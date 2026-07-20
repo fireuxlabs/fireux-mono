@@ -1,5 +1,6 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/meta.model.ts
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: clarify canonical-root relationship and app support semantics.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access support directly without changing persisted fields.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 
@@ -102,7 +103,7 @@ export function normalizeFireuxAppScopeState(
 
 /**
  * Maps an app runtime role to the ownership state written on root-plus-app
- * entities. Standalone apps directly own their app overlay, so they use the
+ * entities. Standalone apps directly own their App support record, so they use the
  * same `parent_app` relationship as global apps. Unknown roles fail closed.
  */
 export function resolveFireuxAppScopeStateForRole(
@@ -180,7 +181,7 @@ export type FireuxConsoleAccess = {
  * - join requests remain optional workflow state
  * - profiles such as Chef are domain extensions, not the stored access principal
  */
-export const FireuxAppOverlayModel = {
+export const FireuxAppAccessRecordModel = {
   id: '' as string,
   ...FireuxConsoleAccessModel,
   team_ids: [] as string[],
@@ -196,8 +197,9 @@ export const FireuxAppOverlayModel = {
   },
 } as const
 
-export type FireuxAppOverlay = {
-  [K in keyof typeof FireuxAppOverlayModel]: (typeof FireuxAppOverlayModel)[K]
+export type FireuxAppAccessRecord = {
+  [K in keyof typeof FireuxAppAccessRecordModel]:
+    (typeof FireuxAppAccessRecordModel)[K]
 }
 
 /**

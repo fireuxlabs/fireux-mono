@@ -1,11 +1,13 @@
-// Concurrent edit — 2026-07-20 22:20 CEST — Both-Entity Authority — Property: split canonical root identity, Place reference, and app operational overlay.
+// Concurrent edit — 2026-07-20 22:59 CEST — Both-Entity Authority — Property: keep independent identity, private support, and explicit publication.
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Property root identity and access-only App support.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Property access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type {
-  FireuxAppOverlay,
+  FireuxAppAccessRecord,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
-  FireuxAppOverlayModel,
+  FireuxAppAccessRecordModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -20,8 +22,6 @@ type WidenLiteral<T> =
   : T
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
- *
  * Family: Property
  * Storage: canonical root property plus an app-scoped support record
  * Owner app scope: Property console / product shell
@@ -31,34 +31,48 @@ type WidenLiteral<T> =
  * - Root means canonical identity, not automatically public-readable.
  * - BuenoHost can use Property without Portfolio.
  * - Property owns its optional Portfolio relationship through `portfolio_id`.
- * - Access and guest-manual operations belong only to AppProperty.
+ * - Access belongs only to AppProperty.
+ * - Guest-manual secrets use a separate private support record so access-list
+ *   reads never download operational credentials.
  */
 export const PropertyStorage = {
-  shape: 'both',
+  shape: 'root-and-app-support',
   root: 'properties/{propertyId}',
-  overlay: 'apps/{appId}/properties/{propertyId}',
+  appSupport: 'apps/{appId}/properties/{propertyId}',
   rootCollection: 'properties',
-  overlayCollection: 'properties',
+  appSupportCollection: 'properties',
   idParam: 'propertyId',
 } as const
 
 export const PropertyEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Property',
-  family: ['portfolio', 'console-entity'],
-  storage: 'both',
+  family: ['property', 'console-entity'],
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'access-record',
+  publicRead: 'projection',
   status: 'confirmed',
   console: true,
   root: PropertyStorage.root,
-  scoped: PropertyStorage.overlay,
+  appSupportPath: PropertyStorage.appSupport,
 })
 
 export const AppPropertyStorage = {
   shape: 'scoped',
-  path: PropertyStorage.overlay,
-  collection: PropertyStorage.overlayCollection,
+  path: PropertyStorage.appSupport,
+  collection: PropertyStorage.appSupportCollection,
   parent: 'app',
   idParam: PropertyStorage.idParam,
+} as const
+
+export const PropertyManualStorage = {
+  shape: 'scoped-support',
+  path: 'apps/{appId}/properties/{propertyId}/private/manual',
+  collection: 'private',
+  documentId: 'manual',
+  parent: 'app-property',
+  propertyIdParam: PropertyStorage.idParam,
 } as const
 
 export const PropertyIdentityModel = {
@@ -152,6 +166,8 @@ export const PropertyManualModel = {
   },
 } as const
 
+export type PropertyPublicationState = 'draft' | 'published' | 'retired'
+
 export const PropertyModel = {
   id: '' as string,
   slug: '' as string,
@@ -160,6 +176,7 @@ export const PropertyModel = {
   ...FireuxAppScope,
   identity: PropertyIdentityModel,
   status: 'active' as 'active' | 'inactive',
+  publication_state: 'draft' as PropertyPublicationState,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],
@@ -175,15 +192,15 @@ export type PropertyIdentity = WidenLiteral<typeof PropertyIdentityModel>
 
 export type PropertyManual = WidenLiteral<typeof PropertyManualModel>
 
+export type PropertyManualRecord = PropertyManual & FireuxStamped
+
 export type Property = WidenLiteral<typeof PropertyModel>
 
 export const AppPropertyModel = {
-  ...FireuxAppOverlayModel,
+  ...FireuxAppAccessRecordModel,
 } as const
 
-export type AppProperty = FireuxAppOverlay & {
-  manual?: PropertyManual
-}
+export type AppProperty = FireuxAppAccessRecord
 
 export type PropertyCreateInput = {
   id?: string
@@ -201,7 +218,4 @@ export type PropertyUpdateInput = Partial<
 export type AppPropertyCreateInput = Pick<
   AppProperty,
   'operator_ids' | 'team_ids' | 'join_requests'
-> &
-  Partial<Pick<AppProperty, 'manual'>>
-
-export type AppPropertyUpdateInput = Partial<Pick<AppProperty, 'manual'>>
+>

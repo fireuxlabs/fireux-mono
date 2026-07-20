@@ -13,8 +13,7 @@
     "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rimraf .nuxt app/.nuxt .output dist",
-    "migrate:chefs": "tsx scripts/migrate-chef-data.ts"
+    "clean": "rimraf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
     "@iconify-json/heroicons": "^1.2.2",

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: validate Property selection only after membership and collection outcomes are composed.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: request the explicit root-with-App-support read shape.
 import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
@@ -63,7 +64,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     outcome: sourceTargetsOutcome,
   } = usePropertyCollection({
     source: consoleRoot.source,
-    shape: 'both',
+    shape: 'root-with-app-support',
     filter: targetFilter,
   })
   const targetsOutcome = options.resolveTargetOutcome

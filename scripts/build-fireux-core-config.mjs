@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-15
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: run config compilation inside builder validation.
 // FILE: scripts/build-fireux-core-config.mjs
 // Build FireUX core config helpers that package builds load through subpath exports.
 

@@ -1,4 +1,5 @@
-// Concurrent edit — 2026-07-20 22:20 CEST — Both-Entity Authority — Property: validate the Place-linked root and allowlist app access/manual deltas.
+// Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority — Property: exact-validate published roots and keep collection surfaces free of private manuals.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name the allowlisted App access input directly.
 import {
   PropertyManualModel,
   PropertyStorage,
@@ -13,70 +14,128 @@ const asRecord = (value: unknown): Record<string, unknown> | null =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : null
+const hasOnlyKeys = (value: Record<string, unknown>, keys: readonly string[]) => {
+  const allowed = new Set(keys)
+  return Object.keys(value).every((key) => allowed.has(key))
+}
+const validStamp = (
+  value: unknown,
+  keys: readonly string[]
+): value is Record<string, unknown> => {
+  const stamp = asRecord(value)
+  if (!stamp || !hasOnlyKeys(stamp, keys)) return false
+  if (!asRecord(stamp.at)) return false
+  return ['by', 'app_id'].every(
+    (key) => stamp[key] === undefined || typeof stamp[key] === 'string'
+  )
+}
 const safeStringArray = (value: unknown) =>
   Array.isArray(value)
     ? [...new Set(value.map((entry) => safeString(entry)).filter(Boolean))]
     : []
 
 export type PropertySurface = Property &
-  Pick<AppProperty, 'operator_ids' | 'team_ids' | 'join_requests'> & {
-    manual?: PropertyManual
-  }
+  Pick<AppProperty, 'operator_ids' | 'team_ids' | 'join_requests'>
 
 export function canonicalPropertyRoot(source?: Property | null): Property | null {
-  const id = safeString(source?.id)
-  if (!source || !id) return null
-  const slug = safeString(source.slug)
-  const placeId = safeString(source.place_id)
-  const appScopeState = safeString(source.app_scope_state)
-  const appScopeAppId = safeString(source.app_scope_app_id)
+  const root = asRecord(source)
+  if (!root || !hasOnlyKeys(root, [
+    'id',
+    'slug',
+    'portfolio_id',
+    'place_id',
+    'app_scope_state',
+    'app_scope_app_id',
+    'identity',
+    'status',
+    'publication_state',
+    'created',
+    'updated',
+  ])) return null
+  if (
+    typeof source?.id !== 'string' ||
+    typeof source.slug !== 'string' ||
+    typeof source.portfolio_id !== 'string' ||
+    typeof source.place_id !== 'string' ||
+    typeof source.app_scope_state !== 'string' ||
+    typeof source.app_scope_app_id !== 'string' ||
+    typeof source.status !== 'string' ||
+    typeof source.publication_state !== 'string'
+  ) return null
+  const id = source.id.trim()
+  const slug = source.slug.trim()
+  const placeId = source.place_id.trim()
+  const appScopeState = source.app_scope_state
+  const appScopeAppId = source.app_scope_app_id.trim()
   const identity = asRecord(source.identity)
-  const created = asRecord(source.created)
-  const updated = asRecord(source.updated)
-  const propertyType = safeString(identity?.property_type)
-  const status = safeString(source.status)
+  const propertyType = identity?.property_type
+  const status = source.status
+  const publicationState = source.publication_state
 
-  if (!slug || !placeId || !identity || !created || !updated) return null
+  if (!id || !slug || !placeId || !identity) return null
+  if (!hasOnlyKeys(identity, [
+    'name',
+    'image_url',
+    'property_type',
+    'unit_count',
+    'estimated_value',
+    'estimated_value_currency',
+  ])) return null
+  if (
+    typeof identity.name !== 'string' ||
+    !identity.name.trim() ||
+    typeof identity.image_url !== 'string' ||
+    typeof propertyType !== 'string' ||
+    typeof identity.unit_count !== 'number' ||
+    typeof identity.estimated_value !== 'number' ||
+    typeof identity.estimated_value_currency !== 'string'
+  ) return null
+  if (!validStamp(source.created, ['at', 'by', 'app_id'])) return null
+  if (!validStamp(source.updated, ['at', 'by'])) return null
   if (!['root_only', 'parent_app', 'tenant_app'].includes(appScopeState)) return null
+  if (appScopeState === 'root_only' && appScopeAppId) return null
   if (appScopeState !== 'root_only' && !appScopeAppId) return null
   if (!['residential', 'commercial', 'mixed'].includes(propertyType)) return null
   if (status !== 'active' && status !== 'inactive') return null
+  if (!['draft', 'published', 'retired'].includes(publicationState)) return null
 
-  const unitCount = Number(identity.unit_count)
-  const estimatedValue = Number(identity.estimated_value)
-  if (!Number.isFinite(unitCount) || !Number.isFinite(estimatedValue)) return null
+  const unitCount = identity.unit_count
+  const estimatedValue = identity.estimated_value
+  if (!Number.isInteger(unitCount) || unitCount < 0) return null
+  if (!Number.isFinite(estimatedValue) || estimatedValue < 0) return null
 
   return {
     id,
     slug,
-    portfolio_id: safeString(source.portfolio_id),
+    portfolio_id: source.portfolio_id.trim(),
     place_id: placeId,
     app_scope_state: appScopeState as Property['app_scope_state'],
     app_scope_app_id: appScopeAppId,
     identity: {
-      name: safeString(identity.name),
-      image_url: safeString(identity.image_url),
+      name: identity.name.trim(),
+      image_url: identity.image_url.trim(),
       property_type: propertyType as Property['identity']['property_type'],
       unit_count: unitCount,
       estimated_value: estimatedValue,
-      estimated_value_currency: safeString(identity.estimated_value_currency),
+      estimated_value_currency: identity.estimated_value_currency.trim(),
     },
     status: status as Property['status'],
+    publication_state: publicationState as Property['publication_state'],
     created: source.created,
     updated: source.updated,
   }
 }
 
-function exactPropertyManual(value: unknown): PropertyManual | undefined {
+export function canonicalPropertyManual(value: unknown): PropertyManual | null {
   const source = asRecord(value)
-  if (!source) return undefined
+  if (!source) return null
 
   const manual: Record<string, Record<string, string>> = {}
   for (const sectionName of Object.keys(PropertyManualModel) as Array<
     keyof PropertyManual
   >) {
     const sectionSource = asRecord(source[sectionName])
-    if (!sectionSource) return undefined
+    if (!sectionSource) return null
 
     const sectionModel = PropertyManualModel[sectionName]
     const section: Record<string, string> = {}
@@ -84,7 +143,7 @@ function exactPropertyManual(value: unknown): PropertyManual | undefined {
       keyof PropertyManual[typeof sectionName]
     >) {
       if (typeof sectionSource[fieldName as string] !== 'string') {
-        return undefined
+        return null
       }
       section[fieldName as string] = sectionSource[fieldName as string] as string
     }
@@ -96,20 +155,18 @@ function exactPropertyManual(value: unknown): PropertyManual | undefined {
 
 export function composePropertySurface(parts: {
   source?: Property | null
-  overlay?: Partial<AppProperty> | null
+  appSupport?: Partial<AppProperty> | null
 }): PropertySurface | null {
   // Stored legacy roots can still carry access/manual fields. They are not part
   // of the canonical root surface and must not leak back through a broad spread.
   const canonicalRoot = canonicalPropertyRoot(parts.source)
   if (!canonicalRoot) return null
-  const manual = exactPropertyManual(parts.overlay?.manual)
 
   return {
     ...canonicalRoot,
-    operator_ids: safeStringArray(parts.overlay?.operator_ids),
-    team_ids: safeStringArray(parts.overlay?.team_ids),
-    join_requests: safeStringArray(parts.overlay?.join_requests),
-    ...(manual ? { manual } : {}),
+    operator_ids: safeStringArray(parts.appSupport?.operator_ids),
+    team_ids: safeStringArray(parts.appSupport?.team_ids),
+    join_requests: safeStringArray(parts.appSupport?.join_requests),
   }
 }
 

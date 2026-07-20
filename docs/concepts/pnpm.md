@@ -5,6 +5,9 @@ Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: map the canonical command and script-lifecycle surface. -->
 <!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: map read-only App media audit and guarded snapshot sync commands. -->
+<!-- Concurrent edit — 2026-07-20 22:38 CEST — Repo Efficiency Pass 5 of 6: map manifest ownership and shared H3 type identity. -->
+<!-- Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: map package-command target validation. -->
+<!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: map package and baseline production build gates. -->
 
 Purpose:
 Explain workspace/package command context.
@@ -25,11 +28,17 @@ Workspace:
 - The active repo Node pin is `22.23.1`; package engines require `>=22.23 <23`.
 - Workspaces include packages, projects, tools, and test packages.
 - Shared pnpm settings live in `pnpm-workspace.yaml`, not `package.json#pnpm`.
+- Workspace overrides keep framework packages with identity-sensitive types,
+  including H3 events, on one resolved version.
 - Non-interactive scripts must not trigger implicit installs; `verifyDepsBeforeRun` is disabled.
+- The private root owns tooling through `devDependencies`; deployable/runtime
+  dependencies belong to the package or app that imports them.
 
 Common commands:
 
 - `pnpm guard`
+- `pnpm build:packages`
+- `pnpm build:nuxt-baseline`
 - `pnpm audit:scripts`
 - `pnpm audit:app-media -- --ecosystem <key>`
 - `pnpm sync:misebox-public-card-snapshots -- --project <id> --database <id>`
@@ -46,6 +55,11 @@ Working rule:
 - Run broad checks when package shape, guard-covered structure, or shared runtime seams change.
 - Do not repeatedly run expensive checks after every tiny exploratory edit unless the user asks.
 - Root commands are supported entrypoints, not aliases for other root commands.
-- CI calls `guard` and `typecheck:packages` directly and checks script lifecycle.
+- CI and release gates call supported root commands directly. Package builds
+  complete before the `fireux-blank` Nuxt production baseline so the app
+  consumes built production exports.
 - Documentation references do not keep scripts active; manual entrypoints are explicit and dry-run-first.
+- Script lifecycle validates local file targets across every authored package manifest.
 - Dev model-drift payloads remain diagnostic; data repair uses a reviewed named domain script.
+- Direct imports cannot resolve accidentally through the root or a sibling
+  workspace. Nested package manifests inside authored source are invalid.

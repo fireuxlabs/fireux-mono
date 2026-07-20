@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: carry canonical relationship read state into the Portfolio operation.
+// Concurrent edit — 2026-07-20 22:52 CEST — Both-Entity Authority — Property: carry access-ready relationship state into the Portfolio operation.
 import { computed } from 'vue'
 import {
   useActivePortfolio,
@@ -33,6 +33,7 @@ export function usePortfolioConsoleProperties(
     collectionPath: collectionPath.value,
     propertiesCount: properties.value.length,
     outcome: outcome.value,
+    canRead: runtimePortfolio.canRead.value,
     canWrite: runtimePortfolio.canWrite.value,
     selectedPortfolio: selectedPortfolio.value,
   }))
@@ -48,6 +49,7 @@ export function usePortfolioConsoleProperties(
     pending,
     error,
     outcome,
+    canRead: runtimePortfolio.canRead,
     canWrite: runtimePortfolio.canWrite,
     debug,
   }

@@ -1,4 +1,6 @@
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: keep root creation free of app access fields.
+// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Portfolio root collection paths.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
@@ -30,7 +32,6 @@ const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
 }
 
 export type PortfolioCreateOptions = {
-  collectionPath?: string
   test?: boolean
 }
 
@@ -57,12 +58,8 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const { createConsole } = useConsoleCreate()
   const { uid, currentUser } = useAuth()
   const collectionPath =
-    options.test === true
-      ? 'test-portfolios'
-      : normalizeString(options.collectionPath || PortfolioStorage.rootCollection) ||
-        PortfolioStorage.rootCollection
-  const isTestPortfolioCollection =
-    options.test === true || collectionPath === 'test-portfolios'
+    options.test === true ? 'test-portfolios' : PortfolioStorage.rootCollection
+  const isTestPortfolioCollection = options.test === true
 
   async function createTestPortfolio(
     input: PortfolioTestCreateInput = {}
@@ -249,7 +246,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       type: 'portfolio',
       mode: createOptions.mode ?? defaultMode,
       createRoot,
-      createOverlay: async () =>
+      createAppSupport: async () =>
         ({
           operator_ids: uid.value ? [uid.value] : ([] as string[]),
           team_ids: uid.value ? [uid.value] : ([] as string[]),
@@ -266,7 +263,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return {
       id: root.id,
       createdRoot: root.created,
-      createdOverlay: false,
+      createdAppSupport: false,
     }
   }
 

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: gate the baseline Nuxt production build after packages.
 // FILE: scripts/release-check.mjs
 
 import { spawnSync } from 'node:child_process'
@@ -14,6 +15,7 @@ const steps = [
   ['shape guard', ['guard']],
   ['package typecheck', ['typecheck:packages']],
   ['package build', ['build:packages']],
+  ['baseline Nuxt production build', ['build:nuxt-baseline']],
   ['component smoke', ['smoke:components']],
 ]
 

@@ -1,16 +1,11 @@
 // @fireux-script
 // last_used: 2026-07-20
-// usage_note: rejects shadow package boundaries and undeclared direct imports.
-// Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: enforce explicit dependency ownership.
+// usage_note: rejects shadow boundaries, undeclared imports, and split framework type identities.
+// Concurrent edit — 2026-07-20 22:44 CEST — Repo Efficiency Pass 5 of 6: enforce dependency ownership and shared H3 type identity.
 // FILE: scripts/guards/dependency-ownership.mjs
 
 import { builtinModules } from 'node:module'
-import {
-  existsSync,
-  readFileSync,
-  readdirSync,
-  statSync,
-} from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
 
@@ -25,6 +20,8 @@ const CODE_EXTENSIONS = new Set([
   '.tsx',
   '.vue',
 ])
+
+const STYLE_EXTENSIONS = new Set(['.css', '.sass', '.scss'])
 
 const IGNORED_DIRECTORIES = new Set([
   '.data',
@@ -59,19 +56,26 @@ function packageRoots(repoRoot) {
   for (const family of packageFamilies) {
     const familyRoot = path.join(repoRoot, 'packages', family)
     for (const packageRoot of childDirectories(familyRoot)) {
-      if (existsSync(path.join(packageRoot, 'package.json'))) roots.push(packageRoot)
+      if (existsSync(path.join(packageRoot, 'package.json')))
+        roots.push(packageRoot)
 
       if (family === 'ecosystem') {
-        for (const appRoot of childDirectories(path.join(packageRoot, 'apps'))) {
-          if (existsSync(path.join(appRoot, 'package.json'))) roots.push(appRoot)
+        for (const appRoot of childDirectories(
+          path.join(packageRoot, 'apps')
+        )) {
+          if (existsSync(path.join(appRoot, 'package.json')))
+            roots.push(appRoot)
         }
       }
     }
   }
 
-  for (const ecosystemRoot of childDirectories(path.join(repoRoot, 'projects'))) {
+  for (const ecosystemRoot of childDirectories(
+    path.join(repoRoot, 'projects')
+  )) {
     for (const projectRoot of childDirectories(ecosystemRoot)) {
-      if (existsSync(path.join(projectRoot, 'package.json'))) roots.push(projectRoot)
+      if (existsSync(path.join(projectRoot, 'package.json')))
+        roots.push(projectRoot)
     }
   }
 
@@ -99,8 +103,12 @@ function readManifest(packageRoot) {
 
 function declaredDependencies(manifest) {
   return new Set(
-    ['dependencies', 'devDependencies', 'optionalDependencies', 'peerDependencies']
-      .flatMap((field) => Object.keys(manifest[field] ?? {}))
+    [
+      'dependencies',
+      'devDependencies',
+      'optionalDependencies',
+      'peerDependencies',
+    ].flatMap((field) => Object.keys(manifest[field] ?? {}))
   )
 }
 
@@ -121,7 +129,8 @@ function isLocalOrVirtualImport(specifier) {
     specifier.startsWith('@/') ||
     specifier.startsWith('@@/') ||
     specifier.startsWith('virtual:') ||
-    specifier.startsWith('nitro:')
+    specifier.startsWith('nitro:') ||
+    /^[a-z][a-z0-9+.-]*:/i.test(specifier)
   )
 }
 
@@ -168,6 +177,21 @@ function importedPackages(source) {
   return imports
 }
 
+function importedStylePackages(source) {
+  const imports = new Set()
+
+  for (const match of source.matchAll(
+    /@(?:forward|import|use)\s+(?:url\(\s*)?['"]([^'"]+)['"]/g
+  )) {
+    const specifier = match[1]
+    if (!specifier || isLocalOrVirtualImport(specifier)) continue
+    if (specifier.startsWith('sass:')) continue
+    imports.add(packageName(specifier))
+  }
+
+  return imports
+}
+
 function sourceUnits(filePath) {
   const source = readFileSync(filePath, 'utf8')
   if (path.extname(filePath) !== '.vue') return [source]
@@ -177,8 +201,17 @@ function sourceUnits(filePath) {
     .filter(Boolean)
 }
 
+function vueStyleUnits(filePath) {
+  const source = readFileSync(filePath, 'utf8')
+
+  return [...source.matchAll(/<style(?:\s[^>]*)?>([\s\S]*?)<\/style>/g)]
+    .map((match) => match[1])
+    .filter(Boolean)
+}
+
 function walkFiles(directory, { nestedPackageRoots = new Set() } = {}) {
   if (!existsSync(directory)) return []
+  if (statSync(directory).isFile()) return [directory]
   const files = []
   const pending = [directory]
 
@@ -190,7 +223,8 @@ function walkFiles(directory, { nestedPackageRoots = new Set() } = {}) {
       const entryPath = path.join(current, entry.name)
       if (entry.isDirectory()) {
         if (IGNORED_DIRECTORIES.has(entry.name)) continue
-        if (entryPath !== directory && nestedPackageRoots.has(entryPath)) continue
+        if (entryPath !== directory && nestedPackageRoots.has(entryPath))
+          continue
         pending.push(entryPath)
         continue
       }
@@ -213,17 +247,45 @@ function directImportViolations({
   const violations = []
 
   for (const filePath of walkFiles(ownerRoot, { nestedPackageRoots })) {
-    if (!CODE_EXTENSIONS.has(path.extname(filePath))) continue
+    const extension = path.extname(filePath)
+    if (!CODE_EXTENSIONS.has(extension) && !STYLE_EXTENSIONS.has(extension))
+      continue
 
-    for (const source of sourceUnits(filePath)) {
-      for (const importedPackage of importedPackages(source)) {
-        if (importedPackage === manifest.name || declared.has(importedPackage)) continue
+    const sources = STYLE_EXTENSIONS.has(extension)
+      ? [readFileSync(filePath, 'utf8')]
+      : sourceUnits(filePath)
+
+    for (const source of sources) {
+      const imports = STYLE_EXTENSIONS.has(extension)
+        ? importedStylePackages(source)
+        : importedPackages(source)
+
+      for (const importedPackage of imports) {
+        if (importedPackage === manifest.name || declared.has(importedPackage))
+          continue
         if (importedPackage === 'vscode' && manifest.engines?.vscode) continue
         violations.push({
           dependency: importedPackage,
           file: path.relative(repoRoot, filePath),
           owner: ownerLabel ?? (path.relative(repoRoot, ownerRoot) || '.'),
         })
+      }
+    }
+
+    if (extension === '.vue') {
+      for (const source of vueStyleUnits(filePath)) {
+        for (const importedPackage of importedStylePackages(source)) {
+          if (
+            importedPackage === manifest.name ||
+            declared.has(importedPackage)
+          )
+            continue
+          violations.push({
+            dependency: importedPackage,
+            file: path.relative(repoRoot, filePath),
+            owner: ownerLabel ?? (path.relative(repoRoot, ownerRoot) || '.'),
+          })
+        }
       }
     }
   }
@@ -236,7 +298,9 @@ function nestedManifestViolations({ repoRoot, roots }) {
   const violations = []
 
   for (const packageRoot of roots) {
-    for (const filePath of walkFiles(packageRoot, { nestedPackageRoots: rootSet })) {
+    for (const filePath of walkFiles(packageRoot, {
+      nestedPackageRoots: rootSet,
+    })) {
       if (path.basename(filePath) !== 'package.json') continue
       if (filePath === path.join(packageRoot, 'package.json')) continue
       violations.push(path.relative(repoRoot, filePath))
@@ -247,9 +311,40 @@ function nestedManifestViolations({ repoRoot, roots }) {
 }
 
 function rootSourceRoots(repoRoot) {
-  return [path.join(repoRoot, 'scripts')].filter((directory) => {
-    return existsSync(directory) && statSync(directory).isDirectory()
+  return [
+    path.join(repoRoot, 'eslint.config.js'),
+    path.join(repoRoot, 'scripts'),
+  ].filter((sourcePath) => {
+    return existsSync(sourcePath)
   })
+}
+
+function h3TypeIdentityViolations(repoRoot) {
+  const workspaceSource = readFileSync(
+    path.join(repoRoot, 'pnpm-workspace.yaml'),
+    'utf8'
+  )
+  const override = workspaceSource.match(
+    /^\s{2}['"]?h3['"]?:\s*['"]?([^'"\s#]+)/m
+  )?.[1]
+  if (!override) {
+    return ['pnpm-workspace.yaml must pin overrides.h3.']
+  }
+
+  const lockSource = readFileSync(path.join(repoRoot, 'pnpm-lock.yaml'), 'utf8')
+  const lockedVersions = new Set(
+    [...lockSource.matchAll(/^  h3@([^:()]+)(?:\([^)]*\))?:$/gm)].map(
+      (match) => match[1]
+    )
+  )
+
+  if (lockedVersions.size !== 1 || !lockedVersions.has(override)) {
+    return [
+      `pnpm-lock.yaml resolves H3 as [${[...lockedVersions].sort().join(', ') || 'none'}], expected only ${override}.`,
+    ]
+  }
+
+  return []
 }
 
 export async function run(ctx) {
@@ -285,8 +380,14 @@ export async function run(ctx) {
 
   const nestedManifests = nestedManifestViolations({ repoRoot, roots })
   const rootRuntimeDependencies = Object.keys(rootManifest.dependencies ?? {})
+  const typeIdentityViolations = h3TypeIdentityViolations(repoRoot)
 
-  if (violations.length || nestedManifests.length || rootRuntimeDependencies.length) {
+  if (
+    violations.length ||
+    nestedManifests.length ||
+    rootRuntimeDependencies.length ||
+    typeIdentityViolations.length
+  ) {
     const lines = ['[guard] ❌ Dependency ownership drift detected:']
 
     if (violations.length) {
@@ -314,7 +415,17 @@ export async function run(ctx) {
       lines.push(
         '',
         'Private workspace-root runtime dependencies:',
-        ...rootRuntimeDependencies.sort().map((dependency) => `  - ${dependency}`)
+        ...rootRuntimeDependencies
+          .sort()
+          .map((dependency) => `  - ${dependency}`)
+      )
+    }
+
+    if (typeIdentityViolations.length) {
+      lines.push(
+        '',
+        'Shared framework type identity:',
+        ...typeIdentityViolations.map((violation) => `  - ${violation}`)
       )
     }
 
@@ -323,11 +434,14 @@ export async function run(ctx) {
       '[guard] Fix:',
       '- Declare every direct import in the package that owns the importing file.',
       '- Remove nested package.json files that create accidental source boundaries.',
-      '- Keep the private workspace root tooling-only; root packages belong in devDependencies.'
+      '- Keep the private workspace root tooling-only; root packages belong in devDependencies.',
+      '- Keep H3 on one workspace override so Nitro and package event types share an identity.'
     )
 
     throw new Error(lines.join('\n'))
   }
 
-  console.log('[guard] ✅ direct dependencies have explicit package owners')
+  console.log(
+    '[guard] ✅ dependencies have explicit owners and shared H3 type identity'
+  )
 }

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader
@@ -16,7 +17,7 @@
           <p>Next: show Cleanbox apps and the primary entry points.</p>
           <p>
             If you're looking for the system-wide list of ecosystems, go to
-            <NuxtLink class="text-primary-500 hover:underline" to="/ecosystems">
+            <NuxtLink class="text-primary hover:underline" to="/ecosystems">
               /ecosystems
             </NuxtLink>
             .

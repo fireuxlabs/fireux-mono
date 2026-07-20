@@ -42,13 +42,10 @@
   },
   "files": ["src/**/*"],
   "scripts": {
-    "build": "nuxt-module-build build && node ../../../scripts/build-fireux-core-config.mjs",
+    "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
-  },
-  "unbuild": {
-    "failOnWarn": false
   },
   "engines": {
     "node": ">=22.23 <23",
@@ -79,7 +76,7 @@
   },
   "devDependencies": {
     "@nuxt/kit": "^4.4.0",
-    "@nuxt/module-builder": "^0.5.5",
+    "@nuxt/module-builder": "^1.0.2",
     "@nuxt/schema": "^4.4.0",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "rimraf": "^6.0.1",

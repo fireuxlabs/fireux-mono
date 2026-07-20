@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: carry authoritative target outcomes into selection.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose App support collection selection directly.
 import { computed, unref, type MaybeRef } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 import { useAuth } from '../../firebase/useAuth'
@@ -27,7 +28,7 @@ export type UseConsoleEntityRuntimeOptions<TTarget> = {
   mode?: ValueRef<ConsoleEntityRuntimeMode | null | undefined>
   explicitPath?: ValueRef<string | null | undefined>
   testCollectionPath?: ValueRef<string | null | undefined>
-  useAppOverlay?: ValueRef<boolean | null | undefined>
+  useAppSupport?: ValueRef<boolean | null | undefined>
   readOnly?: ValueRef<boolean | null | undefined>
   userId?: ValueRef<string | null | undefined>
 }
@@ -72,7 +73,7 @@ export function useConsoleEntityRuntime<TTarget>(
     mode: source,
     explicitPath: options.explicitPath,
     testCollectionPath: options.testCollectionPath,
-    useAppOverlay: options.useAppOverlay,
+    useAppSupport: options.useAppSupport,
   })
   const readOnly = computed(
     () => source.value === 'demo' || Boolean(unref(options.readOnly))
@@ -100,8 +101,8 @@ export function useConsoleEntityRuntime<TTarget>(
       isTenantOwned: firestore.isTenantOwned,
       rootCollection,
       scopeState: firestore.scopeState,
-      scopedCollection: firestore.scopedCollection,
-      usesAppOverlay: firestore.usesAppOverlay,
+      appSupportCollection: firestore.appSupportCollection,
+      usesAppSupport: firestore.usesAppSupport,
       writeCollection: firestore.writeCollection,
       source,
       readOnly,

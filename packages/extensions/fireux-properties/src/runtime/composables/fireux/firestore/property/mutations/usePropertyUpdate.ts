@@ -1,14 +1,16 @@
-// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: expose typed fixed-path root and operational-overlay updates.
+// Concurrent edit — 2026-07-20 22:32 CEST — Both-Entity Authority — Property: keep identity and private-manual updates on fixed paths; withhold access mutation.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: use the explicit Property App support path.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
+  PropertyManualStorage,
   PropertyStorage,
-  type AppProperty,
-  type AppPropertyUpdateInput,
   type Property,
+  type PropertyManual,
   type PropertyUpdateInput,
 } from '../../../../../models/property.model'
+import { canonicalPropertyManual } from '../utils/view/usePropertyInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -27,9 +29,9 @@ export function usePropertyUpdate() {
   const requireAppPropertyCollection = () => {
     const resolvedAppId = normalizeString(appId)
     if (!resolvedAppId) {
-      throw new Error('[fireux-properties] app id is required for AppProperty updates.')
+      throw new Error('[fireux-properties] app id is required for private manual updates.')
     }
-    return `${AppStorage.collection}/${resolvedAppId}/${PropertyStorage.overlayCollection}`
+    return `${AppStorage.collection}/${resolvedAppId}/${PropertyStorage.appSupportCollection}`
   }
 
   async function updatePropertyRoot(
@@ -43,19 +45,24 @@ export function usePropertyUpdate() {
     )
   }
 
-  async function updatePropertyOverlay(
+  async function updatePropertyManual(
     propertyId: string,
-    patch: AppPropertyUpdateInput
+    input: PropertyManual
   ): Promise<void> {
-    await updateDocument<AppProperty>(
-      requireAppPropertyCollection(),
-      requirePropertyId(propertyId),
-      patch
+    const resolvedPropertyId = requirePropertyId(propertyId)
+    const manual = canonicalPropertyManual(input)
+    if (!manual) {
+      throw new Error('[fireux-properties] complete Property manual input is required.')
+    }
+    await updateDocument<PropertyManual>(
+      `${requireAppPropertyCollection()}/${resolvedPropertyId}/${PropertyManualStorage.collection}`,
+      PropertyManualStorage.documentId,
+      manual
     )
   }
 
   return {
     updatePropertyRoot,
-    updatePropertyOverlay,
+    updatePropertyManual,
   }
 }

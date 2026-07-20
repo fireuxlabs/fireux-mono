@@ -1,4 +1,5 @@
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+// Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core style model.
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
 import {
   readRecord,
   readRecordString,

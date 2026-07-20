@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader class="border-b-0"
@@ -9,8 +10,8 @@
       <UCard>
         <div class="space-y-4">
           <div>
-            <p class="text-sm font-medium text-foreground">Product</p>
-            <p class="text-xs text-muted-foreground">
+            <p class="text-sm font-medium text-highlighted">Product</p>
+            <p class="text-xs text-muted">
               Select the product to onboard.
             </p>
           </div>

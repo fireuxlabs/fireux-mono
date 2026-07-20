@@ -89,6 +89,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: read explicit App support creation results.
 import { useRoute, useRouter } from '#imports'
 import type { ConsoleCreateMode } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { doc, getDoc } from 'firebase/firestore'
@@ -176,10 +177,10 @@ const successMessage = computed(() => {
   if (!result) return ''
 
   if (isConsoleMode.value) {
-    if (result.createdRoot && result.createdOverlay) {
+    if (result.createdRoot && result.createdAppSupport) {
       return 'Kitchen activated. You’re now managing this location.'
     }
-    if (!result.createdRoot && result.createdOverlay) {
+    if (!result.createdRoot && result.createdAppSupport) {
       return 'Kitchen connected. You’re now managing this location.'
     }
     return 'Kitchen ready in your console.'

@@ -14,13 +14,14 @@
 </template>
 
 <!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: disclose local-only, non-delivering behavior. -->
+<!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 
 <style scoped>
 .findmyseo-preflight {
   width: 100%;
-  border-bottom: 1px solid color-mix(in srgb, #d97706 36%, var(--ui-border));
-  background: #111827;
-  color: #fff7ed;
+  border-bottom: 1px solid color-mix(in srgb, var(--ui-warning) 36%, var(--ui-border));
+  background: var(--ui-bg-elevated);
+  color: var(--ui-text-highlighted);
 }
 
 .findmyseo-preflight__inner {
@@ -40,12 +41,12 @@
 }
 
 .findmyseo-preflight__inner strong {
-  color: #fbbf24;
+  color: var(--ui-warning);
   letter-spacing: var(--tracking-widest);
 }
 
 .findmyseo-preflight__separator {
-  color: #fbbf24;
+  color: var(--ui-warning);
   font-weight: var(--font-weight-bold);
 }
 </style>

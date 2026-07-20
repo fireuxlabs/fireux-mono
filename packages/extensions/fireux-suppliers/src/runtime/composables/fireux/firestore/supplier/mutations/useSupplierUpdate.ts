@@ -1,13 +1,9 @@
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: require an explicit entity id on fixed root and App-overlay writes.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: retire generic App access-array updates.
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
-  AppSupplierStorage,
   SupplierStorage,
-  type AppSupplier,
-  type AppSupplierUpdateInput,
   type Supplier,
   type SupplierUpdateInput,
 } from '../../../../../models/supplier/Supplier.model'
@@ -17,14 +13,11 @@ type SupplierMutationOptions = {
 }
 /**
  * useSupplierUpdate
- * - Canon surface: global supplier record updates
- * - App-scope updates target the supplier console overlay
- *
- * Shared update surface for v1 scoped fields.
+ * - Canonical Supplier identity updates only.
+ * - App access changes require a trusted lifecycle and are not exposed here.
  */
 export function useSupplierUpdate() {
   const { updateDocument } = useFirestoreUpdate()
-  const { appId } = useFireUXConfig()
 
   const pruneUndefined = <T extends Record<string, any>>(payload: Partial<T>) => {
     const entries = Object.entries(payload).filter(([, value]) => value !== undefined)
@@ -63,24 +56,6 @@ export function useSupplierUpdate() {
 
     await updateDocument<Supplier>(
       SupplierStorage.rootCollection,
-      resolvedId,
-      pruneUndefined(patch)
-    )
-  }
-
-  const updateSupplierOverlay = async (
-    patch: AppSupplierUpdateInput,
-    options: SupplierMutationOptions
-  ) => {
-    if (!appId) {
-      throw new Error('[useSupplierUpdate] App context required for supplier overlay updates')
-    }
-
-    const resolvedId = resolveId(options.id)
-    const collectionPath = `${AppStorage.collection}/${appId}/${AppSupplierStorage.collection}`
-
-    await updateDocument<AppSupplier>(
-      collectionPath,
       resolvedId,
       pruneUndefined(patch)
     )
@@ -176,7 +151,6 @@ export function useSupplierUpdate() {
 
   return {
     updateSupplierRoot,
-    updateSupplierOverlay,
     updateHeadline,
     updateSummary,
     updateBio,

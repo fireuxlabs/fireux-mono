@@ -1,19 +1,44 @@
+// Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: classify independent Property entities without folding them into Portfolio.
+// Concurrent edit — 2026-07-20 23:40 CEST — Entity Vocabulary + Matrix Pass: separate identity, authority, App support, and public-read contracts.
 export type FireuxEntityKind =
   | 'entity'
   | 'record'
   | 'shape'
   | 'primitive'
   | 'bucket'
+  | 'to-confirm'
 
-export type FireuxEntityStorageScope =
+export type FireuxEntityIdentity =
   | 'root'
-  | 'scoped'
-  | 'both'
+  | 'parent-scoped'
   | 'none'
+  | 'to-confirm'
+
+export type FireuxEntityAuthority =
+  | 'owning-app-database'
+  | 'ecosystem-identity-database'
+  | 'fireux-control-plane'
+  | 'identity-database'
+  | 'parent'
+  | 'to-confirm'
+
+export type FireuxEntityAppSupport =
+  | 'none'
+  | 'access-record'
+  | 'membership-record'
+  | 'operational-record'
+  | 'profile-delta'
+  | 'to-confirm'
+
+export type FireuxEntityPublicRead =
+  | 'none'
+  | 'direct-root'
+  | 'projection'
   | 'to-confirm'
 
 export type FireuxEntityFamily =
   | 'core'
+  | 'identity'
   | 'system'
   | 'console-entity'
   | 'content'
@@ -21,6 +46,7 @@ export type FireuxEntityFamily =
   | 'kitchen'
   | 'menu'
   | 'supplier'
+  | 'property'
   | 'portfolio'
   | 'profile'
   | 'support'
@@ -32,11 +58,15 @@ export type FireuxEntityDefinition = {
   kind: FireuxEntityKind
   name: string
   family: FireuxEntityFamily | FireuxEntityFamily[]
-  storage: FireuxEntityStorageScope
-  status?: FireuxEntityStatus
+  identity: FireuxEntityIdentity
+  authority: FireuxEntityAuthority
+  appSupport: FireuxEntityAppSupport
+  publicRead: FireuxEntityPublicRead
+  status: FireuxEntityStatus
   console?: boolean
   root?: string
   scoped?: string
+  appSupportPath?: string
   parent?: string
   notes?: string[]
 }

@@ -1,10 +1,13 @@
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: consume the bounded Place-hydrated Kitchen directory projection.
+// Concurrent edit — 2026-07-20 23:52 CEST — Nuxt Package Toolchain Pass 2 of 3: publish a portable Kitchen index declaration.
 import { useAsyncData } from '#imports'
-import { computed, ref } from 'vue'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE,
   PUBLIC_KITCHEN_INDEX_PAGE_SIZE,
+  type PublicKitchenIndexItem,
   type PublicKitchenIndexPage,
 } from '../../../models/kitchen/kitchen-index.model'
 
@@ -18,9 +21,24 @@ type UsePublicKitchenIndexOptions = {
   pageSize?: number
 }
 
+type PublicKitchenIndexControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error' | 'refresh'
+>
+
+export type UsePublicKitchenIndexReturn = PublicKitchenIndexControls & {
+  kitchens: ComputedRef<PublicKitchenIndexItem[]>
+  ready: Promise<void>
+  outcome: ComputedRef<PublicKitchenIndexOutcome>
+  hasMore: ComputedRef<boolean>
+  loadingMore: Ref<boolean>
+  loadMoreError: Ref<unknown>
+  loadMore: () => Promise<boolean>
+}
+
 export function usePublicKitchenIndex(
   options: UsePublicKitchenIndexOptions = {}
-) {
+): UsePublicKitchenIndexReturn {
   const fireux = useFireUXConfig()
   const pageSize = normalizePageSize(options.pageSize)
   const endpoint = `/api/kitchens?limit=${pageSize}`

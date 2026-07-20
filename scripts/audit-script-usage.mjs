@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // @fireux-script
 // last_used: 2026-07-20
-// usage_note: enforce dated script headers and a tracked caller for every supported script.
+// usage_note: enforce dated script headers, tracked callers, and valid package-command file targets.
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: make orphaned script files a blocking lifecycle failure.
+// Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: validate script file targets in every authored package manifest.
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'
@@ -94,6 +95,37 @@ function sourceReferencesScript(entry, scriptPath) {
   return false
 }
 
+function commandFileTargets(command) {
+  const targets = []
+
+  for (const match of String(command).matchAll(
+    /\b(?:node|tsx|bash|sh)\s+(?:'([^']+)'|"([^"]+)"|([^\s'";&|]+))/g
+  )) {
+    const target = match[1] || match[2] || match[3] || ''
+    if (target.startsWith('.') || target.startsWith('scripts/')) {
+      targets.push(target)
+    }
+  }
+
+  return targets
+}
+
+function invalidPackageCommandTargets(manifestFile) {
+  const manifestPath = path.join(repoRoot, manifestFile)
+  const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+
+  return Object.entries(manifest.scripts || {}).flatMap(([name, command]) =>
+    commandFileTargets(command)
+      .map((target) => ({
+        manifest: manifestFile,
+        name,
+        target,
+        resolved: repoPath(path.resolve(path.dirname(manifestPath), target)),
+      }))
+      .filter(({ resolved }) => !existsSync(path.join(repoRoot, resolved)))
+  )
+}
+
 const authoredPaths = authoredRepoPaths()
 const rows = authoredPaths
   .filter((file) => file.startsWith('scripts/'))
@@ -136,16 +168,9 @@ const unsupported = rows.filter(
   (row) => row.executableReferences.length === 0 && !row.manualEntrypoint
 )
 const manualEntrypoints = rows.filter((row) => row.manualEntrypoint)
-const rootPackage = JSON.parse(
-  readFileSync(path.join(repoRoot, 'package.json'), 'utf8')
-)
-const invalidCommandTargets = Object.entries(rootPackage.scripts || {}).flatMap(
-  ([name, command]) =>
-    [...String(command).matchAll(/\b(?:node|bash)\s+(scripts\/[^\s'";&|]+)/g)]
-      .map((match) => match[1])
-      .filter((target) => !existsSync(path.join(repoRoot, target)))
-      .map((target) => ({ name, target }))
-)
+const invalidCommandTargets = authoredPaths
+  .filter((file) => path.basename(file) === 'package.json')
+  .flatMap(invalidPackageCommandTargets)
 
 console.log(
   JSON.stringify(

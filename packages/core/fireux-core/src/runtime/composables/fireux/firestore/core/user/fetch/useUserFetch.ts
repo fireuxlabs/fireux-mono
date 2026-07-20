@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: normalize app-private profile ids.
 // Concurrent edit — 2026-07-20 16:20 CEST — Console Spine pass: expose App membership read state to console targeting.
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: fail closed when hydrating canonical User avatars.
+// Concurrent edit — 2026-07-20 23:21 CEST — Active User Outcome fix: preserve canonical User read outcomes.
 import { doc } from 'firebase/firestore'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
@@ -8,7 +9,7 @@ import {
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { Ref } from 'vue'
-import { computed, isRef } from 'vue'
+import { computed, isRef, watch } from 'vue'
 import type {
   UserAppConsoleTargets,
   UserApp,
@@ -25,6 +26,13 @@ import {
 import { AppStorage } from '../../../../../../models/core/app.model'
 import { resolveUserAvatarSource } from '../../../../../../models/core/supporting/user-avatar'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
+
+export type UserFetchOutcome =
+  | 'idle'
+  | 'pending'
+  | 'ready'
+  | 'missing'
+  | 'error'
 
 function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
@@ -120,20 +128,37 @@ function isOfflineFirestoreError(error: unknown): boolean {
 }
 
 function guardDocumentPromise(
-  state: { promise?: Ref<Promise<unknown>> },
-  context: string
+  state: {
+    error?: Ref<unknown | undefined>
+    promise?: Ref<Promise<unknown> | undefined>
+  },
+  context: () => string
 ) {
-  const promise = state.promise?.value
-  if (!promise || typeof promise.catch !== 'function') return
+  const handled = new WeakSet<Promise<unknown>>()
 
-  promise.catch((error) => {
-    if (!import.meta.dev) return
-    if (isOfflineFirestoreError(error)) {
-      console.warn(`[useUserFetch] offline read ignored (${context})`, error)
-      return
-    }
-    console.error(`[useUserFetch] read failed (${context})`, error)
-  })
+  watch(
+    () => state.promise?.value,
+    (promise: Promise<unknown> | undefined) => {
+      if (!promise || typeof promise.catch !== 'function') return
+      if (handled.has(promise)) return
+      handled.add(promise)
+      if (state.error) state.error.value = undefined
+      const promiseContext = context()
+
+      promise.catch((error: unknown) => {
+        if (!import.meta.dev) return
+        if (isOfflineFirestoreError(error)) {
+          console.warn(
+            `[useUserFetch] offline read ignored (${promiseContext})`,
+            error
+          )
+          return
+        }
+        console.error(`[useUserFetch] read failed (${promiseContext})`, error)
+      })
+    },
+    { immediate: true, flush: 'sync' }
+  )
 }
 
 /** Arbitrary User reads are public-only unless app/private scopes are explicit. */
@@ -155,6 +180,8 @@ export function useUserFetch(
     const privateUser = computed<UserPrivate | null | undefined>(() => null)
     const user = computed<User | null>(() => null)
     const pending = computed(() => false)
+    const coreError = computed<unknown>(() => null)
+    const coreOutcome = computed<UserFetchOutcome>(() => 'idle')
     const appPending = computed(() => false)
     const appError = computed<unknown>(() => null)
     const privatePending = computed(() => false)
@@ -165,6 +192,8 @@ export function useUserFetch(
       appUser,
       privateUser,
       pending,
+      coreError,
+      coreOutcome,
       appPending,
       appError,
       privatePending,
@@ -233,6 +262,7 @@ export function useUserFetch(
   )
   const coreUserRef = coreState.data
   const corePending = coreState.pending
+  const coreError = coreState.error
   const appUserRef = appState.data
   const appPending = appState.pending
   const appError = appState.error
@@ -241,19 +271,22 @@ export function useUserFetch(
   const privateError = privateState.error
   guardDocumentPromise(
     coreState as any,
-    `${UserStorage.rootCollection}/${uid.value ?? ''}`
+    () => `${UserStorage.rootCollection}/${uid.value ?? ''}`
   )
   guardDocumentPromise(
     appState as any,
-    `${AppStorage.collection}/${appId}/${UserAppStorage.collection}/${uid.value ?? ''}`
+    () =>
+      `${AppStorage.collection}/${appId}/${UserAppStorage.collection}/${uid.value ?? ''}`
   )
   guardDocumentPromise(
     privateState as any,
-    `${UserStorage.rootCollection}/${uid.value ?? ''}/${UserPrivateStorage.collection}/${UserPrivateStorage.document}`
+    () =>
+      `${UserStorage.rootCollection}/${uid.value ?? ''}/${UserPrivateStorage.collection}/${UserPrivateStorage.document}`
   )
 
   const coreUser = computed<User | null | undefined>(() => {
     if (corePending.value) return undefined
+    if (coreError.value) return undefined
 
     const raw = coreUserRef.value
     if (!raw) return null
@@ -278,6 +311,13 @@ export function useUserFetch(
     return normalizeUserPrivate(raw as UserPrivate, uid.value ?? '')
   })
 
+  const coreOutcome = computed<UserFetchOutcome>(() => {
+    if (!uid.value) return 'idle'
+    if (corePending.value) return 'pending'
+    if (coreError.value) return 'error'
+    return coreUser.value ? 'ready' : 'missing'
+  })
+
   const user = computed<User | null>(() => coreUser.value ?? null)
 
   const pending = computed(
@@ -290,6 +330,8 @@ export function useUserFetch(
     appUser,
     privateUser,
     pending,
+    coreError,
+    coreOutcome,
     appPending,
     appError,
     privatePending,

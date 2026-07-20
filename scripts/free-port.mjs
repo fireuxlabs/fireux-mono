@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-15
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 23:22 CEST — Profile hub repair: record the supported FireUX server restart.
 import { execSync } from 'node:child_process'
 
 function usage() {

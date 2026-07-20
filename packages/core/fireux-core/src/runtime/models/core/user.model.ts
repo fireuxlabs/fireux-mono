@@ -1,8 +1,10 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
 // Concurrent edit — 2026-07-20 12:58 CEST — User privacy pass: keep notifications owner-only and membership records governance-only.
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: make the ecosystem avatar canonical User creation and clear state.
+// Concurrent edit — 2026-07-20 23:40 CEST — Entity Vocabulary + Matrix Pass: declare User root identity and UserApp membership support.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import { defineFireuxEntity } from './entity.model'
 import type { FireuxStamped } from './meta.model'
 import { USER_ECOSYSTEM_AVATAR_SRC } from './supporting/user-avatar'
 
@@ -47,6 +49,23 @@ export const UserAppStorage = {
   parent: 'app',
   idParam: 'userId',
 } as const
+
+export const UserEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'User',
+  family: ['core', 'identity'],
+  identity: 'root',
+  authority: 'identity-database',
+  appSupport: 'membership-record',
+  publicRead: 'projection',
+  status: 'confirmed',
+  root: UserStorage.path,
+  appSupportPath: UserAppStorage.path,
+  notes: [
+    'UserPrivate is private account support, not another User.',
+    'UserApp is App membership and capability authority, not public identity.',
+  ],
+})
 
 export const UserAppConsoleTargetFields = {
   kitchen: 'kitchen_ids',

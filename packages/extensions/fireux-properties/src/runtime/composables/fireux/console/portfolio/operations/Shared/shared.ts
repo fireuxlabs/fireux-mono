@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: resolve Portfolio App support paths explicitly.
 import { resolveConsoleEntityCollectionPath } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { AppPortfolioStorage, PortfolioStorage } from '../../../../../../models/portfolio.model'
@@ -17,7 +18,7 @@ export function resolvePortfolioConsoleCollectionPath(
     family: APP_PORTFOLIO_COLLECTION_NAME,
     mode: source,
     appId: normalizePath(appId),
-    useAppOverlay: true,
+    useAppSupport: true,
   })
 }
 

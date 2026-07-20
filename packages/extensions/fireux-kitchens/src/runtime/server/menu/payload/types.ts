@@ -5,7 +5,8 @@ import type {
   KitchenImageShade,
 } from '../../../models/kitchen.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+// Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 
 export type MenuPayloadScope = {
   kitchenId?: string

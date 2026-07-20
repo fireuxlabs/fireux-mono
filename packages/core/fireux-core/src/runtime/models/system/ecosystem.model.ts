@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: declare Ecosystem identity-database and projection authority.
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../core/entity.model'
 import type { FireuxStamped } from '../core/meta.model'
@@ -48,7 +49,10 @@ export const EcosystemEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Ecosystem',
   family: 'system',
-  storage: 'root',
+  identity: 'root',
+  authority: 'ecosystem-identity-database',
+  appSupport: 'none',
+  publicRead: 'projection',
   status: 'confirmed',
   root: EcosystemStorage.path,
 })

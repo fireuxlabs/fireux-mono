@@ -42,6 +42,8 @@
   </main>
 </template>
 
+<!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
+
 <script setup lang="ts">
 useSeoMeta({
   title: 'FireUX Directory Docs',
@@ -69,7 +71,7 @@ definePageMeta({
   gap: calc(var(--spacing) * 8);
 }
 .eyebrow {
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--ui-text-muted);
 }
 header h1 {
   margin-bottom: calc(var(--spacing) * 2);
@@ -88,7 +90,7 @@ header p {
   gap: calc(var(--spacing) * 2);
 }
 .content code {
-  background: rgba(148, 163, 184, 0.15);
+  background: var(--ui-bg-muted);
   padding: 0.1em 0.3em;
   border-radius: var(--ui-radius);
   font-family: var(--font-mono);

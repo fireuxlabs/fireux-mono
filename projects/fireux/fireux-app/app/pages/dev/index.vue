@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader class="border-b-0"
@@ -10,7 +11,7 @@
         <template #header>
           <div class="flex flex-col gap-1">
             <h2
-              class="text-base font-semibold text-gray-900 dark:text-gray-100"
+              class="text-base font-semibold text-highlighted"
             >
               Directory + diagnostics
             </h2>
@@ -29,7 +30,7 @@
           <p>
             Need onboarding context instead of payloads? Hop to
             <NuxtLink
-              class="text-primary-500 hover:underline"
+              class="text-primary hover:underline"
               to="/developer/registry"
             >
               Developer · Directory Docs
@@ -47,19 +48,19 @@
           class="group block"
         >
           <UCard
-            class="h-full transition duration-200 group-hover:border-primary-500"
+            class="h-full transition duration-200 group-hover:border-primary"
           >
             <div class="flex flex-col gap-3">
               <div class="flex items-center gap-3">
                 <span
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 text-primary-600 dark:bg-primary-900/40 dark:text-primary-200"
+                  class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary"
                   aria-hidden="true"
                 >
                   <Icon :name="tool.icon" class="text-lg" />
                 </span>
                 <div>
                   <p
-                    class="text-base font-semibold text-gray-900 dark:text-gray-100"
+                    class="text-base font-semibold text-highlighted"
                   >
                     {{ tool.label }}
                   </p>

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
     <section
@@ -78,7 +79,7 @@
       </UContainer>
     </section>
 
-    <section class="bg-gray-50/80 py-16 dark:bg-gray-900/40">
+    <section class="bg-muted/80 py-16">
       <UContainer class="grid gap-8 md:grid-cols-[2fr,1fr]">
         <div>
           <h2 class="text-2xl font-semibold text-highlighted">
@@ -93,14 +94,14 @@
               <dt class="fx-type-label text-primary">
                 {{ faq.title }}
               </dt>
-              <dd class="mt-2 text-base text-gray-700 dark:text-gray-200">
+              <dd class="mt-2 text-base text-default">
                 {{ faq.copy }}
               </dd>
             </div>
           </dl>
         </div>
         <div
-          class="rounded-2xl border border-gray-200/70 bg-white/90 p-6 text-sm text-gray-600 shadow-lg dark:text-gray-300"
+          class="rounded-2xl border border-default bg-default/90 p-6 text-sm text-toned shadow-lg"
         >
           <p class="fx-type-label text-primary">
             {{ appMeta.getStarted.afterSetup.card.eyebrow }}

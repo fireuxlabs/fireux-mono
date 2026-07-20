@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-10
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: scaffold the v1 builder without a direct mkdist dependency.
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
@@ -192,8 +193,7 @@ function makeFiles({ slug, pkgName, displayName, description, firebaseProject, s
     "@vueuse/core": "*"
   },
   "devDependencies": {
-    "@nuxt/module-builder": "^0.5.5",
-    "mkdist": "^1.5.3",
+    "@nuxt/module-builder": "^1.0.2",
     "rimraf": "^6.0.1",
     "glob": "^11.0.3"
   }

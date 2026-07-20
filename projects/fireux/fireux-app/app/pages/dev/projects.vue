@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader
@@ -31,7 +32,7 @@
       <UCard>
         <template #header>
           <div class="space-y-3">
-            <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+            <p class="text-sm font-semibold text-highlighted">
               Project storage inspector
             </p>
             <p class="text-xs text-muted">

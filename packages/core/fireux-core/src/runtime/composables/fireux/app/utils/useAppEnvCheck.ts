@@ -1,10 +1,21 @@
 // Concurrent edit — 2026-07-20 16:35 CEST — Repo Efficiency Pass 1 of 6: authenticate diagnostics and identity-gate cached data.
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish a portable async-data control surface.
 import { useAsyncData } from '#imports'
-import { computed } from 'vue'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import { computed, type ComputedRef } from 'vue'
 import { useAuth } from '../../firebase/useAuth'
 import type { EnvCheckResponse } from './env-check.types'
 
-export function useAppEnvCheck() {
+type AppEnvCheckControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error' | 'status' | 'refresh' | 'execute' | 'clear'
+>
+
+export type UseAppEnvCheckReturn = AppEnvCheckControls & {
+  data: ComputedRef<EnvCheckResponse | null>
+}
+
+export function useAppEnvCheck(): UseAppEnvCheckReturn {
   const { currentUser, hasAuthState } = useAuth()
   const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
 

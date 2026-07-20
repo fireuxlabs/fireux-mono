@@ -1,4 +1,11 @@
-import { defineNuxtRouteMiddleware, navigateTo, useRuntimeConfig } from '#imports'
+// Concurrent edit — 2026-07-20 23:29 CEST — Profile auth hydration fix: defer initial protected-route redirects through Nuxt readiness.
+import {
+  defineNuxtRouteMiddleware,
+  navigateTo,
+  onNuxtReady,
+  useNuxtApp,
+  useRuntimeConfig,
+} from '#imports'
 import {
   resolveClientAppAdmin,
   resolveClientAuthState,
@@ -20,39 +27,57 @@ export default defineNuxtRouteMiddleware(async (to) => {
   const requiresAuth = Boolean(meta.requiresAuth)
   if (!requiresAuth) return
 
-  const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
+  const nuxtApp = useNuxtApp()
+  const runtime = useRuntimeConfig()
+  const redirectTo = (path: string) =>
+    nuxtApp.runWithContext(() => navigateTo(path))
 
-  if (!auth.isAuthenticated) {
-    return navigateTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
-  }
+  const enforceAuth = async () => {
+    const auth = await resolveClientAuthState(AUTH_WAIT_TIMEOUT_MS)
 
-  const roles = Array.isArray(meta.roles) ? meta.roles : []
-  const needsDeveloper = roles.includes('developer')
+    if (!auth.isAuthenticated) {
+      return redirectTo(`/auth?redirect=${encodeURIComponent(to.fullPath)}`)
+    }
 
-  if (needsDeveloper) {
-    const runtime = useRuntimeConfig()
-    const developerId = String(runtime.public?.fireux?.developerId || '').trim()
-    if (!developerId || auth.uid !== developerId) {
-      return navigateTo('/dashboard')
+    const roles = Array.isArray(meta.roles) ? meta.roles : []
+    const needsDeveloper = roles.includes('developer')
+
+    if (needsDeveloper) {
+      const developerId = String(
+        runtime.public?.fireux?.developerId || ''
+      ).trim()
+      if (!developerId || auth.uid !== developerId) {
+        return redirectTo('/dashboard')
+      }
+    }
+
+    const needsAdmin = roles.includes('admin')
+    if (!needsAdmin) return
+
+    const appId = String(runtime.public?.fireux?.id || '').trim()
+    const databaseId = String(
+      runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
+    ).trim()
+    const isAdmin = await resolveClientAppAdmin({
+      uid: auth.uid,
+      appId,
+      databaseId,
+      timeoutMs: 1500,
+    })
+
+    if (!isAdmin) {
+      return redirectTo('/dashboard')
     }
   }
 
-  const needsAdmin = roles.includes('admin')
-  if (!needsAdmin) return
-
-  const runtime = useRuntimeConfig()
-  const appId = String(runtime.public?.fireux?.id || '').trim()
-  const databaseId = String(
-    runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
-  ).trim()
-  const isAdmin = await resolveClientAppAdmin({
-    uid: auth.uid,
-    appId,
-    databaseId,
-    timeoutMs: 1500,
-  })
-
-  if (!isAdmin) {
-    return navigateTo('/dashboard')
+  if (nuxtApp.isHydrating) {
+    const guardedPath = to.fullPath
+    onNuxtReady(() => {
+      if (nuxtApp.$router.currentRoute.value.fullPath !== guardedPath) return
+      void enforceAuth()
+    })
+    return
   }
+
+  return enforceAuth()
 })

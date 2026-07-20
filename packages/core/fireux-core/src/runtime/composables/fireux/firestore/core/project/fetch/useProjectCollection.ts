@@ -1,8 +1,11 @@
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable project collection declarations.
 import { useAsyncData } from '#imports'
-import { computed, isRef, type Ref } from 'vue'
+import type { AsyncData } from 'nuxt/app'
+import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
+import type { FirestoreCollectionOutcome } from '../../../operations/useFirestoreCollection'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useAuth } from '../../../../firebase/useAuth'
 
@@ -24,9 +27,18 @@ type UseProjectCollectionOptions = {
   filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
 }
 
+export type UseProjectCollectionReturn = {
+  projects: ComputedRef<ProjectSurface[]>
+  count: ComputedRef<number>
+  pending: ComputedRef<boolean>
+  error: ComputedRef<unknown | undefined>
+  outcome: ComputedRef<FirestoreCollectionOutcome>
+  refresh: AsyncData<unknown, unknown>['refresh']
+}
+
 export function useProjectCollection(
   options: UseProjectCollectionOptions = {}
-) {
+): UseProjectCollectionReturn {
   const { surface } = useProjectInterface()
   const { currentUser, hasAuthState } = useAuth()
   const sourceMode = computed<ProjectCollectionSource>(() => {

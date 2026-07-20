@@ -1,10 +1,12 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: admit explicit builder lifecycle config.
 // FILE: scripts/guards/core.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import {
+  COMMON_PACKAGE_ALLOWED_L1,
   COMMON_PACKAGE_REQUIRED_L1,
   inspectLevelOne,
 } from './_lib/filesystem-policy.mjs'
@@ -42,6 +44,7 @@ function checkCorePackage(pkgPath) {
 
   const { missing, unexpected } = inspectLevelOne(entries, {
     required: REQUIRED_L1,
+    allowed: COMMON_PACKAGE_ALLOWED_L1,
   })
 
   const exportViolations = checkPackageExports(pkgPath)
@@ -74,7 +77,8 @@ function checkCorePackage(pkgPath) {
   lines.push(
     '',
     '[guard] Fix:',
-    `- Core packages MUST match L1 exactly: ${REQUIRED_L1.join(', ')}`,
+    `- Core packages MUST expose required L1: ${REQUIRED_L1.join(', ')}`,
+    `- Optional L1 entries: ${COMMON_PACKAGE_ALLOWED_L1.join(', ')}`,
     '- Move implementation into /src',
     '- Keep generated output ignored and untracked'
   )

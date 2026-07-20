@@ -1,6 +1,8 @@
 // Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: own endpoint-first SSR profile detail state.
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable profile detail declarations.
 import { useAsyncData } from '#imports'
-import { computed, unref, type MaybeRef } from 'vue'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type {
   PublicDetailResponse,
   PublicProfileDto,
@@ -24,6 +26,23 @@ type PublicProfileDetailOptions =
   | { collection: 'drivers'; kind: 'driver' }
   | { collection: 'professionals'; kind: 'professional' }
 
+type PublicProfileDetailControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error' | 'refresh'
+>
+
+export type UsePublicProfileDetailReturn<
+  TProfile extends Record<string, unknown>,
+> = PublicProfileDetailControls & {
+  entry: ComputedRef<PublicProfileDto<TProfile> | null>
+  profile: ComputedRef<(TProfile & { id: string }) | null>
+  user: ComputedRef<PublicProfileDto<TProfile>['user'] | null>
+  statusCode: ComputedRef<number>
+  missing: ComputedRef<boolean>
+  failed: ComputedRef<boolean>
+  outcome: ComputedRef<PublicProfileDetailOutcome>
+}
+
 function readStatusCode(error: unknown): number {
   if (!error || typeof error !== 'object') return 0
   const candidate = error as {
@@ -42,7 +61,7 @@ export async function usePublicProfileDetail<
 >(
   options: PublicProfileDetailOptions,
   profileId: MaybeRef<string | null | undefined>
-) {
+): Promise<UsePublicProfileDetailReturn<TProfile>> {
   const id = computed(() => String(unref(profileId) ?? '').trim())
   const { data, pending, error, refresh } = await useAsyncData(
     () => `public-profile-detail-${options.collection}-${id.value || 'none'}`,

@@ -1,5 +1,6 @@
 name: CI
 # Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: use the canonical package typecheck command directly.
+# Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: gate the baseline Nuxt production build after packages.
 
 on:
   push:
@@ -46,6 +47,9 @@ jobs:
 
       - name: Build packages
         run: pnpm build:packages
+
+      - name: Build baseline Nuxt app
+        run: pnpm build:nuxt-baseline
 
       - name: Summary
         run: |

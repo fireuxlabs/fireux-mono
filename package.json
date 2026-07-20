@@ -35,6 +35,7 @@
     "release:check": "node scripts/release-check.mjs",
     "build:all": "node scripts/build-fireux-core-config.mjs && pnpm -r --workspace-concurrency=2 --filter './projects/*/*' build",
     "build:packages": "pnpm -r --filter './packages/*/*' build",
+    "build:nuxt-baseline": "pnpm --dir projects/fireux/fireux-blank build",
     "typecheck:apps": "node scripts/build-fireux-core-config.mjs && pnpm -r --filter './projects/*/*' exec nuxi typecheck",
     "typecheck:packages": "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
     "typecheck": "pnpm typecheck:packages && pnpm typecheck:apps",

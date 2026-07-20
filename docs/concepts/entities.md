@@ -1,7 +1,8 @@
 Entities map
 
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
-<!-- Concurrent edit — 2026-07-20 22:21 CEST — Both-Entity Authority: map canonical roots, app support records, and child-owned relationships. -->
+<!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
+<!-- Concurrent edit — 2026-07-20 23:38 CEST — Entity Vocabulary + Matrix Pass: map four declaration axes and resolve Menu versus KitchenMenu identity/read contracts. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map dormant publication support records and enablement gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map isolated support databases and deterministic blocker decisions. -->
@@ -13,7 +14,7 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map projected public profile reads and owner-only raw authority. -->
 
 Updated: 2026-07-20
-Ref: 4c0a1c7ad
+Ref: a4d382c1d
 Role: map, not canon
 
 Purpose:
@@ -83,38 +84,68 @@ Entity-ness checkpoint:
 - Is it a wrapper around another entity, or the thing itself?
 - Can it start as a `record` or `shape` until the lifecycle proves it needs promotion?
 
-Storage scopes:
+Declaration axes:
 
-- `root`: canonical top-level identity. It may be public, private control-plane,
-  or system truth; root is not a synonym for public-readable.
-- `scoped`: lives under a parent entity/app.
-- `both`: has one canonical root identity plus a scoped app support record.
-- `none`: no stored entity shape.
-- `to-confirm`: not settled yet.
+- `identity`: `root`, `parent-scoped`, `none`, or `to-confirm`. This answers
+  where canonical identity lives. Root is not a synonym for public-readable.
+- `authority`: the canonical store or lifecycle owner: owning App database,
+  Ecosystem identity database, FireUX control plane, identity database, parent,
+  or `to-confirm`.
+- `appSupport`: `none`, `access-record`, `membership-record`,
+  `operational-record`, `profile-delta`, or `to-confirm`. An App support record
+  is not another entity identity and is not called a scoped copy.
+- `publicRead`: `none`, `direct-root`, `projection`, or `to-confirm`. This is
+  independent from root placement.
 
-Both-entity authority boundary:
+The model declarations own these axes locally. The cross-package list at
+`scripts/_lib/entity-matrix.mjs` makes them reviewable without making core
+runtime depend on extension packages; `scripts/guards/entity-matrix.mjs`
+verifies the list against the TypeScript declarations.
 
-- Supplier, Portfolio, Property, and Kitchen have one canonical root entity.
-  Their matching App document is a support record, not another copy or storage
-  scope of the entity.
-- The App record may contain access (`operator_ids`, `team_ids`, and
-  `join_requests`) plus only an explicitly modelled operational delta. Property
-  keeps its guest manual there; it never stores that manual on the root.
+Root + App support authority boundary:
+
+- Supplier, Portfolio, and Property have one canonical root entity. Their
+  matching App document is a support record, not another copy or storage scope
+  of the entity. Kitchen has the same target classification, while its legacy
+  stored App rows and composer still need migration away from duplicated
+  identity; that compatibility is not the pattern.
+- The App record contains bounded access (`operator_ids`, `team_ids`, and
+  `join_requests`) plus only a deliberately public-to-that-access-record delta.
+  Property guest-manual credentials are not such a delta: they live in the
+  separate private support record
+  `apps/{appId}/properties/{propertyId}/private/manual`.
 - An App support record cannot supply identity or exist as a usable entity
   without its matching root. Joined reads start from the root, allowlist the App
-  delta, and report a dangling App record as authority drift.
-- Root identity and App operations use separately named, fixed-path mutation
-  seams. A caller cannot select a scope or collection path. Types and rereads
-  improve correctness; deployed Rules or a trusted server transaction remain
-  the security boundary for create, attach, transfer, and access changes.
+  delta, and expose only complete pairs whose root scope names the current App.
+  Missing halves, dangling App records, and scope mismatches are authority
+  errors; the affected rows do not remain selectable.
+- Supplier, Portfolio, and Property ID-targeted console reads exact-load both
+  the requested roots and same-id App access records. They do not list the App
+  collection and intersect in the browser. Property also exact-validates its
+  root model in collection, detail, attach, and relationship reads. Supplier and
+  Portfolio exact root-schema validators remain gated on live-shape
+  reconciliation; their current reads enforce pair and scope authority without
+  claiming every root field is already canonical.
+- Root identity and App reads/creates use separately named, fixed paths. A
+  caller cannot select a scope, collection path, or different App-record id.
+  Independent root/App deletes and generic access-array mutations stay
+  unexported until a trusted lifecycle can update root scope, App access, and
+  UserApp targets together. Types and rereads improve correctness; deployed
+  Rules or a trusted server transaction remain the security boundary.
 - Cross-root relationships are child-owned ids. Property owns optional
   `portfolio_id`; Portfolio stores neither an inverse Property array nor nested
   full Property copies. Property also references canonical Place with
   `place_id`; shared address/location truth stays on Place.
+- Property publication is separate from operational status. New roots start as
+  `draft`; only active roots with `publication_state: 'published'` enter the
+  bounded public index. Browse cards remain unlinked until a bounded public
+  detail contract exists.
 
 Model placement spine:
 
-- Root or root-plus-overlay identity models live on the root model spine as `models/<entity>.model.ts` when the root identity is the primary concept.
+- Root identity models, including roots with a separate App support record,
+  live on the root model spine as `models/<entity>.model.ts` when root identity
+  is the primary concept.
 - Kitchen-scoped operational models live under `models/kitchen/<operation>.model.ts`.
 - Menu-owned support records live under `models/kitchen/menu/<record>.model.ts` while Menu remains a kitchen operation with a public doorway.
 - Root/public capability profiles such as Chef and Driver use root model files even if their Firestore composables stay grouped under `firestore/profiles` for now.
@@ -133,13 +164,13 @@ Root index classes:
 - Root Simple Index: root/public index entity whose index can render its own collection without linked document hydration.
 - Root Synced Snapshot Index: root/public index entity whose rows carry copied public card/list fields from a source entity.
 - Root Projected Index: root/public index entity whose raw root rows are too sensitive or broad, so a safe server projection powers browse UI.
-- Scoped/Overlay Access: root entity with app-scoped access/delta records used by console or operator filters.
+- Root + App Support Access: root entity with a separate App access record used
+  by console or operator filters.
 - Detail Hydration: detail surfaces may enrich a single entity with linked truth; this is not a collection-manager class.
 - Scoped Surface: parent-scoped route or console surface that should not use root collection-manager ceremony.
 
 Root Simple Index members:
 
-- Menu.
 - Place.
 - Blog.
 - Product.
@@ -175,11 +206,16 @@ Place authority boundary:
 
 Root Projected Index members:
 
+- Menu public browse/detail resolves bounded root Menu or scoped KitchenMenu
+  truth through `/api/menus`; neither record is exposed as a raw public read.
 - Kitchen public browse reads hydrate bounded Place projection fields through
   `/api/kitchens`; canonical Kitchen records do not copy shared Place configuration.
   Place stays ignorant of Kitchens. The Kitchen identity console owns its
   directory publication control; absence means unpublished, and the public
   projection requires explicit publication, a slug, and an existing linked Place.
+- Property public browse uses the bounded `/api/properties` DTO. It never binds
+  raw Property roots or exposes valuation, relationship, access, or guest-manual
+  fields. A malformed canonical root is an explicit read error, not an empty row.
 - App public browse consumes an allowlisted `AppDirectoryEntry`. Owning
   Ecosystem Apps use `/api/public/apps`; FireUX uses the platform directory.
 - Ecosystem public browse exists only as FireUX `EcosystemDirectoryEntry`
@@ -195,7 +231,7 @@ Root Projected Index members:
   model shape. Domain seeds create every field and Firestore Rules reject
   sparse records, removed canonical fields, aliases, and extra fields.
 - Their owners can edit only their own root domain fields. Agent, Chef, and
-  Professional App overlays are stamps-only; separate root/App mutation seams
+  Professional App profile delta records are stamps-only; separate root/App mutation seams
   prevent a caller-selected scope from turning an identity edit into an App
   write. There is no admin-on-behalf browser editor.
 - Raw Agent, Chef, and Professional root reads are owner-only. Public indexes
@@ -211,7 +247,7 @@ Root Projected Index members:
   persist Place snapshots. The editor materializes the Place before assigning
   the reference. Structured experience writes must move to a trusted server
   verifier before the currently blocked client Place root is promoted.
-- App profile overlays are delta-only and never copy public User identity.
+- App profile delta records never copy public User identity.
   Every app-backed profile id belongs to `UserApp.profiles`; root-backed
   profile ids additionally belong to public `User.profiles`.
 - Fixed domain endpoints call
@@ -239,7 +275,7 @@ User identity records:
   `/apps/{appId}/users/{userId}`; app role, entitlement, console access, and
   profile membership belong here. Owner delivery/read state lives at
   `/users/{userId}/notifications/{notificationId}`, including notifications
-  produced from app events. Every profile with an App overlay records its id
+  produced from app events. Every profile with an App delta record records its id
   on UserApp, whether or not that profile also has a public root record.
 - Notification producers are trusted server pipelines. Owners may read and
   acknowledge their records, but browser code does not publish notifications.
@@ -253,7 +289,7 @@ Profile privacy boundaries:
   `/customers/{userId}/orders/{orderId}` as server-only support records; that
   parent path does not restore a root Customer profile.
 - Driver root records contain public capability/presentation fields. Driver
-  phone, tender preferences, and kitchen links exist only in the app overlay.
+  phone, tender preferences, and kitchen links exist only in the App delta record.
 - `AppDriver.kitchen_links` and its derived `active_kitchen_ids` authorization
   index are server-owned. Runtime App admins or current Kitchen operators may
   grant/revoke links only for App members with an AppDriver record. Drivers see
@@ -327,12 +363,14 @@ Directory projection records:
   `scripts/guards/directory-reconciliation.mjs` and
   `scripts/guards/directory-publication.mjs`.
 
-Scoped/Overlay Access members:
+Root + App Support Access members:
 
 - Supplier and Portfolio App records are access-only support records.
-- Property App records contain access plus the exact operational guest manual.
-- Kitchen App records carry access; Kitchen-owned operational child records stay
-  under the selected App Kitchen path.
+- Property App records contain access only. The exact operational guest manual
+  is a private child support record fetched only by the explicit detail seam.
+- `AppKitchen` is access-only in the current model. Legacy stored App Kitchen
+  identity and the compatibility composer remain migration input; Kitchen-owned
+  operational child records stay under the selected App Kitchen path.
 - Public browse is a separate read/projection decision for every family; root
   placement alone never authorizes a raw public collection read.
 
@@ -342,7 +380,8 @@ Root entity/index examples:
 - Ecosystem: `/ecosystems`.
 - User: `/users`.
 - Kitchen: `/kitchens`.
-- Menu: `/menus`, currently to-confirm because it bridges quick uploads and kitchen-owned menus.
+- Menu: `/menus`; root Menu identity is distinct from scoped KitchenMenu
+  operational truth.
 - Ingredient: `/ingredients`.
 - Recipe: no root public index for now. Current model/composable is kitchen-scoped; public recipe projection is future/deferred.
 - Chef: `/chefs`, profile-root index.
@@ -369,26 +408,36 @@ Scoped-only examples:
 - Order: kitchen-scoped today.
 - Team: console/access/member scoped today.
 - Task: portfolio-scoped today.
-- MenuSection/MenuItem: records under Menu.
+- MenuSection/MenuItem: records under KitchenMenu.
 - MenuSourceUpload: support record under Kitchen.
 
-First confirmed markers:
+Current declared matrix:
 
-- App: entity, root, core/system.
-- Ecosystem: entity, root, system.
-- Project: entity, private control-plane root, console-entity.
-- Kitchen: entity, both, console-entity.
-- Supplier: entity, both, console-entity.
-- Portfolio: entity, both, console-entity.
-- Property: entity, both, console-entity.
+- App: root identity, owning App database, no App support, projected public read.
+- Ecosystem: root identity, Ecosystem identity database, no App support,
+  projected public read.
+- Project: root identity, private FireUX control plane, no App support, no
+  public read.
+- User: root public identity in the identity database, plus a UserApp
+  membership/access record and projected public browse. UserPrivate remains
+  separate private account support.
+- Kitchen, Supplier, Portfolio, and Property: root identity in the owning App
+  database plus an access-only App support record. Kitchen and Property use
+  projected public reads; Supplier and Portfolio public-read contracts remain
+  `to-confirm`.
+- Menu: root identity in the owning App database with projected public read.
+- KitchenMenu: Kitchen-scoped identity with projected public read. Publishing
+  may materialize or update a distinct root Menu.
+- MenuSourceUpload, MenuSection, and MenuItem: parent-scoped records, not
+  independent entities. MenuSection belongs to KitchenMenu; MenuItem belongs to
+  MenuSection.
 
-First confirmed bridge marker:
-
-- Menu: entity, storage both/bridge in behavior, because public menu doorways manifest kitchen-owned scoped menus.
+The executable matrix is `scripts/_lib/entity-matrix.mjs`; this map does not
+duplicate every declaration field.
 
 Confirmed support records:
 
-- MenuSection: record under Menu.
+- MenuSection: record under KitchenMenu.
 - MenuItem: record under MenuSection.
 - MenuSourceUpload: record under Kitchen.
 - KitchenIngredient: kitchen-local wrapper around ingredient usage.
@@ -397,6 +446,8 @@ Confirmed support records:
 Confirmed means:
 
 - Confirmed for the current implementation.
+- `status: 'confirmed'` confirms entity/record classification; a separate axis
+  such as `publicRead` may still be `to-confirm` without inventing an answer.
 - Not eternal.
 - If the product concept changes, discuss the entity-ness again before moving files or adding ceremony.
 

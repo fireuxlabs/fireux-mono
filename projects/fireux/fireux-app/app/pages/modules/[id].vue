@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader
@@ -21,15 +22,15 @@
                     Requires FireUX Template
                   </UBadge>
                 </div>
-                <h2 class="text-2xl font-semibold text-foreground">
+                <h2 class="text-2xl font-semibold text-highlighted">
                   {{ moduleTitle }}
                 </h2>
-                <p class="text-sm text-muted-foreground">
+                <p class="text-sm text-muted">
                   {{ moduleTagline }}
                 </p>
               </div>
 
-              <p class="text-base text-muted-foreground">
+              <p class="text-base text-toned">
                 {{ moduleDescription }}
               </p>
 
@@ -50,10 +51,10 @@
           <UCard>
             <div class="space-y-5">
               <div>
-                <p class="text-xs uppercase tracking-wide text-muted-foreground">
+                <p class="text-xs uppercase tracking-wide text-muted">
                   One-time module
                 </p>
-                <div class="text-3xl font-semibold text-foreground">
+                <div class="text-3xl font-semibold text-highlighted">
                   {{ priceLabel }}
                 </div>
               </div>
@@ -66,7 +67,7 @@
                 >
                   {{ isBuying ? 'Starting checkout...' : 'Add module' }}
                 </UButton>
-                <p class="text-xs text-muted-foreground">
+                <p class="text-xs text-muted">
                   {{ ctaHint }}
                 </p>
               </div>
@@ -84,24 +85,24 @@
         <UCard>
           <div class="grid gap-6 lg:grid-cols-[1.1fr,0.9fr]">
             <div class="space-y-3">
-              <div class="text-xs uppercase tracking-wide text-muted-foreground">
+              <div class="text-xs uppercase tracking-wide text-muted">
                 Overview
               </div>
-              <div v-if="moduleContent" class="text-sm text-muted-foreground">
+              <div v-if="moduleContent" class="text-sm text-toned">
                 <div v-html="moduleContent" />
               </div>
-              <p v-else class="text-sm text-muted-foreground">
+              <p v-else class="text-sm text-muted">
                 No overview yet.
               </p>
             </div>
 
             <div class="space-y-3">
-              <div class="text-xs uppercase tracking-wide text-muted-foreground">
+              <div class="text-xs uppercase tracking-wide text-muted">
                 Questions
               </div>
               <div class="space-y-1">
-                <p class="font-medium text-foreground">{{ moduleQ }}</p>
-                <p class="text-sm text-muted-foreground">{{ moduleA }}</p>
+                <p class="font-medium text-highlighted">{{ moduleQ }}</p>
+                <p class="text-sm text-toned">{{ moduleA }}</p>
               </div>
             </div>
           </div>
@@ -110,7 +111,7 @@
         <UCard>
           <template #header>
             <div class="space-y-1">
-              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              <p class="text-sm font-semibold text-highlighted">
                 Roadmap
               </p>
               <p class="text-xs text-muted">
@@ -331,7 +332,7 @@ const notify = (title: string, description: string) => {
     toast.add({
       title,
       description,
-      color: 'amber',
+      color: 'warning',
       icon: 'i-heroicons-exclamation-triangle',
     })
   } else {

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Portfolio: compose only app access delta onto canonical root identity.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name the allowlisted App access input directly.
 import { safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import {
   PortfolioStorage,
@@ -15,7 +16,7 @@ export type PortfolioSurfaceParts<
   TPortfolio extends Partial<Portfolio> = Partial<Portfolio>,
 > = {
   portfolio?: TPortfolio | null | undefined
-  overlay?: AppPortfolio | null | undefined
+  appSupport?: AppPortfolio | null | undefined
 }
 
 export namespace PortfolioCard {
@@ -57,12 +58,12 @@ export function usePortfolioInterface() {
       join_requests: _legacyJoinRequests,
       ...root
     } = source as TPortfolio & Record<string, unknown>
-    const overlay = parts.overlay
-    const accessDelta: PortfolioAccessDelta = overlay
+    const appSupport = parts.appSupport
+    const accessDelta: PortfolioAccessDelta = appSupport
       ? {
-          operator_ids: safeStringArray(overlay.operator_ids),
-          team_ids: safeStringArray(overlay.team_ids),
-          join_requests: safeStringArray(overlay.join_requests),
+          operator_ids: safeStringArray(appSupport.operator_ids),
+          team_ids: safeStringArray(appSupport.team_ids),
+          join_requests: safeStringArray(appSupport.join_requests),
         }
       : {}
 

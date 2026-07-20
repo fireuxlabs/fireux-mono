@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose App support path selection directly.
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { AppStorage } from '../../../../../../models/core/app.model'
@@ -18,7 +19,7 @@ export type UseConsoleEntityFirestoreOptions = {
   target?: MaybeRef<ConsoleEntityScopeTarget | null | undefined>
   explicitPath?: MaybeRef<string | null | undefined>
   testCollectionPath?: MaybeRef<string | null | undefined>
-  useAppOverlay?: MaybeRef<boolean | null | undefined>
+  useAppSupport?: MaybeRef<boolean | null | undefined>
 }
 
 const text = (value: unknown) =>
@@ -32,7 +33,7 @@ const resolveMode = (value: unknown): ConsoleEntityRuntimeMode => {
   return 'live'
 }
 
-const appScopedCollection = (family: string, appId: string) =>
+const appSupportCollectionPath = (family: string, appId: string) =>
   appId ? `${AppStorage.collection}/${appId}/${family}` : ''
 
 export function useConsoleEntityFirestore(
@@ -54,8 +55,8 @@ export function useConsoleEntityFirestore(
     consoleEntityUsesAppScope(target.value)
   )
   const isTenantOwned = computed(() => scopeState.value === 'tenant_app')
-  const shouldUseAppScope = computed(
-    () => Boolean(unref(options.useAppOverlay)) || isAppScoped.value
+  const shouldUseAppSupport = computed(
+    () => Boolean(unref(options.useAppSupport)) || isAppScoped.value
   )
   const rootCollection = computed(() => {
     const testPath = text(unref(options.testCollectionPath))
@@ -65,9 +66,9 @@ export function useConsoleEntityFirestore(
       explicitPath: mode.value === 'test' ? testPath : undefined,
     })
   })
-  const scopedCollection = computed(() => {
+  const appSupportCollection = computed(() => {
     if (mode.value !== 'live') return ''
-    return appScopedCollection(family.value, appId.value)
+    return appSupportCollectionPath(family.value, appId.value)
   })
   const collectionPath = computed(() => {
     if (mode.value === 'demo') return ''
@@ -75,8 +76,8 @@ export function useConsoleEntityFirestore(
     const explicitPath = text(unref(options.explicitPath))
     if (explicitPath) return explicitPath
     if (mode.value !== 'live') return rootCollection.value
-    if (shouldUseAppScope.value && scopedCollection.value) {
-      return scopedCollection.value
+    if (shouldUseAppSupport.value && appSupportCollection.value) {
+      return appSupportCollection.value
     }
 
     return rootCollection.value
@@ -90,9 +91,9 @@ export function useConsoleEntityFirestore(
     mode,
     readCollection: collectionPath,
     rootCollection,
-    scopedCollection,
+    appSupportCollection,
     scopeState,
-    usesAppOverlay: shouldUseAppScope,
+    usesAppSupport: shouldUseAppSupport,
     writeCollection: collectionPath,
   }
 }

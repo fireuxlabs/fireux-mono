@@ -1,11 +1,12 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: allowlist Agent and Professional directory/detail fields.
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: project exact bounded profiles with safe URLs and Place ids.
+// Concurrent edit — 2026-07-20 23:01 CEST — Misebox dev recovery: make workspace runtime imports explicit for Nitro resolution.
 import type {
   PublicProfileHandlerConfig,
   PublicProfileMapper,
 } from 'fireux-core/runtime/server/utils/public-projection/public-profile.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId.ts'
+import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl.ts'
 import { ProfessionalConstraints } from '../../../models/profiles/Professional/Professional.model'
 
 function text(value: unknown, max: number): string {

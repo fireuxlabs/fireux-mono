@@ -6,6 +6,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2–4 of 4: map portable root and owned tooling fixtures. -->
 <!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: distinguish optional console fixtures from other data families. -->
 <!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: map the supported root script surface. -->
+<!-- Concurrent edit — 2026-07-20 22:33 CEST — Repo Efficiency Pass 5 of 6: map explicit workspace dependency ownership. -->
 
 Purpose:
 Explain the repo as a workspace so agents do not rediscover the skeleton.
@@ -57,10 +58,14 @@ Working notes:
 - `scripts/_lib/app-registry.mjs` owns app records and contract assignments;
   `scripts/_lib/app-smoke-contracts.mjs` owns pure HTTP contract builders.
 - `scripts/guard.mjs` is the single guard entrypoint.
+- `scripts/guards/dependency-ownership.mjs` rejects root runtime dependencies,
+  undeclared direct imports, and nested source manifests.
 - `pnpm guard` is the repo shape signal.
 - `pnpm audit:scripts` rejects undated or unsupported authored scripts; rare manual entrypoints are explicit.
 - Completed one-off migration scripts are removed once current writers and independent verification gates own the durable contract.
 - Project apps should not own shared package truth.
+- Packages and apps declare what their authored source imports; the workspace
+  root does not act as a transitive runtime dependency provider.
 
 New project app completion:
 

@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: require explicit linked Place currency for Menu creation.
+// Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: require explicit currency through concrete Place runtime imports.
 import {
   createError,
   getQuery,
@@ -22,8 +22,8 @@ import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/uti
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../../models/kitchen.model'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine.ts'
 import { MenuSourceUploadStorage } from '../../../models/kitchen/menu/menu-source-upload.model'
 
 const menuUploadCollection = MenuSourceUploadStorage.collection

@@ -2,6 +2,7 @@
 // last_used: 2026-07-20
 // usage_note: shared filesystem and local-only path policy for guard modules.
 // Concurrent edit — 2026-07-20 11:40 CEST — Root Efficiency Pass 2 of 4: keep machine-local root lanes untracked.
+// Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: allow explicit package build lifecycle config.
 // FILE: scripts/guards/_lib/filesystem-policy.mjs
 
 export const COMMON_PACKAGE_REQUIRED_L1 = Object.freeze([
@@ -11,6 +12,8 @@ export const COMMON_PACKAGE_REQUIRED_L1 = Object.freeze([
   'src',
   'tsconfig.json',
 ])
+
+export const COMMON_PACKAGE_ALLOWED_L1 = Object.freeze(['build.config.ts'])
 
 export const GENERATED_DIRECTORY_NAMES = Object.freeze([
   '.cache',

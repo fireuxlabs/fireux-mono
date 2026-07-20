@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: model Kitchen-owned payment applicability and fulfilment capability.
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: make Kitchen hours an optional operational override and remove Kitchen currency authority.
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Kitchen root identity and access-only App support.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type {
   FireuxAppScope as FireuxAppScopeShape,
@@ -46,7 +47,7 @@ type WidenLiteral<T> =
  * - If that rule changes later, update the models README first, then this file.
  */
 export const KitchenStorage = {
-  shape: 'both',
+  shape: 'root-and-app-support',
   root: 'kitchens/{kitchenId}',
   scope: 'apps/{appId}/kitchens/{kitchenId}',
   rootCollection: 'kitchens',
@@ -144,11 +145,14 @@ export const KitchenEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Kitchen',
   family: ['kitchen', 'console-entity'],
-  storage: 'both',
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'access-record',
+  publicRead: 'projection',
   status: 'confirmed',
   console: true,
   root: KitchenStorage.root,
-  scoped: KitchenStorage.scope,
+  appSupportPath: KitchenStorage.scope,
 })
 
 export const KitchenModel = {

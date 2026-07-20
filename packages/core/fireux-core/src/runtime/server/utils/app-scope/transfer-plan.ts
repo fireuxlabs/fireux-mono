@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe root/App support transfers without overlay language.
 import { AppStorage } from '../../../models/core/app.model'
 import type { FireuxAppScopeState } from '../../../models/core/meta.model'
 
@@ -10,7 +11,7 @@ export type AppScopeTransferDestinationState = Exclude<
 export type AppScopeTransferPlanInput = {
   family: string
   rootCollection: string
-  overlayCollection: string
+  appSupportCollection: string
   rootId: string
   sourceAppId: string
   destinationAppId: string
@@ -22,13 +23,13 @@ export type AppScopeTransferPlan = {
   dryRun: true
   family: string
   rootPath: string
-  sourceOverlayPath: string
-  destinationOverlayPath: string
+  sourceAppSupportPath: string
+  destinationAppSupportPath: string
   destinationState: AppScopeTransferDestinationState
   rootPatch: Record<string, unknown>
   phases: readonly [
     'inspect_source_tree',
-    'copy_overlay_tree',
+    'copy_app_support_tree',
     'verify_destination_tree',
     'repoint_root',
     'delete_source_tree',
@@ -49,7 +50,7 @@ const segment = (value: unknown, label: string) => {
  * Builds the immutable dry-run contract for an app-scope transfer.
  *
  * This function performs no Firestore reads or writes. A future server-side
- * executor must copy and verify the complete overlay document tree before it
+ * executor must copy and verify the complete App support document tree before it
  * applies `rootPatch`, and may delete the source tree only after repointing
  * succeeds.
  */
@@ -58,7 +59,10 @@ export function buildAppScopeTransferPlan(
 ): AppScopeTransferPlan {
   const family = segment(input.family, 'family')
   const rootCollection = segment(input.rootCollection, 'rootCollection')
-  const overlayCollection = segment(input.overlayCollection, 'overlayCollection')
+  const appSupportCollection = segment(
+    input.appSupportCollection,
+    'appSupportCollection'
+  )
   const rootId = segment(input.rootId, 'rootId')
   const sourceAppId = segment(input.sourceAppId, 'sourceAppId')
   const destinationAppId = segment(input.destinationAppId, 'destinationAppId')
@@ -71,7 +75,7 @@ export function buildAppScopeTransferPlan(
     input.destinationState !== 'parent_app' &&
     input.destinationState !== 'tenant_app'
   ) {
-    throw new Error('[app-scope-transfer] destination must own an app overlay')
+    throw new Error('[app-scope-transfer] destination must own an App support record')
   }
 
   if (input.representation !== 'flat' && input.representation !== 'nested') {
@@ -87,8 +91,8 @@ export function buildAppScopeTransferPlan(
     dryRun: true,
     family,
     rootPath: `${rootCollection}/${rootId}`,
-    sourceOverlayPath: `${AppStorage.collection}/${sourceAppId}/${overlayCollection}/${rootId}`,
-    destinationOverlayPath: `${AppStorage.collection}/${destinationAppId}/${overlayCollection}/${rootId}`,
+    sourceAppSupportPath: `${AppStorage.collection}/${sourceAppId}/${appSupportCollection}/${rootId}`,
+    destinationAppSupportPath: `${AppStorage.collection}/${destinationAppId}/${appSupportCollection}/${rootId}`,
     destinationState: input.destinationState,
     rootPatch: input.representation === 'nested'
       ? { app_scope: ownership }
@@ -98,7 +102,7 @@ export function buildAppScopeTransferPlan(
         },
     phases: [
       'inspect_source_tree',
-      'copy_overlay_tree',
+      'copy_app_support_tree',
       'verify_destination_tree',
       'repoint_root',
       'delete_source_tree',

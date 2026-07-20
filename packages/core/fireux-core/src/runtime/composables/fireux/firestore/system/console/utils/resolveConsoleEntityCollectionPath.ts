@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: select App support paths without overlay terminology.
 import type { ConsoleSource } from '../../../../app/console/useConsole'
 import {
   normalizeFireuxAppScopeState,
@@ -20,7 +21,7 @@ export type ResolveConsoleEntityCollectionPathOptions = {
   appId?: string | null
   target?: ConsoleEntityScopeTarget | null
   explicitPath?: string | null
-  useAppOverlay?: boolean
+  useAppSupport?: boolean
 }
 
 export type ConsoleEntityScopeState =
@@ -92,7 +93,7 @@ export function resolveConsoleEntityCollectionPath(
   }
 
   const appId = resolveConsoleEntityAppId(options.target, options.appId)
-  if (options.useAppOverlay && appId) {
+  if (options.useAppSupport && appId) {
     return `apps/${appId}/${family}`
   }
 

@@ -1,7 +1,9 @@
 // Concurrent edit — 2026-07-20 16:35 CEST — Repo Efficiency Pass 1 of 6: load canonical Apps through the authenticated dev API and identity-gate cached data.
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable collection control declarations.
 
 import { useAsyncData } from '#imports'
-import { computed } from 'vue'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import { computed, type ComputedRef } from 'vue'
 import type { App } from '../../models/core/app.model'
 import { useAuth } from '../fireux/firebase/useAuth'
 
@@ -16,7 +18,21 @@ type DevAppCollectionState = DevAppCollectionResponse & {
   requestUid: string
 }
 
-export function useDevAppCollection() {
+export type DevAppCollectionOutcome = 'pending' | 'error' | 'ready' | 'empty'
+
+type DevAppCollectionControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error' | 'refresh'
+>
+
+export type UseDevAppCollectionReturn = DevAppCollectionControls & {
+  apps: ComputedRef<App[]>
+  count: ComputedRef<number>
+  outcome: ComputedRef<DevAppCollectionOutcome>
+  truncated: ComputedRef<boolean>
+}
+
+export function useDevAppCollection(): UseDevAppCollectionReturn {
   const { currentUser, hasAuthState } = useAuth()
   const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
   const { data, pending, error, refresh } = useAsyncData(

@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require current-user operator authority for Kitchen writes.
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: source selected demo Kitchens through the lazy console adapter.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: select the Kitchen App support collection explicitly.
 import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
@@ -119,7 +120,7 @@ export function useKitchenConsole() {
     appId: scopedAppId,
     mode: kitchenSource,
     testCollectionPath: KitchenStorage.rootCollection,
-    useAppOverlay: computed(
+    useAppSupport: computed(
       () => kitchenSource.value === 'live' && Boolean(scopedAppId.value)
     ),
   })
@@ -197,8 +198,8 @@ export function useKitchenConsole() {
     rootCollection: kitchenCollectionPath,
     storageKitchenId,
     scopeState: firestore.scopeState,
-    scopedCollection: firestore.scopedCollection,
-    usesAppOverlay: firestore.usesAppOverlay,
+    appSupportCollection: firestore.appSupportCollection,
+    usesAppSupport: firestore.usesAppSupport,
     writeCollection: firestore.writeCollection,
     databaseId,
     readOnly,

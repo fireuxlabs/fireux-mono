@@ -1,11 +1,11 @@
+// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: expose fixed reads and identity writes without unsafe lifecycle deletes.
 import type { Ref } from 'vue'
 import type { AppSupplier, Supplier } from '../../../../models/supplier/Supplier.model'
 import type { SupplierCard } from './utils/view/useSupplierInterface'
 import { useSupplierInterface } from './utils/view/useSupplierInterface'
 import { useSupplierCreate } from './mutations/useSupplierCreate'
 import { useSupplierCollection } from './fetch/useSupplierCollection'
-import { useSupplierFetch } from './fetch/useSupplierFetch'
-import { useSupplierDelete } from './mutations/useSupplierDelete'
+import { useAppSupplierFetch, useSupplierFetch } from './fetch/useSupplierFetch'
 import { useSupplierUpdate } from './mutations/useSupplierUpdate'
 import { useSupplierSeo } from './utils/useSupplierSeo'
 import { useSupplierComputed } from './utils/view/useSupplierComputed'
@@ -22,8 +22,8 @@ export type {
 export {
   useSupplierCollection,
   useSupplierFetch,
+  useAppSupplierFetch,
   useSupplierCreate,
-  useSupplierDelete,
   useSupplierUpdate,
   useSupplierSeo,
   useSupplierComputed,
@@ -36,7 +36,7 @@ export {
  * - Exposes:
  *   - fetch one Supplier by id
  *   - Supplier collection
- *   - create/update/delete helpers
+ *   - create and canonical identity update helpers
  *   - computed helpers
  *   - interface helpers
  *
@@ -49,7 +49,6 @@ export function useSupplier(id: string | Ref<string>) {
     ...fetched,
     ...useSupplierCollection(),
     ...useSupplierCreate(),
-    ...useSupplierDelete(),
     ...useSupplierUpdate(),
     ...useSupplierComputed(fetched.supplier),
     ...useSupplierInterface(),

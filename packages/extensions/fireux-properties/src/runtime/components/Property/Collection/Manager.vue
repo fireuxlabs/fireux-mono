@@ -55,38 +55,74 @@
       description="Properties could not be loaded. Please try again."
     />
 
-    <PropertyCollectionList
-      v-else-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <PropertyCardsPill
-          v-bind="card"
-          :link="linkEnabled"
-          :show-meta="true"
-          :show-badges="showBadges"
-        />
-      </template>
-      <template #cell="{ card }">
-        <PropertyCardsCell
-          v-bind="card"
-          :link="linkEnabled"
-          :show-meta="true"
-        />
-      </template>
-    </PropertyCollectionList>
+    <div v-else-if="cardsFiltered.length">
+      <PropertyCollectionList
+        :cards="cardsFiltered"
+        :variant="variant"
+      >
+        <template #pill="{ card }">
+          <PropertyCardsPill
+            v-bind="card"
+            :link="false"
+            :show-meta="true"
+            :show-badges="showBadges"
+          />
+        </template>
+        <template #cell="{ card }">
+          <PropertyCardsCell
+            v-bind="card"
+            :link="false"
+            :show-meta="true"
+          />
+        </template>
+      </PropertyCollectionList>
 
-    <MoleculesStateCard
-      v-else
-      entity="properties"
-      state="empty"
-      surface="bare"
-      :title="query ? 'No matching properties' : 'No properties yet'"
-      :description="query
-        ? 'Try a different property name.'
-        : 'Properties will appear here when they are available.'"
-    />
+      <UButton
+        v-if="hasMore"
+        label="Load more properties"
+        color="neutral"
+        variant="soft"
+        :loading="loadingMore"
+        @click="loadMore"
+      />
+
+      <MoleculesStateCard
+        v-if="loadMoreError"
+        entity="properties"
+        state="error"
+        surface="bare"
+        description="More properties could not be loaded. Please try again."
+      />
+    </div>
+
+    <div v-else>
+      <MoleculesStateCard
+        entity="properties"
+        state="empty"
+        surface="bare"
+        :title="query ? 'No matching properties' : 'No properties yet'"
+        :description="query
+          ? 'Try a different property name.'
+          : 'Published properties will appear here when they are available.'"
+      />
+
+      <UButton
+        v-if="hasMore && !query"
+        label="Check more properties"
+        color="neutral"
+        variant="soft"
+        :loading="loadingMore"
+        @click="loadMore"
+      />
+
+      <MoleculesStateCard
+        v-if="loadMoreError"
+        entity="properties"
+        state="error"
+        surface="bare"
+        description="More properties could not be loaded. Please try again."
+      />
+    </div>
 
     <div>
       <DevJson
@@ -102,17 +138,52 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 23:02 CEST — Property public projection: keep bounded browse cards unlinked until public detail exists.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import { usePropertyCollection } from '../../../composables/fireux/firestore/property/useProperty'
-import { usePropertyInterface } from '../../../composables/fireux/firestore/property/utils/view/usePropertyInterface'
-import type { Property } from '../../../models/property.model'
+import { usePublicPropertyIndex } from '../../../composables/fireux/property/usePublicPropertyIndex'
+import type { PublicPropertyIndexItem } from '../../../models/property-index.model'
 import PropertyCardsCell from '../Cards/Cell.vue'
 import PropertyCardsPill from '../Cards/Pill.vue'
 import PropertyCollectionList from './List.vue'
+
+type PublicPropertyCard = {
+  id: string
+  to: string
+  title: string
+  subtitle: string
+  meta: string
+  imageUrl: string
+  status: string
+  badges: string[]
+  summary: string
+}
+
+const propertyTypeLabel = (value: PublicPropertyIndexItem['property_type']) =>
+  value.charAt(0).toUpperCase() + value.slice(1)
+
+const makeCard = (property: PublicPropertyIndexItem): PublicPropertyCard => {
+  const typeLabel = propertyTypeLabel(property.property_type)
+  const unitLabel = `${property.unit_count} unit${property.unit_count === 1 ? '' : 's'}`
+
+  return {
+    id: property.id,
+    to: '',
+    title: property.name,
+    subtitle: typeLabel,
+    meta: unitLabel,
+    imageUrl: property.image_url || '',
+    status: 'active',
+    badges: [typeLabel],
+    summary: '',
+  }
+}
+
+const makePill = makeCard
+const makeCell = makeCard
 
 const props = withDefaults(
   defineProps<{
@@ -123,7 +194,6 @@ const props = withDefaults(
     showVariantToggle?: boolean
     showCount?: boolean
     initialVariant?: 'pill' | 'cell'
-    link?: boolean
     showBadges?: boolean
     devJsonTitle?: string
     devJsonContext?: string
@@ -136,26 +206,25 @@ const props = withDefaults(
     showVariantToggle: true,
     showCount: true,
     initialVariant: 'pill',
-    link: true,
     showBadges: true,
     devJsonTitle: 'Properties (JSON)',
     devJsonContext: 'collection manager · properties',
   }
 )
 
-const {
-  interface: makeCard,
-  pill: makePill,
-  cell: makeCell,
-} = usePropertyInterface()
-
-const fetched = usePropertyCollection()
-const rawCollection = computed(() => fetched.properties.value)
+const fetched = usePublicPropertyIndex()
+const collection = computed(() => fetched.properties.value)
 const outcome = computed(() => fetched.outcome.value)
+const hasMore = computed(() => fetched.hasMore.value)
+const loadingMore = computed(() => fetched.loadingMore.value)
+const loadMoreError = computed(() => fetched.loadMoreError.value)
+const loadMore = async () => {
+  await fetched.loadMore()
+}
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(rawCollection)
+const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Properties'))
 const description = computed(() => String(props.description || '').trim())
 const searchPlaceholder = computed(() =>
@@ -164,22 +233,16 @@ const searchPlaceholder = computed(() =>
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
-const linkEnabled = computed(() => props.link !== false)
 const showBadges = computed(() => props.showBadges !== false)
-const collection = computed<Property[]>(() =>
-  rawCollection.value.filter((property): property is Property =>
-    Boolean(makeCard(property))
-  )
-)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
-  () => showSearch.value && totalCount.value > 15
+  () => showSearch.value && !hasMore.value && totalCount.value > 15
 )
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<Property, NonNullable<ReturnType<typeof makeCard>>>({
+  useCollectionSearch<PublicPropertyIndexItem, PublicPropertyCard>({
     items: collection,
-    makeCard: (property: Property) => makeCard(property),
+    makeCard,
     initialVariant: props.initialVariant,
   })
 

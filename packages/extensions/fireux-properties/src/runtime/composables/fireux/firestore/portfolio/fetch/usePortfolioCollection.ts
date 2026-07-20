@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Portfolio consoles.
-// Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Portfolio: join strict access overlays only to existing canonical roots.
+// Concurrent edit — 2026-07-20 22:57 CEST — Both-Entity Authority — Portfolio: expose only complete, current-App root/support target pairs.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name exact App access-record joins directly.
 import {
   collection,
   query as fsq,
@@ -9,6 +10,7 @@ import {
 import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -55,6 +57,17 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 function resolvePortfolioId(portfolio: { id?: unknown } | null | undefined) {
   return normalizeString(portfolio?.id)
+}
+
+function portfolioRootBelongsToApp(
+  portfolio: PortfolioCollectionDoc,
+  appId: string
+) {
+  const state = normalizeFireuxAppScopeState(portfolio.app_scope_state)
+  return (
+    (state === 'parent_app' || state === 'tenant_app') &&
+    normalizeString(portfolio.app_scope_app_id) === appId
+  )
 }
 
 export function usePortfolioCollection(
@@ -108,59 +121,66 @@ export function usePortfolioCollection(
     testCollectionPath
   )
   const resolvedAppId = computed(() => normalizeString(appId))
-  const overlayOperatorQuery = computed<Query<AppPortfolio> | null>(() => {
+  const appSupportCollectionPath = computed(() =>
+    resolvedAppId.value
+      ? `${AppStorage.collection}/${resolvedAppId.value}/${PortfolioStorage.appSupportCollection}`
+      : ''
+  )
+  const targetedAppSupportCollectionPath = computed(() =>
+    sourceMode.value === 'live' && hasFilter.value && !hasOperatorFilter.value
+      ? appSupportCollectionPath.value
+      : ''
+  )
+  const targetedAppSupportSource = firestoreLoadDocsByIds<AppPortfolio>({
+    collectionPath: targetedAppSupportCollectionPath,
+    ids: computed(() => [...filterIdSet.value]),
+  })
+  const appSupportOperatorQuery = computed<Query<AppPortfolio> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
 
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
     return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.overlayCollection),
+      collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.appSupportCollection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppPortfolio>
   })
-  const overlayTeamQuery = computed<Query<AppPortfolio> | null>(() => {
+  const appSupportTeamQuery = computed<Query<AppPortfolio> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
 
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
     return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.overlayCollection),
+      collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.appSupportCollection),
       where('team_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppPortfolio>
   })
-  const overlayOperatorSource = firestoreQuery<AppPortfolio>(
-    overlayOperatorQuery,
+  const appSupportOperatorSource = firestoreQuery<AppPortfolio>(
+    appSupportOperatorQuery,
     undefined,
-    computed(() =>
-      resolvedAppId.value
-        ? `${AppStorage.collection}/${resolvedAppId.value}/${PortfolioStorage.overlayCollection}`
-        : ''
-    )
+    appSupportCollectionPath
   )
-  const overlayTeamSource = firestoreQuery<AppPortfolio>(
-    overlayTeamQuery,
+  const appSupportTeamSource = firestoreQuery<AppPortfolio>(
+    appSupportTeamQuery,
     undefined,
-    computed(() =>
-      resolvedAppId.value
-        ? `${AppStorage.collection}/${resolvedAppId.value}/${PortfolioStorage.overlayCollection}`
-        : ''
-    )
+    appSupportCollectionPath
   )
-  const overlaySource = computed<AppPortfolio[]>(() => {
+  const appSupportSource = computed<AppPortfolio[]>(() => {
     const byId = new Map<string, AppPortfolio>()
 
-    for (const overlay of [
-      ...(overlayOperatorSource.value ?? []),
-      ...(overlayTeamSource.value ?? []),
+    for (const appSupport of [
+      ...(targetedAppSupportSource.docs.value ?? []),
+      ...(appSupportOperatorSource.value ?? []),
+      ...(appSupportTeamSource.value ?? []),
     ]) {
-      const id = resolvePortfolioId(overlay)
-      if (id) byId.set(id, { ...overlay, id })
+      const id = resolvePortfolioId(appSupport)
+      if (id) byId.set(id, { ...appSupport, id })
     }
 
     return [...byId.values()]
   })
   const allowedPortfolioIds = computed(() =>
-    (overlaySource.value ?? [])
+    (appSupportSource.value ?? [])
       .map((portfolio) => resolvePortfolioId(portfolio))
       .filter(Boolean)
   )
@@ -183,7 +203,7 @@ export function usePortfolioCollection(
 
   const liveItems = computed<PortfolioCollectionItem[]>(() => {
     const rootById = new Map<string, PortfolioCollectionDoc>()
-    const overlayById = new Map<string, AppPortfolio>()
+    const appSupportById = new Map<string, AppPortfolio>()
 
     for (const portfolio of liveRootDocs.docs.value ?? []) {
       const id = resolvePortfolioId(portfolio)
@@ -194,11 +214,11 @@ export function usePortfolioCollection(
       })
     }
 
-    for (const overlay of overlaySource.value ?? []) {
-      const id = resolvePortfolioId(overlay)
+    for (const appSupport of appSupportSource.value ?? []) {
+      const id = resolvePortfolioId(appSupport)
       if (!id) continue
-      overlayById.set(id, {
-        ...overlay,
+      appSupportById.set(id, {
+        ...appSupport,
         id,
       })
     }
@@ -211,12 +231,20 @@ export function usePortfolioCollection(
       if (!id || seen.has(id)) continue
       seen.add(id)
 
+      const root = {
+        ...(rootById.get(id) ?? {}),
+        id,
+      }
+      const appSupport = appSupportById.get(id)
+      if (
+        !appSupport ||
+        !resolvedAppId.value ||
+        !portfolioRootBelongsToApp(root, resolvedAppId.value)
+      ) continue
+
       const item = surface({
-        portfolio: {
-          ...(rootById.get(id) ?? {}),
-          id,
-        },
-        overlay: overlayById.get(id),
+        portfolio: root,
+        appSupport,
       })
       if (item) merged.push(item)
     }
@@ -269,22 +297,23 @@ export function usePortfolioCollection(
     if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
       liveRootDocs.pending.value ||
-      (hasOperatorFilter.value && (
-        overlayOperatorSource.pending.value ||
-        overlayTeamSource.pending.value
-      ))
+      (hasOperatorFilter.value
+        ? appSupportOperatorSource.pending.value || appSupportTeamSource.pending.value
+        : targetedAppSupportSource.pending.value)
     )
   })
-  const danglingOverlayIds = computed(() => {
+  const danglingAppSupportIds = computed(() => {
     if (
       sourceMode.value !== 'live' ||
-      !hasOperatorFilter.value ||
-      !filterOperatorId.value ||
-      overlayOperatorSource.pending.value ||
-      overlayTeamSource.pending.value ||
+      !usesTargetedRootRead.value ||
+      (hasOperatorFilter.value && !filterOperatorId.value) ||
+      appSupportOperatorSource.pending.value ||
+      appSupportTeamSource.pending.value ||
+      targetedAppSupportSource.pending.value ||
       liveRootDocs.pending.value ||
-      overlayOperatorSource.error.value ||
-      overlayTeamSource.error.value ||
+      appSupportOperatorSource.error.value ||
+      appSupportTeamSource.error.value ||
+      targetedAppSupportSource.error.value ||
       liveRootDocs.error.value ||
       (liveRootDocs.outcome.value !== 'ready' &&
         liveRootDocs.outcome.value !== 'empty')
@@ -298,13 +327,84 @@ export function usePortfolioCollection(
         .filter(Boolean)
     )
 
-    return targetedPortfolioIds.value.filter((id) => !rootIds.has(id))
+    return appSupportSource.value
+      .map((appSupport) => resolvePortfolioId(appSupport))
+      .filter(Boolean)
+      .filter((id) => !rootIds.has(id))
   })
-  const danglingOverlayError = computed<Error | undefined>(() => {
-    if (!danglingOverlayIds.value.length) return undefined
+  const danglingAppSupportError = computed<Error | undefined>(() => {
+    if (!danglingAppSupportIds.value.length) return undefined
 
     return new Error(
-      `Portfolio access overlay references missing canonical root: ${danglingOverlayIds.value.join(', ')}`
+      `AppPortfolio support record references missing canonical root: ${danglingAppSupportIds.value.join(', ')}`
+    )
+  })
+  const requestedTargetPairError = computed<Error | undefined>(() => {
+    if (
+      sourceMode.value !== 'live' ||
+      !hasFilter.value ||
+      hasOperatorFilter.value ||
+      !filterIdSet.value.size ||
+      targetedAppSupportSource.pending.value ||
+      liveRootDocs.pending.value ||
+      targetedAppSupportSource.error.value ||
+      liveRootDocs.error.value
+    ) {
+      return undefined
+    }
+
+    const rootIds = new Set(
+      (liveRootDocs.docs.value ?? [])
+        .map((portfolio) => resolvePortfolioId(portfolio))
+        .filter(Boolean)
+    )
+    const appSupportIds = new Set(
+      (targetedAppSupportSource.docs.value ?? [])
+        .map((appSupport) => resolvePortfolioId(appSupport))
+        .filter(Boolean)
+    )
+    const missingRoots = [...filterIdSet.value].filter((id) => !rootIds.has(id))
+    const missingAppRecords = [...filterIdSet.value].filter(
+      (id) => !appSupportIds.has(id)
+    )
+    if (!missingRoots.length && !missingAppRecords.length) return undefined
+
+    return new Error(
+      `Incomplete requested Portfolio target pair; missing root: ${missingRoots.join(', ') || 'none'}; missing AppPortfolio: ${missingAppRecords.join(', ') || 'none'}`
+    )
+  })
+  const rootScopeError = computed<Error | undefined>(() => {
+    if (
+      sourceMode.value !== 'live' ||
+      !resolvedAppId.value ||
+      liveRootDocs.pending.value ||
+      targetedAppSupportSource.pending.value ||
+      appSupportOperatorSource.pending.value ||
+      appSupportTeamSource.pending.value ||
+      liveRootDocs.error.value ||
+      targetedAppSupportSource.error.value ||
+      appSupportOperatorSource.error.value ||
+      appSupportTeamSource.error.value
+    ) {
+      return undefined
+    }
+
+    const appSupportIds = new Set(
+      appSupportSource.value
+        .map((appSupport) => resolvePortfolioId(appSupport))
+        .filter(Boolean)
+    )
+    const mismatches = (liveRootDocs.docs.value ?? [])
+      .filter((portfolio) => appSupportIds.has(resolvePortfolioId(portfolio)))
+      .filter(
+        (portfolio) => !portfolioRootBelongsToApp(portfolio, resolvedAppId.value)
+      )
+      .map((portfolio) => resolvePortfolioId(portfolio))
+      .filter(Boolean)
+    if (!mismatches.length) return undefined
+
+    return new Error(
+      `Portfolio root/AppPortfolio scope mismatch: ${mismatches.join(', ')}`
     )
   })
   const error = computed<unknown | undefined>(() => {
@@ -313,8 +413,12 @@ export function usePortfolioCollection(
     if (!usesTargetedRootRead.value) return liveRootSource.error.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
     return (hasOperatorFilter.value
-      ? overlayOperatorSource.error.value ?? overlayTeamSource.error.value
-      : undefined) ?? liveRootDocs.error.value ?? danglingOverlayError.value
+      ? appSupportOperatorSource.error.value ?? appSupportTeamSource.error.value
+      : targetedAppSupportSource.error.value) ??
+      liveRootDocs.error.value ??
+      requestedTargetPairError.value ??
+      rootScopeError.value ??
+      danglingAppSupportError.value
   })
   const { outcome } = useFirestoreCollectionState({
     count,

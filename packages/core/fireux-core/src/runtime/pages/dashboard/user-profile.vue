@@ -1,4 +1,5 @@
 <template>
+  <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
   <UDashboardPanel id="user-profile">
     <template #header>
       <LayoutsDashboardNavbar title="Public profile" />
@@ -54,13 +55,20 @@
             />
 
             <MoleculesStateCard
-              v-else-if="!resolvedUser"
+              v-else-if="userError"
+              entity="public profile"
+              kind="document"
+              state="error"
+            />
+
+            <MoleculesStateCard
+              v-else-if="isMissing"
               entity="public profile"
               kind="document"
               state="missing"
             />
 
-            <ClientOnly v-else>
+            <ClientOnly v-else-if="resolvedUser">
               <LayoutsDashboardProfileEdit class="panels-masonry">
                 <template #preview>
                   <UserCardsProfile
@@ -79,6 +87,13 @@
                 </template>
               </LayoutsDashboardProfileEdit>
             </ClientOnly>
+
+            <MoleculesStateCard
+              v-else
+              entity="public profile"
+              kind="document"
+              loading
+            />
 
             <UPageCard
               v-if="profileExtensionRows.length"
@@ -143,7 +158,9 @@ useHead({ title: 'Public profile' })
 
 const {
   currentUser,
+  error: userError,
   isLoading,
+  isMissing,
   profile: userInterface,
 } = useUser()
 const { app, pill: appToCard } = useApp()

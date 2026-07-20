@@ -1,10 +1,10 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: expose canonical Delivery address and timing in customer projection.
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: recover source item identity for signed-in amend resubmission.
-// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: join explicit Place identity and omit absent customer Order values.
+// Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: join the concrete Place runtime model and omit absent customer Order values.
 import { defineEventHandler, getQuery } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import {
   isKitchenOrderStatus,
   isKitchenOrderType,

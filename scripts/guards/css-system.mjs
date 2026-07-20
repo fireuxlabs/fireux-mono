@@ -1,7 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-19
+// last_used: 2026-07-20
 // usage_note: enforces the shared Nuxt UI and FireUX CSS spine.
 // FILE: scripts/guards/css-system.mjs
+// Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: enforce semantic project colors.
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
@@ -182,10 +183,50 @@ const ARBITRARY_TRACKING_CLASS_RE = /\btracking-\[([^\]]+)\]/g
 const ARBITRARY_FONT_WEIGHT_CLASS_RE = /\bfont-\[(\d{3})\]/g
 const ARBITRARY_SEMANTIC_TEXT_COLOR_RE =
   /\btext-\[(?:color:)?var\(--ui-(?:text-(?:dimmed|muted|toned|highlighted)|primary)\)\]/g
-const PACKAGE_RAW_PALETTE_UTILITY_RE =
-  /\b(?:text|bg|border|ring|outline|divide|placeholder)-(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-[0-9]{2,3}(?:\/[0-9]{1,3})?\b/g
-const PACKAGE_RAW_COMPONENT_COLOR_RE =
+const RAW_PALETTE_UTILITY_RE =
+  /\b(?:text|bg|border|ring|outline|divide|placeholder)-(?:primary|secondary|success|info|warning|error|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|neutral|stone)-[0-9]{2,3}(?:\/[0-9]{1,3})?\b/g
+const RAW_COMPONENT_COLOR_RE =
   /\bcolor\s*(?:=|:)\s*(["'])(?:red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose|slate|gray|zinc|stone)\1/g
+const STALE_NON_NUXT_COLOR_UTILITY_RE =
+  /\b(?:text-foreground|text-muted-foreground|bg-background|border-border)\b/g
+const APPROVED_PROJECT_RAW_PALETTE_UTILITIES = new Map([
+  // Deliberately fixed dark marketing panels with their own contrast hierarchy.
+  [
+    'projects/misebox/misebox-app/app/pages/about.vue',
+    new Set([
+      'bg-gray-950',
+      'bg-gray-900',
+      'text-gray-300',
+      'text-gray-400',
+      'text-primary-300',
+      'text-primary-200',
+    ]),
+  ],
+  [
+    'projects/misebox/misebox-app/app/pages/road-map.vue',
+    new Set([
+      'bg-gray-950',
+      'bg-gray-900',
+      'text-gray-300',
+      'text-primary-300',
+    ]),
+  ],
+  // Fixed white QR/sticker output must remain predictable and scannable.
+  [
+    'projects/fireux/buenohost/app/pages/index.vue',
+    new Set(['text-slate-950', 'text-slate-500', 'border-slate-200']),
+  ],
+  [
+    'projects/fireux/go-qr/app/pages/doc/[slug]/qr.vue',
+    new Set([
+      'text-slate-950',
+      'text-slate-500',
+      'text-slate-600',
+      'text-slate-900',
+      'border-slate-200',
+    ]),
+  ],
+])
 const INVALID_TYPOGRAPHY_VARIABLE_RE = /var\(\s*--leading-none\b/g
 const TAILWIND_FONT_SIZE_TOKENS = new Map([
   [12, '--text-xs'],
@@ -377,8 +418,9 @@ export async function run(ctx) {
     typographyValues: [],
     arbitraryTypographyClasses: [],
     arbitrarySemanticTextColors: [],
-    packageRawPaletteUtilities: [],
-    packageRawComponentColors: [],
+    rawPaletteUtilities: [],
+    rawComponentColors: [],
+    staleColorUtilities: [],
     legacyTypographyRoleOverlays: [],
     legacyPageSpacing: [],
     legacyListSpacing: [],
@@ -435,22 +477,28 @@ function scan(dir, repoRoot, violations) {
       label: (match) => match[0],
     })
 
-    if (relativePath.startsWith('packages/')) {
-      collectMatches({
-        source,
-        pattern: PACKAGE_RAW_PALETTE_UTILITY_RE,
-        target: violations.packageRawPaletteUtilities,
-        relativePath,
-        label: (match) => match[0],
-      })
-      collectMatches({
-        source,
-        pattern: PACKAGE_RAW_COMPONENT_COLOR_RE,
-        target: violations.packageRawComponentColors,
-        relativePath,
-        label: (match) => match[0],
-      })
-    }
+    collectMatches({
+      source,
+      pattern: RAW_PALETTE_UTILITY_RE,
+      target: violations.rawPaletteUtilities,
+      relativePath,
+      label: (match) => match[0],
+      approvedLabels: APPROVED_PROJECT_RAW_PALETTE_UTILITIES.get(relativePath),
+    })
+    collectMatches({
+      source,
+      pattern: RAW_COMPONENT_COLOR_RE,
+      target: violations.rawComponentColors,
+      relativePath,
+      label: (match) => match[0],
+    })
+    collectMatches({
+      source,
+      pattern: STALE_NON_NUXT_COLOR_UTILITY_RE,
+      target: violations.staleColorUtilities,
+      relativePath,
+      label: (match) => match[0],
+    })
 
     if (relativePath === NUXT_BASELINE_PATH) {
       collectMatches({
@@ -701,15 +749,25 @@ function scan(dir, repoRoot, violations) {
   }
 }
 
-function collectMatches({ source, pattern, target, relativePath, label }) {
+function collectMatches({
+  source,
+  pattern,
+  target,
+  relativePath,
+  label,
+  approvedLabels,
+}) {
   pattern.lastIndex = 0
   let match
 
   while ((match = pattern.exec(source))) {
+    const matchLabel = label(match)
+    if (approvedLabels?.has(matchLabel)) continue
+
     target.push({
       path: relativePath,
       line: lineNumberAt(source, match.index),
-      label: label(match),
+      label: matchLabel,
     })
   }
 }
@@ -1248,13 +1306,18 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
-    'Package-owned UI using raw Tailwind palette utilities:',
-    violations.packageRawPaletteUtilities
+    'Ordinary package or project UI using raw Tailwind palette utilities:',
+    violations.rawPaletteUtilities
   )
   appendGroup(
     lines,
-    'Package-owned Nuxt UI components or toasts using raw palette colors:',
-    violations.packageRawComponentColors
+    'Nuxt UI components or toasts using raw palette colors:',
+    violations.rawComponentColors
+  )
+  appendGroup(
+    lines,
+    'Stale non-Nuxt semantic color utilities:',
+    violations.staleColorUtilities
   )
   appendGroup(
     lines,
@@ -1349,7 +1412,8 @@ function formatViolations(violations) {
     '- Use `fx-type-section-title` and `fx-type-card-heading` instead of repeating their guarded size/weight overlays.',
     '- Arbitrary typography utilities are reserved for reviewed brand, artwork, print/output, debug, or optical deltas.',
     '- Use Nuxt UI `text-dimmed`, `text-muted`, `text-toned`, and `text-highlighted` instead of arbitrary semantic text-color utilities.',
-    '- Package-owned ordinary UI must use Nuxt UI semantic text, border, surface, and status utilities; intentional brand or artwork colors need an owned named seam rather than a raw Tailwind palette utility.',
+    '- Ordinary package and project UI must use Nuxt UI semantic text, border, surface, and status utilities; intentional brand or artwork colors need an owned named seam or narrow reviewed exception.',
+    '- Replace stale foreground/background aliases with current Nuxt UI semantic utilities.',
     '- Use `.fx-page-stack` and `.fx-list-stack` for the guarded repeated rhythm recipes.',
     '- Let `.console-surface` own its vertical rhythm instead of combining it with `space-y-*`.',
     '- Compose the shared `.fx-card--cell` recipe instead of repeating the audited class string.',

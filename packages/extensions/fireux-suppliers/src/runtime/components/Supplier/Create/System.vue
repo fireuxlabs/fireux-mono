@@ -63,6 +63,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Supplier console creation as App support.
 import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
@@ -98,7 +99,7 @@ const headerTitle = computed(() =>
 const headerDescription = computed(() =>
   isConsoleMode.value
     ? 'We’ll create the supplier console for this app and create the public supplier only if it is missing.'
-    : 'We’ll create the public supplier record. App context may also create the overlay.'
+    : 'We’ll create the public Supplier record. App context may also create its support record.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value

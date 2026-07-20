@@ -1,11 +1,13 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Portfolio: separate canonical root identity from app access overlay.
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Portfolio root identity and access-only App support.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Portfolio access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type {
-  FireuxAppOverlay,
+  FireuxAppAccessRecord,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
-  FireuxAppOverlayModel,
+  FireuxAppAccessRecordModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -36,11 +38,11 @@ type WidenLiteral<T> =
  * - If that changes later, update the models README first, then this file.
  */
 export const PortfolioStorage = {
-  shape: 'both',
+  shape: 'root-and-app-support',
   root: 'portfolios/{portfolioId}',
-  overlay: 'apps/{appId}/portfolios/{portfolioId}',
+  appSupport: 'apps/{appId}/portfolios/{portfolioId}',
   rootCollection: 'portfolios',
-  overlayCollection: 'portfolios',
+  appSupportCollection: 'portfolios',
   idParam: 'portfolioId',
   children: {
     clients: 'apps/{appId}/portfolios/{portfolioId}/clients/{clientId}',
@@ -55,11 +57,14 @@ export const PortfolioEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Portfolio',
   family: ['portfolio', 'console-entity'],
-  storage: 'both',
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'access-record',
+  publicRead: 'to-confirm',
   status: 'confirmed',
   console: true,
   root: PortfolioStorage.root,
-  scoped: PortfolioStorage.overlay,
+  appSupportPath: PortfolioStorage.appSupport,
 })
 
 export const AppPortfolioStorage = {
@@ -99,10 +104,10 @@ export const PortfolioModel = {
 export type Portfolio = WidenLiteral<typeof PortfolioModel>
 
 export const AppPortfolioModel = {
-  ...FireuxAppOverlayModel,
+  ...FireuxAppAccessRecordModel,
 } as const
 
-export type AppPortfolio = FireuxAppOverlay
+export type AppPortfolio = FireuxAppAccessRecord
 
 export type PortfolioCreateInput = Omit<
   Portfolio,

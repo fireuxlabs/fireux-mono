@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: declare private Project control-plane authority.
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../core/entity.model'
 import type { FireuxStamped } from '../core/meta.model'
@@ -42,7 +43,10 @@ export const ProjectEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Project',
   family: ['system', 'console-entity'],
-  storage: 'root',
+  identity: 'root',
+  authority: 'fireux-control-plane',
+  appSupport: 'none',
+  publicRead: 'none',
   status: 'confirmed',
   console: true,
   root: ProjectStorage.path,

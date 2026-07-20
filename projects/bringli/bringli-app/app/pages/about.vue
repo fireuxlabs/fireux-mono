@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale sample-object presentation. -->
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
     <section
@@ -55,7 +56,7 @@
             <h2 class="text-2xl font-semibold text-highlighted">
               {{ appMeta.aboutSections.keyConceptsTitle }}
             </h2>
-            <ol class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+            <ol class="space-y-3 text-sm text-toned">
               <li v-for="(concept, index) in appMeta.keyConcepts" :key="concept.title">
                 <span class="font-semibold text-highlighted">{{ index + 1 }}. {{ concept.title }}</span><br>
                 {{ concept.description }}
@@ -145,7 +146,7 @@
       </UContainer>
     </section>
 
-    <section class="bg-gray-50/80 py-16 dark:bg-gray-900/40">
+    <section class="bg-muted/80 py-16">
       <UContainer class="space-y-8">
         <div class="space-y-2 text-center">
           <p class="fx-type-headline">

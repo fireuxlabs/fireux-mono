@@ -83,6 +83,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors.
 // No script needed for this simple landing page
 </script>
 
@@ -112,6 +113,6 @@
 }
 .dev-link {
   margin-top: calc(var(--spacing) * 4);
-  color: rgba(255, 255, 255, 0.75);
+  color: var(--ui-text-muted);
 }
 </style>

@@ -33,7 +33,7 @@
           Adds the current user to the portfolio
           <code>team_ids</code>.
         </li>
-        <li v-else>Does not create the app-hosted portfolio console overlay.</li>
+        <li v-else>Does not create the App-hosted Portfolio support record.</li>
         <li>
           Success routes to
           <code>{{ successTo }}</code>.
@@ -51,6 +51,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Portfolio console creation as App support.
 import { computed } from 'vue'
 import type {
   ConsoleCreateMode,

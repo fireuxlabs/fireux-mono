@@ -1,9 +1,19 @@
-import { computed, ref, toValue, type MaybeRefOrGetter } from 'vue'
+// Concurrent edit — 2026-07-20 23:52 CEST — Nuxt Package Toolchain Pass 2 of 3: publish a portable Menu index declaration.
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import {
+  computed,
+  ref,
+  toValue,
+  type ComputedRef,
+  type MaybeRefOrGetter,
+  type Ref,
+} from 'vue'
 import { useAsyncData, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
   PUBLIC_MENU_INDEX_PAGE_SIZE,
+  type PublicMenuIndexItem,
   type PublicMenuIndexPage,
 } from '../../../models/kitchen/menu/menu-index.model'
 import {
@@ -25,7 +35,28 @@ type UsePublicMenuIndexOptions = {
   pageSize?: number
 }
 
-export function usePublicMenuIndex(options: UsePublicMenuIndexOptions = {}) {
+type PublicMenuIndexControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'refresh'
+>
+
+export type UsePublicMenuIndexReturn = PublicMenuIndexControls & {
+  menus: ComputedRef<PublicMenuIndexItem[]>
+  error: ComputedRef<Error | NuxtError<unknown> | null>
+  ready: Promise<void>
+  routeScope: ComputedRef<MenuRouteScope>
+  outcome: ComputedRef<PublicMenuIndexOutcome>
+  statusCode: ComputedRef<number | null>
+  hasMore: ComputedRef<boolean>
+  loadingMore: Ref<boolean>
+  loadMoreError: Ref<unknown>
+  loadMore: () => Promise<boolean>
+  menuLink: (menuId: string) => string
+}
+
+export function usePublicMenuIndex(
+  options: UsePublicMenuIndexOptions = {}
+): UsePublicMenuIndexReturn {
   const fireux = useFireUXConfig()
   const router = useRouter()
   const routeScope = computed(() =>
@@ -162,7 +193,7 @@ export function usePublicMenuIndex(options: UsePublicMenuIndexOptions = {}) {
   }
 }
 
-export type PublicMenuIndexController = ReturnType<typeof usePublicMenuIndex>
+export type PublicMenuIndexController = UsePublicMenuIndexReturn
 
 function normalizePageSize(value: unknown) {
   const pageSize = Number(value ?? PUBLIC_MENU_INDEX_PAGE_SIZE)

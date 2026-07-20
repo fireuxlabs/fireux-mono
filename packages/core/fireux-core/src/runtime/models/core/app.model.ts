@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 // Concurrent edit — 2026-07-20 13:08 CEST — Security spine: make self-join explicit and keep admin authority only in UserApp roles.
 // Concurrent edit — 2026-07-20 16:15 CEST — Repo Efficiency Pass 1 of 6: type App repo console families.
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: declare App identity, database authority, support, and public-read axes.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from './entity.model'
@@ -57,7 +58,10 @@ export const AppEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'App',
   family: ['core', 'system'],
-  storage: 'root',
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'none',
+  publicRead: 'projection',
   status: 'confirmed',
   root: AppStorage.path,
   notes: [

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: explicit Blank collection outcome.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Blank access support directly.
 import {
   arrayUnion,
   collection,
@@ -82,22 +83,22 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
     ids: blankIds,
   })
   const blanks = computed<Blank[]>(() => {
-    const overlaysById = new Map<string, AppBlank>()
+    const appSupportById = new Map<string, AppBlank>()
 
-    for (const overlay of authorisedAppBlanks.value) {
-      const id = text(overlay.blank_id || overlay.id)
-      if (id) overlaysById.set(id, overlay)
+    for (const appSupport of authorisedAppBlanks.value) {
+      const id = text(appSupport.blank_id || appSupport.id)
+      if (id) appSupportById.set(id, appSupport)
     }
 
     return (rootBlanks.docs.value ?? []).map((blank) => {
       const id = text(blank.id)
-      const overlay = overlaysById.get(id)
+      const appSupport = appSupportById.get(id)
 
       return {
         ...blank,
         id,
-        operator_ids: Array.isArray(overlay?.operator_ids)
-          ? overlay.operator_ids
+        operator_ids: Array.isArray(appSupport?.operator_ids)
+          ? appSupport.operator_ids
           : blank.operator_ids,
       }
     })
@@ -191,7 +192,7 @@ export function useBlankCreate() {
       { creator: true, app: true }
     )
 
-    const overlayPayload: AppBlank = {
+    const appSupportPayload: AppBlank = {
       blank_id: id,
       operator_ids: [uid],
       team_ids: [uid],
@@ -201,7 +202,7 @@ export function useBlankCreate() {
     await setDocument<AppBlank>(
       blankAppCollectionPath(resolvedAppId),
       id,
-      overlayPayload,
+      appSupportPayload,
       { creator: true, app: true }
     )
 
@@ -212,7 +213,7 @@ export function useBlankCreate() {
     return {
       id,
       createdRoot: true,
-      createdScope: true,
+      createdAppSupport: true,
     }
   }
 

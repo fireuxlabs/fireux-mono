@@ -1,10 +1,11 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: allowlist Chef and Driver directory/detail fields.
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: project exact Chef bounds with HTTPS-only images.
+// Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core HTTPS utility module.
 import type {
   PublicProfileHandlerConfig,
   PublicProfileMapper,
 } from 'fireux-core/runtime/server/utils/public-projection/public-profile.ts'
-import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
+import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl.ts'
 import { CHEF_GALLERY_MAX_ITEMS } from 'fireux-kitchens/runtime/models/chef.model.ts'
 
 function text(value: unknown, max: number): string {

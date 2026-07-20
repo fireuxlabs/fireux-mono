@@ -1,7 +1,9 @@
 // Concurrent edit — 2026-07-20 16:21 CEST — Repo Efficiency Pass 1 of 6: name the ecosystem-local App projection and reject stale reactive records.
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable public App detail declarations.
 
 import { useAsyncData } from '#imports'
-import { computed, unref, type MaybeRef } from 'vue'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
 import type {
   PublicAppDto,
   PublicDetailResponse,
@@ -12,6 +14,16 @@ export type EcosystemAppDetailOutcome =
   | 'ready'
   | 'missing'
   | 'error'
+
+type EcosystemAppDetailControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error' | 'refresh'
+>
+
+export type UseEcosystemAppDetailReturn = EcosystemAppDetailControls & {
+  app: ComputedRef<PublicAppDto | null>
+  outcome: ComputedRef<EcosystemAppDetailOutcome>
+}
 
 function statusCode(error: unknown) {
   if (!error || typeof error !== 'object') return 0
@@ -28,7 +40,7 @@ function statusCode(error: unknown) {
 /** Read one App from the active ecosystem's allowlisted public projection. */
 export function useEcosystemAppDetail(
   appId: MaybeRef<string | null | undefined>
-) {
+): UseEcosystemAppDetailReturn {
   const id = computed(() => String(unref(appId) ?? '').trim())
   const { data, pending, error, refresh } = useAsyncData(
     () => `ecosystem-app-detail-${id.value || 'none'}`,

@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: hydrate Kitchen fulfilment capability with Menu ownership.
-// Concurrent edit — 2026-07-20 22:18 CEST — Place-root authority pass: hydrate sparse Menu baselines only through an explicit Kitchen Place reference.
+// Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: hydrate sparse Menu baselines through concrete Place runtime imports.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine.ts'
 import {
   hasKitchenOperationHours,
   readKitchenAppScope,

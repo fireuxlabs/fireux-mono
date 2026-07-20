@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 22:11 CEST — Both-Entity Authority — Supplier: compose root identity with allowlisted App access only.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name the allowlisted App access input directly.
 import {
   csv,
   safeString,
@@ -13,7 +14,7 @@ import type { Ref } from 'vue'
 
 const supplierCollection = SupplierStorage.rootCollection
 
-type SupplierRootAndOverlay = {
+type SupplierRootAndAppSupport = {
   coreSupplier: Ref<Supplier | null | undefined>
   appSupplier: Ref<AppSupplier | null | undefined>
 }
@@ -45,10 +46,10 @@ type SupplierAccessSurface = Partial<
 export type SupplierSurface = Partial<Supplier> & SupplierAccessSurface
 export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> = {
   supplier?: TSupplier | null | undefined
-  overlay?: Partial<AppSupplier> | null | undefined
+  appSupport?: Partial<AppSupplier> | null | undefined
 }
 
-export function useSupplierInterface(supplier?: SupplierRootAndOverlay | null) {
+export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null) {
   type SupplierIdentity = SupplierCard.Card
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card
@@ -67,14 +68,14 @@ export function useSupplierInterface(supplier?: SupplierRootAndOverlay | null) {
       join_requests: _rootJoinRequests,
       ...root
     } = source as Record<string, unknown>
-    const overlay = parts.overlay ?? null
+    const appSupport = parts.appSupport ?? null
     const merged = {
       ...root,
-      ...(overlay
+      ...(appSupport
         ? {
-            operator_ids: safeStringArray(overlay.operator_ids),
-            team_ids: safeStringArray(overlay.team_ids),
-            join_requests: safeStringArray(overlay.join_requests),
+            operator_ids: safeStringArray(appSupport.operator_ids),
+            team_ids: safeStringArray(appSupport.team_ids),
+            join_requests: safeStringArray(appSupport.join_requests),
           }
         : {}),
     } as TSupplier & SupplierSurface

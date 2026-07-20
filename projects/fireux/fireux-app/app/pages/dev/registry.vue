@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:34 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader
@@ -16,7 +17,7 @@
                 Directory utilities
               </p>
               <h2
-                class="text-lg font-semibold text-gray-900 dark:text-gray-100"
+                class="text-lg font-semibold text-highlighted"
               >
                 Copy projected JSON
               </h2>
@@ -49,7 +50,7 @@
           API is retired because it mixed package metadata with entity copies.
           For the authority notes, visit
           <NuxtLink
-            class="text-primary-500 hover:underline"
+            class="text-primary hover:underline"
             to="/developer/registry"
           >
             Developer · Directory Docs
@@ -59,20 +60,20 @@
 
         <div
           v-if="error"
-          class="mt-4 rounded-lg border border-red-500/40 bg-red-500/10 p-4 text-sm text-red-200"
+          class="mt-4 rounded-lg border border-error/40 bg-error/10 p-4 text-sm text-error"
         >
-          <p class="font-semibold text-red-100">
+          <p class="font-semibold text-error">
             Unable to load directory data.
           </p>
           <p v-text="errorMessage"></p>
         </div>
         <div
           v-else-if="pending"
-          class="mt-4 flex items-center gap-3 rounded-lg border border-dashed border-gray-200 p-4 text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400"
+          class="mt-4 flex items-center gap-3 rounded-lg border border-dashed border-default p-4 text-sm text-muted"
         >
           <Icon
             name="eos-icons:bubble-loading"
-            class="text-lg text-primary-500"
+            class="text-lg text-primary"
             aria-hidden="true"
           />
           <span>Loading directory snapshot…</span>

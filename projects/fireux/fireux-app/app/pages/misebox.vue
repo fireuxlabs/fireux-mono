@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader
@@ -16,7 +17,7 @@
           <p>Next: surface Misebox apps and the main operational flows.</p>
           <p>
             Ecosystem index lives at
-            <NuxtLink class="text-primary-500 hover:underline" to="/ecosystems">
+            <NuxtLink class="text-primary hover:underline" to="/ecosystems">
               /ecosystems
             </NuxtLink>
             .

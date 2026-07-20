@@ -1,10 +1,10 @@
-// Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: project only published, explicitly linked Kitchens through bounded Place and App joins.
+// Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: project published Kitchens through the concrete Place runtime model.
 import { FieldPath, Filter } from 'firebase-admin/firestore'
 import { createError, defineEventHandler, getQuery } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import {
   PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE,
   PUBLIC_KITCHEN_INDEX_PAGE_SIZE,

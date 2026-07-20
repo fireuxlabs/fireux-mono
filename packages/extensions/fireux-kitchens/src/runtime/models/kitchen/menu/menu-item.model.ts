@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify items as MenuSection-owned scoped records.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -22,7 +23,10 @@ export const MenuItemRecord = defineFireuxEntity({
   kind: 'record',
   name: 'MenuItem',
   family: 'menu',
-  storage: 'scoped',
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
   status: 'confirmed',
   parent: 'MenuSection',
   scoped: MenuItemStorage.path,

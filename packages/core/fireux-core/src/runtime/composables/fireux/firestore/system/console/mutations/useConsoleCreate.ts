@@ -1,5 +1,7 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: attach console targets through the server-owned UserApp capability transaction.
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: re-read created roots before app-support ownership checks.
+// Concurrent edit — 2026-07-20 22:40 CEST — Supplier/Portfolio Authority Hardening: bind App support ids to validated canonical roots.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name console App support creation explicitly.
 import {
   arrayUnion,
   collection,
@@ -33,7 +35,7 @@ export type ConsoleCreateMode = 'public' | 'console'
 export type ConsoleCreateResult = {
   id: string
   createdRoot: boolean
-  createdOverlay: boolean
+  createdAppSupport: boolean
 }
 
 export type ConsoleRootCreateResult = {
@@ -43,13 +45,16 @@ export type ConsoleRootCreateResult = {
 
 type MaybePromise<T> = T | Promise<T>
 
-type ConsoleCreateOptions<TOverlay> = {
+type ConsoleCreateOptions<TAppSupport> = {
   type: ConsoleEntityType
   mode?: ConsoleCreateMode
   existingRootId?: string | null
   createRoot?: () => MaybePromise<ConsoleRootCreateResult>
-  createOverlay?: (rootId: string) => MaybePromise<TOverlay>
-  overlayId?: string | null
+  validateRoot?: (
+    rootId: string,
+    rootData: Record<string, unknown>
+  ) => MaybePromise<void>
+  createAppSupport?: (rootId: string) => MaybePromise<TAppSupport>
 }
 
 const consoleCollectionByType: Record<ConsoleEntityType, string> = {
@@ -84,7 +89,7 @@ export function useConsoleCreate() {
 
   async function assertCanCreateAdditionalConsole(
     type: ConsoleEntityType,
-    overlayId: string
+    rootId: string
   ) {
     if (type === 'kitchen') return
 
@@ -104,32 +109,32 @@ export function useConsoleCreate() {
     if (isPremium) return
 
     const collectionName = consoleCollectionByType[type]
-    const overlaysQuery = query(
+    const appSupportQuery = query(
       collection(db, AppStorage.collection, currentAppId, collectionName),
       where('operator_ids', 'array-contains', currentUid)
     )
-    const overlaysSnap = await getDocs(overlaysQuery)
+    const appSupportSnap = await getDocs(appSupportQuery)
 
-    const accessibleOverlayIds = overlaysSnap.docs
+    const accessibleAppSupportIds = appSupportSnap.docs
       .map((snap) => normalizeId(snap.id))
       .filter(Boolean)
 
-    if (!accessibleOverlayIds.length) return
-    if (accessibleOverlayIds.includes(overlayId)) return
+    if (!accessibleAppSupportIds.length) return
+    if (accessibleAppSupportIds.includes(rootId)) return
 
     throw new Error(
       `Standard users can only be on one live ${type} team per app. Premium unlocks multiple.`
     )
   }
 
-  async function createConsole<TOverlay>(
-    options: ConsoleCreateOptions<TOverlay>
+  async function createConsole<TAppSupport>(
+    options: ConsoleCreateOptions<TAppSupport>
   ): Promise<ConsoleCreateResult> {
     const collectionName = consoleCollectionByType[options.type]
 
     let id = ''
     let createdRoot = false
-    let createdOverlay = false
+    let createdAppSupport = false
     let existingRootData: Record<string, unknown> | null = null
 
     const existingRootId = normalizeId(options.existingRootId)
@@ -175,16 +180,26 @@ export function useConsoleCreate() {
       existingRootData = rootSnap.data() ?? {}
     }
 
+    if (options.validateRoot) {
+      if (!existingRootData) {
+        throw new Error(
+          `[console:${options.type}] Root record "${id}" could not be validated`
+        )
+      }
+
+      await options.validateRoot(id, existingRootData)
+    }
+
     // App-hosted support records are canonical for app access/operations in any
     // app context, including global apps. Root identity remains canonical above.
     // "Public" versus "console" affects the route flow, not whether the app-scoped
-    // overlay should exist.
+    // App support record should exist.
     const currentAppId = normalizeId(appId)
     if (!currentAppId) {
       return {
         id,
         createdRoot,
-        createdOverlay: false,
+        createdAppSupport: false,
       }
     }
 
@@ -210,41 +225,40 @@ export function useConsoleCreate() {
       }
     }
 
-    if (!options.createOverlay) {
+    if (!options.createAppSupport) {
       throw new Error(
-        `[console:${options.type}] createOverlay is required in console mode`
+        `[console:${options.type}] createAppSupport is required in console mode`
       )
     }
 
-    const resolvedOverlayId = normalizeId(options.overlayId) || id
-    const overlayRef = doc(
+    const appSupportRef = doc(
       db,
       AppStorage.collection,
       currentAppId,
       collectionName,
-      resolvedOverlayId
+      id
     )
-    const overlaySnap = await getDoc(overlayRef)
+    const appSupportSnap = await getDoc(appSupportRef)
 
-    if (!overlaySnap.exists()) {
-      await assertCanCreateAdditionalConsole(options.type, resolvedOverlayId)
-      const overlayPayload = await options.createOverlay(id)
-      await setDocument<TOverlay>(
+    if (!appSupportSnap.exists()) {
+      await assertCanCreateAdditionalConsole(options.type, id)
+      const appSupportPayload = await options.createAppSupport(id)
+      await setDocument<TAppSupport>(
         `${AppStorage.collection}/${currentAppId}/${collectionName}`,
-        resolvedOverlayId,
-        overlayPayload,
+        id,
+        appSupportPayload,
         {
           app: true,
           creator: true,
         }
       )
-      createdOverlay = true
+      createdAppSupport = true
     }
 
     const currentUid = normalizeId(uid.value)
     if (currentUid) {
       await setDoc(
-        overlayRef,
+        appSupportRef,
         {
           operator_ids: arrayUnion(currentUid),
           team_ids: arrayUnion(currentUid),
@@ -259,7 +273,7 @@ export function useConsoleCreate() {
       await mutateAppMembership({
         action: 'set-console-target',
         family: options.type,
-        targetId: resolvedOverlayId,
+        targetId: id,
         enabled: true,
       })
     }
@@ -308,7 +322,7 @@ export function useConsoleCreate() {
     return {
       id,
       createdRoot,
-      createdOverlay,
+      createdAppSupport,
     }
   }
 

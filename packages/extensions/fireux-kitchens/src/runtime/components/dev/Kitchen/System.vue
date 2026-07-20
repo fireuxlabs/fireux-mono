@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Kitchen dev diagnostics on live storage data. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: distinguish Kitchen App support from App-only child data. -->
 <template>
   <section class="space-y-10">
     <UCard>
@@ -53,7 +54,7 @@
             Kitchen storage inspector
           </p>
           <p class="text-xs text-muted">
-            Inspect the full storage picture for one kitchen: root doc, place doc, app overlay, and known child collections.
+            Inspect the full storage picture for one Kitchen: root doc, Place doc, App support record, and known child collections.
           </p>
           <USelect
             v-model="selectedKitchenId"
@@ -75,7 +76,7 @@
             place doc: {{ selectedPlace ? 'yes' : 'no' }}
           </UBadge>
           <UBadge variant="soft">
-            app overlay: {{ selectedKitchenApp ? 'yes' : 'no' }}
+            App support: {{ selectedKitchenApp ? 'yes' : 'no' }}
           </UBadge>
         </div>
 
@@ -85,14 +86,14 @@
           This is likely migration work for the selected kitchen.
         </div>
 
-        <div v-if="migrationSignals.overlayOnlyCollections.length" class="rounded-lg border border-info bg-info/10 p-3 text-xs text-info">
-          Overlay-only child data detected:
-          {{ migrationSignals.overlayOnlyCollections.join(', ') }}.
+        <div v-if="migrationSignals.appOnlyCollections.length" class="rounded-lg border border-info bg-info/10 p-3 text-xs text-info">
+          App-only child data detected:
+          {{ migrationSignals.appOnlyCollections.join(', ') }}.
         </div>
 
         <div v-if="!selectedKitchenApp && selectedKitchenId" class="rounded-lg border border-error bg-error/10 p-3 text-xs text-error">
-          No app overlay found at
-          <code>{{ overlayKitchenCollectionPath }}/{{ selectedKitchenId }}</code>.
+          No App support record found at
+          <code>{{ appSupportKitchenCollectionPath }}/{{ selectedKitchenId }}</code>.
         </div>
 
         <DevJson
@@ -143,14 +144,14 @@ const { kitchens: hydratedKitchens } = useKitchenCollection()
 const kitchensCollectionValue = computed(() => kitchensCollection.value ?? [])
 const placesCollectionValue = computed(() => placesCollection.value ?? [])
 const resolvedAppId = computed(() => String(appId || '').trim())
-const overlayKitchenCollectionPath = computed(() =>
+const appSupportKitchenCollectionPath = computed(() =>
   resolvedAppId.value ? resolveKitchenScopeCollectionPath(resolvedAppId.value) : ''
 )
 
 const kitchenAppsRef = shallowRef<unknown>(null)
 
 watch(
-  overlayKitchenCollectionPath,
+  appSupportKitchenCollectionPath,
   (nextPath: string) => {
     kitchenAppsRef.value = nextPath ? firestoreFetchCollection<AppKitchen>(nextPath) : null
   },
@@ -239,9 +240,9 @@ const kitchenInspectorOptions = computed(() =>
   (hydratedKitchens.value ?? []).map((kitchen) => {
     const id = String(kitchen.id || '').trim()
     const labelBase = kitchen.name || kitchen.short_name || id
-    const overlayStatus = kitchenAppById.value.has(id) ? 'console' : 'root only'
+    const appSupportStatus = kitchenAppById.value.has(id) ? 'console' : 'root only'
     return {
-      label: `${labelBase} · ${overlayStatus}`,
+      label: `${labelBase} · ${appSupportStatus}`,
       value: id,
     }
   })
@@ -274,50 +275,50 @@ const selectedKitchenApp = computed(() => kitchenAppById.value.get(selectedKitch
 const rootMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.scopeCollection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.scopeCollection, selectedKitchenId, {
-  kitchenCollectionPath: overlayKitchenCollectionPath,
+const appMenus = useKitchenChildCollection<Record<string, unknown>>(MenuStorage.scopeCollection, selectedKitchenId, {
+  kitchenCollectionPath: appSupportKitchenCollectionPath,
 })
 
 const rootDishes = useKitchenChildCollection<Record<string, unknown>>(DishStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayDishes = useKitchenChildCollection<Record<string, unknown>>(DishStorage.collection, selectedKitchenId, {
-  kitchenCollectionPath: overlayKitchenCollectionPath,
+const appDishes = useKitchenChildCollection<Record<string, unknown>>(DishStorage.collection, selectedKitchenId, {
+  kitchenCollectionPath: appSupportKitchenCollectionPath,
 })
 
 const rootRecipes = useKitchenChildCollection<Record<string, unknown>>(RecipeStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayRecipes = useKitchenChildCollection<Record<string, unknown>>(RecipeStorage.collection, selectedKitchenId, {
-  kitchenCollectionPath: overlayKitchenCollectionPath,
+const appRecipes = useKitchenChildCollection<Record<string, unknown>>(RecipeStorage.collection, selectedKitchenId, {
+  kitchenCollectionPath: appSupportKitchenCollectionPath,
 })
 
 const rootMise = useKitchenChildCollection<Record<string, unknown>>('mise', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayMise = useKitchenChildCollection<Record<string, unknown>>('mise', selectedKitchenId, {
-  kitchenCollectionPath: overlayKitchenCollectionPath,
+const appMise = useKitchenChildCollection<Record<string, unknown>>('mise', selectedKitchenId, {
+  kitchenCollectionPath: appSupportKitchenCollectionPath,
 })
 
 const rootIngredients = useKitchenChildCollection<Record<string, unknown>>(IngredientStorage.collection, selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayIngredients = useKitchenChildCollection<Record<string, unknown>>(IngredientStorage.collection, selectedKitchenId, {
-  kitchenCollectionPath: overlayKitchenCollectionPath,
+const appIngredients = useKitchenChildCollection<Record<string, unknown>>(IngredientStorage.collection, selectedKitchenId, {
+  kitchenCollectionPath: appSupportKitchenCollectionPath,
 })
 
 const rootOrders = useKitchenChildCollection<Record<string, unknown>>('orders', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlayOrders = useKitchenChildCollection<Record<string, unknown>>('orders', selectedKitchenId, {
-  kitchenCollectionPath: overlayKitchenCollectionPath,
+const appOrders = useKitchenChildCollection<Record<string, unknown>>('orders', selectedKitchenId, {
+  kitchenCollectionPath: appSupportKitchenCollectionPath,
 })
 
 const rootSuppliers = useKitchenChildCollection<Record<string, unknown>>('suppliers', selectedKitchenId, {
   kitchenCollectionPath: rootKitchenCollectionPath,
 })
-const overlaySuppliers = useKitchenChildCollection<Record<string, unknown>>('suppliers', selectedKitchenId, {
-  kitchenCollectionPath: overlayKitchenCollectionPath,
+const appSuppliers = useKitchenChildCollection<Record<string, unknown>>('suppliers', selectedKitchenId, {
+  kitchenCollectionPath: appSupportKitchenCollectionPath,
 })
 
 const buildCollectionSnapshot = (
@@ -335,55 +336,55 @@ const buildCollectionSnapshot = (
 const childCollectionsSnapshot = computed(() => ({
   menus: {
     root: buildCollectionSnapshot(rootMenus.collectionPath.value, rootMenus.items.value),
-    overlay: buildCollectionSnapshot(overlayMenus.collectionPath.value, overlayMenus.items.value),
+    app: buildCollectionSnapshot(appMenus.collectionPath.value, appMenus.items.value),
   },
   dishes: {
     root: buildCollectionSnapshot(rootDishes.collectionPath.value, rootDishes.items.value),
-    overlay: buildCollectionSnapshot(overlayDishes.collectionPath.value, overlayDishes.items.value),
+    app: buildCollectionSnapshot(appDishes.collectionPath.value, appDishes.items.value),
   },
   recipes: {
     root: buildCollectionSnapshot(rootRecipes.collectionPath.value, rootRecipes.items.value),
-    overlay: buildCollectionSnapshot(overlayRecipes.collectionPath.value, overlayRecipes.items.value),
+    app: buildCollectionSnapshot(appRecipes.collectionPath.value, appRecipes.items.value),
   },
   mise: {
     root: buildCollectionSnapshot(rootMise.collectionPath.value, rootMise.items.value),
-    overlay: buildCollectionSnapshot(overlayMise.collectionPath.value, overlayMise.items.value),
+    app: buildCollectionSnapshot(appMise.collectionPath.value, appMise.items.value),
   },
   ingredients: {
     root: buildCollectionSnapshot(rootIngredients.collectionPath.value, rootIngredients.items.value),
-    overlay: buildCollectionSnapshot(overlayIngredients.collectionPath.value, overlayIngredients.items.value),
+    app: buildCollectionSnapshot(appIngredients.collectionPath.value, appIngredients.items.value),
   },
   orders: {
     root: buildCollectionSnapshot(rootOrders.collectionPath.value, rootOrders.items.value),
-    overlay: buildCollectionSnapshot(overlayOrders.collectionPath.value, overlayOrders.items.value),
+    app: buildCollectionSnapshot(appOrders.collectionPath.value, appOrders.items.value),
   },
   suppliers: {
     root: buildCollectionSnapshot(rootSuppliers.collectionPath.value, rootSuppliers.items.value),
-    overlay: buildCollectionSnapshot(overlaySuppliers.collectionPath.value, overlaySuppliers.items.value),
+    app: buildCollectionSnapshot(appSuppliers.collectionPath.value, appSuppliers.items.value),
   },
 }))
 
 const migrationSignals = computed(() => {
   const rootOnlyCollections: string[] = []
-  const overlayOnlyCollections: string[] = []
+  const appOnlyCollections: string[] = []
   const mirroredCollections: string[] = []
   const emptyCollections: string[] = []
 
   for (const [name, snapshot] of Object.entries(childCollectionsSnapshot.value)) {
     const rootCount = snapshot.root.count
-    const overlayCount = snapshot.overlay.count
+    const appCount = snapshot.app.count
 
-    if (rootCount > 0 && overlayCount === 0) {
+    if (rootCount > 0 && appCount === 0) {
       rootOnlyCollections.push(name)
       continue
     }
 
-    if (overlayCount > 0 && rootCount === 0) {
-      overlayOnlyCollections.push(name)
+    if (appCount > 0 && rootCount === 0) {
+      appOnlyCollections.push(name)
       continue
     }
 
-    if (rootCount > 0 && overlayCount > 0) {
+    if (rootCount > 0 && appCount > 0) {
       mirroredCollections.push(name)
       continue
     }
@@ -392,9 +393,9 @@ const migrationSignals = computed(() => {
   }
 
   return {
-    overlayMissing: !selectedKitchenApp.value,
+    appSupportMissing: !selectedKitchenApp.value,
     rootOnlyCollections,
-    overlayOnlyCollections,
+    appOnlyCollections,
     mirroredCollections,
     emptyCollections,
   }
@@ -406,13 +407,13 @@ const selectedKitchenStorageJson = computed(() => ({
   selectedKitchenName: selectedHydratedKitchen.value?.name || selectedRootKitchen.value?.id || null,
   paths: {
     rootKitchenCollection: rootKitchenCollectionPath.value,
-    overlayKitchenCollection: overlayKitchenCollectionPath.value || null,
+    appSupportKitchenCollection: appSupportKitchenCollectionPath.value || null,
     selectedRootKitchenDoc: selectedKitchenId.value
       ? `${rootKitchenCollectionPath.value}/${selectedKitchenId.value}`
       : null,
-    selectedOverlayKitchenDoc:
-      selectedKitchenId.value && overlayKitchenCollectionPath.value
-        ? `${overlayKitchenCollectionPath.value}/${selectedKitchenId.value}`
+    selectedAppSupportKitchenDoc:
+      selectedKitchenId.value && appSupportKitchenCollectionPath.value
+        ? `${appSupportKitchenCollectionPath.value}/${selectedKitchenId.value}`
         : null,
     selectedPlaceDoc: selectedKitchenId.value ? `places/${selectedKitchenId.value}` : null,
   },

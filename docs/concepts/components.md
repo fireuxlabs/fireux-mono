@@ -1,7 +1,9 @@
 Components spine map
-Updated: 2026-07-19
-Ref: 258a4f8f3
+Updated: 2026-07-20
+Ref: a4d382c1dd
 Role: map, not canon
+
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: map semantic project-color enforcement. -->
 
 Purpose:
 Map component folder and naming conventions.
@@ -119,10 +121,11 @@ Working rules:
   CSS, Tailwind-owned ordinary typography and spacing values, and retirement
   of the audited entity-card, inset-panel, raw disclosure, repeated card-stack,
   and visual-only disabled recipes.
-- Package-owned templates use Nuxt UI semantic color utilities rather than raw
-  Tailwind palette utilities. Intentional brand, artwork, overlay, print, and
-  output colors remain owned deltas and should use a named local seam when they
-  need to differ from ordinary UI semantics.
+- Package and project templates use Nuxt UI semantic color utilities rather
+  than raw Tailwind palette utilities for ordinary UI. Intentional brand,
+  artwork, overlay, print, and output colors remain owned deltas and should use
+  a named local seam or a narrow reviewed guard exception when they need to
+  differ from ordinary UI semantics.
 - Ordinary rectangular UI uses the installed Nuxt UI `xs` through `3xl`
   radius scale. Do not add a parallel radius step or an arbitrary numeric
   radius. True circles and pills, explicitly approved percentage artwork, and

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <UPage>
     <UPageHeader
@@ -16,7 +17,7 @@
                 <UBadge color="neutral" variant="soft">PWA + Website</UBadge>
               </div>
               <h2 class="text-2xl font-semibold">{{ product.name }}</h2>
-              <p class="text-sm text-muted-foreground">{{ product.tagline || product.description }}</p>
+              <p class="text-sm text-toned">{{ product.tagline || product.description }}</p>
               <div
                 v-if="product.content"
                 class="prose prose-sm max-w-none dark:prose-invert"
@@ -30,7 +31,7 @@
               </template>
               <div class="space-y-4">
                 <p class="text-2xl font-bold">{{ priceLabel }}</p>
-                <p class="text-sm text-muted-foreground">
+                <p class="text-sm text-toned">
                   Setup, deployment, and maintenance are handled by FireUX.
                 </p>
                 <div class="flex flex-wrap gap-2">
@@ -68,7 +69,7 @@
           </template>
           <div class="space-y-2">
             <p v-if="product.Q" class="font-medium">{{ product.Q }}</p>
-            <p v-if="product.A" class="text-sm text-muted-foreground">{{ product.A }}</p>
+            <p v-if="product.A" class="text-sm text-toned">{{ product.A }}</p>
           </div>
         </UCard>
       </template>

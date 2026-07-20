@@ -1,4 +1,6 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Supplier: keep test and canonical root creation free of App access fields.
+// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Supplier root collection paths.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
 import { collection, doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
@@ -31,7 +33,6 @@ const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
 }
 
 export type SupplierCreateOptions = {
-  collectionPath?: string
   test?: boolean
 }
 
@@ -58,12 +59,8 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const { createConsole } = useConsoleCreate()
   const { currentUser } = useAuth()
   const supplierCollection =
-    options.test === true
-      ? 'test-suppliers'
-      : normalizeString(options.collectionPath || SupplierStorage.rootCollection) ||
-        SupplierStorage.rootCollection
-  const isTestSupplierCollection =
-    options.test === true || supplierCollection === 'test-suppliers'
+    options.test === true ? 'test-suppliers' : SupplierStorage.rootCollection
+  const isTestSupplierCollection = options.test === true
 
   async function createTestSupplier(
     input: SupplierTestCreateInput = {}
@@ -178,7 +175,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       type: 'supplier',
       mode: options.mode ?? defaultMode,
       createRoot,
-      createOverlay: async () => {
+      createAppSupport: async () => {
         const payload: Omit<AppSupplier, 'created' | 'updated' | 'id'> = {
           operator_ids: uid ? [uid] : ([] as string[]),
           team_ids: uid ? [uid] : ([] as string[]),
@@ -198,7 +195,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     return {
       id: root.id,
       createdRoot: root.created,
-      createdOverlay: false,
+      createdAppSupport: false,
     }
   }
 

@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: reserve raw Kitchen collection reads for console and exact-target seams.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Kitchen App access-record joins directly.
 import {
   collection,
   query as fsq,
@@ -105,7 +106,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   const rootSource = liveRead.firestoreFetchCollection<KitchenCollectionDoc>(
     rootCollectionPath
   )
-  const overlayOperatorQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
+  const appSupportOperatorQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
     if (sourceRef.value !== 'live' || !resolvedAppId.value) return null
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
@@ -114,7 +115,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<KitchenCollectionDoc>
   })
-  const overlayTeamQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
+  const appSupportTeamQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
     if (sourceRef.value !== 'live' || !resolvedAppId.value) return null
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
@@ -123,8 +124,8 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       where('team_ids', 'array-contains', filterOperatorId.value)
     ) as Query<KitchenCollectionDoc>
   })
-  const overlayOperatorSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
-    overlayOperatorQuery,
+  const appSupportOperatorSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
+    appSupportOperatorQuery,
     undefined,
     computed(() =>
       resolvedAppId.value
@@ -132,8 +133,8 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
         : ''
     )
   )
-  const overlayTeamSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
-    overlayTeamQuery,
+  const appSupportTeamSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
+    appSupportTeamQuery,
     undefined,
     computed(() =>
       resolvedAppId.value
@@ -141,21 +142,21 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
         : ''
     )
   )
-  const overlaySource = computed<KitchenCollectionDoc[]>(() => {
+  const appSupportSource = computed<KitchenCollectionDoc[]>(() => {
     const byId = new Map<string, KitchenCollectionDoc>()
 
-    for (const overlay of [
-      ...(overlayOperatorSource.value ?? []),
-      ...(overlayTeamSource.value ?? []),
+    for (const appSupport of [
+      ...(appSupportOperatorSource.value ?? []),
+      ...(appSupportTeamSource.value ?? []),
     ]) {
-      const id = normalize(overlay?.id)
-      if (id) byId.set(id, { ...overlay, id })
+      const id = normalize(appSupport?.id)
+      if (id) byId.set(id, { ...appSupport, id })
     }
 
     return [...byId.values()]
   })
   const allowedKitchenIds = computed(() =>
-    overlaySource.value
+    appSupportSource.value
       .map((kitchen) => normalize(kitchen?.id))
       .filter(Boolean)
   )
@@ -167,7 +168,7 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     ),
     ids: idList,
   })
-  const overlayRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
+  const appSupportRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
     collectionPath: computed(() =>
       sourceRef.value === 'live' && hasOperatorFilter.value
         ? KitchenStorage.rootCollection
@@ -196,9 +197,9 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
           ? exactTestSource.docs.value ?? []
           : testSource.value ?? []
         : hasOperatorFilter.value
-          ? mergeRootAndOverlay(
-              overlayRootSource.docs.value ?? [],
-              overlaySource.value
+          ? mergeRootAndAppSupport(
+              appSupportRootSource.docs.value ?? [],
+              appSupportSource.value
             )
         : hasIdFilter.value
           ? exactRootSource.docs.value ?? []
@@ -240,9 +241,9 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
       if (!filterOperatorId.value) return false
 
       return (
-        overlayRootSource.pending.value ||
-        overlayOperatorSource.pending.value ||
-        overlayTeamSource.pending.value
+        appSupportRootSource.pending.value ||
+        appSupportOperatorSource.pending.value ||
+        appSupportTeamSource.pending.value
       )
     }
 
@@ -262,9 +263,9 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     if (sourceRef.value === 'live' && hasOperatorFilter.value) {
       if (!filterOperatorId.value) return undefined
 
-      return overlayOperatorSource.error.value ??
-        overlayTeamSource.error.value ??
-        overlayRootSource.error.value
+      return appSupportOperatorSource.error.value ??
+        appSupportTeamSource.error.value ??
+        appSupportRootSource.error.value
     }
     if (hasIdFilter.value) {
       return sourceRef.value === 'test'
@@ -291,12 +292,12 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   }
 }
 
-function mergeRootAndOverlay(
+function mergeRootAndAppSupport(
   rootDocs: KitchenCollectionDoc[],
-  overlayDocs: KitchenCollectionDoc[]
+  appSupportDocs: KitchenCollectionDoc[]
 ) {
   const rootById = new Map<string, KitchenCollectionDoc>()
-  const overlayById = new Map<string, KitchenCollectionDoc>()
+  const appSupportById = new Map<string, KitchenCollectionDoc>()
   const seen = new Set<string>()
   const merged: KitchenCollectionDoc[] = []
 
@@ -305,16 +306,19 @@ function mergeRootAndOverlay(
     if (id) rootById.set(id, { ...root, id })
   }
 
-  for (const overlay of overlayDocs) {
-    const id = normalize(overlay?.id)
-    if (id) overlayById.set(id, { ...overlay, id })
+  for (const appSupport of appSupportDocs) {
+    const id = normalize(appSupport?.id)
+    if (id) appSupportById.set(id, { ...appSupport, id })
   }
 
-  for (const id of [...rootById.keys(), ...overlayById.keys()]) {
+  for (const id of [...rootById.keys(), ...appSupportById.keys()]) {
     if (seen.has(id)) continue
     seen.add(id)
 
-    const item = composeKitchenScopedSurface(rootById.get(id), overlayById.get(id))
+    const item = composeKitchenScopedSurface(
+      rootById.get(id),
+      appSupportById.get(id)
+    )
     if (item) merged.push({ ...item, id } as KitchenCollectionDoc)
   }
 

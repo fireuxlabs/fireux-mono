@@ -1,10 +1,11 @@
 Console entity family map
 Updated: 2026-07-20
-Ref: 8d83d3fa7
+Ref: a4d382c1d
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 16:55 CEST — Repo Efficiency Pass 5 of 6: console target family seam. -->
 <!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: align family selection, targeted reads, permissions, and real lifecycle surfaces. -->
-<!-- Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: separate canonical targets, App support, and unfinished write enforcement. -->
+<!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: fail closed on incomplete or wrong-App targets, withhold unsafe lifecycle mutations, and mark Kitchen migration input. -->
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Entity Vocabulary + Matrix Pass: describe root identity and App support as separate axes. -->
 
 Purpose:
 Map similarities and differences across console-capable entities.
@@ -39,26 +40,34 @@ Similar:
   the persisted selection.
 - Global App membership pending/error is part of that target outcome; access
   failure cannot collapse into an empty family collection.
-- ID-scoped Supplier, Portfolio, and Property targets load exact root records.
+- ID-scoped Supplier, Portfolio, and Property targets load exact root records
+  and same-id App access records. Only complete pairs whose root names the
+  current App can enter selection; pair or scope drift produces an error and no
+  selectable row. Property manual secrets are a separate private detail read
+  and never participate in target collection loading.
   Public browse remains a separate projection/Rules decision; a raw root
   collection read does not become authorized merely because a root exists.
 - May have an access/team surface when the entity has a current collaboration
   lifecycle.
 - Should keep index/overview/identity/operations separated; add team only when
   that lifecycle is real.
-- Root-plus-app console entities can share level-one buckets:
+- Root entities with App support records can share level-one buckets:
   `app_scope`, `visibility`, `identity`, then domain-owned operation config.
 - Core owns shared bucket model names in `fireux-core`; domain packages own their operation namespaces and readers until reuse is proven.
 - Console runtime derives `canWrite` from source/read-only state and current
   operator authority. Visible controls reflect it, and every console mutation
-  must enforce it. Supplier, Portfolio, and Property root helpers now use fixed
-  identity paths, but client write authorization is not complete until the
-  owner database has reviewed Rules or a trusted server mutation boundary.
+  must enforce it. Supplier, Portfolio, and Property identity helpers use fixed
+  paths; generic access mutations and independent lifecycle deletes are not
+  exported. Client write authorization is still incomplete until the owner
+  database has reviewed Rules or a trusted server mutation boundary.
 
 Different:
 - Blank is the minimal mirror and stays thin: index, overview, and creation,
   with no invented Identity or Team lifecycle.
 - Kitchen has menu, dish, recipe, ingredient, mise, order, station, supplier operations.
+- Kitchen's target App model is access-only, but its legacy stored duplicate
+  identity and compatibility composer remain migration input; Supplier,
+  Portfolio, and Property are the current strict root + App-support read references.
 - Kitchen keeps live and demo target outcomes separate and composes one shared
   target presenter per source.
 - Supplier has item, catalogue, ingredient operations.

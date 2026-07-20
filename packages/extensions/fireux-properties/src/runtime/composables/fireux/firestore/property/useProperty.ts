@@ -1,10 +1,13 @@
-// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: publish fixed root/app seams without scope options.
+// Concurrent edit — 2026-07-20 22:32 CEST — Both-Entity Authority — Property: publish fixed reads/writes without unsafe independent lifecycle deletes.
 import type { Ref } from 'vue'
 import type { Property } from '../../../../models/property.model'
 import { usePropertyCollection } from './fetch/usePropertyCollection'
-import { useAppPropertyFetch, usePropertyFetch } from './fetch/usePropertyFetch'
+import {
+  useAppPropertyFetch,
+  usePropertyFetch,
+  usePropertyManualFetch,
+} from './fetch/usePropertyFetch'
 import { usePropertyCreate } from './mutations/usePropertyCreate'
-import { usePropertyDelete } from './mutations/usePropertyDelete'
 import { usePropertyUpdate } from './mutations/usePropertyUpdate'
 import { usePropertyInterface } from './utils/view/usePropertyInterface'
 
@@ -18,8 +21,8 @@ export {
   usePropertyCollection,
   usePropertyFetch,
   useAppPropertyFetch,
+  usePropertyManualFetch,
   usePropertyCreate,
-  usePropertyDelete,
   usePropertyUpdate,
   usePropertyInterface,
 }
@@ -31,7 +34,6 @@ export function useProperty(id: string | Ref<string>) {
     ...fetched,
     ...usePropertyCollection(),
     ...usePropertyCreate(),
-    ...usePropertyDelete(),
     ...usePropertyUpdate(),
     ...usePropertyInterface(),
   }

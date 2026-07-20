@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: keep public User surfaces on canonical root identity.
 import {
   safeArray,
   safeString,
@@ -5,7 +6,6 @@ import {
 import type { Ref } from 'vue'
 import {
   UserStorage,
-  type UserApp,
   type User,
 } from '../../../../../../../models/core/user.model'
 import {
@@ -48,7 +48,6 @@ export namespace UserCard {
 
 export type UserSurfaceParts<TUser extends object = Partial<User>> = {
   user?: TUser | null | undefined
-  overlay?: Partial<UserApp> | Record<string, unknown> | null | undefined
 }
 
 export const USER_AVATAR_FALLBACK_SRC = USER_ECOSYSTEM_AVATAR_SRC
@@ -67,10 +66,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     const source = parts.user ?? null
     if (!source) return null
 
-    const merged = {
-      ...source,
-      ...(parts.overlay ?? {}),
-    } as TUser & User
+    const merged = { ...source } as TUser & User
     const id = safeString(merged.id).trim()
     if (!id) return null
 

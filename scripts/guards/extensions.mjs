@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: admit explicit builder lifecycle config.
 // FILE: scripts/guards/extensions.mjs
 // FireUX Extensions Packages Guard
 //
@@ -12,6 +13,7 @@
 import { readdirSync, existsSync } from 'node:fs'
 import path from 'node:path'
 import {
+  COMMON_PACKAGE_ALLOWED_L1,
   COMMON_PACKAGE_REQUIRED_L1,
   inspectLevelOne,
 } from './_lib/filesystem-policy.mjs'
@@ -24,7 +26,7 @@ import {
  * - generated output is tolerated locally but must remain untracked
  */
 const REQUIRED_L1 = COMMON_PACKAGE_REQUIRED_L1
-const ALLOWED_L1 = ['docs']
+const ALLOWED_L1 = [...COMMON_PACKAGE_ALLOWED_L1, 'docs']
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()

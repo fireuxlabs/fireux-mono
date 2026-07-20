@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable persisted-choice declarations.
 import {
   computed,
   onMounted,
@@ -15,11 +16,17 @@ type UseStoredChoiceOptions<T extends string> = {
 }
 type StoredChoiceWatchState<T extends string> = readonly [T[], T, T | '', boolean]
 
+export type UseStoredChoiceReturn<T extends string> = {
+  selected: Ref<T>
+  stored: Ref<T | ''>
+  storageReady: Ref<boolean>
+}
+
 const text = (value: unknown) => String(value ?? '').trim()
 
 export function useStoredChoice<T extends string>(
   options: UseStoredChoiceOptions<T>
-) {
+): UseStoredChoiceReturn<T> {
   const key = computed(() => text(toValue(options.key)))
   const choices = computed<T[]>(() => Array.from(toValue(options.choices)))
   const fallback = computed(() => {
@@ -28,7 +35,7 @@ export function useStoredChoice<T extends string>(
     return choices.value.includes(next) ? next : choices.value[0] ?? next
   })
   const selected = ref(fallback.value) as Ref<T>
-  const stored = ref<T | ''>('')
+  const stored = ref<T | ''>('') as Ref<T | ''>
   const storageReady = ref(!import.meta.client)
   const mounted = ref(!import.meta.client)
   const initialChoiceResolved = ref(false)

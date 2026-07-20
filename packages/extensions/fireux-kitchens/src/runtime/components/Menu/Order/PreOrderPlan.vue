@@ -127,6 +127,7 @@ function chooseTime(event: MouseEvent) {
 </script>
 
 <style scoped>
+/* Concurrent edit — 2026-07-20 23:36 CEST — Final app CSS pass: use the Tailwind typography authority. */
 .menu-order-pre-order-plan {
   display: grid;
   gap: calc(var(--spacing) * 5);
@@ -162,7 +163,7 @@ function chooseTime(event: MouseEvent) {
 .menu-order-pre-order-plan__header h2 {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: clamp(1.25rem, 3vw, 1.65rem);
+  font-size: clamp(var(--text-xl), 3vw, 1.65rem);
 }
 
 .menu-order-pre-order-plan__header span,
@@ -179,7 +180,7 @@ function chooseTime(event: MouseEvent) {
   border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--menu-primary) 16%, var(--menu-bg));
   color: var(--menu-primary);
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
 }
 
 .menu-order-pre-order-plan__fields {

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: add surface-owned Kitchen alert policy without provider credentials.
+// Concurrent edit — 2026-07-20 23:38 CEST — Entity Vocabulary + Matrix Pass: distinguish scoped KitchenMenu truth and its public projection from root Menu identity.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -29,8 +30,12 @@ export const KitchenMenuEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'KitchenMenu',
   family: ['menu', 'kitchen'],
-  storage: 'scoped',
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'projection',
   status: 'confirmed',
+  parent: 'Kitchen',
   scoped: KitchenMenuStorage.path,
   notes: [
     'KitchenMenu owns operator-managed content and ordering policy.',

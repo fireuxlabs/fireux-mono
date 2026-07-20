@@ -1,9 +1,9 @@
+// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: expose fixed reads and identity writes without unsafe lifecycle deletes.
 import type { Ref } from 'vue'
 import type { Portfolio } from '../../../../models/portfolio.model'
 import { usePortfolioCollection } from './fetch/usePortfolioCollection'
-import { usePortfolioFetch } from './fetch/usePortfolioFetch'
+import { useAppPortfolioFetch, usePortfolioFetch } from './fetch/usePortfolioFetch'
 import { usePortfolioCreate } from './mutations/usePortfolioCreate'
-import { usePortfolioDelete } from './mutations/usePortfolioDelete'
 import { usePortfolioUpdate } from './mutations/usePortfolioUpdate'
 import { usePortfolioSeo } from './utils/usePortfolioSeo'
 import { usePortfolioComputed } from './utils/view/usePortfolioComputed'
@@ -18,8 +18,8 @@ export type {
 export {
   usePortfolioCollection,
   usePortfolioFetch,
+  useAppPortfolioFetch,
   usePortfolioCreate,
-  usePortfolioDelete,
   usePortfolioUpdate,
   usePortfolioSeo,
   usePortfolioComputed,
@@ -33,7 +33,6 @@ export function usePortfolio(id: string | Ref<string>) {
     ...fetched,
     ...usePortfolioCollection(),
     ...usePortfolioCreate(),
-    ...usePortfolioDelete(),
     ...usePortfolioUpdate(),
     ...usePortfolioComputed(fetched.portfolio),
     ...usePortfolioInterface(),

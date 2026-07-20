@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: resolve only explicit Kitchen hour overrides over Place business hours.
+// Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import {
   normalizeFireuxAppScopeState,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
@@ -12,7 +12,7 @@ import type {
   KitchenImageShade,
   KitchenPaymentRequirement,
 } from '../models/kitchen.model'
-import { readPlaceBusinessHours } from 'fireux-places/runtime/utils/place-spine'
+import { readPlaceBusinessHours } from 'fireux-places/runtime/utils/place-spine.ts'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import {
   kitchenOrderTypes,

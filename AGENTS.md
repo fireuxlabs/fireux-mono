@@ -10,9 +10,13 @@ Effective: 2026-07-20
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: record projected public profile reads and owner-only raw authority. -->
 <!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: record supported script lifecycle and shared protected artifacts. -->
 <!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: record runtime-owned App media and guarded snapshot mutation tooling. -->
+<!-- Concurrent edit — 2026-07-20 22:40 CEST — Repo Efficiency Pass 5 of 6: record explicit dependency ownership and shared H3 type identity. -->
+<!-- Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: record workspace-wide package command target validation. -->
 <!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: record target-state, route-meta, write-authority, and targeted-read contracts. -->
 <!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: record optional console fixture ownership and loading. -->
-<!-- Concurrent edit — 2026-07-20 22:21 CEST — Both-Entity Authority: record canonical-root and App-support boundaries. -->
+<!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: record fail-closed App joins, explicit Property publication, schema-validation limits, and the Kitchen migration exception. -->
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Entity Vocabulary + Matrix Pass: separate identity, authority, App support, and public-read classification. -->
+<!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Passes 2–3 of 3: record package build lifecycle and durable gates. -->
 
 ## Current Documentation State
 
@@ -134,6 +138,7 @@ Root shape is controlled by `scripts/guards/root.mjs`.
 Core package shape is controlled by `scripts/guards/core.mjs`.
 
 - Required L1: `package.json`, `registry.json`, `README.md`, `src`, `tsconfig.json`.
+- Optional L1: `build.config.ts`, only for a real package-specific builder lifecycle.
 - Core packages must not expose `exports['./runtime']`.
 - Core packages must not add `src/runtime/index.ts`.
 - Implementation belongs in `src`.
@@ -141,13 +146,14 @@ Core package shape is controlled by `scripts/guards/core.mjs`.
 Extension package shape is controlled by `scripts/guards/extensions.mjs`.
 
 - Required L1: `package.json`, `registry.json`, `README.md`, `src`, `tsconfig.json`.
-- Optional L1: `docs`.
+- Optional L1: `docs`; `build.config.ts` only for a real package-specific builder lifecycle.
 - Implementation belongs in `src`.
 - Kitchen/Menu runtime files over 400 lines are checked separately by `scripts/guards/kitchen-menu-size.mjs`; this domain complexity rule is not part of extension folder shape.
 
 Ecosystem package shape is controlled by `scripts/guards/ecosystem.mjs`.
 
 - Required L1: `package.json`, `registry.json`, `README.md`, `src`, `tsconfig.json`, `docs`, `.firebaserc`.
+- Optional L1: `build.config.ts`, only for a real package-specific builder lifecycle.
 - Required tracked config: `src/config/firebase/ecosystem.config.ts` and the inert placeholder `src/config/firebase/service-account.example.json`.
 - Real Firebase Admin credentials must never live inside the repository, tracked or untracked. Use application-default credentials or an external credential file referenced by environment.
 - Local ADC flows that mint Firebase custom tokens may also require `FIREBASE_SERVICE_ACCOUNT_ID` plus `iam.serviceAccounts.signBlob`; the service-account email is identity metadata, not a private key.
@@ -200,6 +206,29 @@ See: `docs/concepts/spine.md`
 Module setup generally uses `configureFireuxModule` from `fireux-core/config/module/module-wiring` and package-specific `configureComponents`, `configureComposables`, `configurePages`, `configureServer`, etc. Models remain explicit imports unless a package has a real registration mechanism for them.
 
 Do not add runtime surfaces without checking module registration.
+
+## Dependency Ownership
+
+Every direct external or workspace import belongs in the manifest of the
+package or app that owns the importing file. Do not rely on a root install,
+another app, or a transitive dependency to make an import resolve. This applies
+to runtime imports, type-only imports, server code, and package-owned
+stylesheets.
+
+The private workspace root is a tooling host: its packages belong in
+`devDependencies`, not `dependencies`. A package that supplies a baseline Nuxt
+module owns and imports that module directly; app-selected modules remain app
+dependencies. Do not add nested `package.json` files inside authored `src`
+trees, because they create accidental module boundaries.
+
+Identity-sensitive framework types must resolve once across the workspace. H3
+is pinned in `pnpm-workspace.yaml` so Nitro events and package server helpers do
+not acquire incompatible copies.
+
+Cross-extension composition belongs in an ecosystem or project that owns all
+participants. Do not make an upstream domain package depend back on optional
+downstream extensions merely to power a dev inspector. These boundaries are
+checked by `scripts/guards/dependency-ownership.mjs`.
 
 Extension component/composable registration is checked by `scripts/guards/runtime-registration.mjs`.
 
@@ -321,18 +350,42 @@ Do not place console operation folders inside Firestore stacks. Do not add Fires
 
 Known boring entity stack examples include kitchen, supplier, product, place, company, blog, property, portfolio, ingredient, recipe, dish, menu, translation, job, task.
 
-For a `storage: 'both'` entity, root means canonical top-level identity, not
-automatically public-readable. Supplier, Portfolio, Property, and Kitchen each
-have one root entity plus a same-id App support record. App support records own
-access and only an explicitly modelled operational delta; they never supply
+Every `defineFireuxEntity` declaration states four separate contracts:
+`identity`, `authority`, `appSupport`, and `publicRead`. `identity: 'root'`
+means canonical top-level identity, not automatically public-readable;
+`identity: 'parent-scoped'` means the concept is canonical only inside its
+named parent. An App support record is not an entity storage scope. The
+cross-package declaration list lives in `scripts/_lib/entity-matrix.mjs` and is
+checked by `scripts/guards/entity-matrix.mjs`.
+
+Supplier, Portfolio, and Property each have one root entity plus a same-id App
+support record declared as `appSupport: 'access-record'`. Kitchen has the same target
+classification and access-only `AppKitchen` model, but its current legacy
+composer and stored App documents still accept duplicated identity as migration
+input; do not use that compatibility seam as a sibling. App support records own
+access and only an explicitly modelled non-secret delta; they never supply
 identity, override root stamps/relationships, or become an entity when the root
-is missing. Joined reads require the root and allowlist App fields. Root and App
-mutations use separately named fixed paths and never accept caller-selected
-scope or collection paths. Property owns optional `portfolio_id` and required
-`place_id`; Portfolio stores no inverse or nested full Property. The shared
-attach reread is a correctness check only: deployed Rules or trusted server
-transactions remain the create/transfer/access security boundary. These shape
-rules are checked by `scripts/guards/both-entity-authority.mjs`.
+is missing. Supplier, Portfolio, and Property ID-targeted joins exact-load
+requested roots and same-id App records, require the root scope to name the
+current App, expose only complete pairs, then allowlist App fields. Property
+guest-manual credentials live separately at
+`apps/{appId}/properties/{propertyId}/private/manual` and never participate in
+access-list reads. Create/read paths are fixed and the App record id always
+equals the root id. Independent root/App deletes and generic access-array
+mutations stay unexported until a trusted lifecycle can maintain root scope,
+App access, and UserApp targets together. Property owns optional `portfolio_id`
+and required `place_id`; Portfolio stores no inverse or nested full Property.
+Public Property browse uses the bounded `/api/properties` projection, never a
+raw root listener. New Property roots start as `draft`; only active, explicitly
+`published` roots enter the currently unlinked browse cards. Schema-invalid
+Property roots are errors, not empty/missing results. Supplier and Portfolio
+still need live-shape reconciliation before exact root-schema validators can be
+cut over; their current boundary validates the root/App relationship, not every
+root field.
+The shared attach reread and validator are correctness checks only: deployed
+Rules or trusted server transactions remain the create/transfer/access security
+boundary. These current Supplier/Portfolio/Property source boundaries and the access-only
+Kitchen App model are checked by `scripts/guards/both-entity-authority.mjs`.
 
 Identity records follow one strict boundary: `/users/{uid}` is public identity,
 `/users/{uid}/private/account` is owner-private account data,
@@ -355,7 +408,7 @@ seeds create every canonical field, and owner updates must preserve the full
 shape enforced by Firestore Rules. Those public roots are self-editable and raw
 client reads are owner-only; public list/detail pages consume the bounded
 domain API projection and initial detail content is server-rendered through
-`usePublicProfileDetail`. Their App overlays remain stamps-only. Root and App
+`usePublicProfileDetail`. Their App profile delta records remain stamps-only. Root and App
 mutation helpers are separate authorities and must not regain a caller-selected
 scope. Public URL fields are empty or valid HTTPS. `User.avatar` is valid HTTPS
 or the canonical `/img/ecosystem/avatar.png` value; clearing an avatar persists
@@ -412,7 +465,7 @@ their domain delta can grow without unpicking a generic shell.
   collection or used to invalidate persisted selection.
 - ID-limited console target reads load those root documents directly. Do not
   bind the full root collection and filter it client-side when target IDs or
-  operator overlays already define the allowed set.
+  App support records already define the allowed set.
 - Console Demo adapters defer fixture imports until their source is active and
   pass their explicit outcome onward. Test, simulation, and dev fixtures are
   separate families and must not be folded into Demo.
@@ -478,13 +531,16 @@ unless the script explicitly declares `manual_entrypoint: true`. Manual
 entrypoints are rare, named, dry-run-first operational seams; documentation
 references alone do not make an ordinary script active. Do not delete stale
 scripts automatically; review whether they are still part of the active
-command surface first. Completed migration and recovery scripts belong in Git
+command surface first. The audit validates local file targets in every authored
+package manifest, not only root commands, so a removed script cannot leave a
+dead app or package command behind. Completed migration and recovery scripts belong in Git
 history once current creation paths own the canonical shape and a separate
 release or verification gate retains any required completion proof.
 
-Root `package.json` exposes supported user commands. CI and documentation use
-the canonical `guard` and `typecheck:*` commands directly; do not add aliases
-that only forward to another root command.
+Root `package.json` exposes supported user commands. CI and release gates call
+canonical root commands directly; do not add aliases that only forward to
+another root command. `build:packages` completes before
+`build:nuxt-baseline`, so the baseline app consumes built production exports.
 
 Protected JSON backups shared by ordinary operational scripts use
 `scripts/_lib/protected-json-artifact.mjs`. The helper owns only exclusive

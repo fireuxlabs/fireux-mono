@@ -7,6 +7,8 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: register owner and loading boundary checks.
 // Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: register operational script safety checks.
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority: register root/app support boundary checks.
+// Concurrent edit — 2026-07-20 22:33 CEST — Repo Efficiency Pass 5 of 6: register dependency ownership checks.
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: register AST-backed declaration checks.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint
@@ -26,6 +28,7 @@ import { run as runRoot } from './guards/root.mjs'
 import { run as runDevWorkspace } from './guards/dev-workspace.mjs'
 import { run as runSecrets } from './guards/secrets.mjs'
 import { run as runGeneratedArtifacts } from './guards/generated-artifacts.mjs'
+import { run as runDependencyOwnership } from './guards/dependency-ownership.mjs'
 import { run as runOperationalScripts } from './guards/operational-scripts.mjs'
 import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
@@ -39,6 +42,7 @@ import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
+import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runBothEntityAuthority } from './guards/both-entity-authority.mjs'
 import { run as runDirectoryReconciliation } from './guards/directory-reconciliation.mjs'
@@ -59,6 +63,7 @@ const guards = [
   { key: 'dev-workspace', run: runDevWorkspace },
   { key: 'secrets', run: runSecrets },
   { key: 'generated-artifacts', run: runGeneratedArtifacts },
+  { key: 'dependency-ownership', run: runDependencyOwnership },
   { key: 'operational-scripts', run: runOperationalScripts },
   { key: 'ownership', run: runOwnership },
   { key: 'runtime-registration', run: runRuntimeRegistration },
@@ -72,6 +77,7 @@ const guards = [
   { key: 'extensions', run: runExtensions },
   { key: 'kitchen-menu-size', run: runKitchenMenuSize },
   { key: 'menu-route-contract', run: runMenuRouteContract },
+  { key: 'entity-matrix', run: runEntityMatrix },
   { key: 'entity-authority', run: runEntityAuthority },
   { key: 'both-entity-authority', run: runBothEntityAuthority },
   { key: 'directory-reconciliation', run: runDirectoryReconciliation },

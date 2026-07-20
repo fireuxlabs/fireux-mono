@@ -3,9 +3,10 @@ Firestore entity spine map
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: bind domain-only root profiles to canonical User by uid. -->
 <!-- Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: record the shared delta-only overlay and membership mirror. -->
 <!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep raw profile lists behind domain APIs. -->
-<!-- Concurrent edit — 2026-07-20 22:21 CEST — Both-Entity Authority: record root-required joins and fixed root/app paths. -->
+<!-- Concurrent edit — 2026-07-20 23:03 CEST — Both-Entity Authority: record fail-closed App joins/queries, explicit Property publication, truthful validator limits, and Kitchen migration input. -->
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Entity Vocabulary + Matrix Pass: replace combined storage language with explicit classification axes. -->
 Updated: 2026-07-20
-Ref: 565ebd668
+Ref: a4d382c1d
 Role: map, not canon
 
 Purpose:
@@ -82,19 +83,22 @@ Read-state contract:
 
 Differences:
 - Some entities are canonical roots; public readability is a separate contract.
-- Some entities are scoped to a console or parent.
-- Some entities are both, but that must be explicit in the model and route behavior.
+- Some entities and records have `parent-scoped` identity.
+- Some root entities have a separate App support record. That support record is
+  not another entity scope or fallback identity.
 - An app-private profile record uses only the app-scoped path, records its id on
   `UserApp.profiles`, and must not acquire a root collection or public index.
 - Every root profile record is domain-only and uses its document id as the
   canonical `/users/{uid}` join key. Public presentation hydrates or projects
   that User; root profile documents never embed a User summary.
-- Every app profile record is a delta-only overlay: it does not duplicate
+- Every App profile delta record is non-identity support: it does not duplicate
   public User identity, and successful create/repair records the profile id on
   `UserApp.profiles`. Root-backed profiles separately retain their public root
   record and `User.profiles` id.
 - Model placement and Firestore composable placement are related but not identical.
-- Root/both profile models can live on the root model spine while current Firestore composables remain grouped under `firestore/profiles/<Profile>` until that stack is deliberately realigned.
+- Root profile models with App delta records can live on the root model spine
+  while current Firestore composables remain grouped under
+  `firestore/profiles/<Profile>` until that stack is deliberately realigned.
 - Project/Ecosystem/App hierarchy uses root documents plus child-owned relation
   ids, not nested storage: `Ecosystem.project_id`, `App.project_id`, and optional
   `App.ecosystem_id`.
@@ -110,23 +114,53 @@ Differences:
 
 Root plus App support contract:
 
-- Supplier, Portfolio, Property, and Kitchen use `storage: 'both'`: one root
-  entity plus a same-id App support document.
+- Supplier, Portfolio, Property, and Kitchen declare `identity: 'root'` plus
+  `appSupport: 'access-record'`: one root entity plus a same-id App support
+  document. App support is a separate relationship/access record, not a storage
+  scope of entity identity.
 - The root owns identity, lifecycle, domain truth, and child-owned relationship
   ids. It does not contain App access arrays. Property root also excludes its
   guest manual and references Place and optional Portfolio by id.
-- The App document owns bounded access and only its declared operational delta.
+- The App document owns bounded access and only its declared non-secret delta.
   Collection adapters type it as the named `App<Entity>` record, require the
   root, and project allowlisted fields instead of spreading it over identity.
-- A dangling App document is an error outcome, not an overlay-only entity or an
-  empty collection result.
-- Root and App writes have separately named helpers with fixed paths. Root
-  ownership fields and App access fields are not interchangeable update input.
+  Supplier, Portfolio, and Property enforce that join now. Kitchen's access-only
+  App model is current, but its legacy composer and stored duplicate identity
+  remain migration input and are not a reference implementation.
+- Property manual credentials live separately at
+  `apps/{appId}/properties/{propertyId}/private/manual`; collection access
+  queries never download that private support record.
+- ID-targeted Supplier, Portfolio, and Property joins exact-load requested App
+  documents by id before composing the root surface. They do not list every App
+  record and filter in browser memory. The root must name the current App scope;
+  only complete, same-id root/App pairs enter the target collection.
+- A missing pair half, dangling App document, or root/App scope mismatch is an
+  error outcome, not a support-only entity, selectable stale row, or empty
+  collection result.
+- A physically present but schema-invalid Property root is also an error in
+  collection, single-document, and Portfolio-membership reads; it is never
+  translated to `empty`, `missing`, or a valid existing root.
+- Supplier and Portfolio do not yet exact-validate every root field. Reconcile
+  their live shapes before adding strict validators and the corresponding
+  migration; do not describe their present pair/scope checks as exact schema
+  validation.
+- Root and App create/read seams have fixed paths and one shared id. Independent
+  root/App deletes and generic App access mutation helpers are withheld until a
+  trusted lifecycle can maintain root scope, access records, and UserApp target
+  indexes together.
 - Shared console attachment re-reads the root returned by an idempotent create
   before it checks App ownership. This closes accidental slug-collision attach
   drift but is not a security or transaction boundary.
 - Property-to-Portfolio membership is `Property.portfolio_id`. The former
-  nested full-Property reader under an App Portfolio is retired.
+  nested full-Property reader under an App Portfolio is retired. The client
+  query activates only after the selected Portfolio has been resolved through
+  its App access record, constrains `app_scope_app_id` to that App, and then
+  exact-validates the returned scope state; owner-database Rules still have to
+  enforce that inheritance contract.
+- Public Property browse uses the bounded server `/api/properties` projection;
+  the browser never binds raw Property roots. Creation defaults publication to
+  `draft`, and the projection emits only active, explicitly `published` roots.
+  Browse cards stay unlinked until a bounded public detail read exists.
 - Current source: Supplier, Portfolio, and Property model/fetch/mutation stacks.
   Shape guard: `scripts/guards/both-entity-authority.mjs`.
 
@@ -139,8 +173,9 @@ Do not:
 - Treat read errors as empty or missing records.
 - Let an App support record overwrite root identity, stamps, or relationships.
 - Fabricate a root entity from an App record when root hydration fails.
-- Accept caller-selected `scope`, `shape`, or `collectionPath` in a both-entity
+- Accept caller-selected `scope`, `shape`, or `collectionPath` in a root-with-App-support
   mutation helper.
 
 Open questions:
-- Menu needs continued cleanup because root menus and kitchen menus currently overlap conceptually.
+- Menu content synchronization still needs cleanup, but identity is settled:
+  root `Menu` and scoped `KitchenMenu` are distinct entities.

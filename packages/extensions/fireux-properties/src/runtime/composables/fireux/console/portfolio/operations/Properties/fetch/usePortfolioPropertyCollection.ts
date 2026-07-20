@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: resolve Portfolio membership from canonical Property.portfolio_id.
+// Concurrent edit — 2026-07-20 23:03 CEST — Both-Entity Authority — Property: query only current-App roots after ready Portfolio access.
 import {
   collection,
   query,
@@ -13,6 +13,10 @@ import { PropertyStorage, type Property } from '../../../../../../../models/prop
 import { canonicalPropertyRoot } from '../../../../../firestore/property/utils/view/usePropertyInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+const propertyBelongsToApp = (property: Property, appId: string) =>
+  (property.app_scope_state === 'parent_app' ||
+    property.app_scope_state === 'tenant_app') &&
+  property.app_scope_app_id === appId
 
 export function usePortfolioPropertyCollection(
   runtimePortfolio = useActivePortfolio()
@@ -20,8 +24,22 @@ export function usePortfolioPropertyCollection(
   const db = useFirestore()
   const { firestoreQuery } = useFirestoreRead()
   const portfolioId = computed(() => normalizeString(runtimePortfolio.id.value))
+  const consoleAppId = computed(() =>
+    normalizeString(runtimePortfolio.consoleAppId.value)
+  )
+  const authorizedPortfolioId = computed(() =>
+    normalizeString(runtimePortfolio.entity.value?.id)
+  )
+  const canRead = computed(() =>
+    Boolean(
+      runtimePortfolio.canRead.value &&
+      portfolioId.value &&
+      consoleAppId.value &&
+      authorizedPortfolioId.value === portfolioId.value
+    )
+  )
   const collectionPath = computed(() =>
-    runtimePortfolio.source.value === 'live' && portfolioId.value
+    runtimePortfolio.source.value === 'live' && canRead.value
       ? PropertyStorage.rootCollection
       : ''
   )
@@ -29,7 +47,8 @@ export function usePortfolioPropertyCollection(
     if (!collectionPath.value) return null
     return query(
       collection(db, PropertyStorage.rootCollection),
-      where('portfolio_id', '==', portfolioId.value)
+      where('portfolio_id', '==', portfolioId.value),
+      where('app_scope_app_id', '==', consoleAppId.value)
     ) as Query<Property>
   })
   const source = firestoreQuery<Property>(
@@ -40,18 +59,52 @@ export function usePortfolioPropertyCollection(
   const properties = computed<Property[]>(() =>
     (source.value ?? []).reduce<Property[]>((items, property) => {
       const root = canonicalPropertyRoot(property)
-      if (root) items.push(root)
+      if (root && propertyBelongsToApp(root, consoleAppId.value)) items.push(root)
       return items
     }, [])
+  )
+  const invalidRootIds = computed(() =>
+    (source.value ?? []).reduce<string[]>((ids, property) => {
+      if (canonicalPropertyRoot(property)) return ids
+      ids.push(normalizeString(property.id) || '(missing-id)')
+      return ids
+    }, [])
+  )
+  const invalidScopeIds = computed(() =>
+    (source.value ?? []).reduce<string[]>((ids, property) => {
+      const root = canonicalPropertyRoot(property)
+      if (!root || propertyBelongsToApp(root, consoleAppId.value)) return ids
+      ids.push(root.id)
+      return ids
+    }, [])
+  )
+  const error = computed<unknown | undefined>(() => {
+    if (source.error.value) return source.error.value
+    if (invalidRootIds.value.length) {
+      return new Error(
+        `[fireux-properties] invalid Portfolio Property root(s): ${invalidRootIds.value.join(', ')}`
+      )
+    }
+    if (invalidScopeIds.value.length) {
+      return new Error(
+        `[fireux-properties] Portfolio Property root/App scope mismatch: ${invalidScopeIds.value.join(', ')}`
+      )
+    }
+    return undefined
+  })
+  const outcome = computed(() =>
+    error.value ? 'error' as const : source.outcome.value
   )
 
   return {
     portfolioId,
+    consoleAppId,
+    canRead,
     collectionPath,
     collection: properties,
     count: computed(() => properties.value.length),
     pending: source.pending,
-    error: source.error,
-    outcome: source.outcome,
+    error,
+    outcome,
   }
 }

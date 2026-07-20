@@ -1,10 +1,12 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: admit explicit builder lifecycle config.
 // FILE: scripts/guards/ecosystem.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import {
+  COMMON_PACKAGE_ALLOWED_L1,
   COMMON_PACKAGE_REQUIRED_L1,
   inspectLevelOne,
 } from './_lib/filesystem-policy.mjs'
@@ -66,6 +68,7 @@ function checkEcosystemPackage(pkgPath) {
 
   const { missing, unexpected } = inspectLevelOne(entries, {
     required: REQUIRED_L1,
+    allowed: COMMON_PACKAGE_ALLOWED_L1,
   })
 
   const configViolations = checkConfigShape(pkgPath)
@@ -121,7 +124,8 @@ function checkEcosystemPackage(pkgPath) {
   lines.push(
     '',
     '[guard] Fix:',
-    `- Ecosystem packages MUST match L1 exactly: ${REQUIRED_L1.join(', ')}`,
+    `- Ecosystem packages MUST expose required L1: ${REQUIRED_L1.join(', ')}`,
+    `- Optional L1 entries: ${COMMON_PACKAGE_ALLOWED_L1.join(', ')}`,
     '- Move implementation into /src (including ecosystem config and credential wiring; never credential files)',
     '- docs/ is required for ecosystem package shape; it is not implementation canon by default',
     '- .firebaserc is required for ecosystems (this is where Firebase project binding lives)',

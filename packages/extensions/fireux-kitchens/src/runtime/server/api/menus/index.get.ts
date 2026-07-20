@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: batch explicit Place links and omit absent Menu copy.
+// Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: batch concrete Place runtime links and omit absent Menu copy.
 import { createError, defineEventHandler, getQuery } from 'h3'
 import { FieldPath } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
@@ -6,7 +6,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 import { KitchenMenuStorage } from '../../../models/kitchen/menu/kitchen-menu.model.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import {
   PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
   PUBLIC_MENU_INDEX_PAGE_SIZE,

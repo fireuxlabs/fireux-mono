@@ -1,11 +1,14 @@
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: keep canonical root identity and ownership separate from App access.
+// Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove the generic App access mutation input.
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Supplier root identity and access-only App support.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Supplier access support directly.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type {
-  FireuxAppOverlay,
+  FireuxAppAccessRecord,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
-  FireuxAppOverlayModel,
+  FireuxAppAccessRecordModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -45,11 +48,11 @@ type WidenLiteral<T> =
  * - If that changes later, update the models README first, then this file.
  */
 export const SupplierStorage = {
-  shape: 'both',
+  shape: 'root-and-app-support',
   root: 'suppliers/{supplierId}',
-  overlay: 'apps/{appId}/suppliers/{supplierId}',
+  appSupport: 'apps/{appId}/suppliers/{supplierId}',
   rootCollection: 'suppliers',
-  overlayCollection: 'suppliers',
+  appSupportCollection: 'suppliers',
   idParam: 'supplierId',
   children: {
     catalogues: 'suppliers/{supplierId}/catalogues/{catalogueId}',
@@ -62,11 +65,14 @@ export const SupplierEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Supplier',
   family: ['supplier', 'console-entity'],
-  storage: 'both',
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'access-record',
+  publicRead: 'to-confirm',
   status: 'confirmed',
   console: true,
   root: SupplierStorage.root,
-  scoped: SupplierStorage.overlay,
+  appSupportPath: SupplierStorage.appSupport,
 })
 
 export const AppSupplierStorage = {
@@ -111,10 +117,10 @@ export const SupplierModel = {
 export type Supplier = WidenLiteral<typeof SupplierModel>
 
 export const AppSupplierModel = {
-  ...FireuxAppOverlayModel,
+  ...FireuxAppAccessRecordModel,
 } as const
 
-export type AppSupplier = FireuxAppOverlay
+export type AppSupplier = FireuxAppAccessRecord
 
 export type SupplierCreateInput = Omit<
   Supplier,
@@ -142,9 +148,6 @@ export type SupplierUpdateInput = Partial<
     | 'app_scope_state'
     | 'app_scope_app_id'
   >
->
-export type AppSupplierUpdateInput = Partial<
-  Omit<AppSupplier, 'id' | 'created' | 'updated'>
 >
 
 export type SupplierIngredientState =

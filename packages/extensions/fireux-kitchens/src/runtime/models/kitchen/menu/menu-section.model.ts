@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify sections under scoped KitchenMenu authority.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -20,9 +21,12 @@ export const MenuSectionRecord = defineFireuxEntity({
   kind: 'record',
   name: 'MenuSection',
   family: 'menu',
-  storage: 'scoped',
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
   status: 'confirmed',
-  parent: 'Menu',
+  parent: 'KitchenMenu',
   scoped: MenuSectionStorage.path,
   notes: [
     'MenuSection groups MenuItems for presentation.',

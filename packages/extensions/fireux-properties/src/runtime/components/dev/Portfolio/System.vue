@@ -33,7 +33,7 @@
             Portfolio storage inspector
           </p>
           <p class="text-xs text-muted">
-            Inspect one portfolio across root, app overlay, and known portfolio-scoped child collections.
+            Inspect one portfolio across its root, App support record, and known App-scoped child collections.
           </p>
           <USelect
             v-model="selectedPortfolioId"
@@ -52,7 +52,7 @@
             root doc: {{ selectedRootPortfolio ? 'yes' : 'no' }}
           </UBadge>
           <UBadge variant="soft">
-            app overlay: {{ selectedPortfolioApp ? 'yes' : 'no' }}
+            App support: {{ selectedPortfolioApp ? 'yes' : 'no' }}
           </UBadge>
           <UBadge variant="soft">
             child families: {{ childCollectionNames.length }}
@@ -68,19 +68,19 @@
         </div>
 
         <div
-          v-if="migrationSignals.overlayOnlyCollections.length"
+          v-if="migrationSignals.appOnlyCollections.length"
           class="rounded-lg border border-info bg-info/10 p-3 text-xs text-info"
         >
-          Overlay-only child data detected:
-          {{ migrationSignals.overlayOnlyCollections.join(', ') }}.
+          App-only child data detected:
+          {{ migrationSignals.appOnlyCollections.join(', ') }}.
         </div>
 
         <div
           v-if="!selectedPortfolioApp && selectedPortfolioId"
           class="rounded-lg border border-error bg-error/10 p-3 text-xs text-error"
         >
-          No app overlay found at
-          <code>{{ overlayPortfolioCollectionPath }}/{{ selectedPortfolioId }}</code>.
+          No App support record found at
+          <code>{{ appSupportPortfolioCollectionPath }}/{{ selectedPortfolioId }}</code>.
         </div>
 
         <UAlert
@@ -105,6 +105,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: retire the duplicate nested full-Property storage probe.
 // Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: expose child inspection without downstream package imports.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: distinguish Portfolio App support from App-only child data.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   buildDevCollectionSnapshot,
@@ -149,17 +150,17 @@ const runtime = useActivePortfolio()
 const portfolioModelRuntime = PortfolioModelRuntime
 const { appId } = useFireUXConfig()
 const resolvedAppId = computed(() => String(appId || '').trim())
-const overlayPortfolioCollectionPath = computed(() =>
+const appSupportPortfolioCollectionPath = computed(() =>
   resolvedAppId.value ? resolvePortfolioConsoleCollectionPath(resolvedAppId.value) : ''
 )
 const runtimePortfolio = computed(() => ({
   id: runtime.id.value || null,
-  collectionPath: overlayPortfolioCollectionPath.value || null,
+  collectionPath: appSupportPortfolioCollectionPath.value || null,
 }))
 
 const { portfolios } = usePortfolioCollection()
 
-const portfolioAppsState = useDevStorageCollection<AppPortfolio>(overlayPortfolioCollectionPath)
+const portfolioAppsState = useDevStorageCollection<AppPortfolio>(appSupportPortfolioCollectionPath)
 const portfolioApps = computed(() => portfolioAppsState.items.value)
 
 const rootPortfolioById = computed(() => {
@@ -188,9 +189,9 @@ const portfolioOptions = computed<{ label: string, value: string }[]>(() =>
   portfolios.value.map((portfolio) => {
     const id = String(portfolio.id || '').trim()
     const labelBase = portfolio.name || id
-    const overlayStatus = portfolioAppById.value.has(id) ? 'console' : 'root only'
+    const appSupportStatus = portfolioAppById.value.has(id) ? 'console' : 'root only'
     return {
-      label: `${labelBase} · ${overlayStatus}`,
+      label: `${labelBase} · ${appSupportStatus}`,
       value: id,
     }
   })
@@ -225,18 +226,18 @@ const childCollectionReaders = childCollectionNames.map((name) => ({
   root: useDevStorageCollection<Record<string, unknown>>(
     computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, name))
   ),
-  overlay: useDevStorageCollection<Record<string, unknown>>(
-    computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, name))
+  app: useDevStorageCollection<Record<string, unknown>>(
+    computed(() => makePortfolioChildPath(appSupportPortfolioCollectionPath.value, name))
   ),
 }))
 
 const childCollectionsSnapshot = computed(() =>
   Object.fromEntries(
-    childCollectionReaders.map(({ name, root, overlay }) => [
+    childCollectionReaders.map(({ name, root, app }) => [
       name,
       {
         root: buildDevCollectionSnapshot(root.collectionPath.value, root.items.value),
-        overlay: buildDevCollectionSnapshot(overlay.collectionPath.value, overlay.items.value),
+        app: buildDevCollectionSnapshot(app.collectionPath.value, app.items.value),
       },
     ])
   )
@@ -244,25 +245,25 @@ const childCollectionsSnapshot = computed(() =>
 
 const migrationSignals = computed(() => {
   const rootOnlyCollections: string[] = []
-  const overlayOnlyCollections: string[] = []
+  const appOnlyCollections: string[] = []
   const mirroredCollections: string[] = []
   const emptyCollections: string[] = []
 
   for (const [name, snapshot] of Object.entries(childCollectionsSnapshot.value)) {
     const rootCount = snapshot.root.count
-    const overlayCount = snapshot.overlay.count
+    const appCount = snapshot.app.count
 
-    if (rootCount > 0 && overlayCount === 0) {
+    if (rootCount > 0 && appCount === 0) {
       rootOnlyCollections.push(name)
       continue
     }
 
-    if (overlayCount > 0 && rootCount === 0) {
-      overlayOnlyCollections.push(name)
+    if (appCount > 0 && rootCount === 0) {
+      appOnlyCollections.push(name)
       continue
     }
 
-    if (rootCount > 0 && overlayCount > 0) {
+    if (rootCount > 0 && appCount > 0) {
       mirroredCollections.push(name)
       continue
     }
@@ -271,9 +272,9 @@ const migrationSignals = computed(() => {
   }
 
   return {
-    overlayMissing: !selectedPortfolioApp.value,
+    appSupportMissing: !selectedPortfolioApp.value,
     rootOnlyCollections,
-    overlayOnlyCollections,
+    appOnlyCollections,
     mirroredCollections,
     emptyCollections,
   }
@@ -286,13 +287,13 @@ const portfolioStorageJson = computed(() => ({
   selectedPortfolioName: selectedRootPortfolio.value?.name || selectedRootPortfolio.value?.id || null,
   paths: {
     rootPortfolioCollection: rootPortfolioCollectionPath.value,
-    overlayPortfolioCollection: overlayPortfolioCollectionPath.value || null,
+    appSupportPortfolioCollection: appSupportPortfolioCollectionPath.value || null,
     selectedRootPortfolioDoc: selectedPortfolioId.value
       ? `${rootPortfolioCollectionPath.value}/${selectedPortfolioId.value}`
       : null,
-    selectedOverlayPortfolioDoc:
-      selectedPortfolioId.value && overlayPortfolioCollectionPath.value
-        ? `${overlayPortfolioCollectionPath.value}/${selectedPortfolioId.value}`
+    selectedAppSupportPortfolioDoc:
+      selectedPortfolioId.value && appSupportPortfolioCollectionPath.value
+        ? `${appSupportPortfolioCollectionPath.value}/${selectedPortfolioId.value}`
         : null,
   },
   rootPortfolio: selectedRootPortfolio.value,

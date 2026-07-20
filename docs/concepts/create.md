@@ -1,5 +1,6 @@
 Create spine map
-Updated: 2026-07-19
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: replace access-overlay create terminology. -->
+Updated: 2026-07-20
 Ref: a6fb7062d
 Role: map, not canon
 
@@ -190,7 +191,7 @@ Current create plan primitive:
 `createStrategy.ts` currently exposes:
 - `family`: `idempotent` or `with_provision`
 - `transport`: `client` or `server`
-- `location`: `root`, `scoped`, or `overlay`
+- `location`: `root`, `scoped`, or `app-support`
 - `id`: `generated` or `known`
 - `steps`: `single` or `multi`
 

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: link Kitchens to Place without copying Place presentation or operational defaults.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit Kitchen App support creation results.
 import { deleteField, doc, getDoc, updateDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
@@ -258,7 +259,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       mode: createOptions.mode ?? defaultMode,
       existingRootId: existingRootId || null,
       createRoot: async () => createKitchenRoot(input),
-      createOverlay: async () =>
+      createAppSupport: async () =>
         ({
           operator_ids: uid.value ? [normalizeString(uid.value)] : [],
           team_ids: uid.value ? [normalizeString(uid.value)] : [],
@@ -278,7 +279,7 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     return {
       id: root.id,
       createdRoot: root.created,
-      createdOverlay: false,
+      createdAppSupport: false,
       ...('slug' in root && root.slug ? { slug: normalizeString(root.slug) } : {}),
     }
   }

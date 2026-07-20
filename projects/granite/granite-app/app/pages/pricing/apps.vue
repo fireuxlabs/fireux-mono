@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
     <section class="py-16">
@@ -31,11 +32,11 @@
 
           <div class="mt-6 grid grid-cols-2 gap-4">
             <div>
-              <p class="text-xs uppercase text-gray-500">Setup</p>
+              <p class="text-xs uppercase text-muted">Setup</p>
               <p class="text-xl font-semibold">$600</p>
             </div>
             <div>
-              <p class="text-xs uppercase text-gray-500">Maintenance</p>
+              <p class="text-xs uppercase text-muted">Maintenance</p>
               <p class="text-xl font-semibold">$50 / month</p>
             </div>
           </div>
@@ -54,7 +55,7 @@
             $5 / month
           </div>
 
-          <p class="mt-2 text-xs text-gray-500">
+          <p class="mt-2 text-xs text-muted">
             Per console user
           </p>
         </UCard>

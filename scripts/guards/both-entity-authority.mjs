@@ -1,7 +1,8 @@
 // @fireux-script
 // last_used: 2026-07-20
 // usage_note: run through pnpm guard; locks canonical-root plus app-support entity boundaries.
-// Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: guard Supplier, Portfolio, Property, and Kitchen root/app separation.
+// Concurrent edit — 2026-07-20 23:04 CEST — Both-Entity Authority: guard classification, fail-closed joins/queries, private support, and active publication.
+// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: use explicit root identity and App access-support axes.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -30,39 +31,87 @@ const directTypeFields = (source, name) => {
   ].map((match) => match[1]).sort()
 }
 
+const assertNoStorageSelectorsInApiTypes = (source, label) => {
+  const apiTypeBlocks = [
+    ...source.matchAll(
+      /(?:export\s+)?type\s+[A-Za-z][A-Za-z0-9]*(?:Options|Input)\s*=\s*\{[\s\S]*?\n\}/g
+    ),
+  ].map((match) => match[0])
+
+  for (const block of apiTypeBlocks) {
+    assert.doesNotMatch(
+      block,
+      /\b(?:scope|shape|collectionPath)\s*\??:/,
+      `${label} API types must not accept caller-selected storage paths.`
+    )
+  }
+}
+
 const files = {
   sharedCreate:
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate.ts',
+  entityModel:
+    'packages/core/fireux-core/src/runtime/models/core/entity.model.ts',
   supplierModel:
     'packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts',
   supplierCollection:
     'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierCollection.ts',
+  supplierFetch:
+    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/fetch/useSupplierFetch.ts',
   supplierInterface:
     'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/utils/view/useSupplierInterface.ts',
+  supplierCreate:
+    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierCreate.ts',
   supplierUpdate:
     'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierUpdate.ts',
-  supplierDelete:
+  supplierUse:
+    'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/useSupplier.ts',
+  retiredSupplierDelete:
     'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierDelete.ts',
   portfolioModel:
     'packages/extensions/fireux-properties/src/runtime/models/portfolio.model.ts',
   portfolioCollection:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioCollection.ts',
+  portfolioFetch:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/fetch/usePortfolioFetch.ts',
   portfolioInterface:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface.ts',
+  portfolioCreate:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioCreate.ts',
   portfolioUpdate:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioUpdate.ts',
+  portfolioUse:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/usePortfolio.ts',
+  retiredPortfolioDelete:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioDelete.ts',
   propertyModel:
     'packages/extensions/fireux-properties/src/runtime/models/property.model.ts',
   propertyCollection:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/fetch/usePropertyCollection.ts',
+  propertyFetch:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/fetch/usePropertyFetch.ts',
   propertyInterface:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts',
   propertyCreate:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/mutations/usePropertyCreate.ts',
   propertyUpdate:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/mutations/usePropertyUpdate.ts',
-  propertyDelete:
+  propertyUse:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/useProperty.ts',
+  retiredPropertyDelete:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/mutations/usePropertyDelete.ts',
+  propertyPublicModel:
+    'packages/extensions/fireux-properties/src/runtime/models/property-index.model.ts',
+  propertyPublicManager:
+    'packages/extensions/fireux-properties/src/runtime/components/Property/Collection/Manager.vue',
+  propertyPublicAdapter:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/property/usePublicPropertyIndex.ts',
+  propertyPublicApi:
+    'packages/extensions/fireux-properties/src/runtime/server/api/properties/index.get.ts',
+  propertyServerConfig:
+    'packages/extensions/fireux-properties/src/config/module/server-config.ts',
+  activePortfolio:
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio.ts',
   portfolioPropertyCollection:
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/Properties/fetch/usePortfolioPropertyCollection.ts',
   retiredNestedProperty:
@@ -74,7 +123,7 @@ const files = {
 export async function run({ repoRoot = process.cwd() } = {}) {
   const source = Object.fromEntries(
     Object.entries(files)
-      .filter(([key]) => key !== 'retiredNestedProperty')
+      .filter(([key]) => !key.startsWith('retired'))
       .map(([key, relativePath]) => [key, read(repoRoot, relativePath)])
   )
 
@@ -83,7 +132,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ['Portfolio', source.portfolioModel, 'PortfolioModel'],
     ['Property', source.propertyModel, 'PropertyModel'],
   ]) {
-    assert.match(modelSource, /storage:\s*'both'/, `${name} must remain a both entity.`)
+    assert.match(
+      modelSource,
+      /identity:\s*'root'[\s\S]*appSupport:\s*'access-record'/,
+      `${name} must remain a root entity with an App access-support record.`
+    )
     const rootModel = constBlock(modelSource, modelName)
     assert.doesNotMatch(
       rootModel,
@@ -95,11 +148,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.supplierModel, /export const AppSupplierModel/)
   assert.match(source.portfolioModel, /export const AppPortfolioModel/)
   assert.match(source.propertyModel, /export const PropertyEntity = defineFireuxEntity/)
+  assert.match(source.entityModel, /\| 'property'/)
+  assert.match(source.propertyModel, /family:\s*\['property',\s*'console-entity'\]/)
   assert.match(source.propertyModel, /export const AppPropertyModel/)
-  assert.match(source.propertyModel, /manual\?: PropertyManual/)
+  assert.match(source.propertyModel, /export type AppProperty = FireuxAppOverlay/)
+  assert.match(
+    source.propertyModel,
+    /apps\/\{appId\}\/properties\/\{propertyId\}\/private\/manual/
+  )
+  assert.doesNotMatch(source.propertyModel, /AppProperty[^\n]*manual|manual\?: PropertyManual/)
   assert.doesNotMatch(constBlock(source.propertyModel, 'PropertyModel'), /manual:/)
   assert.match(constBlock(source.propertyModel, 'PropertyModel'), /portfolio_id:/)
   assert.match(constBlock(source.propertyModel, 'PropertyModel'), /place_id:/)
+  assert.match(constBlock(source.propertyModel, 'PropertyModel'), /publication_state:/)
   assert.doesNotMatch(
     constBlock(source.propertyModel, 'PropertyIdentityModel'),
     /address_line|city|postcode|country|place_id/,
@@ -119,10 +180,36 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     assert.match(collectionSource, new RegExp(`type\\s+${overlayType}`))
     assert.match(
       collectionSource,
+      /targetedOverlaySource\s*=\s*firestoreLoadDocsByIds/,
+      `${name} id-target reads must exact-load same-id App access records.`
+    )
+    assert.match(
+      collectionSource,
       /danglingOverlay|missing canonical|missing canonical root/i,
       `${name} collection must report dangling app records.`
     )
+    assert.match(
+      collectionSource,
+      /requestedTargetPairError/,
+      `${name} collection must report an incomplete requested root/App pair.`
+    )
+    assert.match(
+      collectionSource,
+      /rootScopeError/,
+      `${name} collection must report root/App scope drift.`
+    )
   }
+  assert.match(source.supplierCollection, /!overlay[\s\S]*supplierRootBelongsToApp/)
+  assert.match(source.portfolioCollection, /!overlay[\s\S]*portfolioRootBelongsToApp/)
+  assert.match(
+    source.propertyCollection,
+    /resolvedShape\.value === 'both'[\s\S]*!overlay[\s\S]*root\.app_scope_app_id !== resolvedAppId\.value/
+  )
+  assert.doesNotMatch(
+    source.propertyCollection,
+    /:\s*fsq\(baseCollection\)/,
+    'Property target reads must never list every AppProperty document.'
+  )
 
   for (const [name, interfaceSource] of [
     ['Supplier', source.supplierInterface],
@@ -140,28 +227,59 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  for (const mutationSource of [
+  for (const fixedPathSource of [
+    source.supplierCreate,
+    source.supplierFetch,
     source.supplierUpdate,
-    source.supplierDelete,
+    source.portfolioCreate,
+    source.portfolioFetch,
+    source.portfolioUpdate,
     source.propertyCreate,
+    source.propertyFetch,
     source.propertyUpdate,
-    source.propertyDelete,
   ]) {
-    assert.doesNotMatch(mutationSource, /scope\?:|shape\?:|collectionPath\?:/)
+    assertNoStorageSelectorsInApiTypes(fixedPathSource, 'Both-entity read/create/update')
   }
   assert.doesNotMatch(source.supplierUpdate, /commitUpdate/)
   assert.doesNotMatch(source.supplierUpdate, /useRequireUser|SupplierMutationOptions = \{\}/)
   assert.match(source.supplierUpdate, /updateSupplierRoot/)
-  assert.match(source.supplierUpdate, /updateSupplierOverlay/)
-  assert.match(source.supplierDelete, /deleteSupplierRoot/)
-  assert.match(source.supplierDelete, /deleteSupplierOverlay/)
+  assert.doesNotMatch(source.supplierUpdate, /updateSupplierOverlay|operator_ids|team_ids|join_requests/)
   assert.match(source.portfolioUpdate, /PortfolioStorage\.rootCollection/)
   assert.doesNotMatch(source.portfolioUpdate, /collectionPath/)
   assert.match(source.propertyCreate, /createPropertyConsole/)
+  assert.match(source.propertyCreate, /validateRoot:/)
+  assert.match(source.propertyCreate, /createPropertyManual/)
   assert.match(source.propertyUpdate, /updatePropertyRoot/)
-  assert.match(source.propertyUpdate, /updatePropertyOverlay/)
-  assert.match(source.propertyDelete, /deletePropertyRoot/)
-  assert.match(source.propertyDelete, /deletePropertyOverlay/)
+  assert.match(source.propertyUpdate, /updatePropertyManual/)
+  assert.doesNotMatch(source.propertyUpdate, /updatePropertyOverlay/)
+
+  for (const [name, retiredPath, useSource] of [
+    ['Supplier', files.retiredSupplierDelete, source.supplierUse],
+    ['Portfolio', files.retiredPortfolioDelete, source.portfolioUse],
+    ['Property', files.retiredPropertyDelete, source.propertyUse],
+  ]) {
+    assert.equal(
+      existsSync(path.join(repoRoot, retiredPath)),
+      false,
+      `${name} independent lifecycle delete helper must remain retired.`
+    )
+    assert.doesNotMatch(
+      useSource,
+      /use(?:Supplier|Portfolio|Property)Delete/,
+      `${name} entry seam must not export an independent lifecycle delete.`
+    )
+  }
+
+  assert.match(source.propertyFetch, /usePropertyManualFetch/)
+  assert.match(source.propertyFetch, /PropertyManualStorage\.documentId/)
+  assert.doesNotMatch(source.propertyInterface, /manual\?: PropertyManual/)
+  assert.match(source.propertyInterface, /hasOnlyKeys/)
+  assert.match(source.propertyInterface, /validStamp/)
+  assert.match(source.propertyInterface, /typeof identity\.unit_count !== 'number'/)
+  assert.match(source.propertyInterface, /Number\.isInteger\(unitCount\)/)
+  assert.match(source.propertyCollection, /invalid canonical Property root/)
+  assert.match(source.propertyFetch, /invalid canonical Property root/)
+  assert.match(source.propertyCreate, /publication_state:\s*'draft'/)
 
   assert.equal(
     existsSync(path.join(repoRoot, files.retiredNestedProperty)),
@@ -169,13 +287,67 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'The nested full-Property document reader must not return.'
   )
   assert.match(source.portfolioPropertyCollection, /where\('portfolio_id',\s*'=='/)
+  assert.match(source.portfolioPropertyCollection, /where\('app_scope_app_id',\s*'=='/)
   assert.match(source.portfolioPropertyCollection, /PropertyStorage\.rootCollection/)
+  assert.match(source.portfolioPropertyCollection, /authorizedPortfolioId/)
+  assert.match(source.portfolioPropertyCollection, /runtimePortfolio\.canRead\.value/)
+  assert.match(source.portfolioPropertyCollection, /runtimePortfolio\.consoleAppId\.value/)
+  assert.match(source.portfolioPropertyCollection, /propertyBelongsToApp/)
+  assert.match(source.portfolioPropertyCollection, /root\/App scope mismatch/)
+  assert.match(source.portfolioPropertyCollection, /invalid Portfolio Property root/)
+  assert.match(source.activePortfolio, /targetOutcome\.value === 'ready'/)
+
+  assert.deepEqual(directTypeFields(source.propertyPublicModel, 'PublicPropertyIndexItem'), [
+    'id',
+    'image_url',
+    'name',
+    'property_type',
+    'slug',
+    'unit_count',
+  ])
+  assert.doesNotMatch(
+    source.propertyPublicModel,
+    /estimated_value|portfolio_id|place_id|operator_ids|team_ids|manual/,
+    'Public Property DTO must remain a bounded card projection.'
+  )
+  assert.match(source.propertyPublicManager, /usePublicPropertyIndex/)
+  assert.doesNotMatch(source.propertyPublicManager, /usePropertyCollection/)
+  assert.match(source.propertyPublicManager, /to:\s*''/)
+  assert.match(source.propertyPublicManager, /:link="false"/)
+  assert.doesNotMatch(source.propertyPublicManager, /link\?:\s*boolean/)
+  assert.match(source.propertyPublicAdapter, /\/api\/properties\?limit=/)
+  assert.doesNotMatch(
+    source.propertyPublicAdapter,
+    /firebase\/firestore|usePropertyCollection/,
+    'Public Property browse must use the bounded server projection.'
+  )
+  assert.match(source.propertyPublicApi, /canonicalPropertyRoot/)
+  assert.match(source.propertyPublicApi, /Property directory source is invalid/)
+  assert.match(source.propertyPublicApi, /id:\s*document\.id/)
+  assert.match(source.propertyPublicApi, /canonical\.status !== 'active'/)
+  assert.match(source.propertyPublicApi, /canonical\.publication_state !== 'published'/)
+  assert.doesNotMatch(
+    source.propertyPublicApi,
+    /\.\.\.canonical/,
+    'Public Property API must return an explicit allowlisted DTO, never the canonical root.'
+  )
+  assert.doesNotMatch(
+    source.propertyPublicApi,
+    /estimated_value|portfolio_id|place_id|operator_ids|team_ids|manual/,
+    'Public Property API must not emit private or operational root fields.'
+  )
+  assert.match(source.propertyServerConfig, /route:\s*'\/api\/properties'/)
+  assert.match(source.propertyServerConfig, /method:\s*'get'/)
+  assert.match(source.propertyServerConfig, /runtime\/server\/api\/properties\/index\.get/)
 
   assert.match(
     source.sharedCreate,
     /const rootResult = await options\.createRoot\(\)[\s\S]*const rootSnap = await getDoc\(rootRef\)[\s\S]*existingRootData = rootSnap\.data\(\)/,
     'Console attachment must re-read the root returned by createRoot before ownership checks.'
   )
+  assert.match(source.sharedCreate, /validateRoot\?:/)
+  assert.match(source.sharedCreate, /await options\.validateRoot\(id, existingRootData\)/)
+  assert.doesNotMatch(source.sharedCreate, /overlayId/)
 
   assert.deepEqual(directTypeFields(source.kitchenModel, 'AppKitchen'), [
     'created',

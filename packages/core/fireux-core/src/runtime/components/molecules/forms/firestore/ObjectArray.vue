@@ -1,4 +1,5 @@
 <!-- flag -->
+<!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic form colors. -->
 <template>
   <div class="object-array">
     <USeparator />
@@ -45,7 +46,7 @@
               :cancel="cancelItemEditing"
             >
               <div
-                class="p-4 border border-dashed border-primary-300 rounded bg-primary-50 mt-2"
+                class="mt-2 rounded border border-dashed border-primary/30 bg-primary/10 p-4"
               >
                 Default create/edit rendering for index {{ editingIndex }}
               </div>
@@ -146,7 +147,7 @@
                     :save="saveItemEditing"
                     :cancel="cancelItemEditing"
                   >
-                    <div class="p-4 border border-dashed border-primary-300 rounded bg-primary-50">
+                    <div class="rounded border border-dashed border-primary/30 bg-primary/10 p-4">
                       <div v-if="hasSchema" class="space-y-3">
                         <div
                           v-for="field in fields"

@@ -1,6 +1,8 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: centralize Portfolio operation write authorization.
-import { computed, type ComputedRef } from 'vue'
+// Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: expose access-resolved target readiness for related Property reads.
+import { computed, type ComputedRef, type Ref } from 'vue'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import {
   resolvePortfolioConsoleCollectionPath,
   resolveRuntimePortfolioPath,
@@ -20,6 +22,8 @@ export type ActivePortfolioRuntime = {
   entity: ComputedRef<PortfolioConsoleEntity | null>
   rootCollection: ComputedRef<string>
   consoleAppId: ComputedRef<string>
+  targetOutcome: Readonly<Ref<ConsoleTargetOutcome>>
+  canRead: ComputedRef<boolean>
   canWrite: ComputedRef<boolean>
   collectionPath: ComputedRef<string>
 }
@@ -46,6 +50,7 @@ export function requirePortfolioConsoleWrite(
 export function useActivePortfolio(): ActivePortfolioRuntime {
   const selection = usePortfolioConsoleSelection()
   const {
+    portfolios,
     selection: consoleSelection,
     runtime,
   } = usePortfolioConsole()
@@ -66,6 +71,11 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
   const mode = source
   const isDemo = computed(() => source.value === 'demo')
   const scenario = computed<Record<string, unknown> | null>(() => null)
+  const targetOutcome = portfolios.outcome
+  const canRead = computed(() =>
+    targetOutcome.value === 'ready' &&
+    Boolean(normalizeString(consoleSelection.portfolio.value?.id))
+  )
 
   return {
     source,
@@ -76,6 +86,8 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
     entity: consoleSelection.portfolio,
     rootCollection: runtime.rootCollection,
     consoleAppId: runtime.appId,
+    targetOutcome,
+    canRead,
     canWrite: runtime.canWrite,
     collectionPath,
   }

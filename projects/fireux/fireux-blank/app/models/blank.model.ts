@@ -1,5 +1,6 @@
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: type Blank App access as a support record.
 import type {
-  FireuxAppOverlay,
+  FireuxAppAccessRecord,
   FireuxAppScope,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
@@ -29,7 +30,7 @@ export type Blank = Partial<FireuxStamped> &
     operator_ids: string[]
   }
 
-export type AppBlank = Partial<FireuxAppOverlay> & {
+export type AppBlank = Partial<FireuxAppAccessRecord> & {
   id?: string
   blank_id: string
 }

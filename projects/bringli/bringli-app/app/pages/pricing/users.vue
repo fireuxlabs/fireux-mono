@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: semantic colors. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
     <section class="py-16">
@@ -46,7 +47,7 @@
             $5 / month
           </div>
 
-          <p class="mt-2 text-xs text-gray-500">
+          <p class="mt-2 text-xs text-muted">
             Per console user
           </p>
         </UCard>

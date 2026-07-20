@@ -84,7 +84,7 @@
           <div v-show="openSections.storage" class="mt-4 space-y-4">
             <div class="space-y-3">
               <p class="text-xs text-muted">
-                Inspect one supplier across root and app overlay to catch schema drift or missing console state.
+                Inspect one supplier across its root and App support record to catch schema drift or missing console state.
               </p>
 
               <USelect
@@ -102,7 +102,7 @@
                 root doc: {{ selectedRootSupplier ? 'yes' : 'no' }}
               </UBadge>
               <UBadge variant="soft">
-                app overlay: {{ selectedAppSupplier ? 'yes' : 'no' }}
+                App support: {{ selectedAppSupplier ? 'yes' : 'no' }}
               </UBadge>
               <UBadge variant="soft">
                 child families: none defined
@@ -113,15 +113,15 @@
               v-if="!selectedAppSupplier && selectedSupplierId"
               class="rounded-lg border border-error bg-error/10 p-3 text-xs text-error"
             >
-              No app overlay found at
-              <code>{{ overlaySupplierCollectionPath }}/{{ selectedSupplierId }}</code>.
+              No App support record found at
+              <code>{{ appSupportSupplierCollectionPath }}/{{ selectedSupplierId }}</code>.
             </div>
 
             <UAlert
               color="neutral"
               variant="soft"
               title="Supplier child collections are not canon-shaped yet"
-              description="Current supplier canon only requires root supplier identity and the app overlay. If child families emerge later, add them here deliberately."
+              description="Current Supplier canon requires root identity plus its App support record. If child families emerge later, add them here deliberately."
             />
 
             <DevJson
@@ -139,6 +139,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: label Supplier App support explicitly in Dev storage diagnostics.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useDevStorageCollection } from 'fireux-core/runtime/composables/dev/useDevStorageCollection'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
@@ -174,10 +175,10 @@ const supplierModelRuntime = SupplierModelRuntime
 const { suppliers } = useSupplierCollection()
 const { appId } = useFireUXConfig()
 const resolvedAppId = computed(() => String(appId || '').trim())
-const overlaySupplierCollectionPath = computed(() =>
+const appSupportSupplierCollectionPath = computed(() =>
   resolvedAppId.value ? `apps/${resolvedAppId.value}/suppliers` : ''
 )
-const supplierAppsState = useDevStorageCollection<AppSupplier>(overlaySupplierCollectionPath)
+const supplierAppsState = useDevStorageCollection<AppSupplier>(appSupportSupplierCollectionPath)
 const supplierApps = computed(() => supplierAppsState.items.value)
 
 const suppliersCollection = computed(() => suppliers.value ?? [])
@@ -248,9 +249,9 @@ const supplierOptions = computed(() =>
       String((supplier as any)?.supplier_organization_name || '').trim() ||
       String((supplier as any)?.supplier_headline || '').trim() ||
       id
-    const overlayStatus = appSupplierById.value.has(id) ? 'console' : 'root only'
+    const appSupportStatus = appSupplierById.value.has(id) ? 'console' : 'root only'
     return {
-      label: `${labelBase} · ${overlayStatus}`,
+      label: `${labelBase} · ${appSupportStatus}`,
       value: id,
     }
   })
@@ -280,16 +281,16 @@ const supplierStorageJson = computed(() => ({
   selectedSupplierId: selectedSupplierId.value || null,
   paths: {
     rootSupplierCollection: 'suppliers',
-    overlaySupplierCollection: overlaySupplierCollectionPath.value || null,
+    appSupportSupplierCollection: appSupportSupplierCollectionPath.value || null,
     selectedRootSupplierDoc: selectedSupplierId.value ? `suppliers/${selectedSupplierId.value}` : null,
-    selectedOverlaySupplierDoc:
-      selectedSupplierId.value && overlaySupplierCollectionPath.value
-        ? `${overlaySupplierCollectionPath.value}/${selectedSupplierId.value}`
+    selectedAppSupportSupplierDoc:
+      selectedSupplierId.value && appSupportSupplierCollectionPath.value
+        ? `${appSupportSupplierCollectionPath.value}/${selectedSupplierId.value}`
         : null,
   },
   rootSupplier: selectedRootSupplier.value,
   appSupplier: selectedAppSupplier.value,
-  overlayMissing: !selectedAppSupplier.value,
+  appSupportMissing: !selectedAppSupplier.value,
   childCollections: [],
 }))
 </script>

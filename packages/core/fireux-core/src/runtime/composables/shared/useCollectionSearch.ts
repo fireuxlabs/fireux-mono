@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: remove obsolete card projection.
+// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: publish portable search state declarations.
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 
 export type CollectionVariant = 'pill' | 'cell' | 'preview'
@@ -18,6 +19,18 @@ type UseCollectionSearchOptions<
   initialQuery?: string
   initialVariant?: TVariant
   variants?: readonly TVariant[]
+}
+
+export type UseCollectionSearchReturn<
+  TRaw,
+  TVariant extends CollectionVariant,
+> = {
+  query: Ref<string>
+  variant: Ref<TVariant>
+  toggleVariant: () => void
+  normalizedItems: ComputedRef<TRaw[]>
+  visibleItems: ComputedRef<TRaw[]>
+  visibleCount: ComputedRef<number>
 }
 
 const collectSearchParts = (value: unknown): string[] => {
@@ -40,7 +53,7 @@ export const useCollectionSearch = <
   TVariant extends CollectionVariant = 'pill' | 'cell',
 >(
   options: UseCollectionSearchOptions<TRaw, TCard, TVariant>
-) => {
+): UseCollectionSearchReturn<TRaw, TVariant> => {
   const query = ref(options.initialQuery ?? '')
   const variants: TVariant[] = options.variants?.length
     ? [...options.variants]
@@ -48,7 +61,9 @@ export const useCollectionSearch = <
   const initialVariant = options.initialVariant && variants.includes(options.initialVariant)
     ? options.initialVariant
     : variants[0]
-  const variant = ref<TVariant>(initialVariant ?? variants[0] ?? 'pill' as TVariant)
+  const variant = ref(
+    initialVariant ?? variants[0] ?? ('pill' as TVariant)
+  ) as Ref<TVariant>
 
   const toggleVariant = () => {
     const currentIndex = variants.indexOf(variant.value)
