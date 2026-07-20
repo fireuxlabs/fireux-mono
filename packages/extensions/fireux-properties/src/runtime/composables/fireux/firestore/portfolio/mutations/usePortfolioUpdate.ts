@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: pin identity updates to the canonical root collection.
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import type {
   Portfolio,
@@ -5,20 +6,17 @@ import type {
 } from '../../../../../models/portfolio.model'
 import { PortfolioStorage } from '../../../../../models/portfolio.model'
 
-const COLLECTION_PATH = PortfolioStorage.rootCollection
-
 export function usePortfolioUpdate() {
   const { updateDocument } = useFirestoreUpdate()
 
   const updatePortfolio = async (
     portfolioId: string,
-    patch: PortfolioUpdateInput,
-    collectionPath: string = COLLECTION_PATH
+    patch: PortfolioUpdateInput
   ) => {
     const id = String(portfolioId ?? '').trim()
     if (!id) throw new Error('Portfolio id is required')
 
-    await updateDocument<Portfolio>(collectionPath, id, patch)
+    await updateDocument<Portfolio>(PortfolioStorage.rootCollection, id, patch)
   }
 
   return { updatePortfolio }

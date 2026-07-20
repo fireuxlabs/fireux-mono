@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 13:12 CEST — Driver security: register trusted access and minimal dispatch endpoints.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: register bounded Chef and Driver routes.
 // Concurrent edit — 2026-07-20 17:44 CEST — Repo Efficiency Pass 2 of 6: register trusted Kitchen profile provisioners.
+// Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: register the bounded public Kitchen/Place projection.
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import {
@@ -9,6 +10,11 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 const baseServerHandlers = [
+  {
+    route: '/api/kitchens',
+    method: 'get',
+    handler: './runtime/server/api/kitchens/index.get',
+  },
   {
     route: '/api/internal/profiles/chef',
     method: 'post',

@@ -1,10 +1,10 @@
+// Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Portfolio: separate canonical root identity from app access overlay.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type {
   FireuxAppOverlay,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
-  FireuxConsoleAccessModel,
   FireuxAppOverlayModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
@@ -28,8 +28,8 @@ type WidenLiteral<T> =
  * Child scope: /apps/<appId>/portfolios/<portfolioId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Portfolio is one domain entity with a root public entity and an app-hosted portfolio record.
- * - Public facade depth can vary by family; Portfolio can stay intentionally minimal in public while still using the same root-plus-overlay pattern.
+ * - Portfolio is one domain entity with a canonical root and an app-hosted support record.
+ * - Root does not imply public access; public presentation remains a separate read contract.
  * - The app-scoped record exists because private and operational state can differ by app.
  * - If a future operator profile appears, it should remain a prerequisite or presentation layer over the same app-scoped pattern.
  * - Portfolio-owned operational children should live beneath the app-hosted record.
@@ -46,7 +46,6 @@ export const PortfolioStorage = {
     clients: 'apps/{appId}/portfolios/{portfolioId}/clients/{clientId}',
     compliance: 'apps/{appId}/portfolios/{portfolioId}/compliance-records/{complianceRecordId}',
     documents: 'apps/{appId}/portfolios/{portfolioId}/documents/{documentId}',
-    properties: 'apps/{appId}/portfolios/{portfolioId}/properties/{propertyId}',
     tasks: 'apps/{appId}/portfolios/{portfolioId}/tasks/{taskId}',
     units: 'apps/{appId}/portfolios/{portfolioId}/units/{unitId}',
   },
@@ -75,7 +74,6 @@ export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {
   id: '',
   ...FireuxAppScope,
-  ...FireuxConsoleAccessModel,
 
   name: '',
   tagline: '',
@@ -113,7 +111,6 @@ export type PortfolioCreateInput = Omit<
   | 'updated'
   | 'app_scope_state'
   | 'app_scope_app_id'
-  | 'operator_ids'
   | 'tagline'
   | 'image_url'
   | 'status'
@@ -122,9 +119,6 @@ export type PortfolioCreateInput = Omit<
   Partial<
     Pick<
       Portfolio,
-      | 'app_scope_state'
-      | 'app_scope_app_id'
-      | 'operator_ids'
       | 'tagline'
       | 'image_url'
       | 'status'
@@ -132,4 +126,13 @@ export type PortfolioCreateInput = Omit<
     >
   >
 
-export type PortfolioUpdateInput = Partial<Omit<Portfolio, 'id' | 'created' | 'updated'>>
+export type PortfolioUpdateInput = Partial<
+  Omit<
+    Portfolio,
+    | 'id'
+    | 'created'
+    | 'updated'
+    | 'app_scope_state'
+    | 'app_scope_app_id'
+  >
+>

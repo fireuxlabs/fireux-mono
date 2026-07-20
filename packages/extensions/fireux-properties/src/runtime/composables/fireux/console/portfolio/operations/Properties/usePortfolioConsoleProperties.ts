@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: carry canonical relationship read state into the Portfolio operation.
 import { computed } from 'vue'
 import {
   useActivePortfolio,
@@ -12,7 +13,13 @@ export function usePortfolioConsoleProperties(
 ) {
   // Operation support spine: keep selected parent and child collection wiring out of Vue surfaces.
   const selectedPortfolio = runtimePortfolio.entity
-  const { collectionPath, collection: properties } =
+  const {
+    collectionPath,
+    collection: properties,
+    pending,
+    error,
+    outcome,
+  } =
     usePortfolioPropertyCollection(runtimePortfolio)
 
   const portfolioName = computed(() =>
@@ -25,6 +32,7 @@ export function usePortfolioConsoleProperties(
     portfolioCollectionPath: runtimePortfolio.collectionPath.value,
     collectionPath: collectionPath.value,
     propertiesCount: properties.value.length,
+    outcome: outcome.value,
     canWrite: runtimePortfolio.canWrite.value,
     selectedPortfolio: selectedPortfolio.value,
   }))
@@ -37,6 +45,9 @@ export function usePortfolioConsoleProperties(
     rootCollection: runtimePortfolio.rootCollection,
     collectionPath,
     properties,
+    pending,
+    error,
+    outcome,
     canWrite: runtimePortfolio.canWrite,
     debug,
   }

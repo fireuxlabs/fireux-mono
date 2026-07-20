@@ -1,6 +1,7 @@
 // @fireux-script
 // last_used: 2026-07-20
 // usage_note: run through pnpm guard; locks App/Ecosystem/Project authority boundaries.
+// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: forbid generic cross-domain drift mutation tooling.
 // Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: lock Project access to UserApp admin membership.
 // Concurrent edit — 2026-07-20 20:22 CEST — Repo Efficiency Pass 2 of 6: lock exact projected profile types, transport, and self-only mutations.
 
@@ -498,23 +499,35 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  const migrationScript = read(repoRoot, 'scripts/migrate.mjs')
-  assert.match(migrationScript, /const retiredRecipes = new Set\(\[/)
-  for (const recipe of [
+  assert.equal(
+    existsSync(path.join(repoRoot, 'scripts/migrate.mjs')),
+    false,
+    'Generic cross-domain migration recipes must not return.'
+  )
+  const thisGuard = path.join(repoRoot, 'scripts/guards/entity-authority.mjs')
+  const retiredMigrationTokens = [
+    'apply-drift-payload',
     'apps-canonical-shape',
     'ecosystem-project-id-fix',
+    'runApplyDriftPayload',
     'users-canonical-shape',
-  ]) {
-    assert.match(
-      migrationScript,
-      new RegExp(`retiredRecipes[\\s\\S]*['"]${recipe}['"]`)
-    )
-    assert.doesNotMatch(
-      migrationScript,
-      new RegExp(`^\\s*['"]${recipe}['"]\\s*:`, 'm'),
-      `${recipe} must not be registered.`
-    )
+  ]
+  for (const file of filesBelow(path.join(repoRoot, 'scripts'))) {
+    if (file === thisGuard || !file.endsWith('.mjs')) continue
+    const source = readFileSync(file, 'utf8')
+    for (const token of retiredMigrationTokens) {
+      assert.equal(
+        source.includes(token),
+        false,
+        `${path.relative(repoRoot, file)} must not restore retired generic migration behavior (${token}).`
+      )
+    }
   }
+  const driftToolbar = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/components/dev/DriftToolbar.vue'
+  )
+  assert.doesNotMatch(driftToolbar, /useDevDriftCopyMeta|migration\s*[,}]/)
 
   assert.equal(
     existsSync(

@@ -11,10 +11,8 @@ import { useKitchenConsoleRecipes } from '../operations/Recipes/useKitchenConsol
 import { useKitchenConsoleStations } from '../operations/Stations/useKitchenConsoleStations'
 import { useKitchenConsoleSuppliers } from '../operations/Suppliers/useKitchenConsoleSuppliers'
 import { useKitchenConsoleTables } from '../operations/Tables/useKitchenConsoleTables'
-import {
-  readKitchenAppScope,
-  readKitchenCurrencyCode,
-} from '../../../../../utils/kitchen-spine'
+import { readKitchenAppScope } from '../../../../../utils/kitchen-spine'
+import { useKitchenConsolePlace } from '../identity/useKitchenConsolePlace'
 
 type DetailItem = {
   key: string
@@ -44,12 +42,14 @@ const count = (items: unknown) => Array.isArray(items) ? items.length : 0
 const identityTo = '/console/kitchen/identity'
 
 export function useKitchenConsoleOverview() {
+  // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
   const {
     selection,
     runtime,
     actions,
   } = useKitchenConsole()
-  const { pill } = useKitchenInterface()
+  const { pill, surface } = useKitchenInterface()
+  const { place, currencyCode } = useKitchenConsolePlace()
   const menuState = useKitchenConsoleMenus()
   const ingredientState = useKitchenConsoleIngredients()
   const dishState = useKitchenConsoleDishes({ resolveMenuSections: false })
@@ -66,28 +66,46 @@ export function useKitchenConsoleOverview() {
     (selectedKitchen.value || {}) as Record<string, any>
   )
   const kitchenTitle = computed(() =>
-    normalizeString(kitchenSource.value.display_name || kitchenSource.value.name) || 'Kitchen'
+    normalizeString(
+      kitchenSource.value.identity?.display_name ||
+        kitchenSource.value.display_name ||
+        kitchenSource.value.name ||
+        place.value?.name ||
+        place.value?.short_name
+    ) || 'Kitchen'
   )
   const kitchenSubtitle = computed(() =>
-    normalizeString(kitchenSource.value.tagline) ||
+    normalizeString(
+      kitchenSource.value.identity?.tagline || kitchenSource.value.tagline
+    ) ||
+      normalizeString(place.value?.brand_tagline) ||
+      normalizeString(place.value?.short_address) ||
+      normalizeString(place.value?.formatted_address) ||
       normalizeString(kitchenSource.value.short_address) ||
       normalizeString(kitchenSource.value.formatted_address)
   )
   const identityImage = computed(() =>
     normalizeString(
-      kitchenSource.value.display_image_url ||
+      place.value?.image_url ||
+        place.value?.cover_image ||
+        kitchenSource.value.display_image_url ||
         kitchenSource.value.image_url ||
         kitchenSource.value.identity?.image_url
     )
   )
   const coverImage = computed(() => normalizeString(kitchenSource.value.cover_image))
   const address = computed(() =>
-    normalizeString(kitchenSource.value.formatted_address) ||
+    normalizeString(place.value?.formatted_address) ||
+      normalizeString(place.value?.short_address) ||
+      normalizeString(kitchenSource.value.formatted_address) ||
       normalizeString(kitchenSource.value.short_address)
   )
-  const phone = computed(() => normalizeString(kitchenSource.value.phone))
-  const website = computed(() => normalizeString(kitchenSource.value.website))
-  const currencyCode = computed(() => readKitchenCurrencyCode(kitchenSource.value))
+  const phone = computed(() =>
+    normalizeString(place.value?.phone) || normalizeString(kitchenSource.value.phone)
+  )
+  const website = computed(() =>
+    normalizeString(place.value?.website) || normalizeString(kitchenSource.value.website)
+  )
   const placeId = computed(() => normalizeString(kitchenSource.value.place_id))
   const publicBadgeLabel = computed(() =>
     kitchenSource.value.show === true ? 'Public' : 'Draft'
@@ -108,7 +126,10 @@ export function useKitchenConsoleOverview() {
       )
     )
   )
-  const kitchenPill = computed(() => pill(selectedKitchen.value))
+  const kitchenPill = computed(() => pill(surface({
+    kitchen: selectedKitchen.value,
+    place: place.value,
+  })))
   const imageInitials = computed(() => {
     const parts = kitchenTitle.value.split(/\s+/).filter(Boolean)
     if (!parts.length) return 'K'

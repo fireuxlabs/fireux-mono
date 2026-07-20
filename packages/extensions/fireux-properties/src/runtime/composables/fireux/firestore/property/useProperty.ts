@@ -1,7 +1,8 @@
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: publish fixed root/app seams without scope options.
 import type { Ref } from 'vue'
 import type { Property } from '../../../../models/property.model'
 import { usePropertyCollection } from './fetch/usePropertyCollection'
-import { usePropertyFetch } from './fetch/usePropertyFetch'
+import { useAppPropertyFetch, usePropertyFetch } from './fetch/usePropertyFetch'
 import { usePropertyCreate } from './mutations/usePropertyCreate'
 import { usePropertyDelete } from './mutations/usePropertyDelete'
 import { usePropertyUpdate } from './mutations/usePropertyUpdate'
@@ -16,26 +17,22 @@ export type {
 export {
   usePropertyCollection,
   usePropertyFetch,
+  useAppPropertyFetch,
   usePropertyCreate,
   usePropertyDelete,
   usePropertyUpdate,
   usePropertyInterface,
 }
 
-type UsePropertyOptions = {
-  shape?: 'root' | 'overlay'
-  collectionPath?: string
-}
-
-export function useProperty(id: string | Ref<string>, options: UsePropertyOptions = {}) {
-  const fetched = usePropertyFetch(id, options)
+export function useProperty(id: string | Ref<string>) {
+  const fetched = usePropertyFetch(id)
 
   return {
     ...fetched,
     ...usePropertyCollection(),
-    ...usePropertyCreate(options),
-    ...usePropertyDelete(options),
-    ...usePropertyUpdate(options),
+    ...usePropertyCreate(),
+    ...usePropertyDelete(),
+    ...usePropertyUpdate(),
     ...usePropertyInterface(),
   }
 }

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 22:11 CEST — Both-Entity Authority — Supplier: compose root identity with allowlisted App access only.
 import {
   csv,
   safeString,
@@ -37,10 +38,14 @@ export namespace SupplierCard {
   }
 }
 
-export type SupplierSurface = Partial<Supplier>
+type SupplierAccessSurface = Partial<
+  Pick<AppSupplier, 'operator_ids' | 'team_ids' | 'join_requests'>
+>
+
+export type SupplierSurface = Partial<Supplier> & SupplierAccessSurface
 export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> = {
   supplier?: TSupplier | null | undefined
-  overlay?: Record<string, unknown> | null | undefined
+  overlay?: Partial<AppSupplier> | null | undefined
 }
 
 export function useSupplierInterface(supplier?: SupplierRootAndOverlay | null) {
@@ -56,9 +61,22 @@ export function useSupplierInterface(supplier?: SupplierRootAndOverlay | null) {
     const source = parts.supplier ?? null
     if (!source) return null
 
+    const {
+      operator_ids: _rootOperatorIds,
+      team_ids: _rootTeamIds,
+      join_requests: _rootJoinRequests,
+      ...root
+    } = source as Record<string, unknown>
+    const overlay = parts.overlay ?? null
     const merged = {
-      ...source,
-      ...(parts.overlay ?? {}),
+      ...root,
+      ...(overlay
+        ? {
+            operator_ids: safeStringArray(overlay.operator_ids),
+            team_ids: safeStringArray(overlay.team_ids),
+            join_requests: safeStringArray(overlay.join_requests),
+          }
+        : {}),
     } as TSupplier & SupplierSurface
     const id = safeString(merged.id).trim()
     if (!id) return null

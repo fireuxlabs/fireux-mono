@@ -1,9 +1,11 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: compose Place baselines with only meaningful Kitchen surface deltas.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   Place,
   PlaceImageShade,
 } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
@@ -53,8 +55,8 @@ export namespace KitchenCard {
 }
 
 export type KitchenSurface = {
-  // View surface only: Place-like fields here are copied public snapshots from
-  // Place or local Kitchen overrides, not live collection-manager hydration.
+  // View surface only: Place-like fields are a resolved read projection of the
+  // linked Place plus meaningful Kitchen/scoped deltas, never Kitchen authority.
   id?: string
   app_scope_state?: FireuxAppScopeState
   app_scope_app_id?: string
@@ -123,6 +125,8 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
     | 'types'
     | 'tags'
     | 'price_level'
+    | 'default_currency_code'
+    | 'business_hours'
     | 'claimed_by'
     | 'verified'
     | 'slug'
@@ -146,6 +150,41 @@ const resolveKitchenPath = (target: {
 
   return `/kitchens/${encodeURIComponent(slug)}`
 }
+
+const meaningfulSurfaceDelta = (value: unknown) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+
+  return Object.fromEntries(
+    Object.entries(value as Record<string, unknown>).filter(([, item]) => {
+      if (typeof item === 'string') return Boolean(item.trim())
+      if (Array.isArray(item)) return item.length > 0
+      if (typeof item === 'object' && item) return Object.keys(item).length > 0
+      return item !== null && item !== undefined
+    })
+  )
+}
+
+const placeBaselineKeys = [
+  'name',
+  'short_name',
+  'brand_tagline',
+  'about',
+  'formatted_address',
+  'short_address',
+  'address',
+  'lat',
+  'lng',
+  'timezone',
+  'image_url',
+  'cover_image',
+  'gallery_images',
+  'image_shade',
+  'phone',
+  'email',
+  'website',
+  'google_maps_url',
+  'social_links',
+] as const
 
 export function useKitchenInterface() {
   type KitchenIdentity = KitchenCard.Card
@@ -185,11 +224,45 @@ export function useKitchenInterface() {
     const kitchen = parts.kitchen ?? null
     if (!kitchen) return null
 
+    const place = meaningfulSurfaceDelta(parts.place)
+    const kitchenDelta = meaningfulSurfaceDelta(kitchen)
+    const scopeDelta = meaningfulSurfaceDelta(parts.scope)
     const merged = {
-      ...(parts.place ?? {}),
-      ...kitchen,
-      ...(parts.scope ?? {}),
+      ...place,
+      ...kitchenDelta,
+      ...scopeDelta,
     } as TKitchen & KitchenSurface
+    for (const key of placeBaselineKeys) {
+      if (Object.hasOwn(place, key)) {
+        (merged as Record<string, unknown>)[key] = place[key]
+      }
+    }
+    const identityDelta = {
+      ...meaningfulSurfaceDelta(kitchenDelta.identity),
+      ...meaningfulSurfaceDelta(scopeDelta.identity),
+    }
+    if (Object.hasOwn(place, 'image_url')) {
+      delete merged.display_image_url
+      delete identityDelta.image_url
+    }
+    if (Object.hasOwn(place, 'image_shade')) {
+      delete identityDelta.image_shade
+    }
+    if (Object.hasOwn(place, 'gallery_images')) {
+      delete merged.food_gallery
+      delete identityDelta.gallery
+    }
+    if (Object.keys(identityDelta).length) {
+      (merged as Record<string, unknown>).identity = identityDelta
+    } else {
+      delete (merged as Record<string, unknown>).identity
+    }
+    if (Array.isArray(place.gallery_images)) {
+      merged.food_gallery = place.gallery_images as string[]
+    }
+    const placeCurrencyCode = readPlaceCurrencyCode(parts.place)
+    delete merged.currency_code
+    if (placeCurrencyCode) merged.currency_code = placeCurrencyCode
     const id = safeString(merged.id).trim()
     if (!id) return null
     const identity = readKitchenIdentity(merged)

@@ -55,7 +55,7 @@
             app overlay: {{ selectedPortfolioApp ? 'yes' : 'no' }}
           </UBadge>
           <UBadge variant="soft">
-            child families: 8
+            child families: {{ childCollectionNames.length }}
           </UBadge>
         </div>
 
@@ -103,6 +103,8 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: retire the duplicate nested full-Property storage probe.
+// Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: expose child inspection without downstream package imports.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   buildDevCollectionSnapshot,
@@ -118,16 +120,29 @@ import {
 import { useActivePortfolio } from '../../../composables/fireux/console/portfolio/operations/useActivePortfolio'
 import { usePortfolioCollection } from '../../../composables/fireux/firestore/portfolio/fetch/usePortfolioCollection'
 import type { PortfolioSurface } from '../../../composables/fireux/firestore/portfolio/utils/view/usePortfolioInterface'
-import { ComplianceRecordStorage } from 'fireux-compliance/runtime/models/compliance-record.model'
-import { DocumentLinkStorage } from 'fireux-documents/runtime/models/document-link.model'
-import { DocumentStorage } from 'fireux-documents/runtime/models/document.model'
-import { TaskStorage } from 'fireux-tasks/runtime/models/task.model'
 import { ClientStorage } from '../../../models/client.model'
 import type { AppPortfolio } from '../../../models/portfolio.model'
 import { PortfolioModel as PortfolioModelRuntime } from '../../../models/portfolio.model'
-import { PropertyStorage } from '../../../models/property.model'
 
 defineOptions({ name: 'DevPortfolioSystem' })
+
+const props = withDefaults(
+  defineProps<{
+    additionalChildCollections?: string[]
+  }>(),
+  {
+    additionalChildCollections: () => [],
+  }
+)
+
+const childCollectionNames = [
+  ...new Set([
+    ClientStorage.collection,
+    'financials',
+    'maintenance',
+    ...props.additionalChildCollections.map((name) => String(name || '').trim()),
+  ]),
+].filter(Boolean)
 
 const runtime = useActivePortfolio()
 
@@ -205,89 +220,27 @@ const rootPortfolioCollectionPath = computed(() => ROOT_PORTFOLIO_COLLECTION_PAT
 const makePortfolioChildPath = (basePath: string, suffix: string) =>
   resolveRuntimePortfolioPath(basePath, selectedPortfolioId.value, suffix)
 
-const rootProperties = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, PropertyStorage.overlayCollection))
-)
-const overlayProperties = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, PropertyStorage.overlayCollection))
-)
-const rootClients = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, ClientStorage.collection))
-)
-const overlayClients = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, ClientStorage.collection))
-)
-const rootDocuments = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, DocumentStorage.collection))
-)
-const overlayDocuments = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, DocumentStorage.collection))
-)
-const rootDocumentLinks = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, DocumentLinkStorage.collection))
-)
-const overlayDocumentLinks = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, DocumentLinkStorage.collection))
-)
-const rootTasks = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, TaskStorage.collection))
-)
-const overlayTasks = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, TaskStorage.collection))
-)
-const rootFinancials = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, 'financials'))
-)
-const overlayFinancials = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, 'financials'))
-)
-const rootMaintenance = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, 'maintenance'))
-)
-const overlayMaintenance = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, 'maintenance'))
-)
-const rootCompliance = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, ComplianceRecordStorage.collection))
-)
-const overlayCompliance = useDevStorageCollection<Record<string, unknown>>(
-  computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, ComplianceRecordStorage.collection))
-)
-
-const childCollectionsSnapshot = computed(() => ({
-  [PropertyStorage.overlayCollection]: {
-    root: buildDevCollectionSnapshot(rootProperties.collectionPath.value, rootProperties.items.value),
-    overlay: buildDevCollectionSnapshot(overlayProperties.collectionPath.value, overlayProperties.items.value),
-  },
-  [ClientStorage.collection]: {
-    root: buildDevCollectionSnapshot(rootClients.collectionPath.value, rootClients.items.value),
-    overlay: buildDevCollectionSnapshot(overlayClients.collectionPath.value, overlayClients.items.value),
-  },
-  [DocumentStorage.collection]: {
-    root: buildDevCollectionSnapshot(rootDocuments.collectionPath.value, rootDocuments.items.value),
-    overlay: buildDevCollectionSnapshot(overlayDocuments.collectionPath.value, overlayDocuments.items.value),
-  },
-  [DocumentLinkStorage.collection]: {
-    root: buildDevCollectionSnapshot(rootDocumentLinks.collectionPath.value, rootDocumentLinks.items.value),
-    overlay: buildDevCollectionSnapshot(overlayDocumentLinks.collectionPath.value, overlayDocumentLinks.items.value),
-  },
-  [TaskStorage.collection]: {
-    root: buildDevCollectionSnapshot(rootTasks.collectionPath.value, rootTasks.items.value),
-    overlay: buildDevCollectionSnapshot(overlayTasks.collectionPath.value, overlayTasks.items.value),
-  },
-  financials: {
-    root: buildDevCollectionSnapshot(rootFinancials.collectionPath.value, rootFinancials.items.value),
-    overlay: buildDevCollectionSnapshot(overlayFinancials.collectionPath.value, overlayFinancials.items.value),
-  },
-  maintenance: {
-    root: buildDevCollectionSnapshot(rootMaintenance.collectionPath.value, rootMaintenance.items.value),
-    overlay: buildDevCollectionSnapshot(overlayMaintenance.collectionPath.value, overlayMaintenance.items.value),
-  },
-  [ComplianceRecordStorage.collection]: {
-    root: buildDevCollectionSnapshot(rootCompliance.collectionPath.value, rootCompliance.items.value),
-    overlay: buildDevCollectionSnapshot(overlayCompliance.collectionPath.value, overlayCompliance.items.value),
-  },
+const childCollectionReaders = childCollectionNames.map((name) => ({
+  name,
+  root: useDevStorageCollection<Record<string, unknown>>(
+    computed(() => makePortfolioChildPath(rootPortfolioCollectionPath.value, name))
+  ),
+  overlay: useDevStorageCollection<Record<string, unknown>>(
+    computed(() => makePortfolioChildPath(overlayPortfolioCollectionPath.value, name))
+  ),
 }))
+
+const childCollectionsSnapshot = computed(() =>
+  Object.fromEntries(
+    childCollectionReaders.map(({ name, root, overlay }) => [
+      name,
+      {
+        root: buildDevCollectionSnapshot(root.collectionPath.value, root.items.value),
+        overlay: buildDevCollectionSnapshot(overlay.collectionPath.value, overlay.items.value),
+      },
+    ])
+  )
+)
 
 const migrationSignals = computed(() => {
   const rootOnlyCollections: string[] = []

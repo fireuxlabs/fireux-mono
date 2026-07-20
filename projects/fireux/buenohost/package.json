@@ -16,7 +16,7 @@
     "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rm -rf .nuxt app/.nuxt .output dist"
+    "clean": "rimraf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
     "@nuxt/icon": "2.x",
@@ -28,12 +28,14 @@
     "fireux-products": "workspace:*",
     "fireux-properties": "workspace:*",
     "nuxt": "4.4.6",
+    "qrcode": "^1.5.4",
     "vue": "3.5.20",
     "vue-router": "4.5.1"
   },
   "devDependencies": {
     "@iconify-json/heroicons": "^1.2.2",
     "@iconify-json/lucide": "^1.2.62",
+    "@types/qrcode": "^1.5.6",
     "@vite-pwa/nuxt": "^1.0.4",
     "rimraf": "^6.0.1"
   }

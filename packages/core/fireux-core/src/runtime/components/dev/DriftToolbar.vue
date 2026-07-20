@@ -21,9 +21,7 @@
       Missing
     </UButton>
 
-    <span class="font-medium ml-2">
-      Filter {{ driftKind }}:
-    </span>
+    <span class="font-medium ml-2"> Filter {{ driftKind }}: </span>
 
     <UButton
       v-for="option in filterOptions"
@@ -40,17 +38,21 @@
       size="xs"
       variant="outline"
       :disabled="copyDisabled || copying"
-      :icon="copying ? 'i-heroicons-arrow-path' : (copyIcon || 'i-heroicons-clipboard-document-check')"
+      :icon="
+        copying
+          ? 'i-heroicons-arrow-path'
+          : copyIcon || 'i-heroicons-clipboard-document-check'
+      "
       @click="handleCopy"
     >
-      {{ copying ? 'Copying…' : (copyLabel || 'Copy filtered drift') }}
+      {{ copying ? 'Copying…' : copyLabel || 'Copy filtered drift' }}
     </UButton>
   </div>
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: keep model-drift copy diagnostic-only.
 import { useDevClipboard } from '../../composables/dev/useDevClipboard'
-import { useDevDriftCopyMeta } from '../../composables/dev/useDevDriftCopyMeta'
 
 defineOptions({ name: 'DriftToolbar' })
 
@@ -80,20 +82,9 @@ const emit = defineEmits<{
 }>()
 
 const { copyJSON, copying } = useDevClipboard()
-const { migration } = useDevDriftCopyMeta()
-
-const buildCopyPayload = () => {
-  if (!props.copyPayload || typeof props.copyPayload !== 'object') return props.copyPayload
-  const payload = props.copyPayload as Record<string, unknown>
-  if (payload.migration) return payload
-  return {
-    ...payload,
-    migration,
-  }
-}
 
 const handleCopy = async () => {
-  const payload = buildCopyPayload()
+  const payload = props.copyPayload
   if (payload !== undefined) {
     await copyJSON(payload, {
       label: props.copyLabel || 'Copy filtered drift',

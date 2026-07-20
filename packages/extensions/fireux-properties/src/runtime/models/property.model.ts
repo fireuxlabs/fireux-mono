@@ -1,22 +1,37 @@
+// Concurrent edit — 2026-07-20 22:20 CEST — Both-Entity Authority — Property: split canonical root identity, Place reference, and app operational overlay.
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
+import type {
+  FireuxAppOverlay,
+  FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model'
 import {
+  FireuxAppOverlayModel,
   FireuxAppScope,
-  FireuxConsoleAccessModel,
-  type FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown>
+    ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+  : T
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Property
- * Storage: root/public property record, with optional console app overlay
+ * Storage: canonical root property plus an app-scoped support record
  * Owner app scope: Property console / product shell
  * Scope: BuenoHost-style property information records
  *
  * Decision note:
- * - BuenoHost can use Property as a root information entity without Portfolio.
- * - Portfolio/Granite compatibility can reference Property later, but Portfolio is
- *   not the required owner for Property console canon.
+ * - Root means canonical identity, not automatically public-readable.
+ * - BuenoHost can use Property without Portfolio.
+ * - Property owns its optional Portfolio relationship through `portfolio_id`.
+ * - Access and guest-manual operations belong only to AppProperty.
  */
 export const PropertyStorage = {
   shape: 'both',
@@ -27,13 +42,27 @@ export const PropertyStorage = {
   idParam: 'propertyId',
 } as const
 
+export const PropertyEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Property',
+  family: ['portfolio', 'console-entity'],
+  storage: 'both',
+  status: 'confirmed',
+  console: true,
+  root: PropertyStorage.root,
+  scoped: PropertyStorage.overlay,
+})
+
+export const AppPropertyStorage = {
+  shape: 'scoped',
+  path: PropertyStorage.overlay,
+  collection: PropertyStorage.overlayCollection,
+  parent: 'app',
+  idParam: PropertyStorage.idParam,
+} as const
+
 export const PropertyIdentityModel = {
   name: '' as string,
-  address_line: '' as string,
-  city: '' as string,
-  postcode: '' as string,
-  country: '' as string,
-  place_id: '' as string,
   image_url: '' as string,
   property_type: 'residential' as 'residential' | 'commercial' | 'mixed',
   unit_count: 0 as number,
@@ -127,10 +156,9 @@ export const PropertyModel = {
   id: '' as string,
   slug: '' as string,
   portfolio_id: '' as string,
+  place_id: '' as string,
   ...FireuxAppScope,
-  ...FireuxConsoleAccessModel,
   identity: PropertyIdentityModel,
-  manual: PropertyManualModel,
   status: 'active' as 'active' | 'inactive',
   created: {
     at: {} as FirebaseTimestamp,
@@ -143,19 +171,37 @@ export const PropertyModel = {
   },
 } as const
 
-export type PropertyIdentity = {
-  [K in keyof typeof PropertyIdentityModel]: (typeof PropertyIdentityModel)[K]
+export type PropertyIdentity = WidenLiteral<typeof PropertyIdentityModel>
+
+export type PropertyManual = WidenLiteral<typeof PropertyManualModel>
+
+export type Property = WidenLiteral<typeof PropertyModel>
+
+export const AppPropertyModel = {
+  ...FireuxAppOverlayModel,
+} as const
+
+export type AppProperty = FireuxAppOverlay & {
+  manual?: PropertyManual
 }
 
-export type PropertyManual = {
-  [K in keyof typeof PropertyManualModel]: (typeof PropertyManualModel)[K]
+export type PropertyCreateInput = {
+  id?: string
+  slug?: string
+  portfolio_id?: string
+  place_id: string
+  identity: PropertyIdentity
+  status?: Property['status']
 }
 
-export type Property = {
-  [K in keyof typeof PropertyModel]: (typeof PropertyModel)[K]
-}
-
-export type PropertyCreateInput = Omit<Property, 'created' | 'updated'>
 export type PropertyUpdateInput = Partial<
-  Omit<Property, 'id' | 'created' | 'updated' | 'portfolio_id'>
+  Pick<Property, 'slug' | 'portfolio_id' | 'place_id' | 'identity' | 'status'>
 >
+
+export type AppPropertyCreateInput = Pick<
+  AppProperty,
+  'operator_ids' | 'team_ids' | 'join_requests'
+> &
+  Partial<Pick<AppProperty, 'manual'>>
+
+export type AppPropertyUpdateInput = Partial<Pick<AppProperty, 'manual'>>

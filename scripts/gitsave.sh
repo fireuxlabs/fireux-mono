@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # @fireux-script
-# last_used: 2026-07-09
-# usage_note: baseline after scripts cleanup; update when run.
+# last_used: 2026-07-20
+# usage_note: commit-and-push helper with explicit clean and guard gates.
+# Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: remove the destructive legacy repository-cleanup hook.
 set -euo pipefail
 
 trim() {
@@ -54,13 +55,6 @@ print_repo_state() {
     echo "[gitsave] ${label}: working tree clean | ahead ${ahead} | behind ${behind}"
   else
     echo "[gitsave] ${label}: ${dirty} changed file(s) | ahead ${ahead} | behind ${behind}"
-  fi
-}
-
-run_repo_cleanup() {
-  if [ -x "$(pwd)/scripts/gitsave-cleanup.sh" ] || [ -f "scripts/gitsave-cleanup.sh" ]; then
-    echo "Running repository cleanup script..."
-    bash scripts/gitsave-cleanup.sh || true
   fi
 }
 
@@ -206,9 +200,9 @@ cleanup_git_refs() {
 }
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--repo-clean|--no-repo-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
-  echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-repo-clean --no-strict-scope" >&2
+  echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-strict-scope" >&2
   echo "Dev server default: push committed tree without local artifact cleanup/guard so live Nuxt artifacts stay untouched." >&2
   echo "Safety defaults: block behind-state pushes and guard failures. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
@@ -323,7 +317,6 @@ warn_simple_scope() {
 commit_message=""
 run_guard=false
 run_clean=false
-run_repo_clean=false
 allow_mixed=false
 allow_large=false
 allow_behind=false
@@ -338,16 +331,14 @@ for a in "$@"; do
     --no-guard) run_guard=false ;;
     --clean) run_clean=true ;;
     --no-clean) run_clean=false ;;
-    --repo-clean) run_repo_clean=true ;;
-    --no-repo-clean) run_repo_clean=false ;;
     --strict-scope) strict_scope=true ;;
     --no-strict-scope) strict_scope=false ;;
     --allow-mixed) allow_mixed=true ;;
     --allow-large) allow_large=true ;;
     --allow-behind) allow_behind=true ;;
     --allow-guard-failure) allow_guard_failure=true ;;
-    --force-clean) ;; # Deprecated no-op: gitsave never cleans live dev artifacts.
     -h|--help) usage; exit 0 ;;
+    --*) echo "Unknown option: $a" >&2; usage; exit 1 ;;
     *) args+=("$a") ;;
   esac
 done
@@ -406,15 +397,6 @@ if $run_guard; then
       echo "[gitsave] Fix the issues above, or re-run with --allow-guard-failure if this save must proceed." >&2
       exit 1
     fi
-  fi
-fi
-
-# Optional repository cleanup
-if $run_repo_clean; then
-  if dev_server_running; then
-    echo "[gitsave] Dev server is running; skipped repository cleanup so live artifacts stay intact." >&2
-  else
-    run_repo_cleanup
   fi
 fi
 

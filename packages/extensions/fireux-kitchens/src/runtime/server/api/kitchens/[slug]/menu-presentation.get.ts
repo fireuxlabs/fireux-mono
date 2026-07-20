@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: include only explicitly linked Place defaults in Kitchen Menu presentation.
 import {
   createError,
   defineEventHandler,
@@ -7,6 +8,7 @@ import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   menuKitchenIdentity,
   readAppMenuKitchenData,
+  readMenuKitchenPlaceData,
 } from '../../../menu/ownership/kitchen-scope.ts'
 import { resolveDirectoryPublicMenuScope } from '../../../menu/ownership/public-target.ts'
 
@@ -26,18 +28,19 @@ export default defineEventHandler(async event => {
   }
 
   const scope = await resolveDirectoryPublicMenuScope(kitchenSlug)
-  const appKitchenData = await readAppMenuKitchenData(
-    scope.appId,
-    scope.kitchenId
-  )
+  const [appKitchenData, placeData] = await Promise.all([
+    readAppMenuKitchenData(scope.appId, scope.kitchenId),
+    readMenuKitchenPlaceData(scope.rootKitchenData),
+  ])
   const identity = menuKitchenIdentity(
     scope.rootKitchenData,
-    appKitchenData
+    appKitchenData,
+    placeData
   )
 
   return {
     kitchenSlug: scope.kitchenSlug,
-    kitchenName: identity.name,
-    pageStyle: identity.page_style,
+    ...(identity.name ? { kitchenName: identity.name } : {}),
+    ...(identity.page_style ? { pageStyle: identity.page_style } : {}),
   }
 })

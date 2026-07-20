@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
+<!-- Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: continue new Kitchen creation into linked Place/Kitchen configuration. -->
 <template>
   <UDashboardPanel id="console-kitchen-create">
     <template #header>
@@ -39,7 +40,7 @@ const existingRootId = computed(() =>
   String(route.query.existingRootId || '').trim()
 )
 const returnTo = computed(() =>
-  existingRootId.value ? '/console/kitchen/overview' : '/console/kitchen'
+  existingRootId.value ? '/console/kitchen/overview' : '/console/kitchen/identity'
 )
 
 definePageMeta({

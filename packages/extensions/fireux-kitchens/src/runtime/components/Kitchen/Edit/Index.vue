@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: edit raw Kitchen overrides while presenting the Place-hydrated Kitchen surface. -->
 <template>
   <UPage class="page edit-page">
     <UPageHeader :title="pageTitle" :description="pageSubtitle">
@@ -49,7 +50,7 @@
 
             <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
               <KitchenEditIdentity
-                :kitchen="hydratedKitchen"
+                :kitchen="rootKitchen"
                 :kitchen-id="kitchenId"
                 :can-write="canEdit"
               />
@@ -93,7 +94,7 @@ const { appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Kitchen` })
 
 const locator = computed(() => String(props.locator || '').trim())
-const { kitchen, pending } = useKitchenFetch(locator)
+const { kitchen, rootKitchen, pending } = useKitchenFetch(locator)
 const loading = computed(() => Boolean(locator.value) && pending.value)
 const hydratedKitchen = computed(() => kitchen.value as any | null)
 const kitchenId = computed(() =>

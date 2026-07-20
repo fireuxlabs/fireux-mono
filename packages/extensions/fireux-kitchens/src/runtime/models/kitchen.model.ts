@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: model Kitchen-owned payment applicability and fulfilment capability.
+// Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: make Kitchen hours an optional operational override and remove Kitchen currency authority.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type {
   FireuxAppScope as FireuxAppScopeShape,
@@ -91,11 +92,11 @@ export type KitchenMenusConfig = {
 }
 
 export type KitchenOrdersConfig = {
-  modes: string[]
-  default_lead_time_minutes: number
-  acceptance_required: boolean
-  operation_hours: WeekdayTimeWindowsConfig
-  printing: {
+  modes?: string[]
+  default_lead_time_minutes?: number
+  acceptance_required?: boolean
+  operation_hours?: WeekdayTimeWindowsConfig
+  printing?: {
     ticket_device_id: string
   }
 }
@@ -154,7 +155,6 @@ export const KitchenModel = {
   id: '',
   place_id: '',
   slug: '',
-  currency_code: '',
 
   // Level 1 Kitchen spine: these namespaces mirror console/kitchen route groups.
   // Records still live in operation-specific models and app-scoped collections.
@@ -273,7 +273,6 @@ export type KitchenCreateInput = Partial<
     | 'formatted_address'
     | 'short_address'
     | 'cover_image'
-    | 'currency_code'
     | 'identity'
     | 'menus'
     | 'orders'

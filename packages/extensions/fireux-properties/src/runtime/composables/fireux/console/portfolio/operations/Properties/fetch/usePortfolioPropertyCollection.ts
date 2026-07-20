@@ -1,39 +1,57 @@
-import { computed, shallowRef, watch, type Ref, type ShallowRef } from 'vue'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: resolve Portfolio membership from canonical Property.portfolio_id.
 import {
-  useActivePortfolio,
-  usePortfolioConsoleChildPath,
-} from '../../useActivePortfolio'
+  collection,
+  query,
+  where,
+  type Query,
+} from 'firebase/firestore'
+import { computed } from 'vue'
+import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useActivePortfolio } from '../../useActivePortfolio'
 import { PropertyStorage, type Property } from '../../../../../../../models/property.model'
+import { canonicalPropertyRoot } from '../../../../../firestore/property/utils/view/usePropertyInterface'
 
-export function usePortfolioPropertyCollection(runtimePortfolio = useActivePortfolio()) {
-  const { firestoreFetchCollection } = useFirestoreRead()
-  const sourceRef = shallowRef(null) as ShallowRef<Ref<Property[] | undefined> | null>
-  const collectionPath = usePortfolioConsoleChildPath(
-    runtimePortfolio,
-    PropertyStorage.overlayCollection
+const normalizeString = (value: unknown) => String(value ?? '').trim()
+
+export function usePortfolioPropertyCollection(
+  runtimePortfolio = useActivePortfolio()
+) {
+  const db = useFirestore()
+  const { firestoreQuery } = useFirestoreRead()
+  const portfolioId = computed(() => normalizeString(runtimePortfolio.id.value))
+  const collectionPath = computed(() =>
+    runtimePortfolio.source.value === 'live' && portfolioId.value
+      ? PropertyStorage.rootCollection
+      : ''
   )
-
-  watch(
-    collectionPath,
-    // 2026-07-01: preflight unblock. Revisit with the properties console canon pass
-    // and align this collection seam with the nearest operation sibling.
-    (nextPath: string) => {
-      if (!nextPath) {
-        sourceRef.value = null
-        return
-      }
-      sourceRef.value = firestoreFetchCollection<Property>(nextPath)
-    },
-    { immediate: true }
-  )
-
-  const collection = computed<Property[]>(() => {
-    return sourceRef.value?.value ?? []
+  const propertyQuery = computed<Query<Property> | null>(() => {
+    if (!collectionPath.value) return null
+    return query(
+      collection(db, PropertyStorage.rootCollection),
+      where('portfolio_id', '==', portfolioId.value)
+    ) as Query<Property>
   })
+  const source = firestoreQuery<Property>(
+    propertyQuery,
+    undefined,
+    collectionPath
+  )
+  const properties = computed<Property[]>(() =>
+    (source.value ?? []).reduce<Property[]>((items, property) => {
+      const root = canonicalPropertyRoot(property)
+      if (root) items.push(root)
+      return items
+    }, [])
+  )
 
   return {
+    portfolioId,
     collectionPath,
-    collection,
+    collection: properties,
+    count: computed(() => properties.value.length),
+    pending: source.pending,
+    error: source.error,
+    outcome: source.outcome,
   }
 }

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: present Kitchen identity as optional overrides rather than copied Place truth. -->
 <template>
   <UCard>
     <template #header>
@@ -6,16 +7,16 @@
           Kitchen identity
         </div>
         <p class="text-sm text-dimmed">
-          Kitchen-specific copy and media. Linked place details stay separate.
+          Optional Kitchen-specific copy and media. Blank values inherit the linked Place.
         </p>
       </div>
     </template>
 
     <div class="grid gap-4">
       <MoleculesFormsFirestoreSimpleField
-        label="Kitchen name"
+        label="Kitchen name override"
         :firebase-value="displayName"
-        placeholder="Public kitchen name"
+        placeholder="Inherit the Place name"
         :maxlength="120"
         :update-function="handleDisplayName"
       />
@@ -124,8 +125,13 @@ const toast = useToastify()
 const clean = (value: unknown) => String(value ?? '').trim()
 const kitchenId = computed(() => clean(props.kitchenId))
 const hasLinkedPlace = computed(() => Boolean(clean((props.kitchen as any)?.place_id)))
-const displayName = computed(() => clean((props.kitchen as any)?.display_name))
-const tagline = computed(() => clean((props.kitchen as any)?.tagline))
+const displayName = computed(() => clean(
+  (props.kitchen as any)?.identity?.display_name ||
+    (props.kitchen as any)?.display_name
+))
+const tagline = computed(() => clean(
+  (props.kitchen as any)?.identity?.tagline || (props.kitchen as any)?.tagline
+))
 const coverImage = computed(() => clean((props.kitchen as any)?.cover_image))
 const identityImage = computed(() =>
   clean(
@@ -135,8 +141,13 @@ const identityImage = computed(() =>
   )
 )
 const foodGallery = computed(() =>
-  Array.isArray((props.kitchen as any)?.food_gallery)
-    ? ((props.kitchen as any).food_gallery as unknown[]).map(clean).filter(Boolean)
+  Array.isArray(
+    (props.kitchen as any)?.identity?.gallery || (props.kitchen as any)?.food_gallery
+  )
+    ? (
+        ((props.kitchen as any)?.identity?.gallery ||
+          (props.kitchen as any).food_gallery) as unknown[]
+      ).map(clean).filter(Boolean)
     : []
 )
 const foodGalleryText = computed(() => foodGallery.value.join('\n'))

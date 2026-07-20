@@ -26,7 +26,6 @@
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
     "better-sqlite3": "^12.6.0",
-    "dompurify": "^3.2.6",
     "firebase-functions": "^6.3.2",
     "fireux-ai": "workspace:*",
     "fireux-blogs": "workspace:*",
@@ -40,15 +39,13 @@
     "fireux-places": "workspace:*",
     "fireux-products": "workspace:*",
     "fireux-sproochli": "workspace:*",
+    "h3": "^1.15.4",
     "nuxt": "4.4.6",
-    "qr-code-styling": "^1.9.2",
     "stripe": "^22.1.1",
     "vue": "3.5.20",
     "vue-router": "4.5.1"
   },
   "devDependencies": {
-    "@iconify-json/heroicons": "^1.2.2",
-    "@iconify-json/lucide": "^1.2.62",
     "@vite-pwa/nuxt": "^1.0.4",
     "rimraf": "^6.0.1",
     "vuefire": "3.2.2"

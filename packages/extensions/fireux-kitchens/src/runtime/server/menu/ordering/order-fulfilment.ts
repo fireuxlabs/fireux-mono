@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: never infer a delivery origin from Kitchen identity.
 import { createError } from 'h3'
 import type { MenuOrderingConfig } from '../../../models/kitchen/menu/menu.model.ts'
 import type {
@@ -58,7 +59,7 @@ export async function resolveMenuOrderFulfilment(input: {
   if (strategy.resolvesDelivery) {
     const zones = command.orderTypeConfig?.fulfilment?.delivery_zones || []
     const origin = await resolveMenuDeliveryOrigin(
-      input.context.kitchenPlaceId || input.context.kitchenId,
+      input.context.kitchenPlaceId,
       zones
     )
     delivery = customer.address_place_id

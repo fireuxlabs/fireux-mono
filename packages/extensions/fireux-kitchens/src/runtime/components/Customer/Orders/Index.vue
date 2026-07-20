@@ -56,7 +56,7 @@
               <p v-else class="customer-orders__kitchen">
                 {{ order.kitchen.name }}
               </p>
-              <h2>Order {{ order.order_number }}</h2>
+              <h2>{{ order.order_number ? `Order ${order.order_number}` : 'Order' }}</h2>
             </div>
           </div>
 
@@ -128,6 +128,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: project requested timing and readiness through My orders.
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: present asynchronous Kitchen confirmation in My orders.
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: present sparse customer Order identifiers without blank copy.
 import { useCustomerOrders } from '../../../composables/fireux/customer/useCustomerOrders'
 import type {
   CustomerOrderSummary,

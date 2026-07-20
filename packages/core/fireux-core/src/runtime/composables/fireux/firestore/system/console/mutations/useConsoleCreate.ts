@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: attach console targets through the server-owned UserApp capability transaction.
+// Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: re-read created roots before app-support ownership checks.
 import {
   arrayUnion,
   collection,
@@ -161,9 +162,21 @@ export function useConsoleCreate() {
           `[console:${options.type}] createRoot must return a valid root id`
         )
       }
+
+      const rootRef = doc(db, collectionName, id)
+      const rootSnap = await getDoc(rootRef)
+
+      if (!rootSnap.exists()) {
+        throw new Error(
+          `[console:${options.type}] createRoot returned "${id}", but that root record does not exist`
+        )
+      }
+
+      existingRootData = rootSnap.data() ?? {}
     }
 
-    // App-hosted overlays are canonical for any app context, including global apps.
+    // App-hosted support records are canonical for app access/operations in any
+    // app context, including global apps. Root identity remains canonical above.
     // "Public" versus "console" affects the route flow, not whether the app-scoped
     // overlay should exist.
     const currentAppId = normalizeId(appId)

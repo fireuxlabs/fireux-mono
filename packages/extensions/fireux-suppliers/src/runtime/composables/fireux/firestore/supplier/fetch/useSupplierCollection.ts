@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Supplier consoles.
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
+// Concurrent edit — 2026-07-20 22:11 CEST — Both-Entity Authority — Supplier: reject orphan overlays and keep scoped access delta-only.
 import {
   collection,
   query as fsq,
@@ -16,19 +17,22 @@ import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/a
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   SupplierStorage,
+  type AppSupplier,
   type Supplier,
 } from '../../../../../models/supplier/Supplier.model'
-import { useSupplierInterface } from '../utils/view/useSupplierInterface'
+import {
+  useSupplierInterface,
+  type SupplierSurface,
+} from '../utils/view/useSupplierInterface'
 
-type SupplierCollectionDoc = Partial<Supplier> & {
+type SupplierRootDoc = Partial<Supplier> & {
   id?: string
-  operator_ids?: string[]
-  team_ids?: string[]
 }
 
-type AppSupplierOverlay = SupplierCollectionDoc & {
-  operator_ids?: string[]
-  team_ids?: string[]
+type SupplierCollectionDoc = SupplierRootDoc & SupplierSurface
+
+type AppSupplierOverlay = Partial<AppSupplier> & {
+  id?: string
 }
 
 const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
@@ -55,7 +59,7 @@ type UseSupplierCollectionOptions = {
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
-function resolveSupplierId(supplier: Partial<SupplierCollectionDoc> | null | undefined) {
+function resolveSupplierId(supplier: { id?: unknown } | null | undefined) {
   return normalizeString(supplier?.id)
 }
 
@@ -161,7 +165,7 @@ export function useSupplierCollection(
 
     return [...byId.values()]
   })
-  const liveRootSource = firestoreFetchCollection<SupplierCollectionDoc>(
+  const liveRootSource = firestoreFetchCollection<SupplierRootDoc>(
     liveRootCollectionPath
   )
   const allowedSupplierIds = computed(() =>
@@ -178,13 +182,13 @@ export function useSupplierCollection(
       ? ids.filter((id) => filterIdSet.value.has(id))
       : ids
   })
-  const liveRootDocs = firestoreLoadDocsByIds<SupplierCollectionDoc>({
+  const liveRootDocs = firestoreLoadDocsByIds<SupplierRootDoc>({
     collectionPath: liveDocumentCollectionPath,
     ids: targetedSupplierIds,
   })
 
   const liveItems = computed<SupplierCollectionDoc[]>(() => {
-    const rootById = new Map<string, SupplierCollectionDoc>()
+    const rootById = new Map<string, SupplierRootDoc>()
     const overlayById = new Map<string, AppSupplierOverlay>()
 
     for (const supplier of liveRootDocs.docs.value ?? []) {
@@ -206,27 +210,9 @@ export function useSupplierCollection(
     }
 
     const merged: SupplierCollectionDoc[] = []
-    const seen = new Set<string>()
-
     for (const supplier of liveRootDocs.docs.value ?? []) {
       const id = resolveSupplierId(supplier)
-      if (!id || seen.has(id)) continue
-      seen.add(id)
-
-      const item = surface({
-        supplier: {
-          ...(rootById.get(id) ?? {}),
-          id,
-        },
-        overlay: overlayById.get(id) ?? {},
-      })
-      if (item) merged.push(item)
-    }
-
-    for (const overlay of overlaySource.value ?? []) {
-      const id = resolveSupplierId(overlay)
-      if (!id || seen.has(id)) continue
-      seen.add(id)
+      if (!id) continue
 
       const item = surface({
         supplier: {
@@ -241,11 +227,53 @@ export function useSupplierCollection(
     return merged
   })
 
+  const normalizeRootItems = (items: SupplierRootDoc[]) =>
+    items.reduce<SupplierCollectionDoc[]>((normalized, supplier) => {
+      const item = surface({ supplier })
+      if (item) normalized.push(item)
+      return normalized
+    }, [])
+
   const collectionItems = computed<SupplierCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') return testSource.value ?? []
-    if (!usesTargetedRootRead.value) return liveRootSource.value ?? []
+    if (sourceMode.value === 'test') {
+      return normalizeRootItems(testSource.value ?? [])
+    }
+    if (!usesTargetedRootRead.value) {
+      return normalizeRootItems(liveRootSource.value ?? [])
+    }
     return liveItems.value
+  })
+
+  const danglingOverlayError = computed<Error | undefined>(() => {
+    if (
+      sourceMode.value !== 'live' ||
+      !hasOperatorFilter.value ||
+      !filterOperatorId.value ||
+      overlayOperatorSource.pending.value ||
+      overlayTeamSource.pending.value ||
+      liveRootDocs.pending.value ||
+      overlayOperatorSource.error.value ||
+      overlayTeamSource.error.value ||
+      liveRootDocs.error.value
+    ) {
+      return undefined
+    }
+
+    const rootIds = new Set(
+      (liveRootDocs.docs.value ?? [])
+        .map((supplier) => resolveSupplierId(supplier))
+        .filter(Boolean)
+    )
+    const danglingCount = targetedSupplierIds.value.filter(
+      (id) => !rootIds.has(id)
+    ).length
+
+    if (!danglingCount) return undefined
+
+    return new Error(
+      `[useSupplierCollection] ${danglingCount} app Supplier overlay(s) have no canonical root Supplier`
+    )
   })
 
   const suppliers = computed<SupplierCollectionDoc[]>(() =>
@@ -288,7 +316,7 @@ export function useSupplierCollection(
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
     return (hasOperatorFilter.value
       ? overlayOperatorSource.error.value ?? overlayTeamSource.error.value
-      : undefined) ?? liveRootDocs.error.value
+      : undefined) ?? liveRootDocs.error.value ?? danglingOverlayError.value
   })
   const { outcome } = useFirestoreCollectionState({
     active: computed(() => sourceMode.value !== 'demo'),

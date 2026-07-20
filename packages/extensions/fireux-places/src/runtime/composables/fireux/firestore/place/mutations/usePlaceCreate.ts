@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: persist only present shared currency and business-hours onboarding data.
 import { doc, getDoc } from 'firebase/firestore'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
@@ -8,6 +9,7 @@ import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGo
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
 import { toPlaceSlug } from '../utils/view/toPlaceSlug'
 import { sanitizeLogoAvatar } from '../utils/view/usePlaceLogos'
+import { normalizePlaceBusinessHours } from '../../../../../utils/place-spine'
 
 export interface UsePlaceCreateOptions {
   type?: string | null | undefined
@@ -275,6 +277,10 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       'default_currency_code',
       normalizeString((place as any)?.default_currency_code).toUpperCase()
     )
+    const businessHours = normalizePlaceBusinessHours(
+      (place as any)?.business_hours
+    )
+    if (businessHours) putObject(payload, 'business_hours', businessHours)
     putString(payload, 'claimed_by', (place as any)?.claimed_by)
     if (normalizeBoolean((place as any)?.verified)) payload.verified = true
 

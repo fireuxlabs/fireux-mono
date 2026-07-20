@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Property consoles.
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Property: require canonical roots and allowlist app-overlay deltas.
 import {
   collection,
   query as fsq,
@@ -13,17 +14,22 @@ import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fir
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { PropertyStorage, type Property } from '../../../../../models/property.model'
+import {
+  PropertyStorage,
+  type AppProperty,
+  type Property,
+} from '../../../../../models/property.model'
+import {
+  composePropertySurface,
+  type PropertySurface,
+} from '../utils/view/usePropertyInterface'
 
 type PropertyCollectionDoc = Partial<Property> & {
   id?: string
-  operator_ids?: string[]
-  team_ids?: string[]
 }
 
-type AppPropertyOverlay = PropertyCollectionDoc & {
-  operator_ids?: string[]
-  team_ids?: string[]
+type AppPropertyOverlay = Partial<AppProperty> & {
+  id?: string
 }
 
 const DEFAULT_COLLECTION_PATH = PropertyStorage.rootCollection
@@ -35,7 +41,7 @@ export type PropertyCollectionFilter = {
   operatorId?: PropertyCollectionFilterValue
   teamId?: PropertyCollectionFilterValue
 }
-export type PropertyCollectionShape = 'root' | 'overlay' | 'both'
+export type PropertyCollectionShape = 'root' | 'both'
 export type PropertyCollectionSource = ConsoleSource
 
 type UsePropertyCollectionOptions = {
@@ -98,14 +104,12 @@ export function usePropertyCollection(
     return hasOperatorFilter.value ? 'both' : 'root'
   })
   const usesTargetedRootRead = computed(
-    () => hasFilter.value || (
-      resolvedShape.value === 'both' && hasOperatorFilter.value
-    )
+    () => hasFilter.value || resolvedShape.value === 'both'
   )
   const rootCollectionPath = computed(() => {
     if (sourceMode.value === 'demo') return ''
     if (sourceMode.value === 'test') return TEST_COLLECTION_PATH
-    if (resolvedShape.value === 'overlay' || usesTargetedRootRead.value) return ''
+    if (usesTargetedRootRead.value) return ''
     return DEFAULT_COLLECTION_PATH
   })
   const liveDocumentCollectionPath = computed(() =>
@@ -190,7 +194,7 @@ export function usePropertyCollection(
       .filter(Boolean)
   )
   const targetedPropertyIds = computed(() => {
-    const ids = resolvedShape.value === 'both' && hasOperatorFilter.value
+    const ids = resolvedShape.value === 'both'
       ? allowedPropertyIds.value
       : [...filterIdSet.value]
 
@@ -202,11 +206,22 @@ export function usePropertyCollection(
     collectionPath: liveDocumentCollectionPath,
     ids: targetedPropertyIds,
   })
-  const targetItems = computed<PropertyCollectionDoc[]>(() => {
+  const targetItems = computed<PropertySurface[]>(() => {
     if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') return rootSource.value ?? []
-    if (resolvedShape.value === 'overlay') return overlaySource.value ?? []
-    if (!usesTargetedRootRead.value) return rootSource.value ?? []
+    if (sourceMode.value === 'test') {
+      return (rootSource.value ?? []).reduce<PropertySurface[]>((items, property) => {
+        const surface = composePropertySurface({ source: property as Property })
+        if (surface) items.push(surface)
+        return items
+      }, [])
+    }
+    if (!usesTargetedRootRead.value) {
+      return (rootSource.value ?? []).reduce<PropertySurface[]>((items, property) => {
+        const surface = composePropertySurface({ source: property as Property })
+        if (surface) items.push(surface)
+        return items
+      }, [])
+    }
 
     const rootById = new Map<string, PropertyCollectionDoc>()
     const overlayById = new Map<string, AppPropertyOverlay>()
@@ -229,7 +244,7 @@ export function usePropertyCollection(
       })
     }
 
-    const merged: PropertyCollectionDoc[] = []
+    const merged: PropertySurface[] = []
     const seen = new Set<string>()
 
     for (const property of liveRootDocs.docs.value ?? []) {
@@ -237,32 +252,20 @@ export function usePropertyCollection(
       if (!id || seen.has(id)) continue
       seen.add(id)
 
-      merged.push({
-        ...(rootById.get(id) ?? {}),
-        ...(overlayById.get(id) ?? {}),
-        id,
+      const surface = composePropertySurface({
+        source: rootById.get(id) as Property,
+        overlay: overlayById.get(id),
       })
-    }
-
-    for (const overlay of overlaySource.value ?? []) {
-      const id = resolvePropertyId(overlay)
-      if (!id || seen.has(id)) continue
-      seen.add(id)
-
-      merged.push({
-        ...(rootById.get(id) ?? {}),
-        ...(overlayById.get(id) ?? {}),
-        id,
-      })
+      if (surface) merged.push(surface)
     }
 
     return merged
   })
 
-  const collectionItems = computed<PropertyCollectionDoc[]>(() => targetItems.value)
+  const collectionItems = computed<PropertySurface[]>(() => targetItems.value)
 
-  const properties = computed<Property[]>(() =>
-    collectionItems.value.reduce<Property[]>((acc, property) => {
+  const properties = computed<PropertySurface[]>(() =>
+    collectionItems.value.reduce<PropertySurface[]>((acc, property) => {
       const id = resolvePropertyId(property)
       if (!id) return acc
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
@@ -271,46 +274,61 @@ export function usePropertyCollection(
         if (!targetHasConsoleAccess(property, filterOperatorId.value)) return acc
       }
 
-      acc.push({
-        ...(property as Property),
-        id,
-      })
+      acc.push({ ...property, id })
 
       return acc
     }, [])
   )
   const count = computed(() => properties.value.length)
+  const danglingOverlayIds = computed(() => {
+    if (sourceMode.value !== 'live' || resolvedShape.value !== 'both') return []
+    if (
+      overlayOperatorSource.pending.value ||
+      overlayTeamSource.pending.value ||
+      liveRootDocs.pending.value ||
+      overlayOperatorSource.error.value ||
+      overlayTeamSource.error.value ||
+      liveRootDocs.error.value
+    ) return []
+
+    const rootIds = new Set(
+      (liveRootDocs.docs.value ?? [])
+        .map((property) => resolvePropertyId(property))
+        .filter(Boolean)
+    )
+
+    return targetedPropertyIds.value.filter((id) => !rootIds.has(id))
+  })
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return rootSource.pending.value
-    if (resolvedShape.value === 'overlay') {
-      return (
-        overlayOperatorSource.pending.value ||
-        (hasOperatorFilter.value && overlayTeamSource.pending.value)
-      )
-    }
     if (!usesTargetedRootRead.value) return rootSource.pending.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
       liveRootDocs.pending.value ||
-      (resolvedShape.value === 'both' && hasOperatorFilter.value && (
+      (resolvedShape.value === 'both' && (
         overlayOperatorSource.pending.value ||
-        overlayTeamSource.pending.value
+        (hasOperatorFilter.value && overlayTeamSource.pending.value)
       ))
     )
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
     if (sourceMode.value === 'test') return rootSource.error.value
-    if (resolvedShape.value === 'overlay') {
-      return overlayOperatorSource.error.value ??
-        (hasOperatorFilter.value ? overlayTeamSource.error.value : undefined)
-    }
     if (!usesTargetedRootRead.value) return rootSource.error.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
-    return (resolvedShape.value === 'both' && hasOperatorFilter.value
+    const sourceError = (resolvedShape.value === 'both'
       ? overlayOperatorSource.error.value ?? overlayTeamSource.error.value
       : undefined) ?? liveRootDocs.error.value
+
+    if (sourceError) return sourceError
+    if (danglingOverlayIds.value.length) {
+      return new Error(
+        `[fireux-properties] AppProperty overlay(s) missing canonical Property root: ${danglingOverlayIds.value.join(', ')}`
+      )
+    }
+
+    return undefined
   })
   const { outcome } = useFirestoreCollectionState({
     count,

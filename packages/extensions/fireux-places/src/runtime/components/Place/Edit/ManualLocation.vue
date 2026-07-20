@@ -1,4 +1,5 @@
 <template>
+	<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: route manual edits through authorized sparse Place mutations. -->
 	<UCard v-if="isManual">
 		<template #header>
 			<div>
@@ -53,26 +54,37 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed } from 'vue'
-import { PlaceStorage, type Place } from '../../../models/place.model'
+import {
+	type PlaceMutationAuthority,
+	usePlaceUpdate,
+} from '../../../composables/fireux/firestore/place/mutations/usePlaceUpdate'
+import type { Place } from '../../../models/place.model'
 
-const props = defineProps<{ place: Place | null }>()
+const props = defineProps<{
+	place: Place | null
+	mutationAuthority?: PlaceMutationAuthority | null
+}>()
 const place = computed(() => props.place)
 const placeId = computed(() => place.value?.id ?? '')
 const isManual = computed(() => place.value?.source === 'manual')
 const toast = useToastify()
-const { updateDocument } = useFirestoreUpdate()
-const sanitize = (value: string) => value.trim()
-const parseNumber = (value: string | number) => {
-	const n = typeof value === 'number' ? value : Number(String(value).trim())
-	return Number.isFinite(n) ? n : null
-}
+const {
+	updateFormattedAddress,
+	updateLat,
+	updateLng,
+	updateName,
+	updateSearchTerm,
+} = usePlaceUpdate({ authority: () => props.mutationAuthority })
 
-async function updatePlace(patch: Partial<Place>, successTitle: string, failTitle: string) {
+async function updatePlace(
+	action: () => Promise<void>,
+	successTitle: string,
+	failTitle: string
+) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, patch)
+		await action()
 		toast.success(successTitle)
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -83,7 +95,7 @@ async function updatePlace(patch: Partial<Place>, successTitle: string, failTitl
 
 async function handleManualName(value: string) {
 	await updatePlace(
-		{ name: sanitize(value) || 'Untitled place' },
+		() => updateName(value, { id: placeId.value }),
 		'Name updated',
 		'Failed to update name'
 	)
@@ -91,7 +103,7 @@ async function handleManualName(value: string) {
 
 async function handleManualAddress(value: string) {
 	await updatePlace(
-		{ formatted_address: sanitize(value) },
+		() => updateFormattedAddress(value, { id: placeId.value }),
 		'Address updated',
 		'Failed to update address'
 	)
@@ -99,33 +111,23 @@ async function handleManualAddress(value: string) {
 
 async function handleManualSearchTerm(value: string) {
 	await updatePlace(
-		{ search_term: sanitize(value) },
+		() => updateSearchTerm(value, { id: placeId.value }),
 		'Search term updated',
 		'Failed to update search term'
 	)
 }
 
 async function handleManualLat(value: string | number) {
-	const parsed = parseNumber(value)
-	if (parsed === null) {
-		toast.error('Latitude must be a number')
-		throw new Error('Latitude must be a number')
-	}
 	await updatePlace(
-		{ lat: parsed },
+		() => updateLat(value, { id: placeId.value }),
 		'Latitude updated',
 		'Failed to update latitude'
 	)
 }
 
 async function handleManualLng(value: string | number) {
-	const parsed = parseNumber(value)
-	if (parsed === null) {
-		toast.error('Longitude must be a number')
-		throw new Error('Longitude must be a number')
-	}
 	await updatePlace(
-		{ lng: parsed },
+		() => updateLng(value, { id: placeId.value }),
 		'Longitude updated',
 		'Failed to update longitude'
 	)

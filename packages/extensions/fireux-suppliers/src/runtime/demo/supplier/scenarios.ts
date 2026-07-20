@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep only typed Supplier console targets.
+// Concurrent edit — 2026-07-20 22:11 CEST — Both-Entity Authority — Supplier: keep demo roots aligned to access-free canonical Supplier shape.
 import {
   SupplierModel,
   type Supplier,
@@ -21,7 +22,6 @@ const makeSupplier = (input: {
   id: input.id,
   app_scope_state: 'root_only',
   app_scope_app_id: '',
-  operator_ids: [],
   company_id: '',
   slug: input.id,
   supplier_organization_name: input.name,

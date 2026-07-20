@@ -1,4 +1,5 @@
 <template>
+	<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: compact social links through authorized Place writes. -->
 	<UCard>
 		<template #header>
 			<div>
@@ -58,14 +59,22 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed } from 'vue'
-import { PlaceStorage, type Place } from '../../../models/place.model'
+import {
+	type PlaceMutationAuthority,
+	usePlaceUpdate,
+} from '../../../composables/fireux/firestore/place/mutations/usePlaceUpdate'
+import type { Place } from '../../../models/place.model'
 
-const props = defineProps<{ place: Place | null }>()
+const props = defineProps<{
+	place: Place | null
+	mutationAuthority?: PlaceMutationAuthority | null
+}>()
 const placeId = computed(() => props.place?.id ?? '')
 const toast = useToastify()
-const { updateDocument } = useFirestoreUpdate()
+const { updateSocialLinks } = usePlaceUpdate({
+	authority: () => props.mutationAuthority,
+})
 const sanitize = (value: string) => value.trim()
 const socialLinks = computed(() => ({
 	website: props.place?.social_links?.website ?? '',
@@ -82,12 +91,10 @@ async function handleSocialLink(
 ) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
-			social_links: {
-				...socialLinks.value,
-				[platform]: sanitize(value),
-			},
-		})
+		await updateSocialLinks(
+			{ ...socialLinks.value, [platform]: sanitize(value) },
+			{ id: placeId.value }
+		)
 		toast.success('Social link updated')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'

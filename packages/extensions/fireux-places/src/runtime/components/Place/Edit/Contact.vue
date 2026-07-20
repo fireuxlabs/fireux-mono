@@ -1,4 +1,5 @@
 <template>
+	<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: make Place the authorized sparse contact, currency, and timezone owner. -->
 	<UCard>
 		<template #header>
 			<div>
@@ -6,7 +7,7 @@
 					Contact and defaults
 				</div>
 				<p class="text-sm text-dimmed">
-					Public contact details and simple place defaults.
+					Shared contact, currency, and timezone inherited by linked entities.
 				</p>
 			</div>
 		</template>
@@ -43,11 +44,13 @@
 				:update-function="handleWebsite"
 			/>
 			<MoleculesFormsFirestoreSimpleField
-				label="Default currency"
+				label="Currency"
 				:firebase-value="place?.default_currency_code"
 				placeholder="CHF"
 				:maxlength="3"
-				:update-function="handleDefaultCurrencyCode"
+				:validation-function="validateCurrencyCode"
+				:formatting-function="formatCurrencyCode"
+				:update-function="handleCurrencyCode"
 			/>
 			<MoleculesFormsFirestoreSimpleField
 				label="Timezone"
@@ -62,22 +65,37 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed } from 'vue'
-import { PlaceStorage, type Place } from '../../../models/place.model'
+import {
+	type PlaceMutationAuthority,
+	usePlaceUpdate,
+} from '../../../composables/fireux/firestore/place/mutations/usePlaceUpdate'
+import type { Place } from '../../../models/place.model'
 
-const props = defineProps<{ place: Place | null }>()
+const props = defineProps<{
+	place: Place | null
+	mutationAuthority?: PlaceMutationAuthority | null
+}>()
 const place = computed(() => props.place)
 const placeId = computed(() => place.value?.id ?? '')
 const toast = useToastify()
-const { updateDocument } = useFirestoreUpdate()
-const sanitize = (value: string) => value.trim()
-const sanitizeCurrency = (value: string) => sanitize(value).toUpperCase()
+const {
+	updateDefaultCurrencyCode,
+	updateEmail,
+	updatePhone,
+	updateShortName,
+	updateTimezone,
+	updateWebsite,
+} = usePlaceUpdate({ authority: () => props.mutationAuthority })
 
-async function updatePlace(patch: Partial<Place>, successTitle: string, failTitle: string) {
+async function updatePlace(
+	action: () => Promise<void>,
+	successTitle: string,
+	failTitle: string
+) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, patch)
+		await action()
 		toast.success(successTitle)
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -88,7 +106,7 @@ async function updatePlace(patch: Partial<Place>, successTitle: string, failTitl
 
 async function handleShortName(value: string) {
 	await updatePlace(
-		{ short_name: sanitize(value) },
+		() => updateShortName(value, { id: placeId.value }),
 		'Short name updated',
 		'Failed to update short name'
 	)
@@ -96,7 +114,7 @@ async function handleShortName(value: string) {
 
 async function handlePhone(value: string) {
 	await updatePlace(
-		{ phone: sanitize(value) },
+		() => updatePhone(value, { id: placeId.value }),
 		'Phone updated',
 		'Failed to update phone'
 	)
@@ -104,7 +122,7 @@ async function handlePhone(value: string) {
 
 async function handleEmail(value: string) {
 	await updatePlace(
-		{ email: sanitize(value) },
+		() => updateEmail(value, { id: placeId.value }),
 		'Email updated',
 		'Failed to update email'
 	)
@@ -112,23 +130,34 @@ async function handleEmail(value: string) {
 
 async function handleWebsite(value: string) {
 	await updatePlace(
-		{ website: sanitize(value) },
+		() => updateWebsite(value, { id: placeId.value }),
 		'Website updated',
 		'Failed to update website'
 	)
 }
 
-async function handleDefaultCurrencyCode(value: string) {
+const formatCurrencyCode = (value: string) =>
+	String(value || '').trim().toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3)
+
+const validateCurrencyCode = (value: string) => {
+	const code = formatCurrencyCode(value)
+	return {
+		isValid: !code || /^[A-Z]{3}$/.test(code),
+		message: !code || code.length === 3 ? '' : 'Use a 3-letter ISO currency code.',
+	}
+}
+
+async function handleCurrencyCode(value: string) {
 	await updatePlace(
-		{ default_currency_code: sanitizeCurrency(value) },
-		'Default currency updated',
-		'Failed to update default currency'
+		() => updateDefaultCurrencyCode(value, { id: placeId.value }),
+		'Currency updated',
+		'Failed to update currency'
 	)
 }
 
 async function handleTimezone(value: string) {
 	await updatePlace(
-		{ timezone: sanitize(value) },
+		() => updateTimezone(value, { id: placeId.value }),
 		'Timezone updated',
 		'Failed to update timezone'
 	)

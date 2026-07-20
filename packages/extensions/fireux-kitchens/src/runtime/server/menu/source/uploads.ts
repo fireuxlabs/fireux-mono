@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: require explicit linked Place currency for Menu creation.
 import {
   createError,
   getQuery,
@@ -21,8 +22,9 @@ import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/uti
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
 import { KitchenStorage } from '../../../models/kitchen.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../../models/kitchen/menu/menu-source-upload.model'
-import { readKitchenCurrencyCode } from '../../../utils/kitchen-spine'
 
 const menuUploadCollection = MenuSourceUploadStorage.collection
 const maxFileSizeMb = 10
@@ -199,22 +201,30 @@ export async function assertKitchenMenuUploadAccess(
 }
 
 export async function assertKitchenMenuCurrencyCode(
-  appId: string,
+  _appId: string,
   kitchenId: string
 ) {
   const db = getRuntimeFirestore()
-  const [scopedSnap, rootSnap] = await Promise.all([
-    db.doc(kitchenMenuUploadKitchenPath(appId, kitchenId)).get(),
-    db.doc(`${KitchenStorage.rootCollection}/${kitchenId}`).get(),
-  ])
-  const currencyCode =
-    readKitchenCurrencyCode(scopedSnap.data()) ||
-    readKitchenCurrencyCode(rootSnap.data())
+  const rootSnap = await db
+    .doc(`${KitchenStorage.rootCollection}/${kitchenId}`)
+    .get()
+  const placeId = text(rootSnap.data()?.place_id)
+  if (!placeId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Link this Kitchen to a Place before creating menus.',
+    })
+  }
+  const placeSnap = await db
+    .collection(PlaceStorage.collection)
+    .doc(placeId)
+    .get()
+  const currencyCode = readPlaceCurrencyCode(placeSnap.data())
 
   if (!currencyCode) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Select a kitchen currency code before creating menus.',
+      statusMessage: 'Set the linked Place currency before creating menus.',
     })
   }
 

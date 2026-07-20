@@ -1,4 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/meta.model.ts
+// Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: clarify canonical-root relationship and app support semantics.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 
@@ -64,10 +65,11 @@ export type FireuxRootScope = {
 }
 
 /**
- * Canonical root facade relationship to app-scoped records.
+ * Canonical root relationship to app-scoped support records.
  *
- * Root-plus-app entity families use this on the root public record so the
- * relationship is explicit instead of inferred from domain state or overlays.
+ * Root-plus-app entity families use this on the canonical root so the
+ * relationship is explicit instead of inferred from domain state or app
+ * records. Root placement does not itself make the record public-readable.
  * Identity roots and profile roots do not use this; their app records are overlays.
  */
 export type FireuxAppScopeState =
@@ -170,7 +172,7 @@ export type FireuxConsoleAccess = {
 }
 
 /**
- * Canonical app-scoped support shape.
+ * Canonical app-scoped access-support shape, never a second entity identity.
  *
  * Console entity rule:
  * - users see/select console entities through `team_ids`

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-20
+// usage_note: non-canonical audit report for unresolved slug/id drift; not part of pnpm guard.
+// Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: classify unresolved slug drift as an audit, not a passing guard.
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
@@ -23,22 +24,14 @@ const SKIP_DIRS = new Set([
   'build',
   'coverage',
 ])
-const SKIP_REL_PREFIXES = [
-  'docs/ai',
-]
-const EXTENSIONS = new Set([
-  '.js',
-  '.mjs',
-  '.ts',
-  '.tsx',
-  '.vue',
-  '.md',
-])
+const SKIP_REL_PREFIXES = ['docs/ai']
+const EXTENSIONS = new Set(['.js', '.mjs', '.ts', '.tsx', '.vue', '.md'])
 
 const rules = [
   {
     id: 'slug-field-query',
-    message: 'Public slug reads should use document id, not slug field queries.',
+    message:
+      'Public slug reads should use document id, not slug field queries.',
     patterns: [
       /where\s*\(\s*['"`]slug['"`]/,
       /queryOneByField\s*\([^)]*['"`]slug['"`]/,
@@ -47,7 +40,8 @@ const rules = [
   },
   {
     id: 'slug-id-fallback',
-    message: 'Public route identity must not silently fall back between slug and id.',
+    message:
+      'Public route identity must not silently fall back between slug and id.',
     patterns: [
       /\bslug\s*\|\|\s*id\b/,
       /\bid\s*\|\|\s*slug\b/,
@@ -67,7 +61,8 @@ const rules = [
   },
   {
     id: 'slug-claim-index',
-    message: 'Slug claim/index systems are not canonical for FireUX slug-id routing.',
+    message:
+      'Slug claim/index systems are not canonical for FireUX slug-id routing.',
     patterns: [
       /slug_claims/,
       /slug_to_id/i,
@@ -108,13 +103,13 @@ function shouldReadFile(filePath) {
 function collectFiles(dir, out = []) {
   if (!existsSync(dir)) return out
   for (const entry of readdirSync(dir)) {
-      const fullPath = path.join(dir, entry)
-      const stats = statSync(fullPath)
-      if (stats.isDirectory()) {
-        if (shouldSkipDir(fullPath)) continue
-        collectFiles(fullPath, out)
-        continue
-      }
+    const fullPath = path.join(dir, entry)
+    const stats = statSync(fullPath)
+    if (stats.isDirectory()) {
+      if (shouldSkipDir(fullPath)) continue
+      collectFiles(fullPath, out)
+      continue
+    }
     if (stats.isFile() && shouldReadFile(fullPath)) {
       out.push(fullPath)
     }
@@ -138,7 +133,9 @@ function isAllowedContext(rel, lines, index) {
   return hasAllowText(context)
 }
 
-const files = SEARCH_ROOTS.flatMap((entry) => collectFiles(path.join(root, entry)))
+const files = SEARCH_ROOTS.flatMap((entry) =>
+  collectFiles(path.join(root, entry))
+)
 const findings = []
 const allowedFindings = []
 

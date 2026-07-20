@@ -2,6 +2,7 @@
 // last_used: 2026-07-20
 // usage_note: enforces the portable root and sole pnpm workspace authority.
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2 and 4 of 4: lock portable root and demo ownership.
+// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: lock canonical root quality commands without forwarding aliases.
 // FILE: scripts/guards/root.mjs
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
@@ -144,6 +145,34 @@ export async function run(ctx) {
         '- Remove package.json#workspaces and re-run.',
       ].join('\n')
     )
+  }
+
+  const expectedScripts = {
+    guard: 'node scripts/guard.mjs',
+    'typecheck:packages': "pnpm -r --filter './packages/*/*' exec tsc --noEmit",
+  }
+  for (const [name, command] of Object.entries(expectedScripts)) {
+    if (rootPackage.scripts?.[name] !== command) {
+      throw new Error(
+        `[guard] Root script ${name} must remain the canonical command: ${command}`
+      )
+    }
+  }
+
+  for (const alias of [
+    'guard:shape',
+    'guard:slug',
+    'guard:slug:report',
+    'guard:ts',
+    'tsc:check',
+  ]) {
+    if (
+      Object.prototype.hasOwnProperty.call(rootPackage.scripts || {}, alias)
+    ) {
+      throw new Error(
+        `[guard] Root command alias ${alias} is forbidden; call the canonical command directly.`
+      )
+    }
   }
 
   console.log('[guard] ✅ Repo root is clean')

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: let an empty Kitchen display override delete itself and inherit Place identity.
 import { collection, deleteField, getDocs, query, where } from 'firebase/firestore'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -50,14 +51,10 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
 
   const moveString = (
     from: string,
-    to: string,
-    options: { required?: boolean } = {}
+    to: string
   ) => {
     if (!hasOwn(source, from)) return
     const value = clean(source[from])
-    if (options.required && !value) {
-      throw new Error('Kitchen display name is required.')
-    }
     if (from !== to) next[from] = deleteField()
     next[to] = value || deleteField()
   }
@@ -158,9 +155,9 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     if (hasOwn(appScope, 'app_id')) source['app_scope.app_id'] = appScope.app_id
   }
 
-  moveString('display_name', 'identity.display_name', { required: true })
-  moveString('name', 'identity.display_name', { required: true })
-  moveString('identity.display_name', 'identity.display_name', { required: true })
+  moveString('display_name', 'identity.display_name')
+  moveString('name', 'identity.display_name')
+  moveString('identity.display_name', 'identity.display_name')
   moveString('tagline', 'identity.tagline')
   moveString('identity.tagline', 'identity.tagline')
   moveString('display_image_url', 'identity.image_url')

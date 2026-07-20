@@ -1,8 +1,10 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu uploads on linked Place currency.
 import { computed, ref, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
-import { readKitchenCurrencyCode } from '../../../../../../utils/kitchen-spine'
+import { useKitchenConsolePlace } from '../../identity/useKitchenConsolePlace'
 
 type MaybeRef<T> = T | Ref<T> | ComputedRef<T>
 
@@ -27,6 +29,7 @@ export function useKitchenConsoleMenuUploadPayload(
 ) {
   const { currentUser } = useAuth()
   const kitchenConsole = useKitchenConsole()
+  const { place } = useKitchenConsolePlace()
   const authToken = ref('')
 
   const kitchenSlug = computed(() =>
@@ -37,7 +40,7 @@ export function useKitchenConsoleMenuUploadPayload(
     )
   )
   const currencyCode = computed(() =>
-    readKitchenCurrencyCode(kitchenConsole.selection.kitchen.value)
+    readPlaceCurrencyCode(place.value)
   )
   const menuPath = computed(() =>
     normalizeSlug(optionText(options.uploadId) || 'main-menu')

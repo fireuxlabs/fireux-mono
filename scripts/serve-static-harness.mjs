@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-25
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-20
+// usage_note: serve the external embed harness and current provider-source previews.
+// Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: point Go QR source previews at current dynamic routes.
 // FILE: scripts/serve-static-harness.mjs
 // Serves the plain external-site harness without adding a package to that static project.
 
@@ -12,8 +13,14 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
-const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const publicRoot = path.join(repoRoot, 'projects/fireux/no-fireux-embed-test/public')
+const repoRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..'
+)
+const publicRoot = path.join(
+  repoRoot,
+  'projects/fireux/no-fireux-embed-test/public'
+)
 const port = Number(process.env.PORT || 3025)
 
 const mimeTypes = {
@@ -27,21 +34,21 @@ const mimeTypes = {
 
 const sourcePreviews = {
   'go-qr-url': [
-    'projects/fireux/go-qr/app/pages/tools/url.vue',
+    'projects/fireux/go-qr/app/pages/tools/url/[id].vue',
     'projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Url.vue',
     'projects/fireux/go-qr/app/components/GoQr/Provider/Frame.vue',
     'projects/fireux/go-qr/server/utils/tools/url.ts',
     'projects/fireux/go-qr/server/api/tools/url/index.get.ts',
   ],
   'go-qr-doc': [
-    'projects/fireux/go-qr/app/pages/tools/doc.vue',
+    'projects/fireux/go-qr/app/pages/tools/doc/[id].vue',
     'projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Doc.vue',
     'projects/fireux/go-qr/app/components/GoQr/Provider/Frame.vue',
     'projects/fireux/go-qr/server/utils/tools/doc.ts',
     'projects/fireux/go-qr/server/api/tools/doc/index.get.ts',
   ],
   'go-qr-text': [
-    'projects/fireux/go-qr/app/pages/tools/text.vue',
+    'projects/fireux/go-qr/app/pages/tools/text/[id].vue',
     'projects/fireux/go-qr/app/components/GoQr/Provider/Tools/Text.vue',
     'projects/fireux/go-qr/app/components/GoQr/Provider/Frame.vue',
     'projects/fireux/go-qr/server/utils/tools/text.ts',
@@ -74,9 +81,14 @@ const sourcePreviews = {
 function resolvePublicPath(requestUrl = '/') {
   const url = new URL(requestUrl, `http://localhost:${port}`)
   const decodedPath = decodeURIComponent(url.pathname)
-  const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, '')
+  const normalizedPath = path
+    .normalize(decodedPath)
+    .replace(/^(\.\.[/\\])+/, '')
   const withoutLeadingSlash = normalizedPath.replace(/^[/\\]+/, '')
-  const requestedPath = path.join(publicRoot, withoutLeadingSlash || 'index.html')
+  const requestedPath = path.join(
+    publicRoot,
+    withoutLeadingSlash || 'index.html'
+  )
   const relativePath = path.relative(publicRoot, requestedPath)
 
   if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) {
@@ -131,7 +143,9 @@ async function serveSourcePreview(pathname, response) {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'no-store',
     })
-    response.end(JSON.stringify({ ok: false, reason: 'unknown-source-preview' }))
+    response.end(
+      JSON.stringify({ ok: false, reason: 'unknown-source-preview' })
+    )
     return
   }
 

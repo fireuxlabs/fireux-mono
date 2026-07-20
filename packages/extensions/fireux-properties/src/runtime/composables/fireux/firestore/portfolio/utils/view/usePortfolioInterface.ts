@@ -1,13 +1,21 @@
+// Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Portfolio: compose only app access delta onto canonical root identity.
+import { safeStringArray } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import {
   PortfolioStorage,
+  type AppPortfolio,
   type Portfolio,
 } from '../../../../../../models/portfolio.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
-export type PortfolioSurface = Partial<Portfolio>
-export type PortfolioSurfaceParts<TPortfolio extends object = Partial<Portfolio>> = {
+type PortfolioAccessDelta = Partial<
+  Pick<AppPortfolio, 'operator_ids' | 'team_ids' | 'join_requests'>
+>
+export type PortfolioSurface = Partial<Portfolio> & PortfolioAccessDelta
+export type PortfolioSurfaceParts<
+  TPortfolio extends Partial<Portfolio> = Partial<Portfolio>,
+> = {
   portfolio?: TPortfolio | null | undefined
-  overlay?: Record<string, unknown> | null | undefined
+  overlay?: AppPortfolio | null | undefined
 }
 
 export namespace PortfolioCard {
@@ -35,23 +43,34 @@ export function usePortfolioInterface() {
   type PortfolioPreview = PortfolioCard.Card
   type PortfolioProfile = PortfolioCard.Card
 
-  function surface<TPortfolio extends object = Partial<Portfolio>>(
+  function surface<TPortfolio extends Partial<Portfolio> = Partial<Portfolio>>(
     parts: PortfolioSurfaceParts<TPortfolio>
   ): (TPortfolio & PortfolioSurface) | null {
     const source = parts.portfolio ?? null
     if (!source) return null
 
-    const merged = {
-      ...source,
-      ...(parts.overlay ?? {}),
-    } as TPortfolio & PortfolioSurface
-    const id = safeString(merged.id)
+    const id = safeString(source.id)
     if (!id) return null
+    const {
+      operator_ids: _legacyOperatorIds,
+      team_ids: _legacyTeamIds,
+      join_requests: _legacyJoinRequests,
+      ...root
+    } = source as TPortfolio & Record<string, unknown>
+    const overlay = parts.overlay
+    const accessDelta: PortfolioAccessDelta = overlay
+      ? {
+          operator_ids: safeStringArray(overlay.operator_ids),
+          team_ids: safeStringArray(overlay.team_ids),
+          join_requests: safeStringArray(overlay.join_requests),
+        }
+      : {}
 
     return {
-      ...merged,
+      ...root,
+      ...accessDelta,
       id,
-    }
+    } as TPortfolio & PortfolioSurface
   }
 
   function map(portfolio: PortfolioSurface): PortfolioCard.Card {

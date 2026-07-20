@@ -1,11 +1,10 @@
+// Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: preserve Menu operations on reconfirm and omit absent catalogue fields.
 import { DishStorage } from '../../../models/kitchen/dish.model'
 import { KitchenMenuStorage as MenuStorage } from '../../../models/kitchen/menu/kitchen-menu.model'
 import {
-  MenuItemModel,
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../../models/kitchen/menu/menu-item.model'
-import { MenuSectionModel } from '../../../models/kitchen/menu/menu-section.model'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
@@ -75,18 +74,21 @@ export async function writeKitchenMenuDraft(input: {
   const dishIds = new Set<string>()
   let itemCount = 0
 
-  const menuData = {
+  const description = text(existing.description)
+  const menuData: Record<string, unknown> = {
     id: input.menuId,
     kitchen_id: input.kitchenId,
     name: text(existing.name) || titleFromId(input.menuId) || input.menuId,
-    description: text(existing.description),
     status,
     sort_order: Number(existing.sort_order || 0),
     created: record(existing.created).at ? existing.created : stamp,
     updated: stamp,
+    ...(description ? { description } : {}),
   }
 
-  writeBatch.set(menuRef, menuData)
+  // Catalogue confirmation owns catalogue fields only. Ordering and surface
+  // policy remain on the existing KitchenMenu document.
+  writeBatch.set(menuRef, menuData, { merge: true })
 
   input.sections.forEach((section, sectionIndex) => {
     const sectionId = uniqueSlug(
@@ -97,7 +99,6 @@ export async function writeKitchenMenuDraft(input: {
     const sectionRef = menuRef.collection('sections').doc(sectionId)
 
     writeBatch.set(sectionRef, {
-      ...MenuSectionModel,
       id: sectionId,
       kitchen_id: input.kitchenId,
       menu_id: input.menuId,
@@ -133,17 +134,18 @@ export async function writeKitchenMenuDraft(input: {
           id: dishId,
           name: text(item.name),
           slug: dishId,
-          description: text(item.description),
           item_kind: item.item_kind,
           is_deal: item.is_deal,
           kitchen_id: input.kitchenId,
           created: stamp,
           updated: stamp,
+          ...(text(item.description)
+            ? { description: text(item.description) }
+            : {}),
         },
         { merge: true }
       )
-      writeBatch.set(sectionRef.collection('items').doc(itemId), {
-        ...MenuItemModel,
+      const itemData: Record<string, unknown> = {
         id: itemId,
         kitchen_id: input.kitchenId,
         menu_id: input.menuId,
@@ -151,15 +153,16 @@ export async function writeKitchenMenuDraft(input: {
         dish_id: dishId,
         item_kind: item.item_kind,
         is_deal: item.is_deal,
-        image_url: text(item.image_url),
         price,
-        add_ons: addOns,
-        price_options: priceOptions,
         status: 'active',
         sort_order: itemIndex,
         created: stamp,
         updated: stamp,
-      })
+        ...(text(item.image_url) ? { image_url: text(item.image_url) } : {}),
+        ...(addOns.length ? { add_ons: addOns } : {}),
+        ...(priceOptions.length ? { price_options: priceOptions } : {}),
+      }
+      writeBatch.set(sectionRef.collection('items').doc(itemId), itemData)
 
       itemCount += 1
     })

@@ -55,36 +55,58 @@
       aria-atomic="true"
     />
 
-    <KitchenCollectionList
-      v-else-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <KitchenCardsPill
-          v-bind="card"
-          :link="linkEnabled"
-          :show-badges="showBadges"
-        />
-      </template>
-      <template #cell="{ card }">
-        <KitchenCardsCell
-          v-bind="card"
-          :link="linkEnabled"
-          :show-badges="showBadges"
-          directory
-        />
-      </template>
-    </KitchenCollectionList>
+    <div v-else-if="cardsFiltered.length">
+      <KitchenCollectionList
+        :cards="cardsFiltered"
+        :variant="variant"
+      >
+        <template #pill="{ card }">
+          <KitchenCardsPill
+            v-bind="card"
+            :link="linkEnabled"
+            :show-badges="showBadges"
+          />
+        </template>
+        <template #cell="{ card }">
+          <KitchenCardsCell
+            v-bind="card"
+            :link="linkEnabled"
+            :show-badges="showBadges"
+            directory
+          />
+        </template>
+      </KitchenCollectionList>
 
-    <CollectionDirectoryState
-      v-else
-      icon="i-lucide-utensils"
-      :title="query ? 'No matching kitchens' : 'No kitchens yet'"
-      :description="query
-        ? 'Try a different kitchen name or location.'
-        : 'Published kitchens will appear here when they are ready.'"
-    />
+      <div v-if="hasMore">
+        <UButton
+          label="Load more kitchens"
+          color="neutral"
+          variant="soft"
+          :loading="loadingMore"
+          @click="loadMore"
+        />
+      </div>
+    </div>
+
+    <div v-else>
+      <CollectionDirectoryState
+        icon="i-lucide-utensils"
+        :title="query ? 'No matching kitchens' : 'No kitchens yet'"
+        :description="query
+          ? 'Try a different kitchen name or location.'
+          : 'Published kitchens will appear here when they are ready.'"
+      />
+
+      <div v-if="hasMore && !query">
+        <UButton
+          label="Check more kitchens"
+          color="neutral"
+          variant="soft"
+          :loading="loadingMore"
+          @click="loadMore"
+        />
+      </div>
+    </div>
 
     <div>
       <DevJson
@@ -100,6 +122,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: consume the bounded public Kitchen/Place projection without page-local search false negatives.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
@@ -107,7 +130,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import {
   computed,
 } from 'vue'
-import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/useKitchen'
+import { usePublicKitchenIndex } from '../../../composables/fireux/kitchen/usePublicKitchenIndex'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -142,11 +165,14 @@ const props = withDefaults(
   }
 )
 
-const fetched = useKitchenCollection()
+const fetched = usePublicKitchenIndex()
 const collectionSurface = computed<KitchenCollectionItem[]>(
   () => fetched.kitchens.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
+const hasMore = computed(() => fetched.hasMore.value)
+const loadingMore = computed(() => fetched.loadingMore.value)
+const loadMore = () => fetched.loadMore()
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
@@ -204,7 +230,7 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
-  () => showSearch.value && totalCount.value > 15
+  () => showSearch.value && !hasMore.value && totalCount.value > 15
 )
 const countLabel = computed(() =>
   showSearchInput.value && query.value

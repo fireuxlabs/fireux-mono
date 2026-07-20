@@ -1,8 +1,11 @@
 name: Shape
+# Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: use canonical guard and script-lifecycle commands directly.
+
 on:
   pull_request:
   push:
     branches: [main]
+
 jobs:
   shape:
     runs-on: ubuntu-latest
@@ -15,6 +18,7 @@ jobs:
         with:
           node-version-file: .node-version
           cache: 'pnpm'
-      - run: pnpm i --frozen-lockfile
-      - run: pnpm guard:shape
-      - run: pnpm guard:ts
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm guard
+      - run: pnpm audit:scripts
+        if: ${{ always() }}

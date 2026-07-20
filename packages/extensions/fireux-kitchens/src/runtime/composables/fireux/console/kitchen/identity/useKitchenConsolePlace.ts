@@ -1,7 +1,9 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: resolve demo Place data through the lazy Kitchen console adapter.
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: expose Place-owned currency to Kitchen console consumers.
 import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import type { Place } from 'fireux-places/runtime/models/place.model'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 import {
   findKitchenConsoleDemoScenario,
@@ -51,11 +53,13 @@ export function useKitchenConsolePlace() {
         ? live.pending.value
         : false
   )
+  const currencyCode = computed(() => readPlaceCurrencyCode(place.value))
 
   return {
     ...identity,
     livePlaceId,
     place,
     pending,
+    currencyCode,
   }
 }

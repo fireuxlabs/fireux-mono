@@ -1,6 +1,9 @@
 App config spine map
+
 <!-- Concurrent edit — 2026-07-19 17:06 CEST — Directory Authority Cutover: clarify App versus Ecosystem database authority. -->
 <!-- Concurrent edit — 2026-07-20 16:24 CEST — Repo Efficiency Pass 1 of 6: map self-join declaration and enforcement authority. -->
+<!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: map runtime-owned App media writes. -->
+
 Updated: 2026-07-20
 Ref: 8d83d3fa7
 Role: map, not canon
@@ -9,20 +12,24 @@ Purpose:
 Map how FireUX project apps declare identity, modules, domains, consoles, and app mode.
 
 Vertical links:
+
 - Parent: fireux.md
 - Child: family-tenant-global.md
 - Child: console.md
 
 Horizontal links:
+
 - runtime-package.md
 - pnpm.md
 
 Core files:
+
 - `fireux-core/config/app/fireux.config`
 - `fireux-core/config/app/nuxt-overrides`
 - `fireux-core/runtime/composables/fireux/app/FireUXConfig`
 
 App pattern:
+
 - Import `defineFireuxConfig`.
 - Import `withFireuxNuxtConfig`.
 - Build one `fireuxConfig`.
@@ -42,6 +49,7 @@ App pattern:
   domain extensions on the app's behalf.
 
 Important fields:
+
 - `ecosystem`
 - `projectId`
 - `ecosystemId`, optional
@@ -61,9 +69,18 @@ Important fields:
 - `navHiddenKeys`
 
 Mode differences:
+
 - Global apps can expose multiple domains and consoles.
 - Tenant apps usually pin console targets through `consoleConfig.<family>.targetIds`.
 - Standalone is a FireUX-owned mode.
 
 Working rule:
 Do not duplicate app mode logic in domain code. Read it through `useFireUXConfig` and `useConsole`.
+
+App media:
+
+- Canonical paths, validation, upload, and App-field updates are owned by the
+  core App media runtime.
+- `pnpm audit:app-media` is a read-only cross-check against that truth.
+- Root bulk upload, reset, and deletion scripts are retired migration tooling;
+  do not recreate a second App media writer under `scripts/`.

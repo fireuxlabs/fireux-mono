@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: resolve only explicit Kitchen hour overrides over Place business hours.
 import {
   normalizeFireuxAppScopeState,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
@@ -11,6 +12,7 @@ import type {
   KitchenImageShade,
   KitchenPaymentRequirement,
 } from '../models/kitchen.model'
+import { readPlaceBusinessHours } from 'fireux-places/runtime/utils/place-spine'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import {
   kitchenOrderTypes,
@@ -290,6 +292,7 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
 
+/** Read-only projection helper. Canonical currency is owned by linked Place. */
 export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
   const source = record(value)
 
@@ -329,4 +332,41 @@ export const readKitchenOperationHours = (value: KitchenSpineRecord) => {
   const orders = record(source.orders)
 
   return readWeekdayTimeWindowsConfig(orders.operation_hours)
+}
+
+export const hasKitchenOperationHours = (value: KitchenSpineRecord) => {
+  const source = record(value)
+  const orders = record(source.orders)
+
+  return hasKeys(record(orders.operation_hours))
+}
+
+export const resolveKitchenOperationHours = (
+  kitchen: KitchenSpineRecord,
+  place: KitchenSpineRecord
+) => {
+  const kitchenHours = readKitchenOperationHours(kitchen)
+  const placeHours = readPlaceBusinessHours(place)
+
+  if (
+    hasKitchenOperationHours(kitchen) &&
+    kitchenHours.source === 'custom' &&
+    kitchenHours.windows.length
+  ) {
+    return kitchenHours
+  }
+
+  if (placeHours) {
+    return {
+      source: 'place' as const,
+      timezone: placeHours.timezone,
+      windows: placeHours.windows,
+    }
+  }
+
+  return {
+    source: 'place' as const,
+    timezone: text(record(place).timezone) || kitchenHours.timezone,
+    windows: [],
+  }
 }

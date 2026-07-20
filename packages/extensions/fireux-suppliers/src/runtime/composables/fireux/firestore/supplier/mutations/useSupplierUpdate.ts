@@ -1,30 +1,19 @@
+// Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: require an explicit entity id on fixed root and App-overlay writes.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import {
-  resolveConsoleEntityCollectionPath,
-  type ConsoleEntityRuntimeMode,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import type { Ref } from 'vue'
 import {
+  AppSupplierStorage,
   SupplierStorage,
   type AppSupplier,
+  type AppSupplierUpdateInput,
   type Supplier,
+  type SupplierUpdateInput,
 } from '../../../../../models/supplier/Supplier.model'
 
-const supplierCollection = SupplierStorage.rootCollection
-
-type SupplierRootAndOverlay = {
-  coreSupplier: Ref<Supplier | null | undefined>
-  appSupplier: Ref<AppSupplier | null | undefined>
-}
-
-type SupplierUpdateCollectionOptions = {
-  collectionPath?: string | null
-  mode?: ConsoleEntityRuntimeMode | null
-  source?: ConsoleEntityRuntimeMode | null
-  test?: boolean
+type SupplierMutationOptions = {
+  id: string
 }
 /**
  * useSupplierUpdate
@@ -33,17 +22,9 @@ type SupplierUpdateCollectionOptions = {
  *
  * Shared update surface for v1 scoped fields.
  */
-export function useSupplierUpdate(
-  supplier?: SupplierRootAndOverlay | null,
-  defaults: SupplierUpdateCollectionOptions = {}
-) {
+export function useSupplierUpdate() {
   const { updateDocument } = useFirestoreUpdate()
   const { appId } = useFireUXConfig()
-  const hasAppScope = Boolean(appId)
-  type UpdateOptions = SupplierUpdateCollectionOptions & {
-    id?: string | null
-    scope?: 'core' | 'app'
-  }
 
   const pruneUndefined = <T extends Record<string, any>>(payload: Partial<T>) => {
     const entries = Object.entries(payload).filter(([, value]) => value !== undefined)
@@ -64,79 +45,39 @@ export function useSupplierUpdate(
       )
     )
 
-  const resolveId = async (explicit?: string | null): Promise<string> => {
-    const trimmed = explicit?.trim()
-    if (trimmed) return trimmed
-
-    const fromRefs =
-      supplier?.coreSupplier?.value?.id ?? supplier?.appSupplier?.value?.id ?? null
-    if (fromRefs?.trim()) return fromRefs.trim()
-
-    const user = await useRequireUser()
-    if (!user?.uid) {
-      throw new Error('[useSupplierUpdate] Unable to resolve supplier id')
-    }
-    return user.uid
+  const resolveId = (explicit: string): string => {
+    const id = explicit.trim()
+    if (!id) throw new Error('[useSupplierUpdate] Supplier id is required')
+    return id
   }
-
-  const resolveMode = (
-    options: SupplierUpdateCollectionOptions = {}
-  ): ConsoleEntityRuntimeMode => {
-    if (options.test === true || defaults.test === true) return 'test'
-    return (
-      options.mode ??
-      options.source ??
-      defaults.mode ??
-      defaults.source ??
-      'live'
-    )
-  }
-
-  const resolveCoreCollectionPath = (
-    options: SupplierUpdateCollectionOptions = {}
-  ) =>
-    resolveConsoleEntityCollectionPath({
-      family: supplierCollection,
-      mode: resolveMode(options),
-      explicitPath: options.collectionPath ?? defaults.collectionPath,
-    })
 
   /**
-   * Update the CORE Supplier record
-   * - global document (e.g. suppliers/{uid})
+   * Update the canonical root Supplier record.
+   * Supplier ids are independent entity ids and must be supplied explicitly.
    */
-  const updateCoreSupplier = async (
-    patch: Partial<Supplier>,
-    options: UpdateOptions = {}
+  const updateSupplierRoot = async (
+    patch: SupplierUpdateInput,
+    options: SupplierMutationOptions
   ) => {
-    const resolvedId = await resolveId(options.id)
-    const collectionPath = resolveCoreCollectionPath(options)
-    if (!collectionPath) {
-      throw new Error('[useSupplierUpdate] Cannot update demo supplier records')
-    }
+    const resolvedId = resolveId(options.id)
 
     await updateDocument<Supplier>(
-      collectionPath,
+      SupplierStorage.rootCollection,
       resolvedId,
       pruneUndefined(patch)
     )
   }
 
-  const updateAppSupplier = async (
-    patch: Partial<AppSupplier>,
-    options: UpdateOptions = {}
+  const updateSupplierOverlay = async (
+    patch: AppSupplierUpdateInput,
+    options: SupplierMutationOptions
   ) => {
-    if (!hasAppScope || !appId) {
+    if (!appId) {
       throw new Error('[useSupplierUpdate] App context required for supplier overlay updates')
     }
 
-    const resolvedId = await resolveId(options.id)
-    const collectionPath = resolveConsoleEntityCollectionPath({
-      family: supplierCollection,
-      mode: 'live',
-      appId,
-      useAppOverlay: true,
-    })
+    const resolvedId = resolveId(options.id)
+    const collectionPath = `${AppStorage.collection}/${appId}/${AppSupplierStorage.collection}`
 
     await updateDocument<AppSupplier>(
       collectionPath,
@@ -145,46 +86,46 @@ export function useSupplierUpdate(
     )
   }
 
-  const commitUpdate = async (
-    patch: Partial<Supplier>,
-    options: UpdateOptions = {}
+  const updateHeadline = async (
+    value: string,
+    options: SupplierMutationOptions
   ) => {
-    if (options.scope === 'app') {
-      await updateAppSupplier(patch as Partial<AppSupplier>, options)
-      return
-    }
-
-    await updateCoreSupplier(patch, options)
-  }
-
-  const updateHeadline = async (value: string, options: UpdateOptions = {}) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier(
+    await updateSupplierRoot(
       { supplier_headline: normalized ?? undefined },
       options
     )
   }
 
-  const updateSummary = async (value: string, options: UpdateOptions = {}) => {
+  const updateSummary = async (
+    value: string,
+    options: SupplierMutationOptions
+  ) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ summary: normalized ?? undefined }, options)
+    await updateSupplierRoot({ summary: normalized ?? undefined }, options)
   }
 
-  const updateBio = async (value: string, options: UpdateOptions = {}) => {
+  const updateBio = async (
+    value: string,
+    options: SupplierMutationOptions
+  ) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ supplier_bio: normalized ?? undefined }, options)
+    await updateSupplierRoot({ supplier_bio: normalized ?? undefined }, options)
   }
 
-  const updateImage = async (value: string, options: UpdateOptions = {}) => {
+  const updateImage = async (
+    value: string,
+    options: SupplierMutationOptions
+  ) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ supplier_image: normalized ?? undefined }, options)
+    await updateSupplierRoot({ supplier_image: normalized ?? undefined }, options)
   }
 
   const updateItemCategories = async (
     value: string | string[],
-    options: UpdateOptions = {}
+    options: SupplierMutationOptions
   ) => {
-    await updateCoreSupplier(
+    await updateSupplierRoot(
       {
         supplier_item_categories: toStringArray(value),
       },
@@ -194,9 +135,9 @@ export function useSupplierUpdate(
 
   const updateDeliveryAreas = async (
     value: string | string[],
-    options: UpdateOptions = {}
+    options: SupplierMutationOptions
   ) => {
-    await updateCoreSupplier(
+    await updateSupplierRoot(
       {
         supplier_delivery_areas: toStringArray(value),
       },
@@ -206,11 +147,11 @@ export function useSupplierUpdate(
 
   const updateOrganizationName = async (
     value: string,
-    options: UpdateOptions = {}
+    options: SupplierMutationOptions
   ) => {
     const normalized = cleanString(value)
     const slug = normalized ? normalizeSlug(normalized) : undefined
-    await updateCoreSupplier(
+    await updateSupplierRoot(
       {
         supplier_organization_name: normalized ?? undefined,
         slug,
@@ -219,18 +160,23 @@ export function useSupplierUpdate(
     )
   }
 
-  const updateTagline = async (value: string, options: UpdateOptions = {}) => {
+  const updateTagline = async (
+    value: string,
+    options: SupplierMutationOptions
+  ) => {
     const normalized = cleanString(value)
-    await updateCoreSupplier({ tagline: normalized ?? undefined }, options)
+    await updateSupplierRoot({ tagline: normalized ?? undefined }, options)
   }
 
-  const updateBioShort = async (value: string, options: UpdateOptions = {}) =>
+  const updateBioShort = async (
+    value: string,
+    options: SupplierMutationOptions
+  ) =>
     updateSummary(value, options)
 
   return {
-    commitUpdate,
-    updateCoreSupplier,
-    updateAppSupplier,
+    updateSupplierRoot,
+    updateSupplierOverlay,
     updateHeadline,
     updateSummary,
     updateBio,

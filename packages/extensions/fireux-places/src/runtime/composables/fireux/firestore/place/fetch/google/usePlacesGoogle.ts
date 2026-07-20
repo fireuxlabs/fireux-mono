@@ -1,12 +1,13 @@
 // Concurrent edit — 2026-07-20 19:40 CEST — Repo Efficiency Pass 2 of 6: map Norwegian canonical Places to NOK.
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: carry real Google defaults without inventing missing Place truth.
 import {
-  PlaceModel,
   type BasePlace,
   type GooglePlace,
   type PlaceAddress,
   type PlaceUpsertInput,
 } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
+import { placeBusinessHoursFromGooglePeriods } from '../../../../../../utils/place-spine'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
 
@@ -205,27 +206,34 @@ export async function fetchGoogle(
 
 function toStoredPlace(g: GooglePlace): PlaceUpsertInput {
   const search_term = `${g.name} ${g.formatted_address}`.toLowerCase()
-  return {
-    ...PlaceModel,
+  const address = Object.fromEntries(
+    Object.entries(g.address).filter(([, value]) => Boolean(String(value || '').trim()))
+  )
+  const stored: Record<string, unknown> = {
     id: g.id,
     name: g.name,
-    short_name: '',
-    address: g.address,
-    formatted_address: g.formatted_address,
-    short_address: toShortAddress(g.formatted_address),
-    lat: g.lat,
-    lng: g.lng,
     place_type: 'physical',
     source: 'fireux',
-    image_url: '',
-    phone: g.phone,
-    website: g.website,
-    google_maps_url: g.google_maps_url,
-    types: g.types,
-    price_level: g.price_level,
-    default_currency_code: g.default_currency_code,
     search_term,
-  } as PlaceUpsertInput
+    ...(Object.keys(address).length ? { address } : {}),
+    ...(g.formatted_address ? { formatted_address: g.formatted_address } : {}),
+    ...(g.formatted_address
+      ? { short_address: toShortAddress(g.formatted_address) }
+      : {}),
+    ...(Number.isFinite(g.lat) ? { lat: g.lat } : {}),
+    ...(Number.isFinite(g.lng) ? { lng: g.lng } : {}),
+    ...(g.phone ? { phone: g.phone } : {}),
+    ...(g.website ? { website: g.website } : {}),
+    ...(g.google_maps_url ? { google_maps_url: g.google_maps_url } : {}),
+    ...(g.types.length ? { types: g.types } : {}),
+    ...(g.price_level ? { price_level: g.price_level } : {}),
+    ...(g.default_currency_code
+      ? { default_currency_code: g.default_currency_code }
+      : {}),
+    ...(g.business_hours ? { business_hours: g.business_hours } : {}),
+  }
+
+  return stored as PlaceUpsertInput
 }
 
 type GoogleAddressComponent = {
@@ -316,13 +324,12 @@ export function mapDetailsToGooglePlace(
 
   return {
     id,
-    name: result?.name ?? 'Unknown place',
+    name: text(result?.name),
     short_name: '',
     place_type: 'physical',
-    formatted_address:
-      result?.formatted_address ?? result?.vicinity ?? 'Unknown address',
+    formatted_address: text(result?.formatted_address || result?.vicinity),
     short_address: toShortAddress(
-      result?.formatted_address ?? result?.vicinity ?? 'Unknown address'
+      text(result?.formatted_address || result?.vicinity)
     ),
     address,
     lat: numberValue(location?.lat),
@@ -338,6 +345,9 @@ export function mapDetailsToGooglePlace(
     price_level: priceLevel(result?.price_level),
     types: stringArray(result?.types),
     default_currency_code: currencyCodeFromCountry(address.country_code),
+    business_hours:
+      placeBusinessHoursFromGooglePeriods(result?.opening_hours?.periods) ||
+      undefined,
   }
 }
 

@@ -1,4 +1,5 @@
 <template>
+  <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: write Place-owned logo truth through explicit linked-Kitchen authority. -->
   <MoleculesDisclosurePanel
     title="Place"
     description="Logo, location, and public details."
@@ -64,7 +65,7 @@
                   Logo
                 </p>
                 <p class="text-xs text-dimmed">
-                  Logo is owned by the linked Place and synced back to kitchen menus and cards.
+                  Logo is owned by the linked Place and inherited by Kitchen menus and cards.
                 </p>
               </div>
 
@@ -112,15 +113,10 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
+import { usePlaceUpdate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceUpdate'
 import { computed, ref } from 'vue'
 import { useKitchenConsolePlace } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
-import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
-import type {
-  KitchenImageShade,
-  KitchenUpdateInput,
-} from '../../../../../models/kitchen.model'
+import type { KitchenImageShade } from '../../../../../models/kitchen.model'
 import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 
 const props = defineProps<{
@@ -130,15 +126,24 @@ const props = defineProps<{
   canWrite: boolean
 }>()
 
-const collectionPath = computed(() => props.collectionPath)
-const { updateKitchen } = useKitchenUpdate({ collectionPath })
 const { uploadImage } = useImageStorage()
-const { updateDocument } = useFirestoreUpdate()
 const toast = useToastify()
 
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
-const { place, pending } = useKitchenConsolePlace()
+const {
+  appId,
+  kitchenId: selectedKitchenId,
+  place,
+  pending,
+} = useKitchenConsolePlace()
+const mutationAuthority = computed(() => ({
+  appId: appId.value,
+  kitchenId: selectedKitchenId.value,
+}))
+const { updateImageShade, updatePlaceImage } = usePlaceUpdate({
+  authority: mutationAuthority,
+})
 const imageShade = computed(() => {
   const placeShade = String(place.value?.image_shade ?? '').trim()
   return (placeShade || readKitchenIdentity(props.kitchen).imageShade) as KitchenImageShade
@@ -173,8 +178,8 @@ const imageShadeOptions: Array<{
   { value: 'dark', label: 'Dark logo' },
 ]
 
-const updateKitchenProjection = async (
-  patch: KitchenUpdateInput,
+const updatePlace = async (
+  action: () => Promise<void>,
   successTitle: string,
   failTitle: string
 ) => {
@@ -182,12 +187,12 @@ const updateKitchenProjection = async (
     throw new Error('This kitchen is read-only.')
   }
 
-  if (!props.kitchenId) {
-    throw new Error('No kitchen selected.')
+  if (!placeId.value) {
+    throw new Error('This kitchen has no linked Place.')
   }
 
   try {
-    await updateKitchen(props.kitchenId, patch)
+    await action()
     toast.add({ title: successTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
@@ -205,45 +210,22 @@ const updateKitchenProjection = async (
 
 const handleImageShade = async (value: KitchenImageShade) => {
   if (!props.canWrite) return
-
-  if (placeId.value) {
-    await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
-      image_shade: value,
-    } as Partial<Place>)
-  }
-
-  return updateKitchenProjection(
-    {
-      'identity.image_shade': value,
-      image_shade: value,
-    },
+  return updatePlace(
+    () => updateImageShade(value, { id: placeId.value }),
     'Logo tone updated',
     'Failed to update logo tone'
   )
 }
 
 const handleLogoUpload = async (file: File) => {
-  if (!props.canWrite || !props.kitchenId || logoUploading.value) return
+  if (!props.canWrite || !placeId.value || logoUploading.value) return
 
   logoUploading.value = true
   try {
-    const storagePath = placeId.value
-      ? `places/${placeId.value}/avatar`
-      : `kitchens/${props.kitchenId}/identity/logo/current`
+    const storagePath = `places/${placeId.value}/avatar`
     const url = await uploadImage(storagePath, file)
-
-    if (placeId.value) {
-      await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
-        image_url: url,
-      } as Partial<Place>)
-    }
-
-    await updateKitchenProjection(
-      {
-        'identity.image_url': url,
-        display_image_url: url,
-        image_url: url,
-      },
+    await updatePlace(
+      () => updatePlaceImage(url, { id: placeId.value }),
       'Logo updated',
       'Failed to update logo'
     )

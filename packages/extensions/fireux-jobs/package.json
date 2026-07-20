@@ -28,7 +28,8 @@
     "fireux-core": "workspace:*",
     "fireux-kitchens": "workspace:*",
     "fireux-companies": "workspace:*",
-    "fireux-places": "workspace:*"
+    "fireux-places": "workspace:*",
+    "qrcode": "^1.5.4"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",
@@ -45,9 +46,8 @@
   },
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
-    "mkdist": "^1.5.3",
-    "rimraf": "^6.0.1",
-    "glob": "^11.0.3"
+    "@types/qrcode": "^1.5.6",
+    "rimraf": "^6.0.1"
   },
   "type": "module"
 }

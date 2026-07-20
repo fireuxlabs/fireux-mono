@@ -11,14 +11,16 @@
 // Concurrent edit — 2026-07-20 19:29 CEST — Repo Efficiency Pass 2 fixtures: attest full Place payload evidence and strict URL/year/profile mutations.
 // Concurrent edit — 2026-07-20 19:51 CEST — Ecosystem-avatar fixture: preserve the canonical slash-prefixed value as a Rules string.
 // Concurrent edit — 2026-07-20 20:02 CEST — Repo Efficiency Pass 2 security fixtures: exercise API-only public profile reads and bounded owner mutations.
+// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: share protected JSON backup writing without sharing release authority.
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
-import { readFile, writeFile } from 'node:fs/promises'
+import { readFile } from 'node:fs/promises'
 import {
   firebaseAdminCredentialHelp,
   resolveFirebaseAdminCredential,
 } from './_lib/firebase-admin-credentials.mjs'
+import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 
 const PROJECT_ID = 'misebox-78f9c'
 const SIMULATION_DATABASE_ID = 'misebox-simulation'
@@ -2429,21 +2431,16 @@ async function backupReleases() {
   )
   const stamp = new Date().toISOString().replaceAll(/[:.]/g, '-')
   const path = `/private/tmp/fireux-misebox-firestore-rules-${stamp}.json`
-  await writeFile(
+  const backup = await writeProtectedJsonArtifact({
     path,
-    `${JSON.stringify(
-      {
-        format: 'fireux-misebox-rules-backup/1',
-        createdAt: new Date().toISOString(),
-        projectId: PROJECT_ID,
-        releases,
-      },
-      null,
-      2
-    )}\n`,
-    { flag: 'wx', mode: 0o600 }
-  )
-  return path
+    payload: {
+      format: 'fireux-misebox-rules-backup/1',
+      createdAt: new Date().toISOString(),
+      projectId: PROJECT_ID,
+      releases,
+    },
+  })
+  return backup.path
 }
 
 function sha256(value) {

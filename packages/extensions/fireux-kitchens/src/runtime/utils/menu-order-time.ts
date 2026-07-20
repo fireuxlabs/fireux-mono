@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: generalize the shared ordering-time seam beyond Collection.
+// Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: expose no slots when Place/Kitchen timezone truth is absent.
 import type { WeekdayTimeWindowsConfig } from '../models/shared/weekday-time.model'
 import {
   readWeekdayTimeNoticeState,
@@ -116,7 +117,7 @@ export function menuOrderTimeOptions(input: {
 }) {
   const now = input.now || new Date()
   const hours = readWeekdayTimeWindowsConfig(input.hours)
-  const known = hours.windows.length > 0
+  const known = Boolean(hours.timezone && hours.windows.length)
   const queueAvailable = input.asapEnabled !== false &&
     known &&
     readWeekdayTimeOpenState(hours, now).open

@@ -50,6 +50,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: emit sparse Place onboarding drafts instead of blank placeholders.
 import { computed, nextTick, ref, watch } from 'vue'
 import { usePlaceSearch } from '../../../composables/fireux/firestore/place/fetch/search/usePlaceSearch'
 import { usePlaceCreate } from '../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
@@ -188,27 +189,43 @@ function toDraft(
     resolvedLogo = ''
   }
 
-  return {
+  const draft = {
     id: placeId,
     source: selectedSource.value,
     name,
-    short_name: String((place as any)?.short_name ?? ''),
+    short_name: String((place as any)?.short_name ?? '').trim(),
     formatted_address: formatted,
-    short_address: String((place as any)?.short_address ?? ''),
+    short_address: String((place as any)?.short_address ?? '').trim(),
     address: (place as any)?.address,
     lat: Number((place as any)?.lat ?? 0),
     lng: Number((place as any)?.lng ?? 0),
-    image_shade: toShade((place as any)?.image_shade),
+    image_shade:
+      toShade((place as any)?.image_shade) === 'none'
+        ? undefined
+        : toShade((place as any)?.image_shade),
     image_url: resolvedLogo,
-    claimed_by: String((place as any)?.claimed_by ?? ''),
-    website: String((place as any)?.website ?? ''),
-    phone: String((place as any)?.phone ?? ''),
-    google_maps_url: String((place as any)?.google_maps_url ?? ''),
+    claimed_by: String((place as any)?.claimed_by ?? '').trim(),
+    website: String((place as any)?.website ?? '').trim(),
+    phone: String((place as any)?.phone ?? '').trim(),
+    google_maps_url: String((place as any)?.google_maps_url ?? '').trim(),
     types: Array.isArray((place as any)?.types) ? (place as any).types : [],
-    price_level: String((place as any)?.price_level ?? ''),
-    default_currency_code: String((place as any)?.default_currency_code ?? ''),
+    price_level: String((place as any)?.price_level ?? '').trim(),
+    default_currency_code: String(
+      (place as any)?.default_currency_code ?? ''
+    ).trim(),
+    business_hours: (place as any)?.business_hours,
     search_term: existingSearchTerm || `${name} ${formatted}`.toLowerCase().trim(),
-  } as PlaceUpsertInput
+  }
+
+  return Object.fromEntries(
+    Object.entries(draft).filter(([, value]) => {
+      if (typeof value === 'string') return Boolean(value)
+      if (Array.isArray(value)) return value.length > 0
+      if (value && typeof value === 'object') return Object.keys(value).length > 0
+      if (typeof value === 'number') return Number.isFinite(value) && value !== 0
+      return value !== null && value !== undefined
+    })
+  ) as PlaceUpsertInput
 }
 
 async function onConfirmClick() {

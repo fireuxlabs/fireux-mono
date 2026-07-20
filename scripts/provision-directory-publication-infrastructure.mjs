@@ -3,9 +3,10 @@
 // last_used: 2026-07-20
 // usage_note: backup-first, idempotent provisioning of isolated directory databases, deny-all rules, and publisher IAM.
 // Concurrent edit — 2026-07-20 11:55 CEST — Directory Live Provisioning Pass: finish verified infrastructure while Slap billing remains explicitly pending.
+// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: share protected JSON backup writing without sharing provisioning authority.
 
 import { execFile } from 'node:child_process'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
@@ -16,6 +17,7 @@ import {
   DIRECTORY_PUBLICATION_INFRASTRUCTURE,
   DIRECTORY_PUBLICATION_RECEIVER,
 } from './_lib/directory-publication-targets.mjs'
+import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 
 const execFileAsync = promisify(execFile)
 const scriptDir = path.dirname(fileURLToPath(import.meta.url))
@@ -728,31 +730,25 @@ async function writeBackup(inspections) {
   const relativePath = `temp/directory-publication-infrastructure-backup-${safeTime}.json`
   const absolutePath = path.join(repoRoot, relativePath)
   await mkdir(path.dirname(absolutePath), { recursive: true })
-  await writeFile(
-    absolutePath,
-    `${JSON.stringify(
-      {
-        contractVersion: 'directory-publication-infrastructure-backup/v1',
-        generatedAt,
-        targets: inspections.map((inspection) => ({
-          firebaseProjectId: inspection.target.firebaseProjectId,
-          databases: inspection.databases,
-          iamPolicy: inspection.policy,
-          publisherServiceAccount: inspection.publisherServiceAccount || null,
-          iamBindingExisted: inspection.iamBindingExists,
-          receiverServiceAccount: inspection.receiverServiceAccount || null,
-          receiverIamBindingExisted: inspection.receiverIamBindingExists,
-          customRole: inspection.customRole || null,
-          legacyPublisherBindingExisted:
-            inspection.legacyPublisherBindingExists,
-          legacyReceiverBindingExisted: inspection.legacyReceiverBindingExists,
-        })),
-      },
-      null,
-      2
-    )}\n`,
-    { encoding: 'utf8', flag: 'wx', mode: 0o600 }
-  )
+  await writeProtectedJsonArtifact({
+    path: absolutePath,
+    payload: {
+      contractVersion: 'directory-publication-infrastructure-backup/v1',
+      generatedAt,
+      targets: inspections.map((inspection) => ({
+        firebaseProjectId: inspection.target.firebaseProjectId,
+        databases: inspection.databases,
+        iamPolicy: inspection.policy,
+        publisherServiceAccount: inspection.publisherServiceAccount || null,
+        iamBindingExisted: inspection.iamBindingExists,
+        receiverServiceAccount: inspection.receiverServiceAccount || null,
+        receiverIamBindingExisted: inspection.receiverIamBindingExists,
+        customRole: inspection.customRole || null,
+        legacyPublisherBindingExisted: inspection.legacyPublisherBindingExists,
+        legacyReceiverBindingExisted: inspection.legacyReceiverBindingExists,
+      })),
+    },
+  })
   return relativePath
 }
 

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: omit next-opening copy when canonical timezone data is absent.
 import {
   readWeekdayTimeWindowsConfig,
   weekdayTimeDays,
@@ -77,7 +78,7 @@ export function readWeekdayTimeNextOpeningText(
   now = new Date()
 ) {
   const hours = readWeekdayTimeWindowsConfig(value)
-  if (!hours.windows.length) return ''
+  if (!hours.timezone || !hours.windows.length) return ''
 
   const current = zonedParts(now, hours.timezone)
   for (let offset = 0; offset < 14; offset += 1) {

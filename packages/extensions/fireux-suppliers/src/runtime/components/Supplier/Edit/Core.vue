@@ -63,6 +63,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: target canonical writes by the supplied entity id.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed } from 'vue'
 import { useSupplierUpdate } from '../../../composables/fireux/firestore/supplier/mutations/useSupplierUpdate'
@@ -98,6 +99,7 @@ const deliveryAreas = computed(() =>
     ? supplier.value?.supplier_delivery_areas
     : []
 )
+const mutationOptions = () => ({ id: String(supplier.value?.id ?? '').trim() })
 
 const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
@@ -117,27 +119,43 @@ const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string)
 }
 
 const handleHeadline = async (value: string) =>
-  wrap(() => updateHeadline(value), 'Headline updated', 'Failed to update headline')
+  wrap(
+    () => updateHeadline(value, mutationOptions()),
+    'Headline updated',
+    'Failed to update headline'
+  )
 
 const handleSummary = async (value: string) =>
-  wrap(() => updateSummary(value), 'Summary updated', 'Failed to update summary')
+  wrap(
+    () => updateSummary(value, mutationOptions()),
+    'Summary updated',
+    'Failed to update summary'
+  )
 
 const handleBio = async (value: string) =>
-  wrap(() => updateBio(value), 'Bio updated', 'Failed to update bio')
+  wrap(
+    () => updateBio(value, mutationOptions()),
+    'Bio updated',
+    'Failed to update bio'
+  )
 
 const handleImage = async (value: string) =>
-  wrap(() => updateImage(value), 'Supplier image updated', 'Failed to update supplier image')
+  wrap(
+    () => updateImage(value, mutationOptions()),
+    'Supplier image updated',
+    'Failed to update supplier image'
+  )
 
 const handleCategories = async (value: string[]) =>
   wrap(
-    () => updateItemCategories(value),
+    () => updateItemCategories(value, mutationOptions()),
     'Item categories updated',
     'Failed to update item categories'
   )
 
 const handleDeliveryAreas = async (value: string[]) =>
   wrap(
-    () => updateDeliveryAreas(value),
+    () => updateDeliveryAreas(value, mutationOptions()),
     'Delivery areas updated',
     'Failed to update delivery areas'
   )

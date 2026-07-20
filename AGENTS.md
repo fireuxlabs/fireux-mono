@@ -8,8 +8,11 @@ Effective: 2026-07-20
 <!-- Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2–4 of 4: record portable root, tooling split, and demo ownership. -->
 <!-- Concurrent edit — 2026-07-19 17:07 CEST — Directory Authority Cutover: record resolved App and Ecosystem database authority. -->
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: record projected public profile reads and owner-only raw authority. -->
+<!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: record supported script lifecycle and shared protected artifacts. -->
+<!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: record runtime-owned App media and guarded snapshot mutation tooling. -->
 <!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: record target-state, route-meta, write-authority, and targeted-read contracts. -->
 <!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: record optional console fixture ownership and loading. -->
+<!-- Concurrent edit — 2026-07-20 22:21 CEST — Both-Entity Authority: record canonical-root and App-support boundaries. -->
 
 ## Current Documentation State
 
@@ -318,6 +321,19 @@ Do not place console operation folders inside Firestore stacks. Do not add Fires
 
 Known boring entity stack examples include kitchen, supplier, product, place, company, blog, property, portfolio, ingredient, recipe, dish, menu, translation, job, task.
 
+For a `storage: 'both'` entity, root means canonical top-level identity, not
+automatically public-readable. Supplier, Portfolio, Property, and Kitchen each
+have one root entity plus a same-id App support record. App support records own
+access and only an explicitly modelled operational delta; they never supply
+identity, override root stamps/relationships, or become an entity when the root
+is missing. Joined reads require the root and allowlist App fields. Root and App
+mutations use separately named fixed paths and never accept caller-selected
+scope or collection paths. Property owns optional `portfolio_id` and required
+`place_id`; Portfolio stores no inverse or nested full Property. The shared
+attach reread is a correctness check only: deployed Rules or trusted server
+transactions remain the create/transfer/access security boundary. These shape
+rules are checked by `scripts/guards/both-entity-authority.mjs`.
+
 Identity records follow one strict boundary: `/users/{uid}` is public identity,
 `/users/{uid}/private/account` is owner-private account data,
 `/users/{uid}/notifications/{notificationId}` is owner-only delivery/read state,
@@ -457,8 +473,35 @@ Tracked scripts under `scripts/` carry a small `@fireux-script` header with
 update that date in the script header.
 
 Use `pnpm audit:scripts` to list scripts whose `last_used` date is older than
-six weeks. Do not delete stale scripts automatically; review whether they are
-still part of the active command surface first.
+six weeks. It also fails when an authored script lacks an executable caller,
+unless the script explicitly declares `manual_entrypoint: true`. Manual
+entrypoints are rare, named, dry-run-first operational seams; documentation
+references alone do not make an ordinary script active. Do not delete stale
+scripts automatically; review whether they are still part of the active
+command surface first. Completed migration and recovery scripts belong in Git
+history once current creation paths own the canonical shape and a separate
+release or verification gate retains any required completion proof.
+
+Root `package.json` exposes supported user commands. CI and documentation use
+the canonical `guard` and `typecheck:*` commands directly; do not add aliases
+that only forward to another root command.
+
+Protected JSON backups shared by ordinary operational scripts use
+`scripts/_lib/protected-json-artifact.mjs`. The helper owns only exclusive
+mode-0600 serialization and hashing. Target selection, payload projection,
+dry-run/apply authority, batching, and post-write verification remain in each
+named domain script. Stronger crash-journal or fsync workflows stay local.
+
+App media mutation is runtime-owned. `pnpm audit:app-media` is read-only;
+historical root scripts that bulk-uploaded, reset, or deleted App media are not
+supported operational entrypoints. Firestore snapshot syncs must name the
+project and database, default to inspection, require target-bound confirmation
+plus a protected preimage before apply, reject changed source/target versions,
+verify written fields, and release Firebase Admin apps.
+
+Dev model-drift copy is diagnostic data. Do not attach a generic cross-domain
+migration recipe that guesses missing values or deletes type-mismatched fields;
+write a reviewed domain migration when a real data change is required.
 
 Root ESLint treats authored `.mjs` and `.cjs` tooling as first-class source.
 Generated output and local scratch lanes are excluded; moving authored tooling

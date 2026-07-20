@@ -1,4 +1,5 @@
 <template>
+	<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: route media and claim changes through authorized sparse Place mutations. -->
 	<UCard>
 		<template #header>
 			<div>
@@ -144,13 +145,19 @@ import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase
 import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../../composables/fireux/firestore/place/mutations/usePlaceClaim'
+import {
+	type PlaceMutationAuthority,
+	usePlaceUpdate,
+} from '../../../composables/fireux/firestore/place/mutations/usePlaceUpdate'
 import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import { PlaceStorage, type Place, type PlaceImageShade } from '../../../models/place.model'
+import type { Place, PlaceImageShade } from '../../../models/place.model'
 
-const props = defineProps<{ place: Place | null }>()
+const props = defineProps<{
+	place: Place | null
+	mutationAuthority?: PlaceMutationAuthority | null
+}>()
 const place = computed(() => props.place)
 const placeId = computed(() => place.value?.id ?? '')
 const { currentUser, isAdmin } = useUser()
@@ -195,18 +202,20 @@ const isUpdatingShade = ref(false)
 const isClaiming = ref(false)
 const isDropping = ref(false)
 const { uploadImage } = useImageStorage()
-const { updateDocument } = useFirestoreUpdate()
+const {
+	updateClaimedBy,
+	updateImageShade: updatePlaceImageShade,
+	updatePlaceImage,
+} = usePlaceUpdate({ authority: () => props.mutationAuthority })
 const toast = useToastify()
-const { claimPlace } = usePlaceClaim()
+const { claimPlace } = usePlaceClaim({ authority: () => props.mutationAuthority })
 
 async function handleAvatarUpload(file: File) {
 	if (!placeId.value) return
 	avatarUploading.value = true
 	try {
 		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
-			image_url: url,
-		})
+		await updatePlaceImage(url, { id: placeId.value })
 		toast.success('Image updated')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -221,9 +230,7 @@ async function updateImageShade(shade: PlaceImageShade) {
 	if (!placeId.value || !canEditImage.value || isUpdatingShade.value) return
 	isUpdatingShade.value = true
 	try {
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
-			image_shade: shade,
-		})
+		await updatePlaceImageShade(shade, { id: placeId.value })
 		toast.success('Image shade updated')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -253,9 +260,7 @@ async function onDropClaim() {
 	if (!placeId.value || !canDropClaim.value || isDropping.value) return
 	isDropping.value = true
 	try {
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, {
-			claimed_by: '',
-		})
+		await updateClaimedBy('', { id: placeId.value })
 		toast.success('Claim removed')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'

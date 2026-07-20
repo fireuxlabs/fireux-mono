@@ -1,10 +1,10 @@
+// Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: keep canonical root identity and ownership separate from App access.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type {
   FireuxAppOverlay,
   FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
 import {
-  FireuxConsoleAccessModel,
   FireuxAppOverlayModel,
   FireuxAppScope,
 } from 'fireux-core/runtime/models/core/meta.model'
@@ -32,7 +32,8 @@ type WidenLiteral<T> =
  * Child scope: /apps/<appId>/suppliers/<supplierId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Supplier is treated as a domain entity with a root public entity and an app-hosted supplier record, not as a user profile.
+ * - Supplier is a domain entity with one canonical root and an app-hosted
+ *   access-support record, not a user profile. Public reads are a separate contract.
  * - The path should read as supplier identity rather than user identity.
  * - Public facade depth can vary by family; Supplier may expose only the fields that make sense for its marketplace/public role.
  * - Any future supplier operator profile should remain a prerequisite or presentation layer, not a second ownership model.
@@ -79,7 +80,6 @@ export const AppSupplierStorage = {
 export const SupplierModel = {
   id: '',
   ...FireuxAppScope,
-  ...FireuxConsoleAccessModel,
   company_id: '',
   slug: '',
 
@@ -123,18 +123,29 @@ export type SupplierCreateInput = Omit<
   | 'updated'
   | 'app_scope_state'
   | 'app_scope_app_id'
-  | 'operator_ids'
   | 'tagline'
   | 'slug'
 > &
   Partial<
     Pick<
       Supplier,
-      'app_scope_state' | 'app_scope_app_id' | 'operator_ids' | 'tagline' | 'slug'
+      'tagline' | 'slug'
     >
   >
 
-export type SupplierUpdateInput = Partial<Omit<Supplier, 'id' | 'created' | 'updated'>>
+export type SupplierUpdateInput = Partial<
+  Omit<
+    Supplier,
+    | 'id'
+    | 'created'
+    | 'updated'
+    | 'app_scope_state'
+    | 'app_scope_app_id'
+  >
+>
+export type AppSupplierUpdateInput = Partial<
+  Omit<AppSupplier, 'id' | 'created' | 'updated'>
+>
 
 export type SupplierIngredientState =
   | 'available'

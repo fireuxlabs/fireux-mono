@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: use only the Menu Kitchen's explicit Place delivery origin.
 import {
   createError,
   defineEventHandler,
@@ -61,7 +62,7 @@ export default defineEventHandler(async (event) => {
 
   const zones = deliveryPolicy.fulfilment?.delivery_zones || []
   const origin = await resolveMenuDeliveryOrigin(
-    context.kitchenPlaceId || context.kitchenId,
+    context.kitchenPlaceId,
     zones
   )
   if (placeId) {

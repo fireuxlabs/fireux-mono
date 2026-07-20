@@ -1,5 +1,7 @@
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: expose canonical root identity without the scoped runtime write alias.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { PortfolioStorage } from '../../../../../models/portfolio.model'
 import { usePortfolioConsole } from '../core/usePortfolioConsole'
 
 export function usePortfolioConsoleIdentity() {
@@ -28,7 +30,7 @@ export function usePortfolioConsoleIdentity() {
   )
   const debug = computed(() => ({
     portfolioId: selection.portfolioId.value,
-    rootCollection: runtime.rootCollection.value,
+    rootCollection: PortfolioStorage.rootCollection,
     readOnly: runtime.readOnly.value,
     canWrite: runtime.canWrite.value,
     name: name.value,
@@ -44,7 +46,6 @@ export function usePortfolioConsoleIdentity() {
   return {
     selectedPortfolio: selection.portfolio,
     portfolioId: selection.portfolioId,
-    rootCollection: runtime.rootCollection,
     readOnly: runtime.readOnly,
     canWrite: runtime.canWrite,
     clearSelectedPortfolio: actions.clearSelectedPortfolio,

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: fail radius-origin lookup closed when the explicit Place reference is absent.
 import { createError } from 'h3'
 import type { MenuDeliveryZone } from '../../../models/kitchen/menu/menu.model.ts'
 import {
@@ -103,8 +104,10 @@ export async function resolveMenuDeliveryOrigin(
   zones: MenuDeliveryZone[]
 ): Promise<MenuDeliveryOrigin | undefined> {
   if (!zones.some((zone) => Number(zone.radius_m || 0) > 0)) return undefined
+  const id = text(placeId)
+  if (!id) return undefined
 
-  const address = await readMenuDeliveryPlaceDetails(text(placeId))
+  const address = await readMenuDeliveryPlaceDetails(id)
   if (
     !address.formatted ||
     !Number.isFinite(address.lat) ||
@@ -116,7 +119,7 @@ export async function resolveMenuDeliveryOrigin(
   return {
     lat: address.lat,
     lng: address.lng,
-    place_id: address.place_id || text(placeId),
+    place_id: address.place_id || id,
   }
 }
 

@@ -1,4 +1,5 @@
-import { arrayUnion, deleteField, doc, getDoc, updateDoc } from 'firebase/firestore'
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: link Kitchens to Place without copying Place presentation or operational defaults.
+import { deleteField, doc, getDoc, updateDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
   ConsoleCreateResult,
@@ -10,14 +11,13 @@ import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firesto
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type {
   AppKitchen,
   Kitchen,
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
-import { KitchenModel, KitchenStorage } from '../../../../../models/kitchen.model'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
 import { readWeekdayTimeWindowsConfig } from '../../../../../utils/weekday-time'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -70,11 +70,6 @@ type KitchenPlaceDraft = Record<string, unknown> & {
   id?: string
   name?: string
   short_name?: string
-  formatted_address?: string
-  short_address?: string
-  image_url?: string
-  place_image?: string
-  cover_image?: string
   slug?: string
 }
 type KitchenCreateDraft = KitchenCreateInput & {
@@ -114,19 +109,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     normalizeString(options.collectionPath || KitchenStorage.rootCollection) ||
     KitchenStorage.rootCollection
 
-  async function markPlaceAsKitchen(placeId: string) {
-    const id = normalizeString(placeId)
-    if (!id) return
-
-    const ref = doc(db, PlaceStorage.collection, id)
-    const snap = await getDoc(ref)
-    if (!snap.exists()) return
-
-    await updateDoc(ref, {
-      entity_families: arrayUnion('kitchen'),
-    })
-  }
-
   async function normalizeKitchenRootScope(kitchenId: string) {
     const id = normalizeString(kitchenId)
     if (!id) return
@@ -160,25 +142,17 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const menus = (input.menus ?? {}) as Partial<Kitchen['menus']>
     const placeName = normalizeString(place.name || place.short_name)
     const displayName = normalizeString(
-      identity.display_name || input.display_name || placeName
+      identity.display_name || input.display_name
     )
     const displayImageUrl = normalizeString(
-      identity.image_url ||
-        input.display_image_url ||
-        place.image_url ||
-        place.place_image
+      identity.image_url || input.display_image_url
     )
-    const tagline = normalizeString(identity.tagline || (place as any).brand_tagline)
+    const tagline = normalizeString(identity.tagline)
     const placeId = normalizeString(input.place_id || place.id)
     const claimedBy = normalizeString(input.claimed_by || uid.value)
-    const formattedAddress = normalizeString(
-      input.formatted_address || place.formatted_address
-    )
-    const shortAddress = normalizeString(
-      input.short_address || place.short_address
-    )
-    const coverImage = normalizeString(input.cover_image || place.cover_image)
-    const currencyCode = normalizeString(input.currency_code).toUpperCase()
+    const formattedAddress = normalizeString(input.formatted_address)
+    const shortAddress = normalizeString(input.short_address)
+    const coverImage = normalizeString(input.cover_image)
     const slug = normalizeSlug(
       input.slug ||
       place.slug ||
@@ -186,16 +160,12 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       placeName
     )
     const style = menus.style
-    if (!displayName) {
-      throw new Error('Kitchen display name is required')
-    }
+    if (!placeId) throw new Error('A linked Place is required to create a Kitchen.')
 
     const appScopePayload: Record<string, unknown> = {
       state: 'root_only',
     }
-    const identityPayload: Record<string, unknown> = {
-      display_name: displayName,
-    }
+    const identityPayload: Record<string, unknown> = {}
     const menusPayload: Record<string, unknown> = {}
     const currencyFormat = normalizeString(
       menus.currency_format || input.menu_currency_format
@@ -205,12 +175,16 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
         ? menus.show_currency
         : input.menu_show_currency
     const compactStyle = compactRecord(style)
-    const placeHours = readWeekdayTimeWindowsConfig(place.operation_hours)
     const inputHours = readWeekdayTimeWindowsConfig(
       input.orders?.operation_hours
     )
-    const inheritedHours = placeHours.windows.length ? placeHours : inputHours
+    const ordersPayload = compactRecord(input.orders)
+    delete ordersPayload.operation_hours
+    if (inputHours.source === 'custom' && inputHours.windows.length) {
+      ordersPayload.operation_hours = inputHours
+    }
 
+    putString(identityPayload, 'display_name', displayName)
     putString(identityPayload, 'tagline', tagline)
     putString(identityPayload, 'image_url', displayImageUrl)
     putStringArray(identityPayload, 'gallery', identity.gallery)
@@ -223,28 +197,22 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
 
     const payload: Partial<Kitchen> = {
       app_scope: appScopePayload as Kitchen['app_scope'],
-      identity: identityPayload as Kitchen['identity'],
-      orders: {
-        ...KitchenModel.orders,
-        ...input.orders,
-        operation_hours: {
-          source: placeId ? 'place' : inheritedHours.source,
-          timezone:
-            normalizeString(place.timezone) || inheritedHours.timezone,
-          windows: inheritedHours.windows,
-        },
-      },
+      place_id: placeId,
     }
 
+    if (Object.keys(identityPayload).length) {
+      payload.identity = identityPayload as Kitchen['identity']
+    }
     if (Object.keys(menusPayload).length) {
       payload.menus = menusPayload as Kitchen['menus']
+    }
+    if (Object.keys(ordersPayload).length) {
+      payload.orders = ordersPayload as Kitchen['orders']
     }
     if (claimedBy) payload.claimed_by = claimedBy
     if (formattedAddress) payload.formatted_address = formattedAddress
     if (shortAddress) payload.short_address = shortAddress
     if (coverImage) payload.cover_image = coverImage
-    if (currencyCode) payload.currency_code = currencyCode
-    if (placeId) payload.place_id = placeId
     if (slug) payload.slug = slug
 
     return payload
@@ -261,7 +229,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     const ref = doc(db, collectionPath, id)
     const snap = await getDoc(ref)
     if (snap.exists()) {
-      await markPlaceAsKitchen(input.place_id || input.place?.id || id)
       const existingSlug = normalizeString(snap.data()?.slug)
       return { id, created: false, ...(existingSlug ? { slug: existingSlug } : {}) }
     }
@@ -271,7 +238,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     await setDocument<Partial<Kitchen>>(collectionPath, id, payload, {
       creator: true,
     })
-    await markPlaceAsKitchen(payload.place_id || id)
 
     return {
       id,

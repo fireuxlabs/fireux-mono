@@ -54,7 +54,11 @@
         </UButton>
       </div>
 
-      <PlaceEdit v-if="canWrite" :place="place" />
+      <PlaceEdit
+        v-if="canWrite"
+        :place="place"
+        :mutation-authority="mutationAuthority"
+      />
       <UAlert
         v-else
         color="neutral"
@@ -68,7 +72,13 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: bind Place edits to the explicit selected App/Kitchen authority.
+import { computed } from 'vue'
 import { useKitchenConsolePlace } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
 
-const { placeId, canWrite, place, pending } = useKitchenConsolePlace()
+const { appId, kitchenId, placeId, canWrite, place, pending } = useKitchenConsolePlace()
+const mutationAuthority = computed(() => ({
+  appId: appId.value,
+  kitchenId: kitchenId.value,
+}))
 </script>

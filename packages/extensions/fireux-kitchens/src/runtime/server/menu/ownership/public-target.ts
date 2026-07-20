@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 22:18 CEST — Place-root authority pass: hydrate sparse scoped Menu Place truth only from the explicit reference.
 import { useRuntimeConfig } from '#imports'
 import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
@@ -10,6 +11,7 @@ import {
   menuKitchenIdentity,
   menuKitchenOperationHours,
   readAppMenuKitchenData,
+  readMenuKitchenPlaceData,
   readMenuKitchenBySlug,
   readRootMenuKitchenScope,
   type MenuKitchenScope,
@@ -228,9 +230,23 @@ const scopedTarget = async (
     rootKitchenData: Record<string, unknown>
   }
 ): Promise<ScopedPublicMenuTarget> => {
-  const appKitchenData = await readAppMenuKitchenData(input.appId, input.kitchenId)
-  const menuData = await publishedMenuData(input.appId, input.kitchenId, menuId)
-  const identity = menuKitchenIdentity(input.rootKitchenData, appKitchenData)
+  const [appKitchenData, menuData, placeData] = await Promise.all([
+    readAppMenuKitchenData(input.appId, input.kitchenId),
+    publishedMenuData(input.appId, input.kitchenId, menuId),
+    readMenuKitchenPlaceData(input.rootKitchenData),
+  ])
+  const identity = menuKitchenIdentity(
+    input.rootKitchenData,
+    appKitchenData,
+    placeData
+  )
+  const kitchenPlaceId = readRecordString(input.rootKitchenData, 'place_id')
+  const fulfilment = menuKitchenFulfilment(input.rootKitchenData, appKitchenData)
+  const kitchenOperationHours = menuKitchenOperationHours(
+    input.rootKitchenData,
+    appKitchenData,
+    placeData
+  )
 
   return {
     kind,
@@ -246,27 +262,36 @@ const scopedTarget = async (
     menuData,
     scope: {
       kitchenId: input.kitchenId,
-      kitchenPlaceId:
-        readRecordString(input.rootKitchenData, 'place_id') || input.kitchenId,
-      kitchenImageShade: identity.imageShade,
-      kitchenImageUrl: identity.imageUrl,
-      kitchenLogoImageUrl: identity.logoImageUrl,
-      kitchenSlug:
-        input.kitchenSlug ||
-        readRecordString(appKitchenData, 'slug'),
-      kitchenName: identity.name,
-      kitchenWordmarkImageUrl: identity.wordmarkImageUrl,
+      ...(kitchenPlaceId ? { kitchenPlaceId } : {}),
+      ...(identity.imageUrl && identity.imageShade !== 'none'
+        ? { kitchenImageShade: identity.imageShade }
+        : {}),
+      ...(identity.imageUrl ? { kitchenImageUrl: identity.imageUrl } : {}),
+      ...(identity.logoImageUrl ? { kitchenLogoImageUrl: identity.logoImageUrl } : {}),
+      ...(
+        input.kitchenSlug || readRecordString(appKitchenData, 'slug')
+          ? {
+              kitchenSlug:
+                input.kitchenSlug || readRecordString(appKitchenData, 'slug'),
+            }
+          : {}
+      ),
+      ...(identity.name ? { kitchenName: identity.name } : {}),
+      ...(identity.wordmarkImageUrl
+        ? { kitchenWordmarkImageUrl: identity.wordmarkImageUrl }
+        : {}),
       kitchenAppId: input.appId,
       kitchenMenuId: menuId,
-      currencyCode: identity.currencyCode,
+      ...(identity.currencyCode ? { currencyCode: identity.currencyCode } : {}),
       currencyFormat: identity.currencyFormat,
       showCurrency: identity.showCurrency,
-      page_style: identity.page_style,
-      fulfilment: menuKitchenFulfilment(input.rootKitchenData, appKitchenData),
-      kitchen_operation_hours: menuKitchenOperationHours(
-        input.rootKitchenData,
-        appKitchenData
-      ),
+      ...(identity.page_style ? { page_style: identity.page_style } : {}),
+      ...(fulfilment.delivery_zones.length || fulfilment.payment_methods.length
+        ? { fulfilment }
+        : {}),
+      ...(kitchenOperationHours.windows.length
+        ? { kitchen_operation_hours: kitchenOperationHours }
+        : {}),
     },
   }
 }

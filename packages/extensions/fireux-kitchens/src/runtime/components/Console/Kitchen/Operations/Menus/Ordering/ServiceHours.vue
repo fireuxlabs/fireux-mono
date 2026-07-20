@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 21:54 CEST — Place-root authority pass: keep inherited Kitchen hours out of custom Menu overrides. -->
 <template>
   <UCard>
     <template #header>
@@ -13,7 +14,7 @@
           <UBadge v-if="saveState" color="neutral" variant="soft">
             {{ saveState }}
           </UBadge>
-          <UBadge :color="effectiveHours.windows.length ? 'success' : 'warning'" variant="soft">
+          <UBadge :color="menuServiceHours.windows.length ? 'success' : 'warning'" variant="soft">
             {{ sourceLabel }}
           </UBadge>
         </div>
@@ -90,12 +91,18 @@ const draft = reactive({
 const kitchenHoursSummary = computed(() =>
   formatWeekdayTimeText(kitchenOperationHours.value)
 )
-const effectiveHours = computed(() => menuServiceHours.value)
+const customHours = computed(() => {
+  const serviceHours = ordering.value.service_hours
+
+  return serviceHours?.inherit_kitchen_operation_hours === true
+    ? null
+    : serviceHours?.operation_hours || null
+})
 const sourceLabel = computed(() =>
-  ordering.value.service_hours?.inherit_kitchen_operation_hours
-    ? 'Kitchen hours'
-    : effectiveHours.value.windows.length
-      ? 'Custom hours'
+  customHours.value?.windows.length
+    ? 'Custom hours'
+    : kitchenOperationHours.value.windows.length
+      ? 'Kitchen hours'
       : 'Needs configuration'
 )
 
@@ -103,12 +110,10 @@ watch(
   () => [ordering.value.service_hours, menuServiceHours.value] as const,
   () => {
     syncingDraft = true
-    const serviceHours = ordering.value.service_hours
-    draft.inheritKitchenHours =
-      serviceHours?.inherit_kitchen_operation_hours !== false
-    draft.hoursText = formatWeekdayTimeText(
-      serviceHours?.operation_hours || menuServiceHours.value
-    )
+    draft.inheritKitchenHours = !customHours.value?.windows.length
+    draft.hoursText = customHours.value
+      ? formatWeekdayTimeText(customHours.value)
+      : ''
     validationError.value = ''
     queueMicrotask(() => {
       syncingDraft = false

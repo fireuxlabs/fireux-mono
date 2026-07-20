@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: fail closed when the Place-owned timezone is absent instead of inventing Europe/Zurich.
 import type {
   WeekdayTimeDay,
   WeekdayTimeWindow,
@@ -128,7 +129,7 @@ export const readWeekdayTimeWindowsConfig = (
 
   return {
     source: timeSource(source.source),
-    timezone: text(source.timezone) || 'Europe/Zurich',
+    timezone: text(source.timezone),
     windows: list(source.windows)
       .map(readWindow)
       .filter((window): window is WeekdayTimeWindow => Boolean(window)),
@@ -301,6 +302,13 @@ export const readWeekdayTimeOpenState = (
   now = new Date()
 ) => {
   const hours = readWeekdayTimeWindowsConfig(value)
+  if (!hours.timezone) {
+    return {
+      known: false,
+      open: false,
+      label: 'Service times unavailable',
+    }
+  }
   const { day, minutes } = zonedDayTime(now, hours.timezone)
   const known = Boolean(day && hours.windows.length)
   const open = day && hours.windows.length
@@ -322,6 +330,15 @@ export const readWeekdayTimeSelectionState = (
   timeValue: unknown
 ) => {
   const hours = readWeekdayTimeWindowsConfig(value)
+  if (!hours.timezone) {
+    return {
+      known: false,
+      complete: Boolean(text(dateValue) && normalizeTime(timeValue)),
+      available: false,
+      requested_for: '',
+      label: 'Service times unavailable.',
+    }
+  }
   const day = inputDateDay(dateValue, hours.timezone)
   const dateText = inputDateText(dateValue, hours.timezone)
   const timeText = normalizeTime(timeValue)
@@ -386,10 +403,12 @@ export const readWeekdayTimeNoticeState = (
     ? `${match?.[1]}-${match?.[2]}-${match?.[3]}T${match?.[4]}:${match?.[5]}`
     : ''
   const noticeHours = Math.max(0, Number(noticeHoursValue) || 0)
-  const minimum = zonedDateTimeText(
-    new Date(now.getTime() + noticeHours * 60 * 60 * 1000),
-    hours.timezone
-  )
+  const minimum = hours.timezone
+    ? zonedDateTimeText(
+        new Date(now.getTime() + noticeHours * 60 * 60 * 1000),
+        hours.timezone
+      )
+    : ''
 
   return {
     complete,
@@ -401,7 +420,7 @@ export const readWeekdayTimeNoticeState = (
 
 export const parseWeekdayTimeText = (
   value: string,
-  timezone = 'Europe/Zurich'
+  timezone = ''
 ): WeekdayTimeWindowsConfig => {
   const windows = value
     .split('\n')

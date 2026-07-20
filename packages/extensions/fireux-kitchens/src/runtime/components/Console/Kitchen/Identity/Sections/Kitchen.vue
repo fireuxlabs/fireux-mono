@@ -1,4 +1,5 @@
 <template>
+  <!-- Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: make Kitchen identity fields explicit optional overrides of Place. -->
   <MoleculesDisclosurePanel
     title="Kitchen"
     description="Name, slug, tagline, and menu theme."
@@ -9,9 +10,9 @@
           <div class="grid gap-4 md:grid-cols-2">
             <div class="md:col-span-2">
               <MoleculesFormsFirestoreSimpleField
-                label="Name"
+                label="Kitchen name override"
                 :firebase-value="name"
-                placeholder="Kitchen display name"
+                placeholder="Inherit the Place name"
                 :maxlength="120"
                 :disabled="!canWrite"
                 disabled-message="This kitchen is read-only."
@@ -42,18 +43,6 @@
                 :update-function="handleTagline"
               />
             </div>
-
-            <MoleculesFormsFirestoreSimpleField
-              label="Currency"
-              :firebase-value="currencyCode"
-              placeholder="ISO code"
-              :maxlength="3"
-              :disabled="!canWrite"
-              disabled-message="This kitchen is read-only."
-              :validation-function="validateCurrencyCode"
-              :formatting-function="formatCurrencyCode"
-              :update-function="handleCurrencyCode"
-            />
 
             <div class="md:col-span-2 rounded-lg border border-default bg-muted/30 p-3">
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -129,7 +118,6 @@ import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/ki
 import type { KitchenUpdateInput } from '../../../../../models/kitchen.model'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import {
-  readKitchenCurrencyCode,
   readKitchenIdentity,
 } from '../../../../../utils/kitchen-spine'
 
@@ -150,7 +138,6 @@ const toast = useToastify()
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
 const tagline = computed(() => readKitchenIdentity(props.kitchen).tagline)
 const slug = computed(() => String(props.kitchen?.slug ?? ''))
-const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
 const coverImage = computed(() => String(props.kitchen?.cover_image ?? '').trim())
 const { uploadImage } = useImageStorage()
 const coverInputRef = ref<HTMLInputElement | null>(null)
@@ -198,25 +185,6 @@ const handleTagline = async (value: string) =>
     { 'identity.tagline': value },
     'Tagline updated',
     'Failed to update tagline'
-  )
-
-const formatCurrencyCode = (value: string) =>
-  String(value || '').trim().toUpperCase().replace(/[^A-Z]/g, '').slice(0, 3)
-
-const validateCurrencyCode = (value: string) => {
-  const next = formatCurrencyCode(value)
-
-  return {
-    isValid: /^[A-Z]{3}$/.test(next),
-    message: next.length === 3 ? '' : 'Use a 3-letter ISO currency code.',
-  }
-}
-
-const handleCurrencyCode = async (value: string) =>
-  updateKitchenField(
-    { currency_code: formatCurrencyCode(value) },
-    'Currency updated',
-    'Failed to update currency'
   )
 
 function triggerCoverInput() {

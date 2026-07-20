@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: project requested time and verified Delivery details to customers.
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: make absent customer Order projection values truly optional.
 import type {
   KitchenOrderPaymentMethod,
   KitchenOrderPaymentStatus,
@@ -33,13 +34,13 @@ export type CustomerOrderItemSummary = {
 
 export type CustomerOrderSummary = {
   id: string
-  order_number: string
+  order_number?: string
   status: KitchenOrderStatus
   order_type: KitchenOrderType
   requested_for?: string
-  created_at: string
-  estimated_ready_minutes: number
-  estimated_ready_at: string
+  created_at?: string
+  estimated_ready_minutes?: number
+  estimated_ready_at?: string
   kitchen_note?: string
   item_count: number
   items: CustomerOrderItemSummary[]

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 22:21 CEST — Both-Entity Authority — Property: expose the canonical Place reference instead of copied address truth.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { usePropertyConsole } from '../core/usePropertyConsole'
@@ -13,13 +14,8 @@ export function usePropertyConsoleIdentity() {
   const name = computed(() =>
     normalizeString(identity.value?.name) || selection.propertyId.value
   )
-  const address = computed(() =>
-    [
-      identity.value?.address_line,
-      identity.value?.city,
-      identity.value?.postcode,
-      identity.value?.country,
-    ].map(normalizeString).filter(Boolean).join(', ')
+  const placeId = computed(() =>
+    normalizeString(selection.property.value?.place_id)
   )
   const imageUrl = computed(() => normalizeString(identity.value?.image_url))
   const debug = computed(() => ({
@@ -29,7 +25,7 @@ export function usePropertyConsoleIdentity() {
     readOnly: runtime.readOnly.value,
     canWrite: runtime.canWrite.value,
     name: name.value,
-    address: address.value,
+    placeId: placeId.value,
     imageUrl: imageUrl.value,
     selectedProperty: selection.property.value,
   }))
@@ -43,7 +39,7 @@ export function usePropertyConsoleIdentity() {
     canWrite: runtime.canWrite,
     clearSelectedProperty: actions.clearSelectedProperty,
     name,
-    address,
+    placeId,
     imageUrl,
     debug,
   }

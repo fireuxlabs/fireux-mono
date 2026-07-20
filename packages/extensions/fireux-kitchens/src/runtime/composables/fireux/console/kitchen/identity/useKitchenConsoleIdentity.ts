@@ -1,8 +1,8 @@
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: expose Kitchen identity without treating legacy Kitchen currency as shared truth.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 import {
-  readKitchenCurrencyCode,
   readKitchenIdentity,
 } from '../../../../../utils/kitchen-spine'
 
@@ -15,6 +15,7 @@ export function useKitchenConsoleIdentity() {
   const selectedConsoleKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
+  const appId = runtime.appId
   const source = runtime.source
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
@@ -30,9 +31,6 @@ export function useKitchenConsoleIdentity() {
   const tagline = computed(() =>
     normalizeString(identity.value.tagline)
   )
-  const currencyCode = computed(() =>
-    readKitchenCurrencyCode(kitchenRecord.value)
-  )
   const slug = computed(() =>
     normalizeString(kitchenRecord.value?.slug)
   )
@@ -45,12 +43,12 @@ export function useKitchenConsoleIdentity() {
   })
   const debug = computed(() => ({
     kitchenId: kitchenId.value,
+    appId: appId.value,
     rootCollection: rootCollection.value,
     readOnly: readOnly.value,
     canWrite: canWrite.value,
     name: name.value,
     tagline: tagline.value,
-    currencyCode: currencyCode.value,
     slug: slug.value,
     placeId: placeId.value,
     address: address.value,
@@ -60,6 +58,7 @@ export function useKitchenConsoleIdentity() {
   return {
     selectedKitchen,
     kitchenId,
+    appId,
     rootCollection,
     source,
     readOnly,
@@ -67,7 +66,6 @@ export function useKitchenConsoleIdentity() {
     clearSelectedKitchen: actions.clearSelectedKitchen,
     name,
     tagline,
-    currencyCode,
     slug,
     placeId,
     address,

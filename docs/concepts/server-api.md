@@ -8,9 +8,10 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: map domain-owned bounded profile/User joins. -->
 <!-- Concurrent edit — 2026-07-20 16:04 CEST — Repo Efficiency Pass 1 of 6: map public App DTO, shell status, and authenticated dev-data boundaries. -->
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map owner-only raw profiles and SSR detail transport. -->
+<!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: map trusted sparse Place mutation and fail-closed Kitchen projection. -->
 
 Updated: 2026-07-20
-Ref: 8d83d3fa7
+Ref: 4c0a1c7ad
 Role: map, not canon
 
 Purpose:
@@ -43,10 +44,11 @@ Server spine:
 - `server/utils/**` holds reusable server-only primitives grouped by family and
   workflow, not as a flat package drawer.
 - `server/<domain>/**` extends an existing domain stack into server-only work.
-  Menu is the current example because the domain already has `useMenu`,
-  Menu models/storage, Menu routes, and Menu-specific server workflows:
+  Menu and Place are current examples because each domain already has named
+  models, composables, routes, and server workflows. Menu owns
   `server/menu/manifest`, `server/menu/payload`, `server/menu/source`, and
-  `server/menu/ordering`.
+  `server/menu/ordering`; Place owns its bounded mutation verifier under
+  `server/place`.
 - Core utility buckets may be primitive buckets such as `auth`, `http`, `ids`,
   `records`, `uploads`, and `slug`.
 - Domain server buckets should name the visible family and server workflow,
@@ -83,6 +85,19 @@ Boundary rule:
   no customer, destination, item-line, or payment data; watch writes are
   server-authorized against the current Driver grant. Full Kitchen Order reads
   remain client-accessible only to Kitchen operators.
+- Places owns `PATCH /api/places/:placeId`. It accepts an allowlisted sparse
+  patch, converts cleared optional values to field deletion, and writes through
+  Firebase Admin only after a verified bearer identity proves Place ownership,
+  current-App admin access, or operator access to an explicitly linked
+  `app_id`/`kitchen_id` whose stored `place_id` matches the target. Kitchen
+  `canWrite` is presentation state, not Place authority, and no broad client
+  Place write rule is opened.
+- Kitchens owns `GET /api/kitchens`. It cursor-pages root Kitchens, joins only
+  explicit `place_id` and canonical App-scope references with bounded server
+  batches, and emits a sparse public card DTO only for published, non-test rows
+  with a slug and an existing linked Place. Raw Kitchen operational data,
+  missing values, copied Place snapshots, invalid App overlays, and browser N+1
+  hydration stay out of the public directory contract.
 - Shared identity writes may publish authenticated, idempotent App events
   through core server endpoints. Event facts do not choose notification
   recipients or delivery channels; those belong to subscribing consumers.

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep demo payloads outside the Firestore document seam.
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: expose raw Kitchen delta separately from its Place-hydrated read surface.
 import {
   collection,
   documentId,
@@ -141,20 +142,26 @@ export function useKitchenFetch(
     'kitchen-fetch-place',
     PlaceStorage.collection
   )
-
-  const kitchen = computed<KitchenFetchDoc | null>(() => {
+  const rootKitchen = computed<KitchenFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
     const entry = sourceEntry.value
     if (!docId || !entry) return null
+
+    return {
+      ...entry,
+      id: String(entry.id || docId).trim(),
+    }
+  })
+
+  const kitchen = computed<KitchenFetchDoc | null>(() => {
+    const entry = rootKitchen.value
+    if (!entry) return null
 
     const place = shouldHydrate ? placeSource.value?.[0] ?? null : null
 
     return surface({
       place,
-      kitchen: {
-        ...entry,
-        id: String(entry?.id || docId).trim(),
-      },
+      kitchen: entry,
       routeScope:
         sourceRef.value === 'demo' || sourceRef.value === 'test'
           ? sourceRef.value
@@ -172,6 +179,7 @@ export function useKitchenFetch(
 
   return {
     kitchen,
+    rootKitchen,
     pending,
   }
 }

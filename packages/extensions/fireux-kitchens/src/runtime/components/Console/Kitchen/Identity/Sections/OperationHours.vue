@@ -1,7 +1,8 @@
 <template>
+  <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: edit Kitchen-hour deltas without copying or persisting empty Place inheritance. -->
   <MoleculesDisclosurePanel
     title="Operation hours"
-    description="Use Google business hours or set kitchen opening times."
+    description="Use linked Place business hours or set a Kitchen-only override."
     icon="i-lucide-clock-3"
   >
     <UCard class="mt-4">
@@ -10,16 +11,16 @@
             <UButtonGroup>
               <UButton
                 color="neutral"
-                :variant="hours.source === 'place' ? 'solid' : 'soft'"
+                :variant="usesPlaceHours ? 'solid' : 'soft'"
                 :disabled="!canWrite || saving || !placeId"
                 @click="saveSource('place')"
               >
-                Google business hours
+                Use Place hours
               </UButton>
 
               <UButton
                 color="neutral"
-                :variant="hours.source === 'custom' ? 'solid' : 'soft'"
+                :variant="usesPlaceHours ? 'soft' : 'solid'"
                 :disabled="!canWrite || saving"
                 @click="saveSource('custom')"
               >
@@ -27,35 +28,42 @@
               </UButton>
             </UButtonGroup>
 
-            <UBadge color="neutral" variant="soft">
+            <UBadge v-if="hours.timezone" color="neutral" variant="soft">
               {{ hours.timezone }}
+            </UBadge>
+            <UBadge v-else color="warning" variant="soft">
+              Timezone needed
             </UBadge>
           </div>
 
           <div
-            v-if="hours.source === 'place'"
+            v-if="usesPlaceHours"
             class="space-y-3 rounded-lg border border-default p-4"
           >
             <p class="text-sm text-dimmed">
-              This kitchen is using the linked Place business hours from Google.
-              Set kitchen hours when ordering hours differ from public opening
-              hours.
+              This Kitchen inherits the linked Place business hours. Set a Kitchen
+              override only when its operation differs from the Place baseline.
             </p>
 
-            <PlaceGoogleHours
-              v-if="placeId && source === 'live'"
-              :place-id="placeId"
-              auto-load
-              button-label="Refresh Google hours"
-            />
-            <p
+            <ul v-if="inheritedHourLines.length" class="space-y-1 text-sm text-highlighted">
+              <li v-for="line in inheritedHourLines" :key="line">{{ line }}</li>
+            </ul>
+            <UAlert
               v-else
-              class="text-sm text-dimmed"
+              color="warning"
+              variant="soft"
+              title="Place hours unavailable"
+              description="Open the linked Place and add its timezone and business hours."
+            />
+
+            <UButton
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-map-pin"
+              to="/console/kitchen/identity/place"
             >
-              {{ source === 'live'
-                ? 'Link this kitchen to a Place before inheriting Place hours.'
-                : 'Place hours are not loaded from live data in this read-only source.' }}
-            </p>
+              Configure Place hours
+            </UButton>
           </div>
 
           <MoleculesFormsFirestoreObjectArray
@@ -163,9 +171,10 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import PlaceGoogleHours from 'fireux-places/runtime/components/Place/GoogleHours.vue'
+import { deleteField } from 'firebase/firestore'
+import { readPlaceBusinessHours } from 'fireux-places/runtime/utils/place-spine'
 import { computed, ref } from 'vue'
-import { useKitchenConsoleIdentity } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
+import { useKitchenConsolePlace } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
 import { useKitchenUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type {
   WeekdayTimeDay,
@@ -175,9 +184,14 @@ import type {
 } from '../../../../../models/shared/weekday-time.model'
 import {
   weekdayTimeDayOptions,
+  weekdayTimeLines,
   weekdayTimeWindowFromRange,
 } from '../../../../../utils/weekday-time'
-import { readKitchenOperationHours } from '../../../../../utils/kitchen-spine'
+import {
+  hasKitchenOperationHours,
+  readKitchenOperationHours,
+  resolveKitchenOperationHours,
+} from '../../../../../utils/kitchen-spine'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
@@ -187,13 +201,41 @@ const props = defineProps<{
 }>()
 
 const collectionPath = computed(() => props.collectionPath)
-const { source } = useKitchenConsoleIdentity()
+const { place } = useKitchenConsolePlace()
 const { updateKitchen } = useKitchenUpdate({ collectionPath })
 const toast = useToastify()
 const error = ref('')
 const saving = ref(false)
-const hours = computed(() => readKitchenOperationHours(props.kitchen))
+const customEditorOpen = ref(false)
+const effectiveHours = computed(() =>
+  resolveKitchenOperationHours(props.kitchen, place.value)
+)
+const storedKitchenHours = computed(() => readKitchenOperationHours(props.kitchen))
+const hasStoredCustomHours = computed(() =>
+  hasKitchenOperationHours(props.kitchen) &&
+  storedKitchenHours.value.source === 'custom' &&
+  storedKitchenHours.value.windows.length > 0
+)
+const usesPlaceHours = computed(() =>
+  !customEditorOpen.value && !hasStoredCustomHours.value
+)
+const hours = computed(() => {
+  if (usesPlaceHours.value) return effectiveHours.value
+  if (hasStoredCustomHours.value) return storedKitchenHours.value
+
+  return {
+    source: 'custom' as const,
+    timezone: effectiveHours.value.timezone,
+    windows: [],
+  }
+})
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
+const inheritedHourLines = computed(() => {
+  const configured = readPlaceBusinessHours(place.value)
+  return configured
+    ? weekdayTimeLines({ source: 'place', ...configured })
+    : weekdayTimeLines(hours.value)
+})
 const dayOptions = weekdayTimeDayOptions
 
 const defaultWindow = (): WeekdayTimeWindow => ({
@@ -278,19 +320,26 @@ async function saveWindows(items: unknown[]) {
 
       return window
     })
-    const nextHours: WeekdayTimeWindowsConfig = {
-      source: 'custom',
-      timezone: hours.value.timezone,
-      windows,
-    }
     if (!props.kitchenId) throw new Error('No kitchen selected.')
+    if (windows.length && !hours.value.timezone) {
+      throw new Error('Set the linked Place timezone before saving Kitchen hours.')
+    }
 
     saving.value = true
     await updateKitchen(props.kitchenId, {
-      'orders.operation_hours': nextHours,
+      'orders.operation_hours': windows.length
+        ? {
+            source: 'custom',
+            timezone: hours.value.timezone,
+            windows,
+          } satisfies WeekdayTimeWindowsConfig
+        : deleteField() as never,
     })
+    customEditorOpen.value = windows.length > 0
     toast.add({
-      title: 'Operation hours saved',
+      title: windows.length
+        ? 'Operation hours saved'
+        : 'Using Place business hours',
       color: 'success',
       icon: 'i-lucide-check',
     })
@@ -310,20 +359,23 @@ async function saveWindows(items: unknown[]) {
 }
 
 async function saveSource(source: WeekdayTimeWindowsSource) {
-  if (!props.canWrite || saving.value || source === hours.value.source) return
+  if (!props.canWrite || saving.value) return
   if (source === 'place' && !placeId.value) return
   if (!props.kitchenId) throw new Error('No kitchen selected.')
+  if (source === 'place' && usesPlaceHours.value) return
+  if (source === 'custom') {
+    customEditorOpen.value = true
+    return
+  }
 
   saving.value = true
   try {
     await updateKitchen(props.kitchenId, {
-      'orders.operation_hours': {
-        ...hours.value,
-        source,
-      },
+      'orders.operation_hours': deleteField() as never,
     })
+    customEditorOpen.value = false
     toast.add({
-      title: source === 'place' ? 'Using Google business hours' : 'Using kitchen hours',
+      title: 'Using Place business hours',
       color: 'success',
       icon: 'i-lucide-check',
     })

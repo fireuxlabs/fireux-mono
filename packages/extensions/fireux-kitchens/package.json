@@ -26,21 +26,25 @@
   "dependencies": {
     "fireux-ai": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-places": "workspace:*",
     "fireux-sproochli": "workspace:*",
     "fireux-translation": "workspace:*",
     "fireux-suppliers": "workspace:*",
     "pdfjs-dist": "^5.4.296",
+    "qr-code-styling": "^1.9.2",
     "qrcode": "^1.5.4"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",
     "@nuxt/kit": "^4.4.0",
     "@nuxt/schema": "^4.4.0",
+    "@nuxt/ui": ">=3 <5",
     "vue": "^3.5.20",
     "vue-router": "^4.5.0",
     "vuefire": "^3.2.2",
     "firebase": "^11.10.0",
     "firebase-admin": "*",
+    "h3": "*",
     "stripe": "*"
   },
   "peerDependenciesMeta": {
@@ -51,9 +55,7 @@
   "devDependencies": {
     "@nuxt/module-builder": "^0.5.5",
     "@types/qrcode": "^1.5.6",
-    "mkdist": "^1.5.3",
-    "rimraf": "^6.0.1",
-    "glob": "^11.0.3"
+    "rimraf": "^6.0.1"
   },
   "type": "module"
 }

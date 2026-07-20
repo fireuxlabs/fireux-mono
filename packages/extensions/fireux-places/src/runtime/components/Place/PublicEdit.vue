@@ -1,4 +1,5 @@
 <template>
+  <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: deep-compact editable Place debug truth without dropping valid zero coordinates. -->
   <UPage class="page edit-page">
     <UPageHeader :title="pageTitle" :description="pageSubtitle">
       <template #ctas>
@@ -146,36 +147,57 @@ const pageSubtitle = computed(() =>
   place.value?.formatted_address || 'Public place details and owner-added content.'
 )
 
+const compactValue = (value: unknown): unknown => {
+  if (typeof value === 'string') return value.trim() || undefined
+  if (Array.isArray(value)) {
+    const items = value
+      .map(compactValue)
+      .filter(item => item !== undefined)
+    return items.length ? items : undefined
+  }
+  if (value && typeof value === 'object') {
+    const entries = Object.entries(value)
+      .map(([key, item]) => [key, compactValue(item)] as const)
+      .filter(([, item]) => item !== undefined)
+    return entries.length ? Object.fromEntries(entries) : undefined
+  }
+  return value === null || value === undefined ? undefined : value
+}
+
+const compact = (source: Record<string, unknown>) =>
+  compactValue(source) as Record<string, unknown>
+
 const editableFields = computed(() => {
   const v = place.value
   if (!v) return null
-  const base = {
-    id: v.id ?? '',
-    image_url: v.image_url ?? (v as any).place_image ?? '',
-    image_shade: v.image_shade ?? 'none',
-    short_name: v.short_name ?? '',
-    brand_tagline: v.brand_tagline ?? '',
-    about: v.about ?? '',
-    cover_image: v.cover_image ?? '',
-    gallery_images: Array.isArray(v.gallery_images) ? v.gallery_images : [],
-    phone: v.phone ?? '',
-    email: v.email ?? '',
-    website: v.website ?? '',
-    social_links: v.social_links ?? {},
-    default_currency_code: v.default_currency_code ?? '',
-    timezone: v.timezone ?? '',
-    claimed_by: v.claimed_by ?? '',
-  }
+  const base = compact({
+    id: v.id,
+    image_url: v.image_url ?? (v as any).place_image,
+    image_shade: v.image_shade === 'none' ? undefined : v.image_shade,
+    short_name: v.short_name,
+    brand_tagline: v.brand_tagline,
+    about: v.about,
+    cover_image: v.cover_image,
+    gallery_images: v.gallery_images,
+    phone: v.phone,
+    email: v.email,
+    website: v.website,
+    social_links: v.social_links,
+    default_currency_code: v.default_currency_code,
+    timezone: v.timezone,
+    business_hours: v.business_hours,
+    claimed_by: v.claimed_by,
+  })
 
   if (v.source === 'manual') {
-    return {
+    return compact({
       ...base,
-      name: v.name ?? '',
-      formatted_address: v.formatted_address ?? '',
-      search_term: v.search_term ?? '',
-      lat: v.lat ?? 0,
-      lng: v.lng ?? 0,
-    }
+      name: v.name,
+      formatted_address: v.formatted_address,
+      search_term: v.search_term,
+      lat: v.lat,
+      lng: v.lng,
+    })
   }
 
   return base

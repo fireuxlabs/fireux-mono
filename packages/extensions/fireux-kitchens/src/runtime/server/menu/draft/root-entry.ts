@@ -1,4 +1,5 @@
-import type { Firestore } from 'firebase-admin/firestore'
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: delete stale root Menu description projections under merge.
+import { FieldValue, type Firestore } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { KitchenStorage } from '../../../models/kitchen.model'
@@ -142,12 +143,17 @@ export async function ensureKitchenMenuRootEntry(
   const rootSnap = await rootRef.get()
   const rootData = rootSnap.data() || {}
 
+  const description = readRecordString(input.menuData, 'description')
   await rootRef.set({
     id: rootId,
     kind: 'menu',
     status: readRecordString(input.menuData, 'status') || 'draft',
     name: readRecordString(input.menuData, 'name') || input.menuId,
-    description: readRecordString(input.menuData, 'description'),
+    ...(description
+      ? { description }
+      : rootSnap.exists && Object.hasOwn(rootData, 'description')
+        ? { description: FieldValue.delete() }
+        : {}),
     source: {
       app_id: input.appId,
       kitchen_id: input.kitchenId,

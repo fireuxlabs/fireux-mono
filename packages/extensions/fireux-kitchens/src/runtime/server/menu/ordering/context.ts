@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: carry Kitchen fulfilment capability into canonical Menu order context.
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: fail ordering closed without an explicit Kitchen Place reference.
 import { createError } from 'h3'
 import {
   currentPublicMenuAppId,
@@ -16,7 +17,7 @@ import {
 export type MenuOrderContext = {
   appId: string
   kitchenId: string
-  kitchenPlaceId?: string
+  kitchenPlaceId: string
   kitchenSlug?: string
   kitchenName?: string
   currencyCode?: string
@@ -44,13 +45,22 @@ export const readMenuOrderContext = async (
     })
   }
 
+  const kitchenPlaceId = text(target.scope.kitchenPlaceId)
+  if (!kitchenPlaceId) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'This Kitchen must be linked to a Place before accepting orders.',
+    })
+  }
+  const kitchenName = text(target.scope.kitchenName)
+  const currencyCode = text(target.scope.currencyCode)
   return {
     appId: target.appId,
     kitchenId: target.kitchenId,
-    kitchenPlaceId: text(target.scope.kitchenPlaceId) || target.kitchenId,
-    kitchenSlug: target.kitchenSlug,
-    kitchenName: text(target.scope.kitchenName),
-    currencyCode: text(target.scope.currencyCode),
+    kitchenPlaceId,
+    ...(target.kitchenSlug ? { kitchenSlug: target.kitchenSlug } : {}),
+    ...(kitchenName ? { kitchenName } : {}),
+    ...(currencyCode ? { currencyCode } : {}),
     menuId: target.sourceMenuId,
     routeMenuId: target.routeMenuId,
     routeScope: target.kind === 'directory-menu'
@@ -61,7 +71,9 @@ export const readMenuOrderContext = async (
     menuData: target.kind === 'root-doorway'
       ? target.sourceMenuData
       : target.menuData,
-    fulfilment: target.scope.fulfilment,
-    operationHours: target.scope.kitchen_operation_hours,
+    ...(target.scope.fulfilment ? { fulfilment: target.scope.fulfilment } : {}),
+    ...(target.scope.kitchen_operation_hours
+      ? { operationHours: target.scope.kitchen_operation_hours }
+      : {}),
   }
 }

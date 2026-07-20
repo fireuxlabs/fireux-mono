@@ -167,6 +167,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: use linked Place currency and coordinates for Kitchen delivery configuration.
 import type { RadioGroupItem } from '@nuxt/ui'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
@@ -178,9 +179,9 @@ import type {
   KitchenUpdateInput,
 } from '../../../../../../models/kitchen.model'
 import {
-  readKitchenCurrencyCode,
   readKitchenFulfilmentConfig,
 } from '../../../../../../utils/kitchen-spine'
+import { useKitchenConsolePlace } from '../../../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
 
 type BoundaryType = 'radius' | 'postal_codes' | 'polygon'
 
@@ -212,6 +213,7 @@ const props = defineProps<{
 
 const collectionPath = computed(() => props.collectionPath)
 const { updateKitchen } = useKitchenUpdate({ collectionPath })
+const { place, currencyCode } = useKitchenConsolePlace()
 const toast = useToastify()
 const zones = ref<EditableZone[]>([])
 const activeZoneIndex = ref(0)
@@ -219,14 +221,13 @@ const saving = ref(false)
 const saveState = ref('')
 const syncingSavedZones = ref(false)
 const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
-const currencyCode = computed(() => readKitchenCurrencyCode(props.kitchen))
 const deliveryZones = computed<KitchenDeliveryZone[]>(
   () => fulfilment.value.delivery_zones
 )
 const paymentMethods = computed(() => fulfilment.value.payment_methods || [])
 const deliveryCenter = computed(() => {
-  const lat = Number(props.kitchen?.lat)
-  const lng = Number(props.kitchen?.lng)
+  const lat = Number(place.value?.lat)
+  const lng = Number(place.value?.lng)
 
   return Number.isFinite(lat) && Number.isFinite(lng)
     ? { lat, lng }

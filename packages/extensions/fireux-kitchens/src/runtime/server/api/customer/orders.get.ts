@@ -1,8 +1,10 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: expose canonical Delivery address and timing in customer projection.
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: recover source item identity for signed-in amend resubmission.
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: join explicit Place identity and omit absent customer Order values.
 import { defineEventHandler, getQuery } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
   isKitchenOrderStatus,
   isKitchenOrderType,
@@ -165,18 +167,26 @@ function customerOrderSummary(
       }),
     }]
   })
+  const orderNumber = text(order.order_number) || (
+    number(order.service_number) > 0 ? String(number(order.service_number)) : ''
+  )
+  const createdAt = iso(order.created_at) || iso(record(order.created).at)
+  const estimatedReadyMinutes = number(order.estimated_ready_minutes)
+  const estimatedReadyAt = iso(order.estimated_ready_at)
 
   return {
     id,
-    order_number: text(order.order_number) || String(number(order.service_number)),
+    ...(orderNumber ? { order_number: orderNumber } : {}),
     status: order.status,
     order_type: order.order_type,
     ...(iso(order.requested_for)
       ? { requested_for: iso(order.requested_for) }
       : {}),
-    created_at: iso(order.created_at) || iso(record(order.created).at),
-    estimated_ready_minutes: number(order.estimated_ready_minutes),
-    estimated_ready_at: iso(order.estimated_ready_at),
+    ...(createdAt ? { created_at: createdAt } : {}),
+    ...(estimatedReadyMinutes > 0
+      ? { estimated_ready_minutes: estimatedReadyMinutes }
+      : {}),
+    ...(estimatedReadyAt ? { estimated_ready_at: estimatedReadyAt } : {}),
     ...(text(order.kitchen_note)
       ? { kitchen_note: text(order.kitchen_note) }
       : {}),
@@ -278,6 +288,25 @@ async function customerKitchenHydration(
       snapshot.exists ? snapshot.data() || {} : {},
     ])
   )
+  const placeReferences = new Map<string, ReturnType<typeof db.doc>>()
+  for (const link of links) {
+    const kitchenId = text(link.kitchen_id)
+    if (!kitchenId) continue
+    const rootData = dataByPath.get(`kitchens/${kitchenId}`) || {}
+    const placeId = text(rootData.place_id)
+    if (!placeId) continue
+    const placeRef = db.doc(`${PlaceStorage.collection}/${placeId}`)
+    placeReferences.set(placeRef.path, placeRef)
+  }
+  if (placeReferences.size) {
+    const placeSnapshots = await db.getAll(...placeReferences.values())
+    for (const snapshot of placeSnapshots) {
+      dataByPath.set(
+        snapshot.ref.path,
+        snapshot.exists ? snapshot.data() || {} : {}
+      )
+    }
+  }
 
   return new Map(
     links.flatMap((link) => {
@@ -289,7 +318,11 @@ async function customerKitchenHydration(
       const appData = appId
         ? dataByPath.get(`apps/${appId}/kitchens/${kitchenId}`) || {}
         : {}
-      const identity = menuKitchenIdentity(rootData, appData)
+      const placeId = text(rootData.place_id)
+      const placeData = placeId
+        ? dataByPath.get(`${PlaceStorage.collection}/${placeId}`) || {}
+        : {}
+      const identity = menuKitchenIdentity(rootData, appData, placeData)
       const slug = text(rootData.slug) || text(appData.slug)
 
       return [[

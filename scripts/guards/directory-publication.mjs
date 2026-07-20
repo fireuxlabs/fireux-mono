@@ -3,6 +3,7 @@
 // usage_note: run through pnpm guard; locks the disabled publication pipeline and server-only database topology.
 // Concurrent edit — 2026-07-19 22:12 CEST — Directory Publication Rules Pass: guard isolated databases, deny-all rules, source scopes, and multi-scope authorization.
 // Concurrent edit — 2026-07-20 12:27 CEST — Directory Live Pass: guard read-only dry-runs, state-free capability checks, exact hashes, and per-batch revalidation.
+// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: guard shared protected backup mechanics and domain-local apply authority.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -56,6 +57,7 @@ const REMEDIATION_SCRIPT_PATH =
 const REMEDIATION_LIB_PATH = 'scripts/_lib/platform-directory-remediation.mjs'
 const INFRASTRUCTURE_SCRIPT_PATH =
   'scripts/provision-directory-publication-infrastructure.mjs'
+const PROTECTED_JSON_ARTIFACT_PATH = 'scripts/_lib/protected-json-artifact.mjs'
 const REMEDIATION_EXECUTOR_SCRIPT_PATH =
   'scripts/remediate-platform-directory.mjs'
 const REMEDIATION_EXECUTOR_LIB_PATH =
@@ -108,6 +110,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const remediationScriptSource = read(repoRoot, REMEDIATION_SCRIPT_PATH)
   const remediationLibSource = read(repoRoot, REMEDIATION_LIB_PATH)
   const infrastructureScriptSource = read(repoRoot, INFRASTRUCTURE_SCRIPT_PATH)
+  const protectedJsonArtifactSource = read(
+    repoRoot,
+    PROTECTED_JSON_ARTIFACT_PATH
+  )
   const remediationExecutorScriptSource = read(
     repoRoot,
     REMEDIATION_EXECUTOR_SCRIPT_PATH
@@ -135,6 +141,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assertInfrastructureProvisioningIsFailClosed({
     repoRoot,
     infrastructureScriptSource,
+    protectedJsonArtifactSource,
   })
   assertBackfillIsFailClosed({
     repoRoot,
@@ -517,6 +524,7 @@ function assertPublisherTargets() {
 function assertInfrastructureProvisioningIsFailClosed({
   repoRoot,
   infrastructureScriptSource,
+  protectedJsonArtifactSource,
 }) {
   assert.match(
     infrastructureScriptSource,
@@ -554,8 +562,14 @@ function assertInfrastructureProvisioningIsFailClosed({
     /billing_required_for_named_database/
   )
   assert.match(infrastructureScriptSource, /retryPropagation/)
-  assert.match(infrastructureScriptSource, /mode:\s*0o600/)
-  assert.match(infrastructureScriptSource, /flag:\s*['"]wx['"]/)
+  assert.match(infrastructureScriptSource, /writeProtectedJsonArtifact\s*\(/)
+  assert.match(
+    protectedJsonArtifactSource,
+    /open\(path,\s*['"]wx['"],\s*0o600\)/
+  )
+  assert.match(protectedJsonArtifactSource, /handle\.chmod\(0o600\)/)
+  assert.match(protectedJsonArtifactSource, /file\.mode\s*&\s*0o777/)
+  assert.match(protectedJsonArtifactSource, /!==\s*0o600/)
   assert.match(infrastructureScriptSource, /createReceiverServiceAccount/)
   assert.match(infrastructureScriptSource, /grantReceiverPlatformAccess/)
   assert.match(

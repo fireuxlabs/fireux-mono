@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: align Kitchen sitemap publication with canonical visibility.
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
@@ -65,7 +66,7 @@ export default defineNuxtModule<ModuleOptions>({
         canonicalCollectionPath: 'kitchens',
         routePrefix: '/kitchens',
         slugField: 'slug',
-        publicField: 'show',
+        publicField: 'visibility.show',
         publicValue: true,
         pageSize: 5000,
         updatedAtField: 'updatedAt',

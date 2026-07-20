@@ -1,5 +1,8 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
 import { computed } from 'vue'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
+import { useKitchenConsolePlace } from '../../identity/useKitchenConsolePlace'
 import { useKitchenMenuCollection } from '../../../../firestore/menu/fetch/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../firestore/menu/mutations/useMenuCreate'
 import { useMenuUpdate } from '../../../../firestore/menu/mutations/useMenuUpdate'
@@ -8,7 +11,6 @@ import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
 } from '../../../../../../models/kitchen/menu/menu-source-upload.model'
-import { readKitchenCurrencyCode } from '../../../../../../utils/kitchen-spine'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const timestampSeconds = (value: unknown) => {
@@ -27,6 +29,7 @@ const sortMenuSources = (sources: MenuSourceUpload[]) =>
 
 export function useKitchenConsoleMenus() {
   const kitchenConsole = useKitchenConsole()
+  const { place } = useKitchenConsolePlace()
   const storageKitchenId = kitchenConsole.runtime.storageKitchenId
   const fetchKitchenId = computed(() =>
     kitchenConsole.runtime.rootCollection.value &&
@@ -65,7 +68,7 @@ export function useKitchenConsoleMenus() {
     sortMenuSources(sourceUploads.items.value)
   )
   const currencyCode = computed(() =>
-    readKitchenCurrencyCode(kitchenConsole.selection.kitchen.value)
+    readPlaceCurrencyCode(place.value)
   )
   const canCreateMenu = computed(() =>
     kitchenConsole.runtime.canWrite.value && Boolean(currencyCode.value)
@@ -77,7 +80,7 @@ export function useKitchenConsoleMenus() {
 
     return currencyCode.value
       ? ''
-      : 'Select a kitchen currency code before creating menus.'
+      : 'Set the linked Place currency before creating menus.'
   })
 
   async function createMenu(input: Parameters<typeof create.createMenu>[0]) {

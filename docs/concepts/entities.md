@@ -1,5 +1,8 @@
 Entities map
 
+<!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
+<!-- Concurrent edit — 2026-07-20 22:21 CEST — Both-Entity Authority: map canonical roots, app support records, and child-owned relationships. -->
+
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map dormant publication support records and enablement gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map isolated support databases and deterministic blocker decisions. -->
 <!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: separate public profiles from app-private Customer and Driver operations. -->
@@ -10,7 +13,7 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map projected public profile reads and owner-only raw authority. -->
 
 Updated: 2026-07-20
-Ref: 8d83d3fa7
+Ref: 4c0a1c7ad
 Role: map, not canon
 
 Purpose:
@@ -82,11 +85,32 @@ Entity-ness checkpoint:
 
 Storage scopes:
 
-- `root`: standalone/root public, system, or control-plane entity.
+- `root`: canonical top-level identity. It may be public, private control-plane,
+  or system truth; root is not a synonym for public-readable.
 - `scoped`: lives under a parent entity/app.
-- `both`: has root identity plus scoped/app-operational state.
+- `both`: has one canonical root identity plus a scoped app support record.
 - `none`: no stored entity shape.
 - `to-confirm`: not settled yet.
+
+Both-entity authority boundary:
+
+- Supplier, Portfolio, Property, and Kitchen have one canonical root entity.
+  Their matching App document is a support record, not another copy or storage
+  scope of the entity.
+- The App record may contain access (`operator_ids`, `team_ids`, and
+  `join_requests`) plus only an explicitly modelled operational delta. Property
+  keeps its guest manual there; it never stores that manual on the root.
+- An App support record cannot supply identity or exist as a usable entity
+  without its matching root. Joined reads start from the root, allowlist the App
+  delta, and report a dangling App record as authority drift.
+- Root identity and App operations use separately named, fixed-path mutation
+  seams. A caller cannot select a scope or collection path. Types and rereads
+  improve correctness; deployed Rules or a trusted server transaction remain
+  the security boundary for create, attach, transfer, and access changes.
+- Cross-root relationships are child-owned ids. Property owns optional
+  `portfolio_id`; Portfolio stores neither an inverse Property array nor nested
+  full Property copies. Property also references canonical Place with
+  `place_id`; shared address/location truth stays on Place.
 
 Model placement spine:
 
@@ -123,12 +147,39 @@ Root Simple Index members:
 
 Root Synced Snapshot Index members:
 
-- Kitchen carries public Place snapshot fields; Place stays ignorant of Kitchens.
 - Company carries public Place snapshot fields; Place stays ignorant of Companies.
 - Job carries public workplace snapshot fields; the jobs/workplace domain owns the cascade.
 
+Place authority boundary:
+
+- Place owns facts shared by every role at one physical location: address,
+  coordinates, timezone, public contact/media, currency, and business hours
+  when known. Unknown optional truth is absent, never an empty stored string,
+  array, or object.
+- Kitchen, Property, and future location-role entities reference Place and own
+  only their domain delta. A denormalized public card projection is a read
+  optimization, not a second editor or source of truth.
+- Their relationship is an explicit child `place_id`. Runtime code does not
+  infer that a Kitchen or Property id is also a Place id; a missing reference
+  fails closed and is repaired by a deliberate migration or onboarding step.
+- Supplier already references Company and can cover several delivery areas. A
+  single Supplier-to-Place edge remains `to-confirm`; do not invent or infer it
+  until the product decides whether Supplier identity is company- or site-level.
+- Kitchen operation hours are an optional operational override. Without that
+  override, runtime resolution reads the linked Place business hours. Menu and
+  ordering-surface schedules continue the same single-parent inheritance chain.
+- Authenticated Place edits use the trusted `PATCH /api/places/:placeId` seam.
+  Place owner, current-App admin, and explicitly linked Kitchen-operator access
+  are checked on the server; Kitchen console presentation state never grants a
+  direct browser write to the shared Place record.
+
 Root Projected Index members:
 
+- Kitchen public browse reads hydrate bounded Place projection fields through
+  `/api/kitchens`; canonical Kitchen records do not copy shared Place configuration.
+  Place stays ignorant of Kitchens. The Kitchen identity console owns its
+  directory publication control; absence means unpublished, and the public
+  projection requires explicit publication, a slug, and an existing linked Place.
 - App public browse consumes an allowlisted `AppDirectoryEntry`. Owning
   Ecosystem Apps use `/api/public/apps`; FireUX uses the platform directory.
 - Ecosystem public browse exists only as FireUX `EcosystemDirectoryEntry`
@@ -278,9 +329,12 @@ Directory projection records:
 
 Scoped/Overlay Access members:
 
-- Supplier root browse is simple; operator-filtered access may join app-scoped supplier overlays.
-- Portfolio root browse is simple; operator-filtered access may join app-scoped portfolio overlays.
-- Property root browse is simple; scoped overlay shape is explicit.
+- Supplier and Portfolio App records are access-only support records.
+- Property App records contain access plus the exact operational guest manual.
+- Kitchen App records carry access; Kitchen-owned operational child records stay
+  under the selected App Kitchen path.
+- Public browse is a separate read/projection decision for every family; root
+  placement alone never authorizes a raw public collection read.
 
 Root entity/index examples:
 
@@ -326,6 +380,7 @@ First confirmed markers:
 - Kitchen: entity, both, console-entity.
 - Supplier: entity, both, console-entity.
 - Portfolio: entity, both, console-entity.
+- Property: entity, both, console-entity.
 
 First confirmed bridge marker:
 

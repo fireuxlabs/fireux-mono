@@ -1,6 +1,7 @@
+// Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: publish Kitchen directory visibility through the canonical sparse Kitchen mutation.
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { useKitchenUpdate } from './useKitchenUpdate'
 
 export type KitchenPublishInput = {
   id: string
@@ -40,24 +41,33 @@ function assertKitchenPublishReady(input: KitchenPublishInput) {
 }
 
 export function useKitchenPublish() {
-  const { publish } = usePublish()
+  const { updateKitchen } = useKitchenUpdate()
 
   async function publishKitchen(input: KitchenPublishInput) {
     const ready = assertKitchenPublishReady(input)
     const routePath = `/${KitchenStorage.rootCollection}/${encodeURIComponent(ready.slug)}`
 
-    return publish({
-      collectionPath: KitchenStorage.rootCollection,
-      id: ready.id,
-      routePath,
-      patch: {
-        show: true,
-        slug: ready.slug,
-      },
+    await updateKitchen(ready.id, {
+      slug: ready.slug,
+      'visibility.show': true,
     })
+
+    return { id: ready.id, routePath }
+  }
+
+  async function unpublishKitchen(kitchenId: unknown) {
+    const id = clean(kitchenId)
+    if (!id) throw new Error('Kitchen id is required before hiding it.')
+
+    await updateKitchen(id, {
+      'visibility.show': false,
+    })
+
+    return { id }
   }
 
   return {
     publishKitchen,
+    unpublishKitchen,
   }
 }

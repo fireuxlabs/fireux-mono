@@ -75,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: route identity edits through the fixed root mutation.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { usePortfolioConsoleIdentity } from '../../../../../composables/fireux/console/portfolio/identity/usePortfolioConsoleIdentity'
 import { usePortfolioUpdate } from '../../../../../composables/fireux/firestore/portfolio/mutations/usePortfolioUpdate'
@@ -83,7 +84,6 @@ import type { PortfolioUpdateInput } from '../../../../../models/portfolio.model
 const {
   selectedPortfolio,
   portfolioId,
-  rootCollection,
   canWrite,
   name,
   tagline,
@@ -110,7 +110,7 @@ const updateIdentityField = async (
   }
 
   try {
-    await updatePortfolio(id, patch, rootCollection.value)
+    await updatePortfolio(id, patch)
     toast.add({ title: successTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {

@@ -122,7 +122,8 @@
             >
               {{ zone.label }}
               <span class="console-summary-value">
-                Min CHF {{ zone.min_order_chf || 0 }} · fee CHF {{ zone.fee_chf || 0 }}
+                Min {{ currencyCode || 'currency' }} {{ zone.min_order_chf || 0 }} ·
+                fee {{ currencyCode || 'currency' }} {{ zone.fee_chf || 0 }}
               </span>
             </div>
           </div>
@@ -143,32 +144,49 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: render shared Place identity and currency in Kitchen console summaries.
 import { computed } from 'vue'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
+import { useKitchenConsolePlace } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
 import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import {
-  readKitchenCurrencyCode,
   readKitchenFulfilmentConfig,
 } from '../../../../utils/kitchen-spine'
 import { menuAcceptsOrderType } from '../../../../utils/menu-ordering-policy'
 
 const {
   selectedKitchen,
-  name,
-  tagline,
+  name: kitchenName,
+  tagline: kitchenTagline,
   placeId,
   debug,
 } = useKitchenConsoleIdentity()
+const { place, currencyCode } = useKitchenConsolePlace()
 const { menus } = useKitchenConsoleMenus()
 
 const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
-const imageUrl = computed(() =>
-  String(kitchen.value?.display_image_url || kitchen.value?.image_url || '')
+const name = computed(() =>
+  String(kitchenName.value || place.value?.name || place.value?.short_name || '')
 )
-const shortAddress = computed(() => String(kitchen.value?.short_address ?? ''))
-const formattedAddress = computed(() => String(kitchen.value?.formatted_address ?? ''))
+const tagline = computed(() =>
+  String(kitchenTagline.value || place.value?.brand_tagline || '')
+)
+const imageUrl = computed(() =>
+  String(
+    place.value?.image_url ||
+      place.value?.cover_image ||
+      kitchen.value?.display_image_url ||
+      kitchen.value?.image_url ||
+      ''
+  )
+)
+const shortAddress = computed(() =>
+  String(place.value?.short_address || kitchen.value?.short_address || '')
+)
+const formattedAddress = computed(() =>
+  String(place.value?.formatted_address || kitchen.value?.formatted_address || '')
+)
 const slug = computed(() => String(kitchen.value?.slug ?? ''))
-const currencyCode = computed(() => readKitchenCurrencyCode(kitchen.value))
 const currencyFormat = computed(() => String(kitchen.value?.menu_currency_format ?? 'dash'))
 const showCurrency = computed(() => kitchen.value?.menu_show_currency !== false)
 const deliveryZones = computed(() =>

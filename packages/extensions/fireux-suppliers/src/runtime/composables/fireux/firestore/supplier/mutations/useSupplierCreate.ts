@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Supplier: keep test and canonical root creation free of App access fields.
 import { collection, doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
@@ -16,7 +17,6 @@ import {
   SupplierStorage,
   type AppSupplier,
   type Supplier,
-  type SupplierCreateInput,
 } from '../../../../../models/supplier/Supplier.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -90,7 +90,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       slug: normalizeSlug(name),
       supplier_organization_name: name,
       supplier_headline: userLabel,
-      operator_ids: [id],
     }
 
     if (imageUrl) {
@@ -130,12 +129,13 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       ? `${resolveTestUserLabel(currentUser.value?.displayName, uid)} Test Supplier`
       : ''
 
-    const payload: SupplierCreateInput = {
+    const payload: Omit<Supplier, 'id' | 'created' | 'updated'> = {
       app_scope_state: 'root_only',
       app_scope_app_id: '',
       company_id: '',
       slug: defaultName ? normalizeSlug(defaultName) : '',
       supplier_organization_name: defaultName,
+      tagline: '',
       supplier_headline: '',
       summary: '',
       supplier_bio: '',
@@ -148,10 +148,10 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       hello: '',
     }
 
-    await setDocument<Supplier>(
+    await setDocument(
       supplierCollection,
       rootId,
-      payload as unknown as Supplier,
+      payload,
       {
         creator: true,
       }

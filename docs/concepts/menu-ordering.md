@@ -1,6 +1,7 @@
 Menu ordering map
+<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: lock explicit Place → Kitchen → Menu → surface inheritance and sparse policy writes. -->
 Updated: 2026-07-20
-Ref: 8d83d3fa7
+Ref: 4c0a1c7ad
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared lifecycle. -->
 <!-- Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: record the private Kitchen-alert, provider, and authenticated test boundary. -->
@@ -141,10 +142,22 @@ ordering: {
 ```
 
 Surface timing and capability boundary:
-- Effective time follows one parent at each layer: Place business hours seed
-  Kitchen operation hours; Menu service hours inherit Kitchen by default; an
+- Effective time follows one parent at each layer: Place business hours are the
+  Kitchen default; a persisted Kitchen schedule is an explicit operation-hours
+  override; Menu service hours inherit the effective Kitchen by default; an
   enabled ordering surface inherits its Menu by default. A surface override
   never jumps past the Menu directly to the Kitchen.
+- Configuration follows the same ownership: Place edits shared currency,
+  timezone, and business hours; Kitchen edits operation-hours overrides,
+  fulfilment/payment capability, acceptance, printing, and operator policy;
+  Menu edits catalogue identity and Menu service hours; each focused surface
+  edits only its availability, notice, timing, contact, handoff, and alert
+  delta. Public suffix routes are projections, never configuration owners.
+- Optional configuration is absent when unknown or inherited. Mutation seams
+  compact blank strings, arrays, and objects. Disabling the final ordering
+  surface removes its rows while preserving a real custom Menu-hours delta;
+  if neither remains, `ordering` is deleted. Historical Orders still snapshot
+  the resolved currency and policy needed to interpret the transaction later.
 - Collection, Delivery, or Pre-order availability belongs to its order-type
   row, not to generic Menu hours and not to the public route.
 - Pre-order has two distinct clocks. Enabled plus unpaused controls whether a

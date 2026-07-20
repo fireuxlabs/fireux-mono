@@ -1,16 +1,20 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: create sparse KitchenMenus using their exact linked Place authority.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { doc, getDoc } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   MenuStorage,
-  MenuModel,
   type Menu,
 } from '../../../../../models/kitchen/menu/kitchen-menu.model'
 import { useKitchenConsoleSelection } from '../../../console/kitchen/core/useKitchenConsoleSelection'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
-import { useKitchenConsole } from '../../../console/kitchen/core/useKitchenConsole'
-import { readKitchenCurrencyCode } from '../../../../../utils/kitchen-spine'
+import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
+import { compactMenuServiceHoursDelta } from '../../../../../utils/menu-service-hours'
 
 export type MenuCreateInput = {
   kitchenId?: string
@@ -26,6 +30,24 @@ export type MenuCreateInput = {
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+const compactValue = (value: unknown): unknown => {
+  if (typeof value === 'string') return normalizeString(value) || undefined
+  if (Array.isArray(value)) {
+    const items = value
+      .map(compactValue)
+      .filter(item => item !== undefined)
+    return items.length ? items : undefined
+  }
+  if (isRecord(value)) {
+    const entries = Object.entries(value)
+      .map(([key, item]) => [key, compactValue(item)] as const)
+      .filter(([, item]) => item !== undefined)
+    return entries.length ? Object.fromEntries(entries) : undefined
+  }
+  return value === null || value === undefined ? undefined : value
+}
 
 function buildMenuPayload(
   input: MenuCreateInput,
@@ -34,33 +56,43 @@ function buildMenuPayload(
   const kitchenId = normalizeString(input.kitchenId)
   const orderTypes = Array.isArray(input.ordering?.order_types)
     ? input.ordering.order_types
+        .map(compactValue)
+        .filter((row): row is Record<string, unknown> =>
+          isRecord(row) && Boolean(normalizeString(row.type))
+        )
     : []
-  const serviceHours = input.ordering?.service_hours || {
-    inherit_kitchen_operation_hours: true,
-  }
-
-  return {
-    ...MenuModel,
+  const serviceHours = compactMenuServiceHoursDelta(
+    input.ordering?.service_hours
+  )
+  const payload: Partial<Menu> = {
     kitchen_id: kitchenId,
     name,
-    description: normalizeString(input.description),
     status: input.status || 'draft',
-    doc_url: normalizeString(input.doc_url),
-    doc_name: normalizeString(input.doc_name),
-    doc_type: normalizeString(input.doc_type),
-    doc_storage_path: normalizeString(input.doc_storage_path),
-    ordering: input.ordering
-      ? {
-          enabled: input.ordering.enabled === true,
-          order_types: orderTypes,
-          service_hours: serviceHours,
-        }
-      : {
-          enabled: false,
-          order_types: [],
-          service_hours: serviceHours,
-        },
   }
+  const put = (key: keyof Menu, value: unknown) => {
+    const next = normalizeString(value)
+    if (next) (payload as Record<string, unknown>)[key] = next
+  }
+
+  put('description', input.description)
+  put('doc_url', input.doc_url)
+  put('doc_name', input.doc_name)
+  put('doc_type', input.doc_type)
+  put('doc_storage_path', input.doc_storage_path)
+  if (input.ordering?.enabled === true && orderTypes.length) {
+    payload.ordering = {
+      enabled: true,
+      order_types: orderTypes as Menu['ordering']['order_types'],
+      ...(serviceHours ? { service_hours: serviceHours } : {}),
+    }
+  } else if (serviceHours) {
+    payload.ordering = {
+      enabled: false,
+      service_hours: serviceHours,
+    } as Menu['ordering']
+  }
+
+  return payload
 }
 
 export function useMenuCreate(
@@ -76,7 +108,7 @@ export function useMenuCreate(
   })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
-  const kitchenConsole = useKitchenConsole()
+  const db = useFirestore(options.databaseId)
 
   const kitchenCollectionPath = computed(() =>
     normalizeString(unref(options.kitchenCollectionPath)) ||
@@ -87,6 +119,23 @@ export function useMenuCreate(
     (options.useSelectedKitchen ? normalizeString(selectedId.value) : '')
   )
 
+  async function requireLinkedPlaceCurrency(kitchenId: string) {
+    const kitchenSnap = await getDoc(
+      doc(db, KitchenStorage.rootCollection, kitchenId)
+    )
+    if (!kitchenSnap.exists()) throw new Error('Kitchen not found.')
+
+    const placeId = normalizeString(kitchenSnap.data()?.place_id)
+    if (!placeId) {
+      throw new Error('Link this Kitchen to a Place before creating menus.')
+    }
+
+    const placeSnap = await getDoc(doc(db, PlaceStorage.collection, placeId))
+    if (!readPlaceCurrencyCode(placeSnap.data())) {
+      throw new Error('Set the linked Place currency before creating menus.')
+    }
+  }
+
   async function createMenu(input: MenuCreateInput): Promise<{ created: boolean; id: string }> {
     const kitchenId = normalizeString(input.kitchenId || defaultKitchenId.value)
     const name = normalizeString(input.name)
@@ -96,9 +145,7 @@ export function useMenuCreate(
 
     if (!name) throw new Error('Menu name is required')
     if (!kitchenId) throw new Error('Kitchen id is required')
-    if (!readKitchenCurrencyCode(kitchenConsole.selection.kitchen.value)) {
-      throw new Error('Select a kitchen currency code before creating menus.')
-    }
+    await requireLinkedPlaceCurrency(kitchenId)
 
     const payload = buildMenuPayload({ ...input, kitchenId }, name)
     const id = menuId

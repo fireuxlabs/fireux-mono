@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: make absent Menu description sparse in the public index contract.
 import type { MenuRouteContext } from './menu-context.model'
 import type { MenuServiceHoursConfig } from './kitchen-menu.model'
 import type { MenuKind, MenuSource } from './menu.model'
@@ -21,7 +22,7 @@ export type PublicMenuIndexItem = {
   id: string
   kind?: MenuKind
   name: string
-  description: string
+  description?: string
   status: 'published'
   contexts?: MenuRouteContext[]
   kitchen?: PublicMenuIndexKitchen

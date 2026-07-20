@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: batch explicit Place links and omit absent Menu copy.
 import { createError, defineEventHandler, getQuery } from 'h3'
 import { FieldPath } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
@@ -5,6 +6,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 import { KitchenMenuStorage } from '../../../models/kitchen/menu/kitchen-menu.model.ts'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
   PUBLIC_MENU_INDEX_MAX_PAGE_SIZE,
   PUBLIC_MENU_INDEX_PAGE_SIZE,
@@ -21,6 +23,7 @@ import {
 import {
   menuKitchenIdentity,
   menuKitchenOperationHours,
+  readMenuKitchenPlaceData,
 } from '../../menu/ownership/kitchen-scope.ts'
 import { readMenuOrderingConfig } from '../../menu/ordering/config.ts'
 import { guestDiscoverableMenuContexts } from '../../../utils/menu-context.ts'
@@ -62,7 +65,7 @@ const publicMenuIndexItem = (
   id: string,
   data: Record<string, unknown>,
   scopedKitchen?: TenantPublicMenuScope | null,
-  hydration: MenuIndexHydration = { kitchenName: '' }
+  hydration: MenuIndexHydration = {}
 ): PublicMenuIndexItem | null => {
   const status = readRecordString(data, 'status')
   if (status !== 'published') return null
@@ -72,10 +75,15 @@ const publicMenuIndexItem = (
         kitchenAppId: scopedKitchen.appId,
         kitchenId: scopedKitchen.kitchenId,
         kitchenSlug: scopedKitchen.kitchenSlug,
-        kitchenName: hydration.kitchenName,
+        ...(hydration.kitchenName
+          ? { kitchenName: hydration.kitchenName }
+          : {}),
         kitchenMenuId: id,
       })
-    : menuSourceFromData(data, { kitchenName: hydration.kitchenName })
+    : menuSourceFromData(
+        data,
+        hydration.kitchenName ? { kitchenName: hydration.kitchenName } : {}
+      )
   const hasSource = Boolean(
     source.app_id && source.kitchen_id && source.menu_id
   )
@@ -101,12 +109,13 @@ const publicMenuIndexItem = (
   const kind = storedKind === 'menu' || storedKind === 'doc'
     ? storedKind
     : undefined
+  const description = readRecordString(data, 'description')
 
   return {
     id,
     kind,
     name: readRecordString(data, 'name') || id,
-    description: readRecordString(data, 'description'),
+    ...(description ? { description } : {}),
     status: 'published' as const,
     ...(contexts.length ? { contexts } : {}),
     ...(hydration.kitchen ? { kitchen: hydration.kitchen } : {}),
@@ -124,7 +133,7 @@ type MenuIndexDocument = {
 
 type MenuIndexHydration = {
   kitchen?: PublicMenuIndexKitchen
-  kitchenName: string
+  kitchenName?: string
   kitchenOperationHours?: ReturnType<typeof menuKitchenOperationHours>
   menuData?: Record<string, unknown>
 }
@@ -171,24 +180,49 @@ const menuIndexHydration = async (
       snapshot.exists ? snapshot.data() || {} : {},
     ])
   )
+  const placeReferences = new Map<string, ReturnType<typeof db.doc>>()
+  for (const { source } of sources) {
+    if (!source.kitchen_id) continue
+    const rootData = dataByPath.get(`kitchens/${source.kitchen_id}`) || {}
+    const placeId = readRecordString(rootData, 'place_id')
+    if (!placeId) continue
+    const placeRef = db.collection(PlaceStorage.collection).doc(placeId)
+    placeReferences.set(placeRef.path, placeRef)
+  }
+  if (placeReferences.size) {
+    const placeSnapshots = await db.getAll(...placeReferences.values())
+    for (const snapshot of placeSnapshots) {
+      dataByPath.set(
+        snapshot.ref.path,
+        snapshot.exists ? snapshot.data() || {} : {}
+      )
+    }
+  }
 
   return new Map(
     sources.map(({ document, source }) => {
       if (!source.kitchen_id) {
-        return [document.id, { kitchenName: '' }] as const
+        return [document.id, {}] as const
       }
 
       const rootPath = `kitchens/${source.kitchen_id}`
       const appPath = source.app_id
         ? `apps/${source.app_id}/kitchens/${source.kitchen_id}`
         : ''
+      const rootData = dataByPath.get(rootPath) || {}
+      const placeId = readRecordString(rootData, 'place_id')
+      const placeData = placeId
+        ? dataByPath.get(`${PlaceStorage.collection}/${placeId}`) || {}
+        : {}
       const identity = menuKitchenIdentity(
-        dataByPath.get(rootPath) || {},
-        appPath ? dataByPath.get(appPath) || {} : {}
+        rootData,
+        appPath ? dataByPath.get(appPath) || {} : {},
+        placeData
       )
       const kitchenOperationHours = menuKitchenOperationHours(
-        dataByPath.get(rootPath) || {},
-        appPath ? dataByPath.get(appPath) || {} : {}
+        rootData,
+        appPath ? dataByPath.get(appPath) || {} : {},
+        placeData
       )
       const menuPath = appPath && source.menu_id
         ? `${appPath}/${KitchenMenuStorage.collection}/${source.menu_id}`
@@ -213,7 +247,7 @@ const menuIndexHydration = async (
         document.id,
         {
           ...(kitchen ? { kitchen } : {}),
-          kitchenName: identity.name,
+          ...(identity.name ? { kitchenName: identity.name } : {}),
           ...(kitchenOperationHours.windows.length
             ? { kitchenOperationHours }
             : {}),
@@ -228,17 +262,22 @@ const scopedMenuIndexHydration = async (
   db: ReturnType<typeof getRuntimeFirestore>,
   scope: TenantPublicMenuScope
 ): Promise<MenuIndexHydration> => {
-  const appKitchenSnap = await db
-    .collection(`apps/${scope.appId}/kitchens`)
-    .doc(scope.kitchenId)
-    .get()
+  const [appKitchenSnap, placeData] = await Promise.all([
+    db.collection(`apps/${scope.appId}/kitchens`).doc(scope.kitchenId).get(),
+    readMenuKitchenPlaceData(scope.rootKitchenData),
+  ])
   const appKitchenData = appKitchenSnap.exists
     ? appKitchenSnap.data() || {}
     : {}
-  const identity = menuKitchenIdentity(scope.rootKitchenData, appKitchenData)
+  const identity = menuKitchenIdentity(
+    scope.rootKitchenData,
+    appKitchenData,
+    placeData
+  )
   const kitchenOperationHours = menuKitchenOperationHours(
     scope.rootKitchenData,
-    appKitchenData
+    appKitchenData,
+    placeData
   )
   const kitchen = identity.name
     ? {
@@ -257,7 +296,7 @@ const scopedMenuIndexHydration = async (
 
   return {
     ...(kitchen ? { kitchen } : {}),
-    kitchenName: identity.name,
+    ...(identity.name ? { kitchenName: identity.name } : {}),
     ...(kitchenOperationHours.windows.length
       ? { kitchenOperationHours }
       : {}),

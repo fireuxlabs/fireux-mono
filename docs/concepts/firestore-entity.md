@@ -3,7 +3,8 @@ Firestore entity spine map
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: bind domain-only root profiles to canonical User by uid. -->
 <!-- Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: record the shared delta-only overlay and membership mirror. -->
 <!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep raw profile lists behind domain APIs. -->
-Updated: 2026-07-19
+<!-- Concurrent edit — 2026-07-20 22:21 CEST — Both-Entity Authority: record root-required joins and fixed root/app paths. -->
+Updated: 2026-07-20
 Ref: 565ebd668
 Role: map, not canon
 
@@ -80,7 +81,7 @@ Read-state contract:
 - Current collection-state seam: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts`.
 
 Differences:
-- Some entities are root/public.
+- Some entities are canonical roots; public readability is a separate contract.
 - Some entities are scoped to a console or parent.
 - Some entities are both, but that must be explicit in the model and route behavior.
 - An app-private profile record uses only the app-scoped path, records its id on
@@ -107,6 +108,28 @@ Differences:
 - Deployed Firestore rules must independently deny unauthorized direct Project
   reads; this repository does not currently carry or test that remote ruleset.
 
+Root plus App support contract:
+
+- Supplier, Portfolio, Property, and Kitchen use `storage: 'both'`: one root
+  entity plus a same-id App support document.
+- The root owns identity, lifecycle, domain truth, and child-owned relationship
+  ids. It does not contain App access arrays. Property root also excludes its
+  guest manual and references Place and optional Portfolio by id.
+- The App document owns bounded access and only its declared operational delta.
+  Collection adapters type it as the named `App<Entity>` record, require the
+  root, and project allowlisted fields instead of spreading it over identity.
+- A dangling App document is an error outcome, not an overlay-only entity or an
+  empty collection result.
+- Root and App writes have separately named helpers with fixed paths. Root
+  ownership fields and App access fields are not interchangeable update input.
+- Shared console attachment re-reads the root returned by an idempotent create
+  before it checks App ownership. This closes accidental slug-collision attach
+  drift but is not a security or transaction boundary.
+- Property-to-Portfolio membership is `Property.portfolio_id`. The former
+  nested full-Property reader under an App Portfolio is retired.
+- Current source: Supplier, Portfolio, and Property model/fetch/mutation stacks.
+  Shape guard: `scripts/guards/both-entity-authority.mjs`.
+
 Do not:
 - Put console operation folders inside Firestore stacks.
 - Add architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler`.
@@ -114,6 +137,10 @@ Do not:
 - Infer loading from `collection.value === undefined`; VueFire collections begin
   as arrays, so use the shared `pending` ref.
 - Treat read errors as empty or missing records.
+- Let an App support record overwrite root identity, stamps, or relationships.
+- Fabricate a root entity from an App record when root hydration fails.
+- Accept caller-selected `scope`, `shape`, or `collectionPath` in a both-entity
+  mutation helper.
 
 Open questions:
 - Menu needs continued cleanup because root menus and kitchen menus currently overlap conceptually.

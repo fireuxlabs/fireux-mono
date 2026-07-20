@@ -1,4 +1,5 @@
 <template>
+	<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: delete absent public story fields through authorized Place writes. -->
 	<UCard>
 		<template #header>
 			<div>
@@ -51,14 +52,25 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { computed } from 'vue'
-import { PlaceStorage, type Place } from '../../../models/place.model'
+import {
+	type PlaceMutationAuthority,
+	usePlaceUpdate,
+} from '../../../composables/fireux/firestore/place/mutations/usePlaceUpdate'
+import type { Place } from '../../../models/place.model'
 
-const props = defineProps<{ place: Place | null }>()
+const props = defineProps<{
+	place: Place | null
+	mutationAuthority?: PlaceMutationAuthority | null
+}>()
 const placeId = computed(() => props.place?.id ?? '')
 const toast = useToastify()
-const { updateDocument } = useFirestoreUpdate()
+const {
+	updateAbout,
+	updateBrandTagline,
+	updateCoverImage,
+	updateGalleryImages,
+} = usePlaceUpdate({ authority: () => props.mutationAuthority })
 const sanitize = (value: string) => value.trim()
 const normalizeStringArray = (value: string) =>
 	value
@@ -71,10 +83,14 @@ const galleryImageText = computed(() =>
 		: ''
 )
 
-async function updatePlace(patch: Partial<Place>, successTitle: string, failTitle: string) {
+async function updatePlace(
+	action: () => Promise<void>,
+	successTitle: string,
+	failTitle: string
+) {
 	if (!placeId.value) return
 	try {
-		await updateDocument<Place>(PlaceStorage.collection, placeId.value, patch)
+		await action()
 		toast.success(successTitle)
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
@@ -85,7 +101,7 @@ async function updatePlace(patch: Partial<Place>, successTitle: string, failTitl
 
 async function handleBrandTagline(value: string) {
 	await updatePlace(
-		{ brand_tagline: sanitize(value) },
+		() => updateBrandTagline(value, { id: placeId.value }),
 		'Brand tagline updated',
 		'Failed to update brand tagline'
 	)
@@ -93,7 +109,7 @@ async function handleBrandTagline(value: string) {
 
 async function handleAbout(value: string) {
 	await updatePlace(
-		{ about: sanitize(value) },
+		() => updateAbout(value, { id: placeId.value }),
 		'About updated',
 		'Failed to update about'
 	)
@@ -101,7 +117,7 @@ async function handleAbout(value: string) {
 
 async function handleCoverImage(value: string) {
 	await updatePlace(
-		{ cover_image: sanitize(value) },
+		() => updateCoverImage(value, { id: placeId.value }),
 		'Cover image updated',
 		'Failed to update cover image'
 	)
@@ -109,7 +125,7 @@ async function handleCoverImage(value: string) {
 
 async function handleGalleryImages(value: string) {
 	await updatePlace(
-		{ gallery_images: normalizeStringArray(value) },
+		() => updateGalleryImages(normalizeStringArray(value), { id: placeId.value }),
 		'Gallery images updated',
 		'Failed to update gallery images'
 	)

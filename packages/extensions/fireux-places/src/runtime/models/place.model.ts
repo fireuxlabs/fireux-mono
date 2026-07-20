@@ -1,4 +1,5 @@
 // FILE: packages/extensions/fireux-places/src/runtime/models/place.model.ts
+// Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: distinguish sparse stored Place truth from resolved runtime display defaults.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -54,9 +55,26 @@ export type PlaceAddress = {
   country_code: string
 }
 
-/**
- * Runtime + canonical shape for the stored Firestore Place.
- */
+export type PlaceBusinessHoursDay =
+  | 'monday'
+  | 'tuesday'
+  | 'wednesday'
+  | 'thursday'
+  | 'friday'
+  | 'saturday'
+  | 'sunday'
+
+export type PlaceBusinessHoursWindow = {
+  days: PlaceBusinessHoursDay[]
+  open: string
+  close: string
+}
+
+export type PlaceBusinessHours = {
+  windows: PlaceBusinessHoursWindow[]
+}
+
+/** Resolved runtime defaults. Firestore Place documents remain sparse. */
 export const PlaceModel = {
   id: '' as string,
 
@@ -110,7 +128,10 @@ export const PlaceModel = {
 
   // Simple signals
   price_level: '' as string,
-  default_currency_code: 'CHF' as string,
+  default_currency_code: '' as string,
+  business_hours: {
+    windows: [],
+  } as PlaceBusinessHours,
 
   /** Claimed owner (uid); empty string means unclaimed. */
   claimed_by: '' as string,
@@ -169,9 +190,15 @@ export type GooglePlace = BasePlace & {
   google_maps_url: string
   types: string[]
   default_currency_code: string
+  business_hours?: PlaceBusinessHours
 }
 
-export type PlaceCreateInput = Omit<Place, 'created' | 'updated'>
+export type PlaceStored = Pick<
+  Place,
+  'id' | 'name' | 'place_type' | 'source'
+> & Partial<Omit<Place, 'id' | 'name' | 'place_type' | 'source'>>
+
+export type PlaceCreateInput = Omit<PlaceStored, 'created' | 'updated'>
 export type PlaceUpdateInput = Partial<Omit<Place, 'id' | 'created' | 'updated'>>
 
 /** Create/update input used by Place create flows. */

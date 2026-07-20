@@ -1,6 +1,7 @@
 Menu family map
+<!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: map explicit Place hydration, sparse creation, and live schedule inheritance. -->
 Updated: 2026-07-20
-Ref: 8d83d3fa7
+Ref: 4c0a1c7ad
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared funnel spine. -->
 <!-- Concurrent edit — 2026-07-19 21:18 CEST — Pre-order WhatsApp pass: map the reusable server alert seam. -->
@@ -87,7 +88,8 @@ Current public menu doorways:
   the complete catalogue; a future large-catalogue search must be server-owned.
   The global index resolves each page's current root/app Kitchen display name,
   logo and identity image, referenced KitchenMenu guest-ordering contexts, and
-  effective inherited Kitchen operation hours in one bounded batch. Menu cards
+  effective inherited Kitchen operation hours through deduplicated, bounded
+  page hydration batches. Menu cards
   prefer the logo, fall back to the identity image, and can therefore
   expose accurate Browse, Delivery, Collection, and Pre-order doorways plus
   current open state without copying Kitchen identity or operational policy
@@ -159,16 +161,16 @@ Language/source note:
 - Sproochli/translation can split or infer language-specific fields later.
 
 Presentation/data boundary:
-- Currency belongs to Kitchen or its Place source and is resolved into the
-  public manifest; KitchenMenu does not own `currency_code`. Kitchen menu
+- Currency belongs to the linked Place and is resolved into the public
+  manifest; Kitchen and KitchenMenu do not own `currency_code`. Kitchen menu
   display preferences (`currency_format` and `show_currency`) travel with that
   request-time presentation contract so public Browse does not invent a price
   format or force the currency code to be visible.
 - `MenuKitchenPresentation` in `models/kitchen/menu/menu-detail.model.ts` is the
   shared request-time Kitchen identity contract for structured and document
-  Menu payloads. The ownership resolver supplies current Kitchen name, optional
-  stored identity assets, image-shade metadata, currency, and menu page style;
-  the root Menu does not copy those fields.
+  Menu payloads. The ownership resolver joins the linked Place with current
+  Kitchen identity overrides and supplies image-shade metadata, Place currency,
+  and Kitchen menu page style; the root Menu does not copy those fields.
 - `components/Menu/Identity.vue` renders that shared contract as the common
   Browse and live-order title card. Kitchen media and the visible circular exit
   sit inside that card; missing or failed media falls back to text, and stored
@@ -315,10 +317,20 @@ Page composition note:
   `/console/kitchen/menus/<menuId>/ordering/<surface>`, currently including
   `collection`, `delivery`, `pre-order`, and `kiosk`. This namespace must not collide with
   the existing Menu section route.
-- Time defaults follow the same layers as ownership: Place business hours seed
-  a new Kitchen's operation hours, a new Menu inherits Kitchen operation
-  hours, and a newly enabled ordering surface inherits that Menu's service
-  hours. Each child may later become custom without changing its parent.
+- Time follows the same layers as ownership: Place business hours are the live
+  default, Kitchen stores only an optional operation-hours override, Menu
+  inherits the effective Kitchen hours by default, and an enabled ordering
+  surface inherits its Menu. Each child may become custom without copying or
+  changing its parent.
+- Creation writes are sparse. Creating a Kitchen stores its Place reference and
+  real Kitchen delta, not copied currency or inherited hours. Creating a Menu
+  omits disabled ordering and absent document/copy fields; enabling a surface
+  creates only that surface's meaningful policy. Reconfirming imported
+  catalogue content replaces sections/items but preserves existing Menu
+  ordering and surface configuration.
+- Public resolution follows only the stored Kitchen `place_id`; it never treats
+  Kitchen id as an implicit Place id. Missing Place linkage or currency fails
+  closed instead of producing a blank/fabricated Menu contract.
 - The Kitchen Menu console is a small workspace rather than one long editor.
   `/console/kitchen/menus/<menuId>` owns overview and guest-facing identity;
   its Menu service-hours card chooses inherited Kitchen operation hours or a

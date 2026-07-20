@@ -1,4 +1,7 @@
+// Concurrent edit — 2026-07-20 22:24 CEST — Repo Efficiency Pass 5 of 6: bind baseline-only modules to their package owner.
+import EslintModule from '@nuxt/eslint'
 import type { NuxtConfig } from '@nuxt/schema'
+import NuxtfireModule from 'fireux-nuxtfire'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { withDefaultAppModules } from './modules'
@@ -57,12 +60,12 @@ export function configureAppModules(
   appDatabaseRuntimeModule: unknown
 ) {
   nuxt.modules = [
-    '@nuxt/eslint',
+    EslintModule,
     '@nuxt/ui',
     '@nuxt/icon',
     `fireux-${app.ecosystem}`,
     ...(appDatabaseRuntimeModule ? [appDatabaseRuntimeModule] : []),
-    'fireux-nuxtfire',
+    NuxtfireModule,
     'fireux-core',
     '@vite-pwa/nuxt',
     ...withDefaultAppModules(app.modules),

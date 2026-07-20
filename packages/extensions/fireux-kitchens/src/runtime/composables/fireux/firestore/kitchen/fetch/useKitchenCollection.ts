@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
+// Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: reserve raw Kitchen collection reads for console and exact-target seams.
 import {
   collection,
   query as fsq,
@@ -43,10 +44,11 @@ const normalizeSource = (value: unknown): KitchenFetchSource => {
 }
 
 /**
- * Public root Kitchen collection seam.
+ * Raw root/scoped Kitchen collection seam.
  *
- * Reads `kitchens/{kitchenId}` only. App-scoped operator records belong to
- * console/operator seams, not this collection.
+ * Console and exact-target reads use this Firestore adapter. The public
+ * `/kitchens` directory uses `usePublicKitchenIndex`, whose bounded server
+ * projection joins linked Place truth without client-side N+1 hydration.
  */
 export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) {
   const db = useFirestore()

@@ -1,39 +1,25 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-06-28
-// usage_note: baseline after scripts cleanup; update when run.
-// Concurrent edit — 2026-07-20 15:26 CEST — Script reuse TODO: classify narrow scripts before consolidation or removal.
+// last_used: 2026-07-20
+// usage_note: enforce dated script headers and a tracked caller for every supported script.
+// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: make orphaned script files a blocking lifecycle failure.
 
-// TODO(script-consolidation): Extend this audit to distinguish reusable command
-// surfaces, intentionally retained one-off recovery/migration scripts, and
-// removable scripts. Report repeated argument, credential, plan, backup, and
-// verification mechanics that should become shared parameterized helpers before
-// deleting the narrow callers.
-
-import { readdirSync, readFileSync, statSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+import { existsSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
 const repoRoot = process.cwd()
-const scriptsRoot = path.join(repoRoot, 'scripts')
-const maxAgeDays = Number(process.argv.find((arg) => arg.startsWith('--days='))?.split('=')[1] || 42)
+const maxAgeDays = Number(
+  process.argv.find((arg) => arg.startsWith('--days='))?.split('=')[1] || 42
+)
 const now = new Date()
 const cutoff = new Date(now)
 cutoff.setDate(cutoff.getDate() - maxAgeDays)
 
-const REFERENCE_SKIP_DIRS = new Set([
-  '.firebase',
-  '.git',
-  '.nuxt',
-  '.output',
-  '.pnpm-store',
-  'dist',
-  'mirror',
-  'node_modules',
-  'temp',
-])
-
 const REFERENCE_EXTENSIONS = new Set([
+  '.cjs',
+  '.js',
   '.json',
   '.md',
   '.mjs',
@@ -44,94 +30,155 @@ const REFERENCE_EXTENSIONS = new Set([
   '.yml',
 ])
 
-function walk(dir) {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const fullPath = path.join(dir, entry.name)
-    if (entry.isDirectory()) return walk(fullPath)
-    if (!entry.isFile()) return []
-    if (!/\.(mjs|sh)$/.test(entry.name)) return []
-    return [fullPath]
-  })
+function authoredRepoPaths() {
+  return execFileSync(
+    'git',
+    ['ls-files', '-z', '--cached', '--others', '--exclude-standard'],
+    {
+      cwd: repoRoot,
+      encoding: 'utf8',
+    }
+  )
+    .split('\0')
+    .filter(Boolean)
 }
 
 function repoPath(file) {
   return path.relative(repoRoot, file)
 }
 
-function referenceFiles(dir) {
-  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const fullPath = path.join(dir, entry.name)
-    if (entry.isDirectory()) {
-      if (REFERENCE_SKIP_DIRS.has(entry.name)) return []
-      return referenceFiles(fullPath)
-    }
-    if (!entry.isFile()) return []
-    if (!REFERENCE_EXTENSIONS.has(path.extname(entry.name))) return []
-    return [fullPath]
-  })
+function referenceFile(repoPath) {
+  if (repoPath === 'mirror' || repoPath.startsWith('mirror/')) return false
+  return REFERENCE_EXTENSIONS.has(path.extname(repoPath))
 }
 
 function readUsage(file) {
   const source = readFileSync(file, 'utf8')
-  const lastUsed = source.match(/(?:\/\/|#)\s*last_used:\s*(\d{4}-\d{2}-\d{2})/)?.[1] || ''
-  const note = source.match(/(?:\/\/|#)\s*usage_note:\s*(.+)/)?.[1]?.trim() || ''
+  const marker = /(?:\/\/|#)\s*@fireux-script\b/.test(source)
+  const manualEntrypoint = /(?:\/\/|#)\s*manual_entrypoint:\s*true\b/.test(
+    source
+  )
+  const lastUsed =
+    source.match(/(?:\/\/|#)\s*last_used:\s*(\d{4}-\d{2}-\d{2})/)?.[1] || ''
+  const note =
+    source.match(/(?:\/\/|#)\s*usage_note:\s*(.+)/)?.[1]?.trim() || ''
 
   return {
     file: repoPath(file),
+    marker,
+    manualEntrypoint,
     lastUsed,
     note,
     ageDays: lastUsed
-      ? Math.floor((now.getTime() - new Date(`${lastUsed}T00:00:00Z`).getTime()) / 86_400_000)
+      ? Math.floor(
+          (now.getTime() - new Date(`${lastUsed}T00:00:00Z`).getTime()) /
+            86_400_000
+        )
       : null,
     modifiedAt: statSync(file).mtime.toISOString().slice(0, 10),
   }
 }
 
-const rows = walk(scriptsRoot)
+function sourceReferencesScript(entry, scriptPath) {
+  if (entry.source.includes(scriptPath)) return true
+
+  for (const match of entry.source.matchAll(/['"`]([^'"`\r\n]+)['"`]/g)) {
+    const specifier = match[1]
+    if (!specifier.startsWith('.')) continue
+    const resolved = path.posix.normalize(
+      path.posix.join(path.posix.dirname(entry.file), specifier)
+    )
+    if (resolved === scriptPath) return true
+  }
+
+  return false
+}
+
+const authoredPaths = authoredRepoPaths()
+const rows = authoredPaths
+  .filter((file) => file.startsWith('scripts/'))
+  .filter((file) => /\.(mjs|sh)$/.test(file))
+  .map((file) => path.join(repoRoot, file))
+  .filter(existsSync)
   .map(readUsage)
   .sort((a, b) => a.file.localeCompare(b.file))
 
-const referenceSources = referenceFiles(repoRoot)
+const referenceSources = authoredPaths
+  .filter(referenceFile)
+  .map((file) => path.join(repoRoot, file))
+  .filter(existsSync)
   .map((file) => ({
     file: repoPath(file),
     source: readFileSync(file, 'utf8'),
   }))
 
 for (const row of rows) {
-  const base = path.basename(row.file)
   row.references = referenceSources
     .filter((entry) => entry.file !== row.file)
-    .filter((entry) => {
-      const source = entry.source
-      return (
-        source.includes(row.file) ||
-        source.includes(`./${row.file}`) ||
-        source.includes(`../${row.file}`) ||
-        source.includes(base)
-      )
-    })
+    .filter((entry) => sourceReferencesScript(entry, row.file))
     .map((entry) => entry.file)
     .sort((a, b) => a.localeCompare(b))
   row.referenceCount = row.references.length
+  row.executableReferences = row.references.filter(
+    (file) => path.extname(file) !== '.md'
+  )
+  row.documentationReferences = row.references.filter(
+    (file) => path.extname(file) === '.md'
+  )
 }
 
-const missing = rows.filter((row) => !row.lastUsed)
-const stale = rows.filter((row) => row.lastUsed && new Date(`${row.lastUsed}T00:00:00Z`) < cutoff)
+const missing = rows.filter((row) => !row.marker || !row.lastUsed)
+const stale = rows.filter(
+  (row) => row.lastUsed && new Date(`${row.lastUsed}T00:00:00Z`) < cutoff
+)
 const unreferenced = rows.filter((row) => row.referenceCount === 0)
+const unsupported = rows.filter(
+  (row) => row.executableReferences.length === 0 && !row.manualEntrypoint
+)
+const manualEntrypoints = rows.filter((row) => row.manualEntrypoint)
+const rootPackage = JSON.parse(
+  readFileSync(path.join(repoRoot, 'package.json'), 'utf8')
+)
+const invalidCommandTargets = Object.entries(rootPackage.scripts || {}).flatMap(
+  ([name, command]) =>
+    [...String(command).matchAll(/\b(?:node|bash)\s+(scripts\/[^\s'";&|]+)/g)]
+      .map((match) => match[1])
+      .filter((target) => !existsSync(path.join(repoRoot, target)))
+      .map((target) => ({ name, target }))
+)
 
-console.log(JSON.stringify({
-  checkedAt: now.toISOString().slice(0, 10),
-  maxAgeDays,
-  cutoff: cutoff.toISOString().slice(0, 10),
-  counts: {
-    scripts: rows.length,
-    missing: missing.length,
-    stale: stale.length,
-    unreferenced: unreferenced.length,
-  },
-  stale,
-  missing,
-  unreferenced,
-}, null, 2))
+console.log(
+  JSON.stringify(
+    {
+      checkedAt: now.toISOString().slice(0, 10),
+      maxAgeDays,
+      cutoff: cutoff.toISOString().slice(0, 10),
+      counts: {
+        scripts: rows.length,
+        missing: missing.length,
+        stale: stale.length,
+        unreferenced: unreferenced.length,
+        unsupported: unsupported.length,
+        manualEntrypoints: manualEntrypoints.length,
+        invalidCommandTargets: invalidCommandTargets.length,
+      },
+      stale,
+      missing,
+      unreferenced,
+      unsupported,
+      manualEntrypoints,
+      invalidCommandTargets,
+    },
+    null,
+    2
+  )
+)
 
-if (missing.length) process.exitCode = 1
+if (
+  missing.length ||
+  unreferenced.length ||
+  unsupported.length ||
+  invalidCommandTargets.length
+) {
+  process.exitCode = 1
+}

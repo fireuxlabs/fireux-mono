@@ -13,17 +13,19 @@
     "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project fireux-2005 --config firebase.json",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
-    "clean": "rm -rf .nuxt app/.nuxt .output dist"
+    "clean": "rimraf .nuxt app/.nuxt .output dist"
   },
   "dependencies": {
     "@nuxt/icon": "2.x",
     "@nuxt/ui": "^4.0.0-alpha.2",
+    "firebase-admin": "^12.7.0",
     "firebase-functions": "^6.3.2",
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
     "fireux-go-qr": "workspace:*",
     "fireux-products": "workspace:*",
+    "h3": "^1.15.4",
     "nuxt": "4.4.6",
     "qrcode": "^1.5.4",
     "stripe": "^22.1.1",
