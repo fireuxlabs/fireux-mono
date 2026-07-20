@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-17
+// last_used: 2026-07-20
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/dev-app-with-smoke.mjs
+// Concurrent edit — 2026-07-20 15:54 CEST — Repo Efficiency Pass 1 of 6: run the Misebox route and contract smoke suite.
 
 import { spawnSync } from 'node:child_process'
 import process from 'node:process'

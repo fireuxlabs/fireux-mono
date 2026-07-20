@@ -1,4 +1,5 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/App/Shell.vue -->
+<!-- Concurrent edit — 2026-07-20 15:50 CEST — Repo Efficiency Pass 1 of 6: resolve initialization through a narrow background DTO. -->
 <template>
   <UApp>
     <!-- Toast target -->
@@ -122,12 +123,11 @@
 <script setup lang="ts">
 import { computed, ref, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
-import { useHead } from '#imports'
+import { useFetch, useHead } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
 import { useAppOnboarding } from '../../composables/fireux/app/utils/useAppOnboarding'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 const isDev = import.meta.dev
 const router = useRouter()
@@ -145,17 +145,31 @@ const devDockShellStyle: CSSProperties = {
   zIndex: 2147483647,
 }
 
-const { isResolved, isInitialized } = import.meta.client
-  ? useApp()
-  : ({
-      isResolved: computed(() => false),
-      isInitialized: computed(() => true),
-    } as const)
+const {
+  data: appStatus,
+  pending: appStatusPending,
+  error: appStatusError,
+  refresh: refreshAppStatus,
+} = useFetch<{ ok: true; appId: string; initialized: boolean }>(
+  '/api/public/app/status',
+  { server: false, lazy: true }
+)
+const isResolved = computed(
+  () =>
+    !appStatusPending.value &&
+    !appStatusError.value &&
+    typeof appStatus.value?.initialized === 'boolean'
+)
+const isInitialized = computed(
+  () => appStatus.value?.initialized === true
+)
 
 const showOnboardingModal = computed(
   () => isResolved.value && !isInitialized.value
 )
-const onboarding = import.meta.client ? useAppOnboarding() : null
+const onboarding = import.meta.client
+  ? useAppOnboarding({ onInitialized: refreshAppStatus })
+  : null
 
 useHead({
   meta: fireuxConfig.isTenant

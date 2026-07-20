@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:14 CEST — Console Spine project cleanup: adopt route-level console metadata. -->
 <template>
   <UDashboardPanel id="console-project-ecosystem">
     <template #header>
@@ -15,19 +16,20 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
+  visibility: { ecosystems: ['fireux'] },
   nav: {
-    visibility: { ecosystems: ['fireux'] },
     key: 'console-project-ecosystem',
     label: 'Ecosystem',
     icon: 'i-lucide-orbit',
     position: 'top',
-    requiresSelection: true,
     order: 20,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: true,
   roles: ['admin'],
 })
 </script>

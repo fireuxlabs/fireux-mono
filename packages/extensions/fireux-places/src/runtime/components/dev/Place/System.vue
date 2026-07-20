@@ -1,7 +1,6 @@
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Place dev diagnostics on live model and collection data. -->
 <template>
   <section class="space-y-10">
-    <DevPlaceDemo />
-
     <UCard>
       <DevModel
         :title="'Places · Model'"

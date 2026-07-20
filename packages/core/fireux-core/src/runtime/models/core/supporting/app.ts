@@ -1,4 +1,5 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/supporting/app.ts
+// Concurrent edit — 2026-07-20 15:59 CEST — Repo Efficiency Pass 1 of 6: align App repo console-family types with the security contract.
 
 /**
  * App role defines scope and permissions.
@@ -32,11 +33,22 @@ export type AppDerived = {
   user_count: number
 }
 
+export const APP_CONSOLE_FAMILIES = [
+  'blank',
+  'kitchen',
+  'portfolio',
+  'project',
+  'property',
+  'supplier',
+] as const
+
+export type AppConsoleFamily = (typeof APP_CONSOLE_FAMILIES)[number]
+
 export type AppRepoMetadata = {
   key: string
   workspace: string
   launch_order: number
-  console_families: string[]
+  console_families: AppConsoleFamily[]
   database_id: string
 }
 

@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: make idle target presentation explicit. -->
+<!-- Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: render target states from outcome rather than count. -->
 <template>
   <section v-if="outcome !== 'idle'" class="space-y-2">
     <UCard>
@@ -29,12 +30,12 @@
         :description="errorDescription"
       />
 
-      <div v-else-if="count" :class="itemsClass">
+      <div v-else-if="outcome === 'ready'" :class="itemsClass">
         <slot />
       </div>
 
       <MoleculesStateCard
-        v-else-if="isSettled"
+        v-else-if="outcome === 'empty'"
         :entity="entity"
         state="empty"
         surface="bare"

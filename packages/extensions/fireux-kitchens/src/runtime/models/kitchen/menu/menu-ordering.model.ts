@@ -12,10 +12,11 @@ import type {
   KitchenOrderType,
 } from '../order.model'
 
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: carry the one-time customer capability only in canonical creation/tracking responses.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: carry the one-time customer capability only in canonical creation/tracking responses.
 
 export type CreatedMenuOrderReceiptLine = {
   id: string
+  source_item_id?: string
   menu_id?: string
   label: string
   quantity: number
@@ -27,6 +28,7 @@ export type CreatedMenuOrderReceiptLine = {
     price?: number
   }>
   variant_label?: string
+  variant_id?: string
 }
 
 export type CreatedMenuOrderReceipt = {

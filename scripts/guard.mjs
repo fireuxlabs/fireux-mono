@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-19
+// last_used: 2026-07-20
 // usage_note: validates the authored repository spine after repo-efficiency passes.
 // Concurrent edit — 2026-07-19 17:54 CEST — Directory Publication Scaffold: register reconciliation and dormant pipeline guards.
+// Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: verify the combined console architecture cut.
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: register owner and loading boundary checks.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint
@@ -24,6 +26,7 @@ import { run as runSecrets } from './guards/secrets.mjs'
 import { run as runGeneratedArtifacts } from './guards/generated-artifacts.mjs'
 import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
+import { run as runDemoData } from './guards/demo-data.mjs'
 import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
 import { run as runCssSystem } from './guards/css-system.mjs'
@@ -54,6 +57,7 @@ const guards = [
   { key: 'generated-artifacts', run: runGeneratedArtifacts },
   { key: 'ownership', run: runOwnership },
   { key: 'runtime-registration', run: runRuntimeRegistration },
+  { key: 'demo-data', run: runDemoData },
   { key: 'canon', run: runCanon },
   { key: 'components', run: runComponents },
   { key: 'css-system', run: runCssSystem },

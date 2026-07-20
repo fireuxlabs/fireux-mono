@@ -1,7 +1,14 @@
 // FILE: packages/core/fireux-core/src/runtime/server/api/internal/app/env-check.ts
+// Concurrent edit — 2026-07-20 16:35 CEST — Repo Efficiency Pass 1 of 6: authenticate and prevent caching of environment diagnostics.
 import { useAppConfig, useRuntimeConfig } from '#imports'
 import { timingSafeEqual } from 'node:crypto'
-import { createError, defineEventHandler, getHeader, type H3Event } from 'h3'
+import {
+  createError,
+  defineEventHandler,
+  getHeader,
+  setHeader,
+  type H3Event,
+} from 'h3'
 import {
   join,
   isAbsolute,
@@ -17,6 +24,7 @@ import {
   validateAppAssetDimensions,
   type AppAssetDimensionConstraints,
 } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+import { requireDevDeveloper } from '../../../utils/auth/developer'
 
 type ISizeCalculationResult = ReturnType<typeof imageSize>
 
@@ -59,8 +67,11 @@ function configuredServiceKey(event: H3Event): string {
   )
 }
 
-function assertDevOrInternalAccess(event: H3Event) {
-  if (import.meta.dev) return
+async function assertDevOrInternalAccess(event: H3Event) {
+  if (import.meta.dev) {
+    await requireDevDeveloper(event)
+    return
+  }
 
   const serviceKey = configuredServiceKey(event)
   if (!serviceKey) {
@@ -235,11 +246,13 @@ interface EnvCheckResponse {
   brandAssets: BrandAssetCheck[]
 }
 
-export default defineEventHandler<EnvCheckResponse>((event: H3Event) => {
-  assertDevOrInternalAccess(event)
+export default defineEventHandler(async (event: H3Event): Promise<EnvCheckResponse> => {
+  await assertDevOrInternalAccess(event)
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  setHeader(event, 'Vary', 'Authorization')
 
   const env = process.env as Record<string, string | undefined>
-  const runtimeConfig = useRuntimeConfig()
+  const runtimeConfig = useRuntimeConfig(event)
   const appConfig = useAppConfig() as Record<string, any>
   const publicRuntime = (runtimeConfig?.public ?? {}) as Record<string, any>
   const fireux = (publicRuntime.fireux ?? {}) as Record<string, any>

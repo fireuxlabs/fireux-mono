@@ -17,7 +17,7 @@ import {
 } from '../../../../../models/kitchen/order.model.ts'
 import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../utils/menu-order-capability.ts'
 
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: make status private to the customer UID or opaque same-device capability.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: make status private to the customer UID or opaque same-device capability.
 
 const text = (value: unknown) => String(value ?? '').trim()
 const numberValue = (value: unknown) => {

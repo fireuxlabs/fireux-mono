@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: render overview collection state from outcome. -->
 <template>
   <UCard>
     <template #header>
@@ -9,7 +10,24 @@
       </div>
     </template>
 
-    <div class="console-focus">
+    <p v-if="multiple.outcome === 'idle'" class="console-card-header__description">
+      No {{ entityPluralLower }} source is active.
+    </p>
+
+    <p v-else-if="multiple.outcome === 'pending'" class="console-card-header__description">
+      Loading {{ entityPluralLower }}…
+    </p>
+
+    <UAlert
+      v-else-if="multiple.outcome === 'error'"
+      color="error"
+      variant="soft"
+      icon="i-lucide-circle-alert"
+      :title="`${entityPluralLabel} could not be loaded`"
+      description="Please try again."
+    />
+
+    <div v-else class="console-focus">
       <div class="console-focus__title">
         Available {{ entityPluralLabel }}
       </div>
@@ -26,7 +44,10 @@
       </p>
     </div>
 
-    <div v-if="cards.length" class="mt-4 space-y-2">
+    <div
+      v-if="multiple.outcome === 'ready' && cards.length"
+      class="mt-4 space-y-2"
+    >
       <ConsoleTargetCard
         v-for="card in cards"
         :key="card.id"
@@ -35,7 +56,10 @@
       />
     </div>
 
-    <p v-else class="mt-4 console-card-header__description">
+    <p
+      v-else-if="multiple.outcome === 'empty'"
+      class="mt-4 console-card-header__description"
+    >
       {{ emptyMultipleDescription }}
     </p>
   </UCard>
@@ -48,6 +72,7 @@ import type { ConsoleTargetCard as ConsoleTargetCardType } from './types'
 type ConsoleOverviewMultipleState = {
   count: number
   hasItems: boolean
+  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
 }
 
 const props = withDefaults(
@@ -65,7 +90,11 @@ const props = withDefaults(
 )
 
 const entityPluralLower = computed(() => props.entityPluralLabel.toLowerCase())
-const multipleCountLabel = computed(() => String(props.multiple.count))
+const multipleCountLabel = computed(() =>
+  props.multiple.outcome === 'ready' || props.multiple.outcome === 'empty'
+    ? String(props.multiple.count)
+    : '—'
+)
 const multipleDescription = computed(() =>
   `Available ${entityPluralLower.value} in your current console scope.`
 )

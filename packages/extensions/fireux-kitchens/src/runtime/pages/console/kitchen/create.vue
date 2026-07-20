@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
   <UDashboardPanel id="console-kitchen-create">
     <template #header>
@@ -43,18 +44,19 @@ const returnTo = computed(() =>
 
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'create',
+  visibility: { modules: ['fireux-kitchens'] },
   nav: {
-    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-create',
     label: 'Create',
     icon: 'i-lucide-plus',
     position: 'bottom',
-    requiresSelection: false,
     order: 5,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: false,
 })
 </script>

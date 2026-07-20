@@ -58,6 +58,14 @@
           />
 
           <MoleculesFormsFirestoreArrayOfStrings
+            label="Tags"
+            :firebase-value="tags"
+            item-placeholder="Tag"
+            new-item-placeholder="Add tag"
+            :update-function="handleTags"
+          />
+
+          <MoleculesFormsFirestoreArrayOfStrings
             label="Coverage Areas"
             :firebase-value="coverageAreas"
             item-placeholder="Coverage area"
@@ -77,7 +85,7 @@
             label="Public Business Phone"
             :firebase-value="contactPhone"
             placeholder="Optional"
-            :maxlength="60"
+            :maxlength="40"
             :update-function="handleContactPhone"
           />
 
@@ -97,6 +105,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:34 CEST — Repo Efficiency Pass 2 of 6: bind canonical Agent fields and align phone input with the stored contract.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUserFormattingAndValidation } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import { computed } from 'vue'
@@ -113,6 +122,7 @@ const {
   updateBio,
   updateImage,
   updatePlacementTypes,
+  updateTags,
   updateCoverageAreas,
   updateContactEmail,
   updateContactPhone,
@@ -128,12 +138,13 @@ const bio = computed(() => agent.value?.agent_bio ?? '')
 const imageUrl = computed(() => agent.value?.agent_image ?? '')
 
 const placementTypes = computed(() => {
-  const list =
-    agent.value?.agent_placement_types?.length
-      ? agent.value?.agent_placement_types
-      : (agent.value as any)?.tags ?? []
+  const list = agent.value?.agent_placement_types ?? []
   return Array.isArray(list) ? list : []
 })
+
+const tags = computed(() =>
+  Array.isArray(agent.value?.tags) ? agent.value.tags : []
+)
 
 const coverageAreas = computed(() =>
   Array.isArray(agent.value?.agent_coverage_areas)
@@ -141,15 +152,9 @@ const coverageAreas = computed(() =>
     : []
 )
 
-const contactEmail = computed(
-  () => agent.value?.agent_contact_email ?? agent.value?.contact_email ?? ''
-)
-const contactPhone = computed(
-  () => agent.value?.agent_contact_phone ?? agent.value?.contact_phone ?? ''
-)
-const websiteUrl = computed(
-  () => agent.value?.agent_website_url ?? agent.value?.website_url ?? ''
-)
+const contactEmail = computed(() => agent.value?.agent_contact_email ?? '')
+const contactPhone = computed(() => agent.value?.agent_contact_phone ?? '')
+const websiteUrl = computed(() => agent.value?.agent_website_url ?? '')
 
 const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
   try {
@@ -186,6 +191,9 @@ const handlePlacementTypes = async (value: string[]) =>
     'Placement types updated',
     'Failed to update placement types'
   )
+
+const handleTags = async (value: string[]) =>
+  wrap(() => updateTags(value), 'Tags updated', 'Failed to update tags')
 
 const handleCoverageAreas = async (value: string[]) =>
   wrap(

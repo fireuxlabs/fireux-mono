@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: write Customer ordering details only in app scope.
 // Profile family canon: docs/concepts/entities.md
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
+import { useProfileAppUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import {
   CustomerStorage,
   type Customer,
@@ -9,8 +9,10 @@ import {
 
 type CustomerPatch = Partial<Customer> & Record<string, unknown>
 
-export function useCustomerUpdate(profile?: ProfileRefs<Customer> | null) {
-  const base = useProfileUpdateBase<Customer>(
+export function useCustomerUpdate(
+  profile?: ProfileRefs<Customer, Customer> | null
+) {
+  const base = useProfileAppUpdateBase<Customer, Customer>(
     CustomerStorage.collection,
     profile
   )

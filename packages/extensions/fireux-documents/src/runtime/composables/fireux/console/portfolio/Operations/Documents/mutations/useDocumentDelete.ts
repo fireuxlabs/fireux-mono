@@ -1,5 +1,7 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for document deletion.
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
@@ -15,14 +17,7 @@ export function useDocumentDelete(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function deleteDocumentRecord(documentId: string): Promise<void> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-documents] portfolio id is required.')
-    }
-
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-documents] demo runtime does not allow writes.')
-    }
+    requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-documents')
 
     const normalizedDocumentId = normalizeString(documentId)
     if (!normalizedDocumentId) {

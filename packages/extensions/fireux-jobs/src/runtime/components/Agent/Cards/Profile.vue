@@ -46,14 +46,15 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: accept the exact projected Agent detail shape.
 import { computed } from 'vue';
 import type { AgentCard } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface';
-import type { Agent } from '../../../models/profiles/Agent/Agent.model';
+import type { PublicAgentProfile } from '../../../models/profiles/Agent/Agent.model';
 
 const props = withDefaults(
   defineProps<{
     card: AgentCard.Card
-    profile?: Agent | null
+    profile?: PublicAgentProfile | null
     prop?: string
     showSubtitle?: boolean
   }>(),

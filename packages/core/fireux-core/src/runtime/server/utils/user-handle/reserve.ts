@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: require current legal evidence before trusted identity creation.
-// Concurrent edit — 2026-07-20 13:51 CEST — User handle migration pass: normalize legacy stored casing while repairing its trusted reservation.
+// Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: provision only trusted HTTPS or ecosystem-default avatars.
 
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
@@ -13,7 +13,11 @@ import {
   type UserHandleReservationResult,
 } from '../../../models/core/supporting/user-handle-reservation'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/core/supporting/user-account-provisioning'
-import { resolveUserAvatarSource } from '../../../models/core/supporting/user-avatar'
+import {
+  USER_ECOSYSTEM_AVATAR_SRC,
+  resolveUserAvatarSource,
+} from '../../../models/core/supporting/user-avatar'
+import { readHttpsUrl } from '../../../utils/httpsUrl'
 import { validatePublicSlug } from '../../../utils/slug/validatePublicSlug'
 import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
 
@@ -53,8 +57,15 @@ function normalizeCreation(value: UserHandleReservationInput['create']) {
     fail(400, 'A display name between 1 and 120 characters is required.')
   }
 
-  const avatar = resolveUserAvatarSource(value.avatar)
-  if (avatar.length > 2_048) fail(400, 'Avatar URL is too long.')
+  const requestedAvatar = String(value.avatar ?? '').trim()
+  if (
+    requestedAvatar &&
+    requestedAvatar !== USER_ECOSYSTEM_AVATAR_SRC &&
+    !readHttpsUrl(requestedAvatar)
+  ) {
+    fail(400, 'Avatar must be a valid HTTPS URL.')
+  }
+  const avatar = resolveUserAvatarSource(requestedAvatar)
 
   return { displayName, avatar }
 }

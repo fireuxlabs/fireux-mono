@@ -1,15 +1,33 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: render App operation outcomes explicitly. -->
 <template>
-  <UCard v-if="pending || cards.length">
+  <UCard v-if="outcome !== 'idle'">
     <template #header>
       <div class="flex flex-wrap items-center justify-between gap-3">
         <h2 class="text-base font-semibold text-highlighted">Project apps</h2>
-        <UBadge color="neutral" variant="soft">{{ cards.length }}</UBadge>
+        <UBadge
+          v-if="outcome === 'ready' || outcome === 'empty'"
+          color="neutral"
+          variant="soft"
+        >
+          {{ cards.length }}
+        </UBadge>
       </div>
     </template>
 
-    <div v-if="pending" class="text-sm text-dimmed">Loading apps...</div>
+    <div v-if="outcome === 'pending'" class="text-sm text-dimmed">
+      Loading apps...
+    </div>
 
-    <div v-else class="space-y-3">
+    <UAlert
+      v-else-if="outcome === 'error'"
+      color="error"
+      variant="soft"
+      icon="i-lucide-circle-alert"
+      title="Project apps could not be loaded"
+      description="Please try again."
+    />
+
+    <div v-else-if="outcome === 'ready'" class="space-y-3">
       <AppCardsCell
         v-for="card in cards"
         :key="card.id"
@@ -17,6 +35,10 @@
         :link="false"
       />
     </div>
+
+    <p v-else class="text-sm text-dimmed">
+      No app records point to this project.
+    </p>
   </UCard>
 </template>
 
@@ -28,7 +50,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/operations/Apps/useProjectConsoleApps'
 
-const { apps, pending } = useProjectConsoleApps()
+const { apps, outcome } = useProjectConsoleApps()
 const { cell: appCell } = useAppInterface()
 
 const cards = computed(() =>

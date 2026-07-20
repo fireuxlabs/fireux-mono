@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 19:20 CEST — Repo Efficiency Pass 2 of 6: bind self-profile updates and enforce Professional collection capacities. -->
 <template>
   <ClientOnly>
     <div v-if="professional" class="profile-edit">
@@ -59,6 +60,8 @@
               item-placeholder="Position"
               new-item-placeholder="Add position"
               :update-function="handlePositions"
+              :max-items="ProfessionalConstraints.positions"
+              :max-length="ProfessionalConstraints.stringItemLength"
             />
           </div>
         </div>
@@ -68,39 +71,45 @@
         :label="relevantExperienceLabel"
         :items="professional.relevant_experience || []"
         :onSave="handleRelevantExperience"
-        :place-type="relevantPlaceType"
         :place-collections="placeCollections"
+        :max-items="relevantExperienceMaxItems"
       />
 
       <ProfessionalFieldsExperienceSection
         label="Other Experience"
         :items="professional.other_experience || []"
         :onSave="handleOtherExperience"
+        :max-items="otherExperienceMaxItems"
       />
 
       <ProfessionalEditSectionsLanguages
         :items="languages"
         :onSave="handleLanguages"
+        :max-items="languagesMaxItems"
       />
 
       <ProfessionalEditSectionsCertifications
         :items="certifications"
         :onSave="handleCertifications"
+        :max-items="certificationsMaxItems"
       />
 
       <ProfessionalEditSectionsEducation
         :items="education"
         :onSave="handleEducation"
+        :max-items="educationMaxItems"
       />
 
       <ProfessionalEditSectionsVolunteering
         :items="volunteering"
         :onSave="handleVolunteering"
+        :max-items="volunteeringMaxItems"
       />
 
       <ProfessionalEditSectionsProjects
         :items="projects"
         :onSave="handleProjects"
+        :max-items="projectsMaxItems"
       />
     </div>
 
@@ -112,22 +121,21 @@
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useJobsConfig } from '../../../composables/fireux/app/useJobsConfig'
-import { useProfessionalUpdate } from '../../../composables/fireux/firestore/profiles/Professional/mutations/useProfessionalUpdate'
 import { useProfessional } from '../../../composables/fireux/firestore/profiles/Professional/useProfessional'
-import type {
-  CertificationItem,
-  EducationItem,
-  LanguageProficiency,
-  OtherExperienceItem,
-  ProjectItem,
-  RelevantExperienceItem,
-  VolunteeringItem,
+import {
+  ProfessionalConstraints,
+  type CertificationItem,
+  type EducationItem,
+  type LanguageProficiency,
+  type OtherExperienceItem,
+  type ProjectItem,
+  type RelevantExperienceItem,
+  type VolunteeringItem,
 } from '../../../models/profiles/Professional/Professional.model'
 
 const toast = useToastify()
-const { coreProfile } = useProfessional()
-
 const {
+  coreProfile,
   updateTitle,
   updateSummary,
   updateBio,
@@ -140,10 +148,9 @@ const {
   updateEducation,
   updateVolunteering,
   updateProjects,
-} = useProfessionalUpdate()
+} = useProfessional()
 
 const { placeCollections } = useJobsConfig()
-const relevantPlaceType = computed(() => placeCollections[0] ?? null)
 const relevantExperienceLabel = computed(() => 'Relevant Experience')
 
 const professional = computed(() => coreProfile.value ?? null)
@@ -166,6 +173,74 @@ const certifications = computed(() => professional.value?.certifications ?? [])
 const education = computed(() => professional.value?.education ?? [])
 const volunteering = computed(() => professional.value?.volunteering ?? [])
 const projects = computed(() => professional.value?.projects ?? [])
+
+type StructuredField =
+  | 'relevant_experience'
+  | 'other_experience'
+  | 'languages'
+  | 'certifications'
+  | 'education'
+  | 'volunteering'
+  | 'projects'
+
+const structuredFields: StructuredField[] = [
+  'relevant_experience',
+  'other_experience',
+  'languages',
+  'certifications',
+  'education',
+  'volunteering',
+  'projects',
+]
+
+const structuredMaxItems = (
+  field: StructuredField,
+  perListLimit: number
+) =>
+  computed(() => {
+    const value = professional.value
+    const otherItems = structuredFields.reduce(
+      (total, key) =>
+        key === field ? total : total + (value?.[key].length ?? 0),
+      0
+    )
+    return Math.max(
+      0,
+      Math.min(
+        perListLimit,
+        ProfessionalConstraints.structuredTotal - otherItems
+      )
+    )
+  })
+
+const relevantExperienceMaxItems = structuredMaxItems(
+  'relevant_experience',
+  ProfessionalConstraints.relevantExperience
+)
+const otherExperienceMaxItems = structuredMaxItems(
+  'other_experience',
+  ProfessionalConstraints.otherExperience
+)
+const languagesMaxItems = structuredMaxItems(
+  'languages',
+  ProfessionalConstraints.languages
+)
+const certificationsMaxItems = structuredMaxItems(
+  'certifications',
+  ProfessionalConstraints.certifications
+)
+const educationMaxItems = structuredMaxItems(
+  'education',
+  ProfessionalConstraints.education
+)
+const volunteeringMaxItems = structuredMaxItems(
+  'volunteering',
+  ProfessionalConstraints.volunteering
+)
+const projectsMaxItems = structuredMaxItems(
+  'projects',
+  ProfessionalConstraints.projects
+)
 
 const wrap = async (fn: () => Promise<void>, failTitle: string) => {
   try {

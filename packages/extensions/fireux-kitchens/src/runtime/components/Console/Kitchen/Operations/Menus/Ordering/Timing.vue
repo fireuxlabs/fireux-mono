@@ -30,7 +30,7 @@
         />
 
         <MoleculesFormsFirestoreSimpleField
-          label="Minimum preparation time (minutes)"
+          :label="noticeLabel"
           type="number"
           :firebase-value="noticeMinutes"
           placeholder="45"
@@ -137,11 +137,13 @@ const props = withDefaults(defineProps<{
   description?: string
   disabled?: boolean
   menuHours: WeekdayTimeWindowsConfig
+  noticeLabel?: string
   surfaceLabel: string
   timeLabel: string
   updateFunction: UpdateFn
 }>(), {
   allowAsap: true,
+  noticeLabel: 'Minimum preparation time (minutes)',
 })
 
 const slotIntervalOptions = [15, 30, 45, 60].map(value => ({

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: render projected Professional detail with canonical Place enrichment. -->
 <template>
   <div v-if="viewModel" class="mx-auto w-full max-w-3xl space-y-3">
     <ProfessionalCardsCell
@@ -83,14 +84,15 @@
                       formatExperienceDates(entry.item)
                     }}</span>
                   </div>
-                  <div>
+                  <div class="mt-2">
                     <PlaceCardsPill
-                      :image-url="entry.imageUrl"
-                      :title="entry.title"
-                      :subtitle="entry.subtitle"
+                      v-if="entry.placeCard"
+                      v-bind="entry.placeCard"
                       :show-badges="false"
-                      :show-subtitle="entry.showSubtitle"
                     />
+                    <div v-else class="text-xs text-muted">
+                      Location unavailable
+                    </div>
                   </div>
                   <p v-if="entry.item.responsibilities" class="form-text-body">
                     {{ entry.item.responsibilities }}
@@ -236,12 +238,12 @@
 import { computed } from 'vue'
 import type { ProfessionalCard } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import type { ProfessionalProfileViewModel } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type { Professional } from '../../../models/profiles/Professional/Professional.model'
+import type { PublicProfessionalProfile } from '../../../models/profiles/Professional/Professional.model'
 
 const props = defineProps<{
   model?: ProfessionalProfileViewModel | null
   card?: ProfessionalCard.Card
-  profile?: Professional | null
+  profile?: PublicProfessionalProfile | null
   prop?: string
 }>()
 
@@ -260,18 +262,10 @@ const viewModel = computed<ProfessionalProfileViewModel | null>(() => {
         placeCard: null,
       })
     ),
-    otherExperience: (props.profile.other_experience ?? []).map((item) => {
-      const subtitle = String(
-        (item as any).short_address || (item as any).formatted_address || ''
-      ).trim()
-      return {
-        item,
-        title: String((item as any).name || 'External venue').trim(),
-        subtitle,
-        imageUrl: String((item as any).image_url || '').trim(),
-        showSubtitle: Boolean(subtitle),
-      }
-    }),
+    otherExperience: (props.profile.other_experience ?? []).map((item) => ({
+      item,
+      placeCard: null,
+    })),
     languages: props.profile.languages ?? [],
     certifications: props.profile.certifications ?? [],
     education: props.profile.education ?? [],

@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Supplier consoles.
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
 import {
   collection,
   query as fsq,
@@ -16,7 +18,6 @@ import {
   SupplierStorage,
   type Supplier,
 } from '../../../../../models/supplier/Supplier.model'
-import { getDemoSuppliers } from '../../../demo/supplier/scenarios'
 import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 
 type SupplierCollectionDoc = Partial<Supplier> & {
@@ -58,20 +59,6 @@ function resolveSupplierId(supplier: Partial<SupplierCollectionDoc> | null | und
   return normalizeString(supplier?.id)
 }
 
-function toDemoSupplierSurface(
-  supplier: ReturnType<typeof getDemoSuppliers>[number]
-): SupplierCollectionDoc {
-  const id = resolveSupplierId(supplier)
-
-  return {
-    ...supplier,
-    id,
-    supplier_organization_name: normalizeString(supplier.supplier_organization_name),
-    supplier_headline: normalizeString(supplier.supplier_headline),
-    supplier_image: normalizeString(supplier.supplier_image),
-  }
-}
-
 export function useSupplierCollection(
   options: UseSupplierCollectionOptions = {}
 ) {
@@ -83,11 +70,41 @@ export function useSupplierCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
+  const resolvedFilter = computed<SupplierCollectionFilter | undefined>(() => {
+    if (isRef(options.filter)) return options.filter.value ?? undefined
+    return options.filter ?? undefined
+  })
+  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
+  const filterOperatorId = computed(() =>
+    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
+  )
+  const hasOperatorFilter = computed(() =>
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
+  )
+  const filterIdSet = computed(
+    () =>
+      new Set(
+        (resolvedFilter.value?.ids ?? [])
+          .map((value) => normalizeString(value))
+          .filter(Boolean)
+      )
+  )
+  const usesTargetedRootRead = computed(
+    () => hasFilter.value || hasOperatorFilter.value
+  )
   const testCollectionPath = computed(() =>
     sourceMode.value === 'test' ? TEST_COLLECTION_PATH : ''
   )
-  const liveCollectionPath = computed(() =>
-    sourceMode.value === 'live' ? DEFAULT_COLLECTION_PATH : ''
+  const liveRootCollectionPath = computed(() =>
+    sourceMode.value === 'live' && !usesTargetedRootRead.value
+      ? DEFAULT_COLLECTION_PATH
+      : ''
+  )
+  const liveDocumentCollectionPath = computed(() =>
+    sourceMode.value === 'live' && usesTargetedRootRead.value
+      ? DEFAULT_COLLECTION_PATH
+      : ''
   )
   const testSource = firestoreFetchCollection<SupplierCollectionDoc>(
     testCollectionPath
@@ -144,40 +161,26 @@ export function useSupplierCollection(
 
     return [...byId.values()]
   })
-  const resolvedFilter = computed<SupplierCollectionFilter | undefined>(() => {
-    if (isRef(options.filter)) return options.filter.value ?? undefined
-    return options.filter ?? undefined
-  })
-  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterOperatorId = computed(() =>
-    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
-  )
-  const filterIdSet = computed(
-    () =>
-      new Set(
-        (resolvedFilter.value?.ids ?? [])
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      )
-  )
-  const demoItems = computed<SupplierCollectionDoc[]>(() =>
-    getDemoSuppliers().map(toDemoSupplierSurface)
-  )
   const liveRootSource = firestoreFetchCollection<SupplierCollectionDoc>(
-    liveCollectionPath
+    liveRootCollectionPath
   )
   const allowedSupplierIds = computed(() =>
     (overlaySource.value ?? [])
       .map((supplier) => resolveSupplierId(supplier))
       .filter(Boolean)
   )
+  const targetedSupplierIds = computed(() => {
+    const ids = hasOperatorFilter.value
+      ? allowedSupplierIds.value
+      : [...filterIdSet.value]
+
+    return hasFilter.value
+      ? ids.filter((id) => filterIdSet.value.has(id))
+      : ids
+  })
   const liveRootDocs = firestoreLoadDocsByIds<SupplierCollectionDoc>({
-    collectionPath: liveCollectionPath,
-    ids: allowedSupplierIds,
+    collectionPath: liveDocumentCollectionPath,
+    ids: targetedSupplierIds,
   })
 
   const liveItems = computed<SupplierCollectionDoc[]>(() => {
@@ -239,9 +242,9 @@ export function useSupplierCollection(
   })
 
   const collectionItems = computed<SupplierCollectionDoc[]>(() => {
-    if (sourceMode.value === 'demo') return demoItems.value
+    if (sourceMode.value === 'demo') return []
     if (sourceMode.value === 'test') return testSource.value ?? []
-    if (!hasOperatorFilter.value) return liveRootSource.value ?? []
+    if (!usesTargetedRootRead.value) return liveRootSource.value ?? []
     return liveItems.value
   })
 
@@ -268,24 +271,27 @@ export function useSupplierCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return testSource.pending.value
-    if (!hasOperatorFilter.value) return liveRootSource.pending.value
-    if (!filterOperatorId.value) return false
+    if (!usesTargetedRootRead.value) return liveRootSource.pending.value
+    if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
       liveRootDocs.pending.value ||
-      overlayOperatorSource.pending.value ||
-      overlayTeamSource.pending.value
+      (hasOperatorFilter.value && (
+        overlayOperatorSource.pending.value ||
+        overlayTeamSource.pending.value
+      ))
     )
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
     if (sourceMode.value === 'test') return testSource.error.value
-    if (!hasOperatorFilter.value) return liveRootSource.error.value
-    if (!filterOperatorId.value) return undefined
-    return overlayOperatorSource.error.value ??
-      overlayTeamSource.error.value ??
-      liveRootDocs.error.value
+    if (!usesTargetedRootRead.value) return liveRootSource.error.value
+    if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
+    return (hasOperatorFilter.value
+      ? overlayOperatorSource.error.value ?? overlayTeamSource.error.value
+      : undefined) ?? liveRootDocs.error.value
   })
   const { outcome } = useFirestoreCollectionState({
+    active: computed(() => sourceMode.value !== 'demo'),
     count,
     error,
     pending,

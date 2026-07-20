@@ -59,13 +59,14 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: resolve the sanitized app-local stay simulation.
 import { computed } from 'vue'
-import { getPropertyInfoSections, resolvePropertyInfo } from '../demo/propertyInfo'
-import { findDemoBuenoHostPublicProperty } from '../demo/properties'
+import { getPropertyInfoSections, resolvePropertyInfo } from '../simulations/propertyInfo'
+import { findSimulatedBuenoHostProperty } from '../simulations/properties'
 
 const route = useRoute()
 const propertySlug = computed(() => String(route.params.slug || ''))
-const property = computed(() => findDemoBuenoHostPublicProperty(propertySlug.value))
+const property = computed(() => findSimulatedBuenoHostProperty(propertySlug.value))
 const info = computed(() => (property.value ? resolvePropertyInfo(property.value.slug) : null))
 const sections = computed(() => (info.value ? getPropertyInfoSections(info.value) : []))
 const currentSectionId = computed(() => String(route.params.infoId || ''))

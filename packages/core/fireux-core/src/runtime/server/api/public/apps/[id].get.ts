@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-20 16:24 CEST — Repo Efficiency Pass 1 of 6: keep public App doorway details current for durable links.
+
 import {
   createError,
   defineEventHandler,
@@ -13,13 +15,12 @@ import { projectPublicApp } from '../../../utils/public-projection/public-app.dt
 import { asTrimmedString } from '../../../utils/public-projection/public-dto.helpers'
 import type { PublicDetailResponse } from '../../../utils/public-projection/public-dto.types'
 
-const CACHE_CONTROL =
-  'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
-
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': CACHE_CONTROL,
+    // Detail consumers can turn the App website into durable public links.
+    // Revalidate every lookup so a changed doorway is never served stale.
+    'Cache-Control': 'no-store',
   })
 
   const appId = requireFirestoreDocumentId(

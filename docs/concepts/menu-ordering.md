@@ -1,10 +1,10 @@
 Menu ordering map
 Updated: 2026-07-20
-Ref: f7d3704ef
+Ref: 8d83d3fa7
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared lifecycle. -->
 <!-- Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: record the private Kitchen-alert, provider, and authenticated test boundary. -->
-<!-- Concurrent edit — 2026-07-20 15:22 CEST — Advance-table Pre-order pass: separate request intake, dining-slot policy, and operator confirmation. -->
+<!-- Concurrent edit — 2026-07-20 16:10 CEST — Pre-order planning pass: place dining time and party size before catalogue selection. -->
 
 Purpose:
 Map how food-menu ordering should stay small enough to reason about while still covering future restaurant service patterns.
@@ -355,8 +355,10 @@ Public order funnel spine:
   `notice_hours`. Collection, Delivery, and Pre-order use thin surface request
   seams over
   one `useMenuOrderLifecycle`; Delivery adds authoritative address/zone/minimum/
-  fee validation before the same checkout, while Pre-order requires party size
-  and a future requested dining time. Kiosk adds only the fixed Eat here/Take
+  fee validation before the same checkout, while Pre-order gates the catalogue
+  behind one transient advance-table plan containing party size and a future
+  requested dining time. Checkout does not ask for those plan fields again.
+  Kiosk adds only the fixed Eat here/Take
   away choice and uses
   no customer schedule. Each active surface submits the validated basket,
   minimal contact details according to the resolved customer policy, timing

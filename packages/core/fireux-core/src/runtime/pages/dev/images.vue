@@ -104,9 +104,12 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 16:35 CEST — Repo Efficiency Pass 1 of 6: authenticate image inspection and identity-gate cached data.
+import { useAsyncData } from '#imports'
 import { computed } from 'vue'
-import { useFirestoreRead } from '../../composables/fireux/firestore/operations/useFirestoreRead'
-import { AppStorage, type AppModel } from '../../models/core/app.model'
+import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import type { AppModel } from '../../models/core/app.model'
 
 type ImageEntry = {
   urlPath: string
@@ -120,8 +123,27 @@ type ImageGroup = {
   images: ImageEntry[]
 }
 
-const { data } = await useFetch<{ groups: ImageGroup[] }>('/api/dev/images')
-const groups = computed(() => data.value?.groups ?? [])
+const { currentUser } = useAuth()
+const authUid = computed(() => String(currentUser.value?.uid ?? '').trim())
+const { data } = await useAsyncData(
+  'dev-images',
+  async () => {
+    const user = currentUser.value
+    const requestUid = authUid.value
+    if (!import.meta.client || !user || user.uid !== requestUid) {
+      return { groups: [], requestUid: '' }
+    }
+    const token = await user.getIdToken()
+    const response = await $fetch<{ groups: ImageGroup[] }>('/api/dev/images', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    return { ...response, requestUid }
+  },
+  { server: false, lazy: true, watch: [authUid] }
+)
+const groups = computed(() =>
+  data.value?.requestUid === authUid.value ? data.value.groups : []
+)
 
 function toPublicRelativePath(urlPath: string): string {
   return urlPath.replace(/^\/+/, '')
@@ -130,11 +152,7 @@ function toPublicRelativePath(urlPath: string): string {
 type FirestoreAppImage = { key: string; label: string; url: string }
 type FirestoreAppGroup = { id: string; name: string; images: FirestoreAppImage[] }
 
-const appsRef = import.meta.client
-  ? useFirestoreRead().firestoreFetchCollection<AppModel>(AppStorage.collection)
-  : (null as any)
-
-const firestorePending = computed(() => import.meta.client && appsRef?.value === undefined)
+const { apps, pending: firestorePending } = useDevAppCollection()
 
 function collectFirestoreImages(
   app: AppModel & Record<string, any>
@@ -165,8 +183,8 @@ function collectFirestoreImages(
 
 const firestoreAppGroups = computed<FirestoreAppGroup[]>(() => {
   if (!import.meta.client) return []
-  const apps = (appsRef?.value ?? []) as Array<AppModel & Record<string, any>>
-  return apps
+  const records = apps.value as Array<AppModel & Record<string, any>>
+  return records
     .map((app) => {
       const images = collectFirestoreImages(app)
       return {

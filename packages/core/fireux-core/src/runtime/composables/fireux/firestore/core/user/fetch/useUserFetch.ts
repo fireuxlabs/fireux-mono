@@ -1,4 +1,6 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: normalize app-private profile ids.
+// Concurrent edit — 2026-07-20 16:20 CEST — Console Spine pass: expose App membership read state to console targeting.
+// Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: fail closed when hydrating canonical User avatars.
 import { doc } from 'firebase/firestore'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
@@ -8,10 +10,10 @@ import {
 import type { Ref } from 'vue'
 import { computed, isRef } from 'vue'
 import type {
-    UserAppConsoleTargets,
-    UserApp,
-    UserPrivate,
-    User,
+  UserAppConsoleTargets,
+  UserApp,
+  UserPrivate,
+  User,
 } from '../../../../../../models/core/user.model'
 import {
   UserAppConsoleTargetsModel,
@@ -21,6 +23,7 @@ import {
   UserStorage,
 } from '../../../../../../models/core/user.model'
 import { AppStorage } from '../../../../../../models/core/app.model'
+import { resolveUserAvatarSource } from '../../../../../../models/core/supporting/user-avatar'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 
 function asStringArray(value: unknown): string[] {
@@ -31,7 +34,7 @@ function asStringArray(value: unknown): string[] {
 function normalizeConsoleTargets(value: unknown): UserAppConsoleTargets {
   const raw =
     value && typeof value === 'object' && !Array.isArray(value)
-      ? value as Record<string, unknown>
+      ? (value as Record<string, unknown>)
       : {}
   const targets: Record<string, string[]> = {
     ...UserAppConsoleTargetsModel,
@@ -50,7 +53,7 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
     ...raw,
     id: raw.id ?? fallbackId,
     display_name: (raw as any).display_name ?? raw.id ?? fallbackId,
-    avatar: (raw as any).avatar ?? '',
+    avatar: resolveUserAvatarSource((raw as any).avatar),
     handle: (raw as any).handle ?? '',
     app_ids: asStringArray(anyRaw.app_ids),
     profiles: asStringArray(anyRaw.profiles),
@@ -64,9 +67,7 @@ function normalizeUserApp(raw: UserApp, fallbackId: string): UserApp {
     id: raw.id ?? fallbackId,
     role: raw.role === 'admin' ? 'admin' : 'user',
     is_premium:
-      typeof anyRaw.is_premium === 'boolean'
-        ? anyRaw.is_premium
-        : false,
+      typeof anyRaw.is_premium === 'boolean' ? anyRaw.is_premium : false,
     console_enabled:
       typeof anyRaw.console_enabled === 'boolean'
         ? anyRaw.console_enabled
@@ -76,7 +77,10 @@ function normalizeUserApp(raw: UserApp, fallbackId: string): UserApp {
   }
 }
 
-function normalizeUserPrivate(raw: UserPrivate, fallbackId: string): UserPrivate {
+function normalizeUserPrivate(
+  raw: UserPrivate,
+  fallbackId: string
+): UserPrivate {
   const preferences =
     raw.preferences && typeof raw.preferences === 'object'
       ? raw.preferences
@@ -109,7 +113,8 @@ function normalizeUserPrivate(raw: UserPrivate, fallbackId: string): UserPrivate
 }
 
 function isOfflineFirestoreError(error: unknown): boolean {
-  const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
+  const code =
+    typeof (error as any)?.code === 'string' ? (error as any).code : ''
   const message = String((error as any)?.message ?? '').toLowerCase()
   return code === 'unavailable' || message.includes('client is offline')
 }
@@ -150,16 +155,30 @@ export function useUserFetch(
     const privateUser = computed<UserPrivate | null | undefined>(() => null)
     const user = computed<User | null>(() => null)
     const pending = computed(() => false)
+    const appPending = computed(() => false)
+    const appError = computed<unknown>(() => null)
     const privatePending = computed(() => false)
     const privateError = computed<unknown>(() => null)
-    return { user, coreUser, appUser, privateUser, pending, privatePending, privateError }
+    return {
+      user,
+      coreUser,
+      appUser,
+      privateUser,
+      pending,
+      appPending,
+      appError,
+      privatePending,
+      privateError,
+    }
   }
 
   const appDb = useFirestore()
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
   const coreDoc = computed(() =>
-    uid.value ? (doc(identityDb, UserStorage.rootCollection, uid.value) as any) : null
+    uid.value
+      ? (doc(identityDb, UserStorage.rootCollection, uid.value) as any)
+      : null
   )
 
   const privateDoc = computed(() =>
@@ -177,34 +196,53 @@ export function useUserFetch(
   /**
    * Canon: UserApp membership record
    * - Path: `apps/{appId}/users/{uid}`
-    * - This is NOT a “tenant profile overlay”. It exists to hold app-scoped role,
-    *   permissions, and onboarding state.
+   * - This is NOT a “tenant profile overlay”. It exists to hold app-scoped role,
+   *   permissions, and onboarding state.
    * - Therefore it is valid for any app context (including operator apps like `misebox-app`)
    *   whenever `appId` exists.
    */
   const appDoc = computed(() =>
     uid.value && appId && includeApp
-      ? (doc(appDb, AppStorage.collection, appId, UserAppStorage.collection, uid.value) as any)
+      ? (doc(
+          appDb,
+          AppStorage.collection,
+          appId,
+          UserAppStorage.collection,
+          uid.value
+        ) as any)
       : null
   )
 
-  const coreState = useDocument<User | undefined>(coreDoc as any, {
-    ssrKey: 'user-fetch-core',
-  } as any)
-  const appState = useDocument<UserApp | undefined>(appDoc as any, {
-    ssrKey: 'user-fetch-app',
-  } as any)
-  const privateState = useDocument<UserPrivate | undefined>(privateDoc as any, {
-    ssrKey: 'user-fetch-private',
-  } as any)
+  const coreState = useDocument<User | undefined>(
+    coreDoc as any,
+    {
+      ssrKey: 'user-fetch-core',
+    } as any
+  )
+  const appState = useDocument<UserApp | undefined>(
+    appDoc as any,
+    {
+      ssrKey: 'user-fetch-app',
+    } as any
+  )
+  const privateState = useDocument<UserPrivate | undefined>(
+    privateDoc as any,
+    {
+      ssrKey: 'user-fetch-private',
+    } as any
+  )
   const coreUserRef = coreState.data
   const corePending = coreState.pending
   const appUserRef = appState.data
   const appPending = appState.pending
+  const appError = appState.error
   const privateUserRef = privateState.data
   const privatePending = privateState.pending
   const privateError = privateState.error
-  guardDocumentPromise(coreState as any, `${UserStorage.rootCollection}/${uid.value ?? ''}`)
+  guardDocumentPromise(
+    coreState as any,
+    `${UserStorage.rootCollection}/${uid.value ?? ''}`
+  )
   guardDocumentPromise(
     appState as any,
     `${AppStorage.collection}/${appId}/${UserAppStorage.collection}/${uid.value ?? ''}`
@@ -252,6 +290,8 @@ export function useUserFetch(
     appUser,
     privateUser,
     pending,
+    appPending,
+    appError,
     privatePending,
     privateError,
   }

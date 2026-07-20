@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: define the shared opaque capability protocol.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: define the shared opaque capability protocol.
 export const MENU_ORDER_CAPABILITY_HEADER = 'x-fireux-order-capability'
 
 const MENU_ORDER_CAPABILITY_PATTERN = /^[A-Za-z0-9_-]{43}$/

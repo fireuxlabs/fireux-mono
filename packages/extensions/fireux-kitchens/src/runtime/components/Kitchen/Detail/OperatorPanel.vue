@@ -53,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 15:59 CEST — Repo Efficiency Pass 1 of 6: resolve operator App display through the ecosystem DTO boundary.
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import {
@@ -61,7 +62,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
+import { useEcosystemAppDetail } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppDetail'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleSelection } from '../../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
@@ -83,7 +84,7 @@ const operatorAppId = computed(() =>
 const isTenantConsoleHandoff = computed(() =>
   Boolean(operatorAppId.value && operatorAppId.value !== currentAppId.value)
 )
-const { app: operatorApp } = useAppFetch(operatorAppId)
+const { app: operatorApp } = useEcosystemAppDetail(operatorAppId)
 const currentUserId = computed(() => String(currentUser.value?.id ?? '').trim())
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const operatorCollectionPath = computed(() =>

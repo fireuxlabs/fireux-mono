@@ -2,6 +2,13 @@
 // @fireux-script
 // last_used: 2026-06-28
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-20 15:26 CEST — Script reuse TODO: classify narrow scripts before consolidation or removal.
+
+// TODO(script-consolidation): Extend this audit to distinguish reusable command
+// surfaces, intentionally retained one-off recovery/migration scripts, and
+// removable scripts. Report repeated argument, credential, plan, backup, and
+// verification mechanics that should become shared parameterized helpers before
+// deleting the narrow callers.
 
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: adopt authoritative target outcomes.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
@@ -48,8 +49,7 @@ export function useProjectConsole(
     family: 'project',
     storageFamily: ProjectStorage.collection,
     targetItems: targetProjects,
-    targetPending: targetsPending,
-    targetError: targetsError,
+    targetOutcome: targetsOutcome,
     getId: (project) => normalizeString(project?.id),
     mode: consoleRoot.source,
     readOnly: true,
@@ -73,6 +73,7 @@ export function useProjectConsole(
     targets: targetProjects,
     count: computed(() => targetProjects.value.length),
     pending: targetsPending,
+    error: targetsError,
     outcome: targetsOutcome,
   }
   const selection = {

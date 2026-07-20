@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: register the authenticated runtime App membership endpoint.
 // Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: register trusted UserPrivate provisioning.
 // Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: register trusted handle reservation.
+// Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
 import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   collectAutoSitemapPaths,
@@ -37,6 +38,16 @@ export default defineNuxtModule({
 
   setup(_options, nuxt) {
     const resolver = createResolver(import.meta.url)
+
+    if (nuxt.options.dev) {
+      type NuxtOptionsWithRouteRules = typeof nuxt.options & {
+        routeRules?: Record<string, { ssr?: boolean }>
+      }
+      const options = nuxt.options as NuxtOptionsWithRouteRules
+      const routeRules = (options.routeRules ||= {})
+      routeRules['/dev'] = { ...routeRules['/dev'], ssr: false }
+      routeRules['/dev/**'] = { ...routeRules['/dev/**'], ssr: false }
+    }
 
     // Register SEO endpoints explicitly (works locally + deployed)
     addServerHandler({
@@ -75,6 +86,17 @@ export default defineNuxtModule({
       route: '/api/public/apps/:id',
       handler: resolver.resolve('./runtime/server/api/public/apps/[id].get'),
     })
+    addServerHandler({
+      route: '/api/public/app/status',
+      handler: resolver.resolve('./runtime/server/api/public/app/status.get'),
+    })
+    if (nuxt.options.dev) {
+      addServerHandler({
+        route: '/api/dev/apps',
+        method: 'get',
+        handler: resolver.resolve('./runtime/server/api/dev/apps.get'),
+      })
+    }
     addServerHandler({
       route: '/api/internal/events/user-joined',
       method: 'post',

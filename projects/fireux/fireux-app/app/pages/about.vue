@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale sample-object presentation. -->
 <template>
   <div class="fx-page-stack fx-page-stack--comfortable">
     <section
@@ -159,30 +160,6 @@
           <pre class="overflow-x-auto rounded-sm bg-default p-4 text-xs leading-6">{{ relationshipMap }}</pre>
         </UCard>
 
-        <div class="space-y-2 text-center">
-          <p class="fx-type-headline">
-            {{ appMeta.aboutSections.examplesEyebrow }}
-          </p>
-          <h2 class="fx-type-section-title">
-            {{ appMeta.aboutSections.examplesTitle }}
-          </h2>
-        </div>
-
-        <UCard>
-          <UAccordion type="multiple" class="space-y-2">
-            <UAccordionItem
-              v-for="(sample, index) in appSpec.samples"
-              :key="`${sample.entity}-${index}`"
-              :value="`sample-${index}`"
-              :title="sample.entity"
-            >
-              <template #body>
-                <pre class="overflow-x-auto rounded-sm bg-default p-4 text-xs leading-6">{{ jsonOf(sample.example) }}</pre>
-              </template>
-            </UAccordionItem>
-          </UAccordion>
-        </UCard>
-
         <UCard>
           <template #header>
             <h3 class="fx-type-card-heading">
@@ -221,7 +198,6 @@ type AppSpec = {
     keyFields: readonly string[]
     linksTo: readonly string[]
   }>
-  samples: ReadonlyArray<{ entity: string; example: Record<string, any> }>
   routes: ReadonlyArray<{ label: string; path: string; kind: 'public' | 'console' }>
 }
 
@@ -250,10 +226,8 @@ const appSpec: AppSpec = {
   description: appMeta.description,
   modules: appMeta.modules,
   entities: appMeta.entities,
-  samples: appMeta.samples,
   routes: appMeta.routes,
 }
 const relationshipMap = appMeta.relationshipMap
 
-const jsonOf = (value: Record<string, any>) => JSON.stringify(value, null, 2)
 </script>

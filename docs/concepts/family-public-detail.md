@@ -2,7 +2,9 @@ Public detail family map
 Updated: 2026-07-19
 Ref: 565ebd668
 Role: map, not canon
+
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: join canonical User identity by profile uid. -->
+<!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map the shared SSR profile-detail projection. -->
 
 Purpose:
 Map public detail pages such as `/kitchens/[slug]`, `/suppliers/[slug]`, `/menus/[menuId]`, and similar surfaces.
@@ -34,6 +36,9 @@ Similar:
 - Uses an endpoint-first public projection for the initial SSR render. A
   client-only Firestore binding may enrich an already-rendered public object,
   but it must not be the authority for initial content or missing/error state.
+- Agent, Chef, and Professional use the shared `usePublicProfileDetail`
+  transport with domain-owned projected payload types. Their raw Firestore
+  roots remain owner-only and are not a guest detail transport.
 - Returns truthful outer HTTP status for missing and failed server reads; a
   client-side recovery path must not turn a direct 404 or 5xx into HTTP 200.
 - Shows useful public content first.

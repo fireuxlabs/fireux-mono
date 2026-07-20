@@ -56,8 +56,9 @@
       description="Pre-order requests stay open at all times. Define the future dining times guests may request."
       :disabled="!canWrite"
       :menu-hours="menuServiceHours"
+      notice-label="Minimum notice (minutes)"
       surface-label="Pre-order"
-      time-label="Requested"
+      time-label="Dining"
       :update-function="updatePreOrder"
     />
 

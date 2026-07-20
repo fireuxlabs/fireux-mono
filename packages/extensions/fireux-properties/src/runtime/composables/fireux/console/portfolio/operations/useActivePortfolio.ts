@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: centralize Portfolio operation write authorization.
 import { computed, type ComputedRef } from 'vue'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
@@ -24,6 +25,23 @@ export type ActivePortfolioRuntime = {
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
+
+export function requirePortfolioConsoleWrite(
+  runtimePortfolio: Pick<ActivePortfolioRuntime, 'id' | 'canWrite'>,
+  namespace: string
+) {
+  const portfolioId = normalizeString(runtimePortfolio.id.value)
+  const label = normalizeString(namespace) || 'fireux-portfolio'
+
+  if (!portfolioId) {
+    throw new Error(`[${label}] portfolio id is required.`)
+  }
+  if (!runtimePortfolio.canWrite.value) {
+    throw new Error(`[${label}] current operator does not have write access.`)
+  }
+
+  return portfolioId
+}
 
 export function useActivePortfolio(): ActivePortfolioRuntime {
   const selection = usePortfolioConsoleSelection()

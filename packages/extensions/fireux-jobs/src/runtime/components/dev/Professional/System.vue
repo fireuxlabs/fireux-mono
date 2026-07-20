@@ -1,7 +1,5 @@
 <template>
   <section class="space-y-10">
-    <DevProfessionalDemo />
-
     <UCard>
       <DevModel
         :title="'Professionals · Model'"
@@ -72,6 +70,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: inspect domain-only Professional rows and join canonical User for previews.
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Professional dev diagnostics on live joined profiles.
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'

@@ -1,14 +1,14 @@
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: separate blank simulation seeding from read-only console demo data. -->
 <template>
   <section class="space-y-4">
     <UCard>
       <template #header>
         <div class="space-y-2">
           <p class="text-sm font-semibold text-highlighted">
-            Demo -> Test kitchen
+            Test fixture -> Test kitchen
           </p>
           <p class="text-xs text-dimmed">
-            Demo is read-only. This copies the local demo scenario into a
-            writable simulation kitchen.
+            Creates a blank, writable Kitchen in the simulation database.
           </p>
         </div>
       </template>
@@ -33,9 +33,9 @@
             size="sm"
             :loading="isSyncing"
             icon="i-lucide-refresh-cw"
-            @click="syncDemoToTestKitchen"
+            @click="syncTestFixtureToTestKitchen"
           >
-            Sync demo to test
+            Sync test fixture
           </UButton>
         </div>
 
@@ -64,7 +64,7 @@
     </UCard>
 
     <DevFireuxDebugPanel
-      title="Demo test kitchen sync"
+      title="Test kitchen sync"
       scope="dev"
       :data="debug"
     />
@@ -81,7 +81,7 @@ import {
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { getDefaultDemoKitchen } from '../../../composables/fireux/demo/kitchen/scenarios'
+import { getDefaultTestKitchen } from '../../../test/kitchen/scenario'
 import { DishStorage } from '../../../models/kitchen/dish.model'
 import { KitchenStorage, type Kitchen } from '../../../models/kitchen.model'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
@@ -117,7 +117,7 @@ const collectionOrder: KitchenCollectionName[] = [
   'purchases',
   'orders',
 ]
-const demoKitchenScenario = getDefaultDemoKitchen()
+const testKitchenScenario = getDefaultTestKitchen()
 const { uid, currentUser } = useAuth()
 const targetKitchenId = ref('')
 const pruneMissing = ref(true)
@@ -136,21 +136,21 @@ const db = useFirestore(simulationDatabaseId)
 const { setDocument } = useFirestoreCreate({ databaseId: simulationDatabaseId })
 const defaultTargetKitchenId = computed(() => String(uid.value || '').trim())
 const sourceRows = computed(() => [
-  { label: 'Mise', count: demoKitchenScenario.menuStack.miseTasks.length },
-  { label: 'Recipes', count: demoKitchenScenario.menuStack.recipes.length },
-  { label: 'Dishes', count: demoKitchenScenario.menuStack.dishes.length },
-  { label: 'Menus', count: demoKitchenScenario.menuStack.menus.length },
-  { label: 'Stations', count: demoKitchenScenario.menuStack.stations.length },
-  { label: 'Team', count: demoKitchenScenario.menuStack.team.length },
-  { label: 'Suppliers', count: demoKitchenScenario.procurementStack.suppliers.length },
-  { label: 'Purchases', count: demoKitchenScenario.procurementStack.purchases.length },
-  { label: 'Orders', count: demoKitchenScenario.serviceStack.incomingOrders.length },
+  { label: 'Mise', count: testKitchenScenario.menuStack.miseTasks.length },
+  { label: 'Recipes', count: testKitchenScenario.menuStack.recipes.length },
+  { label: 'Dishes', count: testKitchenScenario.menuStack.dishes.length },
+  { label: 'Menus', count: testKitchenScenario.menuStack.menus.length },
+  { label: 'Stations', count: testKitchenScenario.menuStack.stations.length },
+  { label: 'Team', count: testKitchenScenario.menuStack.team.length },
+  { label: 'Suppliers', count: testKitchenScenario.procurementStack.suppliers.length },
+  { label: 'Purchases', count: testKitchenScenario.procurementStack.purchases.length },
+  { label: 'Orders', count: testKitchenScenario.serviceStack.incomingOrders.length },
 ])
 const debug = computed(() => ({
   source: {
-    id: demoKitchenScenario.kitchen.id,
-    name: demoKitchenScenario.kitchen.name,
-    mode: 'read-only demo scenario',
+    id: testKitchenScenario.kitchen.id,
+    name: testKitchenScenario.kitchen.identity.display_name,
+    mode: 'blank simulation fixture',
     rows: sourceRows.value,
   },
   target: {
@@ -215,31 +215,31 @@ const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
 }
 
 const buildCollections = (kitchenId: string) => ({
-  mise: withKitchenId(asDocs(demoKitchenScenario.menuStack.miseTasks), kitchenId),
+  mise: withKitchenId(asDocs(testKitchenScenario.menuStack.miseTasks), kitchenId),
   [RecipeStorage.collection]: withKitchenId(
-    asDocs(demoKitchenScenario.menuStack.recipes),
+    asDocs(testKitchenScenario.menuStack.recipes),
     kitchenId
   ),
   [DishStorage.collection]: withKitchenId(
-    asDocs(demoKitchenScenario.menuStack.dishes),
+    asDocs(testKitchenScenario.menuStack.dishes),
     kitchenId
   ),
   [MenuStorage.scopeCollection]: withKitchenId(
-    asDocs(demoKitchenScenario.menuStack.menus),
+    asDocs(testKitchenScenario.menuStack.menus),
     kitchenId
   ),
-  stations: withKitchenId(asDocs(demoKitchenScenario.menuStack.stations), kitchenId),
-  team: withKitchenId(asDocs(demoKitchenScenario.menuStack.team), kitchenId),
+  stations: withKitchenId(asDocs(testKitchenScenario.menuStack.stations), kitchenId),
+  team: withKitchenId(asDocs(testKitchenScenario.menuStack.team), kitchenId),
   suppliers: withKitchenId(
-    asDocs(demoKitchenScenario.procurementStack.suppliers),
+    asDocs(testKitchenScenario.procurementStack.suppliers),
     kitchenId
   ),
   purchases: withKitchenId(
-    asDocs(demoKitchenScenario.procurementStack.purchases),
+    asDocs(testKitchenScenario.procurementStack.purchases),
     kitchenId
   ),
   orders: withKitchenId(
-    asDocs(demoKitchenScenario.serviceStack.incomingOrders),
+    asDocs(testKitchenScenario.serviceStack.incomingOrders),
     kitchenId
   ),
 })
@@ -278,7 +278,7 @@ const pruneCollection = async (collectionPath: string, keepIds: Set<string>) => 
   return removed
 }
 
-const syncDemoToTestKitchen = async () => {
+const syncTestFixtureToTestKitchen = async () => {
   if (isSyncing.value) return
 
   const kitchenId = String(targetKitchenId.value || '').trim()
@@ -322,7 +322,7 @@ const syncDemoToTestKitchen = async () => {
     }
   } catch (error: any) {
     syncError.value = String(
-      error?.message || error || 'Failed to sync demo scenario to test kitchen.'
+      error?.message || error || 'Failed to sync the test fixture.'
     )
   } finally {
     isSyncing.value = false

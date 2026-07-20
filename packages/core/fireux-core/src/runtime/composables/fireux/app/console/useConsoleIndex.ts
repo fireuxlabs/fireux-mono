@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: require one authoritative target outcome.
+// Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: gate target auto-selection on authoritative ready state.
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 
@@ -24,6 +25,7 @@ type UseConsoleIndexOptions<
   selection?: ValueRef<TSelection>
   selectedId?: ValueRef<string | null | undefined>
   autoSelectTargetId?: ValueRef<string | null | undefined>
+  getTargetId: (target: TTarget) => string
   runtime?: ValueRef<TRuntime>
   selectTarget: (id: string) => void
   clearSelection?: () => void
@@ -51,6 +53,13 @@ export function useConsoleIndex<
   )
   const targetOutcome = computed<ConsoleTargetOutcome>(() =>
     unref(options.outcome)
+  )
+  const targetIds = computed(() =>
+    new Set(
+      targetItems.value
+        .map((target) => normalizeString(options.getTargetId(target)))
+        .filter(Boolean)
+    )
   )
   const sections = computed(() => ({
     targets: {
@@ -82,9 +91,17 @@ export function useConsoleIndex<
       targetId: options.autoSelectTargetId
         ? normalizeString(unref(options.autoSelectTargetId))
         : '',
+      outcome: targetOutcome.value,
+      targetIds: targetIds.value,
     }),
-    (state: { currentId: string; targetId: string }) => {
-      const { currentId, targetId } = state
+    (state: {
+      currentId: string
+      targetId: string
+      outcome: ConsoleTargetOutcome
+      targetIds: Set<string>
+    }) => {
+      const { currentId, targetId, outcome, targetIds } = state
+      if (outcome !== 'ready' || !targetIds.has(targetId)) return
       if (!targetId || currentId === targetId) return
       options.selectTarget(targetId)
     },

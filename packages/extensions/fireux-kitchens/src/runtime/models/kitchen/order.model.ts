@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: type digest-only access and source item identity on canonical Kitchen Orders.
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { DishItemKind } from './dish.model'
@@ -22,6 +23,7 @@ export const KitchenOrderStorage = {
 
 export type KitchenOrderItem = {
   id: string
+  source_item_id?: string
   menu_id?: string
   dish_id: string
   item_kind?: DishItemKind
@@ -300,6 +302,7 @@ export const KitchenOrderModel = {
 export type KitchenOrder = {
   [K in keyof typeof KitchenOrderModel]: (typeof KitchenOrderModel)[K]
 } & {
+  customer_capability_hash?: string
   customer_uid?: string
 }
 

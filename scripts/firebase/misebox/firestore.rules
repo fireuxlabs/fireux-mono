@@ -5,6 +5,10 @@
 // Concurrent edit — 2026-07-20 13:51 CEST — User handle contract: align public identity validation with the trusted 30-character canonical slug.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: remove embedded User snapshots and preserve owner missing-document gets.
 // Concurrent edit — 2026-07-20 13:42 CEST — Security rollout gate: keep migration evidence server-only.
+// Concurrent edit — 2026-07-20 15:59 CEST — Repo Efficiency Pass 1 of 6: close raw App access, pin bootstrap identity, and repair executable security contracts.
+// Concurrent edit — 2026-07-20 19:58 CEST — Repo Efficiency Pass 2 of 6: preserve strict Professional validation within the Rules expression budget.
+// Concurrent edit — 2026-07-20 19:51 CEST — Repo Efficiency Pass 2 of 6: preserve strict Agent/Chef validation within the Rules expression budget.
+// Concurrent edit — 2026-07-20 20:02 CEST — Repo Efficiency Pass 2 of 6 rules cutover: make raw public-profile roots owner-only and validate one changed Professional list family.
 
 rules_version = '2';
 
@@ -17,11 +21,14 @@ service cloud.firestore {
     //   app_ids, profiles, created, updated). No email or private settings.
     // users/{uid}/private/account: owner-only email, preferences, terms.
     // users/{uid}/notifications/{id}: owner-only notification records.
-    // apps/{appId}: public App identity/content; no join-request identities.
+    // apps/{appId}: canonical App truth. Guests use allowlisted server DTOs;
+    //   raw reads require App membership or the fixed bootstrap developer.
     // apps/{appId}/join-requests/{uid}: owner-visible/admin-listable request.
     // apps/{appId}/users/{uid}: private membership and capability authority.
     // apps/{appId}/customers/{uid}: app-private ordering identity and PII.
     // drivers/{uid}: public Driver presentation/capability.
+    // agents/{uid}, chefs/{uid}, professionals/{uid}: owner-readable raw
+    //   profiles; guests consume allowlisted domain API projections.
     // apps/{appId}/drivers/{uid}: private contact, preferences, and
     //   server-owned kitchen grants.
     // apps/{appId}/kitchens/{kitchenId}/orders/{orderId}: private order PII;
@@ -44,6 +51,11 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
+    function isBootstrapDeveloper() {
+      return isAuthenticated() &&
+        request.auth.uid == 'yZ1nY4RtxnMnJwcVZnaMBigqM1A2';
+    }
+
     function uidNotModified() {
       return !('uid' in request.resource.data) ||
         request.resource.data.uid == resource.data.uid;
@@ -64,6 +76,400 @@ service cloud.firestore {
     function validOptionalList(data, field, maxSize) {
       return !(field in data) ||
         (data[field] is list && data[field].size() <= maxSize);
+    }
+
+    function isValidHttpsUrl(value, maxSize) {
+      return value is string &&
+        value.size() <= maxSize &&
+        (value == '' || value.matches('^https://.+$'));
+    }
+
+    function isValidUserAvatar(value) {
+      return value == '/img/ecosystem/avatar.png' ||
+        (value != '' && isValidHttpsUrl(value, 2048));
+    }
+
+    function isValidFirestoreDocumentId(value) {
+      return value is string &&
+        value.size() >= 1 &&
+        value.size() <= 1500 &&
+        value != '.' &&
+        value != '..' &&
+        !value.matches('.*[/].*') &&
+        !value.matches('^__.*__$');
+    }
+
+    function isValidChefGalleryItem(value) {
+      return value is map &&
+        value.keys().size() == 2 &&
+        value.keys().hasAll(['name', 'image_url']) &&
+        value.name is string &&
+        value.name.size() <= 240 &&
+        value.image_url != '' &&
+        isValidHttpsUrl(value.image_url, 2048);
+    }
+
+    // Firestore Rules has no list iteration, so the bounded gallery contract
+    // is deliberately unrolled through the product maximum. Six keeps deep
+    // item validation comfortably inside the Rules expression budget.
+    function isValidChefGallery(value) {
+      return value is list &&
+        value.size() <= 6 &&
+        (value.size() == 0 ||
+          (isValidChefGalleryItem(value[0]) &&
+            (value.size() == 1 ||
+              (isValidChefGalleryItem(value[1]) &&
+                (value.size() == 2 ||
+                  (isValidChefGalleryItem(value[2]) &&
+                    (value.size() == 3 ||
+                      (isValidChefGalleryItem(value[3]) &&
+                        (value.size() == 4 ||
+                          (isValidChefGalleryItem(value[4]) &&
+                            (value.size() == 5 ||
+                              isValidChefGalleryItem(value[5]))))))))))));
+    }
+
+    function isValidBoundedString(value, maxSize) {
+      return value is string && value.size() <= maxSize;
+    }
+
+    function isValidIdentityProfileStringList0To4(value, maxItemSize) {
+      return value.size() == 0 ||
+        (value[0] is string &&
+          value[0].size() <= maxItemSize &&
+          (value.size() == 1 ||
+            (value[1] is string &&
+              value[1].size() <= maxItemSize &&
+              (value.size() == 2 ||
+                (value[2] is string &&
+                  value[2].size() <= maxItemSize &&
+                  (value.size() == 3 ||
+                    (value[3] is string &&
+                      value[3].size() <= maxItemSize &&
+                      (value.size() == 4 ||
+                        (value[4] is string &&
+                          value[4].size() <= maxItemSize)))))))));
+    }
+
+    function isValidIdentityProfileStringList5To9(value, maxItemSize) {
+      return value[5] is string &&
+        value[5].size() <= maxItemSize &&
+        (value.size() == 6 ||
+          (value[6] is string &&
+            value[6].size() <= maxItemSize &&
+            (value.size() == 7 ||
+              (value[7] is string &&
+                value[7].size() <= maxItemSize &&
+                (value.size() == 8 ||
+                  (value[8] is string &&
+                    value[8].size() <= maxItemSize &&
+                    (value.size() == 9 ||
+                      (value[9] is string &&
+                        value[9].size() <= maxItemSize))))))));
+    }
+
+    function isValidIdentityProfileStringList10To14(value, maxItemSize) {
+      return value[10] is string &&
+        value[10].size() <= maxItemSize &&
+        (value.size() == 11 ||
+          (value[11] is string &&
+            value[11].size() <= maxItemSize &&
+            (value.size() == 12 ||
+              (value[12] is string &&
+                value[12].size() <= maxItemSize &&
+                (value.size() == 13 ||
+                  (value[13] is string &&
+                    value[13].size() <= maxItemSize &&
+                    (value.size() == 14 ||
+                      (value[14] is string &&
+                        value[14].size() <= maxItemSize))))))));
+    }
+
+    function isValidIdentityProfileStringList15To19(value, maxItemSize) {
+      return value[15] is string &&
+        value[15].size() <= maxItemSize &&
+        (value.size() == 16 ||
+          (value[16] is string &&
+            value[16].size() <= maxItemSize &&
+            (value.size() == 17 ||
+              (value[17] is string &&
+                value[17].size() <= maxItemSize &&
+                (value.size() == 18 ||
+                  (value[18] is string &&
+                    value[18].size() <= maxItemSize &&
+                    (value.size() == 19 ||
+                      (value[19] is string &&
+                        value[19].size() <= maxItemSize))))))));
+    }
+
+    // Agent and Chef evaluate several required lists in one request. Five-item
+    // chunks stop at the actual length; a 20-item list still validates every
+    // item against the same type and per-item length contract.
+    function isValidIdentityProfileStringList(value, maxItemSize) {
+      return value is list &&
+        value.size() <= 20 &&
+        isValidIdentityProfileStringList0To4(value, maxItemSize) &&
+        (value.size() <= 5 ||
+          (isValidIdentityProfileStringList5To9(value, maxItemSize) &&
+            (value.size() <= 10 ||
+              (isValidIdentityProfileStringList10To14(value, maxItemSize) &&
+                (value.size() <= 15 ||
+                  isValidIdentityProfileStringList15To19(
+                    value,
+                    maxItemSize
+                  ))))));
+    }
+
+    function isValidYearValue(value) {
+      return value == null ||
+        (value is string && value.matches('^[1-9][0-9]{3}$'));
+    }
+
+    function isValidExperienceMonth(value) {
+      return value in [
+        '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+    }
+
+    function isValidExperienceYear(value) {
+      return value is string &&
+        (value == '' || value.matches('^[1-9][0-9]{3}$'));
+    }
+
+    function isValidExperienceItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'role',
+          'from_month',
+          'from_year',
+          'to_month',
+          'to_year',
+          'ongoing',
+          'responsibilities',
+          'place_id',
+          'place_collection'
+        ]) &&
+        isValidBoundedString(value.role, 160) &&
+        isValidExperienceMonth(value.from_month) &&
+        isValidExperienceYear(value.from_year) &&
+        isValidExperienceMonth(value.to_month) &&
+        isValidExperienceYear(value.to_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.responsibilities, 4000) &&
+        isValidFirestoreDocumentId(value.place_id) &&
+        value.place_collection in ['', 'kitchens', 'companies'];
+    }
+
+    function isValidLanguageItem(value) {
+      return value is map &&
+        value.keys().hasOnly(['language', 'proficiency']) &&
+        value.language is string &&
+        value.language.size() >= 1 &&
+        value.language.size() <= 120 &&
+        isValidBoundedString(value.proficiency, 120);
+    }
+
+    function isValidCertificationItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'name',
+          'year',
+          'place_name',
+          'formatted_address',
+          'document_url',
+          'image_url'
+        ]) &&
+        isValidBoundedString(value.name, 240) &&
+        isValidYearValue(value.year) &&
+        isValidBoundedString(value.place_name, 240) &&
+        isValidBoundedString(value.formatted_address, 500) &&
+        isValidHttpsUrl(value.document_url, 2048) &&
+        isValidHttpsUrl(value.image_url, 2048);
+    }
+
+    function isValidEducationItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'institution',
+          'degree',
+          'start_year',
+          'end_year',
+          'ongoing',
+          'formatted_address',
+          'document_url',
+          'image_url'
+        ]) &&
+        isValidBoundedString(value.institution, 240) &&
+        isValidBoundedString(value.degree, 240) &&
+        isValidYearValue(value.start_year) &&
+        isValidYearValue(value.end_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.formatted_address, 500) &&
+        isValidHttpsUrl(value.document_url, 2048) &&
+        isValidHttpsUrl(value.image_url, 2048);
+    }
+
+    function isValidVolunteeringItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'organization',
+          'role',
+          'from_year',
+          'to_year',
+          'ongoing',
+          'responsibilities'
+        ]) &&
+        isValidBoundedString(value.organization, 240) &&
+        isValidBoundedString(value.role, 160) &&
+        isValidYearValue(value.from_year) &&
+        isValidYearValue(value.to_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.responsibilities, 4000);
+    }
+
+    function isValidProjectItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'name',
+          'role',
+          'from_year',
+          'to_year',
+          'ongoing',
+          'responsibilities'
+        ]) &&
+        isValidBoundedString(value.name, 240) &&
+        isValidBoundedString(value.role, 160) &&
+        isValidYearValue(value.from_year) &&
+        isValidYearValue(value.to_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.responsibilities, 4000);
+    }
+
+    // Evaluate only populated Professional slots. Besides avoiding impossible
+    // type branches, this makes the 24-item aggregate cap the expression-cost
+    // boundary instead of paying for every slot in every independently capped
+    // list. Each branch still validates every present item in order.
+    function isValidProfessionalStringList(value) {
+      return isValidIdentityProfileStringList(value, 240);
+    }
+
+    function isValidProfessionalExperienceChunk(value, start) {
+      return value.size() <= start ||
+        (isValidExperienceItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidExperienceItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidExperienceItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidExperienceItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalExperienceList(value) {
+      return value is list &&
+        value.size() <= 12 &&
+        isValidProfessionalExperienceChunk(value, 0) &&
+        (value.size() <= 4 ||
+          (isValidProfessionalExperienceChunk(value, 4) &&
+            (value.size() <= 8 ||
+              isValidProfessionalExperienceChunk(value, 8))));
+    }
+
+    function isValidProfessionalLanguageChunk(value, start) {
+      return value.size() <= start ||
+        (isValidLanguageItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidLanguageItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidLanguageItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidLanguageItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalLanguageList(value) {
+      return value is list &&
+        value.size() <= 12 &&
+        isValidProfessionalLanguageChunk(value, 0) &&
+        (value.size() <= 4 ||
+          (isValidProfessionalLanguageChunk(value, 4) &&
+            (value.size() <= 8 ||
+              isValidProfessionalLanguageChunk(value, 8))));
+    }
+
+    function isValidProfessionalCertificationChunk(value, start) {
+      return value.size() <= start ||
+        (isValidCertificationItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidCertificationItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidCertificationItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidCertificationItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalCertificationList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalCertificationChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalCertificationChunk(value, 4));
+    }
+
+    function isValidProfessionalEducationChunk(value, start) {
+      return value.size() <= start ||
+        (isValidEducationItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidEducationItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidEducationItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidEducationItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalEducationList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalEducationChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalEducationChunk(value, 4));
+    }
+
+    function isValidProfessionalVolunteeringChunk(value, start) {
+      return value.size() <= start ||
+        (isValidVolunteeringItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidVolunteeringItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidVolunteeringItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidVolunteeringItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalVolunteeringList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalVolunteeringChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalVolunteeringChunk(value, 4));
+    }
+
+    function isValidProfessionalProjectChunk(value, start) {
+      return value.size() <= start ||
+        (isValidProjectItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidProjectItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidProjectItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidProjectItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalProjectList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalProjectChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalProjectChunk(value, 4));
     }
 
     function validCreatedStamp(value) {
@@ -126,7 +532,7 @@ service cloud.firestore {
         );
     }
 
-    function isResourceTargetOperator() {
+    function isResourceTargetOperator(appId) {
       return isAppMember(appId) &&
         (
           (resource.data.operator_ids is list &&
@@ -174,8 +580,7 @@ service cloud.firestore {
           'updated'
         ]) &&
         validRequiredText(data, 'display_name', 1, 120) &&
-        data.avatar is string &&
-        data.avatar.size() <= 2048 &&
+        isValidUserAvatar(data.avatar) &&
         data.handle is string &&
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
         data.app_ids is list &&
@@ -199,6 +604,12 @@ service cloud.firestore {
         );
     }
 
+    function hasValidCanonicalUserProfile(userId, profileId) {
+      return hasValidCanonicalUser(userId) &&
+        get(/databases/$(database)/documents/users/$(userId))
+          .data.profiles.hasAny([profileId]);
+    }
+
     match /users/{userId} {
       allow get: if isOwner(userId) || isValidUser(resource.data);
       // Public directory listing is projected by /api/public/users.
@@ -215,7 +626,6 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'display_name',
           'avatar',
-          'profiles',
           'updated'
         ]) &&
         validOwnerUpdateStamp(request.resource.data, userId);
@@ -308,12 +718,13 @@ service cloud.firestore {
             data.read is bool;
         }
 
-        allow get, list: if isOwner(userId) &&
+        allow get: if isOwner(userId) &&
           isValidNotification(resource.data);
-        allow create: if isOwner(userId) &&
-          isValidNotification(request.resource.data) &&
-          request.resource.data.created.at == request.time &&
-          request.resource.data.read == false;
+        allow list: if isOwner(userId) &&
+          request.query.limit <= 50;
+        // Producers publish through trusted server pipelines; a browser may
+        // acknowledge or dismiss its own notification, but never mint one.
+        allow create: if false;
         allow update: if isOwner(userId) &&
           isValidNotification(request.resource.data) &&
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
@@ -322,7 +733,81 @@ service cloud.firestore {
     }
 
     // ===============================================================
-    // Public App identity; governance writes are server-owned
+    // Canonical Ecosystem bootstrap; public reads use server DTOs
+    // ===============================================================
+    function isValidEcosystem(data) {
+      return data.keys().hasAll([
+          'id',
+          'project_id',
+          'name',
+          'slug',
+          'description',
+          'image_url',
+          'website_url',
+          'status',
+          'created',
+          'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'id',
+          'project_id',
+          'name',
+          'slug',
+          'description',
+          'image_url',
+          'website_url',
+          'status',
+          'created',
+          'updated'
+        ]) &&
+        validRequiredText(data, 'id', 3, 80) &&
+        validRequiredText(data, 'project_id', 1, 120) &&
+        validRequiredText(data, 'name', 1, 120) &&
+        validRequiredText(data, 'slug', 3, 80) &&
+        validOptionalText(data, 'description', 1000) &&
+        validOptionalText(data, 'image_url', 2048) &&
+        validOptionalText(data, 'website_url', 2048) &&
+        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /ecosystems/{ecosystemId} {
+      allow get: if ecosystemId == 'misebox' && isBootstrapDeveloper();
+      allow list: if false;
+      allow create: if ecosystemId == 'misebox' &&
+        isBootstrapDeveloper() &&
+        isValidEcosystem(request.resource.data) &&
+        request.resource.data.id == ecosystemId &&
+        request.resource.data.project_id == 'misebox' &&
+        request.resource.data.slug == ecosystemId &&
+        request.resource.data.created.by == 'misebox-app' &&
+        request.resource.data.created.app_id == 'misebox-app' &&
+        request.resource.data.created.at == request.time &&
+        request.resource.data.updated.by == 'misebox-app' &&
+        request.resource.data.updated.at == request.time;
+      allow update: if ecosystemId == 'misebox' &&
+        isBootstrapDeveloper() &&
+        isValidEcosystem(request.resource.data) &&
+        request.resource.data.id == resource.data.id &&
+        request.resource.data.project_id == resource.data.project_id &&
+        request.resource.data.slug == resource.data.slug &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name',
+          'description',
+          'image_url',
+          'website_url',
+          'status',
+          'updated'
+        ]) &&
+        request.resource.data.updated.by == 'misebox-app' &&
+        request.resource.data.updated.at == request.time;
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Canonical App identity; public reads use server DTOs
     // ===============================================================
     function isValidAppSocialLinks(value) {
       return value is map &&
@@ -364,20 +849,36 @@ service cloud.firestore {
 
     function isValidFireuxRepo(value) {
       return value is map &&
-        value.keys().hasOnly([
-          'provider',
-          'owner',
-          'repository',
-          'default_branch',
-          'visibility',
-          'url'
+        value.keys().hasAll([
+          'key',
+          'workspace',
+          'launch_order',
+          'console_families',
+          'database_id'
         ]) &&
-        validOptionalText(value, 'provider', 40) &&
-        validOptionalText(value, 'owner', 120) &&
-        validOptionalText(value, 'repository', 160) &&
-        validOptionalText(value, 'default_branch', 160) &&
-        validOptionalText(value, 'visibility', 40) &&
-        validOptionalText(value, 'url', 2048);
+        value.keys().hasOnly([
+          'key',
+          'workspace',
+          'launch_order',
+          'console_families',
+          'database_id'
+        ]) &&
+        validRequiredText(value, 'key', 1, 120) &&
+        validRequiredText(value, 'workspace', 1, 500) &&
+        value.launch_order is int &&
+        value.launch_order >= 0 &&
+        value.launch_order <= 100000 &&
+        value.console_families is list &&
+        value.console_families.size() <= 20 &&
+        value.console_families.hasOnly([
+          'blank',
+          'kitchen',
+          'portfolio',
+          'project',
+          'property',
+          'supplier'
+        ]) &&
+        validRequiredText(value, 'database_id', 1, 120);
     }
 
     function isValidApp(data) {
@@ -450,65 +951,40 @@ service cloud.firestore {
         validUpdatedStamp(data.updated);
     }
 
-    function isPublicAppSafe(data) {
-      return data is map &&
-        data.keys().hasAll([
-          'project_id',
-          'database_id',
-          'slug',
-          'status',
-          'app_name',
-          'app_short_name',
-          'role',
-          'self_join_enabled',
-          'derived',
-          'created',
-          'updated'
-        ]) &&
-        data.keys().hasOnly([
-          'project_id',
-          'ecosystem_id',
-          'database_id',
-          'slug',
-          'status',
-          'app_name',
-          'app_short_name',
-          'role',
-          'tagline',
-          'description',
-          'short_bio',
-          'long_bio',
-          'social_links',
-          'derived',
-          'media',
-          'fireux_native',
-          'fireux_size',
-          'fireux_repo',
-          'self_join_enabled',
-          'moderation_state',
-          'ban_reasons',
-          'created',
-          'updated'
-        ]) &&
-        data.self_join_enabled is bool &&
-        (!('moderation_state' in data) || data.moderation_state == '') &&
-        (!('ban_reasons' in data) ||
-          (data.ban_reasons is list && data.ban_reasons.size() == 0));
+    function isValidAppAdminUpdate(data) {
+      return validRequiredText(data, 'app_name', 1, 60) &&
+        validRequiredText(data, 'app_short_name', 1, 40) &&
+        validOptionalText(data, 'tagline', 120) &&
+        validOptionalText(data, 'description', 500) &&
+        validOptionalText(data, 'short_bio', 240) &&
+        validOptionalText(data, 'long_bio', 4000) &&
+        (!('social_links' in data) || isValidAppSocialLinks(data.social_links)) &&
+        (!('media' in data) || isValidAppMedia(data.media));
     }
 
     match /apps/{appId} {
-      allow get: if isPublicAppSafe(resource.data);
-      // Public App listing is projected by /api/public/apps.
+      // Guests use /api/public/apps and /api/public/apps/:id. Raw canonical
+      // data is available inside the App; bootstrap access is exact, not broad.
+      allow get: if isAppMember(appId) ||
+        (appId == 'misebox-app' && isBootstrapDeveloper());
       allow list: if false;
-      allow create: if isAuthenticated() &&
-        request.auth.uid == 'yZ1nY4RtxnMnJwcVZnaMBigqM1A2' &&
+      allow create: if isBootstrapDeveloper() &&
         appId == 'misebox-app' &&
         isValidApp(request.resource.data) &&
+        request.resource.data.project_id == 'misebox' &&
+        request.resource.data.ecosystem_id == 'misebox' &&
+        request.resource.data.database_id == 'misebox' &&
+        request.resource.data.slug == appId &&
+        request.resource.data.status == 'active' &&
+        request.resource.data.role == 'global' &&
+        request.resource.data.self_join_enabled == true &&
         request.resource.data.derived.user_count == 0 &&
+        request.resource.data.created.by == request.auth.uid &&
         request.resource.data.created.at == request.time &&
+        request.resource.data.updated.by == request.auth.uid &&
         request.resource.data.updated.at == request.time;
       allow update: if isAppAdmin(appId) &&
-        isValidApp(request.resource.data) &&
+        isValidAppAdminUpdate(request.resource.data) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'app_name',
           'app_short_name',
@@ -668,15 +1144,9 @@ service cloud.firestore {
         allow get: if (isOwner(userId) && isAppMember(appId)) ||
           (isAppAdmin(appId) && isValidCustomer(resource.data));
         allow list: if isAppAdmin(appId);
-        allow create: if isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidCustomer(request.resource.data) &&
-          (!('private' in request.resource.data) ||
-            (request.resource.data.private.saved_addresses.size() == 0 &&
-              request.resource.data.private.order_history.size() == 0)) &&
-          request.resource.data.created.by == userId &&
-          request.resource.data.created.at == request.time &&
-          validOwnerUpdateStamp(request.resource.data, userId);
+        // Trusted profile provisioning creates the record and updates
+        // UserApp.profiles in one server transaction.
+        allow create: if false;
         allow update: if isOwner(userId) &&
           isAppMember(appId) &&
           isValidCustomer(request.resource.data) &&
@@ -713,16 +1183,9 @@ service cloud.firestore {
         allow get: if (isOwner(userId) && isAppMember(appId)) ||
           (isAppAdmin(appId) && isValidAppDriver(resource.data));
         allow list: if isAppAdmin(appId);
-        allow create: if isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidAppDriver(request.resource.data) &&
-          (!('active_kitchen_ids' in request.resource.data) ||
-            request.resource.data.active_kitchen_ids.size() == 0) &&
-          (!('kitchen_links' in request.resource.data) ||
-            request.resource.data.kitchen_links.size() == 0) &&
-          request.resource.data.created.by == userId &&
-          request.resource.data.created.at == request.time &&
-          validOwnerUpdateStamp(request.resource.data, userId);
+        // Trusted profile provisioning creates the record and updates
+        // UserApp.profiles in one server transaction.
+        allow create: if false;
         allow update: if isOwner(userId) &&
           isAppMember(appId) &&
           isValidAppDriver(request.resource.data) &&
@@ -760,13 +1223,9 @@ service cloud.firestore {
             (isAppAdmin(appId) && isValidProfileOverlay(resource.data)));
         allow list: if isIdentityProfileOverlay() &&
           isAppAdmin(appId);
-        allow create: if isIdentityProfileOverlay() &&
-          isOwner(userId) &&
-          isAppMember(appId) &&
-          isValidProfileOverlay(request.resource.data) &&
-          request.resource.data.created.by == userId &&
-          request.resource.data.created.at == request.time &&
-          validOwnerUpdateStamp(request.resource.data, userId);
+        // Trusted profile provisioning creates the record and updates
+        // UserApp.profiles in one server transaction.
+        allow create: if false;
         allow update: if isIdentityProfileOverlay() &&
           isOwner(userId) &&
           isAppMember(appId) &&
@@ -797,7 +1256,7 @@ service cloud.firestore {
 
         allow get: if isAppAdmin(appId) ||
           isTargetOperator(appId, 'kitchens', kitchenId);
-        allow list: if isAppAdmin(appId) || isResourceTargetOperator();
+        allow list: if isAppAdmin(appId) || isResourceTargetOperator(appId);
         allow create: if isAppAdmin(appId) &&
           request.resource.data.keys().size() <= 100 &&
           hasBoundedKitchenAuthority();
@@ -860,7 +1319,7 @@ service cloud.firestore {
           (isAppAdmin(appId) ||
             isTargetOperator(appId, targetCollection, targetId));
         allow list: if isConsoleTargetCollection() &&
-          (isAppAdmin(appId) || isResourceTargetOperator());
+          (isAppAdmin(appId) || isResourceTargetOperator(appId));
         allow create: if isConsoleTargetCollection() &&
           isAppAdmin(appId) &&
           request.resource.data.keys().size() <= 100 &&
@@ -889,7 +1348,7 @@ service cloud.firestore {
     // ===============================================================
     // Public Driver capability
     // ===============================================================
-    function isValidPublicDriver(data, userId) {
+    function isValidPublicDriver(data) {
       return data.keys().hasAll([
           'title',
           'subtitle',
@@ -933,19 +1392,15 @@ service cloud.firestore {
 
     match /drivers/{userId} {
       allow get: if isOwner(userId) ||
-        (isValidPublicDriver(resource.data, userId) &&
-          hasValidCanonicalUser(userId));
+        (isValidPublicDriver(resource.data) &&
+          hasValidCanonicalUserProfile(userId, 'driver'));
       // Public Driver listing is projected by /api/public/drivers.
       allow list: if false;
-      allow create: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidPublicDriver(request.resource.data, userId) &&
-        request.resource.data.created.by == userId &&
-        request.resource.data.created.at == request.time &&
-        validOwnerUpdateStamp(request.resource.data, userId);
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
       allow update: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidPublicDriver(request.resource.data, userId) &&
+        isValidPublicDriver(request.resource.data) &&
         request.resource.data.created == resource.data.created &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'title',
@@ -955,7 +1410,8 @@ service cloud.firestore {
           'coverage',
           'updated'
         ]) &&
-        validOwnerUpdateStamp(request.resource.data, userId);
+        request.resource.data.updated.at == request.time &&
+        request.resource.data.updated.by == userId;
       allow delete: if false;
     }
 
@@ -973,50 +1429,42 @@ service cloud.firestore {
     }
 
     function validProfileOwnerWrite(data, userId) {
-      return validPublicProfileStamp(data) &&
-        validOwnerUpdateStamp(data, userId);
+      // The family validator already validates the full stamp shape. Keep this
+      // helper to the request-time owner transition so the schema is not
+      // evaluated repeatedly in the same Rules request.
+      return data.updated.at == request.time &&
+        data.updated.by == userId;
     }
 
-    function isValidChef(data, userId) {
-      return data.keys().hasAll(['created', 'updated']) &&
-        data.keys().hasOnly([
+    function isValidChef(data) {
+      return data.keys().size() == 10 &&
+        data.keys().hasAll([
           'title',
           'summary',
           'chef_bio',
           'chef_image',
           'chef_signature_dishes',
+          'chef_gallery',
           'kitchen_ids',
           'chef_organization_name',
-          'subtitle',
-          'tagline',
-          'tags',
-          'bio_long',
-          'specialties',
-          'locations',
-          'organization_name',
           'created',
           'updated'
         ]) &&
-        validOptionalText(data, 'title', 120) &&
-        validOptionalText(data, 'summary', 1000) &&
-        validOptionalText(data, 'chef_bio', 4000) &&
-        validOptionalText(data, 'chef_image', 2048) &&
-        validOptionalText(data, 'chef_organization_name', 160) &&
-        validOptionalText(data, 'subtitle', 240) &&
-        validOptionalText(data, 'tagline', 240) &&
-        validOptionalText(data, 'bio_long', 4000) &&
-        validOptionalText(data, 'organization_name', 160) &&
-        validOptionalList(data, 'chef_signature_dishes', 20) &&
-        validOptionalList(data, 'kitchen_ids', 50) &&
-        validOptionalList(data, 'tags', 20) &&
-        validOptionalList(data, 'specialties', 20) &&
-        validOptionalList(data, 'locations', 30) &&
-        validPublicProfileStamp(data);
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.chef_bio, 4000) &&
+        isValidHttpsUrl(data.chef_image, 2048) &&
+        isValidBoundedString(data.chef_organization_name, 160) &&
+        isValidIdentityProfileStringList(data.chef_signature_dishes, 240) &&
+        isValidChefGallery(data.chef_gallery) &&
+        isValidIdentityProfileStringList(data.kitchen_ids, 1500) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
     }
 
-    function isValidAgent(data, userId) {
-      return data.keys().hasAll(['created', 'updated']) &&
-        data.keys().hasOnly([
+    function isValidAgent(data) {
+      return data.keys().size() == 14 &&
+        data.keys().hasAll([
           'title',
           'summary',
           'agent_bio',
@@ -1029,32 +1477,27 @@ service cloud.firestore {
           'subtitle',
           'tagline',
           'tags',
-          'contact_email',
-          'contact_phone',
-          'website_url',
           'created',
           'updated'
         ]) &&
-        validOptionalText(data, 'title', 120) &&
-        validOptionalText(data, 'summary', 1000) &&
-        validOptionalText(data, 'agent_bio', 4000) &&
-        validOptionalText(data, 'agent_image', 2048) &&
-        validOptionalText(data, 'agent_contact_email', 320) &&
-        validOptionalText(data, 'agent_contact_phone', 40) &&
-        validOptionalText(data, 'agent_website_url', 2048) &&
-        validOptionalText(data, 'subtitle', 240) &&
-        validOptionalText(data, 'tagline', 240) &&
-        validOptionalText(data, 'contact_email', 320) &&
-        validOptionalText(data, 'contact_phone', 40) &&
-        validOptionalText(data, 'website_url', 2048) &&
-        validOptionalList(data, 'agent_placement_types', 30) &&
-        validOptionalList(data, 'agent_coverage_areas', 50) &&
-        validOptionalList(data, 'tags', 20) &&
-        validPublicProfileStamp(data);
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.agent_bio, 4000) &&
+        isValidHttpsUrl(data.agent_image, 2048) &&
+        isValidBoundedString(data.agent_contact_email, 320) &&
+        isValidBoundedString(data.agent_contact_phone, 40) &&
+        isValidHttpsUrl(data.agent_website_url, 2048) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidIdentityProfileStringList(data.agent_placement_types, 240) &&
+        isValidIdentityProfileStringList(data.agent_coverage_areas, 240) &&
+        isValidIdentityProfileStringList(data.tags, 240) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
     }
 
-    function isValidProfessional(data, userId) {
-      return data.keys().hasAll(['created', 'updated']) &&
+    function isValidProfessional(data) {
+      return data.keys().size() == 17 &&
         data.keys().hasOnly([
           'title',
           'subtitle',
@@ -1074,76 +1517,158 @@ service cloud.firestore {
           'created',
           'updated'
         ]) &&
-        validOptionalText(data, 'title', 120) &&
-        validOptionalText(data, 'subtitle', 240) &&
-        validOptionalText(data, 'tagline', 240) &&
-        validOptionalText(data, 'summary', 1000) &&
-        validOptionalText(data, 'bio', 4000) &&
-        validOptionalText(data, 'image', 2048) &&
-        validOptionalList(data, 'positions', 30) &&
-        validOptionalList(data, 'tags', 20) &&
-        validOptionalList(data, 'relevant_experience', 50) &&
-        validOptionalList(data, 'other_experience', 50) &&
-        validOptionalList(data, 'languages', 30) &&
-        validOptionalList(data, 'certifications', 30) &&
-        validOptionalList(data, 'education', 30) &&
-        validOptionalList(data, 'volunteering', 30) &&
-        validOptionalList(data, 'projects', 30) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.bio, 4000) &&
+        isValidHttpsUrl(data.image, 2048) &&
+        data.positions is list &&
+        data.positions.size() <= 20 &&
+        data.tags is list &&
+        data.tags.size() <= 20 &&
+        data.relevant_experience is list &&
+        data.relevant_experience.size() <= 12 &&
+        data.other_experience is list &&
+        data.other_experience.size() <= 12 &&
+        data.languages is list &&
+        data.languages.size() <= 12 &&
+        data.certifications is list &&
+        data.certifications.size() <= 8 &&
+        data.education is list &&
+        data.education.size() <= 8 &&
+        data.volunteering is list &&
+        data.volunteering.size() <= 8 &&
+        data.projects is list &&
+        data.projects.size() <= 8 &&
+        data.relevant_experience.size() +
+          data.other_experience.size() +
+          data.languages.size() +
+          data.certifications.size() +
+          data.education.size() +
+          data.volunteering.size() +
+          data.projects.size() <= 24 &&
         validPublicProfileStamp(data);
     }
 
+    function changesAtMostOneProfessionalStructuredFamily(changed) {
+      return (!changed.hasAny(['relevant_experience']) ||
+          !changed.hasAny([
+            'other_experience',
+            'languages',
+            'certifications',
+            'education',
+            'volunteering',
+            'projects'
+          ])) &&
+        (!changed.hasAny(['other_experience']) ||
+          !changed.hasAny([
+            'languages',
+            'certifications',
+            'education',
+            'volunteering',
+            'projects'
+          ])) &&
+        (!changed.hasAny(['languages']) ||
+          !changed.hasAny([
+            'certifications',
+            'education',
+            'volunteering',
+            'projects'
+          ])) &&
+        (!changed.hasAny(['certifications']) ||
+          !changed.hasAny(['education', 'volunteering', 'projects'])) &&
+        (!changed.hasAny(['education']) ||
+          !changed.hasAny(['volunteering', 'projects'])) &&
+        (!changed.hasAny(['volunteering']) ||
+          !changed.hasAny(['projects']));
+    }
+
+    function isValidChangedProfessionalLists(data, changed) {
+      return (!changed.hasAny(['positions']) ||
+          isValidProfessionalStringList(data.positions)) &&
+        (!changed.hasAny(['tags']) ||
+          isValidProfessionalStringList(data.tags)) &&
+        (!changed.hasAny(['relevant_experience']) ||
+          isValidProfessionalExperienceList(data.relevant_experience)) &&
+        (!changed.hasAny(['other_experience']) ||
+          isValidProfessionalExperienceList(data.other_experience)) &&
+        (!changed.hasAny(['languages']) ||
+          isValidProfessionalLanguageList(data.languages)) &&
+        (!changed.hasAny(['certifications']) ||
+          isValidProfessionalCertificationList(data.certifications)) &&
+        (!changed.hasAny(['education']) ||
+          isValidProfessionalEducationList(data.education)) &&
+        (!changed.hasAny(['volunteering']) ||
+          isValidProfessionalVolunteeringList(data.volunteering)) &&
+        (!changed.hasAny(['projects']) ||
+          isValidProfessionalProjectList(data.projects));
+    }
+
+    function isValidProfessionalOwnerUpdate(data, userId) {
+      let changed = data.diff(resource.data).affectedKeys();
+      return isValidProfessional(data) &&
+        data.created == resource.data.created &&
+        changed.hasOnly([
+          'title',
+          'subtitle',
+          'tagline',
+          'summary',
+          'bio',
+          'image',
+          'positions',
+          'tags',
+          'relevant_experience',
+          'other_experience',
+          'languages',
+          'certifications',
+          'education',
+          'volunteering',
+          'projects',
+          'updated'
+        ]) &&
+        changesAtMostOneProfessionalStructuredFamily(changed) &&
+        isValidChangedProfessionalLists(data, changed) &&
+        validProfileOwnerWrite(data, userId);
+    }
+
     match /chefs/{userId} {
-      allow get: if isOwner(userId) ||
-        (isValidChef(resource.data, userId) && hasValidCanonicalUser(userId));
-      // Public Chef listing is projected by /api/public/chefs.
+      // Public Chef list/detail reads use /api/public/chefs projections.
+      allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidChef(request.resource.data, userId) &&
-        request.resource.data.created.at == request.time &&
-        validProfileOwnerWrite(request.resource.data, userId);
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
       allow update: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidChef(request.resource.data, userId) &&
+        isValidChef(request.resource.data) &&
         request.resource.data.created == resource.data.created &&
         validProfileOwnerWrite(request.resource.data, userId);
       allow delete: if false;
     }
 
     match /agents/{userId} {
-      allow get: if isOwner(userId) ||
-        (isValidAgent(resource.data, userId) && hasValidCanonicalUser(userId));
-      // Public Agent listing is projected by /api/public/agents.
+      // Public Agent list/detail reads use /api/public/agents projections.
+      allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidAgent(request.resource.data, userId) &&
-        request.resource.data.created.at == request.time &&
-        validProfileOwnerWrite(request.resource.data, userId);
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
       allow update: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidAgent(request.resource.data, userId) &&
+        isValidAgent(request.resource.data) &&
         request.resource.data.created == resource.data.created &&
         validProfileOwnerWrite(request.resource.data, userId);
       allow delete: if false;
     }
 
     match /professionals/{userId} {
-      allow get: if isOwner(userId) ||
-        (isValidProfessional(resource.data, userId) &&
-          hasValidCanonicalUser(userId));
-      // Public Professional listing is projected by /api/public/professionals.
+      // Public Professional list/detail reads use API projections.
+      allow get: if isOwner(userId);
       allow list: if false;
-      allow create: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidProfessional(request.resource.data, userId) &&
-        request.resource.data.created.at == request.time &&
-        validProfileOwnerWrite(request.resource.data, userId);
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
       allow update: if isOwner(userId) &&
-        hasValidCanonicalUser(userId) &&
-        isValidProfessional(request.resource.data, userId) &&
-        request.resource.data.created == resource.data.created &&
-        validProfileOwnerWrite(request.resource.data, userId);
+        isValidProfessionalOwnerUpdate(request.resource.data, userId);
       allow delete: if false;
     }
 

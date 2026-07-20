@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
   <UDashboardPanel id="console-portfolio-home">
     <template #header>
@@ -15,18 +16,19 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
+  visibility: { modules: ['fireux-properties'] },
   nav: {
-    visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio',
     label: 'Portfolio',
     icon: 'i-lucide-layout-dashboard',
     position: 'bottom',
-    requiresSelection: false,
     order: 900,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: false,
 })
 </script>

@@ -1,11 +1,20 @@
+// Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: fail closed when hydrating App member avatars.
 import { useNuxtApp } from '#imports'
-import { computed, isRef, onScopeDispose, shallowRef, watch, type Ref } from 'vue'
+import {
+  computed,
+  isRef,
+  onScopeDispose,
+  shallowRef,
+  watch,
+  type Ref,
+} from 'vue'
 import {
   UserAppStorage,
   UserStorage,
   type UserApp,
   type User,
 } from '../../../../../../models/core/user.model'
+import { resolveUserAvatarSource } from '../../../../../../models/core/supporting/user-avatar'
 import { AppStorage } from '../../../../../../models/core/app.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
@@ -54,9 +63,8 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
       ? `${AppStorage.collection}/${resolvedAppId.value}/${UserAppStorage.collection}`
       : ''
   )
-  const membershipSource = appRead.firestoreFetchCollection<UserApp>(
-    membershipPath
-  )
+  const membershipSource =
+    appRead.firestoreFetchCollection<UserApp>(membershipPath)
 
   const memberships = computed<UserApp[]>(() => membershipSource.value ?? [])
   const membershipIds = computed(() =>
@@ -86,20 +94,18 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
 
     for (const id of ids) {
       const existing = current.get(id)
-      const source = existing ?? nuxtApp.runWithContext(() =>
-        identityRead.firestoreFetchDoc<User>(UserStorage.rootCollection, id)
-      )
+      const source =
+        existing ??
+        nuxtApp.runWithContext(() =>
+          identityRead.firestoreFetchDoc<User>(UserStorage.rootCollection, id)
+        )
       next.set(id, source)
     }
 
     userCache.value = next
   }
 
-  watch(
-    membershipIds,
-    reconcileUserCache,
-    { immediate: true, flush: 'sync' }
-  )
+  watch(membershipIds, reconcileUserCache, { immediate: true, flush: 'sync' })
 
   onScopeDispose(() => {
     for (const source of userCache.value.values()) stopUserRead(source)
@@ -124,7 +130,7 @@ export function useAppUserCollection(appId?: AppUserCollectionAppId) {
       enriched.push({
         id: recordId,
         display_name: record.display_name ?? recordId,
-        avatar: record.avatar ?? '',
+        avatar: resolveUserAvatarSource(record.avatar),
         handle: record.handle,
         profiles: [...(record.profiles ?? [])],
         appUser: member,

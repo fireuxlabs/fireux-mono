@@ -1,3 +1,5 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
+<!-- Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: gate task controls with Portfolio write authority. -->
 <template>
   <UDashboardPanel id="console-portfolio-tasks">
     <template #header>
@@ -35,7 +37,7 @@
           </div>
         </UCard>
 
-        <UCard v-if="!isDemo">
+        <UCard v-if="canWrite">
           <template #header>
             <div class="text-sm font-semibold">Create task</div>
           </template>
@@ -43,17 +45,17 @@
           <div class="grid gap-3 sm:grid-cols-2">
             <UInput
               v-model="newTaskTitle"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Task title"
             />
             <UInput
               v-model="newTaskDueDate"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Due date (YYYY-MM-DD)"
             />
             <UInput
               v-model="newTaskDescription"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Description"
               class="sm:col-span-2"
             />
@@ -63,7 +65,7 @@
             <UButton
               size="sm"
               icon="i-lucide-plus"
-              :disabled="isDemo || !newTaskTitle.trim() || createBusy"
+              :disabled="!canWrite || !newTaskTitle.trim() || createBusy"
               :loading="createBusy"
               @click="createManualTask"
             >
@@ -94,25 +96,25 @@
                     {{ item.status }}
                   </UBadge>
 
-                  <div v-if="!isDemo" class="flex gap-1">
+                  <div v-if="canWrite" class="flex gap-1">
                     <UButton
                       size="xs"
                       variant="ghost"
-                      :disabled="isDemo"
+                      :disabled="!canWrite"
                       @click="setStatus(item.id, 'open')"
                       >Open</UButton
                     >
                     <UButton
                       size="xs"
                       variant="ghost"
-                      :disabled="isDemo"
+                      :disabled="!canWrite"
                       @click="setStatus(item.id, 'in_progress')"
                       >In progress</UButton
                     >
                     <UButton
                       size="xs"
                       variant="ghost"
-                      :disabled="isDemo"
+                      :disabled="!canWrite"
                       @click="setStatus(item.id, 'done')"
                       >Done</UButton
                     >
@@ -149,24 +151,26 @@ import { TaskStorage, type Task } from '../../../models/task.model'
 
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
+  visibility: { modules: ['fireux-tasks'] },
   nav: {
-    visibility: { modules: ['fireux-tasks'] },
     key: 'console-portfolio-tasks',
     label: 'Tasks',
     icon: 'i-lucide-list-checks',
     position: 'top',
-    requiresSelection: true,
     order: 50,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: true,
 })
 
 const runtimePortfolio = useActivePortfolio()
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
+const canWrite = computed(() => runtimePortfolio.canWrite.value)
 const tasksPath = usePortfolioConsoleChildPath(
   runtimePortfolio,
   TaskStorage.collection
@@ -211,7 +215,7 @@ const statusColor = (status: Task['status']) => {
 }
 
 const createManualTask = async () => {
-  if (isDemo.value) return
+  if (!canWrite.value) return
 
   createBusy.value = true
   try {
@@ -234,7 +238,7 @@ const createManualTask = async () => {
 }
 
 const setStatus = async (taskId: string, status: Task['status']) => {
-  if (isDemo.value) return
+  if (!canWrite.value) return
   await updateTask(taskId, { status })
 }
 </script>

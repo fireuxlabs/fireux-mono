@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
   <UDashboardPanel id="console-portfolio-finance">
     <template #header>
@@ -20,20 +21,20 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  visibility: { modules: ['fireux-properties'] },
   nav: {
-    visibility: { modules: ['fireux-properties'] },
     key: 'console-portfolio-finance',
     label: 'Financial Signals',
     icon: 'i-lucide-chart-line',
     position: 'top',
     hidden: true,
     parked: true,
-    requiresSelection: true,
     order: 25,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: true,
 })
 </script>

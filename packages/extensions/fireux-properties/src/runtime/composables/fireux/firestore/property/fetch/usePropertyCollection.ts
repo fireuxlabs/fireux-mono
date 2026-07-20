@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Property consoles.
 import {
   collection,
   query as fsq,
@@ -69,25 +70,10 @@ export function usePropertyCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
-  const rootCollectionPath = computed(() => {
-    if (sourceMode.value === 'demo') return ''
-    return sourceMode.value === 'test'
-      ? TEST_COLLECTION_PATH
-      : DEFAULT_COLLECTION_PATH
-  })
-
   const resolvedFilter = computed<PropertyCollectionFilter | undefined>(() => {
     if (isRef(options.filter)) return options.filter.value ?? undefined
     return options.filter ?? undefined
   })
-  const resolvedShape = computed<PropertyCollectionShape>(() => {
-    const explicitShape = isRef(options.shape)
-      ? options.shape.value
-      : options.shape
-    if (explicitShape) return explicitShape
-    return hasOperatorFilter.value ? 'both' : 'root'
-  })
-  const resolvedAppId = computed(() => normalizeString(appId))
   const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
   const filterOperatorId = computed(() =>
     normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
@@ -104,6 +90,30 @@ export function usePropertyCollection(
           .filter(Boolean)
       )
   )
+  const resolvedShape = computed<PropertyCollectionShape>(() => {
+    const explicitShape = isRef(options.shape)
+      ? options.shape.value
+      : options.shape
+    if (explicitShape) return explicitShape
+    return hasOperatorFilter.value ? 'both' : 'root'
+  })
+  const usesTargetedRootRead = computed(
+    () => hasFilter.value || (
+      resolvedShape.value === 'both' && hasOperatorFilter.value
+    )
+  )
+  const rootCollectionPath = computed(() => {
+    if (sourceMode.value === 'demo') return ''
+    if (sourceMode.value === 'test') return TEST_COLLECTION_PATH
+    if (resolvedShape.value === 'overlay' || usesTargetedRootRead.value) return ''
+    return DEFAULT_COLLECTION_PATH
+  })
+  const liveDocumentCollectionPath = computed(() =>
+    sourceMode.value === 'live' && usesTargetedRootRead.value
+      ? DEFAULT_COLLECTION_PATH
+      : ''
+  )
+  const resolvedAppId = computed(() => normalizeString(appId))
 
   const rootSource = firestoreFetchCollection<PropertyCollectionDoc>(
     rootCollectionPath
@@ -179,18 +189,24 @@ export function usePropertyCollection(
       .map((property) => resolvePropertyId(property))
       .filter(Boolean)
   )
+  const targetedPropertyIds = computed(() => {
+    const ids = resolvedShape.value === 'both' && hasOperatorFilter.value
+      ? allowedPropertyIds.value
+      : [...filterIdSet.value]
+
+    return hasFilter.value
+      ? ids.filter((id) => filterIdSet.value.has(id))
+      : ids
+  })
   const liveRootDocs = firestoreLoadDocsByIds<PropertyCollectionDoc>({
-    collectionPath: computed(() =>
-      sourceMode.value === 'live' ? DEFAULT_COLLECTION_PATH : ''
-    ),
-    ids: allowedPropertyIds,
+    collectionPath: liveDocumentCollectionPath,
+    ids: targetedPropertyIds,
   })
   const targetItems = computed<PropertyCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return []
     if (sourceMode.value === 'test') return rootSource.value ?? []
-    if (resolvedShape.value === 'root') return rootSource.value ?? []
     if (resolvedShape.value === 'overlay') return overlaySource.value ?? []
-    if (!hasOperatorFilter.value) return rootSource.value ?? []
+    if (!usesTargetedRootRead.value) return rootSource.value ?? []
 
     const rootById = new Map<string, PropertyCollectionDoc>()
     const overlayById = new Map<string, AppPropertyOverlay>()
@@ -267,34 +283,34 @@ export function usePropertyCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return rootSource.pending.value
-    if (resolvedShape.value === 'root') return rootSource.pending.value
     if (resolvedShape.value === 'overlay') {
       return (
         overlayOperatorSource.pending.value ||
         (hasOperatorFilter.value && overlayTeamSource.pending.value)
       )
     }
-    if (!hasOperatorFilter.value) return rootSource.pending.value
-    if (!filterOperatorId.value) return false
+    if (!usesTargetedRootRead.value) return rootSource.pending.value
+    if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
       liveRootDocs.pending.value ||
-      overlayOperatorSource.pending.value ||
-      overlayTeamSource.pending.value
+      (resolvedShape.value === 'both' && hasOperatorFilter.value && (
+        overlayOperatorSource.pending.value ||
+        overlayTeamSource.pending.value
+      ))
     )
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
     if (sourceMode.value === 'test') return rootSource.error.value
-    if (resolvedShape.value === 'root') return rootSource.error.value
     if (resolvedShape.value === 'overlay') {
       return overlayOperatorSource.error.value ??
         (hasOperatorFilter.value ? overlayTeamSource.error.value : undefined)
     }
-    if (!hasOperatorFilter.value) return rootSource.error.value
-    if (!filterOperatorId.value) return undefined
-    return overlayOperatorSource.error.value ??
-      overlayTeamSource.error.value ??
-      liveRootDocs.error.value
+    if (!usesTargetedRootRead.value) return rootSource.error.value
+    if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
+    return (resolvedShape.value === 'both' && hasOperatorFilter.value
+      ? overlayOperatorSource.error.value ?? overlayTeamSource.error.value
+      : undefined) ?? liveRootDocs.error.value
   })
   const { outcome } = useFirestoreCollectionState({
     count,

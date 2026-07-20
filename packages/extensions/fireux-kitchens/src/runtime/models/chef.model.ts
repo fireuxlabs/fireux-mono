@@ -1,4 +1,5 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/chef.model.ts
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: own exact storage, provision, and public detail/directory shapes.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
@@ -35,6 +36,14 @@ export const AppChefStorage = {
   idParam: 'userId',
 } as const
 
+export type ChefGalleryItem = {
+  name: string
+  image_url: string
+}
+
+/** Product cap mirrored by the authoritative Firestore Rules validator. */
+export const CHEF_GALLERY_MAX_ITEMS = 6
+
 export const ChefModel = {
   id: '' as string,
 
@@ -46,19 +55,11 @@ export const ChefModel = {
 
   // Chef descriptors (scoped)
   chef_signature_dishes: [] as string[],
+  chef_gallery: [] as ChefGalleryItem[],
   kitchen_ids: [] as string[],
 
   // Optional org label (scoped)
   chef_organization_name: '' as string,
-
-  // Deprecated fields retained temporarily for migration compatibility.
-  subtitle: '' as string,
-  tagline: '' as string,
-  tags: [] as string[],
-  bio_long: '' as string,
-  specialties: [] as string[],
-  locations: [] as string[],
-  organization_name: '' as string,
 
   // Stamps
   created: {
@@ -75,6 +76,15 @@ export type Chef = {
   [K in keyof typeof ChefModel]: (typeof ChefModel)[K]
 }
 
+export type PublicChefProfile = Omit<Chef, 'created' | 'updated'>
+export type PublicChefProfilePayload = Omit<PublicChefProfile, 'id'>
+export type PublicChefDirectoryProfilePayload = Pick<
+  PublicChefProfilePayload,
+  'title' | 'summary' | 'chef_bio' | 'chef_image'
+>
+export type PublicChefDirectoryProfile = PublicChefDirectoryProfilePayload &
+  Pick<PublicChefProfile, 'id'>
+
 export const AppChefModel = {
   id: '' as string,
 
@@ -86,3 +96,16 @@ export type AppChef = AppProfileBase
 
 export type ChefCreateInput = Omit<Chef, 'id' | 'created' | 'updated'>
 export type ChefUpdateInput = Partial<Omit<Chef, 'id' | 'created' | 'updated'>>
+
+export function createChefProfileSeed(): ChefCreateInput {
+  return {
+    title: ChefModel.title,
+    summary: ChefModel.summary,
+    chef_bio: ChefModel.chef_bio,
+    chef_image: ChefModel.chef_image,
+    chef_signature_dishes: [...ChefModel.chef_signature_dishes],
+    chef_gallery: [...ChefModel.chef_gallery],
+    kitchen_ids: [...ChefModel.kitchen_ids],
+    chef_organization_name: ChefModel.chef_organization_name,
+  }
+}

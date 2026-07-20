@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:18 CEST — Repo Efficiency Pass 1 of 6: authenticate snapshots and clear them across auth changes.
 import {
   computed,
   onScopeDispose,
@@ -6,6 +7,7 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
+import { useAuth } from '../fireux/firebase/useAuth'
 
 type DevCollectionDocMeta = {
   collectionPath: string
@@ -84,6 +86,8 @@ export function useDevCollectionJson<T extends object>(
   itemsRef: MaybeRefOrGetter<T[]>,
   collectionPathRef?: MaybeRefOrGetter<string | null | undefined>
 ) {
+  const { currentUser } = useAuth()
+  const authUid = computed(() => String(currentUser.value?.uid ?? '').trim())
   const snapshotsById = ref(new Map<string, DevCollectionDocSnapshot>())
   const enabled = ref(false)
   const refreshToken = ref(0)
@@ -146,29 +150,32 @@ export function useDevCollectionJson<T extends object>(
   onScopeDispose(unloadDevJson)
 
   watch(
-    [enabled, fetchKey, refreshToken],
-    async ([isEnabled, nextKey]: [boolean, string, number]) => {
+    [enabled, fetchKey, refreshToken, authUid],
+    async (
+      [isEnabled, nextKey, , nextUid]: [boolean, string, number, string]
+    ) => {
       if (!import.meta.dev || import.meta.server) return
       if (!isEnabled) return
 
       const currentRequestId = ++requestId
+      activeController?.abort()
+      activeController = null
+      snapshotsById.value = new Map()
+      devJsonError.value = null
 
-      if (!nextKey) {
-        activeController?.abort()
-        activeController = null
-        snapshotsById.value = new Map()
-        devJsonError.value = null
+      if (!nextKey || !nextUid) {
         devJsonLoading.value = false
         return
       }
 
       devJsonLoading.value = true
-      devJsonError.value = null
-      activeController?.abort()
       const controller = new AbortController()
       activeController = controller
 
       try {
+        const user = currentUser.value
+        const token = user?.uid === nextUid ? await user.getIdToken() : ''
+        if (!token) throw new Error('Developer authentication is required.')
         const payload = await $fetch<DevCollectionSnapshotResponse>(
           '/api/dev/collection-snapshot',
           {
@@ -177,6 +184,7 @@ export function useDevCollectionJson<T extends object>(
               collectionPath: resolvedCollectionPath.value,
               docIds: docIds.value,
             },
+            headers: { Authorization: `Bearer ${token}` },
             signal: controller.signal,
           }
         )

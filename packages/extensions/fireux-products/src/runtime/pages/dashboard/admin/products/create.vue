@@ -1,5 +1,6 @@
 <!-- FILE: packages/extensions/fireux-products/src/runtime/pages/dashboard/admin/products/create.vue -->
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove blank-form demo bulk writes to canonical Products. -->
 <template>
   <UDashboardPanel id="dashboard-admin-products-create">
     <template #header>
@@ -81,7 +82,6 @@ const { product, resetCreateProductState } = await useCreateProductState()
 const { prices, defaultPrice, resetCreatePricesState } = useCreatePricesState()
 const { createProductFromInput } = useProductCreate()
 const mainImageData = useStorage<string>('createProductMainImageData', '')
-const isDev = import.meta.dev
 const router = useRouter()
 const devCreateJson = computed(() => ({
   product: product.value,
@@ -94,63 +94,6 @@ async function handleCreate() {
   if (isCreating.value) return
   isCreating.value = true
   try {
-    const isBlankPayload =
-      !product.value?.name && !product.value?.slug && !product.value?.id
-    const hasNoPrices = !prices.value?.length
-
-    if (isDev && isBlankPayload && hasNoPrices) {
-      let demoList: any[] = []
-      try {
-        const mod = await import('../../../../demo/product')
-        demoList = Array.isArray(mod?.demoProductList)
-          ? mod.demoProductList
-          : []
-      } catch (error) {
-        throw new Error('Demo module list not found for bulk create')
-      }
-
-      if (!demoList.length) {
-        throw new Error('No demo products found for bulk create')
-      }
-
-      const results = await Promise.all(
-        demoList.map(async (demo) => {
-          const priceInputs = Array.isArray(demo?.prices)
-            ? demo.prices.map(({ id: _id, ...rest }: any) => rest)
-            : []
-          return createProductFromInput({
-            payload: demo as any,
-            priceInputs: priceInputs as StripePriceInput[],
-          })
-        })
-      )
-
-      const successCount = results.filter((result) => result.success).length
-      const failed = results.filter((result) => !result.success)
-
-      if (toast) {
-        toast.add({
-          title: 'Bulk create complete',
-          description: `${successCount}/${demoList.length} created`,
-          icon:
-            failed.length > 0
-              ? 'i-heroicons-exclamation-triangle'
-              : 'i-heroicons-check-circle',
-          color: failed.length > 0 ? 'warning' : 'success',
-        })
-      }
-
-      if (successCount > 0) {
-        await router.push('/dashboard/admin/products')
-      }
-
-      if (failed.length) {
-        console.error('[fireux-products] bulk create failures', failed)
-      }
-
-      return
-    }
-
     const result = await createProductFromInput({
       payload: product.value as any,
       priceInputs: prices.value as StripePriceInput[],

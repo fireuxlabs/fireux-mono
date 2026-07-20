@@ -1,4 +1,9 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/useUserFormattingAndValidation.ts
+// Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: accept only HTTPS public avatar input.
+import {
+  normalizeHttpsUrlInput,
+  readHttpsUrl,
+} from '../../../../../../../utils/httpsUrl'
 import {
     normalizeUserHandle,
     validateUserHandleForPublicRoute,
@@ -86,10 +91,10 @@ function validateAvatarUrl(raw: string | null | undefined) {
 
   try {
     const url = new URL(value)
-    if (!['http:', 'https:'].includes(url.protocol)) {
+    if (url.protocol !== 'https:' || !readHttpsUrl(value)) {
       return {
         isValid: false,
-        message: 'Use an http or https URL.',
+        message: 'Use an HTTPS URL.',
       }
     }
   } catch {
@@ -103,8 +108,10 @@ function validateAvatarUrl(raw: string | null | undefined) {
 }
 
 function formatAvatarUrl(raw: string | null | undefined) {
-  if (typeof raw !== 'string') return ''
-  return raw.trim()
+  return normalizeHttpsUrlInput(raw, {
+    label: 'Avatar URL',
+    maxLength: MAX_AVATAR_URL_LENGTH,
+  })
 }
 
 const DisplayName = {

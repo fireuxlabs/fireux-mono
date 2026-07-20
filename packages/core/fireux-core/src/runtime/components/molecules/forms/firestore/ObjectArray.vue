@@ -5,12 +5,15 @@
     <div class="object-array__header">
       <h3 v-if="label" class="fx-type-card-title">{{ label }}</h3>
       <div v-if="editingIndex === null" class="object-array__actions">
-        <slot name="create" :push="push" />
+        <slot
+          name="create"
+          v-bind="{ push, canPush, count: itemCount, max: maxItems }"
+        />
       </div>
     </div>
 
     <div>
-      <div v-if="editingIndex === items.length">
+      <div v-if="creatingItem">
         <UCard>
           <div class="relative group">
             <div v-if="!hasEditSlot" class="mt-3 flex gap-2">
@@ -233,6 +236,8 @@
 <script setup lang="ts">
 import { computed, ref, useSlots } from 'vue';
 
+// Concurrent edit — 2026-07-20 19:22 CEST — Repo Efficiency Pass 2 of 6: bound reusable object-array creation.
+
 type ObjectArrayField = {
   key: string
   type: 'text' | 'textarea' | 'checkbox'
@@ -273,12 +278,14 @@ const props = defineProps<{
   fields?: ObjectArrayField[]
   sortByDate?: boolean
   dateFields?: DateSortFields
+  maxItems?: number
 }>()
 
 const slots = useSlots()
 
 const editingIndex = ref<number | null>(null)
 const draftItem = ref<any | null>(null)
+const creatingItem = ref(false)
 const emptyText = computed(() => props.emptyText ?? 'No items yet.')
 const hasDisplaySlot = computed(() => Boolean(slots.display))
 const hasEditSlot = computed(() => Boolean(slots.edit))
@@ -299,6 +306,17 @@ const items = computed(() => {
   if (!shouldSortByDate(src, dateFields.value)) return src
   return sortItemsByDate(src, dateFields.value)
 })
+
+const maxItems = computed<number | undefined>(() => {
+  if (props.maxItems === undefined) return undefined
+  return Number.isSafeInteger(props.maxItems) && props.maxItems >= 0
+    ? props.maxItems
+    : 0
+})
+const itemCount = computed(() => items.value.length)
+const hasCapacity = (count = itemCount.value) =>
+  maxItems.value === undefined || count < maxItems.value
+const canPush = computed(() => editingIndex.value === null && hasCapacity())
 
 const getItemTitle = (item: any, index: number) =>
   props.itemTitle ? props.itemTitle(item, index) : ''
@@ -383,11 +401,13 @@ function sortItemsByDate(list: any[], fields: Required<DateSortFields>) {
 }
 
 function startItemEditing(index: number) {
+  creatingItem.value = false
   editingIndex.value = index
   draftItem.value = shallowClone(items.value[index])
 }
 
 function cancelItemEditing() {
+  creatingItem.value = false
   editingIndex.value = null
   draftItem.value = null
 }
@@ -398,22 +418,26 @@ async function saveItemEditing() {
   const src = items.value
 
   let next: any[]
-  if (idx < src.length) {
-    // update existing
-    next = [...src.slice(0, idx), draftItem.value, ...src.slice(idx + 1)]
-  } else {
-    // append new
+  if (creatingItem.value) {
+    if (!hasCapacity(src.length)) return
     next = [...src, draftItem.value]
+  } else {
+    if (idx < 0 || idx >= src.length) return
+    next = [...src.slice(0, idx), draftItem.value, ...src.slice(idx + 1)]
   }
+
+  if (maxItems.value !== undefined && next.length > maxItems.value) return
 
   await props.updateFunction(next)
   cancelItemEditing()
 }
 
 function push(item: any) {
-  if (editingIndex.value !== null) return
+  if (!canPush.value) return false
+  creatingItem.value = true
   editingIndex.value = items.value.length
   draftItem.value = shallowClone(item)
+  return true
 }
 
 async function remove(index: number) {
@@ -430,6 +454,9 @@ defineExpose({
   push,
   remove,
   editingIndex,
+  canPush,
+  itemCount,
+  maxItems,
 })
 </script>
 

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: make the developer PIN cosmetic and bootstrap admin only after server UID authorization.
+// Concurrent edit — 2026-07-20 15:50 CEST — Repo Efficiency Pass 1 of 6: refresh narrow App status after successful initialization.
 
 import { computed, ref, watch } from 'vue'
 import type { Ref } from 'vue'
@@ -30,7 +31,9 @@ export interface AppOnboardingState {
   onProceed: () => Promise<void>
 }
 
-export function useAppOnboarding(): AppOnboardingState {
+export function useAppOnboarding(
+  options: { onInitialized?: () => void | Promise<void> } = {}
+): AppOnboardingState {
   const { developerPin, devMode } = useFireUXConfig()
   const { appId } = useFireUXConfig()
   const isDev = import.meta.dev
@@ -120,6 +123,7 @@ export function useAppOnboarding(): AppOnboardingState {
         throw new Error('Authenticated user is not ready yet. Please try again.')
       }
       await bootstrapUserAppAdmin(appId, currentUid)
+      await options.onInitialized?.()
 
       const syncResult = await syncAppMedia(created.id)
       await refreshEnv()

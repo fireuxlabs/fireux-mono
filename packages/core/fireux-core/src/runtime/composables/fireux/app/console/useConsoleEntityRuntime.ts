@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: carry authoritative target outcomes into selection.
 import { computed, unref, type MaybeRef } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 import { useAuth } from '../../firebase/useAuth'
@@ -11,6 +12,7 @@ import type {
 } from '../../firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { targetHasOperator } from './useConsoleAccess'
 import { normalizeConsoleSource, useConsole } from './useConsole'
+import type { ConsoleTargetOutcome } from './useConsoleIndex'
 import { useConsoleSelection } from './useConsoleSelection'
 
 type ValueRef<T> = MaybeRef<T>
@@ -18,9 +20,8 @@ type ValueRef<T> = MaybeRef<T>
 export type UseConsoleEntityRuntimeOptions<TTarget> = {
   family: string
   storageFamily: ValueRef<ConsoleEntityCollectionFamily>
-  targetItems?: ValueRef<(TTarget | null | undefined)[] | null | undefined>
-  targetPending?: ValueRef<boolean | null | undefined>
-  targetError?: ValueRef<unknown>
+  targetItems: ValueRef<(TTarget | null | undefined)[] | null | undefined>
+  targetOutcome: ValueRef<ConsoleTargetOutcome>
   getId: (target: TTarget) => string
   appId?: ValueRef<string | null | undefined>
   mode?: ValueRef<ConsoleEntityRuntimeMode | null | undefined>
@@ -52,11 +53,7 @@ export function useConsoleEntityRuntime<TTarget>(
     clearSelection,
   } = useConsoleSelection<TTarget>(options.family, {
     targetItems: computed(() => unref(options.targetItems) ?? []),
-    // A failed target read is not a settled authority list. Keep the persisted
-    // selection until a later successful read can validate it.
-    targetPending: computed(() =>
-      Boolean(unref(options.targetPending)) || Boolean(unref(options.targetError))
-    ),
+    targetOutcome: computed(() => unref(options.targetOutcome)),
     getId: options.getId,
   })
 

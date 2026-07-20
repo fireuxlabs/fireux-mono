@@ -4,8 +4,12 @@ Purpose: operating instructions for AI agents working in `fireux-mono`.
 See: `docs/concepts/fireux-mono.md`
 
 Effective: 2026-07-20
+
 <!-- Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2–4 of 4: record portable root, tooling split, and demo ownership. -->
 <!-- Concurrent edit — 2026-07-19 17:07 CEST — Directory Authority Cutover: record resolved App and Ecosystem database authority. -->
+<!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: record projected public profile reads and owner-only raw authority. -->
+<!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: record target-state, route-meta, write-authority, and targeted-read contracts. -->
+<!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: record optional console fixture ownership and loading. -->
 
 ## Current Documentation State
 
@@ -44,6 +48,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - Composables spine: `docs/concepts/composables.md`
 - Firestore entity spine: `docs/concepts/firestore-entity.md`
 - Console spine: `docs/concepts/console.md`
+- Demo Data spine: `docs/concepts/demo-data.md`
 - Server API spine: `docs/concepts/server-api.md`
 - Debug surfaces: `docs/concepts/debug.md`
 - Tool providers: `docs/concepts/tool-provider.md`
@@ -162,6 +167,19 @@ Generated-artifact containment is controlled by `scripts/guards/generated-artifa
 - Those artifacts must remain ignored and untracked; the generated-artifacts guard checks the Git index.
 - Use `pnpm pre-guard-clean` when an intentionally artifact-free filesystem is needed. Do not require it merely to validate authored source shape.
 
+Demo Data shape is controlled by `scripts/guards/demo-data.mjs`.
+
+- Demo Data is optional, read-only console data. It is not public content, a
+  dev preview, a test fixture, a simulation database, or storage authority.
+- Reusable Demo modules live under their owning package `src/runtime/demo`;
+  app-only Demo modules live under the owning project `app/demo`.
+- Console composable adapters load Demo modules with dynamic imports through
+  `useConsoleDemoData`. An inactive source must not import or evaluate Demo.
+- Demo modules follow current real models and record shapes. Change or cull a
+  stale fixture; never add compatibility or runtime fallback for it.
+- Demo modules remain local and pure: no Firestore, Storage, Firebase Admin,
+  server, public-adapter, or mutation value dependencies.
+
 ## Runtime Package Spine
 
 Most packages follow this runtime shape:
@@ -208,6 +226,9 @@ Important app config fields visible in code:
 - `consoleConfig`
 - `domains`
 - `profiles`
+- `selfJoinEnabled`: bootstrap and UX intent for self-joining; the value is
+  copied into a newly created canonical App, whose stored
+  `self_join_enabled` field is the server enforcement authority
 - `navHiddenKeys`
 
 `ecosystem` selects the ecosystem package/Firebase binding. It is not an entity
@@ -229,11 +250,19 @@ Global apps can expose multiple domains/consoles. Tenant apps can pin console ta
 Shared console primitives live in:
 
 - `packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsole.ts`
+- `useConsoleAccess.ts`
+- `useConsoleEntityRuntime.ts`
+- `useConsoleDemoData.ts`
 - `useConsoleTargets.ts`
 - `useConsoleIndex.ts`
 - `useConsoleOverview.ts`
 - `useConsoleSelection.ts`
 - `useConsoleTeam.ts`
+
+Console page `nav` metadata is presentation-only. Put authentication, roles,
+visibility, and target-selection requirements at top-level page metadata.
+Console write controls may reflect `canWrite`, but every mutation must also
+enforce that runtime authority before changing Firestore or Storage.
 
 Domain console composables belong under:
 
@@ -289,6 +318,40 @@ Do not place console operation folders inside Firestore stacks. Do not add Fires
 
 Known boring entity stack examples include kitchen, supplier, product, place, company, blog, property, portfolio, ingredient, recipe, dish, menu, translation, job, task.
 
+Identity records follow one strict boundary: `/users/{uid}` is public identity,
+`/users/{uid}/private/account` is owner-private account data,
+`/users/{uid}/notifications/{notificationId}` is owner-only delivery/read state,
+and `/apps/{appId}/users/{uid}` is app membership and capability authority.
+User, UserApp, and root/app profile documents never embed identity snapshots or
+notification arrays. Root profiles join canonical User by matching uid.
+Profile creation goes through a fixed authenticated domain endpoint backed by
+`server/utils/profile/provision`: domain models own exact seeds, while the
+server transaction creates records and updates `User.profiles` and
+`UserApp.profiles` in canonical profile order. Provisioning is self-only and
+the profile id must be listed in the current App's runtime `profiles`; disabled
+profile routes fail closed before Firestore access. Browsers must not create
+profile records, mutate either
+profile index directly, or publish notifications; notification producers are
+trusted server pipelines, while owners retain read/acknowledgement controls.
+Root Agent, Chef, and Professional documents are complete exact model shapes;
+sparse profile documents and compatibility aliases are invalid. Their domain
+seeds create every canonical field, and owner updates must preserve the full
+shape enforced by Firestore Rules. Those public roots are self-editable and raw
+client reads are owner-only; public list/detail pages consume the bounded
+domain API projection and initial detail content is server-rendered through
+`usePublicProfileDetail`. Their App overlays remain stamps-only. Root and App
+mutation helpers are separate authorities and must not regain a caller-selected
+scope. Public URL fields are empty or valid HTTPS. `User.avatar` is valid HTTPS
+or the canonical `/img/ecosystem/avatar.png` value; clearing an avatar persists
+that value, not an empty string. A Professional owner mutation may change at
+most one structured profile family so every changed item remains fully
+Rules-validated. Professional experience stores a valid `place_id` reference,
+never a Place snapshot. The editor must materialize the canonical Place before
+assigning the reference. Before client Place writes are ever unblocked, move
+structured Professional writes behind a trusted server boundary that verifies
+every referenced Place; syntactic Rules validation alone cannot prove up to 24
+references within Firestore access-call limits.
+
 ## Component Spine
 
 Package UI belongs under `src/runtime/components/**`; app UI belongs under `app/components/**`.
@@ -328,6 +391,15 @@ their domain delta can grow without unpicking a generic shell.
 - Every `useConsoleIndex` adapter must pass its source collection `outcome`.
   Outcome is the sole loading/error/ready/empty authority; card count and a
   separate pending fallback must not infer source state.
+- App membership pending/error state participates in global console target
+  outcome; an access read failure must never be presented as an empty target
+  collection or used to invalidate persisted selection.
+- ID-limited console target reads load those root documents directly. Do not
+  bind the full root collection and filter it client-side when target IDs or
+  operator overlays already define the allowed set.
+- Console Demo adapters defer fixture imports until their source is active and
+  pass their explicit outcome onward. Test, simulation, and dev fixtures are
+  separate families and must not be folded into Demo.
 - Named `ConsoleXIndexTargets` wrappers may share `ConsoleTargetCollection` for
   state presentation. They retain domain mapping, selection, copy, actions,
   and multi-source composition; an idle source renders no chooser.

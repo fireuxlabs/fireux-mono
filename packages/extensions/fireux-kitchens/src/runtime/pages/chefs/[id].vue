@@ -1,17 +1,8 @@
+<!-- Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: make Chef detail endpoint-first and SSR-authoritative. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription">
       <template #ctas>
-        <UButton
-          v-if="profile && isAdminUser && docId"
-          icon="i-lucide-shield"
-          size="xs"
-          color="primary"
-          variant="solid"
-          :to="`/chefs/admin/${docId}`"
-        >
-          Admin
-        </UButton>
         <UButton
           v-if="profile && isSelf"
           icon="i-lucide-pencil"
@@ -26,60 +17,55 @@
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <ClientOnly>
-        <div class="profile-page">
-          <div v-if="loading" class="py-10 text-sm opacity-70">Loading profile…</div>
-
-          <div v-else-if="!profile" class="space-y-2">
-            <MoleculesProfilesAdminCreateCard
-              v-if="isAdminUser"
-              title="Chef profile not available"
-              description="Create a chef profile for this user."
-              :button-label="chefConfig.cta || 'Create Chef profile'"
-              :loading="isCreating"
-              :error="createError"
-              @create="createProfile"
-            />
-
-            <div v-else>
-              <h1 class="text-lg font-semibold">Profile Not Found</h1>
-              <p>The profile you're looking for doesn't exist.</p>
-              <NuxtLink to="/chefs" class="text-primary hover:underline">← Back</NuxtLink>
-            </div>
-          </div>
-
-          <div v-else class="space-y-4">
-            <ChefCardsProfile v-if="chefCard" :card="chefCard" :profile="profile" />
-
-            <DevJson
-              :title="'Chef (Doc)'"
-              context="Chef detail page · chefs/[id] · profile doc"
-              :data="profile"
-              :default-open="false"
-            />
-          </div>
+      <div class="profile-page">
+        <div v-if="pending" class="py-10 text-sm opacity-70">
+          Loading profile…
         </div>
 
-        <template #fallback>
-          <div class="py-10 text-sm opacity-70">Loading profile…</div>
-        </template>
-      </ClientOnly>
+        <UAlert
+          v-else-if="failed"
+          color="error"
+          variant="soft"
+          title="Chef unavailable"
+          description="This profile could not be loaded right now. Please try again."
+        />
+
+        <div v-else-if="missing" class="space-y-2">
+          <h1 class="text-lg font-semibold">Profile Not Found</h1>
+          <p>The profile you're looking for doesn't exist.</p>
+          <NuxtLink to="/chefs" class="text-primary hover:underline"
+            >← Back</NuxtLink
+          >
+        </div>
+
+        <div v-else-if="profile" class="space-y-4" data-public-profile="chef">
+          <ChefCardsProfile
+            v-if="chefCard"
+            :card="chefCard"
+            :profile="profile"
+          />
+
+          <DevJson
+            :title="'Chef (Public DTO)'"
+            context="Chef detail page · chefs/[id] · endpoint-first SSR"
+            :data="devPayload"
+            :default-open="false"
+          />
+        </div>
+      </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
-import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { navigateTo, setResponseStatus } from '#imports'
+import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useChefSeo } from '../../composables/fireux/firestore/profiles/Chef/utils/useChefSeo'
 import { useChefInterface } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { AppChef, Chef } from '../../models/chef.model'
+import type { PublicChefProfilePayload } from '../../models/chef.model'
 
 definePageMeta({
   visibility: { profiles: ['chef'] },
@@ -88,65 +74,49 @@ definePageMeta({
 const routeId = useRouteParam('id')
 const docId = computed(() => routeId.value || null)
 
-const { user, coreUser, appUser } = useUser()
-const userRefs = useUserFetch(docId)
-
-const { profile: profileRefs, pending } = useProfileFetch<Chef, AppChef>(
-  docId,
-  chefConfig
+const {
+  profile,
+  user: profileUser,
+  pending,
+  statusCode,
+  missing,
+  failed,
+  outcome,
+} = await usePublicProfileDetail<PublicChefProfilePayload>(
+  { collection: 'chefs', kind: 'chef' },
+  docId
 )
-const profile = computed<Chef | null>(() => profileRefs.coreProfile.value ?? null)
-const loading = computed(() => pending.value)
-const { profile: chefInterface } = useChefInterface(profileRefs, userRefs.user)
+const { user: sessionUser } = useUser()
+const { profile: chefInterface } = useChefInterface()
 const chefCard = computed(() =>
-  profile.value ? chefInterface(profile.value, userRefs.user.value ?? null) : null
+  profile.value ? chefInterface(profile.value, profileUser.value) : null
 )
 
-const resolveName = (p: any) =>
-  p?.display_name ||
-  p?.name ||
-  p?.title ||
-  p?.agency_name ||
-  p?.company_name ||
-  p?.business_name ||
-  p?.professional_name ||
-  'Profile'
-
-const displayName = computed(() =>
-  userRefs.user.value?.display_name || (profile.value ? resolveName(profile.value) : null)
+const displayName = computed(
+  () => profileUser.value?.display_name || profile.value?.title || null
 )
 const pageTitle = computed(() => displayName.value ?? 'Chef Profile')
 const pageDescription = computed(() =>
-  displayName.value
-    ? `Inspect ${displayName.value}.`
-    : 'Chef profile details.'
+  displayName.value ? `Inspect ${displayName.value}.` : 'Chef profile details.'
 )
 
 useChefSeo(profile, { id: docId, displayName })
 
 const isSelf = computed(() =>
-  Boolean(docId.value && user.value?.id === docId.value)
+  Boolean(docId.value && sessionUser.value?.id === docId.value)
 )
 
-const isAdminUser = computed(() =>
-  appUser.value?.role === 'admin'
-)
-
-const { createProfile: createProfileRecord } = useProfileCreate(chefConfig)
-const isCreating = ref(false)
-const createError = ref<string | null>(null)
-
-const createProfile = async () => {
-  if (isCreating.value || !docId.value) return
-  isCreating.value = true
-  createError.value = null
-
-  try {
-    await createProfileRecord(docId.value)
-  } catch (error) {
-    createError.value = (error as Error)?.message || 'Failed to create profile.'
-  } finally {
-    isCreating.value = false
+if (import.meta.server) {
+  if (missing.value) {
+    setResponseStatus(404)
+  } else if (failed.value) {
+    setResponseStatus(statusCode.value >= 400 ? statusCode.value : 503)
   }
 }
+
+const devPayload = computed(() => ({
+  profile: profile.value,
+  user: profileUser.value,
+  outcome: outcome.value,
+}))
 </script>

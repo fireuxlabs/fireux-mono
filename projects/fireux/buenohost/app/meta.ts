@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: route product copy to the sanitized local preview.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 export const buenoHostProductSentence =
@@ -46,8 +47,8 @@ export const buenoHostLanguage = {
       to: '/console/property',
     },
     secondary: {
-      label: 'View property info',
-      to: '/properties/demo-stay/info',
+      label: 'View local preview',
+      to: '/properties/preview-stay/info',
     },
     console: {
       label: 'Open host console',

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
   <UDashboardPanel id="console-supplier-create">
     <template #header>
@@ -33,18 +34,19 @@ const canCreate = computed(() => canCreateTarget())
 
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'create',
+  visibility: { modules: ['fireux-suppliers'] },
   nav: {
-    visibility: { modules: ['fireux-suppliers'] },
     key: 'console-supplier-create',
     label: 'Create',
     icon: 'i-lucide-plus',
     position: 'bottom',
-    requiresSelection: false,
     order: 5,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: false,
 })
 </script>

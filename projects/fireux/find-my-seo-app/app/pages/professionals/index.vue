@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
+<!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: consume the app-local simulation. -->
 <template>
   <UPage>
     <UPageHeader
@@ -49,7 +50,7 @@ import {
   type ProfessionalCard,
 } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { appMeta } from '../../meta'
-import { demoSeoProfessionalCollection } from '../../demo/findMySeo'
+import { demoSeoProfessionalCollection } from '../../simulations/findMySeo'
 
 const { cell: professionalCell } = useProfessionalInterface()
 

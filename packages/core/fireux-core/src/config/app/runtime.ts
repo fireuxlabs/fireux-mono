@@ -1,4 +1,5 @@
 // FILE: packages/core/fireux-core/config/app/runtime.ts
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: carry explicit App self-join policy into runtime config.
 import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
@@ -35,6 +36,7 @@ export type RuntimeApp = {
   >
   domains: readonly string[]
   profiles: readonly string[]
+  selfJoinEnabled: boolean
   navHiddenKeys?: readonly string[]
 }
 

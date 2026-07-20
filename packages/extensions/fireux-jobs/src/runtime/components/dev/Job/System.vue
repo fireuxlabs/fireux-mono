@@ -1,7 +1,6 @@
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: cull the ad-hoc Job card fixture. -->
 <template>
   <section class="space-y-10">
-    <DevJobDemo />
-
     <UCard>
       <DevModel
         :title="'Jobs · Model'"

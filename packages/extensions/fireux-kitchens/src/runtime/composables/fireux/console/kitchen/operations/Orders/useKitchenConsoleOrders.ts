@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazy-load typed demo Orders inside the console operation.
 import { computed } from 'vue'
 import { useKitchenOrdersFetch } from './fetch/useKitchenOrdersFetch'
 import {
@@ -9,7 +10,10 @@ import {
 } from '../../../../../../models/kitchen/order.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
-import { getDemoKitchenCollection } from '../../../../demo/kitchen/scenarios'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../../core/useKitchenConsoleDemoData'
 import { useKitchenOrderTransition } from './mutations/useKitchenOrderTransition'
 import { useKitchenOrderService } from './mutations/useKitchenOrderService'
 
@@ -28,10 +32,14 @@ export function useKitchenConsoleOrders() {
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const demoOrders = computed(() =>
-    runtime.source.value === 'demo' && kitchenId.value
-      ? getDemoKitchenCollection<KitchenOrder>(kitchenId.value, 'orders')
-      : []
+  const demoData = useKitchenConsoleDemoData(
+    computed(() => runtime.source.value === 'demo')
+  )
+  const demoOrders = computed<KitchenOrder[]>(() =>
+    findKitchenConsoleDemoScenario(
+      demoData.data.value,
+      kitchenId.value
+    )?.orders ?? []
   )
   const { orders, pending: ordersPending, ordersPath } =
     useKitchenOrdersFetch(fetchKitchenId, {
@@ -63,7 +71,9 @@ export function useKitchenConsoleOrders() {
       : page.collection.value.items
   )
   const pending = computed(() =>
-    runtime.source.value === 'demo' ? false : page.collection.value.pending
+    runtime.source.value === 'demo'
+      ? demoData.pending.value
+      : page.collection.value.pending
   )
   const orderBoardPath = computed(() =>
     runtime.source.value === 'demo'

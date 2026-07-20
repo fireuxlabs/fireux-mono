@@ -1,9 +1,4 @@
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: authorize canonical customer Order access without exposing a bearer secret at rest.
-import {
-  createHash,
-  randomBytes,
-  timingSafeEqual,
-} from 'node:crypto'
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: authorize canonical customer Order access without exposing a bearer secret at rest.
 import {
   createError,
   getHeader,
@@ -14,22 +9,15 @@ import {
   MENU_ORDER_CAPABILITY_HEADER,
   readMenuOrderCapabilityToken,
 } from '../../../utils/menu-order-capability.ts'
+import { matchesMenuOrderCapability } from './order-capability-token.ts'
 
-const SHA256_HEX_PATTERN = /^[a-f0-9]{64}$/
+export { createMenuOrderCapability } from './order-capability-token.ts'
+
 const text = (value: unknown) => String(value ?? '').trim()
 
 export type MenuOrderCustomerAccess = {
   capabilityToken: string
   customerUid: string
-}
-
-export function createMenuOrderCapability() {
-  const token = randomBytes(32).toString('base64url')
-
-  return {
-    token,
-    hash: hashMenuOrderCapability(token),
-  }
 }
 
 export async function readMenuOrderCustomerAccess(
@@ -71,18 +59,4 @@ export function requireMenuOrderCustomerAccess(
     statusCode: 404,
     statusMessage: 'Order not found.',
   })
-}
-
-export function hashMenuOrderCapability(token: string) {
-  return createHash('sha256').update(token).digest('hex')
-}
-
-export function matchesMenuOrderCapability(token: string, storedHash: string) {
-  if (!readMenuOrderCapabilityToken(token)) return false
-  if (!SHA256_HEX_PATTERN.test(storedHash)) return false
-
-  const candidate = createHash('sha256').update(token).digest()
-  const stored = Buffer.from(storedHash, 'hex')
-
-  return stored.length === candidate.length && timingSafeEqual(stored, candidate)
 }

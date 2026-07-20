@@ -125,6 +125,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: share the notification slideover owner across console and dashboard.
+// Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: pre-create family console and selection state for layout guards.
 import { useRoute } from '#imports'
 import { computed, ref, watch } from 'vue'
 import {
@@ -133,7 +134,10 @@ import {
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
-import { useConsole } from '../composables/fireux/app/console/useConsole'
+import {
+  normalizeConsoleFamily,
+  useConsole,
+} from '../composables/fireux/app/console/useConsole'
 import { useConsoleSelection } from '../composables/fireux/app/console/useConsoleSelection'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
 
@@ -145,6 +149,17 @@ const open = ref(false)
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const consoleNav = useConsoleNav()
 const consoleRoot = useConsole()
+const familyNames = consoleRoot.families
+  .map((value) => normalizeConsoleFamily(value))
+  .filter(Boolean)
+const familyConsoles = new Map(
+  familyNames.map((familyName) => [familyName, useConsole(familyName)] as const)
+)
+const familySelections = new Map(
+  familyNames.map(
+    (familyName) => [familyName, useConsoleSelection(familyName)] as const
+  )
+)
 const topNav = computed(() =>
   consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'top')
 )
@@ -162,10 +177,10 @@ const familyPath = computed(() => family.value ? toConsoleFamilyPath(family.valu
 const activeSelectionId = computed(() => {
   const activeFamily = family.value
   if (!activeFamily) return ''
-  return useConsoleSelection(activeFamily).selectedId.value
+  return familySelections.get(activeFamily)?.selectedId.value ?? ''
 })
 const configuredTargetIds = computed(() =>
-  family.value ? consoleRoot.targetIds(family.value) : []
+  familyConsoles.get(family.value)?.targetIds() ?? []
 )
 const requiresSelection = computed(() => {
   const nav = route.meta.nav as Record<string, unknown> | undefined
@@ -185,13 +200,15 @@ watch(
     targetIds: string[]
   }) => {
     const onlyTargetId = normalizeString(state.targetIds[0])
+    const activeConsole = familyConsoles.get(state.activeFamily)
+    const activeSelection = familySelections.get(state.activeFamily)
     if (!state.activeFamily) return
     if (!state.requiresSelection) return
-    if (!consoleRoot.isTenant) return
+    if (!activeConsole?.isTenant || !activeSelection) return
     if (state.selectedId) return
     if (state.targetIds.length !== 1 || !onlyTargetId) return
 
-    useConsoleSelection(state.activeFamily).selectTarget(onlyTargetId)
+    activeSelection.selectTarget(onlyTargetId)
   },
   { immediate: true }
 )

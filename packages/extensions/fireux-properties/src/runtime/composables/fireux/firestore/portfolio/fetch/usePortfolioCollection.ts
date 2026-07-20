@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Portfolio consoles.
 import {
   collection,
   query as fsq,
@@ -67,11 +68,41 @@ export function usePortfolioCollection(
     if (isRef(options.source)) return options.source.value ?? 'live'
     return options.source ?? 'live'
   })
+  const resolvedFilter = computed<PortfolioCollectionFilter | undefined>(() => {
+    if (isRef(options.filter)) return options.filter.value ?? undefined
+    return options.filter ?? undefined
+  })
+  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
+  const filterOperatorId = computed(() =>
+    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
+  )
+  const hasOperatorFilter = computed(() =>
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
+    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
+  )
+  const filterIdSet = computed(
+    () =>
+      new Set(
+        (resolvedFilter.value?.ids ?? [])
+          .map((value) => normalizeString(value))
+          .filter(Boolean)
+      )
+  )
+  const usesTargetedRootRead = computed(
+    () => hasFilter.value || hasOperatorFilter.value
+  )
   const testCollectionPath = computed(() =>
     sourceMode.value === 'test' ? TEST_COLLECTION_PATH : ''
   )
-  const liveCollectionPath = computed(() =>
-    sourceMode.value === 'live' ? DEFAULT_COLLECTION_PATH : ''
+  const liveRootCollectionPath = computed(() =>
+    sourceMode.value === 'live' && !usesTargetedRootRead.value
+      ? DEFAULT_COLLECTION_PATH
+      : ''
+  )
+  const liveDocumentCollectionPath = computed(() =>
+    sourceMode.value === 'live' && usesTargetedRootRead.value
+      ? DEFAULT_COLLECTION_PATH
+      : ''
   )
   const testSource = firestoreFetchCollection<PortfolioCollectionDoc>(
     testCollectionPath
@@ -128,37 +159,26 @@ export function usePortfolioCollection(
 
     return [...byId.values()]
   })
-  const resolvedFilter = computed<PortfolioCollectionFilter | undefined>(() => {
-    if (isRef(options.filter)) return options.filter.value ?? undefined
-    return options.filter ?? undefined
-  })
-  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterOperatorId = computed(() =>
-    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
-  )
-  const filterIdSet = computed(
-    () =>
-      new Set(
-        (resolvedFilter.value?.ids ?? [])
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      )
-  )
   const allowedPortfolioIds = computed(() =>
     (overlaySource.value ?? [])
       .map((portfolio) => resolvePortfolioId(portfolio))
       .filter(Boolean)
   )
+  const targetedPortfolioIds = computed(() => {
+    const ids = hasOperatorFilter.value
+      ? allowedPortfolioIds.value
+      : [...filterIdSet.value]
+
+    return hasFilter.value
+      ? ids.filter((id) => filterIdSet.value.has(id))
+      : ids
+  })
   const liveRootSource = firestoreFetchCollection<PortfolioCollectionDoc>(
-    liveCollectionPath
+    liveRootCollectionPath
   )
   const liveRootDocs = firestoreLoadDocsByIds<PortfolioCollectionDoc>({
-    collectionPath: liveCollectionPath,
-    ids: allowedPortfolioIds,
+    collectionPath: liveDocumentCollectionPath,
+    ids: targetedPortfolioIds,
   })
 
   const liveItems = computed<PortfolioCollectionDoc[]>(() => {
@@ -222,7 +242,7 @@ export function usePortfolioCollection(
   const collectionItems = computed<PortfolioCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return []
     if (sourceMode.value === 'test') return testSource.value ?? []
-    if (!hasOperatorFilter.value) return liveRootSource.value ?? []
+    if (!usesTargetedRootRead.value) return liveRootSource.value ?? []
     return liveItems.value
   })
 
@@ -249,22 +269,24 @@ export function usePortfolioCollection(
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
     if (sourceMode.value === 'test') return testSource.pending.value
-    if (!hasOperatorFilter.value) return liveRootSource.pending.value
-    if (!filterOperatorId.value) return false
+    if (!usesTargetedRootRead.value) return liveRootSource.pending.value
+    if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
       liveRootDocs.pending.value ||
-      overlayOperatorSource.pending.value ||
-      overlayTeamSource.pending.value
+      (hasOperatorFilter.value && (
+        overlayOperatorSource.pending.value ||
+        overlayTeamSource.pending.value
+      ))
     )
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
     if (sourceMode.value === 'test') return testSource.error.value
-    if (!hasOperatorFilter.value) return liveRootSource.error.value
-    if (!filterOperatorId.value) return undefined
-    return overlayOperatorSource.error.value ??
-      overlayTeamSource.error.value ??
-      liveRootDocs.error.value
+    if (!usesTargetedRootRead.value) return liveRootSource.error.value
+    if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
+    return (hasOperatorFilter.value
+      ? overlayOperatorSource.error.value ?? overlayTeamSource.error.value
+      : undefined) ?? liveRootDocs.error.value
   })
   const { outcome } = useFirestoreCollectionState({
     count,

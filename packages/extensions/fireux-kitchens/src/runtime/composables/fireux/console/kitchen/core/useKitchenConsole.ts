@@ -1,7 +1,11 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require current-user operator authority for Kitchen writes.
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: source selected demo Kitchens through the lazy console adapter.
 import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { useConsoleEntityFirestore } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/useConsoleEntityFirestore'
 import {
@@ -15,6 +19,10 @@ import {
   type KitchenFetchSource,
 } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from './useKitchenConsoleDemoData'
 
 type KitchenConsoleEntity = KitchenSurface
 
@@ -70,6 +78,7 @@ export function useKitchenConsole() {
    * - actions: select/clear helpers
   */
   const consoleRoot = useConsole('kitchen')
+  const { uid } = useAuth()
 
   const configKitchenIds = computed(() =>
     uniqueStrings(consoleRoot.targetIds())
@@ -80,11 +89,19 @@ export function useKitchenConsole() {
   const kitchenSource = computed<KitchenFetchSource>(() =>
     normalizeSource(consoleRoot.source.value)
   )
-  const { kitchen: publicKitchen } = useKitchenFetch(kitchenId, {
+  const demoData = useKitchenConsoleDemoData(
+    computed(() => kitchenSource.value === 'demo')
+  )
+  const demoScenario = computed(() =>
+    findKitchenConsoleDemoScenario(demoData.data.value, kitchenId.value)
+  )
+  const { kitchen: fetchedPublicKitchen } = useKitchenFetch(kitchenId, {
     source: kitchenSource,
   })
   const selectedPublicKitchen = computed<KitchenConsoleEntity | null>(
-    () => publicKitchen.value as KitchenConsoleEntity | null
+    () => kitchenSource.value === 'demo'
+      ? demoScenario.value?.kitchen ?? null
+      : fetchedPublicKitchen.value as KitchenConsoleEntity | null
   )
   const scopedAppId = computed(() =>
     kitchenSource.value === 'live'
@@ -131,7 +148,8 @@ export function useKitchenConsole() {
     () => consoleRoot.isTenant && configKitchenIds.value.length === 1
   )
   const canWrite = computed(() =>
-    !readOnly.value && Boolean(selectedKitchen.value)
+    !readOnly.value &&
+      targetHasOperator(selectedKitchen.value, normalizeString(uid.value))
   )
   const clearSelectedKitchen = () => clearSelection()
   const selectKitchen = (
@@ -165,6 +183,9 @@ export function useKitchenConsole() {
     kitchenId,
     kitchenSource,
     hasSelection: computed(() => Boolean(kitchenId.value)),
+    demoPending: demoData.pending,
+    demoError: demoData.error,
+    demoOutcome: demoData.outcome,
   }
   const runtime = {
     appId: firestore.appId,

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: expose canonical Delivery address and timing in customer projection.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: recover source item identity for signed-in amend resubmission.
 import { defineEventHandler, getQuery } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
@@ -146,7 +147,7 @@ function customerOrderSummary(
     const variantId = text(item.variant_id)
     const variantLabel = text(item.variant_label)
     return [{
-      id: text(item.id) || `item-${index + 1}`,
+      id: text(item.source_item_id) || text(item.id) || `item-${index + 1}`,
       menu_id: text(item.menu_id),
       name,
       quantity,

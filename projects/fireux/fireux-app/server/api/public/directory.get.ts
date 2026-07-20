@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import {
   createError,
   defineEventHandler,
@@ -5,12 +6,12 @@ import {
   type H3Event,
 } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
-import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/core/supporting/directory'
+import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/core/supporting/directory.ts'
 import {
   projectPublicApp,
   toAppDirectoryEntry,
-} from 'fireux-core/runtime/server/utils/public-projection/public-app.dto'
-import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/server/utils/public-projection/public-ecosystem.dto'
+} from 'fireux-core/runtime/server/utils/public-projection/public-app.dto.ts'
+import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/server/utils/public-projection/public-ecosystem.dto.ts'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
 type StoredDocument = Record<string, unknown> & { id: string }

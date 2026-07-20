@@ -27,13 +27,13 @@
             <div class="space-y-4">
               <div class="mx-auto flex max-w-sm flex-col items-center gap-2">
                 <UButton
-                  :to="demoInfoPath"
+                  :to="previewInfoPath"
                   color="primary"
                   variant="soft"
                   icon="i-lucide-qr-code"
                   class="w-full justify-center"
                 >
-                  View sample stay companion
+                  View local stay simulation
                 </UButton>
                 <div class="text-center text-sm text-muted">
                   <div>- or -</div>
@@ -42,14 +42,14 @@
               </div>
 
               <NuxtLink
-                :to="demoInfoPath"
+                :to="previewInfoPath"
                 class="mx-auto block w-full max-w-sm rounded-lg border border-default bg-white p-5 text-slate-950 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-                aria-label="Open the demo stay companion"
+                aria-label="Open the local stay simulation"
               >
                 <div class="space-y-5 text-center">
                   <div>
                     <p class="text-sm font-medium uppercase tracking-wide text-slate-500">
-                      Luxurious Mountain Chalet
+                      Mountain Stay Preview
                     </p>
                     <h3 class="mt-1 text-2xl font-semibold tracking-normal">
                       Everything about your stay.
@@ -61,7 +61,7 @@
                       <img
                         v-if="qrDataUrl"
                         :src="qrDataUrl"
-                        alt="QR code for the demo stay companion"
+                        alt="QR code for the local stay simulation"
                         class="size-56"
                       >
                       <div
@@ -284,11 +284,12 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: point the showcase at the sanitized read-only simulation.
 import { toDataURL } from 'qrcode'
 import { computed, onMounted, ref } from 'vue'
 import { useRuntimeConfig, useSeoMeta } from '#imports'
 
-const demoInfoPath = '/properties/demo-stay/info'
+const previewInfoPath = '/properties/preview-stay/info'
 const qrTargetUrl = ref('')
 const qrDataUrl = ref('')
 const runtimeConfig = useRuntimeConfig()
@@ -590,7 +591,7 @@ onMounted(async () => {
   const configuredBaseUrl = configString('buenoHostBaseUrl')
   const baseUrl = configuredBaseUrl || (import.meta.client ? window.location.origin : defaultBuenoHostBaseUrl)
 
-  qrTargetUrl.value = new URL(demoInfoPath, normalizeBaseUrl(baseUrl)).toString()
+  qrTargetUrl.value = new URL(previewInfoPath, normalizeBaseUrl(baseUrl)).toString()
   qrDataUrl.value = await toDataURL(qrTargetUrl.value, {
     width: 512,
     margin: 1,

@@ -1,4 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+// Concurrent edit — 2026-07-20 19:32 CEST — Repo Efficiency Pass 2 of 6: constrain Professional meta and JSON-LD images to HTTPS.
+import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
 
@@ -16,14 +18,14 @@ export function buildProfessionalJsonLd(
 ) {
   const name = clean(displayName || professional?.title)
   const id = clean(professional?.id)
-  if (!name || !id || (professional as any)?.visibility !== 'public') return null
+  if (!name || !id) return null
 
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
     name,
     description: excerpt(professional?.summary || professional?.bio || professional?.tagline),
-    image: clean(professional?.image) || undefined,
+    image: readHttpsUrl(professional?.image) || undefined,
     jobTitle: clean(professional?.title) || undefined,
     knowsAbout: professional?.tags?.length ? professional.tags : undefined,
   }
@@ -36,12 +38,12 @@ export function useProfessionalSeo(
   const entry = computed(() => toValue(professional))
   const id = computed(() => clean(toValue(options.id) || entry.value?.id))
   const displayName = computed(() => clean(toValue(options.displayName)))
-  const isPublic = computed(() => Boolean((entry.value as any)?.visibility === 'public' && id.value))
+  const isPublic = computed(() => Boolean(entry.value && id.value))
 
   return useSeo({
     title: computed(() => displayName.value || clean(entry.value?.title) || 'Professional Profile'),
     description: computed(() => excerpt(entry.value?.summary || entry.value?.bio || entry.value?.tagline || 'Professional profile.')),
-    image: computed(() => clean(entry.value?.image)),
+    image: computed(() => readHttpsUrl(entry.value?.image)),
     path: computed(() => (id.value ? `/professionals/${encodeURIComponent(id.value)}` : '')),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildProfessionalJsonLd(entry.value, displayName.value)),

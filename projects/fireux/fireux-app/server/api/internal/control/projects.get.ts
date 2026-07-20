@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 import { useRuntimeConfig } from '#imports'
 import {
   createError,
@@ -6,13 +7,13 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
+import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import {
   ProjectStorage,
   type ProjectStatus,
-} from 'fireux-core/runtime/models/system/project.model'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+} from 'fireux-core/runtime/models/system/project.model.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getFirestoreDb } from '../../../utils/firebase-admin'
 
 const PROJECT_STATUSES = new Set<ProjectStatus>([

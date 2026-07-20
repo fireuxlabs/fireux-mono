@@ -7,9 +7,10 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 13:12 CEST — Driver authority: map server-owned Kitchen grants and non-PII dispatch beacons. -->
 <!-- Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: map delta-only app records and independent public/app profile indexes. -->
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: make User the sole public identity joined by profile uid. -->
+<!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map projected public profile reads and owner-only raw authority. -->
 
 Updated: 2026-07-20
-Ref: f7d3704ef
+Ref: 8d83d3fa7
 Role: map, not canon
 
 Purpose:
@@ -139,9 +140,38 @@ Root Projected Index members:
   keyed by canonical User uid. Their public projections join the schema-valid
   `/users/{userId}` identity; profile documents never copy display name,
   avatar, handle, or another embedded `user` snapshot.
+- Root Agent, Chef, and Professional documents store their complete canonical
+  model shape. Domain seeds create every field and Firestore Rules reject
+  sparse records, removed canonical fields, aliases, and extra fields.
+- Their owners can edit only their own root domain fields. Agent, Chef, and
+  Professional App overlays are stamps-only; separate root/App mutation seams
+  prevent a caller-selected scope from turning an identity edit into an App
+  write. There is no admin-on-behalf browser editor.
+- Raw Agent, Chef, and Professional root reads are owner-only. Public indexes
+  and details use bounded domain API projections; detail pages resolve the
+  projected User/profile pair during SSR and preserve truthful outer 404/5xx
+  status.
+- A Professional owner write changes at most one structured family at a time.
+  The Rules validator deeply checks every changed item while retaining the
+  aggregate 24-item cap across all structured families.
+- Public profile URL fields are empty or valid HTTPS. Professional experience
+  stores only a valid `place_id`, canonical collection hint, and experience
+  fields; both experience families hydrate the referenced root Place and never
+  persist Place snapshots. The editor materializes the Place before assigning
+  the reference. Structured experience writes must move to a trusted server
+  verifier before the currently blocked client Place root is promoted.
 - App profile overlays are delta-only and never copy public User identity.
   Every app-backed profile id belongs to `UserApp.profiles`; root-backed
   profile ids additionally belong to public `User.profiles`.
+- Fixed domain endpoints call
+  `packages/core/fireux-core/src/runtime/server/utils/profile/provision.ts`.
+  Domain models provide exact root/app seeds; the trusted transaction creates
+  missing records and updates both profile indexes in canonical order. Browser
+  code supplies only its Firebase bearer token and cannot choose ids,
+  collections, seeds, stamps,
+  or mutate the derived indexes independently. The endpoint provisions only
+  the caller and only profile ids declared by the current App's runtime
+  `profiles`; disabled handlers fail before Firestore access.
 
 User identity records:
 
@@ -149,14 +179,19 @@ User identity records:
   `app_ids`, and attached profile ids.
 - `User.avatar` stores an explicit user image when one exists; otherwise it uses
   `/img/ecosystem/avatar.png`. Core/FireUX placeholder art is never public User
-  identity.
+  identity. The stored value is never blank: it is that canonical fallback or
+  a valid HTTPS URL, and every public projection fails closed to the fallback.
 - `UserPrivate` is the user-owned private account record at
   `/users/{userId}/private/account`; it contains email, private preferences,
   and versioned terms acceptance evidence.
 - `UserApp` is the app-owned membership record at
   `/apps/{appId}/users/{userId}`; app role, entitlement, console access, and
-  app notifications belong here. Every profile with an App overlay records its
-  id here, whether or not that profile also has a public root record.
+  profile membership belong here. Owner delivery/read state lives at
+  `/users/{userId}/notifications/{notificationId}`, including notifications
+  produced from app events. Every profile with an App overlay records its id
+  on UserApp, whether or not that profile also has a public root record.
+- Notification producers are trusted server pipelines. Owners may read and
+  acknowledge their records, but browser code does not publish notifications.
 - App authorization is never mirrored onto public `User`.
 
 Profile privacy boundaries:

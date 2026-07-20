@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:24 CEST — Pre-order planning repair: make missing child schedules inherit through the canonical Kitchen → Menu → surface chain.
 import type { MenuServiceHoursConfig } from '../models/kitchen/menu/kitchen-menu.model'
 import type { WeekdayTimeWindowsConfig } from '../models/shared/weekday-time.model'
 
@@ -16,7 +17,11 @@ export const resolveMenuServiceHours = (
   config: MenuServiceHoursConfig | undefined,
   kitchenHours?: WeekdayTimeWindowsConfig
 ): MenuServiceHoursConfig | undefined => {
-  if (!config) return undefined
+  if (!config) {
+    return hasWindows(kitchenHours)
+      ? inheritedHours({ inherit_kitchen_operation_hours: true }, kitchenHours)
+      : undefined
+  }
   if (config.inherit_kitchen_operation_hours) {
     return inheritedHours(config, kitchenHours)
   }
@@ -29,7 +34,15 @@ export const resolveMenuSurfaceServiceHours = (
   menuHours?: WeekdayTimeWindowsConfig,
   kitchenHours?: WeekdayTimeWindowsConfig
 ): MenuServiceHoursConfig | undefined => {
-  if (!config) return undefined
+  if (!config) {
+    if (hasWindows(menuHours)) {
+      return inheritedHours({ inherit_menu_service_hours: true }, menuHours)
+    }
+
+    return hasWindows(kitchenHours)
+      ? inheritedHours({ inherit_kitchen_operation_hours: true }, kitchenHours)
+      : undefined
+  }
   if (config.inherit_menu_service_hours) {
     return inheritedHours(config, menuHours)
   }

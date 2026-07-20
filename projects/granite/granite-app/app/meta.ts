@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 const sourceMeta = {
@@ -79,8 +80,6 @@ const sourceMeta = {
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
       structureTitle: 'Relationship map',
-      examplesEyebrow: 'Examples',
-      examplesTitle: 'Sample objects',
       routesTitle: 'Key routes',
     },
     keyConcepts: [
@@ -239,60 +238,6 @@ const sourceMeta = {
           linksTo: ['Place', 'Portfolio', 'Client'],
         },
       ],
-      samples: [
-        {
-          entity: 'Portfolio',
-          example: {
-            id: 'portfolio_rivergate_demo',
-            name: 'Rivergate Holdings Portfolio',
-            owner_label: 'Rivergate Holdings Ltd',
-            region_label: 'Zurich + Bern',
-            strategy_label: 'Income stability',
-          },
-        },
-        {
-          entity: 'Property',
-          example: {
-            id: 'prop_langstrasse_14',
-            portfolio_id: 'portfolio_rivergate_demo',
-            title: 'Langstrasse 14',
-            address_label: 'Langstrasse 14, 8004 Zurich',
-            estimated_value: 5400000,
-          },
-        },
-        {
-          entity: 'Client',
-          example: {
-            id: 'client_alpine_fund',
-            display_name: 'Alpine Residential Fund',
-            entity_kind: 'organization',
-            status: 'active',
-            portfolio_id: 'portfolio_rivergate_demo',
-          },
-        },
-        {
-          entity: 'ComplianceRecord',
-          example: {
-            id: 'comp_fire_alarm_q1',
-            item_type_id: 'type_fire_alarm',
-            scope_type: 'property',
-            scope_id: 'prop_langstrasse_14',
-            issue_date: '2026-01-18',
-            expiry_date: '2027-01-18',
-          },
-        },
-        {
-          entity: 'Task',
-          example: {
-            id: 'task_leak_4021',
-            title: 'Resolve boiler pressure issue',
-            status: 'in_progress',
-            priority: 'high',
-            linked_entity_type: 'property',
-            linked_entity_id: 'prop_langstrasse_14',
-          },
-        },
-      ],
       routes: [
         { label: 'Home', path: '/', kind: 'public' },
         { label: 'Get Started', path: '/get-started', kind: 'public' },
@@ -433,7 +378,6 @@ export const appMeta = {
   keyConcepts: sourceMeta.about.keyConcepts,
   modules: sourceMeta.about.appSpec.modules,
   entities: sourceMeta.about.appSpec.entities,
-  samples: sourceMeta.about.appSpec.samples,
   routes: sourceMeta.about.appSpec.routes,
   relationshipMap: sourceMeta.about.relationshipMap,
 
@@ -553,9 +497,6 @@ export const metaContent = defineFireuxMeta({
     purpose: entity.purpose,
   })),
   relations_ascii: appMeta.relationshipMap,
-  examples: {
-    samples: [...appMeta.samples],
-  },
   routes: {
     public: publicRoutes,
     console: consoleRoutes,

@@ -2,6 +2,7 @@
 
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: distinguish public profiles from app-private records.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: support atomic domain-owned root profile seeds.
+// Concurrent edit — 2026-07-20 17:41 CEST — Repo Efficiency Pass 2 of 6: route profile creation through trusted domain provisioners.
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './meta.model'
 
@@ -34,24 +35,6 @@ export const AppProfileStorage = {
   idParam: 'userId',
 } as const
 
-export const ProfileFields = {
-  title: '' as string,
-  subtitle: '' as string,
-  tagline: '' as string,
-  tags: [] as string[],
-} as const
-
-export const ProfileStamps = {
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
-} as const
-
 export const AppProfileStamps = {
   created: {
     at: {} as FirebaseTimestamp,
@@ -64,34 +47,14 @@ export const AppProfileStamps = {
   },
 } as const
 
-export function createProfileSeed() {
-  return {
-    id: '' as string,
-    title: ProfileFields.title,
-    subtitle: ProfileFields.subtitle,
-    tagline: ProfileFields.tagline,
-    tags: [...ProfileFields.tags],
-    created: { ...ProfileStamps.created },
-    updated: { ...ProfileStamps.updated },
-  }
-}
-
-export function createAppProfileSeed() {
-  return {
-    id: '' as string,
-    created: { ...AppProfileStamps.created },
-    updated: { ...AppProfileStamps.updated },
-  }
-}
-
 /**
  * Profile doc base shape (global truth)
  * Example path: /chefs/<uid>, /agents/<uid>, /professionals/<uid>, etc.
  *
  * Canon notes:
- * - Profiles are user-owned (creator_id optional; uid is the authority)
- * - `tagline` is now universal (remove duplication from each profile)
- * - `tags` are stored (UI derives badges)
+ * - Profiles are user-owned (the document uid is the authority).
+ * - Only profile families that actually share these fields should use this
+ *   base; domain models own their exact persisted creation shape.
  */
 export type ProfileBase = FireuxStamped & {
   id: string
@@ -138,12 +101,9 @@ export interface ProfileConfig {
   /** Icon to reuse across nav/dropdown contexts */
   navIcon: string
 
+  /** Fixed authenticated endpoint that owns this profile's exact seed and writes. */
+  provisionRoute: string
+
   /** Public profiles own a root record; app-private profiles exist only under the current App. */
   storage?: 'root-and-app' | 'app-only'
-
-  /** Domain-owned fields that must be present atomically on the root record. */
-  rootCreateData?: Record<string, unknown>
-
-  /** Domain-owned fields that must be present atomically on the app record. */
-  appCreateData?: Record<string, unknown>
 }

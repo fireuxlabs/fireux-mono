@@ -1,10 +1,12 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/app.model.ts
 // Concurrent edit — 2026-07-20 13:08 CEST — Security spine: make self-join explicit and keep admin authority only in UserApp roles.
+// Concurrent edit — 2026-07-20 16:15 CEST — Repo Efficiency Pass 1 of 6: type App repo console families.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from './entity.model'
 import type { FireuxStamped } from './meta.model'
 import type {
+  AppConsoleFamily,
   AppDerived,
   AppMedia,
   AppRepoMetadata,
@@ -110,7 +112,7 @@ export const AppModel = {
     key: '',
     workspace: '',
     launch_order: 0,
-    console_families: [] as string[],
+    console_families: [] as AppConsoleFamily[],
     database_id: '',
   } as AppRepoMetadata,
 

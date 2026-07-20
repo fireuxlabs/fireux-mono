@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: transport domain fields beside canonical User identity.
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: keep creator principals out of public App transport.
 import type { AppStatus } from '../../../models/core/app.model'
 import type {
   AppDerived,
@@ -6,7 +7,7 @@ import type {
   AppRole,
   AppSocialLinks,
 } from '../../../models/core/supporting/app'
-import type { FireuxCreatedStamp } from '../../../models/core/meta.model'
+import type { FirebaseTimestamp } from '../../../../types/firebase'
 
 export type PublicSeoDto = {
   title: string
@@ -69,7 +70,7 @@ export type PublicAppDto = {
   social_links: AppSocialLinks
   derived: AppDerived
   media: AppMedia
-  created?: FireuxCreatedStamp
+  created?: { at: FirebaseTimestamp }
 }
 
 export type PublicCollectionResponse<T> = {

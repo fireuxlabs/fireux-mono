@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
 import {
   collection,
   query as fsq,
@@ -14,7 +15,6 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { getDemoKitchens } from '../../../demo/kitchen/scenarios'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
@@ -186,26 +186,9 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
     ),
     ids: idList,
   })
-  const demoDocs = computed<KitchenCollectionDoc[]>(() =>
-    getDemoKitchens().map((kitchen) => ({
-      id: kitchen.id,
-      place_id: kitchen.id,
-      slug: kitchen.slug,
-      name: kitchen.name,
-      display_name: kitchen.name,
-      tagline: kitchen.label,
-      short_name: kitchen.short_name || kitchen.label,
-      short_address: kitchen.short_address,
-      formatted_address: kitchen.formatted_address,
-      image_url: kitchen.image_url,
-      display_image_url: kitchen.image_url,
-      route_scope: 'demo',
-      is_test_kitchen: false,
-    }))
-  )
   const rootDocs = computed<KitchenCollectionDoc[]>(() =>
     sourceRef.value === 'demo'
-      ? demoDocs.value
+      ? []
       : sourceRef.value === 'test'
         ? hasIdFilter.value
           ? exactTestSource.docs.value ?? []
@@ -245,7 +228,8 @@ export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) 
   )
   const count = computed(() => kitchens.value.length)
   const active = computed(() =>
-    sourceRef.value !== 'test' || Boolean(simulationDatabaseId.value)
+    sourceRef.value !== 'demo' &&
+      (sourceRef.value !== 'test' || Boolean(simulationDatabaseId.value))
   )
   const pending = computed(() => {
     if (sourceRef.value === 'demo') return false

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep demo payloads outside the Firestore document seam.
 import {
   collection,
   limit,
@@ -12,7 +13,6 @@ import {
   SupplierStorage,
   type Supplier,
 } from '../../../../../models/supplier/Supplier.model'
-import { getDemoSupplier } from '../../../demo/supplier/scenarios'
 import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 
 type SupplierFetchDoc = Partial<Supplier> & {
@@ -93,17 +93,7 @@ export function useSupplierFetch(
 
   const supplier = computed<SupplierFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
-    if (sourceRef.value === 'demo') {
-      const demoSupplier = getDemoSupplier(docId)
-      if (!demoSupplier) return null
-
-      return surface({
-        supplier: {
-          ...demoSupplier,
-          id: String(demoSupplier.id || docId).trim(),
-        },
-      }) as SupplierFetchDoc | null
-    }
+    if (sourceRef.value === 'demo') return null
 
     if (keyRef.value === 'slug') {
       const entry = slugSource.value?.[0]

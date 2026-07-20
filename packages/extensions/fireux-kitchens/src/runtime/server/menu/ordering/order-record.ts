@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: snapshot a pending Kitchen alert atomically with its Order.
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: hash the customer capability on Order and return the raw token only from creation.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: hash the customer capability on Order and return the raw token only from creation.
 import { FieldValue } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import type { KitchenOrderFulfilmentMatch } from '../../../models/kitchen/order.model.ts'
@@ -105,6 +105,7 @@ export function assembleMenuOrderRecord(input: {
     `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${identity.id}`
   const receiptItems = input.items.map((item) => ({
     id: item.id,
+    source_item_id: item.source_item_id,
     menu_id: item.menu_id,
     label: item.label,
     quantity: item.quantity,
@@ -114,6 +115,7 @@ export function assembleMenuOrderRecord(input: {
       Math.max(1, Number(item.quantity || 1) || 1),
     ...(item.add_ons?.length ? { add_ons: item.add_ons } : {}),
     ...(item.variant_label ? { variant_label: item.variant_label } : {}),
+    ...(item.variant_id ? { variant_id: item.variant_id } : {}),
   }))
   const payload = {
     id: identity.id,

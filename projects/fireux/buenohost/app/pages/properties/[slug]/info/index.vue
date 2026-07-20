@@ -295,7 +295,7 @@
       <p class="text-muted">
         This property info is not available in BuenoHost.
       </p>
-      <UButton to="/properties/demo-stay" color="primary" variant="soft">
+      <UButton to="/properties/preview-stay" color="primary" variant="soft">
         Back to properties
       </UButton>
     </div>
@@ -303,6 +303,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: read the sanitized local preview instead of app demo fixtures.
 import { computed, ref } from 'vue'
 import { setResponseStatus, useRuntimeConfig } from '#imports'
 import {
@@ -310,8 +311,8 @@ import {
   getPropertyInfoSections,
   resolvePropertyInfo,
   type PropertyInfoItem,
-} from '../../../../demo/propertyInfo'
-import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
+} from '../../../../simulations/propertyInfo'
+import { findSimulatedBuenoHostProperty } from '../../../../simulations/properties'
 
 definePageMeta({
   layout: 'property-info',
@@ -319,7 +320,7 @@ definePageMeta({
 
 const route = useRoute()
 const runtimeConfig = useRuntimeConfig()
-const property = computed(() => findDemoBuenoHostPublicProperty(String(route.params.slug || '')))
+const property = computed(() => findSimulatedBuenoHostProperty(String(route.params.slug || '')))
 const info = computed(() => property.value ? resolvePropertyInfo(property.value.slug) : null)
 
 if (!info.value) setResponseStatus(404)

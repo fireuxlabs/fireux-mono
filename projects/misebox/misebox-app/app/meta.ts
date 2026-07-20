@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 const sourceMeta = {
@@ -78,8 +79,6 @@ const sourceMeta = {
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
       structureTitle: 'Relationship map',
-      examplesEyebrow: 'Examples',
-      examplesTitle: 'Sample objects',
       routesTitle: 'Key routes',
     },
     keyConcepts: [
@@ -265,59 +264,6 @@ const sourceMeta = {
           linksTo: ['Place', 'Supplier'],
         },
       ],
-      samples: [
-        {
-          entity: 'Kitchen',
-          example: {
-            id: 'k_demo_grill_yard',
-            name: 'Grill Yard Kitchen',
-            short_address: 'Market Street 12',
-            is_test_kitchen: false,
-            image_url:
-              'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=640&q=80',
-          },
-        },
-        {
-          entity: 'Menu',
-          example: {
-            id: 'menu_lunch_core',
-            kitchen_id: 'k_demo_grill_yard',
-            name: 'Lunch Core',
-            description: 'Core lunch menu.',
-            status: 'published',
-          },
-        },
-        {
-          entity: 'Order',
-          example: {
-            id: 'ord_demo_1024',
-            scope_type: 'kitchen',
-            scope_id: 'k_demo_grill_yard',
-            status: 'open',
-            totals: { subtotal_minor: 2450, total_minor: 2646, currency_code: 'CHF' },
-          },
-        },
-        {
-          entity: 'Job',
-          example: {
-            id: 'job_demo_cdpline',
-            title: 'Chef de Partie - Grill',
-            status: 'open',
-            type: 'fixed',
-            place_id: 'place_demo_interlaken',
-          },
-        },
-        {
-          entity: 'Professional',
-          example: {
-            id: 'prof_demo_ivy_lane',
-            title: 'Sous Chef',
-            summary: 'Experienced in alpine hotel and event kitchens.',
-            positions: ['Sous Chef', 'Chef de Partie'],
-            user: { id: 'user_demo_ivy', display_name: 'Ivy Lane' },
-          },
-        },
-      ],
       routes: [
         { label: 'Home', path: '/', kind: 'public' },
         { label: 'Get Started', path: '/get-started', kind: 'public' },
@@ -481,7 +427,6 @@ export const appMeta = {
   keyConcepts: sourceMeta.about.keyConcepts,
   modules: sourceMeta.about.appSpec.modules,
   entities: sourceMeta.about.appSpec.entities,
-  samples: sourceMeta.about.appSpec.samples,
   routes: sourceMeta.about.appSpec.routes,
   relationshipMap: sourceMeta.about.relationshipMap,
 
@@ -770,9 +715,6 @@ export const metaContent = defineFireuxMeta({
     purpose: entity.purpose,
   })),
   relations_ascii: appMeta.relationshipMap,
-  examples: {
-    samples: [...appMeta.samples],
-  },
   routes: {
     public: publicRoutes,
     console: consoleRoutes,

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove the retired personal BNB route family.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 export const sproochliProductSentence =
@@ -13,8 +14,6 @@ type SproochliRoute = {
 
 export const sproochliRoutes: SproochliRoute[] = [
   { label: 'Home', path: '/', kind: 'public' },
-  { label: 'BNB Guides', path: '/bnb', kind: 'public' },
-  { label: 'Holiday with Nats Wi-Fi', path: '/bnb/holiday-with-nats/wifi', kind: 'public' },
   { label: 'Bike Rental Instructions', path: '/info/bern-bike-rental/rental-instructions', kind: 'public' },
   { label: 'Read-only Menus', path: '/menus', kind: 'public' },
   { label: 'Menu Translation Tool', path: '/tools/menu', kind: 'public' },
@@ -40,11 +39,11 @@ export const metaContent = defineFireuxMeta({
     promise_html:
       'Owners write the original page, approve certified translations, and can later use cached generated translations for specific pages.',
     console_bridge_html:
-      'A standalone FireUX app for simple public pages. BNB guides are for hosts, read-only menus are a stepping stone before Misebox, and info pages cover everything else.',
+      'A standalone FireUX app for simple public pages. Read-only menus are a stepping stone before Misebox, while general info pages cover other visitor instructions.',
     about_p1:
       'Sproochli publishes simple QR-friendly public pages without needing a full console or ordering system.',
     about_p2:
-      'The MVP starts with static pages for BNB guides, read-only menus, and general local information.',
+      'The MVP starts with static read-only menus and general local information pages.',
   },
   seo: {
     title: 'Sproochli - Multilingual QR pages for real-world places',
@@ -63,8 +62,8 @@ export const metaContent = defineFireuxMeta({
   },
   cta: {
     primary: {
-      label: 'View BNB guide',
-      to: '/bnb/holiday-with-nats',
+      label: 'View local info simulation',
+      to: '/info/bern-bike-rental/rental-instructions',
     },
     secondary: {
       label: 'View info page',
@@ -107,10 +106,6 @@ export const metaContent = defineFireuxMeta({
       icon: 'i-lucide-house',
       status: 'bridge',
       keywords: ['guest instructions translation', 'Airbnb guest information translation'],
-      cta: {
-        label: 'View BNB guide',
-        to: '/bnb/holiday-with-nats',
-      },
       relatedApp: {
         name: 'BuenoHost',
         to: 'https://buenohost.web.app',
@@ -125,10 +120,6 @@ export const metaContent = defineFireuxMeta({
       icon: 'i-lucide-clipboard-check',
       status: 'very-easy',
       keywords: ['house rules translation', 'Airbnb house rules translation'],
-      cta: {
-        label: 'View BNB guide',
-        to: '/bnb/holiday-with-nats',
-      },
     },
     {
       slug: 'rental-instructions-translator',

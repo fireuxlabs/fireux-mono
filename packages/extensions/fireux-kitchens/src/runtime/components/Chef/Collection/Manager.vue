@@ -7,9 +7,7 @@
           <p>{{ description }}</p>
         </div>
 
-        <div
-          class="collection-manager__controls"
-        >
+        <div class="collection-manager__controls">
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -34,9 +32,9 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showSettledCount" variant="soft"
-              >{{ countLabel }}</UBadge
-            >
+            <UBadge v-if="showSettledCount" variant="soft">{{
+              countLabel
+            }}</UBadge>
           </div>
         </div>
       </div>
@@ -100,12 +98,13 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render root Chef rows with canonical User joins.
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: consume the exact Chef directory projection without storage-model casts.
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
 import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
-import type { Chef } from '../../../models/chef.model'
+import type { PublicChefDirectoryProfile } from '../../../models/chef.model'
 
-type ChefEntry = Partial<Chef> & { id: string }
+type ChefEntry = PublicChefDirectoryProfile
 
 const props = withDefaults(
   defineProps<{
@@ -132,10 +131,9 @@ const props = withDefaults(
 
 const fetched = useChefFetch()
 const { outcome } = fetched
-const collection = computed<ChefEntry[]>(() =>
-  (fetched.coreChefs.value ?? []) as ChefEntry[]
-)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const collection = fetched.coreChefs
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Chefs'))
 const description = computed(() =>
   String(props.description || 'Browse chefs available to this runtime.')
@@ -149,8 +147,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const showSettledCount = computed(
   () =>
-    showCount.value &&
-    (outcome.value === 'ready' || outcome.value === 'empty')
+    showCount.value && (outcome.value === 'ready' || outcome.value === 'empty')
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -162,11 +159,11 @@ const {
   cell: makeChefCell,
 } = useChefInterface()
 const makeCard = (entry: ChefEntry) =>
-  makeChefCard(entry as Chef, fetched.userById(entry.id))
+  makeChefCard(entry, fetched.userById(entry.id))
 const makePill = (entry: ChefEntry) =>
-  makeChefPill(entry as Chef, fetched.userById(entry.id))
+  makeChefPill(entry, fetched.userById(entry.id))
 const makeCell = (entry: ChefEntry) =>
-  makeChefCell(entry as Chef, fetched.userById(entry.id))
+  makeChefCell(entry, fetched.userById(entry.id))
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<ChefEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,

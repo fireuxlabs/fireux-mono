@@ -1,9 +1,8 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: make live and demo outcomes authoritative.
+// Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: include membership state in Kitchen target outcomes and bind real target ids.
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazy-load Kitchen demo targets only on the console index.
 import { computed } from 'vue'
-import {
-  useConsoleIndex,
-  type ConsoleTargetOutcome,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import {
   useKitchenCollection,
@@ -11,6 +10,7 @@ import {
 } from '../../../firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenFetchSource } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenConsole } from '../core/useKitchenConsole'
+import { useKitchenConsoleDemoData } from '../core/useKitchenConsoleDemoData'
 
 export function useKitchenConsoleIndex() {
   const {
@@ -23,17 +23,10 @@ export function useKitchenConsoleIndex() {
     consoleTargets.filter({})
   )
   const targetCollection = useKitchenCollection({ filter: targetFilter })
-  const demoCollection = useKitchenCollection({
-    source: 'demo',
-  })
+  const demoCollection = useKitchenConsoleDemoData(true)
   const targetKitchens = computed(() => targetCollection.kitchens.value)
-  const demoKitchens = computed(() => demoCollection.kitchens.value)
-  const targetPending = computed(() =>
-    Boolean(consoleTargets.pending.value || targetCollection.pending.value)
-  )
-  const targetOutcome = computed<ConsoleTargetOutcome>(() =>
-    targetPending.value ? 'pending' : targetCollection.outcome.value
-  )
+  const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
+  const targetOutcome = consoleTargets.resolveOutcome(targetCollection.outcome)
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
     kitchenId: consoleSelection.kitchenId.value,
@@ -78,6 +71,7 @@ export function useKitchenConsoleIndex() {
     runtime,
     targets: targetKitchens,
     outcome: targetOutcome,
+    getTargetId: (target) => String(target?.id ?? '').trim(),
     showTargets: computed(() => !isTenantSingleTarget.value),
     selectTarget: (id: string) => {
       consoleActions.selectKitchen(String(id ?? '').trim(), 'live')

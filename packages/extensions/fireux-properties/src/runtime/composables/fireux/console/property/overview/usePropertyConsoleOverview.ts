@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: carry Property target outcome into overview.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
@@ -15,6 +16,7 @@ export function usePropertyConsoleOverview() {
   const overview = useConsoleOverview<Property>({
     selectedEntity: selection.property,
     targetItems: properties.targets,
+    targetOutcome: properties.outcome,
     getId: (property) => normalizeString(property?.id),
   })
   const debug = computed(() => ({

@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access before document upload.
 import { useRuntimeConfig } from '#imports'
 import {
   getDownloadURL,
@@ -7,6 +8,10 @@ import {
 } from 'firebase/storage'
 import type { RuntimeConfig } from '@nuxt/schema'
 import { useFirebaseStorage } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import {
+  requirePortfolioConsoleWrite,
+  useActivePortfolio,
+} from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
 
 const normalize = (value: unknown) => String(value || '').trim()
 
@@ -47,11 +52,13 @@ export type DocumentUploadResult = {
   sizeBytes: number
 }
 
-export function useDocumentStorage() {
+export function useDocumentStorage(runtimePortfolio = useActivePortfolio()) {
   const runtimeConfig = useRuntimeConfig() as RuntimeConfig
   const storage = resolveStorageBucket(useFirebaseStorage(), runtimeConfig)
 
   async function uploadFile(input: DocumentUploadInput): Promise<DocumentUploadResult> {
+    requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-documents')
+
     const prefix = normalize(input.pathPrefix)
     if (!prefix) {
       throw new Error('[fireux-documents] pathPrefix is required for upload.')

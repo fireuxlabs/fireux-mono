@@ -1,4 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: map stored, detail, and exact directory Professional shapes without compatibility fields.
 import {
   resolveProfileBadges,
   resolveProfileDisplayName,
@@ -10,12 +11,15 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import type { Ref } from 'vue'
-import type { Professional } from '../../../../../../../models/profiles/Professional/Professional.model'
+import type {
+  Professional,
+  PublicProfessionalDirectoryProfile,
+} from '../../../../../../../models/profiles/Professional/Professional.model'
 import { professionalConfig } from '../../config/professionalConfig'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>
-type ProfessionalTarget = Professional
+type ProfessionalTarget = PublicProfessionalDirectoryProfile
 
 export namespace ProfessionalCard {
   export type Card = {
@@ -67,10 +71,7 @@ export function useProfessionalInterface(
     if (!p) return null
 
     const user = userOverride ?? userRef?.value ?? null
-    const id =
-      safeString((p as any).id).trim() ||
-      safeString((p as any).owner_uid).trim() ||
-      safeString(user?.id).trim()
+    const id = safeString(p.id).trim() || safeString(user?.id).trim()
     if (!id) return null
 
     const image = resolveProfileImage([p.image])
@@ -78,11 +79,10 @@ export function useProfessionalInterface(
     const summary = resolveProfileSummary([p.summary, p.bio])
     const badges = resolveProfileBadges([p.tags])
     const secondaryAvatarUrl = resolveSecondaryAvatarUrl(image, avatar)
-    const explicitTo = safeString((p as any).to).trim()
 
     return {
       id,
-      to: explicitTo || `/${professionalConfig.collectionName}/${encodeURIComponent(id)}`,
+      to: `/${professionalConfig.collectionName}/${encodeURIComponent(id)}`,
       imageUrl: image || avatar,
       avatarUrl: avatar,
       secondaryAvatarUrl,

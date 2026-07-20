@@ -1,7 +1,8 @@
 App config spine map
 <!-- Concurrent edit — 2026-07-19 17:06 CEST — Directory Authority Cutover: clarify App versus Ecosystem database authority. -->
-Updated: 2026-07-19
-Ref: 565ebd668
+<!-- Concurrent edit — 2026-07-20 16:24 CEST — Repo Efficiency Pass 1 of 6: map self-join declaration and enforcement authority. -->
+Updated: 2026-07-20
+Ref: 8d83d3fa7
 Role: map, not canon
 
 Purpose:
@@ -54,6 +55,9 @@ Important fields:
 - `consoleConfig`
 - `domains`
 - `profiles`
+- `selfJoinEnabled`: bootstrap and UX intent for self-joining. A new canonical
+  App receives this value; its stored `self_join_enabled` field is the server
+  enforcement authority.
 - `navHiddenKeys`
 
 Mode differences:

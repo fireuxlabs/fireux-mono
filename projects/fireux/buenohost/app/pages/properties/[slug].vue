@@ -5,8 +5,8 @@
       :description="property.headline"
     >
       <template #headline>
-        <UBadge color="primary" variant="soft">
-          Direct booking enquiry
+        <UBadge color="warning" variant="soft">
+          Local product simulation
         </UBadge>
       </template>
 
@@ -110,53 +110,17 @@
         </div>
 
         <UCard>
-          <div class="space-y-5">
-            <div>
-              <h2 class="text-xl font-semibold">
-                Message the host
-              </h2>
-              <p class="mt-1 text-sm leading-6 text-toned">
-                Ask about dates or direct booking before private stay details are shared.
-              </p>
-            </div>
-
+          <div class="space-y-4">
+            <h2 class="text-xl font-semibold">Preview only</h2>
             <UAlert
-              v-if="submitMessage"
-              :color="submitColor"
-              :title="submitTitle"
-              :description="submitMessage"
+              color="warning"
+              variant="soft"
+              title="No live property or host"
+              description="This route is a local product simulation. Messaging and booking are disabled, and no information is sent or saved."
             />
-
-            <form class="space-y-4" @submit.prevent="handleSubmit">
-              <UFormField label="Name" required>
-                <UInput v-model="draft.name" placeholder="Your name" />
-              </UFormField>
-
-              <UFormField label="Email" required>
-                <UInput v-model="draft.email" type="email" placeholder="you@example.com" />
-              </UFormField>
-
-              <UFormField label="Phone">
-                <UInput v-model="draft.phone" placeholder="+41 ..." />
-              </UFormField>
-
-              <UFormField label="Message" required>
-                <UTextarea
-                  v-model="draft.message"
-                  :rows="5"
-                  placeholder="Tell the host your dates, guest count, and any questions."
-                />
-              </UFormField>
-
-              <UButton
-                block
-                color="primary"
-                type="submit"
-                :loading="submitting"
-              >
-                Send enquiry
-              </UButton>
-            </form>
+            <p class="text-sm leading-6 text-toned">
+              A live BuenoHost property would connect this surface to its verified owner, private guest access and real availability.
+            </p>
           </div>
         </UCard>
       </div>
@@ -177,83 +141,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
-import { useConversationCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/conversation/mutations/useConversationCreate'
-import { findDemoBuenoHostPublicProperty } from '../../demo/properties'
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: make the fictional property route an explicit read-only simulation.
+import { computed } from 'vue'
+import { findSimulatedBuenoHostProperty } from '../../simulations/properties'
 
 const route = useRoute()
 const slug = computed(() => String(route.params.slug || ''))
-const property = computed(() => findDemoBuenoHostPublicProperty(slug.value))
-const { createConversation } = useConversationCreate()
-
-const submitting = ref(false)
-const submitTitle = ref('')
-const submitMessage = ref('')
-const submitColor = ref<'success' | 'warning' | 'error'>('success')
-const draft = reactive({
-  name: '',
-  email: '',
-  phone: '',
-  message: '',
-})
-
-function resetDraft() {
-  draft.name = ''
-  draft.email = ''
-  draft.phone = ''
-  draft.message = ''
-}
-
-async function handleSubmit() {
-  if (!property.value) return
-
-  if (!draft.name.trim() || !draft.email.trim() || !draft.message.trim()) {
-    submitColor.value = 'warning'
-    submitTitle.value = 'Complete the form'
-    submitMessage.value = 'Please add your name, email, and message before sending.'
-    return
-  }
-
-  submitting.value = true
-  submitMessage.value = ''
-
-  try {
-    const conversationId = await createConversation({
-      app_id: 'buenohost',
-      kind: 'property_enquiry',
-      related_entity: {
-        family: 'properties',
-        id: property.value.id,
-        path: `properties/${property.value.id}`,
-        label: property.value.identity.name,
-      },
-      guest_contact: {
-        name: draft.name,
-        email: draft.email,
-        phone: draft.phone,
-        preferred_channel: 'chat',
-      },
-      source_route: route.fullPath,
-      initial_message: {
-        body: draft.message,
-        sender_type: 'guest',
-        sender_name: draft.name,
-      },
-    })
-
-    submitColor.value = 'success'
-    submitTitle.value = 'Enquiry sent'
-    submitMessage.value = `Your message is saved as conversation ${conversationId}.`
-    resetDraft()
-  } catch (error) {
-    submitColor.value = 'error'
-    submitTitle.value = 'Could not send enquiry'
-    submitMessage.value =
-      error instanceof Error ? error.message : 'Please try again.'
-  } finally {
-    submitting.value = false
-  }
-}
+const property = computed(() => findSimulatedBuenoHostProperty(slug.value))
 
 useSeoMeta({
   title: computed(() =>

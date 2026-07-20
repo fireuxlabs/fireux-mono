@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: cull ad-hoc Company fixture surfaces. -->
 <template>
   <UPage>
     <UPageHeader
@@ -7,22 +8,6 @@
 
     <UPageBody class="pagebody">
       <div class="space-y-4">
-        <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Demo</div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('demo')"
-            >
-              {{ openSections.demo ? 'Hide' : 'Show' }}
-            </UButton>
-          </div>
-          <div v-show="openSections.demo" class="mt-4">
-            <DevCompanyDemo />
-          </div>
-        </UCard>
-
         <UCard>
           <div class="flex items-center justify-between gap-3">
             <div class="text-sm font-semibold">Model</div>
@@ -105,7 +90,6 @@ definePageMeta({
 })
 
 const openSections = reactive({
-  demo: false,
   model: false,
   collection: false,
 })

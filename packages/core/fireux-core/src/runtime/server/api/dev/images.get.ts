@@ -1,8 +1,10 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Repo Efficiency Pass 1 of 6: require the configured developer for dev filesystem inspection.
 import { readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createError, defineEventHandler } from 'h3'
+import { defineEventHandler, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
+import { requireDevDeveloper } from '../../utils/auth/developer'
 
 type ImageEntry = {
   urlPath: string
@@ -62,10 +64,10 @@ function getCorePublicDir(): string {
   return path.resolve(path.dirname(here), '../../../public')
 }
 
-export default defineEventHandler(async () => {
-  if (!import.meta.dev) {
-    throw createError({ statusCode: 404, statusMessage: 'Not found' })
-  }
+export default defineEventHandler(async (event) => {
+  await requireDevDeveloper(event)
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  setHeader(event, 'Vary', 'Authorization')
 
   const groups: ImageGroup[] = []
 

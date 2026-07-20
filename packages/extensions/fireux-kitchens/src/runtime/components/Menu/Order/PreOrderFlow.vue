@@ -18,41 +18,47 @@
   />
 
   <template v-else>
-    <MenuOrderCatalogue
-      :key="scopeKey"
-      :currency-code="currencyCode"
-      :sections="sections"
-      @add="basket.add"
+    <MenuOrderPreOrderPlan
+      v-model:party-size="partySize"
+      :selection="requestedTime"
+      @choose-time="openTimePicker"
     />
 
-    <MenuOrderBasketSummary
-      :currency-code="basket.currencyCode.value"
-      :quantity="basket.quantity.value"
-      :total="basket.total.value"
-      :total-label="basket.totalLabel.value"
-      @review="openBasket"
-    />
+    <template v-if="planReady">
+      <MenuOrderCatalogue
+        :key="scopeKey"
+        :currency-code="currencyCode"
+        :sections="sections"
+        @add="basket.add"
+      />
 
-    <MenuOrderCheckoutDialog
-      v-model:open="checkoutOpen"
-      :error="order.error.value"
-      :handoff-instructions="handoffInstructions"
-      handoff-title="Table pre-order"
-      order-type="pre_order"
-      :payment-methods="paymentMethods"
-      party-size-required
-      :pending="order.pending.value"
-      :required-contact-fields="requiredContactFields"
-      :selection-label="requestedTime?.label || ''"
-      show-party-size
-      :total-label="basket.totalLabel.value"
-      @submit="submitOrder"
-    />
+      <MenuOrderBasketSummary
+        :currency-code="basket.currencyCode.value"
+        :quantity="basket.quantity.value"
+        :total="basket.total.value"
+        :total-label="basket.totalLabel.value"
+        @review="openBasket"
+      />
+
+      <MenuOrderCheckoutDialog
+        v-model:open="checkoutOpen"
+        :error="order.error.value"
+        :handoff-instructions="handoffInstructions"
+        handoff-title="Table pre-order"
+        order-type="pre_order"
+        :payment-methods="paymentMethods"
+        :pending="order.pending.value"
+        :required-contact-fields="requiredContactFields"
+        :selection-label="requestedTime?.label || ''"
+        :total-label="basket.totalLabel.value"
+        @submit="submitOrder"
+      />
+    </template>
   </template>
 
   <MenuOrderBasketDialog
     v-model:open="basketOpen"
-    :action-label="requestedTime ? 'Review and send' : 'Choose requested time'"
+    action-label="Review and send"
     :currency-code="basket.currencyCode.value"
     :lines="basket.lines.value"
     :selection-label="requestedTime?.label"
@@ -74,7 +80,7 @@
     :selection="requestedTime"
     :slot-interval-minutes="config?.slot_interval_minutes"
     surface-label="Pre-order"
-    time-label="Requested"
+    time-label="Dining"
     unavailable-description="The Kitchen has not published the dining times available for pre-orders."
     unavailable-title="Requested dining times unavailable"
     @select="setRequestedTime"
@@ -84,7 +90,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: compose mandatory timing over shared Menu Order seams.
-// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: define advance table service with a required party size and dining slot.
+// Concurrent edit — 2026-07-20 16:10 CEST — Pre-order planning pass: gate catalogue selection behind dining time and party size.
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
@@ -122,9 +128,17 @@ const basketOpen = ref(false)
 const timeOpen = ref(false)
 const checkoutOpen = ref(false)
 const requestedTime = ref<MenuOrderTimeSelection | null>(null)
+const partySize = ref('')
 const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
-const afterBasket = ref<'time' | 'checkout' | ''>('')
-const openCheckoutAfterTime = ref(false)
+const timeTrigger = shallowRef<HTMLButtonElement | null>(null)
+const openCheckoutAfterBasket = ref(false)
+const parsedPartySize = computed(() => Number(partySize.value))
+const planReady = computed(() =>
+  Boolean(requestedTime.value?.requestedFor) &&
+  Number.isSafeInteger(parsedPartySize.value) &&
+  parsedPartySize.value >= 1 &&
+  parsedPartySize.value <= 500
+)
 const paymentMethods = computed(() => props.config?.fulfilment?.payment_methods || [])
 const handoffInstructions = computed(() =>
   String(props.config?.fulfilment?.handoff_instructions || '').trim()
@@ -139,13 +153,19 @@ watch(() => order.amendmentLines.value, (lines) => {
 
 watch(() => basket.quantity.value, (quantity) => {
   if (quantity || order.sentOrder.value) return
-  closeDialogs()
-  requestedTime.value = null
+  basketOpen.value = false
+  checkoutOpen.value = false
 })
 watch(scopeKey, () => {
   closeDialogs()
   requestedTime.value = null
+  partySize.value = ''
 })
+
+function openTimePicker(trigger: HTMLButtonElement) {
+  timeTrigger.value = trigger
+  timeOpen.value = true
+}
 
 function openBasket(trigger: HTMLButtonElement) {
   if (!basket.quantity.value) return
@@ -154,19 +174,14 @@ function openBasket(trigger: HTMLButtonElement) {
 }
 
 function continueFromBasket() {
-  if (!basket.quantity.value) return
-  afterBasket.value = requestedTime.value ? 'checkout' : 'time'
+  if (!basket.quantity.value || !planReady.value) return
+  openCheckoutAfterBasket.value = true
   basketOpen.value = false
 }
 
 function finishBasketDialog() {
-  if (afterBasket.value === 'time') {
-    afterBasket.value = ''
-    timeOpen.value = true
-    return
-  }
-  if (afterBasket.value === 'checkout') {
-    afterBasket.value = ''
+  if (openCheckoutAfterBasket.value) {
+    openCheckoutAfterBasket.value = false
     checkoutOpen.value = true
     return
   }
@@ -176,23 +191,20 @@ function finishBasketDialog() {
 function setRequestedTime(selection: MenuOrderTimeSelection) {
   if (!selection.requestedFor) return
   requestedTime.value = selection
-  openCheckoutAfterTime.value = true
 }
 
 function finishTimeDialog() {
-  if (openCheckoutAfterTime.value) {
-    openCheckoutAfterTime.value = false
-    checkoutOpen.value = true
-    return
-  }
-  restoreTriggerFocus()
+  const trigger = timeTrigger.value
+  timeTrigger.value = null
+  void nextTick(() => trigger?.focus())
 }
 
 async function submitOrder(input: MenuOrderCheckoutInput) {
-  if (!requestedTime.value?.requestedFor) return
+  if (!requestedTime.value?.requestedFor || !planReady.value) return
   const created = await order.submit({
     ...input,
     lines: basket.lines.value,
+    partySize: parsedPartySize.value,
     selection: requestedTime.value,
     sourceMenuId: props.sourceMenuId,
   })
@@ -203,6 +215,7 @@ function resetOrder() {
   order.reset()
   closeDialogs()
   requestedTime.value = null
+  partySize.value = ''
   basket.clear()
 }
 
@@ -210,7 +223,8 @@ async function amendOrder() {
   const response = await order.respondToChanges({ action: 'amend' })
   if (!response) return
   requestedTime.value = null
-  basketOpen.value = true
+  partySize.value = ''
+  basketOpen.value = false
 }
 
 async function cancelOrder() {
@@ -222,6 +236,7 @@ function closeDialogs() {
   basketOpen.value = false
   timeOpen.value = false
   checkoutOpen.value = false
+  openCheckoutAfterBasket.value = false
 }
 
 function restoreTriggerFocus() {

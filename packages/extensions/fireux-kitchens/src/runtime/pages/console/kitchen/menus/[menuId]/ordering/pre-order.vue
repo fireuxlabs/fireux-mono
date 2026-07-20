@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <!-- Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: register the focused Pre-order settings route. -->
 <template>
   <UDashboardPanel id="console-kitchen-menu-ordering-pre-order">
@@ -14,14 +15,14 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,
+  requiresSelection: true,
   nav: {
-    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-menu-ordering-pre-order',
     label: 'Pre-order',
     icon: 'i-lucide-calendar-clock',
     position: 'top',
-    requiresSelection: true,
     hidden: true,
     desktop: false,
     mobile: false,

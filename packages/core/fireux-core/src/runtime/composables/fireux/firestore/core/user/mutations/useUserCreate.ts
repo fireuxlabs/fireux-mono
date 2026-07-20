@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: self-create only an unprivileged runtime App membership.
+// Concurrent edit — 2026-07-20 16:37 CEST — Repo Efficiency Pass 1 of 6: distinguish fresh bootstrap from a failed App-status check.
 
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -32,6 +33,25 @@ function toPublicDisplayNameSeed(
     return isAnonymous && suffix ? `Guest ${suffix}` : ''
   }
   return looksLikeEmail(fallback) ? fallback.split('@')[0]?.trim() || '' : fallback
+}
+
+async function isRuntimeAppInitialized(appId: string): Promise<boolean> {
+  const response = await fetch('/api/public/app/status', {
+    headers: { accept: 'application/json' },
+    cache: 'no-store',
+  })
+  if (!response.ok) {
+    throw new Error(`App status check failed (${response.status}).`)
+  }
+
+  const payload = await response.json() as {
+    appId?: unknown
+    initialized?: unknown
+  }
+  if (payload.appId !== appId || typeof payload.initialized !== 'boolean') {
+    throw new Error('App status check returned an invalid response.')
+  }
+  return payload.initialized
 }
 
 export function useUserCreate() {
@@ -94,32 +114,17 @@ export function useUserCreate() {
 
     // Sign-in should not mutate existing membership/admin roles.
     // Only create app membership when the app-scoped overlay is missing.
-    let shouldCreateMembership = true
+    let shouldCreateMembership = false
     let membershipExists = false
-    let appExists = false
     try {
       const db = useFirestore()
-      const [appUserSnap, appSnap] = await Promise.all([
-        getDoc(doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)),
-        getDoc(doc(db, AppStorage.collection, appId)),
-      ])
-      appExists = appSnap.exists()
+      const appUserSnap = await getDoc(
+        doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)
+      )
 
       if (appUserSnap.exists()) {
         membershipExists = true
-        shouldCreateMembership = false
       }
-
-      if (!appExists) {
-        shouldCreateMembership = false
-        if (import.meta.dev) {
-          console.warn('[useUserCreate] app doc missing; skipping membership create', {
-            uid,
-            appId,
-          })
-        }
-      }
-
     } catch (error) {
       if (import.meta.dev) {
         console.warn('[useUserCreate] failed to inspect existing membership role', {
@@ -130,11 +135,19 @@ export function useUserCreate() {
       }
     }
 
+    // Config declares the bootstrap/UX intent. The canonical App's persisted
+    // self_join_enabled field remains the trusted server enforcement policy.
+    // Before that App exists, core account creation must still complete so the
+    // developer can initialize it and bootstrap the first administrator.
+    if (!membershipExists && fireux.selfJoinEnabled) {
+      shouldCreateMembership = await isRuntimeAppInitialized(appId)
+    }
+
     const membership = shouldCreateMembership
       ? await createUserAppMembership(appId, uid, 'user')
       : { created: false }
 
-    const event = appExists && (membershipExists || membership.created)
+    const event = membershipExists || membership.created
       ? await ensureAppUserJoinedEvent(auth)
       : { created: false, ready: false }
 

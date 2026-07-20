@@ -1,6 +1,8 @@
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: render live owner notifications with read controls.
-import { ref } from 'vue'
+// Concurrent edit — 2026-07-20 15:29 CEST — Customer order notification pass: render live owner notifications with read controls.
+import { computed, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useConsoleNotifications } from '../../../composables/fireux/app/ui/useConsoleNotifications'
 import { useUserNotifications } from '../../../composables/fireux/firestore/core/user/fetch/useUserNotifications'
 import { useUserNotificationRead } from '../../../composables/fireux/firestore/core/user/mutations/useUserNotificationRead'
 import {
@@ -9,10 +11,22 @@ import {
 } from '../../../utils/formatTimestamp'
 
 const open = defineModel<boolean>('open', { default: false })
-const { notifications, pending, error } = useUserNotifications()
+const router = useRouter()
+const {
+  notifications,
+  unreadCount: liveUnreadCount,
+  pending,
+  error,
+} = useUserNotifications()
 const { markRead } = useUserNotificationRead()
+const { setUnreadCount } = useConsoleNotifications()
 const markingId = ref('')
 const mutationError = ref('')
+const myOrdersAvailable = computed(() =>
+  router.resolve('/dashboard/customer/profile').matched.length > 0
+)
+
+watch(liveUnreadCount, setUnreadCount, { immediate: true })
 
 const timestampLabel = (value: FirestoreTimestampLike) =>
   formatFirestoreTimestamp(value, { fallback: '' }) || ''
@@ -98,6 +112,7 @@ async function markNotificationRead(notificationId: string) {
 
     <template #footer>
       <UButton
+        v-if="myOrdersAvailable"
         to="/dashboard/customer/profile"
         label="My orders"
         icon="i-lucide-receipt-text"

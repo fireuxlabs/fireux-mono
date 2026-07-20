@@ -3,6 +3,9 @@
     <UContainer class="py-8">
       <div class="mx-auto max-w-3xl space-y-8">
         <header class="space-y-5">
+          <UBadge color="warning" variant="soft">
+            Local content simulation — not a live place page
+          </UBadge>
           <NuxtLink to="/info" class="inline-flex items-center gap-2 text-sm font-semibold text-primary">
             <Icon name="i-lucide-arrow-left" class="size-4" />
             Info
@@ -69,11 +72,12 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: disclose and consume the app-local public simulation.
 import {
   resolveSproochliInfoPage,
   sproochliLanguages,
   type SproochliLanguage,
-} from '../../../demo/sampleInfo'
+} from '../../../simulations/sampleInfo'
 import type { InfoBlockType } from 'fireux-sproochli/runtime/info'
 
 const route = useRoute()

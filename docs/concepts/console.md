@@ -1,8 +1,10 @@
 Console spine map
-Updated: 2026-07-19
-Ref: f7d3704ef
+Updated: 2026-07-20
+Ref: 8d83d3fa7
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: lock authoritative console target outcomes. -->
+<!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: map access, target outcome, targeted reads, and mutation authority. -->
+<!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: map deferred local fixture outcomes. -->
 
 Purpose:
 Map the shared console system and domain adapters.
@@ -17,9 +19,13 @@ Horizontal links:
 - components.md
 - pages.md
 - debug.md
+- demo-data.md
 
 Shared core:
 - `useConsole`
+- `useConsoleAccess`
+- `useConsoleEntityRuntime`
+- `useConsoleDemoData`
 - `useConsoleTargets`
 - `useConsoleIndex`
 - `ConsoleTargetCollection`
@@ -41,6 +47,7 @@ Shared page rules:
 - Back navigation and page actions stay in the navbar right slot.
 - Create and edit share form behavior. Small primitives such as `ConsoleFormActions` may standardize Save, Cancel, pending, disabled, and status treatment without owning the page.
 - New and adopted route access visibility and selection requirements live at top-level page meta; navigation metadata only describes navigation presentation.
+- Authentication and role requirements also live at top-level page meta; `nav` must not become a second access contract.
 - A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
 - Adopted routes can declare `consoleSurface`; edit routes declare `edit` and live routes declare `live`.
@@ -82,6 +89,15 @@ Index pattern:
   one shared target presenter per source rather than flattening source state.
 - Persisted selection is validated only against a successful target read.
   Pending or failed target reads must not clear a saved selection.
+- Global target adapters compose UserApp membership pending/error with the
+  collection outcome. Membership failure is `error`, never an empty target list.
+- Global target IDs and operator overlays drive exact root-document reads;
+  they must not leave an unused full-root listener running behind client-side
+  filtering.
+- Demo target adapters use `useConsoleDemoData` and a dynamic import. The
+  loader stays untouched while inactive, successful local data is cached, and
+  its explicit `idle`, `pending`, `error`, `empty`, or `ready` outcome feeds the
+  same index contract as a live read.
 
 Operations:
 - Operations are child surfaces inside a selected console target.
@@ -92,6 +108,9 @@ Operations:
 - `Read.vue` lists current records and should link each record to detail when the operation owns record identity.
 - `Detail.vue` is justified for operations; it can start as a small selected-record surface and grow detail-level read/write children.
 - The matching operation composable is `useXConsoleOperation`; it owns selected target, child collection path, pending/write permissions, and debug wiring.
+- UI controls may hide or disable writes from `canWrite`, but mutations and
+  storage uploads must enforce the same authority themselves. Demo and other
+  read-only sources therefore remain non-writing even when invoked directly.
 - Use `Index.vue` only when the operation folder itself needs to auto-import as the rendered component.
 - Use named workflow folders only when the operator UI has a real workflow step, such as `Menus/Creation`, `Menus/Process`, or `Menus/QR`.
 - Do not use root entity buckets like `Create` inside operations unless the visible scoped workflow is actually named creation.
@@ -108,5 +127,8 @@ Differences:
 - Portfolio is more private and document/task/compliance oriented.
 - Blank is the minimal mirror for testing console spine.
 
-Open questions:
-- Demo/test/read-only modes should remain minimally invasive and not infect child operations.
+Demo, test, and simulation:
+- Demo is optional local, lazy, and read-only console data.
+- Test and simulation are separate mutable sources and may use dedicated
+  databases. Dev fixtures belong to authenticated dev tooling, not consoles.
+- See `demo-data.md` for ownership and dependency boundaries.

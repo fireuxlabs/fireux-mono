@@ -63,23 +63,6 @@
             />
           </UFormField>
 
-          <UFormField
-            v-if="showPartySize"
-            :label="fieldLabel('Guests', partySizeRequired)"
-            :required="partySizeRequired"
-          >
-            <UInput
-              v-model="partySize"
-              :disabled="pending"
-              inputmode="numeric"
-              :max="500"
-              :min="1"
-              placeholder="Number of guests"
-              :step="1"
-              type="number"
-            />
-          </UFormField>
-
           <UFormField label="Payment" required>
             <URadioGroup
               v-model="paymentMethod"
@@ -123,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: collect the party size for advance table orders through shared checkout.
+// Concurrent edit — 2026-07-20 16:10 CEST — Pre-order planning pass: keep shared checkout focused on contact and payment.
 import { computed, ref, watch } from 'vue'
 import type {
   MenuOrderContactField,
@@ -144,16 +127,12 @@ const props = withDefaults(defineProps<{
   orderType: KitchenOrderType
   paymentMethods: MenuPaymentMethod[]
   pending?: boolean
-  partySizeRequired?: boolean
   requiredContactFields?: MenuOrderContactField[]
   showContactFields?: boolean
-  showPartySize?: boolean
   selectionLabel: string
   totalLabel: string
 }>(), {
-  partySizeRequired: false,
   showContactFields: true,
-  showPartySize: false,
 })
 const emit = defineEmits<{
   (event: 'update:open', open: boolean): void
@@ -172,7 +151,6 @@ const modalUi = {
 const name = ref('')
 const phone = ref('')
 const email = ref('')
-const partySize = ref('')
 const paymentMethod = ref<MenuOrderPaymentSelection | undefined>()
 const validationError = ref('')
 const openModel = computed({
@@ -211,15 +189,10 @@ function submit() {
   const customerName = name.value.trim()
   const customerPhone = phone.value.trim()
   const customerEmail = email.value.trim()
-  const parsedPartySize = Number(partySize.value)
-  const validPartySize = Number.isSafeInteger(parsedPartySize) &&
-    parsedPartySize >= 1 &&
-    parsedPartySize <= 500
   const missing = [
     nameRequired.value && !customerName ? 'name' : '',
     phoneRequired.value && !customerPhone ? 'mobile number' : '',
     emailRequired.value && !customerEmail ? 'email address' : '',
-    props.partySizeRequired && !validPartySize ? 'number of guests' : '',
   ].filter(Boolean)
   if (missing.length) {
     validationError.value = `Add your ${missing.join(', ')} before sending the order.`
@@ -234,9 +207,6 @@ function submit() {
     name: customerName,
     phone: customerPhone,
     email: customerEmail,
-    ...(props.showPartySize && validPartySize
-      ? { partySize: parsedPartySize }
-      : {}),
     paymentMethod: paymentMethod.value,
   })
 }

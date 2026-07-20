@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
+<!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: consume the app-local simulation. -->
 <template>
   <UPage>
     <UPageHeader
@@ -36,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { demoSeoProviderList } from '../../demo/findMySeo'
+import { demoSeoProviderList } from '../../simulations/findMySeo'
 
 const technicalProviders = computed(() =>
   demoSeoProviderList.filter((provider) =>

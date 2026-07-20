@@ -1,4 +1,5 @@
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: map stored, detail, and exact directory Chef shapes without compatibility fields.
 import {
   resolveProfileBadges,
   resolveProfileDisplayName,
@@ -10,12 +11,17 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
-import type { Chef } from 'fireux-kitchens/runtime/models/chef.model'
+import type {
+  Chef,
+  PublicChefDirectoryProfile,
+  PublicChefProfile,
+} from 'fireux-kitchens/runtime/models/chef.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
-  Partial<Pick<User, 'id'>>
-type ChefTarget = Chef
+  Partial<Pick<User, 'id' | 'handle'>>
+type ChefTarget = PublicChefDirectoryProfile &
+  Partial<Pick<PublicChefProfile, 'chef_signature_dishes'>>
 
 export namespace ChefCard {
   export type Card = {
@@ -58,24 +64,13 @@ export function useChefInterface(
     return safeString(authUser.value?.photoURL).trim()
   }
 
-  function map(p: Chef, u?: UserLike | null): ChefCard.Card {
-    const id =
-      safeString((p as any).owner_uid).trim() ||
-      safeString(u?.id).trim() ||
-      safeString((p as any).id).trim()
-    const profileImage = resolveProfileImage([
-      (p as Chef & { image?: string }).image,
-      (p as any).chef_image,
-    ])
-    const summary = resolveProfileSummary([
-      (p as Chef & { summary?: string }).summary,
-      (p as any).chef_bio,
-    ])
+  function map(p: ChefTarget, u?: UserLike | null): ChefCard.Card {
+    const id = safeString(u?.id).trim() || safeString(p.id).trim()
+    const profileImage = resolveProfileImage([p.chef_image])
+    const summary = resolveProfileSummary([p.summary, p.chef_bio])
     const userAvatar = resolveUserAvatar(u)
     const avatarUrl = profileImage || userAvatar
-    const badges = resolveProfileBadges([
-      (p as Chef & { tags?: string[] }).tags,
-    ])
+    const badges = resolveProfileBadges([p.chef_signature_dishes])
     const secondaryAvatarUrl = resolveSecondaryAvatarUrl(avatarUrl, userAvatar)
 
     return {
@@ -84,16 +79,12 @@ export function useChefInterface(
       imageUrl: avatarUrl,
       avatarUrl,
       secondaryAvatarUrl,
-      displayName: resolveProfileDisplayName([
-        u?.display_name,
-        safeString((p as any).display_name).trim(),
-        safeString((p as any).name).trim(),
-      ]),
-      title: safeString((p as any).title).trim(),
-      subtitle: '',
+      displayName: resolveProfileDisplayName([u?.display_name]),
+      title: safeString(p.title).trim(),
+      subtitle: safeString(u?.handle).trim(),
       summary,
       badges,
-      handle: '',
+      handle: safeString(u?.handle).trim(),
       contactEmail: '',
       contactPhone: '',
       websiteUrl: '',

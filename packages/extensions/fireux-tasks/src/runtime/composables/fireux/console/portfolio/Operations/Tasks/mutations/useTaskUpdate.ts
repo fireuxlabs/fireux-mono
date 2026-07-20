@@ -1,5 +1,7 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for task updates.
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
@@ -15,14 +17,7 @@ export function useTaskUpdate(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function updateTask(taskId: string, patch: Partial<Omit<Task, 'id'>>): Promise<void> {
-    const portfolioId = normalize(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-tasks] portfolio id is required.')
-    }
-
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-tasks] demo runtime does not allow writes.')
-    }
+    requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-tasks')
 
     const normalizedTaskId = normalize(taskId)
     if (!normalizedTaskId) {

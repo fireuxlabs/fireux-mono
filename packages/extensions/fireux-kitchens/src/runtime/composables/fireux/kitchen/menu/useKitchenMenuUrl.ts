@@ -1,12 +1,12 @@
+// Concurrent edit — 2026-07-20 16:21 CEST — Repo Efficiency Pass 1 of 6: resolve ecosystem App routing through the DTO boundary and fail closed across ecosystems.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useAppFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppFetch'
+import { useEcosystemAppDetail } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppDetail'
 import type { MenuRouteContext } from '../../../../models/kitchen/menu/menu-context.model'
 import {
   directoryMenuRouteScope,
   menuRouteIndexPath,
   menuRoutePath,
-  rootMenuRouteScope,
   tenantMenuRouteScope,
   type MenuRouteScope,
 } from '../../../../utils/kitchen-menu-route'
@@ -23,7 +23,8 @@ export function useKitchenMenuUrl(options: {
   const fireux = useFireUXConfig()
   const appId = computed(() => text(unref(options.appId)))
   const kitchenSlug = computed(() => text(unref(options.kitchenSlug)))
-  const { app, pending } = useAppFetch(appId)
+  const { app, pending } = useEcosystemAppDetail(appId)
+  const isCurrentApp = computed(() => appId.value === fireux.appId)
   const appRecord = computed<Record<string, unknown>>(() =>
     app.value && typeof app.value === 'object'
       ? app.value as Record<string, unknown>
@@ -47,15 +48,20 @@ export function useKitchenMenuUrl(options: {
       ? links as Record<string, unknown>
       : {}
   })
-  const appOrigin = computed(
-    () =>
-      origin(socialLinks.value.website) ||
-      origin(appRecord.value.source_url) ||
+  const appOrigin = computed(() => {
+    const projectedOrigin = origin(socialLinks.value.website)
+    if (projectedOrigin) return projectedOrigin
+    if (!isCurrentApp.value) return ''
+    return (
       origin(fireux.siteUrl) ||
       (import.meta.client ? origin(window.location.origin) : '')
-  )
+    )
+  })
   const menuIndexUrl = computed(() => {
-    if (!menuIndexPath.value || !appOrigin.value) return menuIndexPath.value
+    if (!menuIndexPath.value) return ''
+    if (!appOrigin.value) {
+      return isCurrentApp.value ? menuIndexPath.value : ''
+    }
     return new URL(menuIndexPath.value, appOrigin.value).toString()
   })
   const menuPath = (
@@ -72,7 +78,8 @@ export function useKitchenMenuUrl(options: {
     context: MenuRouteContext = 'generic'
   ) => {
     const path = menuPath(menuId, context)
-    if (!path || !appOrigin.value) return path
+    if (!path) return ''
+    if (!appOrigin.value) return isCurrentApp.value ? path : ''
     return new URL(path, appOrigin.value).toString()
   }
   const debug = computed(() => ({

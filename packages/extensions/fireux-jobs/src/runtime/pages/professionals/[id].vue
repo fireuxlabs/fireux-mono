@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: make Professional detail endpoint-first and SSR-authoritative. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription">
@@ -10,16 +11,6 @@
           icon="i-lucide-qr-code"
           @click="showBusinessCard = true"
         />
-        <UButton
-          v-if="professionalProfile && isAdminUser && professionalId"
-          icon="i-lucide-shield"
-          size="xs"
-          color="primary"
-          variant="solid"
-          :to="`/professionals/admin/${professionalId}`"
-        >
-          Admin
-        </UButton>
         <UButton
           v-if="professionalProfile && isSelf"
           icon="i-lucide-pencil"
@@ -35,27 +26,21 @@
     <UPageBody class="pagebody">
       <div v-if="pending">Loading profile…</div>
 
-      <div v-else-if="!professionalProfile">
-        <MoleculesProfilesAdminCreateCard
-          v-if="isAdminUser"
-          title="Professional profile not available"
-          description="Create a professional profile for this user."
-          :button-label="
-            professionalConfig.cta || 'Create Professional profile'
-          "
-          :loading="isCreating"
-          :error="createError"
-          @create="createProfile"
-        />
+      <UAlert
+        v-else-if="failed"
+        color="error"
+        variant="soft"
+        title="Professional unavailable"
+        description="This profile could not be loaded right now. Please try again."
+      />
 
-        <div v-else>
-          <h1>Profile Not Found</h1>
-          <p>The profile you're looking for doesn't exist.</p>
-          <NuxtLink to="/professionals">← Back</NuxtLink>
-        </div>
+      <div v-else-if="missing">
+        <h1>Profile Not Found</h1>
+        <p>The profile you're looking for doesn't exist.</p>
+        <NuxtLink to="/professionals">← Back</NuxtLink>
       </div>
 
-      <div v-else>
+      <div v-else-if="professionalProfile" data-public-profile="professional">
         <ProfessionalCardsProfile
           v-if="professionalProfileView"
           :model="professionalProfileView"
@@ -85,23 +70,15 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: pass canonical User separately from Professional storage.
-import { navigateTo } from '#imports'
-import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
+import { navigateTo, setResponseStatus } from '#imports'
+import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { professionalConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Professional/config/professionalConfig'
 import { computed, ref } from 'vue'
 import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/utils/useProfessionalSeo'
-import { useProfessionalComputed } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalComputed'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
-import type {
-  AppProfessional,
-  Professional,
-} from '../../models/profiles/Professional/Professional.model'
+import type { PublicProfessionalProfilePayload } from '../../models/profiles/Professional/Professional.model'
 
 definePageMeta({
   visibility: { profiles: ['professional'] },
@@ -110,35 +87,32 @@ definePageMeta({
 const routeProfessionalId = useRouteParam('id')
 const professionalId = computed(() => routeProfessionalId.value || null)
 
-const { profile, pending } = useProfileFetch<Professional, AppProfessional>(
-  professionalId,
-  professionalConfig
+const {
+  profile: professionalProfile,
+  user: profileUser,
+  pending,
+  statusCode,
+  missing,
+  failed,
+  outcome,
+} = await usePublicProfileDetail<PublicProfessionalProfilePayload>(
+  { collection: 'professionals', kind: 'professional' },
+  professionalId
 )
 
-const { computed: professionalComputed } = useProfessionalComputed(
-  profile,
-  pending
-)
+const { user: sessionUser } = useUser()
 
-const professionalProfile = computed(() => profile.coreProfile.value ?? null)
-
-const { user } = useUserFetch(professionalId)
-const { coreUser, appUser, user: sessionUser } = useUser()
-
-const { profile: professionalInterface } = useProfessionalInterface(
-  profile,
-  user
-)
+const { profile: professionalInterface } = useProfessionalInterface()
 const professionalCard = computed(() => {
   if (!professionalProfile.value) return null
-  return professionalInterface(professionalProfile.value, user.value)
+  return professionalInterface(professionalProfile.value, profileUser.value)
 })
 const { model: professionalProfileView } = useProfessionalProfileView(
   professionalProfile,
   professionalCard
 )
 
-const displayName = computed(() => user.value?.display_name ?? '')
+const displayName = computed(() => profileUser.value?.display_name ?? '')
 
 const pageTitle = computed(() => displayName.value || 'Professional Profile')
 const pageDescription = computed(() => {
@@ -153,35 +127,22 @@ const isSelf = computed(() =>
   )
 )
 
-const isAdminUser = computed(
-  () => appUser.value?.role === 'admin'
-)
-
-const { createProfile: createProfileRecord } = useProfileCreate(professionalConfig)
-const isCreating = ref(false)
-const createError = ref<string | null>(null)
 const showBusinessCard = ref(false)
 const canShowQr = computed(() => Boolean(sessionUser.value?.id))
 
-useProfessionalSeo(professionalProfile, { id: professionalId, displayName })
-
-const createProfile = async () => {
-  if (isCreating.value || !professionalId.value) return
-  isCreating.value = true
-  createError.value = null
-
-  try {
-    await createProfileRecord(professionalId.value)
-  } catch (error) {
-    createError.value = (error as Error)?.message || 'Failed to create profile.'
-  } finally {
-    isCreating.value = false
+if (import.meta.server) {
+  if (missing.value) {
+    setResponseStatus(404)
+  } else if (failed.value) {
+    setResponseStatus(statusCode.value >= 400 ? statusCode.value : 503)
   }
 }
 
+useProfessionalSeo(professionalProfile, { id: professionalId, displayName })
+
 const devPayload = computed(() => ({
   profile: professionalProfile.value,
-  user: user.value,
-  computed: professionalComputed.value,
+  user: profileUser.value,
+  outcome: outcome.value,
 }))
 </script>

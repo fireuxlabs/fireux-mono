@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 22:10 CEST — Directory Publication Rules Pass: pin receiver writes to the server-only platform database.
+// Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 
 import {
   createError,
@@ -8,20 +9,20 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import {
   applyDirectoryPublicationTransaction,
   DirectoryPublicationAuthorizationError,
   DirectoryPublicationStateError,
-} from 'fireux-core/runtime/server/utils/directory-publication/firestore'
+} from 'fireux-core/runtime/server/utils/directory-publication/firestore.ts'
 import {
   DirectoryPublisherOidcError,
   verifyDirectoryPublisherOidc,
-} from 'fireux-core/runtime/server/utils/directory-publication/oidc'
+} from 'fireux-core/runtime/server/utils/directory-publication/oidc.ts'
 import {
   DirectoryPublicationValidationError,
   parseDirectoryPublicationV1,
-} from 'fireux-core/runtime/server/utils/directory-publication/validate'
+} from 'fireux-core/runtime/server/utils/directory-publication/validate.ts'
 import {
   getDirectoryPublicationReceiverConfig,
   isDirectoryPublicationDatabase,

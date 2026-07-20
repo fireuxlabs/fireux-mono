@@ -1,10 +1,12 @@
-import { computed, isRef } from 'vue'
+// Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: validate Portfolio selection only after membership and collection outcomes are composed.
+import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   usePortfolioCollection,
@@ -15,7 +17,10 @@ import {
   type PortfolioSurface,
 } from '../../../firestore/portfolio/utils/view/usePortfolioInterface'
 import { PortfolioStorage } from '../../../../../models/portfolio.model'
-import type { Ref } from 'vue'
+
+type ConsoleTargetOutcomeRef =
+  | Ref<ConsoleTargetOutcome>
+  | ComputedRef<ConsoleTargetOutcome>
 
 export type PortfolioConsoleEntity = PortfolioSurface & {
   id?: string
@@ -27,6 +32,9 @@ type UsePortfolioConsoleOptions = {
     | PortfolioCollectionFilter
     | Ref<PortfolioCollectionFilter | null | undefined>
     | null
+  resolveTargetOutcome?: (
+    sourceOutcome: ConsoleTargetOutcomeRef
+  ) => ConsoleTargetOutcomeRef
 }
 
 /**
@@ -65,18 +73,20 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     portfolios: targetPortfolios,
     pending: targetsPending,
     error: targetsError,
-    outcome: targetsOutcome,
+    outcome: sourceTargetsOutcome,
   } = usePortfolioCollection({
     source: consoleRoot.source,
     filter: targetFilter,
   })
+  const targetsOutcome = options.resolveTargetOutcome
+    ? options.resolveTargetOutcome(sourceTargetsOutcome)
+    : sourceTargetsOutcome
 
   const entity = useConsoleEntityRuntime<PortfolioConsoleEntity>({
     family: 'portfolio',
     storageFamily: PortfolioStorage.rootCollection,
     targetItems: targetPortfolios,
-    targetPending: targetsPending,
-    targetError: targetsError,
+    targetOutcome: targetsOutcome,
     getId: (portfolio) =>
       normalizeString((portfolio as PortfolioConsoleEntity)?.id),
     mode: consoleRoot.source,
@@ -120,6 +130,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     targets: targetPortfolios,
     count: computed(() => targetPortfolios.value.length),
     pending: targetsPending,
+    error: targetsError,
     outcome: targetsOutcome,
   }
   const selection = {

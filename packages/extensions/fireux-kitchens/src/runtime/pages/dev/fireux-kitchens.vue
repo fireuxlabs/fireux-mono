@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: cull stale scenario viewers from Kitchen dev navigation. -->
 <template>
   <UPage>
     <UPageHeader
@@ -6,24 +7,6 @@
     />
     <UPageBody class="pagebody">
       <div class="space-y-4">
-        <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">
-              Dash Dev
-            </div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('dash-dev')"
-            >
-              {{ openSections['dash-dev'] ? 'Hide' : 'Show' }}
-            </UButton>
-          </div>
-          <div v-show="openSections['dash-dev']" class="mt-4">
-            <DevConsoleSystem />
-          </div>
-        </UCard>
-
         <UCard>
           <div class="flex items-center justify-between gap-3">
             <div class="text-sm font-semibold">
@@ -81,24 +64,6 @@
         <UCard>
           <div class="flex items-center justify-between gap-3">
             <div class="text-sm font-semibold">
-              Menu Stack
-            </div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('menu-stack')"
-            >
-              {{ openSections['menu-stack'] ? 'Hide' : 'Show' }}
-            </UButton>
-          </div>
-          <div v-show="openSections['menu-stack']" class="mt-4">
-            <DevMenuStackSystem />
-          </div>
-        </UCard>
-
-        <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">
               Chefs
             </div>
             <UButton
@@ -122,11 +87,9 @@
 import { reactive } from 'vue'
 
 const openSections = reactive({
-  'dash-dev': false,
   kitchens: false,
   'simulation-kitchens': false,
   ingredients: false,
-  'menu-stack': false,
   chefs: false,
 })
 

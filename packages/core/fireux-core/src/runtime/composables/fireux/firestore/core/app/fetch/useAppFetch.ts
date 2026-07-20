@@ -1,7 +1,10 @@
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: expose App read errors instead of collapsing them into missing state.
 import { doc, type DocumentSnapshot } from 'firebase/firestore'
 import { useDocument, useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed, isRef, ref, type Ref } from 'vue'
 import { AppStorage, type App } from '../../../../../../models/core/app.model'
+
+export type AppFetchOutcome = 'idle' | 'pending' | 'ready' | 'missing' | 'error'
 
 function isOfflineFirestoreError(error: unknown): boolean {
   const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
@@ -40,6 +43,8 @@ export function useAppFetch(
     return {
       app: ref<App | undefined>(undefined),
       pending: ref(false),
+      error: ref<unknown>(null),
+      outcome: ref<AppFetchOutcome>('idle'),
     }
   }
 
@@ -71,10 +76,12 @@ export function useAppFetch(
     } as any) || {
       data: ref<App | undefined>(undefined),
       pending: ref(false),
+      error: ref<unknown>(null),
     }
 
   const appSource = docState.data ?? ref<App | undefined>(undefined)
   const pending = docState.pending ?? ref(false)
+  const error = docState.error ?? ref<unknown>(null)
   const app = computed<App | null | undefined>(() => {
     if (!targetId.value) return undefined
     if (pending.value) return undefined
@@ -84,10 +91,16 @@ export function useAppFetch(
 
     return raw
   })
+  const outcome = computed<AppFetchOutcome>(() => {
+    if (!targetId.value) return 'idle'
+    if (pending.value) return 'pending'
+    if (error.value) return 'error'
+    return app.value ? 'ready' : 'missing'
+  })
   guardDocumentPromise(
     docState as any,
     `${collectionPath.value}/${targetId.value ?? ''}`
   )
 
-  return { app, pending }
+  return { app, pending, error, outcome }
 }

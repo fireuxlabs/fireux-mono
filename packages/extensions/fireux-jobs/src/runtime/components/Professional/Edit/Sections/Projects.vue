@@ -1,4 +1,5 @@
 <!-- flag -->
+<!-- Concurrent edit — 2026-07-20 19:17 CEST — Repo Efficiency Pass 2 of 6: enforce Professional project editor capacity. -->
 <template>
   <div class="profile-edit__section">
     <MoleculesFormsFirestoreObjectArray
@@ -10,9 +11,11 @@
       :item-subtitle="itemSubtitle"
       :fields="fields"
       :show-actions="true"
+      :max-items="maxItems"
     >
-      <template #create="{ push }">
+      <template #create="{ push, canPush }">
         <UButton
+          v-if="canPush"
           size="xs"
           variant="soft"
           @click="push({
@@ -45,6 +48,7 @@ type ObjectArrayField = {
 const props = defineProps<{
   items: ProjectItem[]
   onSave: (items: ProjectItem[]) => Promise<void>
+  maxItems: number
 }>()
 
 const itemTitle = (item: ProjectItem) => item.name || 'Project'

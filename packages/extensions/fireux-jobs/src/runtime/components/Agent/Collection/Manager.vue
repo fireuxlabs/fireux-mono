@@ -7,9 +7,7 @@
           <p>{{ description }}</p>
         </div>
 
-        <div
-          class="collection-manager__controls"
-        >
+        <div class="collection-manager__controls">
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -34,9 +32,9 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showSettledCount" variant="soft"
-              >{{ countLabel }}</UBadge
-            >
+            <UBadge v-if="showSettledCount" variant="soft">{{
+              countLabel
+            }}</UBadge>
           </div>
         </div>
       </div>
@@ -99,13 +97,14 @@ import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDev
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render root Agent rows with canonical User joins.
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: consume the exact Agent directory projection without storage-model casts.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'
 import { useAgentInterface } from '../../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { Agent } from '../../../models/profiles/Agent/Agent.model'
+import type { PublicAgentDirectoryProfile } from '../../../models/profiles/Agent/Agent.model'
 
-type AgentEntry = Partial<Agent> & { id: string }
+type AgentEntry = PublicAgentDirectoryProfile
 
 const props = withDefaults(
   defineProps<{
@@ -132,10 +131,9 @@ const props = withDefaults(
 
 const fetched = useAgentFetch()
 const { outcome } = fetched
-const collection = computed<AgentEntry[]>(() =>
-  (fetched.coreAgents.value ?? []) as AgentEntry[]
-)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const collection = fetched.coreAgents
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Agents'))
 const description = computed(() =>
   String(props.description || 'Browse agents available to this runtime.')
@@ -149,8 +147,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const showSettledCount = computed(
   () =>
-    showCount.value &&
-    (outcome.value === 'ready' || outcome.value === 'empty')
+    showCount.value && (outcome.value === 'ready' || outcome.value === 'empty')
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -164,16 +161,16 @@ const {
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<AgentEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
-    makeCard: (entry) => makeCard(entry as Agent, fetched.userById(entry.id)),
+    makeCard: (entry) => makeCard(entry, fetched.userById(entry.id)),
     initialVariant: props.initialVariant,
   })
 
 const { cards: cardsFiltered } = useCollectionVariantCards({
   items: visibleItems,
   variant,
-  makeCard: (entry) => makeCard(entry as Agent, fetched.userById(entry.id)),
-  makePill: (entry) => makePill(entry as Agent, fetched.userById(entry.id)),
-  makeCell: (entry) => makeCell(entry as Agent, fetched.userById(entry.id)),
+  makeCard: (entry) => makeCard(entry, fetched.userById(entry.id)),
+  makePill: (entry) => makePill(entry, fetched.userById(entry.id)),
+  makeCell: (entry) => makeCell(entry, fetched.userById(entry.id)),
 })
 
 const countLabel = computed(() =>

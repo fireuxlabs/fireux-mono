@@ -1,8 +1,6 @@
-// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: replace raw Professional/User collection reads with the bounded API.
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: expose the exact projected Professional directory source.
 import { usePublicProfileCollection } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileCollection'
-import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
-import { computed } from 'vue'
-import type { Professional } from '../../../../../../models/profiles/Professional/Professional.model'
+import type { PublicProfessionalDirectoryProfilePayload } from '../../../../../../models/profiles/Professional/Professional.model'
 
 // Professional profiles for UI use. Public identity joins canonical User by profile uid.
 export function useProfessionalFetch() {
@@ -14,18 +12,12 @@ export function useProfessionalFetch() {
     pending,
     error,
     outcome,
-  } = usePublicProfileCollection<Professional>({ collection: 'professionals' })
-
-  const coreProfessionals = profiles
-  const appProfessionals = computed<Professional[]>(() => [])
-  const { byId: coreProfessional } = useCollectionById(coreProfessionals)
-  const { byId: appProfessional } = useCollectionById(appProfessionals)
+  } = usePublicProfileCollection<PublicProfessionalDirectoryProfilePayload>({
+    collection: 'professionals',
+  })
 
   return {
-    coreProfessionals,
-    appProfessionals,
-    coreProfessional,
-    appProfessional,
+    coreProfessionals: profiles,
     profileUsers,
     usersById,
     userById,

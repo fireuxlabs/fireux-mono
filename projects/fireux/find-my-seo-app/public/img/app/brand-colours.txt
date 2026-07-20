@@ -13,5 +13,5 @@ neutral: slate
 
 Usage
 - App brand assets live in public/img/app.
-- Demo provider avatars/logos stay URL-backed in app/demo/findMySeo.ts.
+- Simulation provider avatars/logos stay URL-backed in app/simulations/findMySeo.ts.
 - Cover copy should describe the professional pool, not an all-in-one SEO platform.

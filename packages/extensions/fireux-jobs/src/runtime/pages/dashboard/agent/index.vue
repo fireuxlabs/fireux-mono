@@ -99,6 +99,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: calculate Agent completeness from canonical fields only.
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { computed } from 'vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
@@ -140,11 +141,9 @@ const profileComplete = computed<number | null>(() => {
     isFilledString(profile.title ?? null),
     isFilledString(profile.summary ?? null),
     isFilledString(profile.agent_bio ?? null),
-    isFilledString(profile.agent_contact_email ?? profile.contact_email ?? null),
-    isFilledString(profile.agent_website_url ?? profile.website_url ?? null),
-    isFilledArray(
-      profile.agent_placement_types ?? (profile as any).tags ?? (profile as any).badges ?? null
-    ),
+    isFilledString(profile.agent_contact_email ?? null),
+    isFilledString(profile.agent_website_url ?? null),
+    isFilledArray(profile.agent_placement_types ?? null),
   ]
 
   const complete = checks.filter(Boolean).length

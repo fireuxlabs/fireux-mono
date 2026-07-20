@@ -1,5 +1,7 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for compliance creation.
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
@@ -8,8 +10,6 @@ import {
   type ComplianceRecord,
   type ComplianceRecordCreateInput,
 } from '../../../../../../../models/compliance-record.model'
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useComplianceRecordCreate(runtimePortfolio = useActivePortfolio()) {
   const { createDocument } = useFirestoreCreate()
@@ -21,14 +21,10 @@ export function useComplianceRecordCreate(runtimePortfolio = useActivePortfolio(
   async function createComplianceRecord(
     input: ComplianceRecordCreateInput
   ): Promise<string> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-compliance] portfolio id is required.')
-    }
-
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-compliance] demo runtime does not allow writes.')
-    }
+    const portfolioId = requirePortfolioConsoleWrite(
+      runtimePortfolio,
+      'fireux-compliance'
+    )
 
     if (!collectionPath.value) {
       throw new Error('[fireux-compliance] runtime compliance path is required.')

@@ -1,4 +1,6 @@
-import { createError, defineEventHandler, readBody } from 'h3'
+// Concurrent edit — 2026-07-20 16:15 CEST — Repo Efficiency Pass 1 of 6: require the configured developer for raw subcollection snapshots.
+import { createError, defineEventHandler, readBody, setHeader } from 'h3'
+import { requireDevDeveloper } from '../../utils/auth/developer'
 import { getRuntimeFirestore } from '../../utils/getRuntimeFirestore'
 
 type Body = {
@@ -58,9 +60,9 @@ async function mapWithConcurrency<T, R>(
 }
 
 export default defineEventHandler(async (event) => {
-  if (!import.meta.dev) {
-    throw createError({ statusCode: 404, statusMessage: 'Not found' })
-  }
+  await requireDevDeveloper(event)
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  setHeader(event, 'Vary', 'Authorization')
 
   const body = (await readBody(event)) as Body | null
   const collectionPath = normalizeString(body?.collectionPath)

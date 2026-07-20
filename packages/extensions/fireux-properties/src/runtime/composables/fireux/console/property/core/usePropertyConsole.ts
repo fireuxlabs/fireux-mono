@@ -1,20 +1,28 @@
-import { computed, isRef } from 'vue'
+// Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: validate Property selection only after membership and collection outcomes are composed.
+import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { PropertyStorage, type Property } from '../../../../../models/property.model'
 import {
   usePropertyCollection,
   type PropertyCollectionFilter,
 } from '../../../firestore/property/fetch/usePropertyCollection'
-import type { Ref } from 'vue'
+
+type ConsoleTargetOutcomeRef =
+  | Ref<ConsoleTargetOutcome>
+  | ComputedRef<ConsoleTargetOutcome>
 
 type UsePropertyConsoleOptions = {
   filter?: PropertyCollectionFilter | Ref<PropertyCollectionFilter | null | undefined> | null
+  resolveTargetOutcome?: (
+    sourceOutcome: ConsoleTargetOutcomeRef
+  ) => ConsoleTargetOutcomeRef
 }
 
 /**
@@ -52,19 +60,21 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     properties: targetProperties,
     pending: targetsPending,
     error: targetsError,
-    outcome: targetsOutcome,
+    outcome: sourceTargetsOutcome,
   } = usePropertyCollection({
     source: consoleRoot.source,
     shape: 'both',
     filter: targetFilter,
   })
+  const targetsOutcome = options.resolveTargetOutcome
+    ? options.resolveTargetOutcome(sourceTargetsOutcome)
+    : sourceTargetsOutcome
 
   const entity = useConsoleEntityRuntime<Property>({
     family: 'property',
     storageFamily: PropertyStorage.rootCollection,
     targetItems: targetProperties,
-    targetPending: targetsPending,
-    targetError: targetsError,
+    targetOutcome: targetsOutcome,
     getId: (property) => normalizeString(property?.id),
     mode: consoleRoot.source,
     userId,
@@ -89,6 +99,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     targets: targetProperties,
     count: computed(() => targetProperties.value.length),
     pending: targetsPending,
+    error: targetsError,
     outcome: targetsOutcome,
   }
   const selection = {

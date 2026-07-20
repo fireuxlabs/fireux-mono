@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: submit App join requests through the authenticated server boundary.
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: remove the unused raw App subscription.
 
 import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
@@ -7,7 +8,6 @@ import { AppJoinRequestStorage } from '../../../../../../models/core/supporting/
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useAuth } from '../../../../firebase/useAuth'
 import { useDocument, useFirestore } from '../../../vuefire'
-import { useApp } from '../useApp'
 import { useUser } from '../../user/useUser'
 import { mutateAppMembership } from '../../user/utils/appMembershipMutation'
 
@@ -22,7 +22,6 @@ const text = (value: unknown) => String(value ?? '').trim()
 export function useAppJoinRequest() {
   const { appId } = useFireUXConfig()
   const { uid, isAuthenticated } = useAuth()
-  const { app, pending: appPending } = useApp()
   const { appUser, pending: userPending } = useUser()
   const db = useFirestore()
 
@@ -41,7 +40,7 @@ export function useAppJoinRequest() {
   const requestState = useDocument(requestRef as any)
   const isAppMember = computed(() => Boolean(appUser.value))
   const pending = computed(() =>
-    Boolean(appPending.value || userPending.value || requestState.pending.value)
+    Boolean(userPending.value || requestState.pending.value)
   )
   const hasPendingRequest = computed(() => Boolean(requestState.data.value))
   const canRequest = computed(
@@ -63,7 +62,6 @@ export function useAppJoinRequest() {
   }
 
   return {
-    app,
     pending,
     userId,
     isAuthenticated,

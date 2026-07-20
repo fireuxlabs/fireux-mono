@@ -1,7 +1,5 @@
 <template>
   <section class="space-y-10">
-    <DevChefDemo />
-
     <UCard>
       <DevModel
         :title="'Chefs · Core Model'"
@@ -77,6 +75,8 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: inspect domain-only Chef rows and join canonical User for previews.
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Chef dev diagnostics on live joined profiles.
+// Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: inspect canonical Chef signature dishes only.
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
@@ -137,9 +137,7 @@ const toCsv = (value: unknown) =>
 
 const chefSpecialtiesCsv = (entry: unknown) => {
   const chef = (entry as Record<string, unknown>) ?? {}
-  const primary = chef.chef_signature_dishes
-  const legacy = chef.specialties
-  return toCsv(Array.isArray(primary) && primary.length ? primary : legacy)
+  return toCsv(chef.chef_signature_dishes)
 }
 
 const chefPreviewCards = computed(() => {

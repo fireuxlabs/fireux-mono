@@ -1,7 +1,5 @@
 <template>
   <section class="space-y-10">
-    <DevAgentDemo />
-
     <UCard>
       <DevModel
         :title="'Agents · Model'"
@@ -68,6 +66,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: inspect domain-only Agent rows and join canonical User for previews.
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: cull the ad-hoc Agent card fixture.
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useAgentFetch } from '../../../composables/fireux/firestore/profiles/Agent/fetch/useAgentFetch'

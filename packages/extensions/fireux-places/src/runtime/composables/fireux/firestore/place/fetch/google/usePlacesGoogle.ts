@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 19:40 CEST — Repo Efficiency Pass 2 of 6: map Norwegian canonical Places to NOK.
 import {
   PlaceModel,
   type BasePlace,
@@ -177,7 +178,10 @@ export async function fetchGoogle(
   } catch (err) {
     if (import.meta.dev) {
       try {
-        const url = new URL(GOOGLE_AUTOCOMPLETE_ENDPOINT, window.location.origin)
+        const url = new URL(
+          GOOGLE_AUTOCOMPLETE_ENDPOINT,
+          window.location.origin
+        )
         url.searchParams.set('q', query)
         lastAutocompleteDebug = {
           query,
@@ -252,9 +256,7 @@ function component(
   return components.find((item) => item.types?.includes(type)) ?? null
 }
 
-function addressFromGoogle(
-  components: GoogleAddressComponent[]
-): PlaceAddress {
+function addressFromGoogle(components: GoogleAddressComponent[]): PlaceAddress {
   const streetNumber = text(component(components, 'street_number')?.long_name)
   const streetName = text(component(components, 'route')?.long_name)
   const locality = text(component(components, 'locality')?.long_name)
@@ -287,6 +289,7 @@ function currencyCodeFromCountry(countryCode: string): string {
     IE: 'EUR',
     IT: 'EUR',
     NL: 'EUR',
+    NO: 'NOK',
     NZ: 'NZD',
     PT: 'EUR',
     US: 'USD',

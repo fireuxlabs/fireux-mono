@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: notify signed-in customers after accepted Order commits.
+// Concurrent edit — 2026-07-20 15:27 CEST — Customer order notification pass: notify signed-in customers after accepted Order commits.
 import {
   createError,
   defineEventHandler,
@@ -73,6 +73,7 @@ export default defineEventHandler(async (event: H3Event) => {
       status: patch.status || current.status,
       customerUid: String(current.customer_uid ?? '').trim(),
       orderNumber: String(current.order_number ?? '').trim(),
+      orderType: current.order_type,
     }
   })
 
@@ -83,6 +84,7 @@ export default defineEventHandler(async (event: H3Event) => {
         kitchenId,
         orderId,
         orderNumber: outcome.orderNumber,
+        orderType: outcome.orderType,
         customerUid: outcome.customerUid,
       })
     } catch (error) {

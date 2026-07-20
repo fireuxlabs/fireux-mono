@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
+<!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: consume the app-local simulation. -->
 <template>
   <UPage>
     <UPageHeader
@@ -23,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import { demoSeoCaseStudyList, demoSeoProviderList } from '../../demo/findMySeo'
+import { demoSeoCaseStudyList, demoSeoProviderList } from '../../simulations/findMySeo'
 
 const ownerName = (providerId: string) =>
   demoSeoProviderList.find((provider) => provider.id === providerId)?.displayName ?? 'SEO provider'

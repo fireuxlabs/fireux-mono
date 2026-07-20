@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: expose explicit App self-join policy.
 import { useRuntimeConfig } from '#imports'
 
 export type FireUXRole = 'global' | 'tenant' | 'standalone'
@@ -16,6 +17,7 @@ export interface FireUXConfig {
   modules: string[]
   domains: string[]
   profiles: string[]
+  selfJoinEnabled: boolean
   navHiddenKeys: string[]
 
   contactEmail?: string
@@ -113,6 +115,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     modules: toStringArray(fireux.modules),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
+    selfJoinEnabled: fireux.selfJoinEnabled === true,
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
 
     contactEmail: optString(fireux, 'contactEmail'),
@@ -160,7 +163,8 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
       cached.ecosystem === cfg.ecosystem &&
       cached.projectId === cfg.projectId &&
       cached.ecosystemId === cfg.ecosystemId &&
-      cached.role === cfg.role
+      cached.role === cfg.role &&
+      cached.selfJoinEnabled === cfg.selfJoinEnabled
 
     if (isCacheValid) return cached
 

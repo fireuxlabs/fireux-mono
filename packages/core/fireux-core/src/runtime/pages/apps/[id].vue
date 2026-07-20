@@ -1,4 +1,5 @@
 <template>
+  <!-- Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: hide private creator identity on public App detail. -->
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
@@ -32,7 +33,11 @@
         data-app-projection="detail"
         :data-app-id="app.id"
       >
-        <AppCardsProfile v-if="appProfileModel" :model="appProfileModel" />
+        <AppCardsProfile
+          v-if="appProfileModel"
+          :model="appProfileModel"
+          :show-people="false"
+        />
       </div>
     </UPageBody>
   </UPage>

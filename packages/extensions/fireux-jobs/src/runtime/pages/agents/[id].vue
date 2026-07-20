@@ -1,17 +1,8 @@
+<!-- Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: make Agent detail endpoint-first and SSR-authoritative. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription">
       <template #ctas>
-        <UButton
-          v-if="agentProfile && isAdminUser && agentId"
-          icon="i-lucide-shield"
-          size="xs"
-          color="primary"
-          variant="solid"
-          :to="`/agents/admin/${agentId}`"
-        >
-          Admin
-        </UButton>
         <UButton
           v-if="agentProfile && isSelf"
           icon="i-lucide-pencil"
@@ -25,33 +16,41 @@
       </template>
     </UPageHeader>
     <UPageBody class="pagebody">
-      <div v-if="pending" class="py-10 text-sm opacity-70">Loading profile…</div>
-
-      <div v-else-if="!agentProfile" class="space-y-2">
-        <MoleculesProfilesAdminCreateCard
-          v-if="isAdminUser"
-          title="Agent profile not available"
-          description="Create an agent profile for this user."
-          :button-label="agentConfig.cta || 'Create Agent profile'"
-          :loading="isCreating"
-          :error="createError"
-          @create="createProfile"
-        />
-
-        <div v-else>
-          <h1 class="text-lg font-semibold">Profile Not Found</h1>
-          <p>The profile you're looking for doesn't exist.</p>
-          <NuxtLink to="/agents" class="text-primary hover:underline">← Back</NuxtLink>
-        </div>
+      <div v-if="pending" class="py-10 text-sm opacity-70">
+        Loading profile…
       </div>
 
-      <div v-else class="space-y-4">
-        <AgentCardsProfile v-if="agentCard" :card="agentCard" :profile="agentProfile" />
+      <UAlert
+        v-else-if="failed"
+        color="error"
+        variant="soft"
+        title="Agent unavailable"
+        description="This profile could not be loaded right now. Please try again."
+      />
+
+      <div v-else-if="missing" class="space-y-2">
+        <h1 class="text-lg font-semibold">Profile Not Found</h1>
+        <p>The profile you're looking for doesn't exist.</p>
+        <NuxtLink to="/agents" class="text-primary hover:underline"
+          >← Back</NuxtLink
+        >
+      </div>
+
+      <div
+        v-else-if="agentProfile"
+        class="space-y-4"
+        data-public-profile="agent"
+      >
+        <AgentCardsProfile
+          v-if="agentCard"
+          :card="agentCard"
+          :profile="agentProfile"
+        />
 
         <DevJson
-          :title="'Agent (Doc)'"
-          context="Agent detail page · agents/[id] · core profile doc"
-          :data="agentProfile"
+          :title="'Agent (Public DTO)'"
+          context="Agent detail page · agents/[id] · endpoint-first SSR"
+          :data="devPayload"
           :default-open="false"
         />
       </div>
@@ -60,17 +59,14 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
+import { navigateTo, setResponseStatus } from '#imports'
+import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useProfileFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/utils/useAgentSeo'
 import { useAgentInterface } from '../../composables/fireux/firestore/profiles/Agent/utils/view/useAgentInterface'
-import type { Agent } from '../../models/profiles/Agent/Agent.model'
+import type { PublicAgentProfilePayload } from '../../models/profiles/Agent/Agent.model'
 
 definePageMeta({
   visibility: { profiles: ['agent'] },
@@ -79,26 +75,29 @@ definePageMeta({
 const routeAgentId = useRouteParam('id')
 const agentId = computed(() => routeAgentId.value || null)
 
-const { profile, pending } = useProfileFetch<Agent>(agentId, agentConfig)
-const agentProfile = computed(() => profile.coreProfile.value ?? null)
+const {
+  profile: agentProfile,
+  user: profileUser,
+  pending,
+  statusCode,
+  missing,
+  failed,
+  outcome,
+} = await usePublicProfileDetail<PublicAgentProfilePayload>(
+  { collection: 'agents', kind: 'agent' },
+  agentId
+)
 
-const userRefs = useUserFetch(agentId)
-const { coreUser, appUser, user: sessionUser } = useUser()
-const { profile: agentInterface } = useAgentInterface(profile, userRefs.user)
-const agentCard = computed(() => agentInterface(agentProfile.value))
+const { user: sessionUser } = useUser()
+const { profile: agentInterface } = useAgentInterface()
+const agentCard = computed(() =>
+  agentProfile.value
+    ? agentInterface(agentProfile.value, profileUser.value)
+    : null
+)
 
-const resolveName = (p: any) =>
-  p?.display_name ||
-  p?.name ||
-  p?.title ||
-  p?.agency_name ||
-  p?.company_name ||
-  p?.business_name ||
-  p?.professional_name ||
-  'Profile'
-
-const displayName = computed(() =>
-  userRefs.user.value?.display_name || (agentProfile.value ? resolveName(agentProfile.value) : null)
+const displayName = computed(
+  () => profileUser.value?.display_name || agentProfile.value?.title || null
 )
 const pageTitle = computed(() => displayName.value ?? 'Agent Profile')
 const pageDescription = computed(() =>
@@ -111,27 +110,19 @@ const isSelf = computed(() =>
   Boolean(agentId.value && sessionUser.value?.id === agentId.value)
 )
 
-const isAdminUser = computed(() =>
-  appUser.value?.role === 'admin'
-)
+if (import.meta.server) {
+  if (missing.value) {
+    setResponseStatus(404)
+  } else if (failed.value) {
+    setResponseStatus(statusCode.value >= 400 ? statusCode.value : 503)
+  }
+}
 
 useAgentSeo(agentProfile, { id: agentId, displayName })
 
-const { createProfile: createProfileRecord } = useProfileCreate(agentConfig)
-const isCreating = ref(false)
-const createError = ref<string | null>(null)
-
-const createProfile = async () => {
-  if (isCreating.value || !agentId.value) return
-  isCreating.value = true
-  createError.value = null
-
-  try {
-    await createProfileRecord(agentId.value)
-  } catch (error) {
-    createError.value = (error as Error)?.message || 'Failed to create profile.'
-  } finally {
-    isCreating.value = false
-  }
-}
+const devPayload = computed(() => ({
+  profile: agentProfile.value,
+  user: profileUser.value,
+  outcome: outcome.value,
+}))
 </script>

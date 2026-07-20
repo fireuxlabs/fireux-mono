@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: include explicit self-join policy in canonical App bootstrap.
 import { deleteField } from 'firebase/firestore'
 import { useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
@@ -65,6 +66,7 @@ export function buildAppEnsureCreateInput(fireux: FireuxConfig): AppCreateInput 
     derived: {
       user_count: 0,
     },
+    self_join_enabled: fireux.selfJoinEnabled,
   })
 
   return (payload ?? {}) as AppCreateInput

@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Professional/Fields/ExperienceSection.vue -->
+<!-- Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: persist Place references only after their canonical records exist. -->
 <template>
   <MoleculesFormsFirestoreObjectArray
     :label="label"
@@ -7,6 +8,7 @@
     :item-title="itemTitle"
     :item-date="itemDate"
     :show-actions="true"
+    :max-items="maxItems"
   >
     <!-- DISPLAY -->
     <template #display="{ item }">
@@ -36,10 +38,12 @@
             :key="collection"
             size="xs"
             :variant="selectedCollection === collection ? 'solid' : 'soft'"
-            @click="() => {
-              selectedCollection = collection
-              item.place_collection = collection
-            }"
+            @click="
+              () => {
+                selectedCollection = collection
+                item.place_collection = collection
+              }
+            "
           >
             {{ formatCollectionLabel(collection) }}
           </UButton>
@@ -52,13 +56,19 @@
           :placeholder="`Search ${formatCollectionLabel(selectedCollection || 'place')}`"
           :show-confirm-button="false"
           :show-clear-button="false"
-          @selected="(payload: PlaceSelectedPayload) => onPlaceSelected(item, payload)"
+          @selected="
+            (payload: PlaceSelectedPayload) => onPlaceSelected(item, payload)
+          "
         />
 
         <PlaceCardsDropdownSelected
           v-if="showDraftCard(item)"
           :name="item.place_draft.name || ''"
-          :address="item.place_draft.formatted_address || item.place_draft.short_address || ''"
+          :address="
+            item.place_draft.formatted_address ||
+            item.place_draft.short_address ||
+            ''
+          "
           :image-url="item.place_draft.image_url || ''"
           :image-shade="item.place_draft.image_shade || 'none'"
           :source="item.place_draft.source || 'google'"
@@ -91,7 +101,9 @@
                 <UCalendar
                   class="p-2"
                   :model-value="getStartDate(item)"
-                  @update:model-value="(value) => onStartDateChange(item, value)"
+                  @update:model-value="
+                    (value) => onStartDateChange(item, value)
+                  "
                 />
               </template>
             </UPopover>
@@ -123,7 +135,9 @@
                   class="p-2"
                   :model-value="getRangeValue(item)"
                   range
-                  @update:model-value="(value) => onRangeDateChange(item, value)"
+                  @update:model-value="
+                    (value) => onRangeDateChange(item, value)
+                  "
                 />
               </template>
             </UPopover>
@@ -139,7 +153,12 @@
 
         <!-- Actions -->
         <div class="flex items-center gap-2">
-          <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save()">
+          <UButton
+            size="xs"
+            variant="solid"
+            icon="i-lucide-check"
+            @click="save()"
+          >
             Save
           </UButton>
           <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel()">
@@ -150,8 +169,8 @@
     </template>
 
     <!-- ADD -->
-    <template #create="{ push }">
-      <div class="flex items-center gap-2">
+    <template #create="{ push, canPush }">
+      <div v-if="canPush" class="flex items-center gap-2">
         <UButton
           size="xs"
           variant="solid"
@@ -167,7 +186,12 @@
 
 <script setup lang="ts">
 import { useNuxtApp } from '#imports'
-import { CalendarDate, DateFormatter, getLocalTimeZone, type DateValue } from '@internationalized/date'
+import {
+  CalendarDate,
+  DateFormatter,
+  getLocalTimeZone,
+  type DateValue,
+} from '@internationalized/date'
 import { doc, getDoc } from 'firebase/firestore'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import type { FirestoreReadRef } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -181,7 +205,11 @@ import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/fi
 import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
-import { PlaceStorage, type Place, type PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import {
+  PlaceStorage,
+  type Place,
+  type PlaceUpsertInput,
+} from 'fireux-places/runtime/models/place.model'
 import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 
@@ -197,11 +225,14 @@ const props = defineProps<{
   label: string
   items: ExperienceItem[]
   onSave: (items: ExperienceItem[]) => Promise<void>
+  maxItems: number
   placeCollections?: string[]
   collections?: string[]
 }>()
 
-const collectionOptions = computed(() => props.placeCollections ?? props.collections ?? [])
+const collectionOptions = computed(
+  () => props.placeCollections ?? props.collections ?? []
+)
 
 const selectedCollection = ref(collectionOptions.value[0] ?? '')
 
@@ -258,9 +289,11 @@ if (import.meta.client) {
 
       for (const id of ids) {
         const existing = current.get(id)
-        const source = existing ?? nuxtApp.runWithContext(() =>
-          firestoreFetchDoc<Place>(PlaceStorage.collection, id)
-        )
+        const source =
+          existing ??
+          nuxtApp.runWithContext(() =>
+            firestoreFetchDoc<Place>(PlaceStorage.collection, id)
+          )
         next.set(id, source)
       }
       placeDocRefs.value = next
@@ -299,7 +332,7 @@ const itemTitle = (item: ExperienceItem) => item.role || 'Experience'
 const itemDate = (item: ExperienceItem) => {
   if (!item.from_year && !item.to_year && !item.ongoing) return ''
   const start = item.from_year || 'Start'
-  const end = item.ongoing ? 'Present' : (item.to_year || 'End')
+  const end = item.ongoing ? 'Present' : item.to_year || 'End'
   return `${start}–${end}`
 }
 
@@ -309,16 +342,22 @@ function formatCollectionLabel(value: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
-async function onPlaceSelected(item: ExperienceItem, payload: PlaceSelectedPayload) {
+async function onPlaceSelected(
+  item: ExperienceItem,
+  payload: PlaceSelectedPayload
+) {
   const normalizedId = normalizePlaceId(payload.placeId) || payload.placeId
-  item.place_id = normalizedId
-  item.place_collection = selectedCollection.value || item.place_collection || ''
-  ;(item as any).place_draft = payload.place
+  const placeCollection =
+    selectedCollection.value || item.place_collection || ''
 
   const ok = await ensurePlaceExists({ ...payload.place, id: normalizedId })
   if (!ok) return
 
-  await ensureCollectionRecord(item.place_collection, normalizedId, payload.place)
+  await ensureCollectionRecord(placeCollection, normalizedId, payload.place)
+
+  item.place_id = normalizedId
+  item.place_collection = placeCollection
+  ;(item as any).place_draft = payload.place
 }
 
 async function ensureCollectionRecord(
@@ -348,13 +387,15 @@ async function ensureCollectionRecord(
 }
 
 function showDraftCard(item: ExperienceItem) {
-  const draft = (item as any)?.place_draft as Partial<PlaceUpsertInput> | undefined
+  const draft = (item as any)?.place_draft as
+    | Partial<PlaceUpsertInput>
+    | undefined
   if (!draft) return false
   return Boolean(
     draft.name ||
-    draft.formatted_address ||
-    draft.short_address ||
-    draft.image_url
+      draft.formatted_address ||
+      draft.short_address ||
+      draft.image_url
   )
 }
 
@@ -366,7 +407,20 @@ function monthToNumber(value: string | undefined) {
   const raw = String(value).trim()
   if (raw.length !== 3) return null
   const short = raw.toLowerCase()
-  const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
+  const months = [
+    'jan',
+    'feb',
+    'mar',
+    'apr',
+    'may',
+    'jun',
+    'jul',
+    'aug',
+    'sep',
+    'oct',
+    'nov',
+    'dec',
+  ]
   const idx = months.indexOf(short)
   return idx >= 0 ? idx + 1 : null
 }
@@ -425,10 +479,7 @@ function onStartDateChange(item: ExperienceItem, value: CalendarUpdateValue) {
   updateFromDate(item, value)
 }
 
-function onRangeDateChange(
-  item: ExperienceItem,
-  value: CalendarUpdateValue
-) {
+function onRangeDateChange(item: ExperienceItem, value: CalendarUpdateValue) {
   if (!isRangeValue(value)) return
   if (value.start) updateFromDate(item, value.start)
   if (value.end) {
@@ -439,7 +490,10 @@ function onRangeDateChange(
   }
 }
 
-function onToggleOngoing(item: ExperienceItem, value: boolean | 'indeterminate') {
+function onToggleOngoing(
+  item: ExperienceItem,
+  value: boolean | 'indeterminate'
+) {
   const isOngoing = value === true
   item.ongoing = isOngoing
   if (isOngoing) {

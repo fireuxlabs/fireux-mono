@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 13:12 CEST — Driver security: register trusted access and minimal dispatch endpoints.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: register bounded Chef and Driver routes.
+// Concurrent edit — 2026-07-20 17:44 CEST — Repo Efficiency Pass 2 of 6: register trusted Kitchen profile provisioners.
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import {
@@ -8,6 +9,21 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 const baseServerHandlers = [
+  {
+    route: '/api/internal/profiles/chef',
+    method: 'post',
+    handler: './runtime/server/api/internal/profiles/chef.post',
+  },
+  {
+    route: '/api/internal/profiles/customer',
+    method: 'post',
+    handler: './runtime/server/api/internal/profiles/customer.post',
+  },
+  {
+    route: '/api/internal/profiles/driver',
+    method: 'post',
+    handler: './runtime/server/api/internal/profiles/driver.post',
+  },
   {
     route: '/api/public/chefs',
     method: 'get',

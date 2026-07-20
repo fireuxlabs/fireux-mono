@@ -1,8 +1,10 @@
 // FILE: packages/core/fireux-core/src/runtime/models/core/user.model.ts
 // Concurrent edit — 2026-07-20 12:58 CEST — User privacy pass: keep notifications owner-only and membership records governance-only.
+// Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: make the ecosystem avatar canonical User creation and clear state.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import type { FireuxStamped } from './meta.model'
+import { USER_ECOSYSTEM_AVATAR_SRC } from './supporting/user-avatar'
 
 /**
  * Entity map: docs/concepts/entities.md
@@ -16,8 +18,9 @@ import type { FireuxStamped } from './meta.model'
  * Decision note:
  * - User is public global identity. Its handle is its canonical route slug.
  * - UserPrivate contains private account data and signup agreement evidence.
- * - UserApp contains app membership, capability, and presentation state.
- * - Notifications remain in the owner-only User notification subcollection.
+ * - UserApp contains app membership and capability state.
+ * - User.profiles and UserApp.profiles are derived by trusted profile provisioning.
+ * - Trusted producers publish notifications to the owner-only User subcollection.
  * - UserApp is not a public profile overlay and does not use FireuxAppScope.
  */
 
@@ -56,7 +59,10 @@ export const UserAppConsoleTargetFields = {
 export type UserAppConsoleTargetField =
   (typeof UserAppConsoleTargetFields)[keyof typeof UserAppConsoleTargetFields]
 
-export type UserAppConsoleTargets = Record<UserAppConsoleTargetField, string[]> &
+export type UserAppConsoleTargets = Record<
+  UserAppConsoleTargetField,
+  string[]
+> &
   Record<string, string[]>
 
 export const UserAppConsoleTargetsModel = {
@@ -68,7 +74,9 @@ export const UserAppConsoleTargetsModel = {
 } satisfies Record<UserAppConsoleTargetField, string[]>
 
 export function resolveUserAppConsoleTargetField(family: unknown): string {
-  const key = String(family ?? '').trim().toLowerCase()
+  const key = String(family ?? '')
+    .trim()
+    .toLowerCase()
   if (!key) return ''
 
   return (UserAppConsoleTargetFields as Record<string, string>)[key] || ''
@@ -86,7 +94,7 @@ export const UserModel = {
   id: '',
 
   display_name: '',
-  avatar: '',
+  avatar: USER_ECOSYSTEM_AVATAR_SRC,
   handle: '',
   app_ids: [] as string[],
   profiles: [] as string[],
@@ -193,9 +201,14 @@ export interface UserApp {
 
 export type UserCreateInput = Omit<User, 'id' | 'created' | 'updated'>
 export type UserUpdateInput = Partial<Omit<User, 'id' | 'created' | 'updated'>>
-export type UserPrivateCreateInput = Omit<UserPrivate, 'id' | 'created' | 'updated'>
+export type UserPrivateCreateInput = Omit<
+  UserPrivate,
+  'id' | 'created' | 'updated'
+>
 export type UserPrivateUpdateInput = Partial<
   Omit<UserPrivate, 'id' | 'created' | 'updated'>
 >
 export type UserAppCreateInput = Omit<UserApp, 'id' | 'created' | 'updated'>
-export type UserAppUpdateInput = Partial<Omit<UserApp, 'id' | 'created' | 'updated'>>
+export type UserAppUpdateInput = Partial<
+  Omit<UserApp, 'id' | 'created' | 'updated'>
+>

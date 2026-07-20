@@ -1,19 +1,20 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/Professional.model.ts
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: keep Professional storage domain-only.
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: own exact storage, provision, and public detail/directory shapes.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
 import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
-    CertificationItem,
-    EducationItem,
-    LanguageProficiency,
-    OtherExperienceItem,
-    ProjectItem,
-    RelevantExperienceItem,
-    VolunteeringItem,
+  CertificationItem,
+  EducationItem,
+  LanguageProficiency,
+  OtherExperienceItem,
+  ProjectItem,
+  RelevantExperienceItem,
+  VolunteeringItem,
 } from './supporting'
 
 export type {
@@ -47,6 +48,23 @@ export const ProfessionalStorage = {
   rootCollection: 'professionals',
   overlayCollection: 'professionals',
   idParam: 'userId',
+} as const
+
+export const ProfessionalConstraints = {
+  positions: 20,
+  tags: 20,
+  relevantExperience: 12,
+  otherExperience: 12,
+  languages: 12,
+  certifications: 8,
+  education: 8,
+  volunteering: 8,
+  projects: 8,
+  structuredTotal: 24,
+  stringItemLength: 240,
+  urlLength: 2_048,
+  yearMin: 1_000,
+  yearMax: 9_999,
 } as const
 
 export const AppProfessionalStorage = {
@@ -88,6 +106,29 @@ export type Professional = {
   [K in keyof typeof ProfessionalModel]: (typeof ProfessionalModel)[K]
 }
 
+export type PublicProfessionalProfile = Omit<
+  Professional,
+  'created' | 'updated'
+>
+export type PublicProfessionalProfilePayload = Omit<
+  PublicProfessionalProfile,
+  'id'
+>
+export type PublicProfessionalDirectoryProfilePayload = Pick<
+  PublicProfessionalProfilePayload,
+  | 'title'
+  | 'subtitle'
+  | 'tagline'
+  | 'summary'
+  | 'bio'
+  | 'image'
+  | 'positions'
+  | 'tags'
+>
+export type PublicProfessionalDirectoryProfile =
+  PublicProfessionalDirectoryProfilePayload &
+    Pick<PublicProfessionalProfile, 'id'>
+
 export const AppProfessionalModel = {
   id: '',
   ...AppProfileStamps,
@@ -95,5 +136,30 @@ export const AppProfessionalModel = {
 
 export type AppProfessional = AppProfileBase
 
-export type ProfessionalCreateInput = Omit<Professional, 'id' | 'created' | 'updated'>
-export type ProfessionalUpdateInput = Partial<Omit<Professional, 'id' | 'created' | 'updated'>>
+export type ProfessionalCreateInput = Omit<
+  Professional,
+  'id' | 'created' | 'updated'
+>
+export type ProfessionalUpdateInput = Partial<
+  Omit<Professional, 'id' | 'created' | 'updated'>
+>
+
+export function createProfessionalProfileSeed(): ProfessionalCreateInput {
+  return {
+    title: ProfessionalModel.title,
+    subtitle: ProfessionalModel.subtitle,
+    tagline: ProfessionalModel.tagline,
+    summary: ProfessionalModel.summary,
+    bio: ProfessionalModel.bio,
+    image: ProfessionalModel.image,
+    positions: [...ProfessionalModel.positions],
+    tags: [...ProfessionalModel.tags],
+    relevant_experience: [...ProfessionalModel.relevant_experience],
+    other_experience: [...ProfessionalModel.other_experience],
+    languages: [...ProfessionalModel.languages],
+    certifications: [...ProfessionalModel.certifications],
+    education: [...ProfessionalModel.education],
+    volunteering: [...ProfessionalModel.volunteering],
+    projects: [...ProfessionalModel.projects],
+  }
+}

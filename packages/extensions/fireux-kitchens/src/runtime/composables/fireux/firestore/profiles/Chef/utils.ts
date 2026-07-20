@@ -1,6 +1,7 @@
 import type {
     Chef,
 } from '../../../../../models/chef.model';
+// Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: validate canonical Chef fields without aliases.
 
 export function useChefValidation() {
   // Validate chef name
@@ -219,27 +220,23 @@ export function useChefValidation() {
     }
 
     // Optional field validations
-    const name =
-      (chefData as any).organization_name ??
-      (chefData as any).title ??
-      (chefData as any).display_name
+    const name = chefData.chef_organization_name ?? chefData.title
 
     if (typeof name === 'string' && name.trim()) {
       addErrorIfInvalid(validateChefName(name))
     }
 
-    if (chefData.specialties) {
-      addErrorIfInvalid(validateSpecialties(chefData.specialties))
+    if (chefData.chef_signature_dishes) {
+      addErrorIfInvalid(validateSpecialties(chefData.chef_signature_dishes))
     }
 
-    // Support both snake_case (canonical) and camelCase inputs
     const bios = [
       {
-        val: (chefData as any).summary,
+        val: chefData.summary,
         kind: 'short' as const,
       },
       {
-        val: (chefData as any).bio_long ?? (chefData as any).bioLong,
+        val: chefData.chef_bio,
         kind: 'long' as const,
       },
     ]

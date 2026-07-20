@@ -1,10 +1,13 @@
-import { computed, isRef } from 'vue'
+// Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: validate Supplier selection only after membership and collection outcomes are composed.
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: resolve Supplier demos through the lazy console adapter.
+import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useSupplierCollection,
@@ -12,10 +15,17 @@ import {
 } from '../../../firestore/supplier/fetch/useSupplierCollection'
 import { type SupplierSurface } from '../../../firestore/supplier/utils/view/useSupplierInterface'
 import { SupplierStorage } from '../../../../../models/supplier/Supplier.model'
-import type { Ref } from 'vue'
+import { useSupplierConsoleDemoData } from './useSupplierConsoleDemoData'
+
+type ConsoleTargetOutcomeRef =
+  | Ref<ConsoleTargetOutcome>
+  | ComputedRef<ConsoleTargetOutcome>
 
 type UseSupplierConsoleOptions = {
   filter?: SupplierCollectionFilter | Ref<SupplierCollectionFilter | null | undefined> | null
+  resolveTargetOutcome?: (
+    sourceOutcome: ConsoleTargetOutcomeRef
+  ) => ConsoleTargetOutcomeRef
 }
 
 /**
@@ -51,22 +61,47 @@ export function useSupplierConsole(
       operatorId: userId.value,
     }
   })
-  const {
-    suppliers: targetSuppliers,
-    pending: targetsPending,
-    error: targetsError,
-    outcome: targetsOutcome,
-  } = useSupplierCollection({
+  const sourceCollection = useSupplierCollection({
     source: consoleRoot.source,
     filter: targetFilter,
   })
+  const demoData = useSupplierConsoleDemoData(
+    computed(() => consoleRoot.source.value === 'demo')
+  )
+  const targetSuppliers = computed<SupplierSurface[]>(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.data.value?.suppliers ?? []
+      : sourceCollection.suppliers.value
+  )
+  const targetsPending = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.pending.value
+      : sourceCollection.pending.value
+  )
+  const targetsError = computed<unknown | undefined>(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.error.value
+      : sourceCollection.error.value
+  )
+  const sourceTargetsOutcome = computed<ConsoleTargetOutcome>(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.outcome.value
+      : sourceCollection.outcome.value
+  )
+  const membershipAwareTargetsOutcome = options.resolveTargetOutcome
+    ? options.resolveTargetOutcome(sourceTargetsOutcome)
+    : sourceTargetsOutcome
+  const targetsOutcome = computed<ConsoleTargetOutcome>(() =>
+    consoleRoot.source.value === 'demo'
+      ? sourceTargetsOutcome.value
+      : membershipAwareTargetsOutcome.value
+  )
 
   const entity = useConsoleEntityRuntime<SupplierSurface>({
     family: 'supplier',
     storageFamily: SupplierStorage.rootCollection,
     targetItems: targetSuppliers,
-    targetPending: targetsPending,
-    targetError: targetsError,
+    targetOutcome: targetsOutcome,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
     mode: consoleRoot.source,
     userId,
@@ -91,6 +126,7 @@ export function useSupplierConsole(
     targets: targetSuppliers,
     count: computed(() => targetSuppliers.value.length),
     pending: targetsPending,
+    error: targetsError,
     outcome: targetsOutcome,
   }
   const selection = {

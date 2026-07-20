@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: validate persisted selection from authoritative target outcomes.
 import { useCookie } from '#imports'
 import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
 import { normalizeString } from '../../../../utils/string'
@@ -6,6 +7,7 @@ import {
   useConsole,
   type ConsoleSource,
 } from './useConsole'
+import type { ConsoleTargetOutcome } from './useConsoleIndex'
 
 type ConsoleSelectionState = {
   selectedId: string
@@ -14,9 +16,9 @@ type ConsoleSelectionState = {
 type ValueRef<T> = Ref<T> | ComputedRef<T>
 
 export type UseConsoleSelectionOptions<TTarget> = {
-  targetItems?: ValueRef<(TTarget | null | undefined)[] | null | undefined>
-  targetPending?: ValueRef<boolean | null | undefined>
-  getId?: (item: TTarget) => string
+  targetItems: ValueRef<(TTarget | null | undefined)[] | null | undefined>
+  targetOutcome: ValueRef<ConsoleTargetOutcome>
+  getId: (item: TTarget) => string
 }
 
 const isPresent = <T>(value: T | null | undefined): value is T => value != null
@@ -37,11 +39,11 @@ export function useConsoleSelection<TTarget = never>(
   )
   const selectedId = computed(() => normalizeString(state.value?.selectedId))
   const targetItems = computed<TTarget[]>(() => {
-    const items = options?.targetItems ? unref(options.targetItems) : []
+    const items = options ? unref(options.targetItems) : []
     return Array.isArray(items) ? items.filter(isPresent) : []
   })
-  const targetPending = computed(() =>
-    options?.targetPending ? Boolean(unref(options.targetPending)) : false
+  const targetOutcome = computed<ConsoleTargetOutcome>(() =>
+    options ? unref(options.targetOutcome) : 'idle'
   )
 
   const selectTarget = (
@@ -66,28 +68,31 @@ export function useConsoleSelection<TTarget = never>(
   }
 
   const getTargetId = (item: TTarget | null | undefined) => {
-    if (!item || !options?.getId) return ''
+    if (!item || !options) return ''
     return normalizeString(options.getId(item))
   }
 
   const selectedTarget = computed<TTarget | null>(() => {
     const id = selectedId.value
-    if (!id || !options?.getId) return null
+    if (!id || !options) return null
 
     return targetItems.value.find((item) => getTargetId(item) === id) ?? null
   })
 
-  if (options?.targetItems && options.getId) {
+  if (options) {
     watch(
       () => ({
         id: selectedId.value,
         items: targetItems.value,
-        pending: targetPending.value,
+        outcome: targetOutcome.value,
       }),
-      (state: { id: string; items: TTarget[]; pending: boolean }) => {
-        const { id, items, pending } = state
-        if (!id || pending) return
-        if (!items.length) return
+      (state: {
+        id: string
+        items: TTarget[]
+        outcome: ConsoleTargetOutcome
+      }) => {
+        const { id, items, outcome } = state
+        if (!id || (outcome !== 'ready' && outcome !== 'empty')) return
         if (items.some((item) => getTargetId(item) === id)) return
         clearSelection()
       },

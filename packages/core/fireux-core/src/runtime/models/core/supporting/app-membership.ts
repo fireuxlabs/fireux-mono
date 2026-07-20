@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: define the trusted runtime App membership mutation contract.
+// Concurrent edit — 2026-07-20 17:49 CEST — Repo Efficiency Pass 2 of 6: keep profile indexing inside trusted profile provisioning.
 
 export type AppMembershipRole = 'admin' | 'user'
 
@@ -55,11 +56,6 @@ export type AppMembershipMutationInput =
       action: 'set-console-target'
       family: string
       targetId: string
-      enabled: boolean
-    }
-  | {
-      action: 'set-profile'
-      profileId: string
       enabled: boolean
     }
 

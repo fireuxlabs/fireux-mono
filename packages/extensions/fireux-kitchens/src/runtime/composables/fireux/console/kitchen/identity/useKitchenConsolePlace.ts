@@ -1,8 +1,12 @@
+// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: resolve demo Place data through the lazy Kitchen console adapter.
 import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import { getDemoKitchenPlace } from '../../../demo/kitchen/scenarios'
 import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../core/useKitchenConsoleDemoData'
 import { useKitchenConsoleIdentity } from './useKitchenConsoleIdentity'
 
 export function useKitchenConsolePlace() {
@@ -11,11 +15,18 @@ export function useKitchenConsolePlace() {
     identity.source.value === 'live' ? identity.placeId.value : ''
   )
   const live = usePlaceFetch(livePlaceId)
+  const demoData = useKitchenConsoleDemoData(
+    computed(() => identity.source.value === 'demo')
+  )
   const demoPlace = computed<Place | null>(() => {
     if (identity.source.value !== 'demo') return null
 
-    const place = getDemoKitchenPlace(identity.kitchenId.value)
-    if (!place) return null
+    const scenario = findKitchenConsoleDemoScenario(
+      demoData.data.value,
+      identity.kitchenId.value
+    )
+    if (!scenario) return null
+    const place = scenario.place
 
     const kitchen = identity.selectedKitchen.value as Record<string, unknown> | null
     const kitchenIdentity = readKitchenIdentity(kitchen)
@@ -34,7 +45,11 @@ export function useKitchenConsolePlace() {
     return null
   })
   const pending = computed(() =>
-    identity.source.value === 'live' ? live.pending.value : false
+    identity.source.value === 'demo'
+      ? demoData.pending.value
+      : identity.source.value === 'live'
+        ? live.pending.value
+        : false
   )
 
   return {

@@ -1,7 +1,8 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: make Customer an app-private ordering record.
 // Profile family canon: docs/concepts/entities.md
-import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model'
-import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model'
+// Concurrent edit — 2026-07-20 18:00 CEST — Repo Efficiency Pass 2 of 6: own a server-loadable exact private Customer provisioning seed.
+import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
+import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -76,3 +77,16 @@ export type CustomerCreateInput = Omit<Customer, 'id' | 'created' | 'updated'>
 export type CustomerUpdateInput = Partial<
   Omit<Customer, 'id' | 'created' | 'updated'>
 >
+
+export function createAppCustomerProfileSeed(): CustomerCreateInput {
+  return {
+    private: {
+      name: CustomerPrivateModel.name,
+      phone: CustomerPrivateModel.phone,
+      allergy_note: CustomerPrivateModel.allergy_note,
+      default_delivery_address: CustomerPrivateModel.default_delivery_address,
+      saved_addresses: [...CustomerPrivateModel.saved_addresses],
+      order_history: [...CustomerPrivateModel.order_history],
+    },
+  }
+}

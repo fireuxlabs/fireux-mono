@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
+<!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: make enquiry behavior explicitly local and non-delivering. -->
 <template>
   <UPage v-if="provider">
     <UPageHeader :title="provider.displayName" :description="provider.headline">
@@ -137,9 +138,9 @@
         <UCard id="enquire">
           <div class="space-y-4">
             <div class="space-y-2">
-              <h2 class="text-2xl font-semibold">Request a quote</h2>
+              <h2 class="text-2xl font-semibold">Try the enquiry flow</h2>
               <p class="text-sm text-dimmed">
-                Share the basics and we will route this straight to {{ provider.displayName }}.
+                Local simulation only. Nothing entered here is sent to {{ provider.displayName }} or another inbox.
               </p>
             </div>
 
@@ -183,11 +184,11 @@
 
               <label class="flex items-start gap-3 text-sm">
                 <input v-model="draft.consentContact" type="checkbox" class="mt-1" />
-                <span>I am happy for Find My SEO to pass this enquiry to the provider.</span>
+                <span>I understand this only adds an enquiry to the local simulation.</span>
               </label>
 
               <UButton block color="primary" type="submit">
-                Send enquiry
+                Add to local simulation
               </UButton>
             </form>
           </div>
@@ -200,15 +201,9 @@
               {{ provider.displayName }} typically works on {{ provider.projectTypes.join(' and ').toLowerCase() }}
               engagements and is currently {{ provider.availabilityStatus.toLowerCase() }}.
             </p>
-            <UButton
-              v-if="provider.contactEmail"
-              :to="emailDirectHref"
-              target="_blank"
-              variant="soft"
-              icon="i-lucide-mail"
-            >
-              Email directly
-            </UButton>
+            <p class="text-sm text-warning">
+              Provider contact is disabled in this preview.
+            </p>
           </div>
         </UCard>
       </div>
@@ -225,8 +220,8 @@
 
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
-import type { DemoSeoLeadDraft } from '../../demo/findMySeo'
-import { demoSeoCaseStudiesForProvider, demoSeoProviderLabel, findDemoSeoProviderBySlug } from '../../demo/findMySeo'
+import type { DemoSeoLeadDraft } from '../../simulations/findMySeo'
+import { demoSeoCaseStudiesForProvider, demoSeoProviderLabel, findDemoSeoProviderBySlug } from '../../simulations/findMySeo'
 import { useFindMySeoLeads } from '../../composables/useFindMySeoLeads'
 
 const route = useRoute()
@@ -240,7 +235,7 @@ const { submitLead } = useFindMySeoLeads()
 const submittedLead = ref(false)
 const successMessage = ref('')
 const submissionColor = ref<'success' | 'warning'>('success')
-const submissionTitle = ref('Enquiry captured')
+const submissionTitle = ref('Local simulation')
 const draft = reactive<DemoSeoLeadDraft>({
   contactName: '',
   contactEmail: '',
@@ -272,29 +267,6 @@ const brandLogoUrl = computed(() => {
   return provider.value.logoUrl
 })
 
-const emailDirectHref = computed(() => {
-  if (!provider.value?.contactEmail) {
-    return undefined
-  }
-
-  const subject = encodeURIComponent(`Find My SEO enquiry for ${provider.value.displayName}`)
-  const body = encodeURIComponent(
-    [
-      `Hi ${provider.value.displayName},`,
-      '',
-      draft.projectSummary || 'I found your profile on Find My SEO and would like to discuss a project.',
-      '',
-      draft.companyName ? `Company: ${draft.companyName}` : '',
-      draft.budgetRange ? `Budget: ${draft.budgetRange}` : '',
-      draft.timeline ? `Timeline: ${draft.timeline}` : '',
-    ]
-      .filter(Boolean)
-      .join('\n')
-  )
-
-  return `mailto:${provider.value.contactEmail}?subject=${subject}&body=${body}`
-})
-
 const resetDraft = () => {
   draft.contactName = ''
   draft.contactEmail = ''
@@ -323,19 +295,16 @@ const handleSubmit = () => {
   ) {
     submissionColor.value = 'warning'
     submissionTitle.value = 'Complete the form'
-    successMessage.value = 'Please complete the required fields before sending your enquiry.'
+    successMessage.value = 'Please complete the required fields before adding the local enquiry.'
     submittedLead.value = true
     return
   }
 
-  const lead = submitLead(provider.value, draft)
+  submitLead(provider.value, draft)
   submittedLead.value = true
-  submissionColor.value = lead.deliveryState === 'sent' ? 'success' : 'warning'
-  submissionTitle.value = lead.deliveryState === 'sent' ? 'Enquiry captured' : 'Operator follow-up needed'
-  successMessage.value =
-    lead.deliveryState === 'sent'
-      ? `Your enquiry is now in the operator inbox and ready to reach ${provider.value.displayName}.`
-      : 'Your enquiry was saved, but direct email delivery needs operator follow-up.'
+  submissionColor.value = 'success'
+  submissionTitle.value = 'Added locally'
+  successMessage.value = 'The enquiry now exists only in this browser simulation. Nothing was sent or delivered.'
   resetDraft()
 }
 

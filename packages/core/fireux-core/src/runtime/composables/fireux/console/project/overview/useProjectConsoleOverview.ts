@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: carry Project target outcome into overview.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
@@ -16,6 +17,7 @@ export function useProjectConsoleOverview() {
   const overview = useConsoleOverview<ProjectSurface>({
     selectedEntity: selection.project,
     targetItems: projects.targets,
+    targetOutcome: projects.outcome,
     getId: (project) => normalizeString(project?.id),
   })
   const debug = computed(() => ({

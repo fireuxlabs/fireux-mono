@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
   <UDashboardPanel id="console-kitchen-menu-publishing">
     <template #header>
@@ -13,14 +14,14 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,
+  requiresSelection: true,
   nav: {
-    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-menu-publishing',
     label: 'Menu Publishing',
     icon: 'i-lucide-send',
     position: 'top',
-    requiresSelection: true,
     hidden: true,
     desktop: false,
     mobile: false,

@@ -1,10 +1,10 @@
 Menu family map
 Updated: 2026-07-20
-Ref: f7d3704ef
+Ref: 8d83d3fa7
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared funnel spine. -->
 <!-- Concurrent edit — 2026-07-19 21:18 CEST — Pre-order WhatsApp pass: map the reusable server alert seam. -->
-<!-- Concurrent edit — 2026-07-20 15:22 CEST — Advance-table Pre-order pass: map always-open intake, asynchronous confirmation, and customer recovery. -->
+<!-- Concurrent edit — 2026-07-20 16:10 CEST — Pre-order planning pass: map the advance-table gate before catalogue selection. -->
 
 Purpose:
 Map the strong Menu/KitchenMenu family without conflating root identity with
@@ -279,8 +279,10 @@ Page composition note:
   address against Kitchen-owned zones and applies the resolved minimum and fee.
   Pre-order means advance dine-in for a larger table: request intake stays open
   whenever the surface is enabled and unpaused, while the mandatory future
-  dining time still obeys its resolved service hours and timing policy. Its
-  checkout also requires party size. Scheduled delivery remains Delivery and
+  dining time still obeys its resolved service hours and timing policy. Before
+  the catalogue appears, its advance-table plan requires both that dining time
+  and a party size; checkout then remains focused on contact and payment.
+  Scheduled delivery remains Delivery and
   scheduled pickup remains Collection; neither becomes Pre-order. All three
   active pipelines offer name, mobile, and email fields with per-surface
   required-field policy, show
@@ -373,6 +375,8 @@ Component placement:
   shared visible order seams. `CollectionFlow`, `DeliveryFlow`, `PreOrderFlow`,
   and the two-stage `KioskFlow` compose the shared `TimeDialog`, `CheckoutDialog`, `Status`,
   and temporary `Paused` states with only their surface-specific inputs.
+  `PreOrderPlan` owns the advance-table time and party-size gate before the
+  shared catalogue; it does not create another basket or lifecycle.
   `composables/fireux/menu/order/useMenuOrderBasket.ts` owns transient basket
   arithmetic and validated line correction only, while
   `useMenuOrderLifecycle.ts` owns shared submission, idempotency, online

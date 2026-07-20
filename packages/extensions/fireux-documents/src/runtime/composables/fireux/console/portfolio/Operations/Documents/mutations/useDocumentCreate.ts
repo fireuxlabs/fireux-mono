@@ -1,5 +1,7 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for document creation.
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
@@ -15,14 +17,10 @@ export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function createDocumentRecord(input: DocumentCreateInput): Promise<string> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-documents] portfolio id is required.')
-    }
-
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-documents] demo runtime does not allow writes.')
-    }
+    const portfolioId = requirePortfolioConsoleWrite(
+      runtimePortfolio,
+      'fireux-documents'
+    )
 
     const payload: Omit<Document, 'id'> = {
       portfolio_id: portfolioId,

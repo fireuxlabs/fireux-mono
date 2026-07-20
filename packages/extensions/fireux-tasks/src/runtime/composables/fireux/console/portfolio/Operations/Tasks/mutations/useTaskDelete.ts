@@ -1,5 +1,7 @@
+// Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for task deletion.
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from 'fireux-properties/runtime/composables/fireux/console/portfolio/operations/useActivePortfolio'
@@ -15,14 +17,7 @@ export function useTaskDelete(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function deleteTask(taskId: string): Promise<void> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-tasks] portfolio id is required.')
-    }
-
-    if (runtimePortfolio.isDemo.value) {
-      throw new Error('[fireux-tasks] demo runtime does not allow writes.')
-    }
+    requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-tasks')
 
     const normalizedTaskId = normalizeString(taskId)
     if (!normalizedTaskId) {

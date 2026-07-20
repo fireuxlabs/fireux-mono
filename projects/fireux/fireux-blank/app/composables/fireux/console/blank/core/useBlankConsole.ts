@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: carry Blank target outcome.
+// Concurrent edit — 2026-07-20 16:14 CEST — Console Spine project cleanup: adopt authoritative target outcomes.
 import { computed } from 'vue'
 import {
   useConsole,
@@ -21,6 +22,7 @@ export function useBlankConsole() {
     blanks: blankRecords,
     outcome,
     pending,
+    error,
     appCollectionPath,
   } =
     useBlankCollection({ source: consoleRoot.source })
@@ -29,7 +31,7 @@ export function useBlankConsole() {
     family: 'blank',
     storageFamily: BlankStorage.rootCollection,
     targetItems: targetBlanks,
-    targetPending: pending,
+    targetOutcome: outcome,
     getId: (target) => normalizeString(target?.id),
     mode: consoleRoot.source,
     readOnly: true,
@@ -53,6 +55,7 @@ export function useBlankConsole() {
     targets: targetBlanks,
     count: computed(() => targetBlanks.value.length),
     pending,
+    error,
     outcome,
     hasTargets,
   }

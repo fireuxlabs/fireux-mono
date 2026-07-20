@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:14 CEST — Console Spine project cleanup: adopt route-level console metadata. -->
 <template>
   <UDashboardPanel id="console-project-identity">
     <template #header>
@@ -15,18 +16,19 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
   nav: {
     key: 'console-project-identity',
     label: 'Identity',
     icon: 'i-lucide-info',
     position: 'top',
-    requiresSelection: true,
     order: 3,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: true,
   roles: ['admin'],
 })
 </script>

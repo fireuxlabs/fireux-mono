@@ -1,11 +1,7 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: route membership creation, bootstrap, and removal through the trusted server boundary.
 // Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: provision canonical User identity through the trusted reservation boundary.
-import {
-  serverTimestamp,
-} from 'firebase/firestore'
+// Concurrent edit — 2026-07-20 17:49 CEST — Repo Efficiency Pass 2 of 6: remove browser notification construction from the canonical create helpers.
 
-import type { FirebaseTimestamp } from '../../../../../../../types/firebase'
-import type { NotificationScope, UserNotification } from '../../../../../../models/core/supporting/user'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useUserHandleClaim } from '../mutations/useUserHandleClaim'
@@ -101,26 +97,6 @@ export async function removeUserAppMembership(
     userId: uid,
   })
   return { removed: result.removed === true }
-}
-
-export type CreateNotificationInput = {
-  message: string
-  scope: NotificationScope
-  appId?: string
-}
-
-export function createUserNotification(
-  input: CreateNotificationInput
-): UserNotification {
-  return {
-    message: input.message,
-    scope: input.scope,
-    created: {
-      at: serverTimestamp() as unknown as FirebaseTimestamp,
-      app_id: input.appId ?? '',
-    },
-    read: false,
-  }
 }
 
 function makeHandle(displayName: string, uid: string) {

@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: distinguish overview loading, failure, and empty selection. -->
 <template>
   <UCard>
     <template #header>
@@ -9,7 +10,24 @@
       </div>
     </template>
 
-    <div v-if="focus.hasSelection" class="space-y-4">
+    <p v-if="focus.outcome === 'idle'" class="console-card-header__description">
+      No {{ entityLower }} source is active.
+    </p>
+
+    <p v-else-if="focus.outcome === 'pending'" class="console-card-header__description">
+      Loading selected {{ entityLower }}…
+    </p>
+
+    <UAlert
+      v-else-if="focus.outcome === 'error'"
+      color="error"
+      variant="soft"
+      icon="i-lucide-circle-alert"
+      :title="`${entityLabel} could not be loaded`"
+      description="Please try again."
+    />
+
+    <div v-else-if="focus.hasSelection" class="space-y-4">
       <ConsoleTargetCard
         v-if="card"
         :card="card"
@@ -43,10 +61,12 @@ import type { ConsoleTargetCard as ConsoleTargetCardType } from './types'
 type ConsoleOverviewFocusState = {
   id: string
   hasSelection: boolean
+  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
 }
 
 type ConsoleOverviewMultipleSummary = {
   count: number
+  outcome: 'idle' | 'pending' | 'error' | 'empty' | 'ready'
 }
 
 const props = withDefaults(
@@ -65,5 +85,9 @@ const props = withDefaults(
 )
 
 const entityLower = computed(() => props.entityLabel.toLowerCase())
-const multipleCountLabel = computed(() => String(props.multiple.count))
+const multipleCountLabel = computed(() =>
+  props.multiple.outcome === 'ready' || props.multiple.outcome === 'empty'
+    ? String(props.multiple.count)
+    : '—'
+)
 </script>

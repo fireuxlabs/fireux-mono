@@ -1,8 +1,10 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: isolate shared customer recovery projections and request helpers.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: reconstruct an amendable basket from the safe local receipt snapshot.
 import type { CustomerOrderSummary } from '../models/customer/order.model'
 import type { KitchenOrderStatus } from '../models/kitchen/order.model'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import type { CreatedMenuOrder } from '../models/kitchen/menu/menu-ordering.model'
+import type { CreatedMenuOrderReceiptLine } from '../models/kitchen/menu/menu-ordering.model'
 import type { MenuOrderTrackingStatus } from '../composables/fireux/menu/order/useMenuOrderTrackingSession'
 import type { MenuOrderBasketLine } from '../composables/fireux/menu/order/useMenuOrderBasket'
 
@@ -36,6 +38,51 @@ export function recoveredMenuOrderBasketLines(
       variant,
       addOns,
     }
+  })
+}
+
+export function createdMenuOrderBasketLines(
+  items: CreatedMenuOrderReceiptLine[]
+): MenuOrderBasketLine[] {
+  return items.flatMap((item, index) => {
+    const name = receiptItemName(item)
+    const addOns = (item.add_ons || []).map(addOn => ({
+      id: addOn.id,
+      label: addOn.label,
+      price: Number(addOn.price) || 0,
+      priceLabel: '',
+    }))
+    const addOnTotal = addOns.reduce((sum, addOn) => sum + addOn.price, 0)
+    const basePrice = item.unit_price_chf - addOnTotal
+    if (!name || !Number.isFinite(basePrice) || basePrice <= 0) return []
+
+    const variantLabel = text(item.variant_label)
+    const variant = variantLabel
+      ? {
+          id: text(item.variant_id) || variantLabel,
+          label: variantLabel,
+          price: basePrice,
+          priceLabel: '',
+        }
+      : null
+    const itemId = text(item.source_item_id) || item.id
+    const configurationKey = JSON.stringify([
+      text(item.menu_id),
+      itemId,
+      variant?.id || 'base',
+      ...addOns.map(addOn => addOn.id),
+    ])
+
+    return [{
+      id: `${configurationKey}:${index + 1}`,
+      configurationKey,
+      itemId,
+      name,
+      quantity: item.quantity,
+      unitPrice: item.unit_price_chf,
+      variant,
+      addOns,
+    }]
   })
 }
 
@@ -94,3 +141,13 @@ export const isTerminalMenuOrderStatus = (status: KitchenOrderStatus) =>
   status === 'completed' || status === 'cancelled' || status === 'trashed'
 
 const text = (value: unknown) => String(value ?? '').trim()
+
+function receiptItemName(item: CreatedMenuOrderReceiptLine) {
+  const label = text(item.label)
+  const variantLabel = text(item.variant_label)
+  const suffix = variantLabel ? ` · ${variantLabel}` : ''
+
+  return suffix && label.endsWith(suffix)
+    ? label.slice(0, -suffix.length).trim()
+    : label
+}

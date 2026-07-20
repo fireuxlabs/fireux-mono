@@ -1,7 +1,9 @@
+// Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: project public Admin avatars through the canonical safe fallback.
 import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
+import { resolveUserAvatarSource } from '../../../../models/core/supporting/user-avatar'
 import { UserAppStorage, UserStorage } from '../../../../models/core/user.model'
 import {
   getRuntimeFirestore,
@@ -33,13 +35,16 @@ function normalizeLimit(value: unknown): number {
   return Math.max(1, Math.min(24, Math.trunc(parsed)))
 }
 
-function mapUser(uid: string, data: Record<string, unknown> | null): PublicAppAdmin {
+function mapUser(
+  uid: string,
+  data: Record<string, unknown> | null
+): PublicAppAdmin {
   if (!data) {
     return {
       id: uid,
       displayName: 'Admin profile unavailable',
       handle: '',
-      avatar: '',
+      avatar: resolveUserAvatarSource(''),
       profiles: [],
       unavailable: true,
     }
@@ -52,7 +57,7 @@ function mapUser(uid: string, data: Record<string, unknown> | null): PublicAppAd
     id: uid,
     displayName: displayName || 'Admin profile unavailable',
     handle,
-    avatar: asString(data.avatar),
+    avatar: resolveUserAvatarSource(data.avatar),
     profiles: asStringArray(data.profiles),
     ...(!displayName ? { unavailable: true } : {}),
   }
@@ -69,7 +74,8 @@ export default defineEventHandler(async (event: H3Event) => {
 
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
-    'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
+    'Cache-Control':
+      'public, max-age=60, s-maxage=300, stale-while-revalidate=600',
   })
 
   try {
@@ -87,7 +93,10 @@ export default defineEventHandler(async (event: H3Event) => {
       const uid = membership.id.trim()
       if (!uid) continue
 
-      const userSnap = await identityDb.collection(UserStorage.rootCollection).doc(uid).get()
+      const userSnap = await identityDb
+        .collection(UserStorage.rootCollection)
+        .doc(uid)
+        .get()
       admins.push(mapUser(uid, userSnap.exists ? userSnap.data() || {} : null))
     }
 

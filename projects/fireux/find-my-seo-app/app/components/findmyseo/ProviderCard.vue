@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture. -->
+<!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: consume the app-local simulation. -->
 <template>
   <UCard class="h-full">
     <div class="space-y-4">
@@ -91,8 +92,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DemoSeoProvider } from '../../demo/findMySeo'
-import { demoSeoProviderLabel } from '../../demo/findMySeo'
+import type { DemoSeoProvider } from '../../simulations/findMySeo'
+import { demoSeoProviderLabel } from '../../simulations/findMySeo'
 
 const props = defineProps<{
   provider: DemoSeoProvider

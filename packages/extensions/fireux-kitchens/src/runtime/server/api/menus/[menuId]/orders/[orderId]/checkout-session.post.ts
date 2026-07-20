@@ -29,7 +29,7 @@ import {
 } from '../../../../../../utils/kitchen-menu-route.ts'
 import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../utils/menu-order-capability.ts'
 
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: restrict checkout creation to the customer UID or opaque same-device capability.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: restrict checkout creation to the customer UID or opaque same-device capability.
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -84,13 +84,6 @@ export default defineEventHandler(async (event) => {
 
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const access = await readMenuOrderCustomerAccess(event)
-  const currencyCode = text(context.currencyCode)
-  if (!currencyCode) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Kitchen currency code is required before payment.',
-    })
-  }
   const db = getRuntimeFirestore()
   const orderRef = db.doc(`apps/${context.appId}/kitchens/${context.kitchenId}/orders/${orderId}`)
   const orderSnap = await orderRef.get()
@@ -109,6 +102,13 @@ export default defineEventHandler(async (event) => {
     })
   }
   requireMenuOrderCustomerAccess(access, order)
+  const currencyCode = text(context.currencyCode)
+  if (!currencyCode) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Kitchen currency code is required before payment.',
+    })
+  }
   const orderType = text(order.order_type) as KitchenOrderType
   const payment = resolveCheckoutPayment(order)
   const orderStatus = text(order.status).toLowerCase()
@@ -166,6 +166,9 @@ export default defineEventHandler(async (event) => {
       statusMessage: 'Order payment currency is required.',
     })
   }
+  const successPath = text(order.customer_uid)
+    ? '/dashboard/customer/profile'
+    : menuPath
 
   // Stripe Checkout dynamic-price spine mirrors fireux-products checkout.
   const stripe = getMenuStripe()
@@ -191,7 +194,7 @@ export default defineEventHandler(async (event) => {
           quantity: 1,
         },
       ],
-      success_url: `${baseUrl}/dashboard/customer/profile?order=${encodeURIComponent(orderId)}&payment=success`,
+      success_url: `${baseUrl}${successPath}?order=${encodeURIComponent(orderId)}&payment=success`,
       cancel_url: `${baseUrl}${menuPath}?order=${encodeURIComponent(orderId)}&payment=cancelled`,
       metadata: {
         appId: context.appId,

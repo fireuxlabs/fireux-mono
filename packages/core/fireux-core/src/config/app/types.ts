@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: make App self-join an explicit bootstrap policy.
 import type { NuxtConfig } from '@nuxt/schema'
 import type { RuntimeAppRole } from './runtime'
 import type { FireuxSeoConfig } from './seo'
@@ -34,6 +35,8 @@ export type FireuxAppConfig = {
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */
   profiles?: string[]
+  /** Whether a signed-in canonical User may create their own App membership. */
+  selfJoinEnabled?: boolean
   /** Optional public/dashboard nav item keys hidden by this app shell. */
   navHiddenKeys?: string[]
   seo?: FireuxSeoConfig

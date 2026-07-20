@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: make App membership, role, premium, and console-target writes server-owned.
 // Concurrent edit — 2026-07-20 14:10 CEST — Membership revocation pass: clear retained target and Driver grants so re-approval cannot resurrect authority.
+// Concurrent edit — 2026-07-20 17:49 CEST — Repo Efficiency Pass 2 of 6: remove the parallel profile-index mutation route.
 
 import { createError } from 'h3'
 import {
@@ -52,14 +53,6 @@ const CONSOLE_COLLECTION_BY_FAMILY: Record<string, string> = {
   portfolio: 'portfolios',
   property: 'properties',
   supplier: 'suppliers',
-}
-
-const PROFILE_COLLECTION_BY_ID: Record<string, string> = {
-  agent: 'agents',
-  chef: 'chefs',
-  customer: 'customers',
-  driver: 'drivers',
-  professional: 'professionals',
 }
 
 const MAX_TARGET_AUTHORITY_REVOCATIONS = 400
@@ -794,45 +787,6 @@ async function mutateInTransaction(
         created,
         role: roleFrom(membership) ?? 'user',
         identityMirror: sameDatabase ? null : 'add',
-      }
-    }
-
-    if (input.action === 'set-profile') {
-      if (!actorMembershipSnapshot.exists || !roleFrom(actorMembership)) {
-        forbidden(409, 'An App membership is required before adding a profile.')
-      }
-      if (typeof input.enabled !== 'boolean') {
-        forbidden(400, 'Profile state must be boolean.')
-      }
-      const profileId = String(input.profileId ?? '').trim().toLowerCase()
-      const profileCollection = PROFILE_COLLECTION_BY_ID[profileId]
-      if (!profileCollection) {
-        forbidden(400, 'App profile type is not supported.')
-      }
-      const profileSnapshot = await transaction.get(
-        appRef.collection(profileCollection).doc(actorUid)
-      )
-      if (!profileSnapshot.exists) {
-        forbidden(404, 'The App profile record does not exist.')
-      }
-      const profiles = stringList(actorMembership?.profiles, 20)
-      const next = input.enabled
-        ? [...new Set([...profiles, profileId])]
-        : profiles.filter((id) => id !== profileId)
-      if (next.length > 20) {
-        forbidden(409, 'This App profile list is full.')
-      }
-      transaction.update(actorMembershipRef, {
-        profiles: next,
-        updated: stamp(actorUid),
-      })
-      return {
-        ok: true,
-        action: input.action,
-        appId,
-        userId: actorUid,
-        role: roleFrom(actorMembership) ?? 'user',
-        identityMirror: null,
       }
     }
 

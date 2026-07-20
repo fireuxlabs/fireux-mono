@@ -6,12 +6,14 @@
         <p>
           <strong>PRE-FLIGHT MODE</strong>
           <span class="findmyseo-preflight__separator" aria-hidden="true">&middot;</span>
-          <span>You are viewing a demo version of Find My SEO with example professionals and preview data.</span>
+          <span>You are viewing a local simulation with fictional professionals and preview data. No enquiry is sent or delivered.</span>
         </p>
       </div>
     </UContainer>
   </div>
 </template>
+
+<!-- Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: disclose local-only, non-delivering behavior. -->
 
 <style scoped>
 .findmyseo-preflight {

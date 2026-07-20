@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: carry Supplier target outcome into overview.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
@@ -16,6 +17,7 @@ export function useSupplierConsoleOverview() {
   const overview = useConsoleOverview<SupplierSurface>({
     selectedEntity: selection.supplier,
     targetItems: suppliers.targets,
+    targetOutcome: suppliers.outcome,
     getId: (supplier) => normalizeString(supplier?.id),
   })
   const debug = computed(() => ({

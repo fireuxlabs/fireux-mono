@@ -6,9 +6,11 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: map the legal version and server-only public identity creation. -->
 <!-- Concurrent edit — 2026-07-20 13:12 CEST — Driver authority: map trusted Kitchen grants and minimal dispatch projection. -->
 <!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: map domain-owned bounded profile/User joins. -->
+<!-- Concurrent edit — 2026-07-20 16:04 CEST — Repo Efficiency Pass 1 of 6: map public App DTO, shell status, and authenticated dev-data boundaries. -->
+<!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map owner-only raw profiles and SSR detail transport. -->
 
 Updated: 2026-07-20
-Ref: f7d3704ef
+Ref: 8d83d3fa7
 Role: map, not canon
 
 Purpose:
@@ -84,15 +86,27 @@ Boundary rule:
 - Shared identity writes may publish authenticated, idempotent App events
   through core server endpoints. Event facts do not choose notification
   recipients or delivery channels; those belong to subscribing consumers.
-- `/api/public/apps` is the owning Ecosystem App projection. FireUX
+- `/api/public/apps` and `/api/public/apps/:id` are the owning Ecosystem's
+  allowlisted App projections; guests never read the canonical App document.
+  `/api/public/app/status` exposes only whether the current runtime App exists,
+  so the shell can distinguish missing initialization from a failed read.
+  FireUX
   `/api/public/directory` is the shared platform App/Ecosystem projection used
   by landing and index surfaces.
+- Raw developer inspection APIs are development-build-only and require a
+  verified Firebase bearer identity matching `fireux.developerId`.
+  `/api/dev/apps` has a fixed runtime database/collection and bounded result;
+  `/api/dev/collection-snapshot` keeps bounded inputs; `/api/dev/images`
+  exposes local asset paths only through the same developer boundary.
 - Kitchens owns `/api/public/chefs` and `/api/public/drivers`; Jobs owns
   `/api/public/agents` and `/api/public/professionals`. Each index is capped,
   explicitly maps domain fields, and joins a minimal canonical User DTO by the
   shared uid. The raw profile and User collections are not public list APIs.
   Matching `/:id` endpoints use the same allowlists and return a truthful 404
-  when either side of the canonical pair is absent or unusable.
+  when either side of the canonical pair is absent or unusable. Raw Agent,
+  Chef, and Professional documents are owner-only even for single-document
+  reads; public pages use `usePublicProfileDetail` so the projected pair and
+  outer HTTP status are resolved during SSR.
 - FireUX `/api/internal/control/projects` verifies the Firebase bearer token and
   current FireUX App-admin membership before returning allowlisted private
   Project control-plane rows.

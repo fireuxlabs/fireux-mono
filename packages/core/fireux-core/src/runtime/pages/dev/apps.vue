@@ -17,8 +17,6 @@
 
       <DevBinding :app="bindingApp" :apps="appCollection" />
 
-      <DevAppDemo />
-
       <DevModel
         :title="'Apps · Model'"
         :model="appModelRuntime"
@@ -53,12 +51,13 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 16:18 CEST — Repo Efficiency Pass 1 of 6: inspect raw Apps through the authenticated dev API across all app roles.
+// Concurrent edit — 2026-07-20 17:01 CEST — Demo Data Spine pass: remove redundant non-console App fixtures.
 import { definePageMeta } from '#imports'
+import { useDevAppCollection } from 'fireux-core/runtime/composables/dev/useDevAppCollection'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
 import { AppModel as AppModelRuntime } from '../../models/core/app.model'
 
@@ -80,12 +79,13 @@ definePageMeta({
 const appModelRuntime = AppModelRuntime
 const publicAppsController = useEcosystemAppCollection()
 
-const { apps } = useAppCollection()
-const { app: activeApp } = useApp()
+const { apps } = useDevAppCollection()
 
 const { appId: configAppId, isTenant, role } = useFireUXConfig()
 const appCollection = computed(() =>
-  isTenant ? (activeApp.value ? [activeApp.value] : []) : apps.value ?? []
+  isTenant
+    ? apps.value.filter((app) => app.id === configAppId)
+    : apps.value ?? []
 )
 const modeLabel = computed(() => {
   if (role === 'tenant') return 'tenant (single app)'
@@ -97,7 +97,6 @@ const bindingAppId = computed(() => configAppId ?? '')
 const bindingApp = computed(() =>
   appCollection.value.find((item) => item?.id === bindingAppId.value) ?? null
 )
-
 
 const {
   driftKind: appsDriftKind,

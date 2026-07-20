@@ -7,9 +7,7 @@
           <p>{{ description }}</p>
         </div>
 
-        <div
-          class="collection-manager__controls"
-        >
+        <div class="collection-manager__controls">
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -34,9 +32,9 @@
               @click="toggleVariant"
             />
 
-            <UBadge v-if="showSettledCount" variant="soft"
-              >{{ countLabel }}</UBadge
-            >
+            <UBadge v-if="showSettledCount" variant="soft">{{
+              countLabel
+            }}</UBadge>
           </div>
         </div>
       </div>
@@ -102,16 +100,17 @@
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: consume the exact Professional directory projection without storage-model casts.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import { useProfessionalFetch } from '../../../composables/fireux/firestore/profiles/Professional/fetch/useProfessionalFetch'
 import { useProfessionalInterface } from '../../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
-import type { Professional } from '../../../models/profiles/Professional/Professional.model'
+import type { PublicProfessionalDirectoryProfile } from '../../../models/profiles/Professional/Professional.model'
 import ProfessionalCardsCell from '../Cards/Cell.vue'
 import ProfessionalCardsPill from '../Cards/Pill.vue'
 import ProfessionalCollectionList from './List.vue'
 
-type ProfessionalEntry = Partial<Professional> & { id: string }
+type ProfessionalEntry = PublicProfessionalDirectoryProfile
 
 const props = withDefaults(
   defineProps<{
@@ -138,10 +137,9 @@ const props = withDefaults(
 
 const fetched = useProfessionalFetch()
 const { outcome } = fetched
-const collection = computed<ProfessionalEntry[]>(() =>
-  (fetched.coreProfessionals.value ?? []) as ProfessionalEntry[]
-)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const collection = fetched.coreProfessionals
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Professionals'))
 const description = computed(() =>
   String(props.description || 'Browse professionals available to this runtime.')
@@ -155,8 +153,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const showSettledCount = computed(
   () =>
-    showCount.value &&
-    (outcome.value === 'ready' || outcome.value === 'empty')
+    showCount.value && (outcome.value === 'ready' || outcome.value === 'empty')
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -173,17 +170,16 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (entry) =>
-      makeCard(entry as Professional, fetched.userById(entry.id)),
+    makeCard: (entry) => makeCard(entry, fetched.userById(entry.id)),
     initialVariant: props.initialVariant,
   })
 
 const { cards: cardsFiltered } = useCollectionVariantCards({
   items: visibleItems,
   variant,
-  makeCard: (entry) => makeCard(entry as Professional, fetched.userById(entry.id)),
-  makePill: (entry) => makePill(entry as Professional, fetched.userById(entry.id)),
-  makeCell: (entry) => makeCell(entry as Professional, fetched.userById(entry.id)),
+  makeCard: (entry) => makeCard(entry, fetched.userById(entry.id)),
+  makePill: (entry) => makePill(entry, fetched.userById(entry.id)),
+  makeCell: (entry) => makeCell(entry, fetched.userById(entry.id)),
 })
 
 const countLabel = computed(() =>
@@ -192,4 +188,5 @@ const countLabel = computed(() =>
     : `${totalCount.value}`
 )
 </script>
-// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render root Professional rows with canonical User joins.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover:
+render root Professional rows with canonical User joins.

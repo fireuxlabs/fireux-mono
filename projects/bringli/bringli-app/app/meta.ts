@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 const sourceMeta = {
@@ -78,8 +79,6 @@ const sourceMeta = {
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
       structureTitle: 'Relationship map',
-      examplesEyebrow: 'Examples',
-      examplesTitle: 'Sample objects',
       routesTitle: 'Key routes',
     },
     keyConcepts: [
@@ -180,45 +179,6 @@ const sourceMeta = {
           purpose: 'Cross-app member identity for producer owners and operators.',
           keyFields: ['id', 'display_name', 'profiles', 'userOf', 'adminOf'],
           linksTo: ['Supplier', 'Company'],
-        },
-      ],
-      samples: [
-        {
-          entity: 'Supplier',
-          example: {
-            id: 'supplier_demo_alpine_farm',
-            supplier_headline: 'Alpine Farm Produce (Demo)',
-            supplier_product_categories: ['vegetables', 'dairy'],
-            supplier_delivery_areas: ['Interlaken', 'Matten'],
-          },
-        },
-        {
-          entity: 'Company',
-          example: {
-            id: 'company_demo_alpine_farm',
-            name: 'Alpine Farm Co.',
-            short_name: 'Alpine Farm',
-            place_id: 'place_demo_interlaken_market',
-          },
-        },
-        {
-          entity: 'Place',
-          example: {
-            id: 'place_demo_interlaken_market',
-            name: 'Interlaken Market Zone',
-            formatted_address: 'Interlaken, Switzerland',
-            lat: 46.6863,
-            lng: 7.8632,
-          },
-        },
-        {
-          entity: 'User',
-          example: {
-            id: 'user_demo_producer_01',
-            display_name: 'Iris Keller',
-            handle: 'iris-keller',
-            userOf: ['bringli-app'],
-          },
         },
       ],
       routes: [
@@ -338,7 +298,6 @@ export const appMeta = {
   keyConcepts: sourceMeta.about.keyConcepts,
   modules: sourceMeta.about.appSpec.modules,
   entities: sourceMeta.about.appSpec.entities,
-  samples: sourceMeta.about.appSpec.samples,
   routes: sourceMeta.about.appSpec.routes,
   relationshipMap: sourceMeta.about.relationshipMap,
 
@@ -458,9 +417,6 @@ export const metaContent = defineFireuxMeta({
     purpose: entity.purpose,
   })),
   relations_ascii: appMeta.relationshipMap,
-  examples: {
-    samples: [...appMeta.samples],
-  },
   routes: {
     public: publicRoutes,
     console: consoleRoutes,

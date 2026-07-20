@@ -1,4 +1,5 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: declare Misebox open self-membership policy.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
@@ -14,6 +15,7 @@ const fireuxConfig = defineFireuxConfig({
   consoles: ['kitchen', 'supplier'],
   domains: ['kitchens', 'suppliers', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
+  selfJoinEnabled: true,
   seo: {
     staticPaths: ['/get-started', '/programme', '/luna-piccante', '/luna-piccante/menu'],
   },

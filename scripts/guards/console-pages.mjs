@@ -1,7 +1,9 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-20
 // usage_note: keeps console page composition explicit and surface metadata valid.
 // FILE: scripts/guards/console-pages.mjs
+// Concurrent edit — 2026-07-20 16:21 CEST — Console Spine project cleanup: remove the retired app redirect exception.
+// Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: enforce route-level access and selection metadata.
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
@@ -22,8 +24,13 @@ const NON_DIRECT_PAGES = new Map([
   ['packages/core/fireux-core/src/runtime/pages/console/index.vue', 'redirect'],
   ['packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/identity.vue', 'router'],
   ['packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue', 'live'],
-  ['projects/fireux/fireux-app/app/pages/console/index.vue', 'redirect'],
 ])
+const ROUTE_ONLY_META_KEYS = [
+  'requiresAuth',
+  'requiresSelection',
+  'roles',
+  'visibility',
+]
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -53,6 +60,7 @@ export async function run(ctx) {
       '- Console pages compose UDashboardPanel, LayoutsConsoleNavbar, and a body slot directly.',
       '- Pages own body width and spacing; named domain components own domain presentation.',
       '- Header actions belong in the console navbar right slot.',
+      '- Route access, visibility, roles, and selection requirements belong at top-level page meta; nav owns presentation only.',
       '- Surface metadata, when declared, uses browse, detail, create, edit, workflow, or live.',
       '- Only redirects, nested routers, and live layouts are exempt.',
     ].join('\n'))
@@ -80,11 +88,13 @@ function scan(dir, repoRoot, violations, seenPages) {
     const relative = path.relative(repoRoot, fullPath).split(path.sep).join('/')
     const template = readTemplate(source)
     const script = readScript(source)
+    const pageMeta = readPageMetaObject(script)
     const surface = readConsoleSurface(script)
     const exceptionKind = NON_DIRECT_PAGES.get(relative)
     const directContract = hasDirectContract(template)
 
     seenPages.add(relative)
+    validateRouteMetaPlacement(relative, pageMeta, violations)
 
     if (surface && !STANDARD_SURFACES.has(surface)) {
       violations.push(`${relative} (invalid consoleSurface: ${surface})`)
@@ -103,11 +113,11 @@ function scan(dir, repoRoot, violations, seenPages) {
       continue
     }
 
-    validateDirectContract(relative, template, script, violations)
+    validateDirectContract(relative, template, script, pageMeta, violations)
   }
 }
 
-function validateDirectContract(relative, template, script, violations) {
+function validateDirectContract(relative, template, script, pageMeta, violations) {
   const requiredTemplateParts = [
     ['UDashboardPanel', /<UDashboardPanel\b/],
     ['header slot', /<template\s+#header\b/],
@@ -126,6 +136,24 @@ function validateDirectContract(relative, template, script, violations) {
   }
   if (!/\brequiresAuth\s*:\s*true\b/.test(script)) {
     violations.push(`${relative} (direct console page must declare requiresAuth: true)`)
+  }
+  if (!hasTopLevelProperty(pageMeta, 'requiresSelection')) {
+    violations.push(`${relative} (direct console page must declare top-level requiresSelection)`)
+  }
+}
+
+function validateRouteMetaPlacement(relative, pageMeta, violations) {
+  if (!pageMeta) {
+    violations.push(`${relative} (missing definePageMeta object)`)
+    return
+  }
+
+  const nav = readTopLevelObjectProperty(pageMeta, 'nav')
+  if (!nav) return
+
+  for (const key of ROUTE_ONLY_META_KEYS) {
+    if (!hasTopLevelProperty(nav, key)) continue
+    violations.push(`${relative} (nav.${key} must move to top-level page meta)`)
   }
 }
 
@@ -172,6 +200,108 @@ function readScript(source) {
 
 function readConsoleSurface(script) {
   return script.match(/\bconsoleSurface\s*:\s*(['"])([^'"]+)\1/)?.[2] ?? ''
+}
+
+function readPageMetaObject(script) {
+  const marker = script.indexOf('definePageMeta')
+  if (marker === -1) return ''
+
+  const callStart = script.indexOf('(', marker + 'definePageMeta'.length)
+  if (callStart === -1) return ''
+
+  const objectStart = script.indexOf('{', callStart + 1)
+  if (objectStart === -1) return ''
+
+  return readBalancedObject(script, objectStart)
+}
+
+function readTopLevelObjectProperty(objectSource, property) {
+  const match = findTopLevelProperty(objectSource, property)
+  if (!match || objectSource[match.valueStart] !== '{') return ''
+  return readBalancedObject(objectSource, match.valueStart)
+}
+
+function hasTopLevelProperty(objectSource, property) {
+  return Boolean(findTopLevelProperty(objectSource, property))
+}
+
+function findTopLevelProperty(objectSource, property) {
+  if (!objectSource) return null
+
+  let depth = 0
+  let quote = ''
+  let escaped = false
+
+  for (let index = 0; index < objectSource.length; index += 1) {
+    const character = objectSource[index]
+
+    if (quote) {
+      if (escaped) {
+        escaped = false
+      } else if (character === '\\') {
+        escaped = true
+      } else if (character === quote) {
+        quote = ''
+      }
+      continue
+    }
+
+    if (character === '"' || character === "'" || character === '`') {
+      quote = character
+      continue
+    }
+    if (character === '{') {
+      depth += 1
+      continue
+    }
+    if (character === '}') {
+      depth -= 1
+      continue
+    }
+    if (depth !== 1 || !/[A-Za-z_$]/.test(character)) continue
+
+    const candidate = objectSource
+      .slice(index)
+      .match(/^([A-Za-z_$][\w$]*)\s*:/)
+    if (!candidate || candidate[1] !== property) continue
+
+    let valueStart = index + candidate[0].length
+    while (/\s/.test(objectSource[valueStart] ?? '')) valueStart += 1
+    return { valueStart }
+  }
+
+  return null
+}
+
+function readBalancedObject(source, start) {
+  let depth = 0
+  let quote = ''
+  let escaped = false
+
+  for (let index = start; index < source.length; index += 1) {
+    const character = source[index]
+
+    if (quote) {
+      if (escaped) {
+        escaped = false
+      } else if (character === '\\') {
+        escaped = true
+      } else if (character === quote) {
+        quote = ''
+      }
+      continue
+    }
+
+    if (character === '"' || character === "'" || character === '`') {
+      quote = character
+      continue
+    }
+    if (character === '{') depth += 1
+    if (character === '}') depth -= 1
+    if (depth === 0) return source.slice(start, index + 1)
+  }
+
+  return ''
 }
 
 function stripJsComments(source) {

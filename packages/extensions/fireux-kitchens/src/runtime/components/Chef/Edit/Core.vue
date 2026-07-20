@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: bind Chef editor only to canonical fields.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed } from 'vue'
 import { useChefUpdate } from '../../../composables/fireux/firestore/profiles/Chef/mutations/useChefUpdate'
@@ -76,14 +77,11 @@ const toast = useToastify()
 
 const title = computed(() => chef.value?.title ?? '')
 const summary = computed(() => chef.value?.summary ?? '')
-const bio = computed(() => chef.value?.chef_bio ?? chef.value?.bio_long ?? '')
+const bio = computed(() => chef.value?.chef_bio ?? '')
 const imageUrl = computed(() => chef.value?.chef_image ?? '')
 
 const signatureDishes = computed(() => {
-  const list =
-    chef.value?.chef_signature_dishes?.length
-      ? chef.value?.chef_signature_dishes
-      : chef.value?.specialties ?? []
+  const list = chef.value?.chef_signature_dishes ?? []
   return Array.isArray(list) ? list : []
 })
 

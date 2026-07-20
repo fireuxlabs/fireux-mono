@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: accept canonical User separately from Agent storage.
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
+// Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: map stored, detail, and exact directory Agent shapes without compatibility fields.
 import {
   resolveProfileBadges,
   resolveProfileDisplayName,
@@ -12,13 +13,16 @@ import {
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
 import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
-import type { Agent } from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+import type {
+  Agent,
+  PublicAgentDirectoryProfile,
+} from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &
   Partial<Pick<User, 'id' | 'handle'>>
 
-type AgentTarget = Agent
+type AgentTarget = PublicAgentDirectoryProfile
 
 export namespace AgentCard {
   export type Card = {
@@ -72,21 +76,15 @@ export function useAgentInterface(
     return safeString(authUser.value?.photoURL).trim()
   }
 
-  function map(p: Agent, u?: UserLike | null): AgentCard.Card {
-    const id =
-      safeString((p as any).id).trim() ||
-      safeString((p as any).owner_uid).trim() ||
-      safeString(u?.id).trim()
+  function map(p: AgentTarget, u?: UserLike | null): AgentCard.Card {
+    const id = safeString(p.id).trim() || safeString(u?.id).trim()
     const headline = safeString(p.title)
     const summary = resolveProfileSummary([p.summary, p.agent_bio])
     const placementTypes = resolveProfileBadges([
       p.agent_placement_types,
       p.tags,
     ])
-    const profileImage = resolveProfileImage([
-      (p as Agent & { image?: string }).image,
-      p.agent_image,
-    ])
+    const profileImage = resolveProfileImage([p.agent_image])
     const userAvatar = resolveUserAvatar(u)
     const secondaryAvatarUrl =
       resolveSecondaryAvatarUrl(profileImage, userAvatar) || ''
@@ -107,9 +105,9 @@ export function useAgentInterface(
       summary,
       handle: safeString(u?.handle).trim(),
 
-      contactEmail: safeString(p.agent_contact_email || p.contact_email).trim(),
-      contactPhone: safeString(p.agent_contact_phone || p.contact_phone).trim(),
-      websiteUrl: safeString(p.agent_website_url || p.website_url),
+      contactEmail: safeString(p.agent_contact_email).trim(),
+      contactPhone: safeString(p.agent_contact_phone).trim(),
+      websiteUrl: safeString(p.agent_website_url),
     }
   }
 

@@ -3,6 +3,7 @@
 // usage_note: canonical app identity, routes, and smoke-contract assignments.
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: keep registry data separate from smoke-contract mechanics.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: require four Misebox directory APIs.
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: retire personal BNB routes and smoke only sanitized simulations.
 
 import {
   appDetailContract,
@@ -358,12 +359,9 @@ export const APP_REGISTRY = {
     smokeRoutes: [
       '/',
       '/chat',
-      '/bnb',
       '/info',
       '/menus',
       '/info/bern-bike-rental/rental-instructions',
-      '/bnb/holiday-with-nats',
-      '/bnb/holiday-with-nats/wifi',
     ],
     launchOrder: 8,
   },
@@ -380,9 +378,9 @@ export const APP_REGISTRY = {
     smokeRoutes: [
       '/',
       '/chat',
-      '/properties/holiday-with-nats',
-      '/properties/holiday-with-nats/companion',
-      '/properties/holiday-with-nats/companion/check-in',
+      '/properties/preview-stay',
+      '/properties/preview-stay/info',
+      '/properties/preview-stay/info/check-in',
       '/console/property',
     ],
     launchOrder: 9,

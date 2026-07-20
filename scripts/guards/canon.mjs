@@ -1,7 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-19
+// last_used: 2026-07-20
 // usage_note: enforces current repo-wide spine rules, including route-param normalization.
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: guard deferred dev collection lifecycle.
+// Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: align allowed console buckets with the documented spine.
 // FILE: scripts/guards/canon.mjs
 // FireUX Canon Guard
 //
@@ -96,6 +97,7 @@ const CONSOLE_ENTITY_STACK_ALLOWED_CHILDREN = new Set([
   'index',
   'operations',
   'overview',
+  'sundries',
   'team',
 ])
 
@@ -753,7 +755,7 @@ function checkConsoleOperationStackShape(repoRoot) {
         if (CONSOLE_ENTITY_STACK_ALLOWED_CHILDREN.has(child)) continue
 
         violations.push(
-          `- Console entity root may only contain spine buckets core/, index/, overview/, identity/, team/, and operations/: ${toRepoRelative(
+          `- Console entity root may only contain spine buckets core/, index/, overview/, identity/, team/, operations/, and sundries/: ${toRepoRelative(
             repoRoot,
             path.join(entityRoot, child)
           )}`
@@ -921,7 +923,7 @@ export async function run(ctx) {
       '- Do not create composables under: firestore/products/product',
       '- Do not create mixed-bucket kitchen paths such as firestore/runtime-kitchen',
       '- Keep usual Firestore entity stacks boring: root useX.ts plus fetch/, mutations/, seo/, utils/',
-      '- Put console entity seams under: composables/fireux/console/<entity>/{core,index,overview,identity}/',
+      '- Put console entity seams under: composables/fireux/console/<entity>/{core,index,overview,identity,team,operations,sundries}/',
       '- Put console operation buckets under: composables/fireux/console/<entity>/operations/',
       '- Keep console operation buckets flexible, but do not add vague architecture buckets such as runtime-*, facade, stack, manager, processor, handler, or resolver',
       '- Keep XCollectionManager for public/root browse only; scoped/admin/console/custom lists need named scoped surfaces or cards, not collection props',

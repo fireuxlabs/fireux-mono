@@ -104,6 +104,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: read the sanitized local preview instead of app demo fixtures.
 import { computed } from 'vue'
 import { setResponseStatus } from '#imports'
 import {
@@ -111,8 +112,8 @@ import {
   resolvePropertyInfo,
   resolvePropertyInfoSection,
   type PropertyInfoItem,
-} from '../../../../demo/propertyInfo'
-import { findDemoBuenoHostPublicProperty } from '../../../../demo/properties'
+} from '../../../../simulations/propertyInfo'
+import { findSimulatedBuenoHostProperty } from '../../../../simulations/properties'
 
 definePageMeta({
   layout: 'property-info',
@@ -121,7 +122,7 @@ definePageMeta({
 const route = useRoute()
 const propertySlug = computed(() => String(route.params.slug || ''))
 const infoId = computed(() => String(route.params.infoId || ''))
-const property = computed(() => findDemoBuenoHostPublicProperty(propertySlug.value))
+const property = computed(() => findSimulatedBuenoHostProperty(propertySlug.value))
 const info = computed(() => property.value ? resolvePropertyInfo(property.value.slug) : null)
 const section = computed(() =>
   property.value ? resolvePropertyInfoSection(property.value.slug, infoId.value) : null

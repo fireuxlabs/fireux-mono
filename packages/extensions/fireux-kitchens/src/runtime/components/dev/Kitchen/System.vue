@@ -1,7 +1,6 @@
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Kitchen dev diagnostics on live storage data. -->
 <template>
   <section class="space-y-10">
-    <DevKitchenDemo />
-
     <UCard>
       <DevModel
         :title="'Kitchens · Model'"

@@ -133,7 +133,11 @@ const eyebrow = computed(() => {
     if (props.orderType === 'takeaway') return 'Ready to take away'
     return 'Pre-order ready'
   }
-  if (currentStatus.value === 'accepted') return 'Kitchen accepted'
+  if (currentStatus.value === 'accepted') {
+    return props.orderType === 'pre_order'
+      ? 'Kitchen confirmed'
+      : 'Kitchen accepted'
+  }
   if (awaitingConfirmation.value && props.orderType === 'pre_order') {
     return 'Pre-order request sent'
   }

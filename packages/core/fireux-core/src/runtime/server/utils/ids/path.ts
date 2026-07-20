@@ -1,17 +1,9 @@
+// Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: reuse the browser-safe Firestore document-id predicate.
 import { createError } from 'h3'
+import { isFirestoreDocumentId } from '../../../utils/firestoreDocumentId'
 import { readString } from '../records/read.ts'
 
-export function isFirestoreDocumentId(value: unknown): boolean {
-  const segment = readString(value)
-  return (
-    Boolean(segment) &&
-    segment !== '.' &&
-    segment !== '..' &&
-    !segment.includes('/') &&
-    !(segment.startsWith('__') && segment.endsWith('__')) &&
-    new TextEncoder().encode(segment).length <= 1_500
-  )
-}
+export { isFirestoreDocumentId }
 
 export function requireFirestoreDocumentId(value: unknown, label: string) {
   const segment = readString(value)

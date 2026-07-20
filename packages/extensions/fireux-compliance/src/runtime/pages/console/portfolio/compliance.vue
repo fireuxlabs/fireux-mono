@@ -1,3 +1,5 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
+<!-- Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: gate compliance actions with Portfolio write authority. -->
 <template>
   <UDashboardPanel id="console-portfolio-compliance">
     <template #header>
@@ -67,11 +69,11 @@
                     {{ statusLabel(item.status) }}
                   </UBadge>
                   <UButton
-                    v-if="!isDemo"
+                    v-if="canWrite"
                     size="xs"
                     variant="ghost"
                     icon="i-lucide-list-checks"
-                    :disabled="isDemo"
+                    :disabled="!canWrite"
                     @click="createTaskFromCompliance(item.id)"
                   >
                     Create task
@@ -108,19 +110,20 @@ import { ComplianceRecordStorage } from '../../../models/compliance-record.model
 
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
+  visibility: { modules: ['fireux-compliance'] },
   nav: {
-    visibility: { modules: ['fireux-compliance'] },
     key: 'console-portfolio-compliance',
     label: 'Compliance',
     icon: 'i-lucide-shield-check',
     position: 'top',
-    requiresSelection: true,
     order: 30,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: true,
 })
 
 const runtimePortfolio = useActivePortfolio()
@@ -135,6 +138,7 @@ const compliancePath = usePortfolioConsoleChildPath(
 
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
+const canWrite = computed(() => runtimePortfolio.canWrite.value)
 
 const cards = computed(() =>
   collection.value
@@ -172,7 +176,7 @@ const statusColor = (status: 'ok' | 'dueSoon' | 'overdue' | null) => {
 }
 
 const createTaskFromCompliance = async (complianceId: string) => {
-  if (isDemo.value) return
+  if (!canWrite.value) return
 
   const record = collection.value.find(
     (entry) =>

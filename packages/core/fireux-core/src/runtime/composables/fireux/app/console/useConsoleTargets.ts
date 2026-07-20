@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: opt current-user console targeting into app membership reads only.
+// Concurrent edit — 2026-07-20 16:20 CEST — Console Spine pass: preserve App membership errors in target outcomes.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { useAuth } from '../../firebase/useAuth'
 import { useUserFetch } from '../../firestore/core/user/fetch/useUserFetch'
@@ -9,6 +10,7 @@ import {
   useConsole,
   type ConsoleAppMode,
 } from './useConsole'
+import type { ConsoleTargetOutcome } from './useConsoleIndex'
 
 type ValueRef<T> = Ref<T> | ComputedRef<T>
 
@@ -23,8 +25,13 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const family = normalizeConsoleFamily(options.family)
   const consoleRoot = useConsole(options.family)
   const { uid } = useAuth()
-  const { appUser, pending: userPending } = useUserFetch(uid, { app: true })
   const mode: ConsoleAppMode = consoleRoot.mode
+  const membershipUid = computed(() => mode === 'tenant' ? null : uid.value)
+  const {
+    appUser,
+    appPending: membershipPending,
+    appError: membershipError,
+  } = useUserFetch(membershipUid, { app: true })
   const configTargetIds = uniqueStrings(consoleRoot.targetIds())
   const configDevTargetIds = uniqueStrings(consoleRoot.devTargetIds())
   const appUserTargetField = resolveUserAppConsoleTargetField(family)
@@ -58,6 +65,18 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     ...base,
     ids: targetIds.value,
   })
+  const pending = computed(() =>
+    mode === 'tenant' ? false : Boolean(membershipPending.value)
+  )
+  const error = computed<unknown>(() =>
+    mode === 'tenant' ? null : membershipError.value
+  )
+  const resolveOutcome = (sourceOutcome: ValueRef<ConsoleTargetOutcome>) =>
+    computed<ConsoleTargetOutcome>(() => {
+      if (pending.value) return 'pending'
+      if (error.value) return 'error'
+      return unref(sourceOutcome)
+    })
   const debug = computed(() => ({
     family: normalizeString(family),
     appMode: mode,
@@ -67,7 +86,8 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     appUserTargetIds: appUserTargetIds.value,
     globalTargetIds: globalTargetIds.value,
     targetIds: targetIds.value,
-    userPending: userPending.value,
+    membershipPending: pending.value,
+    membershipError: error.value,
     canCreate: canCreate.value,
     isSingleTarget: isSingleTarget.value,
     isSingleTenantTarget: isSingleTenantTarget.value,
@@ -90,7 +110,9 @@ export function useConsoleTargets(options: UseConsoleTargetsOptions) {
     isSingleTenantTarget,
     singleTargetId,
     filter,
-    pending: userPending,
+    pending,
+    error,
+    resolveOutcome,
     debug,
   }
 }

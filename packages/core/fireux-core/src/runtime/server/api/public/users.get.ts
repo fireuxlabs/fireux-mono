@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: fail closed when projecting public User avatars.
 import {
   defineEventHandler,
   getQuery,
@@ -17,6 +18,7 @@ import type {
 } from '../../utils/public-projection/public-dto.types'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { UserStorage } from '../../../models/core/user.model'
+import { resolveUserAvatarSource } from '../../../models/core/supporting/user-avatar'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
@@ -41,7 +43,7 @@ function mapUserDocToDto(
     asTrimmedString(data.display_name) ||
     asTrimmedString(data.displayName) ||
     `@${handle}`
-  const avatar = asTrimmedString(data.avatar)
+  const avatar = resolveUserAvatarSource(data.avatar)
 
   const title = displayName
   const description = resolvePublicDescription('', `Public profile for ${displayName}.`)

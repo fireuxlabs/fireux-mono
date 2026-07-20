@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: snapshot source item identity for validated amend resubmission.
 import { createError } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model.ts'
@@ -15,6 +16,7 @@ import { numberValue, text } from './order-request.ts'
 
 export type ResolvedMenuOrderItem = {
   id: string
+  source_item_id: string
   menu_id: string
   dish_id: string
   item_kind: DishItemKind
@@ -123,6 +125,7 @@ export async function resolveMenuOrderItems(
 
       return {
         id: `item-${index + 1}`,
+        source_item_id: requestedItem.itemId,
         menu_id: sourceMenuId,
         dish_id: item.dish_id,
         item_kind: item.item_kind,

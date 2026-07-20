@@ -1,4 +1,5 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/profiles/Professional/supporting/index.ts
+// Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: make stored Professional years canonical four-digit strings or null.
 
 /**
  * Domain-level supporting structures for Professional profiles.
@@ -42,7 +43,7 @@ export type OtherExperienceItem = ExperienceItem
  * Profile detail structures
  * ---------------------------------- */
 
-type YearValue = string | number | null
+type YearValue = string | null
 
 export interface LanguageProficiency {
   language: string

@@ -226,11 +226,11 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 16:18 CEST — Repo Efficiency Pass 1 of 6: inspect raw Apps through the authenticated dev API across all app roles.
 import { computed, ref } from 'vue'
+import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
-import { useAppCollection } from '../../composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
 
 definePageMeta({
   title: 'Dev · Overview',
@@ -253,10 +253,11 @@ if (!cfg.ecosystem || !cfg.ecosystem.trim()) {
 }
 const showRuntimeJson = ref(false)
 
-const { apps } = useAppCollection()
-const { app: activeApp } = useApp()
+const { apps } = useDevAppCollection()
 const bindingApps = computed(() =>
-  cfg.isTenant ? (activeApp.value ? [activeApp.value] : []) : apps.value ?? []
+  cfg.isTenant
+    ? apps.value.filter((app) => app.id === cfg.appId)
+    : apps.value ?? []
 )
 const bindingApp = computed(
   () => bindingApps.value.find((item) => item?.id === cfg.appId) ?? null

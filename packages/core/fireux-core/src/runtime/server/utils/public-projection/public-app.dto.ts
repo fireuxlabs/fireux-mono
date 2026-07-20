@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: project only the public App creation date.
 import type { AppStatus } from '../../../models/core/app.model'
 import type {
   AppRole,
@@ -104,8 +105,6 @@ export function projectPublicApp(
   const derived = asRecord(source.derived)
   const created = asRecord(source.created)
   const createdAt = asTimestamp(created.at)
-  const createdBy = asTrimmedString(created.by)
-  const createdAppId = asTrimmedString(created.app_id)
 
   return {
     id,
@@ -134,8 +133,6 @@ export function projectPublicApp(
       ? {
           created: {
             at: createdAt,
-            ...(createdBy ? { by: createdBy } : {}),
-            ...(createdAppId ? { app_id: createdAppId } : {}),
           },
         }
       : {}),

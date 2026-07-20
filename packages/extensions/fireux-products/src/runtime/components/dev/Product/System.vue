@@ -1,9 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
+<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep Product dev diagnostics on live model and collection data. -->
 <template>
   <section class="space-y-10">
-    <DevProductDemo v-model:selected-id="selectedProductId" />
-    <DevProductPricingPlans :selected-id="selectedProductId" />
-
     <UCard>
       <DevModel
         :title="'Products · Model'"
@@ -41,19 +39,16 @@
 
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
 import {
   FirebaseProduct as ProductModelRuntime,
   type FirebaseProduct,
 } from '../../../models/product.model'
-import { demoProductList } from '../../../demo/product'
 
 defineOptions({ name: 'DevProductSystem' })
 
 const productModelRuntime = ProductModelRuntime
-const selectedProductId = ref(demoProductList[0]?.id ?? '')
-
 const { products } = useProductCollection()
 
 const productsCollection = computed<FirebaseProduct[]>(() => products.value ?? [])

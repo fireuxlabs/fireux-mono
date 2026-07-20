@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:26 CEST — Extension Console Spine pass: require an active Kitchen for the Theme identity route. -->
 <template>
   <UDashboardPanel id="console-kitchen-identity-theme">
     <template #header>
@@ -28,5 +29,6 @@
 definePageMeta({
   layout: 'console',
   requiresAuth: true,
+  requiresSelection: true,
 })
 </script>

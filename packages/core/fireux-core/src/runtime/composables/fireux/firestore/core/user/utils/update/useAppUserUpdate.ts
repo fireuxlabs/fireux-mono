@@ -1,19 +1,9 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: remove browser-owned App role, premium, and membership mirror writes.
+// Concurrent edit — 2026-07-20 17:34 CEST — Repo Efficiency Pass 2 of 6: remove browser-authored notification compatibility actions.
 
-import { addDoc, collection } from 'firebase/firestore'
-import {
-    readRuntimeIdentityFirestoreDatabaseId,
-    useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { UserNotification } from '../../../../../../../models/core/supporting/user'
-import {
-    UserNotificationStorage,
-    UserStorage,
-} from '../../../../../../../models/core/user.model'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { mutateAppMembership } from '../appMembershipMutation'
-import { createUserNotification } from '../createHelpers'
 
 type AppMembershipActions = {
   /** Single, canonical role toggle (admin <-> user). */
@@ -26,15 +16,8 @@ type AppMembershipActions = {
   leave: () => Promise<void>
 }
 
-type AppNotificationActions = {
-  /** Writes non-membership notifications. */
-  push: (message: string) => Promise<UserNotification>
-}
-
 export function useAppUserUpdate(user: UserRefs) {
   const cfg = useFireUXConfig()
-  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
-  const identityDb = useFirestore(identityDatabaseId)
 
   const requireContext = () => {
     const uid = user.coreUser?.value?.id ?? user.user?.value?.id
@@ -73,27 +56,7 @@ export function useAppUserUpdate(user: UserRefs) {
     },
   }
 
-  const notifications: AppNotificationActions = {
-    push: async (message) => {
-      const { uid, appId } = requireContext()
-
-      const notification: UserNotification = createUserNotification({
-        message,
-        scope: 'app',
-        appId,
-      })
-
-      await addDoc(
-        collection(identityDb, UserStorage.rootCollection, uid, UserNotificationStorage.collection),
-        notification
-      )
-
-      return notification
-    },
-  }
-
   return {
     membership,
-    notifications,
   }
 }

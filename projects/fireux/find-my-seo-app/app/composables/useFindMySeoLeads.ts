@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the app-owned Find My SEO fixture.
-import type { DemoSeoLeadDraft, DemoSeoLeadInquiry, DemoSeoLeadStatus, DemoSeoProvider } from '../demo/findMySeo'
-import { buildDemoSeoLeadId, demoFindMySeoOperatorInboxEmail, demoSeoLeadInbox } from '../demo/findMySeo'
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: store submissions only in the local simulation.
+import type { DemoSeoLeadDraft, DemoSeoLeadInquiry, DemoSeoLeadStatus, DemoSeoProvider } from '../simulations/findMySeo'
+import { buildDemoSeoLeadId, demoSeoLeadInbox } from '../simulations/findMySeo'
 import { useState } from '#imports'
 
 const cloneLead = (lead: DemoSeoLeadInquiry): DemoSeoLeadInquiry => ({ ...lead })
@@ -9,16 +10,12 @@ export const useFindMySeoLeads = () => {
   const leads = useState<DemoSeoLeadInquiry[]>('find-my-seo-leads', () => demoSeoLeadInbox.map(cloneLead))
 
   const submitLead = (provider: DemoSeoProvider, draft: DemoSeoLeadDraft) => {
-    const deliveryEmail = provider.contactEmail || demoFindMySeoOperatorInboxEmail
-    const deliveryState = provider.contactEmail ? 'sent' : 'failed'
-
     const lead: DemoSeoLeadInquiry = {
       id: buildDemoSeoLeadId(),
       providerEntityType: provider.entityType,
       providerEntityId: provider.id,
       providerSlug: provider.slug,
       providerDisplayName: provider.displayName,
-      deliveryEmail,
       status: 'new',
       contactName: draft.contactName.trim(),
       contactEmail: draft.contactEmail.trim(),
@@ -29,7 +26,6 @@ export const useFindMySeoLeads = () => {
       budgetRange: draft.budgetRange.trim(),
       timeline: draft.timeline.trim(),
       consentContact: draft.consentContact,
-      deliveryState,
       createdAt: new Date().toISOString(),
     }
 

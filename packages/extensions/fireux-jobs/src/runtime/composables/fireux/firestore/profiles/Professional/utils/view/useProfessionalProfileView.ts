@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: enrich projected Professional detail from canonical Places.
 import { useNuxtApp } from '#imports'
 import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import type { FirestoreReadRef } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -8,7 +9,7 @@ import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/fire
 import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { computed, onScopeDispose, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'
-import type { Professional } from '../../../../../../../models/profiles/Professional/Professional.model'
+import type { PublicProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
 import type {
   CertificationItem,
   EducationItem,
@@ -31,10 +32,7 @@ export type ProfessionalProfileRelevantExperience = {
 
 export type ProfessionalProfileOtherExperience = {
   item: OtherExperienceItem
-  title: string
-  subtitle: string
-  imageUrl: string
-  showSubtitle: boolean
+  placeCard: PlaceCard.Card | null
 }
 
 export type ProfessionalProfileViewModel = {
@@ -61,7 +59,7 @@ const normalizePlaceId = (placeId?: string | null) => {
 }
 
 export function useProfessionalProfileView(
-  profileRef: Ref<Professional | null | undefined>,
+  profileRef: Ref<PublicProfessionalProfile | null | undefined>,
   cardRef: Ref<ProfessionalCard.Card | null | undefined>,
   propRef?: Ref<string | null | undefined>
 ) {
@@ -84,9 +82,12 @@ export function useProfessionalProfileView(
   const nuxtApp = useNuxtApp()
   const placeDocRefs = shallowRef(new Map<string, FirestoreReadRef<Place>>())
 
-  const relevantPlaceIds = computed(() => {
+  const experiencePlaceIds = computed(() => {
     const ids = new Set<string>()
-    for (const item of relevantExperience.value) {
+    for (const item of [
+      ...relevantExperience.value,
+      ...otherExperience.value,
+    ]) {
       const normalized = normalizePlaceId(item.place_id)
       if (normalized) ids.add(normalized)
     }
@@ -95,7 +96,7 @@ export function useProfessionalProfileView(
 
   if (import.meta.client) {
     watch(
-      relevantPlaceIds,
+      experiencePlaceIds,
       (ids: string[]) => {
         const current = placeDocRefs.value
         const activeIds = new Set(ids)
@@ -151,18 +152,10 @@ export function useProfessionalProfileView(
   )
 
   const otherExperienceEntries = computed(() =>
-    otherExperience.value.map((item) => {
-      const subtitle = safeString(
-        (item as any).short_address || (item as any).formatted_address
-      )
-      return {
-        item,
-        title: safeString((item as any).name) || 'External venue',
-        subtitle,
-        imageUrl: safeString((item as any).image_url),
-        showSubtitle: Boolean(subtitle),
-      }
-    })
+    otherExperience.value.map((item) => ({
+      item,
+      placeCard: getPlaceCard(item.place_id),
+    }))
   )
 
   const accordionItems = computed<AccordionItem[]>(() => {

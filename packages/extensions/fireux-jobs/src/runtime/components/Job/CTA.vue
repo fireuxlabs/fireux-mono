@@ -45,6 +45,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-20 17:14 CEST — Repo Efficiency Pass 2 of 6: check canonical Agent contact fields.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser.ts'
 import { computed, ref } from 'vue'
@@ -82,8 +83,8 @@ const check = computed(() => {
   const missing: string[] = []
 
   if (!agent.title) missing.push('title')
-  if (!agent.contact_email) missing.push('contact_email')
-  if (!agent.website_url) missing.push('website_url')
+  if (!agent.agent_contact_email) missing.push('agent_contact_email')
+  if (!agent.agent_website_url) missing.push('agent_website_url')
   if (!agent.summary) missing.push('summary')
 
   return {

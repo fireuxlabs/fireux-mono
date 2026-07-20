@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 const sourceMeta = {
@@ -78,8 +79,6 @@ const sourceMeta = {
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
       structureTitle: 'Relationship map',
-      examplesEyebrow: 'Examples',
-      examplesTitle: 'Sample objects',
       routesTitle: 'Key routes',
     },
     keyConcepts: [
@@ -189,48 +188,6 @@ const sourceMeta = {
           linksTo: ['User', 'StitchProvider'],
         },
       ],
-      samples: [
-        {
-          entity: 'App',
-          example: {
-            id: 'granite-app',
-            app_name: 'Granite',
-            ecosystem: 'granite',
-            role: 'global',
-            modules: ['fireux-properties', 'fireux-compliance'],
-          },
-        },
-        {
-          entity: 'Ecosystem directory entry',
-          example: {
-            id: 'granite',
-            name: 'Granite',
-            slug: 'granite',
-            status: 'active',
-            app_count: 1,
-          },
-        },
-        {
-          entity: 'StitchProvider',
-          example: {
-            id: 'sp_demo_blueoak',
-            display_name: 'Blue Oak Studio (Demo)',
-            type: 'agency',
-            availability: 'available',
-            tags: ['nuxt', 'firebase', 'design-system'],
-          },
-        },
-        {
-          entity: 'StitchRequest',
-          example: {
-            id: 'sr_demo_console_alignment',
-            title: 'Align multi-app console navigation',
-            status: 'open',
-            budget_type: 'retainer',
-            tags: ['platform', 'ux', 'architecture'],
-          },
-        },
-      ],
       routes: [
         { label: 'Home', path: '/', kind: 'public' },
         { label: 'Get Started', path: '/get-started', kind: 'public' },
@@ -335,7 +292,6 @@ export const appMeta = {
   keyConcepts: sourceMeta.about.keyConcepts,
   modules: sourceMeta.about.appSpec.modules,
   entities: sourceMeta.about.appSpec.entities,
-  samples: sourceMeta.about.appSpec.samples,
   routes: sourceMeta.about.appSpec.routes,
   relationshipMap: sourceMeta.about.relationshipMap,
 
@@ -455,9 +411,6 @@ export const metaContent = defineFireuxMeta({
     purpose: entity.purpose,
   })),
   relations_ascii: appMeta.relationshipMap,
-  examples: {
-    samples: [...appMeta.samples],
-  },
   routes: {
     public: publicRoutes,
     console: consoleRoutes,

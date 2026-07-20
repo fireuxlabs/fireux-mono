@@ -1,26 +1,14 @@
 // Concurrent edit — 2026-07-20 13:18 CEST — User identity pass: sync only public profiles; app-private records no longer duplicate User identity.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: make User the only public identity write target.
-import {
-  addDoc,
-  arrayRemove,
-  arrayUnion,
-  collection,
-} from 'firebase/firestore'
-import {
-  readRuntimeIdentityFirestoreDatabaseId,
-  useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+// Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: preserve a canonical safe avatar on clear and upload.
+import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { User } from '../../../../../../../models/core/user.model'
-import {
-  UserNotificationStorage,
-  UserStorage,
-} from '../../../../../../../models/core/user.model'
-import type { UserNotification } from '../../../../../../../models/core/supporting/user'
+import { UserStorage } from '../../../../../../../models/core/user.model'
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../../../../../../models/core/supporting/user-avatar'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useUserHandleClaim } from '../../mutations/useUserHandleClaim'
-import { createUserNotification } from '../createHelpers'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 
 function avatarFileExtension(source: File | Blob): string {
@@ -48,8 +36,6 @@ export function useCoreUserUpdate(user: UserRefs) {
   const { uploadImage } = useImageStorage()
   const { DisplayName, AvatarUrl, Handle } = useUserFormattingAndValidation()
   const { claimHandle } = useUserHandleClaim()
-  const identityDb = useFirestore(identityDatabaseId)
-
   const core = user.coreUser as { value: User | undefined }
 
   const requireCoreId = () => {
@@ -98,70 +84,36 @@ export function useCoreUserUpdate(user: UserRefs) {
         url ?? '',
         'Invalid avatar URL'
       )
-      await updateCorePublicIdentity({ avatar: formatted || '' })
+      await updateCorePublicIdentity({
+        avatar: formatted || USER_ECOSYSTEM_AVATAR_SRC,
+      })
     },
     uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
       const extension = avatarFileExtension(source)
       const path = `${UserStorage.rootCollection}/${id}/avatar/${Date.now()}.${extension}`
       const url = await uploadImage(path, source)
-      await updateCorePublicIdentity({ avatar: url })
-      return url
+      const formatted = formatAndValidate(
+        AvatarUrl,
+        url,
+        'Avatar upload did not return a valid HTTPS URL'
+      )
+      await updateCorePublicIdentity({ avatar: formatted })
+      return formatted
     },
     setHandle: async (handle: string) => {
-      const normalized = formatAndValidate(Handle, handle ?? '', 'Invalid handle')
+      const normalized = formatAndValidate(
+        Handle,
+        handle ?? '',
+        'Invalid handle'
+      )
       const uid = requireCoreId()
       if (!normalized) throw new Error('Handle cannot be empty.')
       await claimHandle(uid, normalized)
     },
   }
 
-  const normalizeTagId = (value: string) => {
-    const trimmed = (value ?? '').trim()
-    return trimmed || null
-  }
-
-  const tags = {
-    add: async (tagId: string) => {
-      const normalized = normalizeTagId(tagId)
-      if (!normalized) return
-      await updateCore({
-        profiles: arrayUnion(normalized) as unknown as string[],
-      })
-    },
-    remove: async (tagId: string) => {
-      const normalized = normalizeTagId(tagId)
-      if (!normalized) return
-      await updateCore({
-        profiles: arrayRemove(normalized) as unknown as string[],
-      })
-    },
-  }
-
-  const notifications = {
-    push: async (message: string) => {
-      const id = requireCoreId()
-      const notification: UserNotification = createUserNotification({
-        message,
-        scope: 'ecosystem',
-      })
-
-      await addDoc(
-        collection(
-          identityDb,
-          UserStorage.rootCollection,
-          id,
-          UserNotificationStorage.collection
-        ),
-        notification
-      )
-      return notification
-    },
-  }
-
   return {
     profile,
-    tags,
-    notifications,
   }
 }

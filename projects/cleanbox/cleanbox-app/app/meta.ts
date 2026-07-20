@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 const sourceMeta = {
@@ -77,8 +78,6 @@ const sourceMeta = {
       entitiesTitle: 'The records we work with every day',
       structureEyebrow: 'Structure',
       structureTitle: 'Relationship map',
-      examplesEyebrow: 'Examples',
-      examplesTitle: 'Sample objects',
       routesTitle: 'Key routes',
     },
     keyConcepts: [
@@ -174,49 +173,6 @@ const sourceMeta = {
           purpose: 'Authenticated member identity for operators and coordinators.',
           keyFields: ['id', 'display_name', 'profiles', 'userOf', 'adminOf'],
           linksTo: ['CleanboxLocation', 'Job'],
-        },
-      ],
-      samples: [
-        {
-          entity: 'CleanboxLocation',
-          example: {
-            id: 'loc_demo_warehouse_west',
-            app_id: 'cleanbox-app',
-            label: 'Warehouse West Service Site',
-            city: 'Zurich',
-            postcode: '8048',
-            core_place_id: 'place_demo_zurich_west',
-          },
-        },
-        {
-          entity: 'Job',
-          example: {
-            id: 'job_demo_evening_clean',
-            title: 'Evening Cleaning Shift',
-            status: 'open',
-            type: 'fixed',
-            place_id: 'place_demo_zurich_west',
-          },
-        },
-        {
-          entity: 'Place',
-          example: {
-            id: 'place_demo_zurich_west',
-            name: 'Zurich West Service Area',
-            formatted_address: 'Zurich, Switzerland',
-            lat: 47.38,
-            lng: 8.52,
-          },
-        },
-        {
-          entity: 'User',
-          example: {
-            id: 'user_demo_ops_01',
-            display_name: 'Nora Meier',
-            handle: 'nora-meier',
-            profiles: ['operator'],
-            userOf: ['cleanbox-app'],
-          },
         },
       ],
       routes: [
@@ -337,7 +293,6 @@ export const appMeta = {
   keyConcepts: sourceMeta.about.keyConcepts,
   modules: sourceMeta.about.appSpec.modules,
   entities: sourceMeta.about.appSpec.entities,
-  samples: sourceMeta.about.appSpec.samples,
   routes: sourceMeta.about.appSpec.routes,
   relationshipMap: sourceMeta.about.relationshipMap,
 
@@ -457,9 +412,6 @@ export const metaContent = defineFireuxMeta({
     purpose: entity.purpose,
   })),
   relations_ascii: appMeta.relationshipMap,
-  examples: {
-    samples: [...appMeta.samples],
-  },
   routes: {
     public: publicRoutes,
     console: consoleRoutes,

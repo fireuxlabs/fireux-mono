@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: carry Portfolio target outcome into overview.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsoleOverview } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleOverview'
@@ -17,6 +18,7 @@ export function usePortfolioConsoleOverview() {
   const overview = useConsoleOverview<PortfolioConsoleEntity>({
     selectedEntity: selection.portfolio,
     targetItems: portfolios.targets,
+    targetOutcome: portfolios.outcome,
     getId: (portfolio) => normalizeString(portfolio?.id),
   })
   const debug = computed(() => ({

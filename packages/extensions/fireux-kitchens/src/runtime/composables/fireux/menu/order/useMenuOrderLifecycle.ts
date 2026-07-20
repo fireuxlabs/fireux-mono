@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: preserve counter channel and payment copy during shared recovery.
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: let a newer unresolved account Order replace an older terminal local tracker.
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: authorize same-device status, payment, and response requests through canonical tracking.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: authorize same-device status, payment, and response requests through canonical tracking.
+// Concurrent edit — 2026-07-20 16:40 CEST — Menu Order recovery pass: keep transient outages quiet and retry status plus signed-in recovery with bounded backoff.
 import {
   computed,
   onBeforeUnmount,
@@ -17,13 +18,11 @@ import type {
   KitchenOrderType,
 } from '../../../../models/kitchen/order.model'
 import type { CreatedMenuOrder } from '../../../../models/kitchen/menu/menu-ordering.model'
-import type {
-  CustomerOrderPage,
-  CustomerOrderSummary,
-} from '../../../../models/customer/order.model'
+import type { CustomerOrderPage, CustomerOrderSummary } from '../../../../models/customer/order.model'
 import type { MenuOrderBasketLine } from './useMenuOrderBasket'
 import { menuOrderAccessHeaders } from '../../../../utils/menu-order-capability'
 import {
+  createdMenuOrderBasketLines,
   createMenuOrderRequestKey,
   createdMenuOrderTrackingStatus,
   customerOrderRequestError,
@@ -37,7 +36,6 @@ import {
 } from './useMenuOrderTrackingSession'
 
 export type MenuOrderLifecycleStatus = MenuOrderTrackingStatus
-
 type UseMenuOrderLifecycleOptions = {
   fulfilmentLabel: (order: CustomerOrderSummary) => string
   kitchenId: MaybeRefOrGetter<string>
@@ -59,6 +57,11 @@ const pausedTrackingStatuses = new Set<KitchenOrderStatus>([
   'cancelled',
   'trashed',
 ])
+const statusRefreshDelay = 2500
+const maximumStatusRefreshDelay = 15_000
+const visibleStatusFailureThreshold = 3
+const customerRecoveryRetryDelay = 5000
+const maximumCustomerRecoveryRetryDelay = 30_000
 
 // Surface wrappers own request details; this seam owns submission, tracking, recovery, and customer response.
 export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
@@ -76,6 +79,9 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   const recovery = ref<Record<string, unknown>>({ phase: 'idle' })
   const amendmentLines = ref<MenuOrderBasketLine[]>([])
   let statusTimer: ReturnType<typeof setTimeout> | undefined
+  let recoveryTimer: ReturnType<typeof setTimeout> | undefined
+  let consecutiveStatusFailures = 0
+  let consecutiveRecoveryFailures = 0
   let requestKey = ''
   let requestSignature = ''
 
@@ -103,7 +109,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   })
   const accessHeaders = () => menuOrderAccessHeaders(
     currentUser.value,
-    tracking.sentOrder.value?.capability_token
+    tracking.capabilityToken.value
   )
 
   function orderEndpoint(suffix: string) {
@@ -133,7 +139,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
 
-      tracking.sentOrder.value = created
+      tracking.trackCreated(created)
       tracking.fulfilmentLabel.value = input.fulfilmentLabel
       tracking.paymentLabel.value = input.paymentLabel
       tracking.status.value = createdMenuOrderTrackingStatus(created)
@@ -170,7 +176,6 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   async function refreshStatus() {
     if (!statusEndpoint.value || statusPending.value) return null
     statusPending.value = true
-    statusError.value = ''
     try {
       const next = await $fetch<MenuOrderLifecycleStatus>(statusEndpoint.value, {
         headers: await accessHeaders(),
@@ -178,14 +183,21 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       if (next.order_type !== options.orderType) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
+      consecutiveStatusFailures = 0
+      statusError.value = ''
       tracking.status.value = next
       tracking.save()
       return next
     } catch (caught) {
-      statusError.value = customerOrderRequestError(
-        caught,
-        'Order status could not be checked.'
-      )
+      consecutiveStatusFailures += 1
+      if (!isTransientStatusFailure(caught)) {
+        statusError.value = customerOrderRequestError(
+          caught,
+          'Order status could not be checked.'
+        )
+      } else if (consecutiveStatusFailures >= visibleStatusFailureThreshold) {
+        statusError.value = 'Live order updates are temporarily unavailable.'
+      }
       return null
     } finally {
       statusPending.value = false
@@ -207,6 +219,8 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
         body: { action: input.action },
       })
       if (!response.ok) throw new Error('The response could not be saved.')
+      if (input.action === 'amend') amendmentLines.value =
+        createdMenuOrderBasketLines(tracking.receiptItems.value)
       tracking.acknowledge()
       if (input.action === 'cancel') amendmentLines.value = []
       return response.order
@@ -230,7 +244,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     ) return
     statusTimer = setTimeout(async () => {
       await refreshStatus()
-      scheduleStatusRefresh()
+      scheduleStatusRefresh(nextStatusRefreshDelay(consecutiveStatusFailures))
     }, delay)
   }
 
@@ -241,13 +255,17 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
 
   function reset() {
     stopStatusRefresh()
+    stopRecoveryRetry()
     tracking.acknowledge()
     resetTransientState()
   }
 
   async function restoreOrder() {
+    stopRecoveryRetry()
     const expectedScope = text(toValue(options.scopeKey))
-    const restoredLocally = tracking.restore()
+    const restoredLocally = tracking.sentOrder.value
+      ? true
+      : tracking.restore()
     if (restoredLocally) scheduleStatusRefresh(0)
     const user = currentUser.value
     const expectedUserId = user?.uid || ''
@@ -272,6 +290,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
         expectedScope !== text(toValue(options.scopeKey)) ||
         expectedUserId !== currentUser.value?.uid
       ) return
+      consecutiveRecoveryFailures = 0
 
       const trackedId = text(tracking.sentOrder.value?.id)
       const trackedCandidate = trackedId
@@ -306,16 +325,47 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       tracking.save()
       scheduleStatusRefresh(0)
     } catch (caught) {
+      consecutiveRecoveryFailures += 1
+      const transientFailure = isTransientStatusFailure(caught)
       recovery.value = {
         phase: 'customer-order-error',
         signed_in: true,
         waiting_for: 'customer',
-        error: customerOrderRequestError(caught, 'Customer order recovery failed.'),
+        error: transientFailure
+          ? 'Customer order recovery is temporarily unavailable.'
+          : customerOrderRequestError(caught, 'Customer order recovery failed.'),
       }
+      if (transientFailure) scheduleRecoveryRetry()
     }
   }
 
+  function scheduleRecoveryRetry() {
+    stopRecoveryRetry()
+    if (
+      !import.meta.client ||
+      !currentUser.value ||
+      hasActiveTrackedOrder()
+    ) return
+
+    recoveryTimer = setTimeout(
+      () => { void restoreOrder() },
+      nextCustomerRecoveryDelay(consecutiveRecoveryFailures)
+    )
+  }
+
+  function stopRecoveryRetry() {
+    if (recoveryTimer) clearTimeout(recoveryTimer)
+    recoveryTimer = undefined
+  }
+
+  function hasActiveTrackedOrder() {
+    const status = tracking.status.value?.status || tracking.sentOrder.value?.status
+
+    return Boolean(status && !isTerminalMenuOrderStatus(status))
+  }
+
   function restoreCustomerOrder(order: CustomerOrderSummary) {
+    tracking.capabilityToken.value = ''
     tracking.sentOrder.value = {
       id: order.id,
       order_number: order.order_number,
@@ -356,11 +406,15 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     statusError.value = ''
     requestKey = ''
     requestSignature = ''
+    consecutiveStatusFailures = 0
+    consecutiveRecoveryFailures = 0
     amendmentLines.value = []
   }
 
   watch(() => text(toValue(options.scopeKey)), () => {
     stopStatusRefresh()
+    stopRecoveryRetry()
+    tracking.resetMemory()
     resetTransientState()
     void restoreOrder()
   })
@@ -369,7 +423,10 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     if (resolved && !tracking.sentOrder.value) void restoreOrder()
   })
   onMounted(() => { void restoreOrder() })
-  onBeforeUnmount(stopStatusRefresh)
+  onBeforeUnmount(() => {
+    stopStatusRefresh()
+    stopRecoveryRetry()
+  })
 
   return {
     amendmentLines,
@@ -390,6 +447,32 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     statusPending,
     submit,
   }
+}
+
+function nextStatusRefreshDelay(failures: number) {
+  if (!failures) return statusRefreshDelay
+
+  return Math.min(
+    maximumStatusRefreshDelay,
+    statusRefreshDelay * (2 ** Math.min(failures, 3))
+  )
+}
+
+function nextCustomerRecoveryDelay(failures: number) {
+  return Math.min(
+    maximumCustomerRecoveryRetryDelay,
+    customerRecoveryRetryDelay * (2 ** Math.min(Math.max(failures - 1, 0), 3))
+  )
+}
+
+function isTransientStatusFailure(caught: unknown) {
+  const source = caught && typeof caught === 'object'
+    ? caught as { status?: unknown, statusCode?: unknown }
+    : {}
+  const status = Number(source.statusCode || source.status)
+
+  return !Number.isFinite(status) || status === 0 || status === 408 ||
+    status === 429 || status >= 500
 }
 
 function recoveredChannel(orderType: KitchenOrderType) {

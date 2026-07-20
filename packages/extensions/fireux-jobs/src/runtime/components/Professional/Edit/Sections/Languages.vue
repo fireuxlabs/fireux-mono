@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 19:17 CEST — Repo Efficiency Pass 2 of 6: enforce Professional language editor capacity. -->
 <template>
   <div class="profile-edit__section">
     <MoleculesFormsFirestoreObjectArray
@@ -7,6 +8,7 @@
       :item-title="itemTitle"
       :item-date="itemDate"
       :show-actions="true"
+      :max-items="maxItems"
     >
       <template #edit="{ item, save, cancel }">
         <div class="space-y-2">
@@ -31,8 +33,9 @@
         </div>
       </template>
 
-      <template #create="{ push }">
+      <template #create="{ push, canPush }">
         <UButton
+          v-if="canPush"
           size="xs"
           variant="soft"
           @click="push({ language: '', proficiency: '' })"
@@ -51,6 +54,7 @@ import type { LanguageProficiency } from '../../../../models/profiles/Profession
 const props = defineProps<{
   items: LanguageProficiency[]
   onSave: (items: LanguageProficiency[]) => Promise<void>
+  maxItems: number
 }>()
 
 const proficiencyOptions = [

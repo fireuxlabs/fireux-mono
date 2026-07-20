@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: accept customer amend/cancel responses for every Menu order surface.
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: permit secure same-device amend/cancel without requiring sign-in.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: permit secure same-device amend/cancel without requiring sign-in.
 import {
   createError,
   defineEventHandler,
@@ -39,10 +39,6 @@ export default defineEventHandler(async (event) => {
   if (!menuId || !orderId) {
     throw createError({ statusCode: 400, statusMessage: 'Order path is required.' })
   }
-  if (action !== 'amend' && action !== 'cancel') {
-    throw createError({ statusCode: 400, statusMessage: 'Choose how to respond.' })
-  }
-
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const access = await readMenuOrderCustomerAccess(event)
   const db = getRuntimeFirestore()
@@ -63,6 +59,9 @@ export default defineEventHandler(async (event) => {
       throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
     }
     const { actorId } = requireMenuOrderCustomerAccess(access, order)
+    if (action !== 'amend' && action !== 'cancel') {
+      throw createError({ statusCode: 400, statusMessage: 'Choose how to respond.' })
+    }
     if (text(order.status) !== 'changes_requested') {
       throw createError({
         statusCode: 409,

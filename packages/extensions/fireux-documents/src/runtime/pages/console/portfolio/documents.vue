@@ -1,3 +1,5 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
+<!-- Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: gate document controls with Portfolio write authority. -->
 <template>
   <UDashboardPanel id="console-portfolio-documents">
     <template #header>
@@ -32,7 +34,7 @@
           </div>
         </UCard>
 
-        <UCard v-if="!isDemo">
+        <UCard v-if="canWrite">
           <template #header>
             <div class="text-sm font-semibold">Upload document</div>
           </template>
@@ -41,20 +43,20 @@
             <input
               type="file"
               class="block w-full rounded border border-default p-2 text-sm"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               @change="handleFileInput"
             />
 
             <UInput
               v-model="uploadNotes"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Optional notes"
             />
 
             <UButton
               size="sm"
               icon="i-lucide-upload"
-              :disabled="!selectedFile || isDemo || uploadBusy"
+              :disabled="!selectedFile || !canWrite || uploadBusy"
               :loading="uploadBusy"
               @click="uploadSelectedFile"
             >
@@ -67,7 +69,7 @@
           </div>
         </UCard>
 
-        <UCard v-if="!isDemo">
+        <UCard v-if="canWrite">
           <template #header>
             <div class="text-sm font-semibold">Link document to entity</div>
           </template>
@@ -75,22 +77,22 @@
           <div class="grid gap-3 sm:grid-cols-2">
             <UInput
               v-model="linkDocumentId"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Document id"
             />
             <UInput
               v-model="linkTargetType"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Target type (property, compliance-record, tenancy, ...)"
             />
             <UInput
               v-model="linkTargetId"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Target id"
             />
             <UInput
               v-model="linkTargetLabel"
-              :disabled="isDemo"
+              :disabled="!canWrite"
               placeholder="Target label (optional)"
             />
           </div>
@@ -99,7 +101,7 @@
             <UButton
               size="sm"
               icon="i-lucide-link"
-              :disabled="isDemo || linkBusy"
+              :disabled="!canWrite || linkBusy"
               :loading="linkBusy"
               @click="createLink"
             >
@@ -110,7 +112,7 @@
               size="sm"
               variant="soft"
               icon="i-lucide-list-checks"
-              :disabled="isDemo || linkBusy"
+              :disabled="!canWrite || linkBusy"
               @click="createLink(true)"
             >
               Link + create task
@@ -185,25 +187,27 @@ import { DocumentStorage } from '../../../models/document.model'
 
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
+  visibility: { modules: ['fireux-documents'] },
   nav: {
-    visibility: { modules: ['fireux-documents'] },
     key: 'console-portfolio-documents',
     label: 'Documents',
     icon: 'i-lucide-file-text',
     position: 'top',
-    requiresSelection: true,
     order: 40,
     desktop: true,
     mobile: true,
     layouts: ['console'],
   },
   requiresAuth: true,
+  requiresSelection: true,
 })
 
 const runtimePortfolio = useActivePortfolio()
 const runtimeId = computed(() => runtimePortfolio.id.value)
 const runtimeMode = computed(() => runtimePortfolio.mode.value)
 const isDemo = computed(() => runtimePortfolio.isDemo.value)
+const canWrite = computed(() => runtimePortfolio.canWrite.value)
 const documentsPath = usePortfolioConsoleChildPath(
   runtimePortfolio,
   DocumentStorage.collection
@@ -245,7 +249,7 @@ const linkBusy = ref(false)
 
 const allowedTargetTypesLabel = documentLinkTargetTypes.join(', ')
 
-const { uploadFile } = useDocumentStorage()
+const { uploadFile } = useDocumentStorage(runtimePortfolio)
 const { createDocumentRecord } = useDocumentCreate(runtimePortfolio)
 const { linkDocumentToEntity: linkMutation } =
   linkDocumentToEntity(runtimePortfolio)
@@ -257,7 +261,7 @@ const handleFileInput = (event: Event) => {
 }
 
 const uploadSelectedFile = async () => {
-  if (!selectedFile.value || isDemo.value || !runtimeId.value) return
+  if (!selectedFile.value || !canWrite.value || !runtimeId.value) return
 
   uploadBusy.value = true
   try {
@@ -286,7 +290,7 @@ const uploadSelectedFile = async () => {
 }
 
 const createLink = async (createTask = false) => {
-  if (isDemo.value) return
+  if (!canWrite.value) return
 
   linkBusy.value = true
   try {

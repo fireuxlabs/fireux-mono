@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
   <UDashboardPanel id="console-kitchen-supplier-procurement">
     <template #header>
@@ -15,14 +16,15 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
+  visibility: { modules: ['fireux-kitchens'] },
   requiresAuth: true,
+  requiresSelection: true,
   nav: {
-    visibility: { modules: ['fireux-kitchens'] },
     key: 'console-kitchen-supplier-procurement',
     label: 'Supplier Procurement',
     icon: 'i-lucide-list-checks',
     position: 'top',
-    requiresSelection: true,
     hidden: true,
     desktop: false,
     mobile: false,

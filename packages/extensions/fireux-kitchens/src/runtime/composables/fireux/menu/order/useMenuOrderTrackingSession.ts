@@ -12,10 +12,14 @@ import {
   type KitchenOrderStatus,
   type KitchenOrderType,
 } from '../../../../models/kitchen/order.model'
-import type { CreatedMenuOrder } from '../../../../models/kitchen/menu/menu-ordering.model'
+import type {
+  CreatedMenuOrder,
+  CreatedMenuOrderReceiptLine,
+} from '../../../../models/kitchen/menu/menu-ordering.model'
 import { readMenuOrderCapabilityToken } from '../../../../utils/menu-order-capability'
 
-// Concurrent edit — 2026-07-20 15:20 CEST — Anonymous Order capability pass: retain the opaque same-device token in canonical local tracking only.
+// Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: retain the opaque same-device token in canonical local tracking only.
+// Concurrent edit — 2026-07-20 16:36 CEST — Menu Order recovery pass: never turn a successful Order POST into a failed submission when browser storage is unavailable.
 
 export type MenuOrderTrackingStatus = {
   id: string
@@ -40,20 +44,25 @@ export type MenuOrderTrackingSession<
   TStatus extends MenuOrderTrackingStatus = MenuOrderTrackingStatus,
 > = {
   acknowledge: () => void
+  capabilityToken: Ref<string>
   clear: () => void
   fulfilmentLabel: Ref<string>
   paymentLabel: Ref<string>
+  receiptItems: Ref<CreatedMenuOrderReceiptLine[]>
   resetMemory: () => void
   restore: () => boolean
   isAcknowledged: (orderId: unknown) => boolean
-  save: () => void
+  save: () => boolean
   sentOrder: Ref<CreatedMenuOrder | null>
   status: Ref<TStatus | null>
+  trackCreated: (order: CreatedMenuOrder) => void
 }
 
 type StoredMenuOrderTrackingSession = {
   version: 1
+  capability_token: string
   order: CreatedMenuOrder
+  receipt_items: CreatedMenuOrderReceiptLine[]
   status: MenuOrderTrackingStatus | null
   fulfilment_label: string
   payment_label: string
@@ -78,9 +87,11 @@ export function useMenuOrderTrackingSession<
   options: UseMenuOrderTrackingSessionOptions
 ): MenuOrderTrackingSession<TStatus> {
   const sentOrder = ref<CreatedMenuOrder | null>(null)
+  const capabilityToken = ref('')
   const status = ref<TStatus | null>(null)
   const fulfilmentLabel = ref('')
   const paymentLabel = ref('')
+  const receiptItems = ref<CreatedMenuOrderReceiptLine[]>([])
   const storageKey = computed(() => {
     const scope = text(toValue(options.scopeKey))
 
@@ -95,29 +106,31 @@ export function useMenuOrderTrackingSession<
 
     try {
       const stored = readStoredSession(
-        JSON.parse(window.localStorage.getItem(storageKey.value) || 'null'),
+        JSON.parse(readStoredValue(storageKey.value) || 'null'),
         options.orderType
       )
       if (!stored) return false
 
       sentOrder.value = stored.order
+      capabilityToken.value = stored.capability_token
       status.value = stored.status as TStatus | null
       fulfilmentLabel.value = stored.fulfilment_label
       paymentLabel.value = stored.payment_label
+      receiptItems.value = stored.receipt_items
       return true
     } catch {
-      window.localStorage.removeItem(storageKey.value)
+      removeStoredValue(storageKey.value)
       return false
     }
   }
 
   function save() {
-    if (!import.meta.client || !storageKey.value || !sentOrder.value) return
+    if (!import.meta.client || !storageKey.value || !sentOrder.value) return false
 
     const order = safeCreatedOrder(sentOrder.value, options.orderType)
     if (!order) {
       clear()
-      return
+      return false
     }
 
     const nextStatus = status.value
@@ -125,26 +138,26 @@ export function useMenuOrderTrackingSession<
       : null
     const stored: StoredMenuOrderTrackingSession = {
       version: 1,
+      capability_token: readMenuOrderCapabilityToken(capabilityToken.value),
       order,
       status: nextStatus,
       fulfilment_label: text(fulfilmentLabel.value),
       payment_label: text(paymentLabel.value),
+      receipt_items: safeReceiptItems(receiptItems.value),
       updated_at: new Date().toISOString(),
     }
-    window.localStorage.setItem(storageKey.value, JSON.stringify(stored))
+    return writeStoredValue(storageKey.value, JSON.stringify(stored))
   }
 
   function clear() {
-    if (import.meta.client && storageKey.value) {
-      window.localStorage.removeItem(storageKey.value)
-    }
+    if (import.meta.client && storageKey.value) removeStoredValue(storageKey.value)
     resetMemory()
   }
 
   function acknowledge() {
     const orderId = text(sentOrder.value?.id)
     if (import.meta.client && orderId) {
-      window.localStorage.setItem(
+      writeStoredValue(
         `${acknowledgementPrefix}${encodeURIComponent(orderId)}`,
         new Date().toISOString()
       )
@@ -157,7 +170,7 @@ export function useMenuOrderTrackingSession<
     return Boolean(
       import.meta.client &&
       id &&
-      window.localStorage.getItem(
+      readStoredValue(
         `${acknowledgementPrefix}${encodeURIComponent(id)}`
       )
     )
@@ -165,22 +178,33 @@ export function useMenuOrderTrackingSession<
 
   function resetMemory() {
     sentOrder.value = null
+    capabilityToken.value = ''
     status.value = null
     fulfilmentLabel.value = ''
     paymentLabel.value = ''
+    receiptItems.value = []
+  }
+
+  function trackCreated(order: CreatedMenuOrder) {
+    capabilityToken.value = readMenuOrderCapabilityToken(order.capability_token)
+    receiptItems.value = safeReceiptItems(order.receipt?.items)
+    sentOrder.value = safeCreatedOrder(order, options.orderType)
   }
 
   return {
     acknowledge,
+    capabilityToken,
     clear,
     fulfilmentLabel,
     paymentLabel,
+    receiptItems,
     resetMemory,
     restore,
     isAcknowledged,
     save,
     sentOrder,
     status,
+    trackCreated,
   }
 }
 
@@ -202,10 +226,12 @@ function readStoredSession(
 
   return {
     version: 1,
+    capability_token: readMenuOrderCapabilityToken(stored.capability_token),
     order,
     status,
     fulfilment_label: text(stored.fulfilment_label),
     payment_label: text(stored.payment_label),
+    receipt_items: safeReceiptItems(stored.receipt_items),
     updated_at: text(stored.updated_at),
   }
 }
@@ -232,10 +258,8 @@ function safeCreatedOrder(
   }
 
   const collection = safeCollection(order.collection)
-  const capabilityToken = readMenuOrderCapabilityToken(order.capability_token)
   return {
     id,
-    ...(capabilityToken ? { capability_token: capabilityToken } : {}),
     order_number: orderNumber,
     status,
     order_type: orderType,
@@ -280,6 +304,56 @@ function safeTrackingStatus(
   }
 }
 
+function safeReceiptItems(value: unknown): CreatedMenuOrderReceiptLine[] {
+  return (Array.isArray(value) ? value : []).slice(0, 200).flatMap((row) => {
+    const item = record(row)
+    const id = boundedText(item.id, 256)
+    const sourceItemId = boundedText(item.source_item_id, 256)
+    const label = boundedText(item.label, 500)
+    const menuId = boundedText(item.menu_id, 256)
+    const quantity = Number(item.quantity)
+    const unitPrice = finiteMoney(item.unit_price_chf)
+    const total = finiteMoney(item.total_chf)
+    if (
+      !id || !label ||
+      !Number.isSafeInteger(quantity) || quantity < 1 || quantity > 99 ||
+      unitPrice <= 0 || total <= 0
+    ) return []
+
+    const addOns = (Array.isArray(item.add_ons) ? item.add_ons : [])
+      .slice(0, 50)
+      .flatMap((row) => {
+        const addOn = record(row)
+        const addOnId = boundedText(addOn.id, 256)
+        const addOnLabel = boundedText(addOn.label, 256)
+        if (!addOnId || !addOnLabel) return []
+
+        return [{
+          id: addOnId,
+          label: addOnLabel,
+          price: finiteMoney(addOn.price),
+        }]
+      })
+
+    return [{
+      id,
+      ...(sourceItemId ? { source_item_id: sourceItemId } : {}),
+      ...(menuId ? { menu_id: menuId } : {}),
+      label,
+      quantity,
+      unit_price_chf: unitPrice,
+      total_chf: total,
+      ...(addOns.length ? { add_ons: addOns } : {}),
+      ...(boundedText(item.variant_label, 256)
+        ? { variant_label: boundedText(item.variant_label, 256) }
+        : {}),
+      ...(boundedText(item.variant_id, 256)
+        ? { variant_id: boundedText(item.variant_id, 256) }
+        : {}),
+    }]
+  })
+}
+
 function safeCollection(value: unknown) {
   const collection = record(value)
   if (collection.mode !== 'queue' && collection.mode !== 'scheduled') return null
@@ -301,4 +375,41 @@ function record(value: unknown): Record<string, unknown> {
 function finiteNumber(value: unknown) {
   const number = Number(value)
   return Number.isFinite(number) ? number : 0
+}
+
+function finiteMoney(value: unknown) {
+  const number = Number(value)
+  return Number.isFinite(number) && number >= 0 && number <= 1_000_000
+    ? number
+    : 0
+}
+
+function boundedText(value: unknown, maxLength: number) {
+  const valueText = text(value)
+  return valueText.length <= maxLength ? valueText : ''
+}
+
+function readStoredValue(key: string) {
+  try {
+    return window.localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function writeStoredValue(key: string, value: string) {
+  try {
+    window.localStorage.setItem(key, value)
+    return true
+  } catch {
+    return false
+  }
+}
+
+function removeStoredValue(key: string) {
+  try {
+    window.localStorage.removeItem(key)
+  } catch {
+    // The in-memory Order remains authoritative for the current page.
+  }
 }
