@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, App access, and UserApp target.
+// Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: normalize only absent support authority arrays inside the trusted transaction.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -25,7 +26,7 @@ import {
   onboardingRecord as record,
   onboardingText as text,
   readKitchenOnboardingScope,
-  readKitchenOnboardingSupport,
+  readKitchenOnboardingSupportForTrustedRepair,
   requireOnboardingMemberRole as memberRole,
   type KitchenOnboardingMemberRole as MemberRole,
 } from './onboarding-policy'
@@ -179,7 +180,11 @@ export async function previewKitchenOnboarding(
   }
 
   const supportData = support.exists ? support.data() || {} : null
-  const supportAuthority = readKitchenOnboardingSupport(supportData)
+  const supportCandidate = readKitchenOnboardingSupportForTrustedRepair(supportData)
+  if (supportCandidate.missingFields.length > 0 && current.role !== 'admin') {
+    fail(409, 'An App admin must repair this Kitchen access record.')
+  }
+  const supportAuthority = supportCandidate.support
   const decision = kitchenOnboardingAccessDecision({
     kitchen: locator.kitchen,
     support: supportAuthority,
@@ -257,7 +262,11 @@ export async function completeKitchenOnboarding(
     if (!rootData && supportData) {
       fail(409, 'Kitchen access exists without its canonical root.')
     }
-    const supportAuthority = readKitchenOnboardingSupport(supportData)
+    const supportCandidate = readKitchenOnboardingSupportForTrustedRepair(supportData)
+    if (supportCandidate.missingFields.length > 0 && role !== 'admin') {
+      fail(409, 'An App admin must repair this Kitchen access record.')
+    }
+    const supportAuthority = supportCandidate.support
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
       support: supportAuthority,
@@ -329,6 +338,9 @@ export async function completeKitchenOnboarding(
       transaction.update(supportRef, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
+        ...(supportCandidate.missingFields.includes('join_requests')
+          ? { join_requests: [] }
+          : {}),
         updated: serverAuditStamp({ by: current.uid }),
       })
     }

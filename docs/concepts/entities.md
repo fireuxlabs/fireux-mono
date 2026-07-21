@@ -9,6 +9,7 @@ Entities map
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map bounded biography onto canonical public User identity. -->
 <!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: classify Sale and FinancialFact as parent-owned records, not entities. -->
 <!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: map trusted Place-backed root and App-access activation. -->
+<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map atomic root/App-support onboarding and access-role authority. -->
 
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
@@ -25,7 +26,7 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map projected public profile reads and owner-only raw authority. -->
 
 Updated: 2026-07-21
-Ref: 1e55eece7
+Ref: 318378b20
 Role: map, not canon
 
 Purpose:
@@ -135,6 +136,9 @@ Root + App support authority boundary:
   identity; that compatibility is not the pattern.
 - The App record contains bounded access (`operator_ids`, `team_ids`, and
   `join_requests`) plus only a deliberately public-to-that-access-record delta.
+  Operators hold target mutation authority; team members hold target/read
+  membership only. Current App admins are the explicit administrative
+  override, not another duplicated target list.
   Property guest-manual credentials are not such a delta: they live in the
   separate private support record
   `apps/{appId}/properties/{propertyId}/private/manual`.
@@ -144,18 +148,24 @@ Root + App support authority boundary:
   Missing halves, dangling App records, and scope mismatches are authority
   errors; the affected rows do not remain selectable.
 - Supplier, Portfolio, and Property ID-targeted console reads exact-load both
-  the requested roots and same-id App access records. They do not list the App
-  collection and intersect in the browser. Property also exact-validates its
-  root model in collection, detail, attach, and relationship reads. Supplier and
-  Portfolio exact root-schema validators remain gated on live-shape
-  reconciliation; their current reads enforce pair and scope authority without
-  claiming every root field is already canonical.
+  the requested roots and same-id App access records. Kitchen's authenticated
+  live target projection exact-loads the stricter root/support/Place join.
+  These readers do not list full root/App collections and intersect them in the
+  browser. Property also exact-validates its root model in collection, detail,
+  attach, and relationship reads. Supplier and Portfolio exact root-schema
+  validators remain gated on live-shape reconciliation; their current reads
+  enforce pair and scope authority without claiming every root field is already
+  canonical.
 - Root identity and App reads/creates use separately named, fixed paths. A
   caller cannot select a scope, collection path, or different App-record id.
-  Independent root/App deletes and generic access-array mutations stay
-  unexported until a trusted lifecycle can update root scope, App access, and
-  UserApp targets together. Types and rereads improve correctness; deployed
-  Rules or a trusted server transaction remain the security boundary.
+  Production Kitchen, Supplier, Portfolio, and Property onboarding now uses a
+  fixed-runtime authenticated domain endpoint whose one trusted transaction
+  creates or attaches the root, creates or validates the same-id complete App
+  support, and updates the caller's UserApp target index. Independent root/App
+  deletes and generic access-array mutations stay unexported; later transfer or
+  deletion flows need an equally atomic lifecycle. Types and rereads improve
+  correctness; deployed Rules and trusted server transactions remain the
+  security boundary.
 - Cross-root relationships are child-owned ids. Property owns optional
   `portfolio_id`; Portfolio stores neither an inverse Property array nor nested
   full Property copies. Property also references canonical Place with

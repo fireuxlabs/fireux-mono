@@ -11,6 +11,7 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: register AST-backed declaration checks.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: register the explicitly named root/App-support authority guard.
 // Concurrent edit — 2026-07-21 13:57 CEST — CSS necessity pass: run the full repository gate after reducing the shared stylesheet surface.
+// Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: register the shared selected/target presentation guard.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint
@@ -39,6 +40,7 @@ import { run as runCanon } from './guards/canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
 import { run as runCssSystem } from './guards/css-system.mjs'
 import { run as runConsolePages } from './guards/console-pages.mjs'
+import { run as runConsoleIndexes } from './guards/console-indexes.mjs'
 import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
@@ -74,6 +76,7 @@ const guards = [
   { key: 'components', run: runComponents },
   { key: 'css-system', run: runCssSystem },
   { key: 'console-pages', run: runConsolePages },
+  { key: 'console-indexes', run: runConsoleIndexes },
   { key: 'core', run: runCore },
   { key: 'ecosystem', run: runEcosystem },
   { key: 'extensions', run: runExtensions },

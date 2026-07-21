@@ -1,12 +1,13 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: validate Portfolio selection only after membership and collection outcomes are composed.
-import { computed, isRef, type ComputedRef, type Ref } from 'vue'
+// Concurrent edit — 2026-07-21 22:31 CEST — Console family alignment: make Portfolio core own target ids and membership outcome.
+import { computed, isRef, type Ref } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
-import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   usePortfolioCollection,
@@ -18,10 +19,6 @@ import {
 } from '../../../firestore/portfolio/utils/view/usePortfolioInterface'
 import { PortfolioStorage } from '../../../../../models/portfolio.model'
 
-type ConsoleTargetOutcomeRef =
-  | Ref<ConsoleTargetOutcome>
-  | ComputedRef<ConsoleTargetOutcome>
-
 export type PortfolioConsoleEntity = PortfolioSurface & {
   id?: string
   tagline?: string
@@ -32,9 +29,6 @@ type UsePortfolioConsoleOptions = {
     | PortfolioCollectionFilter
     | Ref<PortfolioCollectionFilter | null | undefined>
     | null
-  resolveTargetOutcome?: (
-    sourceOutcome: ConsoleTargetOutcomeRef
-  ) => ConsoleTargetOutcomeRef
 }
 
 /**
@@ -51,6 +45,7 @@ type UsePortfolioConsoleOptions = {
  */
 export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const consoleRoot = useConsole('portfolio')
+  const consoleTargets = useConsoleTargets({ family: 'portfolio' })
   const { uid } = useAuth()
   const normalizedUid = computed(() => normalizeString(uid.value))
   const { pill } = usePortfolioInterface()
@@ -59,15 +54,8 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
       ? (options.filter.value ?? {})
       : (options.filter ?? {})
 
-    if (
-      consoleRoot.source.value !== 'live' ||
-      Array.isArray(explicitFilter.ids)
-    ) return explicitFilter
-
-    return {
-      ...explicitFilter,
-      operatorId: normalizedUid.value,
-    }
+    if (consoleRoot.source.value === 'demo') return explicitFilter
+    return consoleTargets.filter(explicitFilter)
   })
   const {
     portfolios: targetPortfolios,
@@ -78,9 +66,14 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     source: consoleRoot.source,
     filter: targetFilter,
   })
-  const targetsOutcome = options.resolveTargetOutcome
-    ? options.resolveTargetOutcome(sourceTargetsOutcome)
-    : sourceTargetsOutcome
+  const membershipAwareTargetsOutcome = consoleTargets.resolveOutcome(
+    sourceTargetsOutcome
+  )
+  const targetsOutcome = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? sourceTargetsOutcome.value
+      : membershipAwareTargetsOutcome.value
+  )
 
   const entity = useConsoleEntityRuntime<PortfolioConsoleEntity>({
     family: 'portfolio',
@@ -147,6 +140,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
 
   return {
     portfolios,
+    targeting: consoleTargets,
     selection,
     runtime: entity.runtime,
     actions,

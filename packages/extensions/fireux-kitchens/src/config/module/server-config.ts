@@ -4,6 +4,7 @@
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: register the bounded public Kitchen/Place projection.
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: register the bounded gross-sales report endpoint.
 // Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: register authenticated preview and atomic completion endpoints.
+// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: register the authenticated bounded target projection.
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import {
@@ -91,6 +92,11 @@ const baseServerHandlers = [
     route: '/api/console/kitchen/orders/end-service',
     method: 'post',
     handler: './runtime/server/api/console/kitchen/orders/end-service.post',
+  },
+  {
+    route: '/api/console/kitchen/targets',
+    method: 'get',
+    handler: './runtime/server/api/console/kitchen/targets.get',
   },
   {
     route: '/api/console/kitchen/reports/gross-sales',

@@ -32,11 +32,11 @@
             <code>suppliers/&lt;id&gt;</code>.
           </li>
           <li>
-            When an app context exists, the shared console create seam also creates
-            <code>apps/&lt;appId&gt;/suppliers/&lt;id&gt;</code>.
+            Console mode uses the authenticated Supplier onboarding transaction
+            to create or attach the root and its same-id App support record.
           </li>
           <li>
-            Route mode changes the entry and return flow, not the root/app write rule.
+            The transaction also updates the current UserApp Supplier target.
           </li>
           <li>
             Adds the current operator to supplier
@@ -64,6 +64,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Supplier console creation as App support.
+// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: describe the trusted Console transaction.
 import { computed } from 'vue'
 import type {
   ConsoleCreateMode,
@@ -99,7 +100,7 @@ const headerTitle = computed(() =>
 const headerDescription = computed(() =>
   isConsoleMode.value
     ? 'We’ll create the supplier console for this app and create the public supplier only if it is missing.'
-    : 'We’ll create the public Supplier record. App context may also create its support record.'
+    : 'We’ll create only the public Supplier root. Console onboarding owns App support and access.'
 )
 const successTo = computed(() => {
   if (returnTo.value.startsWith('/')) return returnTo.value

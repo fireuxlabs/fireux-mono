@@ -1,32 +1,12 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: remove raw console debug label. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: delegate selected-target chrome to Core. -->
 <template>
-  <section class="space-y-2">
-    <UPageCard
-      v-if="supplierId"
-      :title="selectedTitle"
-      :description="supplierName || supplierId"
-      variant="subtle"
-    >
-      <template #footer>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-x"
-          @click="emit('clear')"
-        >
-          Clear
-        </UButton>
-      </template>
-    </UPageCard>
-
-    <UPageCard
-      v-else
-      title="No selected Supplier"
-      description="Choose a Supplier target to open selected Supplier console state."
-      variant="subtle"
-    />
-  </section>
+  <ConsoleSelectedTarget
+    label="Supplier"
+    :selected-id="supplierId"
+    :description="supplierName"
+    @clear="emit('clear')"
+  />
 </template>
 
 <script setup lang="ts">
@@ -51,5 +31,4 @@ const supplierName = computed(() =>
       ''
   ).trim()
 )
-const selectedTitle = 'Selected Supplier'
 </script>

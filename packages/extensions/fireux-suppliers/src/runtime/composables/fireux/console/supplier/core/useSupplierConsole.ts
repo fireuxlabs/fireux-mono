@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: validate Supplier selection only after membership and collection outcomes are composed.
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: resolve Supplier demos through the lazy console adapter.
-import { computed, isRef, type ComputedRef, type Ref } from 'vue'
+// Concurrent edit — 2026-07-21 22:31 CEST — Console family alignment: make Supplier core own target ids and membership outcome.
+import { computed, isRef, type Ref } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   useConsole,
@@ -8,6 +9,7 @@ import {
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useSupplierCollection,
@@ -17,15 +19,8 @@ import { type SupplierSurface } from '../../../firestore/supplier/utils/view/use
 import { SupplierStorage } from '../../../../../models/supplier/Supplier.model'
 import { useSupplierConsoleDemoData } from './useSupplierConsoleDemoData'
 
-type ConsoleTargetOutcomeRef =
-  | Ref<ConsoleTargetOutcome>
-  | ComputedRef<ConsoleTargetOutcome>
-
 type UseSupplierConsoleOptions = {
   filter?: SupplierCollectionFilter | Ref<SupplierCollectionFilter | null | undefined> | null
-  resolveTargetOutcome?: (
-    sourceOutcome: ConsoleTargetOutcomeRef
-  ) => ConsoleTargetOutcomeRef
 }
 
 /**
@@ -44,6 +39,7 @@ export function useSupplierConsole(
   options: UseSupplierConsoleOptions = {}
 ) {
   const consoleRoot = useConsole('supplier')
+  const consoleTargets = useConsoleTargets({ family: 'supplier' })
   const { uid } = useAuth()
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<SupplierCollectionFilter>(() => {
@@ -51,15 +47,8 @@ export function useSupplierConsole(
       ? options.filter.value ?? {}
       : options.filter ?? {}
 
-    if (
-      consoleRoot.source.value !== 'live' ||
-      Array.isArray(explicitFilter.ids)
-    ) return explicitFilter
-
-    return {
-      ...explicitFilter,
-      operatorId: userId.value,
-    }
+    if (consoleRoot.source.value === 'demo') return explicitFilter
+    return consoleTargets.filter(explicitFilter)
   })
   const sourceCollection = useSupplierCollection({
     source: consoleRoot.source,
@@ -88,9 +77,9 @@ export function useSupplierConsole(
       ? demoData.outcome.value
       : sourceCollection.outcome.value
   )
-  const membershipAwareTargetsOutcome = options.resolveTargetOutcome
-    ? options.resolveTargetOutcome(sourceTargetsOutcome)
-    : sourceTargetsOutcome
+  const membershipAwareTargetsOutcome = consoleTargets.resolveOutcome(
+    sourceTargetsOutcome
+  )
   const targetsOutcome = computed<ConsoleTargetOutcome>(() =>
     consoleRoot.source.value === 'demo'
       ? sourceTargetsOutcome.value
@@ -141,6 +130,7 @@ export function useSupplierConsole(
 
   return {
     suppliers,
+    targeting: consoleTargets,
     selection,
     runtime: entity.runtime,
     actions,

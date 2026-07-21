@@ -1,41 +1,33 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Kitchen dual-source target presentation. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: remove the local mount-state loading fork. -->
 <template>
   <section class="space-y-4">
-    <MoleculesStateCard
-      v-if="!isMounted"
-      entity="kitchen targets"
-      state="loading"
-      surface="bare"
+    <ConsoleKitchenIndexTargetSection
+      title="Your kitchens"
+      description="Live kitchens linked to your current user profile."
+      source="live"
+      :collection="collection"
+      :outcome="outcome"
+      :selected-id="selectedId"
+      :selected-source="selectedSource"
+      @select="selectKitchen"
     />
 
-    <template v-else>
-      <ConsoleKitchenIndexTargetSection
-        title="Your kitchens"
-        description="Live kitchens linked to your current user profile."
-        source="live"
-        :collection="collection"
-        :outcome="outcome"
-        :selected-id="selectedId"
-        :selected-source="selectedSource"
-        @select="selectKitchen"
-      />
-
-      <ConsoleKitchenIndexTargetSection
-        title="Demo kitchens"
-        description="Explore with our read-only kitchens."
-        source="demo"
-        :collection="demoCollection"
-        :outcome="demoOutcome"
-        :selected-id="selectedId"
-        :selected-source="selectedSource"
-        @select="selectKitchen"
-      />
-    </template>
+    <ConsoleKitchenIndexTargetSection
+      title="Demo kitchens"
+      description="Explore with our read-only kitchens."
+      source="demo"
+      :collection="demoCollection"
+      :outcome="demoOutcome"
+      :selected-id="selectedId"
+      :selected-source="selectedSource"
+      @select="selectKitchen"
+    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed } from 'vue'
 import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import type { KitchenFetchSource } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -61,7 +53,6 @@ const emit = defineEmits<{
   (event: 'select', id: string, source: KitchenFetchSource): void
 }>()
 
-const isMounted = ref(false)
 const consoleIds = computed(() =>
   props.collection
     .map((kitchen) => String(kitchen.id ?? '').trim())
@@ -74,9 +65,6 @@ const demoIds = computed(() =>
     .filter(Boolean)
 )
 const demoIdSet = computed(() => new Set(demoIds.value))
-onMounted(() => {
-  isMounted.value = true
-})
 
 function selectKitchen(id: string, source: KitchenFetchSource) {
   const kitchenId = String(id ?? '').trim()

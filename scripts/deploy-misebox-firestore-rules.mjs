@@ -15,6 +15,10 @@
 // Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: require the verified Core-composed candidate artifact before release work.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: adversarially test optional bounded public biography writes.
 // Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: prove immutable Sale and server-only financial-fact boundaries.
+// Concurrent edit — 2026-07-21 20:42 CEST — Kitchen target reads: adversarially prove exact-root Console access without raw listing.
+// Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: reject missing, malformed, and oversized write shapes.
+// Concurrent edit — 2026-07-21 23:02 CEST — Console authority alignment: prove team membership cannot exercise operator mutations.
+// Concurrent edit — 2026-07-21 23:16 CEST — Console authority hardening: trace deny failures and prove complete Supplier support cannot bypass validation.
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
@@ -42,7 +46,6 @@ const BLOCKED_PRODUCTION_ROOTS = [
   'ecosystems',
   'ingredients',
   'jobs',
-  'kitchens',
   'menus',
   'places',
   'portfolios',
@@ -742,7 +745,6 @@ async function buildSecurityTests() {
     'ecosystems',
     'ingredients',
     'jobs',
-    'kitchens',
     'menus',
     'places',
     'portfolios',
@@ -824,6 +826,29 @@ async function buildSecurityTests() {
       expressionReportLevel: 'VISITED',
     },
   })
+  const readResource = (
+    name,
+    expectation,
+    value,
+    uid,
+    resourceData,
+    functionMocks = [],
+    provider = 'password'
+  ) => ({
+    name,
+    testCase: {
+      expectation,
+      request: {
+        auth: uid ? auth(uid, provider) : null,
+        path: path(value),
+        method: 'get',
+      },
+      resource: { data: resourceData },
+      ...(functionMocks.length ? { functionMocks } : {}),
+      pathEncoding: 'PLAIN',
+      expressionReportLevel: 'VISITED',
+    },
+  })
   const deniedCreate = (
     name,
     value,
@@ -844,6 +869,7 @@ async function buildSecurityTests() {
       },
       ...(functionMocks.length ? { functionMocks } : {}),
       pathEncoding: 'PLAIN',
+      expressionReportLevel: 'VISITED',
     },
   })
   const allowedCreate = (name, value, uid, data, time, functionMocks = []) => ({
@@ -859,6 +885,7 @@ async function buildSecurityTests() {
       },
       ...(functionMocks.length ? { functionMocks } : {}),
       pathEncoding: 'PLAIN',
+      expressionReportLevel: 'VISITED',
     },
   })
   const deniedUpdate = (
@@ -883,6 +910,7 @@ async function buildSecurityTests() {
       resource: { data: currentData },
       ...(functionMocks.length ? { functionMocks } : {}),
       pathEncoding: 'PLAIN',
+      expressionReportLevel: 'VISITED',
     },
   })
   const allowedUpdate = (
@@ -1279,6 +1307,55 @@ async function buildSecurityTests() {
       app_id: 'misebox-app',
     },
     updated: { at: writeTime, by: 'misebox-app' },
+  }
+  const rootKitchenProbePath = 'kitchens/security-rules-probe'
+  const rootKitchenProbeData = {
+    app_scope: {
+      state: 'tenant_app',
+      app_id: 'security-rules-tenant',
+    },
+  }
+  const parentRootKitchenProbeData = {
+    app_scope: {
+      state: 'parent_app',
+      app_id: 'misebox-app',
+    },
+  }
+  const appKitchenProbePath =
+    'apps/misebox-app/kitchens/security-rules-authority-probe'
+  const appKitchenProbeData = {
+    operator_ids: [adminId],
+    team_ids: [adminId],
+    join_requests: [],
+  }
+  const teamKitchenSupportData = {
+    operator_ids: [],
+    team_ids: [regularId],
+    join_requests: [],
+  }
+  const kitchenChildProbePath =
+    'apps/misebox-app/kitchens/security-rules-probe/team-members/member-probe'
+  const kitchenChildProbeData = {
+    display_name: 'Rules Team Member',
+    active: true,
+  }
+  const appSupplierProbePath =
+    'apps/misebox-app/suppliers/security-rules-supplier-probe'
+  const teamSupplierSupportData = {
+    operator_ids: [],
+    team_ids: [regularId],
+    join_requests: [],
+  }
+  const appSupplierProbeData = {
+    operator_ids: [adminId],
+    team_ids: [adminId],
+    join_requests: [],
+  }
+  const supplierChildProbePath =
+    `${appSupplierProbePath}/catalogue/item-probe`
+  const supplierChildProbeData = {
+    name: 'Rules Catalogue Item',
+    active: true,
   }
   const saleProbePath =
     'apps/misebox-app/kitchens/security-rules-probe/sales/sale-probe'
@@ -1797,6 +1874,258 @@ async function buildSecurityTests() {
       regularId,
       appMemberMocks(regularId, path)
     ),
+    readResource(
+      'parent-App Kitchen operator can read exact root identity',
+      'ALLOW',
+      rootKitchenProbePath,
+      regularId,
+      parentRootKitchenProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    readResource(
+      'team-only Kitchen support can read exact root identity',
+      'ALLOW',
+      rootKitchenProbePath,
+      regularId,
+      parentRootKitchenProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    readResource(
+      'App admin can read exact root Kitchen with same-id support',
+      'ALLOW',
+      rootKitchenProbePath,
+      adminId,
+      parentRootKitchenProbeData,
+      scopedKitchenAuthorityMocks(adminId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        role: 'admin',
+        operatorIds: [],
+        teamIds: [],
+      })
+    ),
+    readResource(
+      'tenant-App Kitchen operator can read exact root identity',
+      'ALLOW',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    readResource(
+      'anonymous cannot read exact root Kitchen identity',
+      'DENY',
+      rootKitchenProbePath,
+      undefined,
+      rootKitchenProbeData
+    ),
+    readResource(
+      'anonymous-provider auth cannot read exact root Kitchen identity',
+      'DENY',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      [],
+      'anonymous'
+    ),
+    readResource(
+      'scoped App member without Kitchen authority cannot read root identity',
+      'DENY',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        operatorIds: ['another-user'],
+        teamIds: [],
+      })
+    ),
+    readResource(
+      'UserApp Kitchen target alone cannot grant root identity access',
+      'DENY',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      [
+        ...miseboxKitchenTargetMocks(regularId, path, ['security-rules-probe']),
+        ...missingKitchenSupportMocks(
+          path,
+          'security-rules-tenant',
+          'security-rules-probe'
+        ),
+      ]
+    ),
+    readResource(
+      'App admin cannot read root Kitchen without same-id support',
+      'DENY',
+      rootKitchenProbePath,
+      adminId,
+      rootKitchenProbeData,
+      scopedKitchenAuthorityMocks(adminId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        role: 'admin',
+        supportExists: false,
+      })
+    ),
+    ...[
+      ['root-only scope', { app_scope: { state: 'root_only' } }],
+      [
+        'flat legacy scope',
+        {
+          app_scope_state: 'tenant_app',
+          app_scope_app_id: 'security-rules-tenant',
+        },
+      ],
+      [
+        'dedicated-App scope',
+        {
+          app_scope: {
+            state: 'dedicated_app',
+            app_id: 'security-rules-tenant',
+          },
+        },
+      ],
+      [
+        'malformed App id',
+        {
+          app_scope: {
+            state: 'tenant_app',
+            app_id: 'invalid/app',
+          },
+        },
+      ],
+      [
+        'extra App-scope keys',
+        {
+          app_scope: {
+            state: 'tenant_app',
+            app_id: 'security-rules-tenant',
+            forged: true,
+          },
+        },
+      ],
+      [
+        'conflicting nested and flat scope',
+        {
+          app_scope: {
+            state: 'tenant_app',
+            app_id: 'security-rules-tenant',
+          },
+          app_scope_state: 'parent_app',
+          app_scope_app_id: 'misebox-app',
+        },
+      ],
+    ].map(([label, resourceData]) =>
+      readResource(
+        `canonical Kitchen reader rejects ${label}`,
+        'DENY',
+        rootKitchenProbePath,
+        regularId,
+        resourceData
+      )
+    ),
+    readResource(
+      'Kitchen authority under another App cannot grant root identity access',
+      'DENY',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      [
+        ...missingKitchenSupportMocks(
+          path,
+          'security-rules-tenant',
+          'security-rules-probe'
+        ),
+        ...scopedKitchenAuthorityMocks(regularId, path, {
+          appId: 'security-rules-other-app',
+          kitchenId: 'security-rules-probe',
+          operatorIds: [regularId],
+          teamIds: [],
+        }),
+      ]
+    ),
+    list(
+      'authorized Kitchen operator cannot list raw root Kitchens',
+      'DENY',
+      'kitchens',
+      regularId,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      }),
+      rootKitchenProbeData
+    ),
+    deniedCreate(
+      'authorized Kitchen operator cannot create a root Kitchen in the browser',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    deniedUpdate(
+      'authorized Kitchen operator cannot update a root Kitchen in the browser',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      {
+        ...rootKitchenProbeData,
+        identity: { display_name: 'Forged Kitchen' },
+      },
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    deniedDelete(
+      'authorized Kitchen operator cannot delete a root Kitchen in the browser',
+      rootKitchenProbePath,
+      regularId,
+      rootKitchenProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    read(
+      'authorized Kitchen operator cannot read root Kitchen descendants',
+      'DENY',
+      `${rootKitchenProbePath}/private/secret`,
+      regularId,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'security-rules-tenant',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
     allowedUpdate(
       'canonical App admin can update allowlisted App content',
       'apps/misebox-app',
@@ -1834,6 +2163,172 @@ async function buildSecurityTests() {
         appAdminMocks(adminId, path)
       )
     ),
+    allowedCreate(
+      'App admin can create a complete AppKitchen authority record',
+      appKitchenProbePath,
+      adminId,
+      appKitchenProbeData,
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    ...['operator_ids', 'team_ids', 'join_requests'].map((field) => {
+      const data = { ...appKitchenProbeData }
+      delete data[field]
+      return deniedCreate(
+        `App admin cannot create AppKitchen without ${field}`,
+        appKitchenProbePath,
+        adminId,
+        data,
+        writeTime,
+        appAdminMocks(adminId, path)
+      )
+    }),
+    deniedCreate(
+      'App admin cannot create AppKitchen with malformed join_requests',
+      appKitchenProbePath,
+      adminId,
+      { ...appKitchenProbeData, join_requests: 'requester' },
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    deniedCreate(
+      'App admin cannot create AppKitchen with oversized join_requests',
+      appKitchenProbePath,
+      adminId,
+      {
+        ...appKitchenProbeData,
+        join_requests: Array.from({ length: 101 }, (_, index) => `user-${index}`),
+      },
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    allowedUpdate(
+      'App admin can update a complete AppKitchen authority record',
+      appKitchenProbePath,
+      adminId,
+      appKitchenProbeData,
+      { ...appKitchenProbeData, join_requests: ['requester'] },
+      updateTime,
+      appAdminMocks(adminId, path)
+    ),
+    deniedUpdate(
+      'App admin cannot remove AppKitchen join_requests on update',
+      appKitchenProbePath,
+      adminId,
+      appKitchenProbeData,
+      {
+        operator_ids: appKitchenProbeData.operator_ids,
+        team_ids: appKitchenProbeData.team_ids,
+      },
+      appAdminMocks(adminId, path)
+    ),
+    deniedUpdate(
+      'App admin cannot make AppKitchen join_requests malformed on update',
+      appKitchenProbePath,
+      adminId,
+      appKitchenProbeData,
+      { ...appKitchenProbeData, join_requests: 'requester' },
+      appAdminMocks(adminId, path)
+    ),
+    deniedUpdate(
+      'Kitchen operator cannot change AppKitchen join_requests',
+      appKitchenProbePath,
+      regularId,
+      appKitchenProbeData,
+      { ...appKitchenProbeData, join_requests: [regularId] },
+      kitchenOperatorMocks(
+        regularId,
+        path,
+        'security-rules-authority-probe'
+      )
+    ),
+    readResource(
+      'Kitchen team member can read exact AppKitchen support',
+      'ALLOW',
+      appKitchenProbePath,
+      regularId,
+      teamKitchenSupportData,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-authority-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedUpdate(
+      'Kitchen team member cannot mutate AppKitchen support',
+      appKitchenProbePath,
+      regularId,
+      teamKitchenSupportData,
+      { ...teamKitchenSupportData, label: 'forged' },
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-authority-probe',
+        teamIds: [regularId],
+      })
+    ),
+    readResource(
+      'Kitchen team member can read ordinary Kitchen child data',
+      'ALLOW',
+      kitchenChildProbePath,
+      regularId,
+      kitchenChildProbeData,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedCreate(
+      'Kitchen team member cannot create ordinary Kitchen child data',
+      `${kitchenChildProbePath}-create`,
+      regularId,
+      kitchenChildProbeData,
+      writeTime,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedUpdate(
+      'Kitchen team member cannot update ordinary Kitchen child data',
+      kitchenChildProbePath,
+      regularId,
+      kitchenChildProbeData,
+      { ...kitchenChildProbeData, active: false },
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedDelete(
+      'Kitchen team member cannot delete ordinary Kitchen child data',
+      kitchenChildProbePath,
+      regularId,
+      kitchenChildProbeData,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    allowedCreate(
+      'Kitchen operator can create ordinary Kitchen child data',
+      `${kitchenChildProbePath}-operator-create`,
+      regularId,
+      kitchenChildProbeData,
+      writeTime,
+      kitchenOperatorMocks(regularId, path)
+    ),
+    allowedCreate(
+      'App admin can create ordinary Kitchen child data without target membership',
+      `${kitchenChildProbePath}-admin-create`,
+      adminId,
+      kitchenChildProbeData,
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
     // Rules REST cannot encode Firestore where/array-contains constraints. This
     // proves the per-resource operator predicate; real query admissibility
     // belongs in a Firebase Emulator client-query integration test.
@@ -1867,6 +2362,29 @@ async function buildSecurityTests() {
       'apps/misebox-app/kitchens/security-rules-probe/orders/private-order',
       driverId,
       appMemberMocks(driverId, path)
+    ),
+    read(
+      'Kitchen team member cannot read full Kitchen order documents',
+      'DENY',
+      'apps/misebox-app/kitchens/security-rules-probe/orders/private-order',
+      regularId,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    readResource(
+      'Kitchen team member cannot read immutable Sales',
+      'DENY',
+      saleProbePath,
+      regularId,
+      saleProbeData,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
     ),
     read(
       'Kitchen operator can read an immutable Sale',
@@ -1917,6 +2435,142 @@ async function buildSecurityTests() {
       { forged: true },
       writeTime,
       kitchenOperatorMocks(regularId, path)
+    ),
+    readResource(
+      'Supplier team member can read exact AppSupplier support',
+      'ALLOW',
+      appSupplierProbePath,
+      regularId,
+      teamSupplierSupportData,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'suppliers',
+        targetId: 'security-rules-supplier-probe',
+        teamIds: [regularId],
+      })
+    ),
+    allowedCreate(
+      'App admin can create a complete AppSupplier authority record',
+      `${appSupplierProbePath}-create`,
+      adminId,
+      appSupplierProbeData,
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    ...['operator_ids', 'team_ids', 'join_requests'].map((field) => {
+      const data = { ...appSupplierProbeData }
+      delete data[field]
+      return deniedCreate(
+        `App admin cannot create AppSupplier without ${field}`,
+        `${appSupplierProbePath}-missing-${field}`,
+        adminId,
+        data,
+        writeTime,
+        appAdminMocks(adminId, path)
+      )
+    }),
+    deniedCreate(
+      'App admin cannot create AppSupplier with malformed join_requests',
+      `${appSupplierProbePath}-malformed-joins`,
+      adminId,
+      { ...appSupplierProbeData, join_requests: 'requester' },
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    deniedCreate(
+      'App admin cannot create AppSupplier with oversized join_requests',
+      `${appSupplierProbePath}-oversized-joins`,
+      adminId,
+      {
+        ...appSupplierProbeData,
+        join_requests: Array.from({ length: 101 }, (_, index) => `user-${index}`),
+      },
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    allowedUpdate(
+      'App admin can update a complete AppSupplier authority record',
+      appSupplierProbePath,
+      adminId,
+      appSupplierProbeData,
+      { ...appSupplierProbeData, join_requests: ['requester'] },
+      updateTime,
+      appAdminMocks(adminId, path)
+    ),
+    deniedUpdate(
+      'Supplier operator cannot change AppSupplier join_requests',
+      appSupplierProbePath,
+      regularId,
+      {
+        operator_ids: [regularId],
+        team_ids: [regularId],
+        join_requests: [],
+      },
+      {
+        operator_ids: [regularId],
+        team_ids: [regularId],
+        join_requests: ['requester'],
+      },
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'suppliers',
+        targetId: 'security-rules-supplier-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    deniedUpdate(
+      'Supplier team member cannot mutate AppSupplier support',
+      appSupplierProbePath,
+      regularId,
+      teamSupplierSupportData,
+      { ...teamSupplierSupportData, label: 'forged' },
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'suppliers',
+        targetId: 'security-rules-supplier-probe',
+        teamIds: [regularId],
+      })
+    ),
+    readResource(
+      'Supplier team member can read ordinary Supplier child data',
+      'ALLOW',
+      supplierChildProbePath,
+      regularId,
+      supplierChildProbeData,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'suppliers',
+        targetId: 'security-rules-supplier-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedCreate(
+      'Supplier team member cannot create ordinary Supplier child data',
+      `${supplierChildProbePath}-create`,
+      regularId,
+      supplierChildProbeData,
+      writeTime,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'suppliers',
+        targetId: 'security-rules-supplier-probe',
+        teamIds: [regularId],
+      })
+    ),
+    allowedCreate(
+      'Supplier operator can create ordinary Supplier child data',
+      `${supplierChildProbePath}-operator-create`,
+      regularId,
+      supplierChildProbeData,
+      writeTime,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'suppliers',
+        targetId: 'security-rules-supplier-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    allowedCreate(
+      'App admin can create ordinary Supplier child data without target membership',
+      `${supplierChildProbePath}-admin-create`,
+      adminId,
+      supplierChildProbeData,
+      writeTime,
+      appAdminMocks(adminId, path)
     ),
     read(
       'App admin cannot read raw FinancialFacts',
@@ -2292,6 +2946,7 @@ async function executeSecurityTests(testTarget, includeSource) {
         ? {}
         : {
             debugMessages: raw.debugMessages || [],
+            visitedExpressions: raw.visitedExpressions || [],
             failedExpressions: (raw.visitedExpressions || [])
               .filter((expression) => expression.value === false)
               .map((expression) => expression.sourcePosition),
@@ -2339,6 +2994,80 @@ function appMemberMocks(userId, path) {
   ]
 }
 
+function miseboxKitchenTargetMocks(userId, path, kitchenIds) {
+  const membershipPath = path(`apps/misebox-app/users/${userId}`)
+  return [
+    {
+      function: 'exists',
+      args: [{ exactValue: membershipPath }],
+      result: { value: true },
+    },
+    {
+      function: 'get',
+      args: [{ exactValue: membershipPath }],
+      result: {
+        value: {
+          data: {
+            role: 'user',
+            console_targets: { kitchen_ids: kitchenIds },
+          },
+        },
+      },
+    },
+  ]
+}
+
+function scopedKitchenAuthorityMocks(userId, path, options) {
+  const appId = String(options.appId || '').trim()
+  const kitchenId = String(options.kitchenId || '').trim()
+  const role = options.role === 'admin' ? 'admin' : 'user'
+  const supportExists = options.supportExists !== false
+  const membershipPath = path(`apps/${appId}/users/${userId}`)
+  const kitchenPath = path(`apps/${appId}/kitchens/${kitchenId}`)
+  const supportData = {
+    ...(Array.isArray(options.operatorIds)
+      ? { operator_ids: options.operatorIds }
+      : {}),
+    ...(Array.isArray(options.teamIds) ? { team_ids: options.teamIds } : {}),
+  }
+  return [
+    {
+      function: 'exists',
+      args: [{ exactValue: membershipPath }],
+      result: { value: true },
+    },
+    {
+      function: 'get',
+      args: [{ exactValue: membershipPath }],
+      result: { value: { data: { role } } },
+    },
+    {
+      function: 'exists',
+      args: [{ exactValue: kitchenPath }],
+      result: { value: supportExists },
+    },
+    ...(supportExists
+      ? [
+          {
+            function: 'get',
+            args: [{ exactValue: kitchenPath }],
+            result: { value: { data: supportData } },
+          },
+        ]
+      : []),
+  ]
+}
+
+function missingKitchenSupportMocks(path, appId, kitchenId) {
+  return [
+    {
+      function: 'exists',
+      args: [{ exactValue: path(`apps/${appId}/kitchens/${kitchenId}`) }],
+      result: { value: false },
+    },
+  ]
+}
+
 function kitchenOperatorMocks(userId, path, kitchenId = 'security-rules-probe') {
   const kitchenPath = path(`apps/misebox-app/kitchens/${kitchenId}`)
   return [
@@ -2351,6 +3080,30 @@ function kitchenOperatorMocks(userId, path, kitchenId = 'security-rules-probe') 
           data: {
             operator_ids: [userId],
             team_ids: [],
+          },
+        },
+      },
+    },
+  ]
+}
+
+function targetAuthorityMocks(userId, path, options) {
+  const appId = String(options.appId || 'misebox-app').trim()
+  const collectionName = String(options.collectionName || '').trim()
+  const targetId = String(options.targetId || '').trim()
+  const targetPath = path(`apps/${appId}/${collectionName}/${targetId}`)
+  return [
+    ...appMemberMocks(userId, path),
+    {
+      function: 'get',
+      args: [{ exactValue: targetPath }],
+      result: {
+        value: {
+          data: {
+            operator_ids: Array.isArray(options.operatorIds)
+              ? options.operatorIds
+              : [],
+            team_ids: Array.isArray(options.teamIds) ? options.teamIds : [],
           },
         },
       },

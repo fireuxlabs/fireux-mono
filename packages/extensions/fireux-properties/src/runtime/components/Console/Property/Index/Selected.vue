@@ -1,32 +1,12 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: remove raw console debug label. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: delegate selected-target chrome to Core. -->
 <template>
-  <section class="space-y-2">
-    <UPageCard
-      v-if="propertyId"
-      :title="selectedTitle"
-      :description="propertyName || propertyId"
-      variant="subtle"
-    >
-      <template #footer>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-x"
-          @click="emit('clear')"
-        >
-          Clear
-        </UButton>
-      </template>
-    </UPageCard>
-
-    <UPageCard
-      v-else
-      title="No selected Property"
-      description="Choose a Property target to open selected Property console state."
-      variant="subtle"
-    />
-  </section>
+  <ConsoleSelectedTarget
+    label="Property"
+    :selected-id="propertyId"
+    :description="propertyName"
+    @clear="emit('clear')"
+  />
 </template>
 
 <script setup lang="ts">
@@ -45,5 +25,4 @@ const emit = defineEmits<{
 const propertyName = computed(() =>
   String(props.property?.identity?.name || props.property?.slug || '').trim()
 )
-const selectedTitle = 'Selected Property'
 </script>

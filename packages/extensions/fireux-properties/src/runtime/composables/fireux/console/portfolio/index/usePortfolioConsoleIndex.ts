@@ -1,8 +1,8 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use outcome as target-state authority.
 // Concurrent edit — 2026-07-20 16:27 CEST — Console Spine pass: compose Portfolio membership outcome before selection validation and bind real target ids.
-import { computed, unref, type Ref } from 'vue'
+// Concurrent edit — 2026-07-21 22:31 CEST — Console family alignment: consume Portfolio core-owned target authority.
+import { computed, type Ref } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import type { PortfolioCollectionFilter } from '../../../firestore/portfolio/fetch/usePortfolioCollection'
 import { usePortfolioConsole } from '../core/usePortfolioConsole'
 
@@ -16,20 +16,14 @@ type UsePortfolioConsoleIndexOptions = {
 export function usePortfolioConsoleIndex(
   options: UsePortfolioConsoleIndexOptions = {}
 ) {
-  const consoleTargets = useConsoleTargets({ family: 'portfolio' })
-  const targetFilter = computed<PortfolioCollectionFilter>(() => {
-    const explicit = options.filter ? unref(options.filter) ?? {} : {}
-
-    return consoleTargets.filter(explicit)
-  })
   const {
     portfolios,
+    targeting,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
   } = usePortfolioConsole({
-    filter: targetFilter,
-    resolveTargetOutcome: consoleTargets.resolveOutcome,
+    filter: options.filter,
   })
   const selection = computed(() => ({
     portfolio: consoleSelection.portfolio.value,
@@ -49,14 +43,14 @@ export function usePortfolioConsoleIndex(
     canWrite: consoleRuntime.canWrite.value,
     selectedPortfolio: consoleSelection.portfolio.value,
     targetCount: portfolios.count.value,
-    source: consoleTargets.debug.value,
+    source: targeting.debug.value,
   }))
 
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.portfolioId.value),
     autoSelectTargetId: computed(() =>
-      consoleTargets.singleTargetId.value
+      targeting.singleTargetId.value
     ),
     runtime,
     targets: portfolios.targets,

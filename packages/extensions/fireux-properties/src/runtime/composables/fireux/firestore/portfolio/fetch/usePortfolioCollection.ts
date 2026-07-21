@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Portfolio consoles.
 // Concurrent edit — 2026-07-20 22:57 CEST — Both-Entity Authority — Portfolio: expose only complete, current-App root/support target pairs.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name exact App access-record joins directly.
+// Concurrent edit — 2026-07-21 23:18 CEST — Console family alignment: fail closed on malformed AppPortfolio authority.
 import {
   collection,
   query as fsq,
@@ -14,7 +15,10 @@ import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/core/me
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import {
+  readConsoleTargetAuthority,
+  targetHasConsoleAccess,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   PortfolioStorage,
@@ -238,6 +242,7 @@ export function usePortfolioCollection(
       const appSupport = appSupportById.get(id)
       if (
         !appSupport ||
+        !readConsoleTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
         !portfolioRootBelongsToApp(root, resolvedAppId.value)
       ) continue
@@ -339,6 +344,27 @@ export function usePortfolioCollection(
       `AppPortfolio support record references missing canonical root: ${danglingAppSupportIds.value.join(', ')}`
     )
   })
+  const malformedAppSupportError = computed<Error | undefined>(() => {
+    if (
+      sourceMode.value !== 'live' ||
+      !usesTargetedRootRead.value ||
+      appSupportOperatorSource.pending.value ||
+      appSupportTeamSource.pending.value ||
+      targetedAppSupportSource.pending.value ||
+      appSupportOperatorSource.error.value ||
+      appSupportTeamSource.error.value ||
+      targetedAppSupportSource.error.value
+    ) return undefined
+
+    const ids = appSupportSource.value
+      .filter(appSupport => !readConsoleTargetAuthority(appSupport))
+      .map(appSupport => resolvePortfolioId(appSupport))
+      .filter(Boolean)
+    if (!ids.length) return undefined
+    return new Error(
+      `Malformed AppPortfolio authority: ${ids.join(', ')}`
+    )
+  })
   const requestedTargetPairError = computed<Error | undefined>(() => {
     if (
       sourceMode.value !== 'live' ||
@@ -416,6 +442,7 @@ export function usePortfolioCollection(
       ? appSupportOperatorSource.error.value ?? appSupportTeamSource.error.value
       : targetedAppSupportSource.error.value) ??
       liveRootDocs.error.value ??
+      malformedAppSupportError.value ??
       requestedTargetPairError.value ??
       rootScopeError.value ??
       danglingAppSupportError.value

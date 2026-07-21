@@ -1,21 +1,28 @@
 Console spine map
-Updated: 2026-07-20
-Ref: 8d83d3fa7
+Updated: 2026-07-21
+Ref: 318378b20
 Role: map, not canon
+
 <!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: lock authoritative console target outcomes. -->
 <!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: map access, target outcome, targeted reads, and mutation authority. -->
 <!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: map deferred local fixture outcomes. -->
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access-driven target reads explicitly. -->
+<!-- Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: map authenticated exact-root projection and selected-target reuse. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: map shared selected-target chrome and the index guard. -->
+<!-- Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: record one shared authenticated projection as sole live authority. -->
+<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map core-owned target authority and atomic production onboarding. -->
 
 Purpose:
 Map the shared console system and domain adapters.
 
 Vertical links:
+
 - Parent: app-config.md
 - Child: family-console-entity.md
 - Child: family-tenant-global.md
 
 Horizontal links:
+
 - composables.md
 - components.md
 - pages.md
@@ -23,18 +30,21 @@ Horizontal links:
 - demo-data.md
 
 Shared core:
+
 - `useConsole`
 - `useConsoleAccess`
 - `useConsoleEntityRuntime`
 - `useConsoleDemoData`
 - `useConsoleTargets`
 - `useConsoleIndex`
+- `ConsoleSelectedTarget`
 - `ConsoleTargetCollection`
 - `useConsoleOverview`
 - `useConsoleSelection`
 - `useConsoleTeam`
 
 Page surface vocabulary:
+
 - `browse`: an operation collection or operational summary at `/<operation>`.
 - `detail`: one record at `/<operation>/[recordId]`.
 - `create`: a form at `/<operation>/create`.
@@ -43,6 +53,7 @@ Page surface vocabulary:
 - `live`: a real-time command surface at the operation root; it may use an immersive domain layout.
 
 Shared page rules:
+
 - The page directly composes `UDashboardPanel`, `LayoutsConsoleNavbar`, a header slot, and a body slot. Do not hide that route shell in a generic component.
 - The page owns high-level width and spacing. Family indexes may stay full width; simple forms may use `panels-narrow`; named domain components own their internal presentation.
 - Back navigation and page actions stay in the navbar right slot.
@@ -53,9 +64,13 @@ Shared page rules:
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
 - Adopted routes can declare `consoleSurface`; edit routes declare `edit` and live routes declare `live`.
 - The console-pages guard enforces the explicit panel/navbar/body contract for visible leaf pages. Only redirects, nested routers, and live layouts are structurally exempt; the guard does not constrain body geometry.
+- The console-indexes guard separately enforces the shared selected → targets
+  index rhythm, clear wiring, `useConsoleIndex` adapter, and shared selected and
+  target-state presentation seams.
 - Tables is the first operation-level edit reference: `/console/kitchen/tables` and `/console/kitchen/tables/edit`.
 
 Allowed domain buckets:
+
 - `core`
 - `index`
 - `overview`
@@ -65,6 +80,7 @@ Allowed domain buckets:
 - `sundries`
 
 Component bucket shape:
+
 - Console families carry only the peer buckets their real lifecycle needs.
   `Team` is not mandatory; Project deliberately has none today.
 - A bucket may own an `Index.vue` entry when the folder itself is the component rendered by a page.
@@ -74,9 +90,17 @@ Component bucket shape:
 - `Sundries` is a temporary quarantine for parked, loose, or underdeveloped console surfaces that are not yet core sheets or confirmed operations.
 
 Index pattern:
+
 - Page renders `ConsoleXIndex`.
 - `ConsoleXIndex` renders selected and targets sections.
 - `useXConsoleIndex` adapts domain data into shared `useConsoleIndex`.
+- `useXConsole` owns target candidate resolution, the authoritative collection
+  outcome, and selection validity. Index and overview composables consume that
+  core result; they do not call `useConsoleTargets` again or overlay another
+  membership outcome.
+- Named selected wrappers map domain identity into `ConsoleSelectedTarget`;
+  Core owns the selected/empty card anatomy and Clear action presentation, and
+  the family index forwards `actions.clear`.
 - Tenant apps can auto-select single configured targets.
 - Global apps usually source target IDs from user/app data.
 - Target adapters must pass the collection `outcome` through `useConsoleIndex`;
@@ -85,6 +109,9 @@ Index pattern:
   `ConsoleTargetCollection` for pending, error, cards, then settled empty;
   counts are not authoritative while a read is unsettled.
 - An `idle` source renders no target chooser; idle is neither loading nor empty.
+- Target wrappers must not add an `isMounted`, local pending flag, or direct
+  state card in front of that outcome. Multi-source families render one shared
+  target presenter per source from the first paint.
 - Domain wrappers retain entity-to-card mapping, selection validation, copy,
   card components, and actions. A multi-source family such as Kitchen composes
   one shared target presenter per source rather than flattening source state.
@@ -92,15 +119,42 @@ Index pattern:
   Pending or failed target reads must not clear a saved selection.
 - Global target adapters compose UserApp membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
-- Global target IDs and operator App support records drive exact root-document reads;
-  they must not leave an unused full-root listener running behind client-side
-  filtering.
+- Global UserApp target IDs and tenant-configured IDs bound live reads. Exact
+  root and same-id App-support reads must fail the complete outcome on a missing
+  half, wrong App scope, malformed support authority, or unauthorized indexed
+  id; they never leave an unused full-root listener behind client filtering.
+- Kitchen live targets use the authenticated `/api/console/kitchen/targets`
+  projection. The fixed-runtime server derives candidate IDs, exact-loads and
+  authorizes every canonical root/App-support/Place join, and the selected live
+  Kitchen reuses that projected root instead of starting a second raw browser
+  query. Its response is the sole live target outcome: do not overlay a second
+  browser UserApp read, and share the keyed request across selected/index
+  consumers. Missing pairs and scope drift remain errors, never partial target
+  lists.
 - Demo target adapters use `useConsoleDemoData` and a dynamic import. The
   loader stays untouched while inactive, successful local data is cached, and
   its explicit `idle`, `pending`, `error`, `empty`, or `ready` outcome feeds the
   same index contract as a live read.
 
+Production onboarding:
+
+- A root/App-support console family creates or attaches through its own
+  fixed-runtime authenticated server endpoint. The caller cannot choose the
+  App, database, collection path, or App-support id.
+- One Firestore transaction owns the root scope, same-id complete App support,
+  and caller UserApp target index. Missing or conflicting halves fail before a
+  partial chooser row can be created.
+- `operator_ids` is mutation authority. `team_ids` is target/read membership,
+  not write authority. Current App admins remain the explicit administrative
+  override; UI `canWrite` still does not replace server or Rules enforcement.
+- Kitchen is the Place-backed reference with a server-projected live outcome
+  and a separate lazy Demo outcome. Supplier, Portfolio, and Property retain
+  domain-owned root payloads and strict pair readers. Blank is the app-local
+  minimal harness. Project deliberately remains a read-only control-plane
+  family and has no root/App-support onboarding.
+
 Operations:
+
 - Operations are child surfaces inside a selected console target.
 - Operations must not leak into Firestore entity root folders.
 - The default operation component spine is entry, optional tools seam, `Read.vue`, optional `Write.vue`, and optional `Detail.vue`.
@@ -118,17 +172,20 @@ Operations:
 - Do not promote `Sundries` into a permanent product bucket. A sundry should later graduate into `Operations`, move into a core sheet, or be deleted.
 
 Similarities:
+
 - All console entities need target selection or a selected target.
 - Console entities expose access/team only when that lifecycle is real.
 - All console indexes should stay thin.
 
 Differences:
+
 - Kitchen has richer operations.
 - Supplier has catalogue/item/ingredient operations.
 - Portfolio is more private and document/task/compliance oriented.
 - Blank is the minimal mirror for testing console spine.
 
 Demo, test, and simulation:
+
 - Demo is optional local, lazy, and read-only console data.
 - Test and simulation are separate mutable sources and may use dedicated
   databases. Dev fixtures belong to authenticated dev tooling, not consoles.

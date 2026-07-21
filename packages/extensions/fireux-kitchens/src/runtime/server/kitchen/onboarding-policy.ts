@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
+// Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: distinguish absent support arrays from malformed stored authority.
 import { createError } from 'h3'
 import {
   normalizeFireuxAppScopeState,
@@ -98,11 +99,48 @@ export function assertKitchenOnboardingPlaceDefaults(
 export function readKitchenOnboardingSupport(
   value: Record<string, unknown> | null
 ) {
-  if (!value) return null
+  const candidate = readKitchenOnboardingSupportForTrustedRepair(value)
+  if (candidate.missingFields.length > 0) {
+    fail(409, 'Kitchen App support is missing required authority arrays.')
+  }
+  return candidate.support
+}
+
+type KitchenOnboardingSupportField =
+  | 'operator_ids'
+  | 'team_ids'
+  | 'join_requests'
+
+export function readKitchenOnboardingSupportForTrustedRepair(
+  value: Record<string, unknown> | null
+) {
+  if (!value) {
+    return {
+      support: null,
+      missingFields: [] as KitchenOnboardingSupportField[],
+    }
+  }
+
+  const missingFields: KitchenOnboardingSupportField[] = []
+  const ids = (
+    key: KitchenOnboardingSupportField,
+    max: number,
+    label: string
+  ) => {
+    if (value[key] === undefined) {
+      missingFields.push(key)
+      return []
+    }
+    return boundedIds(value[key], max, label)
+  }
+
   return {
-    operatorIds: boundedIds(value.operator_ids, 50, 'Kitchen operators'),
-    teamIds: boundedIds(value.team_ids, 100, 'Kitchen team'),
-    joinRequests: boundedIds(value.join_requests, 100, 'Kitchen join requests'),
+    support: {
+      operatorIds: ids('operator_ids', 50, 'Kitchen operators'),
+      teamIds: ids('team_ids', 100, 'Kitchen team'),
+      joinRequests: ids('join_requests', 100, 'Kitchen join requests'),
+    },
+    missingFields,
   }
 }
 

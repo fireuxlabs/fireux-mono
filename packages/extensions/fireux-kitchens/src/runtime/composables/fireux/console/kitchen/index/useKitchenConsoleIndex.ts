@@ -1,32 +1,25 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: make live and demo outcomes authoritative.
 // Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: include membership state in Kitchen target outcomes and bind real target ids.
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazy-load Kitchen demo targets only on the console index.
+// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: load live targets through the authenticated server projection.
+// Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: make the server projection the sole live authority.
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
-import {
-  useKitchenCollection,
-  type KitchenCollectionFilter,
-} from '../../../firestore/kitchen/fetch/useKitchenCollection'
 import type { KitchenFetchSource } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 import { useKitchenConsoleDemoData } from '../core/useKitchenConsoleDemoData'
 
 export function useKitchenConsoleIndex() {
   const {
+    targets: targetCollection,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
   } = useKitchenConsole()
-  const consoleTargets = useConsoleTargets({ family: 'kitchen' })
-  const targetFilter = computed<KitchenCollectionFilter>(() =>
-    consoleTargets.filter({})
-  )
-  const targetCollection = useKitchenCollection({ filter: targetFilter })
   const demoCollection = useKitchenConsoleDemoData(true)
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
-  const targetOutcome = consoleTargets.resolveOutcome(targetCollection.outcome)
+  const targetOutcome = targetCollection.outcome
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
     kitchenId: consoleSelection.kitchenId.value,
@@ -34,10 +27,16 @@ export function useKitchenConsoleIndex() {
   }))
   const isTenantSingleTarget = computed(
     () =>
-      consoleTargets.isSingleTenantTarget.value &&
+      consoleRuntime.isTenant.value &&
+      targetOutcome.value === 'ready' &&
+      targetKitchens.value.length === 1 &&
       Boolean(consoleSelection.kitchen.value)
   )
-  const autoSelectTargetId = consoleTargets.singleTargetId
+  const autoSelectTargetId = computed(() =>
+    targetKitchens.value.length === 1
+      ? String(targetKitchens.value[0]?.id ?? '').trim()
+      : ''
+  )
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
     source: consoleRuntime.source.value,
@@ -45,7 +44,7 @@ export function useKitchenConsoleIndex() {
     rootCollection: consoleRuntime.rootCollection.value,
     readOnly: consoleRuntime.readOnly.value,
     canWrite: consoleRuntime.canWrite.value,
-    canCreate: consoleTargets.canCreate.value,
+    canCreate: consoleRuntime.canCreate.value,
   }))
   const debug = computed(() => ({
     kitchenId: consoleSelection.kitchenId.value,
@@ -60,7 +59,10 @@ export function useKitchenConsoleIndex() {
     selectedKitchen: consoleSelection.kitchen.value,
     targetCount: targetKitchens.value.length,
     demoTargetCount: demoKitchens.value.length,
-    targetSource: consoleTargets.debug.value,
+    targetSource: {
+      authority: 'authenticated-server-projection',
+      outcome: targetOutcome.value,
+    },
     isTenantSingleTarget: isTenantSingleTarget.value,
   }))
 

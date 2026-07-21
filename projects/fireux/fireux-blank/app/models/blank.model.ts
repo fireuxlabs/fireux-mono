@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: type Blank App access as a support record.
+// Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep Blank access exclusively in same-id App support.
 import type {
   FireuxAppAccessRecord,
   FireuxAppScope,
@@ -27,10 +28,12 @@ export type Blank = Partial<FireuxStamped> &
     name: string
     slug: string
     status: BlankStatus
-    operator_ids: string[]
   }
 
 export type AppBlank = Partial<FireuxAppAccessRecord> & {
   id?: string
   blank_id: string
 }
+
+export type BlankSurface = Blank &
+  Pick<FireuxAppAccessRecord, 'operator_ids' | 'team_ids' | 'join_requests'>

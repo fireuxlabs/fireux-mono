@@ -3,6 +3,7 @@
 <!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: record app-wide factual operation routes. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: route main Rules work through Core composition and ecosystem policy. -->
 <!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: route shared facts through Finance and operations through their owning domains. -->
+<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: route target selection and root/App-support onboarding through one authority. -->
 
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
@@ -28,6 +29,23 @@ Before each task:
   snapshots, and remembered implementations are not authority.
 - If current repository files cannot be read, say that the context could not be
   refreshed instead of presenting stale knowledge as current.
+
+## Console target and onboarding authority
+
+- A family core owns the authoritative target items, outcome, and selection
+  validity. Index and overview adapters consume that state; they do not create
+  a second membership or target-outcome authority.
+- Live root/App-support families exact-load only bounded UserApp/configured
+  target IDs and expose no partial pair when a root, same-id support record,
+  App scope, stored authority shape, or caller access is invalid.
+- Production onboarding for those families is a fixed-runtime authenticated
+  domain endpoint. One trusted transaction creates or attaches the canonical
+  root, completes the same-id App support record, and updates the caller's
+  UserApp target index. Operators may mutate; team members have target/read
+  membership only; current App admins are the explicit override.
+- Kitchen retains Place and live/Demo composition, Blank remains the small
+  harness, and Project remains a read-only control-plane family. Those are
+  domain deltas, not alternate target or onboarding spines.
 
 ## Semantic catalogue boundaries
 

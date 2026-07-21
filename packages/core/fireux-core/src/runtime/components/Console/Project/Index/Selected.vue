@@ -1,32 +1,12 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: remove raw console debug label. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: delegate selected-target chrome to Core. -->
 <template>
-  <section class="space-y-2">
-    <UPageCard
-      v-if="projectId"
-      :title="selectedTitle"
-      :description="projectName || projectId"
-      variant="subtle"
-    >
-      <template #footer>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          size="sm"
-          icon="i-lucide-x"
-          @click="emit('clear')"
-        >
-          Clear
-        </UButton>
-      </template>
-    </UPageCard>
-
-    <UPageCard
-      v-else
-      title="No selected Project"
-      description="Choose a Project target to open selected Project console state."
-      variant="subtle"
-    />
-  </section>
+  <ConsoleSelectedTarget
+    label="Project"
+    :selected-id="projectId"
+    :description="projectName"
+    @clear="emit('clear')"
+  />
 </template>
 
 <script setup lang="ts">
@@ -45,5 +25,4 @@ const emit = defineEmits<{
 const projectName = computed(() =>
   String(props.project?.name || props.project?.slug || '').trim()
 )
-const selectedTitle = 'Selected Project'
 </script>

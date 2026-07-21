@@ -5,6 +5,9 @@
 <!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: record the completed-Order Sale producer and derived reporting boundary. -->
 <!-- Concurrent edit — 2026-07-21 17:02 CEST — Kitchen Finance surface: record the bounded selected-Kitchen gross-sales report. -->
 <!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: record shared Place-backed Kitchen activation ownership. -->
+<!-- Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: record complete support shape and authenticated target ownership. -->
+<!-- Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: record trusted absent-array normalization. -->
+<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: align Misebox target/read membership with operator mutation authority. -->
 
 This is the single context entrypoint for an external GPT focused on Misebox
 inside `fireuxlabs/fireux-mono`.
@@ -44,6 +47,16 @@ Before each task:
   apps configure whether creation is available and tenant Apps remain bounded
   to their configured Kitchen targets. A current App admin creates or attaches
   the root; apps do not recreate the funnel or copy Place defaults into Kitchen.
+  AppKitchen access records require bounded `operator_ids`, `team_ids`, and
+  `join_requests` arrays. The authenticated Kitchen target endpoint validates
+  that exact support shape and remains the sole live Console target outcome.
+  Trusted onboarding may repair absent authority arrays for an App admin while
+  malformed stored values remain errors; ordinary target reads never repair.
+  `operator_ids` grants Kitchen mutation authority; `team_ids` grants Kitchen
+  target/read membership only and must never authorize a write. Current App
+  admins remain the explicit administrative override. Supplier and any other
+  root/App-support console packages composed into Misebox keep their own domain
+  payloads but follow the same authority and atomic onboarding spine.
 - Product-neutral money and immutable FinancialFact primitives belong to
   `fireux-finance`. Kitchen retains Order and KitchenSale lifecycle ownership;
   a trusted `ready -> completed` transaction creates the same-id Sale and its

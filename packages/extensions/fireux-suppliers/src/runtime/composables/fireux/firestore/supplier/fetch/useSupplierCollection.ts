@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
 // Concurrent edit — 2026-07-20 22:57 CEST — Both-Entity Authority — Supplier: expose only complete, current-App root/support target pairs.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name exact App access-record joins directly.
+// Concurrent edit — 2026-07-21 23:18 CEST — Console family alignment: fail closed on malformed AppSupplier authority.
 import {
   collection,
   query as fsq,
@@ -15,7 +16,10 @@ import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/core/me
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import {
+  readConsoleTargetAuthority,
+  targetHasConsoleAccess,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   SupplierStorage,
@@ -241,6 +245,7 @@ export function useSupplierCollection(
       const appSupport = appSupportById.get(id)
       if (
         !appSupport ||
+        !readConsoleTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
         !supplierRootBelongsToApp(root, resolvedAppId.value)
       ) continue
@@ -306,6 +311,27 @@ export function useSupplierCollection(
 
     return new Error(
       `[useSupplierCollection] ${danglingCount} AppSupplier support record(s) have no canonical root Supplier`
+    )
+  })
+  const malformedAppSupportError = computed<Error | undefined>(() => {
+    if (
+      sourceMode.value !== 'live' ||
+      !usesTargetedRootRead.value ||
+      appSupportOperatorSource.pending.value ||
+      appSupportTeamSource.pending.value ||
+      targetedAppSupportSource.pending.value ||
+      appSupportOperatorSource.error.value ||
+      appSupportTeamSource.error.value ||
+      targetedAppSupportSource.error.value
+    ) return undefined
+
+    const ids = appSupportSource.value
+      .filter(appSupport => !readConsoleTargetAuthority(appSupport))
+      .map(appSupport => resolveSupplierId(appSupport))
+      .filter(Boolean)
+    if (!ids.length) return undefined
+    return new Error(
+      `[useSupplierCollection] malformed AppSupplier authority: ${ids.join(', ')}`
     )
   })
   const requestedTargetPairError = computed<Error | undefined>(() => {
@@ -418,6 +444,7 @@ export function useSupplierCollection(
       ? appSupportOperatorSource.error.value ?? appSupportTeamSource.error.value
       : targetedAppSupportSource.error.value) ??
       liveRootDocs.error.value ??
+      malformedAppSupportError.value ??
       requestedTargetPairError.value ??
       rootScopeError.value ??
       danglingAppSupportError.value

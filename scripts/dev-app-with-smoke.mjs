@@ -4,10 +4,13 @@
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/dev-app-with-smoke.mjs
 // Concurrent edit — 2026-07-20 15:54 CEST — Repo Efficiency Pass 1 of 6: run the Misebox route and contract smoke suite.
-// Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: refuse to kill an existing app server implicitly.
+// Concurrent edit — 2026-07-21 20:29 CEST — Misebox dev stability pass: reuse a verified healthy same-checkout app without killing it.
 
 import { spawnSync } from 'node:child_process'
+import { realpathSync } from 'node:fs'
+import { resolve } from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 
 import { parseArgs } from './_lib/args.mjs'
 import { DEV_APP_KEYS, getDevApp } from './_lib/dev-apps.mjs'
@@ -35,6 +38,7 @@ function usage() {
 const args = parseArgs(process.argv.slice(2))
 const rawArgs = process.argv.slice(2)
 const appKey = typeof args.app === 'string' ? args.app : ''
+const repoRoot = fileURLToPath(new URL('..', import.meta.url))
 
 if (!appKey) {
   usage()
@@ -114,7 +118,7 @@ async function chooseGoQrProvider(app) {
   return localGoQrProvider
 }
 
-function assertPortAvailable(port) {
+function getPortListenerPids(port) {
   const check = spawnSync(
     'lsof',
     ['-ti', `tcp:${port}`, '-sTCP:LISTEN'],
@@ -129,19 +133,85 @@ function assertPortAvailable(port) {
     process.exit(1)
   }
 
-  const listeners = String(check.stdout || '').trim()
-  if (!listeners) return
-
-  console.error(
-    [
-      `[dev] Port ${port} is already in use; refusing to stop an existing server.`,
-      `Run pnpm kill:${appKey} and retry only when you intend to replace it.`,
-    ].join('\n')
-  )
-  process.exit(1)
+  return [...new Set(
+    String(check.stdout || '')
+      .split(/\s+/)
+      .map(value => value.trim())
+      .filter(Boolean)
+  )]
 }
 
-assertPortAvailable(app.port)
+function getProcessCwd(pid) {
+  const check = spawnSync(
+    'lsof',
+    ['-a', '-p', pid, '-d', 'cwd', '-Fn'],
+    { encoding: 'utf8' }
+  )
+
+  if (check.error || check.status !== 0) return ''
+
+  const pathLine = String(check.stdout || '')
+    .split(/\r?\n/)
+    .find(line => line.startsWith('n'))
+
+  return pathLine?.slice(1) || ''
+}
+
+function isSameAppWorkspace(pid) {
+  const processCwd = getProcessCwd(pid)
+  if (!processCwd) return false
+
+  try {
+    const expectedWorkspace = realpathSync(resolve(repoRoot, app.workspace))
+    return realpathSync(processCwd) === expectedWorkspace
+  } catch {
+    return false
+  }
+}
+
+async function reuseExistingApp(listenerPids) {
+  if (!listenerPids.length) return false
+
+  if (!listenerPids.every(isSameAppWorkspace)) {
+    console.error(
+      [
+        `[dev] Port ${app.port} is already in use by another process; leaving it untouched.`,
+        `Run pnpm kill:${appKey} and retry only when you intend to replace it.`,
+      ].join('\n')
+    )
+    process.exit(1)
+  }
+
+  const pidLabel = listenerPids.length === 1 ? 'PID' : 'PIDs'
+  console.log(
+    `[dev] ${app.name} is already running from this checkout at ${app.baseUrl} ` +
+    `(${pidLabel} ${listenerPids.join(', ')}); verifying it instead of starting a duplicate.`
+  )
+
+  try {
+    await waitForAppReady(app)
+
+    if (!skipSmoke) {
+      await runRouteSmokeForApp(app)
+    }
+
+    console.log(
+      `[dev] Existing ${app.name} server is healthy; nothing new was started. ` +
+      `Run pnpm kill:${appKey} first only when this terminal needs to own a fresh server.`
+    )
+    return true
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`[dev] Existing ${app.name} server did not pass verification: ${message}`)
+    console.error(
+      `Run pnpm kill:${appKey} and retry only when you intend to replace it.`
+    )
+    process.exit(1)
+  }
+}
+
+const existingListenerPids = getPortListenerPids(app.port)
+if (await reuseExistingApp(existingListenerPids)) process.exit(0)
 
 if (!skipPrepare) {
   runPrepareForApp(app)

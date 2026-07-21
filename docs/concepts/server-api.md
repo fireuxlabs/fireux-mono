@@ -4,6 +4,10 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map bounded Job APIs with server-only source scope. -->
 <!-- Concurrent edit — 2026-07-21 15:11 CEST — Werkbox trusted API cutover: map Jobs authoring, fail-closed Place authority, Place/Company projections, App people, and build attestation. -->
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map bounded biography on full public User transport only. -->
+<!-- Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: map fixed-runtime authenticated target projection. -->
+<!-- Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: record strict support validation at the target boundary. -->
+<!-- Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: map admin-only repair of absent support arrays. -->
+<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map fixed-runtime atomic root/App-support onboarding endpoints. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
@@ -17,7 +21,7 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe invalid Kitchen support joins explicitly. -->
 
 Updated: 2026-07-21
-Ref: 02af1d838
+Ref: 318378b20
 Role: map, not canon
 
 Purpose:
@@ -115,6 +119,31 @@ Boundary rule:
   with a slug and an existing linked Place. Raw Kitchen operational data,
   missing values, copied Place snapshots, invalid App support records, and browser N+1
   hydration stay out of the public directory contract.
+- Kitchens owns authenticated `GET /api/console/kitchen/targets`. It accepts no
+  caller App, database, or Kitchen scope; derives at most 50 candidates from
+  the fixed runtime UserApp or tenant configuration; and exact-loads every
+  strict canonical root, same-id scoped support, scoped membership, and linked
+  Place. Scoped App admins, operators, and team members receive an explicit
+  Console projection in source order. Missing pairs, malformed scope, and
+  unauthorized indexed targets fail the whole request rather than becoming an
+  empty or partial chooser. AppKitchen support must carry bounded
+  `operator_ids`, `team_ids`, and `join_requests` arrays; the projection does
+  not coerce malformed stored authority. The same projection supplies selected
+  live Kitchen identity so the Console does not issue a second raw root query.
+  The trusted onboarding transaction alone may initialize absent authority
+  arrays for an App admin; malformed stored values remain fail-closed.
+- Production root/App-support Console onboarding uses authenticated fixed-runtime
+  domain endpoints: Kitchens `/api/kitchens/onboarding/complete`, Suppliers
+  `/api/suppliers/onboarding/complete`, Portfolios
+  `/api/portfolios/onboarding/complete`, Properties
+  `/api/properties/onboarding/complete`, and the app-local Blank harness
+  `/api/console/blank/onboarding`. Each derives App and database from runtime
+  configuration, enforces its runtime create/tenant policy, validates current
+  membership and domain authority, and performs root creation/attachment,
+  same-id complete App support, and the caller's UserApp target-index update in
+  one transaction.
+  Request bodies cannot choose App, database, collection path, or support id;
+  missing/conflicting pairs and malformed stored authority fail before writes.
 - Jobs owns `GET /api/public/jobs` and `GET /api/public/jobs/:id`. The index
   cursor-scans bounded root batches without composite-index assumptions, and
   both routes use the same field allowlist. Only open, explicitly public jobs

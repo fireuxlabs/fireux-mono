@@ -1,6 +1,8 @@
 // Concurrent edit — 2026-07-20 22:12 CEST — Both-Entity Authority — Portfolio: keep root creation free of app access fields.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Portfolio root collection paths.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
+// Concurrent edit — 2026-07-21 22:29 CEST — Portfolio atomic attachment: route live Console creation through trusted onboarding.
+// Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: make existing-root attachment ID-only.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
@@ -8,13 +10,12 @@ import type {
   ConsoleRootCreateResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
-  AppPortfolio,
   Portfolio,
   PortfolioCreateInput,
 } from '../../../../../models/portfolio.model'
@@ -48,6 +49,13 @@ type PortfolioTestCreateInput = {
   image_url?: string
 }
 
+type PortfolioOnboardingCompleteResult = {
+  ok: true
+  portfolio_id: string
+  created_root: boolean
+  created_app_support: boolean
+}
+
 export const PortfolioCreatePlan = defineFireuxCreatePlan({
   family: 'idempotent',
 })
@@ -55,7 +63,6 @@ export const PortfolioCreatePlan = defineFireuxCreatePlan({
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { createConsole } = useConsoleCreate()
   const { uid, currentUser } = useAuth()
   const collectionPath =
     options.test === true ? 'test-portfolios' : PortfolioStorage.rootCollection
@@ -233,28 +240,6 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     return { id: slug, created: true }
   }
 
-  async function runPortfolioConsoleCreate(
-    input: PortfolioCreateInput,
-    createOptions: PortfolioCreateModeOptions = {},
-    defaultMode: ConsoleCreateMode
-  ): Promise<ConsoleCreateResult> {
-    const createRoot = async (): Promise<ConsoleRootCreateResult> => {
-      return createPortfolioRootResult(input, createOptions)
-    }
-
-    return createConsole<AppPortfolio>({
-      type: 'portfolio',
-      mode: createOptions.mode ?? defaultMode,
-      createRoot,
-      createAppSupport: async () =>
-        ({
-          operator_ids: uid.value ? [uid.value] : ([] as string[]),
-          team_ids: uid.value ? [uid.value] : ([] as string[]),
-          join_requests: [] as string[],
-        }) as AppPortfolio,
-    })
-  }
-
   async function createPortfolio(
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
@@ -271,7 +256,44 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
   ): Promise<ConsoleCreateResult> {
-    return runPortfolioConsoleCreate(input, createOptions, 'console')
+    if (isTestPortfolioCollection) {
+      throw new Error('Test Portfolio creation does not use live Console onboarding.')
+    }
+
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const existingRootId = normalizeString(createOptions.existingRootId)
+    const result = await $fetch<PortfolioOnboardingCompleteResult>(
+      '/api/portfolios/onboarding/complete',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: existingRootId
+          ? { existing_root_id: existingRootId }
+          : {
+              input: {
+                name: normalizeString(input?.name),
+                tagline: normalizeString(input?.tagline),
+                image_url: normalizeString(input?.image_url),
+                slug: normalizeString(input?.slug),
+                owner_label: normalizeString(input?.owner_label),
+                status: input?.status || 'active',
+                strategy_label: normalizeString(input?.strategy_label),
+                region_label: normalizeString(input?.region_label),
+                notes: normalizeString(input?.notes),
+              },
+            },
+      }
+    )
+    if (result?.ok !== true || !normalizeString(result.portfolio_id)) {
+      throw new Error('Portfolio onboarding completion was invalid.')
+    }
+
+    return {
+      id: result.portfolio_id,
+      createdRoot: result.created_root,
+      createdAppSupport: result.created_app_support,
+    }
   }
 
   return {

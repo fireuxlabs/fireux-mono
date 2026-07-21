@@ -1,8 +1,9 @@
 Menu family map
 <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: map explicit Place hydration, sparse creation, and live schedule inheritance. -->
 <!-- Concurrent edit — 2026-07-21 20:25 CEST — Food image specification: record the transparent square Menu item asset target. -->
+<!-- Concurrent edit — 2026-07-21 23:22 CEST — Interlaken Pizza audit: align reusable Dish images and MenuItem row overrides with current source. -->
 Updated: 2026-07-21
-Ref: 1e55eece7
+Ref: 318378b20
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared funnel spine. -->
 <!-- Concurrent edit — 2026-07-19 21:18 CEST — Pre-order WhatsApp pass: map the reusable server alert seam. -->
@@ -445,9 +446,11 @@ Structured item options:
   variants remains unpriced.
 - The canonical MenuItem editor supports adding, editing, and removing both
   option families. Invalid or duplicate labels must not be written.
-- `image_url`: optional menu-row presentation image. For now this belongs to
-  `MenuItem`, not `Dish`, so kitchens can use stock/provider images without
-  promoting images into canonical dish truth too early.
+- `Dish.image_url` is the reusable guest-facing food image. A menu placement
+  resolves `MenuItem.image_url` first only when that row intentionally needs a
+  presentation override, then falls back to the Dish image.
+- Imports must preserve existing Dish and MenuItem images unless an operator
+  explicitly reviews and applies an overwrite.
 - The target food-image input is a transparent WebP on a square 1200 × 1200
   canvas. Keep the food centred inside a 10% clear margin, with no background,
   frame, text, or baked-in shadow. Transparent PNG is the fallback; JPEG is not

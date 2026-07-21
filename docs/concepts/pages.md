@@ -9,6 +9,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-21 15:46 CEST — User Profile polish: map the root-identity-only dashboard editor contract. -->
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map biography editing and rendering across shared User routes. -->
 <!-- Concurrent edit — 2026-07-21 17:10 CEST — Dashboard Family pass: map capability-backed route and admin-surface discovery boundaries. -->
+<!-- Concurrent edit — 2026-07-21 20:36 CEST — Profile visibility pass: map independent public identity and owner-private account sections in the shared Profile hub. -->
 
 Purpose:
 Map how route pages should be built and where consensus is still forming.
@@ -74,9 +75,12 @@ Dashboard overview notes:
 Dashboard profile notes:
 
 - Core owns the shared `/dashboard/user-profile` route and its named `User/Edit`
-  components. Projects consume that editor rather than forking it app by app.
-- The route edits only canonical public User identity: photo, display name,
-  handle, and the optional 280-character bio. Private account preferences remain in Settings; UserApp membership
+  components. Projects consume that Profile hub rather than forking it app by
+  app.
+- Public User and owner-private account outcomes remain independent on the
+  route. Only canonical public User identity is editable there: photo, display
+  name, handle, and the optional 280-character bio. The private section is a
+  read-only account summary; Settings owns session actions. UserApp membership
   and entitlements are not presented as editable profile fields.
 - Specialist profile entries are navigation to their owning domain editors.
   Their documents add domain details and never duplicate root User identity.

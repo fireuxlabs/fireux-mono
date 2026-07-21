@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Property consoles.
 // Concurrent edit — 2026-07-20 22:57 CEST — Both-Entity Authority — Property: expose only canonical, current-App pairs without private manual data.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name App access-record joins and read shape directly.
+// Concurrent edit — 2026-07-21 23:18 CEST — Console family alignment: fail closed on malformed AppProperty authority.
 import {
   collection,
   query as fsq,
@@ -13,7 +14,10 @@ import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import {
+  readConsoleTargetAuthority,
+  targetHasConsoleAccess,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   PropertyStorage,
@@ -273,6 +277,7 @@ export function usePropertyCollection(
         resolvedShape.value === 'root-with-app-support' &&
         (
           !appSupport ||
+          !readConsoleTargetAuthority(appSupport) ||
           !resolvedAppId.value ||
           (root.app_scope_state !== 'parent_app' &&
             root.app_scope_state !== 'tenant_app') ||
@@ -336,6 +341,23 @@ export function usePropertyCollection(
       .map((appSupport) => resolvePropertyId(appSupport))
       .filter(Boolean)
       .filter((id) => !rootIds.has(id))
+  })
+  const malformedAppSupportIds = computed(() => {
+    if (
+      sourceMode.value !== 'live' ||
+      resolvedShape.value !== 'root-with-app-support' ||
+      appSupportOperatorSource.pending.value ||
+      appSupportTeamSource.pending.value ||
+      targetedAppSupportSource.pending.value ||
+      appSupportOperatorSource.error.value ||
+      appSupportTeamSource.error.value ||
+      targetedAppSupportSource.error.value
+    ) return []
+
+    return appSupportSource.value
+      .filter(appSupport => !readConsoleTargetAuthority(appSupport))
+      .map(appSupport => resolvePropertyId(appSupport))
+      .filter(Boolean)
   })
   const invalidRootIds = computed(() => {
     if (sourceMode.value !== 'live') return []
@@ -453,6 +475,11 @@ export function usePropertyCollection(
       : undefined)
 
     if (sourceError) return sourceError
+    if (malformedAppSupportIds.value.length) {
+      return new Error(
+        `[fireux-properties] malformed AppProperty authority: ${malformedAppSupportIds.value.join(', ')}`
+      )
+    }
     if (invalidRootIds.value.length) {
       return new Error(
         `[fireux-properties] invalid canonical Property root(s): ${invalidRootIds.value.join(', ')}`

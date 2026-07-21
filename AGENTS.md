@@ -21,6 +21,8 @@ Effective: 2026-07-20
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: record optional bounded biography as public User identity. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: record Core fragments, ecosystem templates, and locked release artifacts. -->
 <!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: record product-neutral immutable facts and domain-owned producers. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: record shared selected-target chrome and guarded outcome-only target presentation. -->
+<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: record family-owned target authority and atomic root/App-support onboarding. -->
 
 ## Current Documentation State
 
@@ -323,6 +325,19 @@ Shared console primitives live in:
 - `useConsoleSelection.ts`
 - `useConsoleTeam.ts`
 
+Shared console index presentation lives in `ConsoleSelectedTarget` and
+`ConsoleTargetCollection`. Named family wrappers retain domain identity,
+mapping, copy, cards, actions, and multi-source composition; they do not fork
+selected-target chrome or target loading/error/empty presentation.
+
+Each console family core owns its authoritative target items and outcome. It
+passes both into selection/runtime so persisted selection is validated only
+after a successful target read; index and overview adapters consume that core
+state instead of starting another membership read or target resolver. Live
+root/App-support families derive bounded candidate IDs from current UserApp or
+tenant configuration, exact-load those IDs, and fail closed on incomplete,
+wrong-App, malformed, or unauthorized pairs.
+
 Console page `nav` metadata is presentation-only. Put authentication, roles,
 visibility, and target-selection requirements at top-level page metadata.
 Console write controls may reflect `canWrite`, but every mutation must also
@@ -357,6 +372,13 @@ Index component pattern:
 - Child components: `ConsoleXIndexSelected`, `ConsoleXIndexTargets`
 - Domain composable: `useXConsoleIndex`
 - Shared core: `useConsoleIndex`
+- Selected wrapper: `ConsoleSelectedTarget`, with `actions.clear` forwarded by
+  the family index.
+- Targets wrapper: `ConsoleTargetCollection`, driven only by the authoritative
+  source outcome; local mount/pending presentation fallbacks are forbidden.
+
+The console index shape and these presentation seams are checked by
+`scripts/guards/console-indexes.mjs`.
 
 The current mirror examples are Blank, Kitchen, Supplier, Portfolio, and Property. Blank is the smallest reference; Kitchen/Supplier show domain target fetching.
 
@@ -403,9 +425,15 @@ current App, expose only complete pairs, then allowlist App fields. Property
 guest-manual credentials live separately at
 `apps/{appId}/properties/{propertyId}/private/manual` and never participate in
 access-list reads. Create/read paths are fixed and the App record id always
-equals the root id. Independent root/App deletes and generic access-array
-mutations stay unexported until a trusted lifecycle can maintain root scope,
-App access, and UserApp targets together. Property owns optional `portfolio_id`
+equals the root id. Production onboarding is a fixed-runtime authenticated
+domain endpoint whose one server transaction creates or attaches the root,
+creates or validates its same-id complete App support record, and updates the
+caller's UserApp target index. Independent root/App deletes and generic
+access-array mutations remain unexported; any broader transfer or deletion
+lifecycle needs the same atomic authority boundary. `operator_ids` grants
+target mutation authority, while `team_ids` grants target/read membership only;
+current App admins remain the explicit administrative override. Property owns
+optional `portfolio_id`
 and required `place_id`; Portfolio stores no inverse or nested full Property.
 Public Property browse uses the bounded `/api/properties` projection, never a
 raw root listener. New Property roots start as `draft`; only active, explicitly

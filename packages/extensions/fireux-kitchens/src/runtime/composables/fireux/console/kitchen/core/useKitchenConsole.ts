@@ -1,6 +1,9 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require current-user operator authority for Kitchen writes.
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: source selected demo Kitchens through the lazy console adapter.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: select the Kitchen App support collection explicitly.
+// Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: reuse the server-projected root for live selection.
+// Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: share one authenticated target collection and auto-select only projected targets.
+// Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: validate source-aware Kitchen selection from its authoritative outcome.
 import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
@@ -20,17 +23,13 @@ import {
   type KitchenFetchSource,
 } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
+import { useKitchenConsoleTargetCollection } from '../index/useKitchenConsoleTargetCollection'
 import {
-  findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from './useKitchenConsoleDemoData'
 
 type KitchenConsoleEntity = KitchenSurface
 
-const uniqueStrings = (values: unknown[]) =>
-  Array.from(
-    new Set(values.map((value) => normalizeString(value)).filter(Boolean))
-  )
 const normalizeSource = (value: unknown): KitchenFetchSource => {
   const source = normalizeString(value)
   if (source === 'demo' || source === 'test') return source
@@ -80,29 +79,50 @@ export function useKitchenConsole() {
   */
   const consoleRoot = useConsole('kitchen')
   const { uid } = useAuth()
-
-  const configKitchenIds = computed(() =>
-    uniqueStrings(consoleRoot.targetIds())
-  )
-  const { selectedId, selectTarget, clearSelection } =
-    useConsoleSelection<KitchenSurface>('kitchen')
-  const kitchenId = computed(() => normalizeString(selectedId.value))
   const kitchenSource = computed<KitchenFetchSource>(() =>
     normalizeSource(consoleRoot.source.value)
   )
+  const liveTargetCollection = useKitchenConsoleTargetCollection()
   const demoData = useKitchenConsoleDemoData(
     computed(() => kitchenSource.value === 'demo')
   )
-  const demoScenario = computed(() =>
-    findKitchenConsoleDemoScenario(demoData.data.value, kitchenId.value)
+  const selectionTargets = computed<KitchenSurface[]>(() => {
+    if (kitchenSource.value === 'live') {
+      return liveTargetCollection.kitchens.value
+    }
+    if (kitchenSource.value === 'demo') {
+      return demoData.data.value?.kitchens ?? []
+    }
+    return []
+  })
+  const selectionOutcome = computed(() => {
+    if (kitchenSource.value === 'live') {
+      return liveTargetCollection.outcome.value
+    }
+    if (kitchenSource.value === 'demo') return demoData.outcome.value
+    return 'idle' as const
+  })
+  const {
+    selectedId,
+    selectedTarget,
+    selectTarget,
+    clearSelection,
+  } = useConsoleSelection<KitchenSurface>('kitchen', {
+    targetItems: selectionTargets,
+    targetOutcome: selectionOutcome,
+    getId: kitchen => normalizeString(kitchen.id),
+  })
+  const kitchenId = computed(() => normalizeString(selectedId.value))
+  const directFetchSource = computed<KitchenFetchSource>(() =>
+    kitchenSource.value === 'test' ? 'test' : 'demo'
   )
   const { kitchen: fetchedPublicKitchen } = useKitchenFetch(kitchenId, {
-    source: kitchenSource,
+    source: directFetchSource,
   })
   const selectedPublicKitchen = computed<KitchenConsoleEntity | null>(
-    () => kitchenSource.value === 'demo'
-      ? demoScenario.value?.kitchen ?? null
-      : fetchedPublicKitchen.value as KitchenConsoleEntity | null
+    () => kitchenSource.value === 'test'
+      ? fetchedPublicKitchen.value as KitchenConsoleEntity | null
+      : selectedTarget.value as KitchenConsoleEntity | null
   )
   const scopedAppId = computed(() =>
     kitchenSource.value === 'live'
@@ -145,9 +165,6 @@ export function useKitchenConsole() {
     kitchenSource.value === 'demo' ? '' : kitchenId.value
   )
   const readOnly = computed(() => consoleRoot.readOnly.value)
-  const autoSelectSingle = computed(
-    () => consoleRoot.isTenant && configKitchenIds.value.length === 1
-  )
   const canWrite = computed(() =>
     !readOnly.value &&
       targetHasOperator(selectedKitchen.value, normalizeString(uid.value))
@@ -161,17 +178,6 @@ export function useKitchenConsole() {
     selectTarget(kitchenId, resolvedSource)
   }
   watch(
-    configKitchenIds,
-    (ids: string[]) => {
-      const onlyKitchenId = normalizeString(ids[0])
-      if (!autoSelectSingle.value || !onlyKitchenId) return
-      if (kitchenId.value === onlyKitchenId) return
-
-      selectKitchen(onlyKitchenId, 'live')
-    },
-    { immediate: true }
-  )
-  watch(
     kitchenId,
     (id: string) => {
       if (id) return
@@ -183,7 +189,11 @@ export function useKitchenConsole() {
     kitchen: selectedKitchen,
     kitchenId,
     kitchenSource,
-    hasSelection: computed(() => Boolean(kitchenId.value)),
+    hasSelection: computed(() =>
+      kitchenSource.value === 'test'
+        ? Boolean(fetchedPublicKitchen.value)
+        : Boolean(selectedTarget.value)
+    ),
     demoPending: demoData.pending,
     demoError: demoData.error,
     demoOutcome: demoData.outcome,
@@ -202,8 +212,10 @@ export function useKitchenConsole() {
     usesAppSupport: firestore.usesAppSupport,
     writeCollection: firestore.writeCollection,
     databaseId,
+    isTenant: computed(() => consoleRoot.isTenant),
     readOnly,
     canWrite,
+    canCreate: computed(() => consoleRoot.canCreateTarget()),
   }
   const actions = {
     selectKitchen,
@@ -211,6 +223,7 @@ export function useKitchenConsole() {
   }
 
   return {
+    targets: liveTargetCollection,
     selection,
     runtime,
     actions,

@@ -1,9 +1,11 @@
 <!-- Concurrent edit — 2026-07-19 16:49 CEST — Repo Efficiency Pass 5 of 6: Kitchen dual-source outcome contract. -->
+<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: restore the shared selected-target clear contract. -->
 <template>
   <section class="console-surface console-surface--compact">
     <ConsoleKitchenIndexSelected
       :kitchen="selection.kitchen"
       :kitchen-id="selection.kitchenId"
+      @clear="actions.clear"
     />
 
     <ConsoleKitchenIndexTargets
@@ -29,11 +31,5 @@
 <script setup lang="ts">
 import { useKitchenConsoleIndex } from '../../../../composables/fireux/console/kitchen/index/useKitchenConsoleIndex'
 
-const {
-  selection,
-  sections,
-  runtime,
-  actions,
-  debug,
-} = useKitchenConsoleIndex()
+const { selection, sections, actions, debug } = useKitchenConsoleIndex()
 </script>

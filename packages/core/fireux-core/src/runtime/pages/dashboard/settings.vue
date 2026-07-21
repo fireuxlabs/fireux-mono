@@ -1,5 +1,6 @@
 <!-- Concurrent edit — 2026-07-19 16:58 CEST — User/Profile pass: use the single User update seam. -->
 <!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: present real private-account state and the one implemented appearance preference. -->
+<!-- Concurrent edit — 2026-07-21 20:36 CEST — Settings Dashboard cleanup: remove preferences UI, retain account/session basics, and link back to Profile. -->
 <template>
   <UDashboardPanel id="account-settings">
     <template #header>
@@ -10,14 +11,14 @@
       <UPage>
         <UPageBody class="pagebody">
           <UPageHeader
-            headline="Private account"
+            headline="Your account"
             title="Settings"
-            description="Review the account details only you can see and choose how FireUX looks for you."
+            description="Review your private account details and manage your current session."
           >
             <template #links>
               <UButton
                 to="/dashboard/user-profile"
-                label="Public profile"
+                label="Profile"
                 icon="i-lucide-user-round"
                 color="neutral"
                 variant="soft"
@@ -37,8 +38,8 @@
             entity="private account"
             kind="document"
             state="error"
-            title="Account settings unavailable"
-            description="Your public profile is unaffected, but private account details could not be read."
+            title="Account unavailable"
+            description="Your public profile still works, but private account details could not be loaded."
           />
 
           <MoleculesStateCard
@@ -47,87 +48,66 @@
             kind="document"
             state="missing"
             title="Private account record missing"
-            description="Settings cannot be saved until the private account record is restored. Your public profile and App access are unchanged."
+            description="The private account record must be restored before account details can be shown."
           />
 
           <div
             v-else-if="privateUser"
-            class="grid gap-4 lg:grid-cols-2"
+            class="max-w-2xl"
           >
             <UPageCard
               title="Account"
-              description="Private sign-in and signup-agreement details."
-              icon="i-lucide-shield-check"
+              description="Sign-in and signup-agreement details."
+              icon="i-lucide-lock-keyhole"
               variant="subtle"
             >
-              <dl class="space-y-4 text-sm">
-                <div>
-                  <dt class="text-muted">Email</dt>
-                  <dd class="mt-1 font-medium text-highlighted">
+              <dl class="divide-y divide-default text-sm">
+                <div class="py-3 first:pt-0">
+                  <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                    Email
+                  </dt>
+                  <dd class="mt-1 break-words font-medium text-highlighted">
                     {{ accountEmail || 'Not available' }}
                   </dd>
                 </div>
-                <div>
-                  <dt class="text-muted">Terms version</dt>
-                  <dd class="mt-1 font-medium text-highlighted">
-                    {{ privateUser.terms.version || 'Not recorded' }}
-                  </dd>
-                </div>
-                <div>
-                  <dt class="text-muted">Accepted</dt>
+                <div class="py-3">
+                  <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                    Terms accepted
+                  </dt>
                   <dd class="mt-1 font-medium text-highlighted">
                     {{ termsAcceptedLabel || 'Not recorded' }}
                   </dd>
                 </div>
+                <div class="py-3 last:pb-0">
+                  <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                    Terms version
+                  </dt>
+                  <dd class="mt-1 font-mono text-highlighted">
+                    {{ privateUser.terms.version || 'Not recorded' }}
+                  </dd>
+                </div>
               </dl>
-            </UPageCard>
 
-            <UPageCard
-              title="Appearance"
-              description="Choose the colour mode used when you open FireUX."
-              icon="i-lucide-palette"
-              variant="subtle"
-            >
-              <div class="space-y-5">
-                <UFormField
-                  name="theme"
-                  label="Theme"
-                  :description="themeDescription"
-                >
-                  <USelect
-                    v-model="selectedTheme"
-                    :options="themeOptions"
-                    :disabled="isSaving"
-                  />
-                </UFormField>
-
-                <div class="flex items-center gap-2 text-sm text-muted">
-                  <UIcon
-                    :name="hasThemeChanges ? 'i-lucide-circle-dot' : 'i-lucide-circle-check'"
-                    class="size-4 shrink-0"
-                  />
-                  <span>
-                    {{
-                      hasThemeChanges
-                        ? 'Your appearance change has not been saved.'
-                        : 'Your appearance setting is up to date.'
-                    }}
-                  </span>
+              <div
+                class="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-default pt-4"
+              >
+                <div>
+                  <p class="font-medium text-highlighted">Current session</p>
+                  <p class="mt-1 text-sm text-muted">
+                    Signed in as {{ accountEmail || 'your account' }}.
+                  </p>
                 </div>
+
+                <UButton
+                  label="Sign out"
+                  icon="i-lucide-log-out"
+                  color="neutral"
+                  variant="soft"
+                  :loading="signOutLoading"
+                  :disabled="signOutLoading"
+                  @click="handleSignOut"
+                />
               </div>
-
-              <template #footer>
-                <div class="flex justify-end">
-                  <UButton
-                    label="Save appearance"
-                    color="neutral"
-                    icon="i-lucide-save"
-                    :loading="isSaving"
-                    :disabled="!canSaveTheme"
-                    @click="saveTheme"
-                  />
-                </div>
-              </template>
             </UPageCard>
           </div>
 
@@ -144,13 +124,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, definePageMeta, ref, useHead, watch } from '#imports'
-import { useColorMode } from '../../composables/fireux/app/useColorMode'
-import { useToastify } from '../../composables/fireux/app/ui/useToastify'
+import { computed, definePageMeta, ref, useHead } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import type { UserPrivate } from '../../models/core/user.model'
-import { UserPrivateModel } from '../../models/core/user.model'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
 definePageMeta({
@@ -167,29 +143,9 @@ definePageMeta({
   requiresAuth: true,
 })
 
-const toast = useToastify()
-const colorMode = useColorMode()
-const { currentUser: authUser } = useAuth()
-const userApi = useUser()
-const { privateOutcome, privateUser } = userApi
-
-const selectedTheme = ref<UserPrivate['preferences']['theme']>(
-  UserPrivateModel.preferences.theme
-)
-const savedTheme = ref<UserPrivate['preferences']['theme']>(
-  UserPrivateModel.preferences.theme
-)
-const isSaving = ref(false)
-
-watch(
-  privateUser,
-  (value) => {
-    if (!value) return
-    selectedTheme.value = value.preferences.theme
-    savedTheme.value = value.preferences.theme
-  },
-  { immediate: true }
-)
+const { currentUser: authUser, signOutUser } = useAuth()
+const { privateOutcome, privateUser } = useUser()
+const signOutLoading = ref(false)
 
 const accountEmail = computed(
   () => privateUser.value?.email || authUser.value?.email || ''
@@ -200,53 +156,14 @@ const termsAcceptedLabel = computed(() =>
     locale: 'en-GB',
   })
 )
-const hasThemeChanges = computed(
-  () => selectedTheme.value !== savedTheme.value
-)
-const canSaveTheme = computed(
-  () =>
-    privateOutcome.value === 'ready' &&
-    Boolean(privateUser.value) &&
-    hasThemeChanges.value &&
-    !isSaving.value
-)
-const themeDescription = computed(() => {
-  if (selectedTheme.value === 'system') {
-    return 'Follow your device light or dark appearance.'
-  }
-  return selectedTheme.value === 'dark'
-    ? 'Use dark appearance on this account.'
-    : 'Use light appearance on this account.'
-})
 
-const themeOptions = [
-  { label: 'System', value: 'system' },
-  { label: 'Light', value: 'light' },
-  { label: 'Dark', value: 'dark' },
-]
-
-const saveTheme = async () => {
-  if (!canSaveTheme.value || !privateUser.value) return
-  const nextTheme = selectedTheme.value
-  isSaving.value = true
+const handleSignOut = async () => {
+  if (signOutLoading.value) return
+  signOutLoading.value = true
   try {
-    await userApi.update(
-      {
-        preferences: {
-          ...privateUser.value.preferences,
-          theme: nextTheme,
-        },
-      },
-      { private: true }
-    )
-    savedTheme.value = nextTheme
-    colorMode.value = nextTheme
-    toast.success('Appearance updated.')
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Please try again.'
-    toast.error(`Appearance was not updated: ${message}`)
+    await signOutUser('/')
   } finally {
-    isSaving.value = false
+    signOutLoading.value = false
   }
 }
 

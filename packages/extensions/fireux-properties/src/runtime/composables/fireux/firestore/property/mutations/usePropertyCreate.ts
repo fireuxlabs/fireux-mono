@@ -1,28 +1,26 @@
 // Concurrent edit — 2026-07-20 22:52 CEST — Both-Entity Authority — Property: validate attach, isolate manuals, and default public publication to draft.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation and paths.
+// Concurrent edit — 2026-07-21 22:30 CEST — Console alignment — Property: route console attachment through one trusted atomic transaction.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
   ConsoleCreateResult,
   ConsoleRootCreateResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
-import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   PropertyManualStorage,
   PropertyStorage,
-  type AppProperty,
-  type AppPropertyCreateInput,
   type Property,
   type PropertyCreateInput,
-  type PropertyIdentity,
   type PropertyManual,
 } from '../../../../../models/property.model'
+import type { PropertyOnboardingCompleteResult } from '../../../../../models/property-onboarding.model'
+import { buildPropertyCreateRoot } from '../../../../../utils/property-create'
 import {
   canonicalPropertyManual,
   canonicalPropertyRoot,
@@ -36,46 +34,16 @@ export type PropertyCreateModeOptions = {
   manual?: PropertyManual
 }
 
-function normalizeIdentity(identity: PropertyIdentity): PropertyIdentity {
-  return {
-    name: normalizeString(identity.name),
-    image_url: normalizeString(identity.image_url),
-    property_type:
-      identity.property_type === 'commercial' || identity.property_type === 'mixed'
-        ? identity.property_type
-        : 'residential',
-    unit_count: Number.isFinite(identity.unit_count) ? identity.unit_count : 0,
-    estimated_value: Number.isFinite(identity.estimated_value)
-      ? identity.estimated_value
-      : 0,
-    estimated_value_currency: normalizeString(identity.estimated_value_currency),
-  }
-}
-
 export function usePropertyCreate() {
   const db = useFirestore()
-  const { uid } = useAuth()
   const { appId } = useFireUXConfig()
   const { setDocument } = useFirestoreCreate()
-  const { createConsole } = useConsoleCreate()
 
   async function createPropertyRootResult(
     input: PropertyCreateInput
   ): Promise<ConsoleRootCreateResult> {
-    const identity = normalizeIdentity(input.identity)
-    const placeId = normalizeString(input.place_id)
-    const slug = normalizeSlug(normalizeString(input.slug) || identity.name)
-    const id = normalizeString(input.id) || slug
-
-    if (!identity.name) {
-      throw new Error('[fireux-properties] property name is required.')
-    }
-    if (!placeId) {
-      throw new Error('[fireux-properties] canonical Place id is required.')
-    }
-    if (!id || !slug) {
-      throw new Error('[fireux-properties] property id and slug are required.')
-    }
+    const plan = buildPropertyCreateRoot(input)
+    const { id } = plan
 
     const rootRef = doc(db, PropertyStorage.rootCollection, id)
     const rootSnap = await getDoc(rootRef)
@@ -92,18 +60,7 @@ export function usePropertyCreate() {
       return { id, created: false }
     }
 
-    const payload: Omit<Property, 'id' | 'created' | 'updated'> = {
-      slug,
-      portfolio_id: normalizeString(input.portfolio_id),
-      place_id: placeId,
-      app_scope_state: 'root_only',
-      app_scope_app_id: '',
-      identity,
-      status: input.status === 'inactive' ? 'inactive' : 'active',
-      publication_state: 'draft',
-    }
-
-    await setDocument(PropertyStorage.rootCollection, id, payload, {
+    await setDocument(PropertyStorage.rootCollection, id, plan.payload, {
       creator: true,
       app: true,
     })
@@ -126,32 +83,28 @@ export function usePropertyCreate() {
     input: PropertyCreateInput,
     options: PropertyCreateModeOptions = {}
   ): Promise<ConsoleCreateResult> {
-    const result = await createConsole<AppProperty>({
-      type: 'property',
-      mode: options.mode ?? 'console',
-      existingRootId: options.existingRootId,
-      createRoot: () => createPropertyRootResult(input),
-      validateRoot: (rootId, rootData) => {
-        const root = canonicalPropertyRoot({
-          ...(rootData as Property),
-          id: rootId,
-        })
-        if (!root) {
-          throw new Error(
-            `[fireux-properties] cannot attach schema-invalid Property root: ${rootId}`
-          )
-        }
-      },
-      createAppSupport: async () => {
-        const operatorId = normalizeString(uid.value)
-        const payload: AppPropertyCreateInput = {
-          operator_ids: operatorId ? [operatorId] : [],
-          team_ids: operatorId ? [operatorId] : [],
-          join_requests: [],
-        }
-        return payload as AppProperty
-      },
-    })
+    const existingRootId = normalizeString(options.existingRootId)
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const response = await $fetch<PropertyOnboardingCompleteResult>(
+      '/api/properties/onboarding/complete',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: existingRootId
+          ? { property_id: existingRootId }
+          : input,
+      }
+    )
+    if (response?.ok !== true || !normalizeString(response.property_id)) {
+      throw new Error('[fireux-properties] Property onboarding completion was invalid.')
+    }
+
+    const result: ConsoleCreateResult = {
+      id: response.property_id,
+      createdRoot: response.created_root,
+      createdAppSupport: response.created_app_support,
+    }
 
     if (options.manual) {
       await createPropertyManual(result.id, options.manual)

@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: link Kitchens to Place without copying Place presentation or operational defaults.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit Kitchen App support creation results.
-import { deleteField, doc, getDoc, updateDoc } from 'firebase/firestore'
+// Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Console creation through trusted onboarding.
+import { doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
   ConsoleCreateResult,
@@ -8,17 +9,17 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type {
-  AppKitchen,
   Kitchen,
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
+import type { KitchenOnboardingCompleteResult } from '../../../../../models/kitchen-onboarding.model'
 import { readWeekdayTimeWindowsConfig } from '../../../../../utils/weekday-time'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -104,35 +105,10 @@ export const KitchenCreatePlan = defineFireuxCreatePlan({
 export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { createConsole } = useConsoleCreate()
   const { uid } = useAuth()
   const collectionPath =
     normalizeString(options.collectionPath || KitchenStorage.rootCollection) ||
     KitchenStorage.rootCollection
-
-  async function normalizeKitchenRootScope(kitchenId: string) {
-    const id = normalizeString(kitchenId)
-    if (!id) return
-
-    const ref = doc(db, collectionPath, id)
-    const snap = await getDoc(ref)
-    if (!snap.exists()) return
-
-    const data = snap.data() as Record<string, unknown>
-    const appScope = isRecord(data.app_scope) ? data.app_scope : {}
-    const state = normalizeString(data.app_scope_state || appScope.state)
-    const appId = normalizeString(data.app_scope_app_id || appScope.app_id)
-    if (!state) return
-
-    await updateDoc(ref, {
-      app_scope: {
-        state,
-        ...(appId ? { app_id: appId } : {}),
-      },
-      app_scope_state: deleteField(),
-      app_scope_app_id: deleteField(),
-    })
-  }
 
   function createKitchenPayload(
     _id: string,
@@ -247,30 +223,6 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     }
   }
 
-  async function runKitchenCreate(
-    input: KitchenCreateDraft = {},
-    createOptions: KitchenCreateModeOptions = {},
-    defaultMode: ConsoleCreateMode
-  ): Promise<KitchenCreateResult> {
-    const existingRootId = normalizeString(createOptions.existingRootId)
-
-    const result = await createConsole<AppKitchen>({
-      type: 'kitchen',
-      mode: createOptions.mode ?? defaultMode,
-      existingRootId: existingRootId || null,
-      createRoot: async () => createKitchenRoot(input),
-      createAppSupport: async () =>
-        ({
-          operator_ids: uid.value ? [normalizeString(uid.value)] : [],
-          team_ids: uid.value ? [normalizeString(uid.value)] : [],
-          join_requests: [],
-        }) as unknown as AppKitchen,
-    })
-    await normalizeKitchenRootScope(result.id)
-
-    return result
-  }
-
   async function createKitchen(
     input: KitchenCreateDraft = {},
     _createOptions: KitchenCreateModeOptions = {}
@@ -288,7 +240,39 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     input: KitchenCreateDraft = {},
     createOptions: KitchenCreateModeOptions = {}
   ): Promise<KitchenCreateResult> {
-    return runKitchenCreate(input, createOptions, 'console')
+    const existingRootId = normalizeString(createOptions.existingRootId)
+    const placeId = normalizeString(input.place_id || input.place?.id)
+    const displayName = normalizeString(
+      input.identity?.display_name || input.display_name
+    )
+    if (!existingRootId && !placeId) {
+      throw new Error('A linked Place is required to create a Kitchen console.')
+    }
+
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const result = await $fetch<KitchenOnboardingCompleteResult>(
+      '/api/kitchens/onboarding/complete',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: {
+          ...(placeId ? { place_id: placeId } : {}),
+          ...(existingRootId ? { kitchen_id: existingRootId } : {}),
+          ...(displayName ? { display_name: displayName } : {}),
+        },
+      }
+    )
+    if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
+      throw new Error('Kitchen onboarding completion was invalid.')
+    }
+
+    return {
+      id: result.kitchen_id,
+      createdRoot: result.created_root,
+      createdAppSupport: result.created_app_support,
+      ...(result.slug ? { slug: result.slug } : {}),
+    }
   }
 
   return { createPlan: KitchenCreatePlan, createKitchen, createKitchenConsole }

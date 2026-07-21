@@ -518,7 +518,7 @@ service cloud.firestore {
         get(appMembershipPath(appId, request.auth.uid)).data.role == 'admin';
     }
 
-    function isTargetOperator(appId, collectionName, targetId) {
+    function isTargetMember(appId, collectionName, targetId) {
       return isAppMember(appId) &&
         (
           (get(
@@ -536,7 +536,17 @@ service cloud.firestore {
         );
     }
 
-    function isResourceTargetOperator(appId) {
+    function isTargetOperator(appId, collectionName, targetId) {
+      return isAppMember(appId) &&
+        get(
+          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+        ).data.operator_ids is list &&
+        get(
+          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+        ).data.operator_ids.hasAny([request.auth.uid]);
+    }
+
+    function isResourceTargetMember(appId) {
       return isAppMember(appId) &&
         (
           (resource.data.operator_ids is list &&
@@ -811,6 +821,49 @@ service cloud.firestore {
         request.resource.data.updated.by == 'misebox-app' &&
         request.resource.data.updated.at == request.time;
       allow delete: if false;
+    }
+
+    // ===============================================================
+    // Exact Kitchen identity for trusted Console targets
+    // ===============================================================
+    match /kitchens/{kitchenId} {
+      function isCanonicalAttachedKitchen(data) {
+        return data is map &&
+          data.keys().hasAll(['app_scope']) &&
+          !data.keys().hasAny([
+            'app_scope_state',
+            'app_scope_app_id',
+            'app_id'
+          ]) &&
+          data.app_scope is map &&
+          data.app_scope.keys().hasAll(['state', 'app_id']) &&
+          data.app_scope.keys().hasOnly(['state', 'app_id']) &&
+          data.app_scope.state in ['parent_app', 'tenant_app'] &&
+          isValidFirestoreDocumentId(data.app_scope.app_id);
+      }
+
+      function hasSameIdAppKitchenSupport(appId) {
+        return exists(
+          /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
+        );
+      }
+
+      // Public Kitchen cards/details use bounded server projections. The raw
+      // root is exact-readable only when its canonical App scope and same-id
+      // support record prove current Console authority. UserApp target ids are
+      // navigation indexes and never grant access by themselves.
+      allow get: if isAuthenticated() &&
+        isCanonicalAttachedKitchen(resource.data) &&
+        hasSameIdAppKitchenSupport(resource.data.app_scope.app_id) &&
+        (
+          isAppAdmin(resource.data.app_scope.app_id) ||
+          isTargetMember(
+            resource.data.app_scope.app_id,
+            'kitchens',
+            kitchenId
+          )
+        );
+      allow list, create, update, delete: if false;
     }
 
     // ===============================================================
@@ -1257,17 +1310,20 @@ service cloud.firestore {
           return request.resource.data.operator_ids is list &&
             request.resource.data.operator_ids.size() <= 50 &&
             request.resource.data.team_ids is list &&
-            request.resource.data.team_ids.size() <= 100;
+            request.resource.data.team_ids.size() <= 100 &&
+            request.resource.data.join_requests is list &&
+            request.resource.data.join_requests.size() <= 100;
         }
 
         function kitchenAuthorityUnchanged() {
           return request.resource.data.operator_ids == resource.data.operator_ids &&
-            request.resource.data.team_ids == resource.data.team_ids;
+            request.resource.data.team_ids == resource.data.team_ids &&
+            request.resource.data.join_requests == resource.data.join_requests;
         }
 
         allow get: if isAppAdmin(appId) ||
-          isTargetOperator(appId, 'kitchens', kitchenId);
-        allow list: if isAppAdmin(appId) || isResourceTargetOperator(appId);
+          isTargetMember(appId, 'kitchens', kitchenId);
+        allow list: if isAppAdmin(appId) || isResourceTargetMember(appId);
         allow create: if isAppAdmin(appId) &&
           request.resource.data.keys().size() <= 100 &&
           hasBoundedKitchenAuthority();
@@ -1293,27 +1349,31 @@ service cloud.firestore {
           allow get, list: if childCollection != 'orders' &&
             childCollection != 'sales' &&
             (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
+              isTargetMember(appId, 'kitchens', kitchenId));
           allow create, update: if childCollection != 'orders' &&
             childCollection != 'sales' &&
-            isTargetOperator(appId, 'kitchens', kitchenId) &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if childCollection != 'orders' &&
             childCollection != 'sales' &&
-            isTargetOperator(appId, 'kitchens', kitchenId);
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId));
 
           match /{nested=**} {
             allow get, list: if childCollection != 'orders' &&
               childCollection != 'sales' &&
               (isAppAdmin(appId) ||
-                isTargetOperator(appId, 'kitchens', kitchenId));
+                isTargetMember(appId, 'kitchens', kitchenId));
             allow create, update: if childCollection != 'orders' &&
               childCollection != 'sales' &&
-              isTargetOperator(appId, 'kitchens', kitchenId) &&
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, 'kitchens', kitchenId)) &&
               request.resource.data.keys().size() <= 100;
             allow delete: if childCollection != 'orders' &&
               childCollection != 'sales' &&
-              isTargetOperator(appId, 'kitchens', kitchenId);
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, 'kitchens', kitchenId));
           }
         }
       }
@@ -1330,19 +1390,22 @@ service cloud.firestore {
           return request.resource.data.operator_ids is list &&
             request.resource.data.operator_ids.size() <= 50 &&
             request.resource.data.team_ids is list &&
-            request.resource.data.team_ids.size() <= 100;
+            request.resource.data.team_ids.size() <= 100 &&
+            request.resource.data.join_requests is list &&
+            request.resource.data.join_requests.size() <= 100;
         }
 
         function targetAuthorityUnchanged() {
           return request.resource.data.operator_ids == resource.data.operator_ids &&
-            request.resource.data.team_ids == resource.data.team_ids;
+            request.resource.data.team_ids == resource.data.team_ids &&
+            request.resource.data.join_requests == resource.data.join_requests;
         }
 
         allow get: if isConsoleTargetCollection() &&
           (isAppAdmin(appId) ||
-            isTargetOperator(appId, targetCollection, targetId));
+            isTargetMember(appId, targetCollection, targetId));
         allow list: if isConsoleTargetCollection() &&
-          (isAppAdmin(appId) || isResourceTargetOperator(appId));
+          (isAppAdmin(appId) || isResourceTargetMember(appId));
         allow create: if isConsoleTargetCollection() &&
           isAppAdmin(appId) &&
           request.resource.data.keys().size() <= 100 &&
@@ -1355,15 +1418,33 @@ service cloud.firestore {
               targetAuthorityUnchanged()));
         allow delete: if false;
 
-        match /{nested=**} {
+        // Use an explicit collection/document pair before the recursive tail.
+        // In rules_version 2 a recursive wildcard matches zero segments, so a
+        // direct /{nested=**} here would also bypass the support validator.
+        match /{childCollection}/{childId} {
           allow get, list: if isConsoleTargetCollection() &&
             (isAppAdmin(appId) ||
-              isTargetOperator(appId, targetCollection, targetId));
+              isTargetMember(appId, targetCollection, targetId));
           allow create, update: if isConsoleTargetCollection() &&
-            isTargetOperator(appId, targetCollection, targetId) &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, targetCollection, targetId)) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if isConsoleTargetCollection() &&
-            isTargetOperator(appId, targetCollection, targetId);
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, targetCollection, targetId));
+
+          match /{nested=**} {
+            allow get, list: if isConsoleTargetCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetMember(appId, targetCollection, targetId));
+            allow create, update: if isConsoleTargetCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, targetCollection, targetId)) &&
+              request.resource.data.keys().size() <= 100;
+            allow delete: if isConsoleTargetCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, targetCollection, targetId));
+          }
         }
       }
     }

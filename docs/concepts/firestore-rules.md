@@ -1,9 +1,12 @@
 Firestore Rules source map
 Updated: 2026-07-21
-Ref: b020f805e
+Ref: 318378b20
 Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-21 16:13 CEST — Shared Firestore Rules pass: map source, scoped composition, artifact, and release ownership. -->
+<!-- Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: map the complete Misebox support-write validator. -->
+<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: separate target/read membership from mutation authority. -->
+<!-- Concurrent edit — 2026-07-21 23:16 CEST — Console authority hardening: map complete Supplier support and the recursive-wildcard boundary. -->
 
 Purpose:
 Map how FireUX authors and releases main-database Firestore Security Rules.
@@ -40,7 +43,17 @@ Current source boundary:
 Current targets:
 
 - Misebox: Firebase project `misebox-78f9c`; databases `misebox` and
-  `misebox-simulation`.
+  `misebox-simulation`. Its AppKitchen and AppSupplier create/update validators require bounded
+  `operator_ids`, `team_ids`, and `join_requests` arrays so every accepted
+  support write remains readable by the fail-closed Console projection;
+  non-admin updates preserve all three authority arrays. Console target rules
+  distinguish membership from mutation authority: `operator_ids` grants
+  target/read access and writes, while `team_ids` grants target/read access
+  only. A team member cannot mutate merely because they can select the target;
+  current App admins remain the explicit administrative override. Descendant
+  target rules start with an explicit child collection/document pair before a
+  recursive tail, because a Rules v2 recursive wildcard also matches zero
+  segments and must not bypass the support-record validator.
 - Werkbox: legacy physical Firebase project `cleanbox-f15bc`; databases
   `cleanbox` and `cleanbox-simulation`.
 - Directory-publication server-only databases separately reuse the exact

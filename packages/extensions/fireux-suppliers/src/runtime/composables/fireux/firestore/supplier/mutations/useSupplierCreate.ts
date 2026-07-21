@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Supplier: keep test and canonical root creation free of App access fields.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Supplier root collection paths.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
+// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: route live Console creation through the trusted transaction.
 import { collection, doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
@@ -8,18 +9,18 @@ import type {
   ConsoleRootCreateResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
-import { useConsoleCreate } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   SupplierStorage,
-  type AppSupplier,
   type Supplier,
 } from '../../../../../models/supplier/Supplier.model'
+import type { SupplierOnboardingCompleteResult } from '../../../../../models/supplier/supplier-onboarding.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
@@ -56,7 +57,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
   const { createUser } = useUserCreate()
-  const { createConsole } = useConsoleCreate()
   const { currentUser } = useAuth()
   const supplierCollection =
     options.test === true ? 'test-suppliers' : SupplierStorage.rootCollection
@@ -160,34 +160,6 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     }
   }
 
-  async function runSupplierConsoleCreate(
-    options: SupplierCreateModeOptions = {},
-    defaultMode: ConsoleCreateMode
-  ): Promise<ConsoleCreateResult> {
-    await createUser()
-    const { uid } = await requireUid()
-
-    const createRoot = async (): Promise<ConsoleRootCreateResult> => {
-      return createSupplierRoot(options)
-    }
-
-    const result = await createConsole<AppSupplier>({
-      type: 'supplier',
-      mode: options.mode ?? defaultMode,
-      createRoot,
-      createAppSupport: async () => {
-        const payload: Omit<AppSupplier, 'created' | 'updated' | 'id'> = {
-          operator_ids: uid ? [uid] : ([] as string[]),
-          team_ids: uid ? [uid] : ([] as string[]),
-          join_requests: [] as string[],
-        }
-        return payload as AppSupplier
-      },
-    })
-
-    return result
-  }
-
   async function createSupplier(
     options: SupplierCreateModeOptions = {}
   ): Promise<ConsoleCreateResult> {
@@ -202,7 +174,26 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   async function createSupplierConsole(
     options: SupplierCreateModeOptions = {}
   ): Promise<ConsoleCreateResult> {
-    return runSupplierConsoleCreate(options, 'console')
+    const supplierId = normalizeString(options.existingRootId)
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const result = await $fetch<SupplierOnboardingCompleteResult>(
+      '/api/suppliers/onboarding/complete',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: supplierId ? { supplier_id: supplierId } : {},
+      }
+    )
+    if (result?.ok !== true || !normalizeString(result.supplier_id)) {
+      throw new Error('Supplier onboarding completion was invalid.')
+    }
+
+    return {
+      id: result.supplier_id,
+      createdRoot: result.created_root,
+      createdAppSupport: result.created_app_support,
+    }
   }
 
   return {

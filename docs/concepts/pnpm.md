@@ -1,6 +1,6 @@
 pnpm concept map
 Updated: 2026-07-21
-Ref: 1e55eece7
+Ref: 318378b20
 Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: map the canonical command and script-lifecycle surface. -->
@@ -9,7 +9,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: map package-command target validation. -->
 <!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: map package and baseline production build gates. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: map the deterministic Rules artifact command. -->
-<!-- Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: map portable installs, complete workspace links, explicit server imports, safe dev ownership, and tracked dependency patches. -->
+<!-- Concurrent edit — 2026-07-21 20:29 CEST — Misebox dev stability pass: map portable installs, explicit server imports, verified dev reuse, and tracked dependency patches. -->
 
 Purpose:
 Explain workspace/package command context.
@@ -72,9 +72,12 @@ Working rule:
 - Dev model-drift payloads remain diagnostic; data repair uses a reviewed named domain script.
 - Direct imports cannot resolve accidentally through the root or a sibling
   workspace. Nested package manifests inside authored source are invalid.
-- Supported app launchers leave an occupied app port untouched. Use the
-  explicit `pnpm kill:<app>` command only when replacing that server is
-  intentional.
+- Supported app launchers leave an unknown or other-checkout occupied app port
+  untouched. When every listener belongs to the same app workspace in the
+  current checkout, the launcher verifies readiness and route contracts, then
+  reports the healthy existing server as success instead of starting a
+  duplicate. Use the explicit `pnpm kill:<app>` command only when replacing
+  that server or giving the current terminal ownership is intentional.
 - Dev route smoke retries one transport-only failure once so an in-flight HMR
   rebuild does not kill startup; received HTTP or body-contract failures remain
   immediate failures.

@@ -1,4 +1,6 @@
 // Concurrent edit — 2026-07-20 22:39 CEST — Property public projection: register the bounded public Property index route.
+// Concurrent edit — 2026-07-21 22:29 CEST — Portfolio atomic attachment: register trusted onboarding completion.
+// Concurrent edit — 2026-07-21 22:32 CEST — Console alignment — Property: register trusted onboarding completion.
 import type { Resolver } from '@nuxt/kit'
 import {
   registerServerHandlers,
@@ -10,6 +12,16 @@ const serverHandlers = [
     route: '/api/properties',
     method: 'get',
     handler: './runtime/server/api/properties/index.get',
+  },
+  {
+    route: '/api/properties/onboarding/complete',
+    method: 'post',
+    handler: './runtime/server/api/properties/onboarding/complete.post',
+  },
+  {
+    route: '/api/portfolios/onboarding/complete',
+    method: 'post',
+    handler: './runtime/server/api/portfolios/onboarding/complete.post',
   },
 ] satisfies FireuxServerHandler[]
 
