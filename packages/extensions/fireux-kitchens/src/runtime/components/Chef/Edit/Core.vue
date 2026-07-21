@@ -1,15 +1,13 @@
+<!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: let Nuxt UI own the identity card header. -->
 <template>
   <ClientOnly>
-    <div v-if="chef" class="space-y-6">
-      <UCard>
-        <template #header>
-          <div class="profile-edit__section-header">
-            <UIcon name="i-lucide-id-card" />
-            Identity
-          </div>
-        </template>
-
-        <div class="space-y-4">
+    <UPageCard
+      v-if="chef"
+      title="Identity"
+      icon="i-lucide-id-card"
+      variant="outline"
+    >
+      <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
             label="Title"
             :firebase-value="title"
@@ -53,9 +51,8 @@
             new-item-placeholder="Add signature dish"
             :update-function="handleSignatureDishes"
           />
-        </div>
-      </UCard>
-    </div>
+      </div>
+    </UPageCard>
 
     <MoleculesStateCard v-else entity="chef profile" kind="document" loading />
   </ClientOnly>

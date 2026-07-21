@@ -1,12 +1,13 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: own bounded author reads and all Job lifecycle writes through Admin.
 import type {
-  DocumentData,
-  DocumentReference,
   DocumentSnapshot,
 } from 'firebase-admin/firestore'
-import { createError, type H3Event } from 'h3'
+import { createError, setHeader, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import {
+  getRuntimeFirestore,
+  getRuntimeIdentityFirestore,
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import type {
@@ -40,6 +41,11 @@ function notFound(): never {
   throw createError({ statusCode: 404, statusMessage: 'Job not found.' })
 }
 
+function markPrivateRead(event: H3Event): void {
+  setHeader(event, 'Cache-Control', 'private, no-store')
+  setHeader(event, 'Vary', 'Authorization')
+}
+
 function assertAuthorJob(
   snapshot: DocumentSnapshot,
   uid: string,
@@ -58,8 +64,8 @@ function stamp(value: unknown): Job['created'] {
   const source = record(value)
   return {
     at: (source.at ?? {}) as Job['created']['at'],
-    ...(text(source.by) ? { by: text(source.by) } : {}),
-    ...(text(source.app_id) ? { app_id: text(source.app_id) } : {}),
+    by: text(source.by) || undefined,
+    app_id: text(source.app_id) || undefined,
   }
 }
 
@@ -71,7 +77,7 @@ function projectAuthorJob(id: string, value: Record<string, unknown>): Job {
     owner_type: text(value.owner_type) as Job['owner_type'],
     owner_id: text(value.owner_id),
     visibility: text(value.visibility) as Job['visibility'],
-    ...(mutableJobFields(value) as Job),
+    ...mutableJobFields(value),
     created: stamp(value.created),
     updated: stamp(value.updated),
   }
@@ -106,10 +112,110 @@ function assertReferencesExist(
   }
 }
 
+function isCurrentMembership(snapshot: DocumentSnapshot): boolean {
+  if (!snapshot.exists) return false
+  const role = text(snapshot.data()?.role)
+  return role === 'user' || role === 'admin'
+}
+
+function hasProfile(snapshot: DocumentSnapshot, profileId: string): boolean {
+  if (!isCurrentMembership(snapshot)) return false
+  const profiles = snapshot.data()?.profiles
+  return Array.isArray(profiles) && profiles.map(text).includes(profileId)
+}
+
+function membershipRef(
+  db: FirebaseFirestore.Firestore,
+  appId: string,
+  uid: string
+) {
+  return db.doc(`apps/${appId}/users/${uid}`)
+}
+
+function appRef(db: FirebaseFirestore.Firestore, appId: string) {
+  return db.doc(`apps/${appId}`)
+}
+
+function appAgentRef(
+  db: FirebaseFirestore.Firestore,
+  appId: string,
+  uid: string
+) {
+  return db.doc(`apps/${appId}/${AppAgentStorage.collection}/${uid}`)
+}
+
+function assertCurrentMembership(snapshot: DocumentSnapshot): void {
+  if (!isCurrentMembership(snapshot)) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Current App membership is required.',
+    })
+  }
+}
+
+function assertCurrentAppMembership(
+  appSnapshot: DocumentSnapshot,
+  membershipSnapshot: DocumentSnapshot
+): void {
+  if (!appSnapshot.exists) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'The current App is unavailable.',
+    })
+  }
+  assertCurrentMembership(membershipSnapshot)
+}
+
+function assertActiveAgent(
+  membershipSnapshot: DocumentSnapshot,
+  appAgentSnapshot: DocumentSnapshot
+): void {
+  if (
+    !hasProfile(membershipSnapshot, 'agent') ||
+    !appAgentSnapshot.exists
+  ) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'An active Agent profile in this App is required.',
+    })
+  }
+}
+
+async function requireAgentRoot(
+  databaseId: string,
+  uid: string
+): Promise<void> {
+  const snapshot = await getRuntimeIdentityFirestore(databaseId)
+    .collection(AgentStorage.rootCollection)
+    .doc(uid)
+    .get()
+  if (!snapshot.exists) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'An active Agent profile in this App is required.',
+    })
+  }
+}
+
+function assertAgentEnabled(profiles: ReadonlySet<string>): void {
+  if (!profiles.has('agent')) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Agent profiles are not enabled for this App.',
+    })
+  }
+}
+
 export async function listAuthorJobs(event: H3Event): Promise<AuthorJobListResponse> {
+  markPrivateRead(event)
   const { uid } = await requireFirebaseBearerUser(event)
   const scope = readJobServerScope(event)
   const db = getRuntimeFirestore(scope.databaseId)
+  const [appSnapshot, membershipSnapshot] = await db.getAll(
+    appRef(db, scope.appId),
+    membershipRef(db, scope.appId, uid)
+  )
+  assertCurrentAppMembership(appSnapshot, membershipSnapshot)
   const snapshot = await db
     .collection(JobStorage.collection)
     .where('created.by', '==', uid)
@@ -134,10 +240,17 @@ export async function getAuthorJob(
   event: H3Event,
   rawId: unknown
 ): Promise<AuthorJobResponse> {
+  markPrivateRead(event)
   const { uid } = await requireFirebaseBearerUser(event)
   const scope = readJobServerScope(event)
   const id = requireFirestoreDocumentId(rawId, 'Job id')
-  const snapshot = await getRuntimeFirestore(scope.databaseId)
+  const db = getRuntimeFirestore(scope.databaseId)
+  const [appSnapshot, membershipSnapshot] = await db.getAll(
+    appRef(db, scope.appId),
+    membershipRef(db, scope.appId, uid)
+  )
+  assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+  const snapshot = await db
     .collection(JobStorage.collection)
     .doc(id)
     .get()
@@ -151,36 +264,28 @@ export async function createAuthorJob(
 ): Promise<CreateAuthorJobResponse> {
   const { uid } = await requireFirebaseBearerUser(event)
   const scope = readJobServerScope(event)
+  assertAgentEnabled(scope.profiles)
+  await requireAgentRoot(scope.identityDatabaseId, uid)
   const job = normalizeJobCreateIntent(input, scope)
   const db = getRuntimeFirestore(scope.databaseId)
   const jobRef = db.collection(JobStorage.collection).doc()
   const references = referenceDocuments(db, job)
+  const currentAppAgentRef = appAgentRef(db, scope.appId, uid)
   const required = [
-    db.collection(AgentStorage.rootCollection).doc(uid),
-    db.doc(`apps/${scope.appId}/${AppAgentStorage.collection}/${uid}`),
-    db.doc(`apps/${scope.appId}/users/${uid}`),
+    appRef(db, scope.appId),
+    currentAppAgentRef,
+    membershipRef(db, scope.appId, uid),
     ...references.map(reference => reference.ref),
   ]
 
   await db.runTransaction(async transaction => {
     const snapshots = await transaction.getAll(...required)
-    const [agentSnapshot, appAgentSnapshot, membershipSnapshot, ...referenceSnapshots] = snapshots
-    const membership = record(membershipSnapshot?.data())
-    const profiles = Array.isArray(membership.profiles)
-      ? membership.profiles.map(text)
-      : []
-
-    if (
-      !agentSnapshot?.exists ||
-      !appAgentSnapshot?.exists ||
-      !membershipSnapshot?.exists ||
-      !profiles.includes('agent')
-    ) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'An active Agent profile in this App is required.',
-      })
-    }
+    const [appSnapshot, appAgentSnapshot, membershipSnapshot, ...referenceSnapshots] = snapshots
+    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertActiveAgent(
+      membershipSnapshot,
+      appAgentSnapshot
+    )
     assertReferencesExist(references, referenceSnapshots)
 
     transaction.create(jobRef, {
@@ -196,10 +301,11 @@ export async function createAuthorJob(
   })
 
   const saved = await jobRef.get()
+  const savedData = assertAuthorJob(saved, uid, scope.appId)
   return {
     id: jobRef.id,
     created: true,
-    job: projectAuthorJob(jobRef.id, record(saved.data())),
+    job: projectAuthorJob(jobRef.id, savedData),
   }
 }
 
@@ -210,11 +316,15 @@ export async function patchAuthorJob(
 ): Promise<PatchAuthorJobResponse> {
   const { uid } = await requireFirebaseBearerUser(event)
   const scope = readJobServerScope(event)
+  assertAgentEnabled(scope.profiles)
+  await requireAgentRoot(scope.identityDatabaseId, uid)
   const id = requireFirestoreDocumentId(rawId, 'Job id')
   const requestedPatch = normalizeJobPatchIntent(input, scope)
   const db = getRuntimeFirestore(scope.databaseId)
   const jobRef = db.collection(JobStorage.collection).doc(id)
-  let savedJob: Job | null = null
+  const currentAppRef = appRef(db, scope.appId)
+  const currentMembershipRef = membershipRef(db, scope.appId, uid)
+  const currentAppAgentRef = appAgentRef(db, scope.appId, uid)
 
   await db.runTransaction(async transaction => {
     const snapshot = await transaction.get(jobRef)
@@ -224,8 +334,17 @@ export async function patchAuthorJob(
       scope
     )
     const references = referenceDocuments(db, proposed)
-    const referenceSnapshots = await transaction.getAll(
-      ...references.map(reference => reference.ref)
+    const [appSnapshot, membershipSnapshot, appAgentSnapshot, ...referenceSnapshots] =
+      await transaction.getAll(
+        currentAppRef,
+        currentMembershipRef,
+        currentAppAgentRef,
+        ...references.map(reference => reference.ref)
+      )
+    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertActiveAgent(
+      membershipSnapshot,
+      appAgentSnapshot
     )
     assertReferencesExist(references, referenceSnapshots)
 
@@ -238,15 +357,11 @@ export async function patchAuthorJob(
       ...patch,
       updated: serverAuditStamp({ by: uid }),
     })
-    savedJob = projectAuthorJob(id, {
-      ...current,
-      ...patch,
-      updated: { by: uid },
-    })
   })
 
-  if (!savedJob) notFound()
-  return { id, updated: true, job: savedJob }
+  const saved = await jobRef.get()
+  const savedData = assertAuthorJob(saved, uid, scope.appId)
+  return { id, updated: true, job: projectAuthorJob(id, savedData) }
 }
 
 export async function publishAuthorJob(
@@ -255,18 +370,31 @@ export async function publishAuthorJob(
 ): Promise<PublishAuthorJobResponse> {
   const { uid } = await requireFirebaseBearerUser(event)
   const scope = readJobServerScope(event)
+  assertAgentEnabled(scope.profiles)
+  await requireAgentRoot(scope.identityDatabaseId, uid)
   const id = requireFirestoreDocumentId(rawId, 'Job id')
   const db = getRuntimeFirestore(scope.databaseId)
   const jobRef = db.collection(JobStorage.collection).doc(id)
-  let savedJob: Job | null = null
+  const currentAppRef = appRef(db, scope.appId)
+  const currentMembershipRef = membershipRef(db, scope.appId, uid)
+  const currentAppAgentRef = appAgentRef(db, scope.appId, uid)
 
   await db.runTransaction(async transaction => {
     const snapshot = await transaction.get(jobRef)
     const current = assertAuthorJob(snapshot, uid, scope.appId)
     const normalized = normalizeJobCreateIntent(mutableJobFields(current), scope)
     const references = referenceDocuments(db, normalized)
-    const referenceSnapshots = await transaction.getAll(
-      ...references.map(reference => reference.ref)
+    const [appSnapshot, membershipSnapshot, appAgentSnapshot, ...referenceSnapshots] =
+      await transaction.getAll(
+        currentAppRef,
+        currentMembershipRef,
+        currentAppAgentRef,
+        ...references.map(reference => reference.ref)
+      )
+    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
+    assertActiveAgent(
+      membershipSnapshot,
+      appAgentSnapshot
     )
     assertReferencesExist(references, referenceSnapshots)
 
@@ -274,14 +402,9 @@ export async function publishAuthorJob(
       visibility: 'public',
       updated: serverAuditStamp({ by: uid }),
     })
-    savedJob = projectAuthorJob(id, {
-      ...current,
-      ...normalized,
-      visibility: 'public',
-      updated: { by: uid },
-    })
   })
 
-  if (!savedJob) notFound()
-  return { id, published: true, job: savedJob }
+  const saved = await jobRef.get()
+  const savedData = assertAuthorJob(saved, uid, scope.appId)
+  return { id, published: true, job: projectAuthorJob(id, savedData) }
 }

@@ -14,18 +14,7 @@
       <PlaceSearchSection @confirmed="onPlaceConfirmed" />
 
       <div v-if="successId" class="text-sm text-success">
-        Company created: {{ successId }}
-      </div>
-      <div v-else-if="existingId" class="space-y-2 text-sm text-warning">
-        <div>Company already exists: {{ existingId }}</div>
-        <UButton
-          size="xs"
-          variant="soft"
-          color="neutral"
-          :to="`/companies/${encodeURIComponent(existingId)}`"
-        >
-          Inspect company
-        </UButton>
+        Company ready: {{ successId }}
       </div>
       <div v-if="error" class="text-sm text-error">
         {{ error }}
@@ -35,34 +24,23 @@
 </template>
 
 <script setup lang="ts">
-import { doc, getDoc } from 'firebase/firestore'
+// Concurrent edit — 2026-07-21 14:30 CEST — Company public projection: trust idempotent server materialization without a raw existence probe.
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { ref } from 'vue'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useCompanyCreate } from '../../../composables/fireux/firestore/company/mutations/useCompanyCreate'
-import { CompanyStorage } from '../../../models/company.model'
 
 const { createCompany } = useCompanyCreate()
-const db = useFirestore()
 
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
-const existingId = ref<string | null>(null)
 
 async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
   error.value = null
   successId.value = null
-  existingId.value = null
 
   try {
     const id = payload.placeId
     const place = payload.place
-
-    const existingSnap = await getDoc(doc(db, CompanyStorage.collection, id))
-    if (existingSnap.exists()) {
-      existingId.value = id
-      return
-    }
 
     const createdId = await createCompany({
       id,

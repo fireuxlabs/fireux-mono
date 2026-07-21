@@ -1,0 +1,14 @@
+// Concurrent edit — 2026-07-21 14:40 CEST — Cleanbox-to-Werkbox migration: define the temporary deny-all production quarantine used during the one-time data cutover.
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // This source is intentionally featureless. The guarded release harness
+    // pins it to cleanbox-f15bc/cleanbox and restores service only by promoting
+    // the separately compiled and adversarially tested canonical ruleset.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

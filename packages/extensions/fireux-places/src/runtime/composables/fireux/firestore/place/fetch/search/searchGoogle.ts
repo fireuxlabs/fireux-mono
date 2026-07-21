@@ -1,4 +1,4 @@
-import type { Firestore } from 'firebase/firestore'
+// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: resolve Google candidates without a browser Firestore dependency.
 import { fetchGoogle, getLastPlacesAutocompleteDebug } from '../google/usePlacesGoogle'
 import { resolveExistingPlace } from './resolveExistingPlace'
 import type { MapToBasePlace, SearchStage } from './types'
@@ -6,12 +6,10 @@ import type { MapToBasePlace, SearchStage } from './types'
 export const searchGoogle = async (params: {
   term: string
   allowGoogle: boolean
-  collectionName: string
-  db: Firestore
   mapToCard: MapToBasePlace
   type?: string | null
 }): Promise<SearchStage> => {
-  const { term, allowGoogle, collectionName, db, mapToCard, type } = params
+  const { term, allowGoogle, mapToCard, type } = params
 
   if (!allowGoogle) {
     return { results: [], stage: 'skip-google', debug: { stage: 'skip-google' } }
@@ -28,7 +26,7 @@ export const searchGoogle = async (params: {
   const googleCells = await fetchGoogle(term, new Set(), 4, { type })
   const resolved = await Promise.all(
     googleCells.map(async (cell) =>
-      (await resolveExistingPlace(db, collectionName, cell.id, mapToCard)) ?? cell
+      (await resolveExistingPlace(cell.id, mapToCard)) ?? cell
     )
   )
 

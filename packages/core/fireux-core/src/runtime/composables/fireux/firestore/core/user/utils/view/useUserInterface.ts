@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: keep public User surfaces on canonical root identity.
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: accept minimal allowlisted User identity on public and admin cards.
 import {
   safeArray,
   safeString,
@@ -50,9 +51,17 @@ export type UserSurfaceParts<TUser extends object = Partial<User>> = {
   user?: TUser | null | undefined
 }
 
+export type UserIdentitySurface = Pick<
+  User,
+  'id' | 'display_name' | 'avatar' | 'handle'
+> &
+  Partial<Pick<User, 'app_ids' | 'profiles'>>
+
 export const USER_AVATAR_FALLBACK_SRC = USER_ECOSYSTEM_AVATAR_SRC
 
-export function useUserInterface(userRef?: Ref<User | null | undefined>) {
+export function useUserInterface(
+  userRef?: Ref<UserIdentitySurface | null | undefined>
+) {
   type UserPill = UserCard.Card
   type UserCell = UserCard.Card
   type UserPreview = UserCard.Card
@@ -76,11 +85,11 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
     }
   }
 
-  function resolveAvatarUrl(user: User): string {
+  function resolveAvatarUrl(user: UserIdentitySurface): string {
     return getProxiedAvatarUrl(resolveUserAvatarSource(user.avatar))
   }
 
-  function map(user: User): UserCard.Card {
+  function map(user: UserIdentitySurface): UserCard.Card {
     const id = safeString(user.id).trim()
     const handle = normalizeUserHandle(safeString(user.handle))
     const handleLabel = handle ? `@${handle}` : ''
@@ -116,7 +125,7 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
   }
 
   function buildInterface(
-    target?: User | null | undefined
+    target?: UserIdentitySurface | null | undefined
   ): UserCard.Card | null {
     const user = target ?? userRef?.value ?? null
     if (!user) return null
@@ -126,19 +135,19 @@ export function useUserInterface(userRef?: Ref<User | null | undefined>) {
 
   const toInterface = buildInterface
 
-  function pill(target?: User | null | undefined): UserPill | null {
+  function pill(target?: UserIdentitySurface | null | undefined): UserPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: User | null | undefined): UserCell | null {
+  function cell(target?: UserIdentitySurface | null | undefined): UserCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: User | null | undefined): UserPreview | null {
+  function preview(target?: UserIdentitySurface | null | undefined): UserPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: User | null | undefined): UserProfile | null {
+  function profile(target?: UserIdentitySurface | null | undefined): UserProfile | null {
     return buildInterface(target)
   }
 

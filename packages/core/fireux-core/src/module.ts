@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: register trusted UserPrivate provisioning.
 // Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: register trusted handle reservation.
 // Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: register exact public identity and App-admin people endpoints.
 import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   collectAutoSitemapPaths,
@@ -79,6 +80,13 @@ export default defineNuxtModule({
       handler: resolver.resolve('./runtime/server/api/public/users/[handle].get'),
     })
     addServerHandler({
+      route: '/api/public/user-identities/:userId',
+      method: 'get',
+      handler: resolver.resolve(
+        './runtime/server/api/public/user-identities/[userId].get'
+      ),
+    })
+    addServerHandler({
       route: '/api/public/apps',
       handler: resolver.resolve('./runtime/server/api/public/apps.get'),
     })
@@ -110,6 +118,11 @@ export default defineNuxtModule({
       handler: resolver.resolve(
         './runtime/server/api/internal/app/membership.post'
       ),
+    })
+    addServerHandler({
+      route: '/api/internal/app/people',
+      method: 'get',
+      handler: resolver.resolve('./runtime/server/api/internal/app/people.get'),
     })
     addServerHandler({
       route: '/api/internal/user/account',

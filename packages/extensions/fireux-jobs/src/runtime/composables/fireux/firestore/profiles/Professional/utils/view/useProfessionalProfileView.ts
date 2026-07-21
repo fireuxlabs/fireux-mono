@@ -1,13 +1,12 @@
 // Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: enrich projected Professional detail from canonical Places.
-import { useNuxtApp } from '#imports'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { FirestoreReadRef } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: enrich public profiles through bounded exact Place reads.
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
+import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
-import { computed, onScopeDispose, shallowRef, watch, type Ref } from 'vue'
+import type { Place } from 'fireux-places/runtime/models/place.model'
+import { computed, shallowRef, watch, type Ref } from 'vue'
 import type { ProfessionalCard } from './useProfessionalInterface'
 import type { PublicProfessionalProfile } from '../../../../../../../models/profiles/Professional/Professional.model'
 import type {
@@ -78,9 +77,8 @@ export function useProfessionalProfileView(
   const summary = computed(() => profile.value?.summary ?? '')
   const bio = computed(() => profile.value?.bio ?? '')
 
-  const { firestoreFetchDoc } = useFirestoreManager()
-  const nuxtApp = useNuxtApp()
-  const placeDocRefs = shallowRef(new Map<string, FirestoreReadRef<Place>>())
+  const { place: fetchPlace } = usePlaceFetch()
+  const placeDocRefs = shallowRef(new Map<string, Ref<Place | undefined>>())
 
   const experiencePlaceIds = computed(() => {
     const ids = new Set<string>()
@@ -99,18 +97,11 @@ export function useProfessionalProfileView(
       experiencePlaceIds,
       (ids: string[]) => {
         const current = placeDocRefs.value
-        const activeIds = new Set(ids)
-        const next = new Map<string, FirestoreReadRef<Place>>()
-
-        for (const [id, source] of current) {
-          if (!activeIds.has(id)) source.stop(() => undefined)
-        }
+        const next = new Map<string, Ref<Place | undefined>>()
 
         for (const id of ids) {
           const existing = current.get(id)
-          const source = existing ?? nuxtApp.runWithContext(() =>
-            firestoreFetchDoc<Place>(PlaceStorage.collection, id)
-          )
+          const source = existing ?? fetchPlace(id)
           next.set(id, source)
         }
         placeDocRefs.value = next
@@ -118,13 +109,6 @@ export function useProfessionalProfileView(
       { immediate: true, flush: 'sync' }
     )
   }
-
-  onScopeDispose(() => {
-    for (const source of placeDocRefs.value.values()) {
-      source.stop(() => undefined)
-    }
-    placeDocRefs.value.clear()
-  })
 
   const toPlaceBase = mapPlaceToBasePlace()
   const { pill: toPlaceCard } = usePlaceInterface()

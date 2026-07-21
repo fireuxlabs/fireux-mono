@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 21:54 CEST — Place-root authority pass: transactionally authorize and normalize sparse Place writes.
+// Concurrent edit — 2026-07-21 15:07 CEST — Place provenance/privacy hardening: remove claim-derived privilege and require explicit App-admin or Kitchen-operator authority.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -58,7 +59,6 @@ const allowedPatchKeys = new Set([
   'default_currency_code',
   'timezone',
   'business_hours',
-  'claimed_by',
 ])
 
 function badRequest(statusMessage: string): never {
@@ -127,7 +127,7 @@ function normalizedNumber(key: 'lat' | 'lng', value: unknown) {
   return number
 }
 
-function normalizePatch(raw: unknown, uid: string) {
+function normalizePatch(raw: unknown) {
   const source = record(raw)
   const keys = Object.keys(source)
   if (!keys.length) badRequest('Place patch is required.')
@@ -184,13 +184,6 @@ function normalizePatch(raw: unknown, uid: string) {
       patch.business_hours = normalizePlaceBusinessHours(value) || FieldValue.delete()
       continue
     }
-    if (key === 'claimed_by') {
-      const requestedOwner = text(value)
-      if (requestedOwner && requestedOwner !== uid) {
-        badRequest('A Place can only be claimed by the signed-in user.')
-      }
-      patch.claimed_by = requestedOwner || FieldValue.delete()
-    }
   }
 
   return patch
@@ -213,9 +206,6 @@ export async function mutatePlace(
   const db = getRuntimeFirestore()
   const placeRef = db.collection(PlaceStorage.collection).doc(id)
   const requestedPatch = record(input.patch)
-  const claimOnly = Object.keys(requestedPatch).length === 1 &&
-    Object.prototype.hasOwnProperty.call(requestedPatch, 'claimed_by')
-  const requestedOwner = text(requestedPatch.claimed_by)
   const requestedAppId = text(input.app_id)
   const requestedKitchenId = text(input.kitchen_id)
   if (Boolean(requestedAppId) !== Boolean(requestedKitchenId)) {
@@ -257,8 +247,6 @@ export async function mutatePlace(
     }
 
     const place = placeSnapshot.data() || {}
-    const liveOwner = text(place.claimed_by)
-    const ownerAccess = liveOwner === uid
     const runtimeAdmin = runtimeMembershipSnapshot?.data()?.role === 'admin'
     const rootKitchen = rootKitchenSnapshot?.data() || {}
     const scopedKitchen = scopedKitchenSnapshot?.data() || {}
@@ -270,29 +258,14 @@ export async function mutatePlace(
       readRootKitchenAppId(rootKitchen) === kitchenAuthority.appId &&
       ids(scopedKitchen.operator_ids).includes(uid)
     )
-    const firstClaim = claimOnly && !liveOwner && requestedOwner === uid
-
-    if (!ownerAccess && !runtimeAdmin && !kitchenAccess && !firstClaim) {
+    if (!runtimeAdmin && !kitchenAccess) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'Place owner or linked Kitchen operator access is required.',
+        statusMessage: 'App admin or linked Kitchen operator access is required.',
       })
     }
 
-    if (claimOnly && liveOwner && liveOwner !== uid && !runtimeAdmin) {
-      throw createError({ statusCode: 409, statusMessage: 'Place is already claimed.' })
-    }
-    if (Object.prototype.hasOwnProperty.call(requestedPatch, 'claimed_by')) {
-      const canChangeClaim = firstClaim || ownerAccess || runtimeAdmin
-      if (!canChangeClaim) {
-        throw createError({
-          statusCode: 403,
-          statusMessage: 'Only the Place owner can change its claim.',
-        })
-      }
-    }
-
-    const patch = normalizePatch(requestedPatch, uid)
+    const patch = normalizePatch(requestedPatch)
     const requestedBusinessHours = normalizePlaceBusinessHours(
       requestedPatch.business_hours
     )

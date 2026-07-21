@@ -1,37 +1,36 @@
 <!-- flag -->
 <!-- Concurrent edit — 2026-07-20 19:17 CEST — Repo Efficiency Pass 2 of 6: enforce Professional volunteering editor capacity. -->
+<!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: remove the ineffective single-child section wrapper. -->
 <template>
-  <div class="profile-edit__section">
-    <MoleculesFormsFirestoreObjectArray
-      label="Volunteering"
-      :firebase-value="items"
-      :update-function="onSave"
-      :item-title="itemTitle"
-      :item-date="itemDate"
-      :item-subtitle="itemSubtitle"
-      :fields="fields"
-      :show-actions="true"
-      :max-items="maxItems"
-    >
-      <template #create="{ push, canPush }">
-        <UButton
-          v-if="canPush"
-          size="xs"
-          variant="soft"
-          @click="push({
-            organization: '',
-            role: '',
-            from_year: '',
-            to_year: '',
-            ongoing: false,
-            responsibilities: '',
-          })"
-        >
-          Add volunteering
-        </UButton>
-      </template>
-    </MoleculesFormsFirestoreObjectArray>
-  </div>
+  <MoleculesFormsFirestoreObjectArray
+    label="Volunteering"
+    :firebase-value="items"
+    :update-function="onSave"
+    :item-title="itemTitle"
+    :item-date="itemDate"
+    :item-subtitle="itemSubtitle"
+    :fields="fields"
+    :show-actions="true"
+    :max-items="maxItems"
+  >
+    <template #create="{ push, canPush }">
+      <UButton
+        v-if="canPush"
+        size="xs"
+        variant="soft"
+        @click="push({
+          organization: '',
+          role: '',
+          from_year: '',
+          to_year: '',
+          ongoing: false,
+          responsibilities: '',
+        })"
+      >
+        Add volunteering
+      </UButton>
+    </template>
+  </MoleculesFormsFirestoreObjectArray>
 </template>
 
 <script setup lang="ts">

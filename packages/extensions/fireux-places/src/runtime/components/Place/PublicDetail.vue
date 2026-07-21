@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 14:52 CEST — Place provenance/privacy hardening: remove public self-claim controls until verified ownership proof exists. -->
 <template>
   <ClientOnly>
     <UPage>
@@ -26,17 +27,10 @@
             :model="placeProfile"
           />
 
-          <!-- operator -->
-          <PlacePublicOperatorPanel
-            :place="place"
-            :id="placeId"
-            :locator="locator"
-          />
-
           <!-- dev -->
           <DevJson
-            :title="'Place (Doc)'"
-            context="Place detail page · places/[id] · raw place doc"
+            :title="'Place (Public Projection)'"
+            context="Place detail page · places/[id] · bounded public projection"
             :data="place"
             :default-open="false"
           />
@@ -76,10 +70,9 @@ const props = defineProps<{
 
 const locator = computed(() => String(props.locator || '').trim())
 const { place, pending } = usePlaceFetch(locator)
-const placeId = computed(() => place.value?.id ?? '')
 const pageTitle = computed(() => place.value?.name || 'Place')
 const pageDescription = computed(
-  () => place.value?.formatted_address || 'Saved place details.'
+  () => place.value?.short_address || 'Saved place details.'
 )
 
 const { profile } = usePlaceInterface()

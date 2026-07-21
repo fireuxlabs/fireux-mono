@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: provide bounded domain-owned profile handlers with canonical User joins.
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: reuse the canonical public User identity allowlist.
 import { FieldPath } from 'firebase-admin/firestore'
 import {
   createError,
@@ -7,7 +8,6 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { resolveUserAvatarSource } from '../../../models/core/supporting/user-avatar'
 import type {
   PublicCollectionResponse,
   PublicDetailResponse,
@@ -16,6 +16,7 @@ import type {
 } from './public-dto.types'
 import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../ids/path'
+import { mapPublicUserIdentity } from './public-user-identity'
 
 const CACHE_CONTROL =
   'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
@@ -52,26 +53,15 @@ function mapCanonicalUser(
   snapshot: FirebaseFirestore.DocumentSnapshot,
   expectedProfile: PublicProfileKind
 ): PublicProfileUserDto | null {
-  if (!snapshot.exists) return null
+  const user = mapPublicUserIdentity(snapshot)
+  if (!user) return null
   const data = (snapshot.data() || {}) as Record<string, unknown>
-  const displayName = String(data.display_name || '').trim()
-  const handle = String(data.handle || '').trim().toLowerCase()
   const profiles = asStringList(data.profiles)
-  if (
-    !displayName ||
-    displayName.length > 120 ||
-    !/^[a-z0-9][a-z0-9-]{2,29}$/.test(handle) ||
-    !profiles.includes(expectedProfile)
-  ) {
+  if (!profiles.includes(expectedProfile)) {
     return null
   }
 
-  return {
-    id: snapshot.id,
-    display_name: displayName,
-    avatar: resolveUserAvatarSource(data.avatar),
-    handle,
-  }
+  return user
 }
 
 function mapEntry(

@@ -1,10 +1,12 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/profiles/Professional/mutations/useProfessionalUpdate.ts
 // flag
 // Concurrent edit — 2026-07-20 20:17 CEST — Repo Efficiency Pass 2 of 6: expose only bounded single-family Professional mutations.
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: route every structured family through fixed-user Admin validation.
 
 import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
 import { useProfileRootUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/httpsUrl'
 import {
@@ -159,10 +161,17 @@ export function useProfessionalUpdate(
   ) => {
     assertListLimit(items, maxItems, label)
     assertStructuredTotal(key, items.length)
-    await commitUpdate(
-      { [key]: items ?? [] } as unknown as Partial<Professional>,
-      options
-    )
+    const user = await useRequireUser()
+    const requestedId = String(options.id ?? '').trim()
+    if (requestedId && requestedId !== user.uid) {
+      throw new Error('Professional structured updates are self-only.')
+    }
+    const token = await user.getIdToken()
+    await $fetch('/api/internal/profiles/professional/structured', {
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${token}` },
+      body: { field: key, items: items ?? [] },
+    })
   }
 
   const defaultDateFields: Required<DateSortFields> = {

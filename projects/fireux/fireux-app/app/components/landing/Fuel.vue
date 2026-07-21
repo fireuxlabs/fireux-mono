@@ -1,8 +1,8 @@
+<!-- Concurrent edit — 2026-07-21 14:32 CEST — Runtime warning repair: remove the stale deleted LogoFlame decoration. -->
 <template>
   <ClientOnly>
     <div class="landing-index-section">
-      <div class="mb-6 flex items-center justify-center gap-3 text-center">
-        <LogoFlame size="small" />
+      <div class="mb-6 text-center">
         <h2 class="text-2xl lg:text-3xl font-bold">Fuel</h2>
       </div>
 

@@ -1,5 +1,6 @@
 // FILE: packages/extensions/fireux-places/src/runtime/composables/fireux/firestore/place/mutations/usePlaceUpdate.ts
 // Concurrent edit — 2026-07-20 21:57 CEST — Place-root authority pass: route sparse Place configuration through the trusted owner/operator boundary.
+// Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: exclude claims from browser patch types and fail closed at legacy claim entrypoints.
 
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { toValue, type MaybeRefOrGetter } from 'vue'
@@ -12,6 +13,9 @@ import type {
 import { normalizePlaceBusinessHours } from '../../../../../utils/place-spine'
 
 type UpdateCtx = { id: string | null | undefined }
+type PlaceBrowserPatch = Partial<
+  Record<Exclude<keyof Place, 'claimed_by' | 'created' | 'id' | 'updated'>, unknown>
+>
 
 export type PlaceMutationAuthority = {
   appId?: string | null | undefined
@@ -67,7 +71,7 @@ function resolvedAuthority(options: UsePlaceUpdateOptions) {
 
 export async function updatePlaceDocument(
   placeId: string,
-  patch: Partial<Record<keyof Place, unknown>>,
+  patch: PlaceBrowserPatch,
   options: UsePlaceUpdateOptions = {}
 ) {
   const id = String(placeId || '').trim()
@@ -91,7 +95,7 @@ export async function updatePlaceDocument(
  * owner, App-admin, or explicitly linked Kitchen-operator authority.
  */
 export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
-  const update = (id: string, patch: Partial<Record<keyof Place, unknown>>) =>
+  const update = (id: string, patch: PlaceBrowserPatch) =>
     updatePlaceDocument(id, patch, options)
 
   async function updateName(value: string, ctx: UpdateCtx) {
@@ -203,8 +207,10 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     })
   }
 
-  async function updateClaimedBy(value: string, ctx: UpdateCtx) {
-    await update(reqId(ctx), { claimed_by: optionalString(value) })
+  async function updateClaimedBy(_value: string, _ctx: UpdateCtx): Promise<never> {
+    throw new Error(
+      'Place claiming requires a verified ownership workflow and is not currently available.'
+    )
   }
 
   return {

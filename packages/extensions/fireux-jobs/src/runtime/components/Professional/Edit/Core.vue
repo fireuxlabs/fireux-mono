@@ -1,16 +1,14 @@
 <!-- Concurrent edit — 2026-07-20 19:20 CEST — Repo Efficiency Pass 2 of 6: bind self-profile updates and enforce Professional collection capacities. -->
+<!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: use Nuxt UI card structure and local form rhythm. -->
 <template>
   <ClientOnly>
-    <div v-if="professional" class="profile-edit">
-      <UCard>
-        <template #header>
-          <div class="profile-edit__section-header">
-            <UIcon name="i-lucide-id-card" />
-            Identity
-          </div>
-        </template>
-
-        <div class="profile-edit__fields">
+    <div v-if="professional" class="space-y-6">
+      <UPageCard
+        title="Identity"
+        icon="i-lucide-id-card"
+        variant="outline"
+      >
+        <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
             label="Job title"
             :firebase-value="headline"
@@ -39,33 +37,29 @@
             :update-function="handleBio"
           />
 
-          <div class="profile-edit__field">
-            <div class="flex flex-col items-center gap-2">
-              <MoleculesFormsFirestoreImagePicker
-                :src="imageUrl"
-                :alt="headline || 'Professional'"
-                :initials="imageInitials"
-                :update-function="handleImageUpload"
-              />
-              <p v-if="imageUploading" class="text-xs text-muted">
-                Uploading image…
-              </p>
-            </div>
+          <div class="flex flex-col items-center gap-2">
+            <MoleculesFormsFirestoreImagePicker
+              :src="imageUrl"
+              :alt="headline || 'Professional'"
+              :initials="imageInitials"
+              :update-function="handleImageUpload"
+            />
+            <p v-if="imageUploading" class="text-xs text-muted">
+              Uploading image…
+            </p>
           </div>
 
-          <div class="profile-edit__field">
-            <MoleculesFormsFirestoreArrayOfStrings
-              label="Positions"
-              :firebase-value="positions"
-              item-placeholder="Position"
-              new-item-placeholder="Add position"
-              :update-function="handlePositions"
-              :max-items="ProfessionalConstraints.positions"
-              :max-length="ProfessionalConstraints.stringItemLength"
-            />
-          </div>
+          <MoleculesFormsFirestoreArrayOfStrings
+            label="Positions"
+            :firebase-value="positions"
+            item-placeholder="Position"
+            new-item-placeholder="Add position"
+            :update-function="handlePositions"
+            :max-items="ProfessionalConstraints.positions"
+            :max-length="ProfessionalConstraints.stringItemLength"
+          />
         </div>
-      </UCard>
+      </UPageCard>
 
       <ProfessionalFieldsExperienceSection
         :label="relevantExperienceLabel"

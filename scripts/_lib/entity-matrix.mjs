@@ -1,3 +1,7 @@
+// @fireux-script
+// last_used: 2026-07-21
+// usage_note: supply the cross-package entity classification matrix consumed by the entity guard.
+// Concurrent edit — 2026-07-21 15:09 CEST — Werkbox Rules migration: register the imported entity matrix with the supported script lifecycle.
 // Concurrent edit — 2026-07-20 23:40 CEST — Entity Vocabulary + Matrix Pass: record cross-package declarations without creating a runtime mega-registry.
 // Concurrent edit — 2026-07-21 12:42 CEST — Cleanbox-to-Werkbox migration: declare product-neutral Job identity and its unresolved public-read boundary.
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: record the completed bounded public-read contract.

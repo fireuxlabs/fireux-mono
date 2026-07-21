@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 14:38 CEST — Place public projection: expose explicit bounded directory pagination. -->
 <template>
   <UCard>
     <template #header>
@@ -109,6 +110,23 @@
       "
     />
 
+    <div v-if="hasMore" class="mt-4 flex justify-center">
+      <UButton
+        size="xs"
+        variant="soft"
+        color="neutral"
+        :loading="loadingMore"
+        :disabled="loadingMore"
+        @click="loadMore"
+      >
+        Load more places
+      </UButton>
+    </div>
+
+    <p v-if="loadMoreError" class="mt-2 text-center text-sm text-error">
+      More places could not be loaded.
+    </p>
+
     <div>
       <DevJson
         :title="'Places (JSON)'"
@@ -162,6 +180,10 @@ const props = withDefaults(
 const fetched = usePlaceCollection()
 const collection = computed(() => fetched.collection.value)
 const outcome = computed(() => fetched.outcome.value)
+const hasMore = computed(() => fetched.hasMore.value)
+const loadingMore = computed(() => fetched.loadingMore.value)
+const loadMoreError = computed(() => fetched.loadMoreError.value)
+const loadMore = () => fetched.loadMore()
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Places'))
 const description = computed(() =>

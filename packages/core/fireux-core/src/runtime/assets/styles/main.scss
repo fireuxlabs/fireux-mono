@@ -1,5 +1,6 @@
 /* Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: map shared styles to their real component and page contracts. */
 /* Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: keep the entrypoint import-only and remove Nuxt UI duplication and global aesthetics. */
+/* Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: retire the redundant editor organism. */
 @use './scss/atoms/tokens';
 @use './scss/atoms/typography';
 @use './scss/molecules/dev-note';
@@ -18,7 +19,6 @@
 @use './scss/molecules/entity-card-details';
 @use './scss/molecules/preview-cards';
 @use './scss/organisms/profile-cards';
-@use './scss/organisms/profile-editor';
 @use './scss/organisms/page-layouts';
 @use './scss/organisms/console-surface';
 @use './scss/molecules/console-card-header';

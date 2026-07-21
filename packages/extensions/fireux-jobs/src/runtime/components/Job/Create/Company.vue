@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Job/Create/Company.vue -->
+<!-- Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: materialize the canonical Company Place before server reference validation. -->
 <template>
   <UCard>
     <template #header>
@@ -31,17 +32,15 @@
 </template>
 
 <script setup lang="ts">
-import { doc, getDoc } from 'firebase/firestore'
 import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
 const form = defineModel<JobCreateForm>('form', { required: true })
-const db = useFirestore()
 const { createCompany } = useCompanyCreate()
+const { ensurePlaceExists } = usePlaceCreate()
 
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
@@ -65,10 +64,11 @@ async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertIn
   const id = payload.placeId
   const place = payload.place
 
-  const existingSnap = await getDoc(doc(db, CompanyStorage.collection, id))
-  if (!existingSnap.exists()) {
-    await createCompany({ id, place })
+  const placeExists = await ensurePlaceExists({ ...place, id })
+  if (!placeExists) {
+    throw new Error('The selected Company Place could not be materialized.')
   }
+  await createCompany({ id, place })
 
   form.value = { ...form.value, company_id: id }
   chosenPlace.value = place

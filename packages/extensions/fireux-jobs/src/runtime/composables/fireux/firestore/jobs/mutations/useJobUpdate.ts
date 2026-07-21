@@ -1,12 +1,10 @@
-import { useDocumentUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/operations/useDocumentUpdateBase'
-import { JobStorage, type Job, type JobUpdateInput } from '../../../../../models/job.model'
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: patch only caller-safe fields through the author boundary.
+import type { JobPatchIntent } from '../../../../../models/job-author.model'
+import { patchAuthorJobRequest } from '../../../jobs/author/jobAuthorClient'
 
 export function useJobUpdate() {
-  const base = useDocumentUpdateBase<Job>(JobStorage.collection, { resolvePath: false })
-
-  const updateJob = async (jobId: string, patch: JobUpdateInput) => {
-    await base.updateById(jobId, patch)
-  }
+  const updateJob = (jobId: string, patch: JobPatchIntent) =>
+    patchAuthorJobRequest(jobId, patch)
 
   return { updateJob }
 }

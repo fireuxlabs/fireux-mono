@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 14:11 CEST — Werkbox Firebase hardening: expose only trusted Company materialization writes.
 import { useCompanyCollection } from './fetch/useCompanyCollection'
 import { useCompanyFetch } from './fetch/useCompanyFetch'
 import { useCompanyCreate } from './mutations/useCompanyCreate'

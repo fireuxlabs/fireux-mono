@@ -1,17 +1,15 @@
 <!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup. -->
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove product-specific profile examples. -->
+<!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: let Nuxt UI own the identity card header. -->
 <template>
   <ClientOnly>
-    <div v-if="agent" class="space-y-6">
-      <UCard>
-        <template #header>
-          <div class="profile-edit__section-header">
-            <UIcon name="i-lucide-id-card" />
-            Identity
-          </div>
-        </template>
-
-        <div class="space-y-4">
+    <UPageCard
+      v-if="agent"
+      title="Identity"
+      icon="i-lucide-id-card"
+      variant="outline"
+    >
+      <div class="space-y-4">
           <MoleculesFormsFirestoreSimpleField
             label="Title"
             :firebase-value="title"
@@ -97,9 +95,8 @@
             :maxlength="200"
             :update-function="handleWebsiteUrl"
           />
-        </div>
-      </UCard>
-    </div>
+      </div>
+    </UPageCard>
 
     <MoleculesStateCard v-else entity="agent profile" kind="document" loading />
   </ClientOnly>

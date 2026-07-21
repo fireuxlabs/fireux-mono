@@ -55,6 +55,7 @@
     "inspect:app-users": "node scripts/inspect-app-users.mjs",
     "inspect:firestore-tree": "node scripts/inspect-firestore-tree.mjs",
     "firebase:rules:misebox": "node scripts/deploy-misebox-firestore-rules.mjs",
+    "firebase:rules:werkbox": "node scripts/deploy-werkbox-firestore-rules.mjs",
     "git-tree": "node scripts/git-tree.mjs",
     "git-tree:full": "cross-env INCLUDE_CONTENT=1 node scripts/git-tree.mjs",
     "mirror:clear": "node scripts/mirror-clear.mjs",

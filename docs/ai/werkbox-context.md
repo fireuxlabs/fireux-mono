@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-21 12:21 CEST — Cleanbox to Werkbox migration: record the durable Werkbox ownership boundary. -->
+<!-- Concurrent edit — 2026-07-21 14:59 CEST — Cleanbox to Werkbox migration: record the durable Werkbox ownership and trusted Firebase boundary. -->
 # Werkbox GPT Context
 
 This is the scoped context entrypoint for work on Werkbox inside
@@ -55,6 +55,22 @@ remembered implementations are not authority.
   `cleanbox`, and main App id `cleanbox-app`. These are physical or stored
   legacy authority identifiers, not current product names. Renaming, moving,
   or deleting remote resources requires an explicitly approved migration.
+- Werkbox client Firestore authority is deliberately narrow: owners may read
+  and edit only the allowlisted scalar portions of their canonical User,
+  UserPrivate, Agent, and Professional records; App membership/admin reads are
+  scoped to the current App. Jobs, Places, Companies, public identities, App
+  people hydration, and structured Professional experience use bounded trusted
+  package server APIs rather than raw browser collection access.
+- The strict client Rules and temporary deny-all cutover source live under
+  `scripts/firebase/werkbox`. The guarded root command owns compilation,
+  adversarial tests, simulation staging, production quarantine, and promotion.
+  The one-time data executor creates its release marker only after protected
+  backup, exact writes, full known-descendant inventory verification, and live
+  build-bound API attestations from both Werkbox Apps.
+- `packages/ecosystem/fireux-werkbox` owns the shared deployed
+  `/api/internal/werkbox/security-contract` attestation. It identifies the
+  runtime App and binds both deployed Apps to the reviewed server/model/config
+  source manifest used by the Rules promotion gate.
 
 ## Living context
 

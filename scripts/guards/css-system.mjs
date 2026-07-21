@@ -5,6 +5,7 @@
 // Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: enforce semantic project colors.
 // Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: enforce the semantic core stylesheet cascade and retired catch-all paths.
 // Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: enforce an import-only core entrypoint and Nuxt UI-owned radius default.
+// Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: keep retired editor composition out of the global cascade.
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
@@ -32,7 +33,6 @@ const CORE_STYLE_CASCADE = [
   './scss/molecules/entity-card-details',
   './scss/molecules/preview-cards',
   './scss/organisms/profile-cards',
-  './scss/organisms/profile-editor',
   './scss/organisms/page-layouts',
   './scss/organisms/console-surface',
   './scss/molecules/console-card-header',
@@ -57,6 +57,7 @@ const RETIRED_CORE_STYLE_PATHS = [
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/landing-index-flow.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/page-motion.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/panel-layouts.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/profile-editor.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/solutions-grid.scss',
 ]
 const STYLE_EXTENSIONS = new Set([

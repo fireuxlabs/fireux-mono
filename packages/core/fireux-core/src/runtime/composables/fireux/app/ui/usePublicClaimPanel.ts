@@ -1,7 +1,8 @@
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: hydrate claimant cards through the public identity API.
 import { computed, ref, type Ref } from 'vue'
-import { useUserFetch } from '../../firestore/core/user/fetch/useUserFetch'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useUserInterface } from '../../firestore/core/user/utils/view/useUserInterface'
+import { usePublicUserIdentity } from '../../public/user/usePublicUserIdentity'
 import { useToastify } from './useToastify'
 import { useConsoleEntryCta } from './nav/useConsoleEntryCta'
 
@@ -30,7 +31,7 @@ export function usePublicClaimPanel(options: ClaimPanelOptions) {
   const isClaimed = computed(() => Boolean(claimedBy.value))
   const editTo = computed(() => readString(options.editTo))
 
-  const { user: claimedUser } = useUserFetch(claimedBy)
+  const { user: claimedUser } = usePublicUserIdentity(claimedBy)
   const { pill } = useUserInterface(claimedUser)
   const claimedUserPill = computed(() => pill(claimedUser.value))
 

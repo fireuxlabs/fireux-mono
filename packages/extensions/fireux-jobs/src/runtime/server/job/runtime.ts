@@ -7,8 +7,10 @@ export type JobServerScope = {
   appId: string
   ecosystemId: string
   databaseId: string
+  identityDatabaseId: string
   categories: ReadonlySet<string>
   workplaces: ReadonlySet<string>
+  profiles: ReadonlySet<string>
   defaultWorkplaceType: string
 }
 
@@ -32,8 +34,9 @@ export function readJobServerScope(event: H3Event): JobServerScope {
   const jobs = (fireux.jobs ?? {}) as Record<string, unknown>
   const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
   const databaseId = text(firebase.databaseId)
+  const identityDatabaseId = text(firebase.identityDatabaseId) || databaseId
 
-  if (!databaseId) {
+  if (!databaseId || !identityDatabaseId) {
     throw createError({
       statusCode: 500,
       statusMessage: 'The runtime App database identity is not configured.',
@@ -44,8 +47,10 @@ export function readJobServerScope(event: H3Event): JobServerScope {
     appId,
     ecosystemId: text(fireux.ecosystemId),
     databaseId,
+    identityDatabaseId,
     categories: identifiers(jobs.categories),
     workplaces: identifiers(jobs.workplaces),
+    profiles: identifiers(fireux.profiles),
     defaultWorkplaceType: text(jobs.defaultWorkplaceType),
   }
 }

@@ -12,7 +12,7 @@
             <div class="section__copy">
               <h3>Binding check (app ↔ users)</h3>
               <p>
-                Compares App memberships against ecosystem identity mirrors.
+                Compares App memberships against projected public identities.
                 Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
               </p>
             </div>
@@ -28,23 +28,24 @@
 
           <div v-if="driftPending" class="text-sm text-dimmed">Checking…</div>
 
+          <div v-else-if="appUsersError" class="text-sm text-warning">
+            Binding check unavailable. App admin access is required.
+          </div>
+
           <div v-else>
+            <div v-if="peopleTruncated" class="mb-3 text-sm text-warning">
+              The bounded check reached its 100-record result limit.
+            </div>
+
             <div v-if="!driftTotal" class="text-sm text-success">
               No binding issues detected.
             </div>
 
             <div v-else class="space-y-3">
               <div v-if="drift.missingCore.length">
-                <div class="text-sm font-medium">App users missing core user docs</div>
+                <div class="text-sm font-medium">App users missing public identity</div>
                 <div class="text-xs text-dimmed">
                   {{ drift.missingCore.join(', ') }}
-                </div>
-              </div>
-
-              <div v-if="drift.missingAppIds.length">
-                <div class="text-sm font-medium">Public users missing app id</div>
-                <div class="text-xs text-dimmed">
-                  {{ drift.missingAppIds.join(', ') }}
                 </div>
               </div>
 
@@ -155,27 +156,25 @@
 </template>
 
 <script setup lang="ts">
-import { doc, getDoc } from 'firebase/firestore'
-import {
-  readRuntimeIdentityFirestoreDatabaseId,
-  useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { computed, ref, watch } from 'vue'
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: diagnose only bounded current-App identity availability.
+import { computed } from 'vue'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import type { AppModel } from '../../../models/core/app.model'
-import { UserStorage, type User } from '../../../models/core/user.model'
 
 const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
 const app = computed(() => props.app)
 
 const { appId: configAppId } = useFireUXConfig()
-const driftAppId = computed(() => app.value?.id ?? configAppId ?? '')
+const driftAppId = computed(() => configAppId)
 
-const { memberships: appUsers, pending: appUsersPending } = useAppUserCollection()
-const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
-const coreUsers = ref<Map<string, User | null>>(new Map())
-const driftPending = ref(false)
+const {
+  memberships: appUsers,
+  fulfilled: projectedUsers,
+  pending: driftPending,
+  error: appUsersError,
+  truncated: peopleTruncated,
+} = useAppUserCollection()
 
 const appUserIds = computed(() =>
   (appUsers.value ?? [])
@@ -183,31 +182,8 @@ const appUserIds = computed(() =>
     .filter((id): id is string => Boolean(id))
 )
 
-watch(
-  appUserIds,
-  async (ids: string[]) => {
-    if (import.meta.server) return
-    const appId = driftAppId.value
-    if (!appId) return
-
-    driftPending.value = true
-    const next = new Map<string, User | null>()
-
-    await Promise.all(
-      ids.map(async (id: string) => {
-        try {
-          const snap = await getDoc(doc(identityDb, UserStorage.rootCollection, id) as any)
-          next.set(id, snap.exists() ? (snap.data() as User) : null)
-        } catch {
-          next.set(id, null)
-        }
-      })
-    )
-
-    coreUsers.value = next
-    driftPending.value = false
-  },
-  { immediate: true }
+const projectedUserIds = computed(
+  () => new Set(projectedUsers.value.map((user) => user.id))
 )
 
 const adminIds = computed(() => {
@@ -217,34 +193,13 @@ const adminIds = computed(() => {
 })
 
 const drift = computed(() => {
-  const appId = driftAppId.value
-  const missingCore: string[] = []
-  const missingAppIds: string[] = []
-
-  if (!appId) {
-    return { missingCore, missingAppIds }
-  }
-
-  for (const [id, coreUser] of coreUsers.value.entries()) {
-    if (!coreUser) {
-      missingCore.push(id)
-      continue
-    }
-
-    const appIds = Array.isArray(coreUser.app_ids) ? coreUser.app_ids : []
-    if (!appIds.includes(appId)) {
-      missingAppIds.push(id)
-    }
-  }
-
-  return { missingCore, missingAppIds }
+  const missingCore = appUserIds.value.filter(
+    (id) => !projectedUserIds.value.has(id)
+  )
+  return { missingCore }
 })
 
-const driftTotal = computed(
-  () =>
-    drift.value.missingCore.length +
-    drift.value.missingAppIds.length
-)
+const driftTotal = computed(() => drift.value.missingCore.length)
 
 const appUsersCount = computed(() => appUserIds.value.length)
 const adminIdsCount = computed(() => adminIds.value.length)

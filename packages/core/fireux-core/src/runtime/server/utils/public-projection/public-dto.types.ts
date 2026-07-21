@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: transport domain fields beside canonical User identity.
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: keep creator principals out of public App transport.
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: define the minimal public identity and App-admin people transport.
 import type { AppStatus } from '../../../models/core/app.model'
 import type {
   AppDerived,
@@ -27,11 +28,32 @@ export type PublicUserDto = PublicSeoDto & {
   profiles: string[]
 }
 
-export type PublicProfileUserDto = {
+export type PublicUserIdentityDto = {
   id: string
   display_name: string
   avatar: string
   handle: string
+}
+
+export type PublicProfileUserDto = PublicUserIdentityDto
+
+export type AppAdminMemberDto = {
+  id: string
+  role: 'admin' | 'user'
+  user: PublicUserIdentityDto | null
+}
+
+export type AppAdminJoinRequestDto = {
+  id: string
+  user: PublicUserIdentityDto | null
+}
+
+export type AppAdminPeopleResponse = {
+  ok: true
+  appId: string
+  members: AppAdminMemberDto[]
+  joinRequests: AppAdminJoinRequestDto[]
+  truncated: boolean
 }
 
 /**

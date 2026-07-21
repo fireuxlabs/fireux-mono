@@ -1,37 +1,43 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove product-named Job collection aliases.
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: reserve this raw collection read for authenticated authoring and dev surfaces.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { computed } from 'vue'
-import { JobStorage, type Job } from '../../../../../models/job.model'
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: replace raw root collection reads with the bounded current-author endpoint.
+import { computed, onMounted, ref } from 'vue'
+import { fetchAuthorJobs } from '../../../jobs/author/jobAuthorClient'
+import type { Job } from '../../../../../models/job.model'
 
 export function useJobCollection() {
-  const fireUXConfig = useFireUXConfig()
-  const { firestoreFetchCollection } = useFirestoreRead()
+  const jobs = ref<Job[]>([])
+  const pending = ref(true)
+  const error = ref<unknown>(null)
+  const truncated = ref(false)
 
-  const source = firestoreFetchCollection<Job>(JobStorage.collection)
-
-  const resolvedJobs = computed<Job[]>(() => {
-    const allJobs = source.value ?? []
-    return allJobs
-  })
-
-  const appJobs = computed<Job[]>(() => {
-    const allJobs = resolvedJobs.value ?? []
-    if (!fireUXConfig.isTenant || !fireUXConfig.appId) {
-      return allJobs
+  const refresh = async () => {
+    pending.value = true
+    error.value = null
+    try {
+      const response = await fetchAuthorJobs()
+      jobs.value = response.items
+      truncated.value = response.truncated
+    } catch (cause) {
+      jobs.value = []
+      truncated.value = false
+      error.value = cause
+    } finally {
+      pending.value = false
     }
-    return allJobs.filter((job) => job.source_app_id === fireUXConfig.appId)
-  })
-  const count = computed(() => appJobs.value.length)
-  const pending = computed(() => source.pending.value)
-  const error = computed(() => source.error.value)
-  const { outcome } = useFirestoreCollectionState({
-    count,
-    error,
-    pending,
-  })
+  }
+
+  onMounted(() => void refresh())
+
+  const resolvedJobs = computed(() => jobs.value)
+  const appJobs = computed(() => jobs.value)
+  const count = computed(() => jobs.value.length)
+  const outcome = computed(() =>
+    pending.value ? 'pending'
+      : error.value ? 'error'
+        : jobs.value.length ? 'ready'
+          : 'empty'
+  )
 
   return {
     jobs: resolvedJobs,
@@ -40,5 +46,7 @@ export function useJobCollection() {
     pending,
     error,
     outcome,
+    truncated,
+    refresh,
   }
 }

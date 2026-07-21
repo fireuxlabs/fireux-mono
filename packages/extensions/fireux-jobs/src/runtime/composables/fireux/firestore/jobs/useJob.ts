@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: retire unsupported raw deletion from the Job family facade.
 import type { Ref } from 'vue'
 import { useJobFetch } from './fetch/useJobFetch'
 import { useJobComputed } from './utils/view/useJobComputed'
@@ -5,7 +6,6 @@ import { useJobInterface } from './utils/view/useJobInterface'
 import { useJobState } from '../../jobs/create/useJobState'
 import { useJobCreate } from './mutations/useJobCreate'
 import { useJobUpdate } from './mutations/useJobUpdate'
-import { useJobDelete } from './mutations/useJobDelete'
 import { useJobPublish } from './mutations/useJobPublish'
 import { useJobSeo } from './utils/useJobSeo'
 
@@ -35,7 +35,6 @@ export function useJob(jobId: string | Ref<string | null | undefined>) {
     ...useJobCreate(),
     ...useJobUpdate(),
     ...useJobPublish(),
-    ...useJobDelete(),
     useJobSeo,
   }
 }

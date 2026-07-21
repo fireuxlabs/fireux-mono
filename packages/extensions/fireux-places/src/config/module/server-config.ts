@@ -6,7 +6,13 @@ import {
 
 // Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: register Place reads and the trusted configuration mutation boundary.
 // Concurrent edit — 2026-07-21 14:08 CEST — Werkbox Firebase hardening: register authenticated idempotent Place materialization.
+// Concurrent edit — 2026-07-21 14:28 CEST — Place public projection: register bounded public Place reads.
 const serverHandlers = [
+  {
+    route: '/api/places',
+    method: 'get',
+    handler: './runtime/server/api/places/index.get',
+  },
   {
     route: '/api/places/autocomplete',
     method: 'get',
@@ -26,6 +32,11 @@ const serverHandlers = [
     route: '/api/places/ensure',
     method: 'post',
     handler: './runtime/server/api/places/ensure.post',
+  },
+  {
+    route: '/api/places/:placeId',
+    method: 'get',
+    handler: './runtime/server/api/places/[placeId].get',
   },
   {
     route: '/api/places/:placeId',

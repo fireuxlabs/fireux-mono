@@ -60,21 +60,12 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: keep owner postings linked to authenticated authoring.
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: consume the server-bounded current-author collection directly.
 import { computed } from 'vue'
 import { useJobCollection } from '../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Job } from '../../../models/job.model'
 
-const { jobs: allJobs, outcome: sourceOutcome } = useJobCollection()
-const { coreUser } = useUser()
-const { uid: authUid } = useAuth()
-
-const jobs = computed<Job[]>(() => {
-  const ownerId = coreUser.value?.id ?? authUid.value ?? null
-  if (!ownerId) return []
-  return (allJobs.value ?? []).filter((job) => job.created?.by === ownerId)
-})
+const { jobs, outcome: sourceOutcome } = useJobCollection()
 
 const outcome = computed(() => sourceOutcome.value)
 const isSettled = computed(() =>

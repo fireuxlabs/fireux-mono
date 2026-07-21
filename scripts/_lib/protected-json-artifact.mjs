@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: shared exclusive mode-0600 JSON artifact writer for named operational scripts.
+// Concurrent edit — 2026-07-21 14:13 CEST — Werkbox Firebase hardening: write the read-only record-level migration plan as a protected artifact.
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: centralize protected JSON backup mechanics only.
 
 import { createHash } from 'node:crypto'

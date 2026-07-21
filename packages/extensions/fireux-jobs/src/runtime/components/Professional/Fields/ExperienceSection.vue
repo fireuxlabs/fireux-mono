@@ -3,6 +3,8 @@
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove domain-specific workplace materialization from professional experience. -->
 <!-- Concurrent edit — 2026-07-21 13:03 CEST — Misebox Jobs workplace adapter: require owner materialization before assigning experience references. -->
 <!-- Concurrent edit — 2026-07-21 13:11 CEST — Cleanbox-to-Werkbox profile correction: persist direct Place references with the canonical blank discriminator. -->
+<!-- Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: use idempotent server materializers without raw Company existence reads. -->
+<!-- Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: enrich experience through bounded exact Place reads. -->
 <template>
   <MoleculesFormsFirestoreObjectArray
     :label="label"
@@ -195,18 +197,14 @@
 </template>
 
 <script setup lang="ts">
-import { useNuxtApp } from '#imports'
 import {
   CalendarDate,
   DateFormatter,
   getLocalTimeZone,
   type DateValue,
 } from '@internationalized/date'
-import { doc, getDoc } from 'firebase/firestore'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import type { FirestoreReadRef } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
+import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
 import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
@@ -218,7 +216,7 @@ import {
   type Place,
   type PlaceUpsertInput,
 } from 'fireux-places/runtime/models/place.model'
-import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
+import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 import { materializeJobWorkplace } from '../../../composables/workplace/materializeWorkplace'
 
@@ -260,7 +258,6 @@ const effectivePlaceType = computed(() => {
   return raw || null
 })
 
-const db = useFirestore()
 const { ensurePlaceExists } = usePlaceCreate()
 const { createCompany } = useCompanyCreate()
 const placeSelectionError = ref('')
@@ -271,9 +268,8 @@ const normalizePlaceId = (placeId?: string | null) => {
   return placeId ? placeId.replace(/^places\//, '') : ''
 }
 
-const { firestoreFetchDoc } = useFirestoreManager()
-const nuxtApp = useNuxtApp()
-const placeDocRefs = shallowRef(new Map<string, FirestoreReadRef<Place>>())
+const { place: fetchPlace } = usePlaceFetch()
+const placeDocRefs = shallowRef(new Map<string, Ref<Place | undefined>>())
 
 const placeIds = computed(() => {
   const ids = new Set<string>()
@@ -289,20 +285,11 @@ if (import.meta.client) {
     placeIds,
     (ids: string[]) => {
       const current = placeDocRefs.value
-      const activeIds = new Set(ids)
-      const next = new Map<string, FirestoreReadRef<Place>>()
-
-      for (const [id, source] of current) {
-        if (!activeIds.has(id)) source.stop(() => undefined)
-      }
+      const next = new Map<string, Ref<Place | undefined>>()
 
       for (const id of ids) {
         const existing = current.get(id)
-        const source =
-          existing ??
-          nuxtApp.runWithContext(() =>
-            firestoreFetchDoc<Place>(PlaceStorage.collection, id)
-          )
+        const source = existing ?? fetchPlace(id)
         next.set(id, source)
       }
       placeDocRefs.value = next
@@ -310,13 +297,6 @@ if (import.meta.client) {
     { immediate: true, flush: 'sync' }
   )
 }
-
-onScopeDispose(() => {
-  for (const source of placeDocRefs.value.values()) {
-    source.stop(() => undefined)
-  }
-  placeDocRefs.value.clear()
-})
 
 const toPlaceBase = mapPlaceToBasePlace()
 const { pill: toPlaceCard } = usePlaceInterface()
@@ -392,11 +372,7 @@ async function ensureCollectionRecord(
   place: PlaceUpsertInput
 ) {
   if (collection === CompanyStorage.collection) {
-    const ref = doc(db, CompanyStorage.collection, placeId)
-    const snap = await getDoc(ref)
-    if (!snap.exists()) {
-      await createCompany({ id: placeId, place })
-    }
+    await createCompany({ id: placeId, place })
     return
   }
 

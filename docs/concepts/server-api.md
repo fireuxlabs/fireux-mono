@@ -2,6 +2,7 @@ Server API spine map
 
 <!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
 <!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map bounded Job APIs with server-only source scope. -->
+<!-- Concurrent edit — 2026-07-21 14:59 CEST — Werkbox trusted API cutover: map Jobs authoring, Place/Company projections, App people, and build attestation. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
@@ -15,7 +16,7 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe invalid Kitchen support joins explicitly. -->
 
 Updated: 2026-07-21
-Ref: 5b6cfcc8e
+Ref: 02af1d838
 Role: map, not canon
 
 Purpose:
@@ -96,6 +97,13 @@ Boundary rule:
   `app_id`/`kitchen_id` whose stored `place_id` matches the target. Kitchen
   `canWrite` is presentation state, not Place authority, and no broad client
   Place write rule is opened.
+- Places also owns authenticated `POST /api/places/ensure` plus bounded
+  `GET /api/places` and `GET /api/places/:placeId` projections. Ensure binds
+  creation to the fixed runtime and reviewed provider/materialization input;
+  public DTOs omit ownership, claim, precise private-contact, raw search, and
+  stamp fields. Companies owns the matching bounded list/detail projections
+  and authenticated `POST /api/companies/materialize`; a Company is emitted or
+  materialized only as a canonical same-id pair with its Place.
 - Kitchens owns `GET /api/kitchens`. It cursor-pages root Kitchens, joins only
   explicit `place_id` and canonical App-scope references with bounded server
   batches, and emits a sparse public card DTO only for published, non-test rows
@@ -110,6 +118,25 @@ Boundary rule:
   Empty category configuration fails closed. Source App scope, Company/Place
   ids, owner scope, creator stamps, and raw linked documents never reach the
   browser DTO.
+- Jobs authoring uses fixed-current-user `GET/POST /api/internal/jobs`,
+  `GET/PATCH /api/internal/jobs/:id`, and
+  `POST /api/internal/jobs/:id/publish`. The server derives scope and ownership,
+  requires current UserApp/Agent authority, and verifies referenced Place and
+  Company records through Admin before mutation. Structured Professional
+  families use `PATCH /api/internal/profiles/professional/structured`, which
+  validates every referenced Place/Company/Kitchen; browser Rules retain only
+  safe scalar/list owner updates.
+- Core owns authenticated `GET /api/internal/app/people`. It requires current
+  App-admin membership, caps and orders member/join-request reads, and joins
+  only the allowlisted public User identity DTO. App admin UI does not hydrate
+  other Users through raw Firestore reads.
+- Each Werkbox App exposes
+  `GET /api/internal/werkbox/security-contract` through the ecosystem package.
+  The non-sensitive response binds runtime App/Project/Ecosystem/database
+  identity to a reproducible hash of the reviewed server, model, config, and
+  dependency sources. The Firestore cutover probes both deployed Apps and
+  authenticated routes before finalizing migration evidence and again before
+  Rules promotion.
 - Shared identity writes may publish authenticated, idempotent App events
   through core server endpoints. Event facts do not choose notification
   recipients or delivery channels; those belong to subscribing consumers.

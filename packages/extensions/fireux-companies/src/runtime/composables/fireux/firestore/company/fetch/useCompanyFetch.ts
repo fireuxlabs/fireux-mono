@@ -1,114 +1,105 @@
-import {
-  useFirestoreRead,
-  type FirestoreReadOutcome,
-} from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { hydratePlaceCollection, hydratePlaceDoc } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceHydration'
-import type { Place } from 'fireux-places/runtime/models/place.model'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
-import type { Company } from 'fireux-companies/runtime/models/company.model'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+// Concurrent edit — 2026-07-21 14:30 CEST — Company public projection: replace raw Company and Place browser reads with complete-pair API reads.
+import { useAsyncData } from '#imports'
+import { computed, isRef, ref, type ComputedRef, type Ref } from 'vue'
+import type {
+  PublicCompanyDetailResponse,
+  PublicCompanyIndexPage,
+} from 'fireux-companies/runtime/models/company-public.model'
 import type { CompanyHydrated } from './types'
-import { computed, isRef, type ComputedRef, type Ref } from 'vue'
 
 type CompanyIdInput = string | Ref<string | null | undefined>
 type CompanyFetchFunction = (id: string) => Ref<CompanyHydrated | undefined>
-
-/**
- * Canon fetch helpers for Company (collection + single doc).
- * Canon: collection `companies/{placeId}`.
- */
-export function useCompanyFetch(): {
+type CompanyReadOutcome = 'idle' | 'pending' | 'error' | 'missing' | 'ready'
+type CompanyFetchFactoryReturn = {
   companies: ComputedRef<CompanyHydrated[]>
   company: CompanyFetchFunction
 }
-export function useCompanyFetch(id: CompanyIdInput): {
+type CompanyFetchDetailReturn = {
   company: ComputedRef<CompanyHydrated | null>
   pending: ComputedRef<boolean>
-  error: Ref<unknown | undefined>
-  outcome: ComputedRef<FirestoreReadOutcome>
+  error: Ref<unknown>
+  outcome: ComputedRef<CompanyReadOutcome>
+  refresh: () => Promise<void>
+  ready: Promise<void>
   fetchCompany: CompanyFetchFunction
 }
-export function useCompanyFetch(id?: CompanyIdInput) {
-  const { firestoreFetchCollection, firestoreFetchDoc } = useFirestoreRead()
-  const hydrateDoc = hydratePlaceDoc
 
-  // ✅ hydrated single doc (UI-ready)
-  const fetchCompany: CompanyFetchFunction = (companyId: string) => {
-    const companyDoc = firestoreFetchDoc<Company>(CompanyStorage.collection, companyId)
-    const placeDoc = firestoreFetchDoc<Place>(PlaceStorage.collection, companyId)
+const cleanId = (value: unknown) => String(value ?? '').trim()
 
-    return hydrateDoc(
-      computed(() => companyDoc.value),
-      computed(() => placeDoc.value),
-      computed(() => companyId),
-      (entry, place, docId): CompanyHydrated | undefined => {
-        if (!entry) return undefined
+function createCompanyFetcher(): CompanyFetchFunction {
+  const cache = new Map<string, Ref<CompanyHydrated | undefined>>()
 
-        return {
-          ...(place ?? {}),
-          ...entry,
-          id: docId,
-        }
-      }
-    )
+  return (value: string) => {
+    const id = cleanId(value)
+    const existing = cache.get(id)
+    if (existing) return existing
+
+    const company = ref<CompanyHydrated>()
+    cache.set(id, company)
+    if (!id || import.meta.server) return company
+
+    void $fetch<PublicCompanyDetailResponse>(
+      `/api/companies/${encodeURIComponent(id)}`
+    ).then(response => {
+      company.value = response?.item
+    }).catch(() => {
+      company.value = undefined
+    })
+    return company
   }
+}
 
-  if (id !== undefined) {
-    const companyId = isRef(id)
-      ? computed(() => String(id.value ?? '').trim())
-      : computed(() => String(id ?? '').trim())
-    const companyDoc = firestoreFetchDoc<Company>(
-      CompanyStorage.collection,
-      companyId
-    )
-    const placeDoc = firestoreFetchDoc<Place>(
-      PlaceStorage.collection,
-      companyId
-    )
-    const hydratedCompany = hydrateDoc(
-      computed(() => companyDoc.value),
-      computed(() => placeDoc.value),
-      companyId,
-      (entry, place, docId): CompanyHydrated | undefined => {
-        if (!entry) return undefined
+export function useCompanyFetch(): CompanyFetchFactoryReturn
+export function useCompanyFetch(id: CompanyIdInput): CompanyFetchDetailReturn
+export function useCompanyFetch(
+  id?: CompanyIdInput
+): CompanyFetchFactoryReturn | CompanyFetchDetailReturn {
+  const fetchCompany = createCompanyFetcher()
 
-        return {
-          ...(place ?? {}),
-          ...entry,
-          id: docId,
-        }
-      }
+  if (id === undefined) {
+    const state = useAsyncData<PublicCompanyIndexPage>(
+      'public-company-index|limit=50',
+      () => $fetch<PublicCompanyIndexPage>('/api/companies?limit=50')
     )
-    const company = computed<CompanyHydrated | null>(
-      () => hydratedCompany.value ?? null
-    )
-    const pending = computed(() => companyDoc.pending.value)
-
     return {
-      company,
-      pending,
-      error: companyDoc.error,
-      outcome: companyDoc.outcome,
-      fetchCompany,
+      companies: computed(() => state.data.value?.items ?? []),
+      company: fetchCompany,
     }
   }
 
-  const companiesCollection = firestoreFetchCollection<Company>(
-    CompanyStorage.collection
+  const companyId = isRef(id)
+    ? computed(() => cleanId(id.value))
+    : computed(() => cleanId(id))
+  const state = useAsyncData<PublicCompanyDetailResponse | null>(
+    () => `public-company-detail|${companyId.value || 'none'}`,
+    async () => {
+      if (!companyId.value) return null
+      return $fetch<PublicCompanyDetailResponse>(
+        `/api/companies/${encodeURIComponent(companyId.value)}`
+      )
+    },
+    { server: true, watch: [companyId] }
   )
-  const placesCollection = firestoreFetchCollection<Place>(PlaceStorage.collection)
-  const companies = hydratePlaceCollection(
-    computed(() => companiesCollection.value ?? []),
-    computed(() => placesCollection.value ?? []),
-    (entry, place): CompanyHydrated => ({
-      ...(place ?? {}),
-      ...entry,
-      id: entry.id,
-    })
+  const company = computed<CompanyHydrated | null>(
+    () => state.data.value?.item ?? null
   )
+  const pending = computed(() => state.pending.value)
+  const outcome = computed<CompanyReadOutcome>(() => {
+    if (!companyId.value) return 'idle'
+    if (state.pending.value) return 'pending'
+    if (state.error.value) return 'error'
+    return company.value ? 'ready' : 'missing'
+  })
 
   return {
-    companies,
-    company: fetchCompany,
+    company,
+    pending,
+    error: state.error as Ref<unknown>,
+    outcome,
+    refresh: async () => {
+      await state.refresh()
+    },
+    ready: state.then(() => undefined),
+    fetchCompany,
   }
 }

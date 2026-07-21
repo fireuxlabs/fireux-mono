@@ -1,0 +1,206 @@
+<!-- Concurrent edit — 2026-07-21 14:57 CEST — Dashboard Overview pass: orchestrate independent User, Ecosystem, and App layers. -->
+<template>
+  <MoleculesStateCard
+    v-if="coreIsLoading"
+    entity="user overview"
+    kind="document"
+    loading
+  />
+
+  <MoleculesStateCard
+    v-else-if="coreIsError"
+    entity="user overview"
+    kind="document"
+    state="error"
+  />
+
+  <template v-else-if="coreUser && userCard">
+    <UPageHeader
+      headline="Overview"
+      :title="`Welcome back, ${userCard.displayName}`"
+      :description="overviewDescription"
+    />
+
+    <div class="space-y-4">
+      <DashboardOverviewUser
+        :card="userCard"
+        :has-custom-avatar="hasCustomAvatar"
+        :private-outcome="privateOutcome"
+      />
+
+      <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-2' : 'grid gap-4'">
+        <DashboardOverviewEcosystem
+          v-if="hasEcosystem"
+          :profile-entries="ecosystemProfileEntries"
+        />
+        <DashboardOverviewApp
+          :app-name="fireux.appName"
+          :app-short-name="fireux.appShortName"
+          :role-label="appRoleLabel"
+          :app-card="appCard"
+          :app-outcome="appOutcome"
+          :membership="resolvedAppUser"
+          :membership-outcome="membershipOutcome"
+          :profile-entries="appProfileEntries"
+          :can-open-console="canOpenConsole"
+          :console-path="consoleEntryPath"
+          :can-self-join="canSelfJoin"
+        />
+      </div>
+    </div>
+  </template>
+
+  <div v-else-if="coreIsMissing" class="space-y-4">
+    <UPageHeader
+      headline="Overview"
+      title="Finish your User setup"
+      description="Your sign-in works, but the public identity behind this dashboard still needs to be restored."
+    />
+    <UAlert
+      color="warning"
+      variant="subtle"
+      orientation="horizontal"
+      icon="i-lucide-user-round-plus"
+      title="Public identity not set up"
+      description="Set up your User to restore the identity apps and profiles connect to."
+    >
+      <template #actions>
+        <UButton
+          to="/users/create"
+          label="Finish setup"
+          icon="i-lucide-arrow-right"
+        />
+      </template>
+    </UAlert>
+  </div>
+
+  <MoleculesStateCard v-else entity="user overview" kind="document" loading />
+</template>
+
+<script setup lang="ts">
+import { computed } from '#imports'
+import type { NavItem } from '../../composables/fireux/app/nav.types'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
+import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
+import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../models/core/supporting/user-avatar'
+import DashboardOverviewApp from './Overview/App.vue'
+import DashboardOverviewEcosystem from './Overview/Ecosystem.vue'
+import DashboardOverviewUser from './Overview/User.vue'
+import type {
+  DashboardOverviewOutcome,
+  DashboardOverviewProfileEntry,
+} from './Overview/types'
+
+const fireux = useFireUXConfig()
+const userApi = useUser()
+const appApi = useApp()
+const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
+const { hasConsoleEntry, consoleEntryPath } = useConsoleEntryCta()
+
+const {
+  coreUser,
+  coreError,
+  coreOutcome,
+  appUser,
+  appPending,
+  appError,
+  privateUser,
+  privatePending,
+  privateError,
+  profile: userToCard,
+} = userApi
+const { app, outcome: appOutcome, profile: appToCard } = appApi
+
+const coreIsLoading = computed(
+  () => coreOutcome.value === 'idle' || coreOutcome.value === 'pending'
+)
+const coreIsError = computed(
+  () => coreOutcome.value === 'error' || Boolean(coreError.value)
+)
+const coreIsMissing = computed(
+  () => coreOutcome.value === 'missing' || coreUser.value === null
+)
+const userCard = computed(() => userToCard(coreUser.value ?? null))
+const appCard = computed(() => appToCard(app.value ?? null))
+const resolvedAppUser = computed(() => appUser.value ?? null)
+const hasCustomAvatar = computed(
+  () =>
+    Boolean(coreUser.value?.avatar) &&
+    coreUser.value?.avatar !== USER_ECOSYSTEM_AVATAR_SRC
+)
+
+const privateOutcome = computed<DashboardOverviewOutcome>(() => {
+  if (privateError.value) return 'error'
+  if (privatePending.value || privateUser.value === undefined) return 'pending'
+  return privateUser.value ? 'ready' : 'missing'
+})
+
+const membershipOutcome = computed<DashboardOverviewOutcome>(() => {
+  if (appError.value) return 'error'
+  if (appPending.value || appUser.value === undefined) return 'pending'
+  return appUser.value ? 'ready' : 'missing'
+})
+
+const hasEcosystem = computed(() => Boolean(fireux.ecosystemId))
+const overviewDescription = computed(() =>
+  hasEcosystem.value
+    ? `See your main identity, what you share across your ecosystem, and what ${fireux.appName} enables.`
+    : `See your main identity and what ${fireux.appName} enables for this account.`
+)
+const appRoleLabel = computed(() => {
+  if (fireux.isTenant) return 'Tenant app'
+  if (fireux.isStandalone) return 'Standalone app'
+  return 'Global app'
+})
+const canOpenConsole = computed(
+  () =>
+    membershipOutcome.value === 'ready' &&
+    Boolean(hasConsoleEntry.value) &&
+    appUser.value?.role === 'admin' &&
+    appUser.value.console_enabled === true
+)
+const canSelfJoin = computed(
+  () => appOutcome.value === 'ready' && app.value?.self_join_enabled === true
+)
+
+function toProfileEntry(
+  item: NavItem,
+  active: boolean
+): DashboardOverviewProfileEntry | null {
+  if (!item.profileId) return null
+  return {
+    profileId: item.profileId,
+    label: item.label,
+    icon: item.icon,
+    to: item.to,
+    active,
+  }
+}
+
+const rootProfileIds = computed(() => new Set(coreUser.value?.profiles ?? []))
+const activeRows = computed<DashboardOverviewProfileEntry[]>(() =>
+  activeProfileEntries.value
+    .map((entry) => toProfileEntry(entry, true))
+    .filter((entry): entry is DashboardOverviewProfileEntry => Boolean(entry))
+)
+const availableRows = computed<DashboardOverviewProfileEntry[]>(() =>
+  availableProfileEntries.value
+    .map((entry) => toProfileEntry(entry, false))
+    .filter((entry): entry is DashboardOverviewProfileEntry => Boolean(entry))
+)
+const ecosystemProfileEntries = computed<DashboardOverviewProfileEntry[]>(() =>
+  activeRows.value.filter((entry: DashboardOverviewProfileEntry) =>
+    rootProfileIds.value.has(entry.profileId)
+  )
+)
+const appProfileEntries = computed<DashboardOverviewProfileEntry[]>(() => [
+  ...activeRows.value.filter(
+    (entry: DashboardOverviewProfileEntry) =>
+      !hasEcosystem.value || !rootProfileIds.value.has(entry.profileId)
+  ),
+  ...availableRows.value,
+])
+</script>

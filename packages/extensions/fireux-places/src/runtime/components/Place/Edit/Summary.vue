@@ -140,11 +140,12 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: hydrate claimant identity through the bounded public API.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { useUserFetch } from 'fireux-core/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { usePublicUserIdentity } from 'fireux-core/runtime/composables/fireux/public/user/usePublicUserIdentity'
 import { computed, ref } from 'vue'
 import { usePlaceClaim } from '../../../composables/fireux/firestore/place/mutations/usePlaceClaim'
 import {
@@ -164,7 +165,7 @@ const { currentUser, isAdmin } = useUser()
 const { pill } = usePlaceInterface()
 const placePill = computed(() => pill(place.value))
 const claimedUserId = computed(() => place.value?.claimed_by || '')
-const { user: claimedUser } = useUserFetch(claimedUserId)
+const { user: claimedUser } = usePublicUserIdentity(claimedUserId)
 const { pill: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const imageUrl = computed(() => place.value?.image_url || (place.value as any)?.place_image || '')

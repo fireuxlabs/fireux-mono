@@ -276,6 +276,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      h3:
+        specifier: '*'
+        version: 1.15.11
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -1447,15 +1450,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
-      fireux-blogs:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-blogs
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       fireux-werkbox:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-werkbox
@@ -1496,9 +1493,6 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
-      fireux-blogs:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-blogs
       fireux-companies:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-companies
@@ -1511,9 +1505,6 @@ importers:
       fireux-places:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-places
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       fireux-werkbox:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-werkbox

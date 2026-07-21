@@ -1,177 +1,142 @@
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: fail closed when hydrating App member avatars.
-import { useNuxtApp } from '#imports'
-import {
-  computed,
-  isRef,
-  onScopeDispose,
-  shallowRef,
-  watch,
-  type Ref,
-} from 'vue'
-import {
-  UserAppStorage,
-  UserStorage,
-  type UserApp,
-  type User,
-} from '../../../../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../../../../models/core/supporting/user-avatar'
-import { AppStorage } from '../../../../../../models/core/app.model'
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: replace raw cross-user reads with the bounded App-admin API.
+import { useAsyncData } from '#imports'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import { computed, type ComputedRef } from 'vue'
+import type {
+  AppAdminJoinRequestDto,
+  AppAdminMemberDto,
+  AppAdminPeopleResponse,
+  PublicUserIdentityDto,
+} from '../../../../../../server/utils/public-projection/public-dto.types'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
-import {
-  useFirestoreRead,
-  type FirestoreReadRef,
-} from '../../../operations/useFirestoreRead'
-import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
+import { useAuth } from '../../../../firebase/useAuth'
 
-type EnrichedUser = {
-  id: string
-  display_name: string
-  avatar: string
-  handle?: string
-  profiles?: string[]
-  appUser?: UserApp | null
-  coreUser?: User | null
+type AppAdminPeopleState = {
+  requestUid: string
+  response: AppAdminPeopleResponse
 }
 
-type AppUserCollectionAppId =
-  | string
-  | null
-  | undefined
-  | Ref<string | null | undefined>
+type AppUserCollectionControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error'
+>
+
+export type EnrichedAppUser = PublicUserIdentityDto & {
+  appUser: AppAdminMemberDto
+  coreUser: PublicUserIdentityDto
+}
+
+export type UseAppUserCollectionReturn = AppUserCollectionControls & {
+  appId: ComputedRef<string>
+  memberships: ComputedRef<AppAdminMemberDto[]>
+  users: ComputedRef<EnrichedAppUser[]>
+  fulfilled: ComputedRef<EnrichedAppUser[]>
+  usersById: ComputedRef<Map<string, PublicUserIdentityDto>>
+  userById: (id: string | null | undefined) => PublicUserIdentityDto | undefined
+  joinRequests: ComputedRef<AppAdminJoinRequestDto[]>
+  count: ComputedRef<number>
+  outcome: ComputedRef<'idle' | 'pending' | 'error' | 'empty' | 'ready'>
+  truncated: ComputedRef<boolean>
+  refresh: () => Promise<void>
+}
 
 /**
- * Streams `/apps/{appId}/users` from the app database and hydrates each
- * membership with `/users/{id}` from the ecosystem identity database.
- * Uses the runtime app by default, but can read an explicit app when needed.
+ * Loads the current runtime App's members and join requests through the
+ * authenticated App-admin projection. The server fixes both App and database
+ * scope; callers cannot select another App or read raw User documents.
  */
-export function useAppUserCollection(appId?: AppUserCollectionAppId) {
-  const { appId: runtimeAppId } = useFireUXConfig()
-  const appRead = useFirestoreRead()
-  const identityRead = useFirestoreRead({
-    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
-  })
-  const nuxtApp = useNuxtApp()
+export function useAppUserCollection(): UseAppUserCollectionReturn {
+  const { appId: configuredAppId } = useFireUXConfig()
+  const appId = computed(() => configuredAppId)
+  const { currentUser, hasAuthState } = useAuth()
+  const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
 
-  const resolvedAppId = computed(() => {
-    const value = isRef(appId) ? appId.value : appId
-    return String(value ?? runtimeAppId ?? '').trim()
-  })
+  const state = useAsyncData(
+    () => `app-admin-people-${appId.value}`,
+    async () => {
+      const user = currentUser.value
+      const requestUid = uid.value
+      if (
+        !import.meta.client ||
+        !hasAuthState.value ||
+        !user ||
+        user.uid !== requestUid
+      ) {
+        return null
+      }
 
-  const membershipPath = computed(() =>
-    resolvedAppId.value
-      ? `${AppStorage.collection}/${resolvedAppId.value}/${UserAppStorage.collection}`
-      : ''
-  )
-  const membershipSource =
-    appRead.firestoreFetchCollection<UserApp>(membershipPath)
-
-  const memberships = computed<UserApp[]>(() => membershipSource.value ?? [])
-  const membershipIds = computed(() =>
-    Array.from(
-      new Set(
-        memberships.value
-          .map((member) => String(member?.id ?? '').trim())
-          .filter(Boolean)
+      const token = await user.getIdToken()
+      const response = await $fetch<AppAdminPeopleResponse>(
+        '/api/internal/app/people',
+        { headers: { Authorization: `Bearer ${token}` } }
       )
+      return { requestUid, response } satisfies AppAdminPeopleState
+    },
+    {
+      server: false,
+      lazy: true,
+      watch: [hasAuthState, uid],
+    }
+  )
+
+  const response = computed<AppAdminPeopleResponse | null>(() => {
+    const value = state.data.value
+    if (
+      !value ||
+      value.requestUid !== uid.value ||
+      value.response.appId !== appId.value
+    ) {
+      return null
+    }
+    return value.response
+  })
+  const memberships = computed(() => response.value?.members ?? [])
+  const joinRequests = computed(() => response.value?.joinRequests ?? [])
+  const fulfilled = computed<EnrichedAppUser[]>(() =>
+    memberships.value.flatMap((member) =>
+      member.user
+        ? [
+            {
+              ...member.user,
+              appUser: member,
+              coreUser: member.user,
+            },
+          ]
+        : []
     )
   )
-
-  const userCache = shallowRef(new Map<string, FirestoreReadRef<User>>())
-
-  const stopUserRead = (source: FirestoreReadRef<User>) => {
-    source.stop(() => undefined)
-  }
-
-  const reconcileUserCache = (ids: string[]) => {
-    const current = userCache.value
-    const next = new Map<string, FirestoreReadRef<User>>()
-    const activeIds = new Set(ids)
-
-    for (const [id, source] of current) {
-      if (!activeIds.has(id)) stopUserRead(source)
-    }
-
-    for (const id of ids) {
-      const existing = current.get(id)
-      const source =
-        existing ??
-        nuxtApp.runWithContext(() =>
-          identityRead.firestoreFetchDoc<User>(UserStorage.rootCollection, id)
-        )
-      next.set(id, source)
-    }
-
-    userCache.value = next
-  }
-
-  watch(membershipIds, reconcileUserCache, { immediate: true, flush: 'sync' })
-
-  onScopeDispose(() => {
-    for (const source of userCache.value.values()) stopUserRead(source)
-    userCache.value.clear()
+  const usersById = computed(
+    () => new Map(fulfilled.value.map((user) => [user.id, user.coreUser]))
+  )
+  const userById = (id: string | null | undefined) =>
+    id ? usersById.value.get(id) : undefined
+  const count = computed(() => memberships.value.length)
+  const pending = computed(() => !hasAuthState.value || state.pending.value)
+  const error = state.error
+  const outcome = computed(() => {
+    if (!uid.value) return hasAuthState.value ? ('idle' as const) : ('pending' as const)
+    if (pending.value) return 'pending' as const
+    if (error.value) return 'error' as const
+    return count.value ? ('ready' as const) : ('empty' as const)
   })
-
-  const fulfilled = computed<EnrichedUser[]>(() => {
-    const entries = memberships.value
-    if (!entries.length) return []
-
-    const enriched: EnrichedUser[] = []
-    for (const member of entries) {
-      const memberId = String(member?.id ?? '').trim()
-      if (!memberId) continue
-
-      const record = userCache.value.get(memberId)?.value
-      if (!record) continue
-      const recordId = String((record as any).id ?? memberId).trim() || memberId
-
-      const coreUser = { ...(record as any), id: recordId } as User
-
-      enriched.push({
-        id: recordId,
-        display_name: record.display_name ?? recordId,
-        avatar: resolveUserAvatarSource(record.avatar),
-        handle: record.handle,
-        profiles: [...(record.profiles ?? [])],
-        appUser: member,
-        coreUser,
-      })
-    }
-
-    return enriched
-  })
-
-  const count = computed(() => fulfilled.value.length)
-  const pending = computed(() => {
-    if (membershipSource.pending.value) return true
-    return membershipIds.value.some((id) => {
-      const source = userCache.value.get(id)
-      return !source || source.pending.value
-    })
-  })
-  const error = computed<unknown | undefined>(() => {
-    if (membershipSource.error.value) return membershipSource.error.value
-    for (const id of membershipIds.value) {
-      const failure = userCache.value.get(id)?.error.value
-      if (failure) return failure
-    }
-    return undefined
-  })
-  const { outcome } = useFirestoreCollectionState({
-    active: computed(() => Boolean(resolvedAppId.value)),
-    count,
-    error,
-    pending,
-  })
+  const truncated = computed(() => response.value?.truncated === true)
 
   return {
-    appId: resolvedAppId,
+    appId,
     memberships,
     users: fulfilled,
     fulfilled,
+    usersById,
+    userById,
+    joinRequests,
     pending,
     error,
     outcome,
     count,
+    truncated,
+    refresh: async () => {
+      await state.refresh()
+    },
   }
 }

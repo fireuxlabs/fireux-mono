@@ -63,6 +63,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: keep raw Job reads behind an authenticated authoring route.
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: exact-load and patch only through the author server boundary.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useHead } from 'nuxt/app'
 import { computed, reactive, ref, watchEffect } from 'vue'
@@ -89,7 +90,7 @@ const jobId = computed(() =>
     : routeParam?.toString() ?? null
 )
 
-const { job: jobRef, pending } = useJobFetch(jobId)
+const { job: jobRef, pending, refresh } = useJobFetch(jobId)
 
 const job = computed<Job | null>(() => jobRef.value)
 
@@ -141,6 +142,7 @@ const onSave = withToast(
         title,
         status: form.status,
       })
+      await refresh()
     } finally {
       saving.value = false
     }

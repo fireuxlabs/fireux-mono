@@ -1,17 +1,10 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: read private App join requests from their admin-scoped collection.
-
-import { collection } from 'firebase/firestore'
-import { computed, ref, watchEffect, type ComputedRef, type Ref } from 'vue'
-
-import type { App } from '../../../../../../models/core/app.model'
-import { AppStorage } from '../../../../../../models/core/app.model'
-import {
-  AppJoinRequestStorage,
-  type AppJoinRequest,
-} from '../../../../../../models/core/supporting/app-membership'
-import type { User } from '../../../../../../models/core/user.model'
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { useCollection, useFirestore } from '../../../vuefire'
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin request identities without raw Firestore reads.
+import { computed, ref, watchEffect, type ComputedRef } from 'vue'
+import type {
+  AppAdminJoinRequestDto,
+  PublicUserIdentityDto,
+} from '../../../../../../server/utils/public-projection/public-dto.types'
 import type { UserCard } from '../../user/utils/view/useUserInterface'
 
 type JoinRequestItem = {
@@ -24,66 +17,42 @@ type JoinRequestItem = {
 
 type HandleJoinRequests = (uid: string, approve: boolean) => Promise<unknown>
 
-type UserRef = ComputedRef<User | null>
-
-type CardBuilder = ComputedRef<(target?: User | null | undefined) => UserCard.Card>
+type CardBuilder = ComputedRef<
+  (target?: PublicUserIdentityDto | null | undefined) => UserCard.Card
+>
 
 type Options = {
-  app: Ref<App | null | undefined>
+  requests: ComputedRef<AppAdminJoinRequestDto[]>
   handleJoinRequests: HandleJoinRequests
-  fetchedUser: (uid: string) => { user: UserRef }
   card: CardBuilder
+  refresh: () => Promise<void>
 }
 
-/**
- * Maps the admin-scoped join-request collection to pill-friendly list items.
- */
+/** Maps the bounded App-admin join-request projection to list items. */
 export function useAppJoinRequests(options: Options): {
   items: ComputedRef<JoinRequestItem[]>
   approve: (uid: string) => Promise<unknown>
   reject: (uid: string) => Promise<unknown>
 } {
-  const { handleJoinRequests, fetchedUser, card } = options
-  const cache = new Map<string, UserRef>()
+  const { requests, handleJoinRequests, card, refresh } = options
   const hidden = new Set<string>()
   const itemsRef = ref<JoinRequestItem[]>([])
-  const { appId } = useFireUXConfig()
-  const db = useFirestore()
-  const requestCollection = collection(
-    db,
-    AppStorage.collection,
-    appId,
-    AppJoinRequestStorage.collection
-  )
-  const requests = useCollection<AppJoinRequest>(requestCollection)
 
-  const resolveUserRef = (uid: string): UserRef => {
-    let ref = cache.get(uid)
-    if (!ref) {
-      ref = fetchedUser(uid).user
-      cache.set(uid, ref)
-    }
-    return ref
-  }
-
-  const toUniqueIds = (raw: unknown[]): string[] => {
-    const trimmed = raw
-      .map((entry) => (typeof entry === 'string' ? entry.trim() : ''))
-      .filter((uid) => uid.length > 0)
-
-    return Array.from(new Set(trimmed))
-  }
-
-  const buildItem = (uid: string): JoinRequestItem => {
-    const ref = resolveUserRef(uid)
-    const profile = ref.value
+  const buildItem = (request: AppAdminJoinRequestDto): JoinRequestItem => {
+    const profile = request.user
     if (!profile) {
-      return { id: uid, title: uid, subtitle: '', avatar: '', to: '' }
+      return {
+        id: request.id,
+        title: request.id,
+        subtitle: '',
+        avatar: '',
+        to: '',
+      }
     }
 
     const payload = card.value(profile)
     return {
-      id: uid,
+      id: request.id,
       title: payload.displayName,
       subtitle: payload.handle,
       avatar: payload.avatarUrl,
@@ -91,63 +60,44 @@ export function useAppJoinRequests(options: Options): {
     }
   }
 
-  watchEffect(() => {
-    const source = requests.data.value
-    if (!Array.isArray(source) || source.length === 0) {
-      cache.clear()
-      hidden.clear()
-      itemsRef.value = []
-      return
-    }
-
-    const ids = toUniqueIds(
-      source.map((request) => request.user_id || request.id)
-    )
-    const mapped = ids
-      .filter((uid) => !hidden.has(uid))
-      .map((uid) => buildItem(uid))
-
-    for (const key of Array.from(cache.keys())) {
-      if (!ids.includes(key)) cache.delete(key)
-    }
-
+  const syncItems = () => {
+    const source = requests.value
+    const ids = new Set(source.map((request) => request.id))
     for (const hiddenId of Array.from(hidden)) {
-      if (!ids.includes(hiddenId)) hidden.delete(hiddenId)
+      if (!ids.has(hiddenId)) hidden.delete(hiddenId)
     }
+    itemsRef.value = source
+      .filter((request) => !hidden.has(request.id))
+      .map(buildItem)
+  }
 
-    itemsRef.value = mapped
-  })
+  watchEffect(syncItems)
 
   const removeLocal = (uid: string) => {
     hidden.add(uid)
-    itemsRef.value = itemsRef.value.filter(
-      (item: JoinRequestItem) => item.id !== uid
-    )
+    itemsRef.value = itemsRef.value.filter((item) => item.id !== uid)
   }
 
-  const approve = async (uid: string) => {
+  const mutate = async (uid: string, approve: boolean) => {
     removeLocal(uid)
     try {
-      await handleJoinRequests(uid, true)
+      const result = await handleJoinRequests(uid, approve)
+      void refresh().catch(() => undefined)
+      return result
     } catch (error) {
       hidden.delete(uid)
-      throw error
-    }
-  }
-
-  const reject = async (uid: string) => {
-    removeLocal(uid)
-    try {
-      await handleJoinRequests(uid, false)
-    } catch (error) {
-      hidden.delete(uid)
+      syncItems()
       throw error
     }
   }
 
   const items = computed<JoinRequestItem[]>(() => itemsRef.value)
 
-  return { items, approve, reject }
+  return {
+    items,
+    approve: (uid: string) => mutate(uid, true),
+    reject: (uid: string) => mutate(uid, false),
+  }
 }
 
 export type { JoinRequestItem }

@@ -1,50 +1,49 @@
 <!-- Concurrent edit — 2026-07-20 19:17 CEST — Repo Efficiency Pass 2 of 6: enforce Professional language editor capacity. -->
+<!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: remove the ineffective single-child section wrapper. -->
 <template>
-  <div class="profile-edit__section">
-    <MoleculesFormsFirestoreObjectArray
-      label="Languages"
-      :firebase-value="sortedItems"
-      :update-function="onSave"
-      :item-title="itemTitle"
-      :item-date="itemDate"
-      :show-actions="true"
-      :max-items="maxItems"
-    >
-      <template #edit="{ item, save, cancel }">
-        <div class="space-y-2">
-          <UInput v-model="item.language" placeholder="Language" />
-          <select
-            v-model="item.proficiency"
-            class="w-full rounded-md border border-default bg-transparent px-3 py-2 text-sm"
-          >
-            <option value="">Proficiency</option>
-            <option v-for="option in proficiencyOptions" :key="option" :value="option">
-              {{ option }}
-            </option>
-          </select>
-          <div class="flex gap-2">
-            <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
-              Save
-            </UButton>
-            <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
-              Cancel
-            </UButton>
-          </div>
-        </div>
-      </template>
-
-      <template #create="{ push, canPush }">
-        <UButton
-          v-if="canPush"
-          size="xs"
-          variant="soft"
-          @click="push({ language: '', proficiency: '' })"
+  <MoleculesFormsFirestoreObjectArray
+    label="Languages"
+    :firebase-value="sortedItems"
+    :update-function="onSave"
+    :item-title="itemTitle"
+    :item-date="itemDate"
+    :show-actions="true"
+    :max-items="maxItems"
+  >
+    <template #edit="{ item, save, cancel }">
+      <div class="space-y-2">
+        <UInput v-model="item.language" placeholder="Language" />
+        <select
+          v-model="item.proficiency"
+          class="w-full rounded-md border border-default bg-transparent px-3 py-2 text-sm"
         >
-          Add language
-        </UButton>
-      </template>
-    </MoleculesFormsFirestoreObjectArray>
-  </div>
+          <option value="">Proficiency</option>
+          <option v-for="option in proficiencyOptions" :key="option" :value="option">
+            {{ option }}
+          </option>
+        </select>
+        <div class="flex gap-2">
+          <UButton size="xs" variant="solid" icon="i-lucide-check" @click="save">
+            Save
+          </UButton>
+          <UButton size="xs" variant="soft" icon="i-lucide-x" @click="cancel">
+            Cancel
+          </UButton>
+        </div>
+      </div>
+    </template>
+
+    <template #create="{ push, canPush }">
+      <UButton
+        v-if="canPush"
+        size="xs"
+        variant="soft"
+        @click="push({ language: '', proficiency: '' })"
+      >
+        Add language
+      </UButton>
+    </template>
+  </MoleculesFormsFirestoreObjectArray>
 </template>
 
 <script setup lang="ts">

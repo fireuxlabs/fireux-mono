@@ -1,18 +1,16 @@
-import type { Firestore } from 'firebase/firestore'
-import { doc, getDoc } from 'firebase/firestore'
+// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: resolve Google candidates through the exact public Place endpoint.
+import type { PublicPlaceDetailResponse } from 'fireux-places/runtime/models/place-public.model'
 import type { MapToBasePlace } from './types'
 
 export const resolveExistingPlace = async (
-  db: Firestore,
-  collection: string,
   id: string,
   mapToCard: MapToBasePlace
 ) => {
   try {
-    const ref = doc(db, collection, id)
-    const snap = await getDoc(ref)
-    if (!snap.exists()) return null
-    return mapToCard({ id, ...snap.data() }, collection)
+    const response = await $fetch<PublicPlaceDetailResponse>(
+      `/api/places/${encodeURIComponent(id)}`
+    )
+    return response?.item ? mapToCard(response.item, 'places') : null
   } catch {
     return null
   }

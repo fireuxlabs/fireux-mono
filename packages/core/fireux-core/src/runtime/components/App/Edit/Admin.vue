@@ -1,5 +1,9 @@
 <template>
   <div v-if="app" class="space-y-6">
+    <p v-if="peopleTruncated" class="text-sm text-warning">
+      Member or join-request results reached the bounded 100-record limit.
+    </p>
+
     <div>
       <AppEditSectionsAbout
         :app="app"
@@ -53,16 +57,16 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin member and join-request identities.
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
 import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import { useUserFetch } from '../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserInterface, type UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { AppModel } from '../../../models/core/app.model'
-import type { User } from '../../../models/core/user.model'
+import type { PublicUserIdentityDto } from '../../../server/utils/public-projection/public-dto.types'
 
 const props = withDefaults(
   defineProps<{ app?: AppModel | null }>(),
@@ -86,7 +90,13 @@ const {
   handleJoinRequests,
   setAppUserAdmin,
 } = useAppUpdate(appRef)
-const { memberships: users, fulfilled: hydratedUsers } = useAppUserCollection()
+const {
+  memberships: users,
+  fulfilled: hydratedUsers,
+  joinRequests,
+  truncated: peopleTruncated,
+  refresh: refreshPeople,
+} = useAppUserCollection()
 const { pill: userCard } = useUserInterface()
 
 const withToast =
@@ -169,7 +179,7 @@ const fallbackUserCard = (options: {
 
   return {
     id,
-    to: id ? `/users/${id}` : '',
+    to: handle ? `/users/${encodeURIComponent(handle)}` : '',
 
     imageUrl: '',
     avatarUrl: '',
@@ -191,7 +201,9 @@ const fallbackUserCard = (options: {
   }
 }
 
-const cardForUser = (target?: User | null | undefined): UserCard.Card => {
+const cardForUser = (
+  target?: PublicUserIdentityDto | null | undefined
+): UserCard.Card => {
   const payload = userCard(target ?? undefined)
   if (payload) return payload
 
@@ -202,11 +214,12 @@ const cardForUser = (target?: User | null | undefined): UserCard.Card => {
   return {
     ...fallbackUserCard({ id, displayName, handle }),
     avatarUrl: target?.avatar ?? '',
-    title: Array.isArray(target?.profiles) ? target.profiles[0] ?? '' : '',
+    imageUrl: target?.avatar ?? '',
+    title: '',
     summary: '',
     bio: '',
-    profiles: target?.profiles ?? [],
-    appsLabel: target?.app_ids?.length ? `${target.app_ids.length} apps` : '',
+    profiles: [],
+    appsLabel: '',
   }
 }
 
@@ -229,6 +242,7 @@ const removeAdmin = withToast(
     adminActionUid.value = uid
     try {
       await setAppUserAdmin(uid, false)
+      await refreshPeople()
     } finally {
       adminActionUid.value = null
     }
@@ -237,11 +251,6 @@ const removeAdmin = withToast(
   'Failed to remove admin'
 )
 
-const fetchedUser = (uid: string) => {
-  const { coreUser } = useUserFetch(uid)
-  return { user: computed(() => coreUser.value ?? null) }
-}
-
 const cardRef = computed(() => cardForUser)
 
 const {
@@ -249,10 +258,10 @@ const {
   approve: approveJoinRequest,
   reject: rejectJoinRequest,
 } = useAppJoinRequests({
-  app: appRef,
+  requests: joinRequests,
   handleJoinRequests,
-  fetchedUser,
   card: cardRef,
+  refresh: refreshPeople,
 })
 
 const onApprove = withToast(

@@ -1,17 +1,12 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: validate categories and configured Place-backed workplace types.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: submit caller-safe Job intent to the fixed-scope Admin create route.
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { ref } from 'vue'
-import { JobStorage, type JobCreateInput } from '../../../../../models/job.model'
+import type { JobCreateIntent } from '../../../../../models/job-author.model'
+import { createAuthorJobRequest } from '../../../jobs/author/jobAuthorClient'
 import { useFireuxJobsConfig } from '../../../../config/useFireuxJobsConfig'
 
 export const JobPayload = {
-  source_app_id: '',
-  source_ecosystem_id: '',
-  owner_type: 'app',
-  owner_id: '',
-  visibility: 'ecosystem',
   company_id: '',
   category_id: '',
   workplace_type: '',
@@ -22,23 +17,17 @@ export const JobPayload = {
   pay_currency: 'CHF',
   pay_rate: 0,
   pay_unit: 'hour',
-  start_at: {} as JobCreateInput['start_at'],
-  end_at: {} as JobCreateInput['end_at'],
+  start_at: {} as JobCreateIntent['start_at'],
+  end_at: {} as JobCreateIntent['end_at'],
   title: '',
   status: 'open',
   description: '',
-} satisfies JobCreateInput
+} satisfies JobCreateIntent
 
-export const JobStampOptions = {
-  creator: true,
-} as const
-
-export type JobCreateForm = JobCreateInput
+export type JobCreateForm = JobCreateIntent
 
 export function useJobCreate() {
-  const { createDocument } = useFirestoreCreate()
   const jobsConfig = useFireuxJobsConfig()
-  const fireux = useFireUXConfig()
 
   const configuredDefaultWorkplaceType = normalizeString(
     jobsConfig.defaultWorkplaceType
@@ -87,7 +76,7 @@ export function useJobCreate() {
     return categoryId
   }
 
-  async function createJob(payload: JobCreateInput): Promise<{ created: boolean; id: string }> {
+  async function createJob(payload: JobCreateIntent): Promise<{ created: boolean; id: string }> {
     requireDefaultWorkplaceType()
     const categoryId = resolveCategoryId(payload.category_id)
     const workplaceType = normalizeString(payload.workplace_type)
@@ -98,31 +87,14 @@ export function useJobCreate() {
     ) {
       throw new Error('Invalid workplace type')
     }
-    const sourceAppId = normalizeString(payload.source_app_id || fireux.appId)
-    const sourceEcosystemId = normalizeString(
-      payload.source_ecosystem_id || fireux.ecosystemId
-    )
-    const ownerType = normalizeString(payload.owner_type || (sourceAppId ? 'app' : 'ecosystem'))
-    const ownerId = normalizeString(
-      payload.owner_id || (ownerType === 'ecosystem' ? sourceEcosystemId : sourceAppId)
-    )
     const data = {
       ...payload,
       category_id: categoryId,
       workplace_type: workplaceType,
-      source_app_id: sourceAppId,
-      source_ecosystem_id: sourceEcosystemId,
-      owner_type: ownerType,
-      owner_id: ownerId,
-      visibility: payload.visibility || 'ecosystem',
-    } satisfies JobCreateInput
+    } satisfies JobCreateIntent
 
-    const id = await createDocument<JobCreateInput>(JobStorage.collection, data, {
-      app: true,
-      creator: true,
-    })
-
-    return { created: true, id }
+    const response = await createAuthorJobRequest(data)
+    return { created: true, id: response.id }
   }
 
   const submit = async (): Promise<string> => {
@@ -132,6 +104,7 @@ export function useJobCreate() {
     const categoryId = resolveCategoryId(form.value.category_id)
     const workplaceId = normalizeString(form.value.workplace_id)
     const workplaceType = normalizeString(form.value.workplace_type)
+    const companyId = normalizeString(form.value.company_id)
 
     if (!workplaceId) throw new Error('Workplace is required')
     if (!workplaceType) throw new Error('Workplace type is required')
@@ -143,8 +116,9 @@ export function useJobCreate() {
     }
     if (!title) throw new Error('Title is required')
     if (!description) throw new Error('Description is required')
+    if (!companyId) throw new Error('Company is required')
 
-    const payload: JobCreateInput = {
+    const payload: JobCreateIntent = {
       ...form.value,
       title,
       description,
@@ -152,7 +126,7 @@ export function useJobCreate() {
       workplace_id: workplaceId,
       workplace_type: workplaceType,
       workplace_label: normalizeString(form.value.workplace_label),
-      company_id: normalizeString(form.value.company_id),
+      company_id: companyId,
       status: form.value.status ?? 'open',
     }
 

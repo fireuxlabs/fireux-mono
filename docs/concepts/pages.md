@@ -5,11 +5,13 @@ Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: map the factual capability index route. -->
 <!-- Concurrent edit — 2026-07-21 13:08 CEST — Operation detail surfaces: map catalogue-backed factual detail routes. -->
+<!-- Concurrent edit — 2026-07-21 14:50 CEST — Dashboard Overview pass: map the shared three-layer dashboard route contract. -->
 
 Purpose:
 Map how route pages should be built and where consensus is still forming.
 
 Vertical links:
+
 - Parent: nuxt4.md
 - Child: family-public-index.md
 - Child: family-public-detail.md
@@ -17,12 +19,14 @@ Vertical links:
 - Child: family-menu.md
 
 Horizontal links:
+
 - layouts.md
 - components.md
 - composables.md
 - debug.md
 
 Current convention:
+
 - Page owns route shell, metadata, layout, and high-level composition.
 - Layout owns shared chrome; see `layouts.md` before changing layout behavior.
 - Page should delegate domain display to named components.
@@ -38,6 +42,7 @@ Current convention:
   sitemap effects as an explicit route/SEO decision first.
 
 Common route families:
+
 - Public index: `/xs`.
 - Public detail: `/xs/[id-or-slug]`.
 - Factual console-operation index: `/operations`; entries point to working
@@ -51,7 +56,20 @@ Common route families:
 - Console child operation: `/console/x/<operation>`.
 - Dashboard/admin/dev surfaces where packages expose them.
 
+Dashboard overview notes:
+
+- Core owns the shared `/dashboard` route shell and the named Dashboard Overview
+  component family. Projects compose that route rather than forking an app-local
+  overview.
+- The User layer is universal. The Ecosystem layer appears only for an explicit
+  `ecosystemId` relationship, and the current App layer is universal.
+- User, private-account, canonical-App, and App-membership outcomes stay
+  independent so a scoped read failure cannot hide a valid public User.
+- Start at `packages/core/fireux-core/src/runtime/components/Dashboard/Overview.vue`
+  and `packages/core/fireux-core/src/runtime/pages/dashboard/index.vue`.
+
 Index page notes:
+
 - Public/root entity indexes should use `XCollectionManager`.
 - `XCollectionManager` should fetch the root/public entity collection itself.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
@@ -59,9 +77,11 @@ Index page notes:
 - Dev/demo pages should live under `/dev`, not ad hoc `/demo`.
 
 Detail page notes:
+
 - Preferred emerging order: header, profile, main, operator/actions, dev debug.
 - This is not fully settled across every entity yet.
 
 Open questions:
+
 - Exact public detail spine still needs alignment across all entities.
 - Menu public routes are actively evolving and should be handled carefully.

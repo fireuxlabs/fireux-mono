@@ -1,11 +1,10 @@
-import { useFirestoreSearch } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreSearch'
+// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: search projected Places without browser Firestore access.
 import { ref, watch } from 'vue'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { PlaceStorage, type BasePlace, type PlaceImageShade, type PlaceSource } from 'fireux-places/runtime/models/place.model'
+import { type BasePlace, type PlaceImageShade, type PlaceSource } from 'fireux-places/runtime/models/place.model'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'
-import { searchFirestorePrimary } from './searchFirestorePrimary'
+import { searchPublicPrimary } from './searchPublicPrimary'
 import { searchGoogle } from './searchGoogle'
 
 type UsePlaceSearchOptions = {
@@ -14,10 +13,6 @@ type UsePlaceSearchOptions = {
 }
 
 export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
-  const { prefixSearch } = useFirestoreSearch()
-  const db = useFirestore()
-  const collectionName = PlaceStorage.collection
-
   const query = ref('')
   const results = ref<PlaceSearchCell[]>([])
   const selected = ref<BasePlace | null>(null)
@@ -81,9 +76,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
       let primaryDebug: Record<string, unknown> | null = null
 
       try {
-        const primary = await searchFirestorePrimary({
-          prefixSearch,
-          collectionName,
+        const primary = await searchPublicPrimary({
           term,
           termNormalized,
           mapToCard: mapToBasePlace,
@@ -108,8 +101,6 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
       const google = await searchGoogle({
         term,
         allowGoogle: true,
-        collectionName,
-        db,
         mapToCard: mapToBasePlace,
         type: options.type ?? null,
       })

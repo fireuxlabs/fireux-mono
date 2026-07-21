@@ -1,80 +1,94 @@
-import {
-  collection,
-  documentId,
-  limit,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
-import { computed, isRef, type ComputedRef, type Ref } from 'vue'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
+// Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: replace raw browser root reads with bounded exact API reads.
+import { useAsyncData } from '#imports'
+import { computed, isRef, ref, type ComputedRef, type Ref } from 'vue'
+import type {
+  PublicPlaceDetailResponse,
+  PublicPlaceProjection,
+} from 'fireux-places/runtime/models/place-public.model'
+import type { Place } from 'fireux-places/runtime/models/place.model'
 
 type PlaceLocatorInput = string | Ref<string | null | undefined>
 type PlaceFetchFunction = (id: string) => Ref<Place | undefined>
-
-const cleanLocator = (value: unknown) => String(value ?? '').trim()
-const cleanSlug = (value: unknown) => cleanLocator(value).toLowerCase()
-
-export function usePlaceFetch(): { place: PlaceFetchFunction }
-export function usePlaceFetch(id: PlaceLocatorInput): {
+type PublicPlaceReadOutcome = 'idle' | 'pending' | 'error' | 'missing' | 'ready'
+type PlaceFetchFactoryReturn = { place: PlaceFetchFunction }
+type PlaceFetchDetailReturn = {
   place: ComputedRef<Place | null>
   pending: ComputedRef<boolean>
+  error: Ref<unknown>
+  outcome: ComputedRef<PublicPlaceReadOutcome>
+  refresh: () => Promise<void>
+  ready: Promise<void>
   fetchPlace: PlaceFetchFunction
 }
-export function usePlaceFetch(id?: PlaceLocatorInput) {
-  const { firestoreFetchDoc, firestoreQuery } = useFirestoreRead()
-  const resolveDb = useFirestoreResolver()
-  const fetchPlace: PlaceFetchFunction = (placeId: string) =>
-    firestoreFetchDoc<Place>(PlaceStorage.collection, placeId)
 
+const cleanLocator = (value: unknown) => String(value ?? '').trim()
+const asPlace = (value: PublicPlaceProjection): Place => value as Place
+
+function createPlaceFetcher(): PlaceFetchFunction {
+  const cache = new Map<string, Ref<Place | undefined>>()
+
+  return (value: string) => {
+    const id = cleanLocator(value)
+    const existing = cache.get(id)
+    if (existing) return existing
+
+    const place = ref<Place>()
+    cache.set(id, place)
+    if (!id || import.meta.server) return place
+
+    void $fetch<PublicPlaceDetailResponse>(
+      `/api/places/${encodeURIComponent(id)}`
+    ).then(response => {
+      place.value = response?.item ? asPlace(response.item) : undefined
+    }).catch(() => {
+      place.value = undefined
+    })
+
+    return place
+  }
+}
+
+export function usePlaceFetch(): PlaceFetchFactoryReturn
+export function usePlaceFetch(id: PlaceLocatorInput): PlaceFetchDetailReturn
+export function usePlaceFetch(
+  id?: PlaceLocatorInput
+): PlaceFetchFactoryReturn | PlaceFetchDetailReturn {
+  const fetchPlace = createPlaceFetcher()
   if (id === undefined) return { place: fetchPlace }
 
-  const placeLocator = isRef(id)
+  const locator = isRef(id)
     ? computed(() => cleanLocator(id.value))
     : computed(() => cleanLocator(id))
-  const placeSlug = computed(() => cleanSlug(placeLocator.value))
-  const placeIdQuery = computed<Query<Place> | null>(() => {
-    if (!placeLocator.value) return null
-
-    return fsq(
-      collection(resolveDb(), PlaceStorage.collection),
-      where(documentId(), '==', placeLocator.value),
-      limit(1)
-    ) as Query<Place>
+  const state = useAsyncData<PublicPlaceDetailResponse | null>(
+    () => `public-place-detail|${locator.value || 'none'}`,
+    async () => {
+      if (!locator.value) return null
+      return $fetch<PublicPlaceDetailResponse>(
+        `/api/places/${encodeURIComponent(locator.value)}`
+      )
+    },
+    { server: true, watch: [locator] }
+  )
+  const place = computed<Place | null>(() =>
+    state.data.value?.item ? asPlace(state.data.value.item) : null
+  )
+  const pending = computed(() => state.pending.value)
+  const outcome = computed<PublicPlaceReadOutcome>(() => {
+    if (!locator.value) return 'idle'
+    if (state.pending.value) return 'pending'
+    if (state.error.value) return 'error'
+    return place.value ? 'ready' : 'missing'
   })
-  const placeSlugQuery = computed<Query<Place> | null>(() => {
-    if (!placeSlug.value) return null
-
-    return fsq(
-      collection(resolveDb(), PlaceStorage.collection),
-      where('slug', '==', placeSlug.value),
-      limit(1)
-    ) as Query<Place>
-  })
-  const byIdSource = firestoreQuery<Place>(
-    placeIdQuery,
-    'place-fetch-by-id',
-    PlaceStorage.collection
-  )
-  const bySlugSource = firestoreQuery<Place>(
-    placeSlugQuery,
-    'place-fetch-by-slug',
-    PlaceStorage.collection
-  )
-  const place = computed<Place | null>(
-    () => byIdSource.value?.[0] ?? bySlugSource.value?.[0] ?? null
-  )
-  const pending = computed(
-    () =>
-      Boolean(placeLocator.value) &&
-      (byIdSource.value === undefined || bySlugSource.value === undefined)
-  )
 
   return {
     place,
     pending,
+    error: state.error as Ref<unknown>,
+    outcome,
+    refresh: async () => {
+      await state.refresh()
+    },
+    ready: state.then(() => undefined),
     fetchPlace,
   }
 }

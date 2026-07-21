@@ -6,6 +6,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: map semantic project-color enforcement. -->
 <!-- Concurrent edit — 2026-07-21 13:03 CEST — CSS architecture pass: map atomic CSS contracts to the domain-first component and page spine. -->
 <!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: make Nuxt UI the default and global CSS the proven exception. -->
+<!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: keep editor rhythm in Nuxt UI cards and named form components. -->
 
 Purpose:
 Map component folder and naming conventions.
@@ -51,8 +52,9 @@ CSS-to-component mapping:
   named `X/Cards/*` components; collection organisms to `X/Collection/*` and
   console indexes; console header/summary molecules plus the console surface
   organism to `Console/X/*`; public-action organisms to claim/operator panels;
-  profile cards/editors to named `Cards/Profile` and `Edit/*` trees; and page
-  organisms to genuinely shared layout and route regions. Solution grids,
+  profile cards to named `Cards/Profile` trees; profile editors use Nuxt UI
+  cards and named `Edit/*` form composition; and page organisms to genuinely
+  shared layout and route regions. Solution grids,
   compact metrics, ordinary card roots, and dashboard body stacks use Nuxt UI
   directly rather than retaining parallel global CSS.
 - `assets/styles/main.scss` is the explicit cascade authority. Its import order
@@ -182,8 +184,10 @@ Working rules:
   or component. Core rhythm and composition live in the specifically named
   modules under `assets/styles/scss/molecules` and
   `assets/styles/scss/organisms`; `organisms/page-layouts.scss` owns the shared
-  page/list rhythm family. Domain-owned semantic seams, such as Menu spacing,
-  may remain when their defaults derive from `--spacing`.
+  page/list rhythm family. Profile editor headers and field rhythm remain with
+  Nuxt UI page cards and their named form components rather than a global
+  editor organism. Domain-owned semantic seams, such as Menu spacing, may
+  remain when their defaults derive from `--spacing`.
 - Off-grid spacing is an explicit local delta for branded optical layout,
   responsive/viewport geometry, safe areas, print, artwork, or accessibility;
   it is not another general-purpose scale.

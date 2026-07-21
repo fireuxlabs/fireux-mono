@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: shared explicit Firebase Admin credential resolution for operational scripts.
+// Concurrent edit — 2026-07-21 14:13 CEST — Werkbox Firebase hardening: resolve application-default credentials for the read-only canonical migration plan.
 // Concurrent edit — 2026-07-20 11:26 CEST — Directory Live Provisioning Pass: record live reconciliation credential use.
 
 import path from 'node:path'

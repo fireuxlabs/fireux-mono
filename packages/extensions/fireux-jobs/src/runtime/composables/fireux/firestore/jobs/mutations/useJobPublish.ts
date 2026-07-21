@@ -1,5 +1,5 @@
-import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
-import { JobStorage } from '../../../../../models/job.model'
+// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: publish only through the validated author lifecycle route.
+import { publishAuthorJobRequest } from '../../../jobs/author/jobAuthorClient'
 
 export type JobPublishInput = {
   id: string
@@ -9,8 +9,6 @@ export type JobPublishInput = {
 const clean = (value: unknown) => String(value ?? '').trim()
 
 export function useJobPublish() {
-  const { publish } = usePublish()
-
   async function publishJob(input: JobPublishInput) {
     const id = clean(input.id)
     const title = input.title === undefined ? undefined : clean(input.title)
@@ -20,14 +18,7 @@ export function useJobPublish() {
       throw new Error('Job title is required before publishing.')
     }
 
-    return publish({
-      collectionPath: JobStorage.collection,
-      id,
-      routePath: `/${JobStorage.collection}/${encodeURIComponent(id)}`,
-      patch: {
-        visibility: 'public',
-      },
-    })
+    return publishAuthorJobRequest(id)
   }
 
   return {
