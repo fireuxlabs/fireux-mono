@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 14:41 CEST — Company public projection: exact-load one complete pair without caching materialization misses.
+// Concurrent edit — 2026-07-21 15:20 CEST — Misebox Nitro startup fix: resolve the Place model through its explicit TypeScript server import.
 import {
   createError,
   defineEventHandler,
@@ -7,7 +8,7 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import type { PublicCompanyDetailResponse } from '../../../models/company-public.model'
 import { CompanyStorage } from '../../../models/company.model'
 import { projectPublicCompany } from '../../company/public-projection'

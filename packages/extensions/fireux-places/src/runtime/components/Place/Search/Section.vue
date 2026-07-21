@@ -1,5 +1,7 @@
 <!-- FILE: packages/extensions/fireux-places/src/runtime/components/Place/Search/Section.vue -->
 <!-- flag -->
+<!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: expose selection clearing without changing existing direct-create consumers. -->
+<!-- Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: keep logo discovery optional and selection-scoped. -->
 <template>
   <div class="space-y-4">
     <PlaceSearchBar v-model="query" :placeholder="placeholder" />
@@ -20,7 +22,7 @@
           size="sm"
           color="neutral"
           variant="soft"
-          @click="clear"
+          @click="clearSelection"
         >
           Clear
         </UButton>
@@ -55,7 +57,6 @@ import { computed, nextTick, ref, watch } from 'vue'
 import { usePlaceSearch } from '../../../composables/fireux/firestore/place/fetch/search/usePlaceSearch'
 import { usePlaceCreate } from '../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
 import {
-    loadLogoForPlace,
     sanitizeLogoAvatar,
     usePlaceLogoState,
 } from '../../../composables/fireux/firestore/place/utils/view/usePlaceLogos'
@@ -83,6 +84,7 @@ const placeholder = computed(() => props.placeholder || undefined)
 const emit = defineEmits<{
   (e: 'selected', payload: { placeId: string; place: PlaceUpsertInput }): void
   (e: 'confirmed', payload: { placeId: string; place: PlaceUpsertInput }): void
+  (e: 'cleared'): void
 }>()
 
 const showConfirmButton = computed(() => props.showConfirmButton ?? true)
@@ -121,7 +123,7 @@ const selectedCell = computed(() =>
 const selectedLogoTarget = computed(
   () => selectedCell.value ?? selectedPlace.value ?? null
 )
-const { avatar: selectedLogo, hydrate: hydrateLogo, isLoading: selectedLogoLoading } = usePlaceLogoState(
+const { avatar: selectedLogo, isLoading: selectedLogoLoading } = usePlaceLogoState(
   selectedLogoTarget
 )
 
@@ -131,6 +133,11 @@ const selectedImageUrl = computed(
 
 const { ensurePlaceExists } = usePlaceCreate({ type: props.type })
 const confirming = ref(false)
+
+function clearSelection() {
+  clear()
+  emit('cleared')
+}
 
 function handleSelectPlace(place: BasePlace) {
   selectPlace(place)
@@ -248,45 +255,6 @@ async function onConfirmClick() {
     }
 
     let logoOverride = selectedLogo.value
-
-    if (selectedSource.value === 'google') {
-      const cardForLogo = selectedCell.value ?? placeInterface(place as any)
-      const cachedLogo = cardForLogo
-        ? await loadLogoForPlace(cardForLogo, { timeoutMs: 2000, priority: true })
-        : null
-
-      if (import.meta.dev) {
-        console.log('[places][confirm] cached-logo', {
-          placeId,
-          hasCard: Boolean(cardForLogo),
-          cached_logo: cachedLogo ?? '',
-        })
-      }
-
-      if (cachedLogo) {
-        logoOverride = sanitizeLogoAvatar(cachedLogo) ?? null
-      } else {
-        const hydrated = await hydrateLogo({ timeoutMs: 6000, forceReload: true })
-        const resolved = cardForLogo
-          ? await loadLogoForPlace(cardForLogo, {
-              timeoutMs: 6000,
-              forceReload: true,
-              priority: true,
-            })
-          : null
-
-        if (import.meta.dev) {
-          console.log('[places][confirm] hydrated-logo', {
-            placeId,
-            hydrated_logo: hydrated ?? '',
-            resolved_logo: resolved ?? '',
-          })
-        }
-
-        logoOverride =
-          sanitizeLogoAvatar(resolved ?? hydrated ?? selectedLogo.value) ?? null
-      }
-    }
 
     if (import.meta.dev) {
       console.log('[places][confirm] logo', {

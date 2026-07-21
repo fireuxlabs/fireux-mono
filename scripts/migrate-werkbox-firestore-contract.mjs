@@ -4,6 +4,7 @@
 // last_used: 2026-07-21
 // usage_note: validate or explicitly apply a protected Werkbox canonical-data plan before strict Firestore Rules are released.
 // Concurrent edit — 2026-07-21 14:40 CEST — Werkbox Firebase hardening: require live trusted APIs and deny-all quarantine before an inventory-verified canonical migration.
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: bind migration evidence only to the verified Core-composed candidate artifact.
 
 import { execFile } from 'node:child_process'
 import { createHash, randomUUID } from 'node:crypto'
@@ -24,6 +25,7 @@ import {
   firebaseAdminCredentialHelp,
   resolveFirebaseAdminCredential,
 } from './_lib/firebase-admin-credentials.mjs'
+import { assertFirestoreRulesArtifactCurrent } from './_lib/firestore-rules-source.mjs'
 import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 import { buildWerkboxServerSourceEvidence } from './_lib/werkbox-security-contract.mjs'
 
@@ -68,9 +70,6 @@ const RULES_API = 'https://firebaserules.googleapis.com/v1'
 const REPO_ROOT = fileURLToPath(new URL('../', import.meta.url))
 const PLANNER_PATH = fileURLToPath(
   new URL('./plan-werkbox-firestore-migration.mjs', import.meta.url)
-)
-const CANDIDATE_RULES_PATH = fileURLToPath(
-  new URL('./firebase/werkbox/firestore.rules', import.meta.url)
 )
 const QUARANTINE_RULES_PATH = fileURLToPath(
   new URL('./firebase/werkbox/firestore-quarantine.rules', import.meta.url)
@@ -239,9 +238,8 @@ try {
       (operation) => operation.path !== MIGRATION_MARKER_PATH
     )
     const sourceEvidence = await buildServerApiSourceEvidence()
-    const candidateRulesSha256 = rawSha256(
-      await readFile(CANDIDATE_RULES_PATH, 'utf8')
-    )
+    const candidateRules = await assertFirestoreRulesArtifactCurrent('werkbox')
+    const candidateRulesSha256 = rawSha256(candidateRules.content)
     const quarantineRulesSha256 = rawSha256(
       await readFile(QUARANTINE_RULES_PATH, 'utf8')
     )

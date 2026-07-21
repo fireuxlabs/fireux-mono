@@ -1,6 +1,7 @@
 Composables spine map
-Updated: 2026-07-19
-Ref: 258a4f8f3
+<!-- Concurrent edit — 2026-07-21 16:00 CEST — Place onboarding reconciliation: map shared and domain onboarding composables. -->
+Updated: 2026-07-21
+Ref: b020f805e
 Role: map, not canon
 
 Purpose:
@@ -37,6 +38,10 @@ Naming note:
   and should collapse into the menu/kitchen spine as those seams are cleaned.
 
 Naming notes:
+- `useOnboarding`: domain-free staged-flow mechanics only. It must not own an
+  entity draft, provider call, persistence, copy, or completion route.
+- `useXOnboarding`: named domain adapter over `useOnboarding`; owns its draft,
+  hydration, validation, mutation boundary, and completion result.
 - `useXCreate`: create an entity/record through a client runtime seam when the
   work is mostly Firestore data. See create.md before using it for upload or
   provider transactions.

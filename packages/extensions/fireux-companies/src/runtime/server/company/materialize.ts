@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 14:18 CEST — Werkbox Firebase hardening: materialize same-id Companies only for current-App members after the canonical Place exists.
+// Concurrent edit — 2026-07-21 15:20 CEST — Misebox Nitro startup fix: resolve the Place model through its explicit TypeScript server import.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -6,7 +7,7 @@ import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import { CompanyStorage } from '../../models/company.model'
 
 type CompanyMaterializeRequest = {

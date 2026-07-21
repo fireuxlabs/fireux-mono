@@ -98,6 +98,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: carry public biography through directory cards and live-self hydration.
 import { useFetch } from '#imports'
 import { computed } from 'vue'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
@@ -113,6 +114,7 @@ type PublicUserDto = {
   id: string
   handle: string
   displayName: string
+  bio: string
   avatar: string
   apps: string[]
   profiles: string[]
@@ -177,6 +179,7 @@ const liveSelfUser = computed<PublicUserDto | null>(() => {
     id: String(user.id || '').trim(),
     handle,
     displayName,
+    bio: String(user.bio || '').trim(),
     avatar,
     apps: Array.isArray(user.app_ids) ? user.app_ids : [],
     profiles: Array.isArray(user.profiles) ? user.profiles : [],
@@ -212,6 +215,7 @@ const collection = computed<User[]>(() =>
     ...UserModel,
     id: user.id,
     display_name: user.displayName,
+    bio: user.bio,
     avatar: user.avatar,
     handle: user.handle,
     app_ids: Array.isArray(user.apps) ? user.apps : [],

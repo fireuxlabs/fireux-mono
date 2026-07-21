@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: keep public User surfaces on canonical root identity.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: accept minimal allowlisted User identity on public and admin cards.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: map optional biography into shared User cards.
 import {
   safeArray,
   safeString,
@@ -55,7 +56,7 @@ export type UserIdentitySurface = Pick<
   User,
   'id' | 'display_name' | 'avatar' | 'handle'
 > &
-  Partial<Pick<User, 'app_ids' | 'profiles'>>
+  Partial<Pick<User, 'bio' | 'app_ids' | 'profiles'>>
 
 export const USER_AVATAR_FALLBACK_SRC = USER_ECOSYSTEM_AVATAR_SRC
 
@@ -94,6 +95,7 @@ export function useUserInterface(
     const handle = normalizeUserHandle(safeString(user.handle))
     const handleLabel = handle ? `@${handle}` : ''
     const displayName = safeString(user.display_name).trim() || handleLabel || id
+    const bio = safeString(user.bio).trim()
     const appCount = safeArray(user.app_ids).length
     const profiles = safeArray<string>(user.profiles)
 
@@ -109,7 +111,7 @@ export function useUserInterface(
       displayName,
       title: profiles[0] || '',
       subtitle: displayName !== handleLabel ? handleLabel : '',
-      summary: '',
+      summary: bio,
 
       handle: handleLabel,
       badges: profiles,
@@ -118,7 +120,7 @@ export function useUserInterface(
       contactPhone: '',
       websiteUrl: '',
 
-      bio: '',
+      bio,
       profiles,
       appsLabel: appCount ? `${appCount} app${appCount === 1 ? '' : 's'}` : '',
     }

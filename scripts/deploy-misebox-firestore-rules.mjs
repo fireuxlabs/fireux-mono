@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: compile, back up, stage, promote, or roll back Misebox named-database Firestore Security Rules through the Firebase Rules REST API.
 // Concurrent edit — 2026-07-20 12:41 CEST — Security spine: gate promotion on exhaustive public fixtures, query cases, and private authority attacks.
 // Concurrent edit — 2026-07-20 13:44 CEST — User/profile security pass: exercise trusted-only identity, handle, overlay, grant, and full-order boundaries.
@@ -12,6 +12,8 @@
 // Concurrent edit — 2026-07-20 19:51 CEST — Ecosystem-avatar fixture: preserve the canonical slash-prefixed value as a Rules string.
 // Concurrent edit — 2026-07-20 20:02 CEST — Repo Efficiency Pass 2 security fixtures: exercise API-only public profile reads and bounded owner mutations.
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: share protected JSON backup writing without sharing release authority.
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: require the verified Core-composed candidate artifact before release work.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: adversarially test optional bounded public biography writes.
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
@@ -20,6 +22,7 @@ import {
   firebaseAdminCredentialHelp,
   resolveFirebaseAdminCredential,
 } from './_lib/firebase-admin-credentials.mjs'
+import { assertFirestoreRulesArtifactCurrent } from './_lib/firestore-rules-source.mjs'
 import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 
 const PROJECT_ID = 'misebox-78f9c'
@@ -27,10 +30,6 @@ const SIMULATION_DATABASE_ID = 'misebox-simulation'
 const PRODUCTION_DATABASE_ID = 'misebox'
 const BOOTSTRAP_DEVELOPER_ID = 'yZ1nY4RtxnMnJwcVZnaMBigqM1A2'
 const ECOSYSTEM_AVATAR = '/img/ecosystem/avatar.png'
-const RULES_PATH = new URL(
-  './firebase/misebox/firestore.rules',
-  import.meta.url
-)
 const MISEBOX_ENV_PATH = new URL(
   '../projects/misebox/misebox-app/.env',
   import.meta.url
@@ -94,7 +93,7 @@ if (selectedActions.length !== 1) {
   throw new Error('Choose exactly one action. Use --help for usage.')
 }
 
-const content = await readFile(RULES_PATH, 'utf8')
+const { content } = await assertFirestoreRulesArtifactCurrent('misebox')
 const localEnv = await readFile(MISEBOX_ENV_PATH, 'utf8').catch((error) => {
   if (error?.code === 'ENOENT') return ''
   throw error
@@ -910,6 +909,13 @@ async function buildSecurityTests() {
   )
   const appDriverData = firestoreRulesResource(appDriverDocument).data
   const publicUserData = firestoreRulesResource(publicUserDocument).data
+  const publicUserDataWithoutBio = Object.fromEntries(
+    Object.entries(publicUserData).filter(([field]) => field !== 'bio')
+  )
+  const publicUserDataWithBio = {
+    ...publicUserDataWithoutBio,
+    bio: 'I build useful things.',
+  }
   const forgedPublicUserProfiles =
     Array.isArray(publicUserData.profiles) &&
     publicUserData.profiles.includes('chef')
@@ -1983,6 +1989,71 @@ async function buildSecurityTests() {
         updated: { at: updateTime, by: publicUserId },
       },
       updateTime
+    ),
+    allowedUpdate(
+      'owner can add a bounded public User bio',
+      `users/${publicUserId}`,
+      publicUserId,
+      publicUserDataWithoutBio,
+      {
+        ...publicUserDataWithoutBio,
+        bio: 'I build useful things.',
+        updated: { at: updateTime, by: publicUserId },
+      },
+      updateTime
+    ),
+    allowedUpdate(
+      'owner can store a 280-character public User bio',
+      `users/${publicUserId}`,
+      publicUserId,
+      publicUserDataWithoutBio,
+      {
+        ...publicUserDataWithoutBio,
+        bio: 'b'.repeat(280),
+        updated: { at: updateTime, by: publicUserId },
+      },
+      updateTime
+    ),
+    allowedUpdate(
+      'owner can remove optional public User bio',
+      `users/${publicUserId}`,
+      publicUserId,
+      publicUserDataWithBio,
+      {
+        ...publicUserDataWithoutBio,
+        updated: { at: updateTime, by: publicUserId },
+      },
+      updateTime
+    ),
+    deniedUpdate(
+      'owner cannot exceed the public User bio limit',
+      `users/${publicUserId}`,
+      publicUserId,
+      publicUserDataWithoutBio,
+      {
+        ...publicUserDataWithoutBio,
+        bio: 'b'.repeat(281),
+        updated: { at: updateTime, by: publicUserId },
+      }
+    ),
+    ...[
+      ['number', 42],
+      ['list', []],
+      ['map', {}],
+      ['boolean', true],
+      ['null', null],
+    ].map(([label, bio]) =>
+      deniedUpdate(
+        `owner cannot store a ${label} public User bio`,
+        `users/${publicUserId}`,
+        publicUserId,
+        publicUserDataWithoutBio,
+        {
+          ...publicUserDataWithoutBio,
+          bio,
+          updated: { at: updateTime, by: publicUserId },
+        }
+      )
     ),
     deniedUpdate(
       'owner cannot self-assign or remove a canonical profile tag',

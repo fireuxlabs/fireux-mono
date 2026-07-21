@@ -17,6 +17,8 @@ import {
 } from '../utils/appEnsurePayload'
 import { syncAppMediaToStorage } from '../utils/appMediaSync'
 
+// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer App write clients until the explicit create action.
+
 export type AppCreateOptions = {
   collectionPath?: string
 }
@@ -27,15 +29,15 @@ export type AppCreateResult = {
 }
 
 export function useAppCreate(options: AppCreateOptions = {}) {
-  const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
-  const { updateDocument } = useFirestoreUpdate()
-  const { createEcosystem } = useEcosystemCreate()
   const collectionPath =
     normalizeString(options.collectionPath || AppStorage.collection) ||
     AppStorage.collection
 
   async function createApp(input?: AppCreateInput): Promise<AppCreateResult> {
+    const db = useFirestore()
+    const { setDocument } = useFirestoreCreate()
+    const { updateDocument } = useFirestoreUpdate()
+    const { createEcosystem } = useEcosystemCreate()
     const fireux = useFireUXConfig()
     const payload = input ?? buildAppEnsureCreateInput(fireux)
     const resolvedId = normalizeString(payload?.id)

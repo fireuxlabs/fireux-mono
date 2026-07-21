@@ -18,6 +18,8 @@ Effective: 2026-07-20
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: point entity authority guidance at the explicit root/App-support guard. -->
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Entity Vocabulary + Matrix Pass: separate identity, authority, App support, and public-read classification. -->
 <!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Passes 2–3 of 3: record package build lifecycle and durable gates. -->
+<!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: record optional bounded biography as public User identity. -->
+<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: record Core fragments, ecosystem templates, and locked release artifacts. -->
 
 ## Current Documentation State
 
@@ -55,6 +57,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - Collection managers: `docs/concepts/collection-manager.md`
 - Composables spine: `docs/concepts/composables.md`
 - Firestore entity spine: `docs/concepts/firestore-entity.md`
+- Firestore Rules source spine: `docs/concepts/firestore-rules.md`
 - Console spine: `docs/concepts/console.md`
 - Demo Data spine: `docs/concepts/demo-data.md`
 - Server API spine: `docs/concepts/server-api.md`
@@ -392,6 +395,8 @@ Identity records follow one strict boundary: `/users/{uid}` is public identity,
 `/users/{uid}/private/account` is owner-private account data,
 `/users/{uid}/notifications/{notificationId}` is owner-only delivery/read state,
 and `/apps/{appId}/users/{uid}` is app membership and capability authority.
+`User.bio` is optional public plain text capped at 280 characters; it belongs on
+the root User, never UserPrivate, UserApp, or a duplicated identity snapshot.
 User, UserApp, and root/app profile documents never embed identity snapshots or
 notification arrays. Root profiles join canonical User by matching uid.
 Profile creation goes through a fixed authenticated domain endpoint backed by
@@ -421,6 +426,33 @@ assigning the reference. Before client Place writes are ever unblocked, move
 structured Professional writes behind a trusted server boundary that verifies
 every referenced Place; syntactic Rules validation alone cannot prove up to 24
 references within Firestore access-call limits.
+
+## Firestore Rules Source Spine
+
+Main-database Firestore Rules use a composed source boundary. Shared,
+byte-identical policy primitives belong to FireUX Core under
+`packages/core/fireux-core/src/config/firebase/rules`; an opted-in ecosystem
+owns its complete template manifest and every project/database/domain delta at
+`packages/ecosystem/<ecosystem>/src/config/firebase/firestore.template.rules`.
+
+Complete reviewable release artifacts remain tracked at
+`scripts/firebase/<ecosystem>/firestore.rules`. They are deterministic output,
+not another policy owner. `scripts/render-firestore-rules.mjs` checks drift by
+default and writes only with explicit `--write`; deploy and migration scripts
+must verify the artifact and must never regenerate it implicitly. Simulation
+hashes, migration evidence, rollback, compile tests, and releases bind that
+complete artifact.
+
+Firestore Rules do not support imports. Add a Core fragment only for genuinely
+shared semantics. Keep differing App ids, database gates, profile sets, query
+limits, bootstrap authority, domain paths, and migration exceptions visible in
+the ecosystem template instead of hiding them behind booleans. Ordinary app
+`firebase.json` files remain Hosting/Functions surfaces and must not acquire a
+competing main Rules source.
+
+Current opted-in main Rules targets are Misebox and Werkbox. Other ecosystems
+must first audit their concrete project, database edition, paths, queries, and
+authority before adding a template. See `docs/concepts/firestore-rules.md`.
 
 ## Component Spine
 

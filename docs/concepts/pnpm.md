@@ -8,6 +8,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-20 22:38 CEST — Repo Efficiency Pass 5 of 6: map manifest ownership and shared H3 type identity. -->
 <!-- Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: map package-command target validation. -->
 <!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: map package and baseline production build gates. -->
+<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: map the deterministic Rules artifact command. -->
 
 Purpose:
 Explain workspace/package command context.
@@ -41,6 +42,8 @@ Common commands:
 - `pnpm build:nuxt-baseline`
 - `pnpm audit:scripts`
 - `pnpm audit:app-media -- --ecosystem <key>`
+- `pnpm firebase:rules:render` (read-only drift check; pass `--write` only for
+  an intentional local artifact regeneration)
 - `pnpm sync:misebox-public-card-snapshots -- --project <id> --database <id>`
 - `pnpm gitsave`
 - `pnpm --dir <package-or-app> exec tsc --noEmit`

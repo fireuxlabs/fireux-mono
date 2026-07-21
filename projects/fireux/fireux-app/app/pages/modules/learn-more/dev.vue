@@ -14,7 +14,7 @@
 
         <ul class="list-disc fx-list-stack text-sm">
           <li>Package metadata: tracked package <code>registry.json</code> files.</li>
-          <li>Module index route reads product records filtered by <code>product_type = module</code>.</li>
+          <li>The module index is an authored public projection of reusable packages under <code>packages/extensions/fireux-*</code>.</li>
           <li>Module detail route is exposed as <code>/modules/[id]</code>.</li>
         </ul>
       </UCard>

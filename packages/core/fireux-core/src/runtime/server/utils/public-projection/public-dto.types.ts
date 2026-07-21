@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: transport domain fields beside canonical User identity.
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: keep creator principals out of public App transport.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: define the minimal public identity and App-admin people transport.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography only on full public User transport.
 import type { AppStatus } from '../../../models/core/app.model'
 import type {
   AppDerived,
@@ -23,6 +24,7 @@ export type PublicUserDto = PublicSeoDto & {
   id: string
   handle: string
   displayName: string
+  bio: string
   avatar: string
   apps: string[]
   profiles: string[]

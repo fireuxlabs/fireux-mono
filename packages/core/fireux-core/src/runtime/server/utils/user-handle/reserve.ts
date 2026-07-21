@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: require current legal evidence before trusted identity creation.
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: provision only trusted HTTPS or ecosystem-default avatars.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: provision the optional public biography field empty.
 
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
@@ -174,6 +175,7 @@ export async function reserveUserHandle(input: {
 
       transaction.create(userRef, {
         display_name: creation.displayName,
+        bio: '',
         avatar: creation.avatar,
         handle,
         app_ids: [],

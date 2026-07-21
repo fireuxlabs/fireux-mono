@@ -1,54 +1,126 @@
 <template>
-  <section class="space-y-4">
+  <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: orchestrate Place-owned steps over shared mechanics. -->
+  <section
+    data-onboarding-family="place"
+    :data-onboarding-step="activeStepId || undefined"
+  >
     <MoleculesCreateCard>
       <template #header>
-        <div class="space-y-1">
-          <div class="font-medium">Select a place</div>
-          <div class="text-sm text-dimmed">
-            Confirm the canonical place record so other entities can reuse the same location truth.
+        <div class="form-stack-sm">
+          <UBadge color="neutral" variant="soft">
+            Step {{ stepNumber }} of {{ stepCount }}
+          </UBadge>
+          <div>
+            <strong>{{ currentStep?.label }}</strong>
+            <p class="form-text-muted">{{ currentStep?.description }}</p>
           </div>
+          <UProgress :model-value="progress" :max="100" />
         </div>
       </template>
 
-      <PlaceSearchSection
-        :type="type"
-        :placeholder="placeholder"
-        @confirmed="onConfirmed"
+      <PlaceCreateSearch
+        v-show="activeStepId === 'find'"
+        :pending="selectionPending"
+        :error="selectionError"
+        @selected="selectPlace"
+        @cleared="clearSelection"
+      />
+
+      <PlaceCreateIdentity
+        v-if="activeStepId === 'identity' && draft"
+        :place="draft"
+        :existing="isExisting"
+      />
+
+      <PlaceCreateReview
+        v-if="activeStepId === 'review' && draft"
+        :place="draft"
+        :existing="isExisting"
       />
 
       <UAlert
-        color="neutral"
+        v-if="error"
+        color="error"
         variant="soft"
-        icon="i-lucide-info"
-        title="Canonical place"
-        description="This flow confirms the shared place record. Public entities and consoles can layer on top of it later."
+        icon="i-lucide-triangle-alert"
+        title="Unable to continue"
+        :description="error"
       />
+
+      <template #footer>
+        <UFieldGroup>
+          <UButton
+            v-if="!isFirstStep"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-arrow-left"
+            :disabled="pending"
+            @click="back"
+          >
+            Back
+          </UButton>
+          <UButton
+            color="primary"
+            :icon="isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'"
+            :loading="pending"
+            :disabled="continueDisabled"
+            @click="onContinue"
+          >
+            {{ continueLabel }}
+          </UButton>
+        </UFieldGroup>
+      </template>
     </MoleculesCreateCard>
   </section>
 </template>
 
 <script setup lang="ts">
-import type { PlaceUpsertInput } from '../../../models/place.model'
-
-withDefaults(
-  defineProps<{
-    type?: string | null
-    placeholder?: string | null
-  }>(),
-  {
-    type: null,
-    placeholder: null,
-  }
-)
+import { computed } from 'vue'
+import {
+  usePlacesOnboarding,
+  type PlaceOnboardingResult,
+} from '../../../composables/fireux/place/usePlacesOnboarding'
 
 const emit = defineEmits<{
-  (e: 'created', payload: { id: string; place: PlaceUpsertInput }): void
+  (event: 'created', result: PlaceOnboardingResult): void
 }>()
 
-function onConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
-  emit('created', {
-    id: payload.placeId,
-    place: payload.place,
-  })
+const {
+  activeStepId,
+  back,
+  clearSelection,
+  completion,
+  currentStep,
+  draft,
+  error,
+  finished,
+  isExisting,
+  isFirstStep,
+  isLastStep,
+  next,
+  pending,
+  progress,
+  selectPlace,
+  selectionError,
+  selectionPending,
+  stepCount,
+  stepNumber,
+} = usePlacesOnboarding()
+
+const continueDisabled = computed(() =>
+  pending.value ||
+  finished.value ||
+  selectionPending.value ||
+  (activeStepId.value === 'find' && !draft.value)
+)
+
+const continueLabel = computed(() => {
+  if (!isLastStep.value) return 'Continue'
+  return isExisting.value ? 'Use Place' : 'Add Place'
+})
+
+async function onContinue() {
+  const advanced = await next()
+  if (advanced && completion.value) emit('created', completion.value)
 }
 </script>

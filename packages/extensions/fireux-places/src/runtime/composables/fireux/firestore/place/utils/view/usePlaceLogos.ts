@@ -1,7 +1,8 @@
+// Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: dedupe and negatively cache bounded logo discovery.
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
-import type { BasePlace } from 'fireux-places/runtime/models/place.model'
-import type { PlaceCard } from './usePlaceInterface'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import type { BasePlace } from 'fireux-places/runtime/models/place.model.ts'
+import type { PlaceCard } from './usePlaceInterface.ts'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 
 const LOGO_ENDPOINT = '/api/places/logo'
 const DETAILS_ENDPOINT = '/api/places/details'
@@ -281,22 +282,18 @@ export async function loadLogoForPlace(
 
   if (logoResultCache.has(placeId)) {
     const cached = logoResultCache.get(placeId) ?? null
-    if (cached) {
-      logEvent('load:cache-hit', { placeId })
-      return cached
-    }
-    logEvent('load:cache-empty', { placeId })
-    logoResultCache.delete(placeId)
-  }
-
-  if (!options.priority) {
-    logEvent('load:cancel-before-refresh', { placeId })
-    cancelLogoRequest(placeId)
+    logEvent(cached ? 'load:cache-hit' : 'load:cache-empty', { placeId })
+    return cached
   }
 
   if (logoPromiseCache.has(placeId)) {
     logEvent('load:pending-reuse', { placeId })
     return logoPromiseCache.get(placeId) ?? null
+  }
+
+  if (!options.priority) {
+    logEvent('load:cancel-before-refresh', { placeId })
+    cancelLogoRequest(placeId)
   }
 
   const controller = new AbortController()
@@ -311,11 +308,7 @@ export async function loadLogoForPlace(
         requestId,
         result: sanitizeLogValue(url),
       })
-      if (url) {
-        logoResultCache.set(placeId, url)
-      } else {
-        logoResultCache.delete(placeId)
-      }
+      logoResultCache.set(placeId, url)
       return url
     })
     .catch((error) => {
@@ -484,7 +477,10 @@ async function resolveWebsite(
 
       const json = await res.json()
       const result = (json?.result ?? null) as Record<string, any> | null
-      if (!result) return null
+      if (!result) {
+        detailsResultCache.set(placeId, null)
+        return null
+      }
 
       const website = normalizeUrl(result.website)
       const mapsUrl = normalizeUrl(result.url)
@@ -556,6 +552,11 @@ async function attemptLogoFetch(
     url: sanitizeLogValue(hint?.url),
     waitedMs: roundDuration(performanceNow() - attemptStart),
   })
+
+  if (!hint?.website) {
+    logEvent('fetch:no-website', { placeId })
+    return null
+  }
 
   const logoUrl = new URL(LOGO_ENDPOINT, window.location.origin)
   applyLogoSearchParams(logoUrl.searchParams, hint)

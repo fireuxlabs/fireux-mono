@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-21 14:57 CEST — Dashboard Overview pass: orchestrate independent User, Ecosystem, and App layers. -->
+<!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: lead with the real User and current workspace while preserving authority boundaries. -->
 <template>
   <MoleculesStateCard
     v-if="coreIsLoading"
@@ -15,12 +15,6 @@
   />
 
   <template v-else-if="coreUser && userCard">
-    <UPageHeader
-      headline="Overview"
-      :title="`Welcome back, ${userCard.displayName}`"
-      :description="overviewDescription"
-    />
-
     <div class="space-y-4">
       <DashboardOverviewUser
         :card="userCard"
@@ -28,15 +22,11 @@
         :private-outcome="privateOutcome"
       />
 
-      <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-2' : 'grid gap-4'">
-        <DashboardOverviewEcosystem
-          v-if="hasEcosystem"
-          :profile-entries="ecosystemProfileEntries"
-        />
+      <div :class="hasEcosystem ? 'grid gap-4 xl:grid-cols-3' : 'grid gap-4'">
         <DashboardOverviewApp
+          :class="hasEcosystem ? 'xl:col-span-2' : ''"
           :app-name="fireux.appName"
           :app-short-name="fireux.appShortName"
-          :role-label="appRoleLabel"
           :app-card="appCard"
           :app-outcome="appOutcome"
           :membership="resolvedAppUser"
@@ -44,7 +34,16 @@
           :profile-entries="appProfileEntries"
           :can-open-console="canOpenConsole"
           :console-path="consoleEntryPath"
+          :console-label="consoleEntryLabel"
+          :console-icon="consoleEntryIcon"
+          :can-manage-app="canManageApp"
           :can-self-join="canSelfJoin"
+        />
+        <DashboardOverviewEcosystem
+          v-if="hasEcosystem"
+          :name="ecosystemName"
+          :profile-entries="ecosystemProfileEntries"
+          :show-directory-action="fireux.isGlobal"
         />
       </div>
     </div>
@@ -78,7 +77,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from '#imports'
+import { computed, useRuntimeConfig } from '#imports'
 import type { NavItem } from '../../composables/fireux/app/nav.types'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
@@ -97,8 +96,10 @@ import type {
 const fireux = useFireUXConfig()
 const userApi = useUser()
 const appApi = useApp()
+const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
-const { hasConsoleEntry, consoleEntryPath } = useConsoleEntryCta()
+const { consoleActions, hasConsoleEntry, consoleEntryPath } =
+  useConsoleEntryCta()
 
 const {
   coreUser,
@@ -145,26 +146,47 @@ const membershipOutcome = computed<DashboardOverviewOutcome>(() => {
 })
 
 const hasEcosystem = computed(() => Boolean(fireux.ecosystemId))
-const overviewDescription = computed(() =>
-  hasEcosystem.value
-    ? `See your main identity, what you share across your ecosystem, and what ${fireux.appName} enables.`
-    : `See your main identity and what ${fireux.appName} enables for this account.`
+const runtimeEcosystem = computed(
+  () =>
+    (runtimeConfig.public as {
+      firebaseEcosystem?: { name?: unknown }
+    }).firebaseEcosystem
 )
-const appRoleLabel = computed(() => {
-  if (fireux.isTenant) return 'Tenant app'
-  if (fireux.isStandalone) return 'Standalone app'
-  return 'Global app'
-})
+const ecosystemName = computed(() =>
+  formatEcosystemName(runtimeEcosystem.value?.name)
+)
+const consoleEntryAction = computed(() => consoleActions.value[0] ?? null)
+const consoleEntryLabel = computed(
+  () => consoleEntryAction.value?.label || 'Console'
+)
+const consoleEntryIcon = computed(
+  () => consoleEntryAction.value?.icon || 'i-lucide-panels-top-left'
+)
 const canOpenConsole = computed(
   () =>
+    appOutcome.value === 'ready' &&
     membershipOutcome.value === 'ready' &&
     Boolean(hasConsoleEntry.value) &&
     appUser.value?.role === 'admin' &&
     appUser.value.console_enabled === true
 )
+const canManageApp = computed(
+  () =>
+    appOutcome.value === 'ready' &&
+    membershipOutcome.value === 'ready' &&
+    appUser.value?.role === 'admin'
+)
 const canSelfJoin = computed(
   () => appOutcome.value === 'ready' && app.value?.self_join_enabled === true
 )
+
+function formatEcosystemName(value: unknown): string {
+  if (typeof value !== 'string') return 'your ecosystem'
+  const name = value.trim()
+  if (!name) return 'your ecosystem'
+  if (name.toLowerCase() === 'fireux') return 'FireUX'
+  return name.charAt(0).toUpperCase() + name.slice(1)
+}
 
 function toProfileEntry(
   item: NavItem,

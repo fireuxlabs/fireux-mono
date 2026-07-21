@@ -1,0 +1,6 @@
+// @fireux-rules-fragment bounded
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own the bounded-string primitive.
+    function isValidBoundedString(value, maxSize) {
+      return value is string && value.size() <= maxSize;
+    }
+

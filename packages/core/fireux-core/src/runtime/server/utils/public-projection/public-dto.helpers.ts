@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: fail closed for bounded public text projection.
 function safeString(input: unknown): string {
   return typeof input === 'string' ? input.trim() : ''
 }
@@ -38,6 +39,14 @@ export function buildPublicPath(basePath: string, segment?: unknown): string {
 
 export function asTrimmedString(input: unknown): string {
   return safeString(input)
+}
+
+export function asBoundedTrimmedString(
+  input: unknown,
+  maxLength: number
+): string {
+  const value = safeString(input)
+  return value.length <= maxLength ? value : ''
 }
 
 export function asStringArray(input: unknown): string[] {

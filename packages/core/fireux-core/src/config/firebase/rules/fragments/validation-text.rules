@@ -1,0 +1,14 @@
+// @fireux-rules-fragment text
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own bounded optional and required text validators.
+    function validOptionalText(data, field, maxSize) {
+      return !(field in data) ||
+        (data[field] is string && data[field].size() <= maxSize);
+    }
+
+    function validRequiredText(data, field, minSize, maxSize) {
+      return field in data &&
+        data[field] is string &&
+        data[field].size() >= minSize &&
+        data[field].size() <= maxSize;
+    }
+

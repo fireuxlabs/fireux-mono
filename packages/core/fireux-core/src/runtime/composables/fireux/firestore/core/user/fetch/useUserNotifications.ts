@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: bind one owner-scoped live notification read.
+// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: bind owner notifications only after browser auth is available.
 import {
   collection,
   limit,
@@ -6,7 +7,7 @@ import {
   query,
   type Query,
 } from 'firebase/firestore'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { UserNotification } from '../../../../../../models/core/supporting/user'
 import {
   UserNotificationStorage,
@@ -24,6 +25,16 @@ export type UserNotificationRecord = UserNotification & { id: string }
 const MAX_VISIBLE_NOTIFICATIONS = 50
 
 export function useUserNotifications() {
+  if (import.meta.server) {
+    return {
+      notifications: ref<UserNotificationRecord[]>([]),
+      unreadCount: ref(0),
+      pending: ref(false),
+      error: ref<unknown>(null),
+      outcome: ref<'idle'>('idle'),
+    }
+  }
+
   const { currentUser } = useAuth()
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const identityDb = useFirestore(identityDatabaseId)

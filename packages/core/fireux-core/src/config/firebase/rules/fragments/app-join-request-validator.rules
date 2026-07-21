@@ -1,0 +1,10 @@
+// @fireux-rules-fragment join-validator
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own the canonical App join-request shape.
+        function isValidJoinRequest(data) {
+          return data.keys().hasAll(['user_id', 'created']) &&
+            data.keys().hasOnly(['user_id', 'created']) &&
+            data.user_id == userId &&
+            validCreatedStamp(data.created) &&
+            data.created.app_id == appId;
+        }
+

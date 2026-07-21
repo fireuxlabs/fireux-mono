@@ -95,6 +95,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 13:29 CEST — User raw-list cutoff: inspect the bounded public User projection.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: keep projected User model inspection biography-aware.
 import { definePageMeta, useFetch } from '#imports'
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
@@ -131,6 +132,7 @@ const users = computed<User[]>(() => {
   return items.map((user) => ({
     id: user.id,
     display_name: user.displayName,
+    bio: user.bio,
     avatar: user.avatar,
     handle: user.handle,
     app_ids: user.apps,

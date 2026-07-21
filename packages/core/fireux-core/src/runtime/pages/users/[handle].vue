@@ -1,5 +1,6 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/users/[handle].vue -->
 <!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: distinguish missing User detail from read failure. -->
+<!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: render canonical biography on public User detail. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription">
@@ -22,6 +23,7 @@
         v-bind="userCard"
         :user="{ id: profile?.id || '' }"
         :show-details="false"
+        :show-footer="false"
       />
       <UAlert
         v-else-if="fetchFailed"
@@ -68,6 +70,7 @@ type PublicUserDto = {
   id: string
   handle: string
   displayName: string
+  bio: string
   avatar?: string
   apps?: string[]
   profiles?: string[]
@@ -115,6 +118,7 @@ const liveSelfProfile = computed<PublicUserDto | null>(() => {
   const apps = Array.isArray(user.app_ids) ? user.app_ids : []
   const profiles = Array.isArray(user.profiles) ? user.profiles : []
   const avatar = String(user.avatar || '').trim()
+  const bio = String(user.bio || '').trim()
 
   // Public detail family: SSR uses the public DTO; a signed-in user can then
   // hydrate their own profile from the live auth-bound User document.
@@ -122,11 +126,12 @@ const liveSelfProfile = computed<PublicUserDto | null>(() => {
     id: String(user.id || '').trim(),
     handle: userHandle,
     displayName,
+    bio,
     avatar,
     apps,
     profiles,
     title: displayName,
-    description: `Profile for ${displayName}.`,
+    description: bio || `Public profile for ${displayName}.`,
     path: `/users/${encodeURIComponent(userHandle)}`,
     image: avatar || undefined,
     updatedAt: '',
@@ -157,14 +162,14 @@ const userCard = computed(() => {
     avatarUrl: String(value.avatar || value.image || '').trim(),
     secondaryAvatarUrl: '',
     displayName: String(value.displayName || value.title || '').trim(),
-    title: String(value.title || profiles[0] || '').trim(),
-    summary: String(value.description || '').trim(),
+    title: '',
+    summary: String(value.bio || '').trim(),
     handle: value.handle ? `@${value.handle}` : '',
     badges: profiles,
     contactEmail: '',
     contactPhone: '',
     websiteUrl: '',
-    bio: String(value.description || '').trim(),
+    bio: String(value.bio || '').trim(),
     profiles,
     appsLabel: '',
   }

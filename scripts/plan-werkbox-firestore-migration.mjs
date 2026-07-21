@@ -4,6 +4,7 @@
 // last_used: 2026-07-21
 // usage_note: produce the exact read-only Werkbox canonical-data plan required before strict Firestore Rules can be released.
 // Concurrent edit — 2026-07-21 14:40 CEST — Werkbox Firebase hardening: plan canonical App, identity, membership, handle, Agent, and notification replacements without remote writes.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: preserve bounded public User biography in canonical migration plans.
 
 import { createHash } from 'node:crypto'
 import path from 'node:path'
@@ -62,7 +63,6 @@ const EMPTY_CONSOLE_TARGETS = {
 const ALLOWED_REMOVED_FIELDS = {
   'canonical-user': new Set([
     'adminOf',
-    'bio',
     'email',
     'id',
     'notifications',
@@ -401,15 +401,12 @@ function buildPlan(state) {
         )
       )
     }
-    if (String(userSnapshot.get('bio') ?? '').trim()) {
-      blockers.push(
-        blocker(
-          'LEGACY_USER_BIO_REVIEW_REQUIRED',
-          userPath,
-          'Non-empty legacy User bio needs an explicit domain-profile decision.'
-        )
-      )
-    }
+    const bio = boundedOptionalString(
+      userSnapshot.get('bio'),
+      280,
+      `${userPath}.bio`,
+      blockers
+    )
     const created = canonicalCreatedStamp(
       userSnapshot.get('created'),
       `${userPath}.created`,
@@ -435,6 +432,7 @@ function buildPlan(state) {
     if (created && updated && displayName && handle) {
       const payload = {
         display_name: displayName,
+        bio,
         avatar,
         handle,
         app_ids: memberships.map(({ appId }) => appId),
@@ -1805,6 +1803,33 @@ function boundedRequiredString(value, max, valuePath, blockers) {
   const text = String(value ?? '').trim()
   if (!text || text.length > max) {
     blockers.push(blocker('INVALID_REQUIRED_TEXT', valuePath, `Expected 1-${max} characters.`))
+    return ''
+  }
+  return text
+}
+
+function boundedOptionalString(value, max, valuePath, blockers) {
+  if (value == null) return ''
+  if (typeof value !== 'string') {
+    blockers.push(
+      blocker(
+        'INVALID_OPTIONAL_TEXT',
+        valuePath,
+        `Expected a string of at most ${max} characters.`
+      )
+    )
+    return ''
+  }
+
+  const text = value.trim()
+  if (text.length > max) {
+    blockers.push(
+      blocker(
+        'INVALID_OPTIONAL_TEXT',
+        valuePath,
+        `Expected a string of at most ${max} characters.`
+      )
+    )
     return ''
   }
   return text

@@ -1,8 +1,10 @@
 // @fireux-script
-// last_used: 2026-07-09
+// last_used: 2026-07-21
 // usage_note: shared runtime contract check; update when run or imported for runtime enforcement.
+// Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: reject stale and split workspace installations before startup.
 
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -14,6 +16,11 @@ const SKIP_DIRS = new Set([
   'dist',
   'node_modules',
 ])
+
+const IDENTITY_SENSITIVE_PACKAGES = [
+  { dependency: 'firebase-admin', specifier: 'firebase-admin/firestore' },
+  { dependency: 'h3', specifier: 'h3' },
+]
 
 function readText(filePath) {
   return existsSync(filePath) ? readFileSync(filePath, 'utf8').trim() : ''
@@ -107,6 +114,163 @@ function addIssue(issues, message, file) {
   issues.push(file ? `${file}: ${message}` : message)
 }
 
+function isPathInside(root, candidate) {
+  const relative = path.relative(root, candidate)
+  return (
+    relative === '' ||
+    (!relative.startsWith(`..${path.sep}`) &&
+      relative !== '..' &&
+      !path.isAbsolute(relative))
+  )
+}
+
+function declaresDependency(pkg, dependency) {
+  return [
+    pkg.dependencies,
+    pkg.devDependencies,
+    pkg.peerDependencies,
+    pkg.optionalDependencies,
+  ].some(group => Object.hasOwn(group || {}, dependency))
+}
+
+function isOptionalDependency(pkg, dependency) {
+  return (
+    Object.hasOwn(pkg.optionalDependencies || {}, dependency) ||
+    pkg.peerDependenciesMeta?.[dependency]?.optional === true
+  )
+}
+
+function resolveInstalledSpecifier(manifestPath, specifier) {
+  return realpathSync(createRequire(manifestPath).resolve(specifier))
+}
+
+export function checkInstalledPackageIdentity(options) {
+  const repoRoot = realpathSync(options.repoRoot)
+  const manifests = options.manifests || []
+  const resolveSpecifier = options.resolveSpecifier || resolveInstalledSpecifier
+  const issues = []
+
+  for (const probe of IDENTITY_SENSITIVE_PACKAGES) {
+    const resolutions = new Map()
+
+    for (const manifest of manifests) {
+      if (!declaresDependency(manifest.pkg, probe.dependency)) continue
+
+      let resolved
+      try {
+        resolved = resolveSpecifier(manifest.filePath, probe.specifier)
+      } catch (error) {
+        if (isOptionalDependency(manifest.pkg, probe.dependency)) continue
+        addIssue(
+          issues,
+          `cannot resolve identity-sensitive ${probe.specifier}; run pnpm install in this checkout`,
+          manifest.rel
+        )
+        continue
+      }
+
+      if (!isPathInside(repoRoot, resolved)) {
+        addIssue(
+          issues,
+          `identity-sensitive ${probe.specifier} resolves outside this checkout (${resolved}); run pnpm install in this checkout`,
+          manifest.rel
+        )
+        continue
+      }
+
+      const owners = resolutions.get(resolved) || []
+      owners.push(manifest.rel)
+      resolutions.set(resolved, owners)
+    }
+
+    if (resolutions.size > 1) {
+      const detail = [...resolutions.entries()]
+        .map(([resolved, owners]) => `${resolved} <- ${owners.join(', ')}`)
+        .join('; ')
+      addIssue(
+        issues,
+        `identity-sensitive ${probe.specifier} has multiple physical installations: ${detail}; run pnpm install in this checkout`
+      )
+    }
+  }
+
+  return issues
+}
+
+function checkInstalledWorkspace(repoRoot, manifests, issues) {
+  const canonicalRepoRoot = realpathSync(repoRoot)
+  const nodeModulesPath = path.join(repoRoot, 'node_modules')
+  const modulesStatePath = path.join(nodeModulesPath, '.modules.yaml')
+
+  if (!existsSync(nodeModulesPath) || !existsSync(modulesStatePath)) {
+    addIssue(
+      issues,
+      'node_modules installation metadata is missing; run pnpm install in this checkout'
+    )
+    return
+  }
+
+  let canonicalNodeModules
+  try {
+    canonicalNodeModules = realpathSync(nodeModulesPath)
+  } catch {
+    addIssue(
+      issues,
+      'node_modules cannot be resolved; run pnpm install in this checkout'
+    )
+    return
+  }
+
+  if (!isPathInside(canonicalRepoRoot, canonicalNodeModules)) {
+    addIssue(
+      issues,
+      `node_modules resolves outside this checkout (${canonicalNodeModules}); run pnpm install in this checkout`
+    )
+    return
+  }
+
+  let modulesState
+  try {
+    modulesState = readJson(modulesStatePath)
+  } catch {
+    addIssue(
+      issues,
+      'node_modules/.modules.yaml is unreadable; run pnpm install in this checkout'
+    )
+    return
+  }
+
+  const rawVirtualStoreDir = String(modulesState.virtualStoreDir || '').trim()
+  if (!rawVirtualStoreDir) {
+    addIssue(
+      issues,
+      'node_modules/.modules.yaml is missing virtualStoreDir; run pnpm install in this checkout'
+    )
+    return
+  }
+
+  const virtualStorePath = path.isAbsolute(rawVirtualStoreDir)
+    ? path.resolve(rawVirtualStoreDir)
+    : path.resolve(nodeModulesPath, rawVirtualStoreDir)
+  const canonicalVirtualStore = existsSync(virtualStorePath)
+    ? realpathSync(virtualStorePath)
+    : virtualStorePath
+
+  if (!isPathInside(canonicalRepoRoot, canonicalVirtualStore)) {
+    addIssue(
+      issues,
+      `node_modules virtual store resolves outside this checkout (${canonicalVirtualStore}); run pnpm install in this checkout`
+    )
+  }
+
+  issues.push(
+    ...checkInstalledPackageIdentity({
+      repoRoot: canonicalRepoRoot,
+      manifests,
+    })
+  )
+}
+
 export function checkFireuxRuntime(options = {}) {
   const repoRoot = options.repoRoot || process.cwd()
   const metadataOnly = Boolean(options.metadataOnly)
@@ -121,6 +285,11 @@ export function checkFireuxRuntime(options = {}) {
   const packageManager = String(rootPackage.packageManager || '')
   const expectedPnpm = packageManager.match(/^pnpm@(.+)$/)?.[1] || ''
   const expectedNodeRange = String(rootPackage.engines?.node || '')
+  const manifests = packageJsonFiles(repoRoot).map(filePath => ({
+    filePath,
+    pkg: readJson(filePath),
+    rel: path.relative(repoRoot, filePath),
+  }))
 
   if (!nodeVersion) addIssue(issues, 'missing .node-version')
   if (nvmVersion !== nodeVersion) {
@@ -155,9 +324,7 @@ export function checkFireuxRuntime(options = {}) {
     }
   }
 
-  for (const filePath of packageJsonFiles(repoRoot)) {
-    const pkg = readJson(filePath)
-    const rel = path.relative(repoRoot, filePath)
+  for (const { pkg, rel } of manifests) {
     if (pkg.engines?.node && pkg.engines.node !== expectedNodeRange) {
       addIssue(issues, `engines.node must be ${expectedNodeRange}`, rel)
     }
@@ -177,6 +344,8 @@ export function checkFireuxRuntime(options = {}) {
     if (pnpmMatch && pnpmMatch[1] !== expectedPnpm) {
       addIssue(issues, `running pnpm is ${pnpmMatch[1]}, expected ${expectedPnpm}`)
     }
+
+    checkInstalledWorkspace(repoRoot, manifests, issues)
   }
 
   return {

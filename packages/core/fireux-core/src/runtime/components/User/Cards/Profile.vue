@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: present canonical biography as the User's About section. -->
 <template>
   <UCard class="profile">
     <template #header>
@@ -18,7 +19,7 @@
 
     <div class="profile__body">
       <section v-if="showDescription && profileSummary" class="profile__section">
-        <div class="profile__label">Summary</div>
+        <div class="profile__label">About</div>
         <div class="profile__value">
           <span>{{ profileSummary }}</span>
         </div>
@@ -83,7 +84,7 @@
         </div>
       </section>
     </div>
-    <template #footer>
+    <template v-if="showFooter" #footer>
       <UserCardsPill
         :avatar-url="avatarUrl"
         :display-name="displayName"
@@ -132,6 +133,7 @@ type Props = {
   showDescription?: boolean
   showMeta?: boolean
   showDetails?: boolean
+  showFooter?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -149,6 +151,7 @@ const props = withDefaults(defineProps<Props>(), {
   showDescription: true,
   showMeta: true,
   showDetails: true,
+  showFooter: true,
 })
 
 const profileSummary = computed(() =>

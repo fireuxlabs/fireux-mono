@@ -1,14 +1,24 @@
+<!-- Concurrent edit — 2026-07-21 16:03 CEST — Extension module catalogue: make reusable packages the primary Modules surface. -->
 <template>
   <UPage>
     <UPageHeader
       title="FireUX modules"
-      description="Browse published module records in the FireUX ecosystem."
+      description="Reusable extensions for FireUX apps."
     />
 
     <UPageBody>
-      <ModuleCTA />
-
       <ModuleCollectionManager />
+
+      <div class="flex justify-end">
+        <UButton
+          to="/modules/learn-more"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-book-open"
+        >
+          How modules work
+        </UButton>
+      </div>
     </UPageBody>
   </UPage>
 </template>
@@ -26,13 +36,12 @@ definePageMeta({
     layouts: ['default', 'landing'],
   },
   title: 'Modules',
-  description: 'Browse published FireUX modules.',
+  description: 'Browse reusable FireUX extension modules.',
 })
 
 useSeoMeta({
   title: 'FireUX Modules',
   description:
-    'Browse published FireUX modules available to apps and ecosystems.',
+    'Browse reusable FireUX extension modules for apps and ecosystems.',
 })
-
 </script>

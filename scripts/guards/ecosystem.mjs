@@ -3,6 +3,7 @@
 // usage_note: baseline after scripts cleanup; update when run.
 // Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify the replacement ecosystem package shape.
 // Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: admit explicit builder lifecycle config.
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: allow opted-in ecosystem Rules templates beside the fixed Firebase binding.
 // FILE: scripts/guards/ecosystem.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -30,6 +31,7 @@ const REQUIRED_FIREBASE_FILES = [
   'ecosystem.config.ts',
   'service-account.example.json',
 ]
+const OPTIONAL_FIREBASE_FILES = ['firestore.template.rules']
 const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
 
 // Ecosystem runtime contract
@@ -265,6 +267,7 @@ function checkFirebaseShape(pkgPath) {
   const unexpected = entries.filter(
     (e) =>
       !REQUIRED_FIREBASE_FILES.includes(e) &&
+      !OPTIONAL_FIREBASE_FILES.includes(e) &&
       !FIREBASE_ALLOWED_NOISE.includes(e)
   )
 
@@ -281,7 +284,9 @@ function checkFirebaseShape(pkgPath) {
   }
 
   if (unexpected.length) {
-    lines.push('    Unexpected (only tracked public config and inert credential example; no local credential or index):')
+    lines.push(
+      '    Unexpected (only tracked public config, optional Rules template, and inert credential example; no local credential or index):'
+    )
     unexpected
       .slice()
       .sort((a, b) => a.localeCompare(b))

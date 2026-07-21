@@ -1,7 +1,7 @@
 // @fireux-script
 // last_used: 2026-07-21
 // usage_note: hash the exact local server, model, config, and dependency sources attested by deployed Werkbox security-contract endpoints.
-// Concurrent edit — 2026-07-21 15:08 CEST — Werkbox Firebase hardening: bind attestation to complete security-relevant source trees, ecosystem registration, and dependency locks.
+// Concurrent edit — 2026-07-21 15:14 CEST — Werkbox Firebase hardening: bind attestation to security-relevant source trees, shared runtime utilities, ecosystem registration, and dependency locks.
 
 import { createHash } from 'node:crypto'
 import { readdir, readFile } from 'node:fs/promises'
@@ -30,6 +30,7 @@ const SOURCE_ROOTS = Object.freeze([
   'packages/core/fireux-core/src/config/app',
   'packages/core/fireux-core/src/runtime/models/core',
   'packages/core/fireux-core/src/runtime/server',
+  'packages/core/fireux-core/src/runtime/utils',
   'packages/ecosystem/fireux-werkbox/src/config',
   'packages/extensions/fireux-jobs/src/config/module',
   'packages/extensions/fireux-jobs/src/runtime/models',
@@ -37,6 +38,7 @@ const SOURCE_ROOTS = Object.freeze([
   'packages/extensions/fireux-places/src/config/module',
   'packages/extensions/fireux-places/src/runtime/models',
   'packages/extensions/fireux-places/src/runtime/server',
+  'packages/extensions/fireux-places/src/runtime/utils',
   'packages/extensions/fireux-companies/src/config/module',
   'packages/extensions/fireux-companies/src/runtime/models',
   'packages/extensions/fireux-companies/src/runtime/server',

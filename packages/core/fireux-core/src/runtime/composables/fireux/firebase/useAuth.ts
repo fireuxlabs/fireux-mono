@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/src/runtime/composables/firebase/useAuth.ts
 // Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: preserve explicit current legal acceptance across redirect auth.
 // Concurrent edit — 2026-07-21 14:32 CEST — Runtime warning repair: coordinate account provisioning across every useAuth consumer.
+// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: keep browser-only VueFire auth binding out of server rendering and Nuxt payload state.
 import { useState } from '#imports'
 import { getApps } from 'firebase/app'
 import {
@@ -202,6 +203,15 @@ export function useAuth() {
   }
 
   const bind = () => {
+    if (import.meta.server) {
+      auth.value = null
+      currentUser.value = null
+      isReady.value = false
+      hasAuthState.value = false
+      lastBindError.value = null
+      return false
+    }
+
     try {
       const bound = tryBindVueFire()
       auth.value = bound.auth

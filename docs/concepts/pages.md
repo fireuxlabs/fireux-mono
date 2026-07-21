@@ -1,11 +1,13 @@
 Pages spine map
 Updated: 2026-07-21
-Ref: 4c7048208
+Ref: b020f805e
 Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: map the factual capability index route. -->
 <!-- Concurrent edit — 2026-07-21 13:08 CEST — Operation detail surfaces: map catalogue-backed factual detail routes. -->
 <!-- Concurrent edit — 2026-07-21 14:50 CEST — Dashboard Overview pass: map the shared three-layer dashboard route contract. -->
+<!-- Concurrent edit — 2026-07-21 15:46 CEST — User Profile polish: map the root-identity-only dashboard editor contract. -->
+<!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map biography editing and rendering across shared User routes. -->
 
 Purpose:
 Map how route pages should be built and where consensus is still forming.
@@ -67,6 +69,16 @@ Dashboard overview notes:
   independent so a scoped read failure cannot hide a valid public User.
 - Start at `packages/core/fireux-core/src/runtime/components/Dashboard/Overview.vue`
   and `packages/core/fireux-core/src/runtime/pages/dashboard/index.vue`.
+
+Dashboard profile notes:
+
+- Core owns the shared `/dashboard/user-profile` route and its named `User/Edit`
+  components. Projects consume that editor rather than forking it app by app.
+- The route edits only canonical public User identity: photo, display name,
+  handle, and the optional 280-character bio. Private account preferences remain in Settings; UserApp membership
+  and entitlements are not presented as editable profile fields.
+- Specialist profile entries are navigation to their owning domain editors.
+  Their documents add domain details and never duplicate root User identity.
 
 Index page notes:
 

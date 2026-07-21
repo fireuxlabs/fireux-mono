@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: centralize HTTPS-only persisted URL mechanics.
+// Concurrent edit — 2026-07-21 15:14 CEST — Werkbox Rules migration: reject credential-bearing HTTPS URLs at the shared normalization boundary.
 
 const DEFAULT_MAX_URL_LENGTH = 2_048
 
@@ -15,7 +16,7 @@ export function readHttpsUrl(
 
   try {
     const url = new URL(raw)
-    if (url.protocol !== 'https:') return ''
+    if (url.protocol !== 'https:' || url.username || url.password) return ''
     const normalized = url.toString()
     return normalized.length <= maxLength ? normalized : ''
   } catch {
@@ -37,4 +38,3 @@ export function normalizeHttpsUrlInput(
 
   throw new Error(`${options.label ?? 'URL'} must be a valid HTTPS URL.`)
 }
-

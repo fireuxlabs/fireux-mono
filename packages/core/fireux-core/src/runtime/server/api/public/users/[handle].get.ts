@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: fail closed when projecting public User avatars.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: project bounded biography into public User detail and SEO.
 import {
   createError,
   defineEventHandler,
@@ -7,6 +8,7 @@ import {
 } from 'h3'
 import {
   asStringArray,
+  asBoundedTrimmedString,
   asTrimmedString,
   buildPublicPath,
   resolvePublicDescription,
@@ -38,16 +40,21 @@ function mapUserDocToDto(
     asTrimmedString(data.displayName) ||
     `@${handle}`
   const avatar = resolveUserAvatarSource(data.avatar)
+  const bio = asBoundedTrimmedString(data.bio, 280)
 
   return {
     id: doc.id,
     handle,
     displayName,
+    bio,
     avatar,
     apps: asStringArray(data.app_ids),
     profiles: asStringArray(data.profiles),
     title: displayName,
-    description: resolvePublicDescription('', `Public profile for ${displayName}.`),
+    description: resolvePublicDescription(
+      bio,
+      `Public profile for ${displayName}.`
+    ),
     path: buildPublicPath('/users', handle),
     image: avatar || undefined,
     updatedAt: toIsoUpdatedAt(

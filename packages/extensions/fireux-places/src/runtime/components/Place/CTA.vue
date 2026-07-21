@@ -1,36 +1,20 @@
 <template>
+  <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: keep the public directory browse-only. -->
   <UPageCTA
     class="cta"
     data-entity-cta-family="domain-managed"
-    title="Create a place"
-    description="Search for a venue or location and save it as a place."
+    title="Add a Place"
+    description="Find the real location, confirm its identity, and review it before adding it to FireUX."
     variant="naked"
   >
-    <!-- section consumer -->
-    <template #default>
-      <div class="cta__body">
-        <PlaceSearchSection
-          :type="placeType"
-          @confirmed="onConfirmed"
-        />
-      </div>
+    <template #links>
+      <UButton
+        to="/places/create"
+        icon="i-lucide-map-pin-plus"
+        color="primary"
+      >
+        Start Place onboarding
+      </UButton>
     </template>
   </UPageCTA>
 </template>
-
-<script setup lang="ts">
-import { useRoute, useRouter } from '#imports'
-import { computed } from 'vue'
-import { normalizePlaceType } from '../../composables/fireux/firestore/place/utils/useNormalizePlace'
-
-const route = useRoute()
-const router = useRouter()
-
-const placeType = computed<string | null>(() =>
-  normalizePlaceType(route.query.type)
-)
-
-async function onConfirmed() {
-  await router.replace({ query: { ...route.query } })
-}
-</script>

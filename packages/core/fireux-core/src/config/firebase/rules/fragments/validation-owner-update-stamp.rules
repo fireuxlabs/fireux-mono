@@ -1,0 +1,8 @@
+// @fireux-rules-fragment owner-stamp
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own the request-time owner update stamp validator.
+    function validOwnerUpdateStamp(data, userId) {
+      return validUpdatedStamp(data.updated) &&
+        data.updated.at == request.time &&
+        data.updated.by == userId;
+    }
+

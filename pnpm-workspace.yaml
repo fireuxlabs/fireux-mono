@@ -1,5 +1,6 @@
 # Concurrent edit — 2026-07-20 22:38 CEST — Repo Efficiency Pass 5 of 6: keep H3 event type identity workspace-wide.
 # Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: align Nuxt Content's c12 peer with workspace magicast.
+# Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: patch dev-proxy response listener cleanup.
 packages:
   - 'packages/core/*'
   - 'packages/extensions/*'
@@ -19,6 +20,9 @@ nodeVersion: 22.23.1
 
 allowBuilds:
   better-sqlite3: true
+
+patchedDependencies:
+  'httpxy@0.5.2': patches/httpxy@0.5.2.patch
 
 overrides:
   nuxt: 4.4.6

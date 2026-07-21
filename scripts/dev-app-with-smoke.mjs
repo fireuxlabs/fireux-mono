@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/dev-app-with-smoke.mjs
 // Concurrent edit — 2026-07-20 15:54 CEST — Repo Efficiency Pass 1 of 6: run the Misebox route and contract smoke suite.
+// Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: refuse to kill an existing app server implicitly.
 
 import { spawnSync } from 'node:child_process'
 import process from 'node:process'
@@ -113,10 +114,34 @@ async function chooseGoQrProvider(app) {
   return localGoQrProvider
 }
 
-const freePort = spawnSync('node', ['scripts/free-port.mjs', String(app.port)], {
-  stdio: 'inherit',
-})
-if (freePort.status !== 0) process.exit(freePort.status ?? 1)
+function assertPortAvailable(port) {
+  const check = spawnSync(
+    'lsof',
+    ['-ti', `tcp:${port}`, '-sTCP:LISTEN'],
+    { encoding: 'utf8' }
+  )
+
+  if (check.error || (check.status !== 0 && check.status !== 1)) {
+    console.error(
+      `[dev] Could not verify whether port ${port} is available. ` +
+      'Install lsof or free the port explicitly before retrying.'
+    )
+    process.exit(1)
+  }
+
+  const listeners = String(check.stdout || '').trim()
+  if (!listeners) return
+
+  console.error(
+    [
+      `[dev] Port ${port} is already in use; refusing to stop an existing server.`,
+      `Run pnpm kill:${appKey} and retry only when you intend to replace it.`,
+    ].join('\n')
+  )
+  process.exit(1)
+}
+
+assertPortAvailable(app.port)
 
 if (!skipPrepare) {
   runPrepareForApp(app)

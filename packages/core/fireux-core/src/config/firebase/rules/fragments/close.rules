@@ -1,0 +1,4 @@
+// @fireux-rules-fragment close
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own the common database and service closing boundary.
+  }
+}

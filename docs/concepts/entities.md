@@ -3,6 +3,9 @@ Entities map
 <!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
 <!-- Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: map composition-owned materialization with domain-owned creation. -->
 <!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map the bounded contract with server-only source scope. -->
+<!-- Concurrent edit — 2026-07-21 15:11 CEST — Werkbox Rules migration: record fail-closed Place mutation authority and inert legacy claims. -->
+<!-- Concurrent edit — 2026-07-21 16:00 CEST — Place onboarding reconciliation: record trusted id-only Place materialization. -->
+<!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map bounded biography onto canonical public User identity. -->
 
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
@@ -224,9 +227,15 @@ Place authority boundary:
   override, runtime resolution reads the linked Place business hours. Menu and
   ordering-surface schedules continue the same single-parent inheritance chain.
 - Authenticated Place edits use the trusted `PATCH /api/places/:placeId` seam.
-  Place owner, current-App admin, and explicitly linked Kitchen-operator access
-  are checked on the server; Kitchen console presentation state never grants a
-  direct browser write to the shared Place record.
+  Current-App admin or explicitly linked Kitchen-operator access is checked on
+  the server; Kitchen console presentation state never grants a direct browser
+  write to the shared Place record. Stored `claimed_by` is inert legacy data:
+  no claim-derived authority exists until a verified ownership workflow does.
+- Authenticated Place onboarding ends at `POST /api/places/ensure`. The caller
+  supplies only a stable Place ID; the server checks current-App membership,
+  reuses an existing Place, or verifies missing Google Place truth before an
+  idempotent create. The Place funnel never implies or creates a Kitchen,
+  Property, or another Place-backed role.
 
 Root Projected Index members:
 
@@ -288,6 +297,9 @@ User identity records:
 
 - `User` is the public global entity: handle-slug identity, public presentation,
   `app_ids`, and attached profile ids.
+- `User.bio` is optional public plain text capped at 280 characters. New Users
+  persist an empty value; existing records without it remain valid during the
+  additive rollout, and projections fail closed on malformed values.
 - `User.avatar` stores an explicit user image when one exists; otherwise it uses
   `/img/ecosystem/avatar.png`. Core/FireUX placeholder art is never public User
   identity. The stored value is never blank: it is that canonical fallback or

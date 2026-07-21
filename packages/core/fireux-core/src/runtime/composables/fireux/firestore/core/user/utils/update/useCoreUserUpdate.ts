@@ -1,6 +1,8 @@
 // Concurrent edit — 2026-07-20 13:18 CEST — User identity pass: sync only public profiles; app-private records no longer duplicate User identity.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: make User the only public identity write target.
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: preserve a canonical safe avatar on clear and upload.
+// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: construct Firebase write and Storage clients only when a User edit runs.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography through the canonical public User updater.
 import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { User } from '../../../../../../../models/core/user.model'
 import { UserStorage } from '../../../../../../../models/core/user.model'
@@ -30,11 +32,8 @@ function avatarFileExtension(source: File | Blob): string {
 
 export function useCoreUserUpdate(user: UserRefs) {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
-  const identityUpdate = useFirestoreUpdate({
-    databaseId: identityDatabaseId,
-  })
-  const { uploadImage } = useImageStorage()
-  const { DisplayName, AvatarUrl, Handle } = useUserFormattingAndValidation()
+  const { DisplayName, Bio, AvatarUrl, Handle } =
+    useUserFormattingAndValidation()
   const { claimHandle } = useUserHandleClaim()
   const core = user.coreUser as { value: User | undefined }
 
@@ -45,7 +44,7 @@ export function useCoreUserUpdate(user: UserRefs) {
   }
 
   const updateCore = (data: Record<string, unknown>) =>
-    identityUpdate.updateDocument<User>(
+    useFirestoreUpdate({ databaseId: identityDatabaseId }).updateDocument<User>(
       UserStorage.rootCollection,
       requireCoreId(),
       data as Partial<User>
@@ -78,6 +77,10 @@ export function useCoreUserUpdate(user: UserRefs) {
       )
       await updateCorePublicIdentity({ display_name: formatted })
     },
+    setBio: async (bio: string) => {
+      const formatted = formatAndValidate(Bio, bio, 'Invalid bio')
+      await updateCorePublicIdentity({ bio: formatted })
+    },
     setAvatarUrl: async (url: string | null) => {
       const formatted = formatAndValidate(
         AvatarUrl,
@@ -92,6 +95,7 @@ export function useCoreUserUpdate(user: UserRefs) {
       const id = requireCoreId()
       const extension = avatarFileExtension(source)
       const path = `${UserStorage.rootCollection}/${id}/avatar/${Date.now()}.${extension}`
+      const { uploadImage } = useImageStorage()
       const url = await uploadImage(path, source)
       const formatted = formatAndValidate(
         AvatarUrl,

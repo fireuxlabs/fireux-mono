@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: keep private client updates within account preferences.
+// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer the private Firestore writer until an owner action runs in the browser.
 import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { UserPrivateUpdateInput } from '../../../../../../models/core/user.model'
 import {
@@ -16,9 +17,7 @@ const loggedInitKeys = new Set<string>()
 export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   const core = useCoreUserUpdate(user)
   const app = useAppUserUpdate(user)
-  const identityUpdate = useFirestoreUpdate({
-    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
-  })
+  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const cfg = useFireUXConfig()
 
   const update = async (
@@ -42,6 +41,9 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
       )
     }
 
+    const identityUpdate = useFirestoreUpdate({
+      databaseId: identityDatabaseId,
+    })
     await identityUpdate.updateDocument(
       `${UserStorage.rootCollection}/${uid}/${UserPrivateStorage.collection}`,
       UserPrivateStorage.document,

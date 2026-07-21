@@ -1,6 +1,7 @@
 # FireUX GPT Context
 
 <!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: record app-wide factual operation routes. -->
+<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: route main Rules work through Core composition and ecosystem policy. -->
 
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
@@ -66,6 +67,18 @@ Before any remote Firebase operation:
    authorization and the relevant backup or verification gate.
 
 Do not add per-app MCP configuration files merely to expose Firebase to Codex.
+
+## Firestore Rules source ownership
+
+- FireUX Core owns reusable main-database Rules fragments and deterministic
+  composition under `packages/core/fireux-core/src/config/firebase/rules`.
+- An opted-in ecosystem owns the complete template manifest and its explicit
+  project/database/domain deltas under `src/config/firebase`.
+- The tracked `scripts/firebase/<ecosystem>/firestore.rules` file is the locked
+  complete release artifact. Check it with `pnpm firebase:rules:render`; update
+  it only through the renderer's explicit `--write` mode.
+- Deploy and migration commands verify, but never regenerate, that artifact.
+  App `firebase.json` files do not own main Firestore Rules.
 
 ## Living context
 

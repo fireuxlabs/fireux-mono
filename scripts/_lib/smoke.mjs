@@ -1,7 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/_lib/smoke.mjs
+// Concurrent edit — 2026-07-21 15:35 CEST — Misebox startup verification: record the full route and HTTP contract run.
 
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'

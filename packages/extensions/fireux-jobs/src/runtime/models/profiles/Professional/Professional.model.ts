@@ -2,11 +2,12 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: keep Professional storage domain-only.
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: own exact storage, provision, and public detail/directory shapes.
+// Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
 import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
 import type {
   CertificationItem,
   EducationItem,

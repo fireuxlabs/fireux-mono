@@ -1,6 +1,7 @@
 # Misebox GPT Context
 
 <!-- Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: record ecosystem-owned Jobs/Kitchen composition. -->
+<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: point Misebox at the composed Rules ownership boundary. -->
 
 This is the single context entrypoint for an external GPT focused on Misebox
 inside `fireuxlabs/fireux-mono`.
@@ -46,6 +47,11 @@ Before each task:
   resolution, and ordering projections belong to `fireux-kitchens`.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
+- Misebox owns its complete main Firestore Rules template and target manifest
+  at `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`.
+  Shared byte-identical policy primitives come from FireUX Core; the tracked
+  `scripts/firebase/misebox/firestore.rules` file is the verified complete
+  release artifact, not a second policy source.
 - Tenant branding, content, routes, and genuine app-specific presentation may
   remain in the relevant project app.
 

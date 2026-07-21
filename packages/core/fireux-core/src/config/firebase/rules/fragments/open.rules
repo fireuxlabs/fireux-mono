@@ -1,0 +1,6 @@
+// @fireux-rules-fragment open
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own the common Rules v2 database opening.
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {

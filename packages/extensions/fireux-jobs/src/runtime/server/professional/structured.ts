@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Professional API: validate structured profile families and every canonical reference before writing.
+// Concurrent edit — 2026-07-21 15:14 CEST — Werkbox Rules migration: reject credential-bearing structured-profile URLs server-side.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
@@ -140,7 +141,9 @@ function httpsUrl(value: unknown, label: string): string {
   } catch {
     fail(`${label} must be a valid HTTPS URL.`)
   }
-  if (parsed.protocol !== 'https:') fail(`${label} must use HTTPS.`)
+  if (parsed.protocol !== 'https:' || parsed.username || parsed.password) {
+    fail(`${label} must use HTTPS without embedded credentials.`)
+  }
   return parsed.toString()
 }
 

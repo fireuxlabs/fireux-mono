@@ -1,0 +1,10 @@
+// @fireux-rules-fragment overlay-validator
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own the identity-profile App overlay validator.
+        function isValidProfileOverlay(data) {
+          return data.keys().hasAll(['created', 'updated']) &&
+            data.keys().hasOnly(['created', 'updated']) &&
+            validCreatedStamp(data.created) &&
+            data.created.app_id == appId &&
+            validUpdatedStamp(data.updated);
+        }
+

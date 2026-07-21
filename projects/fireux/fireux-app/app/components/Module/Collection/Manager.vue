@@ -1,52 +1,51 @@
+<!-- Concurrent edit — 2026-07-21 16:03 CEST — Extension module catalogue: replace empty Product records with reusable package cards. -->
 <template>
-  <UCard>
-    <template #header>
-      <div class="flex items-start justify-between gap-3">
-        <div>
-          <h2>Modules</h2>
-          <p>Browse published FireUX module records.</p>
-        </div>
-
-        <UBadge variant="soft">{{ moduleCards.length }}</UBadge>
+  <section class="grid gap-5" aria-labelledby="extension-modules-title">
+    <div class="flex items-end justify-between gap-4">
+      <div class="grid gap-1">
+        <h2
+          id="extension-modules-title"
+          class="m-0 text-xl font-semibold text-highlighted"
+        >
+          Extension modules
+        </h2>
+        <p class="m-0 text-sm leading-6 text-muted">
+          Reusable capabilities composed into FireUX apps.
+        </p>
       </div>
-    </template>
-
-    <div v-if="moduleCards.length" class="space-y-3">
-      <ProductCardsCell
-        v-for="card in moduleCards"
-        :key="card.id"
-        v-bind="card"
-        link
-      />
+      <UBadge color="neutral" variant="soft">
+        {{ fireuxExtensionModules.length }} modules
+      </UBadge>
     </div>
 
-    <p v-else class="text-sm text-dimmed">No modules found.</p>
-  </UCard>
+    <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+      <UCard
+        v-for="module in fireuxExtensionModules"
+        :key="module.id"
+        variant="subtle"
+        class="h-full"
+      >
+        <div class="grid gap-4">
+          <div class="flex items-start gap-3">
+            <div class="flex size-10 shrink-0 items-center justify-center rounded-lg bg-elevated">
+              <UIcon :name="module.icon" class="size-5 text-primary" />
+            </div>
+            <div class="min-w-0">
+              <h3 class="m-0 font-semibold text-highlighted">
+                {{ module.name }}
+              </h3>
+              <code class="text-xs text-dimmed">{{ module.id }}</code>
+            </div>
+          </div>
+          <p class="m-0 text-sm leading-6 text-muted">
+            {{ module.description }}
+          </p>
+        </div>
+      </UCard>
+    </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
-import {
-  useProductInterface,
-  type ProductCard,
-} from 'fireux-products/runtime/composables/fireux/firestore/product/utils/view/useProductInterface'
-
-const { products } = useProductCollection()
-const { cell: productCell } = useProductInterface()
-
-const text = (value: unknown) => String(value ?? '').trim()
-
-const modules = computed(() =>
-  (products.value ?? [])
-    .filter((product) => product.product_type === 'module')
-    .filter((product) => product.active !== false)
-    .filter((product) => text(product.id))
-    .sort((a, b) => text(a.name).localeCompare(text(b.name)))
-)
-const moduleCards = computed<ProductCard.Card[]>(() =>
-  modules.value
-    .map((product) => productCell(product))
-    .filter((card): card is ProductCard.Card => Boolean(card))
-)
+import { fireuxExtensionModules } from '../../../module-catalogue'
 </script>

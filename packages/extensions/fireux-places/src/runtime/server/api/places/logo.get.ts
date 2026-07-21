@@ -1,11 +1,20 @@
+// Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: bound logo probes and keep expected misses quiet.
 import { defineEventHandler, getQuery } from 'h3'
 
-const log = (...args: unknown[]) => console.info('[places-logo]', ...args)
-const logWarn = (...args: unknown[]) => console.warn('[places-logo]', ...args)
+const debug = process.env.FIREUX_PLACES_DEBUG === 'true'
+const log = (...args: unknown[]) => {
+  if (debug) console.info('[places-logo]', ...args)
+}
+const logWarn = (...args: unknown[]) => {
+  if (debug) console.warn('[places-logo]', ...args)
+}
 const logError = (...args: unknown[]) => console.error('[places-logo]', ...args)
 
 const HOMEPAGE_TIMEOUT_MS = 4500
+const PROBE_TIMEOUT_MS = 2500
+const PROBE_TOTAL_TIMEOUT_MS = 5000
 const PROBE_CONCURRENCY = 4
+const MAX_CANDIDATES = 20
 const NON_BRAND_ASSET_PATTERNS: Array<{ reason: string; pattern: RegExp }> = [
   { reason: 'tripadvisor widget', pattern: /tripadvisor/i },
   { reason: 'review widget', pattern: /wp[-_/]tripadvisor[-_/]review[-_/]slider/i },
@@ -181,7 +190,7 @@ function buildCandidates(html: string, finalHome: string): LogoCandidate[] {
         ...socialCandidates,
       ])
     )
-  )
+  ).slice(0, MAX_CANDIDATES)
 }
 
 function resolveBaseUrl(website?: string, domain?: string): string | null {
@@ -354,12 +363,19 @@ function dedupeCandidates(candidates: LogoCandidate[]): LogoCandidate[] {
   return out
 }
 
-async function looksLikeImage(url: string): Promise<boolean> {
+async function looksLikeImage(
+  url: string,
+  totalSignal: AbortSignal
+): Promise<boolean> {
   try {
     const head = await fetch(url, {
       method: 'HEAD',
       redirect: 'follow',
       headers: { accept: 'image/*' },
+      signal: AbortSignal.any([
+        totalSignal,
+        AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      ]),
     })
     if (head.ok) {
       const ct = (head.headers.get('content-type') || '').toLowerCase()
@@ -373,9 +389,17 @@ async function looksLikeImage(url: string): Promise<boolean> {
       method: 'GET',
       redirect: 'follow',
       headers: { accept: 'image/*' },
+      signal: AbortSignal.any([
+        totalSignal,
+        AbortSignal.timeout(PROBE_TIMEOUT_MS),
+      ]),
     })
-    if (!res.ok) return false
+    if (!res.ok) {
+      await res.body?.cancel()
+      return false
+    }
     const ct = (res.headers.get('content-type') || '').toLowerCase()
+    await res.body?.cancel()
     return isImageContentType(ct)
   } catch {
     return false
@@ -415,6 +439,7 @@ async function probeCandidates(
 ): Promise<Array<LogoCandidate & { score: number }>> {
   const results: Array<LogoCandidate & { score: number }> = []
   const queue = [...candidates]
+  const totalSignal = AbortSignal.timeout(PROBE_TOTAL_TIMEOUT_MS)
   const workers = Array.from(
     { length: Math.min(PROBE_CONCURRENCY, queue.length || 1) },
     () => worker()
@@ -426,7 +451,7 @@ async function probeCandidates(
     while (queue.length) {
       const candidate = queue.shift()
       if (!candidate) return
-      const ok = await looksLikeImage(candidate.url)
+      const ok = await looksLikeImage(candidate.url, totalSignal)
       if (!ok) continue
       const score = scoreCandidate(candidate)
       log('candidate ok', { ...candidate, score })

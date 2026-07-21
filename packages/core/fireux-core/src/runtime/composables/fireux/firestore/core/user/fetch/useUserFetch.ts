@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-20 16:20 CEST — Console Spine pass: expose App membership read state to console targeting.
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: fail closed when hydrating canonical User avatars.
 // Concurrent edit — 2026-07-20 23:21 CEST — Active User Outcome fix: preserve canonical User read outcomes.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: normalize optional stored biography into the shared User runtime.
 import { doc } from 'firebase/firestore'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
@@ -61,6 +62,10 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
     ...raw,
     id: raw.id ?? fallbackId,
     display_name: (raw as any).display_name ?? raw.id ?? fallbackId,
+    bio:
+      typeof anyRaw.bio === 'string' && anyRaw.bio.trim().length <= 280
+        ? anyRaw.bio.trim()
+        : '',
     avatar: resolveUserAvatarSource((raw as any).avatar),
     handle: (raw as any).handle ?? '',
     app_ids: asStringArray(anyRaw.app_ids),

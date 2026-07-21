@@ -2,7 +2,9 @@
 // @fireux-script
 // last_used: 2026-07-21
 // usage_note: compile and adversarially test Werkbox Rules, or perform a guarded future release after audited migration evidence exists.
-// Concurrent edit — 2026-07-21 15:07 CEST — Cleanbox-to-Werkbox migration: prevent production rollback from bypassing the evidence-gated candidate promotion.
+// Concurrent edit — 2026-07-21 15:14 CEST — Cleanbox-to-Werkbox migration: lock evidence-gated promotion and credential-bearing URL regression coverage.
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: require the verified Core-composed candidate artifact before release work.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: adversarially test optional bounded public biography writes.
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
@@ -11,6 +13,7 @@ import {
   firebaseAdminCredentialHelp,
   resolveFirebaseAdminCredential,
 } from './_lib/firebase-admin-credentials.mjs'
+import { assertFirestoreRulesArtifactCurrent } from './_lib/firestore-rules-source.mjs'
 import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 
 const PROJECT_ID = 'cleanbox-f15bc'
@@ -36,7 +39,6 @@ const SERVER_API_PROBES = [
     { baseUrl, method: 'GET', path: '/api/internal/app/people' },
   ]),
 ]
-const RULES_PATH = new URL('./firebase/werkbox/firestore.rules', import.meta.url)
 const QUARANTINE_RULES_PATH = new URL(
   './firebase/werkbox/firestore-quarantine.rules',
   import.meta.url
@@ -77,7 +79,7 @@ ${firebaseAdminCredentialHelp()}
   process.exit(0)
 }
 
-const content = await readFile(RULES_PATH, 'utf8')
+const { content } = await assertFirestoreRulesArtifactCurrent('werkbox')
 const quarantineContent = await readFile(QUARANTINE_RULES_PATH, 'utf8')
 assertPinnedSource(content)
 assertQuarantineSource(quarantineContent)
@@ -602,6 +604,10 @@ function buildSecurityTests(databaseId) {
     created: created(),
     updated: updated(),
   }
+  const userWithBio = {
+    ...user,
+    bio: 'I build useful things.',
+  }
   const privateAccount = {
     email: 'owner@example.invalid',
     preferences: {
@@ -725,6 +731,28 @@ function buildSecurityTests(databaseId) {
     read('unauthenticated User get denied', 'DENY', databaseId, `users/${ownerId}`, '', user),
     list('raw User list denied', 'DENY', databaseId, 'users', ownerId),
     update('owner safe User update', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, display_name: 'Updated', updated: stamp }, updateTime),
+    update('owner can add a bounded public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'I build useful things.', updated: stamp }, updateTime),
+    update('owner can store a 280-character public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(280), updated: stamp }, updateTime),
+    update('owner can remove optional public User bio', 'ALLOW', databaseId, `users/${ownerId}`, ownerId, userWithBio, { ...user, updated: stamp }, updateTime),
+    update('owner cannot exceed the public User bio limit', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, bio: 'b'.repeat(281), updated: stamp }, updateTime),
+    ...[
+      ['number', 42],
+      ['list', []],
+      ['map', {}],
+      ['boolean', true],
+      ['null', null],
+    ].map(([label, bio]) =>
+      update(
+        `owner cannot store a ${label} public User bio`,
+        'DENY',
+        databaseId,
+        `users/${ownerId}`,
+        ownerId,
+        user,
+        { ...user, bio, updated: stamp },
+        updateTime
+      )
+    ),
     update('User app privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, app_ids: ['cleanbox-app', 'richies-reinigung'], updated: stamp }, updateTime),
     update('User profile privilege self-assignment denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, profiles: [], updated: stamp }, updateTime),
     update('User handle bypass denied', 'DENY', databaseId, `users/${ownerId}`, ownerId, user, { ...user, handle: 'forged-handle', updated: stamp }, updateTime),
@@ -761,6 +789,7 @@ function buildSecurityTests(databaseId) {
     update('App role escalation denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, role: 'system', updated: adminStamp }, updateTime, adminMocks),
     update('App derived authority bypass denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, derived: { user_count: 999 }, updated: adminStamp }, updateTime, adminMocks),
     update('App javascript social URL denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, social_links: { website: 'javascript:alert(1)' }, updated: adminStamp }, updateTime, adminMocks),
+    update('App credential-bearing HTTPS URL denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, social_links: { website: 'https://user:pass@example.invalid/private' }, updated: adminStamp }, updateTime, adminMocks),
     update('App insecure media URL denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, media: { logo_url: 'http://unsafe.invalid/logo.png' }, updated: adminStamp }, updateTime, adminMocks),
     update('App invalid social email denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, social_links: { email: 'not-an-email' }, updated: adminStamp }, updateTime, adminMocks),
     update('App schema pollution denied', 'DENY', databaseId, 'apps/cleanbox-app', adminId, app, { ...app, secret: true, updated: adminStamp }, updateTime, adminMocks),

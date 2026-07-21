@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: route App-admin membership and entitlement changes through the trusted server transaction.
+// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer App Firestore and Storage clients until an administrator action.
 
 import { deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
@@ -19,8 +20,6 @@ import {
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const cfg = useFireUXConfig()
-  const { updateDocument } = useFirestoreUpdate()
-  const { uploadImage, getDownloadUrlForPath } = useImageStorage()
 
   const ensureAppId = () => {
     const id = appRef.value?.id ?? cfg.appId
@@ -29,7 +28,11 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   const updateApp = (data: Partial<App> | Record<string, any>) =>
-    updateDocument<any>(AppStorage.collection, ensureAppId(), data as any)
+    useFirestoreUpdate().updateDocument<any>(
+      AppStorage.collection,
+      ensureAppId(),
+      data as any
+    )
 
   const text = (raw: unknown, max: number) =>
     String(raw ?? '')
@@ -120,6 +123,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   async function uploadAvatar(source: File | Blob) {
     const id = ensureAppId()
     const path = appImageStoragePath(id, 'thumbnail')
+    const { uploadImage } = useImageStorage()
     const url = await uploadImage(path, source)
     await updateApp({ 'media.thumbnail_url': cacheBust(url) })
     return url
@@ -137,6 +141,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   async function refreshImageFromBucket(kind: AppImageKind) {
     const id = ensureAppId()
     const path = appImageStoragePath(id, kind)
+    const { getDownloadUrlForPath } = useImageStorage()
     const url = await getDownloadUrlForPath(path)
     const next = cacheBust(url)
 
@@ -214,6 +219,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const id = ensureAppId()
     const path = appImageStoragePath(id, kind)
     const source = await readValidatedLocalAppImage(kind, localPath)
+    const { uploadImage } = useImageStorage()
     const url = await uploadImage(path, source)
     const next = cacheBust(url)
 

@@ -1,14 +1,15 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: add categories and managed job type.
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: declare the completed bounded public-read contract.
+// Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 
 import {
   FireuxRootScope,
   type FireuxRootVisibility,
   type FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model'
-import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
 
 type WidenLiteral<T> =
   T extends string ? string

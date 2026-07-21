@@ -4,6 +4,7 @@
   <div class="flex w-full flex-col">
     <MoleculesFormsTop
       :label="label"
+      :input-id="inputId"
       :is-editing="isEditing"
       :has-data="Boolean(effectiveValue.trim())"
       :error-message="errorMessage"

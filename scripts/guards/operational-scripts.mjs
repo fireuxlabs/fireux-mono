@@ -5,6 +5,7 @@
 // Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: lock read-only App media audit and guarded snapshot mutation contracts.
 // Concurrent edit — 2026-07-20 22:27 CEST — User/Profile data pass: lock the identity reconciliation planner to read-only target-bound inspection.
 // Concurrent edit — 2026-07-21 15:07 CEST — Cleanbox-to-Werkbox migration: lock quarantine, migration-marker finalization, trusted-source evidence, release ordering, and production-promotion exclusivity.
+// Concurrent edit — 2026-07-21 16:07 CEST — Shared Firestore Rules pass: lock every contracted frame identity and helper provenance.
 
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
@@ -12,10 +13,15 @@ import { access, mkdtemp, readFile, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
+import { composeFirestoreRules } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
+import { assertAllFirestoreRulesArtifactsCurrent } from '../_lib/firestore-rules-source.mjs'
 import { writeProtectedJsonArtifact } from '../_lib/protected-json-artifact.mjs'
 import { buildWerkboxServerSourceEvidence } from '../_lib/werkbox-security-contract.mjs'
 
 export async function run({ repoRoot = process.cwd() } = {}) {
+  await assertAllFirestoreRulesArtifactsCurrent()
+  await assertRulesFragmentScope(repoRoot)
+  await assertRulesSourceConsumers(repoRoot)
   await assertProtectedJsonArtifact()
   await assertRulesReleaseBackup(repoRoot)
   await assertWerkboxRulesSurface(repoRoot)
@@ -23,6 +29,193 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   await assertSnapshotSyncSafety(repoRoot)
   await assertUserIdentityPlannerReadOnly(repoRoot)
   console.log('[guard] ✅ operational script safety valid')
+}
+
+async function assertRulesFragmentScope(repoRoot) {
+  const template = await readFile(
+    path.join(
+      repoRoot,
+      'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules'
+    ),
+    'utf8'
+  )
+  const ownerMarker = '    // @fireux-core-rules owner'
+  const tabIndented = template.replace(
+    ownerMarker,
+    '\t// @fireux-core-rules owner'
+  )
+  assert.notEqual(
+    tabIndented,
+    template,
+    'Werkbox Rules must retain the owner marker fixture.'
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(tabIndented),
+    /fragment owner must use 4 spaces/,
+    'Core Rules composition must reject tab-indented fragment markers.'
+  )
+
+  const functionNested = template.replace(
+    ownerMarker,
+    `    function fragmentFixture() {\n${ownerMarker}\n    }`
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(functionNested),
+    /fragment owner must be in the database lexical scope/,
+    'Core Rules composition must reject fragments nested in another block.'
+  )
+
+  const reboundDatabase = template.replace(
+    ownerMarker,
+    '  }\n' +
+      '  match  /databases/{database}/documents {\n' +
+      '    function isAuthenticated() {\n' +
+      '      return true;\n' +
+      '    }\n\n' +
+      ownerMarker
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(reboundDatabase),
+    /must remain inside the service and database frames opened by the Core open fragment/,
+    'Fragments must not rebind to a lookalike database wrapper.'
+  )
+
+  const joinMarker = '        // @fireux-core-rules join-validator'
+  const reboundJoin = template.replace(
+    joinMarker,
+    '      }\n' +
+      '      match  /join-requests/{userId} {\n' +
+      joinMarker
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(reboundJoin),
+    /must retain one original contracted match \/join-requests\/\{userId\} frame/,
+    'A first-use contracted frame must remain structurally unique.'
+  )
+
+  const membershipMarker =
+    '      // @fireux-core-rules membership-block'
+  const reboundApp = template.replace(
+    membershipMarker,
+    '    }\n' +
+      '    match  /apps/{appId} {\n' +
+      membershipMarker
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(reboundApp),
+    /must remain inside the original contracted match \/apps\/\{appId\} frame/,
+    'A later fragment must retain its previously contracted App frame.'
+  )
+
+  const overlayMarker =
+    '        // @fireux-core-rules overlay-validator'
+  const overlayMatch = '      match /{profileCollection}/{userId} {'
+  const appScopedOverlay = template
+    .replace(`${overlayMarker}\n`, '')
+    .replace(overlayMatch, `${overlayMarker}\n${overlayMatch}`)
+  assert.notEqual(
+    appScopedOverlay,
+    template,
+    'Werkbox Rules must retain the profile-overlay marker fixture.'
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(appScopedOverlay),
+    /fragment overlay-validator must be in the app-profile-overlay lexical scope/,
+    'Core Rules composition must reject a nested fragment at its parent scope.'
+  )
+
+  const authFunction = '    function isAuthenticated() {'
+  const authBoundary = `    }\n\n${ownerMarker}`
+  const inaccessibleHelper = template
+    .replace(
+      authFunction,
+      '    match /helper-fixture/{fixtureId} {\n' +
+        '      function isAuthenticated() {'
+    )
+    .replace(authBoundary, `      }\n    }\n\n${ownerMarker}`)
+  assert.notEqual(
+    inaccessibleHelper,
+    template,
+    'Werkbox Rules must retain the authentication helper fixture.'
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(inaccessibleHelper),
+    /fragment owner requires accessible function isAuthenticated\(\)/,
+    'Core Rules dependencies must resolve from an accessible ancestor scope.'
+  )
+
+  const rootHelper = template
+    .replace(
+      '// @fireux-core-rules open',
+      'function isAuthenticated() {\n' +
+        '  return true;\n' +
+        '}\n\n' +
+        '// @fireux-core-rules open'
+    )
+    .replace(
+      '    function isAuthenticated() {',
+      '    function renamedIsAuthenticated() {'
+    )
+  await assert.rejects(
+    () => composeFirestoreRules(rootHelper),
+    /root block must be service cloud\.firestore/,
+    'Root-level functions must not satisfy Rules fragment dependencies.'
+  )
+
+  const knownAppDeclaration = '    function isKnownApp(appId) {'
+  const midDeclaration = template
+    .replace(`${ownerMarker}\n`, '')
+    .replace(
+      knownAppDeclaration,
+      `    function isKnownApp(appId)\n${ownerMarker}\n    {`
+    )
+  await assert.rejects(
+    () => composeFirestoreRules(midDeclaration),
+    /fragment owner must start at a declaration boundary/,
+    'Rules fragments must not split a declaration from its block.'
+  )
+}
+
+async function assertRulesSourceConsumers(repoRoot) {
+  const packageJson = JSON.parse(
+    await readFile(path.join(repoRoot, 'package.json'), 'utf8')
+  )
+  assert.equal(
+    packageJson.scripts?.['firebase:rules:render'],
+    'node scripts/render-firestore-rules.mjs',
+    'Composed Rules must expose one supported read-only drift command.'
+  )
+
+  const renderer = await readFile(
+    path.join(repoRoot, 'scripts/render-firestore-rules.mjs'),
+    'utf8'
+  )
+  for (const token of [
+    'No action defaults to --check.',
+    'if (args.write)',
+    'await writeFile(target.artifactPath, target.content',
+    'assertAllFirestoreRulesArtifactsCurrent()',
+  ]) {
+    assert.ok(renderer.includes(token), `Rules renderer must retain ${token}.`)
+  }
+
+  const consumers = [
+    ['Misebox deploy', 'scripts/deploy-misebox-firestore-rules.mjs', 'misebox'],
+    ['Werkbox deploy', 'scripts/deploy-werkbox-firestore-rules.mjs', 'werkbox'],
+    [
+      'Werkbox migration',
+      'scripts/migrate-werkbox-firestore-contract.mjs',
+      'werkbox',
+    ],
+  ]
+
+  for (const [label, relativePath, ecosystem] of consumers) {
+    const source = await readFile(path.join(repoRoot, relativePath), 'utf8')
+    assert.ok(
+      source.includes(`assertFirestoreRulesArtifactCurrent('${ecosystem}')`),
+      `${label} must consume the verified composed Rules artifact.`
+    )
+  }
 }
 
 async function assertProtectedJsonArtifact() {
@@ -204,6 +397,7 @@ async function assertWerkboxRulesSurface(repoRoot) {
     'client notification delete denied',
     'Agent invalid contact email denied',
     'App javascript social URL denied',
+    'App credential-bearing HTTPS URL denied',
     'App name remains control-owned',
     'Richies isolated from Werkbox member',
     'unknown root defaults to deny',

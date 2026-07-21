@@ -1,8 +1,9 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: pure HTTP smoke-contract builders used by the canonical app registry.
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: separate smoke-contract mechanics from app registry data.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: assert bounded DTO shape and private-field exclusion.
+// Concurrent edit — 2026-07-21 15:35 CEST — Misebox startup verification: scope unavailable-order checks to package-owned surface markers.
 
 const MENU_INDEX_MARKER = 'data-menu-projection="index"'
 const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
@@ -406,7 +407,6 @@ const unavailableMenuOrderContract = (route, title, options = {}) => {
       'menu-order-funnel',
       'menu-item__add',
       'type="submit"',
-      '/orders',
       'Error 404',
       ...(options.noRecovery
         ? ['data-menu-action="browse"', 'data-menu-action="kitchen"']
@@ -449,7 +449,6 @@ const kitchenCollectionRecoveryContract = (
     'data-menu-order-catalogue=',
     'data-menu-order-basket=',
     'type="submit"',
-    '/orders',
     'Error 404',
     'Kitchen not found',
   ],

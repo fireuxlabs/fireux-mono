@@ -1,0 +1,53 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -225,6 +225,27 @@ const redirectStatuses = new Set([
+ 	307,
+ 	308
+ ]);
++const responseUpstreams = new WeakMap();
++function trackResponseUpstream(res, upstream) {
++	if (res.destroyed) {
++		upstream.destroy();
++		return;
++	}
++	let upstreams = responseUpstreams.get(res);
++	if (!upstreams) {
++		upstreams = new Set();
++		responseUpstreams.set(res, upstreams);
++		res.once("close", () => {
++			responseUpstreams.delete(res);
++			for (const current of upstreams) current.destroy();
++			upstreams.clear();
++		});
++	}
++	upstreams.add(upstream);
++	upstream.once("close", () => {
++		upstreams.delete(upstream);
++	});
++}
+ const webIncomingMiddleware = [
+ 	defineProxyMiddleware((req) => {
+ 		if ((req.method === "DELETE" || req.method === "OPTIONS") && !req.headers["content-length"]) {
+@@ -277,9 +298,7 @@ const webIncomingMiddleware = [
+ 		if (options.proxyTimeout) proxyReq.setTimeout(options.proxyTimeout, function() {
+ 			proxyReq.destroy();
+ 		});
+-		res.on("close", function() {
+-			if (!res.writableFinished) proxyReq.destroy();
+-		});
++		trackResponseUpstream(res, proxyReq);
+ 		const proxyError = createErrorHandler(proxyReq, options.target);
+ 		req.on("error", proxyError);
+ 		proxyReq.on("error", proxyError);
+@@ -366,9 +385,7 @@ const webIncomingMiddleware = [
+ 			if (res.finished) {
+ 				if (server) server.emit("end", req, res, proxyRes);
+ 			} else {
+-				res.on("close", function() {
+-					proxyRes.destroy();
+-				});
++				trackResponseUpstream(res, proxyRes);
+ 				proxyRes.on("close", function() {
+ 					if (!proxyRes.complete && !res.destroyed) res.destroy();
+ 				});

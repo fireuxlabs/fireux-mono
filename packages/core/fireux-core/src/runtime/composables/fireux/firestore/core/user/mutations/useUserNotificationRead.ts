@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: add the owner-only notification read mutation.
+// Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: resolve the owner notification writer only when mark-read runs.
 import { doc, updateDoc } from 'firebase/firestore'
 import {
   UserNotificationStorage,
@@ -19,9 +20,10 @@ function requireNotificationId(value: unknown) {
 }
 
 export function useUserNotificationRead() {
-  const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
+  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
 
   const markRead = async (notificationId: string) => {
+    const identityDb = useFirestore(identityDatabaseId)
     const user = await useRequireUser()
     if (user.isAnonymous) {
       throw new Error('Sign in to update notifications.')

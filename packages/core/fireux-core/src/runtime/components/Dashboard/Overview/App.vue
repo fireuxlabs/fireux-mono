@@ -1,28 +1,21 @@
-<!-- Concurrent edit — 2026-07-21 14:57 CEST — Dashboard Overview pass: add an outcome-aware current-App membership and capability layer. -->
+<!-- Concurrent edit — 2026-07-21 15:25 CEST — Dashboard Overview product pass: turn the App layer into a branded, task-led workspace card. -->
 <template>
   <UPageCard class="h-full" variant="subtle">
-    <div class="flex items-start justify-between gap-4">
-      <div class="flex min-w-0 items-center gap-3">
-        <UAvatar
-          :src="appCard?.avatarUrl || undefined"
-          :text="appCard?.avatarText || avatarText"
-          :alt="appName"
-          size="lg"
-        />
-        <div class="min-w-0">
-          <div class="flex flex-wrap items-center gap-2">
-            <UBadge color="primary" variant="subtle">App</UBadge>
-            <UBadge color="neutral" variant="soft">{{ roleLabel }}</UBadge>
-          </div>
-          <h2 class="mt-2 truncate text-lg font-semibold text-highlighted">
-            {{ appName }}
-          </h2>
-          <p class="mt-1 text-sm text-muted">
-            {{
-              appCard?.tagline || `Your access and capabilities in ${appName}.`
-            }}
-          </p>
-        </div>
+    <div class="flex items-start gap-4">
+      <UAvatar
+        :src="appCard?.avatarUrl || undefined"
+        :text="appCard?.avatarText || avatarText"
+        :alt="appName"
+        size="xl"
+        class="shrink-0"
+      />
+      <div class="min-w-0">
+        <h2 class="truncate text-xl font-semibold text-highlighted">
+          {{ appName }} workspace
+        </h2>
+        <p class="mt-1 text-sm leading-6 text-muted">
+          {{ appCard?.tagline || `Your workspace in ${appName}.` }}
+        </p>
       </div>
     </div>
 
@@ -31,49 +24,40 @@
         v-if="appOutcome === 'idle' || appOutcome === 'pending'"
         class="text-sm text-muted"
       >
-        Loading current app details…
+        Loading workspace details…
       </p>
       <UAlert
         v-else-if="appOutcome === 'error'"
         color="error"
         variant="soft"
         icon="i-lucide-circle-alert"
-        title="App details unavailable"
-        description="Your User profile is still available. Current app details could not be read."
+        title="Workspace details unavailable"
+        description="Your public profile is still available. Current app details could not be read."
       />
       <UAlert
         v-else-if="appOutcome === 'missing'"
         color="warning"
         variant="soft"
         icon="i-lucide-file-warning"
-        title="App setup needs attention"
-        description="The app is running, but its shared app details are unavailable. An app administrator may need to check its setup."
+        title="Workspace setup needs attention"
+        description="The app is running, but its shared details are unavailable. An app administrator may need to check its setup."
       />
-      <p v-else-if="appCard?.summary" class="text-sm text-muted">
-        {{ appCard.summary }}
+      <p v-else-if="appSummary" class="text-sm leading-6 text-muted">
+        {{ appSummary }}
       </p>
     </div>
 
-    <USeparator class="my-5" />
-
-    <div>
-      <h3 class="font-medium text-highlighted">Your membership</h3>
-      <p class="mt-1 text-sm text-muted">
-        This access belongs to {{ appName }} and does not change your public
-        User.
-      </p>
-
+    <div class="mt-6">
       <div
         v-if="membershipOutcome === 'idle' || membershipOutcome === 'pending'"
-        class="mt-4 flex flex-wrap gap-2"
+        class="space-y-3"
       >
-        <USkeleton class="h-6 w-24 rounded-full" />
-        <USkeleton class="h-6 w-20 rounded-full" />
+        <USkeleton class="h-10 w-52 rounded-lg" />
+        <USkeleton class="h-5 w-40 rounded" />
       </div>
 
       <UAlert
         v-else-if="membershipOutcome === 'error'"
-        class="mt-4"
         color="error"
         variant="soft"
         icon="i-lucide-shield-alert"
@@ -83,7 +67,6 @@
 
       <UAlert
         v-else-if="membershipOutcome === 'missing'"
-        class="mt-4"
         color="warning"
         variant="soft"
         icon="i-lucide-user-round-x"
@@ -91,24 +74,44 @@
         :description="missingMembershipDescription"
       />
 
-      <div v-else-if="membership" class="mt-4 flex flex-wrap gap-2">
-        <UBadge color="primary" variant="soft">
-          {{ membership.role === 'admin' ? 'Administrator' : 'Member' }}
-        </UBadge>
-        <UBadge
-          :color="membership.is_premium ? 'warning' : 'neutral'"
-          variant="soft"
-        >
-          {{ membership.is_premium ? 'Premium' : 'Standard' }}
-        </UBadge>
-        <UBadge
-          v-if="membership.console_enabled"
-          color="success"
-          variant="soft"
-        >
-          Console enabled
-        </UBadge>
+      <div v-else-if="membership">
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            v-if="canOpenConsole"
+            :to="consolePath"
+            :label="`Open ${consoleLabel}`"
+            :icon="consoleIcon"
+          />
+          <UButton
+            v-if="canManageApp"
+            to="/dashboard/admin"
+            :label="`Manage ${appName}`"
+            icon="i-lucide-shield-check"
+            color="neutral"
+            variant="soft"
+          />
+        </div>
+
+        <div class="mt-5 flex items-center gap-2 text-sm text-muted">
+          <UIcon
+            :name="
+              membership.role === 'admin'
+                ? 'i-lucide-shield-check'
+                : 'i-lucide-user-round-check'
+            "
+            class="size-4 shrink-0"
+          />
+          <span>{{ membershipLabel }}</span>
+        </div>
       </div>
+
+      <UButton
+        v-if="membershipOutcome === 'missing' && canSelfJoin"
+        class="mt-4"
+        to="/users/create"
+        label="Set up app access"
+        icon="i-lucide-user-plus"
+      />
     </div>
 
     <template v-if="membershipOutcome === 'ready' && profileEntries.length">
@@ -152,30 +155,6 @@
         </div>
       </div>
     </template>
-
-    <template #footer>
-      <div class="flex flex-wrap gap-2">
-        <UButton
-          v-if="membershipOutcome === 'missing' && canSelfJoin"
-          to="/users/create"
-          label="Set up app access"
-          icon="i-lucide-user-plus"
-        />
-        <UButton
-          v-if="canOpenConsole"
-          :to="consolePath"
-          label="Open console"
-          icon="i-lucide-panels-top-left"
-        />
-        <UButton
-          to="/dashboard/settings"
-          label="Account settings"
-          icon="i-lucide-settings"
-          color="neutral"
-          variant="soft"
-        />
-      </div>
-    </template>
   </UPageCard>
 </template>
 
@@ -191,7 +170,6 @@ import type {
 const props = defineProps<{
   appName: string
   appShortName: string
-  roleLabel: string
   appCard: AppCard.Card | null
   appOutcome: DashboardOverviewOutcome
   membership: UserApp | null
@@ -199,6 +177,9 @@ const props = defineProps<{
   profileEntries: DashboardOverviewProfileEntry[]
   canOpenConsole: boolean
   consolePath: string
+  consoleLabel: string
+  consoleIcon: string
+  canManageApp: boolean
   canSelfJoin: boolean
 }>()
 
@@ -211,9 +192,21 @@ const avatarText = computed(() =>
     .join('')
 )
 
+const appSummary = computed(() => {
+  const summary = props.appCard?.summary.trim() || ''
+  const tagline = props.appCard?.tagline.trim() || ''
+  return summary && summary !== tagline ? summary : ''
+})
+
 const missingMembershipDescription = computed(() =>
   props.canSelfJoin
     ? `Set up access to use ${props.appName} features. Your public identity already exists.`
-    : `This app has not granted you access. Your public identity is unchanged.`
+    : 'This app has not granted you access. Your public identity is unchanged.'
+)
+
+const membershipLabel = computed(() =>
+  props.membership?.role === 'admin'
+    ? `Administrator in ${props.appName}`
+    : `Member of ${props.appName}`
 )
 </script>

@@ -4,6 +4,7 @@ Ref: 5b6cfcc8e
 Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-21 12:43 CEST — Cleanbox-to-Werkbox migration: map the durable hospitality and practical-work ownership split. -->
+<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: map Core policy fragments and ecosystem deltas. -->
 
 Purpose:
 Explain FireUX as the platform shape behind the repo.
@@ -25,6 +26,7 @@ Horizontal links:
 - nuxt4.md
 - nuxt-ui.md
 - spine.md
+- firestore-rules.md
 
 Current shape:
 - FireUX is a modular Nuxt platform.
@@ -36,6 +38,8 @@ Package lanes:
 - Core packages provide shared primitives and runtime foundations.
 - Ecosystem packages provide ecosystem identity, config, Firebase binding, and public assets.
 - Extension packages provide domain runtime surfaces.
+- Core owns reusable Firestore Rules primitives; opted-in ecosystems own their
+  complete target template and explicit policy deltas.
 
 Runtime app roles:
 - `global`: app can expose multiple domains/consoles.

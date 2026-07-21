@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 14:30 CEST — Company public projection: expose only bounded complete same-id Company and Place pairs.
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: page canonical Company ids into coarse pairs and emit cursors only for projected ids.
+// Concurrent edit — 2026-07-21 15:20 CEST — Misebox Nitro startup fix: resolve the Place model through its explicit TypeScript server import.
 import { FieldPath } from 'firebase-admin/firestore'
 import {
   createError,
@@ -9,7 +10,7 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import {
   PUBLIC_COMPANY_INDEX_MAX_PAGE_SIZE,
   PUBLIC_COMPANY_INDEX_MAX_SCAN_SIZE,

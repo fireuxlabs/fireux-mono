@@ -1,7 +1,8 @@
 Create spine map
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: replace access-overlay create terminology. -->
-Updated: 2026-07-20
-Ref: a6fb7062d
+<!-- Concurrent edit — 2026-07-21 16:00 CEST — Place onboarding reconciliation: record staged onboarding over trusted ensure. -->
+Updated: 2026-07-21
+Ref: b020f805e
 Role: map, not canon
 
 Purpose:
@@ -186,6 +187,23 @@ Use this when:
 - The target has a natural external ID.
 - Re-running create should not duplicate records.
 - The flow is onboarding, migration, or reconciliation.
+
+Staged onboarding composition:
+Use the domain-free `useOnboarding` composable only for step mechanics: stable
+step IDs, navigation, progress, validation gates, pending/error state, reset,
+and one finish transition. A named domain adapter such as
+`usePlacesOnboarding` owns provider hydration, draft truth, domain validation,
+the final mutation, and completion routing.
+
+The Place doorway follows this composition:
+- `/places` is the browse directory and links to `/places/create`.
+- `/places/create` stages Find, Confirm identity, and Review without creating
+  Kitchen, Property, or another Place-backed role.
+- Final confirmation sends only the stable Place ID to
+  `POST /api/places/ensure`; the server reuses an existing Place or verifies a
+  missing Google Place before creating it.
+- Provider and server authority are never replaced by browser-authored Place
+  truth.
 
 Current create plan primitive:
 `createStrategy.ts` currently exposes:

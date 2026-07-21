@@ -2,7 +2,8 @@ Server API spine map
 
 <!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
 <!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map bounded Job APIs with server-only source scope. -->
-<!-- Concurrent edit — 2026-07-21 14:59 CEST — Werkbox trusted API cutover: map Jobs authoring, Place/Company projections, App people, and build attestation. -->
+<!-- Concurrent edit — 2026-07-21 15:11 CEST — Werkbox trusted API cutover: map Jobs authoring, fail-closed Place authority, Place/Company projections, App people, and build attestation. -->
+<!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map bounded biography on full public User transport only. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
@@ -79,6 +80,10 @@ Boundary rule:
   existing terms evidence. Client User creation is denied; the authenticated
   handle endpoint validates consent, owns the handle reservation, and creates
   the canonical public User through the Admin SDK.
+- `/api/public/users` and `/api/public/users/:handle` project optional User bio
+  as bounded public text and use it for profile description/SEO when present.
+  Minimal User identity joins used by App people and domain profiles remain
+  biography-free.
 - Kitchens owns `/api/internal/kitchen/driver-access`. It binds the request to
   runtime App/database identity, accepts no client App target, and grants or
   revokes an AppDriver Kitchen link only after persisted App-admin or Kitchen
@@ -92,11 +97,11 @@ Boundary rule:
   remain client-accessible only to Kitchen operators.
 - Places owns `PATCH /api/places/:placeId`. It accepts an allowlisted sparse
   patch, converts cleared optional values to field deletion, and writes through
-  Firebase Admin only after a verified bearer identity proves Place ownership,
-  current-App admin access, or operator access to an explicitly linked
-  `app_id`/`kitchen_id` whose stored `place_id` matches the target. Kitchen
-  `canWrite` is presentation state, not Place authority, and no broad client
-  Place write rule is opened.
+  Firebase Admin only after a verified bearer identity proves current-App admin
+  access or operator access to an explicitly linked `app_id`/`kitchen_id` whose
+  stored `place_id` matches the target. Stored `claimed_by` grants no authority,
+  Kitchen `canWrite` is presentation state, and no broad client Place write
+  rule is opened.
 - Places also owns authenticated `POST /api/places/ensure` plus bounded
   `GET /api/places` and `GET /api/places/:placeId` projections. Ensure binds
   creation to the fixed runtime and reviewed provider/materialization input;

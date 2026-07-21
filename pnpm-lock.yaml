@@ -16,6 +16,9 @@ overrides:
   vuefire: 3.2.2
   nuxt-vuefire: ^1.1.0
 
+patchedDependencies:
+  httpxy@0.5.2: 59e91454cd0b8308478a85cc63a07649cd60765a1c7943126b9a95d8b0432f14
+
 importers:
 
   .:
@@ -277,7 +280,7 @@ importers:
         specifier: workspace:*
         version: link:../../core/fireux-core
       h3:
-        specifier: '*'
+        specifier: 1.15.11
         version: 1.15.11
     devDependencies:
       '@nuxt/module-builder':
@@ -16234,7 +16237,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  httpxy@0.5.2: {}
+  httpxy@0.5.2(patch_hash=59e91454cd0b8308478a85cc63a07649cd60765a1c7943126b9a95d8b0432f14): {}
 
   human-signals@5.0.0: {}
 
@@ -17380,7 +17383,7 @@ snapshots:
       gzip-size: 7.0.0
       h3: 1.15.11
       hookable: 5.5.3
-      httpxy: 0.5.2
+      httpxy: 0.5.2(patch_hash=59e91454cd0b8308478a85cc63a07649cd60765a1c7943126b9a95d8b0432f14)
       ioredis: 5.10.1
       jiti: 2.7.0
       klona: 2.0.6

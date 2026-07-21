@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: stop eager logo discovery for every search result. -->
 <template>
   <div v-if="cells.length" class="space-y-1">
     <template v-for="cell in cells" :key="cell.id">
@@ -33,8 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
-import { loadLogoForPlace } from '../../../composables/fireux/firestore/place/utils/view/usePlaceLogos';
+import { computed } from 'vue';
 import type { PlaceCard } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface';
 import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../models/place.model';
 
@@ -59,50 +59,8 @@ const debugCells = computed(() =>
   }))
 )
 
-const logoLoading = new Set<string>()
-const logoById = ref<Record<string, string>>({})
-
-watch(
-  cells,
-  (next: PlaceCard.Card[]) => {
-    if (!Array.isArray(next)) return
-    const activeIds = new Set<string>()
-    for (const card of next) {
-      const cardId = String(card?.id || '').trim()
-      if (cardId) activeIds.add(cardId)
-      if (!card || card.source !== 'google') continue
-      if (card.imageUrl) continue
-      if (logoById.value[cardId]) continue
-      if (logoLoading.has(cardId)) continue
-      logoLoading.add(cardId)
-      void loadLogoForPlace(card, { timeoutMs: 6000, priority: true })
-        .then((url) => {
-          if (!url) return
-          logoById.value = {
-            ...logoById.value,
-            [cardId]: url,
-          }
-        })
-        .finally(() => {
-          logoLoading.delete(cardId)
-        })
-    }
-
-    // Keep cache aligned to currently rendered rows.
-    const nextLogoById: Record<string, string> = {}
-    for (const [id, url] of Object.entries(logoById.value)) {
-      if (!activeIds.has(id)) continue
-      nextLogoById[id] = String(url)
-    }
-    logoById.value = nextLogoById
-  },
-  { immediate: true }
-)
-
 function resolveImageUrl(card: PlaceCard.Card) {
-  const cardId = String(card?.id || '').trim()
-  if (!cardId) return String(card?.imageUrl || '')
-  return String(logoById.value[cardId] || card.imageUrl || '')
+  return String(card?.imageUrl || '')
 }
 
 function resolveAddress(card: PlaceCard.Card) {

@@ -1,49 +1,110 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/User/Edit/Core.vue -->
+<!-- Concurrent edit — 2026-07-21 15:42 CEST — User Profile polish: turn root identity fields into friendly, focused edit cards. -->
+<!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: add a focused public biography editor. -->
 <template>
-  <section class="space-y-2">
-    <p class="text-xs font-semibold uppercase tracking-wide text-toned">
-      Core Properties
-    </p>
+  <section class="space-y-4" aria-labelledby="public-profile-fields">
+    <div>
+      <h2 id="public-profile-fields" class="text-lg font-semibold text-highlighted">
+        Edit your profile
+      </h2>
+      <p class="mt-1 text-sm text-muted">
+        Update one detail at a time. Each change saves as soon as you confirm it.
+      </p>
+    </div>
 
     <ClientOnly>
-      <div v-if="user" class="space-y-6">
-        <UCard>
-          <div class="flex flex-col items-center gap-2">
+      <div v-if="user" class="space-y-4">
+        <UPageCard
+          title="Profile photo"
+          description="Use a clear image people will recognise across your apps."
+          icon="i-lucide-image"
+          variant="subtle"
+        >
+          <div class="flex flex-col items-center gap-4 sm:flex-row sm:items-center">
             <MoleculesFormsFirestoreImagePicker
               :src="proxiedAvatarUrl"
               :alt="user.display_name || user.handle || 'User'"
               :initials="avatarInitials"
+              button-label="Change profile photo"
+              :loading="avatarUploading"
               :update-function="handleAvatarUpload"
             />
-            <p v-if="avatarUploading" class="text-xs text-muted">
-              Uploading avatar…
-            </p>
+
+            <div class="min-w-0 flex-1 text-center sm:text-left">
+              <p class="text-sm text-toned">
+                Choose a square photo or image for the best crop.
+              </p>
+              <p
+                v-if="avatarUploading"
+                class="mt-2 inline-flex items-center gap-2 text-xs font-medium text-primary"
+                role="status"
+              >
+                <UIcon name="i-lucide-loader-circle" class="size-3.5 animate-spin" />
+                Uploading photo…
+              </p>
+              <p v-else class="mt-2 text-xs text-dimmed">
+                Select the camera button on your photo to replace it.
+              </p>
+            </div>
           </div>
-        </UCard>
+        </UPageCard>
 
-        <UCard>
+        <UPageCard
+          title="Name and handle"
+          description="These are the public details shown on your User card."
+          icon="i-lucide-id-card"
+          variant="subtle"
+        >
+          <div class="space-y-5">
+            <MoleculesFormsFirestoreSimpleField
+              label="Display name"
+              :firebase-value="user.display_name"
+              placeholder="Display name"
+              :maxlength="60"
+              :update-function="handleUpdateDisplayName"
+              :validation-function="DisplayName.validate"
+              :formatting-function="DisplayName.format"
+            />
+
+            <USeparator />
+
+            <MoleculesFormsFirestoreSimpleField
+              label="Handle"
+              :firebase-value="user.handle"
+              placeholder="your-handle"
+              :update-function="handleUpdateHandle"
+              :validation-function="Handle.validate"
+              :formatting-function="Handle.format"
+            />
+
+            <UAlert
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-at-sign"
+              title="Your public address"
+              :description="publicAddress"
+            />
+          </div>
+        </UPageCard>
+
+        <UPageCard
+          title="About you"
+          description="A short introduction for your User card and public profile."
+          icon="i-lucide-align-left"
+          variant="subtle"
+        >
           <MoleculesFormsFirestoreSimpleField
-            label="Display Name"
-            :firebase-value="user.display_name"
-            placeholder="Display name"
-            :maxlength="60"
-            :update-function="handleUpdateDisplayName"
-            :validation-function="DisplayName.validate"
-            :formatting-function="DisplayName.format"
+            label="Bio"
+            :firebase-value="user.bio"
+            placeholder="Tell people what you build, do or care about."
+            type="textarea"
+            :rows="5"
+            :maxlength="280"
+            :update-function="handleUpdateBio"
+            :validation-function="Bio.validate"
+            :formatting-function="Bio.format"
           />
-        </UCard>
-
-        <UCard>
-          <MoleculesFormsFirestoreSimpleField
-            label="Handle"
-            :firebase-value="user.handle"
-            placeholder="your-handle"
-            :update-function="handleUpdateHandle"
-            :validation-function="Handle.validate"
-            :formatting-function="Handle.format"
-          />
-        </UCard>
-
+        </UPageCard>
       </div>
 
       <MoleculesStateCard v-else entity="profile" kind="document" loading />
@@ -84,8 +145,14 @@ const avatarInitials = computed(() => {
     .map((part) => part[0]?.toUpperCase())
     .join('')
 })
+const publicAddress = computed(() => {
+  const handle = String(user.value?.handle || '').trim().replace(/^@+/, '')
+  return handle
+    ? `/users/${handle}`
+    : 'Choose a handle to create a profile address people can share.'
+})
 
-const { DisplayName, Handle } = useUserFormattingAndValidation()
+const { DisplayName, Bio, Handle } = useUserFormattingAndValidation()
 
 type Msg = { success: string; failure: string }
 const withToast =
@@ -106,6 +173,11 @@ const handleUpdateDisplayName = withToast(coreProfile.rename, {
   failure: 'Failed to update display name',
 })
 
+const handleUpdateBio = withToast(coreProfile.setBio, {
+  success: 'Bio updated',
+  failure: 'Failed to update bio',
+})
+
 const handleUpdateHandle = withToast(coreProfile.setHandle, {
   success: 'Handle updated',
   failure: 'Failed to update handle',
@@ -120,7 +192,6 @@ async function handleAvatarUpload(file: File) {
   } catch (error) {
     const msg = error instanceof Error ? error.message : 'Please try again.'
     toast.error(`Failed to update avatar: ${msg}`)
-    throw error
   } finally {
     avatarUploading.value = false
   }

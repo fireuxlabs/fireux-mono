@@ -1,8 +1,9 @@
+<!-- Concurrent edit — 2026-07-21 15:50 CEST — User Profile polish: associate editable fields and name every field action for assistive tech. -->
 <template>
   <div class="base-form-field-top">
     <div class="top-row">
       <div class="left">
-        <span class="field-label">{{ label }}</span>
+        <label :for="inputId || undefined" class="field-label">{{ label }}</label>
         <UBadge
           v-if="disabled"
           size="xs"
@@ -21,16 +22,16 @@
         <template v-if="!isEditing">
           <UButton
             v-if="disabled"
-            aria-label="Disabled"
+            :aria-label="`Editing disabled for ${fieldName}`"
             color="neutral"
             variant="ghost"
             size="xs"
             :icon="'i-lucide-lock'"
             disabled
           />
-          <UTooltip v-else text="Edit" :popper="{ placement: 'top' }">
+          <UTooltip v-else :text="`Edit ${fieldName}`" :popper="{ placement: 'top' }">
             <UButton
-              aria-label="Edit"
+              :aria-label="`Edit ${fieldName}`"
               color="primary"
               variant="ghost"
               size="xs"
@@ -40,9 +41,9 @@
           </UTooltip>
         </template>
         <template v-else>
-          <UTooltip text="Save" :popper="{ placement: 'top' }">
+          <UTooltip :text="`Save ${fieldName}`" :popper="{ placement: 'top' }">
             <UButton
-              aria-label="Save"
+              :aria-label="`Save ${fieldName}`"
               color="success"
               variant="soft"
               size="xs"
@@ -50,9 +51,9 @@
               @click="$emit('check')"
             />
           </UTooltip>
-          <UTooltip text="Cancel" :popper="{ placement: 'top' }">
+          <UTooltip :text="`Cancel editing ${fieldName}`" :popper="{ placement: 'top' }">
             <UButton
-              aria-label="Cancel"
+              :aria-label="`Cancel editing ${fieldName}`"
               color="neutral"
               variant="ghost"
               size="xs"
@@ -60,9 +61,9 @@
               @click="$emit('cancel')"
             />
           </UTooltip>
-          <UTooltip v-if="hasData" text="Clear" :popper="{ placement: 'top' }">
+          <UTooltip v-if="hasData" :text="`Clear ${fieldName}`" :popper="{ placement: 'top' }">
             <UButton
-              aria-label="Clear"
+              :aria-label="`Clear ${fieldName}`"
               color="error"
               variant="ghost"
               size="xs"
@@ -90,8 +91,11 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   label: { type: String, default: '' },
+  inputId: { type: String, default: '' },
   isEditing: { type: Boolean, default: false },
   hasData: { type: Boolean, default: false },
   errorMessage: { type: String, default: '' },
@@ -100,6 +104,8 @@ defineProps({
 })
 
 defineEmits(['start-editing', 'check', 'cancel', 'delete'])
+
+const fieldName = computed(() => props.label.trim() || 'field')
 </script>
 
 <style scoped>

@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-20 12:58 CEST — User privacy pass: keep notifications owner-only and membership records governance-only.
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: make the ecosystem avatar canonical User creation and clear state.
 // Concurrent edit — 2026-07-20 23:40 CEST — Entity Vocabulary + Matrix Pass: declare User root identity and UserApp membership support.
+// Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: add bounded public biography to canonical User identity.
 
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from './entity.model'
@@ -113,6 +114,7 @@ export const UserModel = {
   id: '',
 
   display_name: '',
+  bio: '',
   avatar: USER_ECOSYSTEM_AVATAR_SRC,
   handle: '',
   app_ids: [] as string[],
@@ -131,6 +133,7 @@ export const UserModel = {
 export interface User {
   id: string
   display_name: string
+  bio: string
   avatar: string
   handle: string
   app_ids: string[]

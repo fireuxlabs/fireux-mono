@@ -1,0 +1,7 @@
+// @fireux-rules-fragment avatar
+// Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: own the canonical User avatar validator.
+    function isValidUserAvatar(value) {
+      return value == '/img/ecosystem/avatar.png' ||
+        (value != '' && isValidHttpsUrl(value, 2048));
+    }
+

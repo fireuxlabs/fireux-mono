@@ -54,6 +54,7 @@
     "sync:misebox-public-card-snapshots": "node scripts/sync-self-contained-collection-rows.mjs",
     "inspect:app-users": "node scripts/inspect-app-users.mjs",
     "inspect:firestore-tree": "node scripts/inspect-firestore-tree.mjs",
+    "firebase:rules:render": "node scripts/render-firestore-rules.mjs",
     "firebase:rules:misebox": "node scripts/deploy-misebox-firestore-rules.mjs",
     "firebase:rules:werkbox": "node scripts/deploy-werkbox-firestore-rules.mjs",
     "git-tree": "node scripts/git-tree.mjs",

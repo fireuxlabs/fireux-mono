@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 14:59 CEST — Cleanbox to Werkbox migration: record the durable Werkbox ownership and trusted Firebase boundary. -->
+<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: point Werkbox at the composed Rules ownership boundary. -->
 # Werkbox GPT Context
 
 This is the scoped context entrypoint for work on Werkbox inside
@@ -61,9 +62,13 @@ remembered implementations are not authority.
   scoped to the current App. Jobs, Places, Companies, public identities, App
   people hydration, and structured Professional experience use bounded trusted
   package server APIs rather than raw browser collection access.
-- The strict client Rules and temporary deny-all cutover source live under
-  `scripts/firebase/werkbox`. The guarded root command owns compilation,
-  adversarial tests, simulation staging, production quarantine, and promotion.
+- Werkbox owns its strict client Rules template and target manifest at
+  `packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules`;
+  shared byte-identical policy primitives come from FireUX Core. The complete
+  locked candidate and temporary deny-all cutover source live under
+  `scripts/firebase/werkbox`. The guarded root commands own deterministic
+  rendering checks, compilation, adversarial tests, simulation staging,
+  production quarantine, and promotion.
   The one-time data executor creates its release marker only after protected
   backup, exact writes, full known-descendant inventory verification, and live
   build-bound API attestations from both Werkbox Apps.
