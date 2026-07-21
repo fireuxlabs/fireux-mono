@@ -1,8 +1,9 @@
-<!-- Concurrent edit — 2026-07-21 13:05 CEST — Operation detail surfaces: add catalogue-backed factual pages. -->
+<!-- Concurrent edit — 2026-07-21 13:12 CEST — Operation detail surfaces: add catalogue-backed factual pages. -->
+<!-- Concurrent edit — 2026-07-21 13:16 CEST — Project Operation copy: use the authored description instead of generating an awkward title. -->
 <template>
   <PublicSimplePage
     v-if="operation"
-    :title="`Manage your ${operation.title}`"
+    :title="operation.title"
     :description="operation.description"
     :eyebrow="operation.console.name"
     :back-to="`/operations#${operation.console.id}`"
@@ -24,9 +25,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { createError, useAsyncData, useSeoMeta } from '#imports'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import type { FireuxMetaOperation } from '../../../models/system/meta-content.model'
-import { getFireuxOperationRouteKey } from '../../../utils/operation-route'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useRouteParam } from '../../composables/shared/useRouteParam'
+import type { FireuxMetaOperation } from '../../models/system/meta-content.model'
 
 type OperationsResponse = {
   ok: boolean
@@ -34,8 +35,7 @@ type OperationsResponse = {
 }
 
 const fireux = useFireUXConfig()
-const consoleId = useRouteParam('consoleId')
-const operationKey = useRouteParam('operationKey')
+const requestedSlug = useRouteParam('slug')
 const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
 
 const { data } = await useAsyncData('public-app-operations', () =>
@@ -43,16 +43,13 @@ const { data } = await useAsyncData('public-app-operations', () =>
 )
 
 const operation = computed(() =>
-  (data.value?.operations || []).find((entry) =>
-    entry.console.id === consoleId.value &&
-    getFireuxOperationRouteKey(entry) === operationKey.value
-  )
+  (data.value?.operations || []).find((entry) => entry.slug === requestedSlug.value)
 )
 
 if (!operation.value) {
   throw createError({
     statusCode: 404,
-    statusMessage: `Operation not found: ${consoleId.value}/${operationKey.value}`,
+    statusMessage: `Operation not found: ${requestedSlug.value}`,
   })
 }
 
@@ -61,9 +58,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: () => `Manage your ${operation.value?.title || 'operation'} - ${appName.value}`,
-  ogTitle: () => `Manage your ${operation.value?.title || 'operation'} - ${appName.value}`,
-  twitterTitle: () => `Manage your ${operation.value?.title || 'operation'} - ${appName.value}`,
+  title: () => `${operation.value?.title || 'Operation'} - ${appName.value}`,
+  ogTitle: () => `${operation.value?.title || 'Operation'} - ${appName.value}`,
+  twitterTitle: () => `${operation.value?.title || 'Operation'} - ${appName.value}`,
   description: () => operation.value?.description || '',
   ogDescription: () => operation.value?.description || '',
   twitterDescription: () => operation.value?.description || '',

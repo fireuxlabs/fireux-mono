@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: include declared pages in static SEO paths.
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 import type { FireuxSeoConfig } from './seo'
 
@@ -29,15 +30,21 @@ export function resolveSeoConfig(
   const solutionPaths = (meta?.solutions || [])
     .map((solution) => normalizePublicPath(`/solutions/${solution.slug}`))
     .filter((path): path is string => Boolean(path))
+  const operationPaths = (meta?.operations || [])
+    .map((operation) => operation.slug)
+    .filter((slug): slug is string =>
+      Boolean(slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug))
+    )
+    .map((slug) => `/operations/${slug}`)
 
-  if (!solutionPaths.length) return seo
+  if (!solutionPaths.length && !operationPaths.length) return seo
 
   return {
     ...(seo || {}),
     staticPaths: mergeStaticPaths([
       ...(seo?.staticPaths || []),
-      '/solutions',
-      ...solutionPaths,
+      ...(solutionPaths.length ? ['/solutions', ...solutionPaths] : []),
+      ...(operationPaths.length ? ['/operations', ...operationPaths] : []),
     ]),
   }
 }

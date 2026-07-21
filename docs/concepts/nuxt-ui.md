@@ -1,7 +1,9 @@
 Nuxt UI concept map
-Updated: 2026-07-18
-Ref: dd0401906
+Updated: 2026-07-21
+Ref: 4c70482080
 Role: map, not canon
+
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: record the installed-component-first styling boundary. -->
 
 Purpose:
 Explain the UI library context for agents.
@@ -17,7 +19,9 @@ Horizontal links:
 
 UI stack:
 - FireUX uses Nuxt UI / Nuxt UI Pro style components.
-- Common shell components include `UPage`, `UPageHeader`, `UPageBody`, `UPageCard`, `UCard`, `UButton`, and dashboard components.
+- Common shell components include `UPage`, `UPageHeader`, `UPageBody`,
+  `UPageGrid`, `UPageColumns`, `UPageCard`, `UPageFeature`, `UPageHero`,
+  `UPageSection`, `UCard`, `UButton`, and dashboard components.
 - The installed Nuxt UI package source is the contract authority when its
   alpha/version differs from later online documentation. Do not assume a
   component or prop exists without checking the installed package.
@@ -32,6 +36,13 @@ Working style:
   spans multiple Nuxt UI elements or adds semantics Nuxt UI does not provide
   as one component. Current seams are disclosure triggers, create-workflow
   cards, entity-card action roots, and explicit state cards.
+- Do not recreate a Nuxt UI page grid, card root, dashboard body stack, page
+  transition, or ordinary radius default in global CSS. A one-component layout
+  delta stays with that component; global CSS requires repeated cross-tree
+  evidence or a narrow browser/accessibility behavior.
+- Nuxt UI owns the ordinary `--ui-radius` default. FireUX may calculate from
+  that live variable but must not copy its installed value into a second token
+  declaration.
 - Use `ULink`/`UButton` disabled behavior rather than visual-only disabled
   classes. Use `UAlert` for notices and errors, `USkeleton` for shaped loading,
   and the FireUX state card for empty/missing/loading outcome presentation.

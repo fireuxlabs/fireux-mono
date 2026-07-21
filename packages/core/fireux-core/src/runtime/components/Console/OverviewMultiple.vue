@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: render overview collection state from outcome. -->
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: use Nuxt UI for the single compact collection summary. -->
 <template>
   <UCard>
     <template #header>
@@ -27,22 +28,12 @@
       description="Please try again."
     />
 
-    <div v-else class="console-focus">
-      <div class="console-focus__title">
-        Available {{ entityPluralLabel }}
-      </div>
-
-      <div class="console-metric">
-        <div class="console-metric__value">
-          {{ multipleCountLabel }}
-        </div>
-        <div class="console-metric__label">{{ entityPluralLabel }}</div>
-      </div>
-
-      <p class="console-card-header__description">
-        {{ multipleDescription }}
-      </p>
-    </div>
+    <UPageFeature
+      v-else
+      icon="i-lucide-layers-3"
+      :title="`${multipleCountLabel} ${entityPluralLabel}`"
+      :description="multipleDescription"
+    />
 
     <div
       v-if="multiple.outcome === 'ready' && cards.length"

@@ -1,10 +1,11 @@
 Components spine map
 Updated: 2026-07-21
-Ref: 1f77cae56e
+Ref: 4c70482080
 Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: map semantic project-color enforcement. -->
 <!-- Concurrent edit — 2026-07-21 13:03 CEST — CSS architecture pass: map atomic CSS contracts to the domain-first component and page spine. -->
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: make Nuxt UI the default and global CSS the proven exception. -->
 
 Purpose:
 Map component folder and naming conventions.
@@ -32,25 +33,31 @@ CSS-to-component mapping:
   and the `.fx-type-*` vocabulary. They do not own a form, card, or page
   composition.
 - `molecules` own reusable local contracts assembled from atoms and Nuxt UI,
-  such as forms, inset panels, metrics, pills, and entity/preview card anatomy.
+  such as browser-level form behavior, inset panels, pills, and entity/preview
+  card anatomy that the installed component library does not provide.
 - `organisms` own recurring multi-component or page-region composition, such
-  as collection grids and layouts, solution grids, public-action panels,
-  profile/console composition, and shared page rhythm.
+  as collection layouts, public-action panels, profile/console composition,
+  and shared page rhythm that still has more than one real consumer.
 - If a real external surface needs shared CSS, `integrations` isolates that
   contract; it is not a domain organism. Do not keep speculative integration
   CSS without an authored consumer.
-- A global CSS family must have a real repeated consumer contract. Business
+- A global CSS family must have a real repeated consumer contract or a narrow
+  browser behavior that cannot be expressed through Nuxt UI. A single shared
+  Vue component is not enough evidence: use the installed Nuxt UI component,
+  its props/slots, or a small component-local utility recipe first. Business
   copy, routes, data authority, actions, and one-off presentation remain in the
   named component or page that owns them.
 - The intended cross-tree mappings are: entity and preview card molecules to
   named `X/Cards/*` components; collection organisms to `X/Collection/*` and
-  console indexes; console header/focus/summary molecules plus the console
-  surface organism to `Console/X/*`; public-action organisms to claim/operator
-  panels; profile cards/editors to named `Cards/Profile` and `Edit/*` trees;
-  and landing/page organisms to their shared layout and route regions.
+  console indexes; console header/summary molecules plus the console surface
+  organism to `Console/X/*`; public-action organisms to claim/operator panels;
+  profile cards/editors to named `Cards/Profile` and `Edit/*` trees; and page
+  organisms to genuinely shared layout and route regions. Solution grids,
+  compact metrics, ordinary card roots, and dashboard body stacks use Nuxt UI
+  directly rather than retaining parallel global CSS.
 - `assets/styles/main.scss` is the explicit cascade authority. Its import order
-  preserves behavior; a CSS folder name does not create component auto-import,
-  route ownership, or business ownership.
+  preserves behavior and the file remains import-only; a CSS folder name does
+  not create component auto-import, route ownership, or business ownership.
 - The `/design/components/contracts` page exposes stable light/dark, desktop,
   and mobile specimens for these shared contracts.
 
@@ -105,6 +112,10 @@ Working rules:
 - Share functions/composables where behavior is common.
 - Let child components own local presentation when it reduces parent script weight.
 - Keep Nuxt UI as the default chrome layer.
+- Nuxt UI owns the ordinary global visual baseline, including `--ui-radius`.
+  FireUX consumes that value but does not redeclare the installed default.
+- Purely aesthetic global behavior is not part of the current system baseline:
+  do not hide scrollbars globally or animate every page-body child on entry.
 - Shared visual primitives such as radius, borders, elevation, standard
   spacing, surface backgrounds, and control geometry belong to Nuxt UI theme
   configuration or a real reusable component/molecule. Domain components

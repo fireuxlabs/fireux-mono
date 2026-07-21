@@ -31,7 +31,7 @@
               <div class="space-y-1">
                 <h3 class="font-semibold leading-tight">{{ job.title }}</h3>
                 <p class="text-xs uppercase tracking-wide text-dimmed">
-                  {{ job.source_app_id || 'App unknown' }}
+                  {{ job.category_id }}
                 </p>
               </div>
               <div class="flex flex-col items-end gap-2">
@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: source network cards from the bounded public API.
+// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: render category while source App scope stays server-only.
 import { computed } from 'vue'
 import { usePublicJobCollection } from '../../../composables/fireux/jobs/public/usePublicJobCollection.ts'
 import type { PublicJobProjection } from '../../../models/job-public.model'

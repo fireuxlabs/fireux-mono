@@ -1,15 +1,10 @@
+<!-- Concurrent edit — 2026-07-21 13:52 CEST — CSS necessity pass: use Nuxt UI columns for the shared profile editor. -->
 <template>
-  <section class="min-w-0">
-    <div class="min-w-0 panels-masonry__item mb-10">
-      <slot name="preview" />
-    </div>
-    <div class="min-w-0 panels-masonry__item mb-10">
-      <slot name="core" />
-    </div>
-    <div v-if="isTenant" class="min-w-0 panels-masonry__item mb-10">
-      <slot name="app" />
-    </div>
-  </section>
+  <UPageColumns class="min-w-0 columns-1 lg:columns-2">
+    <slot name="preview" />
+    <slot name="core" />
+    <slot v-if="isTenant" name="app" />
+  </UPageColumns>
 </template>
 
 <script setup lang="ts">

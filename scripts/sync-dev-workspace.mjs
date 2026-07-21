@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-14
+// last_used: 2026-07-21
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-21 13:11 CEST — Cleanbox-to-Werkbox migration: record the verified workspace registration sync.
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'

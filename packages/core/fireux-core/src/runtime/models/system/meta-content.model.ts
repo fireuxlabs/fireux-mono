@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: update current App identity examples.
+// Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: add explicit app-wide public slugs.
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -57,6 +58,8 @@ export type FireuxMetaOperationConsole = {
 export type FireuxMetaOperation = {
   /** Stable capability key, independent of its current route. */
   id: string
+  /** Optional app-wide child key used at /operations/:slug. */
+  slug?: string
   /** Direct product language, not an SEO title. */
   title: string
   /** Factual description of what the current surface provides. */

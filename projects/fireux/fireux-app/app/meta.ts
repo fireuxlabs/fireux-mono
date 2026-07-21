@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-21 12:20 CEST — FireUX SEO solutions: add seven distinct customer-intent pages.
 // Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: declare FireUX route-backed capabilities.
 // Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the FireUX product highlight vocabulary.
-// Concurrent edit — 2026-07-21 12:57 CEST — FireUX project positioning: describe the current Project Console without claiming project creation.
+// Concurrent edit — 2026-07-21 13:16 CEST — FireUX project positioning: publish Project Operations with working public and Console homes.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 import { fireuxMiseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -397,8 +397,9 @@ export const metaContent = defineFireuxMeta({
   operations: [
     {
       id: 'project.apps',
+      slug: 'apps',
       title: 'Apps',
-      description: 'View apps connected to the selected FireUX project.',
+      description: "Manage your project's apps.",
       to: '/console/project/apps',
       console: {
         id: 'project',
@@ -409,8 +410,9 @@ export const metaContent = defineFireuxMeta({
     },
     {
       id: 'project.ecosystem',
+      slug: 'ecosystem',
       title: 'Ecosystem',
-      description: 'View the ecosystem connected to the selected FireUX project.',
+      description: "Manage your project's ecosystem.",
       to: '/console/project/ecosystem',
       console: {
         id: 'project',
@@ -418,6 +420,19 @@ export const metaContent = defineFireuxMeta({
         to: '/console/project',
       },
       icon: 'i-lucide-orbit',
+    },
+    {
+      id: 'project.users',
+      slug: 'users',
+      title: 'Users',
+      description: 'Manage your users.',
+      to: '/console/project/users',
+      console: {
+        id: 'project',
+        name: 'Project console',
+        to: '/console/project',
+      },
+      icon: 'i-lucide-users',
     },
   ],
   solutions: [

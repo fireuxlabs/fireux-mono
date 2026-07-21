@@ -1,9 +1,0 @@
-/* Concurrent edit — 2026-07-21 12:44 CEST — CSS architecture pass: isolate the shared preview-card modifier. */
-/*
-Preview-card modifier shared by named domain card components.
-Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
-*/
-
-:where(.fx-card--preview) {
-	overflow: hidden;
-}

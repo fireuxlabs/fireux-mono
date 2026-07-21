@@ -1,5 +1,6 @@
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: let Nuxt UI own the public-action card root geometry. -->
 <template>
-  <UCard v-if="showPanel" class="fx-card fx-card--public-action">
+  <UCard v-if="showPanel" class="fx-card--public-action">
     <div class="fx-public-action">
       <div class="fx-public-action__badges">
         <UBadge :color="accessBadgeColor" variant="soft">

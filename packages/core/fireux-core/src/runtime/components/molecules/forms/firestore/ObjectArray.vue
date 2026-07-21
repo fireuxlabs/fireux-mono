@@ -1,5 +1,6 @@
 <!-- flag -->
 <!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic form colors. -->
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: localize object-array rhythm at its sole owner. -->
 <template>
   <div class="object-array">
     <USeparator />
@@ -79,11 +80,11 @@
         </UCard>
       </div>
       <div v-if="!items || items.length === 0">{{ emptyText }}</div>
-      <ul v-else class="object-array__list form-stack-sm">
+      <ul v-else class="object-array__list grid gap-3">
         <li v-for="(item, index) in items" :key="index">
           <UCard>
             <div class="relative group">
-              <div class="object-array__item-body form-stack-sm">
+              <div class="object-array__item-body grid gap-3">
                 <div v-if="editingIndex !== index">
                   <div
                     v-if="getItemTitle(item, index) || getItemDate(item, index) || showActions"
@@ -131,7 +132,10 @@
                     :remove="() => remove(index)"
                   />
                   <div v-else>
-                    <div v-if="getItemSubtitle(item, index)" class="form-text-body">
+                    <div
+                      v-if="getItemSubtitle(item, index)"
+                      class="text-sm leading-normal text-muted"
+                    >
                       {{ getItemSubtitle(item, index) }}
                     </div>
                   </div>

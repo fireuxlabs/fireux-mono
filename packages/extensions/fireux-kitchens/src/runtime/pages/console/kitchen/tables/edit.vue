@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 13:52 CEST — CSS necessity pass: localize the one narrow console form. -->
 <template>
   <UDashboardPanel id="console-kitchen-tables-edit">
     <template #header>
@@ -17,7 +18,7 @@
     </template>
 
     <template #body>
-      <section class="panels-narrow space-y-6">
+      <section class="mx-auto w-full max-w-xl space-y-6">
         <p class="m-0 text-sm text-muted">
           Configure the numbered tables available to table service.
         </p>

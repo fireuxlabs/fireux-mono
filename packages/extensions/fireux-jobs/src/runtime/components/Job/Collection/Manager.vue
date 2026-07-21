@@ -94,7 +94,7 @@
         variant="soft"
         color="neutral"
         :loading="loadingMore"
-        @click="loadMore"
+        @click="onLoadMore"
       >
         Load more jobs
       </UButton>
@@ -123,7 +123,7 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: render only the bounded Job API and its cursor state.
+// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: adapt boolean pagination promises to a void UI handler.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
@@ -163,6 +163,9 @@ const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
 const loadMore = fetched.loadMore
+const onLoadMore = (): void => {
+  void loadMore()
+}
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )

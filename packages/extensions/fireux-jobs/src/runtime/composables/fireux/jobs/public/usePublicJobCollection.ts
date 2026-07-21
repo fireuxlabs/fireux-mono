@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: consume the cursor-bounded Job directory API.
+// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep pagination callbacks explicitly typed for Nuxt consumers.
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
@@ -71,8 +71,18 @@ export function usePublicJobCollection(
       const current = state.data.value
       if (!current) return false
 
-      const items = new Map(current.items.map(item => [item.id, item]))
-      for (const item of page.items) items.set(item.id, item)
+      const currentItems: PublicJobProjection[] = current.items
+      const items = new Map<string, PublicJobProjection>(
+        currentItems.map(
+          (item: PublicJobProjection): [string, PublicJobProjection] => [
+            item.id,
+            item,
+          ]
+        )
+      )
+      for (const item of page.items as PublicJobProjection[]) {
+        items.set(item.id, item)
+      }
       state.data.value = {
         items: [...items.values()],
         ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),

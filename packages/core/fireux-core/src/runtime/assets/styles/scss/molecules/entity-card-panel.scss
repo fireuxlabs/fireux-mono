@@ -1,0 +1,69 @@
+/* Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: own nested entity-card panel anatomy. */
+:where(.fx-card__panel) {
+	border: 1px solid var(--ui-border);
+	border-radius: calc(var(--ui-radius) * 2);
+	padding: calc(var(--spacing) * 3);
+	font-size: var(--text-xs);
+	color: var(--ui-text-muted, var(--ui-text));
+	background: var(--ui-bg);
+}
+
+:where(.fx-card__panel--compact) {
+	padding: calc(var(--spacing) * 2);
+}
+
+:where(.fx-card__panel-title) {
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text);
+}
+
+:where(.fx-card__panel-value) {
+	margin-top: var(--spacing);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text);
+}
+
+:where(.fx-card__panel-row) {
+	margin-top: calc(var(--spacing) * 2);
+	display: flex;
+	flex-wrap: wrap;
+	gap: calc(var(--spacing) * 2);
+}
+
+:where(.fx-card__title--lg) {
+	font-size: var(--text-base);
+}
+
+:where(.fx-card__body) {
+	margin-top: var(--spacing);
+	font-size: var(--text-xs);
+	color: var(--ui-text-muted, var(--ui-text));
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+	overflow: hidden;
+}
+
+:where(.fx-card__panel-subtitle) {
+	font-size: var(--text-xs);
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+:where(.fx-card__label) {
+	font-size: var(--text-xs);
+	text-transform: uppercase;
+	letter-spacing: var(--tracking-widest);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+:where(.fx-card__panel-heading) {
+	display: flex;
+	align-items: center;
+	gap: calc(var(--spacing) * 2);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text);
+}

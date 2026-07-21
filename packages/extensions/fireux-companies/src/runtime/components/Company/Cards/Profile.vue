@@ -1,5 +1,6 @@
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: let Nuxt UI own the profile-card root geometry. -->
 <template>
-  <UCard class="fx-card fx-card--profile">
+  <UCard class="fx-card--profile">
     <div class="fx-card__stack fx-card__stack--loose">
       <div v-if="model.coverImage" class="fx-card__cover">
         <img :src="model.coverImage" :alt="model.title" class="fx-card__cover-image" />

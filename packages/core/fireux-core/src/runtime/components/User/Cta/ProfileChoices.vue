@@ -1,32 +1,32 @@
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: use Nuxt UI's compact alert contract for profile choices. -->
 <template>
-  <UPageCTA
+  <UAlert
     v-if="show"
     title="You are set up as a user"
     :description="description"
-    variant="soft"
+    color="neutral"
+    variant="subtle"
     orientation="horizontal"
   >
-    <template #links>
-      <div class="flex flex-wrap gap-2">
-        <UButton
-          v-for="profileAction in profileActions"
-          :key="profileAction.to"
-          color="neutral"
-          variant="soft"
-          :to="profileAction.to"
-        >
-          {{ profileAction.label }}
-        </UButton>
-        <UButton
-          color="neutral"
-          variant="ghost"
-          @click="dismissed = true"
-        >
-          No thanks, just browsing
-        </UButton>
-      </div>
+    <template #actions>
+      <UButton
+        v-for="profileAction in profileActions"
+        :key="profileAction.to"
+        color="neutral"
+        variant="soft"
+        :to="profileAction.to"
+      >
+        {{ profileAction.label }}
+      </UButton>
+      <UButton
+        color="neutral"
+        variant="ghost"
+        @click="dismissed = true"
+      >
+        No thanks, just browsing
+      </UButton>
     </template>
-  </UPageCTA>
+  </UAlert>
 </template>
 
 <script setup lang="ts">

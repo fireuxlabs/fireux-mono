@@ -1,7 +1,7 @@
 Server API spine map
 
 <!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
-<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map bounded category- and tenant-scoped Job browse/detail APIs. -->
+<!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map bounded Job APIs with server-only source scope. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
@@ -107,8 +107,9 @@ Boundary rule:
   both routes use the same field allowlist. Only open, explicitly public jobs
   whose product-neutral `category_id` is configured by the current runtime are
   emitted; tenant runtimes also require the current App as `source_app_id`.
-  Empty category configuration fails closed. Company/Place ids, owner scope,
-  creator stamps, and raw linked documents never reach the browser DTO.
+  Empty category configuration fails closed. Source App scope, Company/Place
+  ids, owner scope, creator stamps, and raw linked documents never reach the
+  browser DTO.
 - Shared identity writes may publish authenticated, idempotent App events
   through core server endpoints. Event facts do not choose notification
   recipients or delivery channels; those belong to subscribing consumers.

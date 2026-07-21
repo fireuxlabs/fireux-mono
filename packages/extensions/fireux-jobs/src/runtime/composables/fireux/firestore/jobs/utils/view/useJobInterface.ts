@@ -1,11 +1,10 @@
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map the safe DTO while retaining optional authoring-only fields.
+// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map the safe DTO without source App scope.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { JobStorage, type Job } from '../../../../../../models/job.model'
 
 export type JobView = Pick<
   Job,
   | 'id'
-  | 'source_app_id'
   | 'category_id'
   | 'visibility'
   | 'status'

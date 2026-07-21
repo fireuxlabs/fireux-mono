@@ -1,32 +1,4 @@
-/* Concurrent edit — 2026-07-21 13:01 CEST — CSS architecture pass: keep repeated form composition live and form-specific. */
-/* Shared form rhythm and multi-control composition; Nuxt UI owns individual controls. */
-
-.form-text {
-	font-size: var(--text-sm);
-	line-height: var(--leading-normal);
-}
-
-.form-text-body {
-	font-size: var(--text-sm);
-	line-height: var(--leading-normal);
-	color: var(--ui-text-muted);
-}
-
-.form-stack-sm {
-	display: grid;
-	gap: calc(var(--spacing) * 3);
-}
-
-.form-array-input-row {
-	display: flex;
-	align-items: center;
-	gap: var(--spacing);
-	margin-bottom: var(--spacing);
-}
-
-.form-array-add-row {
-	margin-top: var(--spacing);
-}
+/* Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: retain only the cross-tree mobile input accessibility rule. */
 
 /* Prevent iOS Safari zoom-on-focus.
    Safe + minimal: only targets form controls. */

@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/professional/my-jobs.vue -->
+<!-- Concurrent edit — 2026-07-21 14:05 CEST — CSS necessity pass: let UDashboardPanel own body rhythm. -->
 <template>
   <UDashboardPanel id="dashboard-professional-my-work">
     <template #header>
@@ -6,78 +7,73 @@
     </template>
 
     <template #body>
-      <div class="panels-stack">
-        <section class="space-y-6">
-          <UAlert
-            icon="i-lucide-briefcase"
-            color="neutral"
-            title="My Work"
-            description="Track saved jobs, applications, assigned work and availability here."
-          />
+      <UAlert
+        icon="i-lucide-briefcase"
+        color="neutral"
+        title="My Work"
+        description="Track saved jobs, applications, assigned work and availability here."
+      />
 
-          <div class="grid gap-4 lg:grid-cols-3">
-            <UCard class="lg:col-span-2">
-              <template #header>
-                <div
-                  class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
-                >
-                  <UIcon name="i-lucide-clipboard-list" />
-                  Applications
-                </div>
-              </template>
-              <p class="text-sm text-muted">
-                Applications will appear here once the data source is wired up.
-              </p>
-            </UCard>
+      <div class="grid gap-4 lg:grid-cols-3">
+        <UCard class="lg:col-span-2">
+          <template #header>
+            <div
+              class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
+            >
+              <UIcon name="i-lucide-clipboard-list" />
+              Applications
+            </div>
+          </template>
+          <p class="text-sm text-muted">
+            Applications will appear here once the data source is wired up.
+          </p>
+        </UCard>
 
-            <UCard>
-              <template #header>
-                <div
-                  class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
-                >
-                  <UIcon name="i-lucide-sparkles" />
-                  Quick actions
-                </div>
-              </template>
-              <div class="space-y-2">
-                <UButton
-                  to="/dashboard/professional/profile"
-                  label="Update profile"
-                  color="neutral"
-                  block
-                />
-                <UButton
-                  to="/dashboard/professional"
-                  label="Back to overview"
-                  variant="soft"
-                  color="neutral"
-                  block
-                />
-              </div>
-            </UCard>
+        <UCard>
+          <template #header>
+            <div
+              class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
+            >
+              <UIcon name="i-lucide-sparkles" />
+              Quick actions
+            </div>
+          </template>
+          <div class="space-y-2">
+            <UButton
+              to="/dashboard/professional/profile"
+              label="Update profile"
+              color="neutral"
+              block
+            />
+            <UButton
+              to="/dashboard/professional"
+              label="Back to overview"
+              variant="soft"
+              color="neutral"
+              block
+            />
           </div>
-
-          <UCard>
-            <template #header>
-              <div
-                class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
-              >
-                <UIcon name="i-lucide-send" />
-                Assigned work
-              </div>
-            </template>
-            <p class="text-sm text-muted">
-              Assigned jobs and project work will display here after integration.
-            </p>
-          </UCard>
-        </section>
+        </UCard>
       </div>
+
+      <UCard>
+        <template #header>
+          <div
+            class="flex items-center gap-2 text-sm uppercase tracking-wide text-dimmed"
+          >
+            <UIcon name="i-lucide-send" />
+            Assigned work
+          </div>
+        </template>
+        <p class="text-sm text-muted">
+          Assigned jobs and project work will display here after integration.
+        </p>
+      </UCard>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-
 definePageMeta({
   layout: 'dashboard',
   nav: {

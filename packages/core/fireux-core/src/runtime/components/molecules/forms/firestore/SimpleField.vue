@@ -1,4 +1,5 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/molecules/forms/Firestore/SimpleField.vue -->
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: localize the single display-field type recipe. -->
 <template>
   <div class="flex w-full flex-col">
     <MoleculesFormsTop
@@ -16,7 +17,7 @@
 
     <div v-if="!isEditing" class="flex">
       <div
-        class="w-full rounded-md fx-field-surface px-3 form-text"
+        class="w-full rounded-md fx-field-surface px-3 text-sm leading-normal"
         :class="disabled ? 'text-muted' : 'text-dimmed'"
       >
         <span class="break-words">{{ displayValue }}</span>

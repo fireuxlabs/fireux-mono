@@ -1,11 +1,11 @@
 <!-- Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: render factual route-backed capabilities. -->
-<!-- Concurrent edit — 2026-07-21 13:05 CEST — Operation detail surfaces: open factual root pages before console evidence. -->
+<!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: open factual root pages before console evidence. -->
 <template>
   <div class="grid gap-4 md:grid-cols-2">
     <MoleculesActionSurface
       v-for="operation in operations"
       :key="operation.id"
-      :to="getFireuxOperationPublicPath(operation)"
+      :to="operation.slug ? `/operations/${operation.slug}` : operation.to"
       class="min-w-0"
     >
       <UCard variant="subtle" class="h-full">
@@ -33,7 +33,6 @@
 
 <script setup lang="ts">
 import type { FireuxMetaOperation } from '../../models/system/meta-content.model'
-import { getFireuxOperationPublicPath } from '../../utils/operation-route'
 
 defineProps<{
   operations: FireuxMetaOperation[]

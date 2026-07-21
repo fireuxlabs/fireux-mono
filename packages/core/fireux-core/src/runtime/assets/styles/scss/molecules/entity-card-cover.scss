@@ -1,0 +1,59 @@
+/* Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: own entity-card cover media and overlay anatomy. */
+:where(.fx-card__cover) {
+	position: relative;
+	overflow: hidden;
+	border-radius: calc(var(--ui-radius) * 3);
+}
+
+:where(.fx-card__cover-image) {
+	height: 10rem;
+	width: 100%;
+	object-fit: cover;
+	display: block;
+}
+
+:where(.fx-card__cover-gradient) {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(to top, rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0));
+}
+
+:where(.fx-card__cover-content) {
+	position: absolute;
+	left: 0.75rem;
+	right: 0.75rem;
+	bottom: 0.75rem;
+	display: flex;
+	align-items: flex-end;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.fx-card__cover-avatar) {
+	background: var(--fx-avatar-shade-bg, #fff);
+	border-radius: 9999px;
+	box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.8);
+}
+
+:where(.fx-card__cover-title) {
+	font-size: var(--text-lg);
+	font-weight: var(--font-weight-semibold);
+	color: #fff;
+}
+
+:where(.fx-card__cover-meta) {
+	font-size: var(--text-xs);
+	color: rgba(255, 255, 255, 0.75);
+}
+
+:where(.fx-card__cover-badges) {
+	margin-left: auto;
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--spacing);
+}
+
+:where(.fx-card__avatar) {
+	background: var(--fx-avatar-shade-bg, #fff);
+	border-radius: 9999px;
+}

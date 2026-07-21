@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 12:08 CEST — Shared solutions catalogue: give Misebox one reusable authored source.
+// Concurrent edit — 2026-07-21 13:47 CEST — Ingredient management solution: publish the proven Kitchen catalogue workflow.
 import type { FireuxMetaSolution } from 'fireux-core/runtime/models/system/meta-content.model'
 
 const owner = {
@@ -75,6 +76,21 @@ export const miseboxSolutions = [
       description: 'Sproochli owns translation-ready public pages and language workflows.',
     },
     cta: { label: 'Prepare translation', to: '/solutions/multilingual-restaurant-menu' },
+  },
+  {
+    slug: 'restaurant-ingredient-management',
+    title: 'Restaurant ingredient management',
+    description: 'A dedicated ingredient workspace for each kitchen, designed around one reusable ingredient library.',
+    icon: 'i-lucide-carrot',
+    status: 'coming-soon',
+    body: 'Coming soon. The catalogue and add-by-name workflow are in place; final data access and detail linking are still being completed before launch.',
+    steps: [
+      'Choose the kitchen whose ingredient catalogue you want to organise.',
+      'Enter an ingredient name to reuse an exact shared record or create one when missing.',
+      'Keep the kitchen selection separate while the ingredient record stays reusable.',
+    ],
+    keywords: ['restaurant ingredient management', 'kitchen ingredient management'],
+    cta: { label: 'See ingredient operation', to: '/operations/ingredients' },
   },
   {
     slug: 'recipe-management-software',

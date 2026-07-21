@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-<!-- Concurrent edit — 2026-07-21 13:05 CEST — Operation detail surfaces: record app-wide factual operation routes. -->
+<!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: record app-wide factual operation routes. -->
 
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
@@ -37,9 +37,9 @@ Before each task:
   stable anchors such as `/operations#kitchen`; do not duplicate the index at
   domain routes such as `/kitchen/operations`.
 - Each declared operation also receives a factual detail surface at
-  `/operations/<console>/<operation>`. It derives its language and working
-  Console CTA from the same operation record; it is not a second capability
-  source or an SEO Solution.
+  `/operations/<slug>` when its owning record declares an app-wide unique
+  public slug. It derives its language and working Console CTA from that same
+  record; it is not a second capability source or an SEO Solution.
 - `/solutions` is the authored customer and search-intent projection of proven
   capabilities. A Solution is not evidence that an operation exists.
 - Tools are executable utilities and should not be used as a synonym for

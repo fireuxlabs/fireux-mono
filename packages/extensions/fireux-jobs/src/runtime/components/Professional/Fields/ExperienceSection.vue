@@ -2,6 +2,7 @@
 <!-- Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: persist Place references only after their canonical records exist. -->
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove domain-specific workplace materialization from professional experience. -->
 <!-- Concurrent edit — 2026-07-21 13:03 CEST — Misebox Jobs workplace adapter: require owner materialization before assigning experience references. -->
+<!-- Concurrent edit — 2026-07-21 13:11 CEST — Cleanbox-to-Werkbox profile correction: persist direct Place references with the canonical blank discriminator. -->
 <template>
   <MoleculesFormsFirestoreObjectArray
     :label="label"
@@ -350,20 +351,28 @@ function formatCollectionLabel(value: string) {
     .replace(/\b\w/g, (char) => char.toUpperCase())
 }
 
+function persistedPlaceCollection(value: string) {
+  const normalized = String(value ?? '').trim()
+  return normalized === PlaceStorage.collection ? '' : normalized
+}
+
 async function onPlaceSelected(
   item: ExperienceItem,
   payload: PlaceSelectedPayload
 ) {
   placeSelectionError.value = ''
   const normalizedId = normalizePlaceId(payload.placeId) || payload.placeId
-  const placeCollection =
+  const selectedPlaceCollection =
     selectedCollection.value || item.place_collection || PlaceStorage.collection
+  const placeCollection = persistedPlaceCollection(selectedPlaceCollection)
 
   try {
     const ok = await ensurePlaceExists({ ...payload.place, id: normalizedId })
     if (!ok) throw new Error('The selected Place could not be materialized.')
 
-    await ensureCollectionRecord(placeCollection, normalizedId, payload.place)
+    if (placeCollection) {
+      await ensureCollectionRecord(placeCollection, normalizedId, payload.place)
+    }
   } catch (error) {
     placeSelectionError.value =
       error instanceof Error && error.message

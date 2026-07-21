@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: validates the authored repository spine after repo-efficiency passes.
 // Concurrent edit — 2026-07-19 17:54 CEST — Directory Publication Scaffold: register reconciliation and dormant pipeline guards.
 // Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: verify the combined console architecture cut.
@@ -10,6 +10,7 @@
 // Concurrent edit — 2026-07-20 22:33 CEST — Repo Efficiency Pass 5 of 6: register dependency ownership checks.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: register AST-backed declaration checks.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: register the explicitly named root/App-support authority guard.
+// Concurrent edit — 2026-07-21 13:57 CEST — CSS necessity pass: run the full repository gate after reducing the shared stylesheet surface.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint

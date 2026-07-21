@@ -2,7 +2,7 @@ Entities map
 
 <!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
 <!-- Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: map composition-owned materialization with domain-owned creation. -->
-<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map the bounded category- and tenant-scoped public contract. -->
+<!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map the bounded contract with server-only source scope. -->
 
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
@@ -202,8 +202,8 @@ Root Projected Index members:
   routes expose only open, explicitly public jobs in the runtime's configured
   categories; tenant runtimes additionally require the current App as
   `source_app_id`.
-  Empty category configuration fails closed. Company, Place, owner, and stamp
-  fields remain outside the public DTO.
+  Empty category configuration fails closed. Source App scope, Company, Place,
+  owner, and stamp fields remain outside the public DTO.
 
 Place authority boundary:
 

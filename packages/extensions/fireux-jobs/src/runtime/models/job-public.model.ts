@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: define the bounded browser-safe Job transport.
+// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep source App scope server-only in the bounded transport.
 import type { JobPayUnit, JobType } from './job.model'
 
 export const PUBLIC_JOB_INDEX_PAGE_SIZE = 24
@@ -9,12 +9,11 @@ export const PUBLIC_JOB_INDEX_MAX_SCAN_SIZE = 240
 /**
  * Browser-safe Job projection.
  *
- * Root ownership, creator stamps, Company/Place identifiers, and other
- * operational fields deliberately stay server-side.
+ * Root ownership, source App scope, creator stamps, Company/Place identifiers,
+ * and other operational fields deliberately stay server-side.
  */
 export type PublicJobProjection = {
   id: string
-  source_app_id: string
   category_id: string
   visibility: 'public'
   status: 'open'

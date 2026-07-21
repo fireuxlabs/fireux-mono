@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: expose category and workplace fields in Job debug output. -->
+<!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep source App scope out of shared presentation. -->
 <template>
   <UCard v-if="card || job">
     <div class="space-y-5">
@@ -194,11 +195,6 @@ const jobFields = computed(() => {
       value: formatValue(job.description),
     },
     { key: 'status', label: 'status', value: formatValue(job.status) },
-    {
-      key: 'source_app_id',
-      label: 'source_app_id',
-      value: formatValue(job.source_app_id),
-    },
   ]
 })
 

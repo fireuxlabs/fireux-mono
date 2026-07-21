@@ -1,0 +1,129 @@
+/* Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: own shared entity-card root and content anatomy. */
+:where(.card.card--cell, .fx-card--cell) {
+	border-radius: calc(var(--ui-radius) * 2);
+	padding: calc(var(--spacing) * 3);
+	border: 1px solid var(--ui-border);
+	background: var(--ui-bg);
+	transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease,
+		transform 160ms ease;
+}
+
+:where(.card.card--cell) {
+	display: block;
+}
+
+:where(.fx-card--cell) {
+	display: flex;
+	width: 100%;
+	align-items: flex-start;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(
+	.card.card--cell:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover,
+	.fx-card--cell:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover
+) {
+	background: var(--ui-bg-muted);
+	border-color: var(--ui-border);
+	box-shadow: 0 6px 16px color-mix(in srgb, var(--ui-bg-inverted) 8%, transparent);
+	transform: none;
+}
+
+:where(.fx-action-surface[data-disabled='true'] .fx-card--cell:hover) {
+	background: var(--ui-bg);
+	border-color: var(--ui-border);
+	box-shadow: none;
+	transform: none;
+}
+
+:where(.card__media, .fx-card__media) {
+	display: flex;
+	align-items: center;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.card__content, .fx-card__content) {
+	min-width: 0;
+	flex: 1;
+}
+
+:where(.card__stack, .fx-card__stack) {
+	display: grid;
+	gap: var(--spacing);
+}
+
+// Standard vertical rhythm for content placed in a Nuxt UI card body slot.
+:where(.fx-card-body-stack) {
+	display: grid;
+	gap: calc(var(--spacing) * 4);
+}
+
+:where(.card__header, .fx-card__header) {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.card__title, .fx-card__title) {
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+:where(.card__subtitle, .card__tagline, .fx-card__subtitle) {
+	font-size: var(--text-xs);
+	color: var(--ui-text-muted, var(--ui-text));
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+:where(.card__badges, .fx-card__badges) {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--spacing);
+}
+
+:where(.fx-card__icon) {
+	width: 0.75rem;
+	height: 0.75rem;
+}
+
+:where(.fx-card__badge) {
+	flex-shrink: 0;
+}
+
+:where(.fx-card__badge--overlay) {
+	background: rgba(255, 255, 255, 0.2);
+	color: #fff;
+}
+
+:where(.fx-card__tagline--empty) {
+	font-style: italic;
+}
+
+:where(.fx-truncate) {
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+:where(.fx-card__stack--loose) {
+	gap: calc(var(--spacing) * 4);
+}
+
+:where(.fx-card__stack--spaced) {
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.fx-card__stack--tight) {
+	gap: calc(var(--spacing) * 2);
+}
+
+:where(.fx-card__media--start) {
+	align-items: flex-start;
+}

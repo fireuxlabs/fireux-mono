@@ -3,6 +3,7 @@ import { useColorMode as useFireuxColorMode } from 'fireux-core/runtime/composab
 import { ref } from 'vue'
 
 // Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: expose stable visual specimens for shared atomic contracts.
+// Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: demonstrate Nuxt UI in place of one-off CSS metrics and card foundations.
 definePageMeta({ layout: 'design' })
 useHead({ title: 'Component Contracts · Design System' })
 
@@ -251,10 +252,11 @@ const contractSolutions = [
               <p class="fx-type-caption">Shared border, radius, and spacing.</p>
             </div>
 
-            <div class="console-metric">
-              <span class="console-metric__value">24</span>
-              <span class="console-metric__label">Connected records</span>
-            </div>
+            <UPageFeature
+              icon="i-lucide-database"
+              title="24 connected records"
+              description="Nuxt UI owns this compact summary presentation."
+            />
 
             <div class="pill">
               <UIcon name="i-lucide-component" />
@@ -301,7 +303,7 @@ const contractSolutions = [
       <PublicSolutionsGrid :solutions="contractSolutions" />
 
       <div class="contract-grid">
-        <UCard class="fx-card fx-card--public-action">
+        <UCard class="fx-card--public-action">
           <div class="fx-public-action">
             <div class="fx-public-action__badges">
               <UBadge label="Public action" color="primary" variant="soft" />

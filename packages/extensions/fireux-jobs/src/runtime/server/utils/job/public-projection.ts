@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: enforce runtime category and tenant scope before mapping safe DTOs.
+// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: enforce source App scope without transporting it.
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -107,7 +107,6 @@ export function projectPublicJob(
 
   return {
     id,
-    source_app_id: sourceAppId,
     category_id: categoryId,
     visibility: 'public',
     status: 'open',

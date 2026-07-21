@@ -1,5 +1,6 @@
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: let Nuxt UI own the preview-card root geometry and overflow. -->
 <template>
-  <UCard class="fx-card fx-card--preview">
+  <UCard>
     <div class="fx-card__stack fx-card__stack--spaced">
       <div class="fx-card__media">
         <UAvatar

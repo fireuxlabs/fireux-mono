@@ -11,7 +11,7 @@
             Operations
           </h1>
           <p class="m-0 text-base leading-7 text-muted">
-            Operations currently available inside {{ appName }} consoles.
+            Operations across {{ appName }} consoles.
           </p>
           <nav
             v-if="operationGroups.length > 1"
@@ -56,7 +56,7 @@
           color="neutral"
           variant="soft"
           title="No operations published yet"
-          description="This app has not declared any live Console Operations."
+          description="This app has not declared any Console Operations."
         />
       </div>
     </UContainer>
@@ -118,6 +118,6 @@ definePageMeta({
 
 useSeoMeta({
   title: () => `Operations - ${appName.value}`,
-  description: () => `Current operations available inside ${appName.value} consoles.`,
+  description: () => `Operations across ${appName.value} consoles.`,
 })
 </script>

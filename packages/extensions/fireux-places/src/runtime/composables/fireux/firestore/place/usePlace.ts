@@ -5,7 +5,6 @@ import { usePlaceCollection } from './fetch/usePlaceCollection'
 import { usePlaceFetch } from './fetch/usePlaceFetch'
 import { usePlaceClaim } from './mutations/usePlaceClaim'
 import { usePlaceCreate } from './mutations/usePlaceCreate'
-import { usePlaceDelete } from './mutations/usePlaceDelete'
 import { usePlaceUpdate } from './mutations/usePlaceUpdate'
 import { usePlaceSeo } from './utils/usePlaceSeo'
 import { usePlaceComputed } from './utils/view/usePlaceComputed'
@@ -21,7 +20,6 @@ export {
   usePlaceClaim,
   usePlaceCreate,
   usePlaceUpdate,
-  usePlaceDelete,
   usePlaceSeo,
   usePlaceComputed,
   formatPlaceTypeLabel,
@@ -53,7 +51,6 @@ export function usePlace(options: UsePlaceOptions = {}) {
     ...usePlaceSearch(),
     ...usePlaceCreate({ type: unref(options.type), types: options.types }),
     ...usePlaceUpdate(),
-    ...usePlaceDelete(),
     ...usePlaceClaim(),
     ...usePlaceComputed(),
     ...usePlaceInterface(),

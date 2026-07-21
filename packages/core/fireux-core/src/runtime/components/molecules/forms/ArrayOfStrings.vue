@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: localize string-array row geometry at its owner. -->
 <template>
   <div class="form-field">
     <!-- Top Controls -->
@@ -19,7 +20,11 @@
 
     <!-- Edit Mode -->
     <div v-else class="editing">
-      <div v-for="(_, index) in localValue" :key="index" class="form-array-input-row">
+      <div
+        v-for="(_, index) in localValue"
+        :key="index"
+        class="mb-1 flex items-center gap-1"
+      >
         <UInput
           v-model="localValue[index]"
           :placeholder="itemPlaceholder"
@@ -31,7 +36,7 @@
           @click="removeItem(index)"
         />
       </div>
-      <div class="form-array-input-row form-array-add-row">
+      <div class="mt-1 mb-1 flex items-center gap-1">
         <UInput
           v-model="newItem"
           :placeholder="newItemPlaceholder"

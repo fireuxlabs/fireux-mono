@@ -3,7 +3,8 @@
 // usage_note: enforces the shared Nuxt UI and FireUX CSS spine.
 // FILE: scripts/guards/css-system.mjs
 // Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: enforce semantic project colors.
-// Concurrent edit — 2026-07-21 13:02 CEST — CSS architecture pass: enforce the semantic core stylesheet cascade and retired catch-all paths.
+// Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: enforce the semantic core stylesheet cascade and retired catch-all paths.
+// Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: enforce an import-only core entrypoint and Nuxt UI-owned radius default.
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
@@ -20,39 +21,43 @@ const CORE_STYLE_CASCADE = [
   './scss/molecules/form-section-copy',
   './scss/molecules/forms',
   './scss/molecules/inset-panel',
-  './scss/molecules/metrics',
   './scss/molecules/pill',
   './scss/organisms/collection-grid',
-  './scss/molecules/card-foundation',
-  './scss/organisms/solutions-grid',
-  './scss/molecules/card-preview-variant',
   './scss/organisms/public-action-card',
   './scss/organisms/collection-layouts',
-  './scss/organisms/panel-layouts',
   './scss/molecules/card-avatar-shades',
-  './scss/molecules/entity-cards',
+  './scss/molecules/entity-card-cell',
+  './scss/molecules/entity-card-panel',
+  './scss/molecules/entity-card-cover',
+  './scss/molecules/entity-card-details',
   './scss/molecules/preview-cards',
   './scss/organisms/profile-cards',
   './scss/organisms/profile-editor',
   './scss/organisms/page-layouts',
   './scss/organisms/console-surface',
   './scss/molecules/console-card-header',
-  './scss/molecules/console-focus',
   './scss/molecules/console-summary',
-  './scss/molecules/usage-cta',
   './scss/organisms/landing-hero',
-  './scss/organisms/page-motion',
   './scss/organisms/landing-index-sections',
   './scss/organisms/console-profiles',
 ]
 const RETIRED_CORE_STYLE_PATHS = [
   'packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/forms.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/card-foundation.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/card-preview-variant.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/console-focus.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/entity-cards.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/metrics.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/usage-cta.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/cards.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/plugins.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/profiles.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/sections.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/console-layouts.scss',
   'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/landing-index-flow.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/page-motion.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/panel-layouts.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/solutions-grid.scss',
 ]
 const STYLE_EXTENSIONS = new Set([
   '.css',
@@ -97,8 +102,6 @@ const ARBITRARY_RADIUS_CLASS_RE =
   /\brounded(?:-[trblxyse]{1,2})?-\[([^\]]+)\]/g
 const OUT_OF_SCALE_RADIUS_CLASS_RE =
   /\brounded(?:-[trblxyse]{1,2})?-(?:4xl|5xl|6xl|7xl|8xl|9xl)\b/g
-const CANONICAL_UI_RADIUS_PATH =
-  'packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/tokens.scss'
 const ALLOWED_RADIUS_CUSTOM_PROPERTIES = new Set([
   '--ui-radius',
   '--menu-radius',
@@ -502,7 +505,7 @@ function assertCoreStyleArchitecture(repoRoot) {
 
   for (const relativePath of RETIRED_CORE_STYLE_PATHS) {
     if (existsSync(path.join(repoRoot, relativePath))) {
-      violations.push(`retired catch-all still exists: ${relativePath}`)
+      violations.push(`retired core stylesheet still exists: ${relativePath}`)
     }
   }
 
@@ -513,6 +516,10 @@ function assertCoreStyleArchitecture(repoRoot) {
     )
   } else {
     const source = readFileSync(entryPath, 'utf8')
+    const importPattern = /@use\s+['"]([^'"]+)['"]\s*;/g
+    const actualImports = [...source.matchAll(importPattern)].map(
+      (match) => match[1]
+    )
     let previousIndex = -1
 
     for (const modulePath of CORE_STYLE_CASCADE) {
@@ -529,6 +536,21 @@ function assertCoreStyleArchitecture(repoRoot) {
       }
 
       previousIndex = Math.max(previousIndex, statementIndex)
+    }
+
+    for (const modulePath of actualImports) {
+      if (!CORE_STYLE_CASCADE.includes(modulePath)) {
+        violations.push(`unexpected core import: @use '${modulePath}';`)
+      }
+    }
+
+    const entryImplementation = source
+      .replace(/\/\*[\s\S]*?\*\//g, '')
+      .replace(/\/\/[^\n]*/g, '')
+      .replace(importPattern, '')
+      .trim()
+    if (entryImplementation) {
+      violations.push('core stylesheet entrypoint must remain import-only')
     }
   }
 
@@ -917,16 +939,12 @@ function collectRadiusCustomPropertyViolations({
 
     if (isDerivedRadiusProperty(property)) continue
 
-    const isCanonicalUiRadius =
-      property === '--ui-radius' &&
-      relativePath === CANONICAL_UI_RADIUS_PATH &&
-      value === '0.25rem'
     const isOwnedDerivedRadius =
       property !== '--ui-radius' &&
       ALLOWED_RADIUS_CUSTOM_PROPERTIES.has(property) &&
       isCanonicalRadiusValue(value)
 
-    if (isCanonicalUiRadius || isOwnedDerivedRadius) continue
+    if (isOwnedDerivedRadius) continue
 
     target.push({
       path: relativePath,
@@ -1493,7 +1511,7 @@ function formatViolations(violations) {
     '[guard] Fix:',
     '- Use current Nuxt UI semantic variables (`--ui-text*`, `--ui-border*`, `--ui-bg*`).',
     '- Configure Nuxt UI dashboard panels through `dashboardPanel`; `consolePanel` is not a live app-config key.',
-    '- Set `--ui-radius` as the radius authority; use `rounded-*` utilities in templates and calculate from `--ui-radius` in authored CSS.',
+    '- Let Nuxt UI own `--ui-radius`; use `rounded-*` utilities in templates and calculate from that live variable in authored CSS.',
     '- Ordinary radii use only the xs-through-3xl Nuxt UI scale; reserve `50%` or `9999px` for real circles and pills.',
     '- Radius custom properties are explicit owned seams. Menu defaults must derive from `--ui-radius`.',
     '- Arbitrary radius utilities are reserved for approved percentage-based artwork.',

@@ -1,5 +1,6 @@
 /* Atoms: Design Tokens - Foundation values for the entire system */
 /* Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: keep the token atom value-only and retire unused helpers and internal tokens. */
+/* Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: leave the default radius under Nuxt UI ownership. */
 
 :root {
 	/* FireUX Core Design Tokens */
@@ -14,9 +15,6 @@
 	--fx-debug-yellow-bg-strong: rgb(245 158 11 / 0.16);
 	--fx-dev-note-border: var(--fx-debug-yellow-border);
 	--fx-dev-note-bg: var(--fx-debug-yellow-bg);
-
-	/* Nuxt UI derives its rounded-* utilities from this single base. */
-	--ui-radius: 0.25rem; /* 4px */
 
 }
 

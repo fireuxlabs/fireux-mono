@@ -1,10 +1,9 @@
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: persist only present shared currency and business-hours onboarding data.
-import { doc, getDoc } from 'firebase/firestore'
+// Concurrent edit — 2026-07-21 14:08 CEST — Werkbox Firebase hardening: route idempotent Place creation through the authenticated server boundary.
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { PlaceStorage, type PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { canonicalPlaceId, fetchPlaceDetails } from '../fetch/google/usePlacesGoogle'
 import { toShortAddress } from '../utils/view/formatPlaceAddress'
 import { toPlaceSlug } from '../utils/view/toPlaceSlug'
@@ -22,9 +21,22 @@ export const PlaceCreatePlan = defineFireuxCreatePlan({
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeStringArray = (value: unknown): string[] =>
-  Array.isArray(value) ? value.map(normalizeString).filter(Boolean) : []
+  Array.isArray(value)
+    ? Array.from(new Set(value.map(normalizeString).filter(Boolean)))
+    : []
 
-const normalizeBoolean = (value: unknown): boolean => value === true
+const normalizeHttpsUrl = (value: unknown) => {
+  const source = normalizeString(value)
+  if (!source) return ''
+  try {
+    const url = new URL(source)
+    return url.protocol === 'https:' && !url.username && !url.password
+      ? url.toString()
+      : ''
+  } catch {
+    return ''
+  }
+}
 
 const normalizeAddress = (value: unknown) => {
   const source = (value ?? {}) as Record<string, unknown>
@@ -40,12 +52,12 @@ const normalizeAddress = (value: unknown) => {
 const normalizeSocialLinks = (value: unknown) => {
   const source = (value ?? {}) as Record<string, unknown>
   return compactRecord({
-    website: normalizeString(source.website),
-    instagram: normalizeString(source.instagram),
-    facebook: normalizeString(source.facebook),
-    tiktok: normalizeString(source.tiktok),
-    linkedin: normalizeString(source.linkedin),
-    youtube: normalizeString(source.youtube),
+    website: normalizeHttpsUrl(source.website),
+    instagram: normalizeHttpsUrl(source.instagram),
+    facebook: normalizeHttpsUrl(source.facebook),
+    tiktok: normalizeHttpsUrl(source.tiktok),
+    linkedin: normalizeHttpsUrl(source.linkedin),
+    youtube: normalizeHttpsUrl(source.youtube),
   })
 }
 
@@ -66,6 +78,11 @@ function putString(target: Record<string, unknown>, key: string, value: unknown)
   if (next) target[key] = next
 }
 
+function putHttpsUrl(target: Record<string, unknown>, key: string, value: unknown) {
+  const next = normalizeHttpsUrl(value)
+  if (next) target[key] = next
+}
+
 function putStringArray(target: Record<string, unknown>, key: string, value: unknown) {
   const next = normalizeStringArray(value)
   if (next.length) target[key] = next
@@ -76,25 +93,13 @@ function putObject(target: Record<string, unknown>, key: string, value: Record<s
 }
 
 export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
-  const { setDocument } = useFirestoreManager()
   const { uploadFromUrl } = useImageStorage()
-  const db = useFirestore()
 
   async function ensurePlaceExists(
     place: Partial<PlaceUpsertInput> & { id?: string }
   ): Promise<boolean> {
     const id = canonicalPlaceId((place as any)?.id ?? (place as any)?.place_id)
     if (!id) return false
-
-    const collectionPath = PlaceStorage.collection
-    const ref = doc(db, collectionPath, id)
-    const snapshot = await getDoc(ref)
-
-    if (snapshot.exists()) {
-      if (import.meta.dev)
-        console.log(`[fireux-places] Place already exists: ${id}`)
-      return true
-    }
 
     if (import.meta.dev) {
       console.log('[fireux-places] ensure:start', {
@@ -256,18 +261,22 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     putString(payload, 'brand_tagline', (place as any)?.brand_tagline)
     putString(payload, 'about', (place as any)?.about)
     putObject(payload, 'address', normalizeAddress((place as any)?.address))
-    putString(payload, 'timezone', (place as any)?.timezone)
+    const timezone = normalizeString((place as any)?.timezone)
+    putString(payload, 'timezone', timezone)
     putString(payload, 'slug', slug)
-    putString(payload, 'image_url', image_url)
-    putString(payload, 'cover_image', (place as any)?.cover_image)
-    putStringArray(payload, 'gallery_images', (place as any)?.gallery_images)
+    putHttpsUrl(payload, 'image_url', image_url)
+    putHttpsUrl(payload, 'cover_image', (place as any)?.cover_image)
+    const galleryImages = normalizeStringArray((place as any)?.gallery_images)
+      .map(normalizeHttpsUrl)
+      .filter(Boolean)
+    putStringArray(payload, 'gallery_images', galleryImages)
     if (image_shade === 'light' || image_shade === 'dark') {
       payload.image_shade = image_shade
     }
     putString(payload, 'phone', (place as any)?.phone)
     putString(payload, 'email', (place as any)?.email)
-    putString(payload, 'website', (place as any)?.website)
-    putString(payload, 'google_maps_url', (place as any)?.google_maps_url)
+    putHttpsUrl(payload, 'website', (place as any)?.website)
+    putHttpsUrl(payload, 'google_maps_url', (place as any)?.google_maps_url)
     putObject(payload, 'social_links', normalizeSocialLinks((place as any)?.social_links))
     putStringArray(payload, 'types', (place as any)?.types)
     putStringArray(payload, 'tags', (place as any)?.tags)
@@ -280,9 +289,8 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
     const businessHours = normalizePlaceBusinessHours(
       (place as any)?.business_hours
     )
-    if (businessHours) putObject(payload, 'business_hours', businessHours)
+    if (businessHours && timezone) putObject(payload, 'business_hours', businessHours)
     putString(payload, 'claimed_by', (place as any)?.claimed_by)
-    if (normalizeBoolean((place as any)?.verified)) payload.verified = true
 
     if (import.meta.dev) {
       console.log('[fireux-places] create:payload', {
@@ -293,14 +301,29 @@ export function usePlaceCreate(_options: UsePlaceCreateOptions = {}) {
       })
     }
 
-    await setDocument<Partial<PlaceUpsertInput>>(
-      collectionPath,
-      id,
-      payload as Partial<PlaceUpsertInput>,
-      { creator: true }
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const result = await $fetch<{ ok: boolean; id: string; created: boolean }>(
+      '/api/places/ensure',
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: { id, place: payload },
+      }
     )
+    if (
+      result?.ok !== true ||
+      result.id !== id ||
+      typeof result.created !== 'boolean'
+    ) {
+      throw new Error('[usePlaceCreate] Place ensure response was invalid.')
+    }
 
-    if (import.meta.dev) console.log(`[fireux-places] Created new place: ${id}`)
+    if (import.meta.dev) {
+      console.log(
+        `[fireux-places] ${result.created ? 'Created' : 'Reused'} Place: ${id}`
+      )
+    }
 
     return true
   }

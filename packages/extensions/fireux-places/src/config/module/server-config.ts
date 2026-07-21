@@ -5,6 +5,7 @@ import {
 } from 'fireux-core/config/module/module-helpers'
 
 // Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: register Place reads and the trusted configuration mutation boundary.
+// Concurrent edit — 2026-07-21 14:08 CEST — Werkbox Firebase hardening: register authenticated idempotent Place materialization.
 const serverHandlers = [
   {
     route: '/api/places/autocomplete',
@@ -20,6 +21,11 @@ const serverHandlers = [
     route: '/api/places/logo',
     method: 'get',
     handler: './runtime/server/api/places/logo.get',
+  },
+  {
+    route: '/api/places/ensure',
+    method: 'post',
+    handler: './runtime/server/api/places/ensure.post',
   },
   {
     route: '/api/places/:placeId',

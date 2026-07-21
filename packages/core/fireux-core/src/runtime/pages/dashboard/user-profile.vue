@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 13:52 CEST — CSS necessity pass: consume the profile editor's Nuxt UI columns contract. -->
 <template>
   <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
   <UDashboardPanel id="user-profile">
@@ -69,7 +70,7 @@
             />
 
             <ClientOnly v-else-if="resolvedUser">
-              <LayoutsDashboardProfileEdit class="panels-masonry">
+              <LayoutsDashboardProfileEdit>
                 <template #preview>
                   <UserCardsProfile
                     v-if="userCard"
@@ -108,11 +109,18 @@
                   class="flex items-center justify-between gap-3 rounded-lg border border-default px-3 py-2"
                 >
                   <div class="flex min-w-0 items-center gap-2">
-                    <UIcon :name="entry.icon || 'i-lucide-user'" class="size-4 text-dimmed" />
+                    <UIcon
+                      :name="entry.icon || 'i-lucide-user'"
+                      class="size-4 text-dimmed"
+                    />
                     <div class="min-w-0">
-                      <p class="truncate text-sm font-medium">{{ entry.label }}</p>
+                      <p class="truncate text-sm font-medium">
+                        {{ entry.label }}
+                      </p>
                       <p class="text-xs text-dimmed">
-                        {{ entry.active ? 'Active profile' : 'Available profile' }}
+                        {{
+                          entry.active ? 'Active profile' : 'Available profile'
+                        }}
                       </p>
                     </div>
                   </div>
@@ -171,6 +179,9 @@ const userCard = computed(() => userInterface(resolvedUser.value))
 const appCard = computed(() => appToCard(app.value))
 const profileExtensionRows = computed(() => [
   ...activeProfileEntries.value.map((entry) => ({ ...entry, active: true })),
-  ...availableProfileEntries.value.map((entry) => ({ ...entry, active: false })),
+  ...availableProfileEntries.value.map((entry) => ({
+    ...entry,
+    active: false,
+  })),
 ])
 </script>

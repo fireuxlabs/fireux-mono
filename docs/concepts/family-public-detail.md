@@ -5,7 +5,7 @@ Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: join canonical User identity by profile uid. -->
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map the shared SSR profile-detail projection. -->
-<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map exact SSR Job detail without raw linked-document reads. -->
+<!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map exact SSR Job detail with server-only source scope. -->
 
 Purpose:
 Map public detail pages such as `/kitchens/[slug]`, `/suppliers/[slug]`, `/menus/[menuId]`, and similar surfaces.
@@ -42,8 +42,8 @@ Similar:
   roots remain owner-only and are not a guest detail transport.
 - Job detail exact-loads `/api/public/jobs/:id` during SSR through the same
   eligibility and field allowlist as the public Job index. Public Job pages do
-  not raw-read Company, Place, owner, or stamp data and contain no edit/status
-  mutation controls.
+  not receive source App scope or raw-read Company, Place, owner, or stamp data,
+  and contain no edit/status mutation controls.
 - Returns truthful outer HTTP status for missing and failed server reads; a
   client-side recovery path must not turn a direct 404 or 5xx into HTTP 200.
 - Shows useful public content first.
