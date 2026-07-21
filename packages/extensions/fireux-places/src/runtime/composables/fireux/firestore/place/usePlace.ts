@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 14:11 CEST — Werkbox Firebase hardening: retire the untrusted client Place delete surface.
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { usePlaceSearch } from './fetch/search/usePlaceSearch'

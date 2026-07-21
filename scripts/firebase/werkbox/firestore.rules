@@ -1,0 +1,670 @@
+// Concurrent edit — 2026-07-21 14:09 CEST — Cleanbox-to-Werkbox migration: add an isolated, default-deny Werkbox client authority boundary.
+
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Assumed stored authority for this source:
+    // - Firebase project: cleanbox-f15bc (pinned by the release harness)
+    // - canonical database: cleanbox
+    // - Ecosystem id: cleanbox
+    // - App ids: cleanbox-app (Werkbox hub), richies-reinigung (tenant)
+    // The simulation database name is accepted only so the same immutable
+    // ruleset can be tested before promotion. This source does not provision it.
+    function isSupportedDatabase() {
+      return database in ['cleanbox', 'cleanbox-simulation'];
+    }
+
+    function isAuthenticated() {
+      return isSupportedDatabase() &&
+        request.auth != null &&
+        (
+          !('firebase' in request.auth.token) ||
+          !('sign_in_provider' in request.auth.token.firebase) ||
+          request.auth.token.firebase.sign_in_provider != 'anonymous'
+        );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isKnownApp(appId) {
+      return appId in ['cleanbox-app', 'richies-reinigung'];
+    }
+
+    function appMembershipPath(appId, userId) {
+      return /databases/$(database)/documents/apps/$(appId)/users/$(userId);
+    }
+
+    function isAppMember(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role in ['admin', 'user'];
+    }
+
+    function isAppAdmin(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role == 'admin';
+    }
+
+    function validOptionalText(data, field, maxSize) {
+      return !(field in data) ||
+        (data[field] is string && data[field].size() <= maxSize);
+    }
+
+    function validRequiredText(data, field, minSize, maxSize) {
+      return field in data &&
+        data[field] is string &&
+        data[field].size() >= minSize &&
+        data[field].size() <= maxSize;
+    }
+
+    function isValidBoundedString(value, maxSize) {
+      return value is string && value.size() <= maxSize;
+    }
+
+    function isValidHttpsUrl(value, maxSize) {
+      return value is string &&
+        value.size() <= maxSize &&
+        (value == '' || value.matches('^https://.+$'));
+    }
+
+    function isValidUserAvatar(value) {
+      return value == '/img/ecosystem/avatar.png' ||
+        (value != '' && isValidHttpsUrl(value, 2048));
+    }
+
+    function validCreatedStamp(value) {
+      return value is map &&
+        value.keys().hasAll(['at']) &&
+        value.keys().hasOnly(['at', 'by', 'app_id']) &&
+        value.at is timestamp &&
+        (!('by' in value) ||
+          (value.by is string &&
+            value.by.size() >= 1 && value.by.size() <= 1500)) &&
+        (!('app_id' in value) ||
+          (value.app_id is string &&
+            value.app_id.size() >= 1 && value.app_id.size() <= 1500));
+    }
+
+    function validUpdatedStamp(value) {
+      return value is map &&
+        value.keys().hasAll(['at']) &&
+        value.keys().hasOnly(['at', 'by']) &&
+        value.at is timestamp &&
+        (!('by' in value) ||
+          (value.by is string &&
+            value.by.size() >= 1 && value.by.size() <= 1500));
+    }
+
+    function validOwnerUpdateStamp(data, userId) {
+      return validUpdatedStamp(data.updated) &&
+        data.updated.at == request.time &&
+        data.updated.by == userId;
+    }
+
+    function isValidStringList0To4(value, maxItemSize) {
+      return value.size() == 0 ||
+        (value[0] is string && value[0].size() <= maxItemSize &&
+          (value.size() == 1 ||
+            (value[1] is string && value[1].size() <= maxItemSize &&
+              (value.size() == 2 ||
+                (value[2] is string && value[2].size() <= maxItemSize &&
+                  (value.size() == 3 ||
+                    (value[3] is string && value[3].size() <= maxItemSize &&
+                      (value.size() == 4 ||
+                        (value[4] is string &&
+                          value[4].size() <= maxItemSize)))))))));
+    }
+
+    function isValidStringList5To9(value, maxItemSize) {
+      return value[5] is string && value[5].size() <= maxItemSize &&
+        (value.size() == 6 ||
+          (value[6] is string && value[6].size() <= maxItemSize &&
+            (value.size() == 7 ||
+              (value[7] is string && value[7].size() <= maxItemSize &&
+                (value.size() == 8 ||
+                  (value[8] is string && value[8].size() <= maxItemSize &&
+                    (value.size() == 9 ||
+                      (value[9] is string &&
+                        value[9].size() <= maxItemSize))))))));
+    }
+
+    function isValidStringList10To14(value, maxItemSize) {
+      return value[10] is string && value[10].size() <= maxItemSize &&
+        (value.size() == 11 ||
+          (value[11] is string && value[11].size() <= maxItemSize &&
+            (value.size() == 12 ||
+              (value[12] is string && value[12].size() <= maxItemSize &&
+                (value.size() == 13 ||
+                  (value[13] is string && value[13].size() <= maxItemSize &&
+                    (value.size() == 14 ||
+                      (value[14] is string &&
+                        value[14].size() <= maxItemSize))))))));
+    }
+
+    function isValidStringList15To19(value, maxItemSize) {
+      return value[15] is string && value[15].size() <= maxItemSize &&
+        (value.size() == 16 ||
+          (value[16] is string && value[16].size() <= maxItemSize &&
+            (value.size() == 17 ||
+              (value[17] is string && value[17].size() <= maxItemSize &&
+                (value.size() == 18 ||
+                  (value[18] is string && value[18].size() <= maxItemSize &&
+                    (value.size() == 19 ||
+                      (value[19] is string &&
+                        value[19].size() <= maxItemSize))))))));
+    }
+
+    function isValidStringList(value, maxItemSize) {
+      return value is list &&
+        value.size() <= 20 &&
+        isValidStringList0To4(value, maxItemSize) &&
+        (value.size() <= 5 ||
+          (isValidStringList5To9(value, maxItemSize) &&
+            (value.size() <= 10 ||
+              (isValidStringList10To14(value, maxItemSize) &&
+                (value.size() <= 15 ||
+                  isValidStringList15To19(value, maxItemSize))))));
+    }
+
+    // Canonical User identity. Membership/profile indices are server-owned.
+    function isValidUser(data) {
+      return data.keys().hasAll([
+          'display_name', 'avatar', 'handle', 'app_ids', 'profiles',
+          'created', 'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'display_name', 'avatar', 'handle', 'app_ids', 'profiles',
+          'created', 'updated'
+        ]) &&
+        validRequiredText(data, 'display_name', 1, 120) &&
+        isValidUserAvatar(data.avatar) &&
+        data.handle is string &&
+        data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
+        data.app_ids is list &&
+        data.app_ids.size() <= 2 &&
+        data.app_ids.hasOnly(['cleanbox-app', 'richies-reinigung']) &&
+        data.profiles is list &&
+        data.profiles.size() <= 2 &&
+        data.profiles.hasOnly(['agent', 'professional']) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /users/{userId} {
+      allow get: if isAuthenticated() &&
+        (isOwner(userId) || isValidUser(resource.data));
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isValidUser(resource.data) &&
+        isValidUser(request.resource.data) &&
+        request.resource.data.app_ids == resource.data.app_ids &&
+        request.resource.data.profiles == resource.data.profiles &&
+        request.resource.data.handle == resource.data.handle &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'display_name', 'avatar', 'updated'
+        ]) &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+
+      match /private/account {
+        function isValidPreferences(value) {
+          return value is map &&
+            value.keys().hasAll([
+              'language', 'theme', 'email_security_alerts',
+              'share_usage_analytics'
+            ]) &&
+            value.keys().hasOnly([
+              'language', 'theme', 'email_security_alerts',
+              'share_usage_analytics'
+            ]) &&
+            value.language is string &&
+            value.language.size() >= 2 && value.language.size() <= 16 &&
+            value.theme in ['system', 'light', 'dark'] &&
+            value.email_security_alerts is bool &&
+            value.share_usage_analytics is bool;
+        }
+
+        function isValidTerms(value) {
+          return value is map &&
+            value.keys().hasAll(['version', 'accepted_at']) &&
+            value.keys().hasOnly(['version', 'accepted_at']) &&
+            value.version is string && value.version.size() <= 64 &&
+            ((value.version.size() >= 1 && value.accepted_at is timestamp) ||
+              (value.version == '' && value.accepted_at == null));
+        }
+
+        function isValidUserPrivate(data) {
+          return data.keys().hasAll([
+              'email', 'preferences', 'terms', 'created', 'updated'
+            ]) &&
+            data.keys().hasOnly([
+              'email', 'preferences', 'terms', 'created', 'updated'
+            ]) &&
+            data.email is string && data.email.size() <= 320 &&
+            isValidPreferences(data.preferences) &&
+            isValidTerms(data.terms) &&
+            validCreatedStamp(data.created) &&
+            validUpdatedStamp(data.updated);
+        }
+
+        allow get: if isOwner(userId) && isValidUserPrivate(resource.data);
+        allow list, create, delete: if false;
+        allow update: if isOwner(userId) &&
+          isValidUserPrivate(resource.data) &&
+          isValidUserPrivate(request.resource.data) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'preferences', 'updated'
+          ]) &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.terms == resource.data.terms &&
+          request.resource.data.created == resource.data.created &&
+          validOwnerUpdateStamp(request.resource.data, userId);
+      }
+
+      match /notifications/{notificationId} {
+        function isValidNotification(data) {
+          return data.keys().hasAll(['message', 'scope', 'created', 'read']) &&
+            data.keys().hasOnly(['message', 'scope', 'created', 'read']) &&
+            validRequiredText(data, 'message', 1, 1000) &&
+            data.scope in ['ecosystem', 'app'] &&
+            data.created is map &&
+            data.created.keys().hasAll(['at', 'app_id']) &&
+            data.created.keys().hasOnly(['at', 'app_id']) &&
+            data.created.at is timestamp &&
+            data.created.app_id in ['cleanbox-app', 'richies-reinigung'] &&
+            data.read is bool;
+        }
+
+        allow get: if isOwner(userId) && isValidNotification(resource.data);
+        allow list: if isOwner(userId) && request.query.limit <= 50;
+        allow create: if false;
+        allow update: if isOwner(userId) &&
+          isValidNotification(resource.data) &&
+          isValidNotification(request.resource.data) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'read'
+          ]);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // Ecosystem records are Admin-owned. The validator documents the exact
+    // canonical model, but no raw client read or write is a supported API.
+    function isValidEcosystem(data, ecosystemId) {
+      return ecosystemId == 'cleanbox' &&
+        data.keys().hasAll([
+          'id', 'project_id', 'name', 'slug', 'description', 'image_url',
+          'website_url', 'status', 'created', 'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'id', 'project_id', 'name', 'slug', 'description', 'image_url',
+          'website_url', 'status', 'created', 'updated'
+        ]) &&
+        data.id == ecosystemId &&
+        data.project_id == 'cleanbox' &&
+        validRequiredText(data, 'name', 1, 120) &&
+        data.slug == ecosystemId &&
+        isValidBoundedString(data.description, 4000) &&
+        isValidHttpsUrl(data.image_url, 2048) &&
+        isValidHttpsUrl(data.website_url, 2048) &&
+        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /ecosystems/{ecosystemId} {
+      allow get, list, create, update, delete: if false;
+    }
+
+    function isValidAppSocialLinks(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'website_url', 'instagram_url', 'facebook_url', 'linkedin_url',
+          'x_url', 'youtube_url', 'tiktok_url'
+        ]) &&
+        isValidHttpsUrl(value.website_url, 2048) &&
+        isValidHttpsUrl(value.instagram_url, 2048) &&
+        isValidHttpsUrl(value.facebook_url, 2048) &&
+        isValidHttpsUrl(value.linkedin_url, 2048) &&
+        isValidHttpsUrl(value.x_url, 2048) &&
+        isValidHttpsUrl(value.youtube_url, 2048) &&
+        isValidHttpsUrl(value.tiktok_url, 2048);
+    }
+
+    function isValidAppMedia(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'thumbnail_url', 'logo_url', 'wordmark_light_url',
+          'wordmark_dark_url', 'cover_url'
+        ]) &&
+        isValidHttpsUrl(value.thumbnail_url, 2048) &&
+        isValidHttpsUrl(value.logo_url, 2048) &&
+        isValidHttpsUrl(value.wordmark_light_url, 2048) &&
+        isValidHttpsUrl(value.wordmark_dark_url, 2048) &&
+        isValidHttpsUrl(value.cover_url, 2048);
+    }
+
+    function isValidFireuxRepo(value) {
+      return value is map &&
+        value.keys().hasAll([
+          'key', 'workspace', 'launch_order', 'console_families', 'database_id'
+        ]) &&
+        value.keys().hasOnly([
+          'key', 'workspace', 'launch_order', 'console_families', 'database_id'
+        ]) &&
+        validRequiredText(value, 'key', 1, 120) &&
+        validRequiredText(value, 'workspace', 1, 500) &&
+        value.launch_order is int &&
+        value.launch_order >= 0 && value.launch_order <= 100000 &&
+        value.console_families is list &&
+        value.console_families.size() <= 20 &&
+        validRequiredText(value, 'database_id', 1, 120);
+    }
+
+    function isExpectedAppAuthority(data, appId) {
+      return data.project_id == 'cleanbox' &&
+        data.ecosystem_id == 'cleanbox' &&
+        data.database_id == 'cleanbox' &&
+        data.slug == appId &&
+        ((appId == 'cleanbox-app' &&
+            data.role == 'global' && data.self_join_enabled == true) ||
+          (appId == 'richies-reinigung' &&
+            data.role == 'tenant' && data.self_join_enabled == false));
+    }
+
+    function isValidApp(data, appId) {
+      return isKnownApp(appId) &&
+        data.keys().hasAll([
+          'project_id', 'ecosystem_id', 'database_id', 'slug', 'status',
+          'app_name', 'app_short_name', 'role', 'self_join_enabled',
+          'derived', 'created', 'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'project_id', 'ecosystem_id', 'database_id', 'slug', 'status',
+          'app_name', 'app_short_name', 'role', 'tagline', 'description',
+          'short_bio', 'long_bio', 'social_links', 'derived', 'media',
+          'fireux_native', 'fireux_size', 'fireux_repo', 'self_join_enabled',
+          'moderation_state', 'ban_reasons', 'created', 'updated'
+        ]) &&
+        isExpectedAppAuthority(data, appId) &&
+        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        validRequiredText(data, 'app_name', 1, 60) &&
+        validRequiredText(data, 'app_short_name', 1, 40) &&
+        validOptionalText(data, 'tagline', 120) &&
+        validOptionalText(data, 'description', 500) &&
+        validOptionalText(data, 'short_bio', 240) &&
+        validOptionalText(data, 'long_bio', 4000) &&
+        (!('social_links' in data) || isValidAppSocialLinks(data.social_links)) &&
+        data.derived is map &&
+        data.derived.keys().hasAll(['user_count']) &&
+        data.derived.keys().hasOnly(['user_count']) &&
+        data.derived.user_count is int &&
+        data.derived.user_count >= 0 && data.derived.user_count <= 10000000 &&
+        (!('media' in data) || isValidAppMedia(data.media)) &&
+        (!('fireux_native' in data) || data.fireux_native is bool) &&
+        (!('fireux_size' in data) || data.fireux_size in ['big', 'small']) &&
+        (!('fireux_repo' in data) || isValidFireuxRepo(data.fireux_repo)) &&
+        (!('moderation_state' in data) || data.moderation_state == '') &&
+        (!('ban_reasons' in data) ||
+          (data.ban_reasons is list && data.ban_reasons.size() == 0)) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /apps/{appId} {
+      allow get: if isAppMember(appId) && isValidApp(resource.data, appId);
+      allow list, create, delete: if false;
+      allow update: if isAppAdmin(appId) &&
+        isValidApp(resource.data, appId) &&
+        isValidApp(request.resource.data, appId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'app_name', 'app_short_name', 'tagline', 'description', 'short_bio',
+          'long_bio', 'social_links', 'media', 'updated'
+        ]) &&
+        request.resource.data.created == resource.data.created &&
+        validOwnerUpdateStamp(request.resource.data, request.auth.uid);
+
+      match /join-requests/{userId} {
+        function isValidJoinRequest(data) {
+          return data.keys().hasAll(['user_id', 'created']) &&
+            data.keys().hasOnly(['user_id', 'created']) &&
+            data.user_id == userId &&
+            validCreatedStamp(data.created) &&
+            data.created.app_id == appId;
+        }
+
+        allow get: if isKnownApp(appId) &&
+          (isOwner(userId) ||
+            (isAppAdmin(appId) && isValidJoinRequest(resource.data)));
+        allow list: if isAppAdmin(appId);
+        allow create, update, delete: if false;
+      }
+
+      match /membership-blocks/{userId} {
+        allow get, list, create, update, delete: if false;
+      }
+
+      match /users/{userId} {
+        function isValidConsoleTargets(value) {
+          return value is map &&
+            value.keys().hasAll([
+              'kitchen_ids', 'supplier_ids', 'property_ids',
+              'portfolio_ids', 'blank_ids'
+            ]) &&
+            value.keys().hasOnly([
+              'kitchen_ids', 'supplier_ids', 'property_ids',
+              'portfolio_ids', 'blank_ids'
+            ]) &&
+            value.kitchen_ids is list && value.kitchen_ids.size() <= 50 &&
+            value.supplier_ids is list && value.supplier_ids.size() <= 50 &&
+            value.property_ids is list && value.property_ids.size() <= 50 &&
+            value.portfolio_ids is list && value.portfolio_ids.size() <= 50 &&
+            value.blank_ids is list && value.blank_ids.size() <= 50;
+        }
+
+        function isValidUserApp(data) {
+          return data.keys().hasAll([
+              'role', 'is_premium', 'console_enabled', 'profiles',
+              'console_targets', 'created', 'updated'
+            ]) &&
+            data.keys().hasOnly([
+              'role', 'is_premium', 'console_enabled', 'profiles',
+              'console_targets', 'created', 'updated'
+            ]) &&
+            data.role in ['admin', 'user'] &&
+            data.is_premium is bool &&
+            data.console_enabled is bool &&
+            data.profiles is list &&
+            data.profiles.size() <= 2 &&
+            data.profiles.hasOnly(['agent', 'professional']) &&
+            isValidConsoleTargets(data.console_targets) &&
+            validCreatedStamp(data.created) &&
+            data.created.app_id == appId &&
+            validUpdatedStamp(data.updated);
+        }
+
+        allow get: if isKnownApp(appId) &&
+          (isOwner(userId) ||
+            (isAppAdmin(appId) && isValidUserApp(resource.data)));
+        allow list: if isAppAdmin(appId);
+        allow create, update, delete: if false;
+      }
+
+      match /{profileCollection}/{userId} {
+        function isIdentityProfileOverlay() {
+          return profileCollection in ['agents', 'professionals'];
+        }
+
+        function isValidProfileOverlay(data) {
+          return data.keys().hasAll(['created', 'updated']) &&
+            data.keys().hasOnly(['created', 'updated']) &&
+            validCreatedStamp(data.created) &&
+            data.created.app_id == appId &&
+            validUpdatedStamp(data.updated);
+        }
+
+        allow get: if isIdentityProfileOverlay() &&
+          ((isOwner(userId) && isAppMember(appId)) ||
+            (isAppAdmin(appId) && isValidProfileOverlay(resource.data)));
+        allow list: if isIdentityProfileOverlay() && isAppAdmin(appId);
+        allow create, delete: if false;
+        allow update: if isIdentityProfileOverlay() &&
+          isOwner(userId) &&
+          isAppMember(appId) &&
+          isValidProfileOverlay(resource.data) &&
+          isValidProfileOverlay(request.resource.data) &&
+          request.resource.data.created == resource.data.created &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'updated'
+          ]) &&
+          validOwnerUpdateStamp(request.resource.data, userId);
+      }
+    }
+
+    function isValidAgent(data) {
+      return data.keys().size() == 14 &&
+        data.keys().hasAll([
+          'title', 'summary', 'agent_bio', 'agent_image',
+          'agent_placement_types', 'agent_coverage_areas',
+          'agent_contact_email', 'agent_contact_phone', 'agent_website_url',
+          'subtitle', 'tagline', 'tags', 'created', 'updated'
+        ]) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.agent_bio, 4000) &&
+        isValidHttpsUrl(data.agent_image, 2048) &&
+        isValidStringList(data.agent_placement_types, 240) &&
+        isValidStringList(data.agent_coverage_areas, 240) &&
+        isValidBoundedString(data.agent_contact_email, 320) &&
+        isValidBoundedString(data.agent_contact_phone, 40) &&
+        isValidHttpsUrl(data.agent_website_url, 2048) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidStringList(data.tags, 240) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /agents/{userId} {
+      allow get: if isOwner(userId);
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isValidAgent(resource.data) &&
+        isValidAgent(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'title', 'summary', 'agent_bio', 'agent_image',
+          'agent_placement_types', 'agent_coverage_areas',
+          'agent_contact_email', 'agent_contact_phone', 'agent_website_url',
+          'subtitle', 'tagline', 'tags', 'updated'
+        ]) &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+    }
+
+    function isValidProfessional(data) {
+      return data.keys().size() == 17 &&
+        data.keys().hasAll([
+          'title', 'subtitle', 'tagline', 'summary', 'bio', 'image',
+          'positions', 'tags', 'relevant_experience', 'other_experience',
+          'languages', 'certifications', 'education', 'volunteering',
+          'projects', 'created', 'updated'
+        ]) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.bio, 4000) &&
+        isValidHttpsUrl(data.image, 2048) &&
+        data.positions is list && data.positions.size() <= 20 &&
+        data.tags is list && data.tags.size() <= 20 &&
+        data.relevant_experience is list &&
+        data.relevant_experience.size() <= 12 &&
+        data.other_experience is list && data.other_experience.size() <= 12 &&
+        data.languages is list && data.languages.size() <= 12 &&
+        data.certifications is list && data.certifications.size() <= 8 &&
+        data.education is list && data.education.size() <= 8 &&
+        data.volunteering is list && data.volunteering.size() <= 8 &&
+        data.projects is list && data.projects.size() <= 8 &&
+        data.relevant_experience.size() +
+          data.other_experience.size() +
+          data.languages.size() +
+          data.certifications.size() +
+          data.education.size() +
+          data.volunteering.size() +
+          data.projects.size() <= 24 &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    function isValidProfessionalOwnerUpdate(data, userId) {
+      let changed = data.diff(resource.data).affectedKeys();
+      return isValidProfessional(resource.data) &&
+        isValidProfessional(data) &&
+        data.created == resource.data.created &&
+        data.relevant_experience == resource.data.relevant_experience &&
+        data.other_experience == resource.data.other_experience &&
+        data.languages == resource.data.languages &&
+        data.certifications == resource.data.certifications &&
+        data.education == resource.data.education &&
+        data.volunteering == resource.data.volunteering &&
+        data.projects == resource.data.projects &&
+        changed.hasOnly([
+          'title', 'subtitle', 'tagline', 'summary', 'bio', 'image',
+          'positions', 'tags', 'updated'
+        ]) &&
+        (!changed.hasAny(['positions']) ||
+          isValidStringList(data.positions, 240)) &&
+        (!changed.hasAny(['tags']) || isValidStringList(data.tags, 240)) &&
+        validOwnerUpdateStamp(data, userId);
+    }
+
+    match /professionals/{userId} {
+      allow get: if isOwner(userId);
+      allow list, create, delete: if false;
+      // Structured experience writes remain server-owned until the trusted
+      // reference verifier is live; owners may edit only safe scalar/list data.
+      allow update: if isOwner(userId) &&
+        isValidProfessionalOwnerUpdate(request.resource.data, userId);
+    }
+
+    // Server APIs/Admin SDK own domain reads and mutations. Explicit denial
+    // makes that ownership visible; the final wildcard closes every unknown
+    // or newly introduced path unless it receives a reviewed positive rule.
+    match /jobs/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /places/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /companies/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /products/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /blogs/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /blog/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /security-migrations/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /user-handles/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /user-handle-state/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+  }
+}

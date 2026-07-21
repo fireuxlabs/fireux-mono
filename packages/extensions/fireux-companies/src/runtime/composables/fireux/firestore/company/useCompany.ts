@@ -1,8 +1,6 @@
 import { useCompanyCollection } from './fetch/useCompanyCollection'
 import { useCompanyFetch } from './fetch/useCompanyFetch'
 import { useCompanyCreate } from './mutations/useCompanyCreate'
-import { useCompanyDelete } from './mutations/useCompanyDelete'
-import { useCompanyUpdate } from './mutations/useCompanyUpdate'
 import { useCompanySeo } from './utils/useCompanySeo'
 import { useCompanyComputed } from './utils/view/useCompanyComputed'
 import { useCompanyInterface } from './utils/view/useCompanyInterface'
@@ -12,8 +10,6 @@ export {
   useCompanyCollection,
   useCompanyFetch,
   useCompanyCreate,
-  useCompanyUpdate,
-  useCompanyDelete,
   useCompanySeo,
   useCompanyComputed,
   useCompanyInterface,
@@ -41,8 +37,6 @@ export function useCompany<
     ...useCompanyCollection<T>(options.collectionPath ?? CompanyStorage.collection),
     ...useCompanyFetch(),
     ...useCompanyCreate(),
-    ...useCompanyUpdate(),
-    ...useCompanyDelete(),
     ...useCompanyComputed(),
     ...useCompanyInterface(),
     useCompanySeo,
