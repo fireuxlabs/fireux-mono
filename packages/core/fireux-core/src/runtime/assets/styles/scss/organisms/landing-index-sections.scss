@@ -1,0 +1,22 @@
+/* Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: own live landing-index section and divider rhythm. */
+
+.landing-index-divider {
+	padding-block: calc(var(--spacing) * 5);
+}
+
+.landing-index-section {
+	padding-top: calc(var(--spacing) * 18);
+	padding-bottom: calc(var(--spacing) * 36);
+}
+
+@media (min-width: 640px) {
+	.landing-index-divider {
+		padding-block: calc(var(--spacing) * 6);
+	}
+}
+
+@media (min-width: 1024px) {
+	.landing-index-divider {
+		padding-block: calc(var(--spacing) * 7);
+	}
+}

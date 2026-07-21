@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: update current App identity examples.
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
@@ -44,6 +45,29 @@ export type FireuxMetaChecklistItem = {
   done?: boolean
 }
 
+export type FireuxMetaOperationConsole = {
+  /** Stable console key used for grouping and the /operations anchor. */
+  id: string
+  /** Human-facing console name. */
+  name: string
+  /** Working console root route. */
+  to: string
+}
+
+export type FireuxMetaOperation = {
+  /** Stable capability key, independent of its current route. */
+  id: string
+  /** Direct product language, not an SEO title. */
+  title: string
+  /** Factual description of what the current surface provides. */
+  description: string
+  /** Working console route that proves the operation. */
+  to: string
+  /** Console that owns the operation. */
+  console: FireuxMetaOperationConsole
+  icon?: string
+}
+
 export type FireuxMetaSolution = {
   /** URL-safe child key used at /solutions/:slug. */
   slug: string
@@ -82,7 +106,7 @@ export type FireuxMetaSolution = {
 }
 
 export type FireuxMetaAppIdentity = {
-  /** App key (for example: "misebox", "granite", "fireux", "cleanbox", "bringli"). */
+  /** App key (for example: "misebox", "granite", "fireux", "werkbox", "bringli"). */
   id: string
   /** Human app name (for example: "Misebox"). */
   name: string
@@ -179,6 +203,12 @@ export type FireuxMetaContent = {
   }
 
   lists?: FireuxMetaLists
+
+  /**
+   * Factual capability index backed by working Console Operations surfaces.
+   * Operations are not SEO solution pages or generic tools.
+   */
+  operations?: FireuxMetaOperation[]
 
   /**
    * Authored SEO/segue pages.

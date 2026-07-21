@@ -1,9 +1,10 @@
 Components spine map
-Updated: 2026-07-20
-Ref: a4d382c1dd
+Updated: 2026-07-21
+Ref: 1f77cae56e
 Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: map semantic project-color enforcement. -->
+<!-- Concurrent edit — 2026-07-21 13:03 CEST — CSS architecture pass: map atomic CSS contracts to the domain-first component and page spine. -->
 
 Purpose:
 Map component folder and naming conventions.
@@ -22,6 +23,36 @@ Horizontal links:
 Package components:
 - Package UI belongs under `src/runtime/components`.
 - App UI belongs under `app/components`.
+
+CSS-to-component mapping:
+- The CSS atomic taxonomy supports the Vue tree; it does not mirror it. Vue
+  components remain domain-first (`Kitchen/Cards`, `Supplier/Collection`,
+  `Console/X/Operations`) and pages remain route-first.
+- `atoms` own foundations or one semantic visual role, such as system tokens
+  and the `.fx-type-*` vocabulary. They do not own a form, card, or page
+  composition.
+- `molecules` own reusable local contracts assembled from atoms and Nuxt UI,
+  such as forms, inset panels, metrics, pills, and entity/preview card anatomy.
+- `organisms` own recurring multi-component or page-region composition, such
+  as collection grids and layouts, solution grids, public-action panels,
+  profile/console composition, and shared page rhythm.
+- If a real external surface needs shared CSS, `integrations` isolates that
+  contract; it is not a domain organism. Do not keep speculative integration
+  CSS without an authored consumer.
+- A global CSS family must have a real repeated consumer contract. Business
+  copy, routes, data authority, actions, and one-off presentation remain in the
+  named component or page that owns them.
+- The intended cross-tree mappings are: entity and preview card molecules to
+  named `X/Cards/*` components; collection organisms to `X/Collection/*` and
+  console indexes; console header/focus/summary molecules plus the console
+  surface organism to `Console/X/*`; public-action organisms to claim/operator
+  panels; profile cards/editors to named `Cards/Profile` and `Edit/*` trees;
+  and landing/page organisms to their shared layout and route regions.
+- `assets/styles/main.scss` is the explicit cascade authority. Its import order
+  preserves behavior; a CSS folder name does not create component auto-import,
+  route ownership, or business ownership.
+- The `/design/components/contracts` page exposes stable light/dark, desktop,
+  and mobile specimens for these shared contracts.
 
 Domain component folders:
 - `X/Cards`
@@ -115,7 +146,8 @@ Working rules:
   replace long inline Tailwind strings with the same repeated design system in
   local CSS. When a touched surface has grown either way, move the shared
   primitive to its owning layer and keep the leaf component semantic.
-- `scripts/guards/css-system.mjs` enforces the narrow executable CSS spine:
+- `scripts/guards/css-system.mjs` enforces the narrow executable CSS spine and
+  its ordered core entrypoint:
   current Nuxt UI variables, semantic text and surface utilities, `--ui-radius`
   authority through `rounded-*` utilities or direct calculations in authored
   CSS, Tailwind-owned ordinary typography and spacing values, and retirement
@@ -136,10 +168,11 @@ Working rules:
   authored CSS derives ordinary margin, padding, and gap values from
   `--spacing` instead of declaring a second `--space-*` scale.
 - Repeated page, list, form, or layout rhythm belongs in a named shared class
-  or component. Current shared rhythm classes live in core
-  `assets/styles/scss/organisms/sections.scss`. Domain-owned semantic seams,
-  such as Menu spacing, may remain when their defaults derive from
-  `--spacing`.
+  or component. Core rhythm and composition live in the specifically named
+  modules under `assets/styles/scss/molecules` and
+  `assets/styles/scss/organisms`; `organisms/page-layouts.scss` owns the shared
+  page/list rhythm family. Domain-owned semantic seams, such as Menu spacing,
+  may remain when their defaults derive from `--spacing`.
 - Off-grid spacing is an explicit local delta for branded optical layout,
   responsive/viewport geometry, safe areas, print, artwork, or accessibility;
   it is not another general-purpose scale.
@@ -151,6 +184,3 @@ Guard warnings:
 - `assets/styles/scss/organisms` is a CSS composition layer, not a component
   bucket; keep it semantic and shared rather than using it as catch-all CSS.
 - Relative imports in component source must resolve.
-
-Open questions:
-- Operator/claim/action panels need a clearer entity-family spine.

@@ -1,4 +1,6 @@
 // Concurrent edit — 2026-07-20 23:40 CEST — Entity Vocabulary + Matrix Pass: record cross-package declarations without creating a runtime mega-registry.
+// Concurrent edit — 2026-07-21 12:42 CEST — Cleanbox-to-Werkbox migration: declare product-neutral Job identity and its unresolved public-read boundary.
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: record the completed bounded public-read contract.
 
 export const entityMatrix = [
   {
@@ -71,6 +73,24 @@ export const entityMatrix = [
       publicRead: 'none',
       status: 'confirmed',
       console: true,
+    },
+  },
+  {
+    id: 'content/job',
+    state: 'declared',
+    owner: 'fireux-jobs',
+    source: 'packages/extensions/fireux-jobs/src/runtime/models/job.model.ts',
+    export: 'JobEntity',
+    classification: {
+      kind: 'entity',
+      name: 'Job',
+      family: ['content'],
+      identity: 'root',
+      authority: 'owning-app-database',
+      appSupport: 'none',
+      publicRead: 'projection',
+      status: 'confirmed',
+      console: false,
     },
   },
   {

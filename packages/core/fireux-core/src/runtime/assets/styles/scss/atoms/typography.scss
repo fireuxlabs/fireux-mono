@@ -2,6 +2,7 @@
  * FireUX typography roles mirror the current Nuxt UI page vocabulary.
  * Tailwind owns the numeric scale; these classes name repeated semantic use.
  */
+/* Concurrent edit — 2026-07-21 12:55 CEST — CSS architecture pass: keep typography atomic and move component composition to molecules. */
 
 @layer components {
 :where(.fx-type-headline) {
@@ -89,32 +90,10 @@
 	color: var(--ui-text-muted);
 }
 
-:where(.fireux-dev-note__label) {
-	font-size: var(--text-xs);
-	line-height: var(--text-xs--line-height);
-	font-weight: var(--font-weight-semibold);
-	letter-spacing: var(--tracking-wide);
-	text-transform: uppercase;
-}
-
 :where(.fx-type-code) {
 	font-family: var(--font-mono);
 	font-size: var(--text-xs);
 	line-height: var(--text-xs--line-height);
-}
-
-/* Existing edit/form section hooks own this repeated header molecule. */
-:where(.section__copy > h2, .section__copy > h3) {
-	font-size: var(--text-base);
-	line-height: var(--text-base--line-height);
-	font-weight: var(--font-weight-semibold);
-	color: var(--ui-text-highlighted);
-}
-
-:where(.section__copy > p) {
-	font-size: var(--text-xs);
-	line-height: var(--text-xs--line-height);
-	color: var(--ui-text-dimmed);
 }
 
 @media (min-width: 640px) {

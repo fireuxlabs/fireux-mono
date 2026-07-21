@@ -1,4 +1,6 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Job/Create/Location.vue -->
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: materialize generic Place-backed workplaces. -->
+<!-- Concurrent edit — 2026-07-21 12:52 CEST — Misebox Jobs workplace adapter: require owner materialization before recording a workplace. -->
 <template>
   <UCard>
     <template #header>
@@ -14,6 +16,14 @@
     </template>
 
     <div class="space-y-4">
+      <UAlert
+        v-if="locationError"
+        color="error"
+        variant="soft"
+        title="Location could not be selected"
+        :description="locationError"
+      />
+
       <div v-if="!chosenPlaceCard">
         <ClientOnly>
           <PlaceSearchSection
@@ -31,20 +41,21 @@
 </template>
 
 <script setup lang="ts">
-import { doc, getDoc } from 'firebase/firestore'
-import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
-import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
+import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
+import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { computed, ref } from 'vue'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFireuxJobsConfig } from '../../../composables/config/useFireuxJobsConfig'
 import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
+import { materializeJobWorkplace } from '../../../composables/workplace/materializeWorkplace'
 
 const form = defineModel<JobCreateForm>('form', { required: true })
-const db = useFirestore()
-const { createKitchen } = useKitchenCreate()
+const jobsConfig = useFireuxJobsConfig()
+const { ensurePlaceExists } = usePlaceCreate()
 
 const chosenPlace = ref<PlaceUpsertInput | null>(null)
 const chosenPlaceId = ref<string | null>(null)
+const locationError = ref('')
 
 const chosenPlaceCard = computed(() => {
   const place = chosenPlace.value
@@ -56,22 +67,54 @@ const chosenPlaceCard = computed(() => {
     to: '',
     name: place.name ?? '',
     formattedAddress: place.formatted_address ?? '',
-    imageUrl: place.place_image ?? '',
+    imageUrl: place.image_url ?? '',
     source: (place.source as any) ?? 'fireux',
   }
 })
 
-function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
-  const id = payload.placeId
+async function onPlaceConfirmed(payload: {
+  placeId: string
+  place: PlaceUpsertInput
+}) {
+  locationError.value = ''
+  const id = canonicalPlaceId(payload.placeId)
   const place = payload.place
+  const workplaceType = String(jobsConfig.defaultWorkplaceType ?? '').trim()
 
-  void createKitchenIfMissing(id, place)
-}
+  if (!id) {
+    locationError.value = 'The selected Place has no canonical identifier.'
+    return
+  }
+  if (!workplaceType) {
+    locationError.value = 'Jobs default workplace type is not configured.'
+    return
+  }
+  if (
+    jobsConfig.workplaces.length > 0 &&
+    !jobsConfig.workplaces.includes(workplaceType)
+  ) {
+    locationError.value = 'Jobs default workplace type is not allowed.'
+    return
+  }
 
-async function createKitchenIfMissing(id: string, place: PlaceUpsertInput) {
-  const existingSnap = await getDoc(doc(db, KitchenStorage.rootCollection, id))
-  if (!existingSnap.exists()) {
-    await createKitchen({ id, place })
+  try {
+    const created = await ensurePlaceExists({ ...place, id })
+    if (!created) {
+      locationError.value = 'The selected Place could not be materialized.'
+      return
+    }
+
+    await materializeJobWorkplace({
+      workplaceType,
+      workplaceId: id,
+      place: { ...place, id },
+    })
+  } catch (error) {
+    locationError.value =
+      error instanceof Error && error.message
+        ? error.message
+        : 'The selected workplace could not be materialized.'
+    return
   }
 
   const label =
@@ -82,7 +125,7 @@ async function createKitchenIfMissing(id: string, place: PlaceUpsertInput) {
         : ''
   form.value = {
     ...form.value,
-    workplace_type: 'kitchen',
+    workplace_type: workplaceType,
     workplace_id: id,
     workplace_label: label,
   }

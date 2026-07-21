@@ -1,8 +1,9 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: enforces the shared Nuxt UI and FireUX CSS spine.
 // FILE: scripts/guards/css-system.mjs
 // Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: enforce semantic project colors.
+// Concurrent edit — 2026-07-21 13:02 CEST — CSS architecture pass: enforce the semantic core stylesheet cascade and retired catch-all paths.
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
@@ -10,6 +11,49 @@ import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 
 const SOURCE_ROOTS = ['packages', 'projects']
 const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
+const CORE_STYLE_ENTRY_PATH =
+  'packages/core/fireux-core/src/runtime/assets/styles/main.scss'
+const CORE_STYLE_CASCADE = [
+  './scss/atoms/tokens',
+  './scss/atoms/typography',
+  './scss/molecules/dev-note',
+  './scss/molecules/form-section-copy',
+  './scss/molecules/forms',
+  './scss/molecules/inset-panel',
+  './scss/molecules/metrics',
+  './scss/molecules/pill',
+  './scss/organisms/collection-grid',
+  './scss/molecules/card-foundation',
+  './scss/organisms/solutions-grid',
+  './scss/molecules/card-preview-variant',
+  './scss/organisms/public-action-card',
+  './scss/organisms/collection-layouts',
+  './scss/organisms/panel-layouts',
+  './scss/molecules/card-avatar-shades',
+  './scss/molecules/entity-cards',
+  './scss/molecules/preview-cards',
+  './scss/organisms/profile-cards',
+  './scss/organisms/profile-editor',
+  './scss/organisms/page-layouts',
+  './scss/organisms/console-surface',
+  './scss/molecules/console-card-header',
+  './scss/molecules/console-focus',
+  './scss/molecules/console-summary',
+  './scss/molecules/usage-cta',
+  './scss/organisms/landing-hero',
+  './scss/organisms/page-motion',
+  './scss/organisms/landing-index-sections',
+  './scss/organisms/console-profiles',
+]
+const RETIRED_CORE_STYLE_PATHS = [
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/forms.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/cards.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/plugins.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/profiles.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/sections.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/console-layouts.scss',
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/organisms/landing-index-flow.scss',
+]
 const STYLE_EXTENSIONS = new Set([
   '.css',
   '.less',
@@ -403,6 +447,8 @@ const LEGACY_GENERIC_SURFACE_PAIRS = [
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
+  assertCoreStyleArchitecture(repoRoot)
+
   const violations = {
     obsoleteVariables: [],
     deadNuxtUiConfigKeys: [],
@@ -449,6 +495,53 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ CSS system spine valid')
+}
+
+function assertCoreStyleArchitecture(repoRoot) {
+  const violations = []
+
+  for (const relativePath of RETIRED_CORE_STYLE_PATHS) {
+    if (existsSync(path.join(repoRoot, relativePath))) {
+      violations.push(`retired catch-all still exists: ${relativePath}`)
+    }
+  }
+
+  const entryPath = path.join(repoRoot, CORE_STYLE_ENTRY_PATH)
+  if (!existsSync(entryPath)) {
+    violations.push(
+      `missing core stylesheet entrypoint: ${CORE_STYLE_ENTRY_PATH}`
+    )
+  } else {
+    const source = readFileSync(entryPath, 'utf8')
+    let previousIndex = -1
+
+    for (const modulePath of CORE_STYLE_CASCADE) {
+      const statement = `@use '${modulePath}';`
+      const statementIndex = source.indexOf(statement)
+
+      if (statementIndex === -1) {
+        violations.push(`missing ordered core import: ${statement}`)
+        continue
+      }
+
+      if (statementIndex < previousIndex) {
+        violations.push(`core import is out of cascade order: ${statement}`)
+      }
+
+      previousIndex = Math.max(previousIndex, statementIndex)
+    }
+  }
+
+  if (violations.length) {
+    throw new Error(
+      [
+        '[guard] CSS architecture drift detected:',
+        ...violations.map((violation) => `  - ${violation}`),
+        '',
+        `[guard] Keep ${CORE_STYLE_ENTRY_PATH} on the documented semantic modules and preserve its explicit cascade order.`,
+      ].join('\n')
+    )
+  }
 }
 
 function scan(dir, repoRoot, violations) {

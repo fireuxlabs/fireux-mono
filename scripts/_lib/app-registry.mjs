@@ -1,6 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: canonical app identity, routes, and smoke-contract assignments.
+// Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: point local launch authority at the additive Werkbox apps.
+// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: require the shared route across registered apps.
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: keep registry data separate from smoke-contract mechanics.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: require four Misebox directory APIs.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: retire personal BNB routes and smoke only sanitized simulations.
@@ -29,7 +31,7 @@ import {
   unavailableMenuOrderContract,
 } from './app-smoke-contracts.mjs'
 
-const SHARED_ROUTES = ['/', '/dashboard', '/dashboard/user-profile']
+const SHARED_ROUTES = ['/', '/operations', '/dashboard', '/dashboard/user-profile']
 
 // Registry consoles are smoke-test route segments.
 // Console family keys and route segments are singular:
@@ -274,14 +276,14 @@ export const APP_REGISTRY = {
     ],
     launchOrder: 2,
   },
-  cleanbox: {
-    key: 'cleanbox',
-    name: 'Cleanbox',
+  werkbox: {
+    key: 'werkbox',
+    name: 'Werkbox',
     appId: 'cleanbox-app',
-    ecosystem: 'cleanbox',
+    ecosystem: 'werkbox',
     databaseId: 'cleanbox',
     role: 'global',
-    workspace: './projects/cleanbox/cleanbox-app',
+    workspace: './projects/werkbox/werkbox-app',
     port: 3002,
     consoles: [],
     launchOrder: 3,
@@ -290,10 +292,10 @@ export const APP_REGISTRY = {
     key: 'richies',
     name: 'Richies Reinigung',
     appId: 'richies-reinigung',
-    ecosystem: 'cleanbox',
+    ecosystem: 'werkbox',
     databaseId: 'cleanbox',
     role: 'tenant',
-    workspace: './projects/cleanbox/richies-reinigung',
+    workspace: './projects/werkbox/richies-reinigung',
     port: 3004,
     consoles: [],
     launchOrder: 4,
@@ -588,12 +590,12 @@ export const APP_REGISTRY = {
 }
 
 export const APP_GROUPS = {
-  all: ['fireux', 'misebox', 'cleanbox'],
-  'all-extended': ['fireux', 'misebox', 'cleanbox', 'richies', 'tenant'],
+  all: ['fireux', 'misebox', 'werkbox'],
+  'all-extended': ['fireux', 'misebox', 'werkbox', 'richies', 'tenant'],
   full: [
     'fireux',
     'misebox',
-    'cleanbox',
+    'werkbox',
     'richies',
     'tenant',
     'bringli',

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Concurrent edit — 2026-07-21 12:17 CEST — Cleanbox-to-Werkbox app migration: add the restrained Werkbox cover artwork. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" role="img" aria-labelledby="title description">
+  <title id="title">Werkbox cover</title>
+  <desc id="description">Werkbox monogram and wordmark on a dark practical grid.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0f172a"/>
+      <stop offset="1" stop-color="#1e293b"/>
+    </linearGradient>
+    <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse">
+      <path d="M64 0H0V64" fill="none" stroke="#475569" stroke-width="1" opacity="0.24"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="720" fill="url(#background)"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <g transform="translate(200 190)">
+    <rect width="340" height="340" rx="84" fill="#111827" stroke="#475569" stroke-width="4"/>
+    <path
+      d="M72 94 116 248 170 150 224 248 268 94"
+      fill="none"
+      stroke="#f59e0b"
+      stroke-width="28"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </g>
+  <text
+    x="600"
+    y="342"
+    fill="#f8fafc"
+    font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="112"
+    font-weight="700"
+    letter-spacing="-5"
+  >Werkbox</text>
+  <text
+    x="608"
+    y="402"
+    fill="#fbbf24"
+    font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="28"
+    font-weight="600"
+    letter-spacing="4"
+  >PRACTICAL WORK, CONNECTED</text>
+</svg>

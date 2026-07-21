@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update ecosystem discovery copy. -->
 <template>
   <UPage>
     <UPageHeader
@@ -41,7 +42,7 @@ definePageMeta({
 useSeoMeta({
   title: 'FireUX Ecosystems',
   description:
-    'Browse published FireUX ecosystems including Misebox, Cleanbox, Bringli, Granite, and the FireUX platform ecosystem.',
+    'Browse published FireUX ecosystems including Misebox, Werkbox, Bringli, Granite, and the FireUX platform ecosystem.',
 })
 
 </script>

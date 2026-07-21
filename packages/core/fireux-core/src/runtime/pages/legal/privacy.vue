@@ -1,4 +1,5 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/legal/privacy.vue -->
+<!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: update the current product name in legal scope copy. -->
 <template>
   <UPage>
     <UPageHeader
@@ -7,7 +8,7 @@
     />
 
     <UPageBody class="pagebody">
-      <p class="text-sm text-muted">Last updated: November 29, 2025</p>
+      <p class="text-sm text-muted">Last updated: July 21, 2026</p>
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">1. Introduction</h2>
@@ -16,7 +17,7 @@
           uses, and protects your personal information when you use FireUX or
           any application built on the FireUX platform. This policy applies to
           FireUX Core, all FireUX-branded applications (e.g., Misebox,
-          Cleanbox), and tenant apps that run on FireUX infrastructure.
+          Werkbox), and tenant apps that run on FireUX infrastructure.
         </p>
       </section>
 

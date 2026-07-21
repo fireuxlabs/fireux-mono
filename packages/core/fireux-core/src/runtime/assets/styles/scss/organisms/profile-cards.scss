@@ -1,0 +1,78 @@
+/* Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: keep shared profile display composition live and display-specific. */
+// Profile card composition shared across named profile families.
+
+:where(.profile) {
+	display: grid;
+	gap: calc(var(--spacing) * 4);
+}
+
+:where(.profile__header) {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: calc(var(--spacing) * 4);
+	flex-wrap: wrap;
+}
+
+:where(.profile__identity) {
+	display: flex;
+	align-items: center;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.profile__titles) {
+	display: grid;
+	gap: var(--spacing);
+}
+
+:where(.profile__title) {
+	font-size: var(--text-base);
+	font-weight: var(--font-weight-semibold);
+}
+
+:where(.profile__subtitle) {
+	font-size: var(--text-sm);
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+:where(.profile__badges) {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: calc(var(--spacing) * 2);
+}
+
+:where(.profile__body) {
+	display: grid;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.profile__section) {
+	display: grid;
+	gap: calc(var(--spacing) * 2);
+}
+
+:where(.profile__label) {
+	font-size: var(--text-xs);
+	letter-spacing: var(--tracking-wide);
+	text-transform: uppercase;
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+:where(.profile__value) {
+	font-size: var(--text-sm);
+}
+
+:where(.profile__kv) {
+	display: grid;
+	gap: var(--spacing);
+}
+
+:where(.profile__k) {
+	font-size: var(--text-xs);
+	color: var(--ui-text-muted, var(--ui-text));
+}
+
+:where(.profile__v) {
+	font-size: var(--text-sm);
+}

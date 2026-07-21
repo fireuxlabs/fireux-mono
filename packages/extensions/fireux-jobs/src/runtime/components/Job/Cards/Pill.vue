@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 12:26 CEST — Neutral Jobs migration seam: replace the domain-specific subtitle prop. -->
 <template>
   <NuxtLink
   v-if="link && to"
@@ -16,8 +17,8 @@
         <p class="truncate text-sm font-medium text-highlighted">
           {{ title }}
         </p>
-        <p v-if="showSubtitle && kitchenName" class="truncate text-xs text-toned">
-          {{ kitchenName }}
+        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+          {{ subtitle }}
         </p>
         <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
           <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
@@ -45,8 +46,8 @@
         <p class="truncate text-sm font-medium text-highlighted">
           {{ title }}
         </p>
-        <p v-if="showSubtitle && kitchenName" class="truncate text-xs text-toned">
-          {{ kitchenName }}
+        <p v-if="showSubtitle && subtitle" class="truncate text-xs text-toned">
+          {{ subtitle }}
         </p>
         <div v-if="showBadges && badges.length" class="flex flex-wrap items-center gap-1">
           <UBadge v-for="badge in badges" :key="badge" variant="soft" color="neutral" size="xs">
@@ -63,9 +64,8 @@ import { navigateTo } from '#imports'
 
 import type { JobCard } from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
-type Props = Pick<JobCard.Card, 'to' | 'title'> & {
+type Props = Pick<JobCard.Card, 'to' | 'title' | 'subtitle'> & {
   imageUrl?: string
-  kitchenName?: string
   badges?: string[]
   showSubtitle?: boolean
   showBadges?: boolean
@@ -77,7 +77,7 @@ const emit = defineEmits<{ (event: 'action'): void }>()
 
 const props = withDefaults(defineProps<Props>(), {
   imageUrl: '',
-  kitchenName: '',
+  subtitle: '',
   badges: () => [],
   showSubtitle: true,
   showBadges: true,

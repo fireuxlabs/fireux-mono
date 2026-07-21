@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: allowlist Agent and Professional directory/detail fields.
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: project exact bounded profiles with safe URLs and Place ids.
 // Concurrent edit — 2026-07-20 23:01 CEST — Misebox dev recovery: make workspace runtime imports explicit for Nitro resolution.
+// Concurrent edit — 2026-07-21 12:54 CEST — Cleanbox-to-Werkbox projection follow-up: allow canonical Place experience references.
 import type {
   PublicProfileHandlerConfig,
   PublicProfileMapper,
@@ -90,7 +91,7 @@ function experience(value: unknown, limit: number) {
     const toYear = experienceYear(entry.to_year)
     if (
       !isFirestoreDocumentId(placeId) ||
-      !['', 'kitchens', 'companies'].includes(placeCollection) ||
+      !['', 'places', 'kitchens', 'companies'].includes(placeCollection) ||
       fromMonth == null ||
       fromYear == null ||
       toMonth == null ||

@@ -1,10 +1,10 @@
+// Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove product-named Job collection aliases.
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: reserve this raw collection read for authenticated authoring and dev surfaces.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { computed } from 'vue'
 import { JobStorage, type Job } from '../../../../../models/job.model'
-
-type MiseboxJobResolved = Job
 
 export function useJobCollection() {
   const fireUXConfig = useFireUXConfig()
@@ -12,12 +12,12 @@ export function useJobCollection() {
 
   const source = firestoreFetchCollection<Job>(JobStorage.collection)
 
-  const resolvedJobs = computed<MiseboxJobResolved[]>(() => {
+  const resolvedJobs = computed<Job[]>(() => {
     const allJobs = source.value ?? []
     return allJobs
   })
 
-  const appJobs = computed<MiseboxJobResolved[]>(() => {
+  const appJobs = computed<Job[]>(() => {
     const allJobs = resolvedJobs.value ?? []
     if (!fireUXConfig.isTenant || !fireUXConfig.appId) {
       return allJobs

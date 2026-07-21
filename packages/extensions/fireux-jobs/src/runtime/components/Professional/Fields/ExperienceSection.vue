@@ -1,5 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Professional/Fields/ExperienceSection.vue -->
 <!-- Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: persist Place references only after their canonical records exist. -->
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove domain-specific workplace materialization from professional experience. -->
+<!-- Concurrent edit — 2026-07-21 13:03 CEST — Misebox Jobs workplace adapter: require owner materialization before assigning experience references. -->
 <template>
   <MoleculesFormsFirestoreObjectArray
     :label="label"
@@ -28,6 +30,14 @@
     <!-- EDIT / CREATE -->
     <template #edit="{ item, index, save, cancel }">
       <div class="flex flex-col gap-3">
+        <UAlert
+          v-if="placeSelectionError"
+          color="error"
+          variant="soft"
+          title="Workplace could not be selected"
+          :description="placeSelectionError"
+        />
+
         <!-- Collection toggle (create only) -->
         <div
           v-if="index === items.length && collectionOptions.length > 1"
@@ -41,7 +51,6 @@
             @click="
               () => {
                 selectedCollection = collection
-                item.place_collection = collection
               }
             "
           >
@@ -202,9 +211,7 @@ import type { PlaceCard } from 'fireux-places/runtime/composables/fireux/firesto
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { usePlaceCreate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceCreate'
 import { useCompanyCreate } from 'fireux-companies/runtime/composables/fireux/firestore/company/mutations/useCompanyCreate'
-import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
-import { KitchenStorage } from 'fireux-kitchens/runtime/models/kitchen.model'
 import {
   PlaceStorage,
   type Place,
@@ -212,6 +219,7 @@ import {
 } from 'fireux-places/runtime/models/place.model'
 import { computed, onScopeDispose, ref, shallowRef, watch } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
+import { materializeJobWorkplace } from '../../../composables/workplace/materializeWorkplace'
 
 type PlaceSelectedPayload = { placeId: string; place: PlaceUpsertInput }
 type CalendarUpdateValue =
@@ -253,8 +261,8 @@ const effectivePlaceType = computed(() => {
 
 const db = useFirestore()
 const { ensurePlaceExists } = usePlaceCreate()
-const { createKitchen } = useKitchenCreate()
 const { createCompany } = useCompanyCreate()
+const placeSelectionError = ref('')
 
 const normalizePlaceId = (placeId?: string | null) => {
   const normalized = canonicalPlaceId(placeId ?? '')
@@ -346,14 +354,23 @@ async function onPlaceSelected(
   item: ExperienceItem,
   payload: PlaceSelectedPayload
 ) {
+  placeSelectionError.value = ''
   const normalizedId = normalizePlaceId(payload.placeId) || payload.placeId
   const placeCollection =
-    selectedCollection.value || item.place_collection || ''
+    selectedCollection.value || item.place_collection || PlaceStorage.collection
 
-  const ok = await ensurePlaceExists({ ...payload.place, id: normalizedId })
-  if (!ok) return
+  try {
+    const ok = await ensurePlaceExists({ ...payload.place, id: normalizedId })
+    if (!ok) throw new Error('The selected Place could not be materialized.')
 
-  await ensureCollectionRecord(placeCollection, normalizedId, payload.place)
+    await ensureCollectionRecord(placeCollection, normalizedId, payload.place)
+  } catch (error) {
+    placeSelectionError.value =
+      error instanceof Error && error.message
+        ? error.message
+        : 'The selected workplace could not be materialized.'
+    return
+  }
 
   item.place_id = normalizedId
   item.place_collection = placeCollection
@@ -365,25 +382,20 @@ async function ensureCollectionRecord(
   placeId: string,
   place: PlaceUpsertInput
 ) {
-  if (collection === KitchenStorage.rootCollection) {
-    const ref = doc(db, KitchenStorage.rootCollection, placeId)
-    const snap = await getDoc(ref)
-    if (!snap.exists()) {
-      await createKitchen({
-        id: placeId,
-        place,
-      })
-    }
-    return
-  }
-
   if (collection === CompanyStorage.collection) {
     const ref = doc(db, CompanyStorage.collection, placeId)
     const snap = await getDoc(ref)
     if (!snap.exists()) {
       await createCompany({ id: placeId, place })
     }
+    return
   }
+
+  await materializeJobWorkplace({
+    workplaceCollection: collection,
+    workplaceId: placeId,
+    place: { ...place, id: placeId },
+  })
 }
 
 function showDraftCard(item: ExperienceItem) {
@@ -505,7 +517,7 @@ function onToggleOngoing(
 function newExperienceItem(): ExperienceItem {
   return {
     place_id: '',
-    place_collection: selectedCollection.value || '',
+    place_collection: '',
     role: '',
     responsibilities: '',
     from_month: '',

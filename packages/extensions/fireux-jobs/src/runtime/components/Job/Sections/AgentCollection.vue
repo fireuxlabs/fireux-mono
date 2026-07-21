@@ -43,7 +43,7 @@
                 <UButton
                   variant="ghost"
                   icon="i-lucide-arrow-right"
-                  :to="`/jobs/${job.id}`"
+                  :to="`/jobs/edit/${encodeURIComponent(job.id)}`"
                 />
               </div>
             </div>
@@ -59,6 +59,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: keep owner postings linked to authenticated authoring.
 import { computed } from 'vue'
 import { useJobCollection } from '../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'

@@ -1,0 +1,70 @@
+/* Concurrent edit — 2026-07-21 12:44 CEST — CSS architecture pass: isolate the shared card-preview contract. */
+/*
+Shared preview-card anatomy used by domain `X/Cards/Preview` components.
+Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
+*/
+
+:where(.preview) {
+	width: 100%;
+}
+
+:where(.preview__row) {
+	display: flex;
+	align-items: flex-start;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.preview__main) {
+	min-width: 0;
+	flex: 1;
+}
+
+:where(.preview__top) {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.preview__title) {
+	min-width: 0;
+	font-weight: var(--font-weight-semibold);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+:where(.preview__subtitle) {
+	margin-top: var(--spacing);
+	font-size: var(--text-sm);
+	color: var(--ui-text-muted, var(--ui-text));
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+:where(.preview__badges) {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-end;
+	gap: var(--spacing);
+	flex-shrink: 0;
+}
+
+:where(.preview__body) {
+	margin-top: calc(var(--spacing) * 2);
+	display: grid;
+	gap: var(--spacing);
+}
+
+:where(.preview__line) {
+	font-size: var(--text-sm);
+	color: var(--ui-text);
+}
+
+:where(.preview__meta) {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: calc(var(--spacing) * 2);
+}

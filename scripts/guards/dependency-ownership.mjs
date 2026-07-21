@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: rejects shadow boundaries, undeclared imports, and split framework type identities.
+// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify product-neutral Jobs dependency ownership.
 // Concurrent edit — 2026-07-20 22:44 CEST — Repo Efficiency Pass 5 of 6: enforce dependency ownership and shared H3 type identity.
 // FILE: scripts/guards/dependency-ownership.mjs
 

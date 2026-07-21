@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
+// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: keep parked Portfolio work out of the public index.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 const sourceMeta = {
@@ -460,6 +461,7 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  operations: [],
   solutions: [
     {
       slug: 'property-showcase',

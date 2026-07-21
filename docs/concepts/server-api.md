@@ -1,5 +1,8 @@
 Server API spine map
 
+<!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
+<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map bounded category- and tenant-scoped Job browse/detail APIs. -->
+
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
 <!-- Concurrent edit — 2026-07-20 12:27 CEST — Directory Live Pass: record verified support infrastructure and remediation boundary. -->
@@ -11,8 +14,8 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: map trusted sparse Place mutation and fail-closed Kitchen projection. -->
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe invalid Kitchen support joins explicitly. -->
 
-Updated: 2026-07-20
-Ref: 4c0a1c7ad
+Updated: 2026-07-21
+Ref: 5b6cfcc8e
 Role: map, not canon
 
 Purpose:
@@ -99,6 +102,13 @@ Boundary rule:
   with a slug and an existing linked Place. Raw Kitchen operational data,
   missing values, copied Place snapshots, invalid App support records, and browser N+1
   hydration stay out of the public directory contract.
+- Jobs owns `GET /api/public/jobs` and `GET /api/public/jobs/:id`. The index
+  cursor-scans bounded root batches without composite-index assumptions, and
+  both routes use the same field allowlist. Only open, explicitly public jobs
+  whose product-neutral `category_id` is configured by the current runtime are
+  emitted; tenant runtimes also require the current App as `source_app_id`.
+  Empty category configuration fails closed. Company/Place ids, owner scope,
+  creator stamps, and raw linked documents never reach the browser DTO.
 - Shared identity writes may publish authenticated, idempotent App events
   through core server endpoints. Event facts do not choose notification
   recipients or delivery channels; those belong to subscribing consumers.
@@ -150,8 +160,9 @@ Boundary rule:
   databases with deny-all Firestore client rules. Exact, separate rules configs
   live under `scripts/firebase/directory-publication`; normal app deploy configs
   must not contain a Firestore stanza. Six Standard, delete-protected databases
-  are provisioned across FireUX, Bringli, Cleanbox, Granite, and Misebox. Slap's
-  `directory-outbox` remains pending because billing is disabled.
+  are provisioned across FireUX, Bringli, Werkbox's legacy `cleanbox-f15bc`
+  scope, Granite, and Misebox. Slap's `directory-outbox` remains pending because
+  billing is disabled.
 - Ready publishers and the FireUX receiver have separate service accounts and
   conditional database-resource bindings to a four-permission custom role:
   database get plus entity get/create/update, with no list/delete. The current

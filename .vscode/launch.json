@@ -54,10 +54,10 @@
       }
     },
     {
-      "name": "Cleanbox dev (3002)",
+      "name": "Werkbox dev (3002)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm dev:cleanbox",
+      "command": "pnpm dev:werkbox",
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
@@ -241,10 +241,10 @@
       }
     },
     {
-      "name": "Kill Cleanbox dev (3002)",
+      "name": "Kill Werkbox dev (3002)",
       "type": "node-terminal",
       "request": "launch",
-      "command": "pnpm kill:cleanbox",
+      "command": "pnpm kill:werkbox",
       "cwd": "${workspaceFolder}",
       "presentation": {
         "group": "Dev Servers",
@@ -412,7 +412,7 @@
       "configurations": [
         "FireUX dev (3000)",
         "Misebox dev (3001)",
-        "Cleanbox dev (3002)"
+        "Werkbox dev (3002)"
       ]
     },
     {
@@ -420,7 +420,7 @@
       "configurations": [
         "FireUX dev (3000)",
         "Misebox dev (3001)",
-        "Cleanbox dev (3002)",
+        "Werkbox dev (3002)",
         "Richies Reinigung dev (3004)",
         "FireUX Tenant dev (3005)"
       ]
@@ -430,7 +430,7 @@
       "configurations": [
         "FireUX dev (3000)",
         "Misebox dev (3001)",
-        "Cleanbox dev (3002)",
+        "Werkbox dev (3002)",
         "Richies Reinigung dev (3004)",
         "FireUX Tenant dev (3005)",
         "Bringli dev (3006)",

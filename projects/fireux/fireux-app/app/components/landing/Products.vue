@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the product catalogue fallback. -->
 <template>
   <div id="products" class="landing-index-section">
     <div class="mb-6 space-y-2 text-center">
@@ -15,7 +16,7 @@
       v-if="!items?.length"
       icon="i-lucide-packages"
       title="Apps index coming soon"
-      description="Cleanbox, Misebox, and more — server-driven catalog."
+      description="Werkbox, Misebox, and more — server-driven catalog."
       color="neutral"
       variant="soft"
     />

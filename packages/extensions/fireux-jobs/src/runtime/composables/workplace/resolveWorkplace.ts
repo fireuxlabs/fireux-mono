@@ -1,9 +1,10 @@
-import type { Kitchen } from 'fireux-kitchens/runtime/models/kitchen.model'
+// Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: resolve product-neutral workplace registries.
 import type { Job } from '../../models/job.model'
 
-export type WorkplaceRegistries = {
-  kitchens?: Map<string, Kitchen>
-}
+export type WorkplaceRegistries = Record<
+  string,
+  Map<string, unknown> | undefined
+>
 
 export type WorkplaceMeta = {
   workplaceId: string
@@ -22,15 +23,12 @@ export function resolveWorkplaceMeta(job: Job): WorkplaceMeta {
 export function resolveWorkplace(
   job: Job,
   registries: WorkplaceRegistries = {}
-): Kitchen | unknown | null {
+): unknown | null {
   const { workplaceId, workplaceType } = resolveWorkplaceMeta(job)
+  const registry = workplaceType ? registries[workplaceType] : undefined
 
-  if (workplaceType === 'kitchen') {
-    if (registries.kitchens && workplaceId) {
-      return registries.kitchens.get(workplaceId) ?? null
-    }
-
-    return (job as any)?.kitchen ?? null
+  if (registry && workplaceId) {
+    return registry.get(workplaceId) ?? null
   }
 
   return (job as any)?.workplace ?? null

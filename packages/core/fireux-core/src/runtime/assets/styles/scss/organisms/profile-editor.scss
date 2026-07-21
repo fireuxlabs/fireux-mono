@@ -1,0 +1,27 @@
+/* Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: map the shared multi-section editor composition to named profile Edit trees. */
+:where(.profile-edit) {
+	display: grid;
+	gap: calc(var(--spacing) * 6);
+}
+
+:where(.profile-edit__section-header) {
+	display: flex;
+	align-items: center;
+	gap: calc(var(--spacing) * 2);
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+}
+
+:where(.profile-edit__fields) {
+	display: grid;
+	gap: calc(var(--spacing) * 2);
+}
+
+:where(.profile-edit__field) {
+	padding-top: var(--spacing);
+}
+
+:where(.profile-edit__section) {
+	display: grid;
+	gap: calc(var(--spacing) * 3);
+}

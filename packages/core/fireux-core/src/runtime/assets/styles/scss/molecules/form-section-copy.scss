@@ -1,0 +1,15 @@
+/* Concurrent edit — 2026-07-21 12:55 CEST — CSS architecture pass: own the repeated edit/form section-heading contract. */
+@layer components {
+	:where(.section__copy > h2, .section__copy > h3) {
+		font-size: var(--text-base);
+		line-height: var(--text-base--line-height);
+		font-weight: var(--font-weight-semibold);
+		color: var(--ui-text-highlighted);
+	}
+
+	:where(.section__copy > p) {
+		font-size: var(--text-xs);
+		line-height: var(--text-xs--line-height);
+		color: var(--ui-text-dimmed);
+	}
+}

@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: run through pnpm guard; verifies source-owned entity declarations against the cross-package matrix.
+// Concurrent edit — 2026-07-21 12:42 CEST — Cleanbox-to-Werkbox migration: verify the declared product-neutral Job contract.
 // Concurrent edit — 2026-07-20 23:38 CEST — Entity Vocabulary + Matrix Pass: enforce declarations and allowed vocabulary with the TypeScript AST.
 
 import assert from 'node:assert/strict'

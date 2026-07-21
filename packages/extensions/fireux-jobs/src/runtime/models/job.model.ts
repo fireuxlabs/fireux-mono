@@ -1,10 +1,13 @@
 // FILE: packages/extensions/fireux-jobs/src/runtime/models/job.model.ts
+// Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: add categories and managed job type.
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: declare the completed bounded public-read contract.
 
 import {
   FireuxRootScope,
   type FireuxRootVisibility,
   type FireuxStamped,
 } from 'fireux-core/runtime/models/core/meta.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -17,7 +20,7 @@ type WidenLiteral<T> =
   : T
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Current entity map: docs/concepts/entities.md
  *
  * Family: Domain Root
  * Storage: root-first canonical model
@@ -26,7 +29,7 @@ type WidenLiteral<T> =
  * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
  *
  * Decision note:
- * - Job is root canonical truth even when a kitchen or other workplace is linked to it.
+ * - Job is root canonical truth even when a workplace is linked to it.
  * - Tenant and ecosystem job pages should filter the same root records through shared root scoping fields.
  * - If a console later needs real scoped stored job state, add it intentionally rather than by symmetry.
  * - If that changes, update the models README first, then this file.
@@ -38,17 +41,34 @@ export const JobStorage = {
   idParam: 'jobId',
 } as const
 
+export const JobEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Job',
+  family: ['content'],
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'none',
+  publicRead: 'projection',
+  status: 'confirmed',
+  console: false,
+  root: JobStorage.path,
+  notes: [
+    'Category and workplace identifiers are product-neutral.',
+    'Public index and exact detail reads use a bounded server projection; browsers never receive raw Job roots.',
+  ],
+})
+
 export type JobStatus = 'open' | 'closed'
 
 /**
- * JobType (product layer)
+ * Job scheduling type
  *
  * - einsatz: short-term deployment / cover shift (temporary, often urgent)
- * - misebox: platform-managed deployment (routing / staffing flow managed by the platform)
+ * - managed: platform-managed deployment (routing / staffing flow managed by the platform)
  * - fixed: fixed-term role with known start + end date (contract window)
  * - permanent: ongoing role with no planned end date
  */
-export type JobType = 'einsatz' | 'misebox' | 'fixed' | 'permanent'
+export type JobType = 'einsatz' | 'managed' | 'fixed' | 'permanent'
 
 /**
  * Pay rate unit (display + filtering)
@@ -60,10 +80,7 @@ export type JobPayUnit = 'hour' | 'shift' | 'day'
  * Workplace type (ecosystem-configured)
  * Keep flexible: each app/ecosystem declares allowed workplace types.
  *
- * Examples:
- * - misebox: 'kitchen'
- * - cleanbox: 'house' | 'office' | 'school'
- * - logistics: 'truck' | 'warehouse' | 'ship'
+ * Examples include 'place', 'vehicle', 'warehouse', or 'vessel'.
  */
 export type WorkplaceType = string
 
@@ -76,9 +93,12 @@ export const JobModel = {
 
   /**
    * Employer reference (billing / ownership)
-    * One company can own many workplaces.
+   * One company can own many workplaces.
    */
   company_id: '' as string,
+
+  /** Product-neutral category identifier configured by the consuming app. */
+  category_id: '' as string,
 
   /**
    * Work site reference (value optional)
@@ -95,7 +115,7 @@ export const JobModel = {
   workplace_id: '' as string,
   workplace_label: '' as string,
 
-  /** Type (product layer) */
+  /** Scheduling type */
   job_type: 'permanent' as JobType,
 
   /** Hiring intent (crew size / openings) */

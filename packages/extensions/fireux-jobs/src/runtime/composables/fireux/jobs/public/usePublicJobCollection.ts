@@ -1,0 +1,109 @@
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: consume the cursor-bounded Job directory API.
+import { useAsyncData } from '#imports'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import { computed, ref, type ComputedRef, type Ref } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireuxJobsConfig } from '../../../config/useFireuxJobsConfig'
+import {
+  PUBLIC_JOB_INDEX_MAX_PAGE_SIZE,
+  PUBLIC_JOB_INDEX_PAGE_SIZE,
+  type PublicJobIndexPage,
+  type PublicJobProjection,
+} from '../../../../models/job-public.model'
+
+export type PublicJobIndexOutcome = 'pending' | 'error' | 'empty' | 'ready'
+
+type PublicJobCollectionControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error' | 'refresh'
+>
+
+export type UsePublicJobCollectionReturn = PublicJobCollectionControls & {
+  jobs: ComputedRef<PublicJobProjection[]>
+  count: ComputedRef<number>
+  ready: Promise<void>
+  outcome: ComputedRef<PublicJobIndexOutcome>
+  hasMore: ComputedRef<boolean>
+  loadingMore: Ref<boolean>
+  loadMoreError: Ref<unknown>
+  loadMore: () => Promise<boolean>
+}
+
+export function usePublicJobCollection(
+  options: { pageSize?: number } = {}
+): UsePublicJobCollectionReturn {
+  const fireux = useFireUXConfig()
+  const jobsConfig = useFireuxJobsConfig()
+  const pageSize = normalizePageSize(options.pageSize)
+  const endpoint = `/api/public/jobs?limit=${pageSize}`
+  const key = [
+    'public-job-index',
+    `app=${encodeURIComponent(fireux.appId || 'app')}`,
+    `categories=${encodeURIComponent(jobsConfig.categories.join(','))}`,
+    `limit=${pageSize}`,
+  ].join('|')
+  const state = useAsyncData<PublicJobIndexPage>(
+    key,
+    () => $fetch<PublicJobIndexPage>(endpoint)
+  )
+  const loadingMore = ref(false)
+  const loadMoreError = ref<unknown>(null)
+  const jobs = computed(() => state.data.value?.items ?? [])
+  const count = computed(() => jobs.value.length)
+  const nextCursor = computed(() => state.data.value?.nextCursor || '')
+  const hasMore = computed(() => Boolean(nextCursor.value))
+  const outcome = computed<PublicJobIndexOutcome>(() => {
+    if (state.pending.value) return 'pending'
+    if (state.error.value || !state.data.value) return 'error'
+    return jobs.value.length ? 'ready' : 'empty'
+  })
+
+  async function loadMore() {
+    const cursor = nextCursor.value
+    if (!cursor || loadingMore.value) return false
+
+    loadingMore.value = true
+    loadMoreError.value = null
+    try {
+      const page = await $fetch<PublicJobIndexPage>(
+        `${endpoint}&cursor=${encodeURIComponent(cursor)}`
+      )
+      const current = state.data.value
+      if (!current) return false
+
+      const items = new Map(current.items.map(item => [item.id, item]))
+      for (const item of page.items) items.set(item.id, item)
+      state.data.value = {
+        items: [...items.values()],
+        ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),
+      }
+      return true
+    } catch (error) {
+      loadMoreError.value = error
+      return false
+    } finally {
+      loadingMore.value = false
+    }
+  }
+
+  return {
+    jobs,
+    count,
+    pending: state.pending,
+    error: state.error,
+    refresh: state.refresh,
+    ready: state.then(() => undefined),
+    outcome,
+    hasMore,
+    loadingMore,
+    loadMoreError,
+    loadMore,
+  }
+}
+
+function normalizePageSize(value: unknown) {
+  const pageSize = Number(value ?? PUBLIC_JOB_INDEX_PAGE_SIZE)
+  return Number.isInteger(pageSize) && pageSize > 0
+    ? Math.min(pageSize, PUBLIC_JOB_INDEX_MAX_PAGE_SIZE)
+    : PUBLIC_JOB_INDEX_PAGE_SIZE
+}

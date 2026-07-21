@@ -1,0 +1,20 @@
+/* Concurrent edit — 2026-07-21 12:44 CEST — CSS architecture pass: isolate opt-in card avatar shading. */
+/*
+Opt-in avatar surface contract consumed by shared entity-card media.
+Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
+*/
+
+/* Avatar shade helpers (opt-in via props/classes) */
+:where(.fx-avatar-shade--light) {
+	--fx-avatar-shade-bg: var(--ui-color-neutral-900);
+	background: var(--fx-avatar-shade-bg);
+	border-radius: 9999px;
+	overflow: hidden;
+}
+
+:where(.fx-avatar-shade--dark) {
+	--fx-avatar-shade-bg: #ffffff;
+	background: var(--fx-avatar-shade-bg);
+	border-radius: 9999px;
+	overflow: hidden;
+}

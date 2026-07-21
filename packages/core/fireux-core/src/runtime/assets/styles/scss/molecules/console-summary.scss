@@ -1,0 +1,23 @@
+/* Concurrent edit — 2026-07-21 13:00 CEST — CSS architecture pass: own reusable read-only console field summaries. */
+.console-summary-grid {
+	display: grid;
+	gap: calc(var(--spacing) * 3) calc(var(--spacing) * 4);
+	font-size: var(--text-sm);
+	color: var(--ui-text-muted, var(--ui-text));
+	min-width: 0;
+}
+
+@media (min-width: 640px) {
+	.console-summary-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+.console-summary-field {
+	min-width: 0;
+}
+
+.console-summary-value {
+	font-weight: var(--font-weight-medium);
+	color: var(--ui-text, currentColor);
+}

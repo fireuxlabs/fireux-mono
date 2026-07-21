@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: make shared product copy category-neutral. -->
 <template>
   <UPage>
     <UPageHeader
@@ -11,8 +12,8 @@
         <p class="text-sm text-toned">
           FireUX Jobs centralises hiring across every tenant so teams can draft
           roles once, share globally, and augment them with tenant-specific
-          context. Professionals reuse their profiles across Misebox, Cleanbox,
-          and future tenants.
+          context. Professionals reuse their profiles across participating apps
+          and practical-work categories.
         </p>
       </section>
 

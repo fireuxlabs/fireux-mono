@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: rename the local port-3002 toolbar command.
 const vscode = require('vscode')
 const cp = require('node:child_process')
 const fs = require('node:fs')
@@ -684,15 +685,15 @@ function activate(context) {
       url: 'http://localhost:3001',
     },
     {
-      key: 'cleanbox',
-      name: 'CleanBox',
+      key: 'werkbox',
+      name: 'Werkbox',
       icon: '$(beaker)',
       port: 3002,
-      commandId: 'fireuxToolbar.startCleanbox',
-      taskLabel: 'dev:cleanbox (3002)',
-      terminalName: 'CleanBox (3002)',
-      pnpmCommand: 'pnpm dev:cleanbox --host',
-      tooltip: 'Start CleanBox dev (port 3002)',
+      commandId: 'fireuxToolbar.startWerkbox',
+      taskLabel: 'dev:werkbox (3002)',
+      terminalName: 'Werkbox (3002)',
+      pnpmCommand: 'pnpm dev:werkbox --host',
+      tooltip: 'Start Werkbox dev (port 3002)',
       url: 'http://localhost:3002',
     },
     {

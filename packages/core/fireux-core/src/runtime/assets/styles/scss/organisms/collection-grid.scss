@@ -1,0 +1,11 @@
+/* Concurrent edit — 2026-07-21 12:44 CEST — CSS architecture pass: isolate the shared collection-list grid contract. */
+/*
+Collection list composition shared by domain `X/Collection/List` components.
+Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
+*/
+
+:where(.collection-grid) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: calc(var(--spacing) * 2);
+}

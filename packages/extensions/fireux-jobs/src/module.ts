@@ -1,12 +1,11 @@
+// Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: publish category and workplace configuration.
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: retire visibility-only raw-root sitemap discovery.
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { defaultFireuxJobsConfig } from './config/jobs.config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
-import type {
-  FireuxSeoExtendContext,
-  FireuxSeoSitemapsExtendContext,
-} from 'fireux-core/config/app/seo'
+import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -15,7 +14,20 @@ import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
   prefix?: string
+  categories?: string[]
   workplaces?: string[]
+  defaultWorkplaceType?: string
+}
+
+function normalizeIdentifiers(value: unknown, fallback: string[] = []): string[] {
+  const source = Array.isArray(value) ? value : fallback
+  return Array.from(
+    new Set(
+      source
+        .map((entry) => String(entry ?? '').trim())
+        .filter(Boolean)
+    )
+  )
 }
 
 declare module '@nuxt/schema' {
@@ -46,24 +58,27 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addStaticPath('/agents/learn-more')
       ctx.addStaticPath('/professionals/learn-more')
     })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'jobs',
-        canonicalCollectionPath: 'jobs',
-        routePrefix: '/jobs',
-        slugField: 'id',
-        publicField: 'visibility',
-        publicValue: 'public',
-      })
-    })
-    const workplaces = Array.isArray(options?.workplaces)
-      ? options.workplaces
-      : defaultFireuxJobsConfig.workplaces
+    // Job detail discovery cannot use the generic visibility-only root sitemap.
+    // Keep it fail-closed until sitemap generation consumes the same public
+    // status/category/tenant projection as `/api/public/jobs`.
+    const categories = normalizeIdentifiers(
+      options?.categories,
+      defaultFireuxJobsConfig.categories
+    )
+    const workplaces = normalizeIdentifiers(
+      options?.workplaces,
+      defaultFireuxJobsConfig.workplaces
+    )
+    const defaultWorkplaceType = String(
+      options?.defaultWorkplaceType ?? defaultFireuxJobsConfig.defaultWorkplaceType ?? ''
+    ).trim()
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
         configureRuntime(nuxt, 'jobs', {
           enabled: true,
+          categories,
           workplaces,
+          ...(defaultWorkplaceType ? { defaultWorkplaceType } : {}),
         }),
       composables: configureComposables,
       components: configureComponents,

@@ -1,3 +1,5 @@
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: render generic workplace metadata without domain hydration. -->
+<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: render exact SSR DTOs without raw reads or management controls. -->
 <template>
   <UPage>
     <UPageHeader :title="jobTitle" :description="jobSubtitle">
@@ -11,106 +13,69 @@
         >
           Back
         </UButton>
-        <UButton
-          v-if="jobId"
-          size="xs"
-          variant="soft"
-          color="neutral"
-          icon="i-lucide-pencil"
-          :to="`/jobs/edit/${encodeURIComponent(jobId)}`"
-        >
-          Edit
-        </UButton>
       </template>
     </UPageHeader>
 
     <UPageBody class="pagebody">
-      <UAlert v-if="!job" title="Job not found" color="error" variant="soft" />
+      <div v-if="pending" class="space-y-3">
+        <USkeleton class="h-14 rounded-xl" />
+        <USkeleton class="h-48 rounded-xl" />
+      </div>
 
-      <template v-else>
+      <UAlert
+        v-else-if="failed"
+        title="Job unavailable"
+        description="The public job could not be loaded. Please try again."
+        color="error"
+        variant="soft"
+      />
+
+      <UAlert
+        v-else-if="missing"
+        title="Job not found"
+        description="This job is not currently available as an open public posting."
+        color="error"
+        variant="soft"
+      />
+
+      <template v-else-if="job">
         <DevJson
-          :title="'Job (Doc)'"
-          context="Job detail page · jobs/[id] · job doc"
-          :data="job"
+          :title="'Job (Public DTO)'"
+          context="Job detail page · jobs/[id] · endpoint-first SSR"
+          :data="devPayload"
           :default-open="false"
         />
 
         <div class="grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
           <div class="space-y-6">
             <JobCardsProfile
-              v-if="job"
               :card="jobCard"
               :job="job"
-              :company-card="companyCard"
             />
           </div>
 
           <div class="space-y-6">
             <UCard>
               <template #header>
-                <h3 class="font-semibold">Manage</h3>
+                <h3 class="font-semibold">Category</h3>
               </template>
-              <div class="space-y-4">
-                <div class="flex items-center justify-between">
-                  <div>
-                    <p class="text-sm text-toned">Current status</p>
-                    <p class="text-sm font-semibold text-highlighted">
-                      {{ job?.status || 'open' }}
-                    </p>
-                  </div>
-                  <UBadge size="xs" variant="soft" :color="statusColor">
-                    {{ job?.status || 'open' }}
-                  </UBadge>
-                </div>
-
-                <div class="space-y-2">
-                  <USelect
-                    v-model="statusLocal"
-                    :options="statusOptions"
-                    size="sm"
-                    class="min-w-[9rem]"
-                  />
-                  <UButton size="sm" :loading="saving" @click="saveStatus">
-                    Save status
-                  </UButton>
-                </div>
-              </div>
+              <p class="text-sm font-medium text-highlighted">
+                {{ job.category_id }}
+              </p>
             </UCard>
 
             <UCard>
               <template #header>
                 <h3 class="font-semibold">Workplace</h3>
               </template>
-              <div v-if="job?.workplace_id" class="space-y-2">
-                <KitchenPill
-                  v-if="job?.workplace_type === 'kitchen'"
-                  :id="job.workplace_id"
-                />
-                <p class="text-xs text-muted">
-                  Workplace ID: {{ job?.workplace_id }}
-                </p>
-                <p v-if="job?.workplace_label" class="text-xs text-muted">
+              <div class="space-y-2">
+                <p v-if="job.workplace_label" class="text-sm font-medium text-highlighted">
                   {{ job.workplace_label }}
                 </p>
-              </div>
-              <p v-else class="text-sm text-toned">No workplace linked.</p>
-            </UCard>
-
-            <UCard>
-              <template #header>
-                <h3 class="font-semibold">Company</h3>
-              </template>
-              <div v-if="job?.company_id" class="space-y-2">
-                <CompanyCardsPill
-                  v-if="companyCard"
-                  v-bind="companyCard"
-                  :link="Boolean(companyCard.to)"
-                />
                 <p class="text-xs text-muted">
-                  Company ID: {{ job?.company_id }}
+                  Workplace type: {{ job.workplace_type }}
                 </p>
               </div>
-              <p v-else class="text-sm text-toned">No company linked.</p>
             </UCard>
           </div>
         </div>
@@ -120,19 +85,13 @@
 </template>
 
 <script setup lang="ts">
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { computed, defineComponent, ref, watchEffect } from 'vue'
+import { setResponseStatus } from '#imports'
+import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import JobCardsProfile from '../../components/Job/Cards/Profile.vue'
-import { useJobFetch } from '../../composables/fireux/firestore/jobs/fetch/useJobFetch'
-import { useJobUpdate } from '../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
+import { usePublicJobFetch } from '../../composables/fireux/jobs/public/usePublicJobFetch'
 import { useJobSeo } from '../../composables/fireux/firestore/jobs/utils/useJobSeo'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
-import type { JobStatus } from '../../models/job.model'
 
 const route = useRoute()
 const jobId = computed(() => {
@@ -142,79 +101,33 @@ const jobId = computed(() => {
     : (raw?.toString() ?? null)
 })
 
-const { job } = useJobFetch(jobId)
-const { updateJob } = useJobUpdate()
-const { withToast } = useToastify()
+const fetched = usePublicJobFetch(jobId)
+await fetched.ready
+const { job, pending, statusCode, missing, failed, outcome } = fetched
 const { profile: jobCardFactory } = useJobInterface()
-const companyInterface = useCompanyInterface()
-
-const KitchenPill = defineComponent({
-  props: { id: String },
-  setup(props) {
-    const kitchenId = computed(() => String(props.id || '').trim())
-    const { kitchen: kitchenData } = useKitchenFetch(kitchenId)
-    const kitchenInterface = useKitchenInterface()
-    const kitchenCard = computed(() => kitchenInterface.pill(kitchenData.value))
-    return { kitchenCard }
-  },
-  template: `
-    <div v-if="kitchenCard" class="pill">
-      <UUser
-        :name="kitchenCard.title"
-        :description="kitchenCard.subtitle"
-        :avatar="{ src: kitchenCard.imageUrl, alt: kitchenCard.title }"
-        size="sm"
-      />
-    </div>
-  `,
-})
 
 const jobTitle = computed(() => job.value?.title || 'Job Details')
 const jobSubtitle = computed(() =>
-  job.value?.status ? `Status: ${job.value.status}` : 'Job pipeline entry'
+  job.value?.workplace_label || job.value?.category_id || 'Open job posting'
 )
-const statusColor = computed(() =>
-  job.value?.status === 'open' ? 'success' : 'neutral'
-)
-
-const statusOptions = [
-  { label: 'Open', value: 'open' },
-  { label: 'Closed', value: 'closed' },
-] as const
-
-const statusLocal = ref<JobStatus>('open')
-watchEffect(() => {
-  statusLocal.value = (job.value?.status as JobStatus) ?? 'open'
-})
-
 const jobCard = computed(() => (job.value ? jobCardFactory(job.value) : null))
-const jobCompanyId = computed(() => {
-  const value = String(job.value?.company_id ?? '').trim()
-  return value || null
-})
-const { company: companyData } = useCompanyFetch(jobCompanyId)
-const companyCard = computed(() => companyInterface.pill(companyData.value))
 
-const saving = ref(false)
-const saveStatus = withToast(
-  async () => {
-    const current = job.value
-    if (!current?.id) {
-      throw new Error('Job not ready to update')
-    }
-    saving.value = true
-    try {
-      await updateJob(current.id, { status: statusLocal.value })
-    } finally {
-      saving.value = false
-    }
-  },
-  { ok: 'Status updated', fail: 'Failed to update status' }
-)
+if (import.meta.server) {
+  if (missing.value) {
+    setResponseStatus(404)
+  } else if (failed.value) {
+    setResponseStatus(statusCode.value >= 400 ? statusCode.value : 503)
+  }
+}
 
 definePageMeta({
   layout: 'default',
 })
 
 useJobSeo(job)
+
+const devPayload = computed(() => ({
+  job: job.value,
+  outcome: outcome.value,
+}))
 </script>

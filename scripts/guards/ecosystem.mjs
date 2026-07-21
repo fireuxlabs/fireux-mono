@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify the replacement ecosystem package shape.
 // Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: admit explicit builder lifecycle config.
 // FILE: scripts/guards/ecosystem.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'

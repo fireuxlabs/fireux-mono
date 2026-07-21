@@ -61,20 +61,21 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: source network cards from the bounded public API.
 import { computed } from 'vue'
-import { useJobCollection } from '../../../composables/fireux/firestore/jobs/fetch/useJobCollection.ts'
-import type { Job } from '../../../models/job.model'
+import { usePublicJobCollection } from '../../../composables/fireux/jobs/public/usePublicJobCollection.ts'
+import type { PublicJobProjection } from '../../../models/job-public.model'
 
-const { appJobs, outcome: sourceOutcome } = useJobCollection()
+const { jobs: publicJobs, outcome: sourceOutcome } = usePublicJobCollection()
 
-const jobs = computed<Job[]>(() => appJobs.value ?? [])
+const jobs = computed<PublicJobProjection[]>(() => publicJobs.value ?? [])
 const outcome = computed(() => sourceOutcome.value)
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
 const total = computed(() => jobs.value.length)
 
-const badgeColor = (status?: Job['status']) => {
+const badgeColor = (status?: PublicJobProjection['status']) => {
   if (status === 'open') return 'success'
   return 'neutral'
 }

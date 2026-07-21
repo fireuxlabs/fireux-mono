@@ -1,0 +1,48 @@
+/* Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: keep only live shared dashboard panel compositions. */
+/*
+Dashboard and console panel arrangements used by route-level compositions.
+Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
+*/
+
+:where(.panels-stack) {
+	display: grid;
+	gap: calc(var(--spacing) * 8);
+	min-width: 0;
+}
+
+:where(.panels-stack > *) {
+	min-width: 0;
+}
+
+:where(.panels-narrow) {
+	width: 100%;
+	max-width: 36rem;
+	margin-left: auto;
+	margin-right: auto;
+	min-width: 0;
+}
+
+:where(.panels-masonry) {
+	columns: 1;
+	column-gap: calc(var(--spacing) * 10);
+}
+
+@media (min-width: 768px) {
+	:where(.panels-masonry) {
+		columns: 2;
+	}
+}
+
+:where(.panels-masonry__item) {
+	break-inside: avoid;
+	margin-bottom: calc(var(--spacing) * 10);
+}
+
+:where(.panels-masonry > *) {
+	min-width: 0;
+	display: block;
+	break-inside: avoid;
+	page-break-inside: avoid;
+	-webkit-column-break-inside: avoid;
+	margin-bottom: calc(var(--spacing) * 10);
+}

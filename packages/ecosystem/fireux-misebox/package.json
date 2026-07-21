@@ -26,7 +26,9 @@
     "pnpm": "11.9.0"
   },
   "dependencies": {
-    "fireux-core": "workspace:*"
+    "fireux-core": "workspace:*",
+    "fireux-jobs": "workspace:*",
+    "fireux-kitchens": "workspace:*"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

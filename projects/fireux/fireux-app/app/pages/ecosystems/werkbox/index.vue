@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 11:57 CEST — Sarah sales journey: add the authored Werkbox ecosystem overview. -->
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: keep future practical-work copy product-neutral. -->
 <template>
   <PublicSimplePage
     title="Werkbox"
@@ -29,7 +30,7 @@
         />
         <UPageCard
           title="More practical work"
-          description="Drivers, equipment, maintenance, gardening, moving, and other services can join the same network."
+          description="Additional practical-work categories can reuse the same neutral Job and Place foundations when their workflows are ready."
           icon="i-lucide-wrench"
           variant="subtle"
         />

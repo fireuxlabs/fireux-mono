@@ -2,6 +2,9 @@
 // Concurrent edit — 2026-07-21 11:57 CEST — Sarah sales journey: register the cleaning search-intent solution.
 // Concurrent edit — 2026-07-21 12:08 CEST — Shared solutions catalogue: compose FireUX, Misebox, and Werkbox entries.
 // Concurrent edit — 2026-07-21 12:20 CEST — FireUX SEO solutions: add seven distinct customer-intent pages.
+// Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: declare FireUX route-backed capabilities.
+// Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the FireUX product highlight vocabulary.
+// Concurrent edit — 2026-07-21 12:57 CEST — FireUX project positioning: describe the current Project Console without claiming project creation.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 import { fireuxMiseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -207,6 +210,7 @@ const sourceMeta = {
       routes: [
         { label: 'Home', path: '/', kind: 'public' },
         { label: 'Get Started', path: '/get-started', kind: 'public' },
+        { label: 'Operations', path: '/operations', kind: 'public' },
         { label: 'Apps', path: '/apps', kind: 'public' },
         { label: 'Modules', path: '/modules', kind: 'public' },
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
@@ -340,7 +344,7 @@ export const metaContent = defineFireuxMeta({
     highlight_terms: [
       'focused business apps',
       'Misebox',
-      'Cleanbox',
+      'Werkbox',
       'connected FireUX account',
     ],
     positioning_html: appMeta.heroPrimaryHtml,
@@ -390,7 +394,57 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  operations: [
+    {
+      id: 'project.apps',
+      title: 'Apps',
+      description: 'View apps connected to the selected FireUX project.',
+      to: '/console/project/apps',
+      console: {
+        id: 'project',
+        name: 'Project console',
+        to: '/console/project',
+      },
+      icon: 'i-lucide-app-window',
+    },
+    {
+      id: 'project.ecosystem',
+      title: 'Ecosystem',
+      description: 'View the ecosystem connected to the selected FireUX project.',
+      to: '/console/project/ecosystem',
+      console: {
+        id: 'project',
+        name: 'Project console',
+        to: '/console/project',
+      },
+      icon: 'i-lucide-orbit',
+    },
+  ],
   solutions: [
+    {
+      slug: 'fireux-project-overview',
+      title: 'FireUX project overview',
+      description: 'See a FireUX project, its ecosystem, and its connected apps in one console.',
+      icon: 'i-lucide-panels-top-left',
+      status: 'live',
+      owner: fireuxOwner,
+      body: 'The Project Console brings the existing parts of a FireUX ecosystem project together. Select a project, review its identity, then see the ecosystem and apps connected to it.',
+      steps: [
+        'Select an existing FireUX project.',
+        'Review its name, description, and image.',
+        'See its connected ecosystem and apps.',
+      ],
+      cta: {
+        label: 'Open Project Console',
+        to: '/console/project',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: [
+        'FireUX project management',
+        'FireUX ecosystem project',
+        'manage FireUX apps',
+      ],
+    },
     {
       slug: 'app-for-small-business',
       title: 'App for small business',
@@ -419,6 +473,7 @@ export const metaContent = defineFireuxMeta({
       icon: 'i-lucide-circle-user-round',
       status: 'live',
       owner: fireuxOwner,
+      featured: true,
       body: 'Replace scattered email threads and repeated status questions with a branded customer area. Choose what customers can submit, see, and update while your team manages the work from its console.',
       steps: [
         'Choose what customers need to request or view.',
@@ -439,6 +494,7 @@ export const metaContent = defineFireuxMeta({
       icon: 'i-lucide-users-round',
       status: 'live',
       owner: fireuxOwner,
+      featured: true,
       body: 'Give employees a clear starting point for shared information, work updates, forms, and role-based tools. Each person signs in and sees the parts of the app their role needs.',
       steps: [
         'List the information and actions employees need most often.',
@@ -459,6 +515,7 @@ export const metaContent = defineFireuxMeta({
       icon: 'i-lucide-workflow',
       status: 'live',
       owner: fireuxOwner,
+      featured: true,
       body: 'Choose one workflow that repeatedly costs the team time or causes mistakes. FireUX turns it into a focused internal app with shared records, controlled access, and an operator console.',
       steps: [
         'Pick one repeated workflow with a clear owner.',
@@ -539,7 +596,6 @@ export const metaContent = defineFireuxMeta({
       icon: 'i-lucide-sparkles',
       status: 'coming-soon',
       owner: werkboxOwner,
-      featured: true,
       body: 'Werkbox is the conservative starting point: use the shared app first, then move to a dedicated branded app when the business has proved the need.',
       relatedApp: {
         name: 'Werkbox cleaning',

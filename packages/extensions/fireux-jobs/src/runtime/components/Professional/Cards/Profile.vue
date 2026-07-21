@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 20:03 CEST — Repo Efficiency Pass 2 of 6: render projected Professional detail with canonical Place enrichment. -->
+<!-- Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: use the shared semantic type role outside form composition. -->
 <template>
   <div v-if="viewModel" class="mx-auto w-full max-w-3xl space-y-3">
     <ProfessionalCardsCell
@@ -20,17 +21,17 @@
           <template #body="{ item }">
             <div v-if="item.value === 'summary'" class="-mt-2">
               <div v-if="viewModel.prop">{{ viewModel.prop }}</div>
-              <p v-if="viewModel.summary" class="form-text-body">
+              <p v-if="viewModel.summary" class="fx-type-caption">
                 {{ viewModel.summary }}
               </p>
-              <p v-else class="form-text-body">No summary listed.</p>
+              <p v-else class="fx-type-caption">No summary listed.</p>
             </div>
 
             <div v-else-if="item.value === 'bio'">
-              <p v-if="viewModel.bio" class="form-text-body">
+              <p v-if="viewModel.bio" class="fx-type-caption">
                 {{ viewModel.bio }}
               </p>
-              <p v-else class="form-text-body">No bio listed.</p>
+              <p v-else class="fx-type-caption">No bio listed.</p>
             </div>
 
             <div v-else-if="item.value === 'relevant_experience'">
@@ -66,7 +67,7 @@
                       Location unavailable
                     </div>
                   </div>
-                  <p v-if="entry.item.responsibilities" class="form-text-body">
+                  <p v-if="entry.item.responsibilities" class="fx-type-caption">
                     {{ entry.item.responsibilities }}
                   </p>
                 </div>
@@ -94,7 +95,7 @@
                       Location unavailable
                     </div>
                   </div>
-                  <p v-if="entry.item.responsibilities" class="form-text-body">
+                  <p v-if="entry.item.responsibilities" class="fx-type-caption">
                     {{ entry.item.responsibilities }}
                   </p>
                 </div>
@@ -186,10 +187,7 @@
                       formatRange(entry.from_year, entry.to_year, entry.ongoing)
                     }}
                   </div>
-                  <p
-                    v-if="entry.responsibilities"
-                    class="form-text form-text-muted"
-                  >
+                  <p v-if="entry.responsibilities" class="fx-type-caption">
                     {{ entry.responsibilities }}
                   </p>
                 </div>
@@ -214,10 +212,7 @@
                       )
                     }}
                   </div>
-                  <p
-                    v-if="project.responsibilities"
-                    class="form-text form-text-muted"
-                  >
+                  <p v-if="project.responsibilities" class="fx-type-caption">
                     {{ project.responsibilities }}
                   </p>
                 </div>

@@ -1,40 +1,29 @@
-<!-- Concurrent edit — 2026-07-20 23:38 CEST — Final app CSS pass: semantic colors. -->
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: retain the former route only as a permanent redirect. -->
 <template>
-  <UPage>
-    <UPageHeader
-      title="Cleanbox"
-      description="The cleaning ecosystem within FireUX."
-    />
-
-    <UPageBody class="pagebody">
-      <UCard class="space-y-3">
-        <p class="text-sm text-toned">
-          Cleanbox is the operational ecosystem for cleaning work. This route is
-          the landing page for that domain.
-        </p>
-
-        <div class="space-y-2 text-sm text-toned">
-          <p>Next: show Cleanbox apps and the primary entry points.</p>
-          <p>
-            If you're looking for the system-wide list of ecosystems, go to
-            <NuxtLink class="text-primary hover:underline" to="/ecosystems">
-              /ecosystems
-            </NuxtLink>
-            .
-          </p>
-        </div>
-      </UCard>
-    </UPageBody>
-  </UPage>
+  <PublicSimplePage
+    title="Cleaning moved to Werkbox"
+    description="Cleaning is now a category in the shared Werkbox practical-work hub."
+  >
+    <template #actions>
+      <UButton to="/ecosystems/werkbox/cleaning" icon="i-lucide-arrow-right">
+        Continue to Werkbox cleaning
+      </UButton>
+    </template>
+  </PublicSimplePage>
 </template>
 
 <script setup lang="ts">
 definePageMeta({
-  title: 'Cleanbox',
+  layout: 'landing',
 })
 
 useSeoMeta({
-  title: 'Cleanbox · FireUX',
-  description: 'Cleanbox ecosystem landing page.',
+  title: 'Cleaning on Werkbox · FireUX',
+  description: 'Cleaning is a category in the shared Werkbox practical-work hub.',
+})
+
+await navigateTo('/ecosystems/werkbox/cleaning', {
+  redirectCode: 301,
+  replace: true,
 })
 </script>

@@ -164,5 +164,4 @@ export const fireuxMiseboxSolutions = miseboxSolutions.map((solution) => ({
   owner,
   to: `https://misebox.app/solutions/${solution.slug}`,
   external: true,
-  featured: solution.slug === 'restaurant-operations-software',
 })) satisfies FireuxMetaSolution[]

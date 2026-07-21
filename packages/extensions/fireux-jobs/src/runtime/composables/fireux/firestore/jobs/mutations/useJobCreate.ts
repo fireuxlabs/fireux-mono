@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: validate categories and configured Place-backed workplace types.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
@@ -12,6 +13,7 @@ export const JobPayload = {
   owner_id: '',
   visibility: 'ecosystem',
   company_id: '',
+  category_id: '',
   workplace_type: '',
   workplace_id: '',
   workplace_label: '',
@@ -33,21 +35,69 @@ export const JobStampOptions = {
 
 export type JobCreateForm = JobCreateInput
 
-const DEFAULT_FORM: JobCreateForm = {
-  ...JobPayload,
-}
-
 export function useJobCreate() {
   const { createDocument } = useFirestoreCreate()
   const jobsConfig = useFireuxJobsConfig()
   const fireux = useFireUXConfig()
-  const form = ref<JobCreateForm>({ ...DEFAULT_FORM })
+
+  const configuredDefaultWorkplaceType = normalizeString(
+    jobsConfig.defaultWorkplaceType
+  )
+  const singletonCategory = jobsConfig.categories.length === 1
+    ? jobsConfig.categories[0]
+    : ''
+
+  const createDefaultForm = (): JobCreateForm => ({
+    ...JobPayload,
+    category_id: singletonCategory,
+    workplace_type: configuredDefaultWorkplaceType,
+  })
+
+  const form = ref<JobCreateForm>(createDefaultForm())
 
   const reset = () => {
-    form.value = { ...DEFAULT_FORM }
+    form.value = createDefaultForm()
+  }
+
+  function requireDefaultWorkplaceType(): string {
+    if (!configuredDefaultWorkplaceType) {
+      throw new Error('Jobs default workplace type is not configured')
+    }
+    if (
+      jobsConfig.workplaces.length > 0 &&
+      !jobsConfig.workplaces.includes(configuredDefaultWorkplaceType)
+    ) {
+      throw new Error('Jobs default workplace type is not allowed')
+    }
+    return configuredDefaultWorkplaceType
+  }
+
+  function resolveCategoryId(value: unknown): string {
+    const categoryId = normalizeString(value) || singletonCategory
+    if (jobsConfig.categories.length > 0 && !categoryId) {
+      throw new Error('Job category is required')
+    }
+    if (
+      categoryId &&
+      jobsConfig.categories.length > 0 &&
+      !jobsConfig.categories.includes(categoryId)
+    ) {
+      throw new Error('Invalid job category')
+    }
+    return categoryId
   }
 
   async function createJob(payload: JobCreateInput): Promise<{ created: boolean; id: string }> {
+    requireDefaultWorkplaceType()
+    const categoryId = resolveCategoryId(payload.category_id)
+    const workplaceType = normalizeString(payload.workplace_type)
+    if (!workplaceType) throw new Error('Workplace type is required')
+    if (
+      jobsConfig.workplaces.length > 0 &&
+      !jobsConfig.workplaces.includes(workplaceType)
+    ) {
+      throw new Error('Invalid workplace type')
+    }
     const sourceAppId = normalizeString(payload.source_app_id || fireux.appId)
     const sourceEcosystemId = normalizeString(
       payload.source_ecosystem_id || fireux.ecosystemId
@@ -58,6 +108,8 @@ export function useJobCreate() {
     )
     const data = {
       ...payload,
+      category_id: categoryId,
+      workplace_type: workplaceType,
       source_app_id: sourceAppId,
       source_ecosystem_id: sourceEcosystemId,
       owner_type: ownerType,
@@ -74,8 +126,10 @@ export function useJobCreate() {
   }
 
   const submit = async (): Promise<string> => {
+    requireDefaultWorkplaceType()
     const title = normalizeString(form.value.title)
     const description = normalizeString(form.value.description)
+    const categoryId = resolveCategoryId(form.value.category_id)
     const workplaceId = normalizeString(form.value.workplace_id)
     const workplaceType = normalizeString(form.value.workplace_type)
 
@@ -94,6 +148,7 @@ export function useJobCreate() {
       ...form.value,
       title,
       description,
+      category_id: categoryId,
       workplace_id: workplaceId,
       workplace_type: workplaceType,
       workplace_label: normalizeString(form.value.workplace_label),

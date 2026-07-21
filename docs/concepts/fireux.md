@@ -1,7 +1,9 @@
 FireUX concept map
-Updated: 2026-06-17
-Ref: 37fb262f0
+Updated: 2026-07-21
+Ref: 5b6cfcc8e
 Role: map, not canon
+
+<!-- Concurrent edit — 2026-07-21 12:43 CEST — Cleanbox-to-Werkbox migration: map the durable hospitality and practical-work ownership split. -->
 
 Purpose:
 Explain FireUX as the platform shape behind the repo.
@@ -39,6 +41,16 @@ Runtime app roles:
 - `global`: app can expose multiple domains/consoles.
 - `tenant`: app usually pins console targets through `consoleConfig`.
 - `standalone`: FireUX-owned standalone app mode.
+
+Current ecosystem ownership:
+- Misebox owns hospitality work and its Kitchen/Menu composition.
+- Werkbox owns cleaning and other non-hospitality practical work. Cleaning is a
+  product-neutral category inside Werkbox, not a separate ecosystem.
+- Shared Job, Company, Place, Agent, and Professional truth stays in its owning
+  extension package rather than either ecosystem package.
+- Werkbox currently retains the legacy `cleanbox-f15bc` Firebase project,
+  `cleanbox` database, and canonical record IDs until an explicitly approved
+  remote migration changes that physical authority.
 
 Working rule:
 Before inventing a local helper, check whether FireUX core already owns the seam.

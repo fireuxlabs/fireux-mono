@@ -1,0 +1,19 @@
+/* Concurrent edit — 2026-07-21 13:00 CEST — CSS architecture pass: own reusable console card-header anatomy. */
+.console-card-header {
+	display: grid;
+	gap: var(--spacing);
+	min-width: 0;
+}
+
+.console-card-header__title {
+	font-size: var(--text-sm);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text, currentColor);
+}
+
+.console-card-header__description {
+	margin: 0;
+	font-size: var(--text-sm);
+	line-height: var(--leading-normal);
+	color: var(--ui-text-muted, var(--ui-text));
+}

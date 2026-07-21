@@ -1,0 +1,11 @@
+/* Concurrent edit — 2026-07-21 12:44 CEST — CSS architecture pass: isolate the shared card root contract. */
+/*
+Lowest common card geometry; Nuxt UI continues to own card chrome.
+Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
+*/
+
+:where(.fx-card) {
+	display: block;
+	width: 100%;
+	min-width: 0;
+}

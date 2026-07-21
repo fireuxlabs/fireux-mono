@@ -1,14 +1,35 @@
-/* stripped */
+/* Concurrent edit — 2026-07-21 13:00 CEST — CSS architecture pass: map shared styles to their real component and page contracts. */
 @use './scss/atoms/tokens';
 @use './scss/atoms/typography';
-@use './scss/atoms/forms';
+@use './scss/molecules/dev-note';
+@use './scss/molecules/form-section-copy';
+@use './scss/molecules/forms';
 @use './scss/molecules/inset-panel';
 @use './scss/molecules/metrics';
 @use './scss/molecules/pill';
-@use './scss/organisms/cards';
-@use './scss/organisms/sections';
-@use './scss/organisms/profiles';
-@use './scss/organisms/plugins';
+/* Preserve the established cascade while each module names one shared contract. */
+@use './scss/organisms/collection-grid';
+@use './scss/molecules/card-foundation';
+@use './scss/organisms/solutions-grid';
+@use './scss/molecules/card-preview-variant';
+@use './scss/organisms/public-action-card';
+@use './scss/organisms/collection-layouts';
+@use './scss/organisms/panel-layouts';
+@use './scss/molecules/card-avatar-shades';
+@use './scss/molecules/entity-cards';
+@use './scss/molecules/preview-cards';
+@use './scss/organisms/profile-cards';
+@use './scss/organisms/profile-editor';
+@use './scss/organisms/page-layouts';
+@use './scss/organisms/console-surface';
+@use './scss/molecules/console-card-header';
+@use './scss/molecules/console-focus';
+@use './scss/molecules/console-summary';
+@use './scss/molecules/usage-cta';
+@use './scss/organisms/landing-hero';
+@use './scss/organisms/page-motion';
+@use './scss/organisms/landing-index-sections';
+@use './scss/organisms/console-profiles';
 
 /* Global scrollbar hide (keep scrolling functional) */
 * {

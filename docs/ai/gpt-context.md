@@ -1,5 +1,7 @@
 # FireUX GPT Context
 
+<!-- Concurrent edit — 2026-07-21 13:05 CEST — Operation detail surfaces: record app-wide factual operation routes. -->
+
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
 
@@ -24,6 +26,24 @@ Before each task:
   snapshots, and remembered implementations are not authority.
 - If current repository files cannot be read, say that the context could not be
   refreshed instead of presenting stale knowledge as current.
+
+## Semantic catalogue boundaries
+
+- `/operations` is the factual index of operations exposed inside the app's
+  consoles. Every declared operation must point to a working `/console/*`
+  operation route; Overview, Identity, Team, Sundries, dashboards, public
+  indexes, and tools are not Operations.
+- `/operations` is app-wide and groups entries by their owning Console. Prefer
+  stable anchors such as `/operations#kitchen`; do not duplicate the index at
+  domain routes such as `/kitchen/operations`.
+- Each declared operation also receives a factual detail surface at
+  `/operations/<console>/<operation>`. It derives its language and working
+  Console CTA from the same operation record; it is not a second capability
+  source or an SEO Solution.
+- `/solutions` is the authored customer and search-intent projection of proven
+  capabilities. A Solution is not evidence that an operation exists.
+- Tools are executable utilities and should not be used as a synonym for
+  Operations or Solutions.
 
 ## Firebase MCP targeting
 

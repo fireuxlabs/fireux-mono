@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: public Agent contacts and Professional summary cleanup. -->
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: remove product-specific profile examples. -->
 <template>
   <ClientOnly>
     <div v-if="agent" class="space-y-6">
@@ -76,7 +77,7 @@
           <MoleculesFormsFirestoreSimpleField
             label="Public Business Email"
             :firebase-value="contactEmail"
-            placeholder="Ex: daniel@misebox.app"
+            placeholder="Ex: hello@example.com"
             :maxlength="120"
             :update-function="handleContactEmail"
           />
@@ -92,7 +93,7 @@
           <MoleculesFormsFirestoreSimpleField
             label="Public Business Website"
             :firebase-value="websiteUrl"
-            placeholder="Ex: https://misebox.app"
+            placeholder="Ex: https://example.com"
             :maxlength="200"
             :update-function="handleWebsiteUrl"
           />

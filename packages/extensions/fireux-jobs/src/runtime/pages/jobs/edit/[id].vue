@@ -6,9 +6,9 @@
           size="xs"
           variant="ghost"
           icon="i-lucide-arrow-left"
-          :to="jobId ? `/jobs/${jobId}` : '/jobs'"
+          to="/jobs"
         >
-          Back to details
+          Back to jobs
         </UButton>
       </template>
     </UPageHeader>
@@ -62,6 +62,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: keep raw Job reads behind an authenticated authoring route.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useHead } from 'nuxt/app'
 import { computed, reactive, ref, watchEffect } from 'vue'
@@ -72,6 +73,7 @@ import type { Job, JobStatus } from '../../../models/job.model'
 
 definePageMeta({
   layout: 'default',
+  requiresAuth: true,
 })
 
 useHead({ title: 'Edit Job' })

@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: run through pnpm guard; locks the disabled publication pipeline and server-only database topology.
+// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify legacy physical directory scope against current source paths.
 // Concurrent edit — 2026-07-19 22:12 CEST — Directory Publication Rules Pass: guard isolated databases, deny-all rules, source scopes, and multi-scope authorization.
 // Concurrent edit — 2026-07-20 12:27 CEST — Directory Live Pass: guard read-only dry-runs, state-free capability checks, exact hashes, and per-batch revalidation.
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: guard shared protected backup mechanics and domain-local apply authority.

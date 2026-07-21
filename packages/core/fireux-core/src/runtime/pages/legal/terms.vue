@@ -1,4 +1,5 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/pages/legal/terms.vue -->
+<!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: update the current product name in service terms. -->
 <template>
   <UPage>
     <UPageHeader
@@ -7,13 +8,13 @@
     />
 
     <UPageBody class="pagebody">
-      <p class="text-sm text-muted">Last updated: November 29, 2025</p>
+      <p class="text-sm text-muted">Last updated: July 21, 2026</p>
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">1. Agreement to Terms</h2>
         <p>
           By accessing or using FireUX or any application built on the FireUX
-          platform (including but not limited to Misebox, Cleanbox, and other
+          platform (including but not limited to Misebox, Werkbox, and other
           tenant environments), you agree to be bound by these Terms of Service.
           If you do not agree, you may not use FireUX.
         </p>
@@ -79,7 +80,7 @@
           <li>App runtime environments</li>
         </ul>
         <p>
-          Tenant apps (like Misebox or Cleanbox) may offer additional features,
+          Tenant apps (like Misebox or Werkbox) may offer additional features,
           but FireUX remains the central service provider and data controller.
           You acknowledge that FireUX is not the legal employer, contractor, or
           agent for any jobs posted within FireUX-powered apps.

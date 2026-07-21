@@ -106,11 +106,11 @@
       }
     },
     {
-      "label": "pnpm dev:cleanbox",
+      "label": "pnpm dev:werkbox",
       "type": "shell",
       "command": "pnpm",
       "args": [
-        "dev:cleanbox"
+        "dev:werkbox"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -560,11 +560,11 @@
       }
     },
     {
-      "label": "pnpm kill:cleanbox",
+      "label": "pnpm kill:werkbox",
       "type": "shell",
       "command": "pnpm",
       "args": [
-        "kill:cleanbox"
+        "kill:werkbox"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

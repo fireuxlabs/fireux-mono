@@ -1,0 +1,85 @@
+/* Concurrent edit — 2026-07-21 12:44 CEST — CSS architecture pass: isolate shared claim and operator action composition. */
+/*
+Public claim/operator composition shared across named domain panels.
+Folder taxonomy describes CSS composition depth; Vue components remain domain-named.
+*/
+
+:where(.fx-card--public-action) {
+	border: 1px solid color-mix(in srgb, var(--ui-primary) 30%, transparent);
+	background: color-mix(in srgb, var(--ui-primary) 5%, var(--ui-bg));
+	box-shadow: 0 0 0 1px color-mix(in srgb, var(--ui-primary) 20%, transparent);
+}
+
+:where(.fx-public-action) {
+	display: grid;
+	gap: calc(var(--spacing) * 4);
+}
+
+:where(.fx-public-action__badges, .fx-public-action__actions, .fx-public-action__chips) {
+	display: flex;
+	flex-wrap: wrap;
+	gap: calc(var(--spacing) * 2);
+}
+
+:where(.fx-public-action__body) {
+	display: flex;
+	align-items: flex-start;
+	gap: calc(var(--spacing) * 3);
+}
+
+:where(.fx-public-action__avatar) {
+	background: color-mix(in srgb, var(--ui-primary) 10%, transparent);
+	color: var(--ui-primary);
+}
+
+:where(.fx-public-action__content) {
+	display: grid;
+	gap: calc(var(--spacing) * 3);
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+:where(.fx-public-action__copy) {
+	display: grid;
+	gap: var(--spacing);
+}
+
+:where(.fx-public-action__title) {
+	margin: 0;
+	font-size: var(--text-xl);
+	line-height: var(--leading-snug);
+	font-weight: var(--font-weight-semibold);
+	color: var(--ui-text-highlighted);
+}
+
+:where(.fx-public-action__description) {
+	margin: 0;
+	font-size: var(--text-sm);
+	line-height: var(--leading-relaxed);
+	color: var(--ui-text-muted);
+}
+
+:where(.fx-public-action__subject, .fx-public-action__group) {
+	display: grid;
+	gap: calc(var(--spacing) * 2);
+}
+
+:where(.fx-public-action__label) {
+	font-size: var(--text-xs);
+	line-height: 1;
+	font-weight: var(--font-weight-semibold);
+	letter-spacing: var(--tracking-widest);
+	text-transform: uppercase;
+	color: var(--ui-text-muted);
+}
+
+:where(.fx-public-action__groups) {
+	display: grid;
+	gap: calc(var(--spacing) * 3);
+}
+
+@media (min-width: 640px) {
+	:where(.fx-public-action__groups) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}

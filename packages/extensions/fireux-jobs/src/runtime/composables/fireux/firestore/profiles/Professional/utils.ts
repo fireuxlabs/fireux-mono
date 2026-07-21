@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 12:48 CEST — Cleanbox-to-Werkbox migration: neutralize shared Professional experience formatting.
 export function useProfessionalFormatting() {
   const formatProfessionalName = (name: string): string => {
     if (!name || name.trim().length === 0) return 'Professional Name Not Set'
@@ -41,9 +42,9 @@ export function useProfessionalFormatting() {
     return `${experience.from_month} ${experience.from_year}`
   }
 
-  const formatKitchenExperience = (experience: any[]): string => {
+  const formatWorkExperience = (experience: any[]): string => {
     if (!experience || experience.length === 0)
-      return 'No kitchen experience listed'
+      return 'No work experience listed'
 
     const totalPositions = experience.length
     const currentPosition = experience.find((exp) => exp.ongoing)
@@ -61,7 +62,7 @@ export function useProfessionalFormatting() {
       } more`
     }
 
-    return `${totalPositions} kitchen positions`
+    return `${totalPositions} positions`
   }
 
   const formatEducation = (education: any[]): string => {
@@ -101,12 +102,12 @@ export function useProfessionalFormatting() {
     return bio.substring(0, maxLength - 3).trim() + '...'
   }
 
-  const calculateYearsOfExperience = (kitchenExperience: any[]): string => {
-    if (!kitchenExperience || kitchenExperience.length === 0) return '0 years'
+  const calculateYearsOfExperience = (workExperience: any[]): string => {
+    if (!workExperience || workExperience.length === 0) return '0 years'
 
     let totalMonths = 0
 
-    kitchenExperience.forEach((exp) => {
+    workExperience.forEach((exp) => {
       if (exp.from_year) {
         const startYear = parseInt(exp.from_year)
         const startMonth = getMonthNumber(exp.from_month)
@@ -183,7 +184,7 @@ export function useProfessionalFormatting() {
     formatTitle,
     formatLanguages,
     formatExperienceDuration,
-    formatKitchenExperience,
+    formatWorkExperience,
     formatEducation,
     formatCertifications,
     formatProjects,

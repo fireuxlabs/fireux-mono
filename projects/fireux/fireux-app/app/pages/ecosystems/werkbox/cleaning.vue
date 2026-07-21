@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 11:57 CEST — Sarah sales journey: add the Werkbox cleaning offer and capacity path. -->
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: align the offer with currently owned Job and profile foundations. -->
 <template>
   <PublicSimplePage
     title="Cleaning on Werkbox"
@@ -10,34 +11,34 @@
     <UAlert
       color="primary"
       variant="soft"
-      title="Werkbox cleaning is being prepared"
-      description="We are moving the existing Cleanbox foundation into Werkbox. You can ask to join the first group now."
+      title="Cleaning is a Werkbox category"
+      description="Cleaning work uses the shared Jobs, Agent, Professional, Company, and Place foundations without creating cleaning-specific record IDs."
     />
 
     <section class="space-y-3">
       <h2 class="text-xl font-semibold text-highlighted">Start with the shared app</h2>
       <ul class="fx-list-stack text-muted">
-        <li>Create a cleaning business or provider profile.</li>
-        <li>Manage customers and cleaning jobs.</li>
-        <li>Use the free plan before choosing a paid plan.</li>
+        <li>Browse practical Jobs through the shared Jobs domain.</li>
+        <li>Represent service organisations and workers with shared profiles.</li>
+        <li>Keep the product-neutral category ID <code>cleaning</code>.</li>
       </ul>
     </section>
 
     <section class="space-y-3">
-      <h2 class="text-xl font-semibold text-highlighted">When a job gets bigger</h2>
-      <p class="text-muted">Publish the capacity you need to the Werkbox network:</p>
+      <h2 class="text-xl font-semibold text-highlighted">Shared foundations</h2>
+      <p class="text-muted">Werkbox currently composes these reusable domains:</p>
       <div class="grid gap-3 sm:grid-cols-3">
         <UCard variant="subtle">
-          <p class="font-semibold text-highlighted">Cleaners</p>
-          <p class="mt-1 text-sm text-muted">Add people for a larger or short-notice job.</p>
+          <p class="font-semibold text-highlighted">Jobs</p>
+          <p class="mt-1 text-sm text-muted">Product-neutral work records classified by category.</p>
         </UCard>
         <UCard variant="subtle">
-          <p class="font-semibold text-highlighted">Drivers</p>
-          <p class="mt-1 text-sm text-muted">Move workers or large equipment.</p>
+          <p class="font-semibold text-highlighted">Agents</p>
+          <p class="mt-1 text-sm text-muted">Service organisations using shared public profiles.</p>
         </UCard>
         <UCard variant="subtle">
-          <p class="font-semibold text-highlighted">Equipment</p>
-          <p class="mt-1 text-sm text-muted">Find machines or specialist tools.</p>
+          <p class="font-semibold text-highlighted">Professionals</p>
+          <p class="mt-1 text-sm text-muted">People using portable professional profiles.</p>
         </UCard>
       </div>
     </section>
@@ -72,6 +73,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Cleaning on Werkbox · FireUX',
-  description: 'Manage cleaning work and find extra cleaners, drivers, or equipment through the Werkbox ecosystem.',
+  description: 'Explore cleaning Jobs, service organisations, and professionals through the shared Werkbox hub.',
 })
 </script>

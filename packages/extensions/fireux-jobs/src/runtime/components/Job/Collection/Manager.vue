@@ -70,7 +70,7 @@
     </JobCollectionList>
 
     <MoleculesStateCard
-      v-else
+      v-else-if="!hasMore"
       entity="jobs"
       state="empty"
       surface="bare"
@@ -78,6 +78,35 @@
       :description="query
         ? 'Try a different search term.'
         : 'Once job records are added, they will display here.'"
+    />
+
+    <UAlert
+      v-else
+      color="neutral"
+      variant="soft"
+      title="Checking the remaining jobs"
+      description="This page did not contain an eligible public job. Continue to scan the bounded directory."
+    />
+
+    <div v-if="hasMore" class="mt-4 flex justify-center">
+      <UButton
+        size="sm"
+        variant="soft"
+        color="neutral"
+        :loading="loadingMore"
+        @click="loadMore"
+      >
+        Load more jobs
+      </UButton>
+    </div>
+
+    <UAlert
+      v-if="loadMoreError"
+      class="mt-4"
+      color="error"
+      variant="soft"
+      title="More jobs could not be loaded"
+      description="Please try again."
     />
 
     <div>
@@ -94,13 +123,14 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: render only the bounded Job API and its cursor state.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import type { Job } from '../../../models/job.model'
-import { useJobCollection } from '../../../composables/fireux/firestore/jobs/fetch/useJobCollection'
+import type { PublicJobProjection } from '../../../models/job-public.model'
+import { usePublicJobCollection } from '../../../composables/fireux/jobs/public/usePublicJobCollection'
 import { useJobInterface } from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 const props = withDefaults(
@@ -126,9 +156,13 @@ const props = withDefaults(
   }
 )
 
-const fetched = useJobCollection()
-const collection = computed<Job[]>(() => fetched.appJobs.value)
+const fetched = usePublicJobCollection()
+const collection = computed<PublicJobProjection[]>(() => fetched.jobs.value)
 const outcome = computed(() => fetched.outcome.value)
+const hasMore = computed(() => fetched.hasMore.value)
+const loadingMore = computed(() => fetched.loadingMore.value)
+const loadMoreError = computed(() => fetched.loadMoreError.value)
+const loadMore = fetched.loadMore
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
@@ -146,7 +180,7 @@ const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
-  () => showSearch.value && totalCount.value > 15
+  () => showSearch.value && !hasMore.value && totalCount.value > 15
 )
 const {
   interface: makeCard,
@@ -155,9 +189,12 @@ const {
 } = useJobInterface()
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
-  useCollectionSearch<Job, NonNullable<ReturnType<typeof makeCard>>>({
+  useCollectionSearch<
+    PublicJobProjection,
+    NonNullable<ReturnType<typeof makeCard>>
+  >({
     items: collection,
-    makeCard: (job: Job) => makeCard(job),
+    makeCard: (job: PublicJobProjection) => makeCard(job),
     initialVariant: props.initialVariant,
   })
 
@@ -172,6 +209,6 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 const countLabel = computed(() =>
   showSearchInput.value && query.value
     ? `${visibleCount.value} / ${totalCount.value}`
-    : `${totalCount.value}`
+    : `${totalCount.value}${hasMore.value ? '+' : ''}`
 )
 </script>

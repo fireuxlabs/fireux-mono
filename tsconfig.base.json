@@ -173,11 +173,11 @@
       "fireux-bringli/*": [
         "./packages/ecosystem/fireux-bringli/src/*"
       ],
-      "fireux-cleanbox": [
-        "./packages/ecosystem/fireux-cleanbox/src/module.ts"
+      "fireux-werkbox": [
+        "./packages/ecosystem/fireux-werkbox/src/module.ts"
       ],
-      "fireux-cleanbox/*": [
-        "./packages/ecosystem/fireux-cleanbox/src/*"
+      "fireux-werkbox/*": [
+        "./packages/ecosystem/fireux-werkbox/src/*"
       ],
       "fireux-fireux": [
         "./packages/ecosystem/fireux-fireux/src/module.ts"
@@ -236,8 +236,8 @@
       "@fireux-bringli/*": [
         "./packages/ecosystem/fireux-bringli/src/*"
       ],
-      "@fireux-cleanbox/*": [
-        "./packages/ecosystem/fireux-cleanbox/src/*"
+      "@fireux-werkbox/*": [
+        "./packages/ecosystem/fireux-werkbox/src/*"
       ],
       "@fireux-fireux/*": [
         "./packages/ecosystem/fireux-fireux/src/*"
@@ -248,8 +248,8 @@
         "./projects/bringli/bringli-app/app/*",
         "./projects/granite/granite-app/app/*",
         "./projects/misebox/misebox-app/app/*",
-        "./projects/cleanbox/cleanbox-app/app/*",
-        "./projects/cleanbox/richies-reinigung/app/*"
+        "./projects/werkbox/werkbox-app/app/*",
+        "./projects/werkbox/richies-reinigung/app/*"
       ],
       "@/*": [
         "./projects/fireux/fireux-app/app/*",
@@ -257,8 +257,8 @@
         "./projects/bringli/bringli-app/app/*",
         "./projects/granite/granite-app/app/*",
         "./projects/misebox/misebox-app/app/*",
-        "./projects/cleanbox/cleanbox-app/app/*",
-        "./projects/cleanbox/richies-reinigung/app/*"
+        "./projects/werkbox/werkbox-app/app/*",
+        "./projects/werkbox/richies-reinigung/app/*"
       ],
       "~~/*": [
         "./projects/fireux/fireux-app/*",
@@ -266,8 +266,8 @@
         "./projects/bringli/bringli-app/*",
         "./projects/granite/granite-app/*",
         "./projects/misebox/misebox-app/*",
-        "./projects/cleanbox/cleanbox-app/*",
-        "./projects/cleanbox/richies-reinigung/*"
+        "./projects/werkbox/werkbox-app/*",
+        "./projects/werkbox/richies-reinigung/*"
       ],
       "@@/*": [
         "./projects/fireux/fireux-app/*",
@@ -275,8 +275,8 @@
         "./projects/bringli/bringli-app/*",
         "./projects/granite/granite-app/*",
         "./projects/misebox/misebox-app/*",
-        "./projects/cleanbox/cleanbox-app/*",
-        "./projects/cleanbox/richies-reinigung/*"
+        "./projects/werkbox/werkbox-app/*",
+        "./projects/werkbox/richies-reinigung/*"
       ],
       "#imports": [
         "./types/nuxt-shims.d.ts"

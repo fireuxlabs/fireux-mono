@@ -35,6 +35,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: send new private drafts to the authenticated edit route.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify.ts'
 import { useHead, useRouter } from 'nuxt/app'
 import { computed, ref } from 'vue'
@@ -54,6 +55,7 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Create Job',
+  requiresAuth: true,
 })
 
 useHead({ title: 'Create Job' })
@@ -84,7 +86,7 @@ const onSubmit = withToast(
     try {
       const id = await submit()
       onReset()
-      router.push(`/jobs/${id}`)
+      router.push(`/jobs/edit/${encodeURIComponent(id)}`)
     } catch (err) {
       if (err instanceof Error) {
         errorMessage.value = err.message

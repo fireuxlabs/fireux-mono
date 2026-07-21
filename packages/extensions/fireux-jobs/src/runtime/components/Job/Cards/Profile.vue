@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: expose category and workplace fields in Job debug output. -->
 <template>
   <UCard v-if="card || job">
     <div class="space-y-5">
@@ -152,6 +153,11 @@ const jobFields = computed(() => {
       value: formatValue(job.company_id),
     },
     {
+      key: 'category_id',
+      label: 'category_id',
+      value: formatValue(job.category_id),
+    },
+    {
       key: 'workplace_type',
       label: 'workplace_type',
       value: formatValue(job.workplace_type),
@@ -192,11 +198,6 @@ const jobFields = computed(() => {
       key: 'source_app_id',
       label: 'source_app_id',
       value: formatValue(job.source_app_id),
-    },
-    {
-      key: 'workplace',
-      label: 'workplace',
-      value: formatValue((job as any).workplace),
     },
   ]
 })

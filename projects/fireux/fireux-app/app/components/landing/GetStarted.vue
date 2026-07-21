@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: point cleaning discovery at the Werkbox category. -->
 <template>
   <LandingCardGrid
     :title="title"
@@ -26,9 +27,9 @@ const items = [
     icon: 'i-lucide-chef-hat',
   },
   {
-    title: 'Cleanbox',
-    description: 'Explore our cleaning ecosystem for customers, teams, jobs, and service delivery.',
-    to: 'https://cleanbox.web.app',
+    title: 'Werkbox',
+    description: 'Explore cleaning and other practical work through the shared Werkbox hub.',
+    to: '/ecosystems/werkbox/cleaning',
     cta: 'Explore cleaning',
     icon: 'i-lucide-sparkles',
   },

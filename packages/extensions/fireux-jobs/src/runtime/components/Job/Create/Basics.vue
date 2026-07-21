@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Job/Create/Basics.vue -->
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: select configured categories for multi-category apps. -->
 <template>
   <UCard>
     <template #header>
@@ -14,11 +15,19 @@
     </template>
 
     <div class="space-y-5">
+      <UFormField v-if="categoryOptions.length > 1" label="Category" required>
+        <USelect
+          v-model="form.category_id"
+          :options="categoryOptions"
+          placeholder="Choose a category"
+        />
+      </UFormField>
+
       <UFormField label="Job title" required>
         <UInput
           v-model="form.title"
           autofocus
-          placeholder="e.g. Sous Chef (Evenings)"
+          placeholder="e.g. Evening site assistant"
           icon="i-lucide-briefcase"
         />
       </UFormField>
@@ -39,7 +48,19 @@
 </template>
 
 <script setup lang="ts">
-import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate';
+import { computed } from 'vue'
+import { useFireuxJobsConfig } from '../../../composables/config/useFireuxJobsConfig'
+import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
+
+const jobsConfig = useFireuxJobsConfig()
+const categoryOptions = computed(() =>
+  jobsConfig.categories.map((value) => ({
+    value,
+    label: value
+      .replace(/[-_]+/g, ' ')
+      .replace(/\b\w/g, (character) => character.toUpperCase()),
+  }))
+)
 
 const statusOptions = [
   { label: 'Open', value: 'open' },

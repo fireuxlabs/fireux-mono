@@ -1,9 +1,10 @@
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the ecosystem curation example. -->
 <template>
   <AdminDomainCurationPanel
     domain="ecosystem"
     title="Ecosystems"
     description="Add comma-separated ecosystem slugs to feature on public ecosystem surfaces."
-    placeholder="fireux, misebox, cleanbox"
+    placeholder="fireux, misebox, werkbox"
   />
 </template>
 

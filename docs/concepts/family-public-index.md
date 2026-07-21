@@ -1,10 +1,11 @@
 Public index family map
-Updated: 2026-07-20
-Ref: 4c0a1c7ad
+Updated: 2026-07-21
+Ref: 5b6cfcc8e
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: require server-projected User joins for profile indexes. -->
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: map fail-closed Kitchen/Place directory projection and bounded search behavior. -->
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Kitchen access joins as App support. -->
+<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map category- and tenant-scoped bounded Job discovery. -->
 
 Purpose:
 Map public index pages such as `/kitchens`, `/suppliers`, `/menus`, and similar browse surfaces.
@@ -45,6 +46,11 @@ Known pattern:
 - Kitchen directory filtering remains local only after the complete bounded
   result is loaded. While another cursor exists, the UI withholds local search
   rather than claim that an unloaded Kitchen does not exist.
+- The Job directory consumes a cursor-bounded root scan through
+  `/api/public/jobs`. Index and exact detail use one safe DTO contract and
+  expose only open, explicitly public rows in configured product-neutral
+  categories. Tenant runtimes additionally match `source_app_id`; no configured
+  category means no public Job result.
 - one domain CTA or intro component when useful, named `XCTA`
 - one collection manager or equivalent list component
 - dev debug only when actively needed

@@ -1,7 +1,30 @@
+// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map the safe DTO while retaining optional authoring-only fields.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { JobStorage, type Job } from '../../../../../../models/job.model'
 
-export type JobView = Job & {
+export type JobView = Pick<
+  Job,
+  | 'id'
+  | 'source_app_id'
+  | 'category_id'
+  | 'visibility'
+  | 'status'
+  | 'workplace_type'
+  | 'workplace_label'
+  | 'job_type'
+  | 'openings_count'
+  | 'pay_currency'
+  | 'pay_rate'
+  | 'pay_unit'
+  | 'title'
+  | 'description'
+> & Partial<Pick<
+  Job,
+  | 'company_id'
+  | 'workplace_id'
+  | 'start_at'
+  | 'end_at'
+>> & {
   workplace?: unknown | null
   workplace_image_url?: string
   workplace_short_address?: string

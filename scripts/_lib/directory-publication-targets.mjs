@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: imported by the directory-publication guard; declares publisher scope only and performs no remote access.
+// Concurrent edit — 2026-07-21 12:33 CEST — Cleanbox-to-Werkbox migration: point the legacy physical publisher at the Werkbox app workspace.
 // Concurrent edit — 2026-07-19 22:12 CEST — Directory Publication Rules Pass: lock the 11 canonical source scopes and two explicit exclusions.
 // Concurrent edit — 2026-07-20 11:43 CEST — Directory Live Provisioning Pass: lock database placement, machine identities, minimal data role, and trigger regions.
 
@@ -72,7 +73,7 @@ export const DIRECTORY_PUBLICATION_INFRASTRUCTURE = Object.freeze([
   infrastructure({
     id: 'cleanbox',
     firebaseProjectId: 'cleanbox-f15bc',
-    appWorkspace: 'projects/cleanbox/cleanbox-app',
+    appWorkspace: 'projects/werkbox/werkbox-app',
     location: 'eur3',
     databases: [DIRECTORY_PUBLICATION_DATABASES.ownerOutbox],
   }),

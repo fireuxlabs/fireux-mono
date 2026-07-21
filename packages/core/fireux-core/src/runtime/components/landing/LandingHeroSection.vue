@@ -1,13 +1,17 @@
+<!-- Concurrent edit — 2026-07-21 13:00 CEST — CSS architecture pass: use the landing organism's namespaced title contract. -->
 <template>
   <section class="landing-index-section">
     <LandingShell>
       <template #left>
         <div class="landing-hero">
           <div class="landing-hero__heading">
-            <h1 class="hero-title">
+            <h1 class="landing-hero__title">
               <strong v-html="bigPersonality" />
             </h1>
-            <h1 v-if="headline" class="hero-title hero-title--accent">
+            <h1
+              v-if="headline"
+              class="landing-hero__title landing-hero__title--accent"
+            >
               {{ headline }}
             </h1>
           </div>

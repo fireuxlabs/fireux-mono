@@ -77,8 +77,8 @@
         "icon": "$(book)"
       },
       {
-        "command": "fireuxToolbar.startCleanbox",
-        "title": "Dev: CleanBox",
+        "command": "fireuxToolbar.startWerkbox",
+        "title": "Dev: Werkbox",
         "icon": "$(beaker)"
       },
       {
@@ -241,7 +241,7 @@
         "when": "workspaceFolderCount > 0"
       },
       {
-        "command": "fireuxToolbar.startCleanbox",
+        "command": "fireuxToolbar.startWerkbox",
         "key": "ctrl+alt+c",
         "mac": "cmd+alt+c",
         "when": "workspaceFolderCount > 0"

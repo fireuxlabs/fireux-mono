@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-19
+// last_used: 2026-07-21
 // usage_note: checks runtime discovery and rejects empty module configuration hooks.
+// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify replacement runtime registration.
 // FILE: scripts/guards/runtime-registration.mjs
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'

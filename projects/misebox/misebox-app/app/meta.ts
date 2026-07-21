@@ -1,7 +1,10 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 // Concurrent edit — 2026-07-21 12:08 CEST — Shared solutions catalogue: consume Misebox ecosystem-owned entries.
+// Concurrent edit — 2026-07-21 12:58 CEST — Console operations catalogue: compose Kitchen and Supplier operations.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { kitchenOperations } from 'fireux-kitchens/runtime/content/operations'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
+import { supplierOperations } from 'fireux-suppliers/runtime/content/operations'
 
 const sourceMeta = {
   name: 'Misebox',
@@ -516,6 +519,10 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
+  operations: [
+    ...kitchenOperations,
+    ...supplierOperations,
+  ],
   solutions: miseboxSolutions,
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,

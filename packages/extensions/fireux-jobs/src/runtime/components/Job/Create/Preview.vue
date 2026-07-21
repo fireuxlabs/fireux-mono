@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Jobs/Create/Preview.vue -->
+<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: preview categories and generic workplaces. -->
 <!-- NOTE for Copilot:
   - This is the PREVIEW surface for job creation.
   - It renders the SAME shape as useJobCreate().form.
@@ -21,6 +22,9 @@
             }}</UBadge>
             <UBadge v-if="workplaceId" size="xs" variant="soft" color="neutral">
               Workplace: {{ workplaceId }}
+            </UBadge>
+            <UBadge v-if="categoryId" size="xs" variant="soft" color="neutral">
+              Category: {{ categoryId }}
             </UBadge>
             <UBadge v-if="companyId" size="xs" variant="soft" color="neutral">
               Company: {{ companyId }}
@@ -48,13 +52,11 @@
             <p class="text-xs uppercase tracking-wide text-dimmed">
               Workplace
             </p>
-            <KitchenPill
-              v-if="workplaceType === 'kitchen' && workplaceId"
-              :id="workplaceId"
-            />
-            <p v-else-if="workplaceLabel" class="text-sm text-default">
-              {{ workplaceLabel }}
-            </p>
+            <div v-if="workplaceId" class="space-y-1 text-sm text-default">
+              <p class="font-medium">{{ workplaceLabel || workplaceId }}</p>
+              <p class="text-xs text-muted">Type: {{ workplaceType }}</p>
+              <p class="break-all text-xs text-muted">ID: {{ workplaceId }}</p>
+            </div>
             <p v-else class="text-sm text-default">Not selected</p>
           </div>
           <div class="space-y-2">
@@ -78,35 +80,10 @@
 <script setup lang="ts">
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import { useKitchenCollection } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
-import { useKitchenFetch } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
-import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { computed, defineComponent } from 'vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
 
 import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
-
-// Local components for Kitchen and Company pills
-const KitchenPill = defineComponent({
-  props: { id: String },
-  setup(props) {
-    const kitchenId = computed(() => String(props.id || '').trim())
-    const { kitchen: kitchenData } = useKitchenFetch(kitchenId)
-    const kitchenInterface = useKitchenInterface()
-    const kitchenCard = computed(() => kitchenInterface.pill(kitchenData.value))
-    return { kitchenCard }
-  },
-  template: `
-    <div v-if="kitchenCard" class="pill">
-      <UUser
-        :name="kitchenCard.title"
-        :description="kitchenCard.subtitle"
-        :avatar="{ src: kitchenCard.imageUrl, alt: kitchenCard.title }"
-        size="sm"
-      />
-    </div>
-  `,
-})
 
 const CompanyPill = defineComponent({
   props: { id: String },
@@ -144,22 +121,8 @@ const workplaceId = computed(() => props.form.workplace_id.trim())
 const workplaceType = computed(() => props.form.workplace_type.trim())
 const workplaceLabel = computed(() => props.form.workplace_label.trim())
 const companyId = computed(() => props.form.company_id.trim())
+const categoryId = computed(() => props.form.category_id.trim())
 const statusLabel = computed(() =>
   props.form.status === 'closed' ? 'Closed' : 'Open'
-)
-
-const { kitchens } = useKitchenCollection()
-const { companies } = useCompanyFetch()
-
-const selectedKitchen = computed(() =>
-  (kitchens.value ?? []).find(
-    (kitchen) => String(kitchen.id) === workplaceId.value
-  )
-)
-
-const selectedCompany = computed(() =>
-  (companies.value ?? []).find(
-    (company) => String(company.id) === companyId.value
-  )
 )
 </script>

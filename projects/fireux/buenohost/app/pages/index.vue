@@ -284,6 +284,7 @@
 </template>
 
 <script setup lang="ts">
+// Concurrent edit — 2026-07-21 12:38 CEST — Cleanbox-to-Werkbox migration: rename the practical-work integration while retaining its deployed URL.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: point the showcase at the sanitized read-only simulation.
 import { toDataURL } from 'qrcode'
 import { computed, onMounted, ref } from 'vue'
@@ -296,7 +297,7 @@ const runtimeConfig = useRuntimeConfig()
 const publicConfig = runtimeConfig.public as Record<string, unknown>
 const defaultBuenoHostBaseUrl = 'https://buenohost.web.app'
 
-type IntegrationAppKey = 'fireux' | 'misebox' | 'cleanbox' | 'sproochli' | 'findMySeo'
+type IntegrationAppKey = 'fireux' | 'misebox' | 'werkbox' | 'sproochli' | 'findMySeo'
 
 type PublicAppInfo = {
   app?: {
@@ -322,7 +323,8 @@ type IntegrationCard = {
 const defaultIntegrationBaseUrls: Record<IntegrationAppKey, string> = {
   fireux: 'https://fireux.app',
   misebox: 'https://misebox.app',
-  cleanbox: 'https://cleanbox.web.app',
+  // The hosting site is a legacy physical identifier until a remote migration is approved.
+  werkbox: 'https://cleanbox.web.app',
   sproochli: 'https://sproochli.web.app',
   findMySeo: 'https://find-my-seo.web.app',
 }
@@ -330,7 +332,7 @@ const defaultIntegrationBaseUrls: Record<IntegrationAppKey, string> = {
 const localIntegrationBaseUrls: Record<IntegrationAppKey, string> = {
   fireux: 'http://localhost:3000',
   misebox: 'http://localhost:3001',
-  cleanbox: 'http://localhost:3002',
+  werkbox: 'http://localhost:3002',
   sproochli: 'http://localhost:3011',
   findMySeo: 'http://localhost:3010',
 }
@@ -497,10 +499,10 @@ const integrationCards: IntegrationCard[] = [
     appKey: 'findMySeo',
   },
   {
-    title: 'CleanBox',
-    description: 'Connect properties with trusted cleaners, turnovers and room-readiness tasks.',
+    title: 'Werkbox',
+    description: 'Explore cleaning work and service providers through the shared practical-work hub.',
     icon: 'i-lucide-spray-can',
-    appKey: 'cleanbox',
+    appKey: 'werkbox',
   },
   {
     title: 'FireUX',

@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 11:57 CEST — Sarah sales journey: add the cleaning search-intent sales page. -->
+<!-- Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: limit sales copy to current shared foundations. -->
 <template>
   <SolutionPage
     title="App for a cleaning business"
@@ -10,11 +11,11 @@
       </template>
 
       <div class="space-y-4 text-muted">
-        <p>Join Werkbox, create your business profile, and start with the free plan.</p>
+        <p>Explore cleaning through Werkbox before deciding whether your brand needs a separate app.</p>
         <ul class="fx-list-stack">
-          <li>Keep customers and cleaning jobs together.</li>
-          <li>Bring in extra cleaners when a job is too large for your team.</li>
-          <li>Find drivers or equipment when the work needs them.</li>
+          <li>Use product-neutral Jobs classified with the <code>cleaning</code> category.</li>
+          <li>Reuse shared Agent and Professional profile foundations.</li>
+          <li>Keep Places and Companies independent of any one product name.</li>
         </ul>
       </div>
     </UCard>

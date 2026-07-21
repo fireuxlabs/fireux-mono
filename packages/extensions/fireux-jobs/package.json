@@ -26,7 +26,6 @@
   "dependencies": {
     "@internationalized/date": "^3.5.0",
     "fireux-core": "workspace:*",
-    "fireux-kitchens": "workspace:*",
     "fireux-companies": "workspace:*",
     "fireux-places": "workspace:*",
     "qrcode": "^1.5.4"

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Concurrent edit — 2026-07-21 12:17 CEST — Cleanbox-to-Werkbox app migration: add the code-native Werkbox monogram. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title description">
+  <title id="title">Werkbox monogram</title>
+  <desc id="description">A restrained amber W inside a dark rounded square.</desc>
+  <rect x="32" y="32" width="448" height="448" rx="112" fill="#0f172a"/>
+  <rect x="48" y="48" width="416" height="416" rx="96" fill="none" stroke="#334155" stroke-width="4"/>
+  <path
+    d="M116 148 178 364 256 230 334 364 396 148"
+    fill="none"
+    stroke="#f59e0b"
+    stroke-width="38"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

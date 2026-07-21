@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-18
+// last_used: 2026-07-21
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify the replacement project app shapes.
 // FILE: scripts/guards/projects.mjs
 // FireUX Projects (Apps) Guard
 //

@@ -1,23 +1,77 @@
 <script setup lang="ts">
+import { useColorMode as useFireuxColorMode } from 'fireux-core/runtime/composables/fireux/app/useColorMode'
 import { ref } from 'vue'
 
+// Concurrent edit — 2026-07-21 12:58 CEST — CSS architecture pass: expose stable visual specimens for shared atomic contracts.
 definePageMeta({ layout: 'design' })
 useHead({ title: 'Component Contracts · Design System' })
 
 const activationCount = ref(0)
+const contractColorMode = useFireuxColorMode()
+
+const contractSolutions = [
+  {
+    slug: 'shared-css',
+    title: 'Shared CSS contract',
+    description:
+      'One reusable visual contract supports many named domain components.',
+    icon: 'i-lucide-layers-3',
+    to: '/design/components/contracts',
+    owner: { id: 'fireux-core', name: 'FireUX core' },
+  },
+  {
+    slug: 'domain-delta',
+    title: 'Domain-owned delta',
+    description:
+      'Pages and components keep their business meaning and local presentation.',
+    icon: 'i-lucide-blocks',
+    to: '/design/components/contracts',
+    owner: { id: 'named-domain', name: 'Named domain' },
+  },
+]
 </script>
 
 <template>
-  <div class="fx-page-stack fx-page-stack--compact">
+  <div
+    class="fx-page-stack fx-page-stack--compact"
+    data-visual-contract="component-contracts"
+  >
     <header class="contract-heading">
       <p class="fx-type-headline">Components</p>
       <h1 class="fx-type-page-title">Interaction and state contracts</h1>
       <p class="fx-type-description">
         Shared behavior stays consistent while domain content remains local.
       </p>
+      <div
+        class="contract-mode-controls"
+        role="group"
+        aria-label="Contract color mode"
+      >
+        <UButton
+          label="Light"
+          aria-label="Preview light mode"
+          color="neutral"
+          :variant="contractColorMode === 'light' ? 'solid' : 'soft'"
+          @click="contractColorMode = 'light'"
+        />
+        <UButton
+          label="Dark"
+          aria-label="Preview dark mode"
+          color="neutral"
+          :variant="contractColorMode === 'dark' ? 'solid' : 'soft'"
+          @click="contractColorMode = 'dark'"
+        />
+        <UButton
+          label="System"
+          aria-label="Follow system color mode"
+          color="neutral"
+          :variant="contractColorMode === 'system' ? 'solid' : 'soft'"
+          @click="contractColorMode = 'system'"
+        />
+      </div>
     </header>
 
-    <section class="contract-section">
+    <section class="contract-section" data-visual-contract="nuxt-ui-states">
       <div>
         <h2 class="fx-type-section-title">Nuxt UI states</h2>
         <p class="fx-type-caption">
@@ -60,7 +114,7 @@ const activationCount = ref(0)
       </div>
     </section>
 
-    <section class="contract-section">
+    <section class="contract-section" data-visual-contract="outcome-states">
       <div>
         <h2 class="fx-type-section-title">Outcome states</h2>
         <p class="fx-type-caption">
@@ -76,7 +130,7 @@ const activationCount = ref(0)
       </div>
     </section>
 
-    <section class="contract-section">
+    <section class="contract-section" data-visual-contract="workflow-molecules">
       <div>
         <h2 class="fx-type-section-title">Disclosure and create workflow</h2>
         <p class="fx-type-caption">
@@ -117,7 +171,7 @@ const activationCount = ref(0)
       </div>
     </section>
 
-    <section class="contract-section">
+    <section class="contract-section" data-visual-contract="action-surfaces">
       <div>
         <h2 class="fx-type-section-title">Action surfaces</h2>
         <p class="fx-type-caption">
@@ -150,6 +204,156 @@ const activationCount = ref(0)
         </MoleculesActionSurface>
       </div>
     </section>
+
+    <section
+      id="css-taxonomy"
+      class="contract-section"
+      data-visual-contract="css-taxonomy"
+    >
+      <div>
+        <h2 class="fx-type-section-title">CSS taxonomy</h2>
+        <p class="fx-type-caption">
+          Atomic depth describes a shared visual contract. Vue components and
+          pages remain named after their domain and route responsibility.
+        </p>
+      </div>
+
+      <div class="contract-grid contract-grid--taxonomy">
+        <UCard>
+          <template #header>
+            <div class="contract-layer-heading">
+              <UBadge label="Atom" color="neutral" variant="soft" />
+              <p class="fx-type-caption">One semantic visual role</p>
+            </div>
+          </template>
+
+          <div class="contract-content">
+            <p class="fx-type-headline">Eyebrow</p>
+            <p class="fx-type-card-heading">Card heading</p>
+            <p class="fx-type-body">
+              Type roles use the installed Tailwind scale and Nuxt UI colors.
+            </p>
+            <p class="fx-type-caption">Supporting metadata</p>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="contract-layer-heading">
+              <UBadge label="Molecule" color="neutral" variant="soft" />
+              <p class="fx-type-caption">Reusable local composition</p>
+            </div>
+          </template>
+
+          <div class="contract-content">
+            <div class="fx-inset-panel">
+              <p class="fx-type-card-title">Inset panel</p>
+              <p class="fx-type-caption">Shared border, radius, and spacing.</p>
+            </div>
+
+            <div class="console-metric">
+              <span class="console-metric__value">24</span>
+              <span class="console-metric__label">Connected records</span>
+            </div>
+
+            <div class="pill">
+              <UIcon name="i-lucide-component" />
+              <span class="fx-type-label">Entity pill</span>
+            </div>
+          </div>
+        </UCard>
+
+        <UCard>
+          <template #header>
+            <div class="contract-layer-heading">
+              <UBadge label="Organism" color="neutral" variant="soft" />
+              <p class="fx-type-caption">Multi-component page pattern</p>
+            </div>
+          </template>
+
+          <div class="collection-manager__header">
+            <div class="collection-manager__title">
+              <p class="fx-type-card-title">Collection manager</p>
+              <p>Domain copy and data stay with the named component.</p>
+            </div>
+            <div class="collection-manager__controls">
+              <UInput placeholder="Search" icon="i-lucide-search" />
+              <UButton color="neutral" variant="soft" label="Filter" />
+            </div>
+          </div>
+        </UCard>
+      </div>
+    </section>
+
+    <section
+      id="shared-patterns"
+      class="contract-section"
+      data-visual-contract="shared-organisms"
+    >
+      <div>
+        <h2 class="fx-type-section-title">Cross-tree shared patterns</h2>
+        <p class="fx-type-caption">
+          These contracts recur across public components, entity cards, console
+          surfaces, and route pages without becoming generic business shells.
+        </p>
+      </div>
+
+      <PublicSolutionsGrid :solutions="contractSolutions" />
+
+      <div class="contract-grid">
+        <UCard class="fx-card fx-card--public-action">
+          <div class="fx-public-action">
+            <div class="fx-public-action__badges">
+              <UBadge label="Public action" color="primary" variant="soft" />
+            </div>
+            <div class="fx-public-action__body">
+              <UAvatar
+                icon="i-lucide-shield-check"
+                class="fx-public-action__avatar"
+              />
+              <div class="fx-public-action__content">
+                <div class="fx-public-action__copy">
+                  <h3 class="fx-public-action__title">Claim or operate</h3>
+                  <p class="fx-public-action__description">
+                    Company, Place, Kitchen, Portfolio, and Supplier panels
+                    share this presentation contract.
+                  </p>
+                </div>
+                <div class="fx-public-action__actions">
+                  <UButton label="Primary action" />
+                  <UButton color="neutral" variant="soft" label="Secondary" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </UCard>
+
+        <UCard class="profile">
+          <div class="profile__header">
+            <div class="profile__identity">
+              <UAvatar icon="i-lucide-user-round" size="lg" />
+              <div class="profile__titles">
+                <p class="profile__title">Profile card</p>
+                <p class="profile__subtitle">
+                  Shared anatomy, domain-owned data
+                </p>
+              </div>
+            </div>
+            <div class="profile__badges">
+              <UBadge label="Active" color="success" variant="soft" />
+            </div>
+          </div>
+          <div class="profile__body">
+            <div class="profile__section">
+              <span class="profile__label">Responsibility</span>
+              <span class="profile__value">
+                Named Cards/Profile components own the actual content.
+              </span>
+            </div>
+          </div>
+        </UCard>
+      </div>
+    </section>
   </div>
 </template>
 
@@ -177,6 +381,18 @@ const activationCount = ref(0)
   gap: calc(var(--spacing) * 3);
 }
 
+.contract-mode-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}
+
+.contract-layer-heading {
+  display: grid;
+  justify-items: start;
+  gap: calc(var(--spacing) * 2);
+}
+
 .contract-grid--actions > * {
   width: 100%;
   text-align: left;
@@ -188,6 +404,10 @@ const activationCount = ref(0)
   }
 
   .contract-grid--actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .contract-grid--taxonomy {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }

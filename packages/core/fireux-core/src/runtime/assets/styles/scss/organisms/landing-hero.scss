@@ -1,0 +1,74 @@
+/* Concurrent edit — 2026-07-21 13:00 CEST — CSS architecture pass: own the live shared ecosystem landing-hero composition and namespace its title. */
+.landing-hero {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--spacing) * 6);
+}
+
+.landing-hero__heading {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--spacing) * 2);
+}
+
+.landing-hero__body {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--spacing) * 3);
+}
+
+.landing-hero__paragraph {
+	font-size: var(--text-base);
+	line-height: var(--leading-relaxed);
+	max-width: 65ch;
+}
+
+.landing-hero__paragraph--bridge {
+	padding-top: calc(var(--spacing) * 3.5);
+}
+
+.landing-hero__paragraph a {
+	color: var(--ui-primary);
+}
+
+.landing-hero__paragraph a strong {
+	color: inherit;
+}
+
+.landing-hero__actions {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--spacing) * 4);
+	padding-top: 0;
+}
+
+.landing-hero__actions--primary {
+	padding-top: calc(var(--spacing) * 2);
+}
+
+.landing-hero__title {
+	font-weight: var(--font-weight-black);
+	font-size: clamp(2.75rem, 6vw, var(--text-7xl));
+	line-height: 1.15;
+	color: var(--ui-text);
+}
+
+.landing-hero__title strong {
+	font-weight: inherit;
+}
+
+.landing-hero__title--accent {
+	color: var(--ui-primary);
+}
+
+@media (min-width: 640px) {
+	.landing-hero__actions {
+		flex-direction: row;
+	}
+}
+
+@media (min-width: 1024px) {
+	.landing-hero__paragraph {
+		font-size: var(--text-xl);
+	}
+}

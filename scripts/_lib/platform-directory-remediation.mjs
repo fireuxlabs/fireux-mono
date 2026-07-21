@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: provide the immutable resolution matrix and pure no-write directory remediation planner.
+// Concurrent edit — 2026-07-21 12:33 CEST — Cleanbox-to-Werkbox migration: keep the historical cleanbox decision bound to current local authority sources.
 // Concurrent edit — 2026-07-19 22:12 CEST — Directory Remediation Pass: lock the 13 blocker resolutions into a fail-closed no-write plan.
 // Concurrent edit — 2026-07-20 11:26 CEST — Directory Live Provisioning Pass: reuse locked decisions as live write preconditions.
 
@@ -291,9 +292,9 @@ export const PLATFORM_DIRECTORY_REMEDIATION_DECISIONS = deepFreeze([
       },
     },
     authoritative_inputs: [
-      'packages/ecosystem/fireux-cleanbox/src/config/firebase/ecosystem.config.ts',
-      'packages/ecosystem/fireux-cleanbox/.firebaserc',
-      'projects/cleanbox/cleanbox-app/nuxt.config.ts',
+      'packages/ecosystem/fireux-werkbox/src/config/firebase/ecosystem.config.ts',
+      'packages/ecosystem/fireux-werkbox/.firebaserc',
+      'projects/werkbox/werkbox-app/nuxt.config.ts',
       ECOSYSTEM_CREATE_CONTRACT_PATH,
     ],
   },

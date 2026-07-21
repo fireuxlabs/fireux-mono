@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-21
 // usage_note: enforces the portable root and sole pnpm workspace authority.
+// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify the renamed root command surface.
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2 and 4 of 4: lock portable root and demo ownership.
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: lock canonical root quality commands without forwarding aliases.
 // FILE: scripts/guards/root.mjs

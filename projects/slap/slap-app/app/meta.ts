@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty console-operation set.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 
 export const appMeta = {
@@ -146,6 +147,7 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.about.ticks],
   },
+  operations: [],
   solutions: [
     {
       slug: 'slap-sites',

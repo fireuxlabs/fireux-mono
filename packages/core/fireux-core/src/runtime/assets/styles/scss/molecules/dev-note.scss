@@ -1,0 +1,19 @@
+/* Concurrent edit — 2026-07-21 12:55 CEST — CSS architecture pass: own the reusable developer-note presentation contract. */
+.fireux-dev-note {
+	border: 1px solid var(--fx-dev-note-border);
+	background: var(--fx-dev-note-bg);
+}
+
+.fireux-dev-note__label {
+	color: var(--fx-debug-ink);
+}
+
+@layer components {
+	:where(.fireux-dev-note__label) {
+		font-size: var(--text-xs);
+		line-height: var(--text-xs--line-height);
+		font-weight: var(--font-weight-semibold);
+		letter-spacing: var(--tracking-wide);
+		text-transform: uppercase;
+	}
+}

@@ -1,5 +1,9 @@
 Entities map
 
+<!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
+<!-- Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: map composition-owned materialization with domain-owned creation. -->
+<!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: map the bounded category- and tenant-scoped public contract. -->
+
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
 <!-- Concurrent edit — 2026-07-20 23:38 CEST — Entity Vocabulary + Matrix Pass: map four declaration axes and resolve Menu versus KitchenMenu identity/read contracts. -->
@@ -14,8 +18,8 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: make User the sole public identity joined by profile uid. -->
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map projected public profile reads and owner-only raw authority. -->
 
-Updated: 2026-07-20
-Ref: a4d382c1d
+Updated: 2026-07-21
+Ref: 5b6cfcc8e
 Role: map, not canon
 
 Purpose:
@@ -183,7 +187,23 @@ Root Simple Index members:
 Root Synced Snapshot Index members:
 
 - Company carries public Place snapshot fields; Place stays ignorant of Companies.
-- Job carries public workplace snapshot fields; the jobs/workplace domain owns the cascade.
+
+Root Projected Index members:
+
+- Job stores a product-neutral `category_id` and an explicit
+  `workplace_type`/`workplace_id` reference with an optional display label. It
+  materializes the canonical Place first. `place` needs no further entity;
+  another workplace type or collection must have exactly one runtime
+  materializer registered by the ecosystem or project that composes both
+  domains. That adapter delegates creation to the workplace-owning extension,
+  and creation fails before the Job or Professional experience reference is
+  set if the adapter is absent or fails. Jobs carries no product-specific
+  workplace dependency or identity logic. Its public index and exact detail
+  routes expose only open, explicitly public jobs in the runtime's configured
+  categories; tenant runtimes additionally require the current App as
+  `source_app_id`.
+  Empty category configuration fails closed. Company, Place, owner, and stamp
+  fields remain outside the public DTO.
 
 Place authority boundary:
 
@@ -333,8 +353,9 @@ Directory projection records:
   later publication cutover, not canonical owner repair.
 - Canonical entity databases hold no delivery state. Six Standard,
   delete-protected support databases are live: FireUX `directory-outbox` and
-  `platform-directory`, plus `directory-outbox` for Bringli, Cleanbox, Granite,
-  and Misebox. Their client rules deny all access. Slap `directory-outbox`
+  `platform-directory`, plus `directory-outbox` for Bringli, Werkbox's legacy
+  `cleanbox-f15bc` scope, Granite, and Misebox. Their client rules deny all
+  access. Slap `directory-outbox`
   remains uncreated because the Slap project has no billing; do not imply that
   the seven-database topology is complete.
 - Each ready project has a dedicated publisher identity and a conditional
@@ -430,6 +451,7 @@ Current declared matrix:
   projected public reads; Supplier and Portfolio public-read contracts remain
   `to-confirm`.
 - Menu: root identity in the owning App database with projected public read.
+- Job: root identity in the owning App database with projected public read.
 - KitchenMenu: Kitchen-scoped identity with projected public read. Publishing
   may materialize or update a distinct root Menu.
 - MenuSourceUpload, MenuSection, and MenuItem: parent-scoped records, not

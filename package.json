@@ -6,7 +6,7 @@
   "scripts": {
     "dev:fireux": "node scripts/dev-app-with-smoke.mjs --app fireux",
     "dev:misebox": "node scripts/dev-app-with-smoke.mjs --app misebox",
-    "dev:cleanbox": "node scripts/dev-app-with-smoke.mjs --app cleanbox",
+    "dev:werkbox": "node scripts/dev-app-with-smoke.mjs --app werkbox",
     "dev:richies": "node scripts/dev-app-with-smoke.mjs --app richies",
     "dev:tenant": "node scripts/dev-app-with-smoke.mjs --app tenant",
     "dev:bringli": "node scripts/dev-app-with-smoke.mjs --app bringli",
@@ -67,7 +67,7 @@
     "dev:slap": "node scripts/dev-app-with-smoke.mjs --app slap",
     "kill:fireux": "node scripts/free-port.mjs 3000",
     "kill:misebox": "node scripts/free-port.mjs 3001",
-    "kill:cleanbox": "node scripts/free-port.mjs 3002",
+    "kill:werkbox": "node scripts/free-port.mjs 3002",
     "kill:richies": "node scripts/free-port.mjs 3004",
     "kill:tenant": "node scripts/free-port.mjs 3005",
     "kill:bringli": "node scripts/free-port.mjs 3006",

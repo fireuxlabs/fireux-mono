@@ -1,5 +1,7 @@
 # Misebox GPT Context
 
+<!-- Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: record ecosystem-owned Jobs/Kitchen composition. -->
+
 This is the single context entrypoint for an external GPT focused on Misebox
 inside `fireuxlabs/fireux-mono`.
 
@@ -27,8 +29,15 @@ Before each task:
   `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`.
   Misebox renders that catalogue directly; the FireUX parent may compose the
   same entries into its cross-ecosystem discovery surfaces.
+- Kitchen and Supplier packages own their reusable Console Operation catalogues
+  under `src/runtime/content/operations.ts`. Misebox composes those catalogues
+  into one app-wide `/operations` index grouped by Console.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
+- Product-neutral Jobs-to-Kitchen workplace materialization is composed by the
+  Misebox ecosystem runtime. The adapter delegates Kitchen creation to
+  `fireux-kitchens`; neither extension depends on the other, and apps still
+  declare both capabilities explicitly.
 - `defineFireuxConfig` loads `fireux-misebox` automatically from
   `ecosystem: 'misebox'`. Misebox apps declare extension modules as explicit
   capabilities; the ecosystem package is not an umbrella dependency bundle.
