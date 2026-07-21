@@ -33,6 +33,12 @@ export type FireuxMetaRelatedApp = {
   external?: boolean
 }
 
+export type FireuxMetaSolutionOwner = {
+  id: string
+  name: string
+  to?: string
+}
+
 export type FireuxMetaChecklistItem = {
   label: string
   done?: boolean
@@ -65,6 +71,14 @@ export type FireuxMetaSolution = {
   cta?: FireuxMetaCta
   /** Optional search intent phrases for export/search tooling. */
   keywords?: string[]
+  /** Ecosystem or app that owns the canonical solution. */
+  owner?: FireuxMetaSolutionOwner
+  /** Optional canonical destination when this catalogue is composed by a parent app. */
+  to?: string
+  /** Open the canonical destination outside the current app. */
+  external?: boolean
+  /** Prefer this solution in compact landing-page previews. */
+  featured?: boolean
 }
 
 export type FireuxMetaAppIdentity = {

@@ -5,6 +5,7 @@ Firestore entity spine map
 <!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep raw profile lists behind domain APIs. -->
 <!-- Concurrent edit — 2026-07-20 23:03 CEST — Both-Entity Authority: record fail-closed App joins/queries, explicit Property publication, truthful validator limits, and Kitchen migration input. -->
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Entity Vocabulary + Matrix Pass: replace combined storage language with explicit classification axes. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: point the stored-access contract at the explicit root/App-support guard. -->
 Updated: 2026-07-20
 Ref: a4d382c1d
 Role: map, not canon
@@ -162,7 +163,7 @@ Root plus App support contract:
   `draft`, and the projection emits only active, explicitly `published` roots.
   Browse cards stay unlinked until a bounded public detail read exists.
 - Current source: Supplier, Portfolio, and Property model/fetch/mutation stacks.
-  Shape guard: `scripts/guards/both-entity-authority.mjs`.
+  Shape guard: `scripts/guards/root-app-support-authority.mjs`.
 
 Do not:
 - Put console operation folders inside Firestore stacks.

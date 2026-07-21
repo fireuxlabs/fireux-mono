@@ -9,6 +9,7 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-20 16:04 CEST — Repo Efficiency Pass 1 of 6: map public App DTO, shell status, and authenticated dev-data boundaries. -->
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map owner-only raw profiles and SSR detail transport. -->
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: map trusted sparse Place mutation and fail-closed Kitchen projection. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe invalid Kitchen support joins explicitly. -->
 
 Updated: 2026-07-20
 Ref: 4c0a1c7ad
@@ -96,7 +97,7 @@ Boundary rule:
   explicit `place_id` and canonical App-scope references with bounded server
   batches, and emits a sparse public card DTO only for published, non-test rows
   with a slug and an existing linked Place. Raw Kitchen operational data,
-  missing values, copied Place snapshots, invalid App overlays, and browser N+1
+  missing values, copied Place snapshots, invalid App support records, and browser N+1
   hydration stay out of the public directory contract.
 - Shared identity writes may publish authenticated, idempotent App events
   through core server endpoints. Event facts do not choose notification

@@ -23,6 +23,10 @@ Before each task:
 
 - Shared Misebox identity, configuration, layouts, and ecosystem behavior
   belong in `packages/ecosystem/fireux-misebox`.
+- The reusable Misebox solution catalogue belongs in
+  `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`.
+  Misebox renders that catalogue directly; the FireUX parent may compose the
+  same entries into its cross-ecosystem discovery surfaces.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
 - `defineFireuxConfig` loads `fireux-misebox` automatically from

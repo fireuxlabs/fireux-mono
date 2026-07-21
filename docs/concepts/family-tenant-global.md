@@ -1,5 +1,6 @@
 Tenant/global family map
-Updated: 2026-07-17
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: separate root scope state from App support records. -->
+Updated: 2026-07-20
 Ref: de5f53b09
 Role: map, not canon
 
@@ -44,12 +45,12 @@ Different:
 
 App-scope vocabulary:
 - App role is `tenant`; the corresponding entity scope state is `tenant_app`.
-- `parent_app` means an entity's operational overlay is owned by the ecosystem/global app.
-- `tenant_app` means the operational overlay is owned by the tenant app.
-- `root_only` means there is no app-owned operational overlay.
+- `parent_app` means the entity's App support record is owned by the ecosystem/global App.
+- `tenant_app` means the App support record is owned by the tenant App.
+- `root_only` means there is no App-owned support record.
 - `dedicated_app` is legacy stored input only while existing records are migrated; new writes use `tenant_app`.
 - App-role mapping is explicit: `tenant` writes `tenant_app`; `global` and
-  `standalone` write `parent_app`. A standalone app directly owns its overlay;
+  `standalone` write `parent_app`. A standalone App directly owns its support record;
   unknown roles do not receive an ownership default.
 
 Tenant target ownership:
@@ -60,9 +61,9 @@ Tenant target ownership:
 - Writers preserve each entity family's current nested or flat app-scope representation until that family is deliberately migrated.
 - Tenant creation should present attach-versus-transfer as an explicit workflow step; target pinning alone is not ownership migration.
 - The shared server transfer planner is dry-run only. Its fixed phase order is:
-  inspect the source tree, copy the complete overlay tree, verify the
+  inspect the source tree, copy the complete App support tree, verify the
   destination tree, repoint the root, then delete the source tree last.
-- A transfer executor must never infer that copying the overlay document also
+- A transfer executor must never infer that copying the App support document also
   copied its Firestore subcollections; it must inventory and verify the full
   descendant tree explicitly.
 - The public Menu family currently requires exactly one tenant Kitchen target.

@@ -3,6 +3,7 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
 <!-- Concurrent edit — 2026-07-20 23:38 CEST — Entity Vocabulary + Matrix Pass: map four declaration axes and resolve Menu versus KitchenMenu identity/read contracts. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: reserve overlay language for real merge/delta behavior, not access records. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map dormant publication support records and enablement gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map isolated support databases and deterministic blocker decisions. -->
@@ -96,6 +97,9 @@ Declaration axes:
   is not another entity identity and is not called a scoped copy.
 - `publicRead`: `none`, `direct-root`, `projection`, or `to-confirm`. This is
   independent from root placement.
+- Access-record code uses `FireuxAppAccessRecord`, `appSupport`, and
+  `appSupportCollection`. `overlay` remains valid for presentation merging and
+  an explicitly declared `profile-delta`; it is not an access-record synonym.
 
 The model declarations own these axes locally. The cross-package list at
 `scripts/_lib/entity-matrix.mjs` makes them reviewable without making core

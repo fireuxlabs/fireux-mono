@@ -5,6 +5,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: lock authoritative console target outcomes. -->
 <!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: map access, target outcome, targeted reads, and mutation authority. -->
 <!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: map deferred local fixture outcomes. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access-driven target reads explicitly. -->
 
 Purpose:
 Map the shared console system and domain adapters.
@@ -91,7 +92,7 @@ Index pattern:
   Pending or failed target reads must not clear a saved selection.
 - Global target adapters compose UserApp membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
-- Global target IDs and operator overlays drive exact root-document reads;
+- Global target IDs and operator App support records drive exact root-document reads;
   they must not leave an unused full-root listener running behind client-side
   filtering.
 - Demo target adapters use `useConsoleDemoData` and a dynamic import. The

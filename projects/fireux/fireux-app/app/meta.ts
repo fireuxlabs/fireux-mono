@@ -1,5 +1,21 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
+// Concurrent edit — 2026-07-21 11:57 CEST — Sarah sales journey: register the cleaning search-intent solution.
+// Concurrent edit — 2026-07-21 12:08 CEST — Shared solutions catalogue: compose FireUX, Misebox, and Werkbox entries.
+// Concurrent edit — 2026-07-21 12:20 CEST — FireUX SEO solutions: add seven distinct customer-intent pages.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { fireuxMiseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
+
+const fireuxOwner = {
+  id: 'fireux',
+  name: 'FireUX',
+  to: '/',
+} as const
+
+const werkboxOwner = {
+  id: 'werkbox',
+  name: 'Werkbox',
+  to: '/ecosystems/werkbox',
+} as const
 
 const sourceMeta = {
   name: 'FireUX',
@@ -376,35 +392,208 @@ export const metaContent = defineFireuxMeta({
   },
   solutions: [
     {
+      slug: 'app-for-small-business',
+      title: 'App for small business',
+      description: 'A branded website and installable app for a small business, with hosting and maintenance included.',
+      icon: 'i-lucide-store',
+      status: 'live',
+      owner: fireuxOwner,
+      featured: true,
+      body: 'Put your public website, customer entry points, team access, and day-to-day tools in one branded app. Start with the work your business needs now and add more only when it earns its place.',
+      steps: [
+        'Tell us what the business does and what the app must handle first.',
+        'We configure the brand, pages, accounts, console, and hosting.',
+        'Launch the first useful version and improve it from real use.',
+      ],
+      cta: {
+        label: 'Start an app',
+        to: '/get-started',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: ['app for small business', 'small business app', 'business app development'],
+    },
+    {
+      slug: 'customer-portal',
+      title: 'Customer portal',
+      description: 'Give customers one secure place to sign in, make requests, and follow what is happening.',
+      icon: 'i-lucide-circle-user-round',
+      status: 'live',
+      owner: fireuxOwner,
+      body: 'Replace scattered email threads and repeated status questions with a branded customer area. Choose what customers can submit, see, and update while your team manages the work from its console.',
+      steps: [
+        'Choose what customers need to request or view.',
+        'Set customer and team access separately.',
+        'Launch the portal under your business brand.',
+      ],
+      cta: {
+        label: 'Discuss a customer portal',
+        to: '/get-started',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: ['customer portal', 'client portal for small business', 'branded customer portal'],
+    },
+    {
+      slug: 'employee-portal',
+      title: 'Employee portal',
+      description: 'A private app where employees can access the information and tools needed for their work.',
+      icon: 'i-lucide-users-round',
+      status: 'live',
+      owner: fireuxOwner,
+      body: 'Give employees a clear starting point for shared information, work updates, forms, and role-based tools. Each person signs in and sees the parts of the app their role needs.',
+      steps: [
+        'List the information and actions employees need most often.',
+        'Set roles and access for staff and managers.',
+        'Launch one reliable home for the team.',
+      ],
+      cta: {
+        label: 'Discuss an employee portal',
+        to: '/get-started',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: ['employee portal', 'staff portal app', 'employee self service portal'],
+    },
+    {
+      slug: 'internal-business-app',
+      title: 'Internal business app',
+      description: 'Move a recurring business workflow out of spreadsheets, messages, and disconnected tools.',
+      icon: 'i-lucide-workflow',
+      status: 'live',
+      owner: fireuxOwner,
+      body: 'Choose one workflow that repeatedly costs the team time or causes mistakes. FireUX turns it into a focused internal app with shared records, controlled access, and an operator console.',
+      steps: [
+        'Pick one repeated workflow with a clear owner.',
+        'Define the records, decisions, and people involved.',
+        'Run the workflow in one app and extend it when proven.',
+      ],
+      cta: {
+        label: 'Show us the workflow',
+        to: '/get-started',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: ['internal business app', 'internal workflow app', 'replace spreadsheets with app'],
+    },
+    {
+      slug: 'business-directory-app',
+      title: 'Business directory app',
+      description: 'Publish searchable profiles for businesses, professionals, places, or services.',
+      icon: 'i-lucide-list-filter',
+      status: 'live',
+      owner: fireuxOwner,
+      body: 'Create a public directory around a useful group of businesses, people, places, or services. Providers manage structured profiles while visitors browse the information that matters.',
+      steps: [
+        'Define who belongs in the directory and what their profiles show.',
+        'Add submission, review, and publication rules.',
+        'Launch searchable public profiles under one brand.',
+      ],
+      cta: {
+        label: 'Discuss a directory',
+        to: '/get-started',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: ['business directory app', 'online directory software', 'professional directory app'],
+    },
+    {
+      slug: 'marketplace-app',
+      title: 'Marketplace app',
+      description: 'Connect people offering work, services, products, or capacity with people who need them.',
+      icon: 'i-lucide-handshake',
+      status: 'live',
+      owner: fireuxOwner,
+      body: 'Start with the smallest useful exchange: who offers what, who needs it, and how they make contact. FireUX can combine profiles, listings, accounts, and operator controls without pretending every marketplace needs the same workflow.',
+      steps: [
+        'Define the two sides of the marketplace.',
+        'Choose the profiles, listings, and contact path required at launch.',
+        'Add matching, payments, or managed operations only when needed.',
+      ],
+      cta: {
+        label: 'Discuss a marketplace',
+        to: '/get-started',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: ['marketplace app', 'service marketplace app', 'build an online marketplace'],
+    },
+    {
+      slug: 'branded-web-app',
+      title: 'Branded web app',
+      description: 'A fast, installable web app using your name, colours, content, and domain.',
+      icon: 'i-lucide-panels-top-left',
+      status: 'live',
+      owner: fireuxOwner,
+      body: 'Launch a web app that feels like your business rather than a generic software account. It works in the browser, can be installed on a phone, and stays connected to the FireUX platform for hosting and maintenance.',
+      steps: [
+        'Bring your business name, logo, colours, and domain.',
+        'Choose the public pages and signed-in tools needed for launch.',
+        'We configure, deploy, host, and maintain the app.',
+      ],
+      cta: {
+        label: 'Start a branded app',
+        to: '/get-started',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: ['branded web app', 'custom branded app', 'installable business web app'],
+    },
+    {
+      slug: 'cleaning',
+      title: 'App for a cleaning business',
+      description: 'Start on Werkbox, run cleaning work, and move to your own app only when you need it.',
+      icon: 'i-lucide-sparkles',
+      status: 'coming-soon',
+      owner: werkboxOwner,
+      featured: true,
+      body: 'Werkbox is the conservative starting point: use the shared app first, then move to a dedicated branded app when the business has proved the need.',
+      relatedApp: {
+        name: 'Werkbox cleaning',
+        to: '/ecosystems/werkbox/cleaning',
+        description: 'See the shared cleaning offer, capacity network, and upgrade path inside Werkbox.',
+      },
+      cta: {
+        label: 'See Werkbox cleaning',
+        to: '/ecosystems/werkbox/cleaning',
+        icon: 'i-lucide-arrow-right',
+      },
+      keywords: [
+        'app for cleaning business',
+        'cleaning job management app',
+        'find temporary cleaners',
+        'cleaning business software',
+      ],
+    },
+    {
       slug: 'fireux-app',
       title: 'FireUX App',
       description: 'A hosted and maintained website plus app surface we run for you.',
       icon: 'i-lucide-panel-top',
+      owner: fireuxOwner,
     },
     {
       slug: 'fireux-template',
       title: 'FireUX Template',
       description: 'A neutral FireUX starter app you can buy once and run yourself.',
       icon: 'i-lucide-layout-template',
+      owner: fireuxOwner,
     },
     {
       slug: 'launch-ecosystem',
       title: 'Launch an ecosystem',
       description: 'Shape a parent app with shared identity, products, blogs, admin tools, and tenant-ready surfaces.',
       icon: 'i-lucide-network',
+      owner: fireuxOwner,
     },
     {
       slug: 'launch-tenant-app',
       title: 'Launch a tenant app',
       description: 'Create a focused child app inside an ecosystem with its own brand, pages, and product path.',
       icon: 'i-lucide-panel-top',
+      owner: fireuxOwner,
     },
     {
       slug: 'app-products-and-blog',
       title: 'Add products and blog',
       description: 'Use the baseline commercial and content surfaces every FireUX app can rely on.',
       icon: 'i-lucide-shopping-bag',
+      owner: fireuxOwner,
     },
+    ...fireuxMiseboxSolutions,
   ],
   entities: appMeta.entities.map((entity) => ({
     id: entity.name,

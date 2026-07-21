@@ -27,6 +27,7 @@
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
+    "fireux-misebox": "workspace:*",
     "fireux-products": "workspace:*",
     "h3": "^1.15.4",
     "nuxt": "4.4.6",

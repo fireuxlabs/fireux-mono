@@ -103,7 +103,10 @@ const allSolutions = computed(() => data.value?.solutions || [])
 const displayedSolutions = computed(() =>
   props.variant === 'hub'
     ? allSolutions.value
-    : allSolutions.value.slice(0, props.limit)
+    : [
+        ...allSolutions.value.filter((solution) => solution.featured),
+        ...allSolutions.value.filter((solution) => !solution.featured),
+      ].slice(0, props.limit)
 )
 const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
 const hasMoreSolutions = computed(
@@ -121,11 +124,11 @@ const resolvedTitle = computed(() => {
   if (props.title) return props.title
   return props.variant === 'hub'
     ? `${appName.value} solutions`
-    : `Ways to use ${appName.value}`
+    : 'Solutions across FireUX'
 })
 const resolvedSubtitle = computed(() => {
   if (props.subtitle) return props.subtitle
   if (props.variant === 'hub') return ''
-  return 'Start with the thing you need to make public.'
+  return 'FireUX, Misebox and Werkbox in one catalogue.'
 })
 </script>

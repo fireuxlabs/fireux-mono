@@ -6,6 +6,7 @@ import type {
   FireuxMetaContent,
   FireuxMetaRelatedApp,
   FireuxMetaSolution,
+  FireuxMetaSolutionOwner,
   FireuxMetaSolutionStatus,
 } from '../../../../models/system/meta-content.model'
 
@@ -107,6 +108,21 @@ function normalizeRelatedApp(value: unknown): FireuxMetaRelatedApp | undefined {
   }
 }
 
+function normalizeOwner(value: unknown): FireuxMetaSolutionOwner | undefined {
+  if (!isRecord(value)) return undefined
+
+  const id = asString(value.id)
+  const name = asString(value.name)
+  if (!id || !name) return undefined
+
+  const to = asString(value.to)
+  return {
+    id,
+    name,
+    ...(to ? { to } : {}),
+  }
+}
+
 function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
   if (!isRecord(value)) return undefined
 
@@ -125,6 +141,8 @@ function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
   const relatedApp = normalizeRelatedApp(value.relatedApp)
   const cta = normalizeCta(value.cta)
   const keywords = asStringArray(value.keywords)
+  const owner = normalizeOwner(value.owner)
+  const to = asString(value.to)
 
   return {
     slug,
@@ -140,6 +158,10 @@ function normalizeSolution(value: unknown): FireuxMetaSolution | undefined {
     ...(relatedApp ? { relatedApp } : {}),
     ...(cta ? { cta } : {}),
     ...(keywords.length ? { keywords } : {}),
+    ...(owner ? { owner } : {}),
+    ...(to ? { to } : {}),
+    ...(typeof value.external === 'boolean' ? { external: value.external } : {}),
+    ...(typeof value.featured === 'boolean' ? { featured: value.featured } : {}),
   }
 }
 

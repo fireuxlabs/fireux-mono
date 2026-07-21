@@ -4,6 +4,7 @@ Collection manager map
 <!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: move identity joins behind bounded domain APIs. -->
 <!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: map the guarded public-card snapshot sync. -->
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: move Kitchen browse to a fail-closed bounded Place projection. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access-record joins separately from presentation overlays. -->
 
 Updated: 2026-07-20
 Ref: 4c0a1c7ad
@@ -74,7 +75,7 @@ Root Projected Collection Manager members:
 - `Kitchen` receives a bounded public Kitchen/Place projection. Raw Kitchen
   rows stay sparse and no longer copy shared Place fields. Only published,
   non-test Kitchens with a slug and an existing explicit Place reference enter
-  the projection; invalid App scope never selects an overlay.
+  the projection; invalid App scope never selects an App support record.
 - `App` receives one named controller: owning Ecosystem projection or FireUX
   platform directory projection.
 - `Ecosystem` receives the FireUX platform directory controller.
@@ -172,7 +173,7 @@ Hydration directions:
 - Up: scoped/local record reads a higher/root entity.
 - Down: public/root doorway reads scoped child detail.
 - Side: record reads sibling/root references.
-- Overlay: root record combines with app-scoped operational state.
+- App support: a root record combines with an allowlisted App support delta.
 
 Working rule:
 
@@ -207,9 +208,9 @@ Root Simple Collection Managers
 | `Place`      | None in manager                     | Self              | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                            |
 | `Product`    | None in manager                     | Self              | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                        |
 | `Ingredient` | None in root manager                | Self              | Root index manager fetches ingredients; Ingredient can be source truth for synced snapshots elsewhere.                                                  |
-| `Supplier`   | None for root browse                | Self/scoped delta | Root browse fetches suppliers. Operator-filtered console/access flows may join app overlays.                                                            |
-| `Portfolio`  | None for root browse                | Self/scoped delta | Root browse fetches portfolios. Operator-filtered console/access flows may join app overlays.                                                           |
-| `Property`   | None for root browse                | Self/scoped delta | Root browse fetches properties. Scoped overlay shape is explicit via options.                                                                           |
+| `Supplier`   | None for root browse                | Self/App support  | Root browse fetches Suppliers. Operator-filtered console/access flows may join same-id App support records.                                             |
+| `Portfolio`  | None for root browse                | Self/App support  | Root browse fetches Portfolios. Operator-filtered console/access flows may join same-id App support records.                                            |
+| `Property`   | None for root browse                | Self/App support  | Root browse fetches Properties. The `root-with-app-support` read shape is explicit via options.                                                         |
 
 Root Projected Collection Managers
 
@@ -257,4 +258,4 @@ Open questions:
 
 - Which synced snapshots should become Cloud Function triggers rather than manual scripts?
 - Which secure projections need APIs because raw rows should not power public browse UI?
-- Which scoped overlay joins should graduate into their own named scoped surfaces?
+- Which App support joins should graduate into their own named scoped surfaces?

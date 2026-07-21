@@ -4,6 +4,7 @@ Ref: 4c0a1c7ad
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: require server-projected User joins for profile indexes. -->
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: map fail-closed Kitchen/Place directory projection and bounded search behavior. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Kitchen access joins as App support. -->
 
 Purpose:
 Map public index pages such as `/kitchens`, `/suppliers`, `/menus`, and similar browse surfaces.
@@ -40,7 +41,7 @@ Known pattern:
   cards do not require copied Place snapshots or per-row browser hydration.
 - Kitchen projection rows require explicit publication, a public slug, and an
   existing explicitly referenced Place. Test, hidden, unlinked, and malformed
-  rows fail closed. App overlays join only for a valid parent/tenant App scope.
+  rows fail closed. App support records join only for a valid parent/tenant App scope.
 - Kitchen directory filtering remains local only after the complete bounded
   result is loaded. While another cursor exists, the UI withholds local search
   rather than claim that an unloaded Kitchen does not exist.

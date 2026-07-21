@@ -15,6 +15,7 @@ Effective: 2026-07-20
 <!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: record target-state, route-meta, write-authority, and targeted-read contracts. -->
 <!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: record optional console fixture ownership and loading. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: record fail-closed App joins, explicit Property publication, schema-validation limits, and the Kitchen migration exception. -->
+<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: point entity authority guidance at the explicit root/App-support guard. -->
 <!-- Concurrent edit — 2026-07-20 23:33 CEST — Entity Vocabulary + Matrix Pass: separate identity, authority, App support, and public-read classification. -->
 <!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Passes 2–3 of 3: record package build lifecycle and durable gates. -->
 
@@ -385,7 +386,7 @@ root field.
 The shared attach reread and validator are correctness checks only: deployed
 Rules or trusted server transactions remain the create/transfer/access security
 boundary. These current Supplier/Portfolio/Property source boundaries and the access-only
-Kitchen App model are checked by `scripts/guards/both-entity-authority.mjs`.
+Kitchen App model are checked by `scripts/guards/root-app-support-authority.mjs`.
 
 Identity records follow one strict boundary: `/users/{uid}` is public identity,
 `/users/{uid}/private/account` is owner-private account data,

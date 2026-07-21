@@ -815,6 +815,9 @@ importers:
       fireux-fireux:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-fireux
+      fireux-misebox:
+        specifier: workspace:*
+        version: link:../../../packages/ecosystem/fireux-misebox
       fireux-products:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-products

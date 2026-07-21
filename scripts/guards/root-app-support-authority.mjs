@@ -3,6 +3,7 @@
 // usage_note: run through pnpm guard; locks canonical-root plus app-support entity boundaries.
 // Concurrent edit — 2026-07-20 23:04 CEST — Both-Entity Authority: guard classification, fail-closed joins/queries, private support, and active publication.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: use explicit root identity and App access-support axes.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: guard explicit root/App-support contracts and reject legacy access-overlay symbols.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -48,6 +49,8 @@ const assertNoStorageSelectorsInApiTypes = (source, label) => {
 }
 
 const files = {
+  metaModel:
+    'packages/core/fireux-core/src/runtime/models/core/meta.model.ts',
   sharedCreate:
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate.ts',
   entityModel:
@@ -143,15 +146,25 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       /FireuxConsoleAccessModel|operator_ids|team_ids|join_requests/,
       `${name} root must not contain app access fields.`
     )
+    assert.match(modelSource, /appSupport:\s*'apps\/\{appId\}\//)
+    assert.match(modelSource, /appSupportCollection:\s*'/)
+    assert.doesNotMatch(
+      modelSource,
+      /FireuxAppOverlay|overlayCollection:/,
+      `${name} access records must use explicit App support vocabulary.`
+    )
   }
 
   assert.match(source.supplierModel, /export const AppSupplierModel/)
   assert.match(source.portfolioModel, /export const AppPortfolioModel/)
+  assert.match(source.metaModel, /export const FireuxAppAccessRecordModel/)
+  assert.match(source.metaModel, /export type FireuxAppAccessRecord/)
+  assert.doesNotMatch(source.metaModel, /FireuxAppOverlay/)
   assert.match(source.propertyModel, /export const PropertyEntity = defineFireuxEntity/)
   assert.match(source.entityModel, /\| 'property'/)
   assert.match(source.propertyModel, /family:\s*\['property',\s*'console-entity'\]/)
   assert.match(source.propertyModel, /export const AppPropertyModel/)
-  assert.match(source.propertyModel, /export type AppProperty = FireuxAppOverlay/)
+  assert.match(source.propertyModel, /export type AppProperty = FireuxAppAccessRecord/)
   assert.match(
     source.propertyModel,
     /apps\/\{appId\}\/properties\/\{propertyId\}\/private\/manual/
@@ -172,20 +185,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Portfolio must not own a nested duplicate Property collection.'
   )
 
-  for (const [name, collectionSource, overlayType] of [
+  for (const [name, collectionSource, appSupportType] of [
     ['Supplier', source.supplierCollection, 'AppSupplier'],
     ['Portfolio', source.portfolioCollection, 'AppPortfolio'],
     ['Property', source.propertyCollection, 'AppProperty'],
   ]) {
-    assert.match(collectionSource, new RegExp(`type\\s+${overlayType}`))
+    assert.match(collectionSource, new RegExp(`type\\s+${appSupportType}`))
     assert.match(
       collectionSource,
-      /targetedOverlaySource\s*=\s*firestoreLoadDocsByIds/,
+      /targetedAppSupportSource\s*=\s*firestoreLoadDocsByIds/,
       `${name} id-target reads must exact-load same-id App access records.`
     )
     assert.match(
       collectionSource,
-      /danglingOverlay|missing canonical|missing canonical root/i,
+      /danglingAppSupport|missing canonical|missing canonical root/i,
       `${name} collection must report dangling app records.`
     )
     assert.match(
@@ -198,12 +211,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       /rootScopeError/,
       `${name} collection must report root/App scope drift.`
     )
+    assert.doesNotMatch(
+      collectionSource,
+      /targetedOverlaySource|danglingOverlay|\.overlayCollection/,
+      `${name} access joins must use explicit App support vocabulary.`
+    )
   }
-  assert.match(source.supplierCollection, /!overlay[\s\S]*supplierRootBelongsToApp/)
-  assert.match(source.portfolioCollection, /!overlay[\s\S]*portfolioRootBelongsToApp/)
+  assert.match(source.supplierCollection, /!appSupport[\s\S]*supplierRootBelongsToApp/)
+  assert.match(source.portfolioCollection, /!appSupport[\s\S]*portfolioRootBelongsToApp/)
   assert.match(
     source.propertyCollection,
-    /resolvedShape\.value === 'both'[\s\S]*!overlay[\s\S]*root\.app_scope_app_id !== resolvedAppId\.value/
+    /resolvedShape\.value === 'root-with-app-support'[\s\S]*!appSupport[\s\S]*root\.app_scope_app_id !== resolvedAppId\.value/
   )
   assert.doesNotMatch(
     source.propertyCollection,
@@ -222,7 +240,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     assert.match(interfaceSource, /join_requests:\s*safeStringArray/)
     assert.doesNotMatch(
       interfaceSource,
-      /\.\.\.\(parts\.overlay|\.\.\.parts\.overlay/,
+      /\.\.\.\(parts\.appSupport|\.\.\.parts\.appSupport/,
       `${name} must not spread its app record over root identity.`
     )
   }
@@ -238,12 +256,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.propertyFetch,
     source.propertyUpdate,
   ]) {
-    assertNoStorageSelectorsInApiTypes(fixedPathSource, 'Both-entity read/create/update')
+    assertNoStorageSelectorsInApiTypes(fixedPathSource, 'Root/App-support read/create/update')
   }
   assert.doesNotMatch(source.supplierUpdate, /commitUpdate/)
   assert.doesNotMatch(source.supplierUpdate, /useRequireUser|SupplierMutationOptions = \{\}/)
   assert.match(source.supplierUpdate, /updateSupplierRoot/)
-  assert.doesNotMatch(source.supplierUpdate, /updateSupplierOverlay|operator_ids|team_ids|join_requests/)
+  assert.doesNotMatch(
+    source.supplierUpdate,
+    /updateSupplier(?:Overlay|AppSupport)|operator_ids|team_ids|join_requests/
+  )
   assert.match(source.portfolioUpdate, /PortfolioStorage\.rootCollection/)
   assert.doesNotMatch(source.portfolioUpdate, /collectionPath/)
   assert.match(source.propertyCreate, /createPropertyConsole/)
@@ -251,7 +272,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.propertyCreate, /createPropertyManual/)
   assert.match(source.propertyUpdate, /updatePropertyRoot/)
   assert.match(source.propertyUpdate, /updatePropertyManual/)
-  assert.doesNotMatch(source.propertyUpdate, /updatePropertyOverlay/)
+  assert.doesNotMatch(source.propertyUpdate, /updateProperty(?:Overlay|AppSupport)/)
 
   for (const [name, retiredPath, useSource] of [
     ['Supplier', files.retiredSupplierDelete, source.supplierUse],
@@ -347,7 +368,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(source.sharedCreate, /validateRoot\?:/)
   assert.match(source.sharedCreate, /await options\.validateRoot\(id, existingRootData\)/)
-  assert.doesNotMatch(source.sharedCreate, /overlayId/)
+  assert.match(source.sharedCreate, /createAppSupport\?:/)
+  assert.match(source.sharedCreate, /createdAppSupport:/)
+  assert.doesNotMatch(
+    source.sharedCreate,
+    /createOverlay|createdOverlay|overlayId/,
+    'Console creation must use App support vocabulary and fixed same-id records.'
+  )
 
   assert.deepEqual(directTypeFields(source.kitchenModel, 'AppKitchen'), [
     'created',

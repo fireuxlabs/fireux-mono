@@ -71,7 +71,8 @@ export type FireuxRootScope = {
  * Root-plus-app entity families use this on the canonical root so the
  * relationship is explicit instead of inferred from domain state or app
  * records. Root placement does not itself make the record public-readable.
- * Identity roots and profile roots do not use this; their app records are overlays.
+ * Identity and profile roots do not use this; their App records have separate
+ * membership or profile-delta contracts.
  */
 export type FireuxAppScopeState =
   | 'root_only'

@@ -17,7 +17,7 @@
               {{ solution.title }}
             </h2>
             <UBadge
-              :label="`/solutions/${solution.slug}`"
+              :label="solution.owner?.name || `/solutions/${solution.slug}`"
               color="neutral"
               variant="soft"
               size="sm"
@@ -31,7 +31,8 @@
       </p>
 
       <UButton
-        :to="`/solutions/${solution.slug}`"
+        :to="solution.to || `/solutions/${solution.slug}`"
+        :target="solution.external ? '_blank' : undefined"
         :aria-label="`View ${solution.title}`"
         color="neutral"
         variant="soft"

@@ -9,6 +9,7 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority: register root/app support boundary checks.
 // Concurrent edit — 2026-07-20 22:33 CEST — Repo Efficiency Pass 5 of 6: register dependency ownership checks.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: register AST-backed declaration checks.
+// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: register the explicitly named root/App-support authority guard.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint
@@ -44,7 +45,7 @@ import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
 import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
-import { run as runBothEntityAuthority } from './guards/both-entity-authority.mjs'
+import { run as runRootAppSupportAuthority } from './guards/root-app-support-authority.mjs'
 import { run as runDirectoryReconciliation } from './guards/directory-reconciliation.mjs'
 import { run as runDirectoryPublication } from './guards/directory-publication.mjs'
 import { run as runProjects } from './guards/projects.mjs'
@@ -79,7 +80,7 @@ const guards = [
   { key: 'menu-route-contract', run: runMenuRouteContract },
   { key: 'entity-matrix', run: runEntityMatrix },
   { key: 'entity-authority', run: runEntityAuthority },
-  { key: 'both-entity-authority', run: runBothEntityAuthority },
+  { key: 'root-app-support-authority', run: runRootAppSupportAuthority },
   { key: 'directory-reconciliation', run: runDirectoryReconciliation },
   { key: 'directory-publication', run: runDirectoryPublication },
   { key: 'projects', run: runProjects },
