@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 14:41 CEST — Place public projection: exact-load one Place without caching negative materialization races.
+// Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: return the detail-only locale projection.
 import {
   createError,
   defineEventHandler,
@@ -9,7 +10,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import type { PublicPlaceDetailResponse } from '../../../models/place-public.model'
 import { PlaceStorage } from '../../../models/place.model'
-import { projectPublicPlace } from '../../place/public-projection'
+import { projectPublicPlaceDetail } from '../../place/public-projection'
 
 export default defineEventHandler(async (event): Promise<PublicPlaceDetailResponse> => {
   const locator = requireFirestoreDocumentId(getRouterParam(event, 'placeId'), 'Place id')
@@ -18,7 +19,7 @@ export default defineEventHandler(async (event): Promise<PublicPlaceDetailRespon
     throw createError({ statusCode: 503, statusMessage: 'Place could not be read.' })
   })
   if (exact.exists) {
-    const item = projectPublicPlace(exact.id, exact.data() || {})
+    const item = projectPublicPlaceDetail(exact.id, exact.data() || {})
     if (item) return success(event, item)
     throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
   }
@@ -32,7 +33,7 @@ export default defineEventHandler(async (event): Promise<PublicPlaceDetailRespon
       throw createError({ statusCode: 503, statusMessage: 'Place could not be read.' })
     })
   const item = bySlug.size === 1
-    ? projectPublicPlace(bySlug.docs[0].id, bySlug.docs[0].data() || {})
+    ? projectPublicPlaceDetail(bySlug.docs[0].id, bySlug.docs[0].data() || {})
     : null
   if (!item) throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
   return success(event, item)

@@ -1,8 +1,14 @@
-// Concurrent edit — 2026-07-21 16:02 CEST — Shared Firestore Rules pass: bind fragments and helper signatures to the Core-opened database frame.
+// Concurrent edit — 2026-07-21 16:12 CEST — Shared Firestore Rules pass: bind helper provenance and literal-path frame semantics.
 
 export const FIRESTORE_RULE_CORE_BLOCK_STACK = Object.freeze([
   'service cloud.firestore',
   'match /databases/{database}/documents',
+])
+
+export const FIRESTORE_RULE_SEMANTIC_UNIQUE_BLOCKS = Object.freeze([
+  ...FIRESTORE_RULE_CORE_BLOCK_STACK,
+  'match /apps/{appId}',
+  'match /join-requests/{userId}',
 ])
 
 export const FIRESTORE_RULE_FRAGMENTS = Object.freeze({

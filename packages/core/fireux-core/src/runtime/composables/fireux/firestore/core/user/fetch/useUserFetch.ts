@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: fail closed when hydrating canonical User avatars.
 // Concurrent edit — 2026-07-20 23:21 CEST — Active User Outcome fix: preserve canonical User read outcomes.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: normalize optional stored biography into the shared User runtime.
+// Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: expose independent App-membership and private-account outcomes.
 import { doc } from 'firebase/firestore'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
@@ -189,8 +190,10 @@ export function useUserFetch(
     const coreOutcome = computed<UserFetchOutcome>(() => 'idle')
     const appPending = computed(() => false)
     const appError = computed<unknown>(() => null)
+    const appOutcome = computed<UserFetchOutcome>(() => 'idle')
     const privatePending = computed(() => false)
     const privateError = computed<unknown>(() => null)
+    const privateOutcome = computed<UserFetchOutcome>(() => 'idle')
     return {
       user,
       coreUser,
@@ -201,8 +204,10 @@ export function useUserFetch(
       coreOutcome,
       appPending,
       appError,
+      appOutcome,
       privatePending,
       privateError,
+      privateOutcome,
     }
   }
 
@@ -323,6 +328,20 @@ export function useUserFetch(
     return coreUser.value ? 'ready' : 'missing'
   })
 
+  const appOutcome = computed<UserFetchOutcome>(() => {
+    if (!includeApp || !uid.value || !appId) return 'idle'
+    if (appPending.value) return 'pending'
+    if (appError.value) return 'error'
+    return appUser.value ? 'ready' : 'missing'
+  })
+
+  const privateOutcome = computed<UserFetchOutcome>(() => {
+    if (!includePrivate || !uid.value) return 'idle'
+    if (privatePending.value) return 'pending'
+    if (privateError.value) return 'error'
+    return privateUser.value ? 'ready' : 'missing'
+  })
+
   const user = computed<User | null>(() => coreUser.value ?? null)
 
   const pending = computed(
@@ -339,8 +358,10 @@ export function useUserFetch(
     coreOutcome,
     appPending,
     appError,
+    appOutcome,
     privatePending,
     privateError,
+    privateOutcome,
   }
 }
 

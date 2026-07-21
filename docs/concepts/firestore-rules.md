@@ -3,7 +3,7 @@ Updated: 2026-07-21
 Ref: b020f805e
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: map source, delta, artifact, and release ownership. -->
+<!-- Concurrent edit — 2026-07-21 16:13 CEST — Shared Firestore Rules pass: map source, scoped composition, artifact, and release ownership. -->
 
 Purpose:
 Map how FireUX authors and releases main-database Firestore Security Rules.
@@ -24,6 +24,9 @@ Current source boundary:
 
 - FireUX Core owns reusable, byte-identical Rules fragments and the pure
   composer under `packages/core/fireux-core/src/config/firebase/rules`.
+- The Core contract validates fragment order, declaration boundaries,
+  contracted lexical frames, wildcard-equivalent literal paths, and helper
+  signatures in their owning database frame before it emits an artifact.
 - Each opted-in ecosystem owns one `firestore.template.rules` file beside its
   Firebase binding. Its header pins the project, database targets, artifact,
   and ordered Core fragments; its body owns every ecosystem policy delta.

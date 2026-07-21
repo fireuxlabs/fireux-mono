@@ -1,6 +1,7 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/User/Edit/Core.vue -->
 <!-- Concurrent edit — 2026-07-21 15:42 CEST — User Profile polish: turn root identity fields into friendly, focused edit cards. -->
 <!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: add a focused public biography editor. -->
+<!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: require the route-owned active User refs for profile mutations. -->
 <template>
   <section class="space-y-4" aria-labelledby="public-profile-fields">
     <div>
@@ -116,19 +117,16 @@
 import { computed, ref } from 'vue'
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
 import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useUserFormattingAndValidation } from '../../../composables/fireux/firestore/core/user/utils/validation/useUserFormatting'
 import type { User } from '../../../models/core/user.model'
 
 import type { UserRefs } from '../../../composables/fireux/firestore/core/user/fetch/useUserFetch'
 import { useUserUpdate } from '../../../composables/fireux/firestore/core/user/mutations/useUserUpdate'
 
-const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
+const props = defineProps<{ user: User | null; userRefs: UserRefs }>()
 
 const toast = useToastify()
-const userApi = useUser()
-const resolvedRefs = (props.userRefs ?? (userApi as unknown as UserRefs))
-const userUpdate = useUserUpdate(resolvedRefs, 'UserEditCore')
+const userUpdate = useUserUpdate(props.userRefs, 'UserEditCore')
 const coreProfile = userUpdate.core.profile
 
 const user = computed(() => props.user)

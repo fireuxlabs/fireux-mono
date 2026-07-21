@@ -1,8 +1,9 @@
 <template>
+  <!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: make the public doorway authenticated and Place-backed. -->
   <UPage>
     <UPageHeader
-      title="Create Kitchen"
-      description="Create the public kitchen record for a real venue. Setup continues on the kitchen edit page."
+      title="Add a Kitchen"
+      description="Start from one shared Place, add only the Kitchen-specific identity, then finish setup in the Kitchen console."
     />
 
     <UPageBody class="pagebody">
@@ -14,25 +15,25 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import KitchenCreateSystem from '../../components/Kitchen/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
-  title: 'Create Kitchen',
-  description: 'Create the public kitchen record for a real venue.',
+  requiresAuth: true,
+  title: 'Add Kitchen',
+  description: 'Create or connect a Place-backed Kitchen.',
   nav: {
     key: 'kitchens-create',
-    label: 'Create kitchen',
+    label: 'Add Kitchen',
     icon: 'i-lucide-plus',
     order: 56,
     desktop: false,
     mobile: false,
     layouts: ['default'],
   },
-  head: { title: 'Create Kitchen' },
+  head: { title: 'Add Kitchen' },
   name: 'KitchensCreatePage',
 })
 
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | Create Kitchen` })
+useHead({ title: `${appName} | Add Kitchen` })
 </script>

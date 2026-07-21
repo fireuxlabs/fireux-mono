@@ -26,6 +26,7 @@
   "dependencies": {
     "fireux-ai": "workspace:*",
     "fireux-core": "workspace:*",
+    "fireux-finance": "workspace:*",
     "fireux-places": "workspace:*",
     "fireux-sproochli": "workspace:*",
     "fireux-translation": "workspace:*",

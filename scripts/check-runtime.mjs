@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-08
+// last_used: 2026-07-21
 // usage_note: validates Node/pnpm runtime contract.
+// Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: record installed-identity preflight verification.
 
 import process from 'node:process'
 

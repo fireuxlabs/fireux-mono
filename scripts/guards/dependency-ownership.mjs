@@ -1,6 +1,7 @@
 // @fireux-script
 // last_used: 2026-07-21
-// usage_note: rejects shadow boundaries, undeclared imports, and split framework type identities.
+// usage_note: rejects shadow boundaries, undeclared imports, unsafe server runtime specifiers, and split framework type identities.
+// Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: require explicit .ts suffixes on server-reachable workspace runtime value imports.
 // Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify product-neutral Jobs dependency ownership.
 // Concurrent edit — 2026-07-20 22:44 CEST — Repo Efficiency Pass 5 of 6: enforce dependency ownership and shared H3 type identity.
 // FILE: scripts/guards/dependency-ownership.mjs
@@ -178,6 +179,74 @@ function importedPackages(source) {
   return imports
 }
 
+function hasRuntimeImportBinding(node) {
+  const clause = node.importClause
+  if (!clause) return true
+  if (clause.isTypeOnly) return false
+  if (clause.name) return true
+
+  const bindings = clause.namedBindings
+  if (!bindings || ts.isNamespaceImport(bindings)) return true
+  if (!bindings.elements.length) return true
+  return bindings.elements.some(element => !element.isTypeOnly)
+}
+
+function hasRuntimeExportBinding(node) {
+  if (node.isTypeOnly) return false
+  if (!node.exportClause || !ts.isNamedExports(node.exportClause)) return true
+  if (!node.exportClause.elements.length) return true
+  return node.exportClause.elements.some(element => !element.isTypeOnly)
+}
+
+function isWorkspaceRuntimeSubpath(specifier) {
+  return /^fireux-[^/]+\/runtime\/.+/.test(specifier)
+}
+
+export function runtimeWorkspaceSubpathSpecifiers(source) {
+  const imports = new Set()
+  const sourceFile = ts.createSourceFile(
+    'server-runtime-import.ts',
+    source,
+    ts.ScriptTarget.Latest,
+    false,
+    ts.ScriptKind.TSX
+  )
+
+  function addSpecifier(node) {
+    if (!node || !ts.isStringLiteralLike(node)) return
+    const specifier = node.text
+    if (!isWorkspaceRuntimeSubpath(specifier) || specifier.endsWith('.ts'))
+      return
+    imports.add(specifier)
+  }
+
+  function visit(node) {
+    if (ts.isImportDeclaration(node)) {
+      if (hasRuntimeImportBinding(node)) addSpecifier(node.moduleSpecifier)
+    } else if (ts.isExportDeclaration(node)) {
+      if (hasRuntimeExportBinding(node)) addSpecifier(node.moduleSpecifier)
+    } else if (
+      ts.isImportEqualsDeclaration(node) &&
+      ts.isExternalModuleReference(node.moduleReference)
+    ) {
+      addSpecifier(node.moduleReference.expression)
+    } else if (ts.isCallExpression(node) && node.arguments.length === 1) {
+      if (
+        node.expression.kind === ts.SyntaxKind.ImportKeyword ||
+        (ts.isIdentifier(node.expression) && node.expression.text === 'require')
+      ) {
+        addSpecifier(node.arguments[0])
+      }
+    }
+
+    ts.forEachChild(node, visit)
+  }
+
+  visit(sourceFile)
+
+  return [...imports].sort()
+}
+
 function importedStylePackages(source) {
   const imports = new Set()
 
@@ -294,6 +363,43 @@ function directImportViolations({
   return violations
 }
 
+function isServerResolvedRuntimeFile(ownerRoot, filePath) {
+  const relative = path.relative(ownerRoot, filePath).split(path.sep).join('/')
+  return (
+    relative.startsWith('server/') ||
+    relative.startsWith('src/runtime/server/') ||
+    relative.startsWith('src/runtime/models/')
+  )
+}
+
+function serverRuntimeImportExtensionViolations({
+  repoRoot,
+  ownerRoot,
+  nestedPackageRoots,
+}) {
+  const violations = []
+
+  for (const filePath of walkFiles(ownerRoot, { nestedPackageRoots })) {
+    if (
+      !CODE_EXTENSIONS.has(path.extname(filePath)) ||
+      !isServerResolvedRuntimeFile(ownerRoot, filePath)
+    ) {
+      continue
+    }
+
+    for (const source of sourceUnits(filePath)) {
+      for (const specifier of runtimeWorkspaceSubpathSpecifiers(source)) {
+        violations.push({
+          file: path.relative(repoRoot, filePath),
+          specifier,
+        })
+      }
+    }
+  }
+
+  return violations
+}
+
 function nestedManifestViolations({ repoRoot, roots }) {
   const rootSet = new Set(roots)
   const violations = []
@@ -354,6 +460,7 @@ export async function run(ctx) {
   const rootSet = new Set(roots)
   const rootManifest = readManifest(repoRoot)
   const violations = []
+  const runtimeImportExtensionViolations = []
 
   for (const ownerRoot of roots) {
     violations.push(
@@ -362,6 +469,13 @@ export async function run(ctx) {
         ownerRoot,
         ownerLabel: path.relative(repoRoot, ownerRoot),
         manifest: readManifest(ownerRoot),
+        nestedPackageRoots: rootSet,
+      })
+    )
+    runtimeImportExtensionViolations.push(
+      ...serverRuntimeImportExtensionViolations({
+        repoRoot,
+        ownerRoot,
         nestedPackageRoots: rootSet,
       })
     )
@@ -385,6 +499,7 @@ export async function run(ctx) {
 
   if (
     violations.length ||
+    runtimeImportExtensionViolations.length ||
     nestedManifests.length ||
     rootRuntimeDependencies.length ||
     typeIdentityViolations.length
@@ -412,6 +527,16 @@ export async function run(ctx) {
       )
     }
 
+    if (runtimeImportExtensionViolations.length) {
+      lines.push(
+        '',
+        'Server-reachable workspace runtime value imports missing .ts:',
+        ...runtimeImportExtensionViolations
+          .sort((left, right) => left.file.localeCompare(right.file))
+          .map(({ file, specifier }) => `  - ${file}: ${specifier}`)
+      )
+    }
+
     if (rootRuntimeDependencies.length) {
       lines.push(
         '',
@@ -434,6 +559,7 @@ export async function run(ctx) {
       '',
       '[guard] Fix:',
       '- Declare every direct import in the package that owns the importing file.',
+      '- End server-reachable workspace runtime value imports in .ts; type-only imports are erased and exempt.',
       '- Remove nested package.json files that create accidental source boundaries.',
       '- Keep the private workspace root tooling-only; root packages belong in devDependencies.',
       '- Keep H3 on one workspace override so Nitro and package event types share an identity.'
@@ -443,6 +569,6 @@ export async function run(ctx) {
   }
 
   console.log(
-    '[guard] ✅ dependencies have explicit owners and shared H3 type identity'
+    '[guard] ✅ dependencies have explicit owners, explicit server runtime imports, and shared H3 type identity'
   )
 }

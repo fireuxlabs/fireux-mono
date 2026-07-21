@@ -1,208 +1,168 @@
+<!-- Concurrent edit — 2026-07-21 17:00 CEST — Dashboard Family pass: keep Developer focused on media, build context and field authority. -->
+<!-- Concurrent edit — 2026-07-21 20:23 CEST — Developer Dashboard cleanup: prioritize media and build context while folding technical detail away. -->
 <template>
   <ClientOnly>
-    <div v-if="app" class="space-y-6">
-      <!-- TODO: make it easy for admins to change image without a dev -->
+    <div class="space-y-4">
+      <div
+        class="grid gap-4 xl:grid-cols-[minmax(0,1.7fr)_minmax(18rem,0.8fr)] xl:items-start"
+      >
+        <MoleculesFormsFirestoreAppImages :app="app" />
 
-      <!-- Images -->
-      <MoleculesFormsFirestoreAppImages :app="app" />
-
-      <UCard class="section" variant="subtle">
-        <template #header>
-          <div class="section__header">
-            <div class="section__copy">
-              <h3>Binding check (app ↔ users)</h3>
-              <p>
-                Compares App memberships against projected public identities.
-                Membership is authoritative in <span class="font-mono">/apps/{appId}/users</span>.
-              </p>
+        <UPageCard
+          title="Build connection"
+          description="The identifiers this App resolves at runtime."
+          icon="i-lucide-braces"
+          variant="subtle"
+          class="h-full"
+        >
+          <dl class="divide-y divide-default">
+            <div
+              v-for="row in appSummary"
+              :key="row.label"
+              class="grid gap-1 py-3 first:pt-0 last:pb-0"
+            >
+              <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                {{ row.label }}
+              </dt>
+              <dd class="break-words font-mono text-sm text-highlighted">
+                {{ row.value }}
+              </dd>
+              <dd v-if="row.detail" class="text-xs text-muted">
+                {{ row.detail }}
+              </dd>
             </div>
-          </div>
-        </template>
+          </dl>
+        </UPageCard>
+      </div>
 
-        <div class="section__item space-y-3">
-          <div class="text-xs text-dimmed">
-            <span class="font-mono">appId</span>: {{ driftAppId || 'unknown' }} ·
-            <span class="font-mono">app users</span>: {{ appUsersCount }} ·
-            <span class="font-mono">admins</span>: {{ adminIdsCount }}
-          </div>
-
-          <div v-if="driftPending" class="text-sm text-dimmed">Checking…</div>
-
-          <div v-else-if="appUsersError" class="text-sm text-warning">
-            Binding check unavailable. App admin access is required.
-          </div>
-
-          <div v-else>
-            <div v-if="peopleTruncated" class="mb-3 text-sm text-warning">
-              The bounded check reached its 100-record result limit.
-            </div>
-
-            <div v-if="!driftTotal" class="text-sm text-success">
-              No binding issues detected.
-            </div>
-
-            <div v-else class="space-y-3">
-              <div v-if="drift.missingCore.length">
-                <div class="text-sm font-medium">App users missing public identity</div>
-                <div class="text-xs text-dimmed">
-                  {{ drift.missingCore.join(', ') }}
+      <MoleculesDisclosurePanel
+        title="Technical details"
+        description="Field ownership and the canonical App model."
+        icon="i-lucide-git-branch"
+        :default-open="false"
+      >
+        <div class="space-y-4 pt-3">
+          <UPageCard
+            title="Field ownership"
+            description="The product surface responsible for each App field family."
+            variant="subtle"
+          >
+            <div class="divide-y divide-default">
+              <div
+                v-for="section in ownershipSections"
+                :key="section.key"
+                class="grid gap-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
+              >
+                <div class="flex items-center gap-2 font-medium text-highlighted">
+                  <UIcon :name="section.icon" class="size-4 text-primary" />
+                  <span>{{ section.label }}</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-sm leading-6 text-muted">
+                    {{ section.description }}
+                  </p>
+                  <p class="mt-1 break-words font-mono text-xs text-dimmed">
+                    {{ section.fields.join(' · ') }}
+                  </p>
                 </div>
               </div>
-
             </div>
-          </div>
+          </UPageCard>
+
+          <DevJson
+            title="App model (JSON)"
+            context="dashboard/developer · canonical App"
+            :data="app"
+            :default-open="false"
+          />
         </div>
-      </UCard>
-
-      <UCard class="section" variant="subtle">
-        <template #header>
-          <div class="section__header">
-            <div class="section__copy">
-              <h3>Field ownership</h3>
-              <p>
-                Admin runs the app. Developer builds and checks it. App
-                Control changes where it belongs. System owns calculated fields.
-              </p>
-            </div>
-          </div>
-        </template>
-
-        <div class="section__item">
-          <div class="grid gap-4 sm:grid-cols-2">
-            <div>
-              <div class="text-xs font-medium text-dimmed">App Control</div>
-              <ul class="mt-2 space-y-1 text-sm">
-                <li>
-                  <span class="font-mono">project_id</span>,
-                  <span class="font-mono">ecosystem_id</span>,
-                  <span class="font-mono">slug</span>,
-                  <span class="font-mono">status</span>
-                </li>
-                <li>
-                  <span class="font-mono">role</span>,
-                  <span class="font-mono">app_name</span>,
-                  <span class="font-mono">app_short_name</span>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <div class="text-xs font-medium text-dimmed">Developer</div>
-              <ul class="mt-2 space-y-1 text-sm">
-                <li>
-                  <span class="font-mono">media</span>,
-                  <span class="font-mono">database_id</span>
-                </li>
-                <li>
-                  <span class="font-mono">fireux_native</span>,
-                  <span class="font-mono">fireux_size</span>,
-                  <span class="font-mono">fireux_repo</span>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <div class="text-xs font-medium text-dimmed">Admin</div>
-              <ul class="mt-2 space-y-1 text-sm">
-                <li>
-                  <span class="font-mono">tagline</span>,
-                  <span class="font-mono">description</span>
-                </li>
-                <li>
-                  <span class="font-mono">short_bio</span>,
-                  <span class="font-mono">long_bio</span>
-                </li>
-                <li>
-                  <span class="font-mono">social_links</span>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <div class="text-xs font-medium text-dimmed">System</div>
-              <ul class="mt-2 space-y-1 text-sm">
-                <li>
-                  <span class="font-mono">id</span>,
-                  <span class="font-mono">derived</span>
-                </li>
-                <li>
-                  <span class="font-mono">created</span>,
-                  <span class="font-mono">updated</span>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </UCard>
-
-      <UCard class="section">
-        <template #header>
-          <div class="section__header">
-            <div class="section__copy">
-              <h3>Model</h3>
-              <p>Full app document.</p>
-            </div>
-          </div>
-        </template>
-
-        <div class="section__item">
-          <pre class="text-xs font-mono text-dimmed whitespace-pre-wrap break-words">{{ appModelJson }}</pre>
-        </div>
-      </UCard>
+      </MoleculesDisclosurePanel>
     </div>
 
-    <MoleculesStateCard v-else entity="developer settings" kind="document" loading />
+    <template #fallback>
+      <MoleculesStateCard
+        entity="developer workspace"
+        kind="document"
+        loading
+      />
+    </template>
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: diagnose only bounded current-App identity availability.
 import { computed } from 'vue'
-import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import type { AppModel } from '../../../models/core/app.model'
+import {
+  AppFieldGroups,
+  type AppModel,
+} from '../../../models/core/app.model'
 
-const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
+const props = defineProps<{ app: AppModel }>()
 const app = computed(() => props.app)
 
-const { appId: configAppId } = useFireUXConfig()
-const driftAppId = computed(() => configAppId)
+const display = (value: unknown) => {
+  const text = String(value ?? '').trim()
+  return text || 'Not set'
+}
 
-const {
-  memberships: appUsers,
-  fulfilled: projectedUsers,
-  pending: driftPending,
-  error: appUsersError,
-  truncated: peopleTruncated,
-} = useAppUserCollection()
+const appSummary = computed(() => {
+  const repository = display(props.app.fireux_repo?.key)
+  const workspace = display(props.app.fireux_repo?.workspace)
 
-const appUserIds = computed(() =>
-  (appUsers.value ?? [])
-    .map((u) => (u?.id ?? '').trim())
-    .filter((id): id is string => Boolean(id))
-)
-
-const projectedUserIds = computed(
-  () => new Set(projectedUsers.value.map((user) => user.id))
-)
-
-const adminIds = computed(() => {
-  return (appUsers.value ?? [])
-    .filter((membership) => membership.role === 'admin')
-    .map((membership) => membership.id)
+  return [
+    { label: 'App ID', value: display(props.app.id), detail: '' },
+    {
+      label: 'Database',
+      value: display(props.app.database_id),
+      detail: 'Firestore runtime',
+    },
+    {
+      label: 'Repository',
+      value: repository,
+      detail: workspace === 'Not set' ? '' : workspace,
+    },
+    {
+      label: 'Project',
+      value: display(props.app.project_id),
+      detail: props.app.ecosystem_id
+        ? `Ecosystem: ${display(props.app.ecosystem_id)}`
+        : '',
+    },
+    {
+      label: 'Runtime',
+      value: props.app.fireux_native ? 'FireUX native' : 'External',
+      detail: `Size: ${display(props.app.fireux_size)}`,
+    },
+  ]
 })
 
-const drift = computed(() => {
-  const missingCore = appUserIds.value.filter(
-    (id) => !projectedUserIds.value.has(id)
-  )
-  return { missingCore }
-})
-
-const driftTotal = computed(() => drift.value.missingCore.length)
-
-const appUsersCount = computed(() => appUserIds.value.length)
-const adminIdsCount = computed(() => adminIds.value.length)
-
-const appModelJson = computed(() => JSON.stringify(app.value ?? null, null, 2))
+const ownershipSections = [
+  {
+    key: 'developer',
+    label: 'Developer',
+    description: 'Builds and checks App media, database binding and repo metadata.',
+    icon: 'i-lucide-code-xml',
+    fields: AppFieldGroups.developer,
+  },
+  {
+    key: 'control',
+    label: 'App control',
+    description: 'Changes App identity, relationships, lifecycle and routing.',
+    icon: 'i-lucide-panels-top-left',
+    fields: AppFieldGroups.control,
+  },
+  {
+    key: 'admin',
+    label: 'Admin',
+    description: 'Runs the App and maintains its public story.',
+    icon: 'i-lucide-shield-check',
+    fields: AppFieldGroups.admin,
+  },
+  {
+    key: 'system',
+    label: 'System',
+    description: 'Maintains canonical identity, stamps and derived values.',
+    icon: 'i-lucide-cpu',
+    fields: AppFieldGroups.system,
+  },
+] as const
 </script>

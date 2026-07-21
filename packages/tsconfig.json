@@ -28,6 +28,9 @@
       "path": "extensions/fireux-documents"
     },
     {
+      "path": "extensions/fireux-finance"
+    },
+    {
       "path": "extensions/fireux-kitchens"
     },
     {

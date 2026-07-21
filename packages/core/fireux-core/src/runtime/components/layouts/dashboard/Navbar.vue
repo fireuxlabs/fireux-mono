@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-20 15:26 CEST — Customer order notification pass: show the shared live unread count. -->
+<!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: label the notification control for assistive technology. -->
 <template>
   <UDashboardNavbar :title="title" :ui="ui ?? { right: 'gap-3' }">
     <template #leading>
@@ -13,6 +14,7 @@
           color="neutral"
           variant="ghost"
           square
+          :aria-label="notificationTooltip"
           @click="openNotifications()"
         >
           <UChip

@@ -9,8 +9,8 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import {
   isKitchenOrderPostPaymentStatus,
-  type KitchenOrderStatus,
-  type KitchenOrderType,
+  isKitchenOrderStatus,
+  isKitchenOrderType,
 } from '../../../../models/kitchen/order.model.ts'
 import { statusAfterPayment } from '../../../menu/ordering/payment.ts'
 import {
@@ -20,6 +20,7 @@ import {
 import { dispatchPreOrderWhatsApp } from '../../../menu/ordering/whatsapp.ts'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: release the pending alert only after verified Pay-now completion.
+// Concurrent edit — 2026-07-21 16:41 CEST — FireUX Finance pass: make verified payment settlement transactional, non-regressive, and retryable.
 
 const text = (value: unknown) => String(value ?? '').trim()
 const safeSegment = (value: string) =>
@@ -105,83 +106,104 @@ export default defineEventHandler(async (event: H3Event) => {
   const orderRef = db.doc(
     `apps/${metadata.appId}/kitchens/${metadata.kitchenId}/orders/${metadata.orderId}`
   )
-  const orderSnap = await orderRef.get()
-  if (!orderSnap.exists) return { received: true }
-
-  const order = orderSnap.data() || {}
-  const payment = (order.payment && typeof order.payment === 'object')
-    ? order.payment as Record<string, unknown>
-    : {}
-  const expectedSessionId = text(payment.stripe_checkout_session_id)
-  const expectedAmount = amountMinor(payment.amount_chf)
-  const expectedCurrency = text(payment.currency_code).toLowerCase()
   const receivedAmount = Number(session?.amount_total)
   const receivedCurrency = text(session?.currency).toLowerCase()
   const paymentStatus = text(session?.payment_status).toLowerCase()
-  if (
-    text(order.menu_id) !== metadata.menuId ||
-    paymentStatus !== 'paid' ||
-    !expectedSessionId ||
-    expectedSessionId !== metadata.checkoutSessionId ||
-    expectedAmount <= 0 ||
-    receivedAmount !== expectedAmount ||
-    !expectedCurrency ||
-    receivedCurrency !== expectedCurrency
-  ) {
-    console.warn('[fireux-kitchens] Ignoring unverified Stripe payment completion', {
-      orderId: metadata.orderId,
-      paymentStatus,
-      sessionMatches: expectedSessionId === metadata.checkoutSessionId,
-      amountMatches: receivedAmount === expectedAmount,
-      currencyMatches: receivedCurrency === expectedCurrency,
-      menuMatches: text(order.menu_id) === metadata.menuId,
-    })
-    return { received: true }
-  }
-  const orderType = text(order.order_type) as KitchenOrderType
-  const currentStatus = text(order.status).toLowerCase()
-  const terminalStatus: KitchenOrderStatus | null =
-    currentStatus === 'cancelled' ||
-    currentStatus === 'completed' ||
-    currentStatus === 'trashed'
-      ? currentStatus
-      : null
-  const resumeStatus = text(payment.resume_status)
-  if (resumeStatus && !isKitchenOrderPostPaymentStatus(resumeStatus)) {
-    console.warn('[fireux-kitchens] Ignoring Stripe payment with invalid resume state', {
-      orderId: metadata.orderId,
-      resumeStatus,
-    })
-    return { received: true }
-  }
-  const resumableStatus = isKitchenOrderPostPaymentStatus(resumeStatus)
-    ? resumeStatus
-    : null
-  const paidStatus = terminalStatus || resumableStatus || statusAfterPayment(orderType)
-  const now = FieldValue.serverTimestamp()
+  const outcome = await db.runTransaction(async (transaction) => {
+    const orderSnap = await transaction.get(orderRef)
+    if (!orderSnap.exists) return { verified: false, notifyPreOrder: false }
 
-  await orderRef.set(
-    {
-      status: paidStatus,
-      payment: {
-        ...payment,
-        required: true,
-        status: 'paid',
-        stripe_checkout_session_id: metadata.checkoutSessionId,
-        ...(metadata.paymentIntentId
-          ? { stripe_payment_intent_id: metadata.paymentIntentId }
-          : {}),
-        paid_at: now,
-      },
-      updated: {
-        at: now,
-        by: 'stripe-webhook',
-      },
-    },
-    { merge: true }
-  )
+    const order = orderSnap.data() || {}
+    const payment = (order.payment && typeof order.payment === 'object')
+      ? order.payment as Record<string, unknown>
+      : {}
+    const expectedSessionId = text(payment.stripe_checkout_session_id)
+    const expectedAmount = amountMinor(payment.amount_chf)
+    const expectedCurrency = text(payment.currency_code).toLowerCase()
+    if (
+      text(order.menu_id) !== metadata.menuId ||
+      paymentStatus !== 'paid' ||
+      !expectedSessionId ||
+      expectedSessionId !== metadata.checkoutSessionId ||
+      expectedAmount <= 0 ||
+      receivedAmount !== expectedAmount ||
+      !expectedCurrency ||
+      receivedCurrency !== expectedCurrency
+    ) {
+      console.warn('[fireux-kitchens] Ignoring unverified Stripe payment completion', {
+        orderId: metadata.orderId,
+        paymentStatus,
+        sessionMatches: expectedSessionId === metadata.checkoutSessionId,
+        amountMatches: receivedAmount === expectedAmount,
+        currencyMatches: receivedCurrency === expectedCurrency,
+        menuMatches: text(order.menu_id) === metadata.menuId,
+      })
+      return { verified: false, notifyPreOrder: false }
+    }
 
-  if (orderType === 'pre_order' && !terminalStatus) {
+    const orderType = text(order.order_type)
+    const currentStatus = text(order.status).toLowerCase()
+    if (!isKitchenOrderType(orderType) || !isKitchenOrderStatus(currentStatus)) {
+      console.warn('[fireux-kitchens] Ignoring Stripe payment with invalid Order lifecycle', {
+        orderId: metadata.orderId,
+        orderType,
+        currentStatus,
+      })
+      return { verified: false, notifyPreOrder: false }
+    }
+
+    const resumeStatus = text(payment.resume_status)
+    if (resumeStatus && !isKitchenOrderPostPaymentStatus(resumeStatus)) {
+      console.warn('[fireux-kitchens] Ignoring Stripe payment with invalid resume state', {
+        orderId: metadata.orderId,
+        resumeStatus,
+      })
+      return { verified: false, notifyPreOrder: false }
+    }
+
+    if (text(payment.status).toLowerCase() === 'paid') {
+      return {
+        verified: true,
+        notifyPreOrder: orderType === 'pre_order',
+      }
+    }
+
+    const paidStatus = currentStatus === 'pending_payment'
+      ? isKitchenOrderPostPaymentStatus(resumeStatus)
+        ? resumeStatus
+        : statusAfterPayment(orderType)
+      : currentStatus
+    const now = FieldValue.serverTimestamp()
+    transaction.set(
+      orderRef,
+      {
+        status: paidStatus,
+        payment: {
+          ...payment,
+          required: true,
+          status: 'paid',
+          stripe_checkout_session_id: metadata.checkoutSessionId,
+          ...(metadata.paymentIntentId
+            ? { stripe_payment_intent_id: metadata.paymentIntentId }
+            : {}),
+          paid_at: now,
+        },
+        updated: {
+          at: now,
+          by: 'stripe-webhook',
+        },
+      },
+      { merge: true }
+    )
+
+    return {
+      verified: true,
+      notifyPreOrder:
+        orderType === 'pre_order' && currentStatus === 'pending_payment',
+    }
+  })
+
+  if (outcome.notifyPreOrder) {
     await dispatchPreOrderWhatsApp(db, {
       appId: metadata.appId,
       kitchenId: metadata.kitchenId,

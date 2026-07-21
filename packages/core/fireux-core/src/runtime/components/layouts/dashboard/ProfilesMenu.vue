@@ -1,6 +1,20 @@
+<!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: link the root profile directly and reserve the menu for multiple profiles. -->
 <template>
+  <UButton
+    v-if="menu.length === 1"
+    :to="rootUserEntry.to"
+    :label="collapsed ? undefined : rootUserEntry.label"
+    :icon="rootUserEntry.icon || 'i-lucide-user'"
+    :aria-label="rootUserEntry.label"
+    color="neutral"
+    variant="ghost"
+    block
+    :square="collapsed"
+    :class="[!collapsed && 'py-2']"
+  />
+
   <UDropdownMenu
-    v-if="menu.length"
+    v-else-if="menu.length > 1"
     :items="dropdownItems"
     :content="{ align: 'center', collisionPadding: 12 }"
     :ui="{
@@ -11,6 +25,7 @@
       :label="collapsed ? undefined : selected?.label || 'Your profile'"
       :icon="selected?.icon || 'i-lucide-user'"
       :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
+      :aria-label="selected?.label || 'Choose profile'"
       color="neutral"
       variant="ghost"
       block
@@ -21,7 +36,6 @@
       :disabled="!menu.length"
     />
   </UDropdownMenu>
-
 </template>
 
 <script setup lang="ts">

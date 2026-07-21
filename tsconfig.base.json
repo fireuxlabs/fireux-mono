@@ -44,6 +44,15 @@
       "fireux-translation/runtime/*": [
         "./packages/extensions/fireux-translation/src/runtime/*"
       ],
+      "fireux-finance": [
+        "./packages/extensions/fireux-finance/src/module.ts"
+      ],
+      "fireux-finance/*": [
+        "./packages/extensions/fireux-finance/src/*"
+      ],
+      "fireux-finance/runtime/*": [
+        "./packages/extensions/fireux-finance/src/runtime/*"
+      ],
       "fireux-ai": [
         "./packages/extensions/fireux-ai/src/module.ts"
       ],
@@ -190,6 +199,9 @@
       ],
       "@fireux-translation/*": [
         "./packages/extensions/fireux-translation/src/*"
+      ],
+      "@fireux-finance/*": [
+        "./packages/extensions/fireux-finance/src/*"
       ],
       "@fireux-ai/*": [
         "./packages/extensions/fireux-ai/src/*"

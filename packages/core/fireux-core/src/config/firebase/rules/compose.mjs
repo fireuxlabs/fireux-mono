@@ -1,9 +1,10 @@
-// Concurrent edit — 2026-07-21 16:07 CEST — Shared Firestore Rules pass: bind every contracted lexical frame and helper provenance.
+// Concurrent edit — 2026-07-21 16:12 CEST — Shared Firestore Rules pass: bind contracted frames by lexical and literal-path semantic identity.
 
 import { readFile } from 'node:fs/promises'
 import {
   FIRESTORE_RULE_CORE_BLOCK_STACK,
   FIRESTORE_RULE_FRAGMENTS,
+  FIRESTORE_RULE_SEMANTIC_UNIQUE_BLOCKS,
 } from './fragment-contract.mjs'
 
 const TEMPLATE_HEADER =
@@ -328,6 +329,7 @@ function collectLexicalContext(source) {
         ...block,
         key: `${index}:${block.descriptor}`,
         openOffset: index,
+        semanticKey: buildSemanticFrameKey(block, stack),
         functions: [],
       }
       stack.push(frame)
@@ -371,10 +373,23 @@ function collectLexicalContext(source) {
 
 function freezeFrameProjection(frames) {
   return Object.freeze(
-    frames.map(({ descriptor, key, openOffset }) =>
-      Object.freeze({ descriptor, key, openOffset })
+    frames.map(({ descriptor, key, openOffset, semanticKey }) =>
+      Object.freeze({ descriptor, key, openOffset, semanticKey })
     )
   )
+}
+
+function buildSemanticFrameKey(block, stack) {
+  if (!block.matchPath) return block.descriptor
+  const parentMatch = stack.findLast((frame) => frame.matchPath)
+  const parentPath = parentMatch?.semanticKey.slice('match '.length) ?? ''
+  return `match ${parentPath}${canonicalizeMatchPath(block.matchPath)}`
+}
+
+function canonicalizeMatchPath(path) {
+  return path
+    .replace(/\{[A-Za-z_][A-Za-z0-9_]*\s*=\s*\*\*\}/g, '{**}')
+    .replace(/\{[A-Za-z_][A-Za-z0-9_]*\}/g, '{*}')
 }
 
 function isMatchPathWildcard(statement) {
@@ -392,6 +407,7 @@ function classifyBlock(statement) {
       descriptor: `service ${service[1]}`,
       functionName: '',
       functionSignature: '',
+      matchPath: '',
     }
   }
 
@@ -401,6 +417,7 @@ function classifyBlock(statement) {
       descriptor: `match ${match[1]}`,
       functionName: '',
       functionSignature: '',
+      matchPath: match[1],
     }
   }
 
@@ -410,10 +427,16 @@ function classifyBlock(statement) {
       descriptor: `function ${functionDeclaration[1]}`,
       functionName: functionDeclaration[1],
       functionSignature: header,
+      matchPath: '',
     }
   }
 
-  return { descriptor: 'block', functionName: '', functionSignature: '' }
+  return {
+    descriptor: 'block',
+    functionName: '',
+    functionSignature: '',
+    matchPath: '',
+  }
 }
 
 function formatBlockStack(stack) {
@@ -488,6 +511,17 @@ function assertComposedRules(
         `${manifest.key} Rules must retain one original contracted ` +
           `${descriptor} frame.`
       )
+    }
+    if (FIRESTORE_RULE_SEMANTIC_UNIQUE_BLOCKS.includes(descriptor)) {
+      const semanticFrames = context.openedFrames.filter(
+        (frame) => frame.semanticKey === anchor.semanticKey
+      )
+      if (semanticFrames.length !== 1) {
+        throw new Error(
+          `${manifest.key} Rules must retain one wildcard-normalized ` +
+            `${anchor.semanticKey} frame.`
+        )
+      }
     }
   }
   if (!source.endsWith('  }\n}\n')) {

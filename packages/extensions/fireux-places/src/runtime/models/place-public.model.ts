@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 14:28 CEST — Place public projection: define the bounded browser-safe Place contract.
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: define Place identity as a non-sensitive public reference card, never a raw root.
+// Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: expose safe locale defaults on detail without bloating directory cards.
 import type {
   PlaceImageShade,
   PlaceType,
@@ -34,6 +35,11 @@ export type PublicPlaceIndexPage = {
   nextCursor?: string
 }
 
+export type PublicPlaceDetailProjection = PublicPlaceProjection & {
+  default_currency_code?: string
+  timezone?: string
+}
+
 export type PublicPlaceDetailResponse = {
-  item: PublicPlaceProjection
+  item: PublicPlaceDetailProjection
 }

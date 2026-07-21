@@ -1,0 +1,117 @@
+diff --git a/dist/index.mjs b/dist/index.mjs
+--- a/dist/index.mjs
++++ b/dist/index.mjs
+@@ -227,6 +227,82 @@
+ 	307,
+ 	308
+ ]);
++const responseUpstreams = new WeakMap();
++function trackResponseUpstream(res, upstream) {
++	if (res.destroyed) {
++		upstream.destroy();
++		return;
++	}
++	let upstreams = responseUpstreams.get(res);
++	if (!upstreams) {
++		upstreams = new Set();
++		responseUpstreams.set(res, upstreams);
++		res.once("close", () => {
++			responseUpstreams.delete(res);
++			for (const current of upstreams) current.destroy();
++			upstreams.clear();
++		});
++	}
++	upstreams.add(upstream);
++	upstream.once("close", () => {
++		upstreams.delete(upstream);
++	});
++}
++function streamProxyResponse(proxyRes, res) {
++	let waitingForDrain = false;
++	function cleanup() {
++		waitingForDrain = false;
++		res.removeListener("drain", onDrain);
++		proxyRes.removeListener("data", onData);
++		proxyRes.removeListener("end", onEnd);
++		proxyRes.removeListener("close", onClose);
++		proxyRes.removeListener("error", onError);
++	}
++	function abort(error) {
++		cleanup();
++		if (!proxyRes.destroyed) proxyRes.destroy(error);
++	}
++	function onDrain() {
++		waitingForDrain = false;
++		if (!proxyRes.destroyed) proxyRes.resume();
++	}
++	function onData(chunk) {
++		if (res.destroyed || res.writableEnded) {
++			abort();
++			return;
++		}
++		let canContinue;
++		try {
++			canContinue = res.write(chunk);
++		} catch (error) {
++			abort(error);
++			return;
++		}
++		if (!canContinue && !waitingForDrain) {
++			waitingForDrain = true;
++			proxyRes.pause();
++			res.once("drain", onDrain);
++		}
++	}
++	function onEnd() {
++		cleanup();
++		if (!res.destroyed && !res.writableEnded) res.end();
++	}
++	function onClose() {
++		cleanup();
++	}
++	function onError() {
++		cleanup();
++	}
++	if (res.destroyed || res.writableEnded) {
++		proxyRes.destroy();
++		return;
++	}
++	proxyRes.once("end", onEnd);
++	proxyRes.once("close", onClose);
++	proxyRes.once("error", onError);
++	proxyRes.on("data", onData);
++}
+ const webIncomingMiddleware = [
+ 	defineProxyMiddleware((req) => {
+ 		if ((req.method === "DELETE" || req.method === "OPTIONS") && !req.headers["content-length"]) {
+@@ -280,9 +356,7 @@
+ 		if (options.proxyTimeout) proxyReq.setTimeout(options.proxyTimeout, function() {
+ 			proxyReq.destroy();
+ 		});
+-		res.on("close", function() {
+-			if (!res.writableFinished) proxyReq.destroy();
+-		});
++		trackResponseUpstream(res, proxyReq);
+ 		const proxyError = createErrorHandler(proxyReq, options.target);
+ 		req.on("error", proxyError);
+ 		proxyReq.on("error", proxyError);
+@@ -366,9 +440,7 @@
+ 			if (res.finished) {
+ 				if (server) server.emit("end", req, res, proxyRes);
+ 			} else {
+-				res.on("close", function() {
+-					proxyRes.destroy();
+-				});
++				trackResponseUpstream(res, proxyRes);
+ 				proxyRes.on("close", function() {
+ 					if (!proxyRes.complete && !res.destroyed) res.destroy();
+ 				});
+@@ -379,7 +451,7 @@
+ 				proxyRes.on("end", function() {
+ 					if (server) server.emit("end", req, res, proxyRes);
+ 				});
+-				if (!options.selfHandleResponse) proxyRes.pipe(res);
++				if (!options.selfHandleResponse) streamProxyResponse(proxyRes, res);
+ 			}
+ 		}
+ 		proxyReq.on("response", function(proxyRes) {

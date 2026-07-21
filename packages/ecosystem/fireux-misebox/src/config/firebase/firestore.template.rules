@@ -5,6 +5,7 @@
 // @fireux-rules-fragments open,owner,text,avatar,bounded,owner-stamp,membership-path,join-validator,membership-block,overlay-validator,close
 // Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: compose the Misebox release source from Core fragments and ecosystem policy.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: allow bounded optional biography in public User presentation.
+// Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: close immutable Kitchen Sales and raw financial facts to browser writes.
 // @fireux-rules-template-source
 // Concurrent edit — 2026-07-20 12:55 CEST — Security spine: default-deny raw public roots and constrain Driver order access to open deliveries.
 // Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: make trusted server provisioning the sole public User create path.
@@ -39,6 +40,10 @@
     // apps/{appId}/kitchens/{kitchenId}/orders/{orderId}: private order PII;
     //   client reads are restricted to Kitchen operators. Granted Drivers use
     //   authenticated server-projected dispatch beacons instead.
+    // apps/{appId}/kitchens/{kitchenId}/sales/{saleId}: immutable, PII-free
+    //   completed-Order facts readable by App admins and Kitchen operators.
+    // apps/{appId}/financial-facts/{factId}: immutable normalized finance
+    //   facts; raw records remain server-only until bounded reports exist.
 
     // ===============================================================
     // Shared helpers
@@ -987,6 +992,10 @@
         allow create, update, delete: if false;
       }
 
+      match /financial-facts/{factId} {
+        allow get, list, create, update, delete: if false;
+      }
+
       // Administrative removal blocks are server-owned and never client-readable.
       // @fireux-core-rules membership-block
       match /users/{userId} {
@@ -1234,24 +1243,36 @@
           allow create, update, delete: if false;
         }
 
+        match /sales/{saleId} {
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow create, update, delete: if false;
+        }
+
         match /{childCollection}/{childId} {
           allow get, list: if childCollection != 'orders' &&
+            childCollection != 'sales' &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, 'kitchens', kitchenId));
           allow create, update: if childCollection != 'orders' &&
+            childCollection != 'sales' &&
             isTargetOperator(appId, 'kitchens', kitchenId) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if childCollection != 'orders' &&
+            childCollection != 'sales' &&
             isTargetOperator(appId, 'kitchens', kitchenId);
 
           match /{nested=**} {
             allow get, list: if childCollection != 'orders' &&
+              childCollection != 'sales' &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, 'kitchens', kitchenId));
             allow create, update: if childCollection != 'orders' &&
+              childCollection != 'sales' &&
               isTargetOperator(appId, 'kitchens', kitchenId) &&
               request.resource.data.keys().size() <= 100;
             allow delete: if childCollection != 'orders' &&
+              childCollection != 'sales' &&
               isTargetOperator(appId, 'kitchens', kitchenId);
           }
         }

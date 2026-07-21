@@ -1,7 +1,8 @@
 Menu family map
 <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: map explicit Place hydration, sparse creation, and live schedule inheritance. -->
-Updated: 2026-07-20
-Ref: 4c0a1c7ad
+<!-- Concurrent edit — 2026-07-21 20:25 CEST — Food image specification: record the transparent square Menu item asset target. -->
+Updated: 2026-07-21
+Ref: 1e55eece7
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared funnel spine. -->
 <!-- Concurrent edit — 2026-07-19 21:18 CEST — Pre-order WhatsApp pass: map the reusable server alert seam. -->
@@ -447,6 +448,12 @@ Structured item options:
 - `image_url`: optional menu-row presentation image. For now this belongs to
   `MenuItem`, not `Dish`, so kitchens can use stock/provider images without
   promoting images into canonical dish truth too early.
+- The target food-image input is a transparent WebP on a square 1200 × 1200
+  canvas. Keep the food centred inside a 10% clear margin, with no background,
+  frame, text, or baked-in shadow. Transparent PNG is the fallback; JPEG is not
+  suitable because it cannot preserve the alpha channel. Current upload paths
+  do not enforce this target yet, so conversion and validation remain a named
+  follow-up rather than assumed runtime behavior.
 - AI menu processing should preserve both shapes before review/confirm so
   operators can correct them instead of rebuilding them manually.
 - Re-confirming an AI draft fails closed when a matched or omitted current

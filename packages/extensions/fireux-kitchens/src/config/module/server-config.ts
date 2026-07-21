@@ -2,6 +2,8 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: register bounded Chef and Driver routes.
 // Concurrent edit — 2026-07-20 17:44 CEST — Repo Efficiency Pass 2 of 6: register trusted Kitchen profile provisioners.
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: register the bounded public Kitchen/Place projection.
+// Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: register the bounded gross-sales report endpoint.
+// Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: register authenticated preview and atomic completion endpoints.
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import {
@@ -14,6 +16,16 @@ const baseServerHandlers = [
     route: '/api/kitchens',
     method: 'get',
     handler: './runtime/server/api/kitchens/index.get',
+  },
+  {
+    route: '/api/kitchens/onboarding/preview',
+    method: 'post',
+    handler: './runtime/server/api/kitchens/onboarding/preview.post',
+  },
+  {
+    route: '/api/kitchens/onboarding/complete',
+    method: 'post',
+    handler: './runtime/server/api/kitchens/onboarding/complete.post',
   },
   {
     route: '/api/internal/profiles/chef',
@@ -79,6 +91,12 @@ const baseServerHandlers = [
     route: '/api/console/kitchen/orders/end-service',
     method: 'post',
     handler: './runtime/server/api/console/kitchen/orders/end-service.post',
+  },
+  {
+    route: '/api/console/kitchen/reports/gross-sales',
+    method: 'get',
+    handler:
+      './runtime/server/api/console/kitchen/reports/gross-sales.get',
   },
   {
     route: '/api/console/kitchen/menus/upload',

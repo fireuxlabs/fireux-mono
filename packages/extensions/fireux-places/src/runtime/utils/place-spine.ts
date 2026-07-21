@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: centralize sparse currency and business-hours normalization.
+// Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: share currency suggestions and IANA timezone validation across client and server.
 import type {
   PlaceBusinessHours,
   PlaceBusinessHoursDay,
@@ -24,6 +25,29 @@ const googleDays = [
   'friday',
   'saturday',
 ] as const satisfies readonly PlaceBusinessHoursDay[]
+
+const currencyByCountry: Readonly<Record<string, string>> = {
+  AT: 'EUR',
+  AU: 'AUD',
+  BE: 'EUR',
+  CA: 'CAD',
+  CH: 'CHF',
+  DE: 'EUR',
+  DK: 'DKK',
+  ES: 'EUR',
+  FI: 'EUR',
+  FR: 'EUR',
+  GB: 'GBP',
+  IE: 'EUR',
+  IT: 'EUR',
+  LU: 'EUR',
+  NL: 'EUR',
+  NO: 'NOK',
+  NZ: 'NZD',
+  PT: 'EUR',
+  SE: 'SEK',
+  US: 'USD',
+}
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -75,10 +99,27 @@ export const normalizePlaceBusinessHours = (
   return windows.length ? { windows } : null
 }
 
-export const readPlaceCurrencyCode = (value: unknown) => {
-  const code = text(record(value).default_currency_code).toUpperCase()
+export const normalizePlaceCurrencyCode = (value: unknown) => {
+  const code = text(value).toUpperCase()
   return /^[A-Z]{3}$/.test(code) ? code : ''
 }
+
+export const suggestPlaceCurrencyCode = (countryCode: unknown) =>
+  currencyByCountry[text(countryCode).toUpperCase()] ?? ''
+
+export const normalizePlaceTimezone = (value: unknown) => {
+  const timezone = text(value)
+  if (!timezone || timezone.length > 80) return ''
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: timezone }).format()
+    return timezone
+  } catch {
+    return ''
+  }
+}
+
+export const readPlaceCurrencyCode = (value: unknown) =>
+  normalizePlaceCurrencyCode(record(value).default_currency_code)
 
 export const readPlaceBusinessHours = (value: unknown) => {
   const source = record(value)

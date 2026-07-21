@@ -5,7 +5,10 @@ Entities map
 <!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map the bounded contract with server-only source scope. -->
 <!-- Concurrent edit — 2026-07-21 15:11 CEST — Werkbox Rules migration: record fail-closed Place mutation authority and inert legacy claims. -->
 <!-- Concurrent edit — 2026-07-21 16:00 CEST — Place onboarding reconciliation: record trusted id-only Place materialization. -->
+<!-- Concurrent edit — 2026-07-21 16:38 CEST — Place onboarding completion: record trusted locale defaults and detail projection. -->
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map bounded biography onto canonical public User identity. -->
+<!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: classify Sale and FinancialFact as parent-owned records, not entities. -->
+<!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: map trusted Place-backed root and App-access activation. -->
 
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
@@ -22,7 +25,7 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map projected public profile reads and owner-only raw authority. -->
 
 Updated: 2026-07-21
-Ref: 5b6cfcc8e
+Ref: 1e55eece7
 Role: map, not canon
 
 Purpose:
@@ -76,6 +79,16 @@ Kinds:
 - `shape`: embedded or transport shape.
 - `primitive`: reusable low-level value type.
 - `bucket`: organizational folder, not domain truth.
+
+Finance record classification:
+
+- `FinancialMoney` is a primitive: safe integer minor units plus ISO currency.
+- `KitchenSale` is an immutable Kitchen-owned record derived one-to-one from a
+  completed Order. Its id and lifecycle are not independent from that Order.
+- `FinancialFact` is an immutable App-owned support record with deterministic
+  identity derived from its source record. It is not an entity or ledger entry.
+- Promotion would require an independently proven lifecycle or authority; a
+  future reference or report alone does not add entity ceremony.
 
 Thinking aid:
 
@@ -226,16 +239,36 @@ Place authority boundary:
 - Kitchen operation hours are an optional operational override. Without that
   override, runtime resolution reads the linked Place business hours. Menu and
   ordering-surface schedules continue the same single-parent inheritance chain.
+- Interactive Kitchen onboarding composes the canonical Place funnel first,
+  then writes only Kitchen-owned delta. Its trusted completion transaction
+  creates or validates the Kitchen root, the current App access record, and the
+  current UserApp console target together. New roots are unpublished; they do
+  not copy Place address, logo, currency, timezone, contact, or hours.
+- Existing Kitchen attachment is not a claim workflow. An existing App
+  operator may reopen its Kitchen, an App admin may repair or attach a valid
+  unclaimed root, and ordinary members cannot acquire an existing Kitchen by
+  supplying its id.
+- New Kitchen activation also requires current-App-admin authority. Tenant Apps
+  remain bounded to configured Kitchen targets, and a draft receives no public
+  slug until the canonical identity editor validates uniqueness.
 - Authenticated Place edits use the trusted `PATCH /api/places/:placeId` seam.
   Current-App admin or explicitly linked Kitchen-operator access is checked on
   the server; Kitchen console presentation state never grants a direct browser
   write to the shared Place record. Stored `claimed_by` is inert legacy data:
   no claim-derived authority exists until a verified ownership workflow does.
-- Authenticated Place onboarding ends at `POST /api/places/ensure`. The caller
-  supplies only a stable Place ID; the server checks current-App membership,
-  reuses an existing Place, or verifies missing Google Place truth before an
-  idempotent create. The Place funnel never implies or creates a Kitchen,
-  Property, or another Place-backed role.
+- `POST /api/places/ensure` remains the ID-only idempotent Place materialization
+  seam. Interactive Place onboarding separately previews and completes the
+  Place through authenticated `/api/places/onboarding/*` boundaries. The server
+  verifies missing provider identity and validates confirmed ISO currency plus
+  IANA timezone before creation; existing defaults are never overwritten.
+- The creator within the same current App, or a current App admin, may fill only
+  missing defaults and a missing canonical Storage logo on an incomplete Place.
+  Other existing Places are reuse-only. The funnel never implies or creates a
+  Kitchen, Property, or another Place-backed role.
+- Public Place index cards remain coarse. The bounded Place detail projection
+  may additionally expose validated currency and timezone because they are safe
+  locale defaults; exact address, coordinates, contacts, hours, ownership, and
+  provider metadata remain canonical server-side truth.
 
 Root Projected Index members:
 

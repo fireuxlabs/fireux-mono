@@ -1,6 +1,7 @@
 <!-- FILE: packages/extensions/fireux-products/src/runtime/pages/dashboard/admin/products/create.vue -->
 <!-- Concurrent edit — 2026-07-20 11:44 CEST — Root Efficiency Pass 4 of 4: use the Products-owned Product fixture. -->
 <!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove blank-form demo bulk writes to canonical Products. -->
+<!-- Concurrent edit — 2026-07-21 17:00 CEST — Dashboard Family pass: clarify the Product creation task and use shared notifications. -->
 <template>
   <UDashboardPanel id="dashboard-admin-products-create">
     <template #header>
@@ -8,46 +9,60 @@
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
-        <UPage>
-          <UPageBody class="pagebody">
-            <div v-if="permissionsPending" class="space-y-3">
-              <USkeleton v-for="n in 3" :key="n" class="h-20" />
-            </div>
-
-            <UAlert
-              v-else-if="!canManageProducts"
-              color="warning"
-              title="Admins only"
-              description="Only admins can publish products for this runtime."
-            />
-
-            <MoleculesCreateShell
-              v-else
-              :loading="isCreating"
-              submit-label="Create product"
-              @submit="handleCreate"
-              @clear="handleClear"
-            >
-              <template #write>
-                <ProductCreateWrite />
-              </template>
-              <template #preview>
-                <ProductCreatePreview />
-              </template>
-            </MoleculesCreateShell>
-
-            <div class="mt-6">
-              <DevJson
-                :title="'Create Product (JSON)'"
-                context="dashboard/admin/products/create"
-                :data="devCreateJson"
-                :default-open="false"
+      <UPage>
+        <UPageBody class="pagebody">
+          <UPageHeader
+            headline="Products"
+            title="Create a product"
+            description="Set the product details and prices, review the preview, then create the catalogue record."
+          >
+            <template #links>
+              <UButton
+                to="/dashboard/admin/products"
+                label="Back to products"
+                icon="i-lucide-arrow-left"
+                color="neutral"
+                variant="soft"
               />
-            </div>
-          </UPageBody>
-        </UPage>
-      </div>
+            </template>
+          </UPageHeader>
+
+          <div v-if="permissionsPending" class="space-y-3">
+            <USkeleton v-for="n in 3" :key="n" class="h-20" />
+          </div>
+
+          <UAlert
+            v-else-if="!canManageProducts"
+            color="warning"
+            title="Admins only"
+            description="Only app admins can create products."
+          />
+
+          <MoleculesCreateShell
+            v-else
+            :loading="isCreating"
+            submit-label="Create product"
+            @submit="handleCreate"
+            @clear="handleClear"
+          >
+            <template #write>
+              <ProductCreateWrite />
+            </template>
+            <template #preview>
+              <ProductCreatePreview />
+            </template>
+          </MoleculesCreateShell>
+
+          <div class="mt-6">
+            <DevJson
+              :title="'Create Product (JSON)'"
+              context="dashboard/admin/products/create"
+              :data="devCreateJson"
+              :default-open="false"
+            />
+          </div>
+        </UPageBody>
+      </UPage>
     </template>
   </UDashboardPanel>
 </template>
@@ -57,10 +72,8 @@ import { useStorage } from '@vueuse/core'
 import { computed, ref } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useProductPermissions } from '../../../../composables/useProductPermissions'
-// Use Nuxt UI toast if available (auto-imported in app)
-const useToastFn = (globalThis as any).useToast as undefined | (() => any)
-const toast = useToastFn ? useToastFn() : undefined
 import { useProductCreate } from '../../../../composables/fireux/firestore/product/mutations/useProductCreate'
 import { useCreatePricesState } from '../../../../composables/fireux/product/create/useCreatePricesState'
 import { useCreateProductState } from '../../../../composables/fireux/product/create/useCreateProductState'
@@ -74,8 +87,10 @@ definePageMeta({
 })
 
 const { canManageProducts, pending: permissionsPending } = useProductPermissions()
+const { appName } = useFireUXConfig()
+const toast = useToastify()
 
-useHead({ title: 'Create Product' })
+useHead({ title: `${appName} | Create Product` })
 
 const isCreating = ref(false)
 const { product, resetCreateProductState } = await useCreateProductState()
@@ -100,23 +115,15 @@ async function handleCreate() {
     })
 
     if (!result.success) {
-      if (toast)
-        toast.add({
-          title: 'Create failed',
-          description: result.error || 'Unknown error',
-          icon: 'i-heroicons-x-circle',
-          color: 'error',
-        })
+      toast.error(
+        `Product was not created: ${result.error || 'Please try again.'}`
+      )
       return
     }
 
-    if (toast)
-      toast.add({
-        title: 'Product created',
-        description: result.id ? `Created: ${result.id}` : 'Product created',
-        icon: 'i-heroicons-check-circle',
-        color: 'success',
-      })
+    toast.success(
+      result.id ? `Product created: ${result.id}` : 'Product created.'
+    )
     await router.push('/dashboard/admin/products')
   } finally {
     isCreating.value = false

@@ -1,15 +1,16 @@
 // Concurrent edit — 2026-07-20 22:59 CEST — Both-Entity Authority — Property: keep independent identity, private support, and explicit publication.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Property root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Property access support directly.
-import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
+// Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: make server-reachable workspace runtime value imports explicit.
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type {
   FireuxAppAccessRecord,
   FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import {
   FireuxAppAccessRecordModel,
   FireuxAppScope,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =

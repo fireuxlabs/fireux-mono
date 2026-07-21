@@ -1,5 +1,6 @@
-// Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: layer Place selection and verified ensure over shared step mechanics.
+// Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: confirm local defaults and stage optional branding before trusted completion.
 import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
+import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, ref } from 'vue'
 import {
   canonicalPlaceId,
@@ -7,8 +8,18 @@ import {
 } from '../firestore/place/fetch/google/usePlacesGoogle'
 import { usePlaceCreate } from '../firestore/place/mutations/usePlaceCreate'
 import type { PlaceUpsertInput } from '../../../models/place.model'
+import type { PlaceOnboardingPreview } from '../../../models/place-onboarding.model'
+import {
+  normalizePlaceCurrencyCode,
+  normalizePlaceTimezone,
+} from '../../../utils/place-spine'
 
-export type PlaceOnboardingStepId = 'find' | 'identity' | 'review'
+export type PlaceOnboardingStepId =
+  | 'find'
+  | 'identity'
+  | 'defaults'
+  | 'brand'
+  | 'review'
 
 export type PlaceOnboardingSelection = {
   placeId: string
@@ -53,10 +64,33 @@ export function usePlacesOnboarding() {
   const selectionPending = ref(false)
   const selectionError = ref('')
   const completion = ref<PlaceOnboardingResult | null>(null)
+  const preview = ref<PlaceOnboardingPreview | null>(null)
+  const imageFile = ref<File | null>(null)
   let selectionSequence = 0
-  const { ensurePlaceExists } = usePlaceCreate()
+  const {
+    completePlaceOnboarding,
+    ensurePlaceExists,
+    previewPlaceOnboarding,
+  } = usePlaceCreate()
+  const { uploadImage } = useImageStorage()
 
   const isExisting = computed(() => selectionKind.value === 'existing')
+  const canConfigure = computed(() => preview.value?.can_configure === true)
+  const needsEnrichment = computed(() => Boolean(
+    preview.value &&
+    canConfigure.value &&
+    (preview.value.requires_defaults || !preview.value.image_url)
+  ))
+  const currencyCode = computed(() =>
+    text(draft.value?.default_currency_code).toUpperCase().slice(0, 3)
+  )
+  const timezone = computed(() => text(draft.value?.timezone))
+  const validatedCurrencyCode = computed(() =>
+    normalizePlaceCurrencyCode(currencyCode.value)
+  )
+  const validatedTimezone = computed(() =>
+    normalizePlaceTimezone(timezone.value)
+  )
 
   function validateFind() {
     if (selectionPending.value) return 'Wait while we confirm this Place.'
@@ -75,7 +109,16 @@ export function usePlacesOnboarding() {
     return true
   }
 
-  const steps: readonly OnboardingStep<PlaceOnboardingStepId>[] = [
+  function validateDefaults() {
+    if (!needsEnrichment.value) return true
+    if (!validatedCurrencyCode.value) return 'Confirm a 3-letter currency code.'
+    if (!validatedTimezone.value) {
+      return 'Confirm a valid IANA timezone, such as Europe/Zurich.'
+    }
+    return true
+  }
+
+  const steps = computed<readonly OnboardingStep<PlaceOnboardingStepId>[]>(() => [
     {
       id: 'find',
       label: 'Find the Place',
@@ -90,22 +133,61 @@ export function usePlacesOnboarding() {
       icon: 'i-lucide-map-pin',
       validate: validateIdentity,
     },
+    ...(needsEnrichment.value
+      ? [
+          {
+            id: 'defaults' as const,
+            label: 'Local defaults',
+            description: 'Confirm the currency and local timezone inherited from this Place.',
+            icon: 'i-lucide-settings-2',
+            validate: validateDefaults,
+          },
+          {
+            id: 'brand' as const,
+            label: 'Logo',
+            description: 'Add a real logo now or skip it and continue.',
+            icon: 'i-lucide-image',
+          },
+        ]
+      : []),
     {
       id: 'review',
       label: 'Review',
-      description: 'Review the shared Place before adding or reusing it.',
+      description: 'Review the shared identity and confirmed local defaults.',
       icon: 'i-lucide-check-circle-2',
-      validate: validateIdentity,
+      validate: () => validateIdentity() === true
+        ? validateDefaults()
+        : validateIdentity(),
     },
-  ]
+  ])
 
   async function finish() {
     const id = canonicalPlaceId(draft.value?.id)
     if (!id) throw new Error('Choose a Place before continuing.')
 
     try {
-      const ensured = await ensurePlaceExists({ id })
-      if (!ensured) throw new Error('The Place could not be confirmed.')
+      if (!needsEnrichment.value) {
+        const ensured = await ensurePlaceExists({ id })
+        if (!ensured) throw new Error('The Place could not be confirmed.')
+      } else {
+        const defaults = {
+          id,
+          default_currency_code: validatedCurrencyCode.value,
+          timezone: validatedTimezone.value,
+        }
+        await completePlaceOnboarding(defaults)
+
+        if (imageFile.value) {
+          const imageUrl = await uploadImage(
+            `places/${id}/avatar`,
+            imageFile.value
+          )
+          await completePlaceOnboarding({
+            ...defaults,
+            image_url: imageUrl,
+          })
+        }
+      }
       completion.value = {
         id,
         path: `/places/${encodeURIComponent(id)}`,
@@ -128,6 +210,8 @@ export function usePlacesOnboarding() {
     completion.value = null
     selectionError.value = ''
     selectionPending.value = true
+    preview.value = null
+    imageFile.value = null
 
     const id = canonicalPlaceId(selection.placeId || selection.place.id)
     const providerSelection = selection.place.source === 'google'
@@ -141,24 +225,47 @@ export function usePlacesOnboarding() {
     }
 
     try {
-      if (!providerSelection) {
+      if (providerSelection) {
+        const details = await fetchPlaceDetails(id)
+        if (sequence !== selectionSequence) return
+        if (!details?.stored) {
+          selectionError.value = 'We could not load this Place from Google.'
+          return
+        }
+
+        draft.value = {
+          ...selection.place,
+          ...details.stored,
+          id,
+          name: text(details.stored.name || selection.place.name),
+          place_type: 'physical',
+        }
+      } else {
         draft.value = { ...selection.place, id }
-        return
       }
 
-      const details = await fetchPlaceDetails(id)
+      const resolvedPreview = await previewPlaceOnboarding(id)
       if (sequence !== selectionSequence) return
-      if (!details?.stored) {
-        selectionError.value = 'We could not load this Place from Google.'
-        return
-      }
-
+      preview.value = resolvedPreview
+      selectionKind.value = resolvedPreview.existing ? 'existing' : 'provider'
+      const current = resolvedPreview.current || {}
+      const suggestions = resolvedPreview.suggestions || {}
       draft.value = {
-        ...selection.place,
-        ...details.stored,
+        ...(draft.value || selection.place),
+        ...(current.default_currency_code || suggestions.default_currency_code
+          ? {
+              default_currency_code:
+                current.default_currency_code ||
+                suggestions.default_currency_code,
+            }
+          : {}),
+        ...(current.timezone || suggestions.timezone
+          ? { timezone: current.timezone || suggestions.timezone }
+          : {}),
+        ...(resolvedPreview.image_url
+          ? { image_url: resolvedPreview.image_url }
+          : {}),
         id,
-        name: text(details.stored.name || selection.place.name),
-        place_type: 'physical',
       }
     } catch (error) {
       if (sequence === selectionSequence) {
@@ -176,17 +283,45 @@ export function usePlacesOnboarding() {
     selectionPending.value = false
     selectionError.value = ''
     completion.value = null
+    preview.value = null
+    imageFile.value = null
     onboarding.reset()
+  }
+
+  function setCurrencyCode(value: string) {
+    if (!draft.value) return
+    draft.value = {
+      ...draft.value,
+      default_currency_code: text(value).toUpperCase().slice(0, 3),
+    }
+  }
+
+  function setTimezone(value: string) {
+    if (!draft.value) return
+    draft.value = { ...draft.value, timezone: text(value) }
+  }
+
+  function setImageFile(value: File | null) {
+    imageFile.value = value
   }
 
   return {
     ...onboarding,
     clearSelection,
     completion,
+    canConfigure,
+    currencyCode,
     draft,
+    imageFile,
     isExisting,
+    needsEnrichment,
+    preview,
     selectPlace,
+    setCurrencyCode,
+    setImageFile,
+    setTimezone,
     selectionError,
     selectionPending,
+    timezone,
   }
 }

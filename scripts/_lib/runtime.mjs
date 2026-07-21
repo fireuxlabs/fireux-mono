@@ -1,7 +1,7 @@
 // @fireux-script
 // last_used: 2026-07-21
 // usage_note: shared runtime contract check; update when run or imported for runtime enforcement.
-// Concurrent edit — 2026-07-21 16:06 CEST — Misebox dev stability pass: reject stale and split workspace installations before startup.
+// Concurrent edit — 2026-07-21 16:23 CEST — Misebox dev stability pass: reject missing, stale, and split workspace installations before startup.
 
 import { existsSync, readFileSync, readdirSync, realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
@@ -20,6 +20,12 @@ const SKIP_DIRS = new Set([
 const IDENTITY_SENSITIVE_PACKAGES = [
   { dependency: 'firebase-admin', specifier: 'firebase-admin/firestore' },
   { dependency: 'h3', specifier: 'h3' },
+]
+
+const DEPENDENCY_GROUPS = [
+  'dependencies',
+  'devDependencies',
+  'optionalDependencies',
 ]
 
 function readText(filePath) {
@@ -197,6 +203,62 @@ export function checkInstalledPackageIdentity(options) {
   return issues
 }
 
+export function checkInstalledWorkspaceLinks(options) {
+  const repoRoot = realpathSync(options.repoRoot)
+  const manifests = options.manifests || []
+  const resolveSpecifier = options.resolveSpecifier || resolveInstalledSpecifier
+  const issues = []
+  const manifestsByName = new Map(
+    manifests
+      .filter(manifest => typeof manifest.pkg.name === 'string')
+      .map(manifest => [manifest.pkg.name, manifest])
+  )
+
+  for (const manifest of manifests) {
+    for (const groupName of DEPENDENCY_GROUPS) {
+      for (const [dependency, version] of Object.entries(manifest.pkg[groupName] || {})) {
+        if (!String(version).startsWith('workspace:')) continue
+
+        const target = manifestsByName.get(dependency)
+        if (!target) {
+          addIssue(
+            issues,
+            `declares workspace dependency ${dependency}, but no workspace manifest owns that package name`,
+            manifest.rel
+          )
+          continue
+        }
+
+        let resolved
+        try {
+          resolved = resolveSpecifier(manifest.filePath, `${dependency}/package.json`)
+        } catch {
+          addIssue(
+            issues,
+            `cannot resolve workspace dependency ${dependency}; run pnpm install in this checkout`,
+            manifest.rel
+          )
+          continue
+        }
+
+        const expected = realpathSync(target.filePath)
+        if (resolved !== expected) {
+          const location = isPathInside(repoRoot, resolved)
+            ? resolved
+            : `${resolved} (outside this checkout)`
+          addIssue(
+            issues,
+            `workspace dependency ${dependency} resolves to ${location}, expected ${expected}; run pnpm install in this checkout`,
+            manifest.rel
+          )
+        }
+      }
+    }
+  }
+
+  return issues
+}
+
 function checkInstalledWorkspace(repoRoot, manifests, issues) {
   const canonicalRepoRoot = realpathSync(repoRoot)
   const nodeModulesPath = path.join(repoRoot, 'node_modules')
@@ -264,6 +326,10 @@ function checkInstalledWorkspace(repoRoot, manifests, issues) {
   }
 
   issues.push(
+    ...checkInstalledWorkspaceLinks({
+      repoRoot: canonicalRepoRoot,
+      manifests,
+    }),
     ...checkInstalledPackageIdentity({
       repoRoot: canonicalRepoRoot,
       manifests,

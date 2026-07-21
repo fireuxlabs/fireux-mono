@@ -1,15 +1,16 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <!-- Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: continue new Kitchen creation into linked Place/Kitchen configuration. -->
+<!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: use the shared Place-backed funnel and explicit activation review. -->
 <template>
   <UDashboardPanel id="console-kitchen-create">
     <template #header>
-      <LayoutsConsoleNavbar title="Create Kitchen" />
+      <LayoutsConsoleNavbar title="Add Kitchen" />
     </template>
 
     <template #body>
       <section class="space-y-4">
         <KitchenCreateSystem
-          v-if="canCreate"
+          v-if="canEnterCreate"
           mode="console"
           :existing-root-id="existingRootId"
           :return-to="returnTo"
@@ -31,13 +32,15 @@
 import { useRoute } from '#imports'
 import { computed } from 'vue'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import KitchenCreateSystem from '../../../components/Kitchen/Create/System.vue'
 
 const { canCreateTarget } = useConsole('kitchen')
 const canCreate = computed(() => canCreateTarget())
 const route = useRoute()
 const existingRootId = computed(() =>
   String(route.query.existingRootId || '').trim()
+)
+const canEnterCreate = computed(() =>
+  canCreate.value || Boolean(existingRootId.value)
 )
 const returnTo = computed(() =>
   existingRootId.value ? '/console/kitchen/overview' : '/console/kitchen/identity'

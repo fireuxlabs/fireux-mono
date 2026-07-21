@@ -1,6 +1,6 @@
 pnpm concept map
-Updated: 2026-07-20
-Ref: 4c0a1c7ad
+Updated: 2026-07-21
+Ref: 1e55eece7
 Role: map, not canon
 
 <!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: map the canonical command and script-lifecycle surface. -->
@@ -9,6 +9,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: map package-command target validation. -->
 <!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: map package and baseline production build gates. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: map the deterministic Rules artifact command. -->
+<!-- Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: map portable installs, complete workspace links, explicit server imports, safe dev ownership, and tracked dependency patches. -->
 
 Purpose:
 Explain workspace/package command context.
@@ -31,6 +32,11 @@ Workspace:
 - Shared pnpm settings live in `pnpm-workspace.yaml`, not `package.json#pnpm`.
 - Workspace overrides keep framework packages with identity-sensitive types,
   including H3 events, on one resolved version.
+- `scripts/_lib/runtime.mjs` rejects an installed virtual store outside the
+  current checkout, missing direct workspace links, and split physical copies
+  of identity-sensitive server packages before dev, guard, or deploy work starts.
+- The dependency-ownership guard requires server-reachable workspace runtime
+  value imports to end in `.ts`; erased type-only imports are exempt.
 - Non-interactive scripts must not trigger implicit installs; `verifyDepsBeforeRun` is disabled.
 - The private root owns tooling through `devDependencies`; deployable/runtime
   dependencies belong to the package or app that imports them.
@@ -66,3 +72,12 @@ Working rule:
 - Dev model-drift payloads remain diagnostic; data repair uses a reviewed named domain script.
 - Direct imports cannot resolve accidentally through the root or a sibling
   workspace. Nested package manifests inside authored source are invalid.
+- Supported app launchers leave an occupied app port untouched. Use the
+  explicit `pnpm kill:<app>` command only when replacing that server is
+  intentional.
+- Dev route smoke retries one transport-only failure once so an in-flight HMR
+  rebuild does not kill startup; received HTTP or body-contract failures remain
+  immediate failures.
+- Tracked third-party fixes live under `scripts/patches/` and are registered
+  through `pnpm-workspace.yaml#patchedDependencies`; the lockfile records
+  their hash.

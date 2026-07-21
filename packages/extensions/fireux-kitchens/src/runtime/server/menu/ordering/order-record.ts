@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: snapshot a pending Kitchen alert atomically with its Order.
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: hash the customer capability on Order and return the raw token only from creation.
+// Concurrent edit — 2026-07-21 16:24 CEST — FireUX Finance pass: persist currency-aware minor-unit pricing with every new Order.
 import { FieldValue } from 'firebase-admin/firestore'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import type { KitchenOrderFulfilmentMatch } from '../../../models/kitchen/order.model.ts'
@@ -12,6 +13,7 @@ import type { ResolvedMenuOrderFulfilment } from './order-fulfilment.ts'
 import type { MenuOrderTypeStrategy } from './order-type.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 import { createMenuOrderCapability } from './order-capability.ts'
+import { createKitchenOrderPricing } from '../../kitchen/order/pricing.ts'
 import {
   numberValue,
   orderId,
@@ -90,6 +92,12 @@ export function assembleMenuOrderRecord(input: {
     identity,
   } = input
   const strategy = menuOrderTypeStrategy(command.orderType)
+  const pricing = createKitchenOrderPricing({
+    currencyCode: input.currencyCode,
+    subtotal: input.subtotal,
+    deliveryFee: fulfilment.deliveryFee,
+    total: fulfilment.total,
+  })
   const fulfilmentMatch = fulfilment.matchSnapshot || simpleFulfilmentMatch(
     command,
     strategy,
@@ -149,6 +157,7 @@ export function assembleMenuOrderRecord(input: {
       : {}),
     channel: command.channel,
     items: input.items,
+    pricing,
     payment: fulfilment.payment,
     ...(whatsappRecipient
       ? {

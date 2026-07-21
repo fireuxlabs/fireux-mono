@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: read private App join requests from their admin-scoped collection.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: consume bounded App-admin request identities without raw Firestore reads.
+// Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: keep optimistic request removal explicitly typed in Nuxt template checks.
 import { computed, ref, watchEffect, type ComputedRef } from 'vue'
 import type {
   AppAdminJoinRequestDto,
@@ -75,7 +76,9 @@ export function useAppJoinRequests(options: Options): {
 
   const removeLocal = (uid: string) => {
     hidden.add(uid)
-    itemsRef.value = itemsRef.value.filter((item) => item.id !== uid)
+    itemsRef.value = itemsRef.value.filter(
+      (item: JoinRequestItem) => item.id !== uid
+    )
   }
 
   const mutate = async (uid: string, approve: boolean) => {

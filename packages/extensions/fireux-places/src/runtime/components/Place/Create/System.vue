@@ -1,5 +1,5 @@
 <template>
-  <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: orchestrate Place-owned steps over shared mechanics. -->
+  <!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: compose defaults, optional brand, and review steps. -->
   <section
     data-onboarding-family="place"
     :data-onboarding-step="activeStepId || undefined"
@@ -32,10 +32,32 @@
         :existing="isExisting"
       />
 
+      <PlaceCreateDefaults
+        v-if="activeStepId === 'defaults' && draft"
+        :currency-code="currencyCode"
+        :timezone="timezone"
+        :locked="!canConfigure"
+        @update:currency-code="setCurrencyCode"
+        @update:timezone="setTimezone"
+      />
+
+      <PlaceCreateBrand
+        v-if="activeStepId === 'brand' && draft"
+        :place-name="draft.name"
+        :image-url="draft.image_url || ''"
+        :image-file="imageFile"
+        :uploading="pending"
+        @image-selected="setImageFile"
+      />
+
       <PlaceCreateReview
         v-if="activeStepId === 'review' && draft"
         :place="draft"
         :existing="isExisting"
+        :configuring="needsEnrichment"
+        :currency-code="currencyCode"
+        :timezone="timezone"
+        :logo-staged="Boolean(imageFile)"
       />
 
       <UAlert
@@ -90,21 +112,29 @@ const {
   back,
   clearSelection,
   completion,
+  canConfigure,
   currentStep,
+  currencyCode,
   draft,
   error,
   finished,
   isExisting,
   isFirstStep,
   isLastStep,
+  imageFile,
+  needsEnrichment,
   next,
   pending,
   progress,
   selectPlace,
+  setCurrencyCode,
+  setImageFile,
+  setTimezone,
   selectionError,
   selectionPending,
   stepCount,
   stepNumber,
+  timezone,
 } = usePlacesOnboarding()
 
 const continueDisabled = computed(() =>
@@ -116,6 +146,7 @@ const continueDisabled = computed(() =>
 
 const continueLabel = computed(() => {
   if (!isLastStep.value) return 'Continue'
+  if (isExisting.value && needsEnrichment.value) return 'Finish Place'
   return isExisting.value ? 'Use Place' : 'Add Place'
 })
 

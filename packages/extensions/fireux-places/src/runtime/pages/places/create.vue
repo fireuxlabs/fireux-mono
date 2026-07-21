@@ -1,10 +1,10 @@
 <template>
-  <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: make this the sole Place creation funnel route. -->
+  <!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: describe identity, defaults, and optional branding. -->
   <UPage>
     <UPageHeader
       class="pageheader"
       title="Add a Place"
-      description="Find the real location, confirm its shared identity, and review it before it is added."
+      description="Find the real location, confirm its identity and local defaults, then add an optional logo."
     />
 
     <UPageBody class="pagebody">

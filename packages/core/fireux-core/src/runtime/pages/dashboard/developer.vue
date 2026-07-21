@@ -1,99 +1,86 @@
+<!-- Concurrent edit — 2026-07-21 17:00 CEST — Dashboard Family pass: make Developer a truthful App-scoped workspace. -->
+<!-- Concurrent edit — 2026-07-21 20:23 CEST — Developer Dashboard cleanup: remove repeated App chrome and sharpen the page hierarchy. -->
 <template>
   <UDashboardPanel id="dashboard-developer">
     <template #header>
-      <LayoutsDashboardNavbar title="Developer Settings" />
+      <LayoutsDashboardNavbar title="Developer" />
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
-        <UPage>
-          <UPageBody class="pagebody">
-            <UPageCard v-if="pending" variant="subtle">
-              <p class="text-sm text-dimmed">Loading app…</p>
-            </UPageCard>
-
-            <UPageCard
-              v-else-if="!appSnapshot"
-              title="App not available"
-              description="No app data found for this environment."
-              variant="subtle"
-            >
-              <UButton to="/" label="Go to Home" variant="soft" class="w-fit" />
-            </UPageCard>
-
-            <div v-else class="space-y-6">
-              <UPageCard variant="subtle">
-                <div class="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
-                  <div class="space-y-3">
-                    <UBadge color="primary" variant="soft" class="w-fit">
-                      Developer settings
-                    </UBadge>
-                    <div class="space-y-2">
-                      <h1 class="text-2xl font-semibold tracking-tight text-default">
-                        Build and check this app
-                      </h1>
-                      <p class="max-w-3xl text-sm leading-6 text-dimmed">
-                        Developer settings are for app assets, build config,
-                        diagnostics, and repo metadata. The local
-                        <span class="font-mono">/dev</span> workbench is separate
-                        and only exists on a dev server.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div class="flex flex-wrap gap-2">
-                    <UButton
-                      to="/dashboard/admin"
-                      color="neutral"
-                      variant="soft"
-                      icon="i-lucide-badge-check"
-                    >
-                      Admin
-                    </UButton>
-                    <UButton
-                      v-if="isLocalDev"
-                      to="/dev"
-                      color="neutral"
-                      variant="ghost"
-                      icon="i-lucide-terminal"
-                    >
-                      Dev workbench
-                    </UButton>
-                  </div>
-                </div>
-              </UPageCard>
-
-              <AppCardsPill
-                v-if="previewCard"
-                :to="previewCard.to"
-                :thumbnail-url="previewCard.thumbnailUrl"
-                :display-name="previewCard.displayName"
-                :ecosystem="previewCard.ecosystem"
-                :badges="previewCard.badges"
-                :show-subtitle="false"
-                :link="Boolean(previewCard.to)"
-                class="block"
+      <UPage>
+        <UPageBody class="pagebody">
+          <UPageHeader
+            headline="Developer workspace"
+            :title="`Build and verify ${appDisplayName}`"
+            description="Manage App media and verify the build connection for this environment."
+          >
+            <template #links>
+              <UButton
+                v-if="isAdmin"
+                to="/dashboard/admin"
+                label="Admin"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-shield-check"
               />
-              <AppEditDev :app="appSnapshot" />
-            </div>
-          </UPageBody>
-        </UPage>
-      </div>
+              <UButton
+                v-if="isLocalDev"
+                to="/dev"
+                label="Dev workbench"
+                color="neutral"
+                variant="ghost"
+                icon="i-lucide-terminal"
+              />
+            </template>
+          </UPageHeader>
+
+          <MoleculesStateCard
+            v-if="appOutcome === 'idle' || appOutcome === 'pending'"
+            entity="developer workspace"
+            kind="document"
+            loading
+          />
+
+          <MoleculesStateCard
+            v-else-if="appOutcome === 'error'"
+            entity="developer workspace"
+            kind="document"
+            state="error"
+          />
+
+          <MoleculesStateCard
+            v-else-if="appOutcome === 'missing' || !appSnapshot"
+            entity="app"
+            kind="document"
+            state="missing"
+          />
+
+          <div v-else>
+            <AppEditDev :app="appSnapshot" />
+          </div>
+        </UPageBody>
+      </UPage>
     </template>
   </UDashboardPanel>
 </template>
 
 <script setup lang="ts">
-import { definePageMeta } from '#imports'
+import { definePageMeta, useHead } from '#imports'
 import { computed } from 'vue'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
-const { app, pending, pill: appInterface } = useApp()
+const fireux = useFireUXConfig()
+const { app, outcome: appOutcome } = useApp()
+const { isAdmin } = useUser()
 
-const appSnapshot = computed(() => (pending.value ? null : app.value ?? null))
-const previewCard = computed(() => (
-  appSnapshot.value ? appInterface(appSnapshot.value) : null
-))
+const appSnapshot = computed(() =>
+  appOutcome.value === 'ready' ? app.value ?? null : null
+)
+const appDisplayName = computed(
+  () => appSnapshot.value?.app_name || fireux.appName
+)
 const isLocalDev = import.meta.dev
 
 definePageMeta({
@@ -110,4 +97,6 @@ definePageMeta({
   requiresAuth: true,
   roles: ['developer'],
 })
+
+useHead({ title: 'Developer' })
 </script>

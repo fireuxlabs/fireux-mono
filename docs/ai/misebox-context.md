@@ -2,6 +2,9 @@
 
 <!-- Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: record ecosystem-owned Jobs/Kitchen composition. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: point Misebox at the composed Rules ownership boundary. -->
+<!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: record the completed-Order Sale producer and derived reporting boundary. -->
+<!-- Concurrent edit — 2026-07-21 17:02 CEST — Kitchen Finance surface: record the bounded selected-Kitchen gross-sales report. -->
+<!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: record shared Place-backed Kitchen activation ownership. -->
 
 This is the single context entrypoint for an external GPT focused on Misebox
 inside `fireuxlabs/fireux-mono`.
@@ -35,6 +38,28 @@ Before each task:
   into one app-wide `/operations` index grouped by Console.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
+- Reusable Kitchen onboarding belongs to `fireux-kitchens`. It composes the
+  Place package's canonical onboarding, then atomically creates or connects the
+  sparse Kitchen root, Misebox App access, and UserApp console target. Misebox
+  apps configure whether creation is available and tenant Apps remain bounded
+  to their configured Kitchen targets. A current App admin creates or attaches
+  the root; apps do not recreate the funnel or copy Place defaults into Kitchen.
+- Product-neutral money and immutable FinancialFact primitives belong to
+  `fireux-finance`. Kitchen retains Order and KitchenSale lifecycle ownership;
+  a trusted `ready -> completed` transaction creates the same-id Sale and its
+  deterministic App-level `gross_sale` fact atomically.
+- `gross_sale` records the current authoritative total without claiming a VAT
+  split, net revenue, or cash settlement. Reporting and P&L are derived views,
+  not Misebox Console Operations or separately editable truth.
+- The first visible report is the Kitchen-owned `/console/kitchen/finance`
+  sheet. Its authenticated, aggregate-only server projection reads a bounded
+  period of immutable Sales for the selected Kitchen, keeps currencies
+  separate, and exposes gross sales, completed-Sale count, and average Sale.
+  It does not read raw FinancialFacts in the browser or invent Demo/Test and
+  pre-producer history.
+- Supplier catalogue costs, parked purchase orders, Property/Portfolio values,
+  and FireUX Project identity are not Finance producers until their own dated
+  operational lifecycles exist.
 - Product-neutral Jobs-to-Kitchen workplace materialization is composed by the
   Misebox ecosystem runtime. The adapter delegates Kitchen creation to
   `fireux-kitchens`; neither extension depends on the other, and apps still

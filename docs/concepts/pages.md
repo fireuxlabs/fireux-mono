@@ -8,6 +8,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-21 14:50 CEST — Dashboard Overview pass: map the shared three-layer dashboard route contract. -->
 <!-- Concurrent edit — 2026-07-21 15:46 CEST — User Profile polish: map the root-identity-only dashboard editor contract. -->
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map biography editing and rendering across shared User routes. -->
+<!-- Concurrent edit — 2026-07-21 17:10 CEST — Dashboard Family pass: map capability-backed route and admin-surface discovery boundaries. -->
 
 Purpose:
 Map how route pages should be built and where consensus is still forming.
@@ -79,6 +80,18 @@ Dashboard profile notes:
   and entitlements are not presented as editable profile fields.
 - Specialist profile entries are navigation to their owning domain editors.
   Their documents add domain details and never duplicate root User identity.
+
+Dashboard family notes:
+
+- Core exposes only dashboard routes backed by a real read or write authority.
+  Data-less social, commerce, or messaging promises do not belong in the shared
+  sidebar; add them when an owning package provides a bounded outcome contract.
+- App and extension administration stays in named route pages and advertises
+  itself through `adminSurface` route metadata. The shared Admin dashboard
+  discovers those enabled tools; it does not hard-code optional domains.
+- Start at `packages/core/fireux-core/src/runtime/components/Dashboard/Admin.vue`,
+  `packages/core/fireux-core/src/runtime/composables/fireux/app/ui/nav/useDashboardNav.ts`,
+  and the enabled package pages under `src/runtime/pages/dashboard`.
 
 Index page notes:
 

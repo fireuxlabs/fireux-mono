@@ -1,11 +1,19 @@
 // Concurrent edit — 2026-07-21 14:28 CEST — Place public projection: allowlist sparse public location truth and exclude raw stamps/search metadata.
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: expose every canonical Place only through a coarse card-safe reference DTO.
+// Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: add locale defaults only to the bounded detail projection.
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import type {
   PlaceImageShade,
   PlaceType,
 } from '../../models/place.model'
-import type { PublicPlaceProjection } from '../../models/place-public.model'
+import type {
+  PublicPlaceDetailProjection,
+  PublicPlaceProjection,
+} from '../../models/place-public.model'
+import {
+  normalizePlaceCurrencyCode,
+  normalizePlaceTimezone,
+} from '../../utils/place-spine'
 
 const placeTypes = new Set<PlaceType>(['physical', 'non_physical'])
 
@@ -84,4 +92,20 @@ export function projectPublicPlace(
   if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) result.slug = slug
 
   return result
+}
+
+export function projectPublicPlaceDetail(
+  id: string,
+  value: Record<string, unknown>
+): PublicPlaceDetailProjection | null {
+  const place = projectPublicPlace(id, value)
+  if (!place) return null
+
+  const currency = normalizePlaceCurrencyCode(value.default_currency_code)
+  const timezone = normalizePlaceTimezone(value.timezone)
+  return {
+    ...place,
+    ...(currency ? { default_currency_code: currency } : {}),
+    ...(timezone ? { timezone } : {}),
+  }
 }

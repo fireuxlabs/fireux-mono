@@ -1,16 +1,24 @@
+// Concurrent edit — 2026-07-21 17:07 CEST — Dashboard Family pass: expose outcomes and enforce App-admin authority for field-level curation updates.
+import { doc, setDoc } from 'firebase/firestore'
 import { computed } from 'vue'
 import { useFireUXConfig } from './FireUXConfig'
 import { useFirestoreRead } from '../firestore/operations/useFirestoreRead'
+import { useUser } from '../firestore/core/user/useUser'
+import { useFirestoreResolver } from '../firestore/vuefire'
+
+export type AppFeaturedSlugField = `featured_${string}_slugs`
 
 export type AppPublicSettings = {
   id?: string
   featured_app_slugs?: string[]
   featured_ecosystem_slugs?: string[]
-  [key: `featured_${string}_slugs`]: string[] | string | undefined
+  [key: AppFeaturedSlugField]: string[] | string | undefined
 }
 
 export function useAppPublicSettings() {
   const fireux = useFireUXConfig()
+  const resolveDb = useFirestoreResolver()
+  const { isAdmin } = useUser()
   const collectionPath = `apps/${fireux.appId}/settings`
   const { firestoreFetchDoc } = useFirestoreRead()
   const settings = firestoreFetchDoc<AppPublicSettings>(collectionPath, 'public')
@@ -31,11 +39,31 @@ export function useAppPublicSettings() {
       cleanList(settings.value?.[`featured_${domain}_slugs`])
     )
 
+  const updateFeaturedSlugs = async (
+    field: AppFeaturedSlugField,
+    values: unknown
+  ) => {
+    if (isAdmin.value !== true) {
+      throw new Error('App admin access is required.')
+    }
+
+    await setDoc(
+      doc(resolveDb(), collectionPath, 'public'),
+      { [field]: cleanList(values) },
+      { merge: true }
+    )
+  }
+
   return {
     collectionPath,
     settings,
+    pending: settings.pending,
+    error: settings.error,
+    outcome: settings.outcome,
     featuredAppSlugs,
     featuredEcosystemSlugs,
     featuredSlugsFor,
+    canUpdate: isAdmin,
+    updateFeaturedSlugs,
   }
 }

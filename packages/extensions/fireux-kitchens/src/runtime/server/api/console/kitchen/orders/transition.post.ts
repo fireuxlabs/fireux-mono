@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 15:27 CEST — Customer order notification pass: notify signed-in customers after accepted Order commits.
+// Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: atomically create immutable Sale and gross-sale facts on completion.
 import {
   createError,
   defineEventHandler,
@@ -15,6 +16,10 @@ import {
 import { requireKitchenOperator } from '../../../../../server/kitchen/operator-access.ts'
 import { buildKitchenOrderTransitionPatch } from '../../../../../server/kitchen/order/transition.ts'
 import { publishAcceptedOrderCustomerNotification } from '../../../../../server/kitchen/order/customer-notification.ts'
+import {
+  buildCompletedKitchenOrderSale,
+  KitchenSaleInvariantError,
+} from '../../../../../server/kitchen/order/sale.ts'
 
 type TransitionKitchenOrderBody = {
   app_id?: string
@@ -56,6 +61,31 @@ export default defineEventHandler(async (event: H3Event) => {
       note: body?.note,
     })
     const now = FieldValue.serverTimestamp()
+    if (transition === 'complete') {
+      try {
+        const completed = buildCompletedKitchenOrderSale({
+          appId,
+          kitchenId,
+          orderId,
+          order: current,
+          actorId: uid,
+          timestamp: now,
+        })
+        transaction.create(db.doc(completed.salePath), completed.sale)
+        transaction.create(
+          db.doc(completed.financialFactPath),
+          completed.financialFact
+        )
+      } catch (error) {
+        if (error instanceof KitchenSaleInvariantError) {
+          throw createError({
+            statusCode: 409,
+            statusMessage: error.message,
+          })
+        }
+        throw error
+      }
+    }
     transaction.set(
       orderRef,
       {

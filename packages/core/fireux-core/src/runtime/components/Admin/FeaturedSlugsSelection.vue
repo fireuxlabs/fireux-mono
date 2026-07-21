@@ -1,99 +1,123 @@
+<!-- Concurrent edit — 2026-07-21 17:07 CEST — Dashboard Family pass: make featured selection outcome-safe and bind save controls to App-admin authority. -->
 <template>
-  <UDashboardPanel :id="panelId">
-    <template #header>
-      <LayoutsDashboardNavbar :title="navTitle" />
+  <UPageHeader
+    :headline="headline"
+    :title="title"
+    :description="description"
+  >
+    <template #links>
+      <UButton
+        :to="backTo"
+        label="Back to admin"
+        icon="i-lucide-arrow-left"
+        color="neutral"
+        variant="soft"
+      />
     </template>
+  </UPageHeader>
 
-    <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
-        <UPage>
-          <UPageBody class="pagebody">
-            <UPageCard
-              :title="title"
-              :description="description"
-              variant="subtle"
-            >
-              <div class="space-y-4">
-                <div class="flex flex-wrap items-center gap-2">
-                  <UBadge color="neutral" variant="soft">
-                    {{ draftSlugs.length }} selected
-                  </UBadge>
+  <MoleculesStateCard
+    v-if="settingsOutcome === 'idle' || settingsOutcome === 'pending'"
+    entity="featured selection"
+    kind="document"
+    loading
+  />
 
-                  <UBadge
-                    v-for="slug in draftSlugs"
-                    :key="slug"
-                    color="primary"
-                    variant="soft"
-                  >
-                    {{ slug }}
-                  </UBadge>
-                </div>
+  <MoleculesStateCard
+    v-else-if="settingsOutcome === 'error'"
+    entity="featured selection"
+    kind="document"
+    state="error"
+  />
 
-                <p v-if="!draftSlugs.length" class="text-sm text-muted">
-                  {{ emptyLabel }}
-                </p>
+  <div v-else class="space-y-6">
+    <UPageCard
+      title="Current selection"
+      description="Choose what appears first on the public surface, then save your changes."
+      icon="i-lucide-star"
+      variant="subtle"
+    >
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center gap-2">
+          <UBadge color="neutral" variant="soft">
+            {{ draftSlugs.length }} selected
+          </UBadge>
 
-                <div class="flex flex-wrap gap-2">
-                  <UButton
-                    color="primary"
-                    icon="i-lucide-save"
-                    :loading="saving"
-                    :disabled="!isDirty"
-                    @click="save"
-                  >
-                    Save
-                  </UButton>
-                  <UButton
-                    color="neutral"
-                    variant="ghost"
-                    :disabled="!isDirty"
-                    @click="reset"
-                  >
-                    Reset
-                  </UButton>
-                </div>
-              </div>
-            </UPageCard>
+          <UBadge
+            v-for="slug in draftSlugs"
+            :key="slug"
+            color="primary"
+            variant="soft"
+          >
+            {{ slug }}
+          </UBadge>
+        </div>
 
-            <slot
-              :selected-values="draftSlugs"
-              :toggle-slug="toggleSlug"
-            />
-          </UPageBody>
-        </UPage>
+        <p v-if="!draftSlugs.length" class="text-sm text-muted">
+          {{ emptyLabel }}
+        </p>
+
+        <div class="flex flex-wrap gap-2">
+          <UButton
+            label="Save selection"
+            color="primary"
+            icon="i-lucide-save"
+            :loading="saving"
+            :disabled="!isDirty || !canUpdate"
+            @click="save"
+          />
+          <UButton
+            label="Reset"
+            color="neutral"
+            variant="ghost"
+            :disabled="!isDirty || saving"
+            @click="reset"
+          />
+        </div>
       </div>
-    </template>
-  </UDashboardPanel>
+    </UPageCard>
+
+    <slot
+      :selected-values="draftSlugs"
+      :toggle-slug="toggleSlug"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useToastify } from '../../composables/fireux/app/ui/useToastify'
-import { useAppPublicSettings } from '../../composables/fireux/app/useAppPublicSettings'
-import { useFirestoreCreate } from '../../composables/fireux/firestore/operations/useFirestoreCreate'
+import {
+  useAppPublicSettings,
+  type AppFeaturedSlugField,
+} from '../../composables/fireux/app/useAppPublicSettings'
 
 const props = withDefaults(defineProps<{
-  field: `featured_${string}_slugs`
-  panelId?: string
-  navTitle?: string
+  field: AppFeaturedSlugField
+  headline?: string
   title?: string
   description?: string
   emptyLabel?: string
   savedLabel?: string
   failedLabel?: string
+  backTo?: string
 }>(), {
-  panelId: 'dashboard-admin-featured-slugs',
-  navTitle: 'Admin',
+  headline: 'Admin curation',
   title: 'Featured slugs',
   description: 'Select slugs to feature on public surfaces.',
   emptyLabel: 'No featured slugs selected yet.',
   savedLabel: 'Featured slugs saved',
   failedLabel: 'Failed to save featured slugs',
+  backTo: '/dashboard/admin',
 })
 
 const toast = useToastify()
-const { collectionPath, settings } = useAppPublicSettings()
-const { setDocument } = useFirestoreCreate()
+const {
+  settings,
+  outcome: settingsOutcome,
+  canUpdate,
+  updateFeaturedSlugs,
+} = useAppPublicSettings()
 const draftSlugs = ref<string[]>([])
 const saving = ref(false)
 
@@ -138,12 +162,10 @@ function reset() {
 }
 
 async function save() {
+  if (!isDirty.value || saving.value || !canUpdate.value) return
   saving.value = true
   try {
-    await setDocument(collectionPath, 'public', {
-      ...(settings.value ?? {}),
-      [props.field]: draftSlugs.value,
-    })
+    await updateFeaturedSlugs(props.field, draftSlugs.value)
     toast.success(props.savedLabel)
   } catch (error: any) {
     toast.error(String(error?.message || props.failedLabel))

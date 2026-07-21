@@ -1,24 +1,14 @@
-<!-- Concurrent edit — 2026-07-21 16:03 CEST — Extension module catalogue: make reusable packages the primary Modules surface. -->
+<!-- Concurrent edit — 2026-07-21 16:17 CEST — Module family design: establish Modules as reusable capability composition. -->
 <template>
   <UPage>
     <UPageHeader
-      title="FireUX modules"
-      description="Reusable extensions for FireUX apps."
+      headline="FireUX capability family"
+      title="Modules"
+      description="Modules add reusable capability to an app. A module may bring records, Console Operations, tools, public surfaces, or several of them together."
     />
 
     <UPageBody>
       <ModuleCollectionManager />
-
-      <div class="flex justify-end">
-        <UButton
-          to="/modules/learn-more"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-book-open"
-        >
-          How modules work
-        </UButton>
-      </div>
     </UPageBody>
   </UPage>
 </template>
@@ -40,8 +30,8 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'FireUX Modules',
+  title: 'FireUX Modules - Reusable App Capabilities',
   description:
-    'Browse reusable FireUX extension modules for apps and ecosystems.',
+    'Browse reusable FireUX modules that add entities, operations, tools, and solution capability to apps.',
 })
 </script>

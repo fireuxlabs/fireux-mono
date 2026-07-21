@@ -5,7 +5,7 @@
 // Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: lock read-only App media audit and guarded snapshot mutation contracts.
 // Concurrent edit — 2026-07-20 22:27 CEST — User/Profile data pass: lock the identity reconciliation planner to read-only target-bound inspection.
 // Concurrent edit — 2026-07-21 15:07 CEST — Cleanbox-to-Werkbox migration: lock quarantine, migration-marker finalization, trusted-source evidence, release ordering, and production-promotion exclusivity.
-// Concurrent edit — 2026-07-21 16:07 CEST — Shared Firestore Rules pass: lock every contracted frame identity and helper provenance.
+// Concurrent edit — 2026-07-21 16:11 CEST — Shared Firestore Rules pass: lock lexical and wildcard-normalized frame identity.
 
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
@@ -105,6 +105,20 @@ async function assertRulesFragmentScope(repoRoot) {
     () => composeFirestoreRules(reboundApp),
     /must remain inside the original contracted match \/apps\/\{appId\} frame/,
     'A later fragment must retain its previously contracted App frame.'
+  )
+
+  const appMatch = '    match /apps/{appId} {'
+  const aliasedApp = template.replace(
+    appMatch,
+    '    match /apps/{shadowAppId} {\n' +
+      '      allow get: if request.auth != null;\n' +
+      '    }\n\n' +
+      appMatch
+  )
+  await assert.rejects(
+    () => composeFirestoreRules(aliasedApp),
+    /must retain one wildcard-normalized match \/databases\/\{\*\}\/documents\/apps\/\{\*\} frame/,
+    'Wildcard aliases must not create an overlapping contracted App frame.'
   )
 
   const overlayMarker =

@@ -1,78 +1,50 @@
+<!-- Concurrent edit — 2026-07-21 20:23 CEST — Developer Dashboard cleanup: reduce App media to one status-led source-to-Storage workflow. -->
 <template>
   <ClientOnly>
-    <UCard class="section">
-      <template #header>
-        <div class="section__header">
-          <div class="section__copy">
-            <h3>Images</h3>
-            <p>
-              Firestore + Storage URLs are canonical. Local public assets are the files served from
-              <span class="font-mono">/public/img/app</span>.
-            </p>
-            <p
-              v-if="isDev"
-            >
-              In dev, local assets can be used as a display backup. Use Sync to Storage when the local file should become the app record media.
+    <UPageCard
+      title="App media"
+      description="Review repository assets and sync them to the canonical App record."
+      icon="i-lucide-images"
+      variant="subtle"
+      class="h-full"
+    >
+      <div class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p class="text-sm font-medium text-highlighted">Storage status</p>
+            <p class="mt-0.5 text-xs text-muted">
+              {{ syncedCount }} of {{ syncableItems.length }} media assets are available.
             </p>
           </div>
-        </div>
-      </template>
-
-      <div class="section__item space-y-3">
-        <div class="rounded-md border border-default bg-muted/30 px-3 py-2 text-xs text-dimmed">
-          <span class="font-medium text-default">Local assets</span>
-          live in <span class="font-mono">/public/img/app</span>.
-          Syncable assets copy to <span class="font-mono">apps/{appId}/media/*</span>
-          and update the app record.
+          <UBadge
+            :color="allMediaSynced ? 'success' : 'warning'"
+            variant="soft"
+          >
+            {{ allMediaSynced ? 'Ready' : `${missingCount} missing` }}
+          </UBadge>
         </div>
 
-        <div class="overflow-hidden rounded-md border border-default">
-          <div class="flex items-center justify-between gap-3 border-b border-default bg-muted/30 px-3 py-2">
-            <div>
-              <div class="text-xs font-medium text-default">Syncable media</div>
-              <div class="text-xs text-dimmed">Compact previews only; dimensions are enforced by checks.</div>
-            </div>
-            <UBadge color="primary" variant="soft" size="sm">Storage</UBadge>
-          </div>
-
+        <div class="overflow-hidden rounded-lg border border-default bg-default">
           <div class="divide-y divide-default">
             <div
               v-for="item in syncableItems"
               :key="item.key"
-              class="grid gap-2 px-3 py-1.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+              class="grid gap-3 p-3 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
             >
-              <div class="flex min-w-0 flex-wrap items-center gap-2.5 sm:flex-nowrap">
-                <div class="flex shrink-0 items-center gap-1.5">
-                  <div
-                    class="asset-preview-frame"
-                    :class="`asset-preview-frame--${item.shape}`"
-                    title="Storage preview"
-                  >
-                    <img
-                      v-if="item.url"
-                      :src="item.url"
-                      :alt="`Storage ${item.label}`"
-                      class="asset-preview-image"
-                      :class="`asset-preview-image--${item.shape}`"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                    <span v-else class="text-xs text-dimmed">-</span>
-                  </div>
-                  <div
-                    class="asset-preview-frame"
-                    :class="`asset-preview-frame--${item.shape}`"
-                    title="Local preview"
-                  >
-                    <img
-                      :src="item.path"
-                      :alt="`Local ${item.label}`"
-                      class="asset-preview-image"
-                      :class="`asset-preview-image--${item.shape}`"
-                      loading="lazy"
-                      decoding="async"
-                    />
-                  </div>
+              <div class="flex min-w-0 items-center gap-3">
+                <div
+                  class="asset-preview-frame"
+                  :class="`asset-preview-frame--${item.shape}`"
+                  title="Repository asset preview"
+                >
+                  <img
+                    :src="item.path"
+                    :alt="`${item.label} repository asset`"
+                    class="asset-preview-image"
+                    :class="`asset-preview-image--${item.shape}`"
+                    loading="lazy"
+                    decoding="async"
+                  />
                 </div>
 
                 <div class="min-w-0">
@@ -87,11 +59,6 @@
                     </UBadge>
                   </div>
                   <div class="text-xs text-dimmed" v-html="item.requirements" />
-                  <div class="hidden truncate text-xs text-dimmed md:block">
-                    <span class="font-mono">{{ item.field }}</span>
-                    <span class="px-1">-></span>
-                    <span class="font-mono">{{ item.storagePath || 'storage unavailable' }}</span>
-                  </div>
                 </div>
               </div>
 
@@ -102,7 +69,7 @@
                   rel="noopener noreferrer"
                   class="inline-flex h-7 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
                 >
-                  Local
+                  Source
                 </a>
                 <a
                   v-if="item.url"
@@ -112,7 +79,7 @@
                   class="inline-flex h-7 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
                   :aria-label="`Open ${item.label} Storage URL`"
                 >
-                  Storage
+                  Stored
                 </a>
                 <UButton
                   icon="i-lucide-refresh-cw"
@@ -129,53 +96,57 @@
           </div>
         </div>
 
-        <div class="overflow-hidden rounded-md border border-default">
-          <div class="flex items-center justify-between gap-3 border-b border-default bg-muted/30 px-3 py-2">
-            <div>
-              <div class="text-xs font-medium text-default">Local-only files</div>
-              <div class="text-xs text-dimmed">Required browser/install assets.</div>
-            </div>
-            <UBadge color="neutral" variant="soft" size="sm">Local</UBadge>
-          </div>
-
-          <div class="divide-y divide-default">
-            <div
-              v-for="item in requiredOnlyItems"
-              :key="item.key"
-              class="flex items-center justify-between gap-3 px-3 py-2"
-            >
-              <div class="flex min-w-0 items-center gap-2.5">
-                <div
-                  class="asset-preview-frame asset-preview-frame--square"
-                >
-                  <img
-                    :src="item.path"
-                    :alt="`Local ${item.label}`"
-                    class="asset-preview-image asset-preview-image--square"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                </div>
-
-                <div class="min-w-0">
-                  <div class="text-sm font-medium">{{ item.label }}</div>
-                  <div class="text-xs text-dimmed" v-html="item.requirements" />
-                </div>
-              </div>
-
-              <a
-                :href="item.path"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex h-7 shrink-0 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+        <MoleculesDisclosurePanel
+          title="Install assets"
+          :description="`${requiredOnlyItems.length} browser and PWA files stay in the repository.`"
+          icon="i-lucide-monitor-down"
+          :default-open="false"
+        >
+          <div class="mt-3 overflow-hidden rounded-lg border border-default bg-default">
+            <div class="divide-y divide-default">
+              <div
+                v-for="item in requiredOnlyItems"
+                :key="item.key"
+                class="flex items-center justify-between gap-3 p-3"
               >
-                Local
-              </a>
+                <div class="flex min-w-0 items-center gap-3">
+                  <div class="asset-preview-frame asset-preview-frame--square">
+                    <img
+                      :src="item.path"
+                      :alt="`${item.label} repository asset`"
+                      class="asset-preview-image asset-preview-image--square"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+
+                  <div class="min-w-0">
+                    <div class="text-sm font-medium">{{ item.label }}</div>
+                    <div class="text-xs text-dimmed" v-html="item.requirements" />
+                  </div>
+                </div>
+
+                <a
+                  :href="item.path"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex h-7 shrink-0 items-center rounded-md px-2 text-xs text-dimmed hover:bg-muted/50 hover:text-default"
+                >
+                  Source
+                </a>
+              </div>
             </div>
           </div>
-        </div>
+        </MoleculesDisclosurePanel>
+
+        <p class="text-xs leading-5 text-dimmed">
+          Source files live in <span class="font-mono">/public/img/app</span>.
+          Sync validates dimensions, writes to
+          <span class="font-mono">apps/{appId}/media/*</span>, and updates the
+          App record.
+        </p>
       </div>
-    </UCard>
+    </UPageCard>
   </ClientOnly>
 </template>
 
@@ -184,10 +155,8 @@ import { computed, ref } from 'vue'
 import { useToastify } from '../../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import {
-  appImageFirestoreField,
   appImageLocalPublicPath,
   appImageRequirement,
-  appImageStoragePath,
   appPublicAssetRequirement,
   type AppImageKind,
 } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
@@ -200,10 +169,6 @@ const toast = import.meta.client ? useToastify() : null
 const { overwriteImageFromLocal } = import.meta.client
   ? useAppUpdate(appRef)
   : { overwriteImageFromLocal: async () => '' }
-
-const envCheckLabel =
-  ' <span class="text-dimmed">(validated by <span class="font-mono">/api/internal/app/env-check</span>)</span>.'
-const isDev = import.meta.dev
 
 type AssetPreviewShape = 'square' | 'wide' | 'wordmark'
 
@@ -218,15 +183,13 @@ type ImageItemBase = {
 type SyncedImageKind = AppImageKind
 
 const validatedRequirement = (kind: SyncedImageKind) =>
-  `${appImageRequirement(kind).requirementsHtml}${envCheckLabel}`
+  appImageRequirement(kind).requirementsHtml
 
 type SyncedImageItem = ImageItemBase & {
   syncKind: SyncedImageKind
 }
 
 type ResolvedSyncedImageItem = SyncedImageItem & {
-  field: string
-  storagePath: string
   url: string
 }
 
@@ -332,15 +295,20 @@ function mediaUrlForKind(value: AppModel | null | undefined, kind: AppImageKind)
 
 const syncableItems = computed<ResolvedSyncedImageItem[]>(() => {
   const value = appRef.value
-  const appId = value?.id || ''
 
   return syncedItems.map((item) => ({
     ...item,
-    field: appImageFirestoreField(item.syncKind),
-    storagePath: appId ? appImageStoragePath(appId, item.syncKind) : '',
     url: mediaUrlForKind(value, item.syncKind),
   }))
 })
+
+const syncedCount = computed(
+  () => syncableItems.value.filter((item) => Boolean(item.url)).length
+)
+const missingCount = computed(() => syncableItems.value.length - syncedCount.value)
+const allMediaSynced = computed(
+  () => syncableItems.value.length > 0 && missingCount.value === 0
+)
 
 async function onOverwrite(kind: SyncedImageKind) {
   saving.value = kind

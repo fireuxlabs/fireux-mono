@@ -14,6 +14,7 @@
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: share protected JSON backup writing without sharing release authority.
 // Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: require the verified Core-composed candidate artifact before release work.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: adversarially test optional bounded public biography writes.
+// Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: prove immutable Sale and server-only financial-fact boundaries.
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
@@ -823,7 +824,14 @@ async function buildSecurityTests() {
       expressionReportLevel: 'VISITED',
     },
   })
-  const deniedCreate = (name, value, uid, data, time = writeTime) => ({
+  const deniedCreate = (
+    name,
+    value,
+    uid,
+    data,
+    time = writeTime,
+    functionMocks = []
+  ) => ({
     name,
     testCase: {
       expectation: 'DENY',
@@ -834,6 +842,7 @@ async function buildSecurityTests() {
         time,
         resource: { data },
       },
+      ...(functionMocks.length ? { functionMocks } : {}),
       pathEncoding: 'PLAIN',
     },
   })
@@ -899,6 +908,28 @@ async function buildSecurityTests() {
       ...(functionMocks.length ? { functionMocks } : {}),
       pathEncoding: 'PLAIN',
       expressionReportLevel: 'VISITED',
+    },
+  })
+  const deniedDelete = (
+    name,
+    value,
+    uid,
+    currentData,
+    functionMocks = [],
+    time = updateTime
+  ) => ({
+    name,
+    testCase: {
+      expectation: 'DENY',
+      request: {
+        auth: auth(uid),
+        path: path(value),
+        method: 'delete',
+        time,
+      },
+      resource: { data: currentData },
+      ...(functionMocks.length ? { functionMocks } : {}),
+      pathEncoding: 'PLAIN',
     },
   })
   const appDriverDocument = appDrivers.find(
@@ -1248,6 +1279,27 @@ async function buildSecurityTests() {
       app_id: 'misebox-app',
     },
     updated: { at: writeTime, by: 'misebox-app' },
+  }
+  const saleProbePath =
+    'apps/misebox-app/kitchens/security-rules-probe/sales/sale-probe'
+  const saleProbeData = {
+    id: 'sale-probe',
+    schema_version: 1,
+    app_id: 'misebox-app',
+    kitchen_id: 'security-rules-probe',
+    order_id: 'sale-probe',
+    amount_minor: 2500,
+    currency_code: 'CHF',
+  }
+  const financialFactProbePath =
+    'apps/misebox-app/financial-facts/fact-v1-security-probe'
+  const financialFactProbeData = {
+    id: 'fact-v1-security-probe',
+    schema_version: 1,
+    app_id: 'misebox-app',
+    kind: 'gross_sale',
+    amount_minor: 2500,
+    currency_code: 'CHF',
   }
   const tests = [
     list(
@@ -1817,6 +1869,86 @@ async function buildSecurityTests() {
       appMemberMocks(driverId, path)
     ),
     read(
+      'Kitchen operator can read an immutable Sale',
+      'ALLOW',
+      saleProbePath,
+      regularId,
+      kitchenOperatorMocks(regularId, path)
+    ),
+    list(
+      'Kitchen operator can list immutable Sales',
+      'ALLOW',
+      'apps/misebox-app/kitchens/security-rules-probe/sales',
+      regularId,
+      kitchenOperatorMocks(regularId, path)
+    ),
+    read(
+      'anonymous cannot read an immutable Sale',
+      'DENY',
+      saleProbePath
+    ),
+    deniedCreate(
+      'Kitchen operator cannot create an immutable Sale in the browser',
+      saleProbePath,
+      regularId,
+      saleProbeData,
+      writeTime,
+      kitchenOperatorMocks(regularId, path)
+    ),
+    deniedUpdate(
+      'Kitchen operator cannot update an immutable Sale in the browser',
+      saleProbePath,
+      regularId,
+      saleProbeData,
+      { ...saleProbeData, amount_minor: 2600 },
+      kitchenOperatorMocks(regularId, path)
+    ),
+    deniedDelete(
+      'Kitchen operator cannot delete an immutable Sale in the browser',
+      saleProbePath,
+      regularId,
+      saleProbeData,
+      kitchenOperatorMocks(regularId, path)
+    ),
+    deniedCreate(
+      'Kitchen operator cannot use a nested Sale path to bypass immutability',
+      `${saleProbePath}/private/probe`,
+      regularId,
+      { forged: true },
+      writeTime,
+      kitchenOperatorMocks(regularId, path)
+    ),
+    read(
+      'App admin cannot read raw FinancialFacts',
+      'DENY',
+      financialFactProbePath,
+      adminId,
+      appAdminMocks(adminId, path)
+    ),
+    deniedCreate(
+      'App admin cannot create raw FinancialFacts in the browser',
+      financialFactProbePath,
+      adminId,
+      financialFactProbeData,
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    deniedUpdate(
+      'App admin cannot update raw FinancialFacts in the browser',
+      financialFactProbePath,
+      adminId,
+      financialFactProbeData,
+      { ...financialFactProbeData, amount_minor: 2600 },
+      appAdminMocks(adminId, path)
+    ),
+    deniedDelete(
+      'App admin cannot delete raw FinancialFacts in the browser',
+      financialFactProbePath,
+      adminId,
+      financialFactProbeData,
+      appAdminMocks(adminId, path)
+    ),
+    read(
       'membership blocks remain server-only',
       'DENY',
       `apps/misebox-app/membership-blocks/${regularId}`,
@@ -2203,6 +2335,25 @@ function appMemberMocks(userId, path) {
       function: 'get',
       args: [{ exactValue: membershipPath }],
       result: { value: { data: { role: 'user' } } },
+    },
+  ]
+}
+
+function kitchenOperatorMocks(userId, path, kitchenId = 'security-rules-probe') {
+  const kitchenPath = path(`apps/misebox-app/kitchens/${kitchenId}`)
+  return [
+    ...appMemberMocks(userId, path),
+    {
+      function: 'get',
+      args: [{ exactValue: kitchenPath }],
+      result: {
+        value: {
+          data: {
+            operator_ids: [userId],
+            team_ids: [],
+          },
+        },
+      },
     },
   ]
 }

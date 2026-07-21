@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: keep the profile control aligned with sidebar collapse state. -->
 <template>
   <UDashboardGroup unit="rem">
     <UDashboardSidebar
@@ -7,8 +8,8 @@
       resizable
       class="bg-elevated/25"
     >
-      <template #header>
-        <LayoutsDashboardProfilesMenu />
+      <template #header="{ collapsed }">
+        <LayoutsDashboardProfilesMenu :collapsed="collapsed ?? false" />
       </template>
 
       <template #default="{ collapsed }">

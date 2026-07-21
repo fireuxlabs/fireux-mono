@@ -1,4 +1,5 @@
 <!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/dashboard/admin/blogs/create.vue -->
+<!-- Concurrent edit — 2026-07-21 17:00 CEST — Dashboard Family pass: clarify the Blog publish task and stabilize permission loading. -->
 <template>
   <UDashboardPanel id="dashboard-admin-blogs-create">
     <template #header>
@@ -6,33 +7,51 @@
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
-        <UPage>
-          <UPageBody class="pagebody">
-            <UAlert
-              v-if="!canPublishBlog"
-              color="warning"
-              title="Admins only"
-              description="Only admins can publish blog posts for this runtime."
-            />
+      <UPage>
+        <UPageBody class="pagebody">
+          <UPageHeader
+            headline="Blog posts"
+            title="Write and publish a post"
+            description="Draft the post, review its preview, then publish it to the blog."
+          >
+            <template #links>
+              <UButton
+                to="/dashboard/admin/blogs"
+                label="Back to posts"
+                icon="i-lucide-arrow-left"
+                color="neutral"
+                variant="soft"
+              />
+            </template>
+          </UPageHeader>
 
-            <MoleculesCreateShell
-              v-else
-              :loading="isCreating"
-              submit-label="Publish"
-              @submit="handleCreate"
-              @clear="handleClear"
-            >
-              <template #write>
-                <BlogCreateWrite />
-              </template>
-              <template #preview>
-                <BlogCreatePreview />
-              </template>
-            </MoleculesCreateShell>
-          </UPageBody>
-        </UPage>
-      </div>
+          <div v-if="permissionsPending" class="space-y-3">
+            <USkeleton v-for="n in 3" :key="n" class="h-20" />
+          </div>
+
+          <UAlert
+            v-else-if="!canPublishBlog"
+            color="warning"
+            title="Admins only"
+            description="Only app admins can publish blog posts."
+          />
+
+          <MoleculesCreateShell
+            v-else
+            :loading="isCreating"
+            submit-label="Publish"
+            @submit="handleCreate"
+            @clear="handleClear"
+          >
+            <template #write>
+              <BlogCreateWrite />
+            </template>
+            <template #preview>
+              <BlogCreatePreview />
+            </template>
+          </MoleculesCreateShell>
+        </UPageBody>
+      </UPage>
     </template>
   </UDashboardPanel>
 </template>
@@ -40,10 +59,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
+import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useBlogPermissions } from '../../../../composables/useBlogPermissions'
-// Nuxt UI provides useToast via auto-import in app context; fall back if unavailable
-const useToastFn = (globalThis as any).useToast as undefined | (() => any)
-const toast = useToastFn ? useToastFn() : undefined
 import { useBlogDraftState } from '../../../../composables/fireux/blog/editor/useBlogDraftState'
 import { useBlogCreateSubmit } from '../../../../composables/fireux/blog/editor/useBlogCreateSubmit'
 
@@ -54,7 +71,8 @@ definePageMeta({
   roles: ['admin'],
 })
 
-const { canPublishBlog } = useBlogPermissions()
+const toast = useToastify()
+const { canPublishBlog, pending: permissionsPending } = useBlogPermissions()
 
 useHead({ title: 'Create Blog Post' })
 
@@ -67,28 +85,14 @@ async function handleCreate() {
   isCreating.value = true
 
   try {
-    const slug = await submit()
-
-    if (toast) {
-      toast.add({
-        title: 'Published',
-        description: 'Blog post published successfully',
-        icon: 'i-heroicons-check-circle',
-        color: 'success',
-      })
-    }
+    await submit()
+    toast.success('Blog post published.')
 
     handleClear()
     await router.push('/blog')
-  } catch (error: any) {
-    if (toast) {
-      toast.add({
-        title: 'Publish failed',
-        description: error?.message || 'Unknown error',
-        icon: 'i-heroicons-x-circle',
-        color: 'error',
-      })
-    }
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Please try again.'
+    toast.error(`Blog post was not published: ${message}`)
   } finally {
     isCreating.value = false
   }

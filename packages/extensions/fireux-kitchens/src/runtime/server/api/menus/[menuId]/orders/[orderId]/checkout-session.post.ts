@@ -30,6 +30,7 @@ import {
 import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../utils/menu-order-capability.ts'
 
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: restrict checkout creation to the customer UID or opaque same-device capability.
+// Concurrent edit — 2026-07-21 16:38 CEST — FireUX Finance pass: prevent checkout creation from regressing an advanced Order.
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -169,6 +170,14 @@ export default defineEventHandler(async (event) => {
   const successPath = text(order.customer_uid)
     ? '/dashboard/customer/profile'
     : menuPath
+  const checkoutSnapshot = {
+    menuId: text(order.menu_id),
+    orderType: text(order.order_type),
+    orderStatus,
+    paymentStatus,
+    paymentSessionId: text(payment.stripe_checkout_session_id),
+    resumeStatus,
+  }
 
   // Stripe Checkout dynamic-price spine mirrors fireux-products checkout.
   const stripe = getMenuStripe()
@@ -215,22 +224,76 @@ export default defineEventHandler(async (event) => {
     }
   )
 
-  await orderRef.set(
-    {
-      status: 'pending_payment',
-      payment: {
-        ...payment,
-        status: 'pending',
-        resume_status: resumeStatus,
-        stripe_checkout_session_id: session.id,
+  await db.runTransaction(async (transaction) => {
+    const latestSnap = await transaction.get(orderRef)
+    if (!latestSnap.exists) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Order changed while payment was prepared.',
+      })
+    }
+
+    const latestOrder = latestSnap.data() || {}
+    const latestPayment = record(latestOrder.payment)
+    const latestOrderStatus = text(latestOrder.status).toLowerCase()
+    const latestPaymentStatus = text(latestPayment.status).toLowerCase()
+    const latestSessionId = text(latestPayment.stripe_checkout_session_id)
+    let latestResumeStatus = ''
+    try {
+      latestResumeStatus = text(
+        resolveCheckoutPayment(latestOrder).resume_status
+      )
+    } catch {
+      // A changed or invalid lifecycle fails the snapshot comparison below.
+    }
+    const sameCheckoutAlreadyStored =
+      text(latestOrder.menu_id) === checkoutSnapshot.menuId &&
+      text(latestOrder.order_type) === checkoutSnapshot.orderType &&
+      latestOrderStatus === 'pending_payment' &&
+      latestPaymentStatus === 'pending' &&
+      latestSessionId === session.id &&
+      amountMinor(latestPayment.amount_chf) === minor &&
+      text(latestPayment.currency_code).toLowerCase() === paymentCurrencyCode &&
+      latestResumeStatus === checkoutSnapshot.resumeStatus
+    if (sameCheckoutAlreadyStored) return
+
+    const snapshotIsCurrent =
+      text(latestOrder.menu_id) === checkoutSnapshot.menuId &&
+      text(latestOrder.order_type) === checkoutSnapshot.orderType &&
+      latestOrderStatus === checkoutSnapshot.orderStatus &&
+      latestPayment.required === true &&
+      latestPaymentStatus === checkoutSnapshot.paymentStatus &&
+      latestPaymentStatus !== 'paid' &&
+      latestPaymentStatus !== 'refunded' &&
+      amountMinor(latestPayment.amount_chf) === minor &&
+      text(latestPayment.currency_code).toLowerCase() === paymentCurrencyCode &&
+      latestResumeStatus === checkoutSnapshot.resumeStatus &&
+      latestSessionId === checkoutSnapshot.paymentSessionId
+    if (!snapshotIsCurrent) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Order changed while payment was prepared.',
+      })
+    }
+
+    transaction.set(
+      orderRef,
+      {
+        status: 'pending_payment',
+        payment: {
+          ...latestPayment,
+          status: 'pending',
+          resume_status: resumeStatus,
+          stripe_checkout_session_id: session.id,
+        },
+        updated: {
+          at: FieldValue.serverTimestamp(),
+          by: 'stripe-checkout',
+        },
       },
-      updated: {
-        at: FieldValue.serverTimestamp(),
-        by: 'stripe-checkout',
-      },
-    },
-    { merge: true }
-  )
+      { merge: true }
+    )
+  })
 
   return {
     success: true,

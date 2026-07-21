@@ -2,6 +2,7 @@
 
 <!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: record app-wide factual operation routes. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: route main Rules work through Core composition and ecosystem policy. -->
+<!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: route shared facts through Finance and operations through their owning domains. -->
 
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
@@ -45,6 +46,26 @@ Before each task:
   capabilities. A Solution is not evidence that an operation exists.
 - Tools are executable utilities and should not be used as a synonym for
   Operations or Solutions.
+- `/modules` is the public projection of source-controlled reusable capability
+  packages under `packages/extensions/fireux-*`. Modules are their own family:
+  apps compose them, and a module may support entities, Operations, tools,
+  Solutions, or several surfaces together. Do not present Modules as stored
+  entity records or use Firestore Product rows as package authority.
+
+## Financial fact ownership
+
+- `packages/extensions/fireux-finance` owns product-neutral minor-unit money
+  and deterministic immutable FinancialFact primitives. It imports no
+  producing domain.
+- FinancialFacts are App-scoped support records, not entities, reports,
+  general-ledger entries, or Console Operations. Raw facts remain server-only;
+  P&L and other reporting are bounded derived projections.
+- Domain packages retain their named operations and records. A trusted domain
+  lifecycle may atomically emit a normalized fact; the dependency points from
+  that domain to Finance, never back from Finance to the domain.
+- Do not treat a mutable catalogue price, estimate, rent field, or control-plane
+  identity as a financial fact. Add producers only when a dated authoritative
+  operation exists.
 
 ## Firebase MCP targeting
 

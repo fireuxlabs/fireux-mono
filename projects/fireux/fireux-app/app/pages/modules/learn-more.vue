@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 16:17 CEST — Module family design: align the guide with capability-package semantics. -->
 <template>
   <UPage>
     <UPageHeader
@@ -13,9 +14,9 @@
         </template>
 
         <ul class="list-disc fx-list-stack text-sm">
-          <li>Modules are reusable building blocks that can be composed into apps.</li>
-          <li>Each module ships focused capability instead of a full product shell.</li>
-          <li>The module catalog helps teams assemble app surfaces with lower rebuild cost.</li>
+          <li>Modules are source-controlled capability packages added to apps.</li>
+          <li>A module may add entities, Console Operations, tools, or public surfaces.</li>
+          <li>A module is not an app, product, or Solution by itself.</li>
         </ul>
       </UCard>
 
@@ -25,9 +26,9 @@
         </template>
 
         <ol class="list-decimal fx-list-stack text-sm">
-          <li>Choose module capabilities from the current catalog.</li>
-          <li>Attach modules to app surfaces and routes.</li>
-          <li>Validate runtime wiring and deploy with guard + typecheck.</li>
+          <li>Choose the capability the app needs.</li>
+          <li>Add the owning module to the app.</li>
+          <li>Expose only the entities, Operations, tools, and public surfaces the app uses.</li>
         </ol>
       </UCard>
 

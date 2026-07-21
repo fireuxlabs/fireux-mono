@@ -1,59 +1,91 @@
+<!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: make App context explicit and preserve truthful people outcomes. -->
 <template>
-  <div v-if="app" class="space-y-6">
-    <p v-if="peopleTruncated" class="text-sm text-warning">
-      Member or join-request results reached the bounded 100-record limit.
-    </p>
+  <div class="space-y-6">
+    <AppEditSectionsAbout
+      :app="app"
+      :handle-tagline-update="handleTaglineUpdate"
+      :handle-description-update="handleDescriptionUpdate"
+      :handle-short-bio-update="handleShortBioUpdate"
+      :handle-long-bio-update="handleLongBioUpdate"
+    />
 
-    <div>
-      <AppEditSectionsAbout
-        :app="app"
-        :handle-tagline-update="handleTaglineUpdate"
-        :handle-description-update="handleDescriptionUpdate"
-        :handle-short-bio-update="handleShortBioUpdate"
-        :handle-long-bio-update="handleLongBioUpdate"
-      />
-    </div>
+    <AppEditSectionsSocial
+      :app="app"
+      :handle-update-social-links="handleUpdateSocialLinks"
+    />
 
-    <div>
-      <AppEditSectionsSocial
-        :app="app"
-        :handle-update-social-links="handleUpdateSocialLinks"
-      />
-    </div>
+    <section class="space-y-4">
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h3 class="text-lg font-semibold text-highlighted">
+            People and access
+          </h3>
+          <p class="mt-1 text-sm text-muted">
+            Review requests and see who can use or administer this app.
+          </p>
+        </div>
 
-    <div>
-      <AppEditSectionsJoinRequests
-        :items="joinRequestItems"
-        :on-approve="onApprove"
-        :on-remove="onRemove"
-      />
-    </div>
+        <div
+          v-if="peopleOutcome === 'ready' || peopleOutcome === 'empty'"
+          class="flex flex-wrap gap-2"
+        >
+          <UBadge color="neutral" variant="soft">
+            {{ membershipCount }} {{ membershipCount === 1 ? 'member' : 'members' }}
+          </UBadge>
+          <UBadge
+            :color="joinRequestItems.length ? 'warning' : 'neutral'"
+            variant="soft"
+          >
+            {{ joinRequestItems.length }} pending
+          </UBadge>
+        </div>
+      </div>
 
-    <div>
-      <AppEditSectionsAdmins
-        :rows="adminRows"
-        :action-uid="adminActionUid"
-        :pill-for="adminPillFor"
-        :on-remove-admin="removeAdmin"
+      <UAlert
+        v-if="peopleTruncated"
+        color="warning"
+        variant="soft"
+        icon="i-lucide-list-end"
+        title="Showing the first 100 records"
+        description="Member or join-request results reached the bounded limit."
       />
-    </div>
 
-    <div>
-      <AppEditSectionsMembers
-        :rows="teamRows"
-        :pill-for="adminPillFor"
+      <MoleculesStateCard
+        v-if="peopleOutcome === 'idle' || peopleOutcome === 'pending'"
+        entity="app people"
+        kind="collection"
+        loading
       />
-    </div>
+
+      <MoleculesStateCard
+        v-else-if="peopleOutcome === 'error'"
+        entity="app people"
+        kind="collection"
+        state="error"
+      />
+
+      <div v-else class="grid gap-4 lg:grid-cols-2">
+        <AppEditSectionsJoinRequests
+          :items="joinRequestItems"
+          :on-approve="onApprove"
+          :on-remove="onRemove"
+        />
+
+        <AppEditSectionsAdmins
+          :rows="adminRows"
+          :action-uid="adminActionUid"
+          :pill-for="adminPillFor"
+          :on-remove-admin="removeAdmin"
+        />
+
+        <AppEditSectionsMembers
+          :rows="teamRows"
+          :pill-for="adminPillFor"
+          class="lg:col-span-2"
+        />
+      </div>
+    </section>
   </div>
-
-  <MoleculesStateCard
-    v-else-if="pending"
-    entity="app settings"
-    kind="document"
-    loading
-  />
-
-  <MoleculesStateCard v-else entity="app settings" kind="document" />
 </template>
 
 <script setup lang="ts">
@@ -61,23 +93,15 @@
 import { computed, ref } from 'vue'
 import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
-import { useApp } from '../../../composables/fireux/firestore/core/app/useApp'
 import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
 import { useUserInterface, type UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import type { AppModel } from '../../../models/core/app.model'
 import type { PublicUserIdentityDto } from '../../../server/utils/public-projection/public-dto.types'
 
-const props = withDefaults(
-  defineProps<{ app?: AppModel | null }>(),
-  { app: null }
-)
-
-const { app: internalApp, pending: internalPending } = useApp()
-
-const appRef = computed(() => props.app ?? internalApp.value ?? null)
-const app = appRef
-const pending = computed(() => (props.app ? false : internalPending.value))
+const props = defineProps<{ app: AppModel }>()
+const appRef = computed(() => props.app)
+const app = computed(() => props.app)
 
 const toast = useToastify()
 
@@ -94,6 +118,8 @@ const {
   memberships: users,
   fulfilled: hydratedUsers,
   joinRequests,
+  count: membershipCount,
+  outcome: peopleOutcome,
   truncated: peopleTruncated,
   refresh: refreshPeople,
 } = useAppUserCollection()

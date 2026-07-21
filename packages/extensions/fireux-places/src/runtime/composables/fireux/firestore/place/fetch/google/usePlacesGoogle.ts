@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 19:40 CEST — Repo Efficiency Pass 2 of 6: map Norwegian canonical Places to NOK.
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: carry real Google defaults without inventing missing Place truth.
+// Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: consume the shared country-to-currency suggestion.
 import {
   type BasePlace,
   type GooglePlace,
@@ -7,7 +8,10 @@ import {
   type PlaceUpsertInput,
 } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
-import { placeBusinessHoursFromGooglePeriods } from '../../../../../../utils/place-spine'
+import {
+  placeBusinessHoursFromGooglePeriods,
+  suggestPlaceCurrencyCode,
+} from '../../../../../../utils/place-spine'
 
 const GOOGLE_AUTOCOMPLETE_ENDPOINT = '/api/places/autocomplete'
 
@@ -283,28 +287,6 @@ function addressFromGoogle(components: GoogleAddressComponent[]): PlaceAddress {
   }
 }
 
-function currencyCodeFromCountry(countryCode: string): string {
-  const code = countryCode.toUpperCase()
-  const map: Record<string, string> = {
-    AT: 'EUR',
-    AU: 'AUD',
-    CA: 'CAD',
-    CH: 'CHF',
-    DE: 'EUR',
-    ES: 'EUR',
-    FR: 'EUR',
-    GB: 'GBP',
-    IE: 'EUR',
-    IT: 'EUR',
-    NL: 'EUR',
-    NO: 'NOK',
-    NZ: 'NZD',
-    PT: 'EUR',
-    US: 'USD',
-  }
-  return map[code] ?? ''
-}
-
 export function mapDetailsToGooglePlace(
   id: string,
   result: Record<string, any>
@@ -344,7 +326,7 @@ export function mapDetailsToGooglePlace(
     google_maps_url: typeof result?.url === 'string' ? result.url : '',
     price_level: priceLevel(result?.price_level),
     types: stringArray(result?.types),
-    default_currency_code: currencyCodeFromCountry(address.country_code),
+    default_currency_code: suggestPlaceCurrencyCode(address.country_code),
     business_hours:
       placeBusinessHoursFromGooglePeriods(result?.opening_hours?.periods) ||
       undefined,

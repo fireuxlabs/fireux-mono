@@ -2,7 +2,7 @@
 // last_used: 2026-07-21
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/_lib/smoke.mjs
-// Concurrent edit — 2026-07-21 15:35 CEST — Misebox startup verification: record the full route and HTTP contract run.
+// Concurrent edit — 2026-07-21 16:31 CEST — Misebox startup verification: tolerate one transient network failure during dev HMR.
 
 import { spawnSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
@@ -10,6 +10,8 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { spawnSyncPnpm } from './pnpm.mjs'
 
 const ROUTE_TIMEOUT_MS = 20_000
+const ROUTE_NETWORK_RETRIES = 1
+const ROUTE_NETWORK_RETRY_DELAY_MS = 1_000
 const READY_ROUTE_TIMEOUT_MS = 3_000
 const READY_TIMEOUT_MS = 180_000
 const READY_INTERVAL_MS = 1_000
@@ -81,18 +83,37 @@ export async function waitForAppReady(app) {
 }
 
 async function fetchRoute(url, options = {}) {
-  const startedAt = performance.now()
-  const response = await fetch(url, {
-    redirect: options.redirect ?? 'follow',
-    signal: AbortSignal.timeout(ROUTE_TIMEOUT_MS),
-    headers: {
-      'user-agent': 'fireux-smoke/1.0',
-    },
-  })
-  const body = await response.text()
-  const durationMs = performance.now() - startedAt
+  const networkRetries = options.networkRetries ?? 0
 
-  return { response, body, durationMs }
+  for (let attempt = 0; attempt <= networkRetries; attempt += 1) {
+    const startedAt = performance.now()
+
+    try {
+      const response = await fetch(url, {
+        redirect: options.redirect ?? 'follow',
+        signal: AbortSignal.timeout(ROUTE_TIMEOUT_MS),
+        headers: {
+          'user-agent': 'fireux-smoke/1.0',
+        },
+      })
+      const body = await response.text()
+      const durationMs = performance.now() - startedAt
+
+      return { response, body, durationMs }
+    } catch (error) {
+      if (attempt >= networkRetries) throw error
+
+      const message = error instanceof Error ? error.message : String(error)
+      const parsedUrl = new URL(url)
+      const route = `${parsedUrl.pathname}${parsedUrl.search}`
+      console.warn(
+        `${options.retryLabel || '[smoke]'} ↻ ${route} network retry ${attempt + 1}/${networkRetries}: ${message}`
+      )
+      await delay(ROUTE_NETWORK_RETRY_DELAY_MS)
+    }
+  }
+
+  throw new Error(`unreachable route fetch state for ${url}`)
 }
 
 function routeContractFailures(contract, response, body) {
@@ -160,6 +181,8 @@ export async function runRouteContractsForApp(app, contracts) {
     try {
       const { response, body, durationMs } = await fetchRoute(url, {
         redirect: 'manual',
+        networkRetries: ROUTE_NETWORK_RETRIES,
+        retryLabel: '[contract]',
       })
       const reasons = routeContractFailures(contract, response, body)
 
@@ -200,7 +223,10 @@ export async function runRouteSmokeForApp(app) {
     const url = new URL(route, app.baseUrl).toString()
 
     try {
-      const { response, body, durationMs } = await fetchRoute(url)
+      const { response, body, durationMs } = await fetchRoute(url, {
+        networkRetries: ROUTE_NETWORK_RETRIES,
+        retryLabel: '[smoke]',
+      })
 
       let marker = null
       for (const value of FAILURE_MARKERS) {

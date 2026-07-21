@@ -1,6 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 13:52 CEST — CSS necessity pass: consume the profile editor's Nuxt UI columns contract. -->
 <!-- Concurrent edit — 2026-07-21 15:42 CEST — User Profile polish: centre the shared route on a real public identity preview and focused editor. -->
 <!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: include biography in the shared profile-hub contract. -->
+<!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: isolate root User outcomes and reuse one active-user binding. -->
 <template>
   <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
   <UDashboardPanel id="user-profile">
@@ -60,7 +61,10 @@
                 </template>
 
                 <template #core>
-                  <UserEditCore :user="resolvedUser" />
+                  <UserEditCore
+                    :user="resolvedUser"
+                    :user-refs="userApi"
+                  />
                 </template>
               </LayoutsDashboardProfileEdit>
             </ClientOnly>
@@ -142,22 +146,34 @@ definePageMeta({
 
 useHead({ title: 'Public profile' })
 
+const userApi = useUser()
 const {
-  currentUser,
-  error: userError,
-  isLoading,
-  isMissing,
+  appOutcome,
+  coreError,
+  coreOutcome,
+  coreUser,
   profile: userInterface,
-} = useUser()
+} = userApi
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
 
-const resolvedUser = computed(() => currentUser.value ?? null)
+const isLoading = computed(
+  () => coreOutcome.value === 'idle' || coreOutcome.value === 'pending'
+)
+const userError = computed(
+  () => coreOutcome.value === 'error' || Boolean(coreError.value)
+)
+const isMissing = computed(() => coreOutcome.value === 'missing')
+const resolvedUser = computed(() => coreUser.value ?? null)
 const userCard = computed(() => userInterface(resolvedUser.value))
-const profileExtensionRows = computed(() => [
-  ...activeProfileEntries.value.map((entry) => ({ ...entry, active: true })),
-  ...availableProfileEntries.value.map((entry) => ({
-    ...entry,
-    active: false,
-  })),
-])
+const profileExtensionRows = computed(() => {
+  if (appOutcome.value !== 'ready') return []
+
+  return [
+    ...activeProfileEntries.value.map((entry) => ({ ...entry, active: true })),
+    ...availableProfileEntries.value.map((entry) => ({
+      ...entry,
+      active: false,
+    })),
+  ]
+})
 </script>

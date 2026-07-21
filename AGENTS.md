@@ -20,6 +20,7 @@ Effective: 2026-07-20
 <!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Passes 2–3 of 3: record package build lifecycle and durable gates. -->
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: record optional bounded biography as public User identity. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: record Core fragments, ecosystem templates, and locked release artifacts. -->
+<!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: record product-neutral immutable facts and domain-owned producers. -->
 
 ## Current Documentation State
 
@@ -58,6 +59,7 @@ Use the smallest relevant concept map before broad repo scanning:
 - Composables spine: `docs/concepts/composables.md`
 - Firestore entity spine: `docs/concepts/firestore-entity.md`
 - Firestore Rules source spine: `docs/concepts/firestore-rules.md`
+- Financial facts spine: `docs/concepts/finance.md`
 - Console spine: `docs/concepts/console.md`
 - Demo Data spine: `docs/concepts/demo-data.md`
 - Server API spine: `docs/concepts/server-api.md`
@@ -239,6 +241,32 @@ Extension component/composable registration is checked by `scripts/guards/runtim
 - Runtime `components` and `composables` must be registered through `configureFireuxModule` or an intentional Nuxt runtime layer.
 - Models, types, info helpers, and utilities are explicit-import libraries; they do not need fake no-op registration hooks.
 - A runtime asset imported by a component is bundled through that import. Add an assets hook only for global CSS or other module-level asset behavior.
+
+## Finance Fact Spine
+
+`fireux-finance` owns product-neutral money validation, deterministic
+App-scoped FinancialFact identity, and the minimal immutable fact contract.
+It imports FireUX Core only and must never import Kitchen, Supplier, Property,
+Portfolio, Project, or another producing domain.
+
+FinancialFacts are append-only App support records at
+`apps/{appId}/financial-facts/{factId}`. They are not entities, general-ledger
+entries, reports, budgets, tax calculations, or Console Operations. A domain
+keeps its named operational record and lifecycle, then emits the normalized
+fact from a trusted transaction. Domain packages depend on Finance; Finance
+does not depend back on them.
+
+A completed Kitchen Order is the first proven producer: the same trusted
+transaction completes the Order, creates its same-id immutable KitchenSale,
+and creates a deterministic `gross_sale` FinancialFact. `gross_sale` is
+deliberate because current Order truth does not split VAT or prove net revenue.
+Payment receipt is a separate future fact and must not be inferred from Sale.
+Supplier catalogue prices, Property values, Portfolio rent fields, and FireUX
+Project identity are not dated financial facts.
+
+Raw FinancialFacts remain server-only until a bounded reporting projection has
+an explicit access and query contract. P&L and other reports are derived views,
+not mutation operations or stored report truth. See `docs/concepts/finance.md`.
 
 ## App Config Spine
 

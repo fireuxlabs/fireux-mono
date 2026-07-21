@@ -34,6 +34,10 @@ service cloud.firestore {
     // apps/{appId}/kitchens/{kitchenId}/orders/{orderId}: private order PII;
     //   client reads are restricted to Kitchen operators. Granted Drivers use
     //   authenticated server-projected dispatch beacons instead.
+    // apps/{appId}/kitchens/{kitchenId}/sales/{saleId}: immutable, PII-free
+    //   completed-Order facts readable by App admins and Kitchen operators.
+    // apps/{appId}/financial-facts/{factId}: immutable normalized finance
+    //   facts; raw records remain server-only until bounded reports exist.
 
     // ===============================================================
     // Shared helpers
@@ -1018,6 +1022,10 @@ service cloud.firestore {
         allow create, update, delete: if false;
       }
 
+      match /financial-facts/{factId} {
+        allow get, list, create, update, delete: if false;
+      }
+
       // Administrative removal blocks are server-owned and never client-readable.
       match /membership-blocks/{userId} {
         allow get, list, create, update, delete: if false;
@@ -1275,24 +1283,36 @@ service cloud.firestore {
           allow create, update, delete: if false;
         }
 
+        match /sales/{saleId} {
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow create, update, delete: if false;
+        }
+
         match /{childCollection}/{childId} {
           allow get, list: if childCollection != 'orders' &&
+            childCollection != 'sales' &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, 'kitchens', kitchenId));
           allow create, update: if childCollection != 'orders' &&
+            childCollection != 'sales' &&
             isTargetOperator(appId, 'kitchens', kitchenId) &&
             request.resource.data.keys().size() <= 100;
           allow delete: if childCollection != 'orders' &&
+            childCollection != 'sales' &&
             isTargetOperator(appId, 'kitchens', kitchenId);
 
           match /{nested=**} {
             allow get, list: if childCollection != 'orders' &&
+              childCollection != 'sales' &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, 'kitchens', kitchenId));
             allow create, update: if childCollection != 'orders' &&
+              childCollection != 'sales' &&
               isTargetOperator(appId, 'kitchens', kitchenId) &&
               request.resource.data.keys().size() <= 100;
             allow delete: if childCollection != 'orders' &&
+              childCollection != 'sales' &&
               isTargetOperator(appId, 'kitchens', kitchenId);
           }
         }

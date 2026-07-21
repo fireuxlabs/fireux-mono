@@ -1,24 +1,31 @@
 <!-- FILE: packages/extensions/fireux-blogs/src/runtime/pages/dashboard/admin/blogs/index.vue -->
+<!-- Concurrent edit — 2026-07-21 17:00 CEST — Dashboard Family pass: give Blog administration a task-led browse surface. -->
 <template>
   <UDashboardPanel id="dashboard-admin-blogs">
     <template #header>
-      <LayoutsDashboardNavbar :title="`Admin · ${pageTitle}`">
-        <template #right>
-          <UButton to="/dashboard/admin/blogs/create" color="primary">
-            Create post
-          </UButton>
-        </template>
-      </LayoutsDashboardNavbar>
+      <LayoutsDashboardNavbar :title="`Admin · ${pageTitle}`" />
     </template>
 
     <template #body>
-      <div class="px-0 py-0 sm:px-4 sm:py-4 lg:px-6">
-        <UPage>
-          <UPageBody class="pagebody">
-            <BlogCollectionManager />
-          </UPageBody>
-        </UPage>
-      </div>
+      <UPage>
+        <UPageBody class="pagebody">
+          <UPageHeader
+            headline="Publishing"
+            title="Blog posts"
+            description="Browse this app’s blog records and create the next post when you are ready to publish."
+          >
+            <template #links>
+              <UButton
+                to="/dashboard/admin/blogs/create"
+                label="Create post"
+                icon="i-lucide-plus"
+              />
+            </template>
+          </UPageHeader>
+
+          <BlogCollectionManager />
+        </UPageBody>
+      </UPage>
     </template>
   </UDashboardPanel>
 </template>
@@ -37,7 +44,7 @@ definePageMeta({
     surface: true,
     key: 'blogs',
     label: 'Blog posts',
-    description: 'Manage public posts and app updates.',
+    description: 'Browse blog records and publish new posts.',
     icon: 'i-lucide-newspaper',
     order: 20,
     createTo: '/dashboard/admin/blogs/create',

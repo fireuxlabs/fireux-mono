@@ -1,9 +1,10 @@
 // FILE: packages/extensions/fireux-blogs/src/runtime/models/blogPost.model.ts
+// Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: make server-reachable workspace runtime value imports explicit.
 
 import {
   FireuxRootScope,
   type FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type BlogPostType = 'article' | 'product'

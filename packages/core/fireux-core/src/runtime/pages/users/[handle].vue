@@ -3,7 +3,7 @@
 <!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: render canonical biography on public User detail. -->
 <template>
   <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription">
+    <UPageHeader :headline="pageHeadline" :title="pageTitle">
       <template #ctas>
         <UButton
           v-if="isSelf"
@@ -209,6 +209,9 @@ const displayName = computed(() =>
 )
 const pageTitle = computed(() =>
   displayName.value ?? (handle.value ? `@${handle.value}` : 'User')
+)
+const pageHeadline = computed(() =>
+  handle.value ? `@${handle.value}` : 'User profile'
 )
 const pageDescription = computed(() =>
   displayProfile.value?.description ||

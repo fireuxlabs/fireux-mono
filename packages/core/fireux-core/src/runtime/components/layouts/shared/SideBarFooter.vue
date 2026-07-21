@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-21 16:56 CEST — Dashboard Family pass: make profile and app-home destinations explicit. -->
 <template>
   <div class="flex h-full w-full flex-col gap-2">
     <UNavigationMenu
@@ -8,7 +9,7 @@
 
     <NuxtLink
       v-if="compactProfile && collapsed && pillUser"
-      to="/dashboard"
+      to="/dashboard/user-profile"
       class="mt-auto flex w-full justify-center"
       aria-label="View profile"
     >
@@ -67,7 +68,7 @@ const pillUser = computed((): UserCard.Card | undefined => {
   if (!card) return undefined
   return {
     ...card,
-    to: '/dashboard',
+    to: '/dashboard/user-profile',
   }
 })
 
@@ -96,7 +97,7 @@ const handleSignOut = async () => {
 const actionItems = computed(() => {
   const items: any[] = [
     {
-      label: fireux.appName.toLowerCase(),
+      label: `${fireux.appShortName || fireux.appName} home`,
       icon: 'i-lucide-house',
       to: '/',
     },

@@ -1,6 +1,9 @@
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: type digest-only access and source item identity on canonical Kitchen Orders.
+// Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: snapshot canonical minor-unit Order pricing for immutable Sales.
+// Concurrent edit — 2026-07-21 17:04 CEST — Kitchen Finance surface: keep Finance model types resolvable in consuming Nuxt apps.
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
 import type { DishItemKind } from './dish.model'
 
 /**
@@ -52,12 +55,15 @@ export const KitchenOrderTypes = [
 
 export type KitchenOrderType = (typeof KitchenOrderTypes)[number]
 
-export type KitchenOrderChannel =
-  | 'menu'
-  | 'table_qr'
-  | 'kiosk'
-  | 'room_service'
-  | 'staff_pos'
+export const KitchenOrderChannels = [
+  'menu',
+  'table_qr',
+  'kiosk',
+  'room_service',
+  'staff_pos',
+] as const
+
+export type KitchenOrderChannel = (typeof KitchenOrderChannels)[number]
 
 export type KitchenOrderAcceptancePolicy = 'automatic' | 'operator'
 
@@ -226,6 +232,13 @@ export type KitchenOrderPayment = {
   paid_at?: string | FirebaseTimestamp
 }
 
+export type KitchenOrderPricing = {
+  minor_unit_digits: number
+  subtotal: FinancialMoney
+  delivery_fee: FinancialMoney
+  total: FinancialMoney
+}
+
 export type KitchenOrderDriverResponse = {
   status?: 'watching' | 'rejected' | 'tendered'
   driver_id?: string
@@ -270,6 +283,12 @@ export const KitchenOrderModel = {
   estimated_ready_minutes: 0 as number,
   estimated_ready_at: '' as string | FirebaseTimestamp,
   items: [] as KitchenOrderItem[],
+  pricing: {
+    minor_unit_digits: 2,
+    subtotal: { amount_minor: 0, currency_code: '' },
+    delivery_fee: { amount_minor: 0, currency_code: '' },
+    total: { amount_minor: 0, currency_code: '' },
+  } as KitchenOrderPricing,
   // Snapshot of the selected menu order-type policy at order time.
   // Fulfilment can evolve later without rewriting historical tickets.
   fulfilment_policy: {} as Record<string, unknown>,
@@ -359,6 +378,12 @@ export function isKitchenOrderPostPaymentStatus(
 
 export function isKitchenOrderType(value: unknown): value is KitchenOrderType {
   return KitchenOrderTypes.includes(value as KitchenOrderType)
+}
+
+export function isKitchenOrderChannel(
+  value: unknown
+): value is KitchenOrderChannel {
+  return KitchenOrderChannels.includes(value as KitchenOrderChannel)
 }
 
 export function isKitchenOrderTransition(
