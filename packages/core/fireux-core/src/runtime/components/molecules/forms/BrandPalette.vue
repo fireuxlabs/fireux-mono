@@ -1,5 +1,6 @@
 <template>
   <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette onboarding: provide one sparse inherited colour control. -->
+  <!-- Concurrent edit — 2026-07-22 13:22 CEST — Shared palette picker: replace native colour inputs with the Nuxt UI chooser. -->
   <section class="form-stack-sm">
     <UFormField
       v-for="field in fields"
@@ -7,14 +8,15 @@
       :label="field.label"
       :hint="modelValue[field.key] ? activeLabel : inheritLabel"
     >
+      <UColorPicker
+        :model-value="displayColor(field.key)"
+        :disabled="disabled"
+        size="sm"
+        :aria-label="`${field.label} colour picker`"
+        @update:model-value="updateColor(field.key, $event)"
+      />
+
       <UFieldGroup>
-        <UInput
-          type="color"
-          :model-value="displayColor(field.key)"
-          :disabled="disabled"
-          :aria-label="`${field.label} colour picker`"
-          @update:model-value="updateColor(field.key, $event)"
-        />
         <UInput
           :model-value="modelValue[field.key] || ''"
           :placeholder="displayColor(field.key)"

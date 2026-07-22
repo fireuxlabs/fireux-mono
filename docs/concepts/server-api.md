@@ -9,6 +9,8 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: map admin-only repair of absent support arrays. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map fixed-runtime atomic root/App-support onboarding endpoints. -->
 <!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: map explicit Agent authority, exact roots, and Company/Place projection joins. -->
+<!-- Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: map guarded unreferenced-root removal. -->
+<!-- Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: map exact category ids and fail-closed all-versus-allowlist projection. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
@@ -107,6 +109,10 @@ Boundary rule:
   stored `place_id` matches the target. Stored `claimed_by` grants no authority,
   Kitchen `canWrite` is presentation state, and no broad client Place write
   rule is opened.
+- Places owns `DELETE /api/places/:placeId` as a trusted destructive boundary.
+  It requires the configured developer in development or current-App admin
+  membership, and transactionally refuses deletion while a Company, Kitchen,
+  Property, or Job root depends on the Place.
 - Places also owns authenticated `POST /api/places/ensure` plus bounded
   `GET /api/places` and `GET /api/places/:placeId` projections. Ensure binds
   creation to the fixed runtime and reviewed provider/materialization input;
@@ -147,10 +153,11 @@ Boundary rule:
   missing/conflicting pairs and malformed stored authority fail before writes.
 - Jobs owns `GET /api/public/jobs` and `GET /api/public/jobs/:id`. The index
   cursor-scans bounded root batches without composite-index assumptions, and
-  both routes exact-validate roots and use the same field allowlist. Only open, explicitly public jobs
-  whose product-neutral `category_id` is configured by the current runtime are
-  emitted; tenant runtimes also require the current App as `source_app_id`.
-  Empty category configuration fails closed. Bounded server joins project
+  both routes exact-validate roots and use the same field allowlist. Only open,
+  explicitly public jobs whose exact product-neutral `category_id` is accepted
+  by the runtime's explicit allowlist or all-category scope are emitted; tenant
+  runtimes also require the current App as `source_app_id`. Empty allowlists and
+  invalid runtime role/tenant identity fail closed. Bounded server joins project
   nested Company and canonical work-Place display truth. Source App scope,
   Company/Place ids, owner scope, creator stamps, and raw linked documents
   never reach the browser DTO.

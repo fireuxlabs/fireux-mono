@@ -53,7 +53,7 @@ export function useKitchenConsoleOrders() {
     transitionKitchenOrder,
   } = useKitchenOrderTransition({ appId })
   const {
-    endService,
+    endService: endKitchenOrderService,
     error: serviceError,
     pending: servicePending,
   } = useKitchenOrderService({ appId, kitchenId })
@@ -170,6 +170,10 @@ export function useKitchenConsoleOrders() {
     transitionOrder('complete', orderId)
   const trashOrder = (orderId: string) =>
     transitionOrder('trash', orderId)
+  const endService = async () => {
+    if (readOnly.value || !canWrite.value) return
+    return endKitchenOrderService()
+  }
   const debug = computed(() => ({
     objects: {
       orders: debugOrders.value,

@@ -6,6 +6,7 @@
 // Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the FireUX product highlight vocabulary.
 // Concurrent edit — 2026-07-21 13:16 CEST — FireUX project positioning: publish Project Operations with working public and Console homes.
 // Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: publish the request-to-launch operation and its Console route.
+// Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: retain FireUX solution intent through intake.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 import { fireuxMiseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -20,6 +21,9 @@ const werkboxOwner = {
   name: 'Werkbox',
   to: '/ecosystems/werkbox',
 } as const
+
+const ignitionFromSolution = (slug: string) =>
+  `/get-started?solution=${slug}`
 
 const sourceMeta = {
   name: 'FireUX',
@@ -491,7 +495,7 @@ export const metaContent = defineFireuxMeta({
       ],
       cta: {
         label: 'Start an app',
-        to: '/get-started',
+        to: ignitionFromSolution('app-for-small-business'),
         icon: 'i-lucide-arrow-right',
       },
       keywords: ['app for small business', 'small business app', 'business app development'],
@@ -512,7 +516,7 @@ export const metaContent = defineFireuxMeta({
       ],
       cta: {
         label: 'Discuss a customer portal',
-        to: '/get-started',
+        to: ignitionFromSolution('customer-portal'),
         icon: 'i-lucide-arrow-right',
       },
       keywords: ['customer portal', 'client portal for small business', 'branded customer portal'],
@@ -533,7 +537,7 @@ export const metaContent = defineFireuxMeta({
       ],
       cta: {
         label: 'Discuss an employee portal',
-        to: '/get-started',
+        to: ignitionFromSolution('employee-portal'),
         icon: 'i-lucide-arrow-right',
       },
       keywords: ['employee portal', 'staff portal app', 'employee self service portal'],
@@ -554,7 +558,7 @@ export const metaContent = defineFireuxMeta({
       ],
       cta: {
         label: 'Show us the workflow',
-        to: '/get-started',
+        to: ignitionFromSolution('internal-business-app'),
         icon: 'i-lucide-arrow-right',
       },
       keywords: ['internal business app', 'internal workflow app', 'replace spreadsheets with app'],
@@ -574,7 +578,7 @@ export const metaContent = defineFireuxMeta({
       ],
       cta: {
         label: 'Discuss a directory',
-        to: '/get-started',
+        to: ignitionFromSolution('business-directory-app'),
         icon: 'i-lucide-arrow-right',
       },
       keywords: ['business directory app', 'online directory software', 'professional directory app'],
@@ -594,7 +598,7 @@ export const metaContent = defineFireuxMeta({
       ],
       cta: {
         label: 'Discuss a marketplace',
-        to: '/get-started',
+        to: ignitionFromSolution('marketplace-app'),
         icon: 'i-lucide-arrow-right',
       },
       keywords: ['marketplace app', 'service marketplace app', 'build an online marketplace'],
@@ -614,7 +618,7 @@ export const metaContent = defineFireuxMeta({
       ],
       cta: {
         label: 'Start a branded app',
-        to: '/get-started',
+        to: ignitionFromSolution('branded-web-app'),
         icon: 'i-lucide-arrow-right',
       },
       keywords: ['branded web app', 'custom branded app', 'installable business web app'],

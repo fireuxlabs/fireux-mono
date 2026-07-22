@@ -1,5 +1,7 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: normalize bounded product-neutral Job authoring intents.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-validate roots, safe intents, Place references, schedules, and compensation.
+// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: accept any valid neutral category only for explicit all-category Apps.
+// Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: exact-validate stored category ids with the authoring contract.
 import { Timestamp } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -264,19 +266,22 @@ function compensation(
   }
 }
 
-function configuredIdentifier(
+function configuredCategoryIdentifier(
   value: unknown,
-  allowed: ReadonlySet<string>,
-  label: string
+  scope: JobServerScope
 ): string {
-  if (!allowed.size) {
+  const id = text(value, 'Job category', 120, true)
+  if (!isFirestoreDocumentId(id)) badRequest('Job category is invalid.')
+  if (scope.categoryScope === 'all') return id
+  if (!scope.categories.size) {
     throw createError({
       statusCode: 503,
-      statusMessage: `${label} configuration is unavailable.`,
+      statusMessage: 'Job category configuration is unavailable.',
     })
   }
-  const id = text(value, label, 120, true)
-  if (!allowed.has(id)) badRequest(`${label} is not enabled for this App.`)
+  if (!scope.categories.has(id)) {
+    badRequest('Job category is not enabled for this App.')
+  }
   return id
 }
 
@@ -301,7 +306,7 @@ function normalizeCreateField(
     case 'place_id':
       return documentId(value, 'Place id')
     case 'category_id':
-      return configuredIdentifier(value, scope.categories, 'Job category')
+      return configuredCategoryIdentifier(value, scope)
     case 'contract_type':
       return enumValue(value, contractTypes, 'Contract type')
     case 'management_mode':
@@ -441,7 +446,7 @@ export function canonicalJobRoot(
     visibility,
     company_id: canonicalDocumentId(source.company_id, 'company_id'),
     place_id: canonicalDocumentId(source.place_id, 'place_id'),
-    category_id: canonicalText(source.category_id, 'category_id', 120),
+    category_id: canonicalDocumentId(source.category_id, 'category_id'),
     contract_type: contractType,
     management_mode: managementMode,
     openings_count: openingsCount,

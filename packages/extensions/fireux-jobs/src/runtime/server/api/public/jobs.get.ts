@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: cursor-scan roots and emit only eligible safe DTOs.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: hydrate bounded canonical Company and Place relationships.
+// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: keep all-category public indexes enabled without a literal wildcard id.
 import { FieldPath } from 'firebase-admin/firestore'
 import {
   createError,
@@ -55,7 +56,9 @@ export default defineEventHandler(async (event): Promise<PublicJobIndexPage> => 
   })
 
   const scope = readPublicJobRuntimeScope(event)
-  if (!scope.categories.size) return { items: [] }
+  if (scope.categoryScope === 'allowlist' && !scope.categories.size) {
+    return { items: [] }
+  }
 
   const query = getQuery(event)
   const limit = pageSize(query.limit)

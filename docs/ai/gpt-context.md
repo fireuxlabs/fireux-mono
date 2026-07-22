@@ -6,9 +6,27 @@
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: route target selection and root/App-support onboarding through one authority. -->
 <!-- Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: route public demonstrations through the named read-only adapter. -->
 <!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: route every App through the same Agent-owned Company/Place Job contract. -->
+<!-- Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: map explicit all-versus-allowlist App deltas and fail-closed runtime identity. -->
+<!-- Concurrent edit — 2026-07-22 13:13 CEST — Persistent dev-server ownership: preserve user-owned servers across agent tasks. -->
 
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
+
+## Context architecture
+
+The root `AGENTS.md` is a short router. This file owns durable repo-wide GPT
+context. Scoped files under `docs/ai/*-context.md` own durable scope-specific
+context for recurring products, ecosystems, package families, or dedicated
+chats.
+
+Current scoped context entrypoints:
+
+- Misebox: `docs/ai/misebox-context.md`
+- Werkbox: `docs/ai/werkbox-context.md`
+
+Use `docs/concepts/*.md` for topic maps and `scripts/guards/*` for executable
+shape rules. Do not copy implementation details into AI context when current
+source or a guard is the better reference.
 
 ## Refresh instructions
 
@@ -16,21 +34,33 @@ Before each task:
 
 1. Use the current default branch of `fireuxlabs/fireux-mono`, not a cached or
    previously uploaded snapshot.
-2. Read the root `AGENTS.md` completely and follow it as the operating
-   instruction surface.
-3. Start with `docs/concepts/fireux-mono.md`, then follow the Concept Cascade in
-   `AGENTS.md` to the smallest relevant concept map.
-4. Inspect the current source, nearest working sibling, and relevant
+2. Read the root `AGENTS.md` and this file completely.
+3. If a relevant scoped `docs/ai/*-context.md` exists, read it before editing.
+4. Start with `docs/concepts/fireux-mono.md`, then read the smallest relevant
+   concept map for the task.
+5. Inspect the current source, nearest working sibling, and relevant
    `scripts/guards/*` files before making claims or proposing changes.
 
 ## Authority
 
 - Current code, executable guards, and tests are implementation truth.
+- `docs/ai/*-context.md` files are living GPT entrypoints, not implementation
+  substitutes.
 - `docs/concepts/*.md` files are navigation and working-context maps, not canon.
 - Deleted docs, old chat-context files, old README content, cached repository
   snapshots, and remembered implementations are not authority.
 - If current repository files cannot be read, say that the context could not be
   refreshed instead of presenting stale knowledge as current.
+
+## Dev server ownership
+
+- Treat a healthy app server from the current checkout as persistent workspace
+  infrastructure. Verify and reuse it through `pnpm dev:<app>`; do not create a
+  duplicate or restart, kill, or take ownership of it at task boundaries.
+- Prefer user-owned IDE or toolbar servers. Start one from an agent task only
+  when none exists and live verification needs it. Replace it with the explicit
+  `pnpm kill:<app>` command only when the user asks or a concrete runtime change
+  requires a restart; never replace a listener from another checkout.
 
 ## Console target and onboarding authority
 
@@ -105,8 +135,10 @@ Before each task:
   every ecosystem. The current Agent/User is explicit owner authority;
   creator stamps remain audit-only.
 - Canonical Company and Place ids are required relationships. App configuration
-  may narrow product-neutral categories and copy, but may not select a
-  workplace entity, materializer, or alternate stored shape.
+  may select an explicit product-neutral category allowlist or the shared
+  all-category scope plus presentation copy, but may not select a workplace
+  entity, materializer, or alternate stored shape. Invalid runtime role or
+  tenant identity always makes the public Job projection ineligible.
 - Optional compensation uses the Finance minor-unit money primitive plus a pay
   unit. It is a mutable offer term, not a FinancialFact producer.
 - Ecosystem composition used by Professional Experience remains outside Job
@@ -154,6 +186,9 @@ Treat this file as a living repository document, not a frozen prompt.
   repository structure, authority, ownership, or working conventions change.
 - Update this file in the same repository change when a stable repo-wide change
   makes any instruction here incomplete or incorrect.
+- Keep `AGENTS.md` as a router. Put durable repo-wide detail here; put durable
+  scope-specific detail in the relevant `docs/ai/*-context.md`; put topic maps
+  in `docs/concepts/*.md`.
 - Keep it concise and durable. Do not add temporary task state, chat history,
   speculative plans, or implementation details already owned by source code.
 - Preserve this file as the single external-GPT entrypoint. Link to current

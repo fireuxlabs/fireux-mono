@@ -1,27 +1,28 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: replace disconnected target fixtures with one coherent fictional Kitchen world.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as two coherent Demo worlds.
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo surface selectors: name the Menu, Kiosk and Service scenarios independently.
+// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: default to Misebox Restaurant and retain Deanos Smash Burger as the service contrast.
 import { PlaceModel, type Place } from 'fireux-places/runtime/models/place.model'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 import { KitchenModel, type Kitchen } from '../../models/kitchen.model'
 import type { KitchenFulfilmentPaymentPolicy } from '../../models/kitchen.model'
 import {
   deanosKitchenDemoCatalogue,
-  gardenRoomKitchenDemoCatalogue,
+  miseboxRestaurantKitchenDemoCatalogue,
 } from './catalogue'
 import {
   deanosKitchenDemoIdentity,
-  gardenRoomKitchenDemoIdentity,
   kitchenDemoCreated,
   kitchenDemoUpdated,
+  miseboxRestaurantKitchenDemoIdentity,
 } from './fixtures'
 import {
   deanosKitchenDemoMiseTasks,
   deanosKitchenDemoOrders,
   deanosKitchenDemoStations,
-  gardenRoomKitchenDemoMiseTasks,
-  gardenRoomKitchenDemoOrders,
-  gardenRoomKitchenDemoStations,
+  miseboxRestaurantKitchenDemoMiseTasks,
+  miseboxRestaurantKitchenDemoOrders,
+  miseboxRestaurantKitchenDemoStations,
 } from './operations'
 import type {
   KitchenDemoCatalogue,
@@ -192,8 +193,8 @@ export const deanosKitchenDemoScenario = scenario({
   identity: deanosKitchenDemoIdentity,
   kitchen: kitchen({
     identity: deanosKitchenDemoIdentity,
-    name: 'Deanos',
-    tagline: 'A busy, image-poor burger service',
+    name: 'Deanos Smash Burger',
+    tagline: 'A focused smash-burger service',
     palette: deanosPalette,
     paymentMethods: [
       {
@@ -209,9 +210,9 @@ export const deanosKitchenDemoScenario = scenario({
   }),
   place: place({
     identity: deanosKitchenDemoIdentity,
-    name: 'Deanos',
+    name: 'Deanos Smash Burger',
     shortName: 'Deanos',
-    tagline: 'Burgers, sides and a fast neighbourhood service',
+    tagline: 'Straight-up smash burgers, fries and fast service',
     street: '1 Burger Lane',
     city: 'Bern',
     postalCode: '3000',
@@ -226,18 +227,18 @@ export const deanosKitchenDemoScenario = scenario({
   miseTasks: deanosKitchenDemoMiseTasks,
 })
 
-const gardenRoomPalette = {
+const miseboxRestaurantPalette = {
   primary_color: '#bb4d2f',
   secondary_color: '#52705c',
 } satisfies SparseBrandPalette
 
-export const gardenRoomKitchenDemoScenario = scenario({
-  identity: gardenRoomKitchenDemoIdentity,
+export const miseboxRestaurantKitchenDemoScenario = scenario({
+  identity: miseboxRestaurantKitchenDemoIdentity,
   kitchen: kitchen({
-    identity: gardenRoomKitchenDemoIdentity,
-    name: 'Garden Room',
-    tagline: 'A partial-image seasonal Menu and Kiosk',
-    palette: gardenRoomPalette,
+    identity: miseboxRestaurantKitchenDemoIdentity,
+    name: 'Misebox Restaurant',
+    tagline: 'A polished seasonal Menu and Kiosk',
+    palette: miseboxRestaurantPalette,
     paymentMethods: [
       {
         method: 'card_at_pickup',
@@ -247,31 +248,32 @@ export const gardenRoomKitchenDemoScenario = scenario({
     tableCount: 12,
   }),
   place: place({
-    identity: gardenRoomKitchenDemoIdentity,
-    name: 'Garden Room',
-    shortName: 'Garden Room',
-    tagline: 'Seasonal plates in a relaxed garden setting',
-    street: '2 Garden Way',
+    identity: miseboxRestaurantKitchenDemoIdentity,
+    name: 'Misebox Restaurant',
+    shortName: 'Misebox Restaurant',
+    tagline: 'Seasonal plates in a relaxed garden dining room',
+    street: '2 Misebox Garden',
     city: 'Zurich',
     postalCode: '8000',
     region: 'ZH',
     lat: 47.3769,
     lng: 8.5417,
-    palette: gardenRoomPalette,
+    palette: miseboxRestaurantPalette,
   }),
-  catalogue: gardenRoomKitchenDemoCatalogue,
-  orders: gardenRoomKitchenDemoOrders,
-  stations: gardenRoomKitchenDemoStations,
-  miseTasks: gardenRoomKitchenDemoMiseTasks,
+  catalogue: miseboxRestaurantKitchenDemoCatalogue,
+  orders: miseboxRestaurantKitchenDemoOrders,
+  stations: miseboxRestaurantKitchenDemoStations,
+  miseTasks: miseboxRestaurantKitchenDemoMiseTasks,
 })
 
-export const featuredMenuDemoScenario = gardenRoomKitchenDemoScenario
-export const featuredKioskDemoScenario = gardenRoomKitchenDemoScenario
+export const defaultKitchenDemoScenario = miseboxRestaurantKitchenDemoScenario
+export const featuredMenuDemoScenario = defaultKitchenDemoScenario
+export const featuredKioskDemoScenario = defaultKitchenDemoScenario
 export const featuredServiceDemoScenario = deanosKitchenDemoScenario
 
 export const kitchenDemoScenarios: KitchenDemoScenario[] = [
+  defaultKitchenDemoScenario,
   deanosKitchenDemoScenario,
-  gardenRoomKitchenDemoScenario,
 ]
 
 export type { KitchenDemoScenario } from './types'

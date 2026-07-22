@@ -114,10 +114,42 @@ export function useKitchenConsoleMenuSection() {
     })
   )
 
+  function assertCanWrite() {
+    if (!menuState.canWrite.value) throw new Error('This menu is read-only.')
+  }
+
+  async function createItem(...args: Parameters<typeof itemMutations.createItem>) {
+    assertCanWrite()
+    return itemMutations.createItem(...args)
+  }
+
+  async function updateItem(...args: Parameters<typeof itemMutations.updateItem>) {
+    assertCanWrite()
+    return itemMutations.updateItem(...args)
+  }
+
+  async function archiveItem(...args: Parameters<typeof itemMutations.archiveItem>) {
+    assertCanWrite()
+    return itemMutations.archiveItem(...args)
+  }
+
+  async function reorderItems(...args: Parameters<typeof itemMutations.reorderItems>) {
+    assertCanWrite()
+    return itemMutations.reorderItems(...args)
+  }
+
+  async function updateDish(...args: Parameters<typeof dishMutations.updateDish>) {
+    assertCanWrite()
+    return dishMutations.updateDish(...args)
+  }
+
   return {
     ...menuState,
-    ...itemMutations,
-    updateDish: dishMutations.updateDish,
+    createItem,
+    updateItem,
+    archiveItem,
+    reorderItems,
+    updateDish,
     sectionId,
     section,
     items,

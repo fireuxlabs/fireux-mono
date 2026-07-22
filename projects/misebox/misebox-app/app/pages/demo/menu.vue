@@ -1,10 +1,11 @@
 <!-- Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: compose the featured Demo World through the real Menu surface. -->
+<!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: identify Misebox Restaurant as the default guest demonstration. -->
 <template>
   <main class="product-demo-page" data-misebox-product-demo="menu">
     <MiseboxShowcaseHeader
       eyebrow="Guest view"
-      title="Browse the Menu"
-      description="This is the responsive guest-facing Menu presentation, driven by the featured Demo Kitchen rather than live or Test data."
+      title="Misebox Restaurant Menu"
+      description="Explore the polished default Demo Kitchen through the responsive guest-facing Menu presentation, without live or Test data."
     >
       <template #actions>
         <UButton to="/demo/kiosk" color="primary" trailing-icon="i-lucide-arrow-right">
@@ -47,7 +48,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Menu Product Demo · Misebox',
+  title: 'Misebox Restaurant Menu Demo · Misebox',
   description:
     'Explore the responsive Misebox guest Menu with photographed and image-free dishes in a safe Product Demo.',
 })

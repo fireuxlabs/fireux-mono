@@ -1,7 +1,9 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: validate categories and configured Place-backed workplace types.
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: submit caller-safe Job intent to the fixed-scope Admin create route.
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: submit canonical Place, contract, schedule, and compensation intent.
+// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: validate free neutral category ids only for all-category Apps.
 import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money.ts'
 import { ref } from 'vue'
 import type { JobCreateIntent } from '../../../../../models/job-author.model'
@@ -33,7 +35,8 @@ export type JobCreateForm = JobCreateIntent
 export function useJobCreate() {
   const jobsConfig = useFireuxJobsConfig()
 
-  const singletonCategory = jobsConfig.categories.length === 1
+  const singletonCategory = jobsConfig.categoryScope === 'allowlist' &&
+    jobsConfig.categories.length === 1
     ? jobsConfig.categories[0]
     : ''
 
@@ -50,12 +53,14 @@ export function useJobCreate() {
 
   function resolveCategoryId(value: unknown): string {
     const categoryId = normalizeString(value) || singletonCategory
-    if (jobsConfig.categories.length > 0 && !categoryId) {
+    if (!categoryId) {
       throw new Error('Job category is required')
     }
+    if (categoryId.length > 120 || !isFirestoreDocumentId(categoryId)) {
+      throw new Error('Invalid job category')
+    }
     if (
-      categoryId &&
-      jobsConfig.categories.length > 0 &&
+      jobsConfig.categoryScope === 'allowlist' &&
       !jobsConfig.categories.includes(categoryId)
     ) {
       throw new Error('Invalid job category')

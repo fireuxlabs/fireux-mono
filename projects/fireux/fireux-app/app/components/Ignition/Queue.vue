@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: give admins a compact request queue and delivery checklist. -->
+<!-- Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: show which public surface produced each request. -->
 <template>
   <section class="space-y-4">
     <div class="flex flex-wrap items-start justify-between gap-3">
@@ -61,6 +61,13 @@
               <UBadge :color="statusColor(request.status)" variant="soft">
                 {{ statusLabel(request.status) }}
               </UBadge>
+              <NuxtLink
+                v-if="request.origin"
+                :to="originTo(request.origin)"
+                class="text-xs font-medium text-primary hover:underline"
+              >
+                {{ originLabel(request.origin) }}
+              </NuxtLink>
             </div>
             <p class="mt-1 text-sm text-muted">
               {{ request.contact.name }} · {{ formatDate(request.created_at) }}
@@ -199,6 +206,10 @@ type IgnitionStatus =
   | 'in-progress'
   | 'launched'
   | 'declined'
+type IgnitionOrigin = {
+  surface: 'pricing' | 'solution' | 'app-directory'
+  ref: string
+}
 type ChecklistKey =
   | 'request_reviewed'
   | 'scope_agreed'
@@ -215,6 +226,7 @@ type IgnitionRequest = {
   pages: string[]
   app_job: string
   access: string
+  origin: IgnitionOrigin | null
   delivery: Record<ChecklistKey, boolean>
   created_at: string
 }
@@ -290,6 +302,29 @@ function brandingLabel(branding: string) {
   if (branding === 'use-existing') return 'Use existing website'
   if (branding === 'help') return 'Needs branding help'
   return branding || 'Not set'
+}
+
+function titleCaseSlug(value: string) {
+  return value
+    .split('-')
+    .filter(Boolean)
+    .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+    .join(' ')
+}
+
+function originLabel(origin: IgnitionOrigin) {
+  if (origin.surface === 'pricing') return 'App pricing'
+  if (origin.surface === 'solution') {
+    return `Solution · ${titleCaseSlug(origin.ref)}`
+  }
+  return `App example · ${origin.ref}`
+}
+
+function originTo(origin: IgnitionOrigin) {
+  const ref = encodeURIComponent(origin.ref)
+  if (origin.surface === 'pricing') return '/pricing/apps'
+  if (origin.surface === 'solution') return `/solutions/${ref}`
+  return `/apps/${ref}`
 }
 
 function formatDate(value: string) {

@@ -1,6 +1,7 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Job/Create/Basics.vue -->
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: select configured categories for multi-category apps. -->
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: author canonical contract, schedule, openings, and compensation fields. -->
+<!-- Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: author a neutral category id for all-category Apps. -->
 <template>
   <UCard>
     <template #header>
@@ -16,7 +17,19 @@
     </template>
 
     <div class="space-y-5">
-      <UFormField v-if="categoryOptions.length > 1" label="Category" required>
+      <UFormField
+        v-if="jobsConfig.categoryScope === 'all'"
+        label="Category"
+        required
+      >
+        <UInput
+          v-model="form.category_id"
+          placeholder="e.g. cleaning"
+          maxlength="120"
+        />
+      </UFormField>
+
+      <UFormField v-else-if="categoryOptions.length > 1" label="Category" required>
         <USelect
           v-model="form.category_id"
           :options="categoryOptions"

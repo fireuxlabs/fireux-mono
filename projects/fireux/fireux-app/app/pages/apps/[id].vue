@@ -1,7 +1,16 @@
+<!-- Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: turn published App examples into attributed Ignition entry points. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription">
-      <template #ctas>
+      <template #links>
+        <UButton
+          v-if="app"
+          size="xs"
+          icon="i-lucide-rocket"
+          :to="ignitionTo"
+        >
+          Start an app like this
+        </UButton>
         <UButton size="xs" variant="ghost" icon="i-lucide-arrow-left" to="/apps">
           Back
         </UButton>
@@ -96,6 +105,10 @@ const pageTitle = computed(() => app.value?.app_name || 'App')
 const pageDescription = computed(
   () => app.value?.description || 'Published FireUX App directory projection.'
 )
+const ignitionTo = computed(() => {
+  const example = app.value?.slug || app.value?.id || routeId.value
+  return `/get-started?example=${encodeURIComponent(example)}`
+})
 
 useSeoMeta({
   title: pageTitle,

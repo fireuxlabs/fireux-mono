@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: defer and project the featured Kitchens Demo World for public read-only routes.
+// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: present Misebox Restaurant by default and Deanos Smash Burger for service.
 import { useAsyncData } from '#imports'
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
@@ -36,7 +37,7 @@ const experiences: readonly MiseboxProductDemoExperience[] = [
     to: '/demo/menu',
     eyebrow: 'Guest view',
     title: 'Browse a menu',
-    description: 'See one responsive Menu remain clear with a mixture of photographed and image-free dishes.',
+    description: 'Browse Misebox Restaurant’s polished seasonal Menu with photographed and image-free dishes.',
     icon: 'i-lucide-book-open',
     accent: 'primary',
     highlights: ['Responsive sections', 'Mixed image coverage', 'Real Menu components'],
@@ -45,7 +46,7 @@ const experiences: readonly MiseboxProductDemoExperience[] = [
     to: '/demo/kiosk',
     eyebrow: 'Self service',
     title: 'Order at a kiosk',
-    description: 'Try the touch-first Eat here and Take away presentation with a local basket.',
+    description: 'Order from Misebox Restaurant through the touch-first Eat here and Take away presentation.',
     icon: 'i-lucide-monitor-smartphone',
     accent: 'warning',
     highlights: ['Touch-first layout', 'Local basket', 'No live submission'],
@@ -54,7 +55,7 @@ const experiences: readonly MiseboxProductDemoExperience[] = [
     to: '/demo/service',
     eyebrow: 'Kitchen team',
     title: 'Run a service',
-    description: 'Move real Kitchen tickets from Incoming through Queue and Pass in a resettable board.',
+    description: 'Move Deanos Smash Burger tickets from Incoming through Queue and Pass in a resettable board.',
     icon: 'i-lucide-chef-hat',
     accent: 'success',
     highlights: ['Incoming → Queue', 'Queue → Pass', 'Deterministic reset'],

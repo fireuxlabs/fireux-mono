@@ -5,6 +5,7 @@
 // Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: lock Project access to UserApp admin membership.
 // Concurrent edit — 2026-07-20 20:22 CEST — Repo Efficiency Pass 2 of 6: lock exact projected profile types, transport, and self-only mutations.
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job spine alignment: lock explicit owner, Place, compensation, and exact-root authority.
+// Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: lock exact stored ids and fail-closed public runtime scope.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -573,6 +574,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(jobValidation, /requireFinancialMoney/)
   assert.match(
     jobValidation,
+    /category_id:\s*canonicalDocumentId\(source\.category_id, ['"]category_id['"]\)/
+  )
+  assert.match(
+    jobValidation,
     /path:\s*`places\/\$\{job\.place_id\}`/
   )
   assert.match(
@@ -582,6 +587,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(
     jobPublicProjection,
     /const job = canonicalJobRoot\(id, data\)/
+  )
+  assert.match(
+    jobPublicProjection,
+    /const eligible\s*=\s*validRole\s*&&\s*\(role\s*!==\s*['"]tenant['"]\s*\|\|\s*isFirestoreDocumentId\(appId\)\)/
+  )
+  assert.match(
+    jobPublicProjection,
+    /categoryScope:\s*eligible\s*&&\s*jobs\.categoryScope\s*===\s*['"]all['"]\s*\?\s*['"]all['"]\s*:\s*['"]allowlist['"]/
   )
 
   const jobRootSurfacePaths = new Set([

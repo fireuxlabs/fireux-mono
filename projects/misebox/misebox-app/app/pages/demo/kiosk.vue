@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: host the full-viewport local-only Kiosk demonstration. -->
+<!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: identify Misebox Restaurant as the default Kiosk demonstration. -->
 <template>
   <MiseboxShowcaseKiosk
     v-if="productDemo"
@@ -30,9 +31,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Kiosk Product Demo · Misebox',
+  title: 'Misebox Restaurant Kiosk Demo · Misebox',
   description:
-    'Try the touch-first Misebox Kiosk with Eat here, Take away and a local-only basket.',
+    'Try the touch-first Misebox Restaurant Kiosk with Eat here, Take away and a local-only basket.',
 })
 </script>
 

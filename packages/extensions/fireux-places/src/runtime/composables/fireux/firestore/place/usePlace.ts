@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 14:11 CEST — Werkbox Firebase hardening: retire the untrusted client Place delete surface.
+// Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: export the trusted Place removal intent.
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { usePlaceSearch } from './fetch/search/usePlaceSearch'
@@ -6,6 +7,7 @@ import { usePlaceCollection } from './fetch/usePlaceCollection'
 import { usePlaceFetch } from './fetch/usePlaceFetch'
 import { usePlaceClaim } from './mutations/usePlaceClaim'
 import { usePlaceCreate } from './mutations/usePlaceCreate'
+import { usePlaceDelete } from './mutations/usePlaceDelete'
 import { usePlaceUpdate } from './mutations/usePlaceUpdate'
 import { usePlaceSeo } from './utils/usePlaceSeo'
 import { usePlaceComputed } from './utils/view/usePlaceComputed'
@@ -20,6 +22,7 @@ export {
   usePlaceSearch,
   usePlaceClaim,
   usePlaceCreate,
+  usePlaceDelete,
   usePlaceUpdate,
   usePlaceSeo,
   usePlaceComputed,
@@ -51,6 +54,7 @@ export function usePlace(options: UsePlaceOptions = {}) {
     ...usePlaceFetch(),
     ...usePlaceSearch(),
     ...usePlaceCreate({ type: unref(options.type), types: options.types }),
+    ...usePlaceDelete(),
     ...usePlaceUpdate(),
     ...usePlaceClaim(),
     ...usePlaceComputed(),

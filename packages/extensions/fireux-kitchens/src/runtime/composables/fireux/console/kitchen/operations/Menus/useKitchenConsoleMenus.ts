@@ -83,7 +83,7 @@ export function useKitchenConsoleMenus() {
   )
   const activeMenus = computed(() =>
     kitchenConsole.runtime.source.value === 'demo'
-      ? rawMenus.value.filter(menu => menu.status !== 'archived')
+      ? (rawMenus.value ?? []).filter(menu => menu.status !== 'archived')
       : fetchedActiveMenus.value
   )
   const pending = computed(() =>
@@ -125,6 +125,32 @@ export function useKitchenConsoleMenus() {
     return create.createMenu(input)
   }
 
+  function assertCanWrite() {
+    if (!kitchenConsole.runtime.canWrite.value) {
+      throw new Error('This kitchen is read-only.')
+    }
+  }
+
+  async function updateMenu(...args: Parameters<typeof update.updateMenu>) {
+    assertCanWrite()
+    return update.updateMenu(...args)
+  }
+
+  async function renameMenu(...args: Parameters<typeof update.renameMenu>) {
+    assertCanWrite()
+    return update.renameMenu(...args)
+  }
+
+  async function publishMenu(...args: Parameters<typeof update.publishMenu>) {
+    assertCanWrite()
+    return update.publishMenu(...args)
+  }
+
+  async function archiveMenu(...args: Parameters<typeof update.archiveMenu>) {
+    assertCanWrite()
+    return update.archiveMenu(...args)
+  }
+
   return {
     selectedKitchen: kitchenConsole.selection.kitchen,
     kitchenId: kitchenConsole.selection.kitchenId,
@@ -146,10 +172,10 @@ export function useKitchenConsoleMenus() {
     menuSourcesCollectionPath: sourceUploads.collectionPath,
     createMenu,
     menuCreateBlockedMessage,
-    updateMenu: update.updateMenu,
-    renameMenu: update.renameMenu,
-    publishMenu: update.publishMenu,
-    archiveMenu: update.archiveMenu,
+    updateMenu,
+    renameMenu,
+    publishMenu,
+    archiveMenu,
     debug: computed(() => ({
       kitchenId: kitchenConsole.selection.kitchenId.value,
       activeKitchenAppId: kitchenConsole.runtime.appId.value,

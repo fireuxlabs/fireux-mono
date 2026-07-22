@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-21 14:52 CEST — Place provenance/privacy hardening: remove public self-claim controls until verified ownership proof exists. -->
+<!-- Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: expose the guarded developer/admin removal action. -->
 <template>
   <ClientOnly>
     <UPage>
@@ -26,6 +27,8 @@
             v-if="placeProfile"
             :model="placeProfile"
           />
+
+          <PlaceDelete :place="place" />
 
           <!-- dev -->
           <DevJson

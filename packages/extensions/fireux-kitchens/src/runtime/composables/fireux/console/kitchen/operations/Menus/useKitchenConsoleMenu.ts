@@ -60,9 +60,44 @@ export function useKitchenConsoleMenu() {
       : sectionState.collectionPath.value
   )
 
+  function assertCanWrite() {
+    if (!state.canWrite.value) throw new Error('This menu is read-only.')
+  }
+
+  async function createSection(
+    ...args: Parameters<typeof sectionMutations.createSection>
+  ) {
+    assertCanWrite()
+    return sectionMutations.createSection(...args)
+  }
+
+  async function updateSection(
+    ...args: Parameters<typeof sectionMutations.updateSection>
+  ) {
+    assertCanWrite()
+    return sectionMutations.updateSection(...args)
+  }
+
+  async function archiveSection(
+    ...args: Parameters<typeof sectionMutations.archiveSection>
+  ) {
+    assertCanWrite()
+    return sectionMutations.archiveSection(...args)
+  }
+
+  async function reorderSections(
+    ...args: Parameters<typeof sectionMutations.reorderSections>
+  ) {
+    assertCanWrite()
+    return sectionMutations.reorderSections(...args)
+  }
+
   return {
     ...state,
-    ...sectionMutations,
+    createSection,
+    updateSection,
+    archiveSection,
+    reorderSections,
     menuId,
     menu,
     source,

@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: define a current-model Dish and Menu catalogue with valid cross-record references.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: give Deanos and Garden Room distinct, reference-complete catalogues.
+// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: separate the smash-burger and polished restaurant catalogues.
 import { DishModel, type Dish } from '../../models/kitchen/dish.model'
 import {
   KitchenMenuModel,
@@ -17,10 +18,10 @@ import {
 import type { Menu } from '../../models/kitchen/menu/menu.model'
 import {
   deanosKitchenDemoIdentity,
-  gardenRoomKitchenDemoIdentity,
   kitchenDemoAssetBase,
   kitchenDemoCreated,
   kitchenDemoUpdated,
+  miseboxRestaurantKitchenDemoIdentity,
 } from './fixtures'
 import type {
   KitchenDemoCatalogue,
@@ -124,8 +125,8 @@ const menuItem = (
 
 const deanosRootMenu = rootMenu(
   deanosKitchenDemoIdentity,
-  'Deanos service menu',
-  'Burgers, sides and drinks for a busy neighbourhood service.'
+  'Deanos Smash Burger menu',
+  'Smash burgers, fries and drinks for a fast neighbourhood service.'
 )
 
 export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
@@ -235,29 +236,33 @@ export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
   ],
 }
 
-const gardenRoomRootMenu = rootMenu(
-  gardenRoomKitchenDemoIdentity,
-  'Garden Room all-day menu',
-  'A seasonal, partially photographed menu for Browse and Kiosk presentation.'
+const miseboxRestaurantRootMenu = rootMenu(
+  miseboxRestaurantKitchenDemoIdentity,
+  'Misebox Restaurant seasonal menu',
+  'A polished, partially photographed menu for guest Browse and Kiosk presentation.'
 )
 
-export const gardenRoomKitchenDemoCatalogue: KitchenDemoCatalogue = {
-  rootMenu: gardenRoomRootMenu,
-  kitchenMenu: kitchenMenu(gardenRoomKitchenDemoIdentity, gardenRoomRootMenu, [
-    {
-      type: 'eat_in',
-      fulfilment: {
-        handoff_instructions: 'Watch the screen for your tray number.',
+export const miseboxRestaurantKitchenDemoCatalogue: KitchenDemoCatalogue = {
+  rootMenu: miseboxRestaurantRootMenu,
+  kitchenMenu: kitchenMenu(
+    miseboxRestaurantKitchenDemoIdentity,
+    miseboxRestaurantRootMenu,
+    [
+      {
+        type: 'eat_in',
+        fulfilment: {
+          handoff_instructions: 'Watch the screen for your tray number.',
+        },
       },
-    },
-    {
-      type: 'takeaway',
-      fulfilment: {
-        handoff_instructions: 'Collect your bag when your number is called.',
+      {
+        type: 'takeaway',
+        fulfilment: {
+          handoff_instructions: 'Collect your bag when your number is called.',
+        },
       },
-    },
-  ]),
-  dishes: dishes(gardenRoomKitchenDemoIdentity, [
+    ]
+  ),
+  dishes: dishes(miseboxRestaurantKitchenDemoIdentity, [
     {
       id: 'fire-roasted-margherita',
       name: 'Fire-roasted margherita',
@@ -296,9 +301,14 @@ export const gardenRoomKitchenDemoCatalogue: KitchenDemoCatalogue = {
   ]),
   menuSections: [
     {
-      section: menuSection(gardenRoomKitchenDemoIdentity, 'from-the-oven', 'From the oven', 1),
+      section: menuSection(
+        miseboxRestaurantKitchenDemoIdentity,
+        'from-the-oven',
+        'From the oven',
+        1
+      ),
       items: [
-        menuItem(gardenRoomKitchenDemoIdentity, {
+        menuItem(miseboxRestaurantKitchenDemoIdentity, {
           id: 'margherita-item',
           section_id: 'from-the-oven',
           dish_id: 'fire-roasted-margherita',
@@ -316,9 +326,14 @@ export const gardenRoomKitchenDemoCatalogue: KitchenDemoCatalogue = {
       ],
     },
     {
-      section: menuSection(gardenRoomKitchenDemoIdentity, 'bowls-and-plates', 'Bowls & plates', 2),
+      section: menuSection(
+        miseboxRestaurantKitchenDemoIdentity,
+        'bowls-and-plates',
+        'Bowls & plates',
+        2
+      ),
       items: [
-        menuItem(gardenRoomKitchenDemoIdentity, {
+        menuItem(miseboxRestaurantKitchenDemoIdentity, {
           id: 'garden-curry-item',
           section_id: 'bowls-and-plates',
           dish_id: 'garden-curry',
@@ -326,14 +341,14 @@ export const gardenRoomKitchenDemoCatalogue: KitchenDemoCatalogue = {
           sort_order: 1,
           add_ons: [{ id: 'crispy-tofu', label: 'Crispy tofu', price: 4 }],
         }),
-        menuItem(gardenRoomKitchenDemoIdentity, {
+        menuItem(miseboxRestaurantKitchenDemoIdentity, {
           id: 'market-garden-salad-item',
           section_id: 'bowls-and-plates',
           dish_id: 'market-garden-salad',
           price: 17,
           sort_order: 2,
         }),
-        menuItem(gardenRoomKitchenDemoIdentity, {
+        menuItem(miseboxRestaurantKitchenDemoIdentity, {
           id: 'roasted-squash-grains-item',
           section_id: 'bowls-and-plates',
           dish_id: 'roasted-squash-grains',
@@ -343,9 +358,14 @@ export const gardenRoomKitchenDemoCatalogue: KitchenDemoCatalogue = {
       ],
     },
     {
-      section: menuSection(gardenRoomKitchenDemoIdentity, 'drinks', 'Drinks', 3),
+      section: menuSection(
+        miseboxRestaurantKitchenDemoIdentity,
+        'drinks',
+        'Drinks',
+        3
+      ),
       items: [
-        menuItem(gardenRoomKitchenDemoIdentity, {
+        menuItem(miseboxRestaurantKitchenDemoIdentity, {
           id: 'elderflower-spritz-item',
           section_id: 'drinks',
           dish_id: 'elderflower-spritz',

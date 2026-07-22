@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: resolve exact public Job detail during SSR.
+// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: key public details by all-versus-allowlist authority.
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, unref, type ComputedRef, type MaybeRef } from 'vue'
@@ -47,7 +48,9 @@ export function usePublicJobFetch(
     () => [
       'public-job-detail',
       fireux.appId,
-      jobsConfig.categories.join(','),
+      jobsConfig.categoryScope === 'all'
+        ? 'all'
+        : jobsConfig.categories.join(','),
       id.value || 'none',
     ].join('|'),
     async () => {

@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: introduce the public Misebox demonstration index. -->
+<!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: make Misebox Restaurant the default showroom path and Deanos the burger contrast. -->
 <template>
   <main class="product-demo-index" data-misebox-product-demo="index">
     <section class="product-demo-index__hero">
@@ -10,10 +11,30 @@
         <p class="fx-type-headline">From guest choice to Kitchen handoff</p>
         <h1>See the restaurant system working.</h1>
         <p>
-          Explore a coherent fictional service through the same Menu, Kiosk and
+          Explore two fictional restaurants through the same Menu, Kiosk and
           Kitchen Order components used by Misebox. Everything here is local,
           deterministic and safe to reset.
         </p>
+      </div>
+
+      <div class="product-demo-index__actions">
+        <UButton
+          to="/demo/menu"
+          color="primary"
+          size="xl"
+          trailing-icon="i-lucide-arrow-right"
+        >
+          Explore Misebox Restaurant
+        </UButton>
+        <UButton
+          to="/demo/service"
+          color="neutral"
+          variant="soft"
+          size="xl"
+          icon="i-lucide-chef-hat"
+        >
+          Run Deanos Smash Burger
+        </UButton>
       </div>
 
       <div v-if="productDemo" class="product-demo-index__world">
@@ -22,9 +43,12 @@
           Featured Demo Kitchens
         </span>
         <strong>{{ productDemo.menu.kitchenName }}</strong>
-        <small>Guest Menu & Kiosk · {{ productDemo.menu.placeLabel }}</small>
+        <small>
+          Default Demo Kitchen · Guest Menu & Kiosk ·
+          {{ productDemo.menu.placeLabel }}
+        </small>
         <strong>{{ productDemo.service.kitchenName }}</strong>
-        <small>Kitchen service</small>
+        <small>Smash Burger Kitchen · Kitchen service</small>
       </div>
 
       <UAlert
@@ -46,7 +70,7 @@
     <section class="product-demo-index__experiences" aria-labelledby="demo-experiences-title">
       <div class="product-demo-index__section-heading">
         <p class="fx-type-headline">Choose a perspective</p>
-        <h2 id="demo-experiences-title">Three parts of one service</h2>
+        <h2 id="demo-experiences-title">Two restaurants, three perspectives</h2>
       </div>
 
       <div class="product-demo-index__grid">
@@ -142,6 +166,12 @@ useSeoMeta({
 .product-demo-index__intro {
   display: grid;
   gap: calc(var(--spacing) * 4);
+}
+
+.product-demo-index__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 3);
 }
 
 .product-demo-index__intro p,

@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: replace the email CTA with a real request and confirmation flow. -->
+<!-- Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: carry pricing, solution, and App context into intake. -->
 <template>
   <PublicSimplePage
     :title="appMeta.getStarted.title"
@@ -45,6 +45,9 @@
     <UCard id="ignition-request">
       <template #header>
         <div class="space-y-1">
+          <UBadge v-if="originLabel" color="neutral" variant="soft">
+            {{ originLabel }}
+          </UBadge>
           <h2 class="text-xl font-semibold text-highlighted">
             {{ submittedReference ? 'Request received' : 'Request Ignition' }}
           </h2>
@@ -250,7 +253,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
+import { useRoute } from '#imports'
 import { appMeta } from '../meta'
 
 type IgnitionResponse = {
@@ -270,6 +274,10 @@ const pageOptions = [
 ] as const
 
 type PageOption = (typeof pageOptions)[number]['value']
+type IgnitionOrigin = {
+  surface: 'pricing' | 'solution' | 'app-directory'
+  ref: string
+}
 
 const brandingOptions = [
   { label: 'Logo and colours ready', value: 'ready' },
@@ -300,10 +308,44 @@ const initialForm = () => ({
 })
 
 const form = reactive(initialForm())
+const route = useRoute()
 const errors = reactive<Record<string, string>>({})
 const submitting = ref(false)
 const requestError = ref('')
 const submittedReference = ref('')
+
+function queryValue(value: unknown) {
+  const candidate = Array.isArray(value) ? value[0] : value
+  return String(candidate ?? '').trim().toLowerCase()
+}
+
+function safeOriginRef(value: unknown) {
+  const candidate = queryValue(value)
+  return /^[a-z0-9](?:[a-z0-9-]{0,94}[a-z0-9])?$/.test(candidate)
+    ? candidate
+    : ''
+}
+
+const origin = computed<IgnitionOrigin | null>(() => {
+  if (queryValue(route.query.from) === 'pricing-apps') {
+    return { surface: 'pricing', ref: 'apps' }
+  }
+
+  const solution = safeOriginRef(route.query.solution)
+  if (solution) return { surface: 'solution', ref: solution }
+
+  const example = safeOriginRef(route.query.example)
+  if (example) return { surface: 'app-directory', ref: example }
+
+  return null
+})
+
+const originLabel = computed(() => {
+  if (origin.value?.surface === 'pricing') return 'From app pricing'
+  if (origin.value?.surface === 'solution') return 'From a FireUX solution'
+  if (origin.value?.surface === 'app-directory') return 'From an app example'
+  return ''
+})
 
 function normalizeWebsite() {
   const website = form.website.trim()
@@ -373,7 +415,10 @@ async function submitRequest() {
   try {
     const response = await $fetch<IgnitionResponse>('/api/public/ignition', {
       method: 'POST',
-      body: { ...form },
+      body: {
+        ...form,
+        ...(origin.value ? { origin: origin.value } : {}),
+      },
     })
     submittedReference.value = response.reference
   } catch (error) {

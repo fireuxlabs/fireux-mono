@@ -12,6 +12,8 @@ Entities map
 <!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: map sparse brand colours and trusted root-owned overrides. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map atomic root/App-support onboarding and access-role authority. -->
 <!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: replace workplace variants with one Agent-owned Company/Place root. -->
+<!-- Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: record guarded unreferenced-root removal. -->
+<!-- Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: map explicit all-versus-allowlist deltas and exact category ids. -->
 
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
@@ -223,14 +225,17 @@ Root Projected Index members:
   stores required canonical `company_id` and `place_id` references,
   product-neutral `category_id`, separate contract duration and management
   axes, openings, optional Finance-shaped compensation, schedule, lifecycle,
-  and stamps. Apps may configure categories and presentation copy only; there
-  is no workplace-type variant or Kitchen-backed Job identity.
+  and stamps. Apps may configure an explicit category allowlist or the shared
+  all-category scope plus presentation copy only; there is no workplace-type
+  variant or Kitchen-backed Job identity. Stored category identity is an exact
+  Firestore document id in both modes.
 - Job creation and updates use trusted fixed-runtime APIs, reject
   caller-selected scope/ownership/lifecycle fields, validate the exact stored
   root, and require the Company, same-id Company Place, and work Place. Public
   index and exact detail routes emit only open, explicitly public Jobs in the
-  runtime categories; tenant runtimes additionally require the current App as
-  `source_app_id`. Empty category configuration fails closed. Root ids, source
+  runtime allowlist or explicit all-category scope; tenant runtimes additionally
+  require the current App as `source_app_id`. Empty allowlists and invalid
+  runtime role/tenant identity fail closed. Root ids, source
   scope, owner, and stamps remain outside the public DTO; bounded nested
   Company and Place display projections are joined server-side.
 - Professional Experience also stores a canonical `place_id`. Any
@@ -276,6 +281,10 @@ Place authority boundary:
   the server; Kitchen console presentation state never grants a direct browser
   write to the shared Place record. Stored `claimed_by` is inert legacy data:
   no claim-derived authority exists until a verified ownership workflow does.
+- Place hard deletion uses trusted `DELETE /api/places/:placeId` authority and
+  is available only to the configured developer in development or a current-App
+  admin. Company, Kitchen, Property, or Job roots that reference the Place
+  block deletion; callers must remove the dependent role entity first.
 - `POST /api/places/ensure` remains the ID-only idempotent Place materialization
   seam. Interactive Place onboarding separately previews and completes the
   Place through authenticated `/api/places/onboarding/*` boundaries. The server

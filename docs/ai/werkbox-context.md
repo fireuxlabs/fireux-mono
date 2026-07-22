@@ -1,6 +1,7 @@
 <!-- Concurrent edit — 2026-07-21 14:59 CEST — Cleanbox to Werkbox migration: record the durable Werkbox ownership and trusted Firebase boundary. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: point Werkbox at the composed Rules ownership boundary. -->
 <!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: record parity with Misebox and categories-only product delta. -->
+<!-- Concurrent edit — 2026-07-22 12:56 CEST — Werkbox all-category scope: distinguish the general Job hub from its cleaning landing category. -->
 # Werkbox GPT Context
 
 This is the scoped context entrypoint for work on Werkbox inside
@@ -26,8 +27,8 @@ Before each Werkbox task:
 2. Inspect `packages/ecosystem/fireux-werkbox`, the relevant app under
    `projects/werkbox/*`, and the owning extension packages for any shared
    domains in scope.
-3. Follow the Concept Cascade in `AGENTS.md`, starting with the smallest
-   relevant maps under `docs/concepts/*`.
+3. Use the context router in `AGENTS.md`, starting with the smallest relevant
+   maps under `docs/concepts/*`.
 4. Use the nearest working sibling in the same family before proposing a
    Werkbox-specific shape. Misebox is the nearest global ecosystem/app sibling;
    tenant siblings depend on the surface being changed.
@@ -50,6 +51,9 @@ remembered implementations are not authority.
 - Cleaning is represented by a neutral category identifier such as
   `cleaning`; do not encode `cleanbox` or `werkbox` into reusable Job/category
   identity.
+- The main Werkbox App enables the shared Job package's explicit all-category
+  scope. Cleaning remains a first-class landing category, not the boundary of
+  the Werkbox Job catalogue or a wildcard stored as Job identity.
 - Werkbox and Misebox use the same Agent-owned Job root, canonical Company and
   Place references, trusted authoring boundary, exact validation, and bounded
   public projection. Category and presentation copy are the only accepted App

@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: define the app-owned request contract and checklist.
+// Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: validate and preserve pricing, solution, and App entry points.
 import { createError } from 'h3'
 
 export const IgnitionRequestStorage = {
@@ -41,8 +41,18 @@ export const IGNITION_CHECKLIST = [
   'launched',
 ] as const
 
+export const IGNITION_ORIGIN_SURFACES = [
+  'pricing',
+  'solution',
+  'app-directory',
+] as const
+
 export type IgnitionStatus = (typeof IGNITION_STATUSES)[number]
 export type IgnitionChecklistKey = (typeof IGNITION_CHECKLIST)[number]
+export type IgnitionOrigin = {
+  surface: (typeof IGNITION_ORIGIN_SURFACES)[number]
+  ref: string
+}
 
 export type PublicIgnitionRequestInput = {
   contactName: string
@@ -53,6 +63,7 @@ export type PublicIgnitionRequestInput = {
   pages: (typeof IGNITION_PAGE_OPTIONS)[number][]
   appJob: string
   access: string
+  origin: IgnitionOrigin | null
 }
 
 export type IgnitionRequestPatch =
@@ -70,6 +81,7 @@ const PUBLIC_FIELDS = new Set([
   'access',
   'privacy_acknowledged',
   'fax_number',
+  'origin',
 ])
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -126,6 +138,42 @@ function parseWebsite(value: unknown) {
       statusCode: 400,
       statusMessage: 'Website must be a valid web address.',
     })
+  }
+}
+
+function parseOrigin(value: unknown): IgnitionOrigin | null {
+  if (value === undefined || value === null) return null
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'The Ignition source is invalid.',
+    })
+  }
+
+  const source = value as Record<string, unknown>
+  const keys = Object.keys(source)
+  const surface = cleanLine(source.surface, 32)
+  const ref = cleanLine(source.ref, 96)
+  const validRef = /^[a-z0-9](?:[a-z0-9-]{0,94}[a-z0-9])?$/.test(ref)
+  const validPricingRef = surface !== 'pricing' || ref === 'apps'
+
+  if (
+    keys.length !== 2 ||
+    !keys.includes('surface') ||
+    !keys.includes('ref') ||
+    !IGNITION_ORIGIN_SURFACES.includes(surface as never) ||
+    !validRef ||
+    !validPricingRef
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'The Ignition source is invalid.',
+    })
+  }
+
+  return {
+    surface: surface as IgnitionOrigin['surface'],
+    ref,
   }
 }
 
@@ -223,6 +271,7 @@ export function parsePublicIgnitionRequest(
     pages: Array.from(pageSet) as PublicIgnitionRequestInput['pages'],
     appJob,
     access,
+    origin: parseOrigin(source.origin),
   }
 }
 
@@ -280,6 +329,21 @@ function nestedRecord(value: unknown) {
     : {}
 }
 
+function serializeOrigin(value: unknown): IgnitionOrigin | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const source = value as Record<string, unknown>
+  const surface = cleanLine(source.surface, 32)
+  const ref = cleanLine(source.ref, 96)
+  if (
+    !IGNITION_ORIGIN_SURFACES.includes(surface as never) ||
+    !/^[a-z0-9](?:[a-z0-9-]{0,94}[a-z0-9])?$/.test(ref) ||
+    (surface === 'pricing' && ref !== 'apps')
+  ) {
+    return null
+  }
+  return { surface: surface as IgnitionOrigin['surface'], ref }
+}
+
 export function serializeIgnitionRequest(
   id: string,
   source: Record<string, unknown>
@@ -309,6 +373,7 @@ export function serializeIgnitionRequest(
       : [],
     app_job: cleanText(source.app_job, 2000),
     access: cleanText(source.access, 1000),
+    origin: serializeOrigin(source.origin),
     delivery: Object.fromEntries(
       IGNITION_CHECKLIST.map((key) => [key, delivery[key] === true])
     ) as Record<IgnitionChecklistKey, boolean>,

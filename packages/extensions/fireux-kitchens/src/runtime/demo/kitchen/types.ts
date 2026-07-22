@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: type one coherent read-only Kitchen world across identity, menu and service records.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as separate coherent scenarios.
+// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: keep the two named restaurant scenarios distinct.
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import type { Dish } from '../../models/kitchen/dish.model'
 import type { KitchenMiseTask } from '../../models/kitchen/mise.model'

@@ -3,6 +3,7 @@
 // usage_note: enforces owner-local, deferred, read-only Demo World consumers.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: lock fixture ownership and lazy console consumption.
 // Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: admit one named project adapter and the public route namespace.
+// Concurrent edit — 2026-07-22 13:03 CEST — Product Demo dependency pass: enforce pure adapters and project-declared package Demo owners.
 // FILE: scripts/guards/demo-data.mjs
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -138,6 +139,23 @@ function readPackageName(packagePath) {
     return typeof parsed.name === 'string' ? parsed.name.trim() : ''
   } catch {
     return ''
+  }
+}
+
+function readDeclaredDependencies(packagePath) {
+  if (!existsSync(packagePath)) return new Set()
+  try {
+    const parsed = JSON.parse(readFileSync(packagePath, 'utf8'))
+    return new Set(
+      [
+        'dependencies',
+        'devDependencies',
+        'optionalDependencies',
+        'peerDependencies',
+      ].flatMap((field) => Object.keys(parsed[field] ?? {}))
+    )
+  } catch {
+    return new Set()
   }
 }
 
@@ -321,6 +339,7 @@ function resolveImport(relativeImporter, specifier, owners) {
     const sourcePrefix = packageOwner.startsWith('packages/') ? 'src/' : ''
     return {
       owner: packageOwner,
+      packageName,
       relativePath: `${packageOwner}/${sourcePrefix}${suffix}`.replace(/\/$/, ''),
     }
   }
@@ -340,14 +359,18 @@ function isProductDemoAdapter(relativePath) {
   )
 }
 
-function productDemoMayLoad(importer, resolved) {
+function productDemoMayLoad(importer, resolved, declaredDependencies) {
   if (!resolved || !canonicalDemoRoot(resolved.relativePath)) return false
 
   const importerOwner = ownerRoot(importer)
   if (!importerOwner?.startsWith('projects/')) return false
   if (resolved.owner === importerOwner) return true
 
-  return Boolean(resolved.owner?.startsWith('packages/'))
+  return Boolean(
+    resolved.owner?.startsWith('packages/')
+    && resolved.packageName
+    && declaredDependencies.has(resolved.packageName)
+  )
 }
 
 function isForbiddenDemoValueModule(specifier) {
@@ -374,6 +397,7 @@ function formatViolations(violations) {
     '[guard] Fix:',
     '- Keep reusable Demo modules under their package src/runtime/demo; keep app-only Demo modules under app/demo.',
     '- Load Demo through a dynamic import inside an owning console adapter or a project app/composables/product-demo/use*ProductDemo adapter.',
+    '- Declare every package Demo owner in the importing project package.json.',
     '- Keep public Product Demo pages under the reserved project app/pages/demo route namespace; pages must consume the named adapter, not fixtures directly.',
     '- Keep Demo modules pure and read-only; import real model/types, never public/server/admin/mutation or Firebase/Storage runtime dependencies.',
     '- Keep test, simulation, and dev fixture families outside Demo.',
@@ -386,6 +410,7 @@ export async function run(ctx) {
   const owners = packageOwners(repoRoot)
   const violations = []
   const productDemoAdapters = new Map()
+  const productDemoDependencies = new Map()
 
   for (const file of files) {
     const relativeFile = repoRelative(repoRoot, file)
@@ -393,6 +418,12 @@ export async function run(ctx) {
 
     const owner = ownerRoot(relativeFile)
     if (!owner) continue
+    if (!productDemoDependencies.has(owner)) {
+      productDemoDependencies.set(
+        owner,
+        readDeclaredDependencies(path.join(repoRoot, owner, 'package.json'))
+      )
+    }
     const existing = productDemoAdapters.get(owner)
     if (existing) {
       violations.push({
@@ -422,6 +453,7 @@ export async function run(ctx) {
   for (const file of files) {
     const relativeFile = repoRelative(repoRoot, file)
     const demoRoot = canonicalDemoRoot(relativeFile)
+    const productDemoAdapter = isProductDemoAdapter(relativeFile)
     const source = readFileSync(file, 'utf8')
     const imports = importsForFile(file, source)
 
@@ -481,6 +513,31 @@ export async function run(ctx) {
 
     for (const imported of imports) {
       if (imported.typeOnly) continue
+
+      const resolved = resolveImport(relativeFile, imported.specifier, owners)
+      if (productDemoAdapter) {
+        const importedBoundary = forbiddenBoundary(
+          resolved?.relativePath ?? imported.specifier
+        )
+        if (importedBoundary) {
+          violations.push({
+            code: 'product-demo-dependency',
+            file: relativeFile,
+            line: imported.line,
+            message: `Product Demo value-imports the ${importedBoundary} boundary (${imported.specifier}).`,
+          })
+        }
+
+        if (isForbiddenDemoValueModule(imported.specifier)) {
+          violations.push({
+            code: 'product-demo-remote-dependency',
+            file: relativeFile,
+            line: imported.line,
+            message: `Product Demo must not load Firebase, Storage, Admin, or VueFire runtime code (${imported.specifier}).`,
+          })
+        }
+      }
+
       if (!hasDemoSegment(imported.specifier)) continue
 
       if (imported.kind === 'static') {
@@ -495,7 +552,6 @@ export async function run(ctx) {
 
       const boundary = forbiddenBoundary(relativeFile)
       const consoleAdapter = isConsoleAdapter(relativeFile)
-      const productDemoAdapter = isProductDemoAdapter(relativeFile)
       if (boundary || (!consoleAdapter && !productDemoAdapter)) {
         violations.push({
           code: 'consumer-boundary',
@@ -508,14 +564,22 @@ export async function run(ctx) {
         continue
       }
 
-      const resolved = resolveImport(relativeFile, imported.specifier, owners)
       if (productDemoAdapter) {
-        if (!productDemoMayLoad(relativeFile, resolved)) {
+        const declaredDependencies = productDemoDependencies.get(
+          ownerRoot(relativeFile)
+        ) ?? new Set()
+        if (
+          !productDemoMayLoad(
+            relativeFile,
+            resolved,
+            declaredDependencies
+          )
+        ) {
           violations.push({
             code: 'product-demo-owner',
             file: relativeFile,
             line: imported.line,
-            message: `Product Demo adapters may load only their project's Demo World or package-owned Demo Worlds (${imported.specifier}).`,
+            message: `Product Demo adapters may load only their project's Demo World or Demo Worlds owned by packages declared in the project package.json (${imported.specifier}).`,
           })
         }
         continue

@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: exact-load one eligible Job through the same allowlist.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-load canonical Company and Place display relationships.
+// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: keep all-category public details enabled without a literal wildcard id.
 import {
   createError,
   defineEventHandler,
@@ -29,7 +30,7 @@ export default defineEventHandler(async (event): Promise<PublicJobDetailResponse
 
   const id = requireFirestoreDocumentId(event.context.params?.id, 'Job id')
   const scope = readPublicJobRuntimeScope(event)
-  if (!scope.categories.size) {
+  if (scope.categoryScope === 'allowlist' && !scope.categories.size) {
     throw createError({ statusCode: 404, statusMessage: 'Job not found' })
   }
 

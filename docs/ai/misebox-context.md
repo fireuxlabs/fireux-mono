@@ -10,6 +10,7 @@
 <!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: keep branding inheritance and trusted theme writes package-owned. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: align Misebox target/read membership with operator mutation authority. -->
 <!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: keep Jobs identical across ecosystems and isolate Professional Experience composition. -->
+<!-- Concurrent edit — 2026-07-22 12:59 CEST — Product Demo boundary: keep public showroom composition read-only and package-backed. -->
 
 This is the single context entrypoint for an external GPT focused on Misebox
 inside `fireuxlabs/fireux-mono`.
@@ -20,13 +21,13 @@ Before each task:
 
 1. Use the current default branch of `fireuxlabs/fireux-mono`, not a cached or
    previously uploaded snapshot.
-2. Read `docs/ai/gpt-context.md` and the root `AGENTS.md` completely.
+2. Read the root `AGENTS.md` and `docs/ai/gpt-context.md` completely.
 3. Inspect the current Misebox ecosystem package at
    `packages/ecosystem/fireux-misebox` and the relevant app under
    `projects/misebox/*`.
-4. Follow the Concept Cascade in `AGENTS.md`. For kitchen, menu, ordering,
+4. Use the context router in `AGENTS.md`. For kitchen, menu, ordering,
    console, Firestore, public surfaces, layouts, or app configuration, read the
-   corresponding smallest `docs/concepts/*.md` map before inspecting code.
+   smallest relevant `docs/concepts/*.md` map before inspecting code.
 5. Find the nearest working sibling in the same FireUX family before proposing
    a Misebox-specific implementation.
 
@@ -96,6 +97,11 @@ Before each task:
   resolution, and ordering projections belong to `fireux-kitchens`.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
+- Misebox App's public `/demo` family is a project-owned showroom composition.
+  It consumes package-owned deterministic Demo Worlds only through the named
+  Product Demo adapter, reuses real domain components, and performs no live or
+  Test reads or writes. Demo records remain owned by their domain package; the
+  project owns only route selection, marketing copy, and local interaction.
 - Misebox owns its complete main Firestore Rules template and target manifest
   at `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`.
   Shared byte-identical policy primitives come from FireUX Core; the tracked

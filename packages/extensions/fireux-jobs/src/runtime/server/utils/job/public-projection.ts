@@ -1,5 +1,7 @@
 // Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: enforce source App scope without transporting it.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: exact-validate Jobs and join bounded Company/Place display truth.
+// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: project every valid neutral category for explicit all-category Apps.
+// Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: fail closed when runtime role or tenant identity is invalid.
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -24,6 +26,7 @@ const identifiers = (value: unknown) =>
   )
 
 export type PublicJobRuntimeScope = {
+  categoryScope: 'all' | 'allowlist'
   categories: ReadonlySet<string>
   tenantAppId: string | null
 }
@@ -44,12 +47,16 @@ export function readPublicJobRuntimeScope(
   const appId = text(fireux.id, 1_500)
   const validRole =
     role === 'global' || role === 'tenant' || role === 'standalone'
+  const eligible =
+    validRole && (role !== 'tenant' || isFirestoreDocumentId(appId))
 
   return {
-    categories: validRole ? identifiers(jobs.categories) : new Set<string>(),
+    categoryScope:
+      eligible && jobs.categoryScope === 'all' ? 'all' : 'allowlist',
+    categories: eligible ? identifiers(jobs.categories) : new Set<string>(),
     tenantAppId:
-      role === 'tenant'
-        ? (isFirestoreDocumentId(appId) ? appId : '')
+      eligible && role === 'tenant'
+        ? appId
         : null,
   }
 }
@@ -60,14 +67,18 @@ export function isPublicJobCandidate(
   data: Record<string, unknown>,
   scope: PublicJobRuntimeScope
 ): boolean {
-  if (!scope.categories.size || !isFirestoreDocumentId(id)) return false
+  if (
+    (scope.categoryScope === 'allowlist' && !scope.categories.size) ||
+    !isFirestoreDocumentId(id)
+  ) return false
   if (data.status !== 'open' || data.visibility !== 'public') return false
 
   const sourceAppId = text(data.source_app_id, 1_500)
   const categoryId = text(data.category_id, 120)
   return Boolean(
     isFirestoreDocumentId(sourceAppId) &&
-    scope.categories.has(categoryId) &&
+    isFirestoreDocumentId(categoryId) &&
+    (scope.categoryScope === 'all' || scope.categories.has(categoryId)) &&
     (scope.tenantAppId === null || sourceAppId === scope.tenantAppId)
   )
 }

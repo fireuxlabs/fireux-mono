@@ -1,10 +1,11 @@
 <!-- Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: compose Demo Orders into the local canonical Kitchen service board. -->
+<!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: identify Deanos Smash Burger as the focused service demonstration. -->
 <template>
   <main class="product-demo-page" data-misebox-product-demo="service">
     <MiseboxShowcaseHeader
       eyebrow="Kitchen team"
-      title="Run a service"
-      description="Accept an incoming order, move preparation to the Pass and complete handoff. Every transition stays in this page and Reset service restores the Demo World."
+      title="Run Deanos Smash Burger"
+      description="Accept an incoming burger order, move preparation to the Pass and complete handoff. Every transition stays in this page and Reset service restores the Demo World."
     >
       <template #actions>
         <UButton to="/demo/menu" color="neutral" variant="soft" icon="i-lucide-book-open">
@@ -51,7 +52,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Kitchen Service Product Demo · Misebox',
+  title: 'Deanos Smash Burger Service Demo · Misebox',
   description:
     'Move Misebox Kitchen Orders through Incoming, Queue and Pass in a deterministic read-only Product Demo.',
 })

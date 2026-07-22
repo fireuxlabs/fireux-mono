@@ -9,6 +9,7 @@
 // Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: register the Indian Gourmet terminal entry contract.
 // Concurrent edit — 2026-07-22 12:47 CEST — Jobs smoke alignment: cover the shared public Jobs route and projection in both global apps.
 // Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: smoke the new FireUX request queue route.
+// Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: smoke pricing, solution, and intake entry points.
 
 import {
   appDetailContract,
@@ -70,6 +71,10 @@ export const APP_REGISTRY = {
     consoles: ['project'],
     smokeRoutes: [
       ...SHARED_ROUTES,
+      '/get-started',
+      '/pricing/apps',
+      '/solutions/app-for-small-business',
+      '/operations/ignition',
       ...consoleRoutes(['project']),
       '/console/project/identity',
       '/console/project/overview',

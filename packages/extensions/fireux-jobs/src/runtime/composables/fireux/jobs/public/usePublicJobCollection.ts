@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep pagination callbacks explicitly typed for Nuxt consumers.
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: distinguish exhausted emptiness from a scan page with more results.
+// Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: key public collections by all-versus-allowlist authority.
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
@@ -40,7 +41,11 @@ export function usePublicJobCollection(
   const key = [
     'public-job-index',
     `app=${encodeURIComponent(fireux.appId || 'app')}`,
-    `categories=${encodeURIComponent(jobsConfig.categories.join(','))}`,
+    `categories=${encodeURIComponent(
+      jobsConfig.categoryScope === 'all'
+        ? 'all'
+        : jobsConfig.categories.join(',')
+    )}`,
     `limit=${pageSize}`,
   ].join('|')
   const state = useAsyncData<PublicJobIndexPage>(

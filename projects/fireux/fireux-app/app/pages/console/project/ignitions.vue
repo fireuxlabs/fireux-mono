@@ -6,7 +6,7 @@
     </template>
 
     <template #body>
-      <ConsoleProjectOperationsIgnitions />
+      <IgnitionQueue />
     </template>
   </UDashboardPanel>
 </template>

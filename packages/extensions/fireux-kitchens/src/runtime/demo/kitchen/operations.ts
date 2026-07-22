@@ -1,6 +1,8 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: model a coherent fictional service with valid Order lifecycle, pricing and food references.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: retain Deanos operations and keep Garden Room intentionally service-empty.
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo lifecycle correction: retain acceptance estimates through accepted and ready service states.
+// Concurrent edit — 2026-07-22 14:31 CEST — Demo policy correction: keep collection customer data aligned with its required-field snapshot.
+// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: distinguish Deanos Smash Burger service from Misebox Restaurant.
 import type { DishItemKind } from '../../models/kitchen/dish.model'
 import {
   KitchenMiseTaskModel,
@@ -57,6 +59,7 @@ type DemoOrderInput = {
   payment?: KitchenOrderPayment
   paymentMethod?: KitchenOrderPaymentMethod
   customerName?: string
+  customerPhone?: string
   handoff?: 'tray' | 'bag'
   kitchenNote?: string
 }
@@ -125,7 +128,14 @@ const makeOrder = (input: DemoOrderInput): KitchenOrder => {
     },
     fulfilment_policy: {
       order_type: input.orderType,
-      ...(input.orderType === 'collection' ? { asap_enabled: true } : {}),
+      ...(input.orderType === 'collection'
+        ? {
+            asap_enabled: true,
+            customer: {
+              required_fields: ['name', 'phone'],
+            },
+          }
+        : {}),
       handoff_instructions: handoffInstructions,
       payment_methods: paymentMethods(input.orderType),
     },
@@ -136,7 +146,10 @@ const makeOrder = (input: DemoOrderInput): KitchenOrder => {
           handoff: input.handoff || (input.orderType === 'eat_in' ? 'tray' : 'bag'),
         }
       : {},
-    customer: input.customerName ? { name: input.customerName } : {},
+    customer: {
+      ...(input.customerName ? { name: input.customerName } : {}),
+      ...(input.customerPhone ? { phone: input.customerPhone } : {}),
+    },
     kitchen_note: input.kitchenNote || '',
     payment: input.payment || {
       required: false,
@@ -162,6 +175,7 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
     channel: 'menu',
     createdAt: '2026-07-22T09:55:00.000Z',
     customerName: 'Noah',
+    customerPhone: '+1 202-555-0101',
     items: [
       {
         id: 'item-1',
@@ -189,6 +203,7 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
     channel: 'menu',
     createdAt: '2026-07-22T09:58:00.000Z',
     customerName: 'Mina',
+    customerPhone: '+1 202-555-0102',
     items: [
       {
         id: 'item-1',
@@ -275,6 +290,7 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
     createdAt: '2026-07-22T10:06:00.000Z',
     updatedAt: '2026-07-22T10:07:00.000Z',
     customerName: 'Sofia',
+    customerPhone: '+1 202-555-0105',
     kitchenNote: 'Guest cancelled before acceptance.',
     items: [
       {
@@ -342,8 +358,8 @@ export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
   miseTask('stock-takeaway-packaging', 'Stock takeaway packaging', 'pass', 'todo', 'normal', 10),
 ]
 
-// Garden Room deliberately demonstrates the Menu/Kiosk presentation without
+// Misebox Restaurant deliberately demonstrates the Menu/Kiosk presentation without
 // implying that a service board, Stations or Mise workflow is already active.
-export const gardenRoomKitchenDemoOrders: KitchenOrder[] = []
-export const gardenRoomKitchenDemoStations: KitchenStation[] = []
-export const gardenRoomKitchenDemoMiseTasks: KitchenMiseTask[] = []
+export const miseboxRestaurantKitchenDemoOrders: KitchenOrder[] = []
+export const miseboxRestaurantKitchenDemoStations: KitchenStation[] = []
+export const miseboxRestaurantKitchenDemoMiseTasks: KitchenMiseTask[] = []

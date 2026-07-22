@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: capture public requests and notify the FireUX App owner.
+// Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: retain bounded intake while recording the customer's entry point.
 import { useRuntimeConfig } from '#imports'
 import { Timestamp } from 'firebase-admin/firestore'
 import {
@@ -137,6 +137,7 @@ export default defineEventHandler(async (event: H3Event) => {
       pages: input.pages,
       app_job: input.appJob,
       access: input.access,
+      ...(input.origin ? { origin: input.origin } : {}),
       delivery: emptyIgnitionChecklist(),
       created: {
         at: timestamp,
