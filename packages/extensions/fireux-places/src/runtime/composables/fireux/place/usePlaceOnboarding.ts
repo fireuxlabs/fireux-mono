@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: confirm local defaults and stage optional branding before trusted completion.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage sparse brand colours without copying inherited defaults.
+// Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: expose the singular Place domain adapter over usePlaceCreate.
 import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
@@ -19,7 +20,6 @@ import {
 
 export type PlaceOnboardingStepId =
   | 'find'
-  | 'identity'
   | 'defaults'
   | 'brand'
   | 'review'
@@ -61,7 +61,7 @@ function errorMessage(error: unknown) {
   return 'Unable to add this Place right now.'
 }
 
-export function usePlacesOnboarding() {
+export function usePlaceOnboarding() {
   const draft = ref<PlaceUpsertInput | null>(null)
   const selectionKind = ref<'provider' | 'existing' | null>(null)
   const selectionPending = ref(false)
@@ -119,7 +119,7 @@ export function usePlacesOnboarding() {
     return true
   }
 
-  function validateIdentity() {
+  function validateSelection() {
     if (!draft.value || !text(draft.value.name)) {
       return 'Place name is required.'
     }
@@ -151,13 +151,6 @@ export function usePlacesOnboarding() {
       icon: 'i-lucide-search',
       validate: validateFind,
     },
-    {
-      id: 'identity',
-      label: 'Confirm identity',
-      description: 'Check the provider-owned name and physical location.',
-      icon: 'i-lucide-map-pin',
-      validate: validateIdentity,
-    },
     ...(needsDefaults.value
       ? [
           {
@@ -186,8 +179,8 @@ export function usePlacesOnboarding() {
       description: 'Review the shared identity and confirmed local defaults.',
       icon: 'i-lucide-check-circle-2',
       validate: () => {
-        const identity = validateIdentity()
-        if (identity !== true) return identity
+        const selection = validateSelection()
+        if (selection !== true) return selection
         const defaults = validateDefaults()
         return defaults === true ? validateBrand() : defaults
       },

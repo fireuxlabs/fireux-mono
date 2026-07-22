@@ -18,6 +18,7 @@ import {
   type PortfolioSurface,
 } from '../../../firestore/portfolio/utils/view/usePortfolioInterface'
 import { PortfolioStorage } from '../../../../../models/portfolio.model'
+import { usePortfolioConsoleDemoData } from './usePortfolioConsoleDemoData'
 
 export type PortfolioConsoleEntity = PortfolioSurface & {
   id?: string
@@ -57,18 +58,38 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
     if (consoleRoot.source.value === 'demo') return explicitFilter
     return consoleTargets.filter(explicitFilter)
   })
-  const {
-    portfolios: targetPortfolios,
-    pending: targetsPending,
-    error: targetsError,
-    outcome: sourceTargetsOutcome,
-  } = usePortfolioCollection({
+  const liveCollection = usePortfolioCollection({
     source: consoleRoot.source,
     filter: targetFilter,
   })
-  const membershipAwareTargetsOutcome = consoleTargets.resolveOutcome(
-    sourceTargetsOutcome
+  const demoData = usePortfolioConsoleDemoData(
+    computed(() => consoleRoot.source.value === 'demo')
   )
+  const targetPortfolios = computed<PortfolioConsoleEntity[]>(() =>
+    consoleRoot.source.value === 'demo'
+      ? (demoData.data.value ?? []).flatMap((scenario) => {
+          const item = pill(scenario.portfolio)
+          return item ? [{ ...scenario.portfolio, ...item }] : []
+        })
+      : liveCollection.portfolios.value
+  )
+  const targetsPending = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.pending.value
+      : liveCollection.pending.value
+  )
+  const targetsError = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.error.value
+      : liveCollection.error.value
+  )
+  const sourceTargetsOutcome = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.outcome.value
+      : liveCollection.outcome.value
+  )
+  const membershipAwareTargetsOutcome =
+    consoleTargets.resolveOutcome(sourceTargetsOutcome)
   const targetsOutcome = computed(() =>
     consoleRoot.source.value === 'demo'
       ? sourceTargetsOutcome.value

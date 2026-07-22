@@ -1,5 +1,6 @@
 <template>
   <!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: keep identity as an optional Place-name override. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: ask only whether this Kitchen needs its own name. -->
   <section class="form-stack-sm">
     <dl class="form-stack-sm">
       <div>
@@ -13,9 +14,9 @@
     </dl>
 
     <UFormField
-      label="Kitchen name override"
+      label="Kitchen name"
       hint="Optional"
-      description="Leave this blank to use the Place name everywhere."
+      description="Leave blank to use the Place name."
     >
       <UInput
         :model-value="displayName"
@@ -31,18 +32,9 @@
       color="success"
       variant="soft"
       icon="i-lucide-circle-check"
-      title="Existing Kitchen identity"
-      description="Connecting this Kitchen will not overwrite its stored identity."
+      title="Kitchen found"
     />
 
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-layers-3"
-      title="Place defaults stay shared"
-      description="Address, logo, currency, timezone, contact details, and business hours remain on the Place."
-    />
   </section>
 </template>
 

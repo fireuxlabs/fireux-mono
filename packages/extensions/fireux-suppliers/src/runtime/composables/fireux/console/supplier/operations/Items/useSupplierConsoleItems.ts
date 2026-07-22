@@ -2,6 +2,10 @@ import { computed } from 'vue'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
 import { useSupplierItemCollection } from '../../../../firestore/supplier/fetch/useSupplierItemCollection'
 import type { SupplierItemSurface } from '../../../../firestore/supplier/utils/view/useSupplierItemInterface'
+import {
+  findSupplierConsoleDemoScenario,
+  useSupplierConsoleDemoData,
+} from '../../core/useSupplierConsoleDemoData'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -28,7 +32,8 @@ export function useSupplierConsoleItems() {
     normalizeString(selection.supplier.value?.catalogue_state)
   )
   const supplierItemsEnabled = computed(() =>
-    Boolean(runtime.rootCollection.value && selection.supplierId.value)
+    runtime.source.value !== 'demo'
+    && Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
     collectionPath: supplierItemsCollectionPath,
@@ -39,13 +44,22 @@ export function useSupplierConsoleItems() {
     supplierCollectionPath: runtime.rootCollection,
   })
 
+  const demoData = useSupplierConsoleDemoData(
+    computed(() => runtime.source.value === 'demo')
+  )
+  const demoScenario = computed(() => findSupplierConsoleDemoScenario(
+    demoData.data.value,
+    selection.supplierId.value
+  ))
   const supplierItems = computed<SupplierItemSurface[]>(() =>
-    runtime.rootCollection.value
-        ? supplierItemsFromStore.value
-        : []
+    runtime.source.value === 'demo'
+      ? demoScenario.value?.items ?? []
+      : supplierItemsFromStore.value
   )
   const pending = computed(() =>
-    runtime.rootCollection.value ? supplierItemsPending.value : false
+    runtime.source.value === 'demo'
+      ? demoData.pending.value
+      : supplierItemsPending.value
   )
 
   const emptyTitle = computed(() => 'No supplier items yet')

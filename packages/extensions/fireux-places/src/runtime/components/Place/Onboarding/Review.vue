@@ -1,5 +1,6 @@
 <template>
   <!-- Concurrent edit — 2026-07-22 12:27 CEST — Place palette onboarding: review sparse shared colours and optional branding. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep final Place review factual and short. -->
   <section class="form-stack-sm">
     <dl class="form-stack-sm">
       <div>
@@ -28,32 +29,6 @@
       </div>
     </dl>
 
-    <UAlert
-      v-if="existing && !configuring"
-      color="success"
-      variant="soft"
-      icon="i-lucide-refresh-cw"
-      title="Reuse this Place"
-      description="No duplicate will be created and the existing Place will not be overwritten."
-    />
-
-    <UAlert
-      v-else-if="existing"
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-list-checks"
-      title="Finish this Place"
-      description="Only missing defaults and optional branding will be added. Existing Place truth will not be overwritten."
-    />
-
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-badge-check"
-      title="Verify and add"
-      description="FireUX will verify the Google identity again, then save the confirmed defaults through the trusted Place boundary."
-    />
   </section>
 </template>
 
@@ -64,8 +39,6 @@ import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.m
 
 const props = defineProps<{
   place: PlaceUpsertInput
-  existing: boolean
-  configuring: boolean
   currencyCode: string
   timezone: string
   logoStaged: boolean

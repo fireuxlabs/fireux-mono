@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: compose Place selection with Kitchen-only identity and atomic activation.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: stage only colours overriding the linked Place.
+// Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep the Kitchen adapter over useKitchenCreate.
 import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type {
   PublicPlaceDetailProjection,
   PublicPlaceDetailResponse,
@@ -13,8 +13,9 @@ import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
 } from '../../../models/kitchen-onboarding.model'
+import { useKitchenCreate } from '../firestore/kitchen/mutations/useKitchenCreate'
 
-export type KitchenOnboardingStepId = 'identity' | 'palette' | 'review'
+export type KitchenOnboardingStepId = 'identity' | 'brand' | 'review'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -45,6 +46,10 @@ export function useKitchenOnboarding() {
   const selectionError = ref('')
   const completion = ref<KitchenOnboardingCompleteResult | null>(null)
   let selectionSequence = 0
+  const {
+    completeKitchenOnboarding,
+    previewKitchenOnboarding,
+  } = useKitchenCreate()
 
   const canEditIdentity = computed(() => preview.value?.existing !== true)
   const effectiveName = computed(() =>
@@ -54,12 +59,6 @@ export function useKitchenOnboarding() {
   const inheritedPalette = computed<SparseBrandPalette>(() =>
     place.value?.brand_palette || {}
   )
-
-  async function authHeaders() {
-    const user = await useRequireUser()
-    const token = await user.getIdToken()
-    return { Authorization: `Bearer ${token}` }
-  }
 
   function validateIdentity() {
     if (selectionPending.value) return 'Wait while we confirm this Kitchen.'
@@ -88,8 +87,8 @@ export function useKitchenOnboarding() {
       },
       ...(canEditPalette.value
         ? [{
-            id: 'palette' as const,
-            label: 'Kitchen colours',
+            id: 'brand' as const,
+            label: 'Brand',
             description: 'Use the Place colours or add a sparse Kitchen override.',
             icon: 'i-lucide-palette',
             validate: validatePalette,
@@ -116,12 +115,7 @@ export function useKitchenOnboarding() {
     }
 
     try {
-      const result = await $fetch<KitchenOnboardingCompleteResult>(
-        '/api/kitchens/onboarding/complete',
-        {
-          method: 'POST',
-          headers: await authHeaders(),
-          body: {
+      const result = await completeKitchenOnboarding({
             place_id: currentPreview.place_id,
             ...(currentPreview.existing
               ? { kitchen_id: currentPreview.kitchen_id }
@@ -132,9 +126,7 @@ export function useKitchenOnboarding() {
             ...(canEditPalette.value && Object.keys(paletteOverride.value).length
               ? { palette_override: paletteOverride.value }
               : {}),
-          },
-        }
-      )
+      })
       if (
         result?.ok !== true ||
         result.kitchen_id !== currentPreview.kitchen_id ||
@@ -170,14 +162,7 @@ export function useKitchenOnboarding() {
     paletteOverride.value = {}
 
     try {
-      const resolvedPreview = await $fetch<KitchenOnboardingPreview>(
-        '/api/kitchens/onboarding/preview',
-        {
-          method: 'POST',
-          headers: await authHeaders(),
-          body: input,
-        }
-      )
+      const resolvedPreview = await previewKitchenOnboarding(input)
       if (sequence !== selectionSequence) return false
       if (!resolvedPreview?.place_id || !resolvedPreview.kitchen_id) {
         throw new Error('Kitchen onboarding preview was invalid.')
@@ -241,7 +226,7 @@ export function useKitchenOnboarding() {
   function setPaletteOverride(value: SparseBrandPalette) {
     if (!canEditPalette.value) return
     paletteOverride.value = value
-    onboarding.invalidateFrom('palette')
+    onboarding.invalidateFrom('brand')
   }
 
   return {

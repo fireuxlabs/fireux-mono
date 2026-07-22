@@ -12,12 +12,14 @@ import {
   type PortfolioConsoleEntity,
 } from '../core/usePortfolioConsole'
 import { usePortfolioConsoleSelection } from '../core/usePortfolioConsoleSelection'
+import { usePropertiesConsoleDemoData } from '../../shared/usePropertiesConsoleDemoData'
+import type { PropertiesConsoleDemoScenario } from '../../shared/usePropertiesConsoleDemoData'
 
 export type ActivePortfolioRuntime = {
   source: ComputedRef<ConsoleSource>
   mode: ComputedRef<ConsoleSource>
   isDemo: ComputedRef<boolean>
-  scenario: ComputedRef<Record<string, unknown> | null>
+  scenario: ComputedRef<PropertiesConsoleDemoScenario | null>
   id: ComputedRef<string>
   entity: ComputedRef<PortfolioConsoleEntity | null>
   rootCollection: ComputedRef<string>
@@ -57,7 +59,8 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
 
   const id = computed(
     () =>
-      normalizeString(consoleSelection.portfolio.value?.id) || selection.selectedId.value
+      normalizeString(consoleSelection.portfolio.value?.id) ||
+      selection.selectedId.value
   )
   const collectionPath = computed(() => {
     if (!id.value) return ''
@@ -70,11 +73,19 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
   const source = runtime.source
   const mode = source
   const isDemo = computed(() => source.value === 'demo')
-  const scenario = computed<Record<string, unknown> | null>(() => null)
+  const demoData = usePropertiesConsoleDemoData(isDemo)
+  const scenario = computed<PropertiesConsoleDemoScenario | null>(() => {
+    if (!isDemo.value) return null
+    return (
+      demoData.data.value?.find((item) => item.portfolio.id === id.value) ??
+      null
+    )
+  })
   const targetOutcome = portfolios.outcome
-  const canRead = computed(() =>
-    targetOutcome.value === 'ready' &&
-    Boolean(normalizeString(consoleSelection.portfolio.value?.id))
+  const canRead = computed(
+    () =>
+      targetOutcome.value === 'ready' &&
+      Boolean(normalizeString(consoleSelection.portfolio.value?.id))
   )
 
   return {

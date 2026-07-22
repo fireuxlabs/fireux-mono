@@ -2,6 +2,10 @@ import { computed } from 'vue'
 import { useSupplierCatalogueCollection } from '../../../../firestore/supplier/fetch/useSupplierCatalogueCollection'
 import { useSupplierItemCollection } from '../../../../firestore/supplier/fetch/useSupplierItemCollection'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
+import {
+  findSupplierConsoleDemoScenario,
+  useSupplierConsoleDemoData,
+} from '../../core/useSupplierConsoleDemoData'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -20,7 +24,8 @@ export function useSupplierConsoleCatalogue() {
     normalizeString(selection.supplier.value?.catalogue_state)
   )
   const supplierCataloguesEnabled = computed(() =>
-    Boolean(runtime.rootCollection.value && selection.supplierId.value)
+    runtime.source.value !== 'demo'
+    && Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
     collectionPath: supplierCataloguesCollectionPath,
@@ -39,8 +44,23 @@ export function useSupplierConsoleCatalogue() {
     supplierCollectionPath: runtime.rootCollection,
   })
 
-  const supplierItems = computed(() => supplierItemsFromStore.value)
-  const rawCatalogues = computed(() => supplierCatalogues.value)
+  const demoData = useSupplierConsoleDemoData(
+    computed(() => runtime.source.value === 'demo')
+  )
+  const demoScenario = computed(() => findSupplierConsoleDemoScenario(
+    demoData.data.value,
+    selection.supplierId.value
+  ))
+  const supplierItems = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoScenario.value?.items ?? []
+      : supplierItemsFromStore.value
+  )
+  const rawCatalogues = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoScenario.value?.catalogues ?? []
+      : supplierCatalogues.value
+  )
   const catalogues = computed(() =>
     rawCatalogues.value.map((catalogue) => ({
       ...catalogue,
@@ -48,7 +68,9 @@ export function useSupplierConsoleCatalogue() {
     }))
   )
   const pending = computed(() =>
-    supplierCataloguesPending.value || supplierItemsPending.value
+    runtime.source.value === 'demo'
+      ? demoData.pending.value
+      : supplierCataloguesPending.value || supplierItemsPending.value
   )
 
   const isIntegratedCatalogue = computed(

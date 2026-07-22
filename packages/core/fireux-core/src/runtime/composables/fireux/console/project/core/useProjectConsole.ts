@@ -13,11 +13,15 @@ import {
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { ProjectStorage } from 'fireux-core/runtime/models/system/project.model'
 import type { Ref } from 'vue'
+import { useProjectConsoleDemoData } from './useProjectConsoleDemoData'
 
 type ProjectConsoleEntity = ProjectSurface
 
 type UseProjectConsoleOptions = {
-  filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
+  filter?:
+    | ProjectCollectionFilter
+    | Ref<ProjectCollectionFilter | null | undefined>
+    | null
 }
 
 /**
@@ -32,19 +36,35 @@ type UseProjectConsoleOptions = {
  * It should not redefine generic Project collection reads, introduce scoped
  * Project ownership, or redefine related entity identities.
  */
-export function useProjectConsole(
-  options: UseProjectConsoleOptions = {}
-) {
+export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
   const consoleRoot = useConsole('project')
-  const {
-    projects: targetProjects,
-    pending: targetsPending,
-    error: targetsError,
-    outcome: targetsOutcome,
-  } = useProjectCollection({
+  const liveCollection = useProjectCollection({
     source: consoleRoot.source,
     filter: options.filter,
   })
+  const demoData = useProjectConsoleDemoData(
+    computed(() => consoleRoot.source.value === 'demo')
+  )
+  const targetProjects = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? (demoData.data.value?.projects ?? [])
+      : liveCollection.projects.value
+  )
+  const targetsPending = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.pending.value
+      : liveCollection.pending.value
+  )
+  const targetsError = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.error.value
+      : liveCollection.error.value
+  )
+  const targetsOutcome = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.outcome.value
+      : liveCollection.outcome.value
+  )
   const entity = useConsoleEntityRuntime<ProjectSurface>({
     family: 'project',
     storageFamily: ProjectStorage.collection,

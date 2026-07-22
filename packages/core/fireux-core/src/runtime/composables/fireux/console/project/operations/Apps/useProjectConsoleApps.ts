@@ -5,14 +5,15 @@ import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fir
 import type { App } from 'fireux-core/runtime/models/core/app.model'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useProjectConsole } from '../../core/useProjectConsole'
+import {
+  findProjectConsoleDemoScenario,
+  useProjectConsoleDemoData,
+} from '../../core/useProjectConsoleDemoData'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsoleApps() {
-  const {
-    selection,
-    runtime,
-  } = useProjectConsole()
+  const { selection, runtime } = useProjectConsole()
   const appCollectionPath = computed(() =>
     runtime.source.value === 'live' ? AppStorage.collection : ''
   )
@@ -21,28 +22,39 @@ export function useProjectConsoleApps() {
     pending,
     error,
   } = useAppCollection(appCollectionPath)
+  const demoData = useProjectConsoleDemoData(
+    computed(() => runtime.source.value === 'demo')
+  )
   const apps = computed<App[]>(() => {
     const currentProjectId = selection.projectId.value
     const seen = new Set<string>()
 
-    return (appCollection.value ?? [])
-      .filter((entry) => {
-        const id = normalizeString(entry.id)
-        if (!id || seen.has(id)) return false
+    const source =
+      runtime.source.value === 'demo'
+        ? (findProjectConsoleDemoScenario(demoData.data.value, currentProjectId)
+            ?.apps ?? [])
+        : (appCollection.value ?? [])
+    return source.filter((entry) => {
+      const id = normalizeString(entry.id)
+      if (!id || seen.has(id)) return false
 
-        const entryProjectId = normalizeString(entry.project_id)
-        if (!currentProjectId || entryProjectId !== currentProjectId) return false
+      const entryProjectId = normalizeString(entry.project_id)
+      if (!currentProjectId || entryProjectId !== currentProjectId) return false
 
-        seen.add(id)
-        return true
-      }) as App[]
+      seen.add(id)
+      return true
+    }) as App[]
   })
   const count = computed(() => apps.value.length)
   const { outcome } = useFirestoreCollectionState({
-    active: computed(() => Boolean(appCollectionPath.value)),
+    active: computed(
+      () => runtime.source.value === 'demo' || Boolean(appCollectionPath.value)
+    ),
     count,
     error,
-    pending,
+    pending: computed(() =>
+      runtime.source.value === 'demo' ? demoData.pending.value : pending.value
+    ),
   })
   const debug = computed(() => ({
     projectId: selection.projectId.value,

@@ -1,14 +1,15 @@
 <template>
   <!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: describe identity, defaults, and optional branding. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route Place creation through the named domain funnel. -->
   <UPage>
     <UPageHeader
       class="pageheader"
       title="Add a Place"
-      description="Find the real location, confirm its identity and local defaults, then add an optional logo."
+      description="Find your place and add the details you want to use."
     />
 
     <UPageBody class="pagebody">
-      <PlaceCreateSystem @created="onCreated" />
+      <PlaceOnboarding @created="onCreated" />
     </UPageBody>
   </UPage>
 </template>
@@ -16,7 +17,7 @@
 <script setup lang="ts">
 import { useHead, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import type { PlaceOnboardingResult } from '../../composables/fireux/place/usePlacesOnboarding'
+import type { PlaceOnboardingResult } from '../../composables/fireux/place/usePlaceOnboarding'
 
 definePageMeta({
   layout: 'default',

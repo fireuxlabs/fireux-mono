@@ -10,14 +10,21 @@ import {
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { PropertyStorage, type Property } from '../../../../../models/property.model'
+import {
+  PropertyStorage,
+  type Property,
+} from '../../../../../models/property.model'
 import {
   usePropertyCollection,
   type PropertyCollectionFilter,
 } from '../../../firestore/property/fetch/usePropertyCollection'
+import { usePropertyConsoleDemoData } from './usePropertyConsoleDemoData'
 
 type UsePropertyConsoleOptions = {
-  filter?: PropertyCollectionFilter | Ref<PropertyCollectionFilter | null | undefined> | null
+  filter?:
+    | PropertyCollectionFilter
+    | Ref<PropertyCollectionFilter | null | undefined>
+    | null
 }
 
 /**
@@ -39,25 +46,42 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const userId = computed(() => normalizeString(uid.value))
   const targetFilter = computed<PropertyCollectionFilter>(() => {
     const explicitFilter = isRef(options.filter)
-      ? options.filter.value ?? {}
-      : options.filter ?? {}
+      ? (options.filter.value ?? {})
+      : (options.filter ?? {})
 
     if (consoleRoot.source.value === 'demo') return explicitFilter
     return consoleTargets.filter(explicitFilter)
   })
-  const {
-    properties: targetProperties,
-    pending: targetsPending,
-    error: targetsError,
-    outcome: sourceTargetsOutcome,
-  } = usePropertyCollection({
+  const liveCollection = usePropertyCollection({
     source: consoleRoot.source,
     shape: 'root-with-app-support',
     filter: targetFilter,
   })
-  const membershipAwareTargetsOutcome = consoleTargets.resolveOutcome(
-    sourceTargetsOutcome
+  const demoData = usePropertyConsoleDemoData(
+    computed(() => consoleRoot.source.value === 'demo')
   )
+  const targetProperties = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.properties.value
+      : liveCollection.properties.value
+  )
+  const targetsPending = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.pending.value
+      : liveCollection.pending.value
+  )
+  const targetsError = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.error.value
+      : liveCollection.error.value
+  )
+  const sourceTargetsOutcome = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.outcome.value
+      : liveCollection.outcome.value
+  )
+  const membershipAwareTargetsOutcome =
+    consoleTargets.resolveOutcome(sourceTargetsOutcome)
   const targetsOutcome = computed(() =>
     consoleRoot.source.value === 'demo'
       ? sourceTargetsOutcome.value

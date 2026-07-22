@@ -1,24 +1,22 @@
 <template>
-  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: compose sparse colours into the existing Brand step. -->
-  <section
-    data-onboarding-family="place"
-    :data-onboarding-step="activeStepId || undefined"
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: compose one Place stage at a time through the shared shell. -->
+  <MoleculesOnboardingSystem
+    family="place"
+    :step-id="activeStepId"
+    :title="currentStep?.label || 'Add a Place'"
+    :step-number="stepNumber"
+    :step-count="stepCount"
+    :progress="progress"
+    :error="error"
+    :pending="pending"
+    :show-back="!isFirstStep"
+    :continue-label="continueLabel"
+    :continue-icon="isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'"
+    :continue-disabled="continueDisabled"
+    @back="back"
+    @continue="onContinue"
   >
-    <MoleculesCreateCard>
-      <template #header>
-        <div class="form-stack-sm">
-          <UBadge color="neutral" variant="soft">
-            Step {{ stepNumber }} of {{ stepCount }}
-          </UBadge>
-          <div>
-            <strong>{{ currentStep?.label }}</strong>
-            <p class="form-text-muted">{{ currentStep?.description }}</p>
-          </div>
-          <UProgress :model-value="progress" :max="100" />
-        </div>
-      </template>
-
-      <PlaceCreateSearch
+      <PlaceOnboardingFind
         v-show="activeStepId === 'find'"
         :pending="selectionPending"
         :error="selectionError"
@@ -26,13 +24,7 @@
         @cleared="clearSelection"
       />
 
-      <PlaceCreateIdentity
-        v-if="activeStepId === 'identity' && draft"
-        :place="draft"
-        :existing="isExisting"
-      />
-
-      <PlaceCreateDefaults
+      <PlaceOnboardingDefaults
         v-if="activeStepId === 'defaults' && draft"
         :currency-code="currencyCode"
         :timezone="timezone"
@@ -41,7 +33,7 @@
         @update:timezone="setTimezone"
       />
 
-      <PlaceCreateBrand
+      <PlaceOnboardingBrand
         v-if="activeStepId === 'brand' && draft"
         :place-name="draft.name"
         :image-url="draft.image_url || ''"
@@ -54,59 +46,23 @@
         @update:brand-palette="setBrandPalette"
       />
 
-      <PlaceCreateReview
+      <PlaceOnboardingReview
         v-if="activeStepId === 'review' && draft"
         :place="draft"
-        :existing="isExisting"
-        :configuring="needsEnrichment"
         :currency-code="currencyCode"
         :timezone="timezone"
         :logo-staged="Boolean(imageFile)"
         :brand-palette="brandPalette"
       />
-
-      <UAlert
-        v-if="error"
-        color="error"
-        variant="soft"
-        icon="i-lucide-triangle-alert"
-        title="Unable to continue"
-        :description="error"
-      />
-
-      <template #footer>
-        <UFieldGroup>
-          <UButton
-            v-if="!isFirstStep"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-arrow-left"
-            :disabled="pending"
-            @click="back"
-          >
-            Back
-          </UButton>
-          <UButton
-            color="primary"
-            :icon="isLastStep ? 'i-lucide-check' : 'i-lucide-arrow-right'"
-            :loading="pending"
-            :disabled="continueDisabled"
-            @click="onContinue"
-          >
-            {{ continueLabel }}
-          </UButton>
-        </UFieldGroup>
-      </template>
-    </MoleculesCreateCard>
-  </section>
+  </MoleculesOnboardingSystem>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
 import {
-  usePlacesOnboarding,
+  usePlaceOnboarding,
   type PlaceOnboardingResult,
-} from '../../../composables/fireux/place/usePlacesOnboarding'
+} from '../../composables/fireux/place/usePlaceOnboarding'
 
 const emit = defineEmits<{
   (event: 'created', result: PlaceOnboardingResult): void
@@ -144,7 +100,7 @@ const {
   stepCount,
   stepNumber,
   timezone,
-} = usePlacesOnboarding()
+} = usePlaceOnboarding()
 
 const continueDisabled = computed(() =>
   pending.value ||

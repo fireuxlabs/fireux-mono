@@ -10,15 +10,14 @@ export const metaContent = defineFireuxMeta({
     big_personality: 'Blank Console',
     headline: 'A clean console spine harness.',
     positioning_html:
-      'FireUX Blank exists to test the console shell without domain entities, demo data, test data, or operation children.',
+      'FireUX Blank exists to test the console shell with one minimal read-only Demo target and no domain operations or child records.',
     promise_html:
       'Keep the console boring first. Then real console families can copy the proven shape.',
-    console_bridge_html:
-      'Blank is a harness, not a product family.',
+    console_bridge_html: 'Blank is a harness, not a product family.',
   },
   seo: {
     title: 'FireUX Blank',
     description:
-      'A clean FireUX console spine harness with no domain entities, demo data, test data, or operations.',
+      'A clean FireUX console spine harness with one minimal Demo target and no domain operations or test data.',
   },
 })

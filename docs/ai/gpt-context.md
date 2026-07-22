@@ -86,6 +86,9 @@ Before each task:
 - Consoles load their owner's fixtures lazily through `useConsoleDemoData`. A
   project Product Demo may instead compose its project and package-owned worlds
   through one named `app/composables/product-demo/use*ProductDemo.ts` adapter.
+- Every Console family that accepts the shared Demo source must carry its own
+  lazy owner-local adapter and preserve the Live-relative target, selection,
+  and selected-parent operation shape.
 - Public Product Demo pages use the reserved project `/demo` route family and
   consume that adapter. Direct fixture imports elsewhere remain forbidden.
 - Demo World never becomes live public-content authority or a test, simulation,

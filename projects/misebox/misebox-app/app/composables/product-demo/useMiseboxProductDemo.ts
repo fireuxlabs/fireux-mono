@@ -1,5 +1,7 @@
 // Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: defer and project the featured Kitchens Demo World for public read-only routes.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: present Misebox Restaurant by default and Deanos Smash Burger for service.
+// Concurrent edit — 2026-07-22 13:48 CEST — Kiosk Demo selector pass: project both Demo Kitchens into one local Kiosk preview.
+// Concurrent edit — 2026-07-22 13:56 CEST — Kiosk theme contrast pass: assign explicit refined and counter-service preview profiles.
 import { useAsyncData } from '#imports'
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
@@ -14,6 +16,16 @@ export type MiseboxProductDemoExperience = {
   highlights: readonly string[]
 }
 
+export type MiseboxProductDemoKiosk = {
+  appearance: 'refined' | 'counter'
+  id: string
+  label: string
+  tagline: string
+  manifest: MenuManifest
+  nextOrderNumber: number
+  scopeKey: string
+}
+
 export type MiseboxProductDemo = {
   menu: {
     kitchenName: string
@@ -22,9 +34,8 @@ export type MiseboxProductDemo = {
     placeLabel: string
   }
   kiosk: {
-    manifest: MenuManifest
-    nextOrderNumber: number
-    scopeKey: string
+    defaultId: string
+    kitchens: MiseboxProductDemoKiosk[]
   }
   service: {
     kitchenName: string
@@ -46,10 +57,10 @@ const experiences: readonly MiseboxProductDemoExperience[] = [
     to: '/demo/kiosk',
     eyebrow: 'Self service',
     title: 'Order at a kiosk',
-    description: 'Order from Misebox Restaurant through the touch-first Eat here and Take away presentation.',
+    description: 'Switch between a polished restaurant and a bold burger counter in the same touch-first Kiosk.',
     icon: 'i-lucide-monitor-smartphone',
     accent: 'warning',
-    highlights: ['Touch-first layout', 'Local basket', 'No live submission'],
+    highlights: ['Two Kitchen themes', 'Local basket', 'No live submission'],
   },
   {
     to: '/demo/service',
@@ -71,24 +82,48 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
   const kioskScenario = scenarioModule.featuredKioskDemoScenario
   const serviceScenario = scenarioModule.featuredServiceDemoScenario
   const menuManifest = presentationModule.featuredMenuDemoManifest
-  const kioskManifest = presentationModule.featuredKioskDemoManifest
-  const kioskScope = presentationModule.featuredKioskDemoScope
+  const kioskPresentations = [
+    {
+      appearance: 'refined' as const,
+      scenario: scenarioModule.miseboxRestaurantKitchenDemoScenario,
+    },
+    {
+      appearance: 'counter' as const,
+      scenario: scenarioModule.deanosKitchenDemoScenario,
+    },
+  ]
+  const kioskKitchens = kioskPresentations.map(({ appearance, scenario }) => {
+    const manifest = presentationModule.kitchenDemoManifest(scenario)
+    const highestServiceNumber = scenario.orders.reduce(
+      (highest, order) => Math.max(highest, Number(order.service_number || 0)),
+      0
+    )
+
+    if (
+      manifest.source.kitchenId !== scenario.kitchen.id
+      || manifest.source.menuId !== scenario.kitchenMenu.id
+    ) {
+      throw new Error('A Kitchen Demo World is internally inconsistent.')
+    }
+
+    return {
+      appearance,
+      id: scenario.kitchen.id,
+      label: scenario.kitchen.identity.display_name || scenario.place.name,
+      tagline: String(scenario.kitchen.identity.tagline || '').trim(),
+      manifest,
+      nextOrderNumber: highestServiceNumber + 1,
+      scopeKey: `misebox-product-demo:${scenario.kitchen.id}-demo-kiosk`,
+    }
+  })
 
   if (
     menuManifest.source.kitchenId !== menuScenario.kitchen.id
     || menuManifest.source.menuId !== menuScenario.kitchenMenu.id
-    || kioskManifest.source.kitchenId !== kioskScenario.kitchen.id
-    || kioskManifest.source.menuId !== kioskScenario.kitchenMenu.id
-    || kioskScope.kitchenId !== kioskScenario.kitchen.id
-    || kioskScope.menuId !== kioskScenario.kitchenMenu.id
+    || !kioskKitchens.some(kitchen => kitchen.id === kioskScenario.kitchen.id)
   ) {
     throw new Error('The featured Kitchen Demo Worlds are internally inconsistent.')
   }
-
-  const highestServiceNumber = kioskScenario.orders.reduce(
-    (highest, order) => Math.max(highest, Number(order.service_number || 0)),
-    0
-  )
 
   return {
     menu: {
@@ -102,9 +137,8 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
       ).trim(),
     },
     kiosk: {
-      manifest: kioskManifest,
-      nextOrderNumber: highestServiceNumber + 1,
-      scopeKey: `misebox-product-demo:${kioskScope.scopeKey}`,
+      defaultId: kioskScenario.kitchen.id,
+      kitchens: kioskKitchens,
     },
     service: {
       kitchenName: serviceScenario.kitchen.identity.display_name

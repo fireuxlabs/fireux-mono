@@ -1,6 +1,7 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <!-- Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: continue new Kitchen creation into linked Place/Kitchen configuration. -->
 <!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: use the shared Place-backed funnel and explicit activation review. -->
+<!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route Console Kitchen creation through its named funnel. -->
 <template>
   <UDashboardPanel id="console-kitchen-create">
     <template #header>
@@ -9,7 +10,7 @@
 
     <template #body>
       <section class="space-y-4">
-        <KitchenCreateSystem
+        <KitchenOnboarding
           v-if="canEnterCreate"
           mode="console"
           :existing-root-id="existingRootId"

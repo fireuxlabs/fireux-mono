@@ -1,11 +1,7 @@
 <template>
   <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage optional logo and sparse shared colours. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: make optional Place branding visual and concise. -->
   <section class="form-stack-sm">
-    <p class="form-text-muted">
-      Add recognisable Place branding. New values stay staged until onboarding
-      is confirmed.
-    </p>
-
     <MoleculesFormsFirestoreImagePicker
       v-if="imageEditable"
       :src="previewSource"
@@ -22,12 +18,11 @@
       color="neutral"
       variant="soft"
       icon="i-lucide-image"
-      title="Using the existing Place logo"
-      description="Onboarding preserves stored Place media."
+      title="Current logo"
     />
 
     <p v-if="imageFile" class="form-text-muted">
-      {{ imageFile.name }} is ready for review.
+      {{ imageFile.name }} selected
     </p>
 
     <UButton
@@ -36,7 +31,7 @@
       color="neutral"
       variant="ghost"
       icon="i-lucide-x"
-      :label="hasPreview ? 'Remove image' : 'Skip image'"
+      :label="hasPreview ? 'Remove image' : 'No logo for now'"
       :disabled="uploading"
       @click="clearImage"
     />

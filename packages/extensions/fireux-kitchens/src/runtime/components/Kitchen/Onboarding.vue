@@ -1,5 +1,5 @@
 <template>
-  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: compose Place colours with a sparse root override. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep Kitchen selection and stages in one named domain funnel. -->
   <section
     data-onboarding-family="kitchen"
     :data-onboarding-step="activeStepId || undefined"
@@ -34,15 +34,7 @@
     </div>
 
     <div v-else-if="!place" class="form-stack">
-      <UAlert
-        color="neutral"
-        variant="soft"
-        icon="i-lucide-layers-3"
-        title="A Kitchen extends a Place"
-        description="Choose an existing Place or add it first. Shared location truth stays on the Place."
-      />
-
-      <PlaceCreateSystem @created="onPlaceReady" />
+      <PlaceOnboarding @created="onPlaceReady" />
 
       <UButton
         v-if="resolvedCancelTo"
@@ -64,19 +56,24 @@
       />
     </div>
 
-    <MoleculesCreateCard v-else-if="preview">
-      <template #header>
-        <div class="form-stack-sm">
-          <UBadge color="neutral" variant="soft">
-            Kitchen step {{ stepNumber }} of {{ stepCount }}
-          </UBadge>
-          <div>
-            <strong>{{ currentStep?.label }}</strong>
-            <p class="form-text-muted">{{ currentStep?.description }}</p>
-          </div>
-          <UProgress :model-value="progress" :max="100" />
-        </div>
-      </template>
+    <MoleculesOnboardingSystem
+      v-else-if="preview"
+      family="kitchen"
+      :step-id="activeStepId"
+      :title="currentStep?.label || 'Add a Kitchen'"
+      :step-number="stepNumber"
+      :step-count="stepCount"
+      :progress="progress"
+      :error="error"
+      :pending="pending"
+      :show-back="!isFirstStep || canChangePlace || !preview.can_complete"
+      :back-label="backLabel"
+      :continue-label="continueLabel"
+      :continue-icon="isLastStep ? completionIcon : 'i-lucide-arrow-right'"
+      :continue-disabled="continueDisabled"
+      @back="onBack"
+      @continue="onContinue"
+    >
 
       <div v-if="!preview.can_complete" class="form-stack-sm">
         <UAlert
@@ -97,7 +94,7 @@
         </UButton>
       </div>
 
-      <KitchenCreateIdentity
+      <KitchenOnboardingIdentity
         v-if="activeStepId === 'identity'"
         :place="place"
         :display-name="displayName"
@@ -105,7 +102,7 @@
         @update:display-name="setDisplayName"
       />
 
-      <KitchenCreateReview
+      <KitchenOnboardingReview
         v-if="activeStepId === 'review'"
         :place="place"
         :preview="preview"
@@ -114,58 +111,26 @@
         :inherited-palette="inheritedPalette"
       />
 
-      <KitchenCreatePalette
-        v-if="activeStepId === 'palette'"
+      <KitchenOnboardingBrand
+        v-if="activeStepId === 'brand'"
         :model-value="paletteOverride"
         :inherited="inheritedPalette"
         :editable="canEditPalette"
         @update:model-value="setPaletteOverride"
       />
 
-      <UAlert
-        v-if="error"
-        color="error"
-        variant="soft"
-        icon="i-lucide-triangle-alert"
-        title="Unable to continue"
-        :description="error"
-      />
-
-      <template #footer>
-        <UFieldGroup>
-          <UButton
-            v-if="!isFirstStep || canChangePlace || !preview.can_complete"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-arrow-left"
-            :disabled="pending"
-            @click="onBack"
-          >
-            {{ backLabel }}
-          </UButton>
-          <UButton
-            color="primary"
-            :icon="isLastStep ? completionIcon : 'i-lucide-arrow-right'"
-            :loading="pending"
-            :disabled="continueDisabled"
-            @click="onContinue"
-          >
-            {{ continueLabel }}
-          </UButton>
-        </UFieldGroup>
-      </template>
-    </MoleculesCreateCard>
+    </MoleculesOnboardingSystem>
   </section>
 </template>
 
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
 import type { ConsoleCreateMode } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
-import type { PlaceOnboardingResult } from 'fireux-places/runtime/composables/fireux/place/usePlacesOnboarding'
+import type { PlaceOnboardingResult } from 'fireux-places/runtime/composables/fireux/place/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
-import { useKitchenConsoleSelection } from '../../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
-import { useKitchenOnboarding } from '../../../composables/fireux/kitchen/useKitchenOnboarding'
-import type { KitchenOnboardingCompleteResult } from '../../../models/kitchen-onboarding.model'
+import { useKitchenConsoleSelection } from '../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
+import { useKitchenOnboarding } from '../../composables/fireux/kitchen/useKitchenOnboarding'
+import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboarding.model'
 
 const props = withDefaults(defineProps<{
   mode?: ConsoleCreateMode

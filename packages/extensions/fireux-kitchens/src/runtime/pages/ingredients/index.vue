@@ -1,9 +1,9 @@
+<!-- Concurrent edit — 2026-07-22 14:20 CEST — Ingredients public index pass: remove the create CTA from the public collection. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
 
     <UPageBody>
-      <IngredientCTA />
       <IngredientCollectionManager />
     </UPageBody>
   </UPage>

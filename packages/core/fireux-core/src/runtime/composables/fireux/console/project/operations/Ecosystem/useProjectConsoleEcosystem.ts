@@ -3,14 +3,15 @@ import { computed } from 'vue'
 import { useEcosystemCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useProjectConsole } from '../../core/useProjectConsole'
+import {
+  findProjectConsoleDemoScenario,
+  useProjectConsoleDemoData,
+} from '../../core/useProjectConsoleDemoData'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useProjectConsoleEcosystem() {
-  const {
-    selection,
-    runtime,
-  } = useProjectConsole()
+  const { selection, runtime } = useProjectConsole()
 
   const ecosystemCollectionPath = computed(() =>
     runtime.source.value === 'live' ? 'ecosystems' : ''
@@ -20,20 +21,34 @@ export function useProjectConsoleEcosystem() {
     pending,
     error,
   } = useEcosystemCollection(ecosystemCollectionPath)
+  const demoData = useProjectConsoleDemoData(
+    computed(() => runtime.source.value === 'demo')
+  )
   const ecosystems = computed(() => {
     const projectId = normalizeString(selection.projectId.value)
     if (!projectId) return []
 
-    return (ecosystemCollection.value ?? []).filter(
+    const source =
+      runtime.source.value === 'demo'
+        ? (findProjectConsoleDemoScenario(demoData.data.value, projectId)
+            ?.ecosystems ?? [])
+        : (ecosystemCollection.value ?? [])
+    return source.filter(
       (entry) => normalizeString(entry.project_id) === projectId
     )
   })
   const count = computed(() => ecosystems.value.length)
   const { outcome } = useFirestoreCollectionState({
-    active: computed(() => Boolean(ecosystemCollectionPath.value)),
+    active: computed(
+      () =>
+        runtime.source.value === 'demo' ||
+        Boolean(ecosystemCollectionPath.value)
+    ),
     count,
     error,
-    pending,
+    pending: computed(() =>
+      runtime.source.value === 'demo' ? demoData.pending.value : pending.value
+    ),
   })
   const debug = computed(() => ({
     projectId: selection.projectId.value,

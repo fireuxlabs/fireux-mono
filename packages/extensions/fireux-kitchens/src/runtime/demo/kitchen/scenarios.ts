@@ -2,6 +2,8 @@
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as two coherent Demo worlds.
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo surface selectors: name the Menu, Kiosk and Service scenarios independently.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: default to Misebox Restaurant and retain Deanos Smash Burger as the service contrast.
+// Concurrent edit — 2026-07-22 13:48 CEST — Kiosk Demo selector pass: give each Demo Kitchen a distinct package-owned Menu theme.
+// Concurrent edit — 2026-07-22 13:56 CEST — Kiosk theme contrast pass: separate refined dining from bold counter-service typography and colour.
 import { PlaceModel, type Place } from 'fireux-places/runtime/models/place.model'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 import { KitchenModel, type Kitchen } from '../../models/kitchen.model'
@@ -34,6 +36,7 @@ type DemoKitchenInput = {
   identity: KitchenDemoIdentity
   name: string
   tagline: string
+  menuStyle: NonNullable<Kitchen['menus']['style']>
   palette: SparseBrandPalette
   paymentMethods: KitchenFulfilmentPaymentPolicy[]
   tableCount: number
@@ -80,18 +83,7 @@ const kitchen = (input: DemoKitchenInput): Kitchen => ({
     currency_format: 'dash',
     show_currency: true,
     available: true,
-    style: {
-      background_color_light: '#f7f3ea',
-      background_color_dark: '#172019',
-      font_color_light: '#27332b',
-      font_color_dark: '#f7f3ea',
-      title_color_light: '#172019',
-      title_color_dark: '#fffaf0',
-      primary_color: input.palette.primary_color,
-      secondary_color: input.palette.secondary_color,
-      font_source: 'system',
-      title_font_source: 'system',
-    },
+    style: input.menuStyle,
   },
   orders: {
     printing: {
@@ -185,9 +177,23 @@ const scenario = (input: {
 })
 
 const deanosPalette = {
-  primary_color: '#d2472f',
-  secondary_color: '#e5aa37',
+  primary_color: '#e93b1b',
+  secondary_color: '#15110f',
 } satisfies SparseBrandPalette
+
+const deanosMenuStyle = {
+  background_color_light: '#f8d238',
+  background_color_dark: '#17120f',
+  font_color_light: '#17120f',
+  font_color_dark: '#fff7df',
+  title_color_light: '#17120f',
+  title_color_dark: '#fff7df',
+  ...deanosPalette,
+  font_source: 'google',
+  font_family: 'Inter',
+  title_font_source: 'google',
+  title_font_family: 'Oswald',
+} satisfies NonNullable<Kitchen['menus']['style']>
 
 export const deanosKitchenDemoScenario = scenario({
   identity: deanosKitchenDemoIdentity,
@@ -195,6 +201,7 @@ export const deanosKitchenDemoScenario = scenario({
     identity: deanosKitchenDemoIdentity,
     name: 'Deanos Smash Burger',
     tagline: 'A focused smash-burger service',
+    menuStyle: deanosMenuStyle,
     palette: deanosPalette,
     paymentMethods: [
       {
@@ -228,9 +235,23 @@ export const deanosKitchenDemoScenario = scenario({
 })
 
 const miseboxRestaurantPalette = {
-  primary_color: '#bb4d2f',
-  secondary_color: '#52705c',
+  primary_color: '#914632',
+  secondary_color: '#61715c',
 } satisfies SparseBrandPalette
+
+const miseboxRestaurantMenuStyle = {
+  background_color_light: '#eee7da',
+  background_color_dark: '#11251d',
+  font_color_light: '#36433b',
+  font_color_dark: '#f1eadf',
+  title_color_light: '#183328',
+  title_color_dark: '#fffaf1',
+  ...miseboxRestaurantPalette,
+  font_source: 'google',
+  font_family: 'Lora',
+  title_font_source: 'google',
+  title_font_family: 'Cormorant Garamond',
+} satisfies NonNullable<Kitchen['menus']['style']>
 
 export const miseboxRestaurantKitchenDemoScenario = scenario({
   identity: miseboxRestaurantKitchenDemoIdentity,
@@ -238,6 +259,7 @@ export const miseboxRestaurantKitchenDemoScenario = scenario({
     identity: miseboxRestaurantKitchenDemoIdentity,
     name: 'Misebox Restaurant',
     tagline: 'A polished seasonal Menu and Kiosk',
+    menuStyle: miseboxRestaurantMenuStyle,
     palette: miseboxRestaurantPalette,
     paymentMethods: [
       {

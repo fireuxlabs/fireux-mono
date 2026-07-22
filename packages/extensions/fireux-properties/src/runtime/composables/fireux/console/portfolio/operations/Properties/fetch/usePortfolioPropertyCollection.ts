@@ -1,15 +1,13 @@
 // Concurrent edit — 2026-07-20 23:03 CEST — Both-Entity Authority — Property: query only current-App roots after ready Portfolio access.
-import {
-  collection,
-  query,
-  where,
-  type Query,
-} from 'firebase/firestore'
+import { collection, query, where, type Query } from 'firebase/firestore'
 import { computed } from 'vue'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useActivePortfolio } from '../../useActivePortfolio'
-import { PropertyStorage, type Property } from '../../../../../../../models/property.model'
+import {
+  PropertyStorage,
+  type Property,
+} from '../../../../../../../models/property.model'
 import { canonicalPropertyRoot } from '../../../../../firestore/property/utils/view/usePropertyInterface'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -33,9 +31,9 @@ export function usePortfolioPropertyCollection(
   const canRead = computed(() =>
     Boolean(
       runtimePortfolio.canRead.value &&
-      portfolioId.value &&
-      consoleAppId.value &&
-      authorizedPortfolioId.value === portfolioId.value
+        portfolioId.value &&
+        consoleAppId.value &&
+        authorizedPortfolioId.value === portfolioId.value
     )
   )
   const collectionPath = computed(() =>
@@ -56,13 +54,20 @@ export function usePortfolioPropertyCollection(
     undefined,
     collectionPath
   )
-  const properties = computed<Property[]>(() =>
-    (source.value ?? []).reduce<Property[]>((items, property) => {
+  const properties = computed<Property[]>(() => {
+    if (runtimePortfolio.isDemo.value) {
+      return (runtimePortfolio.scenario.value?.properties ?? []).map(
+        (property) => ({ ...property })
+      )
+    }
+
+    return (source.value ?? []).reduce<Property[]>((items, property) => {
       const root = canonicalPropertyRoot(property)
-      if (root && propertyBelongsToApp(root, consoleAppId.value)) items.push(root)
+      if (root && propertyBelongsToApp(root, consoleAppId.value))
+        items.push(root)
       return items
     }, [])
-  )
+  })
   const invalidRootIds = computed(() =>
     (source.value ?? []).reduce<string[]>((ids, property) => {
       if (canonicalPropertyRoot(property)) return ids
@@ -92,9 +97,13 @@ export function usePortfolioPropertyCollection(
     }
     return undefined
   })
-  const outcome = computed(() =>
-    error.value ? 'error' as const : source.outcome.value
-  )
+  const outcome = computed(() => {
+    if (error.value) return 'error' as const
+    if (runtimePortfolio.isDemo.value) {
+      return properties.value.length ? ('ready' as const) : ('empty' as const)
+    }
+    return source.outcome.value
+  })
 
   return {
     portfolioId,
@@ -103,7 +112,9 @@ export function usePortfolioPropertyCollection(
     collectionPath,
     collection: properties,
     count: computed(() => properties.value.length),
-    pending: source.pending,
+    pending: computed(() =>
+      runtimePortfolio.isDemo.value ? false : source.pending.value
+    ),
     error,
     outcome,
   }

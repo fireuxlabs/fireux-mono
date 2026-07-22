@@ -1,6 +1,7 @@
 <template>
   <!-- Concurrent edit — 2026-07-21 16:26 CEST — Place onboarding enrichment: confirm inherited Place currency and timezone defaults. -->
   <!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: distinguish reuse-only Places from incomplete configurable Places. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: ask only for missing Place defaults. -->
   <section class="form-stack-sm">
     <UAlert
       v-if="locked"
@@ -10,11 +11,6 @@
       title="Existing Place defaults"
       description="This Place will be reused without overwriting its currency or timezone."
     />
-
-    <p v-else class="form-text-muted">
-      Confirm the Place defaults inherited by future linked entities. They can
-      still be changed deliberately at the scope that owns them.
-    </p>
 
     <UFormField label="Currency" name="currency">
       <UInput

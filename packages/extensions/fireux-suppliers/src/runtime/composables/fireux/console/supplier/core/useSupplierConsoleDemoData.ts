@@ -7,9 +7,21 @@ import {
   useSupplierInterface,
   type SupplierSurface,
 } from '../../../firestore/supplier/utils/view/useSupplierInterface'
+import type {
+  SupplierCatalogue,
+  SupplierItem,
+} from '../../../../../models/supplier/Supplier.model'
+
+export type SupplierConsoleDemoScenario = {
+  appId: string
+  supplier: SupplierSurface
+  items: SupplierItem[]
+  catalogues: SupplierCatalogue[]
+}
 
 export type SupplierConsoleDemoData = {
   suppliers: SupplierSurface[]
+  scenarios: SupplierConsoleDemoScenario[]
 }
 
 export function useSupplierConsoleDemoData(
@@ -20,20 +32,46 @@ export function useSupplierConsoleDemoData(
   return useConsoleDemoData<SupplierConsoleDemoData>({
     active,
     loader: async () => {
-      const { supplierDemoRecords } = await import(
+      const { supplierDemoScenarios } = await import(
         '../../../../../demo/supplier/scenarios'
       )
-      const suppliers = supplierDemoRecords.reduce<SupplierSurface[]>(
-        (items, supplier) => {
-          const item = surface({ supplier })
-          if (item) items.push(item)
+      const scenarios = supplierDemoScenarios.reduce<SupplierConsoleDemoScenario[]>(
+        (items, scenario) => {
+          const supplier = surface({ supplier: scenario.supplier })
+          if (!supplier) return items
+
+          items.push({
+            appId: scenario.appId,
+            supplier,
+            items: scenario.items.map(item => ({ ...item })),
+            catalogues: scenario.catalogues.map(catalogue => ({
+              ...catalogue,
+              sections: catalogue.sections.map(section => ({
+                ...section,
+                items: section.items.map(item => ({ ...item })),
+              })),
+            })),
+          })
           return items
         },
         []
       )
 
-      return { suppliers }
+      return {
+        suppliers: scenarios.map(scenario => scenario.supplier),
+        scenarios,
+      }
     },
     isEmpty: (value) => value.suppliers.length === 0,
   })
+}
+
+export function findSupplierConsoleDemoScenario(
+  data: SupplierConsoleDemoData | undefined,
+  supplierId: string
+) {
+  const id = String(supplierId ?? '').trim()
+  if (!id) return null
+
+  return data?.scenarios.find(scenario => scenario.supplier.id === id) ?? null
 }

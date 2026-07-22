@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: link Kitchens to Place without copying Place presentation or operational defaults.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit Kitchen App support creation results.
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Console creation through trusted onboarding.
+// Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: own Kitchen preview and completion transport in the create seam.
 import { doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
@@ -19,7 +20,11 @@ import type {
   KitchenCreateInput,
 } from '../../../../../models/kitchen.model'
 import { KitchenStorage } from '../../../../../models/kitchen.model'
-import type { KitchenOnboardingCompleteResult } from '../../../../../models/kitchen-onboarding.model'
+import type {
+  KitchenOnboardingCompleteInput,
+  KitchenOnboardingCompleteResult,
+  KitchenOnboardingPreview,
+} from '../../../../../models/kitchen-onboarding.model'
 import { readWeekdayTimeWindowsConfig } from '../../../../../utils/weekday-time'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -109,6 +114,47 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
   const collectionPath =
     normalizeString(options.collectionPath || KitchenStorage.rootCollection) ||
     KitchenStorage.rootCollection
+
+  async function authHeaders() {
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    return { Authorization: `Bearer ${token}` }
+  }
+
+  async function previewKitchenOnboarding(input: {
+    place_id?: string
+    kitchen_id?: string
+  }) {
+    const result = await $fetch<KitchenOnboardingPreview>(
+      '/api/kitchens/onboarding/preview',
+      {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: input,
+      }
+    )
+    if (!result?.place_id || !result.kitchen_id) {
+      throw new Error('Kitchen onboarding preview was invalid.')
+    }
+    return result
+  }
+
+  async function completeKitchenOnboarding(
+    input: KitchenOnboardingCompleteInput
+  ) {
+    const result = await $fetch<KitchenOnboardingCompleteResult>(
+      '/api/kitchens/onboarding/complete',
+      {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: input,
+      }
+    )
+    if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
+      throw new Error('Kitchen onboarding completion was invalid.')
+    }
+    return result
+  }
 
   function createKitchenPayload(
     _id: string,
@@ -249,23 +295,15 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
       throw new Error('A linked Place is required to create a Kitchen console.')
     }
 
-    const user = await useRequireUser()
-    const token = await user.getIdToken()
-    const result = await $fetch<KitchenOnboardingCompleteResult>(
-      '/api/kitchens/onboarding/complete',
-      {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: {
-          ...(placeId ? { place_id: placeId } : {}),
-          ...(existingRootId ? { kitchen_id: existingRootId } : {}),
-          ...(displayName ? { display_name: displayName } : {}),
-        },
-      }
-    )
-    if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
-      throw new Error('Kitchen onboarding completion was invalid.')
-    }
+    const preview = await previewKitchenOnboarding({
+      ...(placeId ? { place_id: placeId } : {}),
+      ...(existingRootId ? { kitchen_id: existingRootId } : {}),
+    })
+    const result = await completeKitchenOnboarding({
+      place_id: preview.place_id,
+      ...(preview.existing ? { kitchen_id: preview.kitchen_id } : {}),
+      ...(displayName ? { display_name: displayName } : {}),
+    })
 
     return {
       id: result.kitchen_id,
@@ -275,5 +313,11 @@ export function useKitchenCreate(options: KitchenCreateOptions = {}) {
     }
   }
 
-  return { createPlan: KitchenCreatePlan, createKitchen, createKitchenConsole }
+  return {
+    completeKitchenOnboarding,
+    createPlan: KitchenCreatePlan,
+    createKitchen,
+    createKitchenConsole,
+    previewKitchenOnboarding,
+  }
 }

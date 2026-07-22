@@ -1,5 +1,6 @@
 <template>
   <!-- Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: review inherited versus overridden colours. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep final Kitchen review factual and concise. -->
   <section class="form-stack-sm">
     <dl class="form-stack-sm">
       <div>
@@ -28,13 +29,6 @@
       </div>
     </dl>
 
-    <UAlert
-      :color="alertColor"
-      variant="soft"
-      :icon="alertIcon"
-      :title="alertTitle"
-      :description="alertDescription"
-    />
   </section>
 </template>
 
@@ -52,9 +46,6 @@ const props = defineProps<{
   inheritedPalette: SparseBrandPalette
 }>()
 
-const alertColor = computed(() =>
-  props.preview.can_complete ? 'neutral' : 'warning'
-)
 const publicationLabel = computed(() => {
   if (!props.preview.existing) return 'Draft — not published'
   return props.preview.published
@@ -67,29 +58,5 @@ const paletteLabel = computed(() => {
   return Object.keys(props.inheritedPalette).length
     ? 'Inherited from Place'
     : 'FireUX defaults'
-})
-const alertIcon = computed(() => {
-  if (!props.preview.can_complete) return 'i-lucide-lock-keyhole'
-  if (props.preview.action === 'create') return 'i-lucide-plus-circle'
-  if (props.preview.action === 'connect') return 'i-lucide-plug-zap'
-  return 'i-lucide-circle-check'
-})
-const alertTitle = computed(() => {
-  if (!props.preview.can_complete) return 'Kitchen access required'
-  if (props.preview.action === 'create') return 'Create one Kitchen'
-  if (props.preview.action === 'connect') return 'Connect this Kitchen'
-  return 'Kitchen already connected'
-})
-const alertDescription = computed(() => {
-  if (!props.preview.can_complete) {
-    return props.preview.message || 'Ask an App admin or Kitchen operator for access.'
-  }
-  if (props.preview.action === 'create') {
-    return 'The Kitchen starts unpublished and inherits shared defaults from its Place.'
-  }
-  if (props.preview.action === 'connect') {
-    return 'The existing Kitchen identity is preserved while console access is added.'
-  }
-  return 'No duplicate will be created. This Kitchen will be selected in your console.'
 })
 </script>

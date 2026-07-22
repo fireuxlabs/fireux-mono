@@ -11,6 +11,7 @@ import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/co
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
 import { BlankStorage, type Blank } from '../../../../../models/blank.model'
+import { useBlankConsoleDemoData } from './useBlankConsoleDemoData'
 
 /**
  * Blank console harness.
@@ -31,8 +32,20 @@ export function useBlankConsole() {
     source: consoleRoot.source,
     targetIds: consoleTargets.targetIds,
   })
-  const targetOutcome = consoleTargets.resolveOutcome(outcome)
-  const targetBlanks = computed(() => blankRecords.value)
+  const demoData = useBlankConsoleDemoData(
+    computed(() => consoleRoot.source.value === 'demo')
+  )
+  const liveTargetOutcome = consoleTargets.resolveOutcome(outcome)
+  const targetOutcome = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? demoData.outcome.value
+      : liveTargetOutcome.value
+  )
+  const targetBlanks = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? (demoData.data.value ?? [])
+      : blankRecords.value
+  )
   const entity = useConsoleEntityRuntime<Blank>({
     family: 'blank',
     storageFamily: BlankStorage.rootCollection,
@@ -60,8 +73,14 @@ export function useBlankConsole() {
   const blanks = {
     targets: targetBlanks,
     count: computed(() => targetBlanks.value.length),
-    pending,
-    error,
+    pending: computed(() =>
+      consoleRoot.source.value === 'demo'
+        ? demoData.pending.value
+        : pending.value
+    ),
+    error: computed(() =>
+      consoleRoot.source.value === 'demo' ? demoData.error.value : error.value
+    ),
     outcome: targetOutcome,
     hasTargets,
   }

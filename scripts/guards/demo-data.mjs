@@ -88,9 +88,7 @@ function ownerRoot(relativePath) {
   )
   if (packageMatch?.[1]) return packageMatch[1]
 
-  const projectMatch = relativePath.match(
-    /^(projects\/[^/]+\/[^/]+)(?:\/|$)/
-  )
+  const projectMatch = relativePath.match(/^(projects\/[^/]+\/[^/]+)(?:\/|$)/)
   return projectMatch?.[1] ?? null
 }
 
@@ -200,8 +198,10 @@ function isTypeOnlyImport(node) {
     if (!clause.namedBindings || !ts.isNamedImports(clause.namedBindings)) {
       return false
     }
-    return clause.namedBindings.elements.length > 0
-      && clause.namedBindings.elements.every((element) => element.isTypeOnly)
+    return (
+      clause.namedBindings.elements.length > 0 &&
+      clause.namedBindings.elements.every((element) => element.isTypeOnly)
+    )
   }
 
   return ts.isExportDeclaration(node) && node.isTypeOnly
@@ -219,9 +219,9 @@ function collectImports(source, fileName, lineOffset = 0) {
 
   const visit = (node) => {
     if (
-      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node))
-      && node.moduleSpecifier
-      && ts.isStringLiteralLike(node.moduleSpecifier)
+      (ts.isImportDeclaration(node) || ts.isExportDeclaration(node)) &&
+      node.moduleSpecifier &&
+      ts.isStringLiteralLike(node.moduleSpecifier)
     ) {
       const position = sourceFile.getLineAndCharacterOfPosition(
         node.getStart(sourceFile)
@@ -233,10 +233,10 @@ function collectImports(source, fileName, lineOffset = 0) {
         typeOnly: isTypeOnlyImport(node),
       })
     } else if (
-      ts.isCallExpression(node)
-      && node.expression.kind === ts.SyntaxKind.ImportKeyword
-      && node.arguments.length === 1
-      && ts.isStringLiteralLike(node.arguments[0])
+      ts.isCallExpression(node) &&
+      node.expression.kind === ts.SyntaxKind.ImportKeyword &&
+      node.arguments.length === 1 &&
+      ts.isStringLiteralLike(node.arguments[0])
     ) {
       const position = sourceFile.getLineAndCharacterOfPosition(
         node.getStart(sourceFile)
@@ -248,11 +248,11 @@ function collectImports(source, fileName, lineOffset = 0) {
         typeOnly: false,
       })
     } else if (
-      ts.isCallExpression(node)
-      && ts.isIdentifier(node.expression)
-      && node.expression.text === 'require'
-      && node.arguments.length === 1
-      && ts.isStringLiteralLike(node.arguments[0])
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === 'require' &&
+      node.arguments.length === 1 &&
+      ts.isStringLiteralLike(node.arguments[0])
     ) {
       const position = sourceFile.getLineAndCharacterOfPosition(
         node.getStart(sourceFile)
@@ -328,10 +328,7 @@ function resolveImport(relativeImporter, specifier, owners) {
   }
 
   for (const [packageName, packageOwner] of owners) {
-    if (
-      specifier !== packageName
-      && !specifier.startsWith(`${packageName}/`)
-    ) {
+    if (specifier !== packageName && !specifier.startsWith(`${packageName}/`)) {
       continue
     }
 
@@ -340,7 +337,10 @@ function resolveImport(relativeImporter, specifier, owners) {
     return {
       owner: packageOwner,
       packageName,
-      relativePath: `${packageOwner}/${sourcePrefix}${suffix}`.replace(/\/$/, ''),
+      relativePath: `${packageOwner}/${sourcePrefix}${suffix}`.replace(
+        /\/$/,
+        ''
+      ),
     }
   }
 
@@ -351,6 +351,18 @@ function isConsoleAdapter(relativePath) {
   return /\/(?:src\/runtime|app)\/composables\/fireux\/console\//.test(
     `/${relativePath}`
   )
+}
+
+function consoleCoreFamily(relativePath, source) {
+  const match = relativePath.match(
+    /\/(?:src\/runtime|app)\/composables\/fireux\/console\/([^/]+)\/core\/use([A-Z][A-Za-z0-9]*)Console\.(?:js|ts)$/
+  )
+  if (!match) return null
+
+  const family = match[1]
+  return new RegExp(`useConsole\\(\\s*['"]${family}['"]\\s*\\)`).test(source)
+    ? { family, typeName: match[2] }
+    : null
 }
 
 function isProductDemoAdapter(relativePath) {
@@ -367,9 +379,9 @@ function productDemoMayLoad(importer, resolved, declaredDependencies) {
   if (resolved.owner === importerOwner) return true
 
   return Boolean(
-    resolved.owner?.startsWith('packages/')
-    && resolved.packageName
-    && declaredDependencies.has(resolved.packageName)
+    resolved.owner?.startsWith('packages/') &&
+      resolved.packageName &&
+      declaredDependencies.has(resolved.packageName)
   )
 }
 
@@ -439,13 +451,14 @@ export async function run(ctx) {
   for (const directory of demoDirectories) {
     const relativeDirectory = repoRelative(repoRoot, directory)
     if (
-      !canonicalDemoRoot(relativeDirectory)
-      && !isProductDemoRouteDirectory(relativeDirectory)
+      !canonicalDemoRoot(relativeDirectory) &&
+      !isProductDemoRouteDirectory(relativeDirectory)
     ) {
       violations.push({
         code: 'owner-path',
         file: relativeDirectory,
-        message: 'Demo is outside an owning package src/runtime/demo, project app/demo, or project app/pages/demo route namespace.',
+        message:
+          'Demo is outside an owning package src/runtime/demo, project app/demo, or project app/pages/demo route namespace.',
       })
     }
   }
@@ -456,6 +469,20 @@ export async function run(ctx) {
     const productDemoAdapter = isProductDemoAdapter(relativeFile)
     const source = readFileSync(file, 'utf8')
     const imports = importsForFile(file, source)
+    const consoleCore = consoleCoreFamily(relativeFile, source)
+
+    if (
+      consoleCore &&
+      !new RegExp(`use${consoleCore.typeName}ConsoleDemoData\\s*\\(`).test(
+        source
+      )
+    ) {
+      violations.push({
+        code: 'console-shape',
+        file: relativeFile,
+        message: `The ${consoleCore.family} Console accepts the shared Demo source but does not consume its owner-local Demo adapter.`,
+      })
+    }
 
     if (demoRoot) {
       const demoRelativeSegments = pathSegments(
@@ -565,16 +592,9 @@ export async function run(ctx) {
       }
 
       if (productDemoAdapter) {
-        const declaredDependencies = productDemoDependencies.get(
-          ownerRoot(relativeFile)
-        ) ?? new Set()
-        if (
-          !productDemoMayLoad(
-            relativeFile,
-            resolved,
-            declaredDependencies
-          )
-        ) {
+        const declaredDependencies =
+          productDemoDependencies.get(ownerRoot(relativeFile)) ?? new Set()
+        if (!productDemoMayLoad(relativeFile, resolved, declaredDependencies)) {
           violations.push({
             code: 'product-demo-owner',
             file: relativeFile,
@@ -586,9 +606,9 @@ export async function run(ctx) {
       }
 
       if (
-        !resolved
-        || !canonicalDemoRoot(resolved.relativePath)
-        || resolved.owner !== ownerRoot(relativeFile)
+        !resolved ||
+        !canonicalDemoRoot(resolved.relativePath) ||
+        resolved.owner !== ownerRoot(relativeFile)
       ) {
         violations.push({
           code: 'cross-owner',
@@ -602,5 +622,7 @@ export async function run(ctx) {
 
   if (violations.length) throw new Error(formatViolations(violations))
 
-  console.log('[guard] ✅ Demo World is owner-owned, deferred, narrowly consumed, and read-only')
+  console.log(
+    '[guard] ✅ Demo World is owner-owned, deferred, narrowly consumed, and read-only'
+  )
 }

@@ -1,13 +1,14 @@
 <template>
   <!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: make the public doorway authenticated and Place-backed. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route public Kitchen creation through its named funnel. -->
   <UPage>
     <UPageHeader
       title="Add a Kitchen"
-      description="Start from one shared Place, add only the Kitchen-specific identity, then finish setup in the Kitchen console."
+      description="Choose its place, then add the Kitchen details you need."
     />
 
     <UPageBody class="pagebody">
-      <KitchenCreateSystem mode="public" />
+      <KitchenOnboarding mode="public" />
     </UPageBody>
   </UPage>
 </template>

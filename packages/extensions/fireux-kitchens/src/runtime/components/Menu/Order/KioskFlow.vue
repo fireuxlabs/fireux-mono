@@ -1,15 +1,16 @@
 <!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: frame canonical ordering with generic Kitchen identity and ambient presentation. -->
 <!-- Concurrent edit — 2026-07-22 12:20 CEST — Product Demo pass: expose the order layer as a scoped presentation seam while retaining the canonical lifecycle by default. -->
+<!-- Concurrent edit — 2026-07-22 14:45 CEST — Demo Kiosk pass: support a fixed valid fulfilment type without changing the canonical route default. -->
 <template>
   <section
     class="menu-order-kiosk"
-    :class="`menu-order-kiosk--${selectedType ? 'order' : 'mode'}`"
+    :class="`menu-order-kiosk--${activeType ? 'order' : 'mode'}`"
     data-menu-kiosk-presentation="touch"
-    :data-menu-kiosk-stage="selectedType ? 'order' : 'mode'"
+    :data-menu-kiosk-stage="activeType ? 'order' : 'mode'"
     aria-label="Kiosk ordering"
   >
     <MenuOrderKioskStart
-      v-if="!selectedType"
+      v-if="!activeType"
       :menu-name="menuName"
       :options="options"
       :kitchen-name="kitchenName"
@@ -21,6 +22,7 @@
     <template v-else>
       <header class="menu-order-kiosk__toolbar">
         <button
+          v-if="!fixedConfig"
           type="button"
           class="menu-order-kiosk__change"
           data-menu-action="change-kiosk-mode"
@@ -29,6 +31,7 @@
           <UIcon name="i-lucide-arrow-left" aria-hidden="true" />
           <span>Change</span>
         </button>
+        <span v-else class="menu-order-kiosk__change-spacer" aria-hidden="true" />
 
         <span class="menu-order-kiosk__identity">
           <strong>{{ kitchenName || menuName }}</strong>
@@ -43,19 +46,19 @@
       <slot
         name="order"
         :config="selectedConfig"
-        :order-type="selectedType"
+        :order-type="activeType"
         :restart="clearSelection"
-        :scope-key="`${scopeKey}:${selectedType}`"
+        :scope-key="`${scopeKey}:${activeType}`"
       >
         <MenuOrderKioskOrderFlow
-          :key="selectedType"
+          :key="activeType"
           :config="selectedConfig"
           :currency-code="currencyCode"
           :kitchen-id="kitchenId"
           :kitchen-slug="kitchenSlug"
           :menu-id="menuId"
-          :order-type="selectedType"
-          :scope-key="`${scopeKey}:${selectedType}`"
+          :order-type="activeType"
+          :scope-key="`${scopeKey}:${activeType}`"
           :sections="sections"
           :source-menu-id="sourceMenuId"
         />
@@ -73,6 +76,7 @@ import type { MenuOrderKioskType } from '../../../composables/fireux/menu/order/
 const props = defineProps<{
   configs: MenuOrderTypeConfig[]
   currencyCode: string
+  fixedOrderType?: MenuOrderKioskType
   kitchenId: string
   kitchenName?: string
   kitchenSlug?: string
@@ -96,14 +100,29 @@ const options = computed(() => props.configs.flatMap((config) => {
     paused: config.availability?.paused === true,
   }]
 }))
+const fixedConfig = computed(() => {
+  if (!props.fixedOrderType) return null
+
+  return props.configs.find(config =>
+    config.type === props.fixedOrderType
+    && config.availability?.paused !== true
+  ) || null
+})
+const activeType = computed<MenuOrderKioskType | null>(() => {
+  const fixedType = fixedConfig.value?.type
+  if (fixedType === 'eat_in' || fixedType === 'takeaway') return fixedType
+
+  return selectedType.value
+})
 const selectedConfig = computed(() => props.configs.find(
-  config => config.type === selectedType.value
+  config => config.type === activeType.value
 ) || null)
 const selectedLabel = computed(() =>
-  selectedType.value === 'eat_in' ? 'Eat here' : 'Take away'
+  activeType.value === 'eat_in' ? 'Eat here' : 'Take away'
 )
 
 function clearSelection() {
+  if (fixedConfig.value) return
   selectedType.value = null
 }
 </script>
@@ -163,6 +182,10 @@ function clearSelection() {
   cursor: pointer;
   font: inherit;
   font-weight: var(--font-weight-extrabold);
+}
+
+.menu-order-kiosk__change-spacer {
+  display: block;
 }
 
 .menu-order-kiosk__change:focus-visible {
@@ -228,6 +251,10 @@ function clearSelection() {
     width: 2.75rem;
     justify-content: center;
     padding: 0;
+  }
+
+  .menu-order-kiosk__change-spacer {
+    width: 2.75rem;
   }
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <!-- Concurrent edit — 2026-07-21 15:55 CEST — Place onboarding live reconciliation: isolate Place selection as the first funnel step. -->
+  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: keep Place search focused on selection and actionable state. -->
   <section class="form-stack-sm">
     <PlaceSearchSection
       :show-confirm-button="false"
@@ -12,8 +13,7 @@
       color="neutral"
       variant="soft"
       icon="i-lucide-loader-circle"
-      title="Confirming Place details"
-      description="We are loading the full address and location before you continue."
+      title="Checking this place…"
     />
 
     <UAlert
@@ -21,23 +21,14 @@
       color="error"
       variant="soft"
       icon="i-lucide-triangle-alert"
-      title="Place details unavailable"
+      title="We could not use this place"
       :description="error"
-    />
-
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      icon="i-lucide-database"
-      title="One shared Place"
-      description="Existing Places are reused. New Google results are verified by the server before they are added."
     />
   </section>
 </template>
 
 <script setup lang="ts">
-import type { PlaceOnboardingSelection } from '../../../composables/fireux/place/usePlacesOnboarding'
+import type { PlaceOnboardingSelection } from '../../../composables/fireux/place/usePlaceOnboarding'
 
 defineProps<{
   pending: boolean

@@ -1,5 +1,6 @@
 <!-- Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: introduce the public Misebox demonstration index. -->
 <!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: make Misebox Restaurant the default showroom path and Deanos the burger contrast. -->
+<!-- Concurrent edit — 2026-07-22 14:20 CEST — Demo quick-link pass: expose the showroom in landing and default footer navigation. -->
 <template>
   <main class="product-demo-index" data-misebox-product-demo="index">
     <section class="product-demo-index__hero">
@@ -137,6 +138,16 @@ const {
 definePageMeta({
   layout: 'landing',
   name: 'MiseboxProductDemoIndexPage',
+  nav: {
+    key: 'demo',
+    label: 'Demo',
+    icon: 'i-lucide-monitor-play',
+    order: 29,
+    position: 'bottom',
+    desktop: true,
+    mobile: true,
+    layouts: ['default', 'landing'],
+  },
 })
 
 useSeoMeta({

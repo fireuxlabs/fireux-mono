@@ -7,6 +7,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-21 13:03 CEST — CSS architecture pass: map atomic CSS contracts to the domain-first component and page spine. -->
 <!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: make Nuxt UI the default and global CSS the proven exception. -->
 <!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: keep editor rhythm in Nuxt UI cards and named form components. -->
+<!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: map the shared shell and separate named domain stages. -->
 
 Purpose:
 Map component folder and naming conventions.
@@ -67,6 +68,7 @@ Domain component folders:
 - `X/Cards`
 - `X/Collection`
 - `X/Create`
+- `X/Onboarding.vue` with named stages under `X/Onboarding/*`
 - `X/Detail.vue`
 - `X/Detail/Index.vue` when detail owns child slices
 - `X/Edit`
@@ -114,6 +116,11 @@ Working rules:
 - Share functions/composables where behavior is common.
 - Let child components own local presentation when it reduces parent script weight.
 - Keep Nuxt UI as the default chrome layer.
+- Staged entity onboarding uses the small shared
+  `MoleculesOnboardingSystem` shell for progress, navigation, pending, and
+  errors. Each domain retains its own `XOnboarding` root and one
+  `XOnboarding<Stage>` component per visible decision; domain copy, drafts,
+  validation, and creation never move into the shared shell.
 - Nuxt UI owns the ordinary global visual baseline, including `--ui-radius`.
   FireUX consumes that value but does not redeclare the installed default.
 - Purely aesthetic global behavior is not part of the current system baseline:
