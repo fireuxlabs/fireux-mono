@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 13:02 CEST — Misebox Jobs workplace adapter: compose product-neutral Jobs with Kitchen creation authority.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: keep Kitchen materialization as a Professional Experience adapter only.
 import { defineNuxtPlugin, useRuntimeConfig } from '#imports'
 import { useKitchenCreate } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate'
 import type { JobWorkplaceMaterializationContext } from 'fireux-jobs/runtime/composables/workplace/materializeWorkplace'

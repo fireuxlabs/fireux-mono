@@ -1,5 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: render generic workplace metadata without domain hydration. -->
 <!-- Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: render exact SSR DTOs without raw reads or management controls. -->
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: render projected Company, Place, schedule, and employment truth. -->
 <template>
   <UPage>
     <UPageHeader :title="jobTitle" :description="jobSubtitle">
@@ -66,15 +67,38 @@
 
             <UCard>
               <template #header>
-                <h3 class="font-semibold">Workplace</h3>
+                <h3 class="font-semibold">Employer</h3>
               </template>
-              <div class="space-y-2">
-                <p v-if="job.workplace_label" class="text-sm font-medium text-highlighted">
-                  {{ job.workplace_label }}
+              <div class="flex items-center gap-3">
+                <UAvatar
+                  :src="job.company.image_url || undefined"
+                  :alt="job.company.short_name || job.company.name"
+                  icon="i-lucide-building-2"
+                />
+                <p class="text-sm font-medium text-highlighted">
+                  {{ job.company.short_name || job.company.name }}
                 </p>
-                <p class="text-xs text-muted">
-                  Workplace type: {{ job.workplace_type }}
-                </p>
+              </div>
+            </UCard>
+
+            <UCard>
+              <template #header>
+                <h3 class="font-semibold">Location</h3>
+              </template>
+              <div class="flex items-center gap-3">
+                <UAvatar
+                  :src="job.place.image_url || undefined"
+                  :alt="job.place.short_name || job.place.name"
+                  icon="i-lucide-map-pin"
+                />
+                <div>
+                  <p class="text-sm font-medium text-highlighted">
+                    {{ job.place.short_name || job.place.name }}
+                  </p>
+                  <p v-if="job.place.short_address" class="text-xs text-muted">
+                    {{ job.place.short_address }}
+                  </p>
+                </div>
               </div>
             </UCard>
           </div>
@@ -106,11 +130,11 @@ await fetched.ready
 const { job, pending, statusCode, missing, failed, outcome } = fetched
 const { profile: jobCardFactory } = useJobInterface()
 
+const jobCard = computed(() => (job.value ? jobCardFactory(job.value) : null))
 const jobTitle = computed(() => job.value?.title || 'Job Details')
 const jobSubtitle = computed(() =>
-  job.value?.workplace_label || job.value?.category_id || 'Open job posting'
+  jobCard.value?.subtitle || job.value?.category_id || 'Open job posting'
 )
-const jobCard = computed(() => (job.value ? jobCardFactory(job.value) : null))
 
 if (import.meta.server) {
   if (missing.value) {

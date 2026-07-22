@@ -1,10 +1,11 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: pure HTTP smoke-contract builders used by the canonical app registry.
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: separate smoke-contract mechanics from app registry data.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: assert bounded DTO shape and private-field exclusion.
 // Concurrent edit — 2026-07-21 15:35 CEST — Misebox startup verification: scope unavailable-order checks to package-owned surface markers.
 // Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: assert the terminal starts at mode selection before mounting its catalogue.
+// Concurrent edit — 2026-07-22 12:47 CEST — Jobs smoke alignment: assert the bounded public index DTO excludes raw Job authority.
 
 const MENU_INDEX_MARKER = 'data-menu-projection="index"'
 const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
@@ -37,6 +38,25 @@ const profileIndexApiContract = (route) => ({
     '"driver_phone"',
     '"active_kitchen_ids"',
     '"kitchen_links"',
+  ],
+})
+
+const jobIndexApiContract = (route) => ({
+  route,
+  status: 200,
+  contentType: 'application/json',
+  includes: ['"items"'],
+  excludes: [
+    '"source_app_id"',
+    '"source_ecosystem_id"',
+    '"owner_type"',
+    '"owner_id"',
+    '"company_id"',
+    '"place_id"',
+    '"created"',
+    '"updated"',
+    '"created_by"',
+    '"updated_by"',
   ],
 })
 
@@ -529,6 +549,7 @@ const tenantMenuQrContract = (route, targetPath, options = {}) =>
 export {
   appDetailContract,
   invalidMenuIndexCursorContract,
+  jobIndexApiContract,
   kitchenCollectionRecoveryContract,
   menuBrowseContract,
   menuDocumentContract,

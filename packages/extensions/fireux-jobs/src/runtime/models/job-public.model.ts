@@ -1,15 +1,33 @@
 // Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep source App scope server-only in the bounded transport.
-import type { JobPayUnit, JobType } from './job.model'
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: project canonical employer, Place, schedule, and compensation truth.
+import type {
+  JobCompensation,
+  JobContractType,
+  JobManagementMode,
+} from './job.model'
 
 export const PUBLIC_JOB_INDEX_PAGE_SIZE = 24
 export const PUBLIC_JOB_INDEX_MAX_PAGE_SIZE = 48
 export const PUBLIC_JOB_INDEX_SCAN_BATCH_SIZE = 48
 export const PUBLIC_JOB_INDEX_MAX_SCAN_SIZE = 240
 
+export type PublicJobCompanyProjection = {
+  name: string
+  short_name?: string
+  image_url?: string
+}
+
+export type PublicJobPlaceProjection = {
+  name: string
+  short_name?: string
+  short_address?: string
+  image_url?: string
+}
+
 /**
  * Browser-safe Job projection.
  *
- * Root ownership, source App scope, creator stamps, Company/Place identifiers,
+ * Root ownership, source App scope, audit stamps, Company/Place identifiers,
  * and other operational fields deliberately stay server-side.
  */
 export type PublicJobProjection = {
@@ -17,13 +35,14 @@ export type PublicJobProjection = {
   category_id: string
   visibility: 'public'
   status: 'open'
-  workplace_type: string
-  workplace_label: string
-  job_type: JobType
+  company: PublicJobCompanyProjection
+  place: PublicJobPlaceProjection
+  contract_type: JobContractType
+  management_mode: JobManagementMode
   openings_count: number
-  pay_currency: string
-  pay_rate: number
-  pay_unit: JobPayUnit
+  compensation: JobCompensation | null
+  start_at: string | null
+  end_at: string | null
   title: string
   description: string
 }

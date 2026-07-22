@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: project read-only Demo Stations without Firestore access.
 import { computed } from 'vue'
 import { useKitchenChildCollection } from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
@@ -6,6 +7,10 @@ import {
 } from '../../../../../../models/kitchen/station.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../../core/useKitchenConsoleDemoData'
 
 export function useKitchenConsoleStations() {
   const {
@@ -18,13 +23,20 @@ export function useKitchenConsoleStations() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
+  const demoData = useKitchenConsoleDemoData(
+    computed(() => runtime.source.value === 'demo')
+  )
+  const demoScenario = computed(() => findKitchenConsoleDemoScenario(
+    demoData.data.value,
+    kitchenId.value
+  ))
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
-    items: stations,
+    items: fetchedStations,
     pending: stationsPending,
-    collectionPath,
+    collectionPath: fetchedCollectionPath,
   } = useKitchenChildCollection<KitchenStation>(
     KitchenStationStorage.collection,
     fetchKitchenId,
@@ -33,16 +45,29 @@ export function useKitchenConsoleStations() {
       databaseId,
     }
   )
+  const consoleStations = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoScenario.value?.stations ?? []
+      : fetchedStations.value
+  )
+  const pending = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoData.pending.value
+      : stationsPending.value
+  )
+  const collectionPath = computed(() =>
+    runtime.source.value === 'demo'
+      ? `demo/kitchens/${kitchenId.value}/stations`
+      : fetchedCollectionPath.value
+  )
   const page = useKitchenConsoleReadPage<KitchenStation>({
     collectionName: KitchenStationStorage.collection,
     selectedKitchen,
     kitchenId,
-    items: stations,
-    pending: stationsPending,
+    items: consoleStations,
+    pending,
     collectionPath,
   })
-  const consoleStations = computed(() => page.collection.value.items)
-  const pending = computed(() => page.collection.value.pending)
   const debug = computed(() => ({
     kitchenId: kitchenId.value,
     rootCollection: rootCollection.value,

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: register ecosystem-owned cross-extension composition.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: keep the Kitchen adapter scoped to Professional Experience, outside Job creation.
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'

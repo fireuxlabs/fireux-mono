@@ -5,6 +5,7 @@
 // Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: declare FireUX route-backed capabilities.
 // Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the FireUX product highlight vocabulary.
 // Concurrent edit — 2026-07-21 13:16 CEST — FireUX project positioning: publish Project Operations with working public and Console homes.
+// Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: publish the request-to-launch operation and its Console route.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 import { fireuxMiseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -216,6 +217,7 @@ const sourceMeta = {
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
         { label: 'Console Entry', path: '/console', kind: 'console' },
         { label: 'Project Console', path: '/console/project', kind: 'console' },
+        { label: 'Project Ignition', path: '/console/project/ignitions', kind: 'console' },
         { label: 'Project Ecosystem', path: '/console/project/ecosystem', kind: 'console' },
         { label: 'Project Apps', path: '/console/project/apps', kind: 'console' },
       ],
@@ -263,7 +265,7 @@ StitchRequest
       'Who needs access',
     ],
     action: {
-      label: 'Start Ignition',
+      label: 'Email instead',
       to: 'mailto:fire@fireux.app?subject=FireUX%20App%20Ignition',
     },
     seo: {
@@ -395,6 +397,19 @@ export const metaContent = defineFireuxMeta({
     about_ticks: [...appMeta.aboutPanelTicks],
   },
   operations: [
+    {
+      id: 'project.ignition',
+      slug: 'ignition',
+      title: 'Ignition',
+      description: 'Manage new app requests from intake to launch.',
+      to: '/console/project/ignitions',
+      console: {
+        id: 'project',
+        name: 'Project console',
+        to: '/console/project',
+      },
+      icon: 'i-lucide-rocket',
+    },
     {
       id: 'project.apps',
       slug: 'apps',

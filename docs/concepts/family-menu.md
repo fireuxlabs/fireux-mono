@@ -8,6 +8,7 @@ Menu family map
 <!-- Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: map named touch presentation on the canonical MenuOrder lifecycle. -->
 <!-- Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: group surface deltas under the shared MenuOrder prefix. -->
 <!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: record the skin-free generic presentation baseline. -->
+<!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: record token inheritance and trusted root theme writes. -->
 Updated: 2026-07-22
 Ref: 8d4cf4288
 Role: map, not canon
@@ -178,7 +179,12 @@ Presentation/data boundary:
   shared request-time Kitchen identity contract for structured and document
   Menu payloads. The ownership resolver joins the linked Place with current
   Kitchen identity overrides and supplies image-shade metadata, Place currency,
-  and Kitchen menu page style; the root Menu does not copy those fields.
+  and resolved Menu style; the root Menu does not copy those fields. Brand
+  colours merge token-by-token from Place into the canonical root Kitchen
+  override, so one child colour never suppresses another inherited token.
+  Console theme writes revalidate current-App membership, owning-App authority,
+  root scope, AppKitchen support, and linked Place inside one transaction. They
+  persist sparse root tokens and remove legacy AppKitchen style fields.
 - `components/Menu/Identity.vue` renders that shared contract as the common
   Browse and live-order title card. Kitchen media and the visible circular exit
   sit inside that card; missing or failed media falls back to text, and stored
@@ -331,7 +337,8 @@ Page composition note:
   surface inherits its Menu. Each child may become custom without copying or
   changing its parent.
 - Creation writes are sparse. Creating a Kitchen stores its Place reference and
-  real Kitchen delta, not copied currency or inherited hours. Creating a Menu
+  real Kitchen delta, not copied currency, palette, or inherited hours. A new
+  Kitchen may store only brand colours differing from Place. Creating a Menu
   omits disabled ordering and absent document/copy fields; enabling a surface
   creates only that surface's meaningful policy. Reconfirming imported
   catalogue content replaces sections/items but preserves existing Menu

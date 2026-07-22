@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: publish category and workplace configuration.
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: retire visibility-only raw-root sitemap discovery.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: reserve App configuration for category deltas only.
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { defaultFireuxJobsConfig } from './config/jobs.config'
 import { configureRuntime } from './config/module/runtime-config'
@@ -15,8 +16,6 @@ import { configureServer } from './config/module/server-config'
 export interface ModuleOptions {
   prefix?: string
   categories?: string[]
-  workplaces?: string[]
-  defaultWorkplaceType?: string
 }
 
 function normalizeIdentifiers(value: unknown, fallback: string[] = []): string[] {
@@ -65,20 +64,11 @@ export default defineNuxtModule<ModuleOptions>({
       options?.categories,
       defaultFireuxJobsConfig.categories
     )
-    const workplaces = normalizeIdentifiers(
-      options?.workplaces,
-      defaultFireuxJobsConfig.workplaces
-    )
-    const defaultWorkplaceType = String(
-      options?.defaultWorkplaceType ?? defaultFireuxJobsConfig.defaultWorkplaceType ?? ''
-    ).trim()
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
         configureRuntime(nuxt, 'jobs', {
           enabled: true,
           categories,
-          workplaces,
-          ...(defaultWorkplaceType ? { defaultWorkplaceType } : {}),
         }),
       composables: configureComposables,
       components: configureComponents,

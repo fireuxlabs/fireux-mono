@@ -7,7 +7,9 @@
 <!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: record shared Place-backed Kitchen activation ownership. -->
 <!-- Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: record complete support shape and authenticated target ownership. -->
 <!-- Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: record trusted absent-array normalization. -->
+<!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: keep branding inheritance and trusted theme writes package-owned. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: align Misebox target/read membership with operator mutation authority. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: keep Jobs identical across ecosystems and isolate Professional Experience composition. -->
 
 This is the single context entrypoint for an external GPT focused on Misebox
 inside `fireuxlabs/fireux-mono`.
@@ -47,6 +49,11 @@ Before each task:
   apps configure whether creation is available and tenant Apps remain bounded
   to their configured Kitchen targets. A current App admin creates or attaches
   the root; apps do not recreate the funnel or copy Place defaults into Kitchen.
+  Place onboarding may establish sparse primary/secondary brand colours. New
+  Kitchens inherit them and persist only differing colours on the canonical
+  Kitchen root; Misebox app chrome and AppKitchen access records own neither.
+  The Kitchen theme editor mutates that root through a target-bound trusted
+  transaction and removes legacy AppKitchen style input after a successful save.
   AppKitchen access records require bounded `operator_ids`, `team_ids`, and
   `join_requests` arrays. The authenticated Kitchen target endpoint validates
   that exact support shape and remains the sole live Console target outcome.
@@ -73,10 +80,14 @@ Before each task:
 - Supplier catalogue costs, parked purchase orders, Property/Portfolio values,
   and FireUX Project identity are not Finance producers until their own dated
   operational lifecycles exist.
-- Product-neutral Jobs-to-Kitchen workplace materialization is composed by the
-  Misebox ecosystem runtime. The adapter delegates Kitchen creation to
-  `fireux-kitchens`; neither extension depends on the other, and apps still
-  declare both capabilities explicitly.
+- Misebox Jobs use the same Agent-owned, Company/Place-linked root and trusted
+  author/public APIs as Werkbox. Hospitality is only a configured category and
+  presentation delta; Kitchen is never Job identity and Job creation never
+  materializes a Kitchen.
+- Misebox may compose Kitchen materialization for a Professional Experience
+  Place reference. That adapter is profile-specific, delegates creation to
+  `fireux-kitchens`, and must not enter the Job model, authoring flow, or public
+  projection.
 - `defineFireuxConfig` loads `fireux-misebox` automatically from
   `ecosystem: 'misebox'`. Misebox apps declare extension modules as explicit
   capabilities; the ecosystem package is not an umbrella dependency bundle.

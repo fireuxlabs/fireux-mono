@@ -1,6 +1,9 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: confirm local defaults and stage optional branding before trusted completion.
+// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage sparse brand colours without copying inherited defaults.
 import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref } from 'vue'
 import {
   canonicalPlaceId,
@@ -76,11 +79,28 @@ export function usePlacesOnboarding() {
 
   const isExisting = computed(() => selectionKind.value === 'existing')
   const canConfigure = computed(() => preview.value?.can_configure === true)
-  const needsEnrichment = computed(() => Boolean(
+  const needsDefaults = computed(() => Boolean(
     preview.value &&
     canConfigure.value &&
-    (preview.value.requires_defaults || !preview.value.image_url)
+    preview.value.requires_defaults
   ))
+  const canAddBrand = computed(() => Boolean(
+    preview.value &&
+    canConfigure.value &&
+    (!preview.value.image_url || !preview.value.brand_palette)
+  ))
+  const needsEnrichment = computed(() => Boolean(
+    needsDefaults.value || canAddBrand.value
+  ))
+  const canEditImage = computed(() => Boolean(
+    canAddBrand.value && !preview.value?.image_url
+  ))
+  const canEditBrandPalette = computed(() => Boolean(
+    canAddBrand.value && !preview.value?.brand_palette
+  ))
+  const brandPalette = computed<SparseBrandPalette>(() =>
+    draft.value?.brand_palette || {}
+  )
   const currencyCode = computed(() =>
     text(draft.value?.default_currency_code).toUpperCase().slice(0, 3)
   )
@@ -110,12 +130,17 @@ export function usePlacesOnboarding() {
   }
 
   function validateDefaults() {
-    if (!needsEnrichment.value) return true
+    if (!needsDefaults.value) return true
     if (!validatedCurrencyCode.value) return 'Confirm a 3-letter currency code.'
     if (!validatedTimezone.value) {
       return 'Confirm a valid IANA timezone, such as Europe/Zurich.'
     }
     return true
+  }
+
+  function validateBrand() {
+    const result = parseBrandPalette(brandPalette.value)
+    return result.ok ? true : result.error
   }
 
   const steps = computed<readonly OnboardingStep<PlaceOnboardingStepId>[]>(() => [
@@ -133,7 +158,7 @@ export function usePlacesOnboarding() {
       icon: 'i-lucide-map-pin',
       validate: validateIdentity,
     },
-    ...(needsEnrichment.value
+    ...(needsDefaults.value
       ? [
           {
             id: 'defaults' as const,
@@ -142,11 +167,16 @@ export function usePlacesOnboarding() {
             icon: 'i-lucide-settings-2',
             validate: validateDefaults,
           },
+        ]
+      : []),
+    ...(canAddBrand.value
+      ? [
           {
             id: 'brand' as const,
-            label: 'Logo',
-            description: 'Add a real logo now or skip it and continue.',
-            icon: 'i-lucide-image',
+            label: 'Brand',
+            description: 'Add an optional logo and shared Place colours.',
+            icon: 'i-lucide-palette',
+            validate: validateBrand,
           },
         ]
       : []),
@@ -155,9 +185,12 @@ export function usePlacesOnboarding() {
       label: 'Review',
       description: 'Review the shared identity and confirmed local defaults.',
       icon: 'i-lucide-check-circle-2',
-      validate: () => validateIdentity() === true
-        ? validateDefaults()
-        : validateIdentity(),
+      validate: () => {
+        const identity = validateIdentity()
+        if (identity !== true) return identity
+        const defaults = validateDefaults()
+        return defaults === true ? validateBrand() : defaults
+      },
     },
   ])
 
@@ -174,6 +207,9 @@ export function usePlacesOnboarding() {
           id,
           default_currency_code: validatedCurrencyCode.value,
           timezone: validatedTimezone.value,
+          ...(Object.keys(brandPalette.value).length
+            ? { brand_palette: brandPalette.value }
+            : {}),
         }
         await completePlaceOnboarding(defaults)
 
@@ -265,6 +301,9 @@ export function usePlacesOnboarding() {
         ...(resolvedPreview.image_url
           ? { image_url: resolvedPreview.image_url }
           : {}),
+        ...(resolvedPreview.brand_palette
+          ? { brand_palette: resolvedPreview.brand_palette }
+          : {}),
         id,
       }
     } catch (error) {
@@ -302,22 +341,38 @@ export function usePlacesOnboarding() {
   }
 
   function setImageFile(value: File | null) {
+    if (!canEditImage.value) return
     imageFile.value = value
+  }
+
+  function setBrandPalette(value: SparseBrandPalette) {
+    if (!draft.value || !canEditBrandPalette.value) return
+    const next = { ...draft.value }
+    if (Object.keys(value).length) next.brand_palette = value
+    else delete next.brand_palette
+    draft.value = next
+    onboarding.invalidateFrom('brand')
   }
 
   return {
     ...onboarding,
     clearSelection,
     completion,
+    brandPalette,
+    canAddBrand,
     canConfigure,
+    canEditBrandPalette,
+    canEditImage,
     currencyCode,
     draft,
     imageFile,
     isExisting,
     needsEnrichment,
+    needsDefaults,
     preview,
     selectPlace,
     setCurrencyCode,
+    setBrandPalette,
     setImageFile,
     setTimezone,
     selectionError,

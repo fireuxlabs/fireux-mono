@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep pagination callbacks explicitly typed for Nuxt consumers.
+// Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: distinguish exhausted emptiness from a scan page with more results.
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
@@ -55,7 +56,7 @@ export function usePublicJobCollection(
   const outcome = computed<PublicJobIndexOutcome>(() => {
     if (state.pending.value) return 'pending'
     if (state.error.value || !state.data.value) return 'error'
-    return jobs.value.length ? 'ready' : 'empty'
+    return jobs.value.length || nextCursor.value ? 'ready' : 'empty'
   })
 
   async function loadMore() {

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: cursor-scan roots and emit only eligible safe DTOs.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: hydrate bounded canonical Company and Place relationships.
 import { FieldPath } from 'firebase-admin/firestore'
 import {
   createError,
@@ -8,6 +9,8 @@ import {
 } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model.ts'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import {
   PUBLIC_JOB_INDEX_MAX_PAGE_SIZE,
   PUBLIC_JOB_INDEX_MAX_SCAN_SIZE,
@@ -16,6 +19,7 @@ import {
   type PublicJobIndexPage,
 } from '../../../models/job-public.model.ts'
 import {
+  isPublicJobCandidate,
   projectPublicJob,
   readPublicJobRuntimeScope,
 } from '../../utils/job/public-projection.ts'
@@ -97,14 +101,55 @@ export default defineEventHandler(async (event): Promise<PublicJobIndexPage> => 
       break
     }
 
+    const candidates = snapshot.docs.filter(document =>
+      isPublicJobCandidate(document.id, document.data() || {}, scope)
+    )
+    const companyIds = Array.from(new Set(
+      candidates
+        .map(document => text(document.data()?.company_id))
+        .filter(isFirestoreDocumentId)
+    ))
+    const placeIds = Array.from(new Set([
+      ...companyIds,
+      ...candidates
+        .map(document => text(document.data()?.place_id))
+        .filter(isFirestoreDocumentId),
+    ]))
+    const [companies, places] = await Promise.all([
+      companyIds.length
+        ? db.getAll(...companyIds.map(id => db.collection(CompanyStorage.collection).doc(id)))
+        : Promise.resolve([]),
+      placeIds.length
+        ? db.getAll(...placeIds.map(id => db.collection(PlaceStorage.collection).doc(id)))
+        : Promise.resolve([]),
+    ]).catch(() => {
+      throw createError({
+        statusCode: 503,
+        statusMessage: 'Job directory relationships could not be read.',
+      })
+    })
+    const companiesById = new Map(companies.map(document => [document.id, document]))
+    const placesById = new Map(places.map(document => [document.id, document]))
+
     for (const [index, document] of snapshot.docs.entries()) {
       scanned += 1
       afterId = document.id
-      const item = projectPublicJob(
-        document.id,
-        document.data() || {},
-        scope
-      )
+      const data = document.data() || {}
+      const companyId = text(data.company_id)
+      const placeId = text(data.place_id)
+      let item: PublicJobIndexPage['items'][number] | null = null
+      try {
+        item = projectPublicJob(document.id, data, scope, {
+          company: companiesById.get(companyId)?.data() || {},
+          companyPlace: placesById.get(companyId)?.data() || {},
+          place: placesById.get(placeId)?.data() || {},
+        })
+      } catch {
+        throw createError({
+          statusCode: 503,
+          statusMessage: 'The Job directory contains an invalid published Job.',
+        })
+      }
       if (item) items.push(item)
 
       if (items.length >= limit) {

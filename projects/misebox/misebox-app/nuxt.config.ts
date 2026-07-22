@@ -2,6 +2,8 @@
 // Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: make the existing Misebox Jobs workplace default explicit.
 // Concurrent edit — 2026-07-21 12:52 CEST — Misebox Jobs workplace adapter: classify new hospitality jobs explicitly.
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: declare Misebox open self-membership policy.
+// Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: prerender the public Misebox demonstration family.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
@@ -19,7 +21,16 @@ const fireuxConfig = defineFireuxConfig({
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   selfJoinEnabled: true,
   seo: {
-    staticPaths: ['/get-started', '/programme', '/luna-piccante', '/luna-piccante/menu'],
+    staticPaths: [
+      '/get-started',
+      '/programme',
+      '/luna-piccante',
+      '/luna-piccante/menu',
+      '/demo',
+      '/demo/menu',
+      '/demo/kiosk',
+      '/demo/service',
+    ],
   },
   modules: [
     'fireux-places',
@@ -32,8 +43,6 @@ const fireuxConfig = defineFireuxConfig({
       'fireux-jobs',
       {
         categories: ['hospitality'],
-        workplaces: ['kitchen', 'ship', 'truck'],
-        defaultWorkplaceType: 'kitchen',
       },
     ],
     'fireux-ai',

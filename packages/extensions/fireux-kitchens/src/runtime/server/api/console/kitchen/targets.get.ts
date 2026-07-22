@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: project authorized roots without browser Firestore reads.
-import { useRuntimeConfig } from '#imports'
+// Concurrent edit — 2026-07-22 12:35 CEST — Canonical Kitchen theme write: project resolved style and server-authorized write capability.
 import {
   createError,
   defineEventHandler,
@@ -13,7 +13,6 @@ import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import {
-  KITCHEN_CONSOLE_TARGET_LIMIT,
   type KitchenConsoleTargetItem,
   type KitchenConsoleTargetsResponse,
 } from '../../../../models/kitchen/kitchen-index.model.ts'
@@ -22,6 +21,7 @@ import type {
   KitchenTablesConfig,
 } from '../../../../models/kitchen.model.ts'
 import { readKitchenOnboardingSupport } from '../../../../server/kitchen/onboarding-policy.ts'
+import { resolveRuntimeKitchenTargetIds } from '../../../../server/kitchen/console-targets.ts'
 import { menuKitchenIdentity } from '../../../../server/menu/ownership/kitchen-scope.ts'
 import {
   readKitchenFulfilmentConfig,
@@ -41,22 +41,6 @@ const record = (value: unknown): StoredRecord =>
 
 function conflict(statusMessage: string): never {
   throw createError({ statusCode: 409, statusMessage })
-}
-
-function storedIds(value: unknown, limit: number, label: string) {
-  if (!Array.isArray(value) || value.length > limit) {
-    conflict(`${label} has an invalid stored shape.`)
-  }
-
-  const ids = value.map(text)
-  if (
-    ids.some(id => !isFirestoreDocumentId(id)) ||
-    new Set(ids).size !== ids.length
-  ) {
-    conflict(`${label} contains invalid stored ids.`)
-  }
-
-  return ids
 }
 
 function readCanonicalKitchenScope(
@@ -87,41 +71,6 @@ function readCanonicalKitchenScope(
   return { state, app_id: appId }
 }
 
-function resolveKitchenTargetIds(
-  role: string,
-  membership: StoredRecord
-) {
-  const runtime = useRuntimeConfig()
-  const fireux = record(record(runtime.public).fireux)
-  const kitchenConfig = record(
-    record(record(fireux.consoleConfig).kitchen)
-  )
-  const configured = role === 'tenant'
-    ? storedIds(
-        kitchenConfig.targetIds ?? [],
-        KITCHEN_CONSOLE_TARGET_LIMIT,
-        'Configured Kitchen console targets'
-      )
-    : storedIds(
-        record(membership.console_targets).kitchen_ids ?? [],
-        KITCHEN_CONSOLE_TARGET_LIMIT,
-        'UserApp Kitchen console targets'
-      )
-  const development = import.meta.dev
-    ? storedIds(
-        kitchenConfig.devTargetIds ?? [],
-        KITCHEN_CONSOLE_TARGET_LIMIT,
-        'Development Kitchen console targets'
-      )
-    : []
-  const ids = [...new Set([...configured, ...development])]
-
-  if (ids.length > KITCHEN_CONSOLE_TARGET_LIMIT) {
-    conflict('Kitchen console targets exceed the supported limit.')
-  }
-  return ids
-}
-
 const optionalNumber = (value: unknown) => {
   if (value === null || value === undefined || value === '') return undefined
   const number = Number(value)
@@ -130,6 +79,7 @@ const optionalNumber = (value: unknown) => {
 
 function projectKitchenTarget(input: {
   id: string
+  canWrite: boolean
   root: StoredRecord
   support: StoredRecord
   place: StoredRecord
@@ -150,6 +100,7 @@ function projectKitchenTarget(input: {
 
   const visibility = readKitchenVisibility(input.root)
   const menus = readKitchenMenusConfig(input.root)
+  const resolvedMenuStyle = record(resolvedIdentity.page_style)
   const gallery = placeIdentity.gallery.length
     ? placeIdentity.gallery
     : supportIdentity.gallery.length
@@ -174,6 +125,7 @@ function projectKitchenTarget(input: {
 
   return {
     id: input.id,
+    can_write: input.canWrite,
     app_scope: input.scope,
     place_id: readRecordString(input.root, 'place_id'),
     slug: readRecordString(input.root, 'slug'),
@@ -196,7 +148,9 @@ function projectKitchenTarget(input: {
       currency_format: menus.currencyFormat,
       show_currency: menus.showCurrency,
       available: menus.available,
-      ...(menus.style ? { style: menus.style } : {}),
+      ...(Object.keys(resolvedMenuStyle).length
+        ? { style: resolvedMenuStyle }
+        : {}),
     },
     ...(Object.keys(orders).length
       ? { orders: orders as KitchenOrdersConfig }
@@ -241,7 +195,7 @@ export default defineEventHandler(
       event,
       'Sign in to view Kitchen targets.'
     )
-    const { appId, role } = useFireUXConfig()
+    const { appId } = useFireUXConfig()
     const db = getRuntimeFirestore()
     const currentMembershipRef = db.doc(`apps/${appId}/users/${uid}`)
     const currentMembershipSnapshot = await currentMembershipRef.get()
@@ -257,7 +211,7 @@ export default defineEventHandler(
       })
     }
 
-    const targetIds = resolveKitchenTargetIds(role, currentMembership)
+    const targetIds = resolveRuntimeKitchenTargetIds(event, currentMembership)
     if (!targetIds.length) {
       setResponseHeaders(event, {
         'Content-Type': 'application/json; charset=utf-8',
@@ -347,6 +301,8 @@ export default defineEventHandler(
 
       return projectKitchenTarget({
         id,
+        canWrite:
+          scopedRole === 'admin' || authority.operatorIds.includes(uid),
         root,
         support,
         place: placeSnapshot.data() || {},

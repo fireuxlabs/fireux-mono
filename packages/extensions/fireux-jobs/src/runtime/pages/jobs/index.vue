@@ -1,11 +1,18 @@
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use the public-index shell with discovery before author actions. -->
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
-    <UPageBody>
+  <PublicIndexSurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-briefcase-business"
+    secondary-label="For employers and professionals"
+  >
+    <JobCollectionManager />
+
+    <template #secondary>
       <JobCTA />
-      <JobCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">
@@ -15,12 +22,12 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 const { appName } = useFireUXConfig()
 
 const pageTitle = 'Jobs'
-const pageDescription = 'Browse open roles and post opportunities.'
+const pageDescription = 'Explore open roles from employers across the network.'
 
 definePageMeta({
   layout: 'default',
   title: 'Jobs',
-  description: 'Browse open roles and post opportunities.',
+  description: 'Explore open roles from employers across the network.',
   tag: 'jobs',
   nav: {
     key: 'jobs',

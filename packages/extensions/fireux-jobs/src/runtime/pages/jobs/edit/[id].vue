@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: edit the complete canonical Job authoring contract. -->
 <template>
   <UPage class="page edit-page">
     <UPageHeader :title="pageTitle" :description="pageSubtitle">
@@ -28,16 +29,30 @@
       />
 
       <form v-else class="space-y-6" @submit.prevent="onSave">
-        <UFormField label="Job title" required>
-          <UInput v-model="form.title" placeholder="e.g. Chef de Partie" />
-        </UFormField>
+        <UAlert
+          color="neutral"
+          variant="soft"
+          title="Employer and location"
+          :description="`This job remains linked to Company ${form.company_id} and Place ${form.place_id}.`"
+        />
 
-        <UFormField label="Status" required>
-          <USelect v-model="form.status" :options="statusOptions" />
-        </UFormField>
+        <JobCreateBasics
+          v-model:form="form"
+          step-label="Details"
+          title="Job details"
+          subtitle="Update the role, contract, schedule, openings, and optional compensation."
+        />
+
+        <UCard>
+          <UFormField label="Status" required>
+            <USelect v-model="status" :options="statusOptions" />
+          </UFormField>
+        </UCard>
 
         <div class="flex items-center justify-between">
-          <span class="text-sm text-muted">Update the title or lane.</span>
+          <span class="text-sm text-muted">
+            Publishing remains a separate reviewed action.
+          </span>
           <div class="flex items-center gap-2">
             <UButton
               variant="ghost"
@@ -62,13 +77,15 @@
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: keep raw Job reads behind an authenticated authoring route.
-// Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: exact-load and patch only through the author server boundary.
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useHead } from 'nuxt/app'
-import { computed, reactive, ref, watchEffect } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useJobFetch } from '../../../composables/fireux/firestore/jobs/fetch/useJobFetch'
+import {
+  JobPayload,
+  type JobCreateForm,
+} from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 import { useJobUpdate } from '../../../composables/fireux/firestore/jobs/mutations/useJobUpdate'
 import type { Job, JobStatus } from '../../../models/job.model'
 
@@ -91,57 +108,98 @@ const jobId = computed(() =>
 )
 
 const { job: jobRef, pending, refresh } = useJobFetch(jobId)
-
 const job = computed<Job | null>(() => jobRef.value)
 
-const form = reactive({
-  title: '',
-  status: 'open' as JobStatus,
-})
+function editForm(source?: Job | null): JobCreateForm {
+  if (!source) return { ...JobPayload }
+  return {
+    company_id: source.company_id,
+    place_id: source.place_id,
+    category_id: source.category_id,
+    contract_type: source.contract_type,
+    management_mode: source.management_mode,
+    openings_count: source.openings_count,
+    compensation: source.compensation ? { ...source.compensation } : null,
+    start_at: source.start_at,
+    end_at: source.end_at,
+    title: source.title,
+    description: source.description,
+  }
+}
+
+const form = ref<JobCreateForm>(editForm())
+const status = ref<JobStatus>('open')
+const saving = ref(false)
 
 const statusOptions = [
   { label: 'Open', value: 'open' },
   { label: 'Closed', value: 'closed' },
 ] as const
 
-const saving = ref(false)
+watch(job, current => {
+  if (!current) return
+  form.value = editForm(current)
+  status.value = current.status
+}, { immediate: true })
 
-watchEffect(() => {
-  if (!job.value) return
-  form.title = job.value.title ?? ''
-  form.status = (job.value.status as JobStatus) ?? 'open'
-})
+function timestampKey(value: JobCreateForm['start_at']) {
+  if (!value) return null
+  const source = value as unknown as {
+    seconds?: number
+    nanoseconds?: number
+    toMillis?: () => number
+  }
+  if (typeof source.toMillis === 'function') return source.toMillis()
+  return [source.seconds ?? null, source.nanoseconds ?? 0]
+}
 
-const sanitize = (value: string) => value.trim()
+function formKey(value: JobCreateForm, nextStatus: JobStatus) {
+  return JSON.stringify({
+    ...value,
+    title: value.title.trim(),
+    description: value.description.trim(),
+    compensation: value.compensation
+      ? {
+          ...value.compensation,
+          currency_code: value.compensation.currency_code.trim().toUpperCase(),
+        }
+      : null,
+    start_at: timestampKey(value.start_at),
+    end_at: timestampKey(value.end_at),
+    status: nextStatus,
+  })
+}
 
-const isDirty = computed(() => {
-  if (!job.value) return false
-  const baseTitle = job.value.title ?? ''
-  const baseStatus = (job.value.status as JobStatus) ?? 'open'
-
-  return (
-    sanitize(form.title) !== baseTitle.trim() ||
-    form.status !== baseStatus
-  )
-})
+const isDirty = computed(() => Boolean(
+  job.value &&
+  formKey(form.value, status.value) !== formKey(editForm(job.value), job.value.status)
+))
 
 function onReset() {
   if (!job.value) return
-  form.title = job.value.title ?? ''
-  form.status = (job.value.status as JobStatus) ?? 'open'
+  form.value = editForm(job.value)
+  status.value = job.value.status
 }
 
 const onSave = withToast(
   async () => {
     if (!job.value || !jobId.value || !isDirty.value) return
     saving.value = true
-    const title = sanitize(form.title) || 'Untitled Job'
+    const patch = {
+      ...form.value,
+      title: form.value.title.trim(),
+      description: form.value.description.trim(),
+      compensation: form.value.compensation
+        ? {
+            ...form.value.compensation,
+            currency_code: form.value.compensation.currency_code.trim().toUpperCase(),
+          }
+        : null,
+      status: status.value,
+    }
 
     try {
-      await updateJob(jobId.value, {
-        title,
-        status: form.status,
-      })
+      await updateJob(jobId.value, patch)
       await refresh()
     } finally {
       saving.value = false
@@ -150,8 +208,8 @@ const onSave = withToast(
   { ok: 'Job updated', fail: 'Failed to update job' }
 )
 
-const pageTitle = computed(() => form.title || 'Edit job')
+const pageTitle = computed(() => form.value.title || 'Edit job')
 const pageSubtitle = computed(() =>
-  form.status === 'open' ? 'Open job' : 'Closed job'
+  status.value === 'open' ? 'Open job' : 'Closed job'
 )
 </script>

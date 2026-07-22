@@ -1,14 +1,18 @@
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: expose category and workplace fields in Job debug output. -->
 <!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: keep source App scope out of shared presentation. -->
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: present canonical employer, Place, contract, schedule, and compensation truth. -->
 <template>
   <UCard v-if="card || job">
     <div class="space-y-5">
       <div v-if="card" class="space-y-4">
         <UUser
-          v-if="companyCard"
-          :name="companyCard.title"
-          :description="companyCard.subtitle"
-          :avatar="{ src: companyCard.imageUrl, alt: companyCard.title }"
+          v-if="companyCard || card.companyName"
+          :name="companyCard?.title || card.companyName"
+          :description="companyCard?.subtitle || card.placeAddress || card.placeName"
+          :avatar="{
+            src: companyCard?.imageUrl || card.companyImageUrl || undefined,
+            alt: companyCard?.title || card.companyName,
+          }"
           size="sm"
         />
 
@@ -36,7 +40,7 @@
           {{ card.description }}
         </p>
 
-        <div class="grid gap-3 sm:grid-cols-3">
+        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
           <div class="rounded-2xl border border-default bg-muted/40 p-4">
             <div
               class="fx-type-label"
@@ -44,7 +48,7 @@
               Compensation
             </div>
             <div class="mt-2 text-lg font-semibold">
-              {{ payLabel }}
+              {{ compensationLabel }}
             </div>
           </div>
 
@@ -63,12 +67,29 @@
             <div
               class="fx-type-label"
             >
-              Role type
+              Contract
             </div>
             <div class="mt-2 text-lg font-semibold">
-              {{ jobTypeLabel }}
+              {{ contractTypeLabel }}
             </div>
           </div>
+
+          <div class="rounded-2xl border border-default bg-muted/40 p-4">
+            <div class="fx-type-label">
+              Management
+            </div>
+            <div class="mt-2 text-lg font-semibold">
+              {{ managementModeLabel }}
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-if="scheduleLabel !== 'Schedule not specified'"
+          class="rounded-2xl border border-default bg-muted/40 p-4"
+        >
+          <div class="fx-type-label">Schedule</div>
+          <div class="mt-2 text-sm font-medium">{{ scheduleLabel }}</div>
         </div>
 
         <div v-if="card.badges?.length" class="flex flex-wrap gap-2">
@@ -127,6 +148,13 @@ import type {
   JobCard,
   JobView,
 } from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
+import {
+  formatJobCompensation,
+  formatJobContractType,
+  formatJobManagementMode,
+  formatJobOpenings,
+  formatJobSchedule,
+} from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 const props = defineProps<{
   card?: JobCard.Card
@@ -158,34 +186,29 @@ const jobFields = computed(() => {
       label: 'category_id',
       value: formatValue(job.category_id),
     },
+    { key: 'place_id', label: 'place_id', value: formatValue(job.place_id) },
+    { key: 'company', label: 'company', value: formatValue(job.company) },
+    { key: 'place', label: 'place', value: formatValue(job.place) },
     {
-      key: 'workplace_type',
-      label: 'workplace_type',
-      value: formatValue(job.workplace_type),
+      key: 'contract_type',
+      label: 'contract_type',
+      value: formatValue(job.contract_type),
     },
     {
-      key: 'workplace_id',
-      label: 'workplace_id',
-      value: formatValue(job.workplace_id),
+      key: 'management_mode',
+      label: 'management_mode',
+      value: formatValue(job.management_mode),
     },
-    {
-      key: 'workplace_label',
-      label: 'workplace_label',
-      value: formatValue(job.workplace_label),
-    },
-    { key: 'job_type', label: 'job_type', value: formatValue(job.job_type) },
     {
       key: 'openings_count',
       label: 'openings_count',
       value: formatValue(job.openings_count),
     },
     {
-      key: 'pay_currency',
-      label: 'pay_currency',
-      value: formatValue(job.pay_currency),
+      key: 'compensation',
+      label: 'compensation',
+      value: formatValue(job.compensation),
     },
-    { key: 'pay_rate', label: 'pay_rate', value: formatValue(job.pay_rate) },
-    { key: 'pay_unit', label: 'pay_unit', value: formatValue(job.pay_unit) },
     { key: 'start_at', label: 'start_at', value: formatValue(job.start_at) },
     { key: 'end_at', label: 'end_at', value: formatValue(job.end_at) },
     { key: 'title', label: 'title', value: formatValue(job.title) },
@@ -201,17 +224,26 @@ const jobFields = computed(() => {
 const jobJson = computed(() =>
   props.job ? JSON.stringify(props.job, null, 2) : ''
 )
-const payLabel = computed(() => {
-  const job = props.job
-  if (!job?.pay_rate) return 'Discuss'
-  return `${job.pay_currency || 'CHF'} ${job.pay_rate}/${job.pay_unit || 'hour'}`
-})
-const openingsLabel = computed(() => {
-  const count = Number(props.job?.openings_count || 0)
-  return count > 0 ? `${count} opening${count === 1 ? '' : 's'}` : 'Flexible'
-})
-const jobTypeLabel = computed(() => {
-  const value = String(props.job?.job_type || '').trim()
-  return value ? value.charAt(0).toUpperCase() + value.slice(1) : 'Role'
-})
+const compensationLabel = computed(() =>
+  props.card?.compensationLabel ?? formatJobCompensation(props.job?.compensation)
+)
+const openingsLabel = computed(() =>
+  props.card?.openingsLabel ?? formatJobOpenings(props.job?.openings_count)
+)
+const contractTypeLabel = computed(() =>
+  props.card?.contractTypeLabel ?? (
+    props.job ? formatJobContractType(props.job.contract_type) : 'Contract'
+  )
+)
+const managementModeLabel = computed(() =>
+  props.card?.managementModeLabel ?? (
+    props.job ? formatJobManagementMode(props.job.management_mode) : 'Direct hire'
+  )
+)
+const scheduleLabel = computed(() =>
+  props.card?.scheduleLabel ?? formatJobSchedule(
+    props.job?.start_at ?? null,
+    props.job?.end_at ?? null
+  )
+)
 </script>

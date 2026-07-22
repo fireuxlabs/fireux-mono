@@ -4,6 +4,8 @@
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: route main Rules work through Core composition and ecosystem policy. -->
 <!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: route shared facts through Finance and operations through their owning domains. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: route target selection and root/App-support onboarding through one authority. -->
+<!-- Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: route public demonstrations through the named read-only adapter. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: route every App through the same Agent-owned Company/Place Job contract. -->
 
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
@@ -47,6 +49,18 @@ Before each task:
   harness, and Project remains a read-only control-plane family. Those are
   domain deltas, not alternate target or onboarding spines.
 
+## Demo World boundaries
+
+- Package and project owners may provide deterministic read-only Demo World
+  modules under their guarded Demo roots.
+- Consoles load their owner's fixtures lazily through `useConsoleDemoData`. A
+  project Product Demo may instead compose its project and package-owned worlds
+  through one named `app/composables/product-demo/use*ProductDemo.ts` adapter.
+- Public Product Demo pages use the reserved project `/demo` route family and
+  consume that adapter. Direct fixture imports elsewhere remain forbidden.
+- Demo World never becomes live public-content authority or a test, simulation,
+  Firestore, Storage, server, admin, or mutation seam.
+
 ## Semantic catalogue boundaries
 
 - `/operations` is the factual index of operations exposed inside the app's
@@ -84,6 +98,19 @@ Before each task:
 - Do not treat a mutable catalogue price, estimate, rent field, or control-plane
   identity as a financial fact. Add producers only when a dated authoritative
   operation exists.
+
+## Shared Job authority
+
+- `fireux-jobs` owns one Job root shape and trusted author/public boundary for
+  every ecosystem. The current Agent/User is explicit owner authority;
+  creator stamps remain audit-only.
+- Canonical Company and Place ids are required relationships. App configuration
+  may narrow product-neutral categories and copy, but may not select a
+  workplace entity, materializer, or alternate stored shape.
+- Optional compensation uses the Finance minor-unit money primitive plus a pay
+  unit. It is a mutable offer term, not a FinancialFact producer.
+- Ecosystem composition used by Professional Experience remains outside Job
+  creation and cannot change this shared contract.
 
 ## Firebase MCP targeting
 

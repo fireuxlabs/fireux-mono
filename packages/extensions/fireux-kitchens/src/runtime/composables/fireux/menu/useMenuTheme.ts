@@ -1,75 +1,16 @@
-import type {
-  PageStyle,
-  PageStyleFontSource,
-} from 'fireux-core/runtime/models/core/style.model'
-
-export type MenuThemeFontOption = {
-  id: string
-  label: string
-  description: string
-  source: PageStyleFontSource
-  family: string
-  fallback: string
-}
-
-export const menuThemeFontOptions: MenuThemeFontOption[] = [
-  {
-    id: 'system',
-    label: 'System',
-    description: 'Use the app font.',
-    source: 'system',
-    family: '',
-    fallback: 'var(--font-sans)',
-  },
-  {
-    id: 'playfair-display',
-    label: 'Playfair Display',
-    description: 'Elegant restaurant serif.',
-    source: 'google',
-    family: 'Playfair Display',
-    fallback: 'serif',
-  },
-  {
-    id: 'lora',
-    label: 'Lora',
-    description: 'Warm readable serif.',
-    source: 'google',
-    family: 'Lora',
-    fallback: 'serif',
-  },
-  {
-    id: 'cormorant-garamond',
-    label: 'Cormorant Garamond',
-    description: 'Classic fine dining serif.',
-    source: 'google',
-    family: 'Cormorant Garamond',
-    fallback: 'serif',
-  },
-  {
-    id: 'inter',
-    label: 'Inter',
-    description: 'Clean modern sans.',
-    source: 'google',
-    family: 'Inter',
-    fallback: 'var(--font-sans)',
-  },
-  {
-    id: 'nunito-sans',
-    label: 'Nunito Sans',
-    description: 'Friendly rounded sans.',
-    source: 'google',
-    family: 'Nunito Sans',
-    fallback: 'var(--font-sans)',
-  },
-  {
-    id: 'oswald',
-    label: 'Oswald',
-    description: 'Condensed menu-board style.',
-    source: 'google',
-    family: 'Oswald',
-    fallback: 'var(--font-sans)',
-  },
-]
+// Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: reuse the Core brand-colour defaults.
+// Concurrent edit — 2026-07-22 12:39 CEST — Kitchen palette console: reuse one portable Menu font-token authority.
+import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import { DEFAULT_BRAND_PALETTE } from 'fireux-core/runtime/utils/brand-palette'
+import {
+  menuThemeFontFromId,
+  resolveMenuThemeFontToken,
+} from '../../../utils/menu-theme-font'
+export {
+  menuThemeFontFromId,
+  menuThemeFontOptions,
+} from '../../../utils/menu-theme-font'
+export type { MenuThemeFontOption } from '../../../utils/menu-theme-font'
 
 export const menuThemeDefaultPageStyle = {
   background_color_light: '#f8fafc',
@@ -78,15 +19,15 @@ export const menuThemeDefaultPageStyle = {
   font_color_dark: '#f8fafc',
   title_color_light: '',
   title_color_dark: '',
-  primary_color: '#0f766e',
-  secondary_color: '#64748b',
+  primary_color: DEFAULT_BRAND_PALETTE.primary_color,
+  secondary_color: DEFAULT_BRAND_PALETTE.secondary_color,
   font_source: 'system',
   font_family: '',
   title_font_source: 'system',
   title_font_family: '',
 } satisfies Partial<PageStyle>
 
-const systemFont = menuThemeFontOptions[0]!
+const systemFont = menuThemeFontFromId('system')
 const text = (value: unknown) => String(value ?? '').trim()
 
 export function resolveMenuPageStyle(
@@ -169,10 +110,6 @@ export function compactMenuPageStyle(
   return compact
 }
 
-export function menuThemeFontFromId(id: string) {
-  return menuThemeFontOptions.find((option) => option.id === id) || systemFont
-}
-
 export function resolveMenuFont(style?: Partial<PageStyle> | null) {
   return resolveMenuFontToken(style?.font_source, style?.font_family)
 }
@@ -193,25 +130,5 @@ function resolveMenuFontToken(
   sourceValue: unknown,
   familyValue: unknown
 ) {
-  const source = text(sourceValue) as PageStyleFontSource
-  const family = text(familyValue)
-  const option = menuThemeFontOptions.find(
-    (font) => font.source === source && font.family === family
-  ) || systemFont
-  const cssFamily = option.family
-    ? `"${option.family}", ${option.fallback}`
-    : option.fallback
-
-  return {
-    ...option,
-    cssFamily,
-    stylesheetUrl: googleFontStylesheetUrl(option),
-  }
-}
-
-function googleFontStylesheetUrl(option: MenuThemeFontOption) {
-  if (option.source !== 'google' || !option.family) return ''
-
-  const family = option.family.replace(/\s+/g, '+')
-  return `https://fonts.googleapis.com/css2?family=${family}:wght@400;500;600;700&display=swap`
+  return resolveMenuThemeFontToken(sourceValue, familyValue)
 }

@@ -1,7 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: hash the exact local server, model, config, and dependency sources attested by deployed Werkbox security-contract endpoints.
 // Concurrent edit — 2026-07-21 15:14 CEST — Werkbox Firebase hardening: bind attestation to security-relevant source trees, shared runtime utilities, ecosystem registration, and dependency locks.
+// Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: attest the Finance money validator imported by trusted Job code.
 
 import { createHash } from 'node:crypto'
 import { readdir, readFile } from 'node:fs/promises'
@@ -16,6 +17,8 @@ const EXACT_SOURCE_PATHS = Object.freeze([
   'packages/ecosystem/fireux-werkbox/src/module.ts',
   'packages/extensions/fireux-jobs/package.json',
   'packages/extensions/fireux-jobs/src/module.ts',
+  'packages/extensions/fireux-finance/package.json',
+  'packages/extensions/fireux-finance/src/module.ts',
   'packages/extensions/fireux-places/package.json',
   'packages/extensions/fireux-places/src/module.ts',
   'packages/extensions/fireux-companies/package.json',
@@ -32,9 +35,11 @@ const SOURCE_ROOTS = Object.freeze([
   'packages/core/fireux-core/src/runtime/server',
   'packages/core/fireux-core/src/runtime/utils',
   'packages/ecosystem/fireux-werkbox/src/config',
-  'packages/extensions/fireux-jobs/src/config/module',
+  'packages/extensions/fireux-jobs/src/config',
   'packages/extensions/fireux-jobs/src/runtime/models',
   'packages/extensions/fireux-jobs/src/runtime/server',
+  'packages/extensions/fireux-finance/src/runtime/models',
+  'packages/extensions/fireux-finance/src/runtime/utils',
   'packages/extensions/fireux-places/src/config/module',
   'packages/extensions/fireux-places/src/runtime/models',
   'packages/extensions/fireux-places/src/runtime/server',

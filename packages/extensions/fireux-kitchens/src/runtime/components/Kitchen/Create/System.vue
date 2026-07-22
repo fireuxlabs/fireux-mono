@@ -1,5 +1,5 @@
 <template>
-  <!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: compose canonical Place onboarding with sparse Kitchen activation. -->
+  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: compose Place colours with a sparse root override. -->
   <section
     data-onboarding-family="kitchen"
     :data-onboarding-step="activeStepId || undefined"
@@ -110,6 +110,16 @@
         :place="place"
         :preview="preview"
         :effective-name="effectiveName"
+        :palette-override="paletteOverride"
+        :inherited-palette="inheritedPalette"
+      />
+
+      <KitchenCreatePalette
+        v-if="activeStepId === 'palette'"
+        :model-value="paletteOverride"
+        :inherited="inheritedPalette"
+        :editable="canEditPalette"
+        @update:model-value="setPaletteOverride"
       />
 
       <UAlert
@@ -182,6 +192,7 @@ const {
   activeStepId,
   back,
   canEditIdentity,
+  canEditPalette,
   clearSelection,
   completion,
   currentStep,
@@ -190,9 +201,11 @@ const {
   error,
   isFirstStep,
   isLastStep,
+  inheritedPalette,
   next,
   pending,
   place,
+  paletteOverride,
   preview,
   progress,
   selectKitchen,
@@ -200,6 +213,7 @@ const {
   selectionError,
   selectionPending,
   setDisplayName,
+  setPaletteOverride,
   stepCount,
   stepNumber,
 } = useKitchenOnboarding()

@@ -1,6 +1,17 @@
-// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map the safe DTO without source App scope.
+// Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: map canonical employer, Place, contract, schedule, and compensation truth.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import { JobStorage, type Job } from '../../../../../../models/job.model'
+import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money.ts'
+import type {
+  PublicJobCompanyProjection,
+  PublicJobPlaceProjection,
+} from '../../../../../../models/job-public.model'
+import {
+  JobStorage,
+  type Job,
+  type JobCompensation,
+  type JobContractType,
+  type JobManagementMode,
+} from '../../../../../../models/job.model'
 
 export type JobView = Pick<
   Job,
@@ -8,51 +19,123 @@ export type JobView = Pick<
   | 'category_id'
   | 'visibility'
   | 'status'
-  | 'workplace_type'
-  | 'workplace_label'
-  | 'job_type'
+  | 'contract_type'
+  | 'management_mode'
   | 'openings_count'
-  | 'pay_currency'
-  | 'pay_rate'
-  | 'pay_unit'
+  | 'compensation'
   | 'title'
   | 'description'
-> & Partial<Pick<
-  Job,
-  | 'company_id'
-  | 'workplace_id'
-  | 'start_at'
-  | 'end_at'
->> & {
-  workplace?: unknown | null
-  workplace_image_url?: string
-  workplace_short_address?: string
-  workplace_formatted_address?: string
+> & {
+  company_id?: string
+  place_id?: string
+  company?: PublicJobCompanyProjection
+  place?: PublicJobPlaceProjection
+  start_at: Job['start_at'] | string | null
+  end_at: Job['end_at'] | string | null
 }
 
 export namespace JobCard {
   export type Card = {
     id: string
     to: string
-
-    // Media (empty string means unset)
     imageUrl: string
-
-    // Primary display fields
     title: string
     subtitle: string
     summary: string
     status: Job['status']
     description: string
-
-    // Status/label chips
     badges: string[]
-
-    // IDs for fetching related entities
-    workplaceId: string
-    workplaceType: string
     companyId: string
+    companyName: string
+    companyImageUrl: string
+    placeId: string
+    placeName: string
+    placeAddress: string
+    placeImageUrl: string
+    contractTypeLabel: string
+    managementModeLabel: string
+    openingsLabel: string
+    compensationLabel: string
+    scheduleLabel: string
   }
+}
+
+const titleCase = (value: unknown) =>
+  safeString(value)
+    .replace(/[-_]+/g, ' ')
+    .replace(/\b\w/g, character => character.toUpperCase())
+
+export function formatJobContractType(value: JobContractType): string {
+  return titleCase(value)
+}
+
+export function formatJobManagementMode(value: JobManagementMode): string {
+  return value === 'managed' ? 'Managed placement' : 'Direct hire'
+}
+
+export function formatJobOpenings(value: unknown): string {
+  const count = Number(value)
+  return Number.isInteger(count) && count > 0
+    ? `${count} opening${count === 1 ? '' : 's'}`
+    : 'Openings not specified'
+}
+
+export function formatJobCompensation(
+  compensation: JobCompensation | null | undefined
+): string {
+  if (!compensation) return 'Pay not disclosed'
+  const currencyCode = safeString(compensation.currency_code).toUpperCase()
+  let digits = 2
+  try {
+    digits = financialCurrencyMinorUnitDigits(currencyCode)
+  } catch {
+    return 'Pay not disclosed'
+  }
+  const amount = Number(compensation.amount_minor) / 10 ** digits
+  if (!Number.isFinite(amount)) return 'Pay not disclosed'
+
+  let value = `${currencyCode} ${amount}`
+  try {
+    value = new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency: currencyCode,
+    }).format(amount)
+  } catch {
+    // The server validates canonical currency codes; retain a readable fallback.
+  }
+  return `${value} / ${compensation.unit}`
+}
+
+function jobDate(value: JobView['start_at']): Date | null {
+  if (!value) return null
+  if (typeof value === 'string') {
+    const date = new Date(value)
+    return Number.isFinite(date.getTime()) ? date : null
+  }
+  const source = value as unknown as {
+    seconds?: number
+    toDate?: () => Date
+  }
+  const date = typeof source.toDate === 'function'
+    ? source.toDate()
+    : new Date(Number(source.seconds ?? Number.NaN) * 1_000)
+  return Number.isFinite(date.getTime()) ? date : null
+}
+
+export function formatJobSchedule(
+  startAt: JobView['start_at'],
+  endAt: JobView['end_at']
+): string {
+  const start = jobDate(startAt)
+  const end = jobDate(endAt)
+  if (!start && !end) return 'Schedule not specified'
+  const formatter = new Intl.DateTimeFormat(undefined, {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+  if (start && end) return `${formatter.format(start)} – ${formatter.format(end)}`
+  if (start) return `Starts ${formatter.format(start)}`
+  return `Ends ${formatter.format(end as Date)}`
 }
 
 export function useJobInterface() {
@@ -61,40 +144,44 @@ export function useJobInterface() {
   type JobPreview = JobCard.Card
   type JobProfile = JobCard.Card
 
-  function resolveSubtitle(job: JobView): string {
-    const workplace = (job as any)?.workplace as any | null | undefined
-    return (
-      safeString((job as any)?.workplace_short_address).trim() ||
-      safeString((job as any)?.workplace_formatted_address).trim() ||
-      safeString(workplace?.short_address).trim() ||
-      safeString(job.workplace_label).trim()
-    )
-  }
-
   function map(job: JobView): JobCard.Card {
     const id = safeString(job.id).trim()
-    const workplace = (job as any)?.workplace as any | null | undefined
-    const workplaceId = safeString((job as any)?.workplace_id)
-    const workplaceType = safeString((job as any)?.workplace_type)
+    const companyName = safeString(job.company?.short_name || job.company?.name)
+    const placeName = safeString(job.place?.short_name || job.place?.name)
+    const placeAddress = safeString(job.place?.short_address)
+    const contractTypeLabel = formatJobContractType(job.contract_type)
+    const managementModeLabel = formatJobManagementMode(job.management_mode)
+    const openingsLabel = formatJobOpenings(job.openings_count)
+    const compensationLabel = formatJobCompensation(job.compensation)
+    const scheduleLabel = formatJobSchedule(job.start_at, job.end_at)
 
     return {
       id,
-      to: id ? `/${JobStorage.collection}/${id}` : '',
-
-      imageUrl:
-        safeString((job as any)?.workplace_image_url) ||
-        safeString(workplace?.image_url),
+      to: id ? `/${JobStorage.collection}/${encodeURIComponent(id)}` : '',
+      imageUrl: safeString(job.place?.image_url || job.company?.image_url),
       title: safeString(job.title),
-      subtitle: resolveSubtitle(job),
+      subtitle: [companyName, placeAddress || placeName].filter(Boolean).join(' · '),
       summary: safeString(job.description),
       status: job.status,
       description: safeString(job.description),
-
-      badges: [],
-
-      workplaceId,
-      workplaceType,
+      badges: [
+        contractTypeLabel,
+        ...(job.management_mode === 'managed' ? [managementModeLabel] : []),
+        openingsLabel,
+        compensationLabel,
+      ],
       companyId: safeString(job.company_id),
+      companyName,
+      companyImageUrl: safeString(job.company?.image_url),
+      placeId: safeString(job.place_id),
+      placeName,
+      placeAddress,
+      placeImageUrl: safeString(job.place?.image_url),
+      contractTypeLabel,
+      managementModeLabel,
+      openingsLabel,
+      compensationLabel,
+      scheduleLabel,
     }
   }
 

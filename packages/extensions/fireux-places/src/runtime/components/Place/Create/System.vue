@@ -1,5 +1,5 @@
 <template>
-  <!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: compose defaults, optional brand, and review steps. -->
+  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: compose sparse colours into the existing Brand step. -->
   <section
     data-onboarding-family="place"
     :data-onboarding-step="activeStepId || undefined"
@@ -47,7 +47,11 @@
         :image-url="draft.image_url || ''"
         :image-file="imageFile"
         :uploading="pending"
+        :image-editable="canEditImage"
+        :brand-palette="brandPalette"
+        :palette-editable="canEditBrandPalette"
         @image-selected="setImageFile"
+        @update:brand-palette="setBrandPalette"
       />
 
       <PlaceCreateReview
@@ -58,6 +62,7 @@
         :currency-code="currencyCode"
         :timezone="timezone"
         :logo-staged="Boolean(imageFile)"
+        :brand-palette="brandPalette"
       />
 
       <UAlert
@@ -110,6 +115,9 @@ const emit = defineEmits<{
 const {
   activeStepId,
   back,
+  brandPalette,
+  canEditBrandPalette,
+  canEditImage,
   clearSelection,
   completion,
   canConfigure,
@@ -128,6 +136,7 @@ const {
   progress,
   selectPlace,
   setCurrencyCode,
+  setBrandPalette,
   setImageFile,
   setTimezone,
   selectionError,

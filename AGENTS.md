@@ -23,6 +23,8 @@ Effective: 2026-07-20
 <!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: record product-neutral immutable facts and domain-owned producers. -->
 <!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: record shared selected-target chrome and guarded outcome-only target presentation. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: record family-owned target authority and atomic root/App-support onboarding. -->
+<!-- Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: record the named public Demo World consumer. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: record one Agent-owned, Company/Place-linked contract across Misebox and Werkbox. -->
 
 ## Current Documentation State
 
@@ -184,18 +186,28 @@ Generated-artifact containment is controlled by `scripts/guards/generated-artifa
 - Those artifacts must remain ignored and untracked; the generated-artifacts guard checks the Git index.
 - Use `pnpm pre-guard-clean` when an intentionally artifact-free filesystem is needed. Do not require it merely to validate authored source shape.
 
-Demo Data shape is controlled by `scripts/guards/demo-data.mjs`.
+Demo World shape is controlled by `scripts/guards/demo-data.mjs`.
 
-- Demo Data is optional, read-only console data. It is not public content, a
-  dev preview, a test fixture, a simulation database, or storage authority.
+- Demo World is optional, deterministic, read-only scenario data. It is never
+  live public-content authority, a dev fixture, test data, a simulation
+  database, or storage authority.
 - Reusable Demo modules live under their owning package `src/runtime/demo`;
   app-only Demo modules live under the owning project `app/demo`.
-- Console composable adapters load Demo modules with dynamic imports through
+- Console composable adapters load Demo modules lazily through
   `useConsoleDemoData`. An inactive source must not import or evaluate Demo.
+- A project may also expose one named Product Demo adapter under
+  `app/composables/product-demo/use*ProductDemo.ts`. It may dynamically compose
+  that project's Demo World and package-owned Demo Worlds; it must not import
+  another project's fixtures. Public Product Demo pages live only under the
+  reserved `app/pages/demo` route namespace and consume that adapter rather
+  than importing fixtures directly.
 - Demo modules follow current real models and record shapes. Change or cull a
   stale fixture; never add compatibility or runtime fallback for it.
 - Demo modules remain local and pure: no Firestore, Storage, Firebase Admin,
   server, public-adapter, or mutation value dependencies.
+- Arbitrary runtime imports of Demo modules remain forbidden. Test,
+  simulation, and live storage stay separate from both Console Demo Data and
+  Product Demo presentation.
 
 ## Runtime Package Spine
 
@@ -264,7 +276,9 @@ and creates a deterministic `gross_sale` FinancialFact. `gross_sale` is
 deliberate because current Order truth does not split VAT or prove net revenue.
 Payment receipt is a separate future fact and must not be inferred from Sale.
 Supplier catalogue prices, Property values, Portfolio rent fields, and FireUX
-Project identity are not dated financial facts.
+Project identity are not dated financial facts. Job compensation reuses the
+validated `FinancialMoney` primitive, but it is a mutable offer term and does
+not create a FinancialFact.
 
 Raw FinancialFacts remain server-only until a bounded reporting projection has
 an explicit access and query contract. P&L and other reports are derived views,
@@ -403,6 +417,17 @@ Allowed child buckets are:
 Do not place console operation folders inside Firestore stacks. Do not add Firestore buckets named `runtime-*`, `facade`, `stack`, `manager`, `processor`, or `handler`.
 
 Known boring entity stack examples include kitchen, supplier, product, place, company, blog, property, portfolio, ingredient, recipe, dish, menu, translation, job, task.
+
+Job has one shared root contract in Misebox and Werkbox. Its explicit
+Agent/User `owner_id` is mutation authority; `created.by` is audit-only. Every
+root stores required canonical `company_id` and `place_id` references,
+product-neutral category, contract and management axes, openings, optional
+Finance-shaped compensation, schedule, lifecycle, and stamps. App configuration
+may choose categories and presentation copy only; it must not introduce a
+workplace identity, Kitchen materializer, or alternate Job schema. Public Job
+indexes/details use the exact root validator plus bounded Company/Place joins.
+Professional Experience Place materialization is a separate profile concern
+and must never participate in Job creation or identity.
 
 Every `defineFireuxEntity` declaration states four separate contracts:
 `identity`, `authority`, `appSupport`, and `publicRead`. `identity: 'root'`

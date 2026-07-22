@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-22 12:20 CEST — Product Demo pass: let embedded Menu presentations suppress route-owned exit chrome. -->
 <template>
   <header
     class="menu-identity"
@@ -5,7 +6,7 @@
   >
     <div class="menu-identity__copy">
       <MenuClose
-        v-if="!isKioskMenu"
+        v-if="showExit && !isKioskMenu"
         class="menu-identity__close"
         :aria-label="exitLabel"
         :kind="exitKind"
@@ -74,6 +75,7 @@ const props = withDefaults(defineProps<{
   imageShade?: 'light' | 'dark' | 'none'
   imageUrl?: string
   logoImageUrl?: string
+  showExit?: boolean
   wordmarkImageUrl?: string
 }>(), {
   identityKind: 'kitchen-menu',
@@ -85,6 +87,7 @@ const props = withDefaults(defineProps<{
   imageShade: 'none',
   imageUrl: '',
   logoImageUrl: '',
+  showExit: true,
   wordmarkImageUrl: '',
 })
 const {

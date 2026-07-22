@@ -1,7 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-20
-// usage_note: enforces owner-local, console-only, deferred, read-only Demo Data.
+// last_used: 2026-07-22
+// usage_note: enforces owner-local, deferred, read-only Demo World consumers.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: lock fixture ownership and lazy console consumption.
+// Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: admit one named project adapter and the public route namespace.
 // FILE: scripts/guards/demo-data.mjs
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -72,6 +73,12 @@ function canonicalDemoRoot(relativePath) {
     /^(projects\/[^/]+\/[^/]+\/app\/demo)(?:\/|$)/
   )
   return projectMatch?.[1] ?? null
+}
+
+function isProductDemoRouteDirectory(relativePath) {
+  return /^(projects\/[^/]+\/[^/]+\/app\/pages\/demo)(?:\/|$)/.test(
+    relativePath
+  )
 }
 
 function ownerRoot(relativePath) {
@@ -327,6 +334,22 @@ function isConsoleAdapter(relativePath) {
   )
 }
 
+function isProductDemoAdapter(relativePath) {
+  return /^projects\/[^/]+\/[^/]+\/app\/composables\/product-demo\/use(?:[A-Z][A-Za-z0-9]*)?ProductDemo\.(?:js|ts)$/.test(
+    relativePath
+  )
+}
+
+function productDemoMayLoad(importer, resolved) {
+  if (!resolved || !canonicalDemoRoot(resolved.relativePath)) return false
+
+  const importerOwner = ownerRoot(importer)
+  if (!importerOwner?.startsWith('projects/')) return false
+  if (resolved.owner === importerOwner) return true
+
+  return Boolean(resolved.owner?.startsWith('packages/'))
+}
+
 function isForbiddenDemoValueModule(specifier) {
   return FORBIDDEN_DEMO_VALUE_MODULES.some(
     (moduleName) =>
@@ -336,7 +359,7 @@ function isForbiddenDemoValueModule(specifier) {
 
 function formatViolations(violations) {
   return [
-    '[guard] ❌ Demo Data Spine violations:',
+    '[guard] ❌ Demo World Spine violations:',
     ...violations
       .sort((left, right) =>
         `${left.file}:${left.line ?? 0}:${left.code}`.localeCompare(
@@ -350,7 +373,8 @@ function formatViolations(violations) {
     '',
     '[guard] Fix:',
     '- Keep reusable Demo modules under their package src/runtime/demo; keep app-only Demo modules under app/demo.',
-    '- Load Demo only through a dynamic import inside an owning console adapter.',
+    '- Load Demo through a dynamic import inside an owning console adapter or a project app/composables/product-demo/use*ProductDemo adapter.',
+    '- Keep public Product Demo pages under the reserved project app/pages/demo route namespace; pages must consume the named adapter, not fixtures directly.',
     '- Keep Demo modules pure and read-only; import real model/types, never public/server/admin/mutation or Firebase/Storage runtime dependencies.',
     '- Keep test, simulation, and dev fixture families outside Demo.',
   ].join('\n')
@@ -361,14 +385,36 @@ export async function run(ctx) {
   const { demoDirectories, files } = walkRepository(repoRoot)
   const owners = packageOwners(repoRoot)
   const violations = []
+  const productDemoAdapters = new Map()
+
+  for (const file of files) {
+    const relativeFile = repoRelative(repoRoot, file)
+    if (!isProductDemoAdapter(relativeFile)) continue
+
+    const owner = ownerRoot(relativeFile)
+    if (!owner) continue
+    const existing = productDemoAdapters.get(owner)
+    if (existing) {
+      violations.push({
+        code: 'product-demo-adapter',
+        file: relativeFile,
+        message: `Product Demo must use one named project adapter; ${existing} already owns this project boundary.`,
+      })
+      continue
+    }
+    productDemoAdapters.set(owner, relativeFile)
+  }
 
   for (const directory of demoDirectories) {
     const relativeDirectory = repoRelative(repoRoot, directory)
-    if (!canonicalDemoRoot(relativeDirectory)) {
+    if (
+      !canonicalDemoRoot(relativeDirectory)
+      && !isProductDemoRouteDirectory(relativeDirectory)
+    ) {
       violations.push({
         code: 'owner-path',
         file: relativeDirectory,
-        message: 'Demo is outside an owning package src/runtime/demo or project app/demo.',
+        message: 'Demo is outside an owning package src/runtime/demo, project app/demo, or project app/pages/demo route namespace.',
       })
     }
   }
@@ -434,6 +480,7 @@ export async function run(ctx) {
     }
 
     for (const imported of imports) {
+      if (imported.typeOnly) continue
       if (!hasDemoSegment(imported.specifier)) continue
 
       if (imported.kind === 'static') {
@@ -447,20 +494,38 @@ export async function run(ctx) {
       }
 
       const boundary = forbiddenBoundary(relativeFile)
-      if (boundary || !isConsoleAdapter(relativeFile)) {
+      const consoleAdapter = isConsoleAdapter(relativeFile)
+      const productDemoAdapter = isProductDemoAdapter(relativeFile)
+      if (boundary || (!consoleAdapter && !productDemoAdapter)) {
         violations.push({
-          code: 'console-only',
+          code: 'consumer-boundary',
           file: relativeFile,
           line: imported.line,
           message: boundary
             ? `The ${boundary} boundary must not load Demo (${imported.specifier}).`
-            : `Dynamic Demo imports belong only in console composable adapters (${imported.specifier}).`,
+            : `Dynamic Demo imports belong only in console composable adapters or a named project Product Demo adapter (${imported.specifier}).`,
         })
         continue
       }
 
       const resolved = resolveImport(relativeFile, imported.specifier, owners)
-      if (!resolved || resolved.owner !== ownerRoot(relativeFile)) {
+      if (productDemoAdapter) {
+        if (!productDemoMayLoad(relativeFile, resolved)) {
+          violations.push({
+            code: 'product-demo-owner',
+            file: relativeFile,
+            line: imported.line,
+            message: `Product Demo adapters may load only their project's Demo World or package-owned Demo Worlds (${imported.specifier}).`,
+          })
+        }
+        continue
+      }
+
+      if (
+        !resolved
+        || !canonicalDemoRoot(resolved.relativePath)
+        || resolved.owner !== ownerRoot(relativeFile)
+      ) {
         violations.push({
           code: 'cross-owner',
           file: relativeFile,
@@ -473,5 +538,5 @@ export async function run(ctx) {
 
   if (violations.length) throw new Error(formatViolations(violations))
 
-  console.log('[guard] ✅ Demo Data is owner-local, deferred, console-only, and read-only')
+  console.log('[guard] ✅ Demo World is owner-owned, deferred, narrowly consumed, and read-only')
 }

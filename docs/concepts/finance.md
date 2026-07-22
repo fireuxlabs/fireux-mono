@@ -2,8 +2,9 @@ Finance map
 
 <!-- Concurrent edit — 2026-07-21 16:41 CEST — FireUX Finance pass: map product-neutral facts, domain producers, and derived reporting. -->
 <!-- Concurrent edit — 2026-07-21 17:11 CEST — Kitchen Finance surface: map the first bounded gross-sales projection. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: classify validated compensation as an offer term, not a fact. -->
 
-Updated: 2026-07-21
+Updated: 2026-07-22
 Ref: 1e55eece7
 Role: map, not canon
 
@@ -71,6 +72,9 @@ Not producers yet:
 
 - Supplier catalogue `pack_cost_minor` is an offer term, not a purchase,
   receipt, invoice, inventory-consumption, or expense fact.
+- Job compensation reuses `FinancialMoney` plus an explicit hour/shift/day
+  unit, but remains a mutable offer term. Publishing or closing a Job does not
+  emit a FinancialFact.
 - Property values and Portfolio rent fields are mutable terms, not dated facts.
 - Core Project is FireUX control-plane identity, not a business-project finance
   lifecycle.

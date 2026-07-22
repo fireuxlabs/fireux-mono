@@ -1,5 +1,6 @@
 <!-- Concurrent edit — 2026-07-21 14:59 CEST — Cleanbox to Werkbox migration: record the durable Werkbox ownership and trusted Firebase boundary. -->
 <!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: point Werkbox at the composed Rules ownership boundary. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: record parity with Misebox and categories-only product delta. -->
 # Werkbox GPT Context
 
 This is the scoped context entrypoint for work on Werkbox inside
@@ -49,6 +50,10 @@ remembered implementations are not authority.
 - Cleaning is represented by a neutral category identifier such as
   `cleaning`; do not encode `cleanbox` or `werkbox` into reusable Job/category
   identity.
+- Werkbox and Misebox use the same Agent-owned Job root, canonical Company and
+  Place references, trusted authoring boundary, exact validation, and bounded
+  public projection. Category and presentation copy are the only accepted App
+  deltas; Werkbox has no separate Place-mode Job model.
 - Hospitality-specific composition remains under Misebox. Do not make Werkbox
   an umbrella for Kitchen/Menu behavior or move those authorities here.
 - The Werkbox logical ecosystem currently uses the existing Firebase project

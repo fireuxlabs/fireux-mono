@@ -1,5 +1,5 @@
 Pages spine map
-Updated: 2026-07-21
+Updated: 2026-07-22
 Ref: b020f805e
 Role: map, not canon
 
@@ -10,6 +10,7 @@ Role: map, not canon
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map biography editing and rendering across shared User routes. -->
 <!-- Concurrent edit — 2026-07-21 17:10 CEST — Dashboard Family pass: map capability-backed route and admin-surface discovery boundaries. -->
 <!-- Concurrent edit — 2026-07-21 20:36 CEST — Profile visibility pass: map independent public identity and owner-private account sections in the shared Profile hub. -->
+<!-- Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: reserve the public /demo route family. -->
 
 Purpose:
 Map how route pages should be built and where consensus is still forming.
@@ -103,7 +104,11 @@ Index page notes:
 - `XCollectionManager` should fetch the root/public entity collection itself.
 - Scoped child routes should use named scoped surfaces, not root collection managers with scoped override data.
 - Console indexes render `ConsoleXIndex`.
-- Dev/demo pages should live under `/dev`, not ad hoc `/demo`.
+- Internal dev previews and component labs live under `/dev`.
+- `/demo` is reserved for a project's public Product Demo index and its guided
+  child demonstrations. These pages are project-owned, remain thin, and use
+  the named Product Demo adapter described in `demo-data.md`; they never read
+  Console fixtures directly or present Demo World as live public truth.
 
 Detail page notes:
 

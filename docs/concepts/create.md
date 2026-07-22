@@ -3,7 +3,8 @@ Create spine map
 <!-- Concurrent edit — 2026-07-21 16:00 CEST — Place onboarding reconciliation: record staged onboarding over trusted ensure. -->
 <!-- Concurrent edit — 2026-07-21 16:38 CEST — Place onboarding completion: record confirmed defaults and optional canonical branding. -->
 <!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: record composed Place onboarding and atomic console-target activation. -->
-Updated: 2026-07-21
+<!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: record sparse brand-colour inheritance and later root editing. -->
+Updated: 2026-07-22
 Ref: b020f805e
 Role: map, not canon
 
@@ -199,21 +200,24 @@ the final mutation, and completion routing.
 
 The Place doorway follows this composition:
 - `/places` is the browse directory and links to `/places/create`.
-- `/places/create` stages Find, Confirm identity, Local defaults, optional Logo,
+- `/places/create` stages Find, Confirm identity, Local defaults, optional Brand,
   and Review without creating Kitchen, Property, or another Place-backed role.
 - `POST /api/places/onboarding/preview` is authenticated and returns only the
   stored or provider-derived currency/timezone suggestions required by the
   funnel. Currency and IANA timezone remain explicit user confirmations.
 - `POST /api/places/onboarding/complete` accepts only Place ID, confirmed
-  currency, confirmed timezone, and an optional URL bound to that Place's
-  canonical Storage avatar path. Missing Google Place identity is independently
-  verified and created with the defaults in one transaction.
+  currency, confirmed timezone, an optional URL bound to that Place's canonical
+  Storage avatar path, and optional validated primary/secondary brand colours.
+  Missing Google Place identity is independently verified and created with the
+  defaults in one transaction.
 - A current App admin or the same current-App creator may fill missing defaults
   on an incomplete existing Place. The onboarding seam never overwrites stored
   defaults; unrelated existing Places remain reuse-only.
 - An optional staged logo uploads after the required Place transaction to one
   stable Storage path, then the same completion boundary fills only a missing
   image. Retrying replaces that object instead of creating orphaned file names.
+- Brand colours stay sparse. Existing Place colours are preserved; omitting a
+  colour leaves the shared FireUX default available at resolution time.
 - `POST /api/places/ensure` remains the strict ID-only idempotent seam for
   non-interactive callers that only need canonical Place identity.
 - Provider and server authority are never replaced by browser-authored Place
@@ -224,8 +228,9 @@ The Kitchen doorway adds one domain layer over that Place funnel:
   `KitchenCreateSystem`; route mode changes chrome and destination, not entity
   truth.
 - A new Kitchen first completes or reuses canonical Place onboarding. The
-  Kitchen step then asks only for an optional Kitchen name override and a
-  review. Blank means inherit the Place name.
+  Kitchen steps then ask for an optional name and optional colour overrides.
+  Blank identity inherits the Place name; unchanged colours inherit the Place
+  palette and are not copied into Kitchen.
 - `useKitchenOnboarding` owns the Kitchen draft, validation, preview, and final
   completion over domain-free `useOnboarding` mechanics.
 - `POST /api/kitchens/onboarding/preview` resolves an explicit Place or
@@ -239,6 +244,9 @@ The Kitchen doorway adds one domain layer over that Place funnel:
   contact, currency, timezone, and business hours remain on the linked Place;
   Menu, ordering, payment, Chef-profile, and publication setup are not
   onboarding side effects.
+- Later Kitchen theme edits use the same sparse Place-to-Kitchen ownership:
+  the trusted writer updates the canonical Kitchen root, never App access
+  support.
 - Tenant Apps can onboard only their configured Kitchen targets. A new draft
   has no public slug until the canonical identity editor validates and claims
   one.

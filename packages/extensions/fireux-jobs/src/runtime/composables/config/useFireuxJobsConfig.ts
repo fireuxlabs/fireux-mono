@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: read category and workplace configuration.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: expose category as the only App-configured Job delta.
 import { useRuntimeConfig } from '#imports'
 import {
   defaultFireuxJobsConfig,
@@ -24,14 +25,10 @@ export function useFireuxJobsConfig(): Readonly<FireuxJobsConfig> {
   const raw = (fireux.jobs ?? {}) as Record<string, any>
 
   const categories = toStringArray(raw.categories)
-  const workplaces = toStringArray(raw.workplaces)
-  const defaultWorkplaceType = String(raw.defaultWorkplaceType ?? '').trim()
 
   const config: FireuxJobsConfig = {
     ...defaultFireuxJobsConfig,
     categories,
-    workplaces,
-    ...(defaultWorkplaceType ? { defaultWorkplaceType } : {}),
   }
 
   return Object.freeze(config)

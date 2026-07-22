@@ -2,41 +2,27 @@
 // Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: add categories and managed job type.
 // Concurrent edit — 2026-07-21 12:53 CEST — Public Jobs projection: declare the completed bounded public-read contract.
 // Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make Agent authority, Place identity, scheduling, and compensation explicit.
 
-import {
-  FireuxRootScope,
-  type FireuxRootVisibility,
-  type FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
+import type {
+  FireuxRootVisibility,
+  FireuxStamped,
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
-
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends null ? null
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
 
 /**
  * Current entity map: docs/concepts/entities.md
  *
  * Family: Domain Root
- * Storage: root-first canonical model
+ * Storage: one private canonical root in the owning App database
  * Root path: /jobs/<jobId>
- * Console use: consoles may create or manage jobs, but the job remains one root entity by default
- * Root scope: filtered by source app / ecosystem / owner fields rather than app-local duplication
- *
- * Decision note:
- * - Job is root canonical truth even when a workplace is linked to it.
- * - Tenant and ecosystem job pages should filter the same root records through shared root scoping fields.
- * - If a console later needs real scoped stored job state, add it intentionally rather than by symmetry.
- * - If that changes, update the models README first, then this file.
+ * Public read: bounded server projection only
+ * Authority: the Agent/User named by `owner_id`; audit stamps never grant access
  */
 export const JobStorage = {
-  shape: 'public/root',
+  shape: 'root',
   path: 'jobs/{jobId}',
   collection: 'jobs',
   idParam: 'jobId',
@@ -54,119 +40,128 @@ export const JobEntity = defineFireuxEntity({
   console: false,
   root: JobStorage.path,
   notes: [
-    'Category and workplace identifiers are product-neutral.',
+    'The owning Agent/User is explicit in root owner scope; created.by remains audit-only.',
+    'Company and canonical Place relationships are stored by id without product-specific workplace identity.',
     'Public index and exact detail reads use a bounded server projection; browsers never receive raw Job roots.',
   ],
 })
 
-export type JobStatus = 'open' | 'closed'
+export const JOB_STATUSES = ['open', 'closed'] as const
+export type JobStatus = (typeof JOB_STATUSES)[number]
 
-/**
- * Job scheduling type
- *
- * - einsatz: short-term deployment / cover shift (temporary, often urgent)
- * - managed: platform-managed deployment (routing / staffing flow managed by the platform)
- * - fixed: fixed-term role with known start + end date (contract window)
- * - permanent: ongoing role with no planned end date
- */
-export type JobType = 'einsatz' | 'managed' | 'fixed' | 'permanent'
+/** Contract duration. Platform management is a separate axis. */
+export const JOB_CONTRACT_TYPES = [
+  'temporary',
+  'fixed_term',
+  'permanent',
+] as const
+export type JobContractType = (typeof JOB_CONTRACT_TYPES)[number]
 
-/**
- * Pay rate unit (display + filtering)
- * Keep simple; presentation can map this to labels like "per hour".
- */
-export type JobPayUnit = 'hour' | 'shift' | 'day'
+/** Whether the employer or the platform manages the placement. */
+export const JOB_MANAGEMENT_MODES = ['direct', 'managed'] as const
+export type JobManagementMode = (typeof JOB_MANAGEMENT_MODES)[number]
 
-/**
- * Workplace type (ecosystem-configured)
- * Keep flexible: each app/ecosystem declares allowed workplace types.
- *
- * Examples include 'place', 'vehicle', 'warehouse', or 'vessel'.
- */
-export type WorkplaceType = string
+export const JOB_PAY_UNITS = ['hour', 'shift', 'day'] as const
+export type JobPayUnit = (typeof JOB_PAY_UNITS)[number]
 
-// 🔑 Runtime canonical Job (source of truth)
+export type JobCompensation = FinancialMoney & {
+  unit: JobPayUnit
+}
+
+export type JobVisibility = Extract<FireuxRootVisibility, 'app' | 'public'>
+
+export type Job = {
+  id: string
+  source_app_id: string
+  source_ecosystem_id: string
+  owner_type: 'user'
+  owner_id: string
+  visibility: JobVisibility
+
+  /** Employer represented in this posting. */
+  company_id: string
+
+  /** Canonical work location. Place owns all shared location truth. */
+  place_id: string
+
+  /** Product-neutral category configured by the consuming App. */
+  category_id: string
+
+  contract_type: JobContractType
+  management_mode: JobManagementMode
+  openings_count: number
+
+  /** Null means compensation is not publicly disclosed. */
+  compensation: JobCompensation | null
+
+  /** Optional scheduling window; fixed-term Jobs require both values. */
+  start_at: FirebaseTimestamp | null
+  end_at: FirebaseTimestamp | null
+
+  title: string
+  description: string
+  status: JobStatus
+
+  created: FireuxStamped['created'] & {
+    at: FirebaseTimestamp
+    by: string
+    app_id: string
+  }
+  updated: FireuxStamped['updated'] & {
+    at: FirebaseTimestamp
+    by: string
+  }
+}
+
+// Runtime defaults describe a newly created private Job. Trusted writers still
+// derive identity, scope, authority, visibility, lifecycle, and stamps.
 export const JobModel = {
-  /** Firestore document ID */
-  id: '' as string,
-  ...FireuxRootScope,
-  visibility: 'ecosystem' as FireuxRootVisibility,
-
-  /**
-   * Employer reference (billing / ownership)
-   * One company can own many workplaces.
-   */
-  company_id: '' as string,
-
-  /** Product-neutral category identifier configured by the consuming app. */
-  category_id: '' as string,
-
-  /**
-   * Work site reference (value optional)
-   *
-   * - workplace_type: string discriminator (configured by the app)
-   * - workplace_id: fixed site identity (safe to fetch + hydrate)
-   * - workplace_label: fallback for mobile/variable locations (ships, food trucks)
-   *
-   * Rules:
-   * - workplace_type is always present as a field ('' means unset/unknown)
-   * - workplace_id is always present as a field ('' means "no fixed workplace")
-   */
-  workplace_type: '' as WorkplaceType,
-  workplace_id: '' as string,
-  workplace_label: '' as string,
-
-  /** Scheduling type */
-  job_type: 'permanent' as JobType,
-
-  /** Hiring intent (crew size / openings) */
-  openings_count: 1 as number,
-
-  /** Pay (simple + filterable) */
-  pay_currency: 'CHF' as string,
-  pay_rate: 0 as number,
-  pay_unit: 'hour' as JobPayUnit,
-
-  /**
-   * Time window (value optional)
-   * - For einsatz/fixed you can set start/end
-   * - For permanent, leave as {}
-   *
-   * NOTE: Multi-shift selection should be a separate collection keyed by job_id
-   * (not nested arrays on Job).
-   */
-  start_at: {} as FirebaseTimestamp,
-  end_at: {} as FirebaseTimestamp,
-
-  /** Core job content */
-  title: '' as string,
-  description: '' as string,
-
-  /** Lifecycle */
-  status: 'open' as JobStatus,
-
-  /** Authored (FireuxStamped) */
+  id: '',
+  source_app_id: '',
+  source_ecosystem_id: '',
+  owner_type: 'user',
+  owner_id: '',
+  visibility: 'app',
+  company_id: '',
+  place_id: '',
+  category_id: '',
+  contract_type: 'permanent',
+  management_mode: 'direct',
+  openings_count: 1,
+  compensation: null,
+  start_at: null,
+  end_at: null,
+  title: '',
+  description: '',
+  status: 'open',
   created: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
-    app_id: '' as FireuxStamped['created']['app_id'],
+    by: '',
+    app_id: '',
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: '' as FireuxStamped['created']['by'],
+    by: '',
   },
-} as const
+} as const satisfies Job
 
 export const Job = JobModel
 
-export type Job = WidenLiteral<typeof JobModel>
-
-/**
- * Create / update helpers
- */
-export type JobCreateInput = Omit<
+export type JobCreateInput = Pick<
   Job,
-  'created' | 'updated' | 'id'
+  | 'company_id'
+  | 'place_id'
+  | 'category_id'
+  | 'contract_type'
+  | 'management_mode'
+  | 'openings_count'
+  | 'compensation'
+  | 'start_at'
+  | 'end_at'
+  | 'title'
+  | 'description'
 >
 
-export type JobUpdateInput = Partial<Omit<Job, 'id' | 'created' | 'updated'>>
+export type JobUpdateInput = Partial<
+  JobCreateInput & Pick<Job, 'status'>
+>

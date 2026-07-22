@@ -5,8 +5,9 @@ Collection manager map
 <!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: map the guarded public-card snapshot sync. -->
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: move Kitchen browse to a fail-closed bounded Place projection. -->
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access-record joins separately from presentation overlays. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: move Jobs from copied workplace snapshots to bounded Company/Place projection. -->
 
-Updated: 2026-07-20
+Updated: 2026-07-22
 Ref: 4c0a1c7ad
 Role: map, not canon
 
@@ -67,7 +68,6 @@ Root Simple Collection Manager members:
 Root Synced Snapshot Collection Manager members:
 
 - `Company` carries public Place snapshot fields copied onto the Company row.
-- `Job` carries public workplace snapshot fields copied onto the Job row.
 - `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
 
 Root Projected Collection Manager members:
@@ -82,12 +82,15 @@ Root Projected Collection Manager members:
 - `User` uses a public users API so raw identity/private user fields do not become public browse data.
 - `Chef`, `Driver`, `Agent`, and `Professional` use domain-owned public APIs
   that join their allowlisted profile fields to canonical User identity by uid.
+- `Job` uses its bounded public API to exact-validate open/public roots and join
+  safe Company and canonical work-Place display truth.
 - `Customer` is app-private and is not a root public collection-manager member.
 
 Snapshot ownership rule:
 
 - Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
-- Domain parents may cascade into their domain children. Workplace/job sync belongs to the jobs domain.
+- Domain parents may cascade into their domain children. Job roots do not copy
+  Company or Place display snapshots; their public projection owns the joins.
 - `User` is the only stored public identity. Profile writes and sync scripts must not copy it into root or app profile rows.
 - Public profile collection presentation receives the profile and canonical User
   as separate DTO members from a server-side uid join. Exact detail reads remain
@@ -224,13 +227,13 @@ Root Projected Collection Managers
 | `Driver`       | `/api/public/drivers`                                | Server profile/User join  | Kitchen-owned allowlist excludes AppDriver contact, tender, and Kitchen grant state.                                        |
 | `Agent`        | `/api/public/agents`                                 | Server profile/User join  | Jobs-owned allowlist includes deliberate public business contacts only.                                                     |
 | `Professional` | `/api/public/professionals`                          | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                |
+| `Job`          | `/api/public/jobs`                                   | Server Company/Place join | Exact open/public roots join bounded employer and work-location display truth; raw ids, owner, source, and stamps stay private. |
 
 Root Synced Snapshot Collection Managers
 
 | Manager   | Snapshot source                     | Direction | Current note                                                |
 | --------- | ----------------------------------- | --------- | ----------------------------------------------------------- |
 | `Company` | Place by same id                    | Up        | Public Place card fields are copied onto root Company rows. |
-| `Job`     | Kitchen/workplace by `workplace_id` | Side/up   | Public workplace card fields are copied onto root Job rows. |
 
 Scoped/provided collection surfaces
 

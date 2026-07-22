@@ -1,5 +1,6 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/components/Jobs/Create/Preview.vue -->
 <!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: preview categories and generic workplaces. -->
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: preview canonical Place, contract, schedule, and compensation truth. -->
 <!-- NOTE for Copilot:
   - This is the PREVIEW surface for job creation.
   - It renders the SAME shape as useJobCreate().form.
@@ -20,8 +21,14 @@
             <UBadge size="xs" variant="soft" color="primary">{{
               statusLabel
             }}</UBadge>
-            <UBadge v-if="workplaceId" size="xs" variant="soft" color="neutral">
-              Workplace: {{ workplaceId }}
+            <UBadge size="xs" variant="soft" color="neutral">
+              {{ contractTypeLabel }}
+            </UBadge>
+            <UBadge size="xs" variant="soft" color="neutral">
+              {{ managementModeLabel }}
+            </UBadge>
+            <UBadge size="xs" variant="soft" color="neutral">
+              {{ openingsLabel }}
             </UBadge>
             <UBadge v-if="categoryId" size="xs" variant="soft" color="neutral">
               Category: {{ categoryId }}
@@ -50,13 +57,9 @@
         <div class="grid gap-4 md:grid-cols-2">
           <div class="space-y-2">
             <p class="text-xs uppercase tracking-wide text-dimmed">
-              Workplace
+              Location
             </p>
-            <div v-if="workplaceId" class="space-y-1 text-sm text-default">
-              <p class="font-medium">{{ workplaceLabel || workplaceId }}</p>
-              <p class="text-xs text-muted">Type: {{ workplaceType }}</p>
-              <p class="break-all text-xs text-muted">ID: {{ workplaceId }}</p>
-            </div>
+            <PlacePill v-if="placeId" :id="placeId" />
             <p v-else class="text-sm text-default">Not selected</p>
           </div>
           <div class="space-y-2">
@@ -64,6 +67,18 @@
             <CompanyPill v-if="companyId" :id="companyId" />
             <p v-else class="text-sm text-default">Not set</p>
           </div>
+        </div>
+      </div>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <div class="rounded-lg border border-default bg-muted/60 p-4">
+          <p class="text-xs uppercase tracking-wide text-dimmed">Schedule</p>
+          <p class="mt-1 text-sm text-default">{{ scheduleLabel }}</p>
+        </div>
+
+        <div class="rounded-lg border border-default bg-muted/60 p-4">
+          <p class="text-xs uppercase tracking-wide text-dimmed">Compensation</p>
+          <p class="mt-1 text-sm text-default">{{ compensationLabel }}</p>
         </div>
       </div>
 
@@ -80,8 +95,17 @@
 <script setup lang="ts">
 import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
+import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { computed, defineComponent } from 'vue'
 import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/useAgent'
+import {
+  formatJobCompensation,
+  formatJobContractType,
+  formatJobManagementMode,
+  formatJobOpenings,
+  formatJobSchedule,
+} from '../../../composables/fireux/firestore/jobs/utils/view/useJobInterface'
 
 import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'
 
@@ -103,6 +127,29 @@ const CompanyPill = defineComponent({
         size="sm"
       />
     </div>
+    <p v-else class="break-all text-xs text-muted">{{ id }}</p>
+  `,
+})
+
+const PlacePill = defineComponent({
+  props: { id: String },
+  setup(props) {
+    const placeId = computed(() => String(props.id || '').trim())
+    const { place } = usePlaceFetch(placeId)
+    const placeInterface = usePlaceInterface()
+    const placeCard = computed(() => placeInterface.pill(place.value))
+    return { placeCard }
+  },
+  template: `
+    <div v-if="placeCard" class="pill">
+      <UUser
+        :name="placeCard.title"
+        :description="placeCard.subtitle"
+        :avatar="{ src: placeCard.imageUrl, alt: placeCard.title }"
+        size="sm"
+      />
+    </div>
+    <p v-else class="break-all text-xs text-muted">{{ id }}</p>
   `,
 })
 
@@ -117,12 +164,23 @@ const agentCard = computed(() =>
 
 const title = computed(() => props.form.title.trim() || 'Untitled job')
 const description = computed(() => props.form.description.trim())
-const workplaceId = computed(() => props.form.workplace_id.trim())
-const workplaceType = computed(() => props.form.workplace_type.trim())
-const workplaceLabel = computed(() => props.form.workplace_label.trim())
+const placeId = computed(() => props.form.place_id.trim())
 const companyId = computed(() => props.form.company_id.trim())
 const categoryId = computed(() => props.form.category_id.trim())
-const statusLabel = computed(() =>
-  props.form.status === 'closed' ? 'Closed' : 'Open'
+const statusLabel = 'Private draft'
+const contractTypeLabel = computed(() =>
+  formatJobContractType(props.form.contract_type)
+)
+const managementModeLabel = computed(() =>
+  formatJobManagementMode(props.form.management_mode)
+)
+const openingsLabel = computed(() =>
+  formatJobOpenings(props.form.openings_count)
+)
+const compensationLabel = computed(() =>
+  formatJobCompensation(props.form.compensation)
+)
+const scheduleLabel = computed(() =>
+  formatJobSchedule(props.form.start_at, props.form.end_at)
 )
 </script>

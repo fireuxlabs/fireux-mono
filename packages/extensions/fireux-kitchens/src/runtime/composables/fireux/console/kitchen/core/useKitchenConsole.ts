@@ -4,6 +4,7 @@
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: reuse the server-projected root for live selection.
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: share one authenticated target collection and auto-select only projected targets.
 // Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: validate source-aware Kitchen selection from its authoritative outcome.
+// Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: keep projected Menu config and write capability authoritative over App support.
 import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
@@ -40,10 +41,24 @@ const composeConsoleKitchen = (
   publicKitchen: KitchenConsoleEntity | null,
   scoped: KitchenConsoleEntity | null
 ): KitchenConsoleEntity | null => {
-  return composeKitchenScopedSurface(
+  const composed = composeKitchenScopedSurface(
     publicKitchen,
     scoped
   ) as KitchenConsoleEntity | null
+  if (!composed || !publicKitchen) return composed
+
+  const projected = publicKitchen as KitchenConsoleEntity & {
+    menus?: Record<string, unknown>
+  }
+  return {
+    ...composed,
+    ...(projected.menus
+      ? {
+          menus: projected.menus,
+          menu_style: projected.menu_style,
+        }
+      : {}),
+  }
 }
 
 /**
@@ -167,7 +182,9 @@ export function useKitchenConsole() {
   const readOnly = computed(() => consoleRoot.readOnly.value)
   const canWrite = computed(() =>
     !readOnly.value &&
-      targetHasOperator(selectedKitchen.value, normalizeString(uid.value))
+      (kitchenSource.value === 'live'
+        ? selectedPublicKitchen.value?.can_write === true
+        : targetHasOperator(selectedKitchen.value, normalizeString(uid.value)))
   )
   const clearSelectedKitchen = () => clearSelection()
   const selectKitchen = (

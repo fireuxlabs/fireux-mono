@@ -1,3 +1,5 @@
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: resolve Demo MenuItems locally and preserve Dish joins on section detail.
+// Concurrent edit — 2026-07-22 14:08 CEST — Demo route integrity: do not project items for unresolved Menu or MenuSection detail routes.
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { Dish } from '../../../../../../models/kitchen/dish.model'
@@ -14,6 +16,10 @@ import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
 import { useDish } from '../../../../firestore/dish/useDish'
 import { useMenuItemCollection } from '../../../../firestore/menu/fetch/useMenuItemCollection'
 import { useMenuItemMutations } from '../../../../firestore/menu/mutations/useMenuItemMutations'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../../core/useKitchenConsoleDemoData'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown) =>
@@ -41,6 +47,13 @@ export function useKitchenConsoleMenuSection() {
       menuState.sections.value.find((item) => clean(item.id) === sectionId.value) ??
       null
   )
+  const demoData = useKitchenConsoleDemoData(
+    computed(() => menuState.kitchenSource.value === 'demo')
+  )
+  const demoScenario = computed(() => findKitchenConsoleDemoScenario(
+    demoData.data.value,
+    menuState.kitchenId.value
+  ))
   const itemState = useMenuItemCollection(
     menuState.storageKitchenId,
     computed(() => menuState.menu.value ? menuState.menuId.value : ''),
@@ -58,6 +71,25 @@ export function useKitchenConsoleMenuSection() {
     kitchenCollectionPath: menuState.rootCollection,
     databaseId: menuState.databaseId,
   })
+  const items = computed(() =>
+    menuState.kitchenSource.value === 'demo'
+      ? menuState.menu.value && section.value
+        ? demoScenario.value?.menuSections.find(
+            entry => clean(entry.section.id) === sectionId.value
+          )?.items ?? []
+        : []
+      : itemState.items.value
+  )
+  const itemsPending = computed(() =>
+    menuState.kitchenSource.value === 'demo'
+      ? demoData.pending.value
+      : itemState.pending.value
+  )
+  const itemsCollectionPath = computed(() =>
+    menuState.kitchenSource.value === 'demo'
+      ? `demo/kitchens/${menuState.kitchenId.value}/menus/${menuState.menuId.value}/sections/${sectionId.value}/items`
+      : itemState.collectionPath.value
+  )
   const dishesById = computed(() => {
     const map = new Map<string, Dish>()
     dishState.dishes.value.forEach((dish) => {
@@ -67,7 +99,7 @@ export function useKitchenConsoleMenuSection() {
     return map
   })
   const itemRows = computed<MenuSectionItemRow[]>(() =>
-    itemState.items.value.map((item) => {
+    items.value.map((item) => {
       const dish = dishesById.value.get(clean(item.dish_id)) ?? null
       return {
         id: clean(item.id),
@@ -88,17 +120,17 @@ export function useKitchenConsoleMenuSection() {
     updateDish: dishMutations.updateDish,
     sectionId,
     section,
-    items: itemState.items,
+    items,
     itemRows,
-    itemsPending: itemState.pending,
-    itemsCollectionPath: itemState.collectionPath,
+    itemsPending,
+    itemsCollectionPath,
     dishes: dishState.dishes,
     dishesById,
     debug: computed(() => ({
       ...menuState.debug.value,
       sectionId: sectionId.value,
       hasSection: Boolean(section.value),
-      itemsCount: itemState.items.value.length,
+      itemsCount: items.value.length,
     })),
   }
 }

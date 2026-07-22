@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-22 12:20 CEST — Product Demo pass: delegate structured Browse rendering to the reusable Catalogue layer. -->
 <template>
   <article
     class="fireux-menu-detail menu-browse"
@@ -68,52 +69,13 @@
         </p>
       </template>
 
-      <div
+      <MenuBrowseCatalogue
         v-else-if="renderKind === 'structured' && detailMenu"
-        class="menu-browse__body"
-      >
-        <MenuSectionNav
-          v-if="browseSections.length > 1"
-          :sections="browseSections"
-        />
-
-        <div
-          v-if="browseSections.length"
-          class="menu-browse__sections menu-catalogue-sections"
-        >
-          <section
-            v-for="section in browseSections"
-            :id="section.anchor"
-            :key="section.anchor"
-            :aria-labelledby="section.headingId"
-            class="menu-browse__section menu-catalogue-section"
-          >
-            <h2
-              :id="section.headingId"
-              class="menu-catalogue-section__heading"
-              tabindex="-1"
-            >
-              {{ section.label }}
-            </h2>
-
-            <div class="menu-browse__items">
-              <MenuBrowseItem
-                v-for="(item, itemIndex) in section.items"
-                :key="item.id"
-                :accessibility-id="`${section.anchor}-item-${itemIndex + 1}`"
-                :currency-code="currencyCode"
-                :currency-format="currencyFormat"
-                :item="item"
-                :show-currency="showCurrency"
-              />
-            </div>
-          </section>
-        </div>
-
-        <p v-else class="menu-browse__state" role="status">
-          No menu items are published yet.
-        </p>
-      </div>
+        :currency-code="currencyCode"
+        :currency-format="currencyFormat"
+        :sections="detailMenu.content.sections"
+        :show-currency="showCurrency"
+      />
     </template>
 
     <p v-else class="menu-browse__state" role="alert">
@@ -133,7 +95,6 @@ import {
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
 import { guestMenuSurfaceOptions } from '../../../utils/menu-context'
-import { menuSectionLinks } from '../../../utils/menu-section-links'
 
 const props = withDefaults(defineProps<{
   menuId: string
@@ -212,9 +173,6 @@ const surfaceOptions = computed(() => guestMenuSurfaceOptions({
   routeScope: menuRouteScope.value,
   activeContext: 'generic',
 }))
-const browseSections = computed(() =>
-  menuSectionLinks(detailMenu.value?.content.sections ?? [])
-)
 const documentUrl = computed(() => {
   const file = documentMenu.value?.file
   if (!file?.storage_path || !menuId.value) return file?.url || ''
@@ -276,19 +234,4 @@ useSeoMeta({
   color: var(--menu-text);
 }
 
-.menu-browse__body {
-  display: grid;
-  gap: clamp(calc(var(--spacing) * 8), 5vw, calc(var(--spacing) * 16));
-  width: min(100%, 68rem);
-  margin: 0 auto;
-  text-align: left;
-}
-
-.menu-browse__items {
-  display: grid;
-}
-
-.menu-browse__items {
-  border-top: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
-}
 </style>

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: expose Kitchen identity without treating legacy Kitchen currency as shared truth.
+// Concurrent edit — 2026-07-22 12:44 CEST — Kitchen palette console: expose a portable authoritative target refresh after trusted writes.
 import { computed } from 'vue'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenConsole } from '../core/useKitchenConsole'
@@ -8,6 +9,7 @@ import {
 
 export function useKitchenConsoleIdentity() {
   const {
+    targets,
     selection,
     runtime,
     actions,
@@ -19,6 +21,9 @@ export function useKitchenConsoleIdentity() {
   const source = runtime.source
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
+  const refreshTargets: () => Promise<void> = async () => {
+    await targets.refresh()
+  }
   const selectedKitchen = computed(() => selectedConsoleKitchen.value)
   const kitchenRecord = computed(
     () => selectedKitchen.value as Record<string, unknown> | null
@@ -63,6 +68,7 @@ export function useKitchenConsoleIdentity() {
     source,
     readOnly,
     canWrite,
+    refreshTargets,
     clearSelectedKitchen: actions.clearSelectedKitchen,
     name,
     tagline,

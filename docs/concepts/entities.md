@@ -9,7 +9,9 @@ Entities map
 <!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map bounded biography onto canonical public User identity. -->
 <!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: classify Sale and FinancialFact as parent-owned records, not entities. -->
 <!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: map trusted Place-backed root and App-access activation. -->
+<!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: map sparse brand colours and trusted root-owned overrides. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map atomic root/App-support onboarding and access-role authority. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: replace workplace variants with one Agent-owned Company/Place root. -->
 
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: lock explicit Place references, sparse truth, trusted child-operator writes, and Kitchen directory publication. -->
 <!-- Concurrent edit — 2026-07-20 22:58 CEST — Both-Entity Authority: map fail-closed App joins, explicit Property publication, validation limits, and the Kitchen migration exception. -->
@@ -25,7 +27,7 @@ Entities map
 <!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: make User the sole public identity joined by profile uid. -->
 <!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map projected public profile reads and owner-only raw authority. -->
 
-Updated: 2026-07-21
+Updated: 2026-07-22
 Ref: 318378b20
 Role: map, not canon
 
@@ -216,25 +218,29 @@ Root Synced Snapshot Index members:
 
 Root Projected Index members:
 
-- Job stores a product-neutral `category_id` and an explicit
-  `workplace_type`/`workplace_id` reference with an optional display label. It
-  materializes the canonical Place first. `place` needs no further entity;
-  another workplace type or collection must have exactly one runtime
-  materializer registered by the ecosystem or project that composes both
-  domains. That adapter delegates creation to the workplace-owning extension,
-  and creation fails before the Job or Professional experience reference is
-  set if the adapter is absent or fails. Jobs carries no product-specific
-  workplace dependency or identity logic. Its public index and exact detail
-  routes expose only open, explicitly public jobs in the runtime's configured
-  categories; tenant runtimes additionally require the current App as
-  `source_app_id`.
-  Empty category configuration fails closed. Source App scope, Company, Place,
-  owner, and stamp fields remain outside the public DTO.
+- Job is one root contract across ecosystems. The Agent/User named by
+  `owner_id` owns author mutations; `created.by` is only an audit stamp. A Job
+  stores required canonical `company_id` and `place_id` references,
+  product-neutral `category_id`, separate contract duration and management
+  axes, openings, optional Finance-shaped compensation, schedule, lifecycle,
+  and stamps. Apps may configure categories and presentation copy only; there
+  is no workplace-type variant or Kitchen-backed Job identity.
+- Job creation and updates use trusted fixed-runtime APIs, reject
+  caller-selected scope/ownership/lifecycle fields, validate the exact stored
+  root, and require the Company, same-id Company Place, and work Place. Public
+  index and exact detail routes emit only open, explicitly public Jobs in the
+  runtime categories; tenant runtimes additionally require the current App as
+  `source_app_id`. Empty category configuration fails closed. Root ids, source
+  scope, owner, and stamps remain outside the public DTO; bounded nested
+  Company and Place display projections are joined server-side.
+- Professional Experience also stores a canonical `place_id`. Any
+  ecosystem-owned role materializer for that profile field is separate from
+  Job identity and authoring.
 
 Place authority boundary:
 
 - Place owns facts shared by every role at one physical location: address,
-  coordinates, timezone, public contact/media, currency, and business hours
+  coordinates, timezone, public contact/media, currency, brand palette, and business hours
   when known. Unknown optional truth is absent, never an empty stored string,
   array, or object.
 - Kitchen, Property, and future location-role entities reference Place and own
@@ -249,11 +255,15 @@ Place authority boundary:
 - Kitchen operation hours are an optional operational override. Without that
   override, runtime resolution reads the linked Place business hours. Menu and
   ordering-surface schedules continue the same single-parent inheritance chain.
+- Place brand colours are optional primary/secondary tokens. A Kitchen stores
+  only differing Menu colour tokens on its canonical root; absence means
+  inherit. AppKitchen remains access-only, and a future KitchenMenu style may
+  add another sparse child layer without copying its parent.
 - Interactive Kitchen onboarding composes the canonical Place funnel first,
   then writes only Kitchen-owned delta. Its trusted completion transaction
   creates or validates the Kitchen root, the current App access record, and the
   current UserApp console target together. New roots are unpublished; they do
-  not copy Place address, logo, currency, timezone, contact, or hours.
+  not copy Place address, logo, palette, currency, timezone, contact, or hours.
 - Existing Kitchen attachment is not a claim workflow. An existing App
   operator may reopen its Kitchen, an App admin may repair or attach a valid
   unclaimed root, and ordinary members cannot acquire an existing Kitchen by
@@ -272,13 +282,15 @@ Place authority boundary:
   verifies missing provider identity and validates confirmed ISO currency plus
   IANA timezone before creation; existing defaults are never overwritten.
 - The creator within the same current App, or a current App admin, may fill only
-  missing defaults and a missing canonical Storage logo on an incomplete Place.
+  missing defaults, a missing canonical Storage logo, and a missing brand
+  palette on an incomplete Place.
   Other existing Places are reuse-only. The funnel never implies or creates a
   Kitchen, Property, or another Place-backed role.
 - Public Place index cards remain coarse. The bounded Place detail projection
-  may additionally expose validated currency and timezone because they are safe
-  locale defaults; exact address, coordinates, contacts, hours, ownership, and
-  provider metadata remain canonical server-side truth.
+  may additionally expose validated currency, timezone, and sparse brand
+  colours because they are safe public defaults; exact address, coordinates,
+  contacts, hours, ownership, and provider metadata remain canonical
+  server-side truth.
 
 Root Projected Index members:
 
@@ -450,7 +462,10 @@ Root + App Support Access members:
   is a private child support record fetched only by the explicit detail seam.
 - `AppKitchen` is access-only in the current model. Legacy stored App Kitchen
   identity and the compatibility composer remain migration input; Kitchen-owned
-  operational child records stay under the selected App Kitchen path.
+  operational child records stay under the selected App Kitchen path. Portable
+  Menu theme edits use a trusted transaction against the canonical Kitchen root;
+  a successful edit removes legacy AppKitchen style fields rather than writing
+  new presentation truth into access support.
 - Public browse is a separate read/projection decision for every family; root
   placement alone never authorizes a raw public collection read.
 

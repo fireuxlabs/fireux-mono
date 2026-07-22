@@ -1,11 +1,12 @@
 // Concurrent edit — 2026-07-21 15:14 CEST — Werkbox Firebase hardening: attest the reviewed server-source manifest, shared URL boundary, and runtime identity.
 // Concurrent edit — 2026-07-21 16:17 CEST — Shared Firestore Rules pass: refresh the trusted-source attestation after concurrent schema, API, and lockfile edits.
+// Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: attest the canonical Job contract and Finance validator.
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler } from 'h3'
 
 export const WERKBOX_SECURITY_CONTRACT = 'werkbox-firestore-v1' as const
 export const WERKBOX_SERVER_SOURCE_SHA256 =
-  '988a60199de56600361a94764d457ee65384a266a2a3e015862992c0631901cf' as const
+  'd3dabbf43594c647290edd2e2b52b210f2717ac37601ba558aa5e8289082fba3' as const
 
 export default defineEventHandler((event) => {
   const runtime = useRuntimeConfig(event) as any

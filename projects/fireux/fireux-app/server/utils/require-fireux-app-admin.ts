@@ -1,0 +1,41 @@
+// Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: protect app-owned intake operations with canonical App membership authority.
+import { useRuntimeConfig } from '#imports'
+import { createError, type H3Event } from 'h3'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
+import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { getFirestoreDb } from './firebase-admin'
+
+const text = (value: unknown) => String(value ?? '').trim()
+
+export async function requireFireuxAppAdmin(event: H3Event) {
+  const { uid } = await requireFirebaseBearerUser(event)
+  const runtime = useRuntimeConfig(event)
+  const appId = text(runtime.public?.fireux?.id)
+  if (!appId) {
+    throw createError({
+      statusCode: 500,
+      statusMessage: 'The FireUX App identity is not configured.',
+    })
+  }
+
+  const db = await getFirestoreDb()
+  const appRef = db.collection(AppStorage.collection).doc(appId)
+  const [appSnapshot, membershipSnapshot] = await Promise.all([
+    appRef.get(),
+    appRef.collection(UserAppStorage.collection).doc(uid).get(),
+  ])
+  const membership = (membershipSnapshot.data() || {}) as Record<
+    string,
+    unknown
+  >
+
+  if (!appSnapshot.exists || text(membership.role) !== 'admin') {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'FireUX App admin access is required.',
+    })
+  }
+
+  return { appId, db, uid }
+}

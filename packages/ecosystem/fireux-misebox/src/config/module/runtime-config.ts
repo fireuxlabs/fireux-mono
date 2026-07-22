@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: retain placeCollections only for Professional Experience materialization.
 import type { Nuxt } from '@nuxt/schema'
 import { getPlacesConfig } from './places-config'
 

@@ -1,41 +1,62 @@
-// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: replace legacy kitchen world data with typed console-only scenarios.
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: replace disconnected target fixtures with one coherent fictional Kitchen world.
+// Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as two coherent Demo worlds.
+// Concurrent edit — 2026-07-22 14:12 CEST — Demo surface selectors: name the Menu, Kiosk and Service scenarios independently.
+import { PlaceModel, type Place } from 'fireux-places/runtime/models/place.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import { KitchenModel, type Kitchen } from '../../models/kitchen.model'
+import type { KitchenFulfilmentPaymentPolicy } from '../../models/kitchen.model'
 import {
-  KitchenModel,
-  type Kitchen,
-} from '../../models/kitchen.model'
+  deanosKitchenDemoCatalogue,
+  gardenRoomKitchenDemoCatalogue,
+} from './catalogue'
 import {
-  KitchenOrderModel,
-  type KitchenOrder,
-  type KitchenOrderStatus,
-} from '../../models/kitchen/order.model'
+  deanosKitchenDemoIdentity,
+  gardenRoomKitchenDemoIdentity,
+  kitchenDemoCreated,
+  kitchenDemoUpdated,
+} from './fixtures'
 import {
-  PlaceModel,
-  type Place,
-} from 'fireux-places/runtime/models/place.model'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+  deanosKitchenDemoMiseTasks,
+  deanosKitchenDemoOrders,
+  deanosKitchenDemoStations,
+  gardenRoomKitchenDemoMiseTasks,
+  gardenRoomKitchenDemoOrders,
+  gardenRoomKitchenDemoStations,
+} from './operations'
+import type {
+  KitchenDemoCatalogue,
+  KitchenDemoIdentity,
+  KitchenDemoScenario,
+} from './types'
 
-export type KitchenDemoScenario = {
-  kitchen: Kitchen
-  place: Place
-  orders: KitchenOrder[]
-}
-
-const timestamp = (seconds: number): FirebaseTimestamp => ({
-  seconds,
-  nanoseconds: 0,
-})
-
-const makeKitchen = (input: {
-  id: string
-  placeId: string
+type DemoKitchenInput = {
+  identity: KitchenDemoIdentity
   name: string
   tagline: string
-}): Kitchen => ({
+  palette: SparseBrandPalette
+  paymentMethods: KitchenFulfilmentPaymentPolicy[]
+  tableCount: number
+}
+
+type DemoPlaceInput = {
+  identity: KitchenDemoIdentity
+  name: string
+  shortName: string
+  tagline: string
+  city: string
+  postalCode: string
+  region: string
+  street: string
+  lat: number
+  lng: number
+  palette: SparseBrandPalette
+}
+
+const kitchen = (input: DemoKitchenInput): Kitchen => ({
   ...KitchenModel,
-  id: input.id,
-  place_id: input.placeId,
-  slug: input.id,
-  currency_code: 'CHF',
+  id: input.identity.kitchenId,
+  place_id: input.identity.placeId,
+  slug: input.identity.kitchenSlug,
   app_scope: {
     state: 'root_only',
     app_id: '',
@@ -58,208 +79,199 @@ const makeKitchen = (input: {
     currency_format: 'dash',
     show_currency: true,
     available: true,
+    style: {
+      background_color_light: '#f7f3ea',
+      background_color_dark: '#172019',
+      font_color_light: '#27332b',
+      font_color_dark: '#f7f3ea',
+      title_color_light: '#172019',
+      title_color_dark: '#fffaf0',
+      primary_color: input.palette.primary_color,
+      secondary_color: input.palette.secondary_color,
+      font_source: 'system',
+      title_font_source: 'system',
+    },
   },
   orders: {
-    modes: ['collection'],
-    default_lead_time_minutes: 20,
-    acceptance_required: true,
-    operation_hours: {
-      source: 'custom',
-      timezone: 'Europe/Zurich',
-      windows: [],
-    },
     printing: {
       ticket_device_id: '',
     },
   },
   tables: {
-    count: 0,
+    count: input.tableCount,
   },
   fulfilment: {
     delivery_zones: [],
-    payment_methods: [],
+    payment_methods: input.paymentMethods,
   },
-  created: {
-    at: timestamp(1_720_000_000),
-    by: undefined,
-    app_id: undefined,
-  },
-  updated: {
-    at: timestamp(1_720_000_000),
-    by: undefined,
-  },
+  created: kitchenDemoCreated(input.identity),
+  updated: kitchenDemoUpdated(),
 })
 
-const makePlace = (input: {
-  id: string
-  slug: string
-  name: string
-  street: string
-  city: string
-  postalCode: string
-}): Place => ({
+const place = (input: DemoPlaceInput): Place => ({
   ...PlaceModel,
-  id: input.id,
+  id: input.identity.placeId,
   name: input.name,
-  short_name: input.name,
-  brand_tagline: '',
-  about: '',
-  formatted_address: `${input.street}, ${input.postalCode} ${input.city}, Switzerland`,
+  short_name: input.shortName,
+  brand_tagline: input.tagline,
+  about: 'A deterministic read-only venue used to explore Misebox without changing Live or Test data.',
+  formatted_address:
+    `${input.street}, ${input.postalCode} ${input.city}, Switzerland`,
   short_address: `${input.city}, Switzerland`,
   address: {
     street: input.street,
     city: input.city,
-    region: '',
+    region: input.region,
     postal_code: input.postalCode,
     country_code: 'CH',
   },
-  lat: 0,
-  lng: 0,
+  lat: input.lat,
+  lng: input.lng,
   timezone: 'Europe/Zurich',
-  image_url: '',
-  cover_image: '',
-  gallery_images: [],
-  image_shade: 'none',
-  phone: '',
-  email: '',
-  website: '',
-  google_maps_url: '',
-  social_links: {
-    website: '',
-    instagram: '',
-    facebook: '',
-    tiktok: '',
-    linkedin: '',
-    youtube: '',
-  },
-  place_type: 'physical',
-  types: [],
-  tags: [],
-  price_level: '',
+  brand_palette: input.palette,
+  types: ['restaurant'],
+  tags: ['demo', 'restaurant'],
+  price_level: '2',
   default_currency_code: 'CHF',
-  claimed_by: '',
-  verified: false,
-  slug: input.slug,
-  entity_families: ['kitchen'],
-  source: 'fireux',
-  search_term: '',
-  created: {
-    at: timestamp(1_720_000_000),
-    by: undefined,
-  },
-  updated: {
-    at: timestamp(1_720_000_000),
-    by: undefined,
-  },
-})
-
-const makeOrder = (input: {
-  id: string
-  number: string
-  status: KitchenOrderStatus
-  serviceNumber: number
-}): KitchenOrder => ({
-  ...KitchenOrderModel,
-  id: input.id,
-  kitchen_id: 'deanos',
-  menu_id: 'deanos-menu',
-  order_number: input.number,
-  service_id: 'demo-lunch-service',
-  service_number: input.serviceNumber,
-  status: input.status,
-  order_type: 'collection',
-  requested_for: '',
-  collection: {
-    mode: 'queue',
-  },
-  table: {},
-  room_service: {},
-  estimated_ready_minutes: 20,
-  estimated_ready_at: '',
-  items: [
-    {
-      id: `${input.id}-burger`,
-      source_item_id: 'deanos-classic-item',
-      menu_id: 'deanos-menu',
-      dish_id: 'deanos-classic',
-      item_kind: 'food',
-      label: 'Deanos Classic',
-      unit_price: 19,
-      quantity: 1,
-      checked: false,
-    },
-  ],
-  fulfilment_policy: {},
-  fulfilment_match: {},
-  driver_responses: {},
-  customer: {
-    name: `Demo guest ${input.serviceNumber}`,
-  },
-  kitchen_note: '',
-  payment: input.status === 'pending_payment'
-    ? {
-        required: true,
-        status: 'pending',
-        method: 'online_card',
-        amount_chf: 19,
-        currency_code: 'CHF',
-      }
-    : {
-        required: false,
-        status: 'not_required',
-        currency_code: 'CHF',
+  business_hours: {
+    windows: [
+      {
+        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
+        open: '11:30',
+        close: '22:00',
       },
-  channel: 'menu',
-  created: {
-    at: timestamp(1_720_000_000 + input.serviceNumber),
-    by: 'demo-console',
-    app_id: 'demo-console',
-  },
-  updated: {
-    at: timestamp(1_720_000_000 + input.serviceNumber),
-    by: 'demo-console',
-  },
-})
-
-export const kitchenDemoScenarios: KitchenDemoScenario[] = [
-  {
-    kitchen: makeKitchen({
-      id: 'deanos',
-      placeId: 'demo-deanos-place',
-      name: 'Deanos',
-      tagline: 'Read-only burger kitchen',
-    }),
-    place: makePlace({
-      id: 'demo-deanos-place',
-      slug: 'deanos',
-      name: 'Deanos',
-      street: '1 Burger Lane',
-      city: 'Bern',
-      postalCode: '3000',
-    }),
-    orders: [
-      makeOrder({ id: 'demo-order-payment', number: '1041', status: 'pending_payment', serviceNumber: 1 }),
-      makeOrder({ id: 'demo-order-incoming', number: '1042', status: 'pending_acceptance', serviceNumber: 2 }),
-      makeOrder({ id: 'demo-order-queue', number: '1043', status: 'accepted', serviceNumber: 3 }),
-      makeOrder({ id: 'demo-order-pass', number: '1044', status: 'ready', serviceNumber: 4 }),
-      makeOrder({ id: 'demo-order-recent', number: '1045', status: 'completed', serviceNumber: 5 }),
+      {
+        days: ['saturday', 'sunday'],
+        open: '10:00',
+        close: '22:00',
+      },
     ],
   },
-  {
-    kitchen: makeKitchen({
-      id: 'garden-room',
-      placeId: 'demo-garden-room-place',
-      name: 'Garden Room',
-      tagline: 'Read-only seasonal kitchen',
-    }),
-    place: makePlace({
-      id: 'demo-garden-room-place',
-      slug: 'garden-room',
-      name: 'Garden Room',
-      street: '2 Garden Way',
-      city: 'Zurich',
-      postalCode: '8000',
-    }),
-    orders: [],
+  verified: false,
+  slug: input.identity.kitchenSlug,
+  entity_families: ['kitchen'],
+  source: 'manual',
+  search_term: `${input.name} ${input.city}`,
+  created: {
+    at: kitchenDemoCreated(input.identity).at,
+    by: 'demo',
   },
+  updated: {
+    at: kitchenDemoUpdated().at,
+    by: 'demo',
+  },
+})
+
+const scenario = (input: {
+  identity: KitchenDemoIdentity
+  kitchen: Kitchen
+  place: Place
+  catalogue: KitchenDemoCatalogue
+  orders: KitchenDemoScenario['orders']
+  stations: KitchenDemoScenario['stations']
+  miseTasks: KitchenDemoScenario['miseTasks']
+}): KitchenDemoScenario => ({
+  appId: input.identity.appId,
+  kitchen: input.kitchen,
+  place: input.place,
+  rootMenu: input.catalogue.rootMenu,
+  kitchenMenu: input.catalogue.kitchenMenu,
+  dishes: input.catalogue.dishes,
+  menuSections: input.catalogue.menuSections,
+  orders: input.orders,
+  stations: input.stations,
+  miseTasks: input.miseTasks,
+})
+
+const deanosPalette = {
+  primary_color: '#d2472f',
+  secondary_color: '#e5aa37',
+} satisfies SparseBrandPalette
+
+export const deanosKitchenDemoScenario = scenario({
+  identity: deanosKitchenDemoIdentity,
+  kitchen: kitchen({
+    identity: deanosKitchenDemoIdentity,
+    name: 'Deanos',
+    tagline: 'A busy, image-poor burger service',
+    palette: deanosPalette,
+    paymentMethods: [
+      {
+        method: 'online_card',
+        order_types: ['collection'],
+      },
+      {
+        method: 'card_at_pickup',
+        order_types: ['collection', 'eat_in', 'takeaway'],
+      },
+    ],
+    tableCount: 8,
+  }),
+  place: place({
+    identity: deanosKitchenDemoIdentity,
+    name: 'Deanos',
+    shortName: 'Deanos',
+    tagline: 'Burgers, sides and a fast neighbourhood service',
+    street: '1 Burger Lane',
+    city: 'Bern',
+    postalCode: '3000',
+    region: 'BE',
+    lat: 46.948,
+    lng: 7.4474,
+    palette: deanosPalette,
+  }),
+  catalogue: deanosKitchenDemoCatalogue,
+  orders: deanosKitchenDemoOrders,
+  stations: deanosKitchenDemoStations,
+  miseTasks: deanosKitchenDemoMiseTasks,
+})
+
+const gardenRoomPalette = {
+  primary_color: '#bb4d2f',
+  secondary_color: '#52705c',
+} satisfies SparseBrandPalette
+
+export const gardenRoomKitchenDemoScenario = scenario({
+  identity: gardenRoomKitchenDemoIdentity,
+  kitchen: kitchen({
+    identity: gardenRoomKitchenDemoIdentity,
+    name: 'Garden Room',
+    tagline: 'A partial-image seasonal Menu and Kiosk',
+    palette: gardenRoomPalette,
+    paymentMethods: [
+      {
+        method: 'card_at_pickup',
+        order_types: ['eat_in', 'takeaway'],
+      },
+    ],
+    tableCount: 12,
+  }),
+  place: place({
+    identity: gardenRoomKitchenDemoIdentity,
+    name: 'Garden Room',
+    shortName: 'Garden Room',
+    tagline: 'Seasonal plates in a relaxed garden setting',
+    street: '2 Garden Way',
+    city: 'Zurich',
+    postalCode: '8000',
+    region: 'ZH',
+    lat: 47.3769,
+    lng: 8.5417,
+    palette: gardenRoomPalette,
+  }),
+  catalogue: gardenRoomKitchenDemoCatalogue,
+  orders: gardenRoomKitchenDemoOrders,
+  stations: gardenRoomKitchenDemoStations,
+  miseTasks: gardenRoomKitchenDemoMiseTasks,
+})
+
+export const featuredMenuDemoScenario = gardenRoomKitchenDemoScenario
+export const featuredKioskDemoScenario = gardenRoomKitchenDemoScenario
+export const featuredServiceDemoScenario = deanosKitchenDemoScenario
+
+export const kitchenDemoScenarios: KitchenDemoScenario[] = [
+  deanosKitchenDemoScenario,
+  gardenRoomKitchenDemoScenario,
 ]
+
+export type { KitchenDemoScenario } from './types'

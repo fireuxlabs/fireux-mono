@@ -1,19 +1,17 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazily adapt owner-local Kitchen fixtures for console use.
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: expose one coherent typed Kitchen world to read-only Console adapters.
 import type { MaybeRefOrGetter } from 'vue'
 import {
   useConsoleDemoData,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDemoData'
-import type { Place } from 'fireux-places/runtime/models/place.model'
-import type { KitchenOrder } from '../../../../../models/kitchen/order.model'
 import {
   useKitchenInterface,
   type KitchenSurface,
 } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenDemoScenario } from '../../../../../demo/kitchen/types'
 
-export type KitchenConsoleDemoScenario = {
+export type KitchenConsoleDemoScenario = Omit<KitchenDemoScenario, 'kitchen'> & {
   kitchen: KitchenSurface
-  place: Place
-  orders: KitchenOrder[]
 }
 
 export type KitchenConsoleDemoData = {
@@ -42,9 +40,16 @@ export function useKitchenConsoleDemoData(
           if (!kitchen) return items
 
           items.push({
+            ...scenario,
             kitchen,
-            place: scenario.place,
+            dishes: [...scenario.dishes],
+            menuSections: scenario.menuSections.map(section => ({
+              section: section.section,
+              items: [...section.items],
+            })),
+            miseTasks: [...scenario.miseTasks],
             orders: [...scenario.orders],
+            stations: [...scenario.stations],
           })
           return items
         },

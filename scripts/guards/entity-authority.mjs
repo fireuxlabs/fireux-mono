@@ -1,9 +1,10 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-22
 // usage_note: run through pnpm guard; locks App/Ecosystem/Project authority boundaries.
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: forbid generic cross-domain drift mutation tooling.
 // Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: lock Project access to UserApp admin membership.
 // Concurrent edit — 2026-07-20 20:22 CEST — Repo Efficiency Pass 2 of 6: lock exact projected profile types, transport, and self-only mutations.
+// Concurrent edit — 2026-07-22 12:39 CEST — Shared Job spine alignment: lock explicit owner, Place, compensation, and exact-root authority.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -482,6 +483,149 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       source,
       /\bprojectId:\s*['"][^'"]+['"]/,
       `${configPath} needs projectId.`
+    )
+  }
+
+  const jobModelPath =
+    'packages/extensions/fireux-jobs/src/runtime/models/job.model.ts'
+  const jobAuthorModelPath =
+    'packages/extensions/fireux-jobs/src/runtime/models/job-author.model.ts'
+  const jobPublicModelPath =
+    'packages/extensions/fireux-jobs/src/runtime/models/job-public.model.ts'
+  const jobAuthorServerPath =
+    'packages/extensions/fireux-jobs/src/runtime/server/job/author.ts'
+  const jobValidationPath =
+    'packages/extensions/fireux-jobs/src/runtime/server/job/validation.ts'
+  const jobPublicProjectionPath =
+    'packages/extensions/fireux-jobs/src/runtime/server/utils/job/public-projection.ts'
+  const jobRuntimeScopePath =
+    'packages/extensions/fireux-jobs/src/runtime/server/job/runtime.ts'
+  const jobModel = read(repoRoot, jobModelPath)
+  const jobAuthorModel = read(repoRoot, jobAuthorModelPath)
+  const jobAuthorServer = read(repoRoot, jobAuthorServerPath)
+  const jobValidation = read(repoRoot, jobValidationPath)
+  const jobPublicProjection = read(repoRoot, jobPublicProjectionPath)
+
+  assert.deepEqual(typeFields(jobModel, 'Job'), [
+    'category_id',
+    'company_id',
+    'compensation',
+    'contract_type',
+    'created',
+    'description',
+    'end_at',
+    'id',
+    'management_mode',
+    'openings_count',
+    'owner_id',
+    'owner_type',
+    'place_id',
+    'source_app_id',
+    'source_ecosystem_id',
+    'start_at',
+    'status',
+    'title',
+    'updated',
+    'visibility',
+  ])
+  assert.match(jobModel, /owner_type:\s*['"]user['"]/)
+  assert.match(jobModel, /owner_id:\s*string/)
+  assert.match(
+    jobModel,
+    /import type \{ FinancialMoney \} from ['"]fireux-finance\/runtime\/models\/money\.model\.ts['"]/
+  )
+  assert.match(
+    jobModel,
+    /export type JobCompensation = FinancialMoney\s*&\s*\{[\s\S]*unit:\s*JobPayUnit[\s\S]*\}/
+  )
+  assert.match(jobModel, /compensation:\s*JobCompensation\s*\|\s*null/)
+  const jobCreateInput = jobModel.match(
+    /export type JobCreateInput = Pick<[\s\S]*?\n>/
+  )?.[0]
+  assert.ok(jobCreateInput, 'Job must declare its caller-safe create input.')
+  assert.match(jobCreateInput, /['"]place_id['"]/)
+  assert.match(jobCreateInput, /['"]compensation['"]/)
+  assert.doesNotMatch(
+    jobCreateInput,
+    /owner_(?:id|type)|source_(?:app|ecosystem)_id|visibility|created|updated|status/
+  )
+  assert.match(jobAuthorModel, /JobCreateIntent\s*=\s*JobCreateInput/)
+  assert.match(jobAuthorModel, /JobPatchIntent\s*=\s*JobUpdateInput/)
+
+  assert.match(jobAuthorServer, /job\.owner_type\s*!==\s*['"]user['"]/)
+  assert.match(jobAuthorServer, /job\.owner_id\s*!==\s*uid/)
+  assert.match(
+    jobAuthorServer,
+    /\.where\(\s*['"]owner_id['"]\s*,\s*['"]==['"]\s*,\s*uid\s*\)/
+  )
+  assert.match(
+    jobAuthorServer,
+    /transaction\.create\(jobRef,\s*\{[\s\S]*?owner_type:\s*['"]user['"][\s\S]*?owner_id:\s*uid/
+  )
+  assert.doesNotMatch(jobAuthorServer, /\bcreated\.by\b/)
+  assert.doesNotMatch(jobAuthorServer, /owner_id:\s*scope\.appId/)
+
+  assert.match(jobValidation, /export function canonicalJobRoot\s*\(/)
+  assert.match(
+    jobValidation,
+    /requireExactKeys\(source, storedJobKeys, ['"]Job root['"]\)/
+  )
+  assert.match(jobValidation, /requireFinancialMoney/)
+  assert.match(
+    jobValidation,
+    /path:\s*`places\/\$\{job\.place_id\}`/
+  )
+  assert.match(
+    jobAuthorServer,
+    /return canonicalJobRoot\(snapshot\.id, snapshot\.data\(\)\)/
+  )
+  assert.match(
+    jobPublicProjection,
+    /const job = canonicalJobRoot\(id, data\)/
+  )
+
+  const jobRootSurfacePaths = new Set([
+    jobModelPath,
+    jobAuthorModelPath,
+    jobPublicModelPath,
+    jobAuthorServerPath,
+    jobValidationPath,
+    jobPublicProjectionPath,
+    jobRuntimeScopePath,
+    'packages/extensions/fireux-jobs/src/runtime/composables/useJobPermissions.ts',
+    'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs.get.ts',
+    'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs.post.ts',
+    'packages/extensions/fireux-jobs/src/runtime/server/api/public/jobs.get.ts',
+  ])
+  for (const relativeRoot of [
+    'packages/extensions/fireux-jobs/src/runtime/components/Job',
+    'packages/extensions/fireux-jobs/src/runtime/composables/fireux/firestore/jobs',
+    'packages/extensions/fireux-jobs/src/runtime/composables/fireux/jobs',
+    'packages/extensions/fireux-jobs/src/runtime/pages/jobs',
+    'packages/extensions/fireux-jobs/src/runtime/server/api/internal/jobs',
+    'packages/extensions/fireux-jobs/src/runtime/server/api/public/jobs',
+  ]) {
+    for (const file of filesBelow(path.join(repoRoot, relativeRoot))) {
+      if (!/\.(?:ts|vue)$/.test(file)) continue
+      jobRootSurfacePaths.add(path.relative(repoRoot, file))
+    }
+  }
+  for (const relativePath of jobRootSurfacePaths) {
+    const source = read(repoRoot, relativePath)
+    assert.doesNotMatch(
+      source,
+      /\bworkplace_[a-z0-9_]*\b/i,
+      `${relativePath} must use canonical Place fields, not workplace_* compatibility fields.`
+    )
+    assert.doesNotMatch(
+      source,
+      /\b(?:job_type|pay_currency|pay_rate|pay_unit)\b/,
+      `${relativePath} must use contract/management and minor-unit compensation fields.`
+    )
+    assert.doesNotMatch(
+      source,
+      /materializeJobWorkplace|fireux:jobs:workplace:materialize|from\s+['"]fireux-kitchens|['"`]kitchens\//,
+      `${relativePath} must not restore a Job-specific Kitchen/workplace materializer.`
     )
   }
 

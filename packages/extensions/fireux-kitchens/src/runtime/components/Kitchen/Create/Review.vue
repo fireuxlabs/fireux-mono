@@ -1,5 +1,5 @@
 <template>
-  <!-- Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: review sparse Kitchen truth and inherited Place defaults. -->
+  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: review inherited versus overridden colours. -->
   <section class="form-stack-sm">
     <dl class="form-stack-sm">
       <div>
@@ -22,6 +22,10 @@
         <dt class="form-text-muted">Directory</dt>
         <dd>{{ publicationLabel }}</dd>
       </div>
+      <div>
+        <dt class="form-text-muted">Colours</dt>
+        <dd>{{ paletteLabel }}</dd>
+      </div>
     </dl>
 
     <UAlert
@@ -36,6 +40,7 @@
 
 <script setup lang="ts">
 import type { PublicPlaceDetailProjection } from 'fireux-places/runtime/models/place-public.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 import { computed } from 'vue'
 import type { KitchenOnboardingPreview } from '../../../models/kitchen-onboarding.model'
 
@@ -43,6 +48,8 @@ const props = defineProps<{
   place: PublicPlaceDetailProjection
   preview: KitchenOnboardingPreview
   effectiveName: string
+  paletteOverride: SparseBrandPalette
+  inheritedPalette: SparseBrandPalette
 }>()
 
 const alertColor = computed(() =>
@@ -53,6 +60,13 @@ const publicationLabel = computed(() => {
   return props.preview.published
     ? 'Published — preserved'
     : 'Not published — preserved'
+})
+const paletteLabel = computed(() => {
+  const count = Object.keys(props.paletteOverride).length
+  if (count) return `${count} Kitchen override${count === 1 ? '' : 's'}`
+  return Object.keys(props.inheritedPalette).length
+    ? 'Inherited from Place'
+    : 'FireUX defaults'
 })
 const alertIcon = computed(() => {
   if (!props.preview.can_complete) return 'i-lucide-lock-keyhole'

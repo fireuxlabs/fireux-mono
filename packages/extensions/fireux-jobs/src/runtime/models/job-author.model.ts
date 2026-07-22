@@ -1,30 +1,20 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: define caller-safe authoring intents without storage authority fields.
-import type { Job } from './job.model'
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: derive caller intents from the canonical safe input contract.
+import type {
+  Job,
+  JobCreateInput,
+  JobUpdateInput,
+} from './job.model'
 
-export type JobMutableField =
-  | 'company_id'
-  | 'category_id'
-  | 'workplace_type'
-  | 'workplace_id'
-  | 'workplace_label'
-  | 'job_type'
-  | 'openings_count'
-  | 'pay_currency'
-  | 'pay_rate'
-  | 'pay_unit'
-  | 'start_at'
-  | 'end_at'
-  | 'title'
-  | 'description'
-  | 'status'
+export type JobMutableField = keyof JobUpdateInput
 
 /**
  * Browser authoring intent. Storage scope, visibility, identity, and audit
  * stamps are always derived by the trusted server boundary.
  */
-export type JobCreateIntent = Pick<Job, JobMutableField>
+export type JobCreateIntent = JobCreateInput
 
-export type JobPatchIntent = Partial<JobCreateIntent>
+export type JobPatchIntent = JobUpdateInput
 
 export type AuthorJobListResponse = {
   items: Job[]

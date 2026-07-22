@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: compose Place baselines with only meaningful Kitchen surface deltas.
+// Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: preserve bounded server write capability on the live surface.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   Place,
@@ -9,7 +10,10 @@ import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import type { Kitchen } from '../../../../../../models/kitchen.model'
+import type {
+  Kitchen,
+  KitchenMenusConfig,
+} from '../../../../../../models/kitchen.model'
 import {
   readKitchenAppScope,
   readKitchenIdentity,
@@ -58,6 +62,7 @@ export type KitchenSurface = {
   // View surface only: Place-like fields are a resolved read projection of the
   // linked Place plus meaningful Kitchen/scoped deltas, never Kitchen authority.
   id?: string
+  can_write?: boolean
   app_scope_state?: FireuxAppScopeState
   app_scope_app_id?: string
   slug?: string
@@ -77,6 +82,7 @@ export type KitchenSurface = {
   menu_currency_format?: CurrencyDisplayFormat
   menu_show_currency?: boolean
   menu_available?: boolean
+  menus?: KitchenMenusConfig
   menu_style?: Partial<PageStyle>
   formatted_address?: string
   short_address?: string

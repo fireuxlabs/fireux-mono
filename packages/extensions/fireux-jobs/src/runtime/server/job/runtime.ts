@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: resolve immutable App, database, category, and workplace authority from runtime config.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: keep only category as an App-configured Job delta.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -9,9 +10,7 @@ export type JobServerScope = {
   databaseId: string
   identityDatabaseId: string
   categories: ReadonlySet<string>
-  workplaces: ReadonlySet<string>
   profiles: ReadonlySet<string>
-  defaultWorkplaceType: string
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -49,8 +48,6 @@ export function readJobServerScope(event: H3Event): JobServerScope {
     databaseId,
     identityDatabaseId,
     categories: identifiers(jobs.categories),
-    workplaces: identifiers(jobs.workplaces),
     profiles: identifiers(fireux.profiles),
-    defaultWorkplaceType: text(jobs.defaultWorkplaceType),
   }
 }

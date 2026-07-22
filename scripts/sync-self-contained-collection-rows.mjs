@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-22
 // usage_note: sync approved Misebox downstream list/card snapshots through an explicit, backed-up operation.
 // Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: classify the explicit dry-run-first snapshot sync entrypoint.
 // Concurrent edit — 2026-07-20 14:14 CEST — User identity boundary: stop materializing User identity in root or app profile rows.
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: stop copying Place truth onto Kitchen roots or inferring same-id links.
 // Concurrent edit — 2026-07-20 22:10 CEST — Repo Efficiency Pass 4 of 6: add explicit target, protected preimage, atomic version checks, verification, and cleanup.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: stop copying workplace snapshots onto canonical Job roots.
 
 import path from 'node:path'
 import { mkdir } from 'node:fs/promises'
@@ -303,11 +304,10 @@ function queuePatch({
 }
 
 async function buildPlan(db, actor) {
-  const [places, kitchens, companies, jobs, menus] = await Promise.all([
+  const [places, kitchens, companies, menus] = await Promise.all([
     loadCollection(db, 'places'),
     loadCollection(db, 'kitchens'),
     loadCollection(db, 'companies'),
-    loadCollection(db, 'jobs'),
     loadCollection(db, 'menus'),
   ])
   const now = Timestamp.now()
@@ -338,30 +338,6 @@ async function buildPlan(db, actor) {
       patches,
       reason: 'company place public card snapshot',
       target: company,
-    })
-  }
-
-  for (const job of jobs.values()) {
-    const workplaceType = text(job.effectiveData.workplace_type)
-    const workplaceId = text(job.effectiveData.workplace_id)
-    if (workplaceType !== 'kitchen' || !workplaceId) continue
-    const kitchen = kitchens.get(workplaceId)
-    if (!kitchen) continue
-    queuePatch({
-      actor,
-      dependencies: kitchen.dependencies,
-      now,
-      patch: {
-        workplace_label: kitchenName(kitchen.effectiveData),
-        workplace_short_address: text(kitchen.effectiveData.short_address),
-        workplace_formatted_address: text(
-          kitchen.effectiveData.formatted_address
-        ),
-        workplace_image_url: kitchenImage(kitchen.effectiveData),
-      },
-      patches,
-      reason: 'job workplace public card snapshot',
-      target: job,
     })
   }
 

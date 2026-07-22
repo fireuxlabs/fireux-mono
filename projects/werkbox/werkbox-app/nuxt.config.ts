@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 12:23 CEST — Cleanbox-to-Werkbox app migration: add the additive Werkbox global app config.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
@@ -24,8 +25,6 @@ export default defineFireuxConfig({
       'fireux-jobs',
       {
         categories: ['cleaning'],
-        workplaces: ['place'],
-        defaultWorkplaceType: 'place',
       },
     ],
   ],

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-22
 // usage_note: baseline after scripts cleanup; update when run.
+// Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: record the focused FireUX route smoke run.
 // FILE: scripts/smoke-app.mjs
 
 import process from 'node:process'

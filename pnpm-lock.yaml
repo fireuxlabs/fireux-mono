@@ -428,6 +428,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-finance:
+        specifier: workspace:*
+        version: link:../fireux-finance
       fireux-places:
         specifier: workspace:*
         version: link:../fireux-places
@@ -12379,7 +12382,7 @@ snapshots:
       perfect-debounce: 2.1.0
       pkg-types: 2.3.1
       scule: 1.3.0
-      semver: 7.8.0
+      semver: 7.8.5
       srvx: 0.11.15
       std-env: 4.1.0
       tinyclip: 0.1.12
@@ -17770,7 +17773,7 @@ snapshots:
 
   node-abi@3.85.0:
     dependencies:
-      semver: 7.8.0
+      semver: 7.8.5
 
   node-addon-api@7.1.1: {}
 

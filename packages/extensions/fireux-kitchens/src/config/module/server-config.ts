@@ -6,6 +6,7 @@
 // Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: register authenticated preview and atomic completion endpoints.
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: register the authenticated bounded target projection.
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: register the canonical Dish image upload endpoint.
+// Concurrent edit — 2026-07-22 12:24 CEST — Canonical Kitchen theme write: register the trusted root style mutation.
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import {
@@ -98,6 +99,11 @@ const baseServerHandlers = [
     route: '/api/console/kitchen/targets',
     method: 'get',
     handler: './runtime/server/api/console/kitchen/targets.get',
+  },
+  {
+    route: '/api/console/kitchen/theme',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/theme.post',
   },
   {
     route: '/api/console/kitchen/reports/gross-sales',

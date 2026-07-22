@@ -8,6 +8,7 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: record strict support validation at the target boundary. -->
 <!-- Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: map admin-only repair of absent support arrays. -->
 <!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map fixed-runtime atomic root/App-support onboarding endpoints. -->
+<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: map explicit Agent authority, exact roots, and Company/Place projection joins. -->
 
 <!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
 <!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
@@ -20,7 +21,7 @@ Server API spine map
 <!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: map trusted sparse Place mutation and fail-closed Kitchen projection. -->
 <!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe invalid Kitchen support joins explicitly. -->
 
-Updated: 2026-07-21
+Updated: 2026-07-22
 Ref: 318378b20
 Role: map, not canon
 
@@ -146,17 +147,22 @@ Boundary rule:
   missing/conflicting pairs and malformed stored authority fail before writes.
 - Jobs owns `GET /api/public/jobs` and `GET /api/public/jobs/:id`. The index
   cursor-scans bounded root batches without composite-index assumptions, and
-  both routes use the same field allowlist. Only open, explicitly public jobs
+  both routes exact-validate roots and use the same field allowlist. Only open, explicitly public jobs
   whose product-neutral `category_id` is configured by the current runtime are
   emitted; tenant runtimes also require the current App as `source_app_id`.
-  Empty category configuration fails closed. Source App scope, Company/Place
-  ids, owner scope, creator stamps, and raw linked documents never reach the
-  browser DTO.
+  Empty category configuration fails closed. Bounded server joins project
+  nested Company and canonical work-Place display truth. Source App scope,
+  Company/Place ids, owner scope, creator stamps, and raw linked documents
+  never reach the browser DTO.
 - Jobs authoring uses fixed-current-user `GET/POST /api/internal/jobs`,
   `GET/PATCH /api/internal/jobs/:id`, and
-  `POST /api/internal/jobs/:id/publish`. The server derives scope and ownership,
-  requires current UserApp/Agent authority, and verifies referenced Place and
-  Company records through Admin before mutation. Structured Professional
+  `POST /api/internal/jobs/:id/publish`. The server derives App/database scope,
+  sets the current Agent/User as explicit `owner_id`, treats creator stamps as
+  audit-only, and rejects caller-selected ownership, visibility, create status,
+  source, and stamps. It requires current UserApp/Agent authority, exact-validates
+  stored roots, and verifies the Company, its same-id Place, and canonical work
+  Place through Admin before mutation. App configuration may choose categories
+  only; it cannot select a workplace model. Structured Professional
   families use `PATCH /api/internal/profiles/professional/structured`, which
   validates every referenced Place/Company/Kitchen; browser Rules retain only
   safe scalar/list owner updates.

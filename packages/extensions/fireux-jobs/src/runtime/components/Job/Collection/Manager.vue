@@ -1,108 +1,114 @@
+<!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use shared public-directory chrome and truthful projected outcomes. -->
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
-        </div>
+  <section class="collection-directory job-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div
-          class="collection-manager__controls"
-        >
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="variant === 'pill'
+            ? 'Switch to card view'
+            : 'Switch to compact view'"
+          @click="toggleVariant"
+        />
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-            <UBadge v-if="showCount && isSettled" variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
-        </div>
-      </div>
-    </template>
+        <span v-if="showCount && isSettled" class="collection-directory__count">
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="jobs"
-      state="loading"
-      surface="bare"
+      title="Loading jobs"
+      description="Finding published jobs…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-atomic="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="jobs"
-      state="error"
-      surface="bare"
-      description="Jobs could not be loaded. Please try again."
+      title="Jobs unavailable"
+      description="Published jobs could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
     />
 
-    <JobCollectionList
-      v-else-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
-    >
-      <template #pill="{ card }">
-        <JobCardsPill v-bind="card" :link="linkEnabled" :show-badges="false" />
-      </template>
-      <template #cell="{ card }">
-        <JobCardsCell v-bind="card" :link="linkEnabled" />
-      </template>
-    </JobCollectionList>
+    <div v-else-if="cardsFiltered.length">
+      <JobCollectionList :cards="cardsFiltered" :variant="variant">
+        <template #pill="{ card }">
+          <JobCardsPill
+            v-bind="card"
+            :link="linkEnabled"
+            :show-badges="showBadges"
+          />
+        </template>
+        <template #cell="{ card }">
+          <JobCardsCell
+            v-bind="card"
+            :link="linkEnabled"
+            :show-badges="showBadges"
+          />
+        </template>
+      </JobCollectionList>
 
-    <MoleculesStateCard
-      v-else-if="!hasMore"
-      entity="jobs"
-      state="empty"
-      surface="bare"
-      :title="query ? 'No jobs match your search' : 'No jobs yet'"
-      :description="query
-        ? 'Try a different search term.'
-        : 'Once job records are added, they will display here.'"
-    />
+      <div v-if="hasMore">
+        <UButton
+          label="Load more jobs"
+          color="neutral"
+          variant="soft"
+          :loading="loadingMore"
+          @click="onLoadMore"
+        />
+      </div>
+    </div>
 
-    <UAlert
-      v-else
-      color="neutral"
-      variant="soft"
-      title="Checking the remaining jobs"
-      description="This page did not contain an eligible public job. Continue to scan the bounded directory."
-    />
+    <div v-else>
+      <CollectionDirectoryState
+        icon="i-lucide-briefcase-business"
+        :title="query
+          ? 'No matching jobs'
+          : hasMore
+            ? 'More published jobs may be available'
+            : 'No published jobs yet'"
+        :description="query
+          ? 'Try a different role, employer, or location.'
+          : hasMore
+            ? 'Continue through the bounded directory to check the remaining listings.'
+            : 'Published opportunities will appear here when employers make them public.'"
+      />
 
-    <div v-if="hasMore" class="mt-4 flex justify-center">
-      <UButton
-        size="sm"
-        variant="soft"
-        color="neutral"
-        :loading="loadingMore"
-        @click="onLoadMore"
-      >
-        Load more jobs
-      </UButton>
+      <div v-if="hasMore && !query">
+        <UButton
+          label="Check more jobs"
+          color="neutral"
+          variant="soft"
+          :loading="loadingMore"
+          @click="onLoadMore"
+        />
+      </div>
     </div>
 
     <UAlert
       v-if="loadMoreError"
-      class="mt-4"
       color="error"
       variant="soft"
       title="More jobs could not be loaded"
@@ -111,22 +117,20 @@
 
     <div>
       <DevJson
-        :title="'Jobs (JSON)'"
-        context="collection manager · jobs"
+        title="Jobs (Public JSON)"
+        context="collection manager · jobs · bounded public projection"
         :data="devJsonData"
         :default-open="false"
         @opened="loadDevJson"
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
-// Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: adapt boolean pagination promises to a void UI handler.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
-// Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import type { PublicJobProjection } from '../../../models/job-public.model'
@@ -142,17 +146,19 @@ const props = withDefaults(
     showSearch?: boolean
     showVariantToggle?: boolean
     showCount?: boolean
+    showBadges?: boolean
     initialVariant?: 'pill' | 'cell'
   }>(),
   {
     title: 'Jobs',
-    description: 'Browse job records available to this runtime.',
+    description: 'Choose a published job to review the role, employer, and location.',
     link: true,
     searchPlaceholder: 'Search jobs…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
-    initialVariant: 'pill',
+    showBadges: true,
+    initialVariant: 'cell',
   }
 )
 
@@ -162,25 +168,23 @@ const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
-const loadMore = fetched.loadMore
 const onLoadMore = (): void => {
-  void loadMore()
+  void fetched.loadMore()
 }
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Jobs'))
-const description = computed(() =>
-  String(props.description || 'Browse job records available to this runtime.')
-)
+const description = computed(() => String(
+  props.description || 'Choose a published job to review its details.'
+))
 const linkEnabled = computed(() => props.link !== false)
-const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search jobs…')
-)
+const searchPlaceholder = computed(() => String(props.searchPlaceholder || 'Search jobs…'))
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
+const showBadges = computed(() => props.showBadges !== false)
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
   () => showSearch.value && !hasMore.value && totalCount.value > 15
@@ -197,7 +201,7 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (job: PublicJobProjection) => makeCard(job),
+    makeCard: job => makeCard(job),
     initialVariant: props.initialVariant,
   })
 
@@ -211,7 +215,7 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value
-    ? `${visibleCount.value} / ${totalCount.value}`
-    : `${totalCount.value}${hasMore.value ? '+' : ''}`
+    ? `${visibleCount.value} of ${totalCount.value} jobs`
+    : `${totalCount.value}${hasMore.value ? '+' : ''} job${totalCount.value === 1 ? '' : 's'}`
 )
 </script>

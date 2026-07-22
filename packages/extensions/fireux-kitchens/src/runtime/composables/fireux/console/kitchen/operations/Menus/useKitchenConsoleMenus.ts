@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: gate Menu creation on the selected Kitchen's linked Place currency.
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: expose the typed Demo Menu without opening live collection paths.
 import { computed } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
@@ -11,6 +12,10 @@ import {
   MenuSourceUploadStorage,
   type MenuSourceUpload,
 } from '../../../../../../models/kitchen/menu/menu-source-upload.model'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../../core/useKitchenConsoleDemoData'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const timestampSeconds = (value: unknown) => {
@@ -31,6 +36,13 @@ export function useKitchenConsoleMenus() {
   const kitchenConsole = useKitchenConsole()
   const { place } = useKitchenConsolePlace()
   const storageKitchenId = kitchenConsole.runtime.storageKitchenId
+  const demoData = useKitchenConsoleDemoData(
+    computed(() => kitchenConsole.runtime.source.value === 'demo')
+  )
+  const demoScenario = computed(() => findKitchenConsoleDemoScenario(
+    demoData.data.value,
+    kitchenConsole.selection.kitchenId.value
+  ))
   const fetchKitchenId = computed(() =>
     kitchenConsole.runtime.rootCollection.value &&
     storageKitchenId.value
@@ -38,10 +50,10 @@ export function useKitchenConsoleMenus() {
       : ''
   )
   const {
-    menus: rawMenus,
-    activeMenus,
+    menus: fetchedMenus,
+    activeMenus: fetchedActiveMenus,
     pending: menusPending,
-    collectionPath,
+    collectionPath: fetchedCollectionPath,
   } =
     useKitchenMenuCollection(fetchKitchenId, {
       kitchenCollectionPath: kitchenConsole.runtime.rootCollection,
@@ -64,8 +76,30 @@ export function useKitchenConsoleMenus() {
       databaseId: kitchenConsole.runtime.databaseId,
     }
   )
+  const rawMenus = computed(() =>
+    kitchenConsole.runtime.source.value === 'demo'
+      ? demoScenario.value ? [demoScenario.value.kitchenMenu] : []
+      : fetchedMenus.value
+  )
+  const activeMenus = computed(() =>
+    kitchenConsole.runtime.source.value === 'demo'
+      ? rawMenus.value.filter(menu => menu.status !== 'archived')
+      : fetchedActiveMenus.value
+  )
+  const pending = computed(() =>
+    kitchenConsole.runtime.source.value === 'demo'
+      ? demoData.pending.value
+      : menusPending.value
+  )
+  const collectionPath = computed(() =>
+    kitchenConsole.runtime.source.value === 'demo'
+      ? `demo/kitchens/${kitchenConsole.selection.kitchenId.value}/menus`
+      : fetchedCollectionPath.value
+  )
   const menuSources = computed(() =>
-    sortMenuSources(sourceUploads.items.value)
+    kitchenConsole.runtime.source.value === 'demo'
+      ? []
+      : sortMenuSources(sourceUploads.items.value)
   )
   const currencyCode = computed(() =>
     readPlaceCurrencyCode(place.value)
@@ -96,6 +130,7 @@ export function useKitchenConsoleMenus() {
     kitchenId: kitchenConsole.selection.kitchenId,
     storageKitchenId,
     activeKitchenAppId: kitchenConsole.runtime.appId,
+    kitchenSource: kitchenConsole.runtime.source,
     rootCollection: kitchenConsole.runtime.rootCollection,
     databaseId: kitchenConsole.runtime.databaseId,
     readOnly: kitchenConsole.runtime.readOnly,
@@ -105,7 +140,7 @@ export function useKitchenConsoleMenus() {
     collectionPath,
     menus: activeMenus,
     rawMenus,
-    pending: menusPending,
+    pending,
     menuSources,
     menuSourcesPending: sourceUploads.pending,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
@@ -123,7 +158,7 @@ export function useKitchenConsoleMenus() {
       rawMenusCount: (rawMenus.value ?? []).length,
       menuSourcesCollectionPath: sourceUploads.collectionPath.value,
       menuSourcesCount: menuSources.value.length,
-      pending: menusPending.value,
+      pending: pending.value,
       menuSourcesPending: sourceUploads.pending.value,
       readOnly: kitchenConsole.runtime.readOnly.value,
       canWrite: kitchenConsole.runtime.canWrite.value,

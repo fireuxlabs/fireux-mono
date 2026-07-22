@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: canonical app identity, routes, and smoke-contract assignments.
 // Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: point local launch authority at the additive Werkbox apps.
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: require the shared route across registered apps.
@@ -7,10 +7,13 @@
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: require four Misebox directory APIs.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: retire personal BNB routes and smoke only sanitized simulations.
 // Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: register the Indian Gourmet terminal entry contract.
+// Concurrent edit — 2026-07-22 12:47 CEST — Jobs smoke alignment: cover the shared public Jobs route and projection in both global apps.
+// Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: smoke the new FireUX request queue route.
 
 import {
   appDetailContract,
   invalidMenuIndexCursorContract,
+  jobIndexApiContract,
   kitchenCollectionRecoveryContract,
   menuBrowseContract,
   menuDocumentContract,
@@ -72,6 +75,7 @@ export const APP_REGISTRY = {
       '/console/project/overview',
       '/console/project/apps',
       '/console/project/ecosystem',
+      '/console/project/ignitions',
     ],
     launchOrder: 1,
   },
@@ -97,7 +101,13 @@ export const APP_REGISTRY = {
       '/console/kitchen/recipes',
       '/console/supplier',
     ],
+    smokeRoutes: [
+      ...SHARED_ROUTES,
+      ...consoleRoutes(['kitchen', 'supplier']),
+      '/jobs',
+    ],
     httpContracts: [
+      jobIndexApiContract('/api/public/jobs?limit=1'),
       profileIndexApiContract('/api/public/chefs'),
       profileIndexApiContract('/api/public/drivers'),
       profileIndexApiContract('/api/public/agents'),
@@ -291,6 +301,8 @@ export const APP_REGISTRY = {
     workspace: './projects/werkbox/werkbox-app',
     port: 3002,
     consoles: [],
+    smokeRoutes: [...SHARED_ROUTES, '/jobs'],
+    httpContracts: [jobIndexApiContract('/api/public/jobs?limit=1')],
     launchOrder: 3,
   },
   richies: {

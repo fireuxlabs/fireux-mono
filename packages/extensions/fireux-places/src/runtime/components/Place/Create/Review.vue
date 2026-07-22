@@ -1,5 +1,5 @@
 <template>
-  <!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: review confirmed defaults and optional branding. -->
+  <!-- Concurrent edit — 2026-07-22 12:27 CEST — Place palette onboarding: review sparse shared colours and optional branding. -->
   <section class="form-stack-sm">
     <dl class="form-stack-sm">
       <div>
@@ -22,6 +22,10 @@
         <dt class="form-text-muted">Logo</dt>
         <dd>{{ logoLabel }}</dd>
       </div>
+      <div>
+        <dt class="form-text-muted">Colours</dt>
+        <dd>{{ paletteLabel }}</dd>
+      </div>
     </dl>
 
     <UAlert
@@ -39,7 +43,7 @@
       variant="soft"
       icon="i-lucide-list-checks"
       title="Finish this Place"
-      description="Only missing defaults and the optional logo will be added. Existing Place truth will not be overwritten."
+      description="Only missing defaults and optional branding will be added. Existing Place truth will not be overwritten."
     />
 
     <UAlert
@@ -56,6 +60,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { PlaceUpsertInput } from '../../../models/place.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 
 const props = defineProps<{
   place: PlaceUpsertInput
@@ -64,6 +69,7 @@ const props = defineProps<{
   currencyCode: string
   timezone: string
   logoStaged: boolean
+  brandPalette: SparseBrandPalette
 }>()
 
 const address = computed(() =>
@@ -78,5 +84,10 @@ const logoLabel = computed(() => {
   if (props.logoStaged) return 'Ready to upload'
   if (String(props.place.image_url || '').trim()) return 'Existing logo'
   return 'Skipped for now'
+})
+
+const paletteLabel = computed(() => {
+  const count = Object.keys(props.brandPalette).length
+  return count ? `${count} Place colour${count === 1 ? '' : 's'}` : 'FireUX defaults'
 })
 </script>

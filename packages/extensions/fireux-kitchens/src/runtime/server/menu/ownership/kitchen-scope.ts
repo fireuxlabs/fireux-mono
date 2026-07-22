@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: hydrate Kitchen fulfilment capability with Menu ownership.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: hydrate sparse Menu baselines through concrete Place runtime imports.
+// Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: resolve Place base, migration fallback, then canonical root override.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
@@ -108,11 +109,9 @@ export function menuKitchenIdentity(
     ? appMenuConfig
     : rootMenuConfig
   const pageStyle = resolveMenuPageStyle(
+    { source: 'place', style: placeData.brand_palette },
     { source: 'app-kitchen', style: readKitchenMenuStyle(appData) },
-    {
-      source: 'root-kitchen',
-      style: isTenantOwned ? {} : readKitchenMenuStyle(rootData),
-    }
+    { source: 'root-kitchen', style: readKitchenMenuStyle(rootData) }
   )
   const imageUrl =
     placeIdentity.imageUrl || appIdentity.imageUrl || rootIdentity.imageUrl
@@ -122,7 +121,7 @@ export function menuKitchenIdentity(
       ? appIdentity.imageShade
       : rootIdentity.imageShade
 
-  // Menu identity spine: tenant apps emit style through their API; root menu_style is only a non-tenant directory fallback.
+  // AppKitchen style remains read-only migration input; new and edited truth belongs on the root Kitchen.
   return {
     name:
       explicitKitchenDisplayName(appData) ||

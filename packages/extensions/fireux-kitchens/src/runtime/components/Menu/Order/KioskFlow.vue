@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: frame canonical ordering with generic Kitchen identity and ambient presentation. -->
+<!-- Concurrent edit — 2026-07-22 12:20 CEST — Product Demo pass: expose the order layer as a scoped presentation seam while retaining the canonical lifecycle by default. -->
 <template>
   <section
     class="menu-order-kiosk"
@@ -23,7 +24,7 @@
           type="button"
           class="menu-order-kiosk__change"
           data-menu-action="change-kiosk-mode"
-          @click="selectedType = null"
+          @click="clearSelection"
         >
           <UIcon name="i-lucide-arrow-left" aria-hidden="true" />
           <span>Change</span>
@@ -39,18 +40,26 @@
         </span>
       </header>
 
-      <MenuOrderKioskOrderFlow
-        :key="selectedType"
+      <slot
+        name="order"
         :config="selectedConfig"
-        :currency-code="currencyCode"
-        :kitchen-id="kitchenId"
-        :kitchen-slug="kitchenSlug"
-        :menu-id="menuId"
         :order-type="selectedType"
+        :restart="clearSelection"
         :scope-key="`${scopeKey}:${selectedType}`"
-        :sections="sections"
-        :source-menu-id="sourceMenuId"
-      />
+      >
+        <MenuOrderKioskOrderFlow
+          :key="selectedType"
+          :config="selectedConfig"
+          :currency-code="currencyCode"
+          :kitchen-id="kitchenId"
+          :kitchen-slug="kitchenSlug"
+          :menu-id="menuId"
+          :order-type="selectedType"
+          :scope-key="`${scopeKey}:${selectedType}`"
+          :sections="sections"
+          :source-menu-id="sourceMenuId"
+        />
+      </slot>
     </template>
   </section>
 </template>
@@ -93,6 +102,10 @@ const selectedConfig = computed(() => props.configs.find(
 const selectedLabel = computed(() =>
   selectedType.value === 'eat_in' ? 'Eat here' : 'Take away'
 )
+
+function clearSelection() {
+  selectedType.value = null
+}
 </script>
 
 <style scoped>

@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Trusted Jobs API: own bounded author reads and all Job lifecycle writes through Admin.
+// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: authorize explicit Agent owners and exact canonical roots.
 import type {
   DocumentSnapshot,
 } from 'firebase-admin/firestore'
@@ -10,6 +11,8 @@ import {
 } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { projectPublicCompany } from 'fireux-companies/runtime/server/company/public-projection.ts'
+import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection.ts'
 import type {
   AuthorJobListResponse,
   AuthorJobResponse,
@@ -22,9 +25,10 @@ import { JobStorage, type Job } from '../../models/job.model.ts'
 import { AgentStorage, AppAgentStorage } from '../../models/profiles/Agent/Agent.model.ts'
 import { readJobServerScope } from './runtime.ts'
 import {
-  JOB_MUTABLE_FIELDS,
+  canonicalJobRoot,
+  JOB_PATCH_FIELDS,
+  jobCreateFields,
   jobReferences,
-  mutableJobFields,
   normalizeJobCreateIntent,
   normalizeJobPatchIntent,
 } from './validation.ts'
@@ -46,41 +50,32 @@ function markPrivateRead(event: H3Event): void {
   setHeader(event, 'Vary', 'Authorization')
 }
 
+function canonicalJob(snapshot: DocumentSnapshot): Job {
+  try {
+    return canonicalJobRoot(snapshot.id, snapshot.data())
+  } catch {
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'The stored Job is not canonical.',
+    })
+  }
+}
+
 function assertAuthorJob(
   snapshot: DocumentSnapshot,
   uid: string,
   appId: string
-): Record<string, unknown> {
+): Job {
   if (!snapshot.exists) notFound()
-  const data = record(snapshot.data())
-  const created = record(data.created)
-  if (text(created.by) !== uid || text(data.source_app_id) !== appId) {
+  const job = canonicalJob(snapshot)
+  if (
+    job.owner_type !== 'user' ||
+    job.owner_id !== uid ||
+    job.source_app_id !== appId
+  ) {
     notFound()
   }
-  return data
-}
-
-function stamp(value: unknown): Job['created'] {
-  const source = record(value)
-  return {
-    at: (source.at ?? {}) as Job['created']['at'],
-    by: text(source.by) || undefined,
-    app_id: text(source.app_id) || undefined,
-  }
-}
-
-function projectAuthorJob(id: string, value: Record<string, unknown>): Job {
-  return {
-    id,
-    source_app_id: text(value.source_app_id),
-    source_ecosystem_id: text(value.source_ecosystem_id),
-    owner_type: text(value.owner_type) as Job['owner_type'],
-    owner_id: text(value.owner_id),
-    visibility: text(value.visibility) as Job['visibility'],
-    ...mutableJobFields(value),
-    created: stamp(value.created),
-    updated: stamp(value.updated),
-  }
+  return job
 }
 
 function stampMillis(value: unknown): number {
@@ -99,7 +94,8 @@ function referenceDocuments(
   }))
 }
 
-function assertReferencesExist(
+function assertCanonicalReferences(
+  job: ReturnType<typeof normalizeJobCreateIntent>,
   references: ReturnType<typeof referenceDocuments>,
   snapshots: DocumentSnapshot[]
 ): void {
@@ -108,6 +104,28 @@ function assertReferencesExist(
     throw createError({
       statusCode: 400,
       statusMessage: `${missing.label} is not available.`,
+    })
+  }
+
+  const values = new Map(
+    references.map((reference, index) => [
+      reference.path,
+      record(snapshots[index]?.data()),
+    ])
+  )
+  const company = projectPublicCompany(
+    job.company_id,
+    values.get(`companies/${job.company_id}`) || {},
+    values.get(`places/${job.company_id}`) || {}
+  )
+  const place = projectPublicPlace(
+    job.place_id,
+    values.get(`places/${job.place_id}`) || {}
+  )
+  if (!company || !place) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Job Company and Place relationships must be canonical.',
     })
   }
 }
@@ -218,11 +236,11 @@ export async function listAuthorJobs(event: H3Event): Promise<AuthorJobListRespo
   assertCurrentAppMembership(appSnapshot, membershipSnapshot)
   const snapshot = await db
     .collection(JobStorage.collection)
-    .where('created.by', '==', uid)
+    .where('source_app_id', '==', scope.appId)
+    .where('owner_id', '==', uid)
     .limit(AUTHOR_JOB_LIMIT + 1)
     .get()
   const matching = snapshot.docs
-    .filter(document => text(document.data().source_app_id) === scope.appId)
     .slice(0, AUTHOR_JOB_LIMIT)
     .sort((left, right) => {
       const difference = stampMillis(right.data().updated) - stampMillis(left.data().updated)
@@ -230,7 +248,7 @@ export async function listAuthorJobs(event: H3Event): Promise<AuthorJobListRespo
     })
 
   return {
-    items: matching.map(document => projectAuthorJob(document.id, document.data())),
+    items: matching.map(document => assertAuthorJob(document, uid, scope.appId)),
     limit: AUTHOR_JOB_LIMIT,
     truncated: snapshot.size > AUTHOR_JOB_LIMIT,
   }
@@ -255,7 +273,7 @@ export async function getAuthorJob(
     .doc(id)
     .get()
   const data = assertAuthorJob(snapshot, uid, scope.appId)
-  return { job: projectAuthorJob(id, data) }
+  return { job: data }
 }
 
 export async function createAuthorJob(
@@ -286,15 +304,16 @@ export async function createAuthorJob(
       membershipSnapshot,
       appAgentSnapshot
     )
-    assertReferencesExist(references, referenceSnapshots)
+    assertCanonicalReferences(job, references, referenceSnapshots)
 
     transaction.create(jobRef, {
       ...job,
       source_app_id: scope.appId,
       source_ecosystem_id: scope.ecosystemId,
-      owner_type: 'app',
-      owner_id: scope.appId,
+      owner_type: 'user',
+      owner_id: uid,
       visibility: 'app',
+      status: 'open',
       created: serverAuditStamp({ by: uid, appId: scope.appId }),
       updated: serverAuditStamp({ by: uid }),
     })
@@ -305,7 +324,7 @@ export async function createAuthorJob(
   return {
     id: jobRef.id,
     created: true,
-    job: projectAuthorJob(jobRef.id, savedData),
+    job: savedData,
   }
 }
 
@@ -330,7 +349,10 @@ export async function patchAuthorJob(
     const snapshot = await transaction.get(jobRef)
     const current = assertAuthorJob(snapshot, uid, scope.appId)
     const proposed = normalizeJobCreateIntent(
-      { ...mutableJobFields(current), ...requestedPatch },
+      {
+        ...jobCreateFields(current as unknown as Record<string, unknown>),
+        ...requestedPatch,
+      },
       scope
     )
     const references = referenceDocuments(db, proposed)
@@ -346,12 +368,15 @@ export async function patchAuthorJob(
       membershipSnapshot,
       appAgentSnapshot
     )
-    assertReferencesExist(references, referenceSnapshots)
+    assertCanonicalReferences(proposed, references, referenceSnapshots)
 
     const patch = Object.fromEntries(
-      JOB_MUTABLE_FIELDS
+      JOB_PATCH_FIELDS
         .filter(key => Object.prototype.hasOwnProperty.call(requestedPatch, key))
-        .map(key => [key, proposed[key]])
+        .map(key => [
+          key,
+          key === 'status' ? requestedPatch.status : proposed[key],
+        ])
     ) as JobPatchIntent
     transaction.update(jobRef, {
       ...patch,
@@ -361,7 +386,7 @@ export async function patchAuthorJob(
 
   const saved = await jobRef.get()
   const savedData = assertAuthorJob(saved, uid, scope.appId)
-  return { id, updated: true, job: projectAuthorJob(id, savedData) }
+  return { id, updated: true, job: savedData }
 }
 
 export async function publishAuthorJob(
@@ -382,7 +407,10 @@ export async function publishAuthorJob(
   await db.runTransaction(async transaction => {
     const snapshot = await transaction.get(jobRef)
     const current = assertAuthorJob(snapshot, uid, scope.appId)
-    const normalized = normalizeJobCreateIntent(mutableJobFields(current), scope)
+    const normalized = normalizeJobCreateIntent(
+      jobCreateFields(current as unknown as Record<string, unknown>),
+      scope
+    )
     const references = referenceDocuments(db, normalized)
     const [appSnapshot, membershipSnapshot, appAgentSnapshot, ...referenceSnapshots] =
       await transaction.getAll(
@@ -396,7 +424,7 @@ export async function publishAuthorJob(
       membershipSnapshot,
       appAgentSnapshot
     )
-    assertReferencesExist(references, referenceSnapshots)
+    assertCanonicalReferences(normalized, references, referenceSnapshots)
 
     transaction.update(jobRef, {
       visibility: 'public',
@@ -406,5 +434,5 @@ export async function publishAuthorJob(
 
   const saved = await jobRef.get()
   const savedData = assertAuthorJob(saved, uid, scope.appId)
-  return { id, published: true, job: projectAuthorJob(id, savedData) }
+  return { id, published: true, job: savedData }
 }

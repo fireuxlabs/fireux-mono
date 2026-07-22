@@ -1,12 +1,13 @@
 <template>
-  <!-- Concurrent edit — 2026-07-21 16:26 CEST — Place onboarding enrichment: stage an optional Place image without persisting it. -->
+  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: stage optional logo and sparse shared colours. -->
   <section class="form-stack-sm">
     <p class="form-text-muted">
-      Add a recognisable logo or image for {{ placeName }}. It stays staged
-      until the Place onboarding is confirmed.
+      Add recognisable Place branding. New values stay staged until onboarding
+      is confirmed.
     </p>
 
     <MoleculesFormsFirestoreImagePicker
+      v-if="imageEditable"
       :src="previewSource"
       :alt="placeName || 'Place'"
       :initials="initials"
@@ -16,11 +17,21 @@
       :update-function="stageImage"
     />
 
+    <UAlert
+      v-else-if="imageUrl"
+      color="neutral"
+      variant="soft"
+      icon="i-lucide-image"
+      title="Using the existing Place logo"
+      description="Onboarding preserves stored Place media."
+    />
+
     <p v-if="imageFile" class="form-text-muted">
       {{ imageFile.name }} is ready for review.
     </p>
 
     <UButton
+      v-if="imageEditable"
       type="button"
       color="neutral"
       variant="ghost"
@@ -29,21 +40,43 @@
       :disabled="uploading"
       @click="clearImage"
     />
+
+    <MoleculesFormsBrandPalette
+      :model-value="brandPalette"
+      :disabled="!paletteEditable"
+      active-label="Place colour"
+      inherit-label="FireUX default"
+      @update:model-value="emit('update:brandPalette', $event)"
+    />
+
+    <UAlert
+      v-if="!paletteEditable && Object.keys(brandPalette).length"
+      color="neutral"
+      variant="soft"
+      icon="i-lucide-palette"
+      title="Using the existing Place colours"
+      description="Onboarding preserves an established Place palette."
+    />
   </section>
 </template>
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 
 const props = defineProps<{
   placeName: string
   imageUrl: string
   imageFile: File | null
   uploading: boolean
+  imageEditable: boolean
+  brandPalette: SparseBrandPalette
+  paletteEditable: boolean
 }>()
 
 const emit = defineEmits<{
   (event: 'image-selected', file: File | null): void
+  (event: 'update:brandPalette', value: SparseBrandPalette): void
 }>()
 
 const objectUrl = ref('')
@@ -81,11 +114,13 @@ function syncPreview(file: File | null) {
 }
 
 function stageImage(file: File) {
+  if (!props.imageEditable) return
   syncPreview(file)
   emit('image-selected', file)
 }
 
 function clearImage() {
+  if (!props.imageEditable) return
   revokeObjectUrl()
   emit('image-selected', null)
 }

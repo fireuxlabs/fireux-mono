@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, App access, and UserApp target.
 // Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: normalize only absent support authority arrays inside the trusted transaction.
+// Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -11,6 +12,11 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import {
+  compactBrandPalette,
+  parseBrandPalette,
+  readBrandPalette,
+} from 'fireux-core/runtime/utils/brand-palette.ts'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import type {
   KitchenOnboardingCompleteResult,
@@ -201,6 +207,9 @@ export async function previewKitchenOnboarding(
   )
   const visibility = record(locator.kitchen?.visibility)
   const published = visibility.show === true || locator.kitchen?.show === true
+  const paletteOverride = readBrandPalette(
+    record(locator.kitchen?.menus).style
+  )
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
@@ -210,6 +219,9 @@ export async function previewKitchenOnboarding(
     ...(displayName ? { display_name: displayName } : {}),
     ...(locator.kitchen ? { published } : {}),
     ...(slug ? { slug } : {}),
+    ...(Object.keys(paletteOverride).length
+      ? { palette_override: paletteOverride }
+      : {}),
   }
 }
 
@@ -217,9 +229,16 @@ export async function completeKitchenOnboarding(
   event: H3Event,
   input: unknown
 ): Promise<KitchenOnboardingCompleteResult> {
-  const body = request(input, ['place_id', 'kitchen_id', 'display_name'])
+  const body = request(input, [
+    'place_id',
+    'kitchen_id',
+    'display_name',
+    'palette_override',
+  ])
   const displayName = text(body.display_name)
   if (displayName.length > 120) fail(400, 'Kitchen name is too long.')
+  const requestedPalette = parseBrandPalette(body.palette_override)
+  if ('error' in requestedPalette) fail(400, requestedPalette.error)
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
   assertRuntimeTarget(current, locator.kitchenId)
@@ -285,6 +304,15 @@ export async function completeKitchenOnboarding(
     const createdAppSupport = !support.exists
     const placeName = text(place.get('name'))
     const slug = text(rootData?.slug)
+    const placePalette = readBrandPalette(place.get('brand_palette'))
+    const paletteOverride = compactBrandPalette(
+      requestedPalette.value,
+      placePalette
+    )
+
+    if (!createdRoot && Object.keys(requestedPalette.value).length) {
+      fail(409, 'Existing Kitchen colours are preserved during onboarding.')
+    }
 
     if (createdRoot) {
       transaction.create(rootRef, {
@@ -300,6 +328,9 @@ export async function completeKitchenOnboarding(
         },
         ...(displayName && displayName !== placeName
           ? { identity: { display_name: displayName } }
+          : {}),
+        ...(Object.keys(paletteOverride).length
+          ? { menus: { style: paletteOverride } }
           : {}),
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
@@ -359,6 +390,9 @@ export async function completeKitchenOnboarding(
       created_root: createdRoot,
       created_app_support: createdAppSupport,
       ...(slug ? { slug } : {}),
+      ...(createdRoot && Object.keys(paletteOverride).length
+        ? { palette_override: paletteOverride }
+        : {}),
     }
   })
 }
