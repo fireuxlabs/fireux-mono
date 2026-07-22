@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: project menu images only from Dish food truth.
 import type { Firestore } from 'firebase-admin/firestore'
 import {
   normalizeDishDealFlag,
@@ -62,18 +63,11 @@ export async function readKitchenMenuSections(
             return {
               id: text(item.id),
               dish_id: dishId,
-              item_kind:
-                readDishItemKind(item.item_kind) ||
-                readDishItemKind(dish?.item_kind) ||
-                'food',
-              is_deal:
-                normalizeDishDealFlag(item.is_deal) ||
-                normalizeDishDealFlag(dish?.is_deal),
+              item_kind: readDishItemKind(dish?.item_kind) || 'food',
+              is_deal: normalizeDishDealFlag(dish?.is_deal),
               name: readRecordString(dish || {}, 'name') || dishId,
               description: readRecordString(dish || {}, 'description'),
-              image_url:
-                readRecordString(item, 'image_url') ||
-                readRecordString(dish || {}, 'image_url'),
+              image_url: readRecordString(dish || {}, 'image'),
               price: numberValue(item.price),
               priceOptions: normalizeMenuItemPriceOptions(item.price_options),
               addOns: normalizeMenuItemAddOns(item.add_ons),

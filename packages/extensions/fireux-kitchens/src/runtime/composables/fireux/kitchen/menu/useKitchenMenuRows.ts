@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: derive row media only from its Dish.
 import { computed, type Ref } from 'vue'
 import type { Dish } from '../../../../models/kitchen/dish.model'
 import {
@@ -51,7 +52,7 @@ export function useKitchenMenuRows(options: MenuRowOptions) {
             dish,
             name: text(dish?.name) || dishId,
             description: text(dish?.description),
-            image_url: text(record(item).image_url) || text(record(dish).image_url),
+            image_url: text(record(dish).image),
             price: Number(item.price || 0),
             addOns: normalizeMenuItemAddOns(record(item).add_ons),
             priceOptions: normalizeMenuItemPriceOptions(record(item).price_options),

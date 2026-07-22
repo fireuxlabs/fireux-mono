@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: stage an image and persist it through the canonical Dish upload after create. -->
 <template>
   <UCard>
     <template #header>
@@ -10,6 +11,22 @@
       class="space-y-4"
       @submit.prevent="addDish"
     >
+      <UFormField label="Image">
+        <div class="flex flex-col items-start gap-2">
+          <MoleculesFormsFirestoreImagePicker
+            :src="imagePreviewUrl"
+            :alt="name.trim() || 'New Dish'"
+            :initials="imageInitials"
+            button-label="Choose Dish image"
+            :disabled="saving || !canCreateDish"
+            :update-function="stageImage"
+          />
+          <p class="text-xs text-dimmed">
+            Use a transparent-background source. It will be stored as a 1200 × 1200 WebP when the Dish is created.
+          </p>
+        </div>
+      </UFormField>
+
       <div class="grid gap-4 md:grid-cols-2">
         <UFormField label="Name">
           <UInput
@@ -52,7 +69,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { computed, ref } from 'vue'
+import { computed, onBeforeUnmount, ref } from 'vue'
 import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
 import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
 
@@ -62,7 +79,7 @@ const {
   databaseId,
   canWrite,
 } = useKitchenConsoleDishes({ resolveMenuSections: false })
-const { createDish } = useDish({
+const { createDish, uploadDishImage } = useDish({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
@@ -72,11 +89,33 @@ const name = ref('')
 const description = ref('')
 const saving = ref(false)
 const message = ref('')
+const imageFile = ref<File | null>(null)
+const imagePreviewUrl = ref('')
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const canCreateDish = computed(() =>
   canWrite.value && Boolean(normalizeString(kitchenId.value))
 )
+const imageInitials = computed(() => {
+  const parts = normalizeString(name.value).split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'D'
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
+  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
+})
+
+const clearImageDraft = () => {
+  if (imagePreviewUrl.value) URL.revokeObjectURL(imagePreviewUrl.value)
+  imagePreviewUrl.value = ''
+  imageFile.value = null
+}
+
+const stageImage = (file: File) => {
+  clearImageDraft()
+  imageFile.value = file
+  imagePreviewUrl.value = URL.createObjectURL(file)
+}
+
+onBeforeUnmount(clearImageDraft)
 
 const addDish = async () => {
   if (!canCreateDish.value || saving.value) return
@@ -95,15 +134,47 @@ const addDish = async () => {
   message.value = ''
 
   try {
-    await createDish(
+    const resolvedKitchenId = normalizeString(kitchenId.value)
+    const result = await createDish(
       {
         name: dishName,
         description: normalizeString(description.value),
       },
-      { kitchenId: normalizeString(kitchenId.value) }
+      { kitchenId: resolvedKitchenId }
     )
+
+    if (imageFile.value) {
+      try {
+        await uploadDishImage({
+          dishId: result.id,
+          kitchenId: resolvedKitchenId,
+          file: imageFile.value,
+        })
+      } catch (error) {
+        const imageError = String(
+          (error as any)?.data?.statusMessage ||
+          (error as any)?.statusMessage ||
+          (error as any)?.message ||
+          error ||
+          'Image upload failed.'
+        )
+        message.value = `Created ${dishName}, but its image was not saved: ${imageError}`
+        toast.add({
+          title: 'Dish created without its image',
+          description: 'Open the Dish to retry the image upload.',
+          color: 'warning',
+          icon: 'i-lucide-image-off',
+        })
+        clearImageDraft()
+        name.value = ''
+        description.value = ''
+        return
+      }
+    }
+
     name.value = ''
     description.value = ''
+    clearImageDraft()
     message.value = `Created ${dishName}.`
     toast.add({ title: 'Dish created', icon: 'i-heroicons-check-circle' })
   } catch (error) {

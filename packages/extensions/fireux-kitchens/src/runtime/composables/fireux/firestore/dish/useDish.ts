@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: expose the named Dish image mutation in the Dish stack.
 import type { Ref } from 'vue'
 import type { Dish } from '../../../../models/kitchen/dish.model'
 import { useKitchenDishCollection } from './fetch/useKitchenDishCollection'
@@ -5,6 +6,7 @@ import { useDishFetch } from './fetch/useDishFetch'
 import { useDishCreate } from './mutations/useDishCreate'
 import { useDishUpdate } from './mutations/useDishUpdate'
 import { useDishDelete } from './mutations/useDishDelete'
+import { useDishImageUpload } from './mutations/useDishImageUpload'
 import { useDishComputed } from './utils/view/useDishComputed'
 import { useDishInterface } from './utils/view/useDishInterface'
 
@@ -17,6 +19,7 @@ export {
   useDishCreate,
   useDishUpdate,
   useDishDelete,
+  useDishImageUpload,
   useDishComputed,
   useDishInterface,
 }
@@ -43,6 +46,7 @@ export function useDish(options: UseDishOptions = {}) {
     ...useDishCreate(options),
     ...useDishUpdate(options),
     ...useDishDelete(options),
+    ...useDishImageUpload(),
     ...useDishComputed(),
     ...useDishInterface(),
   }

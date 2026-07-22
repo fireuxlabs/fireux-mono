@@ -1,15 +1,15 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify items as MenuSection-owned scoped records.
+// Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: keep food media on Dish and commercial placement on MenuItem.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { DishItemKind } from '../dish.model'
 
 /**
  * Family: App-scoped Kitchen Menu Section child record.
  *
  * MenuItem is a placement link to a Dish. Dish owns food truth; MenuItem owns
- * menu placement state such as section, order, status, price override, and
- * optional menu-row presentation such as a stock image.
+ * menu placement state such as section, order, availability, price, variants,
+ * and add-ons. Food copy and media remain on Dish.
  */
 export const MenuItemStorage = {
   shape: 'scoped',
@@ -32,7 +32,7 @@ export const MenuItemRecord = defineFireuxEntity({
   scoped: MenuItemStorage.path,
   notes: [
     'MenuItem places a Dish in a MenuSection.',
-    'Dish owns food truth; MenuItem owns placement, order, price overrides, and optional row presentation.',
+    'Dish owns food truth and media; MenuItem owns placement, order, availability, price, variants, and add-ons.',
   ],
 })
 
@@ -123,9 +123,6 @@ export const MenuItemModel = {
   menu_id: '' as string,
   section_id: '' as string,
   dish_id: '' as string,
-  item_kind: 'food' as DishItemKind,
-  is_deal: false as boolean,
-  image_url: '' as string,
   price: 0 as number,
   price_options: [] as MenuItemPriceOption[],
   add_ons: [] as MenuItemAddOnOption[],

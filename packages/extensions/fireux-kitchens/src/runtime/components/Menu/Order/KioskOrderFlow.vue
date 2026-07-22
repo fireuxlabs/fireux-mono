@@ -1,65 +1,74 @@
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: send a fixed Eat here or Take away order through the shared basket and lifecycle. -->
+<!-- Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: consume the renamed Kiosk order delta. -->
 <template>
-  <MenuOrderStatus
-    v-if="order.sentOrder.value"
-    :customer-name="order.customerName.value"
-    :destination-instructions="handoffInstructions"
-    :fulfilment-label="order.fulfilmentLabel.value"
-    fulfilment-term="Service"
-    :order="order.sentOrder.value"
-    :order-type="orderType"
-    :payment-label="order.paymentLabel.value"
-    :status="order.status.value"
-    :status-error="order.statusError.value"
-    :response-error="order.responseError.value"
-    :responding="order.responsePending.value"
-    @cancel="cancelOrder"
-    @amend="amendOrder"
-    @reset="resetOrder"
-  />
+  <div
+    class="menu-order-kiosk-order"
+    :data-menu-kiosk-order-type="orderType"
+  >
+    <div v-if="order.sentOrder.value" class="menu-order-kiosk-order__status">
+      <MenuOrderStatus
+        :customer-name="order.customerName.value"
+        :destination-instructions="handoffInstructions"
+        :fulfilment-label="order.fulfilmentLabel.value"
+        fulfilment-term="Service"
+        :order="order.sentOrder.value"
+        :order-type="orderType"
+        :payment-label="order.paymentLabel.value"
+        :status="order.status.value"
+        :status-error="order.statusError.value"
+        :response-error="order.responseError.value"
+        :responding="order.responsePending.value"
+        @cancel="cancelOrder"
+        @amend="amendOrder"
+        @reset="resetOrder"
+      />
+    </div>
 
-  <template v-else>
-    <MenuOrderCatalogue
-      :key="scopeKey"
-      :currency-code="currencyCode"
-      :sections="sections"
-      @add="basket.add"
-    />
+    <template v-else>
+      <MenuOrderKioskCatalogue
+        :key="scopeKey"
+        :currency-code="currencyCode"
+        :sections="sections"
+        @add="basket.add"
+      />
 
-    <MenuOrderBasketSummary
+      <div class="menu-order-kiosk-order__basket">
+        <MenuOrderBasketSummary
+          :currency-code="basket.currencyCode.value"
+          :quantity="basket.quantity.value"
+          :total="basket.total.value"
+          :total-label="basket.totalLabel.value"
+          @review="openBasket"
+        />
+      </div>
+
+      <MenuOrderCheckoutDialog
+        v-model:open="checkoutOpen"
+        :error="order.error.value"
+        :handoff-instructions="handoffInstructions"
+        :order-type="orderType"
+        :payment-methods="paymentMethods"
+        :pending="order.pending.value"
+        :required-contact-fields="requiredContactFields"
+        :selection-label="order.modeLabel"
+        :show-contact-fields="requiredContactFields.length > 0"
+        :total-label="basket.totalLabel.value"
+        @submit="submitOrder"
+      />
+    </template>
+
+    <MenuOrderBasketDialog
+      v-model:open="basketOpen"
+      action-label="Review and send"
       :currency-code="basket.currencyCode.value"
-      :quantity="basket.quantity.value"
-      :total="basket.total.value"
-      :total-label="basket.totalLabel.value"
-      @review="openBasket"
-    />
-
-    <MenuOrderCheckoutDialog
-      v-model:open="checkoutOpen"
-      :error="order.error.value"
-      :handoff-instructions="handoffInstructions"
-      :order-type="orderType"
-      :payment-methods="paymentMethods"
-      :pending="order.pending.value"
-      :required-contact-fields="requiredContactFields"
+      :lines="basket.lines.value"
       :selection-label="order.modeLabel"
-      :show-contact-fields="requiredContactFields.length > 0"
       :total-label="basket.totalLabel.value"
-      @submit="submitOrder"
+      @remove="basket.remove"
+      @continue="continueFromBasket"
+      @after-leave="finishBasketDialog"
     />
-  </template>
-
-  <MenuOrderBasketDialog
-    v-model:open="basketOpen"
-    action-label="Review and send"
-    :currency-code="basket.currencyCode.value"
-    :lines="basket.lines.value"
-    :selection-label="order.modeLabel"
-    :total-label="basket.totalLabel.value"
-    @remove="basket.remove"
-    @continue="continueFromBasket"
-    @after-leave="finishBasketDialog"
-  />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -68,9 +77,9 @@ import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.mode
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import {
-  useMenuKioskOrder,
-  type MenuKioskOrderType,
-} from '../../../composables/fireux/menu/order/useMenuKioskOrder'
+  useMenuOrderKiosk,
+  type MenuOrderKioskType,
+} from '../../../composables/fireux/menu/order/useMenuOrderKiosk'
 import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
 
 const props = defineProps<{
@@ -79,7 +88,7 @@ const props = defineProps<{
   kitchenId: string
   kitchenSlug?: string
   menuId: string
-  orderType: MenuKioskOrderType
+  orderType: MenuOrderKioskType
   scopeKey: string
   sections: MenuManifestSection[]
   sourceMenuId: string
@@ -90,7 +99,7 @@ const basket = useMenuOrderBasket({
   scopeKey,
   sourceMenuId: computed(() => props.sourceMenuId),
 })
-const order = useMenuKioskOrder({
+const order = useMenuOrderKiosk({
   kitchenId: computed(() => props.kitchenId),
   kitchenSlug: computed(() => props.kitchenSlug || ''),
   menuId: computed(() => props.menuId),
@@ -166,3 +175,40 @@ async function cancelOrder() {
   basket.clear()
 }
 </script>
+
+<style scoped>
+.menu-order-kiosk-order {
+  position: relative;
+  display: grid;
+  height: 100%;
+  min-height: 0;
+}
+
+.menu-order-kiosk-order__status {
+  min-height: 0;
+  padding: clamp(1rem, 4vw, 3rem);
+  overflow-y: auto;
+}
+
+.menu-order-kiosk-order__basket {
+  position: absolute;
+  z-index: 30;
+  inset-inline: clamp(1rem, 3vw, 2rem);
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  display: grid;
+  pointer-events: none;
+}
+
+.menu-order-kiosk-order__basket :deep(.menu-order-basket-summary) {
+  position: static;
+  width: min(100%, 38rem);
+  min-height: 4.25rem;
+  pointer-events: auto;
+}
+
+@media (max-width: 700px) {
+  .menu-order-kiosk-order__basket {
+    bottom: max(7rem, env(safe-area-inset-bottom));
+  }
+}
+</style>

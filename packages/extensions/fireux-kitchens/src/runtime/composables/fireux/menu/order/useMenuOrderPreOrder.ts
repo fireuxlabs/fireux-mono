@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: reuse generic lifecycle, timing, and request-item seams.
+// Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: place the Pre-order delta under the shared MenuOrder prefix.
 import type { MaybeRefOrGetter } from 'vue'
 import type { CustomerOrderSummary } from '../../../../models/customer/order.model'
 import type { MenuOrderTimeSelection } from '../../../../utils/menu-order-time'
@@ -10,7 +10,7 @@ import {
 import type { MenuOrderBasketLine } from './useMenuOrderBasket'
 import { useMenuOrderLifecycle } from './useMenuOrderLifecycle'
 
-type UseMenuCollectionOrderOptions = {
+type UseMenuOrderPreOrderOptions = {
   kitchenId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>
@@ -18,7 +18,7 @@ type UseMenuCollectionOrderOptions = {
   sourceMenuId: MaybeRefOrGetter<string>
 }
 
-type SubmitMenuCollectionOrderInput = MenuOrderCheckoutInput & {
+type SubmitMenuOrderPreOrderInput = MenuOrderCheckoutInput & {
   lines: MenuOrderBasketLine[]
   selection: MenuOrderTimeSelection
   sourceMenuId: string
@@ -26,60 +26,57 @@ type SubmitMenuCollectionOrderInput = MenuOrderCheckoutInput & {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useMenuCollectionOrder(options: UseMenuCollectionOrderOptions) {
+export function useMenuOrderPreOrder(options: UseMenuOrderPreOrderOptions) {
   const lifecycle = useMenuOrderLifecycle({
     ...options,
-    orderType: 'collection',
-    fulfilmentLabel: recoveredCollectionLabel,
+    orderType: 'pre_order',
+    fulfilmentLabel: recoveredPreOrderLabel,
   })
 
-  async function submit(input: SubmitMenuCollectionOrderInput) {
+  async function submit(input: SubmitMenuOrderPreOrderInput) {
     const sourceMenuId = text(input.sourceMenuId)
+    const requestedFor = text(input.selection.requestedFor)
     if (!sourceMenuId || !input.lines.length) throw new Error('The basket is empty.')
+    if (!requestedFor) throw new Error('Choose a requested date and time.')
+
     const name = text(input.name)
     const phone = text(input.phone)
     const email = text(input.email)
-    const collection = {
-      mode: input.selection.mode,
-      ...(input.selection.requestedFor
-        ? { requested_for: input.selection.requestedFor }
-        : {}),
+    const partySize = Number(input.partySize)
+    if (!Number.isSafeInteger(partySize) || partySize < 1 || partySize > 500) {
+      throw new Error('Add the number of guests for this pre-order.')
     }
-
     return lifecycle.submit({
       fulfilmentLabel: input.selection.label,
-      paymentLabel: menuOrderPaymentLabel('collection', input.paymentMethod),
+      paymentLabel: menuOrderPaymentLabel('pre_order', input.paymentMethod),
       body: {
         channel: 'menu',
-        order_type: 'collection',
+        order_type: 'pre_order',
         items: menuOrderRequestItems(input.lines, sourceMenuId),
-        collection,
-        ...(input.selection.requestedFor
-          ? { requested_for: input.selection.requestedFor }
-          : {}),
+        requested_for: requestedFor,
         payment_method: input.paymentMethod,
-        ...(name || phone || email ? { customer: { name, phone, email } } : {}),
+        customer: {
+          name,
+          phone,
+          email,
+          party_size: partySize,
+        },
       },
     })
   }
 
   return {
     ...lifecycle,
-    collectionLabel: lifecycle.fulfilmentLabel,
+    preOrderLabel: lifecycle.fulfilmentLabel,
     submit,
   }
 }
 
-export type MenuCollectionOrderStatus = ReturnType<
-  typeof useMenuCollectionOrder
->['status']['value']
-
-function recoveredCollectionLabel(order: CustomerOrderSummary) {
-  if (order.collection?.mode === 'queue') return 'As soon as possible'
-  const value = text(order.collection?.requested_for)
-  if (!value) return 'Scheduled collection'
+function recoveredPreOrderLabel(order: CustomerOrderSummary) {
+  const value = text(order.requested_for)
+  if (!value) return 'Requested time unavailable'
   const date = new Date(value)
-  if (Number.isNaN(date.getTime())) return 'Scheduled collection'
+  if (Number.isNaN(date.getTime())) return 'Requested time unavailable'
 
   return new Intl.DateTimeFormat(undefined, {
     dateStyle: 'medium',

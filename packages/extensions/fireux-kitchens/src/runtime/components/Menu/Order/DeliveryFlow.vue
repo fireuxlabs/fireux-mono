@@ -94,13 +94,14 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: connect address, timing, checkout, and lifecycle through shared Menu Order seams.
+// Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: consume the renamed Delivery order delta.
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuDeliveryAddress } from '../../../composables/fireux/menu/order/useMenuDeliveryAddress'
-import { useMenuDeliveryOrder } from '../../../composables/fireux/menu/order/useMenuDeliveryOrder'
+import { useMenuOrderDelivery } from '../../../composables/fireux/menu/order/useMenuOrderDelivery'
 import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
 import type { MenuOrderTimeSelection } from '../../../utils/menu-order-time'
 
@@ -127,7 +128,7 @@ const delivery = useMenuDeliveryAddress({
   menuId: computed(() => props.menuId),
   subtotal: basket.total,
 })
-const order = useMenuDeliveryOrder({
+const order = useMenuOrderDelivery({
   kitchenId: computed(() => props.kitchenId),
   kitchenSlug: computed(() => props.kitchenSlug || ''),
   menuId: computed(() => props.menuId),

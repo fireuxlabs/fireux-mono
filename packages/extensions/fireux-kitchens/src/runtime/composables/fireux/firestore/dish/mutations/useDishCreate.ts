@@ -1,3 +1,4 @@
+// Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: keep raw image URLs out of client Dish creation.
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
@@ -19,7 +20,6 @@ type DishCreateDraft = {
   description?: string
   item_kind?: string
   is_deal?: boolean
-  image_url?: string
 }
 
 export type DishCreateResult = {
@@ -35,8 +35,6 @@ function buildDishPayload(
 ): DishCreateInput {
   const name = normalizeString(draft.name)
   const description = normalizeString(draft.description)
-  const imageUrl = normalizeString(draft.image_url)
-
   return {
     id: dishId,
     name,
@@ -44,7 +42,7 @@ function buildDishPayload(
     description,
     item_kind: normalizeDishItemKind(draft.item_kind),
     is_deal: normalizeDishDealFlag(draft.is_deal),
-    image_url: imageUrl,
+    image: '',
     kitchen_id: kitchenId,
   }
 }

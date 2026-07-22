@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: preserve Menu operations on reconfirm and omit absent catalogue fields.
+// Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: never persist a source image candidate on MenuItem.
 import { DishStorage } from '../../../models/kitchen/dish.model'
 import { KitchenMenuStorage as MenuStorage } from '../../../models/kitchen/menu/kitchen-menu.model'
 import {
@@ -151,14 +152,11 @@ export async function writeKitchenMenuDraft(input: {
         menu_id: input.menuId,
         section_id: sectionId,
         dish_id: dishId,
-        item_kind: item.item_kind,
-        is_deal: item.is_deal,
         price,
         status: 'active',
         sort_order: itemIndex,
         created: stamp,
         updated: stamp,
-        ...(text(item.image_url) ? { image_url: text(item.image_url) } : {}),
         ...(addOns.length ? { add_ons: addOns } : {}),
         ...(priceOptions.length ? { price_options: priceOptions } : {}),
       }

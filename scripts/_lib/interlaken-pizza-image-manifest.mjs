@@ -1,7 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: validate the fixed Interlaken audit manifest and its contained, cryptographically pinned converted Dish images.
 // Concurrent edit — 2026-07-21 23:59 CEST — Interlaken Pizza images: isolate reviewed manifest and local artifact validation from live planning.
+// Concurrent edit — 2026-07-22 01:58 CEST — Interlaken image ownership: publish pinned imports under the Dish image path.
 
 import { createHash } from 'node:crypto'
 import { readFile } from 'node:fs/promises'
@@ -18,56 +19,156 @@ const SHA256 = /^[a-f0-9]{64}$/
 const REVIEWED_SOURCE_EXCLUSIONS = new Map([
   [
     'grilled-salmon',
-    {
-      websiteProductId: '194',
-      websiteImageUrl:
-        'https://interlakenpizza.ch/image/catalog/Mix%20grill%20teller.png',
-      reason: 'reviewed_wrong_website_image',
-      reviewNote: 'The source depicts mixed-grill meat, not salmon.',
-    },
+    sourceExclusion(
+      '194',
+      'https://interlakenpizza.ch/image/catalog/Mix%20grill%20teller.png',
+      'reviewed_wrong_website_image',
+      'The source depicts mixed-grill meat, not salmon.'
+    ),
   ],
   [
     'chicken-cheese-burger',
-    {
-      websiteProductId: '183',
-      websiteImageUrl:
-        'https://interlakenpizza.ch/image/catalog/Cheese%20Burger%201.png',
-      reason: 'reviewed_wrong_website_image',
-      reviewNote: 'The source depicts a beef patty, not chicken.',
-    },
+    sourceExclusion(
+      '183',
+      'https://interlakenpizza.ch/image/catalog/Cheese%20Burger%201.png',
+      'reviewed_wrong_website_image',
+      'The source depicts a beef patty, not chicken.'
+    ),
   ],
   [
     'espresso',
-    {
-      websiteProductId: '110',
-      websiteImageUrl:
-        'https://interlakenpizza.ch/image/catalog/pngwing.com%20(79).png',
-      reason: 'reviewed_wrong_website_image',
-      reviewNote: 'The source depicts a milk-foam latte, not espresso.',
-    },
+    sourceExclusion(
+      '110',
+      'https://interlakenpizza.ch/image/catalog/pngwing.com%20(79).png',
+      'reviewed_wrong_website_image',
+      'The source depicts a milk-foam latte, not espresso.'
+    ),
+  ],
+  [
+    'coffee-cream',
+    sourceExclusion(
+      '77',
+      'https://interlakenpizza.ch/image/catalog/Gallery/image%20100.png',
+      'reviewed_wrong_website_image'
+    ),
   ],
   [
     'pizza-feta',
-    {
-      websiteProductId: '170',
-      websiteImageUrl:
-        'https://interlakenpizza.ch/image/catalog/Pizza%20Feta.png',
-      reason: 'reviewed_wrong_website_image',
-      reviewNote: 'The source depicts a Margherita-style pizza without feta.',
-    },
+    sourceExclusion(
+      '170',
+      'https://interlakenpizza.ch/image/catalog/Pizza%20Feta.png',
+      'reviewed_wrong_website_image',
+      'The source depicts a Margherita-style pizza without feta.'
+    ),
   ],
   [
     'pizza-quattro-stagioni',
-    {
-      websiteProductId: '181',
-      websiteImageUrl:
-        'https://interlakenpizza.ch/image/catalog/PIZZA%20QUATTRO%20STAGIONI%201.png',
-      reason: 'reviewed_wrong_website_image',
-      reviewNote:
-        'The source has seafood toppings that conflict with the Dish.',
-    },
+    sourceExclusion(
+      '181',
+      'https://interlakenpizza.ch/image/catalog/PIZZA%20QUATTRO%20STAGIONI%201.png',
+      'reviewed_wrong_website_image',
+      'The source has seafood toppings that conflict with the Dish.'
+    ),
+  ],
+  [
+    'pizza-prosciutto',
+    sourceExclusion(
+      '156',
+      'https://interlakenpizza.ch/image/catalog/Banner/Pizza%20Prosciutto.png',
+      'reviewed_wrong_website_image'
+    ),
+  ],
+  [
+    'doener-box',
+    sourceExclusion(
+      '192',
+      'https://interlakenpizza.ch/image/catalog/Banner/box%20of%20Doner.png',
+      'reviewed_wrong_website_image'
+    ),
+  ],
+  [
+    'grilled-lamm',
+    sourceExclusion(
+      '196',
+      'https://interlakenpizza.ch/image/catalog/LAMM%20TELLER.png',
+      'reviewed_wrong_website_image'
+    ),
+  ],
+  [
+    'cola-zero-light-fanta-sprite',
+    sourceExclusion(
+      '218',
+      'https://interlakenpizza.ch/image/catalog/Coca%20cola,%20coca%20cola%20zero%201.png',
+      'reviewed_wrong_website_image'
+    ),
+  ],
+  [
+    'long-zenger-burger',
+    sourceExclusion(
+      '295',
+      'https://interlakenpizza.ch/image/catalog/Banner/longg.png',
+      'reviewed_wrong_website_image'
+    ),
+  ],
+  [
+    'hamburger',
+    sourceExclusion(
+      '124',
+      'https://interlakenpizza.ch/image/catalog/Hamburger%201.png',
+      'reviewed_manual_image'
+    ),
+  ],
+  [
+    'pizza-de-pollo-mild',
+    sourceExclusion(
+      '175',
+      'https://interlakenpizza.ch/image/catalog/Pizza%20De%20Pollo%20(Mild).png',
+      'reviewed_manual_image'
+    ),
+  ],
+  [
+    'pizza-interlakener',
+    sourceExclusion(
+      '179',
+      'https://interlakenpizza.ch/image/catalog/Pizza%20Interlakener.png',
+      'reviewed_manual_image'
+    ),
+  ],
+  [
+    'crispy-chicken-finger-box',
+    sourceExclusion(
+      '274',
+      'https://interlakenpizza.ch/image/catalog/snacks/image%20172.png',
+      'reviewed_manual_image'
+    ),
+  ],
+  [
+    'chicken-nuggets',
+    sourceExclusion(
+      '279',
+      'https://interlakenpizza.ch/image/catalog/snacks/erer%20(1).png',
+      'reviewed_manual_image'
+    ),
   ],
 ])
+
+function sourceExclusion(
+  websiteProductId,
+  websiteImageUrl,
+  reason,
+  reviewNote = ''
+) {
+  return {
+    websiteProductId,
+    websiteImageUrl,
+    reason,
+    reviewNote:
+      reviewNote ||
+      (reason === 'reviewed_manual_image'
+        ? 'Visual review was inconclusive; operator confirmation is required.'
+        : 'Visual review found that the source image does not safely represent this Dish.'),
+  }
+}
 
 const text = (value) => String(value ?? '').trim()
 const hash = (value) =>
@@ -231,7 +332,7 @@ async function manifestCandidates(manifest, repoRoot) {
       localSha256: verified.sha256,
       manifestImageUrl: text(currentDish.imageUrl),
       matchStatus: product.match.status,
-      objectPath: `kitchens/${INTERLAKEN_PIZZA_TARGET.kitchenId}/dishes/${dishId}/image/current`,
+      objectPath: `apps/${INTERLAKEN_PIZZA_TARGET.appId}/kitchens/${INTERLAKEN_PIZZA_TARGET.kitchenId}/dishes/${dishId}/image/${verified.sha256}.webp`,
       websiteProductId: text(product.websiteProductId),
       websiteName: text(product.websiteName),
       websiteImageUrl: text(product.websiteImageUrl),
@@ -246,10 +347,15 @@ async function manifestCandidates(manifest, repoRoot) {
     seen.add(row.dishId)
   }
 
-  const reviewedExclusions = rows
-    .filter((row) => REVIEWED_SOURCE_EXCLUSIONS.has(row.dishId))
-    .map((row) => {
-      const exclusion = REVIEWED_SOURCE_EXCLUSIONS.get(row.dishId)
+  const rowsByDishId = new Map(rows.map((row) => [row.dishId, row]))
+  const reviewedExclusions = [...REVIEWED_SOURCE_EXCLUSIONS.entries()].map(
+    ([dishId, exclusion]) => {
+      const row = rowsByDishId.get(dishId)
+      if (!row) {
+        throw new Error(
+          `Reviewed website-image exclusion is missing for ${dishId}; audit the changed source before publishing it.`
+        )
+      }
       if (
         row.websiteProductId !== exclusion.websiteProductId ||
         row.websiteImageUrl !== exclusion.websiteImageUrl
@@ -266,7 +372,8 @@ async function manifestCandidates(manifest, repoRoot) {
         sourceImageSha256: hash(row.websiteImageUrl),
         websiteName: row.websiteName,
       }
-    })
+    }
+  )
   const excludedDishIds = new Set(
     reviewedExclusions.map((item) => item.dishId)
   )
@@ -282,7 +389,7 @@ async function manifestCandidates(manifest, repoRoot) {
           dishId: row.dishId,
           dishName: row.dishName,
           reason: 'manifest_image_already_present',
-          currentImageSha256: hash(row.manifestImageUrl),
+          dishImageSha256: hash(row.manifestImageUrl),
         })),
       ...reviewedExclusions,
     ],

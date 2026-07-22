@@ -21,11 +21,12 @@ const itemName = (item: Record<string, unknown>) =>
 const itemDescription = (item: Record<string, unknown>) =>
   text(item.description) || text(record(item.item).description)
 
+// Top-level image values here are already joined public rows, not stored
+// MenuItem ownership. Raw MenuItem fallbacks are deliberately excluded.
 const itemImageUrl = (item: Record<string, unknown>) =>
   text(item.imageUrl) ||
   text(item.image_url) ||
-  text(record(item.item).image_url) ||
-  text(record(item.dish).image_url)
+  text(record(item.dish).image)
 
 const itemPriceLabel = (item: Record<string, unknown>) =>
   text(item.priceLabel) ||

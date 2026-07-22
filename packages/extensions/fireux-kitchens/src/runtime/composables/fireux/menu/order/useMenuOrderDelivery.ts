@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: reuse generic lifecycle, timing, and request-item seams.
+// Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: place the Delivery delta under the shared MenuOrder prefix.
 import type { MaybeRefOrGetter } from 'vue'
 import type { CustomerOrderSummary } from '../../../../models/customer/order.model'
 import type { MenuOrderTimeSelection } from '../../../../utils/menu-order-time'
@@ -10,7 +10,7 @@ import {
 import type { MenuOrderBasketLine } from './useMenuOrderBasket'
 import { useMenuOrderLifecycle } from './useMenuOrderLifecycle'
 
-type UseMenuDeliveryOrderOptions = {
+type UseMenuOrderDeliveryOptions = {
   kitchenId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>
@@ -18,7 +18,7 @@ type UseMenuDeliveryOrderOptions = {
   sourceMenuId: MaybeRefOrGetter<string>
 }
 
-type SubmitMenuDeliveryOrderInput = MenuOrderCheckoutInput & {
+type SubmitMenuOrderDeliveryInput = MenuOrderCheckoutInput & {
   address: string
   addressPlaceId?: string
   addressLabel: string
@@ -29,14 +29,14 @@ type SubmitMenuDeliveryOrderInput = MenuOrderCheckoutInput & {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useMenuDeliveryOrder(options: UseMenuDeliveryOrderOptions) {
+export function useMenuOrderDelivery(options: UseMenuOrderDeliveryOptions) {
   const lifecycle = useMenuOrderLifecycle({
     ...options,
     orderType: 'delivery',
     fulfilmentLabel: recoveredDeliveryLabel,
   })
 
-  async function submit(input: SubmitMenuDeliveryOrderInput) {
+  async function submit(input: SubmitMenuOrderDeliveryInput) {
     const sourceMenuId = text(input.sourceMenuId)
     const address = text(input.address)
     if (!sourceMenuId || !input.lines.length) throw new Error('The basket is empty.')

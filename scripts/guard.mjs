@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: validates the authored repository spine after repo-efficiency passes.
+// Concurrent edit — 2026-07-22 01:05 CEST — Dish media verification: record the full repository guard run used for this pass.
 // Concurrent edit — 2026-07-19 17:54 CEST — Directory Publication Scaffold: register reconciliation and dormant pipeline guards.
 // Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: verify the combined console architecture cut.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: register owner and loading boundary checks.

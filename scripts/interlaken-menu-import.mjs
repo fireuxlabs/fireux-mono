@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: dry-run and explicitly publish reviewed Interlaken transparent images to canonical Misebox Dish records.
 // Concurrent edit — 2026-07-21 23:59 CEST — Interlaken Pizza images: add the fixed-target, images-only publication entrypoint.
+// Concurrent edit — 2026-07-22 00:34 CEST — Interlaken image apply safety: make probable mappings and reviewed exclusions explicit before apply.
 
 import path from 'node:path'
 import process from 'node:process'
@@ -140,7 +141,11 @@ function printPlan(output, apply) {
     },
     {
       measure: 'Reviewed wrong source images excluded',
-      count: output.counts.reviewedSourceImagesExcluded,
+      count: output.counts.reviewedWrongSourceImagesExcluded,
+    },
+    {
+      measure: 'Reviewed manual source images excluded',
+      count: output.counts.reviewedManualSourceImagesExcluded,
     },
     { measure: 'Blockers', count: output.counts.blockers },
   ])
@@ -285,7 +290,7 @@ Apply the exact reviewed live plan:
 
 The importer is fixed to project ${INTERLAKEN_PIZZA_TARGET.projectId}, database
 ${INTERLAKEN_PIZZA_TARGET.databaseId}, App ${INTERLAKEN_PIZZA_TARGET.appId}, and
-Kitchen ${INTERLAKEN_PIZZA_TARGET.kitchenId}. It writes only empty Dish.image_url
+Kitchen ${INTERLAKEN_PIZZA_TARGET.kitchenId}. It writes only empty Dish.image
 fields. Existing images, descriptions, prices, options, and MenuItems are never
 changed. Storage objects are created only when the canonical path is absent;
 identical failed-run objects may be reused.

@@ -22,6 +22,16 @@ const unique = (values: string[]) => new Set(values).size === values.length
 const optionKey = (value: unknown) => normalizeSlug(value)
 
 const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
+  if (
+    'image' in patch ||
+    'image_url' in patch ||
+    'item_kind' in patch ||
+    'is_deal' in patch
+  ) {
+    throw new Error(
+      'Dish owns food identity and media; MenuItem owns menu pricing and options.'
+    )
+  }
   const normalized = { ...patch }
 
   if (Object.hasOwn(patch, 'price_options')) {

@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: adapt counter choices to the shared Menu order lifecycle.
+// Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: place the Kiosk delta under the shared MenuOrder prefix.
 import type { MaybeRefOrGetter } from 'vue'
 import type { CustomerOrderSummary } from '../../../../models/customer/order.model'
 import type { KitchenOrderType } from '../../../../models/kitchen/order.model'
@@ -10,32 +10,32 @@ import {
 import type { MenuOrderBasketLine } from './useMenuOrderBasket'
 import { useMenuOrderLifecycle } from './useMenuOrderLifecycle'
 
-export type MenuKioskOrderType = Extract<KitchenOrderType, 'eat_in' | 'takeaway'>
+export type MenuOrderKioskType = Extract<KitchenOrderType, 'eat_in' | 'takeaway'>
 
-type UseMenuKioskOrderOptions = {
+type UseMenuOrderKioskOptions = {
   kitchenId: MaybeRefOrGetter<string>
   kitchenSlug?: MaybeRefOrGetter<string>
   menuId: MaybeRefOrGetter<string>
-  orderType: MenuKioskOrderType
+  orderType: MenuOrderKioskType
   scopeKey: MaybeRefOrGetter<string>
   sourceMenuId: MaybeRefOrGetter<string>
 }
 
-type SubmitMenuKioskOrderInput = MenuOrderCheckoutInput & {
+type SubmitMenuOrderKioskInput = MenuOrderCheckoutInput & {
   lines: MenuOrderBasketLine[]
   sourceMenuId: string
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-export function useMenuKioskOrder(options: UseMenuKioskOrderOptions) {
+export function useMenuOrderKiosk(options: UseMenuOrderKioskOptions) {
   const modeLabel = options.orderType === 'eat_in' ? 'Eat here' : 'Take away'
   const lifecycle = useMenuOrderLifecycle({
     ...options,
     fulfilmentLabel: recoveredKioskLabel,
   })
 
-  async function submit(input: SubmitMenuKioskOrderInput) {
+  async function submit(input: SubmitMenuOrderKioskInput) {
     const sourceMenuId = text(input.sourceMenuId)
     if (!sourceMenuId || !input.lines.length) throw new Error('The basket is empty.')
     const name = text(input.name)

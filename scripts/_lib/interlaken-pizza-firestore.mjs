@@ -43,9 +43,6 @@ export async function readInterlakenCurrentState(firestore) {
           sectionId: section.id,
           sectionLabel: section.label,
           dishId: text(data.dish_id),
-          itemKind: text(data.item_kind),
-          isDeal: data.is_deal === true,
-          imageUrl: text(data.image_url),
           price: numberValue(data.price),
           priceOptions: array(data.price_options),
           addOns: array(data.add_ons),
@@ -70,7 +67,7 @@ export async function readInterlakenCurrentState(firestore) {
         description: text(data.description),
         itemKind: text(data.item_kind) || 'food',
         isDeal: data.is_deal === true,
-        imageUrl: text(data.image_url),
+        imageUrl: text(data.image),
         kitchenId: text(data.kitchen_id),
       }
     })

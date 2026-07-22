@@ -114,7 +114,7 @@
                 :to="`/console/kitchen/dishes/${encodeURIComponent(dish.id)}`"
                 :title="dish.name || dish.id"
                 :subtitle="dishSubtitle(dish)"
-                :image-url="dish.image_url"
+                :image-url="dish.image"
                 :description="dish.description"
                 :meta="dish.item_kind"
                 show-subtitle
@@ -158,7 +158,7 @@ const searchable = (dish: Dish) =>
     dish.item_kind,
     dish.is_deal ? 'deal' : '',
   ].map(clean).join(' ').toLowerCase()
-const hasImage = (dish: Dish) => Boolean(clean(dish.image_url))
+const hasImage = (dish: Dish) => Boolean(clean(dish.image))
 const kindLabel = (dish: Dish) =>
   dish.is_deal ? 'Deal' : dish.item_kind === 'drink' ? 'Drink' : 'Food'
 const dishSubtitle = (dish: Dish) =>

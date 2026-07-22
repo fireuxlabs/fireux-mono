@@ -1,13 +1,17 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: back up and explicitly apply a reviewed Interlaken Dish image plan with Storage and Firestore version guards.
 // Concurrent edit — 2026-07-21 23:59 CEST — Interlaken Pizza images: add create-only Storage publication and atomic Dish pointer updates.
+// Concurrent edit — 2026-07-22 00:34 CEST — Interlaken image apply safety: generation-pin cleanup and report every ambiguous or committed failure state.
 
 import { createHash, randomUUID } from 'node:crypto'
 
 import { FieldValue } from 'firebase-admin/firestore'
 
-import { firebaseStorageDownloadUrl } from './interlaken-pizza-image-plan.mjs'
+import {
+  firebaseStorageDownloadUrl,
+  versionLabel,
+} from './interlaken-pizza-image-plan.mjs'
 
 const OPERATION = 'interlaken-dish-images'
 const CACHE_CONTROL = 'public, max-age=300'
@@ -52,7 +56,8 @@ export async function applyInterlakenImagePlan({ bucket, db, plan }) {
 
       for (let index = 0; index < plan.entries.length; index += 1) {
         transaction.update(plan.entries[index].documentRef, {
-          image_url: published[index].url,
+          image: published[index].url,
+          image_url: FieldValue.delete(),
           updated: {
             at: FieldValue.serverTimestamp(),
             by: plan.actor,
@@ -77,10 +82,14 @@ export async function applyInterlakenImagePlan({ bucket, db, plan }) {
       }
       if (pointerState.matched === plan.entries.length) {
         firestoreCommitted = true
-        const verified = await verifyAppliedPlan({ bucket, db, plan, published })
-        return applyResult(plan, published, verified, {
-          recoveredAfterTransactionError: true,
-        })
+        try {
+          const verified = await verifyAppliedPlan({ bucket, db, plan, published })
+          return applyResult(plan, published, verified, {
+            recoveredAfterTransactionError: true,
+          })
+        } catch (verificationError) {
+          throw committedStateError(verificationError, createdObjects)
+        }
       }
       if (pointerState.matched > 0) {
         throw new Error(
@@ -99,8 +108,18 @@ export async function applyInterlakenImagePlan({ bucket, db, plan }) {
         { cause: error }
       )
     }
+    if (firestoreCommitted) {
+      throw committedStateError(error, createdObjects)
+    }
     throw error
   }
+}
+
+function committedStateError(error, createdObjects) {
+  return new Error(
+    `${error instanceof Error ? error.message : String(error)} Firestore image pointers were committed, so Storage cleanup was skipped. Created objects: ${JSON.stringify(createdObjectInventory(createdObjects))}`,
+    { cause: error }
+  )
 }
 
 function applyResult(plan, published, verified, extra = {}) {
@@ -137,28 +156,21 @@ async function publishEntry(bucket, plan, entry, createdObjects) {
     sha256: entry.localSha256,
     token,
   }
-  try {
-    await file.save(entry.buffer, {
-      resumable: false,
-      validation: 'md5',
-      preconditionOpts: { ifGenerationMatch: 0 },
+  createdObjects.push(created)
+  await file.save(entry.buffer, {
+    resumable: false,
+    validation: 'md5',
+    preconditionOpts: { ifGenerationMatch: 0 },
+    metadata: {
+      contentType: 'image/webp',
+      cacheControl: CACHE_CONTROL,
       metadata: {
-        contentType: 'image/webp',
-        cacheControl: CACHE_CONTROL,
-        metadata: {
-          firebaseStorageDownloadTokens: token,
-          fireuxImportOperation: OPERATION,
-          fireuxImportSha256: entry.localSha256,
-        },
+        firebaseStorageDownloadTokens: token,
+        fireuxImportOperation: OPERATION,
+        fireuxImportSha256: entry.localSha256,
       },
-    })
-    createdObjects.push(created)
-  } catch (error) {
-    if (await storageObjectOwnedBy(created).catch(() => false)) {
-      createdObjects.push(created)
-    }
-    throw error
-  }
+    },
+  })
 
   const current = await verifyStorageObject(bucket, entry, {
     expectedToken: token,
@@ -194,7 +206,7 @@ function assertDishSnapshots(snapshots, plan, phase) {
     if (!sameVersion(snapshot.updateTime, entry.expectedUpdateTime)) {
       throw new Error(`Dish changed ${phase}: ${entry.documentPath}`)
     }
-    if (text(snapshot.data()?.image_url)) {
+    if (text(snapshot.data()?.image) || text(snapshot.data()?.image_url)) {
       throw new Error(`Dish gained an image ${phase}: ${entry.documentPath}`)
     }
   }
@@ -208,7 +220,8 @@ async function readPublishedPointerState(db, plan, published) {
     matched: snapshots.filter(
       (snapshot, index) =>
         snapshot?.exists &&
-        text(snapshot.data()?.image_url) === published[index].url
+        text(snapshot.data()?.image) === published[index].url &&
+        !Object.hasOwn(snapshot.data() || {}, 'image_url')
     ).length,
   }
 }
@@ -226,6 +239,7 @@ async function cleanupCreatedObjects(createdObjects) {
     try {
       const [metadata] = await created.file.getMetadata()
       const generation = text(metadata.generation)
+      const metageneration = text(metadata.metageneration)
       if (!storageMetadataOwnedBy(metadata, created)) {
         return {
           dishId: created.dishId,
@@ -234,14 +248,29 @@ async function cleanupCreatedObjects(createdObjects) {
           generation,
         }
       }
-      await created.file.delete({
-        preconditionOpts: { ifGenerationMatch: generation },
-      })
+      if (!generation || !metageneration) {
+        return {
+          dishId: created.dishId,
+          objectPath: created.objectPath,
+          status: 'not_deleted_missing_generation_guard',
+          generation,
+          metageneration,
+        }
+      }
+      await created.file.bucket
+        .file(created.objectPath, {
+          preconditionOpts: {
+            ifGenerationMatch: generation,
+            ifMetagenerationMatch: metageneration,
+          },
+        })
+        .delete()
       return {
         dishId: created.dishId,
         objectPath: created.objectPath,
         status: 'deleted',
         generation,
+        metageneration,
       }
     } catch (error) {
       if (Number(error?.code) === 404) {
@@ -263,11 +292,6 @@ async function cleanupCreatedObjects(createdObjects) {
   })
 }
 
-async function storageObjectOwnedBy(created) {
-  const [metadata] = await created.file.getMetadata()
-  return storageMetadataOwnedBy(metadata, created)
-}
-
 function storageMetadataOwnedBy(metadata, created) {
   return Boolean(
     text(metadata?.metadata?.fireuxImportOperation) === OPERATION &&
@@ -286,8 +310,11 @@ async function verifyAppliedPlan({ bucket, db, plan, published }) {
     if (!snapshot?.exists) {
       throw new Error(`Verification failed; Dish is missing: ${entry.documentPath}`)
     }
-    if (text(snapshot.data()?.image_url) !== published[index].url) {
-      throw new Error(`Verification failed; image_url differs: ${entry.documentPath}`)
+    if (text(snapshot.data()?.image) !== published[index].url) {
+      throw new Error(`Verification failed; image differs: ${entry.documentPath}`)
+    }
+    if (Object.hasOwn(snapshot.data() || {}, 'image_url')) {
+      throw new Error(`Verification failed; legacy image_url remains: ${entry.documentPath}`)
     }
     if (text(snapshot.data()?.updated?.by) !== plan.actor) {
       throw new Error(`Verification failed; updated.by differs: ${entry.documentPath}`)

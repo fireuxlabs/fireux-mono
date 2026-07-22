@@ -1,7 +1,8 @@
 Menu ordering map
 <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: lock explicit Place → Kitchen → Menu → surface inheritance and sparse policy writes. -->
-Updated: 2026-07-20
-Ref: 4c0a1c7ad
+<!-- Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: map the terminal-specific view over the shared order lifecycle. -->
+Updated: 2026-07-22
+Ref: 8d4cf4288
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared lifecycle. -->
 <!-- Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: record the private Kitchen-alert, provider, and authenticated test boundary. -->
@@ -372,8 +373,11 @@ Public order funnel spine:
   behind one transient advance-table plan containing party size and a future
   requested dining time. Checkout does not ask for those plan fields again.
   Kiosk adds only the fixed Eat here/Take
-  away choice and uses
-  no customer schedule. Each active surface submits the validated basket,
+  away fulfilment choice and uses no customer schedule. Its named presentation
+  delta is a full-viewport entry stage, persistent section rail, one active
+  section, image-led touch cards, and persistent basket access; those components
+  consume the same manifest, validated basket input, checkout, and lifecycle
+  rather than a Kiosk-specific order engine. Each active surface submits the validated basket,
   minimal contact details according to the resolved customer policy, timing
   choice, and shared payment selection to the canonical endpoint. Resolved
   handoff instructions remain visible through checkout and status. The shared

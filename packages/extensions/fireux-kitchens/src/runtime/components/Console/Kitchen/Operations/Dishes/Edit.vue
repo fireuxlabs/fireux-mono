@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: replace direct client Storage writes with the Kitchen-owned Dish upload. -->
 <template>
   <UCard v-if="dish">
     <template #header>
@@ -21,6 +22,7 @@
             :src="dishImageUrl"
             :alt="dishName || 'Dish'"
             :initials="imageInitials"
+            :loading="imageUploading"
             :update-function="handleImageUpload"
           />
           <UAvatar
@@ -36,6 +38,12 @@
             class="text-xs text-dimmed"
           >
             Uploading image...
+          </p>
+          <p
+            v-else-if="canWrite"
+            class="text-center text-xs text-dimmed"
+          >
+            Use a transparent-background source. Storage keeps a 1200 × 1200 WebP.
           </p>
         </div>
       </UFormField>
@@ -71,7 +79,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDish'
 import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
 import type { DishUpdateInput } from '../../../../../models/kitchen/dish.model'
@@ -86,17 +93,16 @@ const {
 } = useKitchenConsoleDish()
 
 const toast = useToastify()
-const { updateDish } = useDish({
+const { updateDish, uploadDishImage } = useDish({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
-const { uploadImage } = useImageStorage()
 const imageUploading = ref(false)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const dishName = computed(() => normalizeString(dish.value?.name))
 const dishDescription = computed(() => normalizeString(dish.value?.description))
-const dishImageUrl = computed(() => normalizeString(dish.value?.image_url))
+const dishImageUrl = computed(() => normalizeString(dish.value?.image))
 const imageInitials = computed(() => {
   const parts = dishName.value.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'D'
@@ -152,15 +158,26 @@ const handleImageUpload = async (file: File) => {
   if (!canWrite.value || !dishId.value || !kitchenId.value) return
   imageUploading.value = true
   try {
-    const url = await uploadImage(
-      `kitchens/${kitchenId.value}/dishes/${dishId.value}/image/current`,
-      file
-    )
-    await updateDishField(
-      { image_url: url },
-      'Dish image updated',
-      'Could not update dish image'
-    )
+    await uploadDishImage({
+      dishId: dishId.value,
+      kitchenId: kitchenId.value,
+      file,
+    })
+    toast.add({
+      title: 'Dish image updated',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
+  } catch (error) {
+    toast.add({
+      title: 'Could not update Dish image',
+      description:
+        (error as any)?.data?.statusMessage ||
+        (error instanceof Error ? error.message : 'Please try again.'),
+      color: 'error',
+      icon: 'i-lucide-alert-triangle',
+    })
+    throw error
   } finally {
     imageUploading.value = false
   }

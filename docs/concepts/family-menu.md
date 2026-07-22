@@ -2,8 +2,13 @@ Menu family map
 <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: map explicit Place hydration, sparse creation, and live schedule inheritance. -->
 <!-- Concurrent edit — 2026-07-21 20:25 CEST — Food image specification: record the transparent square Menu item asset target. -->
 <!-- Concurrent edit — 2026-07-21 23:22 CEST — Interlaken Pizza audit: align reusable Dish images and MenuItem row overrides with current source. -->
-Updated: 2026-07-21
-Ref: 318378b20
+<!-- Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: map the canonical normalized Storage mutation. -->
+<!-- Concurrent edit — 2026-07-22 00:58 CEST — Dish media ownership: record pointer-only Firestore ownership and the remaining AI-import exception. -->
+<!-- Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: make Dish the sole food-image owner. -->
+<!-- Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: map named touch presentation on the canonical MenuOrder lifecycle. -->
+<!-- Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: group surface deltas under the shared MenuOrder prefix. -->
+Updated: 2026-07-22
+Ref: 8d4cf4288
 Role: map, not canon
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: record the private Kiosk doorway on the shared funnel spine. -->
 <!-- Concurrent edit — 2026-07-19 21:18 CEST — Pre-order WhatsApp pass: map the reusable server alert seam. -->
@@ -388,15 +393,19 @@ Component placement:
   `ItemDialog`, `Quantity`, `BasketSummary`, and `BasketDialog` children own the
   shared visible order seams. `CollectionFlow`, `DeliveryFlow`, `PreOrderFlow`,
   and the two-stage `KioskFlow` compose the shared `TimeDialog`, `CheckoutDialog`, `Status`,
-  and temporary `Paused` states with only their surface-specific inputs.
+  and temporary `Paused` states with only their surface-specific inputs. Kiosk's
+  named `Start`, `Catalogue`, and `Item` presentation components provide its
+  full-viewport mode choice, persistent section rail, active touch grid, and
+  image-led cards; `KioskOrderFlow` still owns the same shared basket, checkout,
+  submission, and tracking boundary as the other MenuOrder projections.
   `PreOrderPlan` owns the advance-table time and party-size gate before the
   shared catalogue; it does not create another basket or lifecycle.
   `composables/fireux/menu/order/useMenuOrderBasket.ts` owns transient basket
   arithmetic and validated line correction only, while
   `useMenuOrderLifecycle.ts` owns shared submission, idempotency, online
   checkout handoff, status polling, and customer recovery through server APIs;
-  `useMenuCollectionOrder.ts`, `useMenuDeliveryOrder.ts`,
-  `useMenuPreOrder.ts`, and `useMenuKioskOrder.ts` supply only their surface request and fulfilment-label
+  `useMenuOrderCollection.ts`, `useMenuOrderDelivery.ts`,
+  `useMenuOrderPreOrder.ts`, and `useMenuOrderKiosk.ts` supply only their surface request and fulfilment-label
   deltas;
   `useMenuOrderTrackingSession.ts` owns the minimal surface-neutral
   post-submit browser tracking record. Shared payment
@@ -446,19 +455,30 @@ Structured item options:
   variants remains unpriced.
 - The canonical MenuItem editor supports adding, editing, and removing both
   option families. Invalid or duplicate labels must not be written.
-- `Dish.image_url` is the reusable guest-facing food image. A menu placement
-  resolves `MenuItem.image_url` first only when that row intentionally needs a
-  presentation override, then falls back to the Dish image.
-- Imports must preserve existing Dish and MenuItem images unless an operator
-  explicitly reviews and applies an overwrite.
+- `Dish.image` is the sole reusable guest-facing food image. MenuItem does
+  not own or override food media.
+- Dish image bytes live in Firebase Storage; Firestore stores only the final
+  `Dish.image` pointer. Interactive create and edit use the authenticated
+  Kitchen endpoint and immutable App-scoped objects under
+  `apps/{appId}/kitchens/{kitchenId}/dishes/{dishId}/image`. The Dish pointer
+  selects its image; stored objects are never overwritten in place.
+- Reviewed image importers must preserve an existing Dish image unless an
+  operator explicitly reviews and applies an overwrite.
 - The target food-image input is a transparent WebP on a square 1200 × 1200
   canvas. Keep the food centred inside a 10% clear margin, with no background,
   frame, text, or baked-in shadow. Transparent PNG is the fallback; JPEG is not
-  suitable because it cannot preserve the alpha channel. Current upload paths
-  do not enforce this target yet, so conversion and validation remain a named
-  follow-up rather than assumed runtime behavior.
-- AI menu processing should preserve both shapes before review/confirm so
-  operators can correct them instead of rebuilding them manually.
+  suitable as a final asset because it cannot preserve the alpha channel. The
+  Kitchen-owned Dish image endpoint accepts JPEG, PNG, or WebP input and stores
+  a normalized 1200 × 1200 WebP with that transparent margin at the canonical
+  Dish Storage path. Normalization preserves the source pixels, so an opaque
+  source background, frame, text, or shadow still requires a reviewed source
+  asset rather than being treated as automatically removed.
+- AI menu processing currently carries one ambiguous candidate `image_url`,
+  does not render it on the review surface, and confirmation does not ingest it
+  through the canonical Dish-image endpoint. A provider URL is not owned Dish
+  media until reviewed ingestion writes the bytes to Storage and the resulting
+  URL to `Dish.image`. The candidate is never persisted on MenuItem; that
+  flow is not yet a Dish-image importer.
 - Re-confirming an AI draft fails closed when a matched or omitted current
   item would lose an existing variant or add-on. The server recomputes this
   comparison at confirm time; persisted review flags are presentation only.

@@ -37,7 +37,7 @@ export async function writeInterlakenImagePreimage({ backupPath, plan }) {
         path: entry.documentPath,
         updateTime: versionLabel(entry.expectedUpdateTime),
         before: serialiseFirestoreValue(entry.currentData),
-        plannedFields: ['image_url', 'updated'],
+        plannedFields: ['image', 'image_url', 'updated'],
       })),
       storage: plan.entries.map((entry) => ({
         bucket: plan.target.storageBucket,

@@ -5,6 +5,7 @@
 // Concurrent edit — 2026-07-21 16:57 CEST — Kitchen Finance surface: register the bounded gross-sales report endpoint.
 // Concurrent edit — 2026-07-21 17:15 CEST — Kitchen onboarding: register authenticated preview and atomic completion endpoints.
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: register the authenticated bounded target projection.
+// Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: register the canonical Dish image upload endpoint.
 import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import {
@@ -103,6 +104,12 @@ const baseServerHandlers = [
     method: 'get',
     handler:
       './runtime/server/api/console/kitchen/reports/gross-sales.get',
+  },
+  {
+    route: '/api/console/kitchen/dishes/:dishId/image',
+    method: 'post',
+    handler:
+      './runtime/server/api/console/kitchen/dishes/[dishId]/image.post',
   },
   {
     route: '/api/console/kitchen/menus/upload',

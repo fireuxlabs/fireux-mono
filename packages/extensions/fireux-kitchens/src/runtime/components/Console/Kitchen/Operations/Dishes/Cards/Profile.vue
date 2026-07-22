@@ -3,7 +3,7 @@
     <div class="space-y-6">
       <div class="flex items-start gap-3">
         <UAvatar
-          :src="dish.image_url || undefined"
+          :src="dish.image || undefined"
           :alt="dish.name || 'Dish'"
           icon="i-lucide-utensils"
           size="lg"

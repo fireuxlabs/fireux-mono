@@ -1,7 +1,8 @@
 // @fireux-script
-// last_used: 2026-07-21
-// usage_note: validate the reviewed Interlaken image manifest and build a fixed-target, live-versioned Dish image publication plan.
+// last_used: 2026-07-22
+// usage_note: validate the reviewed Interlaken image manifest and build a fixed-target Dish image publication plan.
 // Concurrent edit — 2026-07-21 23:57 CEST — Interlaken Pizza images: add the dry-run-first canonical Dish publication plan.
+// Concurrent edit — 2026-07-22 00:34 CEST — Interlaken image apply safety: expose pinned mismatch and manual-review exclusions separately.
 
 import { createHash } from 'node:crypto'
 
@@ -53,7 +54,7 @@ export async function buildInterlakenImagePlan({
     skipped: skipped.map((item) => ({
       dishId: item.dishId,
       reason: item.reason,
-      currentImageSha256: item.currentImageSha256,
+      dishImageSha256: item.dishImageSha256,
       reviewNote: item.reviewNote,
       sourceImageSha256: item.sourceImageSha256,
     })),
@@ -85,8 +86,11 @@ export function interlakenImagePlanOutput(plan) {
     (entry) => entry.storageAction === 'create'
   ).length
   const reuses = plan.entries.length - creates
-  const reviewedSourceExclusions = plan.skipped.filter(
+  const reviewedWrongSourceExclusions = plan.skipped.filter(
     (item) => item.reason === 'reviewed_wrong_website_image'
+  ).length
+  const reviewedManualSourceExclusions = plan.skipped.filter(
+    (item) => item.reason === 'reviewed_manual_image'
   ).length
   const existingImagesPreserved = plan.skipped.filter((item) =>
     ['manifest_image_already_present', 'live_image_now_present'].includes(
@@ -106,7 +110,8 @@ export function interlakenImagePlanOutput(plan) {
       storageCreates: creates,
       identicalStorageReuses: reuses,
       existingImagesPreserved,
-      reviewedSourceImagesExcluded: reviewedSourceExclusions,
+      reviewedWrongSourceImagesExcluded: reviewedWrongSourceExclusions,
+      reviewedManualSourceImagesExcluded: reviewedManualSourceExclusions,
       blockers: plan.blockers.length,
     },
     entries: plan.entries.map((entry) => ({
@@ -152,13 +157,16 @@ async function inspectLiveCandidate(candidate, snapshot, bucket) {
     return blocker(candidate, 'Dish updateTime is unavailable.')
   }
   if (text(data.image_url)) {
+    return blocker(candidate, 'Dish still uses legacy image_url; migrate it to image first.')
+  }
+  if (text(data.image)) {
     return {
       kind: 'skipped',
       value: {
         dishId: candidate.dishId,
         dishName: candidate.dishName,
         reason: 'live_image_now_present',
-        currentImageSha256: hash(data.image_url),
+        dishImageSha256: hash(data.image),
       },
     }
   }

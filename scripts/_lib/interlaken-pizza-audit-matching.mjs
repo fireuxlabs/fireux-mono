@@ -119,7 +119,7 @@ export function buildInterlakenAudit({ dishes, menuItems, source }) {
 
       if (product.imageUrl) {
         proposedChanges.push({
-          field: 'Dish.image_url',
+          field: 'Dish.image',
           action: currentDish.imageUrl
             ? 'preserve_existing_unless_explicit_overwrite'
             : 'stage_local_then_upload_later',

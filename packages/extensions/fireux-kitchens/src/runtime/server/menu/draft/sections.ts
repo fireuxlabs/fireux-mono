@@ -14,6 +14,7 @@ export type KitchenMenuDraftItem = {
   description: string
   item_kind: ReturnType<typeof normalizeDishItemKind>
   is_deal: boolean
+  /** Untrusted source candidate for the Dish image review/ingestion flow. */
   image_url: string
   price: number
   add_ons: unknown[]

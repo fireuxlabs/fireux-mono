@@ -4,6 +4,7 @@
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: separate smoke-contract mechanics from app registry data.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: assert bounded DTO shape and private-field exclusion.
 // Concurrent edit — 2026-07-21 15:35 CEST — Misebox startup verification: scope unavailable-order checks to package-owned surface markers.
+// Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: assert the terminal starts at mode selection before mounting its catalogue.
 
 const MENU_INDEX_MARKER = 'data-menu-projection="index"'
 const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
@@ -350,6 +351,47 @@ const menuOrderContract = (route, options = {}) => {
   }
 }
 
+const menuKioskContract = (route, options = {}) => {
+  const contract = menuOrderContract(route, { ...options, context: 'kiosk' })
+  const deferredUntilModeSelection = new Set([
+    'data-menu-order-catalogue="selectable"',
+    'data-menu-item="true"',
+    'data-menu-item-mode="selectable"',
+    'data-menu-action="add-item"',
+    'data-menu-order-basket="local"',
+    'data-menu-basket-persistence="none"',
+    'data-menu-basket-state="empty"',
+    'data-menu-basket-quantity="0"',
+    'data-menu-basket-total="0.00"',
+    'data-menu-action="review-basket"',
+  ])
+
+  return {
+    ...contract,
+    includes: [
+      ...contract.includes.filter(
+        marker => !deferredUntilModeSelection.has(marker)
+      ),
+      'data-menu-kiosk-presentation="touch"',
+      'data-menu-kiosk-stage="mode"',
+      'data-menu-action="select-kiosk-mode"',
+      'data-menu-kiosk-mode="eat_in"',
+      'data-menu-kiosk-mode="takeaway"',
+      'Eat here',
+      'Take away',
+    ],
+    excludes: [
+      ...contract.excludes,
+      'menu-order-intro',
+      'data-menu-kiosk-stage="order"',
+      'data-menu-action="change-kiosk-mode"',
+      'data-menu-order-catalogue=',
+      'data-menu-item=',
+      'data-menu-order-basket=',
+    ],
+  }
+}
+
 const unavailableMenuOrderContract = (route, title, options = {}) => {
   const indexPath = route.slice(0, route.lastIndexOf('/'))
   const exitKind = options.exitKind || 'back'
@@ -493,6 +535,7 @@ export {
   menuDocumentFileContract,
   menuIndexApiContract,
   menuIndexContract,
+  menuKioskContract,
   menuOrderContract,
   menuQrContract,
   missingMenuBrowseContract,

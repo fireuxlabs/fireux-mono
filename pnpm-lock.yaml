@@ -477,6 +477,9 @@ importers:
       qrcode:
         specifier: ^1.5.4
         version: 1.5.4
+      sharp:
+        specifier: 0.35.3
+        version: 0.35.3(@types/node@22.18.1)
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2

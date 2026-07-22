@@ -91,12 +91,13 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 17:12 CEST — Pre-order pass: compose mandatory timing over shared Menu Order seams.
 // Concurrent edit — 2026-07-20 16:10 CEST — Pre-order planning pass: gate catalogue selection behind dining time and party size.
+// Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: consume the renamed Pre-order delta.
 import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
-import { useMenuPreOrder } from '../../../composables/fireux/menu/order/useMenuPreOrder'
+import { useMenuOrderPreOrder } from '../../../composables/fireux/menu/order/useMenuOrderPreOrder'
 import type { MenuOrderTimeSelection } from '../../../utils/menu-order-time'
 import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
 
@@ -117,7 +118,7 @@ const basket = useMenuOrderBasket({
   scopeKey,
   sourceMenuId: computed(() => props.sourceMenuId),
 })
-const order = useMenuPreOrder({
+const order = useMenuOrderPreOrder({
   kitchenId: computed(() => props.kitchenId),
   kitchenSlug: computed(() => props.kitchenSlug || ''),
   menuId: computed(() => props.menuId),

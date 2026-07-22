@@ -6,6 +6,7 @@
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: keep registry data separate from smoke-contract mechanics.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: require four Misebox directory APIs.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: retire personal BNB routes and smoke only sanitized simulations.
+// Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: register the Indian Gourmet terminal entry contract.
 
 import {
   appDetailContract,
@@ -16,6 +17,7 @@ import {
   menuDocumentFileContract,
   menuIndexApiContract,
   menuIndexContract,
+  menuKioskContract,
   menuOrderContract,
   menuQrContract,
   missingMenuBrowseContract,
@@ -155,6 +157,9 @@ export const APP_REGISTRY = {
         ],
         itemExcludes: ['+ 27.-'],
       }),
+      menuKioskContract(
+        '/menus/indian-gourmet-restaurant-pizzeria-main.kiosk'
+      ),
       unavailableMenuOrderContract(
         '/menus/indian-gourmet-restaurant-pizzeria-main.collection',
         'Collection unavailable',

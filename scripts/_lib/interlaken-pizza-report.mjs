@@ -117,12 +117,11 @@ export function buildInterlakenManifest({
     modelMapping: {
       category: 'MenuSection.label',
       reusableFoodCopy: 'Dish.name and Dish.description',
-      reusableFoodImage: 'Dish.image_url',
+      reusableFoodImage: 'Dish.image',
       menuPlacement: 'MenuItem.dish_id and MenuSection',
       menuPrice: 'MenuItem.price',
       requiredVariants: 'MenuItem.price_options using absolute prices',
       optionalExtras: 'MenuItem.add_ons using incremental prices',
-      rowImageOverride: 'MenuItem.image_url (optional override)',
       mismatches: [
         'The website stores option price deltas; FireUX price_options require absolute full prices.',
         "Website radio groups such as Special combo, Burger Extra's, Drink level, and Spice Level are not safely inferable as FireUX add-ons or variants without operator review.",
@@ -248,7 +247,6 @@ function currentCounts(state) {
     dishDeals: state.dishes.filter((dish) => dish.isDeal).length,
     menuSections: state.sections.length,
     menuItems: state.menuItems.length,
-    menuItemsWithImages: state.menuItems.filter((item) => item.imageUrl).length,
     menuItemsWithPriceOptions: state.menuItems.filter(
       (item) => item.priceOptions.length
     ).length,

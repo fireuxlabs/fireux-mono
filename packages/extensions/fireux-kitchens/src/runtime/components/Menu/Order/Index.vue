@@ -11,12 +11,20 @@
     :data-menu-render-kind="orderAvailable ? 'structured' : undefined"
     :data-menu-state="orderState"
     :data-menu-surface-theme="orderAvailable ? 'menu' : 'app'"
-    :class="themeClassName"
+    :class="[
+      themeClassName,
+      { 'menu-order--kiosk': orderAvailable && menuContext === 'kiosk' },
+    ]"
     :style="themeStyleVars"
+    :aria-label="orderAvailable && menuContext === 'kiosk'
+      ? `${menuName} kiosk`
+      : undefined"
     :aria-labelledby="pending
       ? undefined
       : orderAvailable
-        ? 'menu-order-title'
+        ? menuContext === 'kiosk'
+          ? undefined
+          : 'menu-order-title'
         : 'menu-order-unavailable-title'"
   >
     <p v-if="pending" class="menu-order__state" role="status">
@@ -30,6 +38,30 @@
       :kitchen-name="kitchenName"
       :kitchen-path="unavailableKitchenPath"
     />
+
+    <div v-else-if="menuContext === 'kiosk'" class="menu-order__kiosk">
+      <div v-if="surfacePaused" class="menu-order__kiosk-paused">
+        <MenuOrderPaused
+          :browse-path="unavailableBrowsePath"
+          :message="surfacePauseMessage"
+          :surface-label="contextProfile.label"
+        />
+      </div>
+
+      <MenuOrderKioskFlow
+        v-else
+        :configs="contextConfigs"
+        :currency-code="currencyCode"
+        :kitchen-id="resolvedSource?.kitchenId || ''"
+        :kitchen-slug="orderKitchenSlug"
+        :menu-id="menuId"
+        :menu-name="menuName"
+        :scope-key="basketScopeKey"
+        :sections="menuSections"
+        :source-menu-id="sourceMenuId"
+        :wordmark-image-url="kitchenWordmarkImageUrl"
+      />
+    </div>
 
     <div v-else class="menu-order__shell">
       <MenuOrderIntro
@@ -96,18 +128,6 @@
         :source-menu-id="sourceMenuId"
       />
 
-      <MenuOrderKioskFlow
-        v-else-if="menuContext === 'kiosk'"
-        :configs="contextConfigs"
-        :currency-code="currencyCode"
-        :kitchen-id="resolvedSource?.kitchenId || ''"
-        :kitchen-slug="orderKitchenSlug"
-        :menu-id="menuId"
-        :scope-key="basketScopeKey"
-        :sections="menuSections"
-        :source-menu-id="sourceMenuId"
-      />
-
     </div>
   </article>
 </template>
@@ -115,6 +135,8 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: route the private terminal doorway through the shared order lifecycle.
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: separate always-open request intake from future dining-slot availability.
+// Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: restore a touch-first terminal frame without reviving the retired funnel stack.
+// Concurrent edit — 2026-07-22 11:23 CEST — Kiosk simplification pass: stop wiring duplicate kitchen identity into the terminal presentation.
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
