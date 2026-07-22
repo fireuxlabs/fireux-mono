@@ -78,6 +78,8 @@ export function useAgentInterface(
 
   function map(p: AgentTarget, u?: UserLike | null): AgentCard.Card {
     const id = safeString(p.id).trim() || safeString(u?.id).trim()
+    const handle = safeString(u?.handle).trim().replace(/^@/, '').toLowerCase()
+    const routeKey = handle || id
     const headline = safeString(p.title)
     const summary = resolveProfileSummary([p.summary, p.agent_bio])
     const placementTypes = resolveProfileBadges([
@@ -91,7 +93,9 @@ export function useAgentInterface(
 
     return {
       id,
-      to: id ? `/${agentConfig.collectionName}/${encodeURIComponent(id)}` : '',
+      to: routeKey
+        ? `/${agentConfig.collectionName}/${encodeURIComponent(routeKey)}`
+        : '',
 
       imageUrl: profileImage || userAvatar,
       avatarUrl: profileImage || userAvatar,
@@ -99,11 +103,11 @@ export function useAgentInterface(
 
       displayName: resolveProfileDisplayName([u?.display_name]),
       title: headline,
-      subtitle: safeString(u?.handle).trim(),
+      subtitle: handle,
       badges: placementTypes,
 
       summary,
-      handle: safeString(u?.handle).trim(),
+      handle,
 
       contactEmail: safeString(p.agent_contact_email).trim(),
       contactPhone: safeString(p.agent_contact_phone).trim(),

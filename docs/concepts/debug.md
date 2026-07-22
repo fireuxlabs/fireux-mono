@@ -1,25 +1,23 @@
-Debug surface map
-<!-- Concurrent edit — 2026-07-20 16:18 CEST — Repo Efficiency Pass 1 of 6: record the authenticated client-only dev-data boundary. -->
-<!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: separate dev previews from console Demo Data. -->
-Updated: 2026-07-20
-Ref: 8d83d3fa7
+# Debug surface map
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-Purpose:
+## Purpose
 Map how debug information should appear without becoming page noise.
 
-Vertical links:
+## Vertical links
 
 - Parent: components.md
 - Child: pages.md
 
-Horizontal links:
+## Horizontal links
 
 - console.md
 - demo-data.md
 - nuxt-ui.md
 
-Current pattern:
+## Current pattern
 
 - Use the shared FireUX debug component where available.
 - Prefer one debug panel per page or surface.
@@ -34,7 +32,7 @@ Current pattern:
   closing the panel aborts the request and clears its snapshot. Parent,
   subcollection, document, and concurrency work must remain bounded.
 
-Good debug data:
+## Good debug data
 
 - route inputs
 - fetched object(s)
@@ -42,18 +40,31 @@ Good debug data:
 - derived flags
 - collection paths or endpoint paths when debugging data flow
 
-Object vs derived:
+## Object vs derived
 
 - `objects`: fetched records, API surfaces, hydrated rows, and direct source payloads.
 - `derived`: interface cards, UI filters, counts, selected modes, computed labels, and route/action targets.
 - Prefer `DevJson` `objects` and `derived` props over a single flat `data` blob when both kinds exist.
 
-Avoid:
+## Avoid
 
 - Multiple scattered debug panels on one page.
 - Debug UI that stays visible in production.
 - Debug values that invent fallback truth.
 
-Open questions:
+## Delta register
 
-- DevJson vs DevFireuxDebugPanel naming and usage can be unified further.
+| Surface | State | Reason |
+| --- | --- | --- |
+| `DevJson` | `accepted` | Route-aware, structured `objects`/`derived` diagnostics with open/close events for lazy expensive snapshots |
+| `DevFireuxDebugPanel` | `accepted` | Compact always-mounted dev card for already prepared console/runtime data |
+| A third generic debug panel | `drift` | Extend one of the two proven surfaces instead of creating another competing system |
+
+## Alignment roadmap
+
+- Now: use `DevJson` for route/collection inspection and
+  `DevFireuxDebugPanel` for concise prepared runtime state.
+- Next: align naming only if both components converge on the same lifecycle and
+  data contract; visual similarity alone is not enough.
+- Later: guard against production rendering and unbounded closed-panel work if
+  those failures recur outside Collection Managers.

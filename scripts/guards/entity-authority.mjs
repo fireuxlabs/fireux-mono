@@ -230,23 +230,30 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(publicProfileDetail, /server:\s*true/)
   for (const [pagePath, collection, kind] of [
     [
-      'packages/extensions/fireux-jobs/src/runtime/pages/agents/[id].vue',
+      'packages/extensions/fireux-jobs/src/runtime/pages/agents/[handle].vue',
       'agents',
       'agent',
     ],
     [
-      'packages/extensions/fireux-jobs/src/runtime/pages/professionals/[id].vue',
+      'packages/extensions/fireux-jobs/src/runtime/pages/professionals/[handle].vue',
       'professionals',
       'professional',
     ],
     [
-      'packages/extensions/fireux-kitchens/src/runtime/pages/chefs/[id].vue',
+      'packages/extensions/fireux-kitchens/src/runtime/pages/chefs/[handle].vue',
       'chefs',
       'chef',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/pages/drivers/[handle].vue',
+      'drivers',
+      'driver',
     ],
   ]) {
     const source = read(repoRoot, pagePath)
     assert.match(source, /await usePublicProfileDetail/)
+    assert.match(source, /useRouteParam\(['"]handle['"]\)/)
+    assert.match(source, /redirectCode:\s*301/)
     assert.match(
       source,
       new RegExp(

@@ -1,285 +1,220 @@
-Server API spine map
-
-<!-- Concurrent edit — 2026-07-21 12:37 CEST — Cleanbox-to-Werkbox migration: distinguish the current product from its legacy physical publication scope. -->
-<!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map bounded Job APIs with server-only source scope. -->
-<!-- Concurrent edit — 2026-07-21 15:11 CEST — Werkbox trusted API cutover: map Jobs authoring, fail-closed Place authority, Place/Company projections, App people, and build attestation. -->
-<!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map bounded biography on full public User transport only. -->
-<!-- Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: map fixed-runtime authenticated target projection. -->
-<!-- Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: record strict support validation at the target boundary. -->
-<!-- Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: map admin-only repair of absent support arrays. -->
-<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map fixed-runtime atomic root/App-support onboarding endpoints. -->
-<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: map explicit Agent authority, exact roots, and Company/Place projection joins. -->
-<!-- Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: map guarded unreferenced-root removal. -->
-<!-- Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: map exact category ids and fail-closed all-versus-allowlist projection. -->
-
-<!-- Concurrent edit — 2026-07-19 17:52 CEST — Directory Publication Scaffold: map the default-off receiver and deployment gate. -->
-<!-- Concurrent edit — 2026-07-19 22:15 CEST — Directory Publication Rules Pass: map dedicated databases, machine scope, and no-write remediation. -->
-<!-- Concurrent edit — 2026-07-20 12:27 CEST — Directory Live Pass: record verified support infrastructure and remediation boundary. -->
-<!-- Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: map the legal version and server-only public identity creation. -->
-<!-- Concurrent edit — 2026-07-20 13:12 CEST — Driver authority: map trusted Kitchen grants and minimal dispatch projection. -->
-<!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: map domain-owned bounded profile/User joins. -->
-<!-- Concurrent edit — 2026-07-20 16:04 CEST — Repo Efficiency Pass 1 of 6: map public App DTO, shell status, and authenticated dev-data boundaries. -->
-<!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map owner-only raw profiles and SSR detail transport. -->
-<!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: map trusted sparse Place mutation and fail-closed Kitchen projection. -->
-<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe invalid Kitchen support joins explicitly. -->
+# Server API family
 
 Updated: 2026-07-22
-Ref: 318378b20
+Ref: 796952bf0
 Role: map, not canon
 
-Purpose:
-Map server API boundaries and avoid duplicate provider/consumer jobs.
+## Purpose
 
-Vertical links:
+Map the shared shape of FireUX server endpoints without copying every current
+route into documentation. Server APIs exist where public projection,
+authentication, trusted transactions, uploads, secrets, providers, or
+cross-project transport cannot safely belong in browser code.
 
-- Parent: nuxt4.md
-- Child: tool-provider.md
-- Child: family-menu.md
-- Child: create.md
+## Related maps
 
-Horizontal links:
+- Framework: `docs/concepts/nuxt4.md`
+- Runtime registration: `docs/concepts/runtime-package.md`
+- Create families: `docs/concepts/create.md`
+- Tool providers: `docs/concepts/tool-provider.md`
+- Firestore entities: `docs/concepts/firestore-entity.md`
+- Menu family: `docs/concepts/family-menu.md`
 
-- firestore-entity.md
-- composables.md
+## Placement spine
 
-Current server surfaces:
+| Location | Job |
+| --- | --- |
+| Package `src/runtime/server/api` | Reusable package-owned Nitro endpoints |
+| App `server/api` | App-only composition or product endpoints |
+| Package `src/runtime/server/utils` | Reusable server-only primitives and workflows |
+| App `server/utils` | App-only server helpers |
+| Package `src/runtime/server/{domain}` | Server extension of an already-proven named domain stack |
+| Package `src/config/module/server-config.ts` | Declarative registration of package handlers |
 
-- Package APIs live under `src/runtime/server/api`.
-- App APIs live under `server/api`.
-- Server helpers live under `src/runtime/server/utils` or app `server/utils`.
-- Server domain stacks may live directly under `src/runtime/server/<domain>`
-  when the domain already has a named stack such as model/composables/routes.
+Request handlers stay near their HTTP route. A difficult handler does not earn
+a vague top-level `handlers`, `processor`, or `manager` bucket.
 
-Server spine:
+Domain server folders are appropriate only when the domain already has a real
+model/composable/route family. Menu and Place are current examples. Core
+utility folders should name reusable primitives such as auth, HTTP, ids,
+records, uploads, or slugs.
 
-- `server/api/**` follows the HTTP route and method surface. Registered module
-  handlers should still live under `server/api` when they are request handlers.
-- `server/utils/**` holds reusable server-only primitives grouped by family and
-  workflow, not as a flat package drawer.
-- `server/<domain>/**` extends an existing domain stack into server-only work.
-  Menu and Place are current examples because each domain already has named
-  models, composables, routes, and server workflows. Menu owns
-  `server/menu/manifest`, `server/menu/payload`, `server/menu/source`, and
-  `server/menu/ordering`; Place owns its bounded mutation verifier under
-  `server/place`.
-- Core utility buckets may be primitive buckets such as `auth`, `http`, `ids`,
-  `records`, `uploads`, and `slug`.
-- Domain server buckets should name the visible family and server workflow,
-  for example `menu/ai`, `menu/draft`, `menu/source`, `menu/manifest`,
-  `menu/payload`, `menu/ordering`, and `menu/ownership`.
-- Use top-level provider folders such as `stripe` only for provider/runtime
-  constants that are not a request handler and are not reusable helper logic.
-- Do not create a top-level domain folder only because a route is complicated;
-  prefer `server/utils` until the domain has a named stack to extend.
+## Endpoint spine
 
-Boundary rule:
+Every endpoint should be readable as three parts:
 
-- Provider tools provide tool behavior.
-- Consumer apps store their own consumer data unless the provider is dogfooding its own tool.
-- `/api/internal/user/account` verifies a Firebase bearer identity and creates
-  the caller's `UserPrivate` account record in the identity database only when
-  absent. Email comes only from the decoded token; anonymous identities are
-  rejected; signup consent records the published `2025-11-29` Terms acceptance
-  and Privacy acknowledgement version, while
-  ordinary legacy sign-in provisions honest unrecorded terms only when its
-  public `User` already exists. A new identity requires current consent before
-  private-first provisioning. The endpoint is idempotent and never overwrites
-  existing terms evidence. Client User creation is denied; the authenticated
-  handle endpoint validates consent, owns the handle reservation, and creates
-  the canonical public User through the Admin SDK.
-- `/api/public/users` and `/api/public/users/:handle` project optional User bio
-  as bounded public text and use it for profile description/SEO when present.
-  Minimal User identity joins used by App people and domain profiles remain
-  biography-free.
-- Kitchens owns `/api/internal/kitchen/driver-access`. It binds the request to
-  runtime App/database identity, accepts no client App target, and grants or
-  revokes an AppDriver Kitchen link only after persisted App-admin or Kitchen
-  operator authority plus target UserApp/AppDriver existence are verified in
-  the transaction. `active_kitchen_ids` is derived from bounded normalized
-  links and revocation removes the active authorization.
-- Drivers consume `/api/internal/driver/dispatches` and
-  `/api/internal/driver/dispatch-watch`. The list is an allowlisted beacon with
-  no customer, destination, item-line, or payment data; watch writes are
-  server-authorized against the current Driver grant. Full Kitchen Order reads
-  remain client-accessible only to Kitchen operators.
-- Places owns `PATCH /api/places/:placeId`. It accepts an allowlisted sparse
-  patch, converts cleared optional values to field deletion, and writes through
-  Firebase Admin only after a verified bearer identity proves current-App admin
-  access or operator access to an explicitly linked `app_id`/`kitchen_id` whose
-  stored `place_id` matches the target. Stored `claimed_by` grants no authority,
-  Kitchen `canWrite` is presentation state, and no broad client Place write
-  rule is opened.
-- Places owns `DELETE /api/places/:placeId` as a trusted destructive boundary.
-  It requires the configured developer in development or current-App admin
-  membership, and transactionally refuses deletion while a Company, Kitchen,
-  Property, or Job root depends on the Place.
-- Places also owns authenticated `POST /api/places/ensure` plus bounded
-  `GET /api/places` and `GET /api/places/:placeId` projections. Ensure binds
-  creation to the fixed runtime and reviewed provider/materialization input;
-  public DTOs omit ownership, claim, precise private-contact, raw search, and
-  stamp fields. Companies owns the matching bounded list/detail projections
-  and authenticated `POST /api/companies/materialize`; a Company is emitted or
-  materialized only as a canonical same-id pair with its Place.
-- Kitchens owns `GET /api/kitchens`. It cursor-pages root Kitchens, joins only
-  explicit `place_id` and canonical App-scope references with bounded server
-  batches, and emits a sparse public card DTO only for published, non-test rows
-  with a slug and an existing linked Place. Raw Kitchen operational data,
-  missing values, copied Place snapshots, invalid App support records, and browser N+1
-  hydration stay out of the public directory contract.
-- Kitchens owns authenticated `GET /api/console/kitchen/targets`. It accepts no
-  caller App, database, or Kitchen scope; derives at most 50 candidates from
-  the fixed runtime UserApp or tenant configuration; and exact-loads every
-  strict canonical root, same-id scoped support, scoped membership, and linked
-  Place. Scoped App admins, operators, and team members receive an explicit
-  Console projection in source order. Missing pairs, malformed scope, and
-  unauthorized indexed targets fail the whole request rather than becoming an
-  empty or partial chooser. AppKitchen support must carry bounded
-  `operator_ids`, `team_ids`, and `join_requests` arrays; the projection does
-  not coerce malformed stored authority. The same projection supplies selected
-  live Kitchen identity so the Console does not issue a second raw root query.
-  The trusted onboarding transaction alone may initialize absent authority
-  arrays for an App admin; malformed stored values remain fail-closed.
-- Production root/App-support Console onboarding uses authenticated fixed-runtime
-  domain endpoints: Kitchens `/api/kitchens/onboarding/complete`, Suppliers
-  `/api/suppliers/onboarding/complete`, Portfolios
-  `/api/portfolios/onboarding/complete`, Properties
-  `/api/properties/onboarding/complete`, and the app-local Blank harness
-  `/api/console/blank/onboarding`. Each derives App and database from runtime
-  configuration, enforces its runtime create/tenant policy, validates current
-  membership and domain authority, and performs root creation/attachment,
-  same-id complete App support, and the caller's UserApp target-index update in
-  one transaction.
-  Request bodies cannot choose App, database, collection path, or support id;
-  missing/conflicting pairs and malformed stored authority fail before writes.
-- Jobs owns `GET /api/public/jobs` and `GET /api/public/jobs/:id`. The index
-  cursor-scans bounded root batches without composite-index assumptions, and
-  both routes exact-validate roots and use the same field allowlist. Only open,
-  explicitly public jobs whose exact product-neutral `category_id` is accepted
-  by the runtime's explicit allowlist or all-category scope are emitted; tenant
-  runtimes also require the current App as `source_app_id`. Empty allowlists and
-  invalid runtime role/tenant identity fail closed. Bounded server joins project
-  nested Company and canonical work-Place display truth. Source App scope,
-  Company/Place ids, owner scope, creator stamps, and raw linked documents
-  never reach the browser DTO.
-- Jobs authoring uses fixed-current-user `GET/POST /api/internal/jobs`,
-  `GET/PATCH /api/internal/jobs/:id`, and
-  `POST /api/internal/jobs/:id/publish`. The server derives App/database scope,
-  sets the current Agent/User as explicit `owner_id`, treats creator stamps as
-  audit-only, and rejects caller-selected ownership, visibility, create status,
-  source, and stamps. It requires current UserApp/Agent authority, exact-validates
-  stored roots, and verifies the Company, its same-id Place, and canonical work
-  Place through Admin before mutation. App configuration may choose categories
-  only; it cannot select a workplace model. Structured Professional
-  families use `PATCH /api/internal/profiles/professional/structured`, which
-  validates every referenced Place/Company/Kitchen; browser Rules retain only
-  safe scalar/list owner updates.
-- Core owns authenticated `GET /api/internal/app/people`. It requires current
-  App-admin membership, caps and orders member/join-request reads, and joins
-  only the allowlisted public User identity DTO. App admin UI does not hydrate
-  other Users through raw Firestore reads.
-- Each Werkbox App exposes
-  `GET /api/internal/werkbox/security-contract` through the ecosystem package.
-  The non-sensitive response binds runtime App/Project/Ecosystem/database
-  identity to a reproducible hash of the reviewed server, model, config, and
-  dependency sources. The Firestore cutover probes both deployed Apps and
-  authenticated routes before finalizing migration evidence and again before
-  Rules promotion.
-- Shared identity writes may publish authenticated, idempotent App events
-  through core server endpoints. Event facts do not choose notification
-  recipients or delivery channels; those belong to subscribing consumers.
-- `/api/public/apps` and `/api/public/apps/:id` are the owning Ecosystem's
-  allowlisted App projections; guests never read the canonical App document.
-  `/api/public/app/status` exposes only whether the current runtime App exists,
-  so the shell can distinguish missing initialization from a failed read.
-  FireUX
-  `/api/public/directory` is the shared platform App/Ecosystem projection used
-  by landing and index surfaces.
-- Raw developer inspection APIs are development-build-only and require a
-  verified Firebase bearer identity matching `fireux.developerId`.
-  `/api/dev/apps` has a fixed runtime database/collection and bounded result;
-  `/api/dev/collection-snapshot` keeps bounded inputs; `/api/dev/images`
-  exposes local asset paths only through the same developer boundary.
-- Kitchens owns `/api/public/chefs` and `/api/public/drivers`; Jobs owns
-  `/api/public/agents` and `/api/public/professionals`. Each index is capped,
-  explicitly maps domain fields, and joins a minimal canonical User DTO by the
-  shared uid. The raw profile and User collections are not public list APIs.
-  Matching `/:id` endpoints use the same allowlists and return a truthful 404
-  when either side of the canonical pair is absent or unusable. Raw Agent,
-  Chef, and Professional documents are owner-only even for single-document
-  reads; public pages use `usePublicProfileDetail` so the projected pair and
-  outer HTTP status are resolved during SSR.
-- FireUX `/api/internal/control/projects` verifies the Firebase bearer token and
-  current FireUX App-admin membership before returning allowlisted private
-  Project control-plane rows.
-- Directory responses are explicit allowlists. Failed source reads remain HTTP
-  errors and never masquerade as empty directories.
-- `GET/POST /api/registry` are retired. The mixed registry database is neither
-  entity authority nor directory authority.
-- The selected directory publication transport is Google-signed OIDC from a
-  dedicated owner worker to a private FireUX ingestion route. The receiver must
-  verify signature, issuer, fixed audience, stable service-account subject,
-  verified email, enabled source authorization, exact source database, and
-  allowlisted entity kind/id. Firebase user bearer tokens and shared webhook
-  secrets are not publisher authority.
-- FireUX has a private publication route that is 404 by default. Its fixed OIDC
-  audience and database id come only from private environment configuration;
-  request Host is never publisher authority. The database has no fallback and
-  must be exactly `platform-directory`.
-- Core has a reusable Firestore document-written factory with a durable owner
-  outbox/dispatcher. Canonical changes are watched in the canonical database,
-  while delivery state is written only to that Firebase project's dedicated
-  `directory-outbox` database. The factory requires a dedicated publisher
-  service account. It is deliberately unregistered: no current module or app
-  `firebase.json` deploys it, and public APIs still read legacy central rows.
-- `directory-outbox` and FireUX `platform-directory` are server-only support
-  databases with deny-all Firestore client rules. Exact, separate rules configs
-  live under `scripts/firebase/directory-publication`; normal app deploy configs
-  must not contain a Firestore stanza. Six Standard, delete-protected databases
-  are provisioned across FireUX, Bringli, Werkbox's legacy `cleanbox-f15bc`
-  scope, Granite, and Misebox. Slap's `directory-outbox` remains pending because
-  billing is disabled.
-- Ready publishers and the FireUX receiver have separate service accounts and
-  conditional database-resource bindings to a four-permission custom role:
-  database get plus entity get/create/update, with no list/delete. The current
-  public FireUX SSR identity received no receiver authority.
-- Source authorization is scoped by a digest of OIDC subject plus canonical
-  Firebase project, database, Project, and optional Ecosystem. Reusing one
-  service account across a Firebase project therefore does not merge source
-  allowlists.
-- Before enablement, each owner needs a separate statically exported publisher
-  codebase, exact App/Ecosystem allowlists, OIDC source authorization, and
-  deployed trigger/transport. Source authorizations are not seeded, publisher
-  and receiver code stays dormant, and public reads remain on legacy central
-  rows. Slap additionally needs billing and its missing support infrastructure.
-- The receiver transaction writes an event receipt and the projection together:
-  an existing receipt is a duplicate, a revision at or below the stored tuple is
-  stale, a newer active upsert publishes or revives, and a newer retirement
-  stores a payload-free tombstone. FireUX curation remains a separate record.
-- Publication contract: `models/core/supporting/directory-publication.ts`.
-  Safe tools: `scripts/reconcile-platform-directory.mjs` is read-only and
-  `scripts/plan-platform-directory-backfill.mjs` only writes a disabled local
-  plan. `scripts/plan-platform-directory-remediation.mjs` deterministically
-  classifies the 13 locked decisions but has no mutation mode.
-  `scripts/remediate-platform-directory.mjs` is a separate explicitly confirmed
-  one-time executor. It applied 15 conditional writes across ten database
-  batches with a 0600 backup, crash journal, per-batch source revalidation, and
-  no document deletion. Post-reconciliation reports zero missing owners and
-  zero relationship drift; directory publication/cutover remains disabled.
-- The removed `/api/fireux-console` contract used Firebase project ids and
-  singular Project links as entity identity; do not recreate it.
+### Input
 
-Working notes:
+- Parse route, query, body, multipart data, or provider callback.
+- Authenticate the caller where required.
+- Derive App, database, actor, and owning scope from fixed runtime authority.
+- Reject caller-selected authority fields.
 
-- Use endpoint files with clear HTTP suffixes where present, e.g. `.get.ts`, `.post.ts`, `.options.ts`.
-- Keep upload/storage endpoints small and explicit.
-- Shared server primitives can live in package `server/utils` when used by multiple endpoints.
-- Server create endpoints are valid when the create is a transaction that needs
-  multipart upload, storage, provider credentials, or admin/server-only work.
-  See create.md.
-- Avoid parked top-level `server/handlers` folders for API endpoints; route
-  registration belongs in config, but the handler file itself should stay near
-  the API route it serves.
+### Process
 
-Open questions:
+- Validate the exact domain input.
+- Resolve canonical records with bounded reads.
+- Enforce product authority on the server.
+- Perform one named query, command, transaction, upload, or provider action.
+- Reuse a focused server primitive when several endpoints perform the same
+  security-sensitive job.
 
-- Menu upload endpoints are still young and should be simplified around clear input/process/output.
+### Output
+
+- Return an explicit allowlisted DTO or named command result.
+- Preserve truthful HTTP status.
+- Never turn source failure into an empty successful collection.
+- Never expose raw Admin errors, secrets, private records, or broad canonical
+  documents.
+
+If this shape cannot be explained briefly, split domain preparation from the
+HTTP handler rather than hiding it in another generic layer.
+
+## Route families
+
+| Family | Typical job | Accepted delta |
+| --- | --- | --- |
+| Public list/detail | Bounded projection for public pages | Pagination, joins, and publication filters differ by entity authority |
+| Internal | Authenticated owner/member/admin work | Required role and fixed domain scope differ |
+| Console | Selected-target commands and projections | Target family and operation differ; selection alone never grants authority |
+| Onboarding | Idempotent root/support creation or attachment | Domain seed and validation differ; transaction shape remains fixed-runtime |
+| Upload | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ |
+| Tool provider | Return or execute a reusable provider contract | Tool payload differs; provider never steals consumer data ownership |
+| Webhook/callback | Verify provider signature and advance trusted state | Signature and event vocabulary are provider-specific |
+| Cross-project publication | Signed owner-to-receiver projection transport | Requires OIDC/source allowlists and server-only support databases |
+| Dev | Bounded developer inspection | Development build plus configured developer identity are mandatory |
+
+These are server endpoint families, not new Entity kinds.
+
+## Authority rules
+
+- Browser state such as `canWrite`, selected Console target, or hidden UI is not
+  server authority.
+- Firebase bearer identity proves the caller; stored App/Entity relationships
+  prove the requested action.
+- Fixed-runtime endpoints do not accept client App ids, database ids,
+  collection paths, owner ids, support ids, lifecycle stamps, or visibility
+  authority.
+- Public routes return bounded projections, not raw Firestore roots.
+- Root plus App-support onboarding writes all required relationships in one
+  trusted transaction or not at all.
+- Named lifecycle commands are preferred over generic document patches.
+- Destructive operations require explicit authority and dependency checks.
+- Cross-project publishers use verifiable service identity, fixed audience,
+  exact source scope, and allowlisted entity identity. Firebase user tokens or
+  shared webhook secrets are not publisher authority.
+
+## Public projection contract
+
+Public list and detail endpoints for one Entity must share:
+
+- the same publication decision;
+- the same field allowlist;
+- the same linked-identity validation;
+- truthful 404 versus 5xx behavior;
+- bounded pagination and joins;
+- no browser N+1 hydration of private/canonical records.
+
+The Public Index and Public Detail maps own page-family expectations. This map
+owns only the server transport boundary.
+
+## Trusted create and command contract
+
+Use a server create/command endpoint when work requires one or more of:
+
+- a multi-document transaction;
+- Admin-only access;
+- multipart upload or Storage writes;
+- provider credentials;
+- idempotency reservation;
+- lifecycle transition validation;
+- immutable audit/event emission.
+
+An endpoint named `create.post.ts` is acceptable when it truly performs one
+named create transaction. Prefer specific commands such as `publish`,
+`transition`, `checkout-session`, `upload`, or `complete` when those names
+describe the job better.
+
+## Shared primitives
+
+Current reusable server evidence includes:
+
+- bearer auth:
+  `packages/core/fireux-core/src/runtime/server/utils/auth/bearer.ts`;
+- module handler registration:
+  `packages/core/fireux-core/src/config/module/module-helpers.ts`;
+- tool-provider registry and response headers:
+  `packages/core/fireux-core/src/runtime/server/utils/tool-provider.ts`;
+- App membership mutation:
+  `packages/core/fireux-core/src/runtime/server/utils/app-membership/mutate.ts`;
+- App-scope transfer planning:
+  `packages/core/fireux-core/src/runtime/server/utils/app-scope/transfer-plan.ts`;
+- Menu ownership/manifest/ordering workflows:
+  `packages/extensions/fireux-kitchens/src/runtime/server/menu/`;
+- Kitchen order transition enforcement:
+  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/order/transition.ts`.
+
+Promote a helper only when several endpoints share the same authority-sensitive
+process. Shared `text()`, `record()`, or response snippets alone do not justify
+a new architecture layer.
+
+## Accepted deltas
+
+| Delta | State | Reason |
+| --- | --- | --- |
+| Core registers foundational routes directly in its module | `accepted` | Core owns the runtime foundation and has no parent package hook to consume |
+| Extension packages register explicit handler lists | `accepted` | Apps opt into domain routes through installed modules |
+| App-local APIs exist beside package APIs | `accepted` | App-only product composition should not become reusable package truth prematurely |
+| Public projections join different linked records | `accepted` | Safe public meaning differs by Entity while bounded projection rules remain shared |
+| Provider callbacks use provider-specific verification | `accepted` | Signatures and event schemas are external contracts |
+| OPTIONS handlers accompany cross-origin tools/uploads | `accepted` | Browser preflight is part of the external tool boundary |
+
+## Migration and drift register
+
+| Difference | State | Required direction |
+| --- | --- | --- |
+| Several package `server-config.ts` files register empty arrays | `drift` | Remove no-op hooks until a real endpoint exists; optional parity does not require empty files |
+| Some domain endpoint families still repeat auth/runtime parsing | `migration` | Consolidate only proven identical authority work into focused Core/domain primitives |
+| Menu upload/processing endpoints remain a young family | `to-confirm` | Keep input/process/output explicit and consolidate only after both quick Menu and KitchenMenu flows are stable |
+| Cross-project directory publication details were copied into broad maps | `drift` | Keep durable trust boundary here and current implementation state in source/guards or a focused family map |
+| Provider and consumer endpoint ownership has historically been confused | `migration` | Enforce the Tool Provider ownership contract and keep consumer storage local |
+| Package route registration has direct and hook-based implementations | `accepted` by package lane | Preserve Core's direct foundation; require extensions to use the shared registration helper |
+
+## Alignment roadmap
+
+### Now
+
+1. Keep handlers visibly structured as input, process, and output.
+2. Keep App/database/actor authority fixed by runtime and verified server data.
+3. Preserve bounded projection parity between public list and detail routes.
+4. Remove empty server registration hooks when touched.
+
+### Next
+
+1. Add focused contract tests for root/App-support onboarding families.
+2. Consolidate repeated bearer/runtime parsing only where authority semantics are
+   identical.
+3. Stabilize quick Menu and KitchenMenu upload/process contracts before
+   extracting more shared helpers.
+4. Inventory app-local endpoints that now have more than one consumer and move
+   only proven reusable behavior to the owning package.
+
+### Later
+
+1. Create a focused cross-project publication map if that family becomes active
+   across several owners.
+2. Version external provider contracts only when incompatible released
+   consumers require it.
+3. Add guards for repeated registration or authority failures, not optional
+   folder symmetry.
+
+## Guardrails
+
+- Do not authorize from client presentation state.
+- Do not accept caller-selected App/database/collection authority.
+- Do not expose raw canonical records as convenient DTOs.
+- Do not duplicate provider and consumer persistence jobs.
+- Do not hide broad domain work inside `create.post.ts` or a generic helper.
+- Do not create empty registration files merely to mirror siblings.
+- Do not preserve one-time migration counts or deployment snapshots in this
+  family map.

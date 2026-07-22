@@ -1,27 +1,25 @@
-Demo World and Demo Data spine map
+# Demo World and Demo Data spine map
 Updated: 2026-07-22
-Ref: 8d83d3fa7
+Ref: 796952bf0
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: map optional console fixtures and their loading boundary. -->
-<!-- Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: map the narrow public Demo World adapter. -->
+## Purpose
 
-Purpose:
 Map the deterministic read-only Demo World and its two named consumers:
 Console Demo Data and a project's public Product Demo.
 
-Vertical links:
+## Vertical links
 
 - Parent: console.md
 - Child: firestore-entity.md
 
-Horizontal links:
+## Horizontal links
 
 - entities.md
 - debug.md
 - runtime-package.md
 
-Current contract:
+## Current contract
 
 - Demo World is scenario data, not canonical storage, live public-content
   authority, dev preview content, test data, or simulation data.
@@ -50,14 +48,14 @@ Current contract:
 - Test and simulation sources remain separate because they are allowed to
   exercise writes. Dev fixtures remain with authenticated dev tooling.
 
-Authority and refresh:
+## Authority and refresh
 
 - Entity models, DTOs, and console adapters define current shapes.
 - `scripts/guards/demo-data.mjs` enforces location, deferred loading, consumer,
   ownership, and dependency boundaries.
 - Refresh fixtures in the same change when a real shape used by Demo changes.
 
-Verification:
+## Verification
 
 - Run the Demo Data guard through `pnpm guard`.
 - Typecheck every owning package or app whose fixtures or adapters changed.

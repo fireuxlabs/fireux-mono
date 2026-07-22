@@ -1,77 +1,113 @@
-Public detail family map
-Updated: 2026-07-21
-Ref: 5b6cfcc8e
+# Public detail family
+
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: join canonical User identity by profile uid. -->
-<!-- Concurrent edit — 2026-07-20 20:12 CEST — Repo Efficiency Pass 2 of 6: map the shared SSR profile-detail projection. -->
-<!-- Concurrent edit — 2026-07-21 13:09 CEST — Public Jobs projection: map exact SSR Job detail with server-only source scope. -->
+## Purpose
 
-Purpose:
-Map public detail pages such as `/kitchens/[slug]`, `/suppliers/[slug]`, `/menus/[menuId]`, and similar surfaces.
+Map public detail routes, their shared transport boundary, and the entity-level
+reasons that route identity and page composition differ.
 
-Vertical links:
+## Links
 
-- Parent: pages.md
-- Child: family-menu.md
+- Parent: `pages.md`
+- Child: `family-menu.md`
+- Horizontal: `entities.md`, `components.md`, `composables.md`, `debug.md`
 
-Horizontal links:
+## Shared spine
 
-- components.md
-- composables.md
-- debug.md
+Every public detail route should:
 
-Emerging shared order:
+- Resolve one public object or bounded public projection.
+- Prefer an endpoint-first SSR projection for initial content, missing state,
+  and failure state. Client Firestore may enrich an already-rendered object but
+  must not become a second initial authority.
+- Use the same publication and field allowlist as its sibling public index.
+- Return truthful HTTP status for missing and failed reads. A client recovery
+  branch must not turn a direct 404 or 5xx into HTTP 200.
+- Keep raw private roots, support records, owner ids, and mutation authority out
+  of public DTOs unless the public contract explicitly requires a safe field.
+- Delegate domain display to named domain components.
+- Keep operator/private actions separate from the public identity and content.
+- Expose one useful dev debug surface only when needed, with fetched objects
+  separated from derived route/render state.
 
-- Header.
-- Profile or identity card.
-- Main public content.
-- Operator/actions surface when relevant.
-- Dev debug.
+## Emerging page composition
 
-Similar:
+The preferred order is:
 
-- Resolves one public object or public projection.
-- Profile details keep the root profile domain-only and resolve canonical User
-  presentation separately by the same uid.
-- Uses an endpoint-first public projection for the initial SSR render. A
-  client-only Firestore binding may enrich an already-rendered public object,
-  but it must not be the authority for initial content or missing/error state.
-- Agent, Chef, and Professional use the shared `usePublicProfileDetail`
-  transport with domain-owned projected payload types. Their raw Firestore
-  roots remain owner-only and are not a guest detail transport.
-- Job detail exact-loads `/api/public/jobs/:id` during SSR through the same
-  eligibility and field allowlist as the public Job index. Public Job pages do
-  not receive source App scope or raw-read Company, Place, owner, or stamp data,
-  and contain no edit/status mutation controls.
-- Returns truthful outer HTTP status for missing and failed server reads; a
-  client-side recovery path must not turn a direct 404 or 5xx into HTTP 200.
-- Shows useful public content first.
-- Keeps operator/private actions separate from main public content.
-- Uses named domain components.
+1. Header.
+2. Identity or profile.
+3. Main public content.
+4. Operator/actions surface when relevant.
+5. Dev debug.
 
-Different:
+This order is a recommendation, not yet a guard-backed contract. Align detail
+pages opportunistically when they are touched; do not perform a blind
+repository-wide template rewrite.
 
-- Kitchen detail can show public menus.
-- Supplier detail should use slug and company-style identity.
-- Portfolio detail is likely private-light and public-light.
-- Menu detail can be a photo/PDF quick menu or a structured kitchen menu.
+## Current route identity
 
-Open questions:
+| Entity family                     | Current route key | State and reason                                                                                                                                                                       |
+| --------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| User                              | handle            | `accepted`: public human identity is the route contract                                                                                                                                |
+| Blog                              | slug              | `accepted`: authored content owns a stable public slug                                                                                                                                 |
+| Kitchen                           | slug              | `accepted`: public business identity is human-facing while storage id remains internal                                                                                                 |
+| Supplier                          | slug              | `accepted`: supplier identity is company-style and public-facing                                                                                                                       |
+| Product                           | slug              | `accepted`: catalogue identity is public and human-readable                                                                                                                            |
+| Menu                              | menu route id     | `accepted`: the id participates in root, kitchen-directory, tenant, and contextual route grammar; see `family-menu.md`                                                                 |
+| App                               | id                | `accepted`: canonical App identity is already a public platform key                                                                                                                    |
+| Agent, Chef, Driver, Professional | User handle       | `accepted`: public identity uses the canonical User handle; the trusted projection resolves it to the uid-keyed profile and legacy uid requests redirect permanently to the handle URL |
+| Place, Company, Job, Portfolio    | id today          | `to-confirm`: current route works, but no family-wide human slug decision has been proved                                                                                              |
+| Property                          | slug today        | `to-confirm`: keep the route stable while public-detail and publication behavior are completed                                                                                         |
+| Project                           | no public detail  | `accepted`: private FireUX control-plane entity                                                                                                                                        |
 
-- Exact operator/action panel spine is not fully settled.
-- Detail pages should be aligned opportunistically when touched, not in a massive sweep.
-- Route identity still needs a dedicated pass: choose `id`, `slug`, or both per
-  entity family by comparing siblings before changing routes.
+Do not mechanically rename `[id]` to `[slug]` or the reverse. A route-key
+change requires canonical redirect, 404, sitemap, stored-link, and QR impact
+review.
 
-Route identity to-confirm:
+## Accepted deltas
 
-- Kitchen: public detail currently uses slug.
-- Menu: public detail currently uses menu id/slug-like key; root quick menus and
-  kitchen menus are still being reconciled.
-- Supplier: should likely use slug for public company-style identity, but confirm
-  against existing data and console needs.
-- Project has no public detail route; it remains a private FireUX control-plane
-  entity.
-- Portfolio and Property: private-light/public-light identity needs confirmation
-  before moving from id to slug or both.
+| Delta                                                                  | State       | Why it exists                                                                                                                                                                                                 |
+| ---------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Profile details join canonical User presentation by uid                | `accepted`  | Domain profile roots remain owner/private authority and do not duplicate public User identity; public Agent, Chef, Driver, and Professional routes resolve the User handle at the trusted projection boundary |
+| Legacy profile uid URLs redirect permanently to the User-handle URL    | `migration` | Stored links remain usable during the route cutover while every new card, canonical tag, and share path uses the handle                                                                                       |
+| Job detail exact-loads the same bounded DTO as Job index               | `accepted`  | Category, tenant, publication, Company, and Place joins are server-owned                                                                                                                                      |
+| Kitchen detail can expose public KitchenMenus                          | `accepted`  | Kitchen is a public console entity with scoped published children                                                                                                                                             |
+| Menu detail can render a photo/PDF root Menu or structured KitchenMenu | `accepted`  | Root Menu and scoped KitchenMenu are distinct entities sharing public doorway behavior                                                                                                                        |
+| Portfolio is public-light/private-heavy                                | `accepted`  | Financial and operational Portfolio data stays out of the public projection; the exact public DTO remains to-confirm                                                                                          |
+| Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
+
+## Drift and decisions
+
+| Difference                                                                   | State        | Recommendation                                                                                                      |
+| ---------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
+| Operator/action panels do not yet share a settled responsibility boundary    | `drift`      | Keep each named `XPublicOperatorPanel` domain-owned; extract shared behavior only after repeated jobs are identical |
+| Identity/profile/main ordering varies across older pages                     | `drift`      | Align when touching the page, using the emerging order and existing domain components                               |
+| Several current id routes have no recorded long-term route-identity decision | `to-confirm` | Decide per entity from public identity and redirect requirements, not visual preference                             |
+| Supplier and Portfolio public DTO declarations are incomplete                | `to-confirm` | Confirm bounded projections before promising detail parity                                                          |
+| Property public detail is partly app-specific today                          | `migration`  | Move reusable bounded detail behavior to the owning package while preserving tenant presentation deltas             |
+
+## Alignment roadmap
+
+### Now
+
+- Keep index and detail on one publication/DTO contract per entity.
+- Preserve truthful SSR status and bounded public projections.
+- Keep Menu route identity on the guarded route grammar.
+
+### Next
+
+- Settle named operator-panel responsibilities using Kitchen and Menu as the
+  proving siblings.
+- Record route identity decisions for Place, Company, Job, Portfolio, and
+  Property.
+- Move reusable Property detail behavior out of project-app forks.
+
+### Later
+
+- Add a light detail-page guard only after page order, not-found treatment, and
+  operator boundaries are proven across several families.
+- Retire legacy profile uid redirects only after stored-link evidence shows
+  the compatibility window is no longer needed.

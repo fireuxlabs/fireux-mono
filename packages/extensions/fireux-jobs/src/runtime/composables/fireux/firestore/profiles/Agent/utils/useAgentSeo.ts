@@ -5,10 +5,11 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Agent } from '../../../../../../models/profiles/Agent/Agent.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
+const excerpt = (value: unknown) =>
+  clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
 type AgentSeoOptions = {
-  id: MaybeRefOrGetter<string | null | undefined>
+  routeKey: MaybeRefOrGetter<string | null | undefined>
   displayName?: MaybeRefOrGetter<string | null | undefined>
 }
 
@@ -37,16 +38,29 @@ export function useAgentSeo(
   options: AgentSeoOptions
 ) {
   const entry = computed(() => toValue(agent))
-  const id = computed(() => clean(toValue(options.id) || entry.value?.id))
+  const routeKey = computed(() => clean(toValue(options.routeKey)))
   const displayName = computed(() => clean(toValue(options.displayName)))
-  const isPublic = computed(() => Boolean(entry.value && id.value))
+  const isPublic = computed(() => Boolean(entry.value && routeKey.value))
 
   return useSeo({
-    title: computed(() => displayName.value || clean(entry.value?.title) || 'Agent Profile'),
-    description: computed(() => excerpt(entry.value?.summary || entry.value?.agent_bio || entry.value?.tagline || 'Agent profile.')),
+    title: computed(
+      () => displayName.value || clean(entry.value?.title) || 'Agent Profile'
+    ),
+    description: computed(() =>
+      excerpt(
+        entry.value?.summary ||
+          entry.value?.agent_bio ||
+          entry.value?.tagline ||
+          'Agent profile.'
+      )
+    ),
     image: computed(() => readHttpsUrl(entry.value?.agent_image)),
-    path: computed(() => (id.value ? `/agents/${encodeURIComponent(id.value)}` : '')),
-    robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
+    path: computed(() =>
+      routeKey.value ? `/agents/${encodeURIComponent(routeKey.value)}` : ''
+    ),
+    robots: computed(() =>
+      isPublic.value ? 'index, follow' : 'noindex, nofollow'
+    ),
     jsonLd: computed(() => buildAgentJsonLd(entry.value, displayName.value)),
   })
 }

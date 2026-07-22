@@ -1,52 +1,49 @@
-FireUX concept map
+# FireUX concept map
 Updated: 2026-07-21
 Ref: 5b6cfcc8e
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-21 12:43 CEST — Cleanbox-to-Werkbox migration: map the durable hospitality and practical-work ownership split. -->
-<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: map Core policy fragments and ecosystem deltas. -->
-
-Purpose:
+## Purpose
 Explain FireUX as the platform shape behind the repo.
 
-Scope:
+## Scope
 - Core packages.
 - Ecosystem packages.
 - Extension packages.
 - Project app consumers.
 
-Vertical links:
+## Vertical links
 - Parent: fireux-mono.md
 - Child: runtime-package.md
 - Child: app-config.md
 - Child: console.md
 - Child: firestore-entity.md
 
-Horizontal links:
+## Horizontal links
 - nuxt4.md
 - nuxt-ui.md
 - spine.md
 - firestore-rules.md
 
-Current shape:
+## Current shape
 - FireUX is a modular Nuxt platform.
 - Packages expose Nuxt modules and runtime surfaces.
 - Apps consume packages through `defineFireuxConfig`.
 - Shared domain truth belongs in the owning package.
 
-Package lanes:
+## Package lanes
 - Core packages provide shared primitives and runtime foundations.
 - Ecosystem packages provide ecosystem identity, config, Firebase binding, and public assets.
 - Extension packages provide domain runtime surfaces.
 - Core owns reusable Firestore Rules primitives; opted-in ecosystems own their
   complete target template and explicit policy deltas.
 
-Runtime app roles:
+## Runtime app roles
 - `global`: app can expose multiple domains/consoles.
 - `tenant`: app usually pins console targets through `consoleConfig`.
 - `standalone`: FireUX-owned standalone app mode.
 
-Current ecosystem ownership:
+## Current ecosystem ownership
 - Misebox owns hospitality work and its Kitchen/Menu composition.
 - Werkbox owns cleaning and other non-hospitality practical work. Cleaning is a
   product-neutral category inside Werkbox, not a separate ecosystem.
@@ -56,5 +53,5 @@ Current ecosystem ownership:
   `cleanbox` database, and canonical record IDs until an explicitly approved
   remote migration changes that physical authority.
 
-Working rule:
+## Working rule
 Before inventing a local helper, check whether FireUX core already owns the seam.

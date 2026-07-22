@@ -1,29 +1,22 @@
-Firestore entity spine map
-<!-- Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: record the app-only profile storage delta. -->
-<!-- Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: bind domain-only root profiles to canonical User by uid. -->
-<!-- Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: record the shared delta-only overlay and membership mirror. -->
-<!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: keep raw profile lists behind domain APIs. -->
-<!-- Concurrent edit — 2026-07-20 23:03 CEST — Both-Entity Authority: record fail-closed App joins/queries, explicit Property publication, truthful validator limits, and Kitchen migration input. -->
-<!-- Concurrent edit — 2026-07-20 23:33 CEST — Entity Vocabulary + Matrix Pass: replace combined storage language with explicit classification axes. -->
-<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: point the stored-access contract at the explicit root/App-support guard. -->
-Updated: 2026-07-20
-Ref: a4d382c1d
+# Firestore entity stack family
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-Purpose:
+## Purpose
 Map the stored access/composable shape for FireUX entities.
 
-Vertical links:
+## Vertical links
 - Parent: entities.md
 - Parent: composables.md
 - Child: family-console-entity.md
 - Child: family-menu.md
 
-Horizontal links:
+## Horizontal links
 - console.md
 - server-api.md
 
-Allowed entity stack:
+## Allowed entity stack
 - `composables/fireux/firestore/<entity>`
 - `fetch`
 - `mutations`
@@ -47,13 +40,13 @@ Example Firestore stack names, not automatic entity proof:
 - `job`
 - `task`
 
-Similarities:
+## Similarities
 - Stored entity stacks should be boring and predictable.
 - Fetch and collection concerns belong in `fetch`.
 - Writes belong in `mutations`.
 - UI mapping belongs in `utils/view` when present.
 
-Read-state contract:
+## Read-state contract
 - `useFirestoreRead` is the shared reactive read authority. Its collection and
   document refs preserve normal `.value` access while also exposing `data`,
   `pending`, `error`, `outcome`, `promise`, and `stop`.
@@ -82,7 +75,7 @@ Read-state contract:
 - Current source: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreRead.ts`.
 - Current collection-state seam: `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCollection.ts`.
 
-Differences:
+## Accepted storage deltas
 - Some entities are canonical roots; public readability is a separate contract.
 - Some entities and records have `parent-scoped` identity.
 - Some root entities have a separate App support record. That support record is
@@ -113,7 +106,7 @@ Differences:
 - Deployed Firestore rules must independently deny unauthorized direct Project
   reads; this repository does not currently carry or test that remote ruleset.
 
-Root plus App support contract:
+## Root plus App support contract
 
 - Supplier, Portfolio, Property, and Kitchen declare `identity: 'root'` plus
   `appSupport: 'access-record'`: one root entity plus a same-id App support
@@ -165,7 +158,17 @@ Root plus App support contract:
 - Current source: Supplier, Portfolio, and Property model/fetch/mutation stacks.
   Shape guard: `scripts/guards/root-app-support-authority.mjs`.
 
-Do not:
+## Migration and drift register
+
+| Difference | State | Required direction |
+| --- | --- | --- |
+| Kitchen still composes legacy duplicate AppKitchen identity | `migration` | Move all identity to the canonical Kitchen root and leave AppKitchen access-only after verified data migration |
+| Supplier and Portfolio do not exact-validate every root field | `migration` | Reconcile live data first, then add validators without relabelling read errors as missing |
+| Root profile models and grouped `firestore/profiles/<Profile>` composables use different organizational spines | `to-confirm` | Realign only after a package-wide profile storage decision; current path difference does not alter identity |
+| Some folders exist because a thing is stored, not because entity-ness was confirmed | `drift` | Check `entities.md` and the executable entity matrix before adding root entity ceremony |
+| Project direct-read Rules are outside the currently tested repository contract | `to-confirm` | Identify and verify the deployed Rules owner before claiming end-to-end control-plane denial |
+
+## Do not
 - Put console operation folders inside Firestore stacks.
 - Add architecture buckets such as `facade`, `stack`, `manager`, `processor`, or `handler`.
 - Create fake compatibility branches without an explicit user request.
@@ -177,6 +180,23 @@ Do not:
 - Accept caller-selected `scope`, `shape`, or `collectionPath` in a root-with-App-support
   mutation helper.
 
-Open questions:
-- Menu content synchronization still needs cleanup, but identity is settled:
-  root `Menu` and scoped `KitchenMenu` are distinct entities.
+## Alignment roadmap
+
+### Now
+
+- Keep ordinary entity stacks boring: root seam plus `fetch`, `mutations`,
+  `seo`, and `utils` only when used.
+- Preserve explicit read outcomes and complete root/App-support pairs.
+
+### Next
+
+- Complete Kitchen identity migration.
+- Reconcile Supplier and Portfolio roots before introducing strict validators.
+- Audit stored folders against confirmed entity/record declarations.
+
+### Later
+
+- Revisit profile composable placement only as one coherent family pass.
+- Verify the external Project Rules boundary before documenting it as guarded.
+- Follow `family-menu.md` for Menu content migration; Menu/KitchenMenu identity
+  is already settled.

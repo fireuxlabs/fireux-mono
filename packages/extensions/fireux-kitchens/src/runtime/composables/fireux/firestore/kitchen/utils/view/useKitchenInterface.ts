@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: compose Place baselines with only meaningful Kitchen surface deltas.
 // Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: preserve bounded server write capability on the live surface.
+// Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: label and unlink Kitchens that are not publicly visible.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type {
   Place,
@@ -67,6 +68,7 @@ export type KitchenSurface = {
   app_scope_app_id?: string
   slug?: string
   show?: boolean
+  publicly_visible?: boolean
   active?: boolean
   route_scope?: 'live' | 'demo' | 'test'
   is_test_kitchen?: boolean
@@ -309,11 +311,16 @@ export function useKitchenInterface() {
     )
     const imageUrl = safeString(identity.imageUrl || kitchen.image_url)
 
-    const badges = kitchen.show === false ? ['Hidden'] : []
+    const isPubliclyVisible = kitchen.publicly_visible !== false
+    const badges = isPubliclyVisible
+      ? []
+      : [kitchen.is_test_kitchen ? 'Test' : 'Hidden']
 
     return {
       id,
-      to: resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope }),
+      to: isPubliclyVisible
+        ? resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope })
+        : '',
 
       title: name,
       subtitle: shortAddress,

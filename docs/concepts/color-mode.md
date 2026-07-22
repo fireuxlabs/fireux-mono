@@ -1,7 +1,8 @@
 # Color Mode
 
-Updated: 2026-06-24
-Ref: 2ec25ffba
+Updated: 2026-07-22
+Ref: 796952bf0
+Role: map, not canon
 
 ## Purpose
 
@@ -17,11 +18,14 @@ Map the Nuxt UI light/dark spine as used by FireUX so app chrome, tenant chrome,
 - JS display behavior: components that need the current visible mode should use `useResolvedColorMode()`.
 - JS preference behavior: components that edit the user's setting may use `useColorMode()`.
 
-## Allowed Deltas
+## Delta register
 
-- Tailwind/Nuxt UI `dark:` utilities are fine in templates because they follow the root mode class.
-- Tenant apps may define app-local tokens in app config or app CSS using `:root` and `:root.dark`.
-- Isolated renderers and previews may use explicit local classes when they intentionally preview a mode, for example a menu preview that renders light and dark without changing the whole app.
+| Difference | State | Reason or alignment trigger |
+| --- | --- | --- |
+| Tailwind/Nuxt UI `dark:` utilities in templates | `accepted` | They follow the same document-root mode class |
+| Tenant tokens under `:root` and `:root.dark` | `accepted` | Brand values differ while mode ownership stays shared |
+| Explicit local mode classes in previews | `accepted` | A preview may intentionally show a mode without changing the whole app |
+| Core `useColorMode()` mirrors Nuxt color-mode storage and DOM classes | `migration` | It carries legacy storage compatibility and a resolved-mode observer; remove the duplicate preference writer after consumers and legacy storage are migrated |
 
 ## Avoid
 
@@ -29,3 +33,12 @@ Map the Nuxt UI light/dark spine as used by FireUX so app chrome, tenant chrome,
 - Do not use `useColorMode().value` when the component needs the actual rendered mode; `system` must be resolved first.
 - Avoid `prefers-color-scheme` in component CSS unless the component is intentionally outside the FireUX app shell.
 - Do not add a second FireUX-owned colour-mode system; prefer Nuxt UI / `@nuxtjs/color-mode` and keep FireUX helpers thin.
+
+## Alignment roadmap
+
+- Now: treat Nuxt UI / `@nuxtjs/color-mode` as owner and
+  `useResolvedColorMode()` as the read seam for rendered state.
+- Next: inventory writers of the FireUX helper and verify whether direct Nuxt
+  color-mode state covers them.
+- Later: retire legacy `fireux:color-mode` storage and the duplicate writer in
+  one migration, retaining only a thin resolved-state adapter if still needed.

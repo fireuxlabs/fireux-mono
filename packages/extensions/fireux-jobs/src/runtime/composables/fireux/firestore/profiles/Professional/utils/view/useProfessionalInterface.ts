@@ -74,6 +74,15 @@ export function useProfessionalInterface(
     const id = safeString(p.id).trim() || safeString(user?.id).trim()
     if (!id) return null
 
+    const handle = safeString(user?.handle)
+      .trim()
+      .replace(/^@/, '')
+      .toLowerCase()
+    const explicitTo = safeString(
+      (p as ProfessionalTarget & { to?: string }).to
+    ).trim()
+    const routeKey = handle || id
+
     const image = resolveProfileImage([p.image])
     const avatar = resolveUserAvatar(user)
     const summary = resolveProfileSummary([p.summary, p.bio])
@@ -82,17 +91,19 @@ export function useProfessionalInterface(
 
     return {
       id,
-      to: `/${professionalConfig.collectionName}/${encodeURIComponent(id)}`,
+      to:
+        explicitTo ||
+        `/${professionalConfig.collectionName}/${encodeURIComponent(routeKey)}`,
       imageUrl: image || avatar,
       avatarUrl: avatar,
       secondaryAvatarUrl,
       image,
       displayName: resolveProfileDisplayName([user?.display_name]),
       title: safeString(p.title),
-      subtitle: safeString(user?.handle).trim(),
+      subtitle: handle,
       summary,
       badges,
-      handle: safeString(user?.handle).trim(),
+      handle,
       contactEmail: '',
       contactPhone: '',
       websiteUrl: '',

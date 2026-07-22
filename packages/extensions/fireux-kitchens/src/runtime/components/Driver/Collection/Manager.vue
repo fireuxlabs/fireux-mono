@@ -1,70 +1,75 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
-        </div>
+  <section class="collection-directory driver-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div class="collection-manager__controls">
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
+        <span v-if="showCount && isSettled" class="collection-directory__count">
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-            <UBadge v-if="showSettledCount" variant="soft">
-              {{ countLabel }}
-            </UBadge>
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="drivers"
-      state="loading"
-      surface="bare"
+      title="Loading drivers"
+      description="Finding driver profiles…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-atomic="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="drivers"
-      state="error"
-      surface="bare"
+      title="Drivers unavailable"
+      description="Driver profiles could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
     />
 
     <DriverCollectionList
       v-else-if="cardsFiltered.length"
       :cards="cardsFiltered"
       :variant="variant"
-    />
+    >
+      <template #pill="{ card }">
+        <DriverCardsPill v-bind="card" :link="linkEnabled" />
+      </template>
+      <template #cell="{ card }">
+        <DriverCardsCell v-bind="card" :link="linkEnabled" />
+      </template>
+    </DriverCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      state="empty"
-      surface="bare"
-      :title="query ? 'No drivers match your search.' : 'No drivers found.'"
+      icon="i-lucide-truck"
+      :title="query ? 'No matching drivers' : 'No drivers yet'"
       :description="
         query
           ? 'Try a different search term.'
@@ -80,7 +85,7 @@
       @opened="loadDevJson"
       @closed="unloadDevJson"
     />
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -92,14 +97,15 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import { computed } from 'vue'
 import { useDriverFetch } from '../../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverInterface } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
-import type { Driver } from '../../../models/driver.model'
+import type { PublicDriverDirectoryProfile } from '../../../models/driver.model'
 
-type DriverEntry = Driver
+type DriverEntry = PublicDriverDirectoryProfile
 
 const props = withDefaults(
   defineProps<{
     title?: string
     description?: string
+    link?: boolean
     searchPlaceholder?: string
     showSearch?: boolean
     showVariantToggle?: boolean
@@ -108,33 +114,36 @@ const props = withDefaults(
   }>(),
   {
     title: 'Drivers',
-    description: 'Browse driver profiles available to this runtime.',
-    searchPlaceholder: 'Search drivers...',
+    description: 'Choose a driver to explore their delivery profile.',
+    link: true,
+    searchPlaceholder: 'Search drivers…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
-    initialVariant: 'pill',
+    initialVariant: 'cell',
   }
 )
 
 const fetched = useDriverFetch()
 const { outcome } = fetched
 const collection = computed<DriverEntry[]>(() => fetched.drivers.value)
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Drivers'))
 const description = computed(() =>
-  String(props.description || 'Browse driver profiles available to this runtime.')
+  String(
+    props.description || 'Choose a driver to explore their delivery profile.'
+  )
 )
+const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search drivers...')
+  String(props.searchPlaceholder || 'Search drivers…')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
-const showSettledCount = computed(
-  () =>
-    showCount.value &&
-    (outcome.value === 'ready' || outcome.value === 'empty')
+const isSettled = computed(
+  () => outcome.value === 'ready' || outcome.value === 'empty'
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -145,15 +154,12 @@ const {
   pill: makePill,
   cell: makeCell,
 } = useDriverInterface()
-type DriverInterfaceTarget = NonNullable<Parameters<typeof makeCard>[0]>
-const asDriverInterfaceTarget = (entry: DriverEntry) =>
-  entry as DriverInterfaceTarget
 const makeEntryCard = (entry: DriverEntry) =>
-  makeCard(asDriverInterfaceTarget(entry), fetched.userById(entry.id))
+  makeCard(entry, fetched.userById(entry.id))
 const makeEntryPill = (entry: DriverEntry) =>
-  makePill(asDriverInterfaceTarget(entry), fetched.userById(entry.id))
+  makePill(entry, fetched.userById(entry.id))
 const makeEntryCell = (entry: DriverEntry) =>
-  makeCell(asDriverInterfaceTarget(entry), fetched.userById(entry.id))
+  makeCell(entry, fetched.userById(entry.id))
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<DriverEntry, NonNullable<ReturnType<typeof makeCard>>>({
     items: collection,
@@ -172,7 +178,7 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value
-    ? `${visibleCount.value} / ${totalCount.value}`
-    : `${totalCount.value}`
+    ? `${visibleCount.value} of ${totalCount.value} drivers`
+    : `${totalCount.value} driver${totalCount.value === 1 ? '' : 's'}`
 )
 </script>

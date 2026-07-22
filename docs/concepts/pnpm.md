@@ -1,29 +1,21 @@
-pnpm concept map
+# pnpm concept map
 Updated: 2026-07-21
 Ref: 318378b20
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: map the canonical command and script-lifecycle surface. -->
-<!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: map read-only App media audit and guarded snapshot sync commands. -->
-<!-- Concurrent edit — 2026-07-20 22:38 CEST — Repo Efficiency Pass 5 of 6: map manifest ownership and shared H3 type identity. -->
-<!-- Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: map package-command target validation. -->
-<!-- Concurrent edit — 2026-07-20 23:56 CEST — Nuxt Package Toolchain Pass 3 of 3: map package and baseline production build gates. -->
-<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: map the deterministic Rules artifact command. -->
-<!-- Concurrent edit — 2026-07-21 20:29 CEST — Misebox dev stability pass: map portable installs, explicit server imports, verified dev reuse, and tracked dependency patches. -->
-
-Purpose:
+## Purpose
 Explain workspace/package command context.
 
-Vertical links:
+## Vertical links
 
 - Parent: fireux-mono.md
 
-Horizontal links:
+## Horizontal links
 
 - runtime-package.md
 - app-config.md
 
-Workspace:
+## Workspace
 
 - The repo uses pnpm workspaces.
 - Root package manager is `pnpm@11.9.0`.
@@ -41,7 +33,7 @@ Workspace:
 - The private root owns tooling through `devDependencies`; deployable/runtime
   dependencies belong to the package or app that imports them.
 
-Common commands:
+## Common commands
 
 - `pnpm guard`
 - `pnpm build:packages`
@@ -58,7 +50,7 @@ Common commands:
 - `pnpm dev:go-qr`
 - `pnpm dev:la-tap-berne`
 
-Working rule:
+## Working rule
 
 - Use focused checks while iterating.
 - Run broad checks when package shape, guard-covered structure, or shared runtime seams change.

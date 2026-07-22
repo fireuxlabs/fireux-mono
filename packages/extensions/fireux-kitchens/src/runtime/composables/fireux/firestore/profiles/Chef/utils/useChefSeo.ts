@@ -5,10 +5,11 @@ import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import type { Chef } from '../../../../../../models/chef.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
-const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
+const excerpt = (value: unknown) =>
+  clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
 type ChefSeoOptions = {
-  id: MaybeRefOrGetter<string | null | undefined>
+  routeKey: MaybeRefOrGetter<string | null | undefined>
   displayName?: MaybeRefOrGetter<string | null | undefined>
 }
 
@@ -35,16 +36,26 @@ export function useChefSeo(
   options: ChefSeoOptions
 ) {
   const entry = computed(() => toValue(chef))
-  const id = computed(() => clean(toValue(options.id) || entry.value?.id))
+  const routeKey = computed(() => clean(toValue(options.routeKey)))
   const displayName = computed(() => clean(toValue(options.displayName)))
-  const isPublic = computed(() => Boolean(entry.value && id.value))
+  const isPublic = computed(() => Boolean(entry.value && routeKey.value))
 
   return useSeo({
-    title: computed(() => displayName.value || clean(entry.value?.title) || 'Chef Profile'),
-    description: computed(() => excerpt(entry.value?.summary || entry.value?.chef_bio || 'Chef profile details.')),
+    title: computed(
+      () => displayName.value || clean(entry.value?.title) || 'Chef Profile'
+    ),
+    description: computed(() =>
+      excerpt(
+        entry.value?.summary || entry.value?.chef_bio || 'Chef profile details.'
+      )
+    ),
     image: computed(() => readHttpsUrl(entry.value?.chef_image)),
-    path: computed(() => (id.value ? `/chefs/${encodeURIComponent(id.value)}` : '')),
-    robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
+    path: computed(() =>
+      routeKey.value ? `/chefs/${encodeURIComponent(routeKey.value)}` : ''
+    ),
+    robots: computed(() =>
+      isPublic.value ? 'index, follow' : 'noindex, nofollow'
+    ),
     jsonLd: computed(() => buildChefJsonLd(entry.value, displayName.value)),
   })
 }

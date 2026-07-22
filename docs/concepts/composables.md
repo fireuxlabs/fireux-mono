@@ -1,29 +1,27 @@
-Composables spine map
-<!-- Concurrent edit — 2026-07-21 16:00 CEST — Place onboarding reconciliation: map shared and domain onboarding composables. -->
-<!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: require domain adapters to compose their named create seams. -->
+# Composables spine map
 Updated: 2026-07-21
-Ref: b020f805e
+Ref: 796952bf0
 Role: map, not canon
 
-Purpose:
+## Purpose
 Map where reusable runtime logic belongs.
 
-Vertical links:
+## Vertical links
 - Parent: nuxt4.md
 - Child: firestore-entity.md
 - Child: console.md
 - Child: server-api.md
 - Child: create.md
 
-Horizontal links:
+## Horizontal links
 - pages.md
 - components.md
 - runtime-package.md
 
-Core principle:
+## Core principle
 Composables should name a real seam. Do not create a composable just to hide a messy file.
 
-Common buckets:
+## Common buckets
 - `composables/fireux/firestore/<entity>` for stored entity stacks.
 - `composables/fireux/console/<entity>` for console workspaces.
 - `composables/fireux/<entity>` for normal entity runtime helpers used by
@@ -31,14 +29,15 @@ Common buckets:
   Firestore or console seams.
 - `composables/fireux/app/*` for app-level shared runtime concerns.
 
-Naming note:
+## Naming note
 - Avoid adding new `composables/fireux/public/<entity>` buckets by default.
   Root/public-facing routes are usually the normal entity doorway; use explicit
   `console` or `firestore` buckets only when the seam really is scoped to that
-  system. Existing `public/menu` files are transitional menu doorway helpers
-  and should collapse into the menu/kitchen spine as those seams are cleaned.
+  system. The former Menu public bucket has already collapsed into
+  `composables/fireux/menu` and `composables/fireux/kitchen/menu`; do not
+  recreate it.
 
-Naming notes:
+## Naming notes
 - `useOnboarding`: domain-free staged-flow mechanics only. It must not own an
   entity draft, provider call, persistence, copy, or completion route.
 - `useXOnboarding`: named domain adapter over `useOnboarding`; owns its draft,
@@ -55,7 +54,7 @@ Naming notes:
 - `useXConsole`: selected console runtime for a domain.
 - `useXConsoleIndex`: index page adapter over shared `useConsoleIndex`.
 
-Reactive ownership:
+## Reactive ownership
 - A composable that exposes a live collection or document read constructs that
   binding once during setup and passes reactive source inputs into it.
 - Static fetch factories are setup-time conveniences only. Do not invoke them
@@ -65,7 +64,7 @@ Reactive ownership:
   surviving bindings, stops removed bindings, disposes the complete cache with
   its scope, and keeps derived/computed mapping constructor-free.
 
-Avoid:
+## Avoid
 - `facade`
 - `stack`
 - `manager`
@@ -74,5 +73,19 @@ Avoid:
 - `resolver`
 - `runtime-*`
 
-Open questions:
-- Some older domain composables may still need simplification into clearer input/process/output seams.
+## Delta register
+
+| Difference | State | Reason or alignment trigger |
+| --- | --- | --- |
+| Core, app, Firestore, console, and domain composables use different buckets | `accepted` | Ownership and required context differ; each seam should have one clear authority |
+| Domain `useXOnboarding` adapters contain different drafts and stages | `accepted` | Shared onboarding owns mechanics only; domain decisions must remain named and local |
+| Menu uses both `fireux/menu` and `fireux/kitchen/menu` | `accepted` | Root Menu and scoped KitchenMenu are different entities and route contexts |
+| Older vague or multi-job composables remain | `drift` | Simplify when touched by naming input, process, and output before extracting another helper |
+| A proposed composable only shortens a component without creating reuse or authority | `drift` | Keep the logic with its owner instead of adding a pass-through layer |
+
+## Alignment roadmap
+
+- Now: choose the ownership bucket before naming the composable.
+- Next: simplify touched multi-job composables and remove pass-through aliases.
+- Later: promote a repeated seam to Core only after at least two domains prove
+  identical inputs, outcomes, and lifecycle ownership.

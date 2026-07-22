@@ -1,18 +1,23 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+  <PublicIndexSurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-chef-hat"
+    secondary-label="For chefs"
+  >
+    <ChefCollectionManager />
 
-    <UPageBody>
+    <template #secondary>
       <!-- Profile CTA family: Chef is a profile layer attached to a User. -->
       <ChefCTA />
-      <ChefCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   tag: 'chefs',
@@ -27,16 +32,20 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Chefs',
-  description: 'Browse chef profiles.',
+  description:
+    'Discover chefs, their craft, and the kitchens they help bring to life.',
   layout: 'default',
   name: 'ChefsIndexPage',
 })
 
 const pageTitle = 'Chefs'
 const pageDescription =
-  'Find chefs, or create your profile.'
+  'Discover chefs, their craft, and the kitchens they help bring to life.'
 
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | ${pageTitle}` })
-
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/chefs',
+})
 </script>

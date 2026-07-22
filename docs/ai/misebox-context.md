@@ -1,16 +1,9 @@
 # Misebox GPT Context
 
-<!-- Concurrent edit — 2026-07-21 13:00 CEST — Misebox Jobs workplace adapter: record ecosystem-owned Jobs/Kitchen composition. -->
-<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: point Misebox at the composed Rules ownership boundary. -->
-<!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: record the completed-Order Sale producer and derived reporting boundary. -->
-<!-- Concurrent edit — 2026-07-21 17:02 CEST — Kitchen Finance surface: record the bounded selected-Kitchen gross-sales report. -->
-<!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: record shared Place-backed Kitchen activation ownership. -->
-<!-- Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: record complete support shape and authenticated target ownership. -->
-<!-- Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: record trusted absent-array normalization. -->
-<!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: keep branding inheritance and trusted theme writes package-owned. -->
-<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: align Misebox target/read membership with operator mutation authority. -->
-<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: keep Jobs identical across ecosystems and isolate Professional Experience composition. -->
-<!-- Concurrent edit — 2026-07-22 12:59 CEST — Product Demo boundary: keep public showroom composition read-only and package-backed. -->
+Updated: 2026-07-22
+Ref: 796952bf0
+Role: living context
+Scope: Misebox ecosystem and Apps
 
 This is the single context entrypoint for an external GPT focused on Misebox
 inside `fireuxlabs/fireux-mono`.
@@ -44,6 +37,14 @@ Before each task:
   into one app-wide `/operations` index grouped by Console.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
+- The `/kitchens` directory is published-only for guests and ordinary,
+  Premium, or Free users. An explicit authenticated private projection may
+  show all strict canonical Kitchen/App-support pairs to a current Misebox App
+  admin or, in local development, the configured developer. Global Misebox is
+  bounded to Apps with the current `ecosystem_id`; tenant runtimes remain
+  bounded to their current App. The derived access badge grants no authority,
+  unpublished/test preview rows never become public detail links, and legacy
+  root-only, missing-support, cross-ecosystem, or malformed rows fail closed.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It composes the
   Place package's canonical onboarding, then atomically creates or connects the
   sparse Kitchen root, Misebox App access, and UserApp console target. Misebox

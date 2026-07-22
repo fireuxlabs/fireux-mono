@@ -1,18 +1,23 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+  <PublicIndexSurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-briefcase-business"
+    secondary-label="For professionals"
+  >
+    <ProfessionalCollectionManager />
 
-    <UPageBody>
+    <template #secondary>
       <!-- Profile CTA family: Professional is a profile layer attached to a User. -->
       <ProfessionalCTA />
-      <ProfessionalCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   tag: 'professionals',
@@ -27,7 +32,8 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Professionals',
-  description: 'Browse professional profiles.',
+  description:
+    'Meet skilled professionals and explore the work they bring to the network.',
   layout: 'default',
   name: 'ProfessionalsIndexPage',
 })
@@ -36,7 +42,11 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Professionals'
 const pageDescription =
-  'Find professionals, or create your profile.'
+  'Meet skilled professionals and explore the work they bring to the network.'
 
-useHead({ title: `${appName} | ${pageTitle}` })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/professionals',
+})
 </script>

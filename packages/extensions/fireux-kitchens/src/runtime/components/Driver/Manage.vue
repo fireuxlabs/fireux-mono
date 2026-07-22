@@ -39,7 +39,9 @@
                   min="0"
                   inputmode="numeric"
                   placeholder="1500"
-                  @update:model-value="draft(driver).coverage_radius_m = String($event ?? '')"
+                  @update:model-value="
+                    draft(driver).coverage_radius_m = String($event ?? '')
+                  "
                   @blur="saveDriver(driver)"
                   @keydown.enter.prevent="saveDriver(driver)"
                 />
@@ -60,9 +62,7 @@
         </UPageCard>
       </div>
 
-      <p v-else class="text-sm text-dimmed">
-        No drivers found.
-      </p>
+      <p v-else class="text-sm text-dimmed">No drivers found.</p>
     </ClientOnly>
   </UCard>
 </template>
@@ -74,9 +74,9 @@ import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useTo
 import { reactive, ref, watchEffect } from 'vue'
 import { useDriverFetch } from '../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
 import { useDriverUpdate } from '../../composables/fireux/firestore/profiles/Driver/mutations/useDriverUpdate'
-import type { Driver } from '../../models/driver.model'
+import type { PublicDriverDirectoryProfile } from '../../models/driver.model'
 
-type DriverEntry = Driver
+type DriverEntry = PublicDriverDirectoryProfile
 type DriverDraft = {
   coverage_radius_m: string
 }

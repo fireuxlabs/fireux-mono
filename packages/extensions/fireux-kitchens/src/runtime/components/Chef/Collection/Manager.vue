@@ -1,57 +1,56 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
-        </div>
+  <section class="collection-directory chef-directory">
+    <CollectionDirectoryHeader :title="title" :description="description">
+      <template #controls>
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
 
-        <div class="collection-manager__controls">
-          <div class="ml-auto flex items-center gap-2">
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
 
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
+        <span v-if="showCount && isSettled" class="collection-directory__count">
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
 
-            <UBadge v-if="showSettledCount" variant="soft">{{
-              countLabel
-            }}</UBadge>
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      entity="chefs"
-      state="loading"
-      surface="bare"
+      title="Loading chefs"
+      description="Finding chef profiles…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+      aria-atomic="true"
     />
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      entity="chefs"
-      state="error"
-      surface="bare"
+      title="Chefs unavailable"
+      description="Chef profiles could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+      aria-atomic="true"
     />
 
     <ChefCollectionList
@@ -67,11 +66,10 @@
       </template>
     </ChefCollectionList>
 
-    <MoleculesStateCard
+    <CollectionDirectoryState
       v-else
-      state="empty"
-      surface="bare"
-      :title="query ? 'No chefs match your search.' : 'No chefs found.'"
+      icon="i-lucide-chef-hat"
+      :title="query ? 'No matching chefs' : 'No chefs yet'"
       :description="
         query
           ? 'Try a different search term.'
@@ -89,7 +87,7 @@
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -119,13 +117,13 @@ const props = withDefaults(
   }>(),
   {
     title: 'Chefs',
-    description: 'Browse chefs available to this runtime.',
+    description: 'Choose a chef to discover their craft and experience.',
     link: true,
     searchPlaceholder: 'Search chefs…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
-    initialVariant: 'pill',
+    initialVariant: 'cell',
   }
 )
 
@@ -136,7 +134,9 @@ const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Chefs'))
 const description = computed(() =>
-  String(props.description || 'Browse chefs available to this runtime.')
+  String(
+    props.description || 'Choose a chef to discover their craft and experience.'
+  )
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
@@ -145,9 +145,8 @@ const searchPlaceholder = computed(() =>
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showCount = computed(() => props.showCount !== false)
-const showSettledCount = computed(
-  () =>
-    showCount.value && (outcome.value === 'ready' || outcome.value === 'empty')
+const isSettled = computed(
+  () => outcome.value === 'ready' || outcome.value === 'empty'
 )
 const totalCount = computed(() => collection.value.length)
 const showSearchInput = computed(
@@ -181,7 +180,7 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value
-    ? `${visibleCount.value} / ${totalCount.value}`
-    : `${totalCount.value}`
+    ? `${visibleCount.value} of ${totalCount.value} chefs`
+    : `${totalCount.value} chef${totalCount.value === 1 ? '' : 's'}`
 )
 </script>

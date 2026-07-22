@@ -10,11 +10,13 @@
 // Concurrent edit — 2026-07-22 12:47 CEST — Jobs smoke alignment: cover the shared public Jobs route and projection in both global apps.
 // Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: smoke the new FireUX request queue route.
 // Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: smoke pricing, solution, and intake entry points.
+// Concurrent edit — 2026-07-22 15:21 CEST — Kitchen directory preview: run public/fail-closed projection contracts on every Misebox launch.
 
 import {
   appDetailContract,
   invalidMenuIndexCursorContract,
   jobIndexApiContract,
+  kitchenIndexApiContract,
   kitchenCollectionRecoveryContract,
   menuBrowseContract,
   menuDocumentContract,
@@ -28,6 +30,7 @@ import {
   missingMenuIndexContract,
   missingMenuQrContract,
   profileIndexApiContract,
+  privateKitchenIndexAuthContract,
   tenantMenuBrowseContract,
   tenantMenuIndexRedirectContract,
   tenantMenuOrderContract,
@@ -113,6 +116,8 @@ export const APP_REGISTRY = {
     ],
     httpContracts: [
       jobIndexApiContract('/api/public/jobs?limit=1'),
+      kitchenIndexApiContract('/api/kitchens?limit=48'),
+      privateKitchenIndexAuthContract('/api/kitchens?limit=48&visibility=all'),
       profileIndexApiContract('/api/public/chefs'),
       profileIndexApiContract('/api/public/drivers'),
       profileIndexApiContract('/api/public/agents'),

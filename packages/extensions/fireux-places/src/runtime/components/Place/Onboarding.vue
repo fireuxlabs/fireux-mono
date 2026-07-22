@@ -1,5 +1,6 @@
 <template>
   <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: compose one Place stage at a time through the shared shell. -->
+  <!-- Concurrent edit — 2026-07-22 15:59 CEST — Place onboarding logo preview: pass staged image state into the final review. -->
   <MoleculesOnboardingSystem
     family="place"
     :step-id="activeStepId"
@@ -51,7 +52,7 @@
         :place="draft"
         :currency-code="currencyCode"
         :timezone="timezone"
-        :logo-staged="Boolean(imageFile)"
+        :image-file="imageFile"
         :brand-palette="brandPalette"
       />
   </MoleculesOnboardingSystem>

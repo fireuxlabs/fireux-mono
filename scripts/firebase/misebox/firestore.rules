@@ -57,7 +57,7 @@ service cloud.firestore {
 
     function isBootstrapDeveloper() {
       return isAuthenticated() &&
-        request.auth.uid == 'yZ1nY4RtxnMnJwcVZnaMBigqM1A2';
+        request.auth.uid == 'jMK33p5XlhYS8rBCEf8qUiogfMg2';
     }
 
     function uidNotModified() {

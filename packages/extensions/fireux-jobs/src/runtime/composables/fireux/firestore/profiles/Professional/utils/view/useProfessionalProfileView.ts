@@ -37,6 +37,9 @@ export type ProfessionalProfileOtherExperience = {
 export type ProfessionalProfileViewModel = {
   identityCard: ProfessionalCard.Card
   prop: string
+  subtitle: string
+  tagline: string
+  positions: string[]
   summary: string
   bio: string
   relevantExperience: ProfessionalProfileRelevantExperience[]
@@ -74,6 +77,9 @@ export function useProfessionalProfileView(
   const education = computed(() => profile.value?.education ?? [])
   const volunteering = computed(() => profile.value?.volunteering ?? [])
   const projects = computed(() => profile.value?.projects ?? [])
+  const subtitle = computed(() => profile.value?.subtitle ?? '')
+  const tagline = computed(() => profile.value?.tagline ?? '')
+  const positions = computed(() => profile.value?.positions ?? [])
   const summary = computed(() => profile.value?.summary ?? '')
   const bio = computed(() => profile.value?.bio ?? '')
 
@@ -175,6 +181,9 @@ export function useProfessionalProfileView(
     return {
       identityCard: identityCard.value,
       prop: safeString(propRef?.value),
+      subtitle: subtitle.value,
+      tagline: tagline.value,
+      positions: positions.value,
       summary: summary.value,
       bio: bio.value,
       relevantExperience: relevantExperienceEntries.value,

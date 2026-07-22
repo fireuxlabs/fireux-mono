@@ -123,6 +123,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: consume the bounded public Kitchen/Place projection without page-local search false negatives.
+// Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: distinguish authorized all-Kitchen results from the public directory.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
@@ -152,7 +153,7 @@ const props = withDefaults(
   }>(),
   {
     title: 'Kitchens',
-    description: 'Choose a kitchen to explore its public profile and menus.',
+    description: '',
     searchPlaceholder: 'Search kitchens…',
     showSearch: true,
     showVariantToggle: true,
@@ -180,7 +181,9 @@ const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collect
 const title = computed(() => String(props.title || 'Kitchens'))
 const description = computed(() =>
   String(
-    props.description || 'Browse kitchen records available to this runtime.'
+    props.description || (fetched.privilegedPreview.value
+      ? 'Admin preview of all Kitchens. Hidden and test Kitchens are not public.'
+      : 'Choose a kitchen to explore its public profile and menus.')
   ).trim()
 )
 const searchPlaceholder = computed(() =>
@@ -190,7 +193,9 @@ const showSearch = computed(() => props.showSearch !== false)
 const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
-const showBadges = computed(() => props.showBadges !== false)
+const showBadges = computed(() =>
+  props.showBadges !== false || fetched.privilegedPreview.value
+)
 const devJsonTitle = computed(() =>
   String(props.devJsonTitle || 'Kitchens (JSON)').trim()
 )

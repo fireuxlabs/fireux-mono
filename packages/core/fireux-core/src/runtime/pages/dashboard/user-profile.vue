@@ -2,7 +2,7 @@
 <!-- Concurrent edit — 2026-07-21 15:42 CEST — User Profile polish: centre the shared route on a real public identity preview and focused editor. -->
 <!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: include biography in the shared profile-hub contract. -->
 <!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: isolate root User outcomes and reuse one active-user binding. -->
-<!-- Concurrent edit — 2026-07-21 20:36 CEST — Profile visibility pass: make this the shared Profile hub with independent public and private sections. -->
+<!-- Concurrent edit — 2026-07-22 15:11 CEST — Profile visibility pass: keep public/private sections and restore the derived access tier in the header. -->
 <template>
   <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
   <UDashboardPanel id="user-profile">
@@ -14,10 +14,16 @@
       <UPage>
         <UPageBody class="pagebody">
           <UPageHeader
-            :headline="userCard?.handle || 'Your profile'"
             :title="userCard?.displayName || 'Profile'"
             description="Manage what people can see and review the account details only you can access."
           >
+            <template #headline>
+              <div class="flex flex-wrap items-center gap-2">
+                <span>{{ userCard?.handle || 'Your profile' }}</span>
+                <UserAccessBadge :tier="accessTier" />
+              </div>
+            </template>
+
             <template #links>
               <UButton
                 v-if="userCard?.to"
@@ -278,6 +284,7 @@ useHead({ title: 'Profile' })
 
 const userApi = useUser()
 const {
+  accessTier,
   appOutcome,
   coreError,
   coreOutcome,

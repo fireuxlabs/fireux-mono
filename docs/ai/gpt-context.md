@@ -1,13 +1,9 @@
 # FireUX GPT Context
 
-<!-- Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: record app-wide factual operation routes. -->
-<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: route main Rules work through Core composition and ecosystem policy. -->
-<!-- Concurrent edit — 2026-07-21 16:20 CEST — FireUX Finance pass: route shared facts through Finance and operations through their owning domains. -->
-<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: route target selection and root/App-support onboarding through one authority. -->
-<!-- Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: route public demonstrations through the named read-only adapter. -->
-<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: route every App through the same Agent-owned Company/Place Job contract. -->
-<!-- Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: map explicit all-versus-allowlist App deltas and fail-closed runtime identity. -->
-<!-- Concurrent edit — 2026-07-22 13:13 CEST — Persistent dev-server ownership: preserve user-owned servers across agent tasks. -->
+Updated: 2026-07-22
+Ref: 796952bf0
+Role: living context
+Scope: repo-wide
 
 This is the single context entrypoint for external GPTs working with
 `fireuxlabs/fireux-mono`.
@@ -27,6 +23,12 @@ Current scoped context entrypoints:
 Use `docs/concepts/*.md` for topic maps and `scripts/guards/*` for executable
 shape rules. Do not copy implementation details into AI context when current
 source or a guard is the better reference.
+
+Family work starts at `docs/concepts/spine.md`. Its registry routes every
+currently documented family and cross-cutting spine to the smallest relevant
+map and summarizes the alignment queue. Every family difference must be
+classified as accepted, migration, drift, or to-confirm; see
+`docs/concepts/documentation.md`.
 
 ## Refresh instructions
 

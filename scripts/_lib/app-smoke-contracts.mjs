@@ -6,6 +6,7 @@
 // Concurrent edit — 2026-07-21 15:35 CEST — Misebox startup verification: scope unavailable-order checks to package-owned surface markers.
 // Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: assert the terminal starts at mode selection before mounting its catalogue.
 // Concurrent edit — 2026-07-22 12:47 CEST — Jobs smoke alignment: assert the bounded public index DTO excludes raw Job authority.
+// Concurrent edit — 2026-07-22 15:21 CEST — Kitchen directory preview: guard published-only defaults and authenticated private mode.
 
 const MENU_INDEX_MARKER = 'data-menu-projection="index"'
 const MENU_BROWSE_MARKER = 'data-menu-projection="browse"'
@@ -57,6 +58,24 @@ const jobIndexApiContract = (route) => ({
     '"updated"',
     '"created_by"',
     '"updated_by"',
+  ],
+})
+
+const kitchenIndexApiContract = (route) => ({
+  route,
+  status: 200,
+  contentType: 'application/json',
+  includes: ['"items"', '"publicly_visible": true'],
+  excludes: ['"publicly_visible": false', '"is_test_kitchen": true'],
+})
+
+const privateKitchenIndexAuthContract = (route) => ({
+  route,
+  status: 401,
+  contentType: 'application/json',
+  includes: [
+    '"statusCode": 401',
+    '"statusMessage": "Sign in to preview all Kitchens."',
   ],
 })
 
@@ -550,6 +569,7 @@ export {
   appDetailContract,
   invalidMenuIndexCursorContract,
   jobIndexApiContract,
+  kitchenIndexApiContract,
   kitchenCollectionRecoveryContract,
   menuBrowseContract,
   menuDocumentContract,
@@ -563,6 +583,7 @@ export {
   missingMenuIndexContract,
   missingMenuQrContract,
   profileIndexApiContract,
+  privateKitchenIndexAuthContract,
   tenantMenuBrowseContract,
   tenantMenuIndexRedirectContract,
   tenantMenuOrderContract,

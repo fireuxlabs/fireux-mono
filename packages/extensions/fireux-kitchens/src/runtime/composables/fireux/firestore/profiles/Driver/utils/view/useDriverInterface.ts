@@ -8,11 +8,14 @@ import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
-import type { Driver } from 'fireux-kitchens/runtime/models/driver.model'
+import type {
+  Driver,
+  PublicDriverDirectoryProfile,
+} from 'fireux-kitchens/runtime/models/driver.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>
-type DriverTarget = Driver
+type DriverTarget = Driver | PublicDriverDirectoryProfile
 
 export namespace DriverCard {
   export type Card = {
@@ -33,6 +36,8 @@ export namespace DriverCard {
 export function useDriverInterface() {
   type DriverPill = DriverCard.Card
   type DriverCell = DriverCard.Card
+  type DriverPreview = DriverCard.Card
+  type DriverProfile = DriverCard.Card
 
   const { uid, currentUser: authUser } = useAuth()
 
@@ -47,11 +52,12 @@ export function useDriverInterface() {
     return safeString(authUser.value?.photoURL).trim()
   }
 
-  function map(p: Driver, u?: UserLike | null): DriverCard.Card {
+  function map(p: DriverTarget, u?: UserLike | null): DriverCard.Card {
     const id =
       safeString(u?.id).trim() ||
       safeString((p as Driver & { id?: string }).id).trim()
     const handle = safeString(u?.handle).trim()
+    const routeKey = handle.replace(/^@/, '').toLowerCase() || id
     const userAvatar = resolveUserAvatar(u)
     const avatarUrl = userAvatar
     const badges = resolveProfileBadges([
@@ -66,7 +72,7 @@ export function useDriverInterface() {
 
     return {
       id,
-      to: '',
+      to: routeKey ? `/drivers/${encodeURIComponent(routeKey)}` : '',
       imageUrl: avatarUrl,
       avatarUrl,
       displayName,
@@ -107,9 +113,25 @@ export function useDriverInterface() {
     return buildInterface(target, userOverride)
   }
 
+  function preview(
+    target?: DriverTarget | null,
+    userOverride?: UserLike | null
+  ): DriverPreview | null {
+    return buildInterface(target, userOverride)
+  }
+
+  function profile(
+    target?: DriverTarget | null,
+    userOverride?: UserLike | null
+  ): DriverProfile | null {
+    return buildInterface(target, userOverride)
+  }
+
   return {
     interface: toInterface,
     pill,
     cell,
+    preview,
+    profile,
   }
 }

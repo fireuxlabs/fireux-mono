@@ -1,4 +1,5 @@
 <!-- packages/core/fireux-core/src/runtime/components/layouts/default/Header.vue -->
+<!-- Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: replace the Premium-only header badge with the derived tier. -->
 <template>
   <ClientOnly>
     <!-- Single-source mobile toggle via UHeader -->
@@ -42,14 +43,7 @@
 
           <!-- Signed in => dashboard -->
           <template v-else-if="isSignedIn">
-            <UBadge
-              v-if="isPremium"
-              color="primary"
-              variant="soft"
-              size="sm"
-            >
-              Premium
-            </UBadge>
+            <UserAccessBadge :tier="accessTier" />
 
             <UButton
               to="/dashboard"
@@ -133,7 +127,7 @@ const mobileItems = computed(() =>
 
 /** Auth */
 const { authPhase, isSignedIn } = useConsoleEntryState()
-const { currentUser, avatarSrc, isPremium } = useUser()
+const { currentUser, avatarSrc, accessTier } = useUser()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const headerAvatarName = computed(() =>

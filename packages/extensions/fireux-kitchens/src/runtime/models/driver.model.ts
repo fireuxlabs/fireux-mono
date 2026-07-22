@@ -68,6 +68,14 @@ export type Driver = {
   [K in keyof typeof DriverModel]: (typeof DriverModel)[K]
 }
 
+export type PublicDriverProfilePayload = Pick<
+  Driver,
+  'title' | 'subtitle' | 'tagline' | 'tags' | 'coverage'
+>
+export type PublicDriverProfile = PublicDriverProfilePayload &
+  Pick<Driver, 'id'>
+export type PublicDriverDirectoryProfile = PublicDriverProfile
+
 export const AppDriverModel = {
   id: '' as string,
   driver_phone: '' as string,

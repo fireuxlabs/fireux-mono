@@ -2,6 +2,7 @@
 <!-- Concurrent edit — 2026-07-22 13:48 CEST — Kiosk Demo selector pass: move preview controls outside the canvas and switch Demo Kitchens. -->
 <!-- Concurrent edit — 2026-07-22 13:56 CEST — Kiosk theme contrast pass: separate refined dining and fast-food counter presentation. -->
 <!-- Concurrent edit — 2026-07-22 14:45 CEST — Demo Kiosk entry pass: go straight to Eat here with a short catalogue reveal. -->
+<!-- Concurrent edit — 2026-07-22 15:56 CEST — Demo preview guidance pass: surface the target kiosk viewport and in-page Nuxt DevTools access. -->
 <template>
   <main
     class="showcase-kiosk"
@@ -29,29 +30,52 @@
         <UBadge color="neutral" variant="soft">
           Local preview
         </UBadge>
-        <small>No live orders are sent</small>
+        <span class="showcase-kiosk__preview-copy">
+          <small class="showcase-kiosk__preview-safety">No live orders are sent</small>
+          <small class="showcase-kiosk__preview-target">
+            <UIcon name="i-lucide-monitor-smartphone" aria-hidden="true" />
+            Optimised for 1080 × 1920 portrait
+          </small>
+        </span>
       </div>
 
-      <div
-        class="showcase-kiosk__kitchen-picker"
-        role="group"
-        aria-label="Demo Kitchen"
-      >
-        <span class="showcase-kiosk__kitchen-picker-label">Kitchen</span>
-        <UButtonGroup class="showcase-kiosk__kitchen-options">
+      <div class="showcase-kiosk__preview-controls">
+        <ClientOnly>
           <UButton
-            v-for="kitchen in kitchens"
-            :key="kitchen.id"
+            v-if="canOpenDevTools"
             size="sm"
-            :color="kitchen.id === kitchenId ? 'primary' : 'neutral'"
-            :variant="kitchen.id === kitchenId ? 'solid' : 'ghost'"
-            :aria-pressed="kitchen.id === kitchenId"
-            :data-demo-kitchen-option="kitchen.id"
-            @click="$emit('update:kitchenId', kitchen.id)"
+            color="neutral"
+            variant="ghost"
+            icon="i-lucide-panel-top-open"
+            aria-label="Open Nuxt DevTools in this page"
+            data-demo-kiosk-open-devtools
+            @click="openDevTools"
           >
-            {{ kitchen.label }}
+            Open DevTools
           </UButton>
-        </UButtonGroup>
+        </ClientOnly>
+
+        <div
+          class="showcase-kiosk__kitchen-picker"
+          role="group"
+          aria-label="Demo Kitchen"
+        >
+          <span class="showcase-kiosk__kitchen-picker-label">Kitchen</span>
+          <UButtonGroup class="showcase-kiosk__kitchen-options">
+            <UButton
+              v-for="kitchen in kitchens"
+              :key="kitchen.id"
+              size="sm"
+              :color="kitchen.id === kitchenId ? 'primary' : 'neutral'"
+              :variant="kitchen.id === kitchenId ? 'solid' : 'ghost'"
+              :aria-pressed="kitchen.id === kitchenId"
+              :data-demo-kitchen-option="kitchen.id"
+              @click="$emit('update:kitchenId', kitchen.id)"
+            >
+              {{ kitchen.label }}
+            </UButton>
+          </UButtonGroup>
+        </div>
       </div>
     </header>
 
@@ -96,7 +120,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onBeforeUnmount, onMounted, shallowRef } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 
@@ -104,6 +128,16 @@ type DemoKitchenOption = {
   id: string
   label: string
   tagline: string
+}
+
+type NuxtDevToolsHost = {
+  devtools: {
+    open: () => void
+  }
+}
+
+type NuxtDevToolsWindow = Window & {
+  __NUXT_DEVTOOLS_HOST__?: NuxtDevToolsHost
 }
 
 const props = defineProps<{
@@ -119,6 +153,36 @@ defineEmits<{
   (event: 'update:kitchenId', kitchenId: string): void
 }>()
 
+const nuxtDevTools = shallowRef<NuxtDevToolsHost>()
+const canOpenDevTools = computed(() => Boolean(nuxtDevTools.value))
+let devToolsConnectTimer: number | undefined
+
+onMounted(() => {
+  if (!import.meta.dev)
+    return
+
+  let attemptsRemaining = 40
+  const connectDevTools = () => {
+    const host = (window as NuxtDevToolsWindow).__NUXT_DEVTOOLS_HOST__
+    if (host) {
+      nuxtDevTools.value = host
+      devToolsConnectTimer = undefined
+      return
+    }
+
+    attemptsRemaining -= 1
+    if (attemptsRemaining > 0)
+      devToolsConnectTimer = window.setTimeout(connectDevTools, 100)
+  }
+
+  connectDevTools()
+})
+
+onBeforeUnmount(() => {
+  if (devToolsConnectTimer !== undefined)
+    window.clearTimeout(devToolsConnectTimer)
+})
+
 const kioskConfigs = computed(() =>
   (props.manifest.behaviour.ordering?.order_types || []).filter(
     config => config.type === 'eat_in' || config.type === 'takeaway'
@@ -133,6 +197,10 @@ const {
   colorMode: 'light',
   pageCanvas: true,
 })
+
+function openDevTools() {
+  nuxtDevTools.value?.devtools.open()
+}
 </script>
 
 <style scoped>
@@ -171,12 +239,41 @@ const {
   gap: calc(var(--spacing) * 2);
 }
 
+.showcase-kiosk__preview-copy {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: calc(var(--spacing) * 2);
+}
+
 .showcase-kiosk__preview-status small {
   overflow: hidden;
   color: var(--ui-text-dimmed);
   font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.showcase-kiosk__preview-target {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--spacing) * 1.25);
+  color: var(--ui-text-muted);
+  font-weight: var(--font-weight-semibold);
+}
+
+.showcase-kiosk__preview-target :deep(svg) {
+  width: 0.9rem;
+  height: 0.9rem;
+  flex: 0 0 auto;
+}
+
+.showcase-kiosk__preview-controls {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(var(--spacing) * 2);
 }
 
 .showcase-kiosk__kitchen-picker {
@@ -512,9 +609,14 @@ const {
     justify-self: end;
   }
 
-  .showcase-kiosk__kitchen-picker {
+  .showcase-kiosk__preview-controls {
     grid-column: 1 / -1;
     justify-content: space-between;
+  }
+
+  .showcase-kiosk__kitchen-picker {
+    flex: 1;
+    justify-content: flex-end;
   }
 
   .showcase-kiosk__kitchen-options {
@@ -528,9 +630,19 @@ const {
 }
 
 @media (max-width: 520px) {
-  .showcase-kiosk__preview-status small,
+  .showcase-kiosk__preview-safety,
   .showcase-kiosk__kitchen-picker-label {
     display: none;
+  }
+
+  .showcase-kiosk__preview-status {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: calc(var(--spacing) * 0.5);
+  }
+
+  .showcase-kiosk__preview-target {
+    font-size: 0.68rem;
   }
 
   .showcase-kiosk__preview-toolbar {

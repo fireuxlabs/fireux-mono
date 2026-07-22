@@ -1,18 +1,14 @@
 <template>
   <div v-if="variant === 'pill'" class="collection-grid">
-    <DriverCardsPill
-      v-for="card in cards"
-      :key="card.id"
-      v-bind="card"
-    />
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="pill" :card="card" />
+    </template>
   </div>
 
   <div v-else class="collection-stack">
-    <DriverCardsCell
-      v-for="card in cards"
-      :key="card.id"
-      v-bind="card"
-    />
+    <template v-for="card in cards" :key="card.to || card.id">
+      <slot name="cell" :card="card" />
+    </template>
   </div>
 </template>
 

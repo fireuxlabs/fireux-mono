@@ -1,68 +1,104 @@
-Runtime package spine map
-Updated: 2026-07-20
-Ref: dda2e1753
+# Runtime package family
+
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-20 22:33 CEST — Repo Efficiency Pass 5 of 6: map package-owned imports and ecosystem composition. -->
-<!-- Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: map the package build-config lifecycle seam. -->
+## Purpose
 
-Purpose:
-Map how FireUX packages expose runtime surfaces to Nuxt apps.
+Map how FireUX packages expose reusable runtime surfaces to Nuxt Apps and why
+Core, Ecosystem, and Extension packages legitimately differ.
 
-Vertical links:
+## Links
 
-- Parent: fireux.md
-- Child: components.md
-- Child: composables.md
-- Child: pages.md
-- Child: server-api.md
+- Parent: `fireux.md`
+- Children: `components.md`, `composables.md`, `pages.md`, `server-api.md`
+- Horizontal: `pnpm.md`, `app-config.md`, `spine.md`
+- Executable references: package guards, dependency ownership guard, and each
+  package's `src/module.ts`
 
-Horizontal links:
+## Shared spine
 
-- pnpm.md
-- app-config.md
-- spine.md
+Every runtime package starts from:
 
-Common shape:
+```text
+src/module.ts
+src/config/module/*
+src/runtime/*
+```
 
-- `src/module.ts`
-- `src/config/module/*`
-- `src/runtime/components`
-- `src/runtime/composables`
-- `src/runtime/models`
-- `src/runtime/pages`
-- `src/runtime/server`
-- `src/runtime/utils`
-- Optional `build.config.ts` only when a package has a real custom builder
-  lifecycle; keep ordinary packages on the shared module-builder defaults.
+Common runtime buckets are `components`, `composables`, `models`, `pages`,
+`server`, and `utils`. A package carries only the buckets it genuinely owns.
 
-Module registration:
+Shared rules:
 
-- Core helper: `fireux-core/config/module/module-wiring`.
-- Common package hooks: `configureRuntime`, `configurePlugins`, `configureComposables`, `configureComponents`, `configureLayouts`, `configurePages`, `configureAssets`, `configureServer`.
-- Keep only hooks that perform real Nuxt registration. Models, types, info helpers, and utilities are explicit-import surfaces and do not have registration hooks.
-- Do not add a runtime surface without checking module registration.
-- Declare every direct runtime, server, type-only, and stylesheet import in the
-  owning package manifest; root hoisting is not package ownership.
-- Put cross-extension composition in an ecosystem or project that declares all
-  participating packages, not back into an upstream domain package.
-- Do not place a nested `package.json` under `src`; the workspace package root
-  is the module boundary.
-- Package-specific production outputs must be generated inside the builder
-  lifecycle before export validation, not by a command chained after the
-  builder has completed.
+- Register Nuxt runtime surfaces through the package module.
+- Use the Core module-wiring helper rather than rebuilding Nuxt registration.
+- Keep only registration hooks that perform real work.
+- Models, types, information helpers, and ordinary utilities are explicit
+  imports; they do not need fake registration hooks.
+- Declare every direct runtime, server, type-only, and stylesheet dependency in
+  the owning package manifest.
+- Project Apps compose packages; they do not re-own reusable package behavior.
+- Cross-extension composition belongs in an ecosystem package or project that
+  declares every participating package.
+- Do not place a nested `package.json` under `src`.
+- Add `build.config.ts` only for a real custom builder lifecycle.
 
-Similarities:
+## Package lanes
 
-- Core, ecosystem, and extension packages all register through Nuxt module entry points.
-- Runtime surfaces should be importable or auto-registered according to package config.
+| Lane | Shared shape | Accepted delta and reason |
+| --- | --- | --- |
+| Core | Module entry, config hooks, reusable runtime | `accepted`: owns product-neutral foundations and therefore has the strictest package and dependency boundary |
+| Ecosystem | Module entry plus ecosystem config, Firebase binding, shared identity/assets | `accepted`: owns cross-App composition for one ecosystem, not reusable domain implementation |
+| Extension | Module entry plus domain runtime surfaces | `accepted`: owns reusable entities, public surfaces, Console operations, APIs, and assets for one domain |
 
-Differences:
+Package lanes differ in ownership, not in whether module registration is
+explicit and reviewable.
 
-- Core packages are shared foundations and have the strictest L1 package shape.
-- Ecosystem packages carry ecosystem config, Firebase binding, and public assets.
-- Extension packages carry domain runtime surfaces.
+## Registration hooks
 
-Open questions:
+Current hook vocabulary includes:
 
-- README placeholders are required by guard but should stay TODO-only until docs are intentionally rebuilt.
+- `configureRuntime`
+- `configurePlugins`
+- `configureComposables`
+- `configureComponents`
+- `configureLayouts`
+- `configurePages`
+- `configureAssets`
+- `configureServer`
+
+No package needs all hooks. Missing hooks are normal when the package owns no
+corresponding surface. A no-op hook is drift, not parity.
+
+## Drift and decisions
+
+| Difference | State | Recommendation |
+| --- | --- | --- |
+| Similar packages expose different config files only because old scaffolds created them | `drift` | Remove empty/no-op hooks; compare registration behavior, not filenames alone |
+| A project App implements package-owned Console/domain behavior | `drift` | Move reusable code to the owning package and leave app composition local |
+| A package imports another extension to compose product behavior | `drift` | Move the composition to an ecosystem/project owner unless the dependency is a true domain primitive |
+| A package needs custom build output | `to-confirm` | Add builder config only after the output lifecycle cannot use shared defaults |
+| Runtime surface exists but is not registered | `drift` | Add the smallest real module hook and a focused smoke route/import check |
+
+## Alignment roadmap
+
+### Now
+
+- Keep `src/module.ts` and real `src/config/module/*` hooks as the registration
+  spine.
+- Let package manifests declare actual dependency ownership.
+
+### Next
+
+- Remove remaining no-op or scaffold-only config helpers when encountered.
+- Compare sibling packages by owned runtime surfaces and registration effects.
+- Keep project-app overrides small and explicit.
+
+### Later
+
+- Extend guards for repeated registration failures, not for optional folder
+  symmetry.
+- Standardize custom builders only after more than one package proves the same
+  lifecycle.

@@ -66,6 +66,8 @@ export function useChefInterface(
 
   function map(p: ChefTarget, u?: UserLike | null): ChefCard.Card {
     const id = safeString(u?.id).trim() || safeString(p.id).trim()
+    const handle = safeString(u?.handle).trim().replace(/^@/, '').toLowerCase()
+    const routeKey = handle || id
     const profileImage = resolveProfileImage([p.chef_image])
     const summary = resolveProfileSummary([p.summary, p.chef_bio])
     const userAvatar = resolveUserAvatar(u)
@@ -75,16 +77,18 @@ export function useChefInterface(
 
     return {
       id,
-      to: id ? `/${chefConfig.collectionName}/${encodeURIComponent(id)}` : '',
+      to: routeKey
+        ? `/${chefConfig.collectionName}/${encodeURIComponent(routeKey)}`
+        : '',
       imageUrl: avatarUrl,
       avatarUrl,
       secondaryAvatarUrl,
       displayName: resolveProfileDisplayName([u?.display_name]),
       title: safeString(p.title).trim(),
-      subtitle: safeString(u?.handle).trim(),
+      subtitle: handle,
       summary,
       badges,
-      handle: safeString(u?.handle).trim(),
+      handle,
       contactEmail: '',
       contactPhone: '',
       websiteUrl: '',

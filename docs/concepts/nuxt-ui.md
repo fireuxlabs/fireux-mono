@@ -1,23 +1,22 @@
-Nuxt UI concept map
-Updated: 2026-07-21
-Ref: 4c70482080
+# Nuxt UI concept map
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: record the installed-component-first styling boundary. -->
-
-Purpose:
+## Purpose
 Explain the UI library context for agents.
 
-Vertical links:
+## Vertical links
 - Parent: AGENTS.md
 - Child: components.md
 - Child: pages.md
 
-Horizontal links:
+## Horizontal links
 - nuxt4.md
 - debug.md
+- color-mode.md
 
-UI stack:
+## UI stack
 - FireUX uses Nuxt UI / Nuxt UI Pro style components.
 - Common shell components include `UPage`, `UPageHeader`, `UPageBody`,
   `UPageGrid`, `UPageColumns`, `UPageCard`, `UPageFeature`, `UPageHero`,
@@ -26,7 +25,7 @@ UI stack:
   alpha/version differs from later online documentation. Do not assume a
   component or prop exists without checking the installed package.
 
-Working style:
+## Working style
 - Prefer existing Nuxt UI components over handmade HTML chrome.
 - Configure universal component defaults through Nuxt UI app configuration;
   use direct component props for ordinary color, variant, size, loading, and
@@ -50,7 +49,7 @@ Working style:
 - Keep pages composed from domain components where possible.
 - Avoid heavy parent scripts that pass many tiny display props; let named child components own local presentation when reasonable.
 
-Typography:
+## Typography
 - Nuxt UI's semantic text colors and Tailwind's installed typography scale are
   the default system.
 - Core `.fx-type-*` roles name repeated Nuxt UI page typography without owning
@@ -60,12 +59,12 @@ Typography:
 - Exact tenant display, artwork, print/output, debug, and responsive optical
   typography remain owned deltas when the shared roles do not describe them.
 
-Design caution:
+## Design caution
 - Display defaults are okay.
 - Fake stored truth is not okay.
 - Do not add fallback identity, fake logos, fake avatars, or fake canonical data.
 
-When touching frontend:
+## When touching frontend
 - Check nearest sibling page/component first.
 - Keep mobile and desktop layout safe.
 - Avoid generic AI-looking boilerplate if creating a new visual surface.

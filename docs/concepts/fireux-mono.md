@@ -1,24 +1,19 @@
-FireUX Mono concept map
-Updated: 2026-07-20
-Ref: 8d83d3fa7
+# FireUX Mono concept map
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2–4 of 4: map portable root and owned tooling fixtures. -->
-<!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: distinguish optional console fixtures from other data families. -->
-<!-- Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: map the supported root script surface. -->
-<!-- Concurrent edit — 2026-07-20 22:33 CEST — Repo Efficiency Pass 5 of 6: map explicit workspace dependency ownership. -->
-
-Purpose:
+## Purpose
 Explain the repo as a workspace so agents do not rediscover the skeleton.
 
-Scope:
+## Scope
 
 - Root pnpm workspace.
 - Package lanes.
 - Project app lanes.
 - Guard scripts and command entry points.
 
-Vertical links:
+## Vertical links
 
 - Parent: ../../AGENTS.md
 - Child: fireux.md
@@ -26,7 +21,7 @@ Vertical links:
 - Child: runtime-package.md
 - Child: app-config.md
 
-Horizontal links:
+## Horizontal links
 
 - spine.md
 - pages.md
@@ -34,7 +29,7 @@ Horizontal links:
 - composables.md
 - demo-data.md
 
-Current shape:
+## Current shape
 
 - `packages/core/*`: shared foundations.
 - `packages/ecosystem/*`: ecosystem identity/config packages.
@@ -46,8 +41,10 @@ Current shape:
 - `projects/*/*/app/demo`: app-owned console Demo Data.
 - `temp/*`: ignored temporary work only, never authored source.
 - `figma-export`: optional ignored local directory or symlink, never tracked.
+- `mirror`: active local comparison workspace generated from explicit file
+  lists, Git changes, or model inventories; generated links are not source.
 
-Working notes:
+## Working notes
 
 - Root `package.json` owns workspace scripts.
 - `pnpm-workspace.yaml` solely owns workspace package globs; do not duplicate
@@ -67,7 +64,7 @@ Working notes:
 - Packages and apps declare what their authored source imports; the workspace
   root does not act as a transitive runtime dependency provider.
 
-New project app completion:
+## New project app completion
 
 - Add the app to `scripts/_lib/app-registry.mjs` with its unique port, workspace, identity, role, consoles, and focused smoke routes.
 - Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root dev/kill scripts, `.vscode/tasks.json`, or `.vscode/launch.json`.
@@ -75,6 +72,10 @@ New project app completion:
 - A new app is not complete until its root dev command, kill command, VS Code task/launch entry, toolbar spinner, and focused smoke route exist.
 - Run `pnpm guard` after the workspace sync.
 
-Open questions:
+## Tooling delta
 
-- Whether `mirror` remains useful is scheduled for later review.
+- Mirror is retained because its scripts and VS Code toolbar integration were
+  used and updated after the 2026-06-17 review trigger. It is an accepted local
+  review aid, not a source tree, package lane, documentation authority, or
+  runtime dependency. Re-review deletion only if its commands and toolbar entry
+  become unused and are removed together.

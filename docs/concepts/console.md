@@ -1,27 +1,18 @@
-Console spine map
-Updated: 2026-07-21
-Ref: 318378b20
+# Console
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: lock authoritative console target outcomes. -->
-<!-- Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: map access, target outcome, targeted reads, and mutation authority. -->
-<!-- Concurrent edit — 2026-07-20 17:05 CEST — Demo Data Spine pass: map deferred local fixture outcomes. -->
-<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access-driven target reads explicitly. -->
-<!-- Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: map authenticated exact-root projection and selected-target reuse. -->
-<!-- Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: map shared selected-target chrome and the index guard. -->
-<!-- Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: record one shared authenticated projection as sole live authority. -->
-<!-- Concurrent edit — 2026-07-21 22:36 CEST — Console family alignment: map core-owned target authority and atomic production onboarding. -->
-
-Purpose:
+## Purpose
 Map the shared console system and domain adapters.
 
-Vertical links:
+## Vertical links
 
 - Parent: app-config.md
 - Child: family-console-entity.md
 - Child: family-tenant-global.md
 
-Horizontal links:
+## Horizontal links
 
 - composables.md
 - components.md
@@ -29,7 +20,7 @@ Horizontal links:
 - debug.md
 - demo-data.md
 
-Shared core:
+## Shared core
 
 - `useConsole`
 - `useConsoleAccess`
@@ -43,7 +34,7 @@ Shared core:
 - `useConsoleSelection`
 - `useConsoleTeam`
 
-Page surface vocabulary:
+## Page surface vocabulary
 
 - `browse`: an operation collection or operational summary at `/<operation>`.
 - `detail`: one record at `/<operation>/[recordId]`.
@@ -52,7 +43,7 @@ Page surface vocabulary:
 - `workflow`: a resumable process at `/<operation>/workflows/<name>/[runId?]`.
 - `live`: a real-time command surface at the operation root; it may use an immersive domain layout.
 
-Shared page rules:
+## Shared page rules
 
 - The page directly composes `UDashboardPanel`, `LayoutsConsoleNavbar`, a header slot, and a body slot. Do not hide that route shell in a generic component.
 - The page owns high-level width and spacing. Family indexes may stay full width; simple forms may use `panels-narrow`; named domain components own their internal presentation.
@@ -69,7 +60,7 @@ Shared page rules:
   target-state presentation seams.
 - Tables is the first operation-level edit reference: `/console/kitchen/tables` and `/console/kitchen/tables/edit`.
 
-Allowed domain buckets:
+## Allowed domain buckets
 
 - `core`
 - `index`
@@ -79,7 +70,7 @@ Allowed domain buckets:
 - `operations`
 - `sundries`
 
-Component bucket shape:
+## Component bucket shape
 
 - Console families carry only the peer buckets their real lifecycle needs.
   `Team` is not mandatory; Project deliberately has none today.
@@ -89,7 +80,7 @@ Component bucket shape:
 - `Operations` is for selected-target work and may contain domain-specific child folders.
 - `Sundries` is a temporary quarantine for parked, loose, or underdeveloped console surfaces that are not yet core sheets or confirmed operations.
 
-Index pattern:
+## Index pattern
 
 - Page renders `ConsoleXIndex`.
 - `ConsoleXIndex` renders selected and targets sections.
@@ -136,7 +127,7 @@ Index pattern:
   its explicit `idle`, `pending`, `error`, `empty`, or `ready` outcome feeds the
   same index contract as a live read.
 
-Production onboarding:
+## Production onboarding
 
 - A root/App-support console family creates or attaches through its own
   fixed-runtime authenticated server endpoint. The caller cannot choose the
@@ -153,7 +144,7 @@ Production onboarding:
   minimal harness. Project deliberately remains a read-only control-plane
   family and has no root/App-support onboarding.
 
-Operations:
+## Operations
 
 - Operations are child surfaces inside a selected console target.
 - Operations must not leak into Firestore entity root folders.
@@ -171,18 +162,19 @@ Operations:
 - Do not use root entity buckets like `Create` inside operations unless the visible scoped workflow is actually named creation.
 - Do not promote `Sundries` into a permanent product bucket. A sundry should later graduate into `Operations`, move into a core sheet, or be deleted.
 
-Similarities:
+## Similarities
 
 - All console entities need target selection or a selected target.
 - Console entities expose access/team only when that lifecycle is real.
 - All console indexes should stay thin.
 
-Differences:
+## Differences
 
-- Kitchen has richer operations.
-- Supplier has catalogue/item/ingredient operations.
-- Portfolio is more private and document/task/compliance oriented.
-- Blank is the minimal mirror for testing console spine.
+- Domain differences, their reasons, migration debt, and alignment roadmap live
+  in `family-console-entity.md`.
+- A difference in operation children is expected; a difference in Index target
+  outcome, selection authority, or error semantics is drift unless guarded and
+  explained there.
 
 Demo, test, and simulation:
 
@@ -190,3 +182,12 @@ Demo, test, and simulation:
 - Test and simulation are separate mutable sources and may use dedicated
   databases. Dev fixtures belong to authenticated dev tooling, not consoles.
 - See `demo-data.md` for ownership and dependency boundaries.
+
+## Alignment roadmap
+
+- Now: preserve the guarded selected → targets → debug Index contract and one
+  family-owned target outcome.
+- Next: align lifecycle sheets through the family delta register, especially
+  Property Identity/Create and Kitchen App-support migration.
+- Later: guard Overview, Identity, and Team only after their shared jobs are as
+  stable as Index.

@@ -1,67 +1,105 @@
-Layouts spine map
-Updated: 2026-06-19
-Ref: 1fb119d15
+# Layouts spine map
+
+Updated: 2026-07-22
+Ref: 796952bf0
 Role: map, not canon
 
-Purpose:
-Map how FireUX layouts currently work so future layout work starts from repo
-evidence, not generic Nuxt instinct.
+## Purpose
 
-Vertical links:
+Map who renders route content and who owns shared chrome. FireUX currently has
+two layout composition shapes; this map makes that delta visible rather than
+declaring either one universal without render evidence.
+
+## Links
+
 - Parent: nuxt4.md
 - Sibling: pages.md
 - Sibling: components.md
 - Sibling: app-config.md
+- Related family: family-menu.md
+- Related family: family-tenant-global.md
 
-Current FireUX spine:
-- FireUX runtime layouts render page content with `<NuxtPage />`.
-- Core examples include `default`, `landing`, `console`, `dashboard`, `docs`,
-  `dev`, `design`, and `auth`.
-- Ecosystem tenant example: `misebox-tenant` also renders `<NuxtPage />`.
-- The layout owns page chrome such as header, footer, shell background, sidebar,
-  dashboard frame, or tenant frame.
-- The page owns route metadata, content composition, and domain components.
+## Ownership spine
 
-Important nuance:
-- Generic Nuxt examples often show layouts using `<slot />` because the app root
-  passes page content through `<NuxtLayout>`.
-- FireUX currently has an app shell that renders `<NuxtLayout><NuxtPage /></NuxtLayout>`,
-  while most FireUX runtime layouts also render `<NuxtPage />`.
-- That means the repo's current working layout spine is `<NuxtPage />`, even if
-  generic Nuxt convention may suggest `<slot />`.
+- `AppShell` owns the outer app composition and currently renders
+  `<NuxtLayout><NuxtPage /></NuxtLayout>`.
+- A layout owns recurring chrome: header, footer, navigation, shell background,
+  sidebar, close control, or tenant frame.
+- A page owns route metadata, route outcome, and high-level domain composition.
+- A route-family layout may derive shared chrome from route scope, as Menu does
+  for its exit control; it must not become the domain data-fetching owner.
 
-App-local layouts:
-- App-local layouts are allowed when an app has real chrome needs that should not
-  become package truth yet.
-- Before adding one, compare the nearest package or core layout first.
-- If an app-local layout differs from the FireUX spine, name the delta in the
-  change and keep it small.
-- App-local tenant or microsite layouts should own local navigation chrome so
-  pages do not repeat it.
+## Current composition lanes
 
-When creating or changing a layout:
-- Name the layout family: core, dashboard, console, tenant, microsite, menu, or
-  app-local special case.
-- Name the nearest working sibling.
-- Keep chrome in the layout and domain content in the page/component tree.
-- Prefer `<NuxtPage />` unless deliberately following an existing app-local
-  `<slot />` pattern.
-- Do not move domain data fetching into layouts.
-- Do not hide route-specific behavior inside a layout.
-- A package-owned route family should also own its layout when the chrome can
-  be derived from app role and explicit route scope. Menu uses this shape:
-  `fireux-kitchens` owns the shared Menu layout, tenant routes close home, and
-  global or kitchen-directory routes return to their Menu index.
+### Slot-rendering leaf layouts
 
-Known examples:
-- Core default layout: `packages/core/fireux-core/src/runtime/layouts/default.vue`
-- Core console layout: `packages/core/fireux-core/src/runtime/layouts/console.vue`
-- Misebox tenant layout: `packages/ecosystem/fireux-misebox/src/runtime/layouts/misebox-tenant.vue`
-- Kitchens Menu layout: `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
-- La Tap local layout: `projects/misebox/la-tap-berne/app/layouts/latap-default.vue`
+These layouts consume the page content supplied by the outer Nuxt layout
+composition:
 
-Open questions:
-- Decide whether app-local `<slot />` layouts should be normalized to the FireUX
-  `<NuxtPage />` spine when touched.
-- Decide whether `misebox-tenant` should become the polished tenant reference or
-  whether a newer tenant layout should replace it.
+- `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-menu.vue`
+- `projects/fireux/buenohost/app/layouts/property-info.vue`
+
+Their content boundary is `<slot />`. The Menu layout is the clearest package
+example: it owns route-family close chrome while the page remains the content
+owner.
+
+### Route-rendering shell layouts
+
+Core layouts and several tenant/app layouts currently render `<NuxtPage />`
+directly:
+
+- `packages/core/fireux-core/src/runtime/layouts/default.vue`
+- `packages/core/fireux-core/src/runtime/layouts/console.vue`
+- `packages/ecosystem/fireux-misebox/src/runtime/layouts/misebox-tenant.vue`
+- `projects/misebox/la-tap-berne/app/layouts/latap-default.vue`
+
+This is established source, but its relationship with the outer `AppShell`
+composition has not been reduced to one documented render contract. Preserve
+working routes; do not copy this lane into a new layout merely because Core
+currently uses it.
+
+## App-local layouts
+
+- App-local layouts are allowed for real app chrome that is not package truth.
+- Compare the nearest package or ecosystem layout first.
+- Keep the delta small and name why the chrome cannot be shared.
+- Promote it only after another app proves the same contract.
+
+## Delta register
+
+| Difference | State | Reason or alignment trigger |
+| --- | --- | --- |
+| Package Menu layouts render `<slot />` | `accepted` | The outer shell supplies page content; the package layout adds route-family chrome without rendering another route tree |
+| Core and several tenant layouts render `<NuxtPage />` | `to-confirm` | It is current working source, but its relationship to `AppShell` must be verified with render-count and nested-route tests before becoming the universal rule |
+| Menu layout derives close behavior from route scope | `accepted` | Exit chrome is shared by the entire Menu route family and remains separate from Menu data fetching |
+| App-local branded layouts exist | `accepted` | Brand/navigation chrome can be app-owned; unexplained copies of package chrome remain drift |
+| Mechanically replacing every `<slot />` or `<NuxtPage />` | `drift` | Renderer choice depends on which layer already owns page rendering |
+
+## Change checklist
+
+- Name the family: core, dashboard, console, tenant, microsite, Menu, or
+  app-local.
+- Inspect `AppShell`, the nearest layout sibling, and the route smoke behavior.
+- Confirm that route content renders exactly once.
+- Keep domain fetches and route-specific business decisions out of the layout.
+- Keep shared route-family chrome out of individual pages.
+
+## Alignment roadmap
+
+### Now
+
+- Preserve the proven renderer for a touched working layout.
+- Require every new layout to name its composition owner and sibling.
+
+### Next
+
+- Add focused route smoke specimens for one slot-rendering package layout and
+  one route-rendering Core layout.
+- Verify nested routes, hydration, and single-render behavior under `AppShell`.
+
+### Later
+
+- Choose and guard one renderer per proven layout lane.
+- Align existing layouts only after the render contract is demonstrated, not
+  as a cosmetic syntax sweep.

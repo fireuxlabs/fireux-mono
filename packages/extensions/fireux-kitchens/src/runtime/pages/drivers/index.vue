@@ -1,20 +1,24 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
+  <PublicIndexSurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-truck"
+    secondary-label="For drivers"
+  >
+    <DriverCollectionManager />
 
-    <UPageBody>
+    <template #secondary>
       <!-- Profile CTA family: Driver is a delivery profile attached to a User. -->
       <DriverCTA />
-
-      <DriverCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: Driver public identity and app-private operations.
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   tag: 'drivers',
@@ -31,12 +35,18 @@ definePageMeta({
   layout: 'default',
   name: 'DriversIndexPage',
   title: 'Drivers',
-  description: 'Browse driver profiles.',
+  description:
+    'Meet delivery professionals keeping kitchens, teams, and orders moving.',
 })
 
 const pageTitle = 'Drivers'
-const pageDescription = 'Find drivers, or create your delivery profile.'
+const pageDescription =
+  'Meet delivery professionals keeping kitchens, teams, and orders moving.'
 const { appName } = useFireUXConfig()
 
-useHead({ title: `${appName} | ${pageTitle}` })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/drivers',
+})
 </script>

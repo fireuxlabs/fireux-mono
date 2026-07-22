@@ -1,28 +1,46 @@
 <template>
-  <div class="pill">
-    <UUser
-      :name="displayName"
-      :description="title || undefined"
-      size="sm"
-    >
-      <template #avatar>
-        <UAvatarGroup v-if="avatarUrl && secondaryAvatarUrl" size="xs">
-          <UAvatar :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
-          <UAvatar :src="secondaryAvatarUrl || undefined" :alt="displayName || ''" size="2xs" />
-        </UAvatarGroup>
-        <UAvatar v-else :src="avatarUrl || undefined" :alt="displayName || ''" size="xs" />
-      </template>
-    </UUser>
-  </div>
+  <PublicProfileDirectoryCard
+    variant="compact"
+    kind-label="Driver"
+    icon="i-lucide-truck"
+    :to="to"
+    :avatar-url="avatarUrl"
+    :secondary-avatar-url="secondaryAvatarUrl"
+    :display-name="displayName"
+    :handle="handle"
+    :headline="title"
+    :link="link"
+    :action="action"
+    @action="emit('action')"
+  />
 </template>
 
 <script setup lang="ts">
 import type { DriverCard } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
 
-defineProps<
-  Pick<
-    DriverCard.Card,
-    'avatarUrl' | 'secondaryAvatarUrl' | 'displayName' | 'title'
-  >
->()
+const emit = defineEmits<{
+  (event: 'action'): void
+}>()
+
+withDefaults(
+  defineProps<
+    Pick<
+      DriverCard.Card,
+      | 'to'
+      | 'avatarUrl'
+      | 'secondaryAvatarUrl'
+      | 'displayName'
+      | 'handle'
+      | 'title'
+    > & {
+      action?: boolean
+      link?: boolean
+    }
+  >(),
+  {
+    action: false,
+    link: false,
+    secondaryAvatarUrl: '',
+  }
+)
 </script>

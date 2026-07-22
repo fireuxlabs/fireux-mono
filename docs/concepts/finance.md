@@ -1,18 +1,14 @@
-Finance map
-
-<!-- Concurrent edit — 2026-07-21 16:41 CEST — FireUX Finance pass: map product-neutral facts, domain producers, and derived reporting. -->
-<!-- Concurrent edit — 2026-07-21 17:11 CEST — Kitchen Finance surface: map the first bounded gross-sales projection. -->
-<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: classify validated compensation as an offer term, not a fact. -->
+# Finance map
 
 Updated: 2026-07-22
 Ref: 1e55eece7
 Role: map, not canon
 
-Purpose:
+## Purpose
 Map the shared financial-fact boundary without turning domain operations or
 reports into one generic Finance console.
 
-Authority and ownership:
+## Authority and ownership
 
 - `packages/extensions/fireux-finance` owns reusable money validation,
   deterministic FinancialFact identity, and the minimal fact model.
@@ -25,7 +21,7 @@ Authority and ownership:
   transaction, Misebox Rules template, rendered Rules artifact, and security
   test gate linked below.
 
-Family checkpoint:
+## Family checkpoint
 
 - Family: explicit-import extension library plus domain adapters.
 - Nearest package sibling: `fireux-translation` for a module with no registered
@@ -38,7 +34,7 @@ Family checkpoint:
   lifecycle, public route, collection stack, or direct Console surface. The
   Kitchen Finance sheet is a derived report over Sales, not a record editor.
 
-Current fact contract:
+## Current fact contract
 
 - `id`: deterministic hash of schema version, App, fact kind, and source path.
 - `schema_version`: currently `1`.
@@ -49,7 +45,7 @@ Current fact contract:
   field. Corrections must be new facts after a correction lifecycle is proven;
   source facts are never rewritten.
 
-First proven producer:
+## First proven producer
 
 - Server-resolved menu prices are captured on every new Kitchen Order as an
   internally consistent minor-unit pricing snapshot.
@@ -68,7 +64,7 @@ First proven producer:
   producer without a separately reviewed migration; the runtime fails closed
   instead of guessing from line sums or payment deposits.
 
-Not producers yet:
+## Not producers yet
 
 - Supplier catalogue `pack_cost_minor` is an offer term, not a purchase,
   receipt, invoice, inventory-consumption, or expense fact.
@@ -82,7 +78,7 @@ Not producers yet:
   Cross-extension Project/Portfolio composition belongs in an ecosystem or app
   that owns both participants.
 
-Reporting and Console boundary:
+## Reporting and Console boundary
 
 - Raw facts are not a browser collection API. Expose bounded server projections
   only after target access, period, currency, grouping, and query limits are
@@ -104,7 +100,7 @@ Reporting and Console boundary:
   Kitchen operations; Suppliers, Projects, and Portfolios keep their own future
   producer operations.
 
-Current source:
+## Current source
 
 - `packages/extensions/fireux-finance/src/runtime/models/money.model.ts`
 - `packages/extensions/fireux-finance/src/runtime/models/financial-fact.model.ts`
@@ -129,7 +125,7 @@ Current source:
 - `scripts/firebase/misebox/firestore.rules`
 - `scripts/deploy-misebox-firestore-rules.mjs`
 
-Refresh and verification:
+## Refresh and verification
 
 - Re-read the Finance model/builders and each producing domain transaction.
 - Confirm the current Firestore database edition and composed Rules ownership

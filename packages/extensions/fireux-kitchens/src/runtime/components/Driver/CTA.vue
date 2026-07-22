@@ -1,11 +1,16 @@
 <template>
   <section data-entity-cta-family="profile-managed" class="space-y-4">
     <div v-if="hasProfile && profileCard" class="space-y-4">
-      <DriverCardsCell v-bind="profileCard" />
+      <DriverCardsCell v-bind="profileCard" :link="false" />
 
-      <p class="text-sm text-dimmed">
-        Your driver profile is available for delivery work.
-      </p>
+      <div class="flex flex-wrap gap-2">
+        <UButton v-if="profileTo" color="primary" :to="profileTo">
+          View profile
+        </UButton>
+        <UButton color="neutral" variant="soft" to="/dashboard/driver">
+          Manage profile
+        </UButton>
+      </div>
     </div>
 
     <UPageCTA
@@ -16,11 +21,7 @@
       variant="soft"
       orientation="horizontal"
     >
-      <UButton
-        color="primary"
-        :loading="creating"
-        @click="create"
-      >
+      <UButton color="primary" :loading="creating" @click="create">
         Create driver profile
       </UButton>
     </UPageCTA>
@@ -45,7 +46,10 @@ const profileCard = computed(() =>
   cell(coreProfile.value, currentUser.value ?? null)
 )
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
-const userName = computed(() => String(currentUser.value?.display_name || '').trim())
+const profileTo = computed(() => String(profileCard.value?.to || '').trim())
+const userName = computed(() =>
+  String(currentUser.value?.display_name || '').trim()
+)
 const createTitle = computed(() =>
   userName.value
     ? `Hi ${userName.value}, create your driver profile`

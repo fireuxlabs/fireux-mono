@@ -5,7 +5,8 @@ import { usePublicProfileCollection } from 'fireux-core/runtime/composables/fire
 import { useCollectionById } from 'fireux-core/runtime/composables/shared/useCollectionById'
 import {
   DriverStorage,
-  type Driver,
+  type PublicDriverDirectoryProfile,
+  type PublicDriverProfilePayload,
 } from '../../../../../../models/driver.model'
 
 // Public Driver directory source. App-scoped operational rows never enter this read.
@@ -18,10 +19,11 @@ export function useDriverFetch() {
     pending,
     error,
     outcome,
-  } = usePublicProfileCollection<Driver>({
+  } = usePublicProfileCollection<PublicDriverProfilePayload>({
     collection: DriverStorage.rootCollection,
   })
-  const { byId: driver } = useCollectionById(drivers)
+  const { byId: driver } =
+    useCollectionById<PublicDriverDirectoryProfile>(drivers)
 
   return {
     drivers,

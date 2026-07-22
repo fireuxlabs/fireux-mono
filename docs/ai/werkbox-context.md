@@ -1,8 +1,9 @@
-<!-- Concurrent edit — 2026-07-21 14:59 CEST — Cleanbox to Werkbox migration: record the durable Werkbox ownership and trusted Firebase boundary. -->
-<!-- Concurrent edit — 2026-07-21 15:36 CEST — Shared Firestore Rules pass: point Werkbox at the composed Rules ownership boundary. -->
-<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: record parity with Misebox and categories-only product delta. -->
-<!-- Concurrent edit — 2026-07-22 12:56 CEST — Werkbox all-category scope: distinguish the general Job hub from its cleaning landing category. -->
 # Werkbox GPT Context
+
+Updated: 2026-07-22
+Ref: 796952bf0
+Role: living context
+Scope: Werkbox ecosystem and Apps
 
 This is the scoped context entrypoint for work on Werkbox inside
 `fireuxlabs/fireux-mono`. It inherits the root `AGENTS.md` and

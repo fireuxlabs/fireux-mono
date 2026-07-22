@@ -1,21 +1,12 @@
-Pages spine map
+# Pages
 Updated: 2026-07-22
-Ref: b020f805e
+Ref: 796952bf0
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: map the factual capability index route. -->
-<!-- Concurrent edit — 2026-07-21 13:08 CEST — Operation detail surfaces: map catalogue-backed factual detail routes. -->
-<!-- Concurrent edit — 2026-07-21 14:50 CEST — Dashboard Overview pass: map the shared three-layer dashboard route contract. -->
-<!-- Concurrent edit — 2026-07-21 15:46 CEST — User Profile polish: map the root-identity-only dashboard editor contract. -->
-<!-- Concurrent edit — 2026-07-21 16:03 CEST — User bio pass: map biography editing and rendering across shared User routes. -->
-<!-- Concurrent edit — 2026-07-21 17:10 CEST — Dashboard Family pass: map capability-backed route and admin-surface discovery boundaries. -->
-<!-- Concurrent edit — 2026-07-21 20:36 CEST — Profile visibility pass: map independent public identity and owner-private account sections in the shared Profile hub. -->
-<!-- Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: reserve the public /demo route family. -->
-
-Purpose:
+## Purpose
 Map how route pages should be built and where consensus is still forming.
 
-Vertical links:
+## Vertical links
 
 - Parent: nuxt4.md
 - Child: family-public-index.md
@@ -23,14 +14,14 @@ Vertical links:
 - Child: family-console-entity.md
 - Child: family-menu.md
 
-Horizontal links:
+## Horizontal links
 
 - layouts.md
 - components.md
 - composables.md
 - debug.md
 
-Current convention:
+## Current convention
 
 - Page owns route shell, metadata, layout, and high-level composition.
 - Layout owns shared chrome; see `layouts.md` before changing layout behavior.
@@ -46,7 +37,7 @@ Current convention:
   grammar as mechanical cleanup. Review their 404, canonical, redirect, and
   sitemap effects as an explicit route/SEO decision first.
 
-Common route families:
+## Common route families
 
 - Public index: `/xs`.
 - Public detail: `/xs/[id-or-slug]`.
@@ -61,7 +52,7 @@ Common route families:
 - Console child operation: `/console/x/<operation>`.
 - Dashboard/admin/dev surfaces where packages expose them.
 
-Dashboard overview notes:
+## Dashboard overview notes
 
 - Core owns the shared `/dashboard` route shell and the named Dashboard Overview
   component family. Projects compose that route rather than forking an app-local
@@ -73,7 +64,7 @@ Dashboard overview notes:
 - Start at `packages/core/fireux-core/src/runtime/components/Dashboard/Overview.vue`
   and `packages/core/fireux-core/src/runtime/pages/dashboard/index.vue`.
 
-Dashboard profile notes:
+## Dashboard profile notes
 
 - Core owns the shared `/dashboard/user-profile` route and its named `User/Edit`
   components. Projects consume that Profile hub rather than forking it app by
@@ -83,10 +74,15 @@ Dashboard profile notes:
   name, handle, and the optional 280-character bio. The private section is a
   read-only account summary; Settings owns session actions. UserApp membership
   and entitlements are not presented as editable profile fields.
+- The signed-in Profile header may show the derived highest current-App access
+  badge. It never stores or publishes that App-private authority on User.
+- A signed-in user may also see that private derived badge on their own public
+  User detail page. It is not part of the public User DTO and is not shown to
+  other visitors.
 - Specialist profile entries are navigation to their owning domain editors.
   Their documents add domain details and never duplicate root User identity.
 
-Dashboard family notes:
+## Dashboard family notes
 
 - Core exposes only dashboard routes backed by a real read or write authority.
   Data-less social, commerce, or messaging promises do not belong in the shared
@@ -98,7 +94,7 @@ Dashboard family notes:
   `packages/core/fireux-core/src/runtime/composables/fireux/app/ui/nav/useDashboardNav.ts`,
   and the enabled package pages under `src/runtime/pages/dashboard`.
 
-Index page notes:
+## Index page notes
 
 - Public/root entity indexes should use `XCollectionManager`.
 - `XCollectionManager` should fetch the root/public entity collection itself.
@@ -110,12 +106,32 @@ Index page notes:
   the named Product Demo adapter described in `demo-data.md`; they never read
   Console fixtures directly or present Demo World as live public truth.
 
-Detail page notes:
+## Detail page notes
 
 - Preferred emerging order: header, profile, main, operator/actions, dev debug.
 - This is not fully settled across every entity yet.
 
-Open questions:
+## Family delta rule
 
-- Exact public detail spine still needs alignment across all entities.
-- Menu public routes are actively evolving and should be handled carefully.
+- Console route shells follow `console.md`; domain differences live below the
+  route page.
+- Public index presentation and authority differences live in
+  `family-public-index.md`.
+- Public detail route identity and operator-panel differences live in
+  `family-public-detail.md`.
+- Tenant route omission versus global explicit scope lives in
+  `family-tenant-global.md`.
+- Menu routes use the stronger guarded contract in `family-menu.md`.
+- A page-level difference not explained by one of those maps is drift, not an
+  automatic app-specific exception.
+
+## Alignment roadmap
+
+- Now: keep route pages thin and preserve truthful route/HTTP outcomes.
+- Next: classify remaining public indexes and settle detail route identity per
+  entity.
+- Later: guard page families only after their structural and product deltas are
+  explicit.
+
+The unresolved public-detail members and Menu migrations are registered in
+their family maps. Do not maintain a second question list here.

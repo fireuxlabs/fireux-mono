@@ -19,6 +19,7 @@
 // Concurrent edit — 2026-07-21 21:41 CEST — AppKitchen authority arrays: reject missing, malformed, and oversized write shapes.
 // Concurrent edit — 2026-07-21 23:02 CEST — Console authority alignment: prove team membership cannot exercise operator mutations.
 // Concurrent edit — 2026-07-21 23:16 CEST — Console authority hardening: trace deny failures and prove complete Supplier support cannot bypass validation.
+// Concurrent edit — 2026-07-22 15:55 CEST — Developer identity migration: pin Misebox bootstrap authority to Daniel's retained Firebase identity.
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
@@ -33,7 +34,7 @@ import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
 const PROJECT_ID = 'misebox-78f9c'
 const SIMULATION_DATABASE_ID = 'misebox-simulation'
 const PRODUCTION_DATABASE_ID = 'misebox'
-const BOOTSTRAP_DEVELOPER_ID = 'yZ1nY4RtxnMnJwcVZnaMBigqM1A2'
+const BOOTSTRAP_DEVELOPER_ID = 'jMK33p5XlhYS8rBCEf8qUiogfMg2'
 const ECOSYSTEM_AVATAR = '/img/ecosystem/avatar.png'
 const MISEBOX_ENV_PATH = new URL(
   '../projects/misebox/misebox-app/.env',

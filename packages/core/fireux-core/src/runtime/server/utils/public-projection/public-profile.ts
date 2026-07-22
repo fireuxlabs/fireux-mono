@@ -22,6 +22,7 @@ const CACHE_CONTROL =
   'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 const DEFAULT_LIMIT = 100
 const MAX_LIMIT = 200
+const USER_HANDLE_PATTERN = /^[a-z0-9][a-z0-9-]{2,29}$/
 
 export type PublicProfileKind = PublicProfileDto['kind']
 export type PublicProfileMapper = (
@@ -104,7 +105,9 @@ export function createPublicProfileCollectionHandler(
     const userSnapshots = profileSnapshot.empty
       ? []
       : await db.getAll(
-          ...profileSnapshot.docs.map((profile) => db.doc(`users/${profile.id}`))
+          ...profileSnapshot.docs.map((profile) =>
+            db.doc(`users/${profile.id}`)
+          )
         )
 
     const items = profileSnapshot.docs
@@ -128,8 +131,33 @@ export function createPublicProfileDetailHandler(
 ) {
   return defineEventHandler(async (event: H3Event) => {
     setPublicHeaders(event)
-    const id = requireFirestoreDocumentId(event.context.params?.id, 'Profile id')
+    const identifier = requireFirestoreDocumentId(
+      event.context.params?.id,
+      'Profile identifier'
+    )
     const db = getRuntimeIdentityFirestore()
+
+    // Public profile identity is the canonical User handle. Root profile
+    // documents remain keyed by User uid, so resolve the handle at the trusted
+    // projection boundary and retain exact uid lookup for legacy links.
+    const normalizedHandle = identifier.toLowerCase()
+    const handleSnapshot = USER_HANDLE_PATTERN.test(normalizedHandle)
+      ? await db
+          .collection('users')
+          .where('handle', '==', normalizedHandle)
+          .limit(2)
+          .get()
+      : null
+
+    if (handleSnapshot && handleSnapshot.size > 1) {
+      throw createError({
+        statusCode: 500,
+        statusMessage: 'Profile identity is not unique',
+      })
+    }
+
+    const handleUser = handleSnapshot?.docs[0] ?? null
+    const id = handleUser?.id ?? identifier
     const [profile, user] = await db.getAll(
       db.doc(`${config.collection}/${id}`),
       db.doc(`users/${id}`)

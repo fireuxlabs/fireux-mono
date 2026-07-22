@@ -1,33 +1,26 @@
-Collection manager map
-
-<!-- Concurrent edit — 2026-07-20 14:18 CEST — User identity boundary: profile collections join canonical Users instead of storing identity snapshots. -->
-<!-- Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: move identity joins behind bounded domain APIs. -->
-<!-- Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: map the guarded public-card snapshot sync. -->
-<!-- Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: move Kitchen browse to a fail-closed bounded Place projection. -->
-<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access-record joins separately from presentation overlays. -->
-<!-- Concurrent edit — 2026-07-22 12:47 CEST — Shared Job spine alignment: move Jobs from copied workplace snapshots to bounded Company/Place projection. -->
+# Collection manager family
 
 Updated: 2026-07-22
-Ref: 4c0a1c7ad
+Ref: 796952bf0
 Role: map, not canon
 
-Purpose:
+## Purpose
 Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
-Vertical links:
+## Vertical links
 
 - Parent: components.md
 - Parent: entities.md
 - Child: family-public-index.md
 - Child: firestore-entity.md
 
-Horizontal links:
+## Horizontal links
 
 - composables.md
 - family-menu.md
 - family-console-entity.md
 
-Working language:
+## Working language
 
 - Collection manager: visual/list/search/card manager for a collection family.
 - Root index manager: collection manager for a public/root entity index route.
@@ -37,26 +30,26 @@ Working language:
 - Hydration: extra live reads or API enrichment that add linked truth to a record. This is not the default collection-manager shape.
 - Interface: `useXInterface()` maps fetched collection rows into cards.
 
-Important split:
+## Important split
 
 - Snapshot class answers: does this collection row already carry the list/card truth it needs?
 - Source mode answers: is this a root index manager, a scoped surface, or a custom-derived surface?
 - These are different axes. A root index manager can carry authored fields, synced snapshot fields, or a server-safe projection.
 
-Source modes:
+## Source modes
 
 - Root index manager: fetches its own public/root entity collection.
 - Scoped surface: parent/context-specific surface fetches scoped rows; do not reuse root collection manager as the scoped renderer.
 - Custom-derived: renders a shaped collection rather than a boring root entity list.
 
-Root index manager classes:
+## Root index manager classes
 
 - Root Simple Collection Manager: fetch root/public collection and render through `useXInterface()` with authored row fields.
 - Root Synced Snapshot Collection Manager: fetch root/public collection whose list/card fields are copied from source truth by `scripts/sync-self-contained-collection-rows.mjs`.
 - Root Projected Collection Manager: fetch a safe server projection because the raw root collection contains fields that should not power public browse UI.
 - Scoped Surface: not a collection manager class; it owns parent-scoped fetching and may reuse cards/lists underneath.
 
-Root Simple Collection Manager members:
+## Root Simple Collection Manager members
 
 - `Menu`.
 - `Place`.
@@ -65,12 +58,12 @@ Root Simple Collection Manager members:
 - `Ingredient`.
 - `Recipe` is not in this class: current recipe storage/fetch is kitchen-scoped and public recipe projection is deferred.
 
-Root Synced Snapshot Collection Manager members:
+## Root Synced Snapshot Collection Manager members
 
 - `Company` carries public Place snapshot fields copied onto the Company row.
 - `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
 
-Root Projected Collection Manager members:
+## Root Projected Collection Manager members
 
 - `Kitchen` receives a bounded public Kitchen/Place projection. Raw Kitchen
   rows stay sparse and no longer copy shared Place fields. Only published,
@@ -86,7 +79,7 @@ Root Projected Collection Manager members:
   safe Company and canonical work-Place display truth.
 - `Customer` is app-private and is not a root public collection-manager member.
 
-Snapshot ownership rule:
+## Snapshot ownership rule
 
 - Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
 - Domain parents may cascade into their domain children. Job roots do not copy
@@ -97,7 +90,7 @@ Snapshot ownership rule:
   separate until those pages complete their endpoint-first cutover.
 - Collection managers consume the row/projection they receive; they do not make per-row hydration calls.
 
-Source contract:
+## Source contract
 
 - `XCollectionManager` belongs to `/xs` root/public browse surfaces.
 - Boring self-owned managers mount directly. Authority-sensitive App and
@@ -112,7 +105,7 @@ Source contract:
   public projection according to the family's declared index class.
 - Scoped pages use named scoped surfaces and may reuse smaller `XCards*` pieces.
 
-Data-state contract:
+## Data-state contract
 
 - A manager consumes the collection composable/controller outcome; rendered
   card count must never decide whether the source is loading or failed.
@@ -128,9 +121,7 @@ Data-state contract:
 - Do not expose raw backend errors on public surfaces. A retained valid page may
   show a non-fatal pagination error without replacing the existing list.
 
-Card handoff contract:
-
-<!-- Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: close the shared card and deferred-debug contracts. -->
+## Card handoff contract
 
 - `XCollectionManager` maps records through `useXInterface()`.
 - Two-variant managers delegate pill/cell selection, cell-overlay merging, and
@@ -142,7 +133,7 @@ Card handoff contract:
 - `XCardsPill` and `XCardsCell` receive direct card fields, not a wrapped `card` prop.
 - `XCardsPill` and `XCardsCell` render real `<NuxtLink>` branches when `link && to`; action-only usage is the local delta.
 
-Visual convergence status:
+## Visual convergence status
 
 - The public Kitchen directory established the warmer, clearer root-manager
   hierarchy now shared with Menu and User through core
@@ -155,7 +146,7 @@ Visual convergence status:
 - Converge additional root managers deliberately through these small seams;
   do not copy Kitchen/Menu markup and CSS into each manager.
 
-Debug contract:
+## Debug contract
 
 - Collection manager debug should separate `objects` from `derived`.
 - `objects` means fetched/API collection rows as the manager receives them.
@@ -164,21 +155,21 @@ Debug contract:
 - A manager using `useDevCollectionJson` loads its snapshot only when `DevJson`
   opens and unloads it when the panel closes; closed debug panels do no work.
 
-Current source-mode snapshot:
+## Current source-mode snapshot
 
 - Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Driver`, `Agent`, `Professional`.
 - Project is a private FireUX console target, not a public collection manager.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
 - Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
 
-Hydration directions:
+## Hydration directions
 
 - Up: scoped/local record reads a higher/root entity.
 - Down: public/root doorway reads scoped child detail.
 - Side: record reads sibling/root references.
 - App support: a root record combines with an allowlisted App support delta.
 
-Working rule:
+## Working rule
 
 - Root/public entity collection managers fetch a default public/root collection.
 - Scoped operation surfaces should not blindly fetch; they need parent scope and a named scoped surface.
@@ -194,7 +185,7 @@ Working rule:
   server-only work makes a raw collection the wrong public source.
 - The Vue manager should avoid manual per-row document reads.
 
-Guard-backed lock:
+## Guard-backed lock
 
 - `scripts/guards/canon.mjs` now blocks new `collection` props on `*/Collection/Manager.vue`.
 - The same guard requires the open/load and close/unload lifecycle whenever a
@@ -257,8 +248,35 @@ Custom-derived surfaces
 | `Console.Kitchen.Operations.Mise`      | Kitchen-scoped mise rows           | Custom/scoped | Operation surface.             |
 | `Console.Portfolio.Operations.Clients` | Portfolio/client/property rows     | Custom/scoped | Operation surface.             |
 
-Open questions:
+## Delta register
 
-- Which synced snapshots should become Cloud Function triggers rather than manual scripts?
-- Which secure projections need APIs because raw rows should not power public browse UI?
-- Which App support joins should graduate into their own named scoped surfaces?
+| Difference | State | Reason or direction |
+| --- | --- | --- |
+| Root Simple, Synced Snapshot, and Projected managers fetch differently | `accepted` | Privacy and read-model authority differ; every manager still owns one bounded source outcome |
+| Scoped operations do not use `XCollectionManager` | `accepted` | Parent scope is required input, so they need named scoped surfaces rather than a root-manager override prop |
+| App and Ecosystem managers receive named controllers | `accepted` | The page must choose ecosystem/platform authority explicitly |
+| Kitchen/Menu/User established shared directory header/state presentation before older managers | `migration` | Converge other root managers through the small core seams when touched |
+| Orders and some Console operation lists are custom-derived | `to-confirm` | Keep named domain surfaces until a repeated collection contract is proved |
+| Client-side search is hidden before all bounded pages are loaded | `accepted` | It must not claim absence from an incomplete catalogue; large search becomes server-owned |
+| Snapshot propagation is currently a guarded manual script | `to-confirm` | Move a snapshot to a trigger only after write volume, failure recovery, and source ownership justify continuous sync |
+| Some authority-sensitive roots use public APIs while simple roots read collections | `accepted` | Privacy, publication, and server-only joins determine transport; the manager still consumes one bounded source outcome |
+| App-support joins remain options on several domain reads | `to-confirm` | Graduate a join into a named scoped surface when it gains independent permissions, UI, or reuse |
+
+## Alignment roadmap
+
+### Now
+
+- Keep source, outcome, interface mapping, and debug authority inside the
+  manager.
+
+### Next
+
+- Converge older root managers through shared directory header/state and
+  variant-card seams without moving domain copy or fetching into Core.
+
+### Later
+
+- Promote custom-derived surfaces only when several domains prove the
+  same input and outcome contract.
+- Replace a manual snapshot sync with a trigger only for a measured,
+  recoverable propagation requirement.

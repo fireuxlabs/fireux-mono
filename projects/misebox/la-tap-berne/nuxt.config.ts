@@ -12,7 +12,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'La Tap Berne',
   role: 'tenant',
   seo: {
-    siteUrl: 'https://tapberne.web.app',
+    siteUrl: 'https://tapberne.misebox.app',
   },
   consoles: ['kitchen'],
   consoleConfig: {

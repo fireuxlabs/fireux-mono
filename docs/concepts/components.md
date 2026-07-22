@@ -1,33 +1,27 @@
-Components spine map
+# Components spine map
 Updated: 2026-07-21
 Ref: 4c70482080
 Role: map, not canon
 
-<!-- Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: map semantic project-color enforcement. -->
-<!-- Concurrent edit — 2026-07-21 13:03 CEST — CSS architecture pass: map atomic CSS contracts to the domain-first component and page spine. -->
-<!-- Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: make Nuxt UI the default and global CSS the proven exception. -->
-<!-- Concurrent edit — 2026-07-21 14:35 CEST — Profile editor CSS pass: keep editor rhythm in Nuxt UI cards and named form components. -->
-<!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: map the shared shell and separate named domain stages. -->
-
-Purpose:
+## Purpose
 Map component folder and naming conventions.
 
-Vertical links:
+## Vertical links
 - Parent: nuxt-ui.md
 - Child: family-console-entity.md
 - Child: family-public-index.md
 - Child: family-public-detail.md
 
-Horizontal links:
+## Horizontal links
 - pages.md
 - composables.md
 - debug.md
 
-Package components:
+## Package components
 - Package UI belongs under `src/runtime/components`.
 - App UI belongs under `app/components`.
 
-CSS-to-component mapping:
+## CSS-to-component mapping
 - The CSS atomic taxonomy supports the Vue tree; it does not mirror it. Vue
   components remain domain-first (`Kitchen/Cards`, `Supplier/Collection`,
   `Console/X/Operations`) and pages remain route-first.
@@ -64,7 +58,7 @@ CSS-to-component mapping:
 - The `/design/components/contracts` page exposes stable light/dark, desktop,
   and mobile specimens for these shared contracts.
 
-Domain component folders:
+## Domain component folders
 - `X/Cards`
 - `X/Collection`
 - `X/Create`
@@ -75,17 +69,17 @@ Domain component folders:
 - `X/Overview`
 - `Console/X/*`
 
-Detail rule:
+## Detail rule
 - Use `X/Detail.vue` when the detail component is simple and self-contained.
 - Use `X/Detail/Index.vue` when the detail surface owns child components.
 - Put those child components inside `X/Detail/*` so the filesystem reads like the UI surface.
 
-Root entity naming:
+## Root entity naming
 - Root entity component folders such as `Kitchen/**`, `Menu/**`, and `Supplier/**` are already public/root surfaces.
 - Do not prefix components in those folders with `Public` unless it names an external imported concept.
 - Use route/composable buckets such as `fireux/public/*` when “public” distinguishes runtime behavior rather than component location.
 
-Console component folders:
+## Console component folders
 - `Console/X/Index`
 - `Console/X/Overview`
 - `Console/X/Identity`
@@ -93,7 +87,7 @@ Console component folders:
 - `Console/X/Operations`
 - `Console/X/Sundries`
 
-Console bucket rule:
+## Console bucket rule
 - Every `components/Console/X` family should expose the same peer buckets: `Index`, `Overview`, `Identity`, `Team`, `Operations`, and optional `Sundries`.
 - These buckets are directories. Prefer `Console/X/Overview/Index.vue` over `Console/X/Overview.vue`.
 - `Team` is a shared console access concept, not an operation.
@@ -111,7 +105,7 @@ Console bucket rule:
 - `Create` belongs to root/public entity creation by default. In scoped operations, prefer `Write` unless a real UI workflow is named creation.
 - Workflow subfolders under operations should be named after visible operator concepts, not technical storage buckets.
 
-Working rules:
+## Working rules
 - Prefer named domain components over vague generic shells.
 - Share functions/composables where behavior is common.
 - Let child components own local presentation when it reduces parent script weight.
@@ -201,7 +195,7 @@ Working rules:
 - The CSS guard does not ban one-off Tailwind for local layout, pixel-specific
   non-system deltas, or intentional branded color.
 
-Guard warnings:
+## Guard warnings
 - No component `organisms` folders or `Organisms*` component names.
 - `assets/styles/scss/organisms` is a CSS composition layer, not a component
   bucket; keep it semantic and shared rather than using it as catch-all CSS.

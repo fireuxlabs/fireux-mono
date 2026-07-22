@@ -1,36 +1,31 @@
-Create spine map
-<!-- Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: replace access-overlay create terminology. -->
-<!-- Concurrent edit — 2026-07-21 16:00 CEST — Place onboarding reconciliation: record staged onboarding over trusted ensure. -->
-<!-- Concurrent edit — 2026-07-21 16:38 CEST — Place onboarding completion: record confirmed defaults and optional canonical branding. -->
-<!-- Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: record composed Place onboarding and atomic console-target activation. -->
-<!-- Concurrent edit — 2026-07-22 12:40 CEST — Place/Kitchen palette onboarding: record sparse brand-colour inheritance and later root editing. -->
+# Create spine map
 Updated: 2026-07-22
-Ref: b020f805e
+Ref: 796952bf0
 Role: map, not canon
 
-Purpose:
+## Purpose
 Map the current FireUX create families so agents do not confuse normal entity
 creation with upload transactions, console onboarding, provider provisioning, or
 ensure/upsert flows.
 
-Vertical links:
+## Vertical links
 - Parent: spine.md
 - Child: firestore-entity.md
 - Child: console.md
 - Child: server-api.md
 
-Horizontal links:
+## Horizontal links
 - composables.md
 - components.md
 - pages.md
 - tool-provider.md
 - collection-manager.md
 
-Core question:
+## Core question
 When adding or changing a create flow, first ask what is being created and
 where the irreversible work happens.
 
-Families:
+## Families
 - Client entity create
 - Draft-state create
 - Console target create
@@ -38,11 +33,11 @@ Families:
 - Provider/provision create
 - Ensure/upsert create
 
-Client entity create:
+### Client entity create
 Use a `useXCreate` composable when the create is mostly a Firestore entity
 write from an app/runtime surface.
 
-Current examples:
+#### Current examples
 - `useMenuCreate`
 - `useKitchenCreate`
 - `useSupplierCreate`
@@ -50,68 +45,68 @@ Current examples:
 - `useProductCreate`
 - `useProfileCreate`
 
-Typical shape:
+#### Typical shape
 - Component/page gathers input.
 - Domain create composable validates and shapes payload.
 - Domain create composable calls `useFirestoreCreate` or `useFirestoreManager`.
 - Firestore write creates the record.
 
-Use this when:
+#### Use this when
 - The caller already has the needed app/user/context.
 - The work is mostly Firestore data.
 - No multipart file, external secret, webhook, payment session, or admin-only
   transaction is required.
 
-Do not use this when:
+#### Do not use this when
 - The create needs server-only credentials.
 - The create uploads files.
 - The create calls external providers with secrets.
 - The create must atomically combine file storage plus Firestore writes.
 
-Draft-state create:
+### Draft-state create
 Use a local/staged draft state when the create UI has enough fields, preview,
 draft persistence, or multi-part input that the user should shape the object
 before the final create/publish action.
 
-Current examples:
+#### Current examples
 - Product create
 - Blog post create
 
-Typical shape:
+#### Typical shape
 - `XCreateSystem` or create page owns the submit/clear flow.
 - `useXDraftState` stores local create state.
 - Write and preview components read/write the same staged state.
 - `useXCreateSubmit` converts staged state into a final create call.
 - Final submit calls `useXCreate`, publish, or provider/provision seams.
 
-Use this when:
+#### Use this when
 - The create form is multi-section or has a preview.
 - The user may pause, clear, or revise before submitting.
 - The final record should not exist until the user commits.
 - Create and publish are separate concepts.
 
-Do not use this when:
+#### Do not use this when
 - The create is a tiny one-step Firestore write.
 - The local staged object would become more complex than the final record.
 - The flow really needs server transaction create because files/secrets are
   involved.
 
-Console target create:
+### Console target create
 Use a domain `useXCreate` plus `useConsoleCreate` when the entity is a console
 target that may create both a root record and an app-scoped console record.
 
-Current examples:
+#### Current examples
 - `useKitchenCreate`
 - `useSupplierCreate`
 - `usePortfolioCreate`
 
-Typical shape:
+#### Typical shape
 - Public or console create page mounts `XCreateSystem`.
 - `XCreateSystem` calls `useXCreate`.
 - `useXCreate` creates or reuses the root target.
 - `useConsoleCreate` creates the app console scope when needed.
 
-Notes:
+#### Notes
 - These are usually idempotent because users may select/create the same real
   target more than once.
 - Existing target IDs are normal for place-backed or app-backed entities.
@@ -119,30 +114,30 @@ Notes:
 - Project is a private FireUX control-plane root. It has no client create seam;
   creation belongs in a future authenticated control-plane transaction.
 
-Server transaction create:
+### Server transaction create
 Use a `server/api/**.post.ts` endpoint when create is a transaction that belongs
 on the server.
 
-Current examples:
+#### Current examples
 - `POST /api/menus/create`
 - `POST /api/console/kitchen/menus/upload`
 - Go QR `POST /api/tools/doc/create`
 
-Typical shape:
+#### Typical shape
 - Component passes tool payload or form data.
 - Server endpoint reads and validates request.
 - Server endpoint performs server-only work.
 - Server endpoint writes the resulting record.
 - Server endpoint returns route/output URLs.
 
-Use this when:
+#### Use this when
 - Multipart upload is involved.
 - Firebase Storage write is involved.
 - Download token or storage URL creation is involved.
 - Admin SDK or server credentials are involved.
 - A single user action must create files and records together.
 
-Menu example:
+#### Menu example
 - `MenuCTA` uses `ProviderGoQrTools`.
 - The tool posts to `/api/menus/create`.
 - `/api/menus/create` stores the source file and creates a root public menu
@@ -150,110 +145,76 @@ Menu example:
 - This should not be replaced by `useMenuCreate`, because `useMenuCreate`
   creates kitchen-scoped menu entity records, not upload transactions.
 
-Provider/provision create:
+### Provider/provision create
 Use a server endpoint or domain composable when the create provisions an
 external system or requires provider state.
 
-Current examples:
+#### Current examples
 - Stripe product/session endpoints.
 - Product create flows that prepare Stripe-backed product/price data.
 - Place create flows that may hydrate from Google Places and image storage.
 
-Typical shape:
+#### Typical shape
 - Validate local input.
 - Call provider/provision step.
 - Store local representation.
 - Return provider/local IDs needed by the caller.
 
-Use this when:
+#### Use this when
 - A third-party provider owns part of the created thing.
 - Secret keys or provider credentials are required.
 - A provider object and Firestore mirror must stay related.
 
-Ensure/upsert create:
+### Ensure/upsert create
 Use an ensure/upsert create when the user intent is “make sure this exists,” not
 “always create a new record.”
 
-Current examples:
+#### Current examples
 - Place create/ensure.
 - Test target create.
 - Console target root create with known IDs.
 - User/app membership create.
 
-Typical shape:
+#### Typical shape
 - Normalize the natural ID.
 - Read existing record.
 - Return `{ created: false }` if it already exists.
 - Otherwise create the minimum valid record.
 
-Use this when:
+#### Use this when
 - The target has a natural external ID.
 - Re-running create should not duplicate records.
 - The flow is onboarding, migration, or reconciliation.
 
-Staged onboarding composition:
+### Staged onboarding composition
+
 Use the domain-free `useOnboarding` composable only for step mechanics: stable
 step IDs, navigation, progress, validation gates, pending/error state, reset,
 and one finish transition. A named domain adapter such as
 `usePlacesOnboarding` owns provider hydration, draft truth, domain validation,
 the final mutation, and completion routing.
 
-The Place doorway follows this composition:
-- `/places` is the browse directory and links to `/places/create`.
-- `/places/create` stages Find, Confirm identity, Local defaults, optional Brand,
-  and Review without creating Kitchen, Property, or another Place-backed role.
-- `POST /api/places/onboarding/preview` is authenticated and returns only the
-  stored or provider-derived currency/timezone suggestions required by the
-  funnel. Currency and IANA timezone remain explicit user confirmations.
-- `POST /api/places/onboarding/complete` accepts only Place ID, confirmed
-  currency, confirmed timezone, an optional URL bound to that Place's canonical
-  Storage avatar path, and optional validated primary/secondary brand colours.
-  Missing Google Place identity is independently verified and created with the
-  defaults in one transaction.
-- A current App admin or the same current-App creator may fill missing defaults
-  on an incomplete existing Place. The onboarding seam never overwrites stored
-  defaults; unrelated existing Places remain reuse-only.
-- An optional staged logo uploads after the required Place transaction to one
-  stable Storage path, then the same completion boundary fills only a missing
-  image. Retrying replaces that object instead of creating orphaned file names.
-- Brand colours stay sparse. Existing Place colours are preserved; omitting a
-  colour leaves the shared FireUX default available at resolution time.
-- `POST /api/places/ensure` remains the strict ID-only idempotent seam for
-  non-interactive callers that only need canonical Place identity.
-- Provider and server authority are never replaced by browser-authored Place
-  truth.
+#### Place reference
 
-The Kitchen doorway adds one domain layer over that Place funnel:
-- `/kitchens/create` and `/console/kitchen/create` use the same
-  `KitchenCreateSystem`; route mode changes chrome and destination, not entity
-  truth.
-- A new Kitchen first completes or reuses canonical Place onboarding. The
-  Kitchen steps then ask for an optional name and optional colour overrides.
-  Blank identity inherits the Place name; unchanged colours inherit the Place
-  palette and are not copied into Kitchen.
-- `useKitchenOnboarding` owns the Kitchen draft, validation, preview, and final
-  completion over domain-free `useOnboarding` mechanics.
-- `POST /api/kitchens/onboarding/preview` resolves an explicit Place or
-  existing Kitchen relationship and reports whether the current actor will
-  create, connect, open, or request access.
-- `POST /api/kitchens/onboarding/complete` atomically creates or validates the
-  Kitchen root, same-id App access record, and the current UserApp Kitchen
-  console target. New and existing unattached roots require current-App-admin
-  authority; existing operators can reopen an already connected Kitchen.
-- New Kitchen roots start unpublished and sparse. Address, coordinates, logo,
-  contact, currency, timezone, and business hours remain on the linked Place;
-  Menu, ordering, payment, Chef-profile, and publication setup are not
-  onboarding side effects.
-- Later Kitchen theme edits use the same sparse Place-to-Kitchen ownership:
-  the trusted writer updates the canonical Kitchen root, never App access
-  support.
-- Tenant Apps can onboard only their configured Kitchen targets. A new draft
-  has no public slug until the canonical identity editor validates and claims
-  one.
-- Query-driven existing-Kitchen activation is reviewed explicitly. It never
-  mutates automatically on mount.
+- Place onboarding confirms provider identity and user-owned local defaults
+  before one authenticated completion transaction.
+- Provider identity remains server-verified; optional image and brand values
+  stay sparse and do not overwrite existing truth.
+- `POST /api/places/ensure` remains the narrow idempotent identity seam for
+  non-interactive callers.
 
-Current create plan primitive:
+#### Kitchen reference
+
+- Public and Console create routes compose the same Kitchen create system;
+  route mode changes chrome and destination, not entity truth.
+- Kitchen onboarding reuses canonical Place identity, then owns only Kitchen
+  draft decisions and the trusted root/App-support/UserApp transaction.
+- New Kitchen roots stay sparse and unpublished. Place fields, Menu content,
+  ordering, payment, profiles, and publication are not create side effects.
+- Tenant onboarding is bounded by configured targets, and route query state
+  never mutates an existing Kitchen automatically.
+
+## Current create plan primitive
 `createStrategy.ts` currently exposes:
 - `family`: `idempotent` or `with_provision`
 - `transport`: `client` or `server`
@@ -264,7 +225,27 @@ Current create plan primitive:
 This is emerging, not complete. Treat existing `CreatePlan` exports as useful
 markers, not a complete registry.
 
-Decision checklist:
+## Source evidence
+
+- Core create-plan vocabulary:
+  `packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/createStrategy.ts`
+- Console-target examples:
+  `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts`,
+  `packages/extensions/fireux-suppliers/src/runtime/composables/fireux/firestore/supplier/mutations/useSupplierCreate.ts`,
+  and
+  `packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/portfolio/mutations/usePortfolioCreate.ts`
+- Draft-state example:
+  `packages/extensions/fireux-products/src/runtime/composables/fireux/product/create/useCreateProductState.ts`
+- Root Menu upload transaction:
+  `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/create.post.ts`
+- Scoped Kitchen Menu mutation:
+  `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/mutations/useMenuCreate.ts`
+
+The Menu split is settled: root `Menu` is a public doorway/upload entity while
+`KitchenMenu` is scoped Kitchen content. See `family-menu.md`; do not reopen
+that distinction inside the create family.
+
+## Decision checklist
 - Is this just a Firestore entity record? Use `useXCreate`.
 - Is this a rich authoring form with preview or draft persistence? Use a
   draft-state create seam, then submit into `useXCreate` or publish.
@@ -277,7 +258,7 @@ Decision checklist:
 - Are optional fields empty? Do not write them. Omit them and let read DTOs
   normalize display shape if needed.
 
-Naming notes:
+## Naming notes
 - `useXCreate`: domain create composable for entity/console create.
 - `useXDraftState`: local/staged authoring state before final persistence.
 - `useXCreateSubmit`: converts staged authoring state into final create/publish
@@ -289,11 +270,38 @@ Naming notes:
 - `create.post.ts` should not hide broad domain logic; keep it as input/process/
   output transaction code with helpers when needed.
 
-Open questions:
-- Should `createStrategy.ts` become a stronger registry or stay a lightweight
-  marker?
-- Should primitive root menu doorway records remain `menus/{id}`, or become a
-  separate record family from kitchen-scoped Menu?
-- Should all `useXCreate` composables omit empty optional fields by default?
-- Product create currently uses older `useCreateProductState` naming. Prefer
-  `useProductDraftState` when that surface is next touched.
+## Delta register
+
+| Difference | State | Reason or alignment trigger |
+| --- | --- | --- |
+| Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted` | Irreversible work and credential authority differ; all must still expose one named create boundary |
+| Console-target create may write root identity plus App support | `accepted` | Console entities require both canonical identity and app-scoped access; `useConsoleCreate` owns the shared support step |
+| Place and Kitchen use staged onboarding rather than a one-step form | `accepted` | Provider confirmation, inherited defaults, and access review require explicit stages |
+| `createStrategy.ts` is implemented by only a subset of create families | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value |
+| Product uses `useCreateProductState` rather than `useProductDraftState` | `migration` | Rename when Product Create is next changed; do not add the older ordering to new families |
+| Optional blank-field omission is described but not uniformly enforced | `drift` | Audit `useXCreate` payload builders and extract a shared primitive only if repetition is genuinely identical |
+| Root Menu upload and scoped Kitchen Menu mutation both contain “Menu create” language | `accepted` | They create different entities; route, type, and composable names must retain the root-versus-scoped distinction |
+
+## Alignment roadmap
+
+### Now
+
+- Choose the create family before naming a component, composable, or endpoint.
+- Keep root Menu upload transactions separate from scoped Kitchen Menu
+  mutations.
+- Do not adopt `CreatePlan` metadata in another family merely for symmetry.
+
+### Next
+
+- Audit create payload builders for blank optional fields and align the actual
+  repeated rule.
+- Rename Product draft state when that surface next receives functional work.
+- Record create-family membership in entity concept maps where ambiguity still
+  causes callers to choose the wrong seam.
+
+### Later
+
+- Promote `CreatePlan` into a registry or guard only if multiple consumers need
+  to query it.
+- Add transaction tests around multi-write console onboarding and file-backed
+  create flows before extracting further shared machinery.

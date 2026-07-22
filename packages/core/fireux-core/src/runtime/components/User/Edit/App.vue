@@ -1,4 +1,5 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/User/Edit/App.vue -->
+<!-- Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: use the shared highest-tier badge for App membership presentation. -->
 <template>
   <section class="space-y-2">
     <p class="text-xs font-semibold uppercase tracking-wide text-toned">
@@ -21,16 +22,7 @@
 
           <div v-if="overlay" class="space-y-4">
             <div class="flex items-center gap-3">
-              <UBadge size="sm" color="primary" variant="soft">
-                {{ overlay.role === 'admin' ? 'Admin' : 'Member' }}
-              </UBadge>
-              <UBadge
-                size="sm"
-                :color="isAppPremium ? 'warning' : 'neutral'"
-                variant="soft"
-              >
-                {{ isAppPremium ? 'Premium' : 'Standard' }}
-              </UBadge>
+              <UserAccessBadge :tier="accessTier" />
               <span class="text-sm text-muted">
                 Access granted within this app
               </span>
@@ -60,11 +52,10 @@ import type { User } from '../../../models/core/user.model'
 
 const props = defineProps<{ user: User | null; userRefs?: UserRefs }>()
 
-const { appUser } = useUser()
+const { accessTier, appUser } = useUser()
 
 const overlay = computed(() =>
   props.userRefs?.appUser?.value ?? appUser.value ?? null
 )
 
-const isAppPremium = computed(() => overlay.value?.is_premium === true)
 </script>

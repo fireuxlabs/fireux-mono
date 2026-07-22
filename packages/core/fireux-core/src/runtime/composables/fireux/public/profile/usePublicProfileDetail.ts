@@ -60,20 +60,23 @@ export async function usePublicProfileDetail<
   TProfile extends Record<string, unknown>,
 >(
   options: PublicProfileDetailOptions,
-  profileId: MaybeRef<string | null | undefined>
+  profileIdentifier: MaybeRef<string | null | undefined>
 ): Promise<UsePublicProfileDetailReturn<TProfile>> {
-  const id = computed(() => String(unref(profileId) ?? '').trim())
+  const identifier = computed(() =>
+    String(unref(profileIdentifier) ?? '').trim()
+  )
   const { data, pending, error, refresh } = await useAsyncData(
-    () => `public-profile-detail-${options.collection}-${id.value || 'none'}`,
+    () =>
+      `public-profile-detail-${options.collection}-${identifier.value || 'none'}`,
     async () => {
-      if (!id.value) return null
+      if (!identifier.value) return null
       return $fetch<PublicDetailResponse<PublicProfileDto<TProfile>>>(
-        `/api/public/${options.collection}/${encodeURIComponent(id.value)}`
+        `/api/public/${options.collection}/${encodeURIComponent(identifier.value)}`
       )
     },
     {
       server: true,
-      watch: [id],
+      watch: [identifier],
     }
   )
 
@@ -82,8 +85,9 @@ export async function usePublicProfileDetail<
     if (
       !item ||
       pending.value ||
-      item.id !== id.value ||
-      item.kind !== options.kind
+      item.kind !== options.kind ||
+      (item.id !== identifier.value &&
+        item.user.handle !== identifier.value.toLowerCase())
     ) {
       return null
     }

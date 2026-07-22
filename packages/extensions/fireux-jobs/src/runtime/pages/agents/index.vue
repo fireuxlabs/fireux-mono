@@ -1,17 +1,23 @@
 <template>
-  <UPage>
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
-    <UPageBody>
+  <PublicIndexSurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    :description="pageDescription"
+    icon="i-lucide-handshake"
+    secondary-label="For agents"
+  >
+    <AgentCollectionManager />
+
+    <template #secondary>
       <!-- Profile CTA family: Agent is a profile layer attached to a User. -->
       <AgentCTA />
-      <AgentCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   tag: 'agents',
@@ -26,7 +32,8 @@ definePageMeta({
     layouts: ['default'],
   },
   title: 'Agents',
-  description: 'Browse agent profiles.',
+  description:
+    'Meet agents connecting people, opportunities, and teams across the network.',
   layout: 'default',
   name: 'AgentsIndexPage',
 })
@@ -35,8 +42,11 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Agents'
 const pageDescription =
-  'Find agents, or create your profile.'
+  'Meet agents connecting people, opportunities, and teams across the network.'
 
-useHead({ title: `${appName} | ${pageTitle}` })
-
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/agents',
+})
 </script>

@@ -1,9 +1,12 @@
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: consume the bounded Place-hydrated Kitchen directory projection.
 // Concurrent edit — 2026-07-20 23:52 CEST — Nuxt Package Toolchain Pass 2 of 3: publish a portable Kitchen index declaration.
+// Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: upgrade authorized App admins and the local developer to the private projection.
 import { useAsyncData } from '#imports'
 import type { AsyncData, NuxtError } from 'nuxt/app'
 import { computed, ref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import {
   PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE,
   PUBLIC_KITCHEN_INDEX_PAGE_SIZE,
@@ -28,6 +31,7 @@ type PublicKitchenIndexControls = Pick<
 
 export type UsePublicKitchenIndexReturn = PublicKitchenIndexControls & {
   kitchens: ComputedRef<PublicKitchenIndexItem[]>
+  privilegedPreview: ComputedRef<boolean>
   ready: Promise<void>
   outcome: ComputedRef<PublicKitchenIndexOutcome>
   hasMore: ComputedRef<boolean>
@@ -40,6 +44,12 @@ export function usePublicKitchenIndex(
   options: UsePublicKitchenIndexOptions = {}
 ): UsePublicKitchenIndexReturn {
   const fireux = useFireUXConfig()
+  const { currentUser, hasAuthState } = useAuth()
+  const { isAdmin, isDeveloper } = useUser()
+  const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
+  const canPreviewAll = computed(() =>
+    Boolean(uid.value) && (isAdmin.value || (import.meta.dev && isDeveloper.value))
+  )
   const pageSize = normalizePageSize(options.pageSize)
   const endpoint = `/api/kitchens?limit=${pageSize}`
   const key = [
@@ -51,14 +61,59 @@ export function usePublicKitchenIndex(
     key,
     () => $fetch<PublicKitchenIndexPage>(endpoint)
   )
+  const previewState = useAsyncData<{
+    requestUid: string
+    page: PublicKitchenIndexPage
+  } | null>(
+    () => `private-kitchen-index-${fireux.appId}-${uid.value || 'signed-out'}-${pageSize}`,
+    async () => {
+      const user = currentUser.value
+      const requestUid = uid.value
+      if (
+        !import.meta.client ||
+        !hasAuthState.value ||
+        !canPreviewAll.value ||
+        !user ||
+        user.uid !== requestUid
+      ) {
+        return null
+      }
+
+      const token = await user.getIdToken()
+      const page = await $fetch<PublicKitchenIndexPage>(
+        `${endpoint}&visibility=all`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      return { requestUid, page }
+    },
+    {
+      server: false,
+      lazy: true,
+      dedupe: 'defer',
+      watch: [hasAuthState, canPreviewAll, uid],
+    }
+  )
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
-  const kitchens = computed(() => state.data.value?.items ?? [])
-  const nextCursor = computed(() => state.data.value?.nextCursor || '')
+  const previewPage = computed(() => {
+    const value = previewState.data.value
+    return value?.requestUid === uid.value ? value.page : null
+  })
+  const privilegedPreview = computed(() => Boolean(previewPage.value))
+  const page = computed(() => previewPage.value || state.data.value)
+  const kitchens = computed(() => page.value?.items ?? [])
+  const nextCursor = computed(() => page.value?.nextCursor || '')
   const hasMore = computed(() => Boolean(nextCursor.value))
   const outcome = computed<PublicKitchenIndexOutcome>(() => {
-    if (state.pending.value) return 'pending'
-    if (state.error.value || !state.data.value) return 'error'
+    if (
+      state.pending.value ||
+      (canPreviewAll.value && previewState.pending.value)
+    ) return 'pending'
+    if (
+      state.error.value ||
+      !state.data.value ||
+      (canPreviewAll.value && previewState.error.value)
+    ) return 'error'
     return kitchens.value.length ? 'ready' : 'empty'
   })
 
@@ -69,17 +124,29 @@ export function usePublicKitchenIndex(
     loadingMore.value = true
     loadMoreError.value = null
     try {
-      const page = await $fetch<PublicKitchenIndexPage>(
-        `${endpoint}&cursor=${encodeURIComponent(cursor)}`
+      const user = currentUser.value
+      const preview = privilegedPreview.value && user
+      const token = preview ? await user.getIdToken() : ''
+      const nextPage = await $fetch<PublicKitchenIndexPage>(
+        `${endpoint}&cursor=${encodeURIComponent(cursor)}${preview ? '&visibility=all' : ''}`,
+        preview ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       )
-      const current = state.data.value
+      const current = page.value
       if (!current) return false
 
       const items = new Map(current.items.map(item => [item.id, item]))
-      for (const item of page.items) items.set(item.id, item)
-      state.data.value = {
+      for (const item of nextPage.items) items.set(item.id, item)
+      const merged = {
         items: [...items.values()],
-        ...(page.nextCursor ? { nextCursor: page.nextCursor } : {}),
+        ...(nextPage.nextCursor ? { nextCursor: nextPage.nextCursor } : {}),
+      }
+      if (preview && previewState.data.value) {
+        previewState.data.value = {
+          requestUid: uid.value,
+          page: merged,
+        }
+      } else {
+        state.data.value = merged
       }
       return true
     } catch (error) {
@@ -92,6 +159,7 @@ export function usePublicKitchenIndex(
 
   return {
     kitchens,
+    privilegedPreview,
     pending: state.pending,
     error: state.error,
     refresh: state.refresh,

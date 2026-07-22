@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: define the sparse bounded published Kitchen index projection.
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: define the bounded authenticated target projection.
 // Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: project server-authorized write capability with resolved Menu style.
+// Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
 import type {
   KitchenFulfilmentConfig,
   KitchenImageShade,
@@ -16,6 +17,8 @@ export type PublicKitchenIndexItem = {
   id: string
   name: string
   slug: string
+  publicly_visible: boolean
+  is_test_kitchen: boolean
   short_name?: string
   brand_tagline?: string
   formatted_address?: string
