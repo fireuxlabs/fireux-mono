@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-22 11:23 CEST — Kiosk simplification pass: keep a quiet section rail and one content heading. -->
+<!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: strengthen portrait navigation and balanced touch-grid rhythm. -->
 <template>
   <section
     class="menu-order-kiosk-catalogue"
@@ -138,10 +138,10 @@ function finishDialog() {
 <style scoped>
 .menu-order-kiosk-catalogue {
   display: grid;
-  grid-template-columns: clamp(10.5rem, 18vw, 14rem) minmax(0, 1fr);
+  grid-template-columns: clamp(11.5rem, 19vw, 15rem) minmax(0, 1fr);
   height: 100%;
   min-height: 0;
-  background: var(--menu-bg);
+  background: transparent;
   text-align: left;
 }
 
@@ -157,7 +157,7 @@ function finishDialog() {
   padding: clamp(0.75rem, 2vw, 1.25rem) 0.65rem;
   padding-bottom: max(6.5rem, env(safe-area-inset-bottom));
   border-right: 1px solid color-mix(in srgb, var(--menu-text) 13%, transparent);
-  background: var(--menu-bg);
+  background: color-mix(in srgb, var(--menu-bg) 94%, transparent);
 }
 
 .menu-order-kiosk-catalogue__rail nav {
@@ -168,15 +168,15 @@ function finishDialog() {
 .menu-order-kiosk-catalogue__section {
   display: block;
   width: 100%;
-  min-height: 3.1rem;
-  padding: 0.7rem 0.8rem;
+  min-height: 3.65rem;
+  padding: 0.85rem 0.95rem;
   border: 0;
   border-radius: var(--menu-radius-control);
   background: transparent;
   color: var(--menu-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 0.88rem;
+  font-size: clamp(0.88rem, 1.35vw, 1rem);
   font-weight: var(--font-weight-extrabold);
   text-align: left;
 }
@@ -186,7 +186,7 @@ function finishDialog() {
 }
 
 .menu-order-kiosk-catalogue__section--active {
-  background: transparent;
+  background: color-mix(in srgb, var(--menu-primary) 9%, var(--menu-bg));
   box-shadow: inset 0.18rem 0 0 var(--menu-primary);
   color: var(--menu-primary);
 }
@@ -197,7 +197,7 @@ function finishDialog() {
 }
 
 .menu-order-kiosk-catalogue__content {
-  padding: clamp(1.25rem, 2.5vw, 2rem);
+  padding: clamp(1.5rem, 3vw, 2.5rem);
   padding-bottom: clamp(7rem, 14vh, 9rem);
 }
 
@@ -219,9 +219,9 @@ function finishDialog() {
 
 .menu-order-kiosk-catalogue__items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
-  gap: clamp(0.85rem, 1.7vw, 1.25rem);
-  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: stretch;
 }
 
 .menu-order-kiosk-catalogue__empty {

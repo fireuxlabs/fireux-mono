@@ -1,4 +1,5 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: preview and atomically persist confirmed Place defaults.
+// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: validate and fill only a missing canonical brand palette.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
@@ -6,6 +7,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
 import type {
   PlaceOnboardingCompleteResult,
   PlaceOnboardingDefaults,
@@ -25,6 +27,7 @@ type PlaceOnboardingRequest = {
   default_currency_code?: unknown
   timezone?: unknown
   image_url?: unknown
+  brand_palette?: unknown
 }
 
 type OnboardingContext = {
@@ -193,6 +196,17 @@ function storedHttpsImage(value: unknown) {
   }
 }
 
+function storedBrandPalette(value: Record<string, unknown>) {
+  const result = parseBrandPalette(value.brand_palette)
+  if (!result.ok) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'The stored Place brand palette needs repair.',
+    })
+  }
+  return result.value
+}
+
 function completeInput(value: unknown) {
   const source = requestRecord(value)
   const allowed = new Set([
@@ -200,6 +214,7 @@ function completeInput(value: unknown) {
     'default_currency_code',
     'timezone',
     'image_url',
+    'brand_palette',
   ])
   const unsupported = Object.keys(source).find(key => !allowed.has(key))
   if (unsupported) {
@@ -217,6 +232,9 @@ function completeInput(value: unknown) {
     badRequest('Confirm a valid IANA timezone, such as Europe/Zurich.')
   }
   const imageUrl = httpsImage(source.image_url, id)
+  const brandPaletteResult = parseBrandPalette(source.brand_palette)
+  if (!brandPaletteResult.ok) badRequest(brandPaletteResult.error)
+  const brandPalette = brandPaletteResult.value
   return {
     id,
     defaults: {
@@ -224,6 +242,7 @@ function completeInput(value: unknown) {
       timezone,
     },
     ...(imageUrl ? { imageUrl } : {}),
+    ...(Object.keys(brandPalette).length ? { brandPalette } : {}),
   }
 }
 
@@ -245,6 +264,7 @@ export async function previewPlaceOnboarding(
     const timezone = current.timezone || await resolveTimezone(event, place)
     const suggested = suggestions(place, timezone)
     const imageUrl = storedHttpsImage(place.image_url)
+    const brandPalette = storedBrandPalette(place)
     return {
       id: actor.placeRef.id,
       existing: true,
@@ -253,6 +273,9 @@ export async function previewPlaceOnboarding(
       ...(Object.keys(current).length ? { current } : {}),
       ...(Object.keys(suggested).length ? { suggestions: suggested } : {}),
       ...(imageUrl ? { image_url: imageUrl } : {}),
+      ...(Object.keys(brandPalette).length
+        ? { brand_palette: brandPalette }
+        : {}),
     }
   }
 
@@ -300,6 +323,9 @@ export async function completePlaceOnboarding(
         ...provider,
         ...requested.defaults,
         ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
+        ...('brandPalette' in requested
+          ? { brand_palette: requested.brandPalette }
+          : {}),
         created: serverAuditStamp({
           by: actor.uid,
           appId: actor.runtimeAppId,
@@ -313,12 +339,16 @@ export async function completePlaceOnboarding(
         configured: true,
         defaults: requested.defaults,
         ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
+        ...('brandPalette' in requested
+          ? { brand_palette: requested.brandPalette }
+          : {}),
       }
     }
 
     const place = snapshot.data() || {}
     const current = currentDefaults(place)
     const storedImage = storedHttpsImage(place.image_url)
+    const currentBrandPalette = storedBrandPalette(place)
     const patch: Record<string, unknown> = {}
     if (!current.default_currency_code) {
       patch.default_currency_code = requested.defaults.default_currency_code
@@ -326,6 +356,12 @@ export async function completePlaceOnboarding(
     if (!current.timezone) patch.timezone = requested.defaults.timezone
     if (!storedImage && 'imageUrl' in requested) {
       patch.image_url = requested.imageUrl
+    }
+    if (
+      !Object.keys(currentBrandPalette).length &&
+      'brandPalette' in requested
+    ) {
+      patch.brand_palette = requested.brandPalette
     }
 
     if (Object.keys(patch).length) {
@@ -337,7 +373,7 @@ export async function completePlaceOnboarding(
       if (!authorized) {
         throw createError({
           statusCode: 403,
-          statusMessage: 'This existing Place requires an App admin to finish its defaults.',
+          statusMessage: 'This existing Place requires an App admin to finish its shared defaults and branding.',
         })
       }
       transaction.update(actor.placeRef, {
@@ -363,6 +399,11 @@ export async function completePlaceOnboarding(
         ? { image_url: storedImage }
         : 'imageUrl' in requested
           ? { image_url: requested.imageUrl }
+          : {}),
+      ...(Object.keys(currentBrandPalette).length
+        ? { brand_palette: currentBrandPalette }
+        : 'brandPalette' in requested
+          ? { brand_palette: requested.brandPalette }
           : {}),
     }
   })

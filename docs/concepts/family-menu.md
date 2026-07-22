@@ -7,6 +7,7 @@ Menu family map
 <!-- Concurrent edit — 2026-07-22 01:58 CEST — Dish/MenuItem boundary: make Dish the sole food-image owner. -->
 <!-- Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: map named touch presentation on the canonical MenuOrder lifecycle. -->
 <!-- Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: group surface deltas under the shared MenuOrder prefix. -->
+<!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: record the skin-free generic presentation baseline. -->
 Updated: 2026-07-22
 Ref: 8d4cf4288
 Role: map, not canon
@@ -396,8 +397,12 @@ Component placement:
   and temporary `Paused` states with only their surface-specific inputs. Kiosk's
   named `Start`, `Catalogue`, and `Item` presentation components provide its
   full-viewport mode choice, persistent section rail, active touch grid, and
-  image-led cards; `KioskOrderFlow` still owns the same shared basket, checkout,
+  image-aware cards with intentional image-free tiles; `KioskOrderFlow` still owns the same shared basket, checkout,
   submission, and tracking boundary as the other MenuOrder projections.
+  The canonical Kiosk currently renders an out-of-box Menu-colour canvas with
+  a CSS-only ambient texture and canonical Kitchen identity. It intentionally
+  does not consume optional Kiosk skin data or app/Kitchen-specific assets;
+  legacy Detail/Kiosk skin rendering is design evidence, not production authority.
   `PreOrderPlan` owns the advance-table time and party-size gate before the
   shared catalogue; it does not create another basket or lifecycle.
   `composables/fireux/menu/order/useMenuOrderBasket.ts` owns transient basket

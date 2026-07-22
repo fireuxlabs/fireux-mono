@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: consume the renamed Kiosk order delta. -->
+<!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: frame canonical ordering with generic Kitchen identity and ambient presentation. -->
 <template>
   <section
     class="menu-order-kiosk"
@@ -11,6 +11,8 @@
       v-if="!selectedType"
       :menu-name="menuName"
       :options="options"
+      :kitchen-name="kitchenName"
+      :logo-image-url="logoImageUrl"
       :wordmark-image-url="wordmarkImageUrl"
       @select="selectedType = $event"
     />
@@ -27,7 +29,10 @@
           <span>Change</span>
         </button>
 
-        <strong class="menu-order-kiosk__title">{{ menuName }}</strong>
+        <span class="menu-order-kiosk__identity">
+          <strong>{{ kitchenName || menuName }}</strong>
+          <small v-if="kitchenName && menuName !== kitchenName">{{ menuName }}</small>
+        </span>
 
         <span class="menu-order-kiosk__mode">
           {{ selectedLabel }}
@@ -60,7 +65,9 @@ const props = defineProps<{
   configs: MenuOrderTypeConfig[]
   currencyCode: string
   kitchenId: string
+  kitchenName?: string
   kitchenSlug?: string
+  logoImageUrl?: string
   menuId: string
   menuName: string
   scopeKey: string
@@ -90,11 +97,25 @@ const selectedLabel = computed(() =>
 
 <style scoped>
 .menu-order-kiosk {
+  isolation: isolate;
+  position: relative;
   display: grid;
   height: 100%;
   min-height: 0;
   background: var(--menu-bg);
   color: var(--menu-text);
+}
+
+.menu-order-kiosk::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background:
+    radial-gradient(circle at 14% 8%, color-mix(in srgb, var(--menu-primary) 13%, transparent) 0 14rem, transparent 38rem),
+    radial-gradient(circle at 92% 88%, color-mix(in srgb, var(--menu-secondary) 10%, transparent) 0 12rem, transparent 34rem),
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--menu-text) 2.6%, transparent) 0 1px, transparent 1px 9px);
+  content: '';
+  pointer-events: none;
 }
 
 .menu-order-kiosk--order {
@@ -136,14 +157,39 @@ const selectedLabel = computed(() =>
   outline-offset: 0.25rem;
 }
 
-.menu-order-kiosk__title {
+.menu-order-kiosk__change :deep(.iconify) {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: 0 0 auto;
+}
+
+.menu-order-kiosk__identity {
+  display: grid;
   min-width: 0;
+  justify-items: center;
+  line-height: 1.05;
+}
+
+.menu-order-kiosk__identity strong,
+.menu-order-kiosk__identity small {
+  max-width: min(44vw, 28rem);
   overflow: hidden;
-  color: var(--menu-title);
-  font-size: 0.95rem;
-  text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.menu-order-kiosk__identity strong {
+  color: var(--menu-title);
+  font-family: var(--menu-title-font);
+  font-size: clamp(0.95rem, 1.7vw, 1.2rem);
+  text-align: center;
+}
+
+.menu-order-kiosk__identity small {
+  margin-top: 0.25rem;
+  color: var(--menu-muted);
+  font-size: 0.7rem;
+  font-weight: var(--font-weight-bold);
 }
 
 .menu-order-kiosk__mode {

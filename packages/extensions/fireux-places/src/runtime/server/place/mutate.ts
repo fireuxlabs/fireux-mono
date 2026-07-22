@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 21:54 CEST — Place-root authority pass: transactionally authorize and normalize sparse Place writes.
 // Concurrent edit — 2026-07-21 15:07 CEST — Place provenance/privacy hardening: remove claim-derived privilege and require explicit App-admin or Kitchen-operator authority.
+// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: validate brand colours at the trusted Place mutation boundary.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -10,6 +11,7 @@ import {
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
 import { PlaceStorage } from '../../models/place.model'
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
 
@@ -59,6 +61,7 @@ const allowedPatchKeys = new Set([
   'default_currency_code',
   'timezone',
   'business_hours',
+  'brand_palette',
 ])
 
 function badRequest(statusMessage: string): never {
@@ -182,6 +185,14 @@ function normalizePatch(raw: unknown) {
     }
     if (key === 'business_hours') {
       patch.business_hours = normalizePlaceBusinessHours(value) || FieldValue.delete()
+      continue
+    }
+    if (key === 'brand_palette') {
+      const result = parseBrandPalette(value)
+      if (!result.ok) badRequest(result.error)
+      patch.brand_palette = Object.keys(result.value).length
+        ? result.value
+        : FieldValue.delete()
       continue
     }
   }

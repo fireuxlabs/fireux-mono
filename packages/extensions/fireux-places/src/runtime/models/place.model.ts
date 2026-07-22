@@ -1,7 +1,9 @@
 // FILE: packages/extensions/fireux-places/src/runtime/models/place.model.ts
 // Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: distinguish sparse stored Place truth from resolved runtime display defaults.
+// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: make shared venue colours optional canonical Place truth.
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -103,6 +105,9 @@ export const PlaceModel = {
   cover_image: '' as string,
   gallery_images: [] as string[],
   image_shade: 'none' as PlaceImageShade,
+
+  // Portable brand colours inherited by Place-backed roles.
+  brand_palette: {} as SparseBrandPalette,
 
   // Contact + presence
   phone: '' as string,

@@ -1,4 +1,4 @@
-/* Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: give the canonical Kiosk order branch a plain full-viewport canvas. */
+/* Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: keep a full-viewport generic canvas without skin or app-specific assets. */
 .menu-order {
   align-content: start;
 }
@@ -20,6 +20,8 @@
 }
 
 .menu-order--kiosk {
+  grid-template-rows: minmax(0, 1fr);
+  align-content: stretch;
   gap: 0;
   width: 100%;
   height: 100vh;

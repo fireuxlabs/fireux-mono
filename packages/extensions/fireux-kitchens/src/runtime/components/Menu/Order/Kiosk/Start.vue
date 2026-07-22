@@ -1,20 +1,21 @@
-<!-- Concurrent edit — 2026-07-22 11:45 CEST — MenuOrder naming spine: consume the renamed Kiosk order delta type. -->
+<!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: provide a brand-aware generic entry without skin assets. -->
 <template>
   <div class="menu-order-kiosk-start">
     <header class="menu-order-kiosk-start__identity">
       <img
-        v-if="wordmarkImageUrl"
-        :src="wordmarkImageUrl"
-        alt=""
+        v-if="identityImageUrl"
+        :src="identityImageUrl"
+        :alt="kitchenName || menuName"
         class="menu-order-kiosk-start__wordmark"
       >
       <h1
         :class="{
-          'menu-order-kiosk-start__title--visually-hidden': wordmarkImageUrl,
+          'menu-order-kiosk-start__title--visually-hidden': identityImageUrl,
         }"
       >
-        {{ menuName }}
+        {{ kitchenName || menuName }}
       </h1>
+      <p v-if="kitchenName && menuName !== kitchenName">{{ menuName }}</p>
     </header>
 
     <div class="menu-order-kiosk-start__prompt">
@@ -55,6 +56,7 @@
 
 <script setup lang="ts">
 import type { MenuOrderKioskType } from '../../../../composables/fireux/menu/order/useMenuOrderKiosk'
+import { computed } from 'vue'
 
 type MenuOrderKioskOption = {
   type: MenuOrderKioskType
@@ -63,24 +65,31 @@ type MenuOrderKioskOption = {
   paused: boolean
 }
 
-defineProps<{
+const props = defineProps<{
   menuName: string
   options: MenuOrderKioskOption[]
+  kitchenName?: string
+  logoImageUrl?: string
   wordmarkImageUrl?: string
 }>()
 
 defineEmits<{
   (event: 'select', type: MenuOrderKioskType): void
 }>()
+
+const identityImageUrl = computed(() =>
+  String(props.wordmarkImageUrl || props.logoImageUrl || '').trim()
+)
 </script>
 
 <style scoped>
 .menu-order-kiosk-start {
+  position: relative;
   display: grid;
-  width: min(100%, 58rem);
+  width: min(100%, 64rem);
   min-height: 100%;
   align-content: center;
-  gap: clamp(2rem, 6vh, 3.5rem);
+  gap: clamp(2.5rem, 7vh, 5rem);
   margin: 0 auto;
   padding:
     max(2rem, env(safe-area-inset-top))
@@ -96,6 +105,7 @@ defineEmits<{
 }
 
 .menu-order-kiosk-start__identity h1,
+.menu-order-kiosk-start__identity p,
 .menu-order-kiosk-start__prompt h2 {
   margin: 0;
 }
@@ -108,9 +118,17 @@ defineEmits<{
 }
 
 .menu-order-kiosk-start__wordmark {
-  width: min(100%, 20rem);
-  max-height: 7rem;
+  width: min(100%, 24rem);
+  max-height: 9rem;
   object-fit: contain;
+}
+
+.menu-order-kiosk-start__identity p {
+  color: var(--menu-muted);
+  font-size: clamp(0.95rem, 1.7vw, 1.15rem);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .menu-order-kiosk-start__title--visually-hidden {
@@ -130,7 +148,7 @@ defineEmits<{
 .menu-order-kiosk-start__prompt h2 {
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: clamp(2.15rem, 5vw, 3.75rem);
+  font-size: clamp(2.75rem, 6vw, 4.75rem);
   font-weight: var(--font-weight-black);
   line-height: 1;
   letter-spacing: -0.04em;
@@ -147,22 +165,24 @@ defineEmits<{
   grid-template-columns: auto minmax(0, 1fr);
   gap: 1rem;
   align-items: center;
-  min-height: clamp(6.25rem, 13vh, 7.5rem);
-  padding: clamp(1rem, 2vw, 1.4rem);
-  border: 1px solid color-mix(in srgb, var(--menu-text) 16%, transparent);
+  min-height: clamp(7.5rem, 14vh, 10rem);
+  padding: clamp(1.25rem, 2.8vw, 2rem);
+  border: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
   border-radius: var(--menu-radius-control);
-  background: var(--menu-bg);
+  background: color-mix(in srgb, var(--menu-bg) 89%, var(--menu-primary));
   color: var(--menu-text);
   cursor: pointer;
   font: inherit;
   text-align: left;
-  transition: border-color 160ms ease, background 160ms ease;
+  box-shadow: 0 1.2rem 3rem color-mix(in srgb, var(--menu-text) 8%, transparent);
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
 }
 
 .menu-order-kiosk-start__option:hover,
 .menu-order-kiosk-start__option:focus-visible {
   border-color: color-mix(in srgb, var(--menu-primary) 58%, transparent);
-  background: color-mix(in srgb, var(--menu-primary) 5%, var(--menu-bg));
+  background: color-mix(in srgb, var(--menu-primary) 11%, var(--menu-bg));
+  transform: translateY(-0.16rem);
 }
 
 .menu-order-kiosk-start__option:focus-visible {
@@ -177,13 +197,13 @@ defineEmits<{
 
 .menu-order-kiosk-start__option-icon {
   display: grid;
-  width: 3.5rem;
-  height: 3.5rem;
+  width: clamp(4rem, 7vw, 5.5rem);
+  height: clamp(4rem, 7vw, 5.5rem);
   place-items: center;
   border-radius: 9999px;
   background: color-mix(in srgb, var(--menu-primary) 12%, var(--menu-bg));
   color: var(--menu-primary);
-  font-size: 1.45rem;
+  font-size: clamp(1.65rem, 3vw, 2.35rem);
 }
 
 .menu-order-kiosk-start__option-copy {
@@ -194,7 +214,7 @@ defineEmits<{
 
 .menu-order-kiosk-start__option-copy strong {
   color: var(--menu-title);
-  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-size: clamp(1.55rem, 3vw, 2.25rem);
   line-height: 1.1;
 }
 

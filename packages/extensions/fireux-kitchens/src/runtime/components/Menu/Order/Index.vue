@@ -53,7 +53,9 @@
         :configs="contextConfigs"
         :currency-code="currencyCode"
         :kitchen-id="resolvedSource?.kitchenId || ''"
+        :kitchen-name="kitchenName"
         :kitchen-slug="orderKitchenSlug"
+        :logo-image-url="kitchenLogoImageUrl"
         :menu-id="menuId"
         :menu-name="menuName"
         :scope-key="basketScopeKey"
@@ -137,6 +139,7 @@
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: separate always-open request intake from future dining-slot availability.
 // Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: restore a touch-first terminal frame without reviving the retired funnel stack.
 // Concurrent edit — 2026-07-22 11:23 CEST — Kiosk simplification pass: stop wiring duplicate kitchen identity into the terminal presentation.
+// Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: supply canonical Kitchen identity without a skin or app-specific branch.
 import { computed } from 'vue'
 import { setResponseStatus, useSeoMeta } from '#imports'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'

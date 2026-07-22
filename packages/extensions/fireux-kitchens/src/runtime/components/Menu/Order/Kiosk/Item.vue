@@ -1,8 +1,11 @@
-<!-- Concurrent edit — 2026-07-22 11:23 CEST — Kiosk simplification pass: omit empty media and reduce cards to order-relevant content. -->
+<!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: balance image and image-free cards without fake media. -->
 <template>
   <article
     class="menu-order-kiosk-item"
-    :class="{ 'menu-order-kiosk-item--unavailable': !canSelect }"
+    :class="{
+      'menu-order-kiosk-item--unavailable': !canSelect,
+      'menu-order-kiosk-item--without-media': !itemImageUrl,
+    }"
     data-menu-item="true"
     :data-menu-item-id="item.id"
     data-menu-item-mode="selectable"
@@ -22,6 +25,7 @@
     <div class="menu-order-kiosk-item__body">
       <div class="menu-order-kiosk-item__copy">
         <h3>{{ item.name }}</h3>
+        <p v-if="item.description">{{ item.description }}</p>
         <span v-if="!canSelect" class="menu-order-kiosk-item__unavailable-label">
           Price unavailable
         </span>
@@ -184,16 +188,18 @@ function formatPrice(price: number) {
 <style scoped>
 .menu-order-kiosk-item {
   display: grid;
+  height: 100%;
   min-width: 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
   border-radius: var(--menu-radius-control);
-  background: var(--menu-bg);
+  background: color-mix(in srgb, var(--menu-bg) 96%, var(--menu-primary));
+  box-shadow: 0 0.8rem 2.2rem color-mix(in srgb, var(--menu-text) 5%, transparent);
 }
 
 .menu-order-kiosk-item__media {
   display: grid;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1;
   min-height: 0;
   place-items: center;
   overflow: hidden;
@@ -214,12 +220,24 @@ function formatPrice(price: number) {
 }
 
 .menu-order-kiosk-item__body {
+  min-height: 10rem;
   gap: 0.8rem;
   padding: clamp(0.9rem, 1.7vw, 1.15rem);
 }
 
 .menu-order-kiosk-item__copy {
   gap: 0.35rem;
+}
+
+.menu-order-kiosk-item__copy p {
+  display: -webkit-box;
+  margin: 0;
+  overflow: hidden;
+  color: var(--menu-muted);
+  font-size: clamp(0.78rem, 1.2vw, 0.9rem);
+  line-height: 1.35;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 .menu-order-kiosk-item h3 {
@@ -322,5 +340,25 @@ function formatPrice(price: number) {
 
 .menu-order-kiosk-item--unavailable {
   opacity: 0.66;
+}
+
+.menu-order-kiosk-item--without-media {
+  position: relative;
+  min-height: clamp(18rem, 29vw, 24rem);
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 105% -5%, color-mix(in srgb, var(--menu-primary) 17%, transparent) 0 7rem, transparent 7.1rem),
+    radial-gradient(circle at -5% 105%, color-mix(in srgb, var(--menu-secondary) 10%, transparent) 0 5rem, transparent 5.1rem),
+    color-mix(in srgb, var(--menu-bg) 95%, var(--menu-primary));
+}
+
+.menu-order-kiosk-item--without-media .menu-order-kiosk-item__body {
+  min-height: 100%;
+  align-content: end;
+  padding-top: clamp(4rem, 10vw, 8rem);
+}
+
+.menu-order-kiosk-item--without-media h3 {
+  font-size: clamp(1.35rem, 2.6vw, 1.8rem);
 }
 </style>

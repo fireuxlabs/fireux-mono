@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-22
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/dev-app-with-smoke.mjs
 // Concurrent edit — 2026-07-20 15:54 CEST — Repo Efficiency Pass 1 of 6: run the Misebox route and contract smoke suite.
 // Concurrent edit — 2026-07-21 20:29 CEST — Misebox dev stability pass: reuse a verified healthy same-checkout app without killing it.
+// Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: run the Misebox route and contract smoke suite for live visual verification.
 
 import { spawnSync } from 'node:child_process'
 import { realpathSync } from 'node:fs'

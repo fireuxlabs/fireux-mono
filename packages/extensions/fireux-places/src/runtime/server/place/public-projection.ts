@@ -1,7 +1,9 @@
 // Concurrent edit — 2026-07-21 14:28 CEST — Place public projection: allowlist sparse public location truth and exclude raw stamps/search metadata.
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: expose every canonical Place only through a coarse card-safe reference DTO.
 // Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: add locale defaults only to the bounded detail projection.
+// Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: project only validated sparse brand colours.
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
 import type {
   PlaceImageShade,
   PlaceType,
@@ -103,9 +105,13 @@ export function projectPublicPlaceDetail(
 
   const currency = normalizePlaceCurrencyCode(value.default_currency_code)
   const timezone = normalizePlaceTimezone(value.timezone)
+  const brandPalette = readBrandPalette(value.brand_palette)
   return {
     ...place,
     ...(currency ? { default_currency_code: currency } : {}),
     ...(timezone ? { timezone } : {}),
+    ...(Object.keys(brandPalette).length
+      ? { brand_palette: brandPalette }
+      : {}),
   }
 }
