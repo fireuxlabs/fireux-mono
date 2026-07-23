@@ -1,66 +1,69 @@
-<!-- Concurrent edit — 2026-07-21 12:25 CEST — Neutral Jobs migration seam: make shared product copy category-neutral. -->
+<!-- Concurrent edit — 2026-07-23 15:48 CEST — Keep the shared Jobs guide truthful about browse, profile, and employer capabilities. -->
 <template>
   <UPage>
     <UPageHeader
-      title="FireUX Jobs"
-      description="How the unified jobs workspace helps agents and professionals connect."
+      title="About Jobs"
+      description="Browse published opportunities, prepare a professional profile, or publish a role as an employer."
     />
 
     <UPageBody class="pagebody">
       <section class="space-y-3">
-        <h2 class="text-lg font-semibold">Why FireUX Jobs exists</h2>
+        <h2 class="text-lg font-semibold">What you can do today</h2>
         <p class="text-sm text-toned">
-          FireUX Jobs centralises hiring across every tenant so teams can draft
-          roles once, share globally, and augment them with tenant-specific
-          context. Professionals reuse their profiles across participating apps
-          and practical-work categories.
+          Explore open public roles connected to canonical employers and
+          workplaces. Signed-in professionals can prepare their profile, while
+          authorised agents can create, review, and publish employer-owned job
+          drafts.
         </p>
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Core capabilities today</h3>
+        <h3 class="text-base font-semibold">Current capabilities</h3>
         <ul class="space-y-2 text-sm text-toned">
           <li>
             <strong class="font-medium text-highlighted"
-              >Global job collection</strong
+              >Published job directory</strong
             >
-            &nbsp;— all jobs live in a single Firestore collection keyed by the
-            Firestore auto ID. Tenant filters keep listings scoped when needed.
+            &nbsp;— open public roles are projected with bounded Company and
+            Place information.
           </li>
           <li>
             <strong class="font-medium text-highlighted"
               >Agent-authored drafts</strong
             >
-            &nbsp;— agents can create jobs once they establish their profile.
-            Drafts stay private until marked open.
+            &nbsp;— authorised agents can create and manage private drafts
+            before publishing them.
           </li>
           <li>
-            <strong class="font-medium text-highlighted">Realtime editing</strong>
-            &nbsp;— title, description, pay, and status updates sync instantly
-            across tenants.
+            <strong class="font-medium text-highlighted"
+              >Professional profiles</strong
+            >
+            &nbsp;— job seekers can maintain a reusable professional profile
+            without duplicating their core User identity.
           </li>
         </ul>
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Coming next</h3>
-        <ul class="space-y-2 text-sm text-toned">
-          <li>Candidate applications and shortlist management.</li>
-          <li>Tenant-branded onboarding flows and job templates.</li>
-          <li>Automated notifications for updates, interviews, and offers.</li>
-        </ul>
+        <h3 class="text-base font-semibold">Application status</h3>
+        <p class="text-sm text-toned">
+          Native applications and shortlist management are not available yet.
+          The current product supports honest job discovery, professional
+          profiles, and employer publishing without pretending that an
+          application has been submitted.
+        </p>
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Get involved</h3>
-        <p class="text-sm text-toned">
-          Agents can start by creating a draft job from the Jobs console.
-          Professionals should keep their profiles complete so they appear in
-          recommendations when jobs go live.
-        </p>
+        <h3 class="text-base font-semibold">Choose your next step</h3>
         <div class="flex flex-wrap gap-2">
-          <UButton to="/jobs/create" color="primary">Create a job</UButton>
-          <UButton to="/profiles" variant="ghost">Review your profile</UButton>
+          <UButton to="/jobs" color="primary">Browse jobs</UButton>
+          <UButton to="/dashboard/professional/profile" variant="soft">
+            Prepare your profile
+          </UButton>
+          <UButton to="/jobs/manage" color="neutral" variant="ghost">
+            Employer tools
+          </UButton>
         </div>
       </section>
     </UPageBody>
@@ -68,10 +71,18 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from 'nuxt/app'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 definePageMeta({
   layout: 'default',
 })
 
-useHead({ title: 'Learn more about FireUX Jobs' })
+const { appName } = useFireUXConfig()
+useSeo({
+  title: `${appName} | About Jobs`,
+  description:
+    'Browse published opportunities, prepare a professional profile, or publish a role as an employer.',
+  path: '/jobs/learn-more',
+})
 </script>

@@ -58,6 +58,22 @@ export type AppAdminPeopleResponse = {
   truncated: boolean
 }
 
+export type CurrentAppMembershipDto = {
+  id: string
+  role: 'admin' | 'user'
+  is_premium: boolean
+  console_enabled: boolean
+  profiles: string[]
+  console_targets: Record<string, string[]>
+}
+
+export type CurrentAppContextResponse = {
+  ok: true
+  appId: string
+  app: PublicAppDto | null
+  membership: CurrentAppMembershipDto | null
+}
+
 /**
  * Public profile transport keeps canonical User identity beside, never inside,
  * the domain profile record. The profile payload is field-allowlisted by kind.

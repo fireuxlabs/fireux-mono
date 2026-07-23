@@ -1,4 +1,7 @@
 # Components spine map
+<!-- Concurrent edit — 2026-07-23 02:43 CEST — Map the shared product-led landing surface and project proof slot. -->
+<!-- Concurrent edit — 2026-07-23 12:13 CEST — Record FireUX as the second shared product-landing consumer. -->
+<!-- Concurrent edit — 2026-07-23 — Extract the two-consumer product-preview frame without moving product proof into Core. -->
 Updated: 2026-07-23
 Ref: e98ffb195
 Role: map, not canon
@@ -52,7 +55,19 @@ Map component folder and naming conventions.
   `PublicProfileDirectoryCard` presentation while each named domain retains
   its content; profile editors use Nuxt UI cards and named `Edit/*` form
   composition; and page organisms to genuinely shared layout and route
-  regions. Solution grids,
+  regions. Core `LandingProductIndex` owns the
+  product-led public landing composition and responsive/reveal behavior; app
+  projects supply typed copy, routes, catalogues, and genuine product proof
+  through its named slot rather than copying that presentation. FireUX and
+  Misebox are the current sibling consumers. Core
+  `LandingProductPreviewFrame` owns their repeated outer preview frame,
+  identity/status chrome, mode controls, panel transition, footer action, and
+  reduced-motion behavior; each project preview retains its active state,
+  product copy, routes, and complete proof body. Core
+  `LandingAppCollection` renders the bounded public App directory controller
+  inside the product landing's named App slot; the project supplies only
+  section copy and presentation-safe filtering, never a hard-coded tenant App
+  list or direct App storage read. Solution grids,
   compact metrics, ordinary card roots, and dashboard body stacks use Nuxt UI
   directly rather than retaining parallel global CSS.
 - `assets/styles/main.scss` is the explicit cascade authority. Its import order

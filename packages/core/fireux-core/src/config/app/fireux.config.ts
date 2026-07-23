@@ -102,6 +102,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       profiles: app.profiles || [],
       selfJoinEnabled: app.selfJoinEnabled === true,
       navHiddenKeys: app.navHiddenKeys || [],
+      navOverrides: app.navOverrides || {},
     },
 
     firebaseApp: {

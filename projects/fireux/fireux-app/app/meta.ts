@@ -7,6 +7,7 @@
 // Concurrent edit — 2026-07-21 13:16 CEST — FireUX project positioning: publish Project Operations with working public and Console homes.
 // Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: publish the request-to-launch operation and its Console route.
 // Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: retain FireUX solution intent through intake.
+// Concurrent edit — 2026-07-23 12:13 CEST — FireUX landing makeover: align public metadata with the concrete Ignition offer.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 import { fireuxMiseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 
@@ -34,17 +35,17 @@ const sourceMeta = {
       headline: 'Powerful Applications',
     },
     heroPrimaryLine:
-      'FireUX is the <strong>console architecture</strong> for builders and operators. A low-code ecosystem for <strong>responsive</strong>, <strong>scalable</strong>, and <strong>data-driven</strong> applications built upon <strong>Nuxt 4</strong> and <strong>Firebase</strong>.',
+      'We configure and launch a <strong>branded web app</strong> around one useful job, with an installable PWA, accounts, an operator console, hosting, updates, and maintenance.',
     primaryCtaLabel: 'Get started',
     secondaryCtaLabel: 'Browse apps',
     secondaryCtaTo: '/apps',
     consoleBridgeLine:
-      'The operating system for building and running domain applications from one shared, <strong>extensible core</strong>.',
+      'One FireUX project keeps the app, ecosystem, users, and future operations connected.',
     heroBullets: [
-      'Nuxt 4 + Firebase orchestration out of the box',
-      'Reusable design system and shared components',
-      'Tenant-aware and white-label runtime',
-      'Automations, PWA, and CI presets',
+      'One job for the app to do',
+      'Your branding and pages',
+      'User accounts and operator console',
+      'Hosting, updates, and maintenance',
     ],
     rightPanelItems: [
       {
@@ -64,9 +65,9 @@ const sourceMeta = {
       },
     ],
     seo: {
-      title: 'FireUX — Powerful Applications',
+      title: 'FireUX — Your Business. Your App.',
       description:
-        'Build, launch, and run branded applications with FireUX.',
+        'Launch a branded web app with an installable PWA, accounts, operator console, hosting, updates, and maintenance from $150 setup and $15 per month.',
     },
   },
   about: {

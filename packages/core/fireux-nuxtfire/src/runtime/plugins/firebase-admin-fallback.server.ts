@@ -1,15 +1,16 @@
-import {
-  applicationDefault,
-  cert,
-  getApps,
-  initializeApp,
-  type App,
-  type AppOptions,
-  type ServiceAccount,
+import type {
+  App,
+  AppOptions,
+  ServiceAccount,
 } from 'firebase-admin/app'
 import { defineNuxtPlugin, useRequestEvent, useRuntimeConfig } from '#imports'
 import { promises as fs } from 'node:fs'
+import { createRequire } from 'node:module'
 import { isAbsolute, resolve } from 'node:path'
+
+const require = createRequire(import.meta.url)
+const { applicationDefault, cert, getApps, initializeApp } =
+  require('firebase-admin/app') as typeof import('firebase-admin/app')
 
 const ADMIN_APP_NAME = 'vuefire-admin'
 let adminAppPromise: Promise<App> | null = null

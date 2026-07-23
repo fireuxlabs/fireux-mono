@@ -19,6 +19,7 @@ export interface FireUXConfig {
   profiles: string[]
   selfJoinEnabled: boolean
   navHiddenKeys: string[]
+  navOverrides: Record<string, unknown>
 
   contactEmail?: string
   designPack?: Record<string, unknown>
@@ -117,6 +118,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
+    navOverrides: optRecord(fireux, 'navOverrides') || {},
 
     contactEmail: optString(fireux, 'contactEmail'),
     designPack: optRecord(fireux, 'designPack'),

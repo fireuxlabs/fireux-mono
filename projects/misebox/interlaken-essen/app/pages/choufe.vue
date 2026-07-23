@@ -1,8 +1,13 @@
 <template>
-  <section class="market-page market-landing" aria-labelledby="buy-title">
+  <section
+    class="market-page market-landing market-browse market-browse--feed"
+    aria-labelledby="buy-title"
+  >
     <div class="market-landing__content">
-      <ChoufeMain id="buy-title" />
-      <MarketplaceShared />
+      <div class="market-browse__columns">
+        <ChoufeMain id="buy-title" />
+        <MarketplaceShared />
+      </div>
     </div>
   </section>
 </template>

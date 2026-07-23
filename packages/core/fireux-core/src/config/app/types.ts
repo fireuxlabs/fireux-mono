@@ -39,6 +39,19 @@ export type FireuxAppConfig = {
   selfJoinEnabled?: boolean
   /** Optional public/dashboard nav item keys hidden by this app shell. */
   navHiddenKeys?: string[]
+  /** App-level presentation overrides for inherited route navigation, keyed by nav key. */
+  navOverrides?: Record<
+    string,
+    {
+      label?: string
+      icon?: string
+      position?: 'top' | 'middle' | 'bottom'
+      order?: number
+      desktop?: boolean
+      mobile?: boolean
+      layouts?: string[]
+    }
+  >
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }

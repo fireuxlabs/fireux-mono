@@ -5,6 +5,7 @@ await navigateTo('/ordering/kiosk', {
 
 definePageMeta({
   layout: 'landing',
+  pageTransition: false,
   name: 'MiseboxOrderingTakeAwayPage',
 })
 </script>

@@ -155,6 +155,18 @@ function includeAppNavKey(
   return !fireux.navHiddenKeys.includes(item.key)
 }
 
+function applyAppNavOverride(
+  nav: NavMeta,
+  fireux: ReturnType<typeof useFireUXConfig>
+): NavMeta {
+  if (!nav.key) return nav
+  const override = fireux.navOverrides[nav.key]
+  if (!override || typeof override !== 'object' || Array.isArray(override)) {
+    return nav
+  }
+  return { ...nav, ...(override as Partial<NavMeta>), key: nav.key }
+}
+
 export function useNav(
   targetLayouts: MaybeRefOrGetter<TargetLayouts> = [DEFAULT_LAYOUT]
 ) {
@@ -171,10 +183,11 @@ export function useNav(
 
       const meta = route.meta as RouteMetaLike
       if (!isNavMeta(meta.nav)) continue
+      const nav = applyAppNavOverride(meta.nav, fireux)
 
       const item = buildNavItem(
         route,
-        meta.nav,
+        nav,
         wanted.value,
         meta.visibility,
         meta.requiresSelection

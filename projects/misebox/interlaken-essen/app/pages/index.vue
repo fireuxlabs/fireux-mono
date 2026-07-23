@@ -17,7 +17,7 @@
           <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
         </NuxtLink>
 
-        <NuxtLink to="/Verchoufe" class="market-action market-action--dark">
+        <NuxtLink to="/verchoufe" class="market-action market-action--dark">
           <UIcon name="i-lucide-circle-plus" aria-hidden="true" />
           <strong>Verchoufe</strong>
           <UIcon name="i-lucide-arrow-right" aria-hidden="true" />

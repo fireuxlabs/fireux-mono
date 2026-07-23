@@ -19,7 +19,7 @@
             :items="footerNavItems"
             variant="link"
             aria-label="Footer navigation"
-            class="justify-center"
+            class="fx-footer-nav"
           />
         </UFooter>
 
@@ -126,3 +126,16 @@ function labelizeEcosystemName(value: string) {
     .join(' ') || 'Ecosystem'
 }
 </script>
+
+<style scoped>
+:deep(.fx-footer-nav) {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
+:deep(.fx-footer-nav ul) {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+</style>

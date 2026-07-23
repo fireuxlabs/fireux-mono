@@ -29,6 +29,9 @@ Map how route pages should be built and where consensus is still forming.
   ownership or URLs. Use `definePageMeta({ pageTransition: false })` only for a
   genuine route-level exception; do not rebuild the shared transition in a
   page.
+- A rendered page must compile to one real root node for Nuxt transitions.
+  Keep authored comments outside `<template>` and wrap true sibling roots;
+  redirect-only routes opt out because they have no visible page to animate.
 - Page should delegate domain display to named components.
 - Page should use composables for data and state.
 - Page should not become a heavy script that calculates many tiny display props.

@@ -80,9 +80,10 @@
 import { computed, useRuntimeConfig } from '#imports'
 import type { NavItem } from '../../composables/fireux/app/nav.types'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useCurrentAppContext } from '../../composables/fireux/app/useCurrentAppContext'
 import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
 import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
+import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../models/core/supporting/user-avatar'
 import DashboardOverviewApp from './Overview/App.vue'
@@ -95,7 +96,8 @@ import type {
 
 const fireux = useFireUXConfig()
 const userApi = useUser()
-const appApi = useApp()
+const appContext = useCurrentAppContext()
+const { profile: appToCard } = useAppInterface()
 const runtimeConfig = useRuntimeConfig()
 const { activeProfileEntries, availableProfileEntries } = useDashboardNav()
 const { consoleActions, hasConsoleEntry, consoleEntryPath } =
@@ -105,15 +107,22 @@ const {
   coreUser,
   coreError,
   coreOutcome,
-  appUser,
-  appPending,
-  appError,
   privateUser,
   privatePending,
   privateError,
   profile: userToCard,
 } = userApi
-const { app, outcome: appOutcome, profile: appToCard } = appApi
+const {
+  app,
+  membership: appUser,
+  pending: appPending,
+  error: appError,
+} = appContext
+const appOutcome = computed<DashboardOverviewOutcome>(() => {
+  if (appError.value) return 'error'
+  if (appPending.value) return 'pending'
+  return app.value ? 'ready' : 'missing'
+})
 
 const coreIsLoading = computed(
   () => coreOutcome.value === 'idle' || coreOutcome.value === 'pending'

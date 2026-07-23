@@ -418,12 +418,14 @@ async function buildPlan(state) {
     blockers,
   })
   operations.push(...handleResult.operations)
+  operations.sort(compareOperations)
 
   const operationSetSha256 = sha256({
     target: { projectId, databaseId, appId },
     decisions: {
       deleteUsers: [...deleteUsers].sort(),
       retainUsers: [...retainUsers].sort(),
+      authOnlyPolicy: 'preserve',
     },
     operations,
   })

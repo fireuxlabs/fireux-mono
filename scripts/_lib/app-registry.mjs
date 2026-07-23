@@ -426,7 +426,7 @@ export const APP_REGISTRY = {
     port: 3013,
     consoles: [],
     toolProviders: ['go-qr'],
-    smokeRoutes: ['/', '/choufe', '/Verchoufe'],
+    smokeRoutes: ['/', '/choufe', '/verchoufe'],
     launchOrder: 10,
   },
   'fireux-blank': {

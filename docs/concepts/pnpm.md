@@ -1,5 +1,5 @@
 # pnpm concept map
-Updated: 2026-07-21
+Updated: 2026-07-23
 Ref: 318378b20
 Role: map, not canon
 
@@ -29,6 +29,10 @@ Explain workspace/package command context.
   of identity-sensitive server packages before dev, guard, or deploy work starts.
 - The dependency-ownership guard requires server-reachable workspace runtime
   value imports to end in `.ts`; erased type-only imports are exempt.
+- Shared Nuxt Vite config resolves Firebase Admin server subpaths through their
+  supported CommonJS entrypoints, and the NuxtFire Admin fallback uses
+  `createRequire`; the dependency-ownership guard protects both parts of that
+  SSR interop boundary.
 - Non-interactive scripts must not trigger implicit installs; `verifyDepsBeforeRun` is disabled.
 - The private root owns tooling through `devDependencies`; deployable/runtime
   dependencies belong to the package or app that imports them.

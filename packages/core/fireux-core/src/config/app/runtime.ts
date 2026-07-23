@@ -38,6 +38,18 @@ export type RuntimeApp = {
   profiles: readonly string[]
   selfJoinEnabled: boolean
   navHiddenKeys?: readonly string[]
+  navOverrides?: Record<
+    string,
+    {
+      label?: string
+      icon?: string
+      position?: 'top' | 'middle' | 'bottom'
+      order?: number
+      desktop?: boolean
+      mobile?: boolean
+      layouts?: string[]
+    }
+  >
 }
 
 export type RuntimeFirebaseEcosystem = {

@@ -1,7 +1,7 @@
 <template>
   <section
     id="betrieb-registriere"
-    class="market-page market-landing"
+    class="market-page market-landing market-browse"
     aria-labelledby="sell-title"
   >
     <div class="market-landing__content">

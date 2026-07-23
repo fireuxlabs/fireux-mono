@@ -47,6 +47,7 @@ import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
+import { run as runProductLanding } from './guards/product-landing.mjs'
 import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runRootAppSupportAuthority } from './guards/root-app-support-authority.mjs'
@@ -83,6 +84,7 @@ const guards = [
   { key: 'extensions', run: runExtensions },
   { key: 'kitchen-menu-size', run: runKitchenMenuSize },
   { key: 'menu-route-contract', run: runMenuRouteContract },
+  { key: 'product-landing', run: runProductLanding },
   { key: 'entity-matrix', run: runEntityMatrix },
   { key: 'entity-authority', run: runEntityAuthority },
   { key: 'root-app-support-authority', run: runRootAppSupportAuthority },

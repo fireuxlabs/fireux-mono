@@ -5,7 +5,7 @@
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-briefcase-business"
-    secondary-label="For employers and professionals"
+    secondary-label="For job seekers and employers"
   >
     <JobCollectionManager />
 
@@ -16,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 const { appName } = useFireUXConfig()
 
@@ -41,5 +41,9 @@ definePageMeta({
   name: 'JobsIndexPage',
 })
 
-useHead({ title: `${appName} | ${pageTitle}` })
+useSeo({
+  title: `${appName} | ${pageTitle}`,
+  description: pageDescription,
+  path: '/jobs',
+})
 </script>

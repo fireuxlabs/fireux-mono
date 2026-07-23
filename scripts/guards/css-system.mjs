@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-22
+// last_used: 2026-07-23
 // usage_note: enforces the shared Nuxt UI and FireUX CSS spine.
 // FILE: scripts/guards/css-system.mjs
 // Concurrent edit — 2026-07-20 23:33 CEST — Final app CSS pass: enforce semantic project colors.

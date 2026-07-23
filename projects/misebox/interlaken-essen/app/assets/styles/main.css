@@ -148,6 +148,36 @@
   margin-inline: auto;
 }
 
+.market-browse {
+  align-items: start;
+  padding-top: clamp(6.5rem, 12vh, 8rem);
+}
+
+.market-browse .market-landing__content {
+  width: min(100%, 36rem);
+  margin-inline: 0;
+}
+
+.market-browse--feed .market-landing__content {
+  width: min(100%, 56rem);
+  margin-inline: auto;
+}
+
+.market-browse__columns {
+  display: grid;
+  grid-template-columns: minmax(0, 26rem) minmax(0, 26rem);
+  gap: clamp(1.5rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.market-browse__columns .market-feed {
+  margin-top: clamp(4rem, 9vh, 7rem);
+}
+
+.market-browse h1 {
+  font-size: clamp(3.75rem, 10vw, 7rem);
+}
+
 .market-eyebrow,
 .market-intro,
 .market-landing h1 {
@@ -184,6 +214,145 @@
   font-weight: 650;
   line-height: 1.4;
   text-shadow: 0 0.15rem 1rem rgba(0, 0, 0, 0.56);
+}
+
+.market-section-index {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.market-sections {
+  display: grid;
+  gap: 0.65rem;
+  width: min(100%, 26rem);
+  margin-top: 0.65rem;
+}
+
+.market-section-link {
+  display: grid;
+  min-height: 4rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 0.8rem;
+  align-items: center;
+  border: 1px solid var(--market-line);
+  border-radius: 9999px;
+  padding: 0.85rem 1rem;
+  background: rgba(251, 243, 223, 0.68);
+  box-shadow: 0 0.7rem 1.8rem rgba(12, 35, 31, 0.22);
+  color: var(--market-ink);
+  text-decoration: none;
+  backdrop-filter: blur(10px);
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.market-section-icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex: none;
+}
+
+.market-section-link:hover {
+  background: rgba(251, 243, 223, 0.84);
+  box-shadow: 0 1rem 2.5rem rgba(12, 35, 31, 0.34);
+  transform: translateY(-2px);
+}
+
+.market-section-link > span {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.market-section-link strong,
+.market-section-link small {
+  display: block;
+}
+
+.market-section-link strong {
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.market-section-link small {
+  color: rgba(23, 53, 43, 0.72);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.market-eyebrow a {
+  color: inherit;
+}
+
+.market-feed {
+  display: grid;
+  gap: 0.75rem;
+  width: min(100%, 26rem);
+  margin-top: 1.25rem;
+}
+
+.market-feed__heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.market-feed__heading h2 {
+  margin: 0;
+  color: var(--market-cream);
+  font-family: var(--market-display);
+  font-size: 2rem;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.market-feed-post {
+  overflow: hidden;
+  border: 1px solid rgba(251, 243, 223, 0.44);
+  border-radius: calc(var(--ui-radius) * 5);
+  background: rgba(251, 243, 223, 0.72);
+  box-shadow: 0 0.8rem 2rem rgba(12, 35, 31, 0.24);
+  color: var(--market-ink);
+  backdrop-filter: blur(10px);
+}
+
+.market-feed-post__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.market-feed-post__body {
+  display: grid;
+  gap: 0.4rem;
+  padding: 1rem;
+}
+
+.market-feed-post__label {
+  color: var(--market-moss);
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.market-feed-post h3,
+.market-feed-post p {
+  margin: 0;
+}
+
+.market-feed-post h3 {
+  font-size: 1.1rem;
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.market-feed-post p {
+  color: rgba(23, 53, 43, 0.76);
+  font-size: 0.85rem;
+  line-height: 1.45;
 }
 
 .market-actions {
@@ -301,7 +470,24 @@
     background: linear-gradient(180deg, transparent 36svh, var(--market-ink) 58svh);
   }
 
+  .market-browse {
+    align-items: start;
+    background: linear-gradient(180deg, transparent 46svh, var(--market-ink) 78svh);
+  }
+
+  .market-browse__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .market-browse__columns .market-feed {
+    margin-top: 1.25rem;
+  }
+
   .market-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .market-sections {
     grid-template-columns: 1fr;
   }
 
@@ -328,7 +514,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .market-action {
+  .market-action,
+  .market-section-link {
     transition: none;
   }
 }

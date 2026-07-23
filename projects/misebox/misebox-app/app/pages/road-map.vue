@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-23 15:48 CEST — Keep the Road Map on Kitchen operations and focused adjacent products. -->
 <template>
   <div class="pb-20">
     <section class="border-b border-default py-20 sm:py-28">
@@ -8,7 +9,7 @@
             Build from the menu inward.
           </h1>
           <p class="fx-type-description mt-6 max-w-2xl leading-8">
-            Misebox grows from useful public kitchen tools into a connected operating system. The sequence matters: establish reliable kitchen data first, turn it into repeatable work, then connect the wider hospitality ecosystem.
+            Misebox grows from useful public Kitchen tools into connected preparation and service workflows. The sequence matters: establish reliable Kitchen data first, turn it into repeatable work, then scale without losing the operating model.
           </p>
         </div>
         <div class="rounded-3xl border border-primary/20 bg-primary/10 p-6">
@@ -50,7 +51,7 @@
           <p class="fx-type-headline">Product compass</p>
           <h2 class="fx-type-section-title mt-4">What earns a place on the road map?</h2>
           <p class="mt-5 leading-7 text-muted">
-            Misebox is intentionally broad in ambition and strict in implementation. A feature should strengthen the kitchen operating loop, remove duplicate work, or create a useful connection between participants.
+            Misebox is intentionally focused on the Kitchen operating loop and strict in implementation. A feature should strengthen that loop, remove duplicate work, or create a useful connection between existing operational records.
           </p>
         </div>
         <div class="grid gap-4 sm:grid-cols-2">
@@ -90,7 +91,7 @@ const phases = [
       { title: 'Public and QR menus', copy: 'Reliable menu publishing, URLs, PDFs, presentation, and kitchen-owned public identity.' },
       { title: 'Structured kitchen knowledge', copy: 'Menus, dishes, recipes, ingredients, allergens, and suppliers with clear relationships.' },
       { title: 'Kitchen console foundations', copy: 'Practical identity, menu, prep, team, and operational management surfaces.' },
-      { title: 'Hospitality profiles and jobs', copy: 'Connect kitchens with professionals through useful profiles and real roles.' },
+      { title: 'Order and service handoff', copy: 'Carry guest choices into a clear Kitchen queue and move each ticket toward service.' },
     ],
   },
   {
@@ -99,17 +100,17 @@ const phases = [
     items: [
       { title: 'Prep and service planning', copy: 'Generate clearer work from menus, recipes, yields, stations, and service needs.' },
       { title: 'Allergen and translation workflows', copy: 'Make critical menu information safer to maintain and easier to publish across languages.' },
-      { title: 'Supplier collaboration', copy: 'Improve the connection between ingredients, products, availability, and kitchen requirements.' },
+      { title: 'Ingredient readiness', copy: 'Connect ingredient needs, preparation quantities, availability, and Kitchen requirements.' },
       { title: 'Operational reporting', copy: 'Give teams useful signals about readiness, consistency, gaps, and repeated work.' },
     ],
   },
   {
-    key: 'later', label: 'Later', title: 'Connect the hospitality ecosystem', color: 'neutral' as const, icon: 'i-lucide-orbit',
-    description: 'Build higher-value coordination once the underlying kitchen and participant data is trustworthy.',
+    key: 'later', label: 'Later', title: 'Scale without losing the Kitchen model', color: 'neutral' as const, icon: 'i-lucide-orbit',
+    description: 'Build higher-value coordination once the underlying Kitchen and service data is trustworthy.',
     items: [
       { title: 'Multi-kitchen operations', copy: 'Share standards while preserving each location’s ownership and operating reality.' },
       { title: 'Partner and specialist apps', copy: 'Let focused products extend Misebox through clear integrations and shared identity.' },
-      { title: 'Portable professional reputation', copy: 'Help experience, capability, and trusted working relationships move with people.' },
+      { title: 'Cross-location standards', copy: 'Carry approved recipes, menu structure, and operating practices across locations without erasing local control.' },
       { title: 'Assisted kitchen intelligence', copy: 'Use AI where it reduces repetitive work while keeping operators in control of kitchen truth.' },
     ],
   },
@@ -137,9 +138,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Misebox Road Map · From menu to operating system',
-  description: 'See how Misebox is developing from public kitchen tools into connected operations for menus, recipes, prep, teams, suppliers, and hospitality professionals.',
+  title: 'Misebox Road Map · From menu to Kitchen workflow',
+  description: 'See how Misebox is developing from public Kitchen tools into connected menus, recipes, prep, orders, service, and multi-location operations.',
   ogTitle: 'Misebox Road Map',
-  ogDescription: 'Build from the menu inward: reliable kitchen knowledge, daily coordination, then a connected hospitality ecosystem.',
+  ogDescription: 'Build from the menu inward: reliable Kitchen knowledge, daily coordination, then repeatable multi-location operations.',
 })
 </script>

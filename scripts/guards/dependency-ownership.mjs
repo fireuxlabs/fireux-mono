@@ -1,6 +1,7 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-23
 // usage_note: rejects shadow boundaries, undeclared imports, unsafe server runtime specifiers, and split framework type identities.
+// Concurrent edit — 2026-07-23 13:42 CEST — Firebase Admin SSR stability: guard the shared CommonJS interop boundary used by every app.
 // Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: require explicit .ts suffixes on server-reachable workspace runtime value imports.
 // Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify product-neutral Jobs dependency ownership.
 // Concurrent edit — 2026-07-20 22:44 CEST — Repo Efficiency Pass 5 of 6: enforce dependency ownership and shared H3 type identity.
@@ -454,6 +455,61 @@ function h3TypeIdentityViolations(repoRoot) {
   return []
 }
 
+function firebaseAdminSsrBoundaryViolations(repoRoot) {
+  const vitePath = path.join(
+    repoRoot,
+    'packages/core/fireux-core/src/config/app/vite.ts'
+  )
+  const fallbackPath = path.join(
+    repoRoot,
+    'packages/core/fireux-nuxtfire/src/runtime/plugins/firebase-admin-fallback.server.ts'
+  )
+  const viteSource = readFileSync(vitePath, 'utf8')
+  const fallbackSource = readFileSync(fallbackPath, 'utf8')
+  const violations = []
+
+  for (const subpath of [
+    'firebase-admin/app',
+    'firebase-admin/app-check',
+    'firebase-admin/auth',
+    'firebase-admin/firestore',
+    'firebase-admin/storage',
+  ]) {
+    if (!viteSource.includes(`'${subpath}'`)) {
+      violations.push(`fireux-core Vite config must alias ${subpath} to its CommonJS entrypoint.`)
+    }
+  }
+
+  for (const required of [
+    'createRequire(import.meta.url).resolve',
+    'replacement: resolveDependency(packageName)',
+  ]) {
+    if (!viteSource.includes(required)) {
+      violations.push(`fireux-core Vite config is missing ${required}.`)
+    }
+  }
+
+  for (const required of [
+    'createRequire(import.meta.url)',
+    "require('firebase-admin/app')",
+  ]) {
+    if (!fallbackSource.includes(required)) {
+      violations.push(`fireux-nuxtfire Admin fallback is missing ${required}.`)
+    }
+  }
+
+  if (
+    /import\s*\{[^}]*\b(?:applicationDefault|cert|getApps|initializeApp)\b[^}]*\}\s*from\s*['"]firebase-admin\/app['"]/s
+      .test(fallbackSource)
+  ) {
+    violations.push(
+      'fireux-nuxtfire Admin fallback must not use Firebase Admin runtime ESM bindings in Vite SSR.'
+    )
+  }
+
+  return violations
+}
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const roots = packageRoots(repoRoot)
@@ -496,13 +552,16 @@ export async function run(ctx) {
   const nestedManifests = nestedManifestViolations({ repoRoot, roots })
   const rootRuntimeDependencies = Object.keys(rootManifest.dependencies ?? {})
   const typeIdentityViolations = h3TypeIdentityViolations(repoRoot)
+  const firebaseAdminSsrViolations =
+    firebaseAdminSsrBoundaryViolations(repoRoot)
 
   if (
     violations.length ||
     runtimeImportExtensionViolations.length ||
     nestedManifests.length ||
     rootRuntimeDependencies.length ||
-    typeIdentityViolations.length
+    typeIdentityViolations.length ||
+    firebaseAdminSsrViolations.length
   ) {
     const lines = ['[guard] ❌ Dependency ownership drift detected:']
 
@@ -555,6 +614,14 @@ export async function run(ctx) {
       )
     }
 
+    if (firebaseAdminSsrViolations.length) {
+      lines.push(
+        '',
+        'Firebase Admin SSR interop boundary:',
+        ...firebaseAdminSsrViolations.map((violation) => `  - ${violation}`)
+      )
+    }
+
     lines.push(
       '',
       '[guard] Fix:',
@@ -562,7 +629,8 @@ export async function run(ctx) {
       '- End server-reachable workspace runtime value imports in .ts; type-only imports are erased and exempt.',
       '- Remove nested package.json files that create accidental source boundaries.',
       '- Keep the private workspace root tooling-only; root packages belong in devDependencies.',
-      '- Keep H3 on one workspace override so Nitro and package event types share an identity.'
+      '- Keep H3 on one workspace override so Nitro and package event types share an identity.',
+      '- Keep Firebase Admin server subpaths on the shared CommonJS boundary so Vite SSR cannot expose undefined ESM bindings.'
     )
 
     throw new Error(lines.join('\n'))

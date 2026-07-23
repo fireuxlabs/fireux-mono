@@ -83,6 +83,10 @@ Before each task:
 - A family core owns the authoritative target items, outcome, and selection
   validity. Index and overview adapters consume that state; they do not create
   a second membership or target-outcome authority.
+- Authenticated dashboard surfaces consume the exact current App and caller
+  membership through a bounded server projection. They do not raw-read private
+  App or App-user authority from browser Firestore merely to render overview
+  state.
 - Live root/App-support families exact-load only bounded UserApp/configured
   target IDs and expose no partial pair when a root, same-id support record,
   App scope, stored authority shape, or caller access is invalid.

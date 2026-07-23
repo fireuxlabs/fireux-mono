@@ -1,5 +1,7 @@
 # App config spine map
 
+<!-- Concurrent edit — 2026-07-23 15:48 CEST — Map app-scoped presentation overrides for inherited navigation. -->
+
 Updated: 2026-07-23
 Ref: 796952bf0
 Role: map, not canon
@@ -66,6 +68,11 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
   App receives this value; its stored `self_join_enabled` field is the server
   enforcement authority.
 - `navHiddenKeys`
+- `navOverrides`: app-scoped presentation deltas for inherited route
+  navigation, keyed by the route's canonical `nav.key`. Overrides may change
+  label, icon, order, position, device visibility, or target layouts; they do
+  not change route existence, domain authority, authentication, or App
+  membership.
 
 ## Mode differences
 
@@ -99,6 +106,7 @@ CSS and does not reuse Core's `fx-page` selector namespace.
 | Direct Project Apps may omit `ecosystemId` | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts |
 | Apps declare different extension modules | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer |
 | Tenant apps pin console target IDs | `accepted` | A tenant normally has bounded target scope; global apps derive user-authorized targets |
+| Apps present inherited public navigation differently | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority |
 | App-specific Nuxt overrides exist | `accepted` | External integration or deployment requirements may differ; repeated FireUX defaults belong in `withFireuxNuxtConfig` |
 | An app disables or replaces the Core page transition through native Nuxt app config | `accepted` | The shared default remains Core-owned while a deliberate product delta stays explicit |
 | A project app shell or stylesheet copies the shared page transition | `drift` | App-wide overrides belong in config and route-specific exceptions belong in page meta |

@@ -9,26 +9,26 @@
 <script setup lang="ts">
 const title = 'Get started'
 const subtitle =
-  'Kitchen operations, professionals, and roles - in one connected workspace.'
+  'Connect your menu, preparation, and service workflow in one Kitchen workspace.'
 
 const items = [
   {
-    title: 'Post a job',
-    description: 'Use quick create to get your job posted fast.',
-    to: '/jobs',
-    icon: 'i-lucide-briefcase',
-  },
-  {
-    title: 'Browse professionals',
-    description: 'Search our database of vetted professionals.',
-    to: '/professionals',
-    icon: 'i-lucide-user',
-  },
-  {
-    title: 'Showcase your kitchen',
-    description: 'Get your kitchen noticed for its menu and culture.',
+    title: 'Create a Kitchen workspace',
+    description: 'Start with Kitchen identity, operator access, and the menu you serve.',
     to: '/kitchens',
     icon: 'i-lucide-chef-hat',
+  },
+  {
+    title: 'Try the interactive demo',
+    description: 'Follow a sample menu from guest choice to Kitchen handoff.',
+    to: '/demo',
+    icon: 'i-lucide-monitor-play',
+  },
+  {
+    title: 'See what works today',
+    description: 'Inspect the working Kitchen operations without decoding a roadmap.',
+    to: '/operations',
+    icon: 'i-lucide-list-checks',
   },
 ]
 </script>

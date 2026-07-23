@@ -1,7 +1,10 @@
 # Misebox GPT Context
 
-Updated: 2026-07-22
-Ref: 796952bf0
+<!-- Concurrent edit — 2026-07-23 02:43 CEST — Record the Core-owned product landing and Misebox-owned proof boundary. -->
+<!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
+
+Updated: 2026-07-23
+Ref: e98ffb195
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -103,6 +106,42 @@ Before each task:
   Product Demo adapter, reuses real domain components, and performs no live or
   Test reads or writes. Demo records remain owned by their domain package; the
   project owns only route selection, marketing copy, and local interaction.
+- Shared product-led landing presentation belongs to Core
+  `LandingProductIndex`: page rhythm, hero/action hierarchy, operating loop,
+  capability, operation and audience grids, proof-panel placement, closing CTA,
+  reveal behavior, and responsive breakpoints. Misebox keeps its product copy,
+  routes, Kitchen Operations catalogue, and interactive Menu/Mise/Service proof
+  in its project adapter. Core `LandingProductPreviewFrame` owns only the
+  repeated outer frame, identity/status chrome, mode controls, panel transition,
+  footer action, and reduced-motion behavior; Misebox retains active state,
+  routes, labels, metrics, tickets, and all proof truth. The composition is
+  mobile-first: phone flow, touch targets, and compact product proof are
+  unconditioned defaults, while wider layouts enhance them only through
+  `min-width` breakpoints. The executable contract lives in
+  `scripts/guards/product-landing.mjs`.
+- The main landing's Our Apps section consumes Core
+  `LandingAppCollection` through the product landing's named App slot and the
+  existing `useEcosystemAppCollection` controller. It shows only active Apps
+  from the current Misebox ecosystem's bounded public DTO projection, links to
+  canonical `/apps/:slug` details, and excludes the current global Misebox App
+  from its own proof grid. It does not hard-code tenant Apps or read canonical
+  App documents in the browser.
+- The main Misebox public entrance leads with the current restaurant job:
+  keeping a published menu, dishes, recipes, prep work, and Kitchen order
+  handoff connected. It names the restaurant audience and live workflow before
+  broader ecosystem or operating-system aspirations, uses Product Demo as the
+  primary proof, and labels its fictional data so it cannot read as a customer
+  result. Its inherited header promotes Kitchens, Operations, and Product Demo
+  through app-level navigation overrides. Jobs and Professional directories
+  remain secondary footer doorways rather than competing acquisition promises;
+  project presentation must not fork the shared FireUX header or change those
+  inherited routes for other apps.
+- `jobs.misebox.app` is a focused product doorway over the existing
+  `misebox-app` authority, not a second canonical App. It may give public Job,
+  Professional, and Agent routes a Jobs-only project layout while retaining
+  the same Firebase Auth, database, App membership, App Agent support, and
+  `source_app_id` author boundary. Creating an independent Jobs App requires a
+  separately verified membership, Rules, and existing-Job migration.
 - Misebox owns its complete main Firestore Rules template and target manifest
   at `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`.
   Shared byte-identical policy primitives come from FireUX Core; the tracked

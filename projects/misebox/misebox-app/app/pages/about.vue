@@ -1,3 +1,4 @@
+<!-- Concurrent edit — 2026-07-23 15:48 CEST — Keep About focused on restaurant menu, prep, and service work. -->
 <template>
   <div class="overflow-hidden pb-20">
     <section class="relative border-b border-default py-20 sm:py-28">
@@ -6,10 +7,10 @@
         <div class="max-w-3xl">
           <UBadge color="primary" variant="soft">About Misebox</UBadge>
           <h1 class="fx-type-page-title mt-6 text-5xl font-semibold tracking-tight sm:text-6xl lg:text-7xl">
-            A shared operating system for the people behind every service.
+            One connected workflow for menus, prep, and service.
           </h1>
           <p class="fx-type-description mt-7 max-w-2xl leading-8 sm:text-xl">
-            Misebox turns menus, kitchen knowledge, daily preparation, people, and suppliers into one connected workspace. It helps hospitality teams spend less time reconstructing information and more time running a great service.
+            Misebox turns menus, kitchen knowledge, daily preparation, and service orders into one connected workspace. It helps restaurant teams spend less time reconstructing information and more time running a great service.
           </p>
           <div class="mt-9 flex flex-wrap gap-3">
             <UButton to="/get-started" size="lg" trailing-icon="i-lucide-arrow-right">
@@ -159,14 +160,14 @@
 const ideaItems = [
   { label: 'Menus and dishes', icon: 'i-lucide-notebook-tabs' },
   { label: 'Recipes and prep', icon: 'i-lucide-list-checks' },
-  { label: 'People and roles', icon: 'i-lucide-users' },
-  { label: 'Suppliers and sourcing', icon: 'i-lucide-truck' },
+  { label: 'Stations and teams', icon: 'i-lucide-users' },
+  { label: 'Orders and handoff', icon: 'i-lucide-bell-ring' },
 ] as const
 
 const problems = [
   { title: 'Information drifts', copy: 'The public menu, kitchen notes, allergen records, and team knowledge stop matching each other.', icon: 'i-lucide-files' },
   { title: 'Experience walks out', copy: 'When knowledge lives in memory, every absence and staff change creates avoidable operational risk.', icon: 'i-lucide-brain' },
-  { title: 'Tools stay disconnected', copy: 'Point solutions add screens but rarely connect the menu, the work, the people, and the supply chain.', icon: 'i-lucide-unplug' },
+  { title: 'Tools stay disconnected', copy: 'Point solutions add screens but rarely connect the menu, prep work, service queue, and people doing the work.', icon: 'i-lucide-unplug' },
 ] as const
 
 const operatingLoop = [
@@ -177,16 +178,16 @@ const operatingLoop = [
 ] as const
 
 const audiences = [
-  { title: 'Kitchen operators', copy: 'Create a dependable workspace for menus, recipes, prep, suppliers, team access, and daily execution.', action: 'Explore kitchens', to: '/kitchens', icon: 'i-lucide-chef-hat' },
-  { title: 'Hospitality professionals', copy: 'Build a profile around real experience and connect with kitchens and roles across the ecosystem.', action: 'Browse professionals', to: '/professionals', icon: 'i-lucide-user-round' },
-  { title: 'Suppliers and partners', copy: 'Connect products and services to the kitchens, ingredients, and operating needs they support.', action: 'Explore suppliers', to: '/suppliers', icon: 'i-lucide-handshake' },
+  { title: 'Owners and operators', copy: 'Create a dependable workspace for menus, recipes, team access, and daily Kitchen execution.', action: 'Explore kitchens', to: '/kitchens', icon: 'i-lucide-store' },
+  { title: 'Prep and production teams', copy: 'Move from dishes and recipes into visible preparation organised around stations and service.', action: 'Explore Kitchen prep', to: '/operations/mise', icon: 'i-lucide-list-checks' },
+  { title: 'Service teams', copy: 'See guest choices enter a clear Kitchen queue and move toward a ready handoff.', action: 'Try the service demo', to: '/demo/service', icon: 'i-lucide-bell-ring' },
 ] as const
 
 const principles = [
   { title: 'Start with real operational objects.', copy: 'Features attach to menus, dishes, recipes, ingredients, prep tasks, kitchens, people, or suppliers.' },
   { title: 'Keep ownership clear.', copy: 'Kitchens own their operational truth while public surfaces present the right part of it.' },
   { title: 'Make the simple path valuable.', copy: 'A team can begin with one useful surface and grow into the wider system at its own pace.' },
-  { title: 'Build an ecosystem, not a data silo.', copy: 'Profiles, jobs, suppliers, and specialist apps connect around the kitchen without losing their own identity.' },
+  { title: 'Keep focused products focused.', copy: 'Adjacent products such as Misebox Jobs can share trusted foundations without competing with the Kitchen workflow.' },
 ] as const
 
 definePageMeta({
@@ -204,9 +205,9 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'About Misebox · The operating system for kitchen teams',
-  description: 'Misebox connects menus, recipes, prep, people, suppliers, and public kitchen experiences in one hospitality operating system.',
+  title: 'About Misebox · Restaurant menu and Kitchen workflow',
+  description: 'Misebox connects menus, dishes, recipes, prep work, service orders, and Kitchen handoff for restaurant teams.',
   ogTitle: 'About Misebox',
-  ogDescription: 'A shared operating system for the people behind every service.',
+  ogDescription: 'One connected workflow for menus, prep, and service.',
 })
 </script>

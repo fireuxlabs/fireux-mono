@@ -17,7 +17,7 @@
           <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
           Choufe
         </NuxtLink>
-        <NuxtLink to="/Verchoufe" exact-active-class="market-nav__link--active">
+        <NuxtLink to="/verchoufe" exact-active-class="market-nav__link--active">
           <UIcon name="i-lucide-circle-plus" aria-hidden="true" />
           Verchoufe
         </NuxtLink>

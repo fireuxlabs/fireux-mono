@@ -1,31 +1,11 @@
 <template>
-  <div>
-    <EffectsSteam />
-    <LandingHeroSection
-      :app-name="appMeta.brand.appName"
-      :big-personality="appMeta.brand.bigPersonality"
-      :headline="appMeta.brand.headline"
-      :hero-primary-line="appMeta.heroPrimaryHtml"
-      :primary-cta-label="appMeta.landingPrimaryCtaLabel"
-      :secondary-cta-label="appMeta.landingSecondaryCtaLabel"
-      :secondary-cta-to="appMeta.landingSecondaryCtaTo"
-      :console-bridge-line="appMeta.consoleBridgeHtml"
-      :hero-bullets="appMeta.heroBullets"
-      :right-panel-items="appMeta.heroPanelItems"
-    >
-      <template #get-started>
-        <LandingGetStarted />
-      </template>
-
-      <template #apps>
-        <LandingApps />
-      </template>
-    </LandingHeroSection>
-  </div>
+  <EffectsSteam />
+  <MiseboxLandingIndex />
 </template>
 
 <script setup lang="ts">
 import { appMeta } from '../meta'
+import MiseboxLandingIndex from '../components/Misebox/Landing/Index.vue'
 
 definePageMeta({
   layout: 'landing',

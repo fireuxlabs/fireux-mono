@@ -1,8 +1,24 @@
 // packages/core/fireux-core/src/config/vite.ts
 import { existsSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import type { NuxtConfig } from '@nuxt/schema'
+
+const resolveDependency = createRequire(import.meta.url).resolve
+const FIREBASE_ADMIN_SERVER_SUBPATHS = [
+  'firebase-admin/app',
+  'firebase-admin/app-check',
+  'firebase-admin/auth',
+  'firebase-admin/firestore',
+  'firebase-admin/storage',
+]
+const FIREBASE_ADMIN_SERVER_ALIASES = FIREBASE_ADMIN_SERVER_SUBPATHS.map(
+  (packageName) => ({
+    find: packageName,
+    replacement: resolveDependency(packageName),
+  })
+)
 
 export function configViteWorkspace(nuxt: NuxtConfig) {
   const currentDir = dirname(fileURLToPath(import.meta.url))
@@ -30,6 +46,7 @@ export function configViteWorkspace(nuxt: NuxtConfig) {
   n.vite = n.vite || {}
   n.vite.optimizeDeps = n.vite.optimizeDeps || {}
   n.vite.optimizeDeps.include = n.vite.optimizeDeps.include || []
+  n.vite.resolve = n.vite.resolve || {}
   n.vite.server = n.vite.server || {}
   n.vite.server.fs = n.vite.server.fs || {}
   n.vite.server.fs.allow = n.vite.server.fs.allow || []
@@ -41,4 +58,23 @@ export function configViteWorkspace(nuxt: NuxtConfig) {
   if (!n.vite.server.fs.allow.includes(workspaceRoot)) {
     n.vite.server.fs.allow.push(workspaceRoot)
   }
+
+  // Firebase Admin's ESM subpath wrappers can expose registered-but-undefined
+  // bindings inside Nuxt's Vite dev SSR graph. Point those server-only imports
+  // at the package's supported CommonJS entrypoints instead.
+  const configuredAliases = Array.isArray(n.vite.resolve.alias)
+    ? n.vite.resolve.alias
+    : Object.entries(n.vite.resolve.alias || {}).map(([find, replacement]) => ({
+        find,
+        replacement,
+      }))
+  const firebaseAdminSubpaths = new Set(FIREBASE_ADMIN_SERVER_SUBPATHS)
+  n.vite.resolve.alias = [
+    ...FIREBASE_ADMIN_SERVER_ALIASES,
+    ...configuredAliases.filter(
+      (entry: { find?: string | RegExp }) =>
+        typeof entry.find !== 'string' ||
+        !firebaseAdminSubpaths.has(entry.find)
+    ),
+  ]
 }

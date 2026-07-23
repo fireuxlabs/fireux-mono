@@ -161,7 +161,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { AppCard } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
-import type { UserApp } from '../../../models/core/user.model'
+import type { CurrentAppMembershipDto } from '../../../server/utils/public-projection/public-dto.types'
 import type {
   DashboardOverviewOutcome,
   DashboardOverviewProfileEntry,
@@ -172,7 +172,7 @@ const props = defineProps<{
   appShortName: string
   appCard: AppCard.Card | null
   appOutcome: DashboardOverviewOutcome
-  membership: UserApp | null
+  membership: CurrentAppMembershipDto | null
   membershipOutcome: DashboardOverviewOutcome
   profileEntries: DashboardOverviewProfileEntry[]
   canOpenConsole: boolean
