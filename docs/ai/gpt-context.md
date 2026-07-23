@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-07-22
+Updated: 2026-07-23
 Ref: 796952bf0
 Role: living context
 Scope: repo-wide
@@ -63,6 +63,20 @@ Before each task:
   when none exists and live verification needs it. Replace it with the explicit
   `pnpm kill:<app>` command only when the user asks or a concrete runtime change
   requires a restart; never replace a listener from another checkout.
+
+## Shared page navigation
+
+- FireUX Core owns the default Nuxt page-transition config and its matching CSS
+  integration. Navigation remains real Nuxt routing with clean URLs; the
+  transition changes presentation only.
+- Keep layout transitions disabled by default so persistent layout chrome stays
+  mounted when the route keeps the same layout.
+- A genuine app-wide opt-out or override belongs in the native Nuxt `app`
+  config through `withFireuxNuxtConfig`; a genuine route exception belongs in
+  page meta. Do not attach transition props to app-shell `NuxtPage` instances
+  or copy the shared generated-selector CSS into projects.
+- Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
+  `scripts/guards/css-system.mjs` when this contract changes.
 
 ## Console target and onboarding authority
 

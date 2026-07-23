@@ -1,5 +1,5 @@
 # Nuxt UI concept map
-Updated: 2026-07-22
+Updated: 2026-07-23
 Ref: 796952bf0
 Role: map, not canon
 
@@ -35,10 +35,13 @@ Explain the UI library context for agents.
   spans multiple Nuxt UI elements or adds semantics Nuxt UI does not provide
   as one component. Current seams are disclosure triggers, create-workflow
   cards, entity-card action roots, and explicit state cards.
-- Do not recreate a Nuxt UI page grid, card root, dashboard body stack, page
-  transition, or ordinary radius default in global CSS. A one-component layout
-  delta stays with that component; global CSS requires repeated cross-tree
-  evidence or a narrow browser/accessibility behavior.
+- Do not recreate a Nuxt UI page grid, card root, dashboard body stack, or
+  ordinary radius default in global CSS. Core owns one narrow Nuxt-generated
+  page-transition integration for all apps; projects opt out or override it
+  through native Nuxt config instead of copying transition CSS. A
+  one-component layout delta stays with that component; other global CSS
+  requires repeated cross-tree evidence or a narrow browser/accessibility
+  behavior.
 - Nuxt UI owns the ordinary `--ui-radius` default. FireUX may calculate from
   that live variable but must not copy its installed value into a second token
   declaration.

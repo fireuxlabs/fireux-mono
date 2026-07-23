@@ -1,5 +1,5 @@
+<!-- Concurrent edit — 2026-07-20 15:11 CEST — Pre-order console route: add the focused operator confirmation doorway. -->
 <template>
-  <!-- Concurrent edit — 2026-07-20 15:11 CEST — Pre-order console route: add the focused operator confirmation doorway. -->
   <UDashboardPanel id="console-kitchen-pre-orders">
     <template #header>
       <LayoutsConsoleNavbar title="Pre-orders">

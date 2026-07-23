@@ -1,6 +1,6 @@
+<!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: describe identity, defaults, and optional branding. -->
+<!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route Place creation through the named domain funnel. -->
 <template>
-  <!-- Concurrent edit — 2026-07-21 16:32 CEST — Place onboarding completion: describe identity, defaults, and optional branding. -->
-  <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route Place creation through the named domain funnel. -->
   <UPage>
     <UPageHeader
       class="pageheader"

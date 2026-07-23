@@ -23,12 +23,18 @@ export function withFireuxNuxtConfig(
 ) {
   const runtimeConfig = record(fireuxConfig.runtimeConfig)
   const overrideRuntimeConfig = record(overrides.runtimeConfig)
+  const app = record(fireuxConfig.app)
+  const overrideApp = record(overrides.app)
   const vite = record(fireuxConfig.vite)
   const overrideVite = record(overrides.vite)
 
   return defineNuxtConfig({
     ...fireuxConfig,
     ...overrides,
+    app: {
+      ...app,
+      ...overrideApp,
+    },
     css: [
       ...array(fireuxConfig.css),
       ...array(overrides.css),

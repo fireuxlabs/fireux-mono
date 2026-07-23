@@ -1,5 +1,5 @@
 # Components spine map
-Updated: 2026-07-22
+Updated: 2026-07-23
 Ref: e98ffb195
 Role: map, not canon
 
@@ -122,6 +122,8 @@ Map component folder and naming conventions.
   FireUX consumes that value but does not redeclare the installed default.
 - Purely aesthetic global behavior is not part of the current system baseline:
   do not hide scrollbars globally or animate every page-body child on entry.
+  Core's single Nuxt-generated route-transition integration is the narrow
+  shared navigation contract, not permission for broad page-motion recipes.
 - Shared visual primitives such as radius, borders, elevation, standard
   spacing, surface backgrounds, and control geometry belong to Nuxt UI theme
   configuration or a real reusable component/molecule. Domain components

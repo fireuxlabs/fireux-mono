@@ -22,6 +22,7 @@ import {
   configureIconServerBundle,
   configureNitroBaseline,
   configureNuxtRuntimeDefaults,
+  configurePageTransition,
   configureProjectPublicAssets,
   configureViewport,
 } from './nuxt-baseline'
@@ -50,6 +51,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(app.databaseId)
 
   configureViewport(nuxt)
+  configurePageTransition(nuxt)
   configureNitroBaseline(nuxt)
   configureProjectPublicAssets(nuxt)
   configureNuxtRuntimeDefaults(nuxt)

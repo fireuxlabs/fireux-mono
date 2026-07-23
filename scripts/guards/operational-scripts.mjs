@@ -629,7 +629,9 @@ async function assertSnapshotSyncSafety(repoRoot) {
   )
 }
 
-async function assertUserIdentityPlannerReadOnly(repoRoot) {
+export async function assertUserIdentityPlannerReadOnly(
+  repoRoot = process.cwd()
+) {
   const source = await readFile(
     path.join(
       repoRoot,
@@ -646,6 +648,8 @@ async function assertUserIdentityPlannerReadOnly(repoRoot) {
     "if (key === 'apply' || key === 'commit')",
     'This command is read-only.',
     'readOnly: true',
+    'summarizeAuthOnlyIdentities',
+    'plausibleIncompleteRegistration',
     'writeProtectedJsonArtifact',
     'await deleteApp(adminApp)',
   ]) {
@@ -670,4 +674,46 @@ async function assertUserIdentityPlannerReadOnly(repoRoot) {
       `User identity planner must not expose remote mutation token ${token}.`
     )
   }
+
+  const executor = await readFile(
+    path.join(
+      repoRoot,
+      'scripts/apply-misebox-user-identity-reconciliation.mjs'
+    ),
+    'utf8'
+  )
+  for (const token of [
+    "const PROJECT_ID = 'misebox-78f9c'",
+    "const DATABASE_ID = 'misebox'",
+    "const APP_ID = 'misebox-app'",
+    'Apply requires --confirm ${TARGET_CONFIRMATION}.',
+    'Apply requires --confirm-plan ${plan.finalPlanSha256}.',
+    'writeProtectedJsonArtifact',
+    'assertCredentialFreeBackup',
+    'readStoragePreimage',
+    'await applyFirestoreTransaction',
+    'transaction.getAll',
+    'Plan changed after backup; transaction aborted.',
+    'await applyStorageDeletes',
+    'await verifyResults',
+    'await deleteApp(adminApp)',
+  ]) {
+    assert.ok(
+      executor.includes(token),
+      `User identity executor must retain ${token}.`
+    )
+  }
+  const backupIndex = executor.indexOf(
+    'const backupArtifact = await writeProtectedJsonArtifact'
+  )
+  const firestoreIndex = executor.indexOf('await applyFirestoreTransaction')
+  const storageIndex = executor.indexOf('await applyStorageDeletes')
+  const verificationIndex = executor.indexOf('await verifyResults')
+  assert.ok(backupIndex >= 0, 'User identity apply requires a protected preimage.')
+  assert.ok(
+    backupIndex < firestoreIndex &&
+      firestoreIndex < storageIndex &&
+      storageIndex < verificationIndex,
+    'User identity apply must back up, mutate, and verify in guarded order.'
+  )
 }

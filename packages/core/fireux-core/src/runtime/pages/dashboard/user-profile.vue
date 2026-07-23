@@ -3,8 +3,8 @@
 <!-- Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: include biography in the shared profile-hub contract. -->
 <!-- Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: isolate root User outcomes and reuse one active-user binding. -->
 <!-- Concurrent edit — 2026-07-22 15:11 CEST — Profile visibility pass: keep public/private sections and restore the derived access tier in the header. -->
+<!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
 <template>
-  <!-- Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: render read failures separately from missing profiles. -->
   <UDashboardPanel id="user-profile">
     <template #header>
       <LayoutsDashboardNavbar title="Profile" />

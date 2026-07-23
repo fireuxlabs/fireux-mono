@@ -149,11 +149,14 @@ const providerError = ref('')
 const googleConsentAcknowledged = ref(false)
 const accountProvisionErrorMessage = computed(() => {
   const error = lastAccountProvisionError.value
-  return error instanceof Error && error.message.trim()
-    ? error.message
-    : error
-      ? 'Your signed-in account could not be prepared.'
-      : ''
+  if (!error) return ''
+
+  const message = error instanceof Error ? error.message.trim() : String(error)
+  if (message.includes('canonical backfill')) {
+    return 'We’re getting your account ready. Your login details are safe — please try again shortly.'
+  }
+
+  return message || 'Your signed-in account could not be prepared.'
 })
 
 const config = useFireUXConfig()

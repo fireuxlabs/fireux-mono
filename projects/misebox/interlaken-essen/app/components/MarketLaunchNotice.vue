@@ -10,7 +10,10 @@
       <span>Mäld din Betrieb jetzt aa – es bliibt immer gratis.</span>
     </span>
 
-    <NuxtLink to="/Verchoufe" class="market-launch__action">
+    <NuxtLink
+      to="/register"
+      class="market-launch__action"
+    >
       Betrieb registriere
       <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
     </NuxtLink>

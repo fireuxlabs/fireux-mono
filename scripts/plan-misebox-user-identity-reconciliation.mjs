@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
 // manual_entrypoint: true
-// last_used: 2026-07-20
-// usage_note: produce an exact read-only Misebox User identity cleanup and handle-backfill plan before any reviewed apply executor exists.
+// last_used: 2026-07-23
+// usage_note: produce the exact read-only Misebox User identity cleanup and handle-backfill plan consumed by the guarded apply executor.
 // Concurrent edit — 2026-07-20 22:21 CEST — User/Profile data pass: plan retained identities, synthetic cleanup, private markers, and handle reservations without remote writes.
 
 import { createHash } from 'node:crypto'
@@ -316,6 +316,7 @@ async function buildPlan(state) {
     .filter((user) => !state.users.has(user.uid))
     .map((user) => ({
       uid: user.uid,
+      disabled: user.disabled === true,
       anonymous: !user.email && user.providerData.length === 0,
       providers: [
         ...new Set(user.providerData.map((provider) => provider.providerId)),
@@ -326,6 +327,7 @@ async function buildPlan(state) {
       lastSignInAt: user.metadata.lastSignInTime,
     }))
     .sort((left, right) => left.uid.localeCompare(right.uid))
+  const authOnlySummary = summarizeAuthOnlyIdentities(authOnly)
 
   const unresolved = firestoreOnly.filter(
     (uid) => !deleteUsers.has(uid) && !retainUsers.has(uid)
@@ -497,6 +499,7 @@ async function buildPlan(state) {
     identities: {
       firestoreOnly,
       authOnly,
+      authOnlySummary,
     },
     safety: {
       status: ready ? 'ready-for-apply-review' : 'blocked',
@@ -515,6 +518,48 @@ async function buildPlan(state) {
       releaseGateChangeRequired:
         'Validate current live counts and this reconciliation marker; do not rewrite the historical boundary-v4 marker.',
     },
+  }
+}
+
+function summarizeAuthOnlyIdentities(authOnly) {
+  const creationMonths = {}
+  const status = {
+    disabled: 0,
+    enabled: 0,
+    neverSignedIn: 0,
+    singleSessionOnly: 0,
+    plausibleIncompleteRegistration: 0,
+  }
+  for (const identity of authOnly) {
+    const createdAt = Date.parse(identity.createdAt || '')
+    const lastSignInAt = Date.parse(identity.lastSignInAt || '')
+    const month = Number.isFinite(createdAt)
+      ? new Date(createdAt).toISOString().slice(0, 7)
+      : 'unknown'
+    creationMonths[month] = (creationMonths[month] ?? 0) + 1
+    if (identity.disabled) status.disabled += 1
+    else status.enabled += 1
+    if (!Number.isFinite(lastSignInAt)) status.neverSignedIn += 1
+    const singleSessionOnly =
+      Number.isFinite(createdAt) &&
+      Number.isFinite(lastSignInAt) &&
+      Math.abs(lastSignInAt - createdAt) <= 10 * 60 * 1000
+    if (singleSessionOnly) status.singleSessionOnly += 1
+    if (
+      !identity.hasPrivateAccount &&
+      (identity.anonymous ||
+        !Number.isFinite(lastSignInAt) ||
+        singleSessionOnly)
+    ) {
+      status.plausibleIncompleteRegistration += 1
+    }
+  }
+  return {
+    total: authOnly.length,
+    creationMonths,
+    status,
+    inference:
+      'Plausible incomplete registration means no public User, no UserPrivate account, and an anonymous, never-signed-in, or creation-only Auth session; it does not prove server rejection.',
   }
 }
 

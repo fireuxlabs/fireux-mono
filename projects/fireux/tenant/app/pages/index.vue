@@ -1,31 +1,33 @@
 <template>
-  <LandingMissingBrandAssetsFlag />
-  <LandingTenantPlaceholderFlag />
-  <EffectsStars />
-  <LandingShell>
-    <template #left>
-      <LandingHero
-        :title="title"
-        :accent="accent"
-        :paragraph="paragraph"
-        :badges="badges"
-        :primary="hero.primary"
-        :secondary="hero.secondary"
-        :bullets="bullets"
-      />
-    </template>
-    <template #right>
-      <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
-    </template>
-  </LandingShell>
-  <LandingCardGrid
-    :title="solutions.title"
-    :subtitle="solutions.subtitle"
-    :items="solutions.items"
-  />
-  <LandingFuel />
-  <LandingFeatures first />
-  <LandingSkillsIcons />
+  <div>
+    <LandingMissingBrandAssetsFlag />
+    <LandingTenantPlaceholderFlag />
+    <EffectsStars />
+    <LandingShell>
+      <template #left>
+        <LandingHero
+          :title="title"
+          :accent="accent"
+          :paragraph="paragraph"
+          :badges="badges"
+          :primary="hero.primary"
+          :secondary="hero.secondary"
+          :bullets="bullets"
+        />
+      </template>
+      <template #right>
+        <LandingQuickPeek :items="quickPeek" :footer-badge="footerBadge" />
+      </template>
+    </LandingShell>
+    <LandingCardGrid
+      :title="solutions.title"
+      :subtitle="solutions.subtitle"
+      :items="solutions.items"
+    />
+    <LandingFuel />
+    <LandingFeatures first />
+    <LandingSkillsIcons />
+  </div>
 </template>
 
 <script setup lang="ts">

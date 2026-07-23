@@ -15,6 +15,12 @@ const SOURCE_ROOTS = ['packages', 'projects']
 const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
 const CORE_STYLE_ENTRY_PATH =
   'packages/core/fireux-core/src/runtime/assets/styles/main.scss'
+const CORE_PAGE_TRANSITION_STYLE_PATH =
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/integrations/nuxt-page-transition.scss'
+const FIREUX_CONFIG_PATH =
+  'packages/core/fireux-core/src/config/app/fireux.config.ts'
+const NUXT_OVERRIDES_PATH =
+  'packages/core/fireux-core/src/config/app/nuxt-overrides.ts'
 const CORE_STYLE_CASCADE = [
   './scss/atoms/tokens',
   './scss/atoms/typography',
@@ -41,6 +47,7 @@ const CORE_STYLE_CASCADE = [
   './scss/organisms/landing-hero',
   './scss/organisms/landing-index-sections',
   './scss/organisms/console-profiles',
+  './scss/integrations/nuxt-page-transition',
 ]
 const RETIRED_CORE_STYLE_PATHS = [
   'packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/forms.scss',
@@ -91,6 +98,10 @@ const OBSOLETE_VARIABLE_RE =
 const NUXT_BASELINE_PATH =
   'packages/core/fireux-core/src/config/app/nuxt-baseline.ts'
 const DEAD_NUXT_UI_CONSOLE_PANEL_RE = /\bconsolePanel\b/g
+const LOCAL_NUXT_PAGE_TRANSITION_PROP_RE =
+  /<NuxtPage\b[^>]*\s+:?transition\s*=/g
+const COPIED_CORE_PAGE_TRANSITION_RE =
+  /\.fx-page-(?:enter|leave)-(?:active|from|to)\b/g
 const DERIVED_RADIUS_DECLARATION_RE =
   /--radius-(?:xs|sm|md|lg|xl|2xl|3xl|4xl)\s*:/g
 const DERIVED_RADIUS_REFERENCE_RE =
@@ -453,6 +464,7 @@ const LEGACY_GENERIC_SURFACE_PAIRS = [
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   assertCoreStyleArchitecture(repoRoot)
+  assertCorePageTransitionArchitecture(repoRoot)
 
   const violations = {
     obsoleteVariables: [],
@@ -485,6 +497,8 @@ export async function run(ctx) {
     redundantEntityCardLayout: [],
     redundantCollectionManagerControls: [],
     directMenuDetailCssImports: [],
+    localNuxtPageTransitions: [],
+    copiedCorePageTransitions: [],
     legacySemanticColors: [],
     legacyGenericSurfaces: [],
   }
@@ -568,6 +582,129 @@ function assertCoreStyleArchitecture(repoRoot) {
   }
 }
 
+function assertCorePageTransitionArchitecture(repoRoot) {
+  const violations = []
+  const readRequiredSource = (relativePath) => {
+    const filePath = path.join(repoRoot, relativePath)
+    if (!existsSync(filePath)) {
+      violations.push(`missing page-transition authority: ${relativePath}`)
+      return ''
+    }
+    return readFileSync(filePath, 'utf8')
+  }
+
+  const transitionSource = readRequiredSource(CORE_PAGE_TRANSITION_STYLE_PATH)
+  if (transitionSource) {
+    for (const selector of [
+      '.fx-page-enter-active',
+      '.fx-page-leave-active',
+      '.fx-page-enter-from',
+      '.fx-page-leave-to',
+    ]) {
+      if (!transitionSource.includes(selector)) {
+        violations.push(
+          `${CORE_PAGE_TRANSITION_STYLE_PATH} is missing ${selector}`
+        )
+      }
+    }
+
+    if (
+      !/transition:\s*[\s\S]*opacity\s+180ms\s+ease,[\s\S]*transform\s+180ms\s+ease\s*;/.test(
+        transitionSource
+      )
+    ) {
+      violations.push(
+        `${CORE_PAGE_TRANSITION_STYLE_PATH} must keep the shared 180ms opacity/transform contract`
+      )
+    }
+    if (
+      !/translateY\(calc\(var\(--spacing\)\s*\*\s*3\)\)/.test(
+        transitionSource
+      ) ||
+      !/translateY\(calc\(var\(--spacing\)\s*\*\s*-1\.5\)\)/.test(
+        transitionSource
+      )
+    ) {
+      violations.push(
+        `${CORE_PAGE_TRANSITION_STYLE_PATH} must derive its movement from the shared spacing authority`
+      )
+    }
+
+    const reducedMotionIndex = transitionSource.indexOf(
+      '@media (prefers-reduced-motion: reduce)'
+    )
+    const reducedMotionSource =
+      reducedMotionIndex === -1
+        ? ''
+        : transitionSource.slice(reducedMotionIndex)
+    if (
+      !reducedMotionSource.includes('transition: none;') ||
+      !reducedMotionSource.includes('opacity: 1;') ||
+      !reducedMotionSource.includes('transform: none;')
+    ) {
+      violations.push(
+        `${CORE_PAGE_TRANSITION_STYLE_PATH} must disable opacity and movement for reduced motion`
+      )
+    }
+  }
+
+  const baselineSource = readRequiredSource(NUXT_BASELINE_PATH)
+  if (
+    baselineSource &&
+    (
+      !/FIREUX_PAGE_TRANSITION\s*=\s*\{[\s\S]*?name:\s*['"]fx-page['"][\s\S]*?mode:\s*['"]out-in['"][\s\S]*?\}\s*as const/.test(
+        baselineSource
+      ) ||
+      !/function\s+configurePageTransition\b/.test(baselineSource) ||
+      !/\bapp\.pageTransition\s*=\s*\{\s*\.\.\.FIREUX_PAGE_TRANSITION\s*\}/.test(
+        baselineSource
+      )
+    )
+  ) {
+    violations.push(
+      `${NUXT_BASELINE_PATH} must own the native Nuxt fx-page default`
+    )
+  }
+  if (baselineSource && /\blayoutTransition\b/.test(baselineSource)) {
+    violations.push(
+      `${NUXT_BASELINE_PATH} must leave layout transitions disabled so shared chrome stays persistent`
+    )
+  }
+
+  const fireuxConfigSource = readRequiredSource(FIREUX_CONFIG_PATH)
+  if (
+    fireuxConfigSource &&
+    !/\bconfigurePageTransition\(nuxt\)/.test(fireuxConfigSource)
+  ) {
+    violations.push(
+      `${FIREUX_CONFIG_PATH} must apply the Core page-transition baseline`
+    )
+  }
+
+  const overrideSource = readRequiredSource(NUXT_OVERRIDES_PATH)
+  if (
+    overrideSource &&
+    !/app:\s*\{\s*\.\.\.app,\s*\.\.\.overrideApp,\s*\}/s.test(
+      overrideSource
+    )
+  ) {
+    violations.push(
+      `${NUXT_OVERRIDES_PATH} must merge app overrides so pageTransition can be disabled or replaced`
+    )
+  }
+
+  if (violations.length) {
+    throw new Error(
+      [
+        '[guard] Core page-transition drift detected:',
+        ...violations.map((violation) => `  - ${violation}`),
+        '',
+        '[guard] Keep the Nuxt-native default and generated transition selectors in Core; use Nuxt app config or page meta for genuine opt-outs.',
+      ].join('\n')
+    )
+  }
+}
+
 function scan(dir, repoRoot, violations) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory()) {
@@ -616,6 +753,15 @@ function scan(dir, repoRoot, violations) {
       relativePath,
       label: (match) => match[0],
     })
+    if (relativePath.startsWith('projects/')) {
+      collectMatches({
+        source,
+        pattern: COPIED_CORE_PAGE_TRANSITION_RE,
+        target: violations.copiedCorePageTransitions,
+        relativePath,
+        label: (match) => match[0],
+      })
+    }
 
     if (relativePath === NUXT_BASELINE_PATH) {
       collectMatches({
@@ -797,6 +943,13 @@ function scan(dir, repoRoot, violations) {
     })
 
     if (extension === '.vue' || extension === '.html') {
+      collectMatches({
+        source,
+        pattern: LOCAL_NUXT_PAGE_TRANSITION_PROP_RE,
+        target: violations.localNuxtPageTransitions,
+        relativePath,
+        label: () => 'local NuxtPage transition override',
+      })
       collectStaticClassAttributeViolations({
         source,
         relativePath,
@@ -1499,6 +1652,16 @@ function formatViolations(violations) {
   )
   appendGroup(
     lines,
+    'Local NuxtPage transition props that bypass the Core config seam:',
+    violations.localNuxtPageTransitions
+  )
+  appendGroup(
+    lines,
+    'Project styles copying the Core page-transition selector namespace:',
+    violations.copiedCorePageTransitions
+  )
+  appendGroup(
+    lines,
     'Legacy hard-coded semantic text color pairs:',
     violations.legacySemanticColors
   )
@@ -1538,6 +1701,7 @@ function formatViolations(violations) {
     '- Replace the guarded gray/dark text pairs with `text-highlighted`, `text-toned`, or `text-muted`.',
     '- Replace the guarded generic surface pairs with `border-default` and `bg-default/*`.',
     '- Register Menu detail CSS once through the kitchens module; do not import it from leaf pages or components.',
+    '- Use the Core Nuxt page-transition default. App-wide opt-outs or overrides belong in `withFireuxNuxtConfig`; route-specific exceptions belong in page meta.',
     '- One-off Tailwind for local layout or pixel-perfect deltas remains allowed.'
   )
 

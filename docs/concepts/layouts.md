@@ -1,6 +1,6 @@
 # Layouts spine map
 
-Updated: 2026-07-22
+Updated: 2026-07-23
 Ref: 796952bf0
 Role: map, not canon
 
@@ -28,6 +28,10 @@ declaring either one universal without render evidence.
 - A page owns route metadata, route outcome, and high-level domain composition.
 - A route-family layout may derive shared chrome from route scope, as Menu does
   for its exit control; it must not become the domain data-fetching owner.
+- Core's native Nuxt page transition changes only route-page presentation.
+  Layout transitions remain disabled by default, so a header, footer,
+  background, sidebar, or other layout chrome stays mounted while navigation
+  remains inside the same layout.
 
 ## Current composition lanes
 
@@ -82,6 +86,8 @@ currently uses it.
   app-local.
 - Inspect `AppShell`, the nearest layout sibling, and the route smoke behavior.
 - Confirm that route content renders exactly once.
+- Keep the Core page transition at the Nuxt config boundary; do not attach a
+  duplicate transition prop to a layout's or app shell's `NuxtPage`.
 - Keep domain fetches and route-specific business decisions out of the layout.
 - Keep shared route-family chrome out of individual pages.
 

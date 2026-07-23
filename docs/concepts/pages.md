@@ -1,5 +1,5 @@
 # Pages
-Updated: 2026-07-22
+Updated: 2026-07-23
 Ref: 796952bf0
 Role: map, not canon
 
@@ -25,6 +25,10 @@ Map how route pages should be built and where consensus is still forming.
 
 - Page owns route shell, metadata, layout, and high-level composition.
 - Layout owns shared chrome; see `layouts.md` before changing layout behavior.
+- Core supplies the app-wide Nuxt page transition without changing route
+  ownership or URLs. Use `definePageMeta({ pageTransition: false })` only for a
+  genuine route-level exception; do not rebuild the shared transition in a
+  page.
 - Page should delegate domain display to named components.
 - Page should use composables for data and state.
 - Page should not become a heavy script that calculates many tiny display props.

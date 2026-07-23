@@ -7,6 +7,11 @@ import { resolve } from 'node:path'
 import { withDefaultAppModules } from './modules'
 import type { FireuxAppConfig } from './types'
 
+export const FIREUX_PAGE_TRANSITION = {
+  name: 'fx-page',
+  mode: 'out-in',
+} as const
+
 export function configureViewport(nuxt: NuxtConfig) {
   // Ensure responsive breakpoints behave correctly on mobile.
   const head: any = ((nuxt as any).app ||= {}).head ||= {}
@@ -15,6 +20,11 @@ export function configureViewport(nuxt: NuxtConfig) {
   if (!hasViewport) {
     meta.push({ name: 'viewport', content: 'width=device-width, initial-scale=1' })
   }
+}
+
+export function configurePageTransition(nuxt: NuxtConfig) {
+  const app = (((nuxt as any).app ||= {}) as Record<string, any>)
+  app.pageTransition = { ...FIREUX_PAGE_TRANSITION }
 }
 
 export function configureNitroBaseline(nuxt: NuxtConfig) {
