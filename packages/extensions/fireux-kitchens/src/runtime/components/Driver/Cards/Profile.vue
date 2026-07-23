@@ -1,8 +1,9 @@
 <template>
-  <article class="mx-auto w-full max-w-6xl space-y-6">
+  <article class="public-profile-detail" data-profile-tone="driver">
     <PublicProfileHero
       kind-label="Driver"
       icon="i-lucide-truck"
+      tone="success"
       :avatar-url="card.avatarUrl"
       :display-name="card.displayName || 'Driver profile'"
       :handle="card.handle"
@@ -17,16 +18,15 @@
       </template>
     </PublicProfileHero>
 
-    <div class="grid gap-6 md:grid-cols-2">
-      <section
-        class="rounded-3xl border border-default bg-default p-5 shadow-sm sm:p-7"
+    <div
+      class="public-profile-detail__content public-profile-detail__content--split"
+    >
+      <PublicProfileSection
+        icon="i-lucide-route"
+        eyebrow="Service area"
+        title="Delivery coverage"
       >
-        <PublicProfileSectionHeading
-          icon="i-lucide-route"
-          eyebrow="Service area"
-          title="Delivery coverage"
-        />
-        <div class="mt-6 flex items-end gap-3">
+        <div class="flex items-end gap-3">
           <div class="text-5xl font-semibold tracking-tight text-highlighted">
             {{ coverageValue }}
           </div>
@@ -38,17 +38,14 @@
           Available for delivery work within this public service radius. Kitchen
           assignments and contact details stay private.
         </p>
-      </section>
+      </PublicProfileSection>
 
-      <section
-        class="rounded-3xl border border-default bg-default p-5 shadow-sm sm:p-7"
+      <PublicProfileSection
+        icon="i-lucide-package-check"
+        eyebrow="Delivery profile"
+        title="Capabilities"
       >
-        <PublicProfileSectionHeading
-          icon="i-lucide-package-check"
-          eyebrow="Delivery profile"
-          title="Capabilities"
-        />
-        <div v-if="profile?.tags.length" class="mt-6 flex flex-wrap gap-2">
+        <div v-if="profile?.tags.length" class="flex flex-wrap gap-2">
           <UBadge
             v-for="tag in profile.tags"
             :key="tag"
@@ -57,10 +54,10 @@
             variant="soft"
           />
         </div>
-        <p v-else class="mt-5 text-sm leading-6 text-muted">
+        <p v-else class="text-sm leading-6 text-muted">
           This driver is available through the kitchen delivery network.
         </p>
-      </section>
+      </PublicProfileSection>
     </div>
   </article>
 </template>

@@ -2,9 +2,14 @@
   <UPage>
     <UPageBody class="pagebody">
       <slot v-if="pending" name="loading">
-        <div class="space-y-4" role="status" aria-live="polite">
+        <div
+          class="public-profile-detail"
+          role="status"
+          aria-live="polite"
+          aria-busy="true"
+        >
           <USkeleton class="h-72 rounded-3xl" />
-          <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_20rem]">
+          <div class="public-profile-detail__content">
             <USkeleton class="h-96 rounded-3xl" />
             <USkeleton class="h-64 rounded-3xl" />
           </div>
@@ -17,6 +22,7 @@
         :description="`This ${entityLabel.toLowerCase()} profile could not be loaded right now. Please try again.`"
         icon="i-lucide-cloud-alert"
         variant="subtle"
+        class="rounded-3xl"
       >
         <template #footer>
           <UButton
@@ -34,6 +40,7 @@
         :description="`This ${entityLabel.toLowerCase()} profile does not exist.`"
         :icon="icon"
         variant="subtle"
+        class="rounded-3xl"
       >
         <template #footer>
           <UButton

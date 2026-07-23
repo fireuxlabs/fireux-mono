@@ -943,9 +943,6 @@ importers:
       fireux-products:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-products
-      fireux-sproochli:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-sproochli
       google-auth-library:
         specifier: ^9.15.1
         version: 9.15.1

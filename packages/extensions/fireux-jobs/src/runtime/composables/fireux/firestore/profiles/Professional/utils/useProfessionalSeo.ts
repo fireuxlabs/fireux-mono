@@ -21,6 +21,17 @@ export function buildProfessionalJsonLd(
   const id = clean(professional?.id)
   if (!name || !id) return null
 
+  const knowsAbout = (
+    professional?.tags?.length
+      ? professional.tags
+      : (professional?.positions ?? [])
+  )
+    .map(clean)
+    .filter(Boolean)
+  const knowsLanguage = (professional?.languages ?? [])
+    .map((entry) => clean(entry.language))
+    .filter(Boolean)
+
   return {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -30,7 +41,8 @@ export function buildProfessionalJsonLd(
     ),
     image: readHttpsUrl(professional?.image) || undefined,
     jobTitle: clean(professional?.title) || undefined,
-    knowsAbout: professional?.tags?.length ? professional.tags : undefined,
+    knowsAbout: knowsAbout.length ? knowsAbout : undefined,
+    knowsLanguage: knowsLanguage.length ? knowsLanguage : undefined,
   }
 }
 
@@ -44,10 +56,13 @@ export function useProfessionalSeo(
   const isPublic = computed(() => Boolean(entry.value && routeKey.value))
 
   return useSeo({
-    title: computed(
-      () =>
-        displayName.value || clean(entry.value?.title) || 'Professional Profile'
-    ),
+    title: computed(() => {
+      const role = clean(entry.value?.title)
+      if (displayName.value && role && displayName.value !== role) {
+        return `${displayName.value} — ${role}`
+      }
+      return displayName.value || role || 'Professional Profile'
+    }),
     description: computed(() =>
       excerpt(
         entry.value?.summary ||

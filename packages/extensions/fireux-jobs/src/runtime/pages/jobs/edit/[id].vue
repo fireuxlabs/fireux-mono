@@ -7,14 +7,26 @@
           size="xs"
           variant="ghost"
           icon="i-lucide-arrow-left"
-          to="/jobs"
+          to="/jobs/manage"
         >
-          Back to jobs
+          Your jobs
+        </UButton>
+        <UButton
+          v-if="isPublicAndOpen"
+          :to="`/jobs/${encodeURIComponent(jobId || '')}`"
+          size="xs"
+          color="primary"
+          variant="soft"
+          icon="i-lucide-external-link"
+        >
+          Open public job
         </UButton>
       </template>
     </UPageHeader>
 
     <UPageBody class="pagebody">
+      <JobAuthorFlowProgress :current-step="3" :published="isPublicAndOpen" />
+
       <div v-if="pending" class="space-y-3">
         <USkeleton class="h-14 rounded-xl" />
         <USkeleton class="h-40 rounded-xl" />
@@ -29,47 +41,86 @@
       />
 
       <form v-else class="space-y-6" @submit.prevent="onSave">
-        <UAlert
-          color="neutral"
-          variant="soft"
-          title="Employer and location"
-          :description="`This job remains linked to Company ${form.company_id} and Place ${form.place_id}.`"
-        />
+        <div
+          class="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.72fr)]"
+        >
+          <div class="space-y-6">
+            <UAlert
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-link-2"
+              title="Employer and workplace"
+              :description="`This job remains linked to Company ${form.company_id} and Place ${form.place_id}.`"
+            />
 
-        <JobCreateBasics
-          v-model:form="form"
-          step-label="Details"
-          title="Job details"
-          subtitle="Update the role, contract, schedule, openings, and optional compensation."
-        />
+            <JobCreateBasics
+              v-model:form="form"
+              step-label="Draft details"
+              title="Job details"
+              subtitle="Update the role, contract, schedule, openings, and optional compensation."
+            />
 
-        <UCard>
-          <UFormField label="Status" required>
-            <USelect v-model="status" :options="statusOptions" />
-          </UFormField>
-        </UCard>
+            <UCard>
+              <template #header>
+                <div>
+                  <h2 class="text-base font-semibold text-highlighted">
+                    Availability
+                  </h2>
+                  <p class="mt-1 text-sm text-muted">
+                    Closed jobs stay in your workspace but disappear from public
+                    discovery.
+                  </p>
+                </div>
+              </template>
+              <UFormField label="Status" required>
+                <USelect v-model="status" :options="statusOptions" />
+              </UFormField>
+            </UCard>
 
-        <div class="flex items-center justify-between">
-          <span class="text-sm text-muted">
-            Publishing remains a separate reviewed action.
-          </span>
-          <div class="flex items-center gap-2">
-            <UButton
-              variant="ghost"
-              :disabled="saving || !isDirty"
-              @click="onReset"
+            <div
+              class="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-default bg-muted/30 p-4"
             >
-              Reset changes
-            </UButton>
-            <UButton
-              color="primary"
-              :loading="saving"
-              :disabled="!isDirty"
-              type="submit"
-            >
-              Save changes
-            </UButton>
+              <span class="text-sm text-muted">
+                {{
+                  isDirty
+                    ? 'You have unsaved changes.'
+                    : 'All draft changes are saved.'
+                }}
+              </span>
+              <div class="flex items-center gap-2">
+                <UButton
+                  type="button"
+                  color="neutral"
+                  variant="ghost"
+                  :disabled="saving || publishing || !isDirty"
+                  @click="onReset"
+                >
+                  Reset changes
+                </UButton>
+                <UButton
+                  color="primary"
+                  icon="i-lucide-save"
+                  :loading="saving"
+                  :disabled="publishing || !isDirty"
+                  type="submit"
+                >
+                  Save changes
+                </UButton>
+              </div>
+            </div>
           </div>
+
+          <aside class="space-y-6 xl:sticky xl:top-6 xl:self-start">
+            <JobCreatePreview :form="form" />
+            <JobAuthorPublish
+              :job="job"
+              :status="status"
+              :is-dirty="isDirty"
+              :saving="saving"
+              @published="onPublished"
+              @publishing="publishing = $event"
+            />
+          </aside>
         </div>
       </form>
     </UPageBody>
@@ -103,8 +154,8 @@ const { updateJob } = useJobUpdate()
 const routeParam = route.params.id
 const jobId = computed(() =>
   Array.isArray(routeParam)
-    ? routeParam[0]?.toString() ?? null
-    : routeParam?.toString() ?? null
+    ? (routeParam[0]?.toString() ?? null)
+    : (routeParam?.toString() ?? null)
 )
 
 const { job: jobRef, pending, refresh } = useJobFetch(jobId)
@@ -130,17 +181,22 @@ function editForm(source?: Job | null): JobCreateForm {
 const form = ref<JobCreateForm>(editForm())
 const status = ref<JobStatus>('open')
 const saving = ref(false)
+const publishing = ref(false)
 
 const statusOptions = [
   { label: 'Open', value: 'open' },
   { label: 'Closed', value: 'closed' },
 ] as const
 
-watch(job, current => {
-  if (!current) return
-  form.value = editForm(current)
-  status.value = current.status
-}, { immediate: true })
+watch(
+  job,
+  (current) => {
+    if (!current) return
+    form.value = editForm(current)
+    status.value = current.status
+  },
+  { immediate: true }
+)
 
 function timestampKey(value: JobCreateForm['start_at']) {
   if (!value) return null
@@ -170,10 +226,13 @@ function formKey(value: JobCreateForm, nextStatus: JobStatus) {
   })
 }
 
-const isDirty = computed(() => Boolean(
-  job.value &&
-  formKey(form.value, status.value) !== formKey(editForm(job.value), job.value.status)
-))
+const isDirty = computed(() =>
+  Boolean(
+    job.value &&
+      formKey(form.value, status.value) !==
+        formKey(editForm(job.value), job.value.status)
+  )
+)
 
 function onReset() {
   if (!job.value) return
@@ -183,7 +242,7 @@ function onReset() {
 
 const onSave = withToast(
   async () => {
-    if (!job.value || !jobId.value || !isDirty.value) return
+    if (!job.value || !jobId.value || !isDirty.value || publishing.value) return
     saving.value = true
     const patch = {
       ...form.value,
@@ -192,7 +251,9 @@ const onSave = withToast(
       compensation: form.value.compensation
         ? {
             ...form.value.compensation,
-            currency_code: form.value.compensation.currency_code.trim().toUpperCase(),
+            currency_code: form.value.compensation.currency_code
+              .trim()
+              .toUpperCase(),
           }
         : null,
       status: status.value,
@@ -208,8 +269,19 @@ const onSave = withToast(
   { ok: 'Job updated', fail: 'Failed to update job' }
 )
 
+async function onPublished() {
+  await refresh()
+}
+
 const pageTitle = computed(() => form.value.title || 'Edit job')
 const pageSubtitle = computed(() =>
-  status.value === 'open' ? 'Open job' : 'Closed job'
+  job.value?.visibility === 'public' && job.value.status === 'open'
+    ? 'Live public job'
+    : job.value?.status === 'closed'
+      ? 'Closed job'
+      : 'Private draft'
+)
+const isPublicAndOpen = computed(
+  () => job.value?.visibility === 'public' && job.value.status === 'open'
 )
 </script>

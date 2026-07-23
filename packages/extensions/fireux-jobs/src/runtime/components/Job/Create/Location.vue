@@ -6,12 +6,12 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-muted">Step 1 · Location</p>
+        <p class="text-sm text-muted">Step 2 · Workplace</p>
         <h2 class="text-lg font-semibold">
           {{ chosenPlaceCard ? 'Selected location' : 'Choose a location' }}
         </h2>
         <p class="text-sm text-muted">
-          Choose the canonical Place where this job is based.
+          Choose the canonical Place where the professional will work.
         </p>
       </div>
     </template>
@@ -28,7 +28,7 @@
       <div v-if="!chosenPlaceCard">
         <ClientOnly>
           <PlaceSearchSection
-            placeholder="Type a location name…"
+            placeholder="Search for the workplace…"
             @confirmed="onPlaceConfirmed"
           />
         </ClientOnly>

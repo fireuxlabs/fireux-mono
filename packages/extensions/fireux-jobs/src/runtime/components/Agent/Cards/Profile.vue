@@ -1,8 +1,9 @@
 <template>
-  <article class="mx-auto w-full max-w-6xl space-y-6">
+  <article class="public-profile-detail" data-profile-tone="agent">
     <PublicProfileHero
       kind-label="Agent"
       icon="i-lucide-handshake"
+      tone="info"
       :avatar-url="card.imageUrl || card.avatarUrl"
       :display-name="card.displayName || 'Agent profile'"
       :handle="card.handle"
@@ -18,41 +19,33 @@
       </template>
     </PublicProfileHero>
 
-    <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div class="space-y-6">
-        <section
+    <div class="public-profile-detail__content">
+      <div class="public-profile-detail__main">
+        <PublicProfileSection
           v-if="aboutCopy"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm sm:p-7"
+          icon="i-lucide-building-2"
+          eyebrow="Agency"
+          title="About"
         >
-          <PublicProfileSectionHeading
-            icon="i-lucide-building-2"
-            eyebrow="Agency"
-            title="About"
-          />
-          <p
-            class="mt-5 whitespace-pre-line text-sm leading-7 text-toned sm:text-base"
-          >
+          <p class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base">
             {{ aboutCopy }}
           </p>
-        </section>
+        </PublicProfileSection>
 
-        <section
+        <PublicProfileSection
           v-if="focusAreas.length"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm sm:p-7"
+          icon="i-lucide-briefcase-business"
+          eyebrow="Recruitment"
+          title="Placement focus"
         >
-          <PublicProfileSectionHeading
-            icon="i-lucide-briefcase-business"
-            eyebrow="Recruitment"
-            title="Placement focus"
-          />
-          <div class="mt-5 grid gap-3 sm:grid-cols-2">
+          <div class="grid gap-3 sm:grid-cols-2">
             <div
               v-for="focusArea in focusAreas"
               :key="focusArea"
               class="flex items-center gap-3 rounded-2xl border border-default bg-elevated/45 p-4"
             >
               <div
-                class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"
+                class="flex size-9 shrink-0 items-center justify-center rounded-xl bg-info/10 text-info"
               >
                 <UIcon name="i-lucide-user-search" class="size-4" />
               </div>
@@ -61,21 +54,18 @@
               </span>
             </div>
           </div>
-        </section>
+        </PublicProfileSection>
       </div>
 
-      <aside class="space-y-4 lg:sticky lg:top-24">
-        <section
+      <aside class="public-profile-detail__sidebar">
+        <PublicProfileSection
           v-if="coverageAreas.length"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm"
+          compact
+          icon="i-lucide-map-pinned"
+          eyebrow="Reach"
+          title="Coverage"
         >
-          <PublicProfileSectionHeading
-            compact
-            icon="i-lucide-map-pinned"
-            eyebrow="Reach"
-            title="Coverage"
-          />
-          <div class="mt-5 flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2">
             <UBadge
               v-for="area in coverageAreas"
               :key="area"
@@ -84,19 +74,16 @@
               variant="soft"
             />
           </div>
-        </section>
+        </PublicProfileSection>
 
-        <section
+        <PublicProfileSection
           v-if="contactLinks.length"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm"
+          compact
+          icon="i-lucide-message-circle"
+          eyebrow="Business"
+          title="Contact"
         >
-          <PublicProfileSectionHeading
-            compact
-            icon="i-lucide-message-circle"
-            eyebrow="Business"
-            title="Contact"
-          />
-          <div class="mt-5 grid gap-2">
+          <div class="grid gap-2">
             <UButton
               v-for="contact in contactLinks"
               :key="contact.label"
@@ -110,7 +97,7 @@
               block
             />
           </div>
-        </section>
+        </PublicProfileSection>
       </aside>
     </div>
   </article>

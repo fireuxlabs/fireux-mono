@@ -431,6 +431,42 @@ const menuKioskContract = (route, options = {}) => {
   }
 }
 
+const menuPreOrderContract = (route, options = {}) => {
+  const contract = menuOrderContract(route, { ...options, context: 'pre_order' })
+  const deferredUntilTablePlan = new Set([
+    'data-menu-order-catalogue="selectable"',
+    'data-menu-item="true"',
+    'data-menu-item-mode="selectable"',
+    'data-menu-action="add-item"',
+    'data-menu-order-basket="local"',
+    'data-menu-basket-persistence="none"',
+    'data-menu-basket-state="empty"',
+    'data-menu-basket-quantity="0"',
+    'data-menu-basket-total="0.00"',
+    'data-menu-action="review-basket"',
+  ])
+
+  return {
+    ...contract,
+    includes: [
+      ...contract.includes.filter(
+        marker => !deferredUntilTablePlan.has(marker)
+      ),
+      'data-menu-pre-order-plan="advance-table"',
+      'data-menu-pre-order-plan-state="incomplete"',
+      'Plan your table',
+      'Choose date and time',
+      'The menu will open when both table details are set.',
+    ],
+    excludes: [
+      ...contract.excludes,
+      'data-menu-order-catalogue=',
+      'data-menu-item=',
+      'data-menu-order-basket=',
+    ],
+  }
+}
+
 const unavailableMenuOrderContract = (route, title, options = {}) => {
   const indexPath = route.slice(0, route.lastIndexOf('/'))
   const exitKind = options.exitKind || 'back'
@@ -578,6 +614,7 @@ export {
   menuIndexContract,
   menuKioskContract,
   menuOrderContract,
+  menuPreOrderContract,
   menuQrContract,
   missingMenuBrowseContract,
   missingMenuIndexContract,

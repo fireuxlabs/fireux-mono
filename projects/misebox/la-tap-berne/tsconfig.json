@@ -36,9 +36,6 @@
       "fireux-products": ["../../../packages/extensions/fireux-products/src/module.ts"],
       "fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"],
       "fireux-products/runtime/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
-      "fireux-sproochli": ["../../../packages/extensions/fireux-sproochli/src/module.ts"],
-      "fireux-sproochli/*": ["../../../packages/extensions/fireux-sproochli/src/*"],
-      "fireux-sproochli/runtime/*": ["../../../packages/extensions/fireux-sproochli/src/runtime/*"],
       "fireux-suppliers": ["../../../packages/extensions/fireux-suppliers/src/module.ts"],
       "fireux-suppliers/*": ["../../../packages/extensions/fireux-suppliers/src/*"],
       "fireux-suppliers/runtime/*": ["../../../packages/extensions/fireux-suppliers/src/runtime/*"]

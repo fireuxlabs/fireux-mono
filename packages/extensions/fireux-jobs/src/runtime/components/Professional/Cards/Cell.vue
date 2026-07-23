@@ -3,6 +3,7 @@
     variant="card"
     kind-label="Professional"
     icon="i-lucide-briefcase-business"
+    tone="primary"
     :to="to"
     :avatar-url="image || avatarUrl"
     :secondary-avatar-url="secondaryAvatarUrl"

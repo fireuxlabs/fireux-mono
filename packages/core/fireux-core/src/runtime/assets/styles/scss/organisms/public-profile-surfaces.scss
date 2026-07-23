@@ -1,0 +1,70 @@
+/*
+ * Shared public specialist-profile composition.
+ * Domain components retain their content; this organism owns only family tone,
+ * detail rhythm, responsive columns, and the optional canonical User hub.
+ */
+
+@layer components {
+	:where([data-profile-tone]) {
+		--fx-profile-accent: var(--ui-primary);
+	}
+
+	:where([data-profile-tone='user'], [data-profile-tone='secondary']) {
+		--fx-profile-accent: var(--ui-secondary);
+	}
+
+	:where([data-profile-tone='agent'], [data-profile-tone='info']) {
+		--fx-profile-accent: var(--ui-info);
+	}
+
+	:where([data-profile-tone='chef'], [data-profile-tone='warning']) {
+		--fx-profile-accent: var(--ui-warning);
+	}
+
+	:where([data-profile-tone='driver'], [data-profile-tone='success']) {
+		--fx-profile-accent: var(--ui-success);
+	}
+
+	:where(.public-profile-detail, .public-profile-hub) {
+		display: grid;
+		gap: calc(var(--spacing) * 6);
+		margin-inline: auto;
+		max-width: calc(var(--spacing) * 288);
+		min-width: 0;
+		width: 100%;
+	}
+
+	:where(.public-profile-detail__content) {
+		display: grid;
+		gap: calc(var(--spacing) * 6);
+		min-width: 0;
+	}
+
+	:where(.public-profile-detail__main, .public-profile-detail__sidebar) {
+		display: grid;
+		gap: calc(var(--spacing) * 6);
+		min-width: 0;
+	}
+
+	:where(.public-profile-detail__sidebar) {
+		align-content: start;
+		gap: calc(var(--spacing) * 4);
+	}
+
+	@media (min-width: 48rem) {
+		:where(.public-profile-detail__content--split) {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+
+	@media (min-width: 64rem) {
+		:where(.public-profile-detail__content:not(.public-profile-detail__content--split)) {
+			grid-template-columns: minmax(0, 1fr) calc(var(--spacing) * 80);
+		}
+
+		:where(.public-profile-detail__sidebar) {
+			position: sticky;
+			top: calc(var(--spacing) * 24);
+		}
+	}
+}

@@ -12,8 +12,8 @@
 const actions = [
   {
     label: 'Employers',
-    cta: 'Post a job',
-    to: '/jobs/create',
+    cta: 'Post or manage jobs',
+    to: '/jobs/manage',
     icon: 'i-lucide-briefcase-business',
   },
   {

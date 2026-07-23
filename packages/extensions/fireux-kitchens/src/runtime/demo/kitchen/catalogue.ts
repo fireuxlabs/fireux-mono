@@ -3,6 +3,8 @@
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: separate the smash-burger and polished restaurant catalogues.
 // Concurrent edit — 2026-07-22 15:09 CEST — Misebox Restaurant catalogue pass: expand the polished Demo to seven fully pictured sections.
 // Concurrent edit — 2026-07-22 15:27 CEST — Demo image review: align each generated photograph with its Dish identity and copy.
+// Concurrent edit — 2026-07-22 18:03 CEST — Deanos catalogue pass: build a focused four-section fast-food Menu with coherent Dish photography.
+// Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add a complete green-and-yellow pizzeria catalogue in the shared Demo shape.
 import { DishModel, type Dish } from '../../models/kitchen/dish.model'
 import {
   KitchenMenuModel,
@@ -24,6 +26,7 @@ import {
   kitchenDemoCreated,
   kitchenDemoUpdated,
   miseboxRestaurantKitchenDemoIdentity,
+  pizzaTheActionKitchenDemoIdentity,
 } from './fixtures'
 import type {
   KitchenDemoCatalogue,
@@ -128,8 +131,10 @@ const menuItem = (
 const deanosRootMenu = rootMenu(
   deanosKitchenDemoIdentity,
   'Deanos Smash Burger menu',
-  'Smash burgers, fries and drinks for a fast neighbourhood service.'
+  'Lace-edged smash burgers, crispy chicken, loaded sides and hand-spun shakes.'
 )
+
+const deanosAssetBase = `${kitchenDemoAssetBase}/deanos`
 
 export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
   rootMenu: deanosRootMenu,
@@ -161,77 +166,493 @@ export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
     {
       id: 'deanos-classic',
       name: 'Deanos Classic',
-      description: 'Beef patty, cheddar, lettuce, pickles and house sauce.',
+      description: 'Smashed beef, American cheese, shredded lettuce, pickles and Deanos sauce.',
       item_kind: 'food',
-      image: '',
+      image: `${deanosAssetBase}/deanos-classic.jpg`,
     },
     {
-      id: 'crispy-chicken-burger',
-      name: 'Crispy chicken burger',
-      description: 'Buttermilk chicken, slaw, pickles and hot honey mayo.',
+      id: 'double-trouble',
+      name: 'Double Trouble',
+      description: 'Three smashed patties, American cheese, caramelised onions, pickles and smoky sauce.',
       item_kind: 'food',
-      image: '',
+      image: `${deanosAssetBase}/double-trouble.jpg`,
+    },
+    {
+      id: 'swiss-melt',
+      name: 'Swiss Melt',
+      description: 'Double smashed beef, Swiss cheese, brown mushrooms, onions and peppercorn mayo.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/swiss-melt.jpg`,
+    },
+    {
+      id: 'hot-honey-chicken',
+      name: 'Hot Honey Chicken',
+      description: 'Buttermilk fried chicken, crunchy slaw, pickles, hot honey and chilli mayo.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/hot-honey-chicken.jpg`,
+    },
+    {
+      id: 'ranch-chicken',
+      name: 'Crispy Ranch Chicken',
+      description: 'Fried chicken, lettuce, tomato, pickles and herbed ranch.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/ranch-chicken.jpg`,
+    },
+    {
+      id: 'crispy-cauliflower',
+      name: 'Crispy Cauliflower',
+      description: 'Crispy cauliflower, red cabbage slaw, pickles and smoky vegan mayo.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/crispy-cauliflower.jpg`,
     },
     {
       id: 'skin-on-fries',
       name: 'Skin-on fries',
-      description: 'Crisp fries with sea salt.',
+      description: 'Golden skin-on fries with flaky sea salt.',
       item_kind: 'food',
-      image: '',
+      image: `${deanosAssetBase}/skin-on-fries.jpg`,
+    },
+    {
+      id: 'dirty-deanos-fries',
+      name: 'Dirty Deanos fries',
+      description: 'Fries loaded with chopped smash beef, cheddar, pickles, spring onion and Deanos sauce.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/dirty-deanos-fries.jpg`,
+    },
+    {
+      id: 'onion-rings',
+      name: 'Crispy onion rings',
+      description: 'A tall stack of crunchy beer-battered onion rings.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/onion-rings.jpg`,
+    },
+    {
+      id: 'salted-caramel-shake',
+      name: 'Salted caramel shake',
+      description: 'Vanilla soft serve, caramel and flaky sea salt.',
+      item_kind: 'drink',
+      image: `${deanosAssetBase}/salted-caramel-shake.jpg`,
+    },
+    {
+      id: 'cherry-vanilla-shake',
+      name: 'Cherry vanilla shake',
+      description: 'Vanilla soft serve blended with dark cherry.',
+      item_kind: 'drink',
+      image: `${deanosAssetBase}/cherry-vanilla-shake.jpg`,
     },
     {
       id: 'house-lemonade',
       name: 'House lemonade',
       description: 'Fresh lemon, mint and sparkling water.',
       item_kind: 'drink',
-      image: '',
+      image: `${deanosAssetBase}/house-lemonade.jpg`,
     },
   ]),
   menuSections: [
     {
-      section: menuSection(deanosKitchenDemoIdentity, 'burgers', 'Burgers', 1),
+      section: menuSection(
+        deanosKitchenDemoIdentity,
+        'smash-burgers',
+        'Smash burgers',
+        1
+      ),
       items: [
         menuItem(deanosKitchenDemoIdentity, {
           id: 'deanos-classic-item',
-          section_id: 'burgers',
+          section_id: 'smash-burgers',
           dish_id: 'deanos-classic',
           price: 19,
           sort_order: 1,
+          price_options: [
+            { label: 'Single', quantity: 1, unit: 'burger', price: 16 },
+            { label: 'Double', quantity: 1, unit: 'burger', price: 19 },
+          ],
           add_ons: [
             { id: 'extra-cheddar', label: 'Extra cheddar', price: 2 },
             { id: 'smoked-bacon', label: 'Smoked bacon', price: 3 },
           ],
         }),
         menuItem(deanosKitchenDemoIdentity, {
-          id: 'crispy-chicken-item',
-          section_id: 'burgers',
-          dish_id: 'crispy-chicken-burger',
-          price: 20,
+          id: 'double-trouble-item',
+          section_id: 'smash-burgers',
+          dish_id: 'double-trouble',
+          price: 24,
           sort_order: 2,
+          add_ons: [
+            { id: 'jalapenos', label: 'Jalapeños', price: 1.5 },
+            { id: 'smoked-bacon', label: 'Smoked bacon', price: 3 },
+          ],
+        }),
+        menuItem(deanosKitchenDemoIdentity, {
+          id: 'swiss-melt-item',
+          section_id: 'smash-burgers',
+          dish_id: 'swiss-melt',
+          price: 22,
+          sort_order: 3,
         }),
       ],
     },
     {
       section: menuSection(
         deanosKitchenDemoIdentity,
-        'sides-and-drinks',
-        'Sides & drinks',
+        'chicken-and-plant',
+        'Chicken & plant',
         2
       ),
       items: [
         menuItem(deanosKitchenDemoIdentity, {
+          id: 'hot-honey-chicken-item',
+          section_id: 'chicken-and-plant',
+          dish_id: 'hot-honey-chicken',
+          price: 20,
+          sort_order: 1,
+          add_ons: [
+            { id: 'extra-hot-honey', label: 'Extra hot honey', price: 1.5 },
+            { id: 'smoked-bacon', label: 'Smoked bacon', price: 3 },
+          ],
+        }),
+        menuItem(deanosKitchenDemoIdentity, {
+          id: 'ranch-chicken-item',
+          section_id: 'chicken-and-plant',
+          dish_id: 'ranch-chicken',
+          price: 19,
+          sort_order: 2,
+        }),
+        menuItem(deanosKitchenDemoIdentity, {
+          id: 'crispy-cauliflower-item',
+          section_id: 'chicken-and-plant',
+          dish_id: 'crispy-cauliflower',
+          price: 18,
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosKitchenDemoIdentity,
+        'fries-and-sides',
+        'Fries & sides',
+        3
+      ),
+      items: [
+        menuItem(deanosKitchenDemoIdentity, {
           id: 'skin-on-fries-item',
-          section_id: 'sides-and-drinks',
+          section_id: 'fries-and-sides',
           dish_id: 'skin-on-fries',
           price: 6,
           sort_order: 1,
         }),
         menuItem(deanosKitchenDemoIdentity, {
+          id: 'dirty-deanos-fries-item',
+          section_id: 'fries-and-sides',
+          dish_id: 'dirty-deanos-fries',
+          price: 13,
+          sort_order: 2,
+        }),
+        menuItem(deanosKitchenDemoIdentity, {
+          id: 'onion-rings-item',
+          section_id: 'fries-and-sides',
+          dish_id: 'onion-rings',
+          price: 7,
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosKitchenDemoIdentity,
+        'shakes-and-drinks',
+        'Shakes & drinks',
+        4
+      ),
+      items: [
+        menuItem(deanosKitchenDemoIdentity, {
+          id: 'salted-caramel-shake-item',
+          section_id: 'shakes-and-drinks',
+          dish_id: 'salted-caramel-shake',
+          price: 8,
+          sort_order: 1,
+        }),
+        menuItem(deanosKitchenDemoIdentity, {
+          id: 'cherry-vanilla-shake-item',
+          section_id: 'shakes-and-drinks',
+          dish_id: 'cherry-vanilla-shake',
+          price: 8,
+          sort_order: 2,
+        }),
+        menuItem(deanosKitchenDemoIdentity, {
           id: 'house-lemonade-item',
-          section_id: 'sides-and-drinks',
+          section_id: 'shakes-and-drinks',
           dish_id: 'house-lemonade',
           price: 5,
+          sort_order: 3,
+        }),
+      ],
+    },
+  ],
+}
+
+const pizzaTheActionRootMenu = rootMenu(
+  pizzaTheActionKitchenDemoIdentity,
+  'Pizza the Action menu',
+  'Big-flavour pizzas, crispy sides and bright Italian drinks, made for sharing.'
+)
+
+const pizzaTheActionAssetBase = `${kitchenDemoAssetBase}/pizza-the-action`
+
+export const pizzaTheActionKitchenDemoCatalogue: KitchenDemoCatalogue = {
+  rootMenu: pizzaTheActionRootMenu,
+  kitchenMenu: kitchenMenu(
+    pizzaTheActionKitchenDemoIdentity,
+    pizzaTheActionRootMenu,
+    [
+      {
+        type: 'eat_in',
+        fulfilment: {
+          handoff_instructions: 'Watch the screen for your table order number.',
+        },
+      },
+      {
+        type: 'takeaway',
+        fulfilment: {
+          handoff_instructions: 'Collect your pizza when your number is called.',
+        },
+      },
+      {
+        type: 'collection',
+        asap_enabled: true,
+        fulfilment: {
+          handoff_instructions: 'Collect from the pizza counter.',
+        },
+        customer: {
+          required_fields: ['name', 'phone'],
+        },
+      },
+    ]
+  ),
+  dishes: dishes(pizzaTheActionKitchenDemoIdentity, [
+    {
+      id: 'action-margherita',
+      name: 'Action Margherita',
+      description: 'San Marzano tomato, fior di latte, basil and extra-virgin olive oil.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/action-margherita.jpg`,
+    },
+    {
+      id: 'pepperoni-punch',
+      name: 'Pepperoni Punch',
+      description: 'Cup-and-char pepperoni, mozzarella, chilli honey and oregano.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/pepperoni-punch.jpg`,
+    },
+    {
+      id: 'prosciutto-rocket',
+      name: 'Prosciutto & Rocket',
+      description: 'Prosciutto crudo, fior di latte, wild rocket, parmesan and lemon oil.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/prosciutto-rocket.jpg`,
+    },
+    {
+      id: 'green-machine',
+      name: 'Green Machine',
+      description: 'Courgette, spinach pesto, fior di latte, peas, basil and pecorino.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/green-machine.jpg`,
+    },
+    {
+      id: 'truffle-shroom',
+      name: 'Truffle Shroom',
+      description: 'Roasted mushrooms, taleggio, mozzarella, thyme and black truffle cream.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/truffle-shroom.jpg`,
+    },
+    {
+      id: 'nduja-burrata',
+      name: 'Nduja & Burrata',
+      description: 'Spicy nduja, tomato, torn burrata, basil and chilli oil.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/nduja-burrata.jpg`,
+    },
+    {
+      id: 'garlic-knots',
+      name: 'Garlic knots',
+      description: 'Wood-fired dough knots with roast garlic butter, parsley and parmesan.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/garlic-knots.jpg`,
+    },
+    {
+      id: 'courgette-fritti',
+      name: 'Courgette fritti',
+      description: 'Crispy courgette ribbons with lemon, sea salt and basil mayo.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/courgette-fritti.jpg`,
+    },
+    {
+      id: 'chopped-italian-salad',
+      name: 'Chopped Italian salad',
+      description: 'Little gem, tomato, cucumber, olives, peppers, parmesan and oregano dressing.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/chopped-italian-salad.jpg`,
+    },
+    {
+      id: 'pistachio-tiramisu',
+      name: 'Pistachio tiramisu',
+      description: 'Espresso-soaked sponge, mascarpone and roasted pistachio.',
+      item_kind: 'food',
+      image: `${pizzaTheActionAssetBase}/pistachio-tiramisu.jpg`,
+    },
+    {
+      id: 'amalfi-lemon-soda',
+      name: 'Amalfi lemon soda',
+      description: 'Sparkling lemon soda with fresh citrus and mint.',
+      item_kind: 'drink',
+      image: `${pizzaTheActionAssetBase}/amalfi-lemon-soda.jpg`,
+    },
+    {
+      id: 'blood-orange-spritz',
+      name: 'Blood orange spritz',
+      description: 'Blood orange, bitter botanicals and sparkling water.',
+      item_kind: 'drink',
+      image: `${pizzaTheActionAssetBase}/blood-orange-spritz.jpg`,
+    },
+  ]),
+  menuSections: [
+    {
+      section: menuSection(
+        pizzaTheActionKitchenDemoIdentity,
+        'pizza-classics',
+        'Pizza classics',
+        1
+      ),
+      items: [
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'action-margherita-item',
+          section_id: 'pizza-classics',
+          dish_id: 'action-margherita',
+          price: 18,
+          sort_order: 1,
+          price_options: [
+            { label: '28 cm', quantity: 1, unit: 'pizza', price: 18 },
+            { label: '36 cm', quantity: 1, unit: 'pizza', price: 25 },
+          ],
+          add_ons: [
+            { id: 'burrata', label: 'Burrata', price: 5 },
+            { id: 'house-chilli-oil', label: 'House chilli oil', price: 1.5 },
+          ],
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'pepperoni-punch-item',
+          section_id: 'pizza-classics',
+          dish_id: 'pepperoni-punch',
+          price: 23,
           sort_order: 2,
+          add_ons: [
+            { id: 'jalapenos', label: 'Jalapeños', price: 1.5 },
+            { id: 'extra-hot-honey', label: 'Extra hot honey', price: 2 },
+          ],
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'prosciutto-rocket-item',
+          section_id: 'pizza-classics',
+          dish_id: 'prosciutto-rocket',
+          price: 24,
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        pizzaTheActionKitchenDemoIdentity,
+        'house-pizzas',
+        'House pizzas',
+        2
+      ),
+      items: [
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'green-machine-item',
+          section_id: 'house-pizzas',
+          dish_id: 'green-machine',
+          price: 22,
+          sort_order: 1,
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'truffle-shroom-item',
+          section_id: 'house-pizzas',
+          dish_id: 'truffle-shroom',
+          price: 24,
+          sort_order: 2,
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'nduja-burrata-item',
+          section_id: 'house-pizzas',
+          dish_id: 'nduja-burrata',
+          price: 25,
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        pizzaTheActionKitchenDemoIdentity,
+        'sides',
+        'Sides',
+        3
+      ),
+      items: [
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'garlic-knots-item',
+          section_id: 'sides',
+          dish_id: 'garlic-knots',
+          price: 8,
+          sort_order: 1,
+          add_ons: [
+            { id: 'marinara-dip', label: 'Warm marinara dip', price: 2 },
+          ],
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'courgette-fritti-item',
+          section_id: 'sides',
+          dish_id: 'courgette-fritti',
+          price: 9,
+          sort_order: 2,
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'chopped-italian-salad-item',
+          section_id: 'sides',
+          dish_id: 'chopped-italian-salad',
+          price: 11,
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        pizzaTheActionKitchenDemoIdentity,
+        'sweet-and-drinks',
+        'Sweet & drinks',
+        4
+      ),
+      items: [
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'pistachio-tiramisu-item',
+          section_id: 'sweet-and-drinks',
+          dish_id: 'pistachio-tiramisu',
+          price: 10,
+          sort_order: 1,
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'amalfi-lemon-soda-item',
+          section_id: 'sweet-and-drinks',
+          dish_id: 'amalfi-lemon-soda',
+          price: 6,
+          sort_order: 2,
+        }),
+        menuItem(pizzaTheActionKitchenDemoIdentity, {
+          id: 'blood-orange-spritz-item',
+          section_id: 'sweet-and-drinks',
+          dish_id: 'blood-orange-spritz',
+          price: 7,
+          sort_order: 3,
         }),
       ],
     },

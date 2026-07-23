@@ -1,23 +1,67 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Create Job"
-      description="Draft a new job posting to share with professionals."
-    />
+      title="Post a job"
+      description="Build a private draft, review it, then publish when it is ready."
+    >
+      <template #ctas>
+        <UButton
+          to="/jobs/manage"
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-list-checks"
+        >
+          Your jobs
+        </UButton>
+      </template>
+    </UPageHeader>
 
     <UPageBody class="pagebody">
-      <!-- Gate on agent profile (must be an agent to create jobs) -->
+      <JobAuthorFlowProgress :current-step="canPostJob ? 2 : 1" />
+
       <div v-if="isChecking" class="space-y-3">
         <USkeleton v-for="n in 3" :key="n" class="h-20" />
       </div>
 
-      <AgentCTA v-else-if="!canPostJob" />
+      <JobAuthorGate
+        v-else-if="!canPostJob"
+        :readiness="authorReadiness"
+        return-to="/jobs/create"
+      />
 
-      <!-- Main create shell: write + preview -->
       <div v-else class="space-y-3">
+        <UCard v-if="agentCard" variant="subtle">
+          <template #header>
+            <div>
+              <p
+                class="text-xs font-semibold uppercase tracking-[0.18em] text-primary"
+              >
+                Posting as
+              </p>
+              <h2 class="mt-1 text-base font-semibold text-highlighted">
+                Your Agent profile owns this draft
+              </h2>
+            </div>
+          </template>
+          <AgentCardsPill
+            v-bind="agentCard"
+            :show-subtitle="false"
+            :link="Boolean(agentCard.to)"
+          />
+        </UCard>
+
+        <UAlert
+          v-if="errorMessage"
+          color="error"
+          variant="soft"
+          icon="i-lucide-triangle-alert"
+          title="Draft could not be created"
+          :description="errorMessage"
+        />
+
         <MoleculesCreateShell
           :loading="submitting"
-          submit-label="Create"
+          submit-label="Create draft"
           @clear="onReset"
           @submit="onSubmit"
         >
@@ -54,18 +98,21 @@ definePageMeta({
     mobile: false,
     layouts: ['default'],
   },
-  title: 'Create Job',
+  title: 'Post a job',
   requiresAuth: true,
 })
 
-useHead({ title: 'Create Job' })
+useHead({ title: 'Post a job' })
 
-// Gate on agent profile (same rule as /jobs index)
-const { agent, pending } = useAgent()
-const { canPostJob } = useJobPermissions(agent)
-const isChecking = computed(() => Boolean(pending?.value))
+const { agent, coreProfile, pending, pill: agentInterface } = useAgent()
+const { authorReadiness, canPostJob, isChecking } = useJobPermissions(
+  agent,
+  pending
+)
+const agentCard = computed(() =>
+  coreProfile.value ? agentInterface(coreProfile.value) : null
+)
 
-// Create flow: state + fake submit
 const { form, reset, submit } = useJobCreate()
 
 const router = useRouter()
@@ -86,7 +133,7 @@ const onSubmit = withToast(
     try {
       const id = await submit()
       onReset()
-      router.push(`/jobs/edit/${encodeURIComponent(id)}`)
+      await router.push(`/jobs/edit/${encodeURIComponent(id)}`)
     } catch (err) {
       if (err instanceof Error) {
         errorMessage.value = err.message
@@ -96,6 +143,6 @@ const onSubmit = withToast(
       submitting.value = false
     }
   },
-  { ok: 'Job created', fail: 'Unable to create job' }
+  { ok: 'Draft created', fail: 'Unable to create draft' }
 )
 </script>

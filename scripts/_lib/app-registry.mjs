@@ -25,6 +25,7 @@ import {
   menuIndexContract,
   menuKioskContract,
   menuOrderContract,
+  menuPreOrderContract,
   menuQrContract,
   missingMenuBrowseContract,
   missingMenuIndexContract,
@@ -523,8 +524,10 @@ export const APP_REGISTRY = {
       missingMenuIndexContract('/kitchens/la-tapberne/menus'),
       tenantMissingMenuBrowseContract('/kitchens/la-tapberne/menus/main'),
       missingMenuQrContract('/kitchens/la-tapberne/menus/main/qr'),
-      tenantMenuOrderContract('/main.pre_order', {
-        context: 'pre_order',
+      menuPreOrderContract('/main.pre_order', {
+        indexPath: '/menus',
+        exitKind: 'close',
+        exitPath: '/',
       }),
     ],
     launchOrder: 14,

@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo lifecycle correction: retain acceptance estimates through accepted and ready service states.
 // Concurrent edit — 2026-07-22 14:31 CEST — Demo policy correction: keep collection customer data aligned with its required-field snapshot.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: distinguish Deanos Smash Burger service from Misebox Restaurant.
+// Concurrent edit — 2026-07-22 18:12 CEST — Demo integrity pass: align Deanos service items and retain Pizza the Action as presentation-only.
 import type { DishItemKind } from '../../models/kitchen/dish.model'
 import {
   KitchenMiseTaskModel,
@@ -207,10 +208,10 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
     items: [
       {
         id: 'item-1',
-        itemId: 'crispy-chicken-item',
-        dishId: 'crispy-chicken-burger',
+        itemId: 'hot-honey-chicken-item',
+        dishId: 'hot-honey-chicken',
         itemKind: 'food',
-        label: 'Crispy chicken burger',
+        label: 'Hot Honey Chicken',
         unitPrice: 20,
       },
       {
@@ -263,10 +264,10 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
     items: [
       {
         id: 'item-1',
-        itemId: 'crispy-chicken-item',
-        dishId: 'crispy-chicken-burger',
+        itemId: 'hot-honey-chicken-item',
+        dishId: 'hot-honey-chicken',
         itemKind: 'food',
-        label: 'Crispy chicken burger',
+        label: 'Hot Honey Chicken',
         unitPrice: 20,
         checked: true,
       },
@@ -363,3 +364,8 @@ export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
 export const miseboxRestaurantKitchenDemoOrders: KitchenOrder[] = []
 export const miseboxRestaurantKitchenDemoStations: KitchenStation[] = []
 export const miseboxRestaurantKitchenDemoMiseTasks: KitchenMiseTask[] = []
+
+// Pizza the Action is likewise a Menu/Kiosk presentation world for now.
+export const pizzaTheActionKitchenDemoOrders: KitchenOrder[] = []
+export const pizzaTheActionKitchenDemoStations: KitchenStation[] = []
+export const pizzaTheActionKitchenDemoMiseTasks: KitchenMiseTask[] = []

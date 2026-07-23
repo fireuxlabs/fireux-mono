@@ -3,6 +3,7 @@
     variant="card"
     kind-label="Driver"
     icon="i-lucide-truck"
+    tone="success"
     :to="to"
     :avatar-url="avatarUrl"
     :secondary-avatar-url="secondaryAvatarUrl"

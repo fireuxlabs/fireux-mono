@@ -22,7 +22,7 @@ const fireuxConfig = defineFireuxConfig({
     },
   },
   navHiddenKeys: ['kitchens', 'places'],
-  modules: ['fireux-places', 'fireux-go-qr', 'fireux-kitchens', 'fireux-sproochli'],
+  modules: ['fireux-places', 'fireux-go-qr', 'fireux-kitchens'],
 })
 
 export default withFireuxNuxtConfig(fireuxConfig, {

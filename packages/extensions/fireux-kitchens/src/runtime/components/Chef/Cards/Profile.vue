@@ -1,8 +1,9 @@
 <template>
-  <article class="mx-auto w-full max-w-6xl space-y-6">
+  <article class="public-profile-detail" data-profile-tone="chef">
     <PublicProfileHero
       kind-label="Chef"
       icon="i-lucide-chef-hat"
+      tone="warning"
       :avatar-url="card.imageUrl || card.avatarUrl"
       :display-name="card.displayName || 'Chef profile'"
       :handle="card.handle"
@@ -17,42 +18,34 @@
       </template>
     </PublicProfileHero>
 
-    <div class="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-      <div class="space-y-6">
-        <section
+    <div class="public-profile-detail__content">
+      <div class="public-profile-detail__main">
+        <PublicProfileSection
           v-if="aboutCopy"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm sm:p-7"
+          icon="i-lucide-utensils"
+          eyebrow="Culinary identity"
+          title="About"
         >
-          <PublicProfileSectionHeading
-            icon="i-lucide-utensils"
-            eyebrow="Culinary identity"
-            title="About"
-          />
-          <p
-            class="mt-5 whitespace-pre-line text-sm leading-7 text-toned sm:text-base"
-          >
+          <p class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base">
             {{ aboutCopy }}
           </p>
-        </section>
+        </PublicProfileSection>
 
-        <section
+        <PublicProfileSection
           v-if="gallery.length"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm sm:p-7"
+          icon="i-lucide-images"
+          eyebrow="From the pass"
+          title="Selected dishes"
         >
-          <div class="flex flex-wrap items-end justify-between gap-3">
-            <PublicProfileSectionHeading
-              icon="i-lucide-images"
-              eyebrow="From the pass"
-              title="Selected dishes"
-            />
+          <template #meta>
             <UBadge
               :label="`${gallery.length} ${gallery.length === 1 ? 'photo' : 'photos'}`"
               color="neutral"
               variant="soft"
             />
-          </div>
+          </template>
 
-          <div class="mt-6 grid gap-3 sm:grid-cols-2">
+          <div class="grid gap-3 sm:grid-cols-2">
             <figure
               v-for="item in gallery"
               :key="`${item.name}-${item.image_url}`"
@@ -62,7 +55,10 @@
                 :src="item.image_url"
                 :alt="item.name || `${card.displayName} dish`"
                 loading="lazy"
-                class="size-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                decoding="async"
+                width="960"
+                height="720"
+                class="size-full object-cover transition duration-500 group-hover:scale-[1.03] motion-reduce:transform-none motion-reduce:transition-none"
               />
               <figcaption
                 v-if="item.name"
@@ -72,21 +68,18 @@
               </figcaption>
             </figure>
           </div>
-        </section>
+        </PublicProfileSection>
       </div>
 
-      <aside class="space-y-4 lg:sticky lg:top-24">
-        <section
+      <aside class="public-profile-detail__sidebar">
+        <PublicProfileSection
           v-if="signatureDishes.length"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm"
+          compact
+          icon="i-lucide-sparkles"
+          eyebrow="Known for"
+          title="Signature dishes"
         >
-          <PublicProfileSectionHeading
-            compact
-            icon="i-lucide-sparkles"
-            eyebrow="Known for"
-            title="Signature dishes"
-          />
-          <div class="mt-5 flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-2">
             <UBadge
               v-for="dish in signatureDishes"
               :key="dish"
@@ -95,21 +88,18 @@
               variant="soft"
             />
           </div>
-        </section>
+        </PublicProfileSection>
 
-        <section
+        <PublicProfileSection
           v-if="profile?.chef_organization_name || kitchenCount"
-          class="rounded-3xl border border-default bg-default p-5 shadow-sm"
+          compact
+          icon="i-lucide-store"
+          eyebrow="Kitchen network"
+          title="At work"
         >
-          <PublicProfileSectionHeading
-            compact
-            icon="i-lucide-store"
-            eyebrow="Kitchen network"
-            title="At work"
-          />
           <p
             v-if="profile?.chef_organization_name"
-            class="mt-5 text-sm font-medium text-highlighted"
+            class="text-sm font-medium text-highlighted"
           >
             {{ profile.chef_organization_name }}
           </p>
@@ -118,7 +108,7 @@
             {{ kitchenCount === 1 ? 'kitchen' : 'kitchens' }} across the
             network.
           </p>
-        </section>
+        </PublicProfileSection>
       </aside>
     </div>
   </article>

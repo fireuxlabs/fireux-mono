@@ -15,12 +15,18 @@
       >
         <template #actions>
           <UButton
-            v-if="professionalCard"
-            label="View compact card"
-            icon="i-lucide-contact-round"
-            color="neutral"
+            label="Share profile"
+            icon="i-lucide-share-2"
+            color="primary"
             variant="soft"
-            @click="showBusinessCard = true"
+            @click="shareProfile"
+          />
+          <UButton
+            label="Print / save"
+            icon="i-lucide-printer"
+            color="neutral"
+            variant="outline"
+            @click="printProfile"
           />
           <UButton
             v-if="isSelf"
@@ -41,28 +47,14 @@
       />
     </div>
   </PublicProfileDetailSurface>
-
-  <UModal
-    v-model:open="showBusinessCard"
-    title="Professional card"
-    description="A compact view of this professional identity."
-  >
-    <template #body>
-      <ProfessionalCardsCell
-        v-if="professionalCard"
-        v-bind="professionalCard"
-        :link="Boolean(professionalCard.to)"
-      />
-    </template>
-  </UModal>
 </template>
 
 <script setup lang="ts">
-import { navigateTo, setResponseStatus } from '#imports'
+import { navigateTo, setResponseStatus, useToast } from '#imports'
 import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useProfessionalSeo } from '../../composables/fireux/firestore/profiles/Professional/utils/useProfessionalSeo'
 import { useProfessionalInterface } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalInterface'
 import { useProfessionalProfileView } from '../../composables/fireux/firestore/profiles/Professional/utils/view/useProfessionalProfileView'
@@ -123,7 +115,78 @@ const isSelf = computed(() =>
     profileUser.value?.id && sessionUser.value?.id === profileUser.value.id
   )
 )
-const showBusinessCard = ref(false)
+const toast = useToast()
+
+const profileShareTitle = computed(() =>
+  [displayName.value, professionalProfile.value?.title]
+    .map((value) => String(value || '').trim())
+    .filter(Boolean)
+    .join(' — ')
+)
+
+const copyProfileUrl = async (url: string) => {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(url)
+      return
+    } catch {
+      // Fall through to the selection-based copy path.
+    }
+  }
+
+  const textarea = document.createElement('textarea')
+  textarea.value = url
+  textarea.style.position = 'fixed'
+  textarea.style.opacity = '0'
+  document.body.appendChild(textarea)
+  textarea.select()
+  const copied = document.execCommand('copy')
+  document.body.removeChild(textarea)
+  if (!copied) throw new Error('Clipboard copy failed')
+}
+
+const shareProfile = async () => {
+  if (!import.meta.client) return
+
+  const url = new URL(
+    canonicalPath.value || window.location.pathname,
+    window.location.origin
+  ).toString()
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: profileShareTitle.value || 'Professional profile',
+        text: professionalProfile.value?.summary || undefined,
+        url,
+      })
+      return
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') return
+    }
+  }
+
+  try {
+    await copyProfileUrl(url)
+    toast.add({
+      title: 'Profile link copied',
+      description: 'Ready to share.',
+      color: 'success',
+      icon: 'i-lucide-check',
+    })
+  } catch {
+    toast.add({
+      title: 'Could not copy the profile link',
+      description: url,
+      color: 'error',
+      icon: 'i-lucide-circle-alert',
+    })
+  }
+}
+
+const printProfile = () => {
+  if (import.meta.client) window.print()
+}
 
 if (import.meta.server) {
   if (missing.value) {
@@ -145,3 +208,24 @@ const devPayload = computed(() => ({
   canonicalPath: canonicalPath.value,
 }))
 </script>
+
+<style>
+@media print {
+  body:has([data-public-profile='professional']) [data-fireux-header-root],
+  body:has([data-public-profile='professional']) .fx-layout-shell > footer,
+  body:has([data-public-profile='professional']) .fireux-dev-json {
+    display: none !important;
+  }
+
+  body:has([data-public-profile='professional']) .fx-layout-main > div {
+    max-width: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  body:has([data-public-profile='professional']) .pagebody {
+    margin-top: 0;
+    padding-bottom: 0;
+  }
+}
+</style>

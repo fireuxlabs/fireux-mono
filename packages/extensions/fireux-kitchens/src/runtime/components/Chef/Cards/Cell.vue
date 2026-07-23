@@ -3,6 +3,7 @@
     variant="card"
     kind-label="Chef"
     icon="i-lucide-chef-hat"
+    tone="warning"
     :to="to"
     :avatar-url="avatarUrl"
     :secondary-avatar-url="secondaryAvatarUrl"

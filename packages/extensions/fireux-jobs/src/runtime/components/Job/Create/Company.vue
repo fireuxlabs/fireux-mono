@@ -4,12 +4,13 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <p class="text-sm text-muted">Step 2 · Company</p>
+        <p class="text-sm text-muted">Step 1 · Employer</p>
         <h2 class="text-lg font-semibold">
-          {{ chosenPlaceCard ? 'Selected company' : 'Choose a company' }}
+          {{ chosenPlaceCard ? 'Selected employer' : 'Choose the employer' }}
         </h2>
         <p class="text-sm text-muted">
-          Type a company name. We create the company record if it doesn’t exist.
+          Search for the organisation advertising this role. We connect it to
+          the canonical Company record.
         </p>
       </div>
     </template>
@@ -18,7 +19,7 @@
       <div v-if="!chosenPlaceCard">
         <ClientOnly>
           <PlaceSearchSection
-            placeholder="Type a company name…"
+            placeholder="Search for the employer…"
             @confirmed="onPlaceConfirmed"
           />
         </ClientOnly>
@@ -60,7 +61,10 @@ const chosenPlaceCard = computed(() => {
   }
 })
 
-async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
+async function onPlaceConfirmed(payload: {
+  placeId: string
+  place: PlaceUpsertInput
+}) {
   const id = payload.placeId
   const place = payload.place
 

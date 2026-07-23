@@ -4,12 +4,11 @@
       <template #header>
         <div class="header">
           <div>
-            <p class="eyebrow">Agent profile</p>
-            <h2>Create your profile</h2>
+            <p class="eyebrow">{{ eyebrow }}</p>
+            <h2>{{ title }}</h2>
           </div>
           <p class="lede">
-            Set up an agent profile with your agency details and experience. You
-            can edit everything right after creating it.
+            {{ description }}
           </p>
         </div>
       </template>
@@ -39,7 +38,7 @@
             :disabled="isCreating"
             @click="handleCreate"
           >
-            {{ isCreating ? 'Creating…' : 'Create profile' }}
+            {{ isCreating ? 'Preparing…' : actionLabel }}
           </UButton>
           <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
         </div>
@@ -49,11 +48,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAgentCreate } from '../../../composables/fireux/firestore/profiles/Agent/mutations/useAgentCreate';
+import { computed, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAgentCreate } from '../../../composables/fireux/firestore/profiles/Agent/mutations/useAgentCreate'
 
-const props = defineProps<{ create?: () => Promise<unknown> }>()
+const props = withDefaults(
+  defineProps<{
+    actionLabel?: string
+    create?: () => Promise<unknown>
+    description?: string
+    eyebrow?: string
+    returnTo?: string
+    title?: string
+  }>(),
+  {
+    actionLabel: 'Create profile',
+    description:
+      'Set up an agent profile with your agency details and experience. You can edit everything right after creating it.',
+    eyebrow: 'Agent profile',
+    returnTo: '/dashboard/agent/profile',
+    title: 'Create your profile',
+  }
+)
 
 const emit = defineEmits<{
   (e: 'created', payload: unknown): void
@@ -61,10 +77,16 @@ const emit = defineEmits<{
 }>()
 
 const router = useRouter()
+const route = useRoute()
 const { createAgentProfile } = useAgentCreate()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
+const resolvedReturnTo = computed(() => {
+  const target = String(props.returnTo || '').trim()
+  if (target.startsWith('/') && !target.startsWith('//')) return target
+  return '/dashboard/agent/profile'
+})
 
 const handleCreate = async () => {
   if (isCreating.value) return
@@ -76,7 +98,9 @@ const handleCreate = async () => {
   try {
     const result = await create()
     emit('created', result)
-    await router.push('/dashboard/agent/profile')
+    if (route.fullPath !== resolvedReturnTo.value) {
+      await router.push(resolvedReturnTo.value)
+    }
   } catch (error) {
     const message =
       error instanceof Error

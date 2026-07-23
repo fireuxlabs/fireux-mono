@@ -29,10 +29,18 @@
         class="pointer-events-auto fixed inset-0 z-[100] overflow-auto overscroll-contain bg-transparent p-0 text-[var(--brand-ink)]"
         aria-label="La Tap Berne menu"
       >
-        <MiseboxMenuClose
-          class="latap-glass fixed right-4 top-4 z-[101] sm:right-8 sm:top-8"
+        <button
+          class="latap-glass fixed right-4 top-4 z-[101] grid size-14 cursor-pointer place-items-center rounded-full border-0 p-0 sm:right-8 sm:top-8 sm:size-[4.5rem]"
+          type="button"
+          aria-label="Close menu"
           @click="closeMenu"
-        />
+        >
+          <UIcon
+            aria-hidden="true"
+            class="size-8 sm:size-10"
+            name="i-lucide-x"
+          />
+        </button>
 
         <MenuDetail
           menu-id="main"

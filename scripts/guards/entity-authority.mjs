@@ -508,11 +508,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-jobs/src/runtime/server/utils/job/public-projection.ts'
   const jobRuntimeScopePath =
     'packages/extensions/fireux-jobs/src/runtime/server/job/runtime.ts'
+  const jobPermissionsPath =
+    'packages/extensions/fireux-jobs/src/runtime/composables/useJobPermissions.ts'
+  const jobPublishSurfacePath =
+    'packages/extensions/fireux-jobs/src/runtime/components/Job/Author/Publish.vue'
+  const agentProvisionSurfacePath =
+    'packages/extensions/fireux-jobs/src/runtime/components/Agent/Create/System.vue'
   const jobModel = read(repoRoot, jobModelPath)
   const jobAuthorModel = read(repoRoot, jobAuthorModelPath)
   const jobAuthorServer = read(repoRoot, jobAuthorServerPath)
   const jobValidation = read(repoRoot, jobValidationPath)
   const jobPublicProjection = read(repoRoot, jobPublicProjectionPath)
+  const jobPermissions = read(repoRoot, jobPermissionsPath)
+  const jobPublishSurface = read(repoRoot, jobPublishSurfacePath)
+  const agentProvisionSurface = read(repoRoot, agentProvisionSurfacePath)
 
   assert.deepEqual(typeFields(jobModel, 'Job'), [
     'category_id',
@@ -559,6 +568,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(jobAuthorModel, /JobCreateIntent\s*=\s*JobCreateInput/)
   assert.match(jobAuthorModel, /JobPatchIntent\s*=\s*JobUpdateInput/)
+  assert.match(
+    jobPermissions,
+    /appUser\.value\?\.profiles\.includes\(['"]agent['"]\)/
+  )
+  assert.match(jobPermissions, /resolvedAgent\.value\?\.app\?\.id/)
+  assert.match(jobPermissions, /authorReadiness\.value\s*===\s*['"]ready['"]/)
+  assert.match(jobPublishSurface, /useJobPublish/)
+  assert.match(jobPublishSurface, /Publish job/)
+  assert.match(agentProvisionSurface, /target\.startsWith\(['"]\/['"]\)/)
+  assert.match(agentProvisionSurface, /!target\.startsWith\(['"]\/\/['"]\)/)
 
   assert.match(jobAuthorServer, /job\.owner_type\s*!==\s*['"]user['"]/)
   assert.match(jobAuthorServer, /job\.owner_id\s*!==\s*uid/)
@@ -583,18 +602,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     jobValidation,
     /category_id:\s*canonicalDocumentId\(source\.category_id, ['"]category_id['"]\)/
   )
-  assert.match(
-    jobValidation,
-    /path:\s*`places\/\$\{job\.place_id\}`/
-  )
+  assert.match(jobValidation, /path:\s*`places\/\$\{job\.place_id\}`/)
   assert.match(
     jobAuthorServer,
     /return canonicalJobRoot\(snapshot\.id, snapshot\.data\(\)\)/
   )
-  assert.match(
-    jobPublicProjection,
-    /const job = canonicalJobRoot\(id, data\)/
-  )
+  assert.match(jobPublicProjection, /const job = canonicalJobRoot\(id, data\)/)
   assert.match(
     jobPublicProjection,
     /const eligible\s*=\s*validRole\s*&&\s*\(role\s*!==\s*['"]tenant['"]\s*\|\|\s*isFirestoreDocumentId\(appId\)\)/

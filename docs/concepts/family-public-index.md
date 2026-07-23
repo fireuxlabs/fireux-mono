@@ -1,7 +1,7 @@
 # Public index family
 
 Updated: 2026-07-22
-Ref: 796952bf0
+Ref: e98ffb195
 Role: map, not canon
 
 ## Purpose
@@ -37,6 +37,10 @@ Every public entity index should:
   doorway is real. Pages do not configure `EntityIndexCta` directly.
 - Keep dev JSON inside the collection surface unless the route itself owns
   unique route-level derived state.
+- Specialist-profile managers retain their named domain card adapters, while
+  Agent, Chef, Driver, and Professional cells and pills render through the
+  shared Core `PublicProfileDirectoryCard`. Semantic profile tones are a
+  presentation delta only; they do not classify or authorize records.
 
 ## Current presentation classes
 

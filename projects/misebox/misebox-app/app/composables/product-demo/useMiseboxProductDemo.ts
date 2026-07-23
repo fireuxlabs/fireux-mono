@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: present Misebox Restaurant by default and Deanos Smash Burger for service.
 // Concurrent edit — 2026-07-22 13:48 CEST — Kiosk Demo selector pass: project both Demo Kitchens into one local Kiosk preview.
 // Concurrent edit — 2026-07-22 13:56 CEST — Kiosk theme contrast pass: assign explicit refined and counter-service preview profiles.
+// Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: expose a third reusable pizzeria appearance without Kitchen-specific branching.
 import { useAsyncData } from '#imports'
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
@@ -16,8 +17,13 @@ export type MiseboxProductDemoExperience = {
   highlights: readonly string[]
 }
 
+export type MiseboxProductDemoKioskAppearance =
+  | 'refined'
+  | 'counter'
+  | 'pizzeria'
+
 export type MiseboxProductDemoKiosk = {
-  appearance: 'refined' | 'counter'
+  appearance: MiseboxProductDemoKioskAppearance
   id: string
   label: string
   tagline: string
@@ -57,10 +63,10 @@ const experiences: readonly MiseboxProductDemoExperience[] = [
     to: '/demo/kiosk',
     eyebrow: 'Self service',
     title: 'Order at a kiosk',
-    description: 'Switch between a polished restaurant and a bold burger counter in the same touch-first Kiosk.',
+    description: 'Switch between restaurant, burger-counter and pizzeria presentations in the same touch-first Kiosk.',
     icon: 'i-lucide-monitor-smartphone',
     accent: 'warning',
-    highlights: ['Two Kitchen themes', 'Local basket', 'No live submission'],
+    highlights: ['Three Kitchen themes', 'Local basket', 'No live submission'],
   },
   {
     to: '/demo/service',
@@ -90,6 +96,10 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
     {
       appearance: 'counter' as const,
       scenario: scenarioModule.deanosKitchenDemoScenario,
+    },
+    {
+      appearance: 'pizzeria' as const,
+      scenario: scenarioModule.pizzaTheActionKitchenDemoScenario,
     },
   ]
   const kioskKitchens = kioskPresentations.map(({ appearance, scenario }) => {

@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: centralize stable fictional identities and timestamps for related Demo records.
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: retain stable identities for both original Demo Kitchens.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: name the polished default world Misebox Restaurant.
+// Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add one stable fictional pizzeria identity without changing existing Demo ownership.
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { KitchenDemoIdentity } from './types'
 
@@ -20,6 +21,15 @@ export const miseboxRestaurantKitchenDemoIdentity = {
   placeId: 'demo-misebox-restaurant-place',
   menuId: 'misebox-restaurant-menu',
   serviceId: 'misebox-restaurant-demo-lunch-service',
+} as const satisfies KitchenDemoIdentity
+
+export const pizzaTheActionKitchenDemoIdentity = {
+  appId: 'misebox-app',
+  kitchenId: 'pizza-the-action',
+  kitchenSlug: 'pizza-the-action',
+  placeId: 'demo-pizza-the-action-place',
+  menuId: 'pizza-the-action-menu',
+  serviceId: 'pizza-the-action-demo-evening-service',
 } as const satisfies KitchenDemoIdentity
 
 export const kitchenDemoAssetBase = '/img/showcase/menu'

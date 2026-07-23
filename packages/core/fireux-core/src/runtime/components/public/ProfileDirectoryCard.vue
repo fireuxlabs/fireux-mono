@@ -1,25 +1,30 @@
 <template>
-  <component
-    :is="rootComponent"
-    :to="rootTo"
+  <MoleculesActionSurface
+    :to="surfaceTo"
+    :action="action && !surfaceTo"
     class="public-profile-directory-card group"
     :class="`public-profile-directory-card--${variant}`"
-    @click="onClick"
+    :data-profile-tone="tone"
+    @activate="emit('action')"
   >
     <div class="public-profile-directory-card__avatar">
       <UAvatarGroup
         v-if="proxiedSecondaryAvatarUrl"
-        :size="variant === 'compact' ? 'sm' : 'lg'"
+        :size="variant === 'compact' ? 'lg' : '2xl'"
       >
         <UAvatar
           :src="proxiedAvatarUrl || undefined"
           :alt="displayName"
-          :size="variant === 'compact' ? 'sm' : 'lg'"
+          :size="variant === 'compact' ? 'lg' : '2xl'"
+          loading="lazy"
+          decoding="async"
         />
         <UAvatar
           :src="proxiedSecondaryAvatarUrl || undefined"
-          :alt="displayName"
-          size="2xs"
+          alt=""
+          size="xs"
+          loading="lazy"
+          decoding="async"
         />
       </UAvatarGroup>
       <UAvatar
@@ -27,7 +32,9 @@
         :src="proxiedAvatarUrl || undefined"
         :alt="displayName"
         :icon="icon"
-        :size="variant === 'compact' ? 'sm' : 'lg'"
+        :size="variant === 'compact' ? 'lg' : '2xl'"
+        loading="lazy"
+        decoding="async"
       />
     </div>
 
@@ -48,7 +55,7 @@
           v-if="variant === 'card'"
           :label="kindLabel"
           :icon="icon"
-          color="neutral"
+          :color="tone"
           variant="soft"
           size="xs"
           class="shrink-0"
@@ -85,16 +92,22 @@
       name="i-lucide-arrow-up-right"
       class="public-profile-directory-card__arrow size-4 shrink-0 text-dimmed transition"
     />
-  </component>
+  </MoleculesActionSurface>
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
-import { computed, resolveComponent } from 'vue'
+import { computed } from 'vue'
 import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
 import { USER_AVATAR_FALLBACK_SRC } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 
 defineOptions({ name: 'PublicProfileDirectoryCard' })
+
+type PublicProfileTone =
+  | 'primary'
+  | 'secondary'
+  | 'success'
+  | 'info'
+  | 'warning'
 
 const emit = defineEmits<{
   (event: 'action'): void
@@ -114,6 +127,7 @@ const props = withDefaults(
     secondaryAvatarUrl?: string
     summary?: string
     to?: string
+    tone?: PublicProfileTone
     variant?: 'compact' | 'card'
   }>(),
   {
@@ -126,15 +140,14 @@ const props = withDefaults(
     secondaryAvatarUrl: '',
     summary: '',
     to: '',
+    tone: 'primary',
     variant: 'card',
   }
 )
 
-const nuxtLink = resolveComponent('NuxtLink')
-const rootComponent = computed(() =>
-  props.link && props.to ? nuxtLink : 'div'
+const surfaceTo = computed(() =>
+  !props.action && props.link && props.to ? props.to : undefined
 )
-const rootTo = computed(() => (props.link && props.to ? props.to : undefined))
 const formattedHandle = computed(() => {
   const handle = String(props.handle || '')
     .trim()
@@ -157,18 +170,6 @@ const proxiedSecondaryAvatarUrl = useProxiedAvatar(() => {
   const secondary = String(props.secondaryAvatarUrl || '').trim()
   return secondary && secondary !== props.avatarUrl ? secondary : ''
 })
-
-const onClick = (event?: MouseEvent) => {
-  if (props.action) {
-    emit('action')
-    return
-  }
-
-  if (!props.link || !props.to) return
-  if (event?.currentTarget instanceof HTMLAnchorElement) return
-
-  navigateTo(props.to)
-}
 </script>
 
 <style scoped>
@@ -176,19 +177,25 @@ const onClick = (event?: MouseEvent) => {
   background:
     radial-gradient(
       circle at 100% 0%,
-      color-mix(in srgb, var(--ui-primary) 9%, transparent),
+      color-mix(
+        in srgb,
+        var(--fx-profile-accent, var(--ui-primary)) 10%,
+        transparent
+      ),
       transparent 38%
     ),
     var(--ui-bg);
   border: 1px solid var(--ui-border);
   color: inherit;
   display: flex;
+  font: inherit;
   min-width: 0;
   text-decoration: none;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
     transform 160ms ease;
+  width: 100%;
 }
 
 .public-profile-directory-card--compact {
@@ -218,14 +225,41 @@ const onClick = (event?: MouseEvent) => {
   -webkit-line-clamp: 3;
 }
 
-.public-profile-directory-card:is(a):hover {
-  border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
-  box-shadow: 0 16px 36px color-mix(in srgb, var(--ui-primary) 8%, transparent);
+.public-profile-directory-card:not([data-action-surface='static']) {
+  cursor: pointer;
+}
+
+.public-profile-directory-card:not([data-action-surface='static']):hover,
+.public-profile-directory-card:not([data-action-surface='static']):focus-visible {
+  border-color: color-mix(
+    in srgb,
+    var(--fx-profile-accent, var(--ui-primary)) 42%,
+    var(--ui-border)
+  );
+  box-shadow: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 9)
+    color-mix(
+      in srgb,
+      var(--fx-profile-accent, var(--ui-primary)) 9%,
+      transparent
+    );
   transform: translateY(-2px);
 }
 
-.public-profile-directory-card:is(a):hover
+.public-profile-directory-card:not([data-action-surface='static']):hover
+  .public-profile-directory-card__arrow,
+.public-profile-directory-card:not([data-action-surface='static']):focus-visible
   .public-profile-directory-card__arrow {
-  color: var(--ui-primary);
+  color: var(--fx-profile-accent, var(--ui-primary));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .public-profile-directory-card {
+    transition: none;
+  }
+
+  .public-profile-directory-card:not([data-action-surface='static']):hover,
+  .public-profile-directory-card:not([data-action-surface='static']):focus-visible {
+    transform: none;
+  }
 }
 </style>

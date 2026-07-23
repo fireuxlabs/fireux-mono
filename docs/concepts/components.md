@@ -1,6 +1,6 @@
 # Components spine map
-Updated: 2026-07-21
-Ref: 4c70482080
+Updated: 2026-07-22
+Ref: e98ffb195
 Role: map, not canon
 
 ## Purpose
@@ -47,9 +47,12 @@ Map component folder and naming conventions.
   named `X/Cards/*` components; collection organisms to `X/Collection/*` and
   console indexes; console header/summary molecules plus the console surface
   organism to `Console/X/*`; public-action organisms to claim/operator panels;
-  profile cards to named `Cards/Profile` trees; profile editors use Nuxt UI
-  cards and named `Edit/*` form composition; and page organisms to genuinely
-  shared layout and route regions. Solution grids,
+  profile cards to named `Cards/Profile` trees; the public specialist-profile
+  family composes Core `PublicProfileHero`, `PublicProfileSection`, and
+  `PublicProfileDirectoryCard` presentation while each named domain retains
+  its content; profile editors use Nuxt UI cards and named `Edit/*` form
+  composition; and page organisms to genuinely shared layout and route
+  regions. Solution grids,
   compact metrics, ordinary card roots, and dashboard body stacks use Nuxt UI
   directly rather than retaining parallel global CSS.
 - `assets/styles/main.scss` is the explicit cascade authority. Its import order
@@ -185,10 +188,12 @@ Map component folder and naming conventions.
   or component. Core rhythm and composition live in the specifically named
   modules under `assets/styles/scss/molecules` and
   `assets/styles/scss/organisms`; `organisms/page-layouts.scss` owns the shared
-  page/list rhythm family. Profile editor headers and field rhythm remain with
-  Nuxt UI page cards and their named form components rather than a global
-  editor organism. Domain-owned semantic seams, such as Menu spacing, may
-  remain when their defaults derive from `--spacing`.
+  page/list rhythm family, while `organisms/public-profile-surfaces.scss` owns
+  only the cross-domain specialist detail grid, sidebar rhythm, and semantic
+  tone inheritance. Profile editor headers and field rhythm remain with Nuxt
+  UI page cards and their named form components rather than a global editor
+  organism. Domain-owned semantic seams, such as Menu spacing, may remain when
+  their defaults derive from `--spacing`.
 - Off-grid spacing is an explicit local delta for branded optical layout,
   responsive/viewport geometry, safe areas, print, artwork, or accessibility;
   it is not another general-purpose scale.

@@ -3,6 +3,7 @@
     variant="compact"
     kind-label="Agent"
     icon="i-lucide-handshake"
+    tone="info"
     :to="to"
     :avatar-url="avatarUrl"
     :secondary-avatar-url="secondaryAvatarUrl"

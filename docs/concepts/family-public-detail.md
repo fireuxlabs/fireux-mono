@@ -1,7 +1,7 @@
 # Public detail family
 
 Updated: 2026-07-22
-Ref: 796952bf0
+Ref: e98ffb195
 Role: map, not canon
 
 ## Purpose
@@ -32,6 +32,13 @@ Every public detail route should:
 - Keep operator/private actions separate from the public identity and content.
 - Expose one useful dev debug surface only when needed, with fetched objects
   separated from derived route/render state.
+- Agent, Chef, Driver, and Professional details share Core
+  `PublicProfileDetailSurface`, `PublicProfileHero`, and
+  `PublicProfileSection` presentation. Their named `X/Cards/Profile` roots own
+  domain content, icons, and section presence; profile tone is presentation
+  only and never changes identity, transport, publication, or authority.
+- Canonical User detail reuses the shared profile hero and Nuxt UI page cards
+  for specialist doorways instead of maintaining a parallel profile shell.
 
 ## Emerging page composition
 
