@@ -112,55 +112,13 @@
       </div>
     </aside>
 
-    <UModal
+    <MiseboxShowcaseKioskPreview
       v-if="!standalonePreview"
       v-model:open="previewOpen"
-      title="Kiosk demo"
-      description="Exact 1080 × 1920 portrait viewport, scaled to fit this screen."
-      :ui="{
-        content: 'showcase-kiosk-preview-modal',
-        body: 'showcase-kiosk-preview-modal__body',
-      }"
-    >
-      <template #body>
-        <div
-          class="showcase-kiosk__modal-switcher"
-          role="group"
-          aria-label="Demo Kitchen"
-        >
-          <span class="showcase-kiosk__popup-switcher-label">Demo Kitchen</span>
-          <div class="showcase-kiosk__kitchen-options">
-            <UButton
-              v-for="kitchen in kitchens"
-              :key="kitchen.id"
-              size="sm"
-              :color="kitchen.id === kitchenId ? 'primary' : 'neutral'"
-              :variant="kitchen.id === kitchenId ? 'solid' : 'ghost'"
-              :aria-pressed="kitchen.id === kitchenId"
-              :data-demo-kitchen-option="kitchen.id"
-              @click="$emit('update:kitchenId', kitchen.id)"
-            >
-              {{ kitchen.label }}
-            </UButton>
-          </div>
-        </div>
-
-        <div
-          class="showcase-kiosk__portrait-stage"
-          :style="previewStageStyle"
-          data-demo-kiosk-preview-dialog
-        >
-          <iframe
-            v-if="portraitPreviewUrl"
-            class="showcase-kiosk__portrait-frame"
-            :src="portraitPreviewUrl"
-            title="1080 by 1920 Kiosk demo"
-            width="1080"
-            height="1920"
-          />
-        </div>
-      </template>
-    </UModal>
+      :kitchen-id="kitchenId"
+      :kitchens="kitchens"
+      @update:kitchen-id="$emit('update:kitchenId', $event)"
+    />
 
     <article
       class="fireux-menu-detail menu-detail--kiosk showcase-kiosk__canvas"
@@ -245,21 +203,7 @@ const {
 })
 
 const previewOpen = ref(false)
-const portraitPreviewBaseUrl = ref('')
-const portraitPreviewUrl = computed(() => {
-  if (!portraitPreviewBaseUrl.value)
-    return ''
-
-  const previewUrl = new URL(portraitPreviewBaseUrl.value)
-  previewUrl.searchParams.set('kitchen', props.kitchenId)
-  return previewUrl.toString()
-})
 const previewScale = ref(0.5)
-const previewStageStyle = computed<Record<string, string>>(() => ({
-  '--demo-kiosk-preview-scale': String(previewScale.value),
-  'width': `${1080 * previewScale.value}px`,
-  'height': `${1920 * previewScale.value}px`,
-}))
 const standalonePreviewStyle = computed<Record<string, string> | undefined>(() =>
   props.standalonePreview
     ? { '--demo-kiosk-window-scale': String(previewScale.value) }
@@ -279,9 +223,6 @@ function updatePreviewScale() {
     return
   }
 
-  const availableWidth = Math.max(window.innerWidth - 96, 320)
-  const availableHeight = Math.max(window.innerHeight - 192, 480)
-  previewScale.value = Math.min(availableWidth / 1080, availableHeight / 1920, 1)
 }
 
 onMounted(() => {
@@ -350,9 +291,6 @@ function openPortraitPreview() {
     portraitWindow.close()
   }
 
-  previewUrl.searchParams.set('embedded', '1')
-  portraitPreviewBaseUrl.value = previewUrl.toString()
-  updatePreviewScale()
   previewOpen.value = true
 }
 </script>
@@ -400,51 +338,6 @@ function openPortraitPreview() {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   white-space: nowrap;
-}
-
-:global(.showcase-kiosk-preview-modal) {
-  width: min(96vw, 72rem);
-  max-width: 96vw;
-  max-height: 96dvh;
-  overflow: hidden;
-}
-
-:global(.showcase-kiosk-preview-modal__body) {
-  display: grid;
-  min-height: 0;
-  place-items: center;
-  gap: calc(var(--spacing) * 3);
-  overflow: auto;
-  background: #111827;
-}
-
-.showcase-kiosk__modal-switcher {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  padding: calc(var(--spacing) * 2);
-  border-radius: 9999px;
-  background: rgb(255 255 255 / 94%);
-}
-
-.showcase-kiosk__portrait-stage {
-  position: relative;
-  flex: 0 0 auto;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  background: white;
-  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 35%);
-}
-
-.showcase-kiosk__portrait-frame {
-  position: absolute;
-  inset: 0 auto auto 0;
-  width: 1080px;
-  max-width: none;
-  height: 1920px;
-  border: 0;
-  transform: scale(var(--demo-kiosk-preview-scale));
-  transform-origin: top left;
 }
 
 .showcase-kiosk__preview-toolbar {

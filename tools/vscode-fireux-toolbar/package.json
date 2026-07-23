@@ -2,7 +2,7 @@
   "name": "fireux-toolbar",
   "displayName": "FireUX Toolbar",
   "publisher": "fire-uxxx",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.80.0"
   },
@@ -137,11 +137,75 @@
         "category": "FireUX"
       }
     ],
-    "views": {
-      "explorer": [
+    "viewsContainers": {
+      "activitybar": [
         {
-          "id": "fireuxToolbar.serversView",
-          "name": "FireUX Servers"
+          "id": "fireux-fireux",
+          "title": "FireUX",
+          "icon": "media/fireux.svg"
+        },
+        {
+          "id": "fireux-misebox",
+          "title": "Misebox",
+          "icon": "media/misebox.svg"
+        },
+        {
+          "id": "fireux-werkbox",
+          "title": "Werkbox",
+          "icon": "media/werkbox.svg"
+        },
+        {
+          "id": "fireux-bringli",
+          "title": "Bringli",
+          "icon": "media/bringli.svg"
+        },
+        {
+          "id": "fireux-granite",
+          "title": "Granite",
+          "icon": "media/granite.svg"
+        },
+        {
+          "id": "fireux-slap",
+          "title": "Slap",
+          "icon": "media/slap.svg"
+        }
+      ]
+    },
+    "views": {
+      "fireux-fireux": [
+        {
+          "id": "fireuxToolbar.fireuxServersView",
+          "name": "FireUX Apps"
+        }
+      ],
+      "fireux-misebox": [
+        {
+          "id": "fireuxToolbar.miseboxServersView",
+          "name": "Misebox Apps"
+        }
+      ],
+      "fireux-werkbox": [
+        {
+          "id": "fireuxToolbar.werkboxServersView",
+          "name": "Werkbox Apps"
+        }
+      ],
+      "fireux-bringli": [
+        {
+          "id": "fireuxToolbar.bringliServersView",
+          "name": "Bringli Apps"
+        }
+      ],
+      "fireux-granite": [
+        {
+          "id": "fireuxToolbar.graniteServersView",
+          "name": "Granite Apps"
+        }
+      ],
+      "fireux-slap": [
+        {
+          "id": "fireuxToolbar.slapServersView",
+          "name": "Slap Apps"
         }
       ]
     },
@@ -201,29 +265,29 @@
         {
           "command": "fireuxToolbar.startAllServers",
           "group": "navigation@1",
-          "when": "view == fireuxToolbar.serversView"
+          "when": "view =~ /fireuxToolbar\\..*ServersView/"
         },
         {
           "command": "fireuxToolbar.refreshServers",
           "group": "navigation@2",
-          "when": "view == fireuxToolbar.serversView"
+          "when": "view =~ /fireuxToolbar\\..*ServersView/"
         }
       ],
       "view/item/context": [
         {
           "command": "fireuxToolbar.startAppByKey",
           "group": "inline@1",
-          "when": "view == fireuxToolbar.serversView && viewItem == fireuxServer"
+          "when": "view =~ /fireuxToolbar\\..*ServersView/ && viewItem == fireuxServer"
         },
         {
           "command": "fireuxToolbar.openAppByKey",
           "group": "inline@2",
-          "when": "view == fireuxToolbar.serversView && viewItem == fireuxServer"
+          "when": "view =~ /fireuxToolbar\\..*ServersView/ && viewItem == fireuxServer"
         },
         {
           "command": "fireuxToolbar.killAppByKey",
           "group": "inline@3",
-          "when": "view == fireuxToolbar.serversView && viewItem == fireuxServer"
+          "when": "view =~ /fireuxToolbar\\..*ServersView/ && viewItem == fireuxServer"
         }
       ]
     },

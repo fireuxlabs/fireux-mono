@@ -219,6 +219,17 @@
       }
     },
     {
+      "name": "Interlaken Essen dev (3026)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:interlaken-essen",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 18
+      }
+    },
+    {
       "name": "Kill FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
@@ -404,6 +415,17 @@
         "group": "Dev Servers",
         "order": 117
       }
+    },
+    {
+      "name": "Kill Interlaken Essen dev (3026)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:interlaken-essen",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 118
+      }
     }
   ],
   "compounds": [
@@ -444,7 +466,8 @@
         "La Tap Berne dev (3008)",
         "FireUX Blank dev (3015)",
         "Bangin Coffee dev (3016)",
-        "Bären Ringgenberg dev (3017)"
+        "Bären Ringgenberg dev (3017)",
+        "Interlaken Essen dev (3026)"
       ]
     }
   ]

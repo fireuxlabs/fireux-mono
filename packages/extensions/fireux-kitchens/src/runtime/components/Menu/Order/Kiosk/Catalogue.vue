@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-22 11:58 CEST — Out-of-box Kiosk design: strengthen portrait navigation and balanced touch-grid rhythm. -->
+<!-- Concurrent edit — 2026-07-23 12:52 CEST — Portrait density pass: use mobile-first one/two/three-column breakpoints instead of desktop auto-fill. -->
 <template>
   <section
     class="menu-order-kiosk-catalogue"
@@ -219,7 +220,7 @@ function finishDialog() {
 
 .menu-order-kiosk-catalogue__items {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 14rem), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: clamp(1rem, 2vw, 1.5rem);
   align-items: stretch;
 }
@@ -278,8 +279,17 @@ function finishDialog() {
     font-size: clamp(1.8rem, 8vw, 2.75rem);
   }
 
+}
+
+@media (min-width: 560px) {
   .menu-order-kiosk-catalogue__items {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 12.5rem), 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .menu-order-kiosk-catalogue__items {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 </style>

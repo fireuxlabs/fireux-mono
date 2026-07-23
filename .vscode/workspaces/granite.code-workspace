@@ -1,0 +1,25 @@
+{
+  "folders": [
+    { "name": "Granite apps", "path": "../../projects/granite" },
+    { "name": "Granite ecosystem", "path": "../../packages/ecosystem/fireux-granite" },
+    { "name": "Shared core", "path": "../../packages/core" },
+    { "name": "Shared extensions", "path": "../../packages/extensions" },
+    { "name": "Repository docs", "path": "../../docs" },
+    { "name": "Repository scripts", "path": "../../scripts" }
+  ],
+  "settings": {
+    "window.title": "Granite — ${activeEditorShort}",
+    "files.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "search.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    }
+  }
+}

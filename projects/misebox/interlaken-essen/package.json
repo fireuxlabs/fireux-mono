@@ -1,0 +1,30 @@
+{
+  "name": "interlaken-essen",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev --port 3026",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview",
+    "check:env": "node ../../../scripts/check-env.mjs",
+    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
+    "clean": "rimraf .nuxt app/.nuxt .output dist"
+  },
+  "dependencies": {
+    "@nuxt/icon": "2.x",
+    "@nuxt/ui": "^4.0.0-alpha.2",
+    "firebase": "11.10.0",
+    "firebase-functions": "^6.3.2",
+    "fireux-core": "workspace:*",
+    "fireux-misebox": "workspace:*",
+    "nuxt": "4.4.6",
+    "vue": "3.5.20",
+    "vue-router": "4.5.1"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "^1.2.62",
+    "@vite-pwa/nuxt": "^1.0.4",
+    "rimraf": "^6.0.1"
+  }
+}

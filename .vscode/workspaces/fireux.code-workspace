@@ -1,0 +1,25 @@
+{
+  "folders": [
+    { "name": "FireUX apps", "path": "../../projects/fireux" },
+    { "name": "FireUX ecosystem", "path": "../../packages/ecosystem/fireux-fireux" },
+    { "name": "Shared core", "path": "../../packages/core" },
+    { "name": "Shared extensions", "path": "../../packages/extensions" },
+    { "name": "Repository docs", "path": "../../docs" },
+    { "name": "Repository scripts", "path": "../../scripts" }
+  ],
+  "settings": {
+    "window.title": "FireUX — ${activeEditorShort}",
+    "files.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "search.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    }
+  }
+}

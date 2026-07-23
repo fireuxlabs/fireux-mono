@@ -1,0 +1,25 @@
+{
+  "folders": [
+    { "name": "Bringli apps", "path": "../../projects/bringli" },
+    { "name": "Bringli ecosystem", "path": "../../packages/ecosystem/fireux-bringli" },
+    { "name": "Shared core", "path": "../../packages/core" },
+    { "name": "Shared extensions", "path": "../../packages/extensions" },
+    { "name": "Repository docs", "path": "../../docs" },
+    { "name": "Repository scripts", "path": "../../scripts" }
+  ],
+  "settings": {
+    "window.title": "Bringli — ${activeEditorShort}",
+    "files.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "search.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    }
+  }
+}

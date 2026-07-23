@@ -210,6 +210,22 @@ function formatRealTarget({ workspaceRootDir, realAbsPath }) {
   return normalizeRelPath(rel)
 }
 
+function findRepoRoot(startDir) {
+  let current = startDir && path.resolve(startDir)
+  while (current) {
+    const hasWorkspace = fs.existsSync(path.join(current, 'pnpm-workspace.yaml'))
+    const hasRegistry = fs.existsSync(
+      path.join(current, 'scripts', '_lib', 'app-registry.mjs')
+    )
+    if (hasWorkspace && hasRegistry) return current
+
+    const parent = path.dirname(current)
+    if (parent === current) return undefined
+    current = parent
+  }
+  return undefined
+}
+
 async function buildMirrorTreeText(
   mirrorDir,
   { workspaceRootDir, maxFiles, maxFileBytes, maxTotalBytes }
@@ -342,13 +358,14 @@ end run
 }
 
 function activate(context) {
-  const ws =
-    vscode.workspace.workspaceFolders && vscode.workspace.workspaceFolders[0]
-  const workspaceCwd = ws ? ws.uri.fsPath : undefined
-  const fallbackRepoCwd = path.resolve(__dirname, '..', '..')
+  const workspaceFolders = vscode.workspace.workspaceFolders ?? []
+  const workspaceCwd = workspaceFolders
+    .map((folder) => findRepoRoot(folder.uri.fsPath))
+    .find(Boolean)
+  const fallbackRepoCwd = findRepoRoot(__dirname)
   const cwd =
     (workspaceCwd && fs.existsSync(workspaceCwd) && workspaceCwd) ||
-    (fs.existsSync(fallbackRepoCwd) && fallbackRepoCwd) ||
+    (fallbackRepoCwd && fs.existsSync(fallbackRepoCwd) && fallbackRepoCwd) ||
     undefined
 
   const ensureTerminal = (name, command) => {
@@ -662,6 +679,7 @@ function activate(context) {
   const apps = [
     {
       key: 'fireux',
+      ecosystem: 'fireux',
       name: 'FireUX',
       icon: '$(flame)',
       port: 3000,
@@ -674,6 +692,7 @@ function activate(context) {
     },
     {
       key: 'misebox',
+      ecosystem: 'misebox',
       name: 'MiseBox',
       icon: '$(book)',
       port: 3001,
@@ -686,6 +705,7 @@ function activate(context) {
     },
     {
       key: 'werkbox',
+      ecosystem: 'werkbox',
       name: 'Werkbox',
       icon: '$(beaker)',
       port: 3002,
@@ -698,6 +718,7 @@ function activate(context) {
     },
     {
       key: 'richies',
+      ecosystem: 'werkbox',
       name: 'Richies',
       icon: '$(tools)',
       port: 3004,
@@ -710,6 +731,7 @@ function activate(context) {
     },
     {
       key: 'tenant',
+      ecosystem: 'fireux',
       name: 'Tenant',
       icon: '$(home)',
       port: 3005,
@@ -722,6 +744,7 @@ function activate(context) {
     },
     {
       key: 'bringli',
+      ecosystem: 'bringli',
       name: 'Bringli',
       icon: '$(symbol-namespace)',
       port: 3006,
@@ -734,6 +757,7 @@ function activate(context) {
     },
     {
       key: 'find-my-seo',
+      ecosystem: 'fireux',
       name: 'Find My SEO',
       icon: '$(search)',
       port: 3010,
@@ -746,6 +770,7 @@ function activate(context) {
     },
     {
       key: 'sproochli',
+      ecosystem: 'fireux',
       name: 'Sproochli',
       icon: '$(globe)',
       port: 3011,
@@ -758,6 +783,7 @@ function activate(context) {
     },
     {
       key: 'buenohost',
+      ecosystem: 'fireux',
       name: 'BuenoHost',
       icon: '$(key)',
       port: 3012,
@@ -770,6 +796,7 @@ function activate(context) {
     },
     {
       key: 'go-qr',
+      ecosystem: 'fireux',
       name: 'Go QR',
       icon: '$(file-media)',
       port: 3013,
@@ -782,6 +809,7 @@ function activate(context) {
     },
     {
       key: 'embed-harness',
+      ecosystem: 'fireux',
       name: 'Plain Jane',
       icon: '$(browser)',
       port: 3025,
@@ -794,6 +822,7 @@ function activate(context) {
     },
     {
       key: 'fireux-blank',
+      ecosystem: 'fireux',
       name: 'FireUX Blank',
       icon: '$(empty-window)',
       port: 3015,
@@ -806,6 +835,7 @@ function activate(context) {
     },
     {
       key: 'yellow-velo',
+      ecosystem: 'slap',
       name: 'Yellow Velo',
       icon: '$(symbol-color)',
       port: 3014,
@@ -818,6 +848,7 @@ function activate(context) {
     },
     {
       key: 'granite',
+      ecosystem: 'granite',
       name: 'Granite',
       icon: '$(database)',
       port: 3007,
@@ -830,6 +861,7 @@ function activate(context) {
     },
     {
       key: 'slap',
+      ecosystem: 'slap',
       name: 'Slap',
       icon: '$(sparkle)',
       port: 3009,
@@ -842,6 +874,7 @@ function activate(context) {
     },
     {
       key: 'la-tap-berne',
+      ecosystem: 'misebox',
       name: 'La Tap Berne',
       icon: '$(tag)',
       port: 3008,
@@ -854,6 +887,7 @@ function activate(context) {
     },
     {
       key: 'baeren-ringgenberg',
+      ecosystem: 'misebox',
       name: 'Bären Ringgenberg',
       icon: '$(tag)',
       port: 3017,
@@ -863,6 +897,32 @@ function activate(context) {
       pnpmCommand: 'pnpm dev:baeren-ringgenberg --host',
       tooltip: 'Start Bären Ringgenberg dev (port 3017)',
       url: 'http://localhost:3017',
+    },
+    {
+      key: 'bangin-coffee',
+      ecosystem: 'misebox',
+      name: "Bangin' Coffee",
+      icon: '$(coffee)',
+      port: 3016,
+      commandId: 'fireuxToolbar.startBanginCoffee',
+      taskLabel: 'pnpm dev:bangin-coffee',
+      terminalName: "Bangin' Coffee (3016)",
+      pnpmCommand: 'pnpm dev:bangin-coffee --host',
+      tooltip: "Start Bangin' Coffee dev (port 3016)",
+      url: 'http://localhost:3016',
+    },
+    {
+      key: 'interlaken-essen',
+      ecosystem: 'misebox',
+      name: 'Interlaken Essen',
+      icon: '$(tag)',
+      port: 3026,
+      commandId: 'fireuxToolbar.startInterlakenEssen',
+      taskLabel: 'pnpm dev:interlaken-essen',
+      terminalName: 'Interlaken Essen (3026)',
+      pnpmCommand: 'pnpm dev:interlaken-essen --host',
+      tooltip: 'Start Interlaken Essen dev (port 3026)',
+      url: 'http://localhost:3026',
     },
   ]
 
@@ -932,9 +992,7 @@ function activate(context) {
     serverTreeChanged.fire(undefined)
   }
 
-  const serverTreeProvider = {
-    onDidChangeTreeData: serverTreeChanged.event,
-    getTreeItem: (app) => {
+  const getServerTreeItem = (app) => {
       const running = isAppRunning(app)
       const item = new vscode.TreeItem(
         `${app.name} (${app.port})`,
@@ -956,21 +1014,41 @@ function activate(context) {
         arguments: [app.key],
       }
       return item
-    },
-    getChildren: () => apps,
   }
 
-  const serverTreeView = vscode.window.createTreeView('fireuxToolbar.serversView', {
-    treeDataProvider: serverTreeProvider,
-    showCollapseAll: false,
-  })
-  context.subscriptions.push(serverTreeView)
+  const ecosystemViewIds = {
+    fireux: 'fireuxToolbar.fireuxServersView',
+    misebox: 'fireuxToolbar.miseboxServersView',
+    werkbox: 'fireuxToolbar.werkboxServersView',
+    bringli: 'fireuxToolbar.bringliServersView',
+    granite: 'fireuxToolbar.graniteServersView',
+    slap: 'fireuxToolbar.slapServersView',
+  }
+
+  const ecosystemTreeViews = new Map()
+  for (const [ecosystem, viewId] of Object.entries(ecosystemViewIds)) {
+    const ecosystemApps = apps.filter((app) => app.ecosystem === ecosystem)
+    const treeDataProvider = {
+      onDidChangeTreeData: serverTreeChanged.event,
+      getTreeItem: getServerTreeItem,
+      getChildren: () => ecosystemApps,
+    }
+    const treeView = vscode.window.createTreeView(viewId, {
+      treeDataProvider,
+      showCollapseAll: false,
+    })
+    ecosystemTreeViews.set(ecosystem, { apps: ecosystemApps, treeView })
+    context.subscriptions.push(treeView)
+  }
 
   register('fireuxToolbar.openServersView', async () => {
-    await vscode.commands.executeCommand('workbench.view.explorer')
+    await vscode.commands.executeCommand(
+      'workbench.view.extension.fireux-misebox'
+    )
+    const miseboxView = ecosystemTreeViews.get('misebox')
     try {
-      if (apps.length > 0) {
-        await serverTreeView.reveal(apps[0], {
+      if (miseboxView?.apps.length > 0) {
+        await miseboxView.treeView.reveal(miseboxView.apps[0], {
           focus: true,
           select: false,
           expand: false,
@@ -1070,8 +1148,8 @@ function activate(context) {
       if (!name.includes('Git Tree')) return
       if (e.exitCode !== 0) return
 
-      if (!ws) return
-      const mdUri = vscode.Uri.joinPath(ws.uri, 'docs', 'git-tree.md')
+      if (!cwd) return
+      const mdUri = vscode.Uri.file(path.join(cwd, 'docs', 'git-tree.md'))
       try {
         await vscode.workspace.fs.stat(mdUri)
       } catch {

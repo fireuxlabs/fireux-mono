@@ -1,0 +1,25 @@
+{
+  "folders": [
+    { "name": "Werkbox apps", "path": "../../projects/werkbox" },
+    { "name": "Werkbox ecosystem", "path": "../../packages/ecosystem/fireux-werkbox" },
+    { "name": "Shared core", "path": "../../packages/core" },
+    { "name": "Shared extensions", "path": "../../packages/extensions" },
+    { "name": "Repository docs", "path": "../../docs" },
+    { "name": "Repository scripts", "path": "../../scripts" }
+  ],
+  "settings": {
+    "window.title": "Werkbox — ${activeEditorShort}",
+    "files.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    },
+    "search.exclude": {
+      "**/.nuxt": true,
+      "**/.output": true,
+      "**/dist": true,
+      "**/node_modules": true
+    }
+  }
+}

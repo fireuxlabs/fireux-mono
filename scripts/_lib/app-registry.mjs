@@ -426,7 +426,7 @@ export const APP_REGISTRY = {
     port: 3013,
     consoles: [],
     toolProviders: ['go-qr'],
-    smokeRoutes: ['/'],
+    smokeRoutes: ['/', '/choufe', '/Verchoufe'],
     launchOrder: 10,
   },
   'fireux-blank': {
@@ -617,6 +617,19 @@ export const APP_REGISTRY = {
     smokeRoutes: ['/', '/contact'],
     launchOrder: 16,
   },
+  'interlaken-essen': {
+    key: 'interlaken-essen',
+    name: 'Interlaken Essen',
+    appId: 'interlaken-essen',
+    ecosystem: 'misebox',
+    databaseId: 'misebox',
+    role: 'tenant',
+    workspace: './projects/misebox/interlaken-essen',
+    port: 3026,
+    consoles: [],
+    smokeRoutes: ['/'],
+    launchOrder: 18,
+  },
 }
 
 export const APP_GROUPS = {
@@ -640,6 +653,7 @@ export const APP_GROUPS = {
     'la-tap-berne',
     'bangin-coffee',
     'baeren-ringgenberg',
+    'interlaken-essen',
   ],
 }
 

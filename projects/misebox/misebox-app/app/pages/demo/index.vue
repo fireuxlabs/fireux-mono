@@ -1,6 +1,7 @@
 <!-- Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: introduce the public Misebox demonstration index. -->
 <!-- Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: make Misebox Restaurant the default showroom path and Deanos the burger contrast. -->
 <!-- Concurrent edit — 2026-07-22 14:20 CEST — Demo quick-link pass: expose the showroom in landing and default footer navigation. -->
+<!-- Concurrent edit — 2026-07-23 09:32 CEST — Demo entry popup: open the Kiosk portrait preview in place instead of segueing to its route. -->
 <template>
   <main class="product-demo-index" data-misebox-product-demo="index">
     <section class="product-demo-index__hero">
@@ -12,7 +13,7 @@
         <p class="fx-type-headline">From guest choice to Kitchen handoff</p>
         <h1>See the restaurant system working.</h1>
         <p>
-          Explore two fictional restaurants through the same Menu, Kiosk and
+          Explore three fictional restaurants through the same Menu, Kiosk and
           Kitchen Order components used by Misebox. Everything here is local,
           deterministic and safe to reset.
         </p>
@@ -71,15 +72,18 @@
     <section class="product-demo-index__experiences" aria-labelledby="demo-experiences-title">
       <div class="product-demo-index__section-heading">
         <p class="fx-type-headline">Choose a perspective</p>
-        <h2 id="demo-experiences-title">Two restaurants, three perspectives</h2>
+        <h2 id="demo-experiences-title">Three restaurants, three perspectives</h2>
       </div>
 
       <div class="product-demo-index__grid">
-        <NuxtLink
+        <component
           v-for="experience in experiences"
           :key="experience.to"
-          :to="experience.to"
+          :is="experience.to === '/demo/kiosk' ? 'button' : NuxtLink"
+          :to="experience.to === '/demo/kiosk' ? undefined : experience.to"
+          :type="experience.to === '/demo/kiosk' ? 'button' : undefined"
           class="product-demo-index__link"
+          @click="handleExperienceClick(experience.to)"
         >
           <UCard class="product-demo-index__card" :ui="{ body: 'h-full' }">
             <div class="product-demo-index__card-body">
@@ -110,7 +114,7 @@
               </span>
             </div>
           </UCard>
-        </NuxtLink>
+        </component>
       </div>
     </section>
 
@@ -124,6 +128,13 @@
         </p>
       </div>
     </aside>
+
+    <MiseboxShowcaseKioskPreview
+      v-if="productDemo"
+      v-model:open="kioskPreviewOpen"
+      v-model:kitchen-id="kioskPreviewKitchenId"
+      :kitchens="productDemo.kiosk.kitchens"
+    />
   </main>
 </template>
 
@@ -134,6 +145,17 @@ const {
   experiences,
   refresh,
 } = await useMiseboxProductDemo()
+
+const kioskPreviewOpen = ref(false)
+const kioskPreviewKitchenId = ref(productDemo.value?.kiosk.defaultId || '')
+const NuxtLink = resolveComponent('NuxtLink')
+
+function handleExperienceClick(to: string) {
+  if (to !== '/demo/kiosk')
+    return
+
+  kioskPreviewOpen.value = true
+}
 
 definePageMeta({
   layout: 'landing',
@@ -260,8 +282,14 @@ useSeoMeta({
 
 .product-demo-index__link {
   min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: inherit;
+  font: inherit;
+  text-align: inherit;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .product-demo-index__card {
