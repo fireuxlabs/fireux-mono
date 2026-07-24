@@ -3,7 +3,7 @@
 <!-- Concurrent edit — 2026-07-23 02:43 CEST — Record the Core-owned product landing and Misebox-owned proof boundary. -->
 <!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
 
-Updated: 2026-07-23
+Updated: 2026-07-24
 Ref: e98ffb195
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -154,6 +154,18 @@ Before each task:
   release artifact, not a second policy source.
 - Tenant branding, content, routes, and genuine app-specific presentation may
   remain in the relevant project app.
+- Interlaken Essen's durable visual canon is the project-owned
+  `projects/misebox/interlaken-essen/artistic-direction.md`. Its
+  **Alpine–Mœbius** direction governs that tenant's UI, editorial artwork,
+  social assets, maps, and icons; shared Misebox packages must not generalize
+  that project-specific presentation into the ecosystem spine.
+- Interlaken Essen onboarding keeps UserApp limited to App governance,
+  capability, and lifecycle. Locality and offer presentation belong to the
+  app-private `apps/interlaken-essen/marketplace-profiles/{uid}` record; the
+  trusted project endpoint owns strict validation and writes that profile with
+  the UserApp `onboarding_status` transition in one transaction. The live
+  contract is in the project's `app/content/marketplace-profile.ts` and
+  `server/api/onboarding/profile.post.ts`.
 
 Current code, executable guards, and tests are implementation truth. Concept
 maps provide navigation and working context. Deleted docs, previous chat

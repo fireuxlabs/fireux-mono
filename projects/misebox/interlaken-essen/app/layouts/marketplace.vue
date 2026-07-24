@@ -54,6 +54,7 @@
                 :alt="headerAvatarName || 'User avatar'"
                 :text="headerAvatarText"
                 size="sm"
+                class="market-account__avatar-image"
               />
             </span>
           </UTooltip>

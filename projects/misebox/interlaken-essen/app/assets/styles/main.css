@@ -152,13 +152,15 @@
 }
 
 .market-account--avatar {
-  width: 2.35rem;
-  height: 2.35rem;
-  border: 1px solid rgba(251, 243, 223, 0.64);
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
-  background: rgba(23, 53, 43, 0.42);
   box-shadow: 0 0.2rem 0.9rem rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(8px);
+}
+
+.market-account__avatar-image {
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(251, 243, 223, 0.72);
 }
 
 .market-account__skeleton {
