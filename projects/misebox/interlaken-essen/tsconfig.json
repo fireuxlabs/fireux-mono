@@ -14,6 +14,9 @@
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
       "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
+      "fireux-blogs": ["../../../packages/extensions/fireux-blogs/src/module.ts"],
+      "fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/*"],
+      "fireux-blogs/runtime/*": ["../../../packages/extensions/fireux-blogs/src/runtime/*"],
       "fireux-misebox": ["../../../packages/ecosystem/fireux-misebox/src/module.ts"],
       "fireux-misebox/*": ["../../../packages/ecosystem/fireux-misebox/src/*"],
       "fireux-misebox/runtime/*": ["../../../packages/ecosystem/fireux-misebox/src/runtime/*"]

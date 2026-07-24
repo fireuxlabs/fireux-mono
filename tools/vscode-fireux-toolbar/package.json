@@ -145,6 +145,11 @@
           "icon": "media/fireux.svg"
         },
         {
+          "id": "fireux-buenohost",
+          "title": "BuenoHost",
+          "icon": "media/buenohost.svg"
+        },
+        {
           "id": "fireux-misebox",
           "title": "Misebox",
           "icon": "media/misebox.svg"
@@ -176,6 +181,12 @@
         {
           "id": "fireuxToolbar.fireuxServersView",
           "name": "FireUX Apps"
+        }
+      ],
+      "fireux-buenohost": [
+        {
+          "id": "fireuxToolbar.buenohostServersView",
+          "name": "BuenoHost Apps"
         }
       ],
       "fireux-misebox": [

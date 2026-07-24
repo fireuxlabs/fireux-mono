@@ -25,12 +25,13 @@ export const GLOBAL_BRAND_ASSETS: ResolvedFireuxBrandAssets = Object.freeze({
 })
 
 export const CORE_BRAND_DEFAULT_ASSETS = Object.freeze({
-  logo: '/img/core/brand/logo.png',
-  wordmarkLight: '/img/core/brand/wordmark-light.svg',
+  logo: '/img/core/brand/logo.svg',
+  wordmarkLight: '/img/core/brand/wordmark-light.png',
   wordmarkDark: '/img/core/brand/wordmark-dark.png',
 })
 
-const IMAGE_FILENAME_RE = /^[A-Za-z0-9._-]+\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i
+const IMAGE_FILENAME_RE =
+  /^[A-Za-z0-9._-]+\.(?:avif|gif|ico|jpe?g|png|svg|webp)$/i
 
 export function normalizePublicImgAsset(
   value: string | null | undefined,

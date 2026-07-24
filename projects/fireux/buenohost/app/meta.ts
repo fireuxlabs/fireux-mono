@@ -131,7 +131,7 @@ export const metaContent = defineFireuxMeta({
   app: {
     id: 'buenohost',
     name: 'BuenoHost',
-    ecosystem: 'fireux',
+    ecosystem: 'buenohost',
   },
   ...buenoHostLanguage,
 })

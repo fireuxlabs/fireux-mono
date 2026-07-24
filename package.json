@@ -89,7 +89,9 @@
     "kill:baeren-ringgenberg": "node scripts/free-port.mjs 3017",
     "kill:bangin-coffee": "node scripts/free-port.mjs 3016",
     "dev:interlaken-essen": "node scripts/dev-app-with-smoke.mjs --app interlaken-essen",
-    "kill:interlaken-essen": "node scripts/free-port.mjs 3026"
+    "kill:interlaken-essen": "node scripts/free-port.mjs 3026",
+    "dev:book-with-nats": "node scripts/dev-app-with-smoke.mjs --app book-with-nats",
+    "kill:book-with-nats": "node scripts/free-port.mjs 3028"
   },
   "engines": {
     "node": ">=22.23 <23",

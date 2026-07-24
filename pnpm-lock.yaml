@@ -204,6 +204,19 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  packages/ecosystem/fireux-buenohost:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^1.0.2
+        version: 1.0.2(@nuxt/cli@3.35.2(@nuxt/schema@4.4.6)(cac@6.7.14)(magicast@0.5.3))(@vue/compiler-core@3.5.34)(esbuild@0.28.0)(sass@1.96.0)(typescript@5.9.2)(vue-tsc@3.3.0(typescript@5.9.2))(vue@3.5.20(typescript@5.9.2))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
   packages/ecosystem/fireux-fireux:
     dependencies:
       fireux-core:
@@ -633,6 +646,46 @@ importers:
         specifier: ^6.0.1
         version: 6.0.1
 
+  projects/fireux/book-with-nats:
+    dependencies:
+      '@nuxt/icon':
+        specifier: 2.x
+        version: 2.0.0(magicast@0.5.3)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue@3.5.20(typescript@5.9.2))
+      '@nuxt/ui':
+        specifier: ^4.0.0-alpha.2
+        version: 4.0.0-alpha.2(@babel/parser@7.29.3)(change-case@5.4.4)(db0@0.3.4(better-sqlite3@12.6.0))(embla-carousel@8.6.0)(ioredis@5.10.1)(magicast@0.5.3)(qrcode@1.5.4)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-router@4.5.1(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))(zod@3.25.76)
+      firebase-functions:
+        specifier: ^6.3.2
+        version: 6.6.0(firebase-admin@12.7.0)
+      fireux-buenohost:
+        specifier: workspace:*
+        version: link:../../../packages/ecosystem/fireux-buenohost
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../../packages/core/fireux-core
+      fireux-properties:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-properties
+      nuxt:
+        specifier: 4.4.6
+        version: 4.4.6(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.30.1)(magicast@0.5.3)(optionator@0.9.4)(rollup-plugin-visualizer@7.0.1(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
+      vue:
+        specifier: 3.5.20
+        version: 3.5.20(typescript@5.9.2)
+      vue-router:
+        specifier: 4.5.1
+        version: 4.5.1(vue@3.5.20(typescript@5.9.2))
+    devDependencies:
+      '@iconify-json/lucide':
+        specifier: ^1.2.62
+        version: 1.2.82
+      '@vite-pwa/nuxt':
+        specifier: ^1.0.4
+        version: 1.0.4(magicast@0.5.3)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
   projects/fireux/buenohost:
     dependencies:
       '@nuxt/icon':
@@ -647,12 +700,12 @@ importers:
       fireux-blogs:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-blogs
+      fireux-buenohost:
+        specifier: workspace:*
+        version: link:../../../packages/ecosystem/fireux-buenohost
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
-      fireux-fireux:
-        specifier: workspace:*
-        version: link:../../../packages/ecosystem/fireux-fireux
       fireux-products:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-products
@@ -1212,6 +1265,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core

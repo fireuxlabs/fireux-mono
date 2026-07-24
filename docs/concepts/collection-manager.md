@@ -1,6 +1,6 @@
 # Collection manager family
 
-Updated: 2026-07-22
+Updated: 2026-07-23
 Ref: 796952bf0
 Role: map, not canon
 
@@ -53,7 +53,6 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 - `Menu`.
 - `Place`.
-- `Blog`.
 - `Product`.
 - `Ingredient`.
 - `Recipe` is not in this class: current recipe storage/fetch is kitchen-scoped and public recipe projection is deferred.
@@ -77,6 +76,11 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   that join their allowlisted profile fields to canonical User identity by uid.
 - `Job` uses its bounded public API to exact-validate open/public roots and join
   safe Company and canonical work-Place display truth.
+- Blog's public `BlogCollectionEditorialManager` consumes `/api/public/blogs`,
+  which applies publication and ecosystem scope, exposes a bounded index-card
+  DTO, and owns cursor pagination. The authenticated/dev
+  `BlogCollectionManager` retains the scoped root collection so drafts remain
+  operable without exposing that source to the public route.
 - `Customer` is app-private and is not a root public collection-manager member.
 
 ## Snapshot ownership rule
@@ -198,7 +202,6 @@ Root Simple Collection Managers
 | Manager      | Snapshot source                     | Direction         | Current note                                                                                                                                            |
 | ------------ | ----------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Menu`       | Route-owned `/api/menus` controller | Self              | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
-| `Blog`       | None in manager                     | Self              | Root index manager fetches blog posts.                                                                                                                  |
 | `Place`      | None in manager                     | Self              | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                            |
 | `Product`    | None in manager                     | Self              | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                        |
 | `Ingredient` | None in root manager                | Self              | Root index manager fetches ingredients; Ingredient can be source truth for synced snapshots elsewhere.                                                  |
@@ -214,6 +217,7 @@ Root Projected Collection Managers
 | `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                     |
 | `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                    |
 | `User`         | `/api/public/users`                                  | Server projection         | Public users index gets safe user DTOs, then maps them through `useUserInterface()`.                                        |
+| `Blog`         | `/api/public/blogs`                                  | Server projection         | The public editorial manager uses a content-free index DTO and endpoint-owned cursor pagination; admin/dev retain their scoped root manager. |
 | `Chef`         | `/api/public/chefs`                                  | Server profile/User join  | Kitchen-owned allowlist joins canonical User by matching uid.                                                               |
 | `Driver`       | `/api/public/drivers`                                | Server profile/User join  | Kitchen-owned allowlist excludes AppDriver contact, tender, and Kitchen grant state.                                        |
 | `Agent`        | `/api/public/agents`                                 | Server profile/User join  | Jobs-owned allowlist includes deliberate public business contacts only.                                                     |
@@ -256,6 +260,7 @@ Custom-derived surfaces
 | Scoped operations do not use `XCollectionManager` | `accepted` | Parent scope is required input, so they need named scoped surfaces rather than a root-manager override prop |
 | App and Ecosystem managers receive named controllers | `accepted` | The page must choose ecosystem/platform authority explicitly |
 | Kitchen/Menu/User established shared directory header/state presentation before older managers | `migration` | Converge other root managers through the small core seams when touched |
+| Blog has separate public-editorial and authenticated-root managers | `accepted` | Public projection and draft administration have different authority; both remain Blogs-extension-owned and share the interface mapper |
 | Orders and some Console operation lists are custom-derived | `to-confirm` | Keep named domain surfaces until a repeated collection contract is proved |
 | Client-side search is hidden before all bounded pages are loaded | `accepted` | It must not claim absence from an incomplete catalogue; large search becomes server-owned |
 | Snapshot propagation is currently a guarded manual script | `to-confirm` | Move a snapshot to a trigger only after write volume, failure recovery, and source ownership justify continuous sync |

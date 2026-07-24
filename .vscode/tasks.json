@@ -554,6 +554,34 @@
       }
     },
     {
+      "label": "pnpm dev:book-with-nats",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:book-with-nats"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
       "label": "pnpm kill:fireux",
       "type": "shell",
       "command": "pnpm",
@@ -848,6 +876,23 @@
       "command": "pnpm",
       "args": [
         "kill:interlaken-essen"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:book-with-nats",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:book-with-nats"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

@@ -2,12 +2,20 @@ import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler } from 'h3'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { publishAppUserJoinedEvent } from '../../../utils/events/publishAppUserJoinedEvent'
+import { publishProjectUserJoinProjection } from '../../../utils/project-user-join/publish'
 
 export default defineEventHandler(async (event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const runtime = useRuntimeConfig()
   const appId = String(runtime.public?.fireux?.id || '').trim()
   const ecosystemId = String(runtime.public?.fireux?.ecosystemId || '').trim()
+  const projectId = String(runtime.public?.fireux?.projectId || '').trim()
+  const firebaseProjectId = String(
+    runtime.public?.firebaseEcosystem?.firebase?.projectId || ''
+  ).trim()
+  const databaseId = String(
+    runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
+  ).trim()
 
   if (!appId) {
     throw createError({
@@ -22,6 +30,29 @@ export default defineEventHandler(async (event) => {
       ecosystemId,
       userId: uid,
     })
+    let monitor: 'disabled' | 'delivered' | 'duplicate' = 'disabled'
+    try {
+      monitor = await publishProjectUserJoinProjection({
+        version: 1,
+        event_id: result.eventId,
+        source: {
+          firebase_project_id: firebaseProjectId,
+          database_id: databaseId,
+          project_id: projectId,
+          ecosystem_id: ecosystemId,
+          app_id: appId,
+        },
+        user_id: uid,
+        membership_role: result.membershipRole,
+        occurred_at: result.occurredAt,
+      })
+    } catch (error) {
+      console.warn('[user-joined] signup monitor delivery failed', {
+        appId,
+        eventId: result.eventId,
+        error,
+      })
+    }
 
     return {
       ok: true,
@@ -30,6 +61,7 @@ export default defineEventHandler(async (event) => {
         name: 'app.user.joined' as const,
         created: result.created,
       },
+      monitor,
     }
   } catch (error) {
     throw createError({

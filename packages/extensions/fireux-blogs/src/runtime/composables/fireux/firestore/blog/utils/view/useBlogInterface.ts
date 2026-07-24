@@ -1,5 +1,14 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import type {
+  PublicBlogPostIndexProjection,
+  PublicBlogPostProjection,
+} from '../../../../../../models/blogPost-public.model'
 import type { BlogPost } from '../../../../../../models/blogPost.model'
+
+type BlogViewPost =
+  | BlogPost
+  | PublicBlogPostIndexProjection
+  | PublicBlogPostProjection
 
 export namespace BlogCard {
   export type Card = {
@@ -18,6 +27,11 @@ export namespace BlogCard {
     status: string
     excerpt: string
     author: string
+    authorAvatarUrl: string
+    authorHandle: string
+    readingTime: string
+    tags: string[]
+    type: 'article' | 'product'
 
     // Status/label chips
     badges: string[]
@@ -41,35 +55,54 @@ export function useBlogInterface() {
   type BlogPreview = BlogCard.Card
   type BlogProfile = BlogCard.Card
 
-  function map(post: BlogPost): BlogCard.Card {
-    const content = safeString(post.content)
-    const excerpt = ellipsis(stripHtml(content), 180)
+  function map(post: BlogViewPost): BlogCard.Card {
+    const content = 'content' in post ? safeString(post.content) : ''
+    const storedExcerpt = 'excerpt' in post ? safeString(post.excerpt) : ''
+    const excerpt = storedExcerpt || ellipsis(stripHtml(content), 180)
 
     const author = safeString((post.author as any)?.display_name)
+    const authorAvatarUrl = safeString((post.author as any)?.avatar)
+    const authorHandle = safeString((post.author as any)?.handle)
     const imageUrl =
       safeString(post.featuredImage) || safeString(post.socialImage)
     const id = safeString(post.slug).trim()
     const title = safeString(post.title)
+    const readingTime = safeString(post.readingTime)
+    const type = post.type === 'product' ? 'product' : 'article'
+    const tags = Array.from(
+      new Set(
+        (Array.isArray(post.tags) ? post.tags : [])
+          .map((tag) => safeString(tag))
+          .filter(Boolean)
+      )
+    )
+    const typeLabel = type === 'product' ? 'Product note' : 'Article'
+    const summary = safeString(post.metaDescription) || excerpt
 
     return {
       id,
       to: id ? `/blog/${id}` : '',
 
-      avatarUrl: imageUrl,
+      avatarUrl: authorAvatarUrl,
       imageUrl,
-      subtitle: author,
+      subtitle: [author, readingTime].filter(Boolean).join(' · '),
 
       title,
-      summary: excerpt,
-      status: '',
+      summary,
+      status: type,
       excerpt,
       author,
-      badges: [],
+      authorAvatarUrl,
+      authorHandle,
+      readingTime,
+      tags,
+      type,
+      badges: tags.length ? tags.slice(0, 3) : [typeLabel],
     }
   }
 
   function buildInterface(
-    target?: BlogPost | null | undefined
+    target?: BlogViewPost | null | undefined
   ): BlogCard.Card | null {
     if (!target) return null
     const mapped = map(target)
@@ -78,19 +111,19 @@ export function useBlogInterface() {
 
   const toInterface = buildInterface
 
-  function pill(target?: BlogPost | null | undefined): BlogPill | null {
+  function pill(target?: BlogViewPost | null | undefined): BlogPill | null {
     return buildInterface(target)
   }
 
-  function cell(target?: BlogPost | null | undefined): BlogCell | null {
+  function cell(target?: BlogViewPost | null | undefined): BlogCell | null {
     return buildInterface(target)
   }
 
-  function preview(target?: BlogPost | null | undefined): BlogPreview | null {
+  function preview(target?: BlogViewPost | null | undefined): BlogPreview | null {
     return buildInterface(target)
   }
 
-  function profile(target?: BlogPost | null | undefined): BlogProfile | null {
+  function profile(target?: BlogViewPost | null | undefined): BlogProfile | null {
     return buildInterface(target)
   }
 

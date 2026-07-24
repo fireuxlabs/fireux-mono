@@ -14,6 +14,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   signOut,
+  updateProfile,
   type Auth,
   type User,
 } from 'firebase/auth'
@@ -492,7 +493,8 @@ export function useAuth() {
   const signUpWithEmailPassword = async (
     email: string,
     password: string,
-    termsVersion: string
+    termsVersion: string,
+    displayName?: string
   ) => {
     if (!auth.value) return null
     rememberPendingAccountConsent(termsVersion)
@@ -504,6 +506,10 @@ export function useAuth() {
     if (!result?.user) {
       clearPendingAccountConsent()
       return null
+    }
+    const normalizedDisplayName = String(displayName || '').trim()
+    if (normalizedDisplayName) {
+      await updateProfile(result.user, { displayName: normalizedDisplayName })
     }
     return await ensureSignedInUser(result.user, termsVersion)
   }

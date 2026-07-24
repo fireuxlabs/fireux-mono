@@ -20,6 +20,7 @@ import {
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/models/core/meta.model'
 import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model'
+import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'
@@ -84,7 +85,7 @@ function readAppScope(rootData: Record<string, unknown>) {
 export function useConsoleCreate() {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { appId, role } = useFireUXConfig()
+  const { appId, developerId, role } = useFireUXConfig()
   const { uid } = useAuth()
 
   async function assertCanCreateAdditionalConsole(
@@ -105,8 +106,15 @@ export function useConsoleCreate() {
       currentUid
     )
     const appUserSnap = await getDoc(appUserRef)
-    const isPremium = appUserSnap.exists() && appUserSnap.get('is_premium') === true
-    if (isPremium) return
+    if (
+      appUserSnap.exists() &&
+      hasUserAppPremiumAccess(appUserSnap.data(), {
+        isConfiguredDeveloper:
+          Boolean(developerId) && currentUid === developerId,
+      })
+    ) {
+      return
+    }
 
     const collectionName = consoleCollectionByType[type]
     const appSupportQuery = query(

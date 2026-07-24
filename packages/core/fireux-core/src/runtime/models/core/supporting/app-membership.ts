@@ -2,6 +2,10 @@
 // Concurrent edit — 2026-07-20 17:49 CEST — Repo Efficiency Pass 2 of 6: keep profile indexing inside trusted profile provisioning.
 
 export type AppMembershipRole = 'admin' | 'user'
+export type AppMembershipOnboardingStatus =
+  | 'pending'
+  | 'completed'
+  | 'skipped'
 
 export const AppJoinRequestStorage = {
   shape: 'scoped',
@@ -49,6 +53,10 @@ export type AppMembershipMutationInput =
       isPremium: boolean
     }
   | {
+      action: 'set-onboarding-status'
+      status: Exclude<AppMembershipOnboardingStatus, 'pending'>
+    }
+  | {
       action: 'remove-member'
       userId?: string
     }
@@ -68,5 +76,6 @@ export type AppMembershipMutationResult = {
   removed?: boolean
   role?: AppMembershipRole
   isPremium?: boolean
+  onboardingStatus?: AppMembershipOnboardingStatus
   requested?: boolean
 }

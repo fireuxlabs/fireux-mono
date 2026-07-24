@@ -18,6 +18,19 @@ export interface FireUXConfig {
   domains: string[]
   profiles: string[]
   selfJoinEnabled: boolean
+  authDefaultMode?: 'sign-in' | 'sign-up'
+  authCompletion?: {
+    path: string
+    title?: string
+    description?: string
+    delayMs?: number
+  }
+  authOnboarding?: {
+    title: string
+    description?: string
+    completeLabel?: string
+    skipLabel?: string
+  }
   navHiddenKeys: string[]
   navOverrides: Record<string, unknown>
 
@@ -117,6 +130,16 @@ function buildConfig(): Readonly<FireUXConfig> {
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
+    authDefaultMode:
+      fireux.authDefaultMode === 'sign-in' || fireux.authDefaultMode === 'sign-up'
+        ? fireux.authDefaultMode
+        : undefined,
+    authCompletion: optRecord(fireux, 'authCompletion') as
+      | FireUXConfig['authCompletion']
+      | undefined,
+    authOnboarding: optRecord(fireux, 'authOnboarding') as
+      | FireUXConfig['authOnboarding']
+      | undefined,
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
     navOverrides: optRecord(fireux, 'navOverrides') || {},
 
@@ -166,7 +189,16 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
       cached.projectId === cfg.projectId &&
       cached.ecosystemId === cfg.ecosystemId &&
       cached.role === cfg.role &&
-      cached.selfJoinEnabled === cfg.selfJoinEnabled
+      cached.selfJoinEnabled === cfg.selfJoinEnabled &&
+      cached.authDefaultMode === cfg.authDefaultMode &&
+      cached.authCompletion?.path === cfg.authCompletion?.path &&
+      cached.authCompletion?.title === cfg.authCompletion?.title &&
+      cached.authCompletion?.description === cfg.authCompletion?.description &&
+      cached.authCompletion?.delayMs === cfg.authCompletion?.delayMs &&
+      cached.authOnboarding?.title === cfg.authOnboarding?.title &&
+      cached.authOnboarding?.description === cfg.authOnboarding?.description &&
+      cached.authOnboarding?.completeLabel === cfg.authOnboarding?.completeLabel &&
+      cached.authOnboarding?.skipLabel === cfg.authOnboarding?.skipLabel
 
     if (isCacheValid) return cached
 

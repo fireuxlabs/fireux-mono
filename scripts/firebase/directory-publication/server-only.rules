@@ -32,6 +32,10 @@ service cloud.firestore {
       allow read, write: if serverOnly();
     }
 
+    match /project-user-monitor/{document=**} {
+      allow read, write: if serverOnly();
+    }
+
     match /{document=**} {
       allow read, write: if serverOnly();
     }

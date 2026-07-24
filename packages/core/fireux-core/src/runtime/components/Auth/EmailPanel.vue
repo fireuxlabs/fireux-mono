@@ -65,11 +65,14 @@ type AuthError = {
   hint?: string
 } | null
 
-const props = defineProps<{ brandLabel: string }>()
+const props = defineProps<{
+  brandLabel: string
+  defaultMode?: 'sign-in' | 'sign-up'
+}>()
 
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
 
-const isSignUp = ref(false)
+const isSignUp = ref(props.defaultMode === 'sign-up')
 const formLoading = ref(false)
 const error = ref<AuthError>(null)
 const signupConsentAcknowledged = ref(false)
@@ -93,6 +96,19 @@ const signupConsentRequired = computed(
   () => isSignUp.value && !signupConsentAcknowledged.value
 )
 const fields = computed(() => [
+  ...(isSignUp.value
+    ? [{
+        name: 'name',
+        type: 'text' as const,
+        color: 'neutral' as const,
+        variant: 'outline' as const,
+        label: 'Name',
+        placeholder: 'Din Name',
+        required: true,
+        autocomplete: 'name',
+        defaultValue: '',
+      }]
+    : []),
   {
     name: 'email',
     type: 'email' as const,
@@ -135,6 +151,7 @@ const setEmailError = (mode: AuthMode) => {
 
 type AuthFormSubmitLike = {
   data?: {
+    name?: string
     email?: string
     password?: string
   }
@@ -143,14 +160,18 @@ type AuthFormSubmitLike = {
 const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
   if (formLoading.value) return
 
+  const name = String(event?.data?.name ?? '').trim()
   const email = String(event?.data?.email ?? '').trim()
   const password = String(event?.data?.password ?? '')
   const mode: AuthMode = isSignUp.value ? 'sign-up' : 'sign-in'
 
-  if (!email || !password) {
+  if (!email || !password || (mode === 'sign-up' && !name)) {
     error.value = {
       title: 'Missing information',
-      description: 'Enter your email and password to continue.',
+      description:
+        mode === 'sign-up'
+          ? 'Enter your name, email and password to register.'
+          : 'Enter your email and password to continue.',
     }
     return
   }
@@ -173,7 +194,8 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
         ? await signUpWithEmailPassword(
             email,
             password,
-            FIREUX_ACCOUNT_TERMS_VERSION
+            FIREUX_ACCOUNT_TERMS_VERSION,
+            name
           )
         : await signInWithEmailPassword(email, password)
   } catch (accountError) {

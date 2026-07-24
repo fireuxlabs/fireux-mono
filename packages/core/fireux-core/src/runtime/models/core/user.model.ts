@@ -23,6 +23,10 @@ import { USER_ECOSYSTEM_AVATAR_SRC } from './supporting/user-avatar'
  * - UserPrivate contains private account data and signup agreement evidence.
  * - UserApp contains app membership and capability state.
  * - User.profiles and UserApp.profiles are derived by trusted profile provisioning.
+ * - Empty UserApp profile and Console-target indexes are omitted at rest and
+ *   normalized into this runtime model on read.
+ * - Dev/Admin/Premium/Free is derived by the shared user-app-access resolver;
+ *   it is never stored as another role field.
  * - Trusted producers publish notifications to the owner-only User subcollection.
  * - UserApp is not a public profile overlay and does not use FireuxAppScope.
  */
@@ -196,6 +200,7 @@ export const UserAppModel = {
   role: 'user' as 'user' | 'admin',
   is_premium: false,
   console_enabled: false,
+  onboarding_status: 'pending' as 'pending' | 'completed' | 'skipped',
   profiles: [] as string[],
   console_targets: UserAppConsoleTargetsModel as UserAppConsoleTargets,
 
@@ -215,6 +220,7 @@ export interface UserApp {
   role: 'user' | 'admin'
   is_premium: boolean
   console_enabled: boolean
+  onboarding_status: 'pending' | 'completed' | 'skipped'
   profiles: string[]
   console_targets: UserAppConsoleTargets
   created: typeof UserAppModel.created
@@ -230,7 +236,13 @@ export type UserPrivateCreateInput = Omit<
 export type UserPrivateUpdateInput = Partial<
   Omit<UserPrivate, 'id' | 'created' | 'updated'>
 >
-export type UserAppCreateInput = Omit<UserApp, 'id' | 'created' | 'updated'>
+export type UserAppCreateInput = Omit<
+  UserApp,
+  'id' | 'created' | 'updated' | 'profiles' | 'console_targets'
+> & {
+  profiles?: string[]
+  console_targets?: Partial<UserAppConsoleTargets>
+}
 export type UserAppUpdateInput = Partial<
   Omit<UserApp, 'id' | 'created' | 'updated'>
 >

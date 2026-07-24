@@ -91,10 +91,7 @@ function initialMembership(
     role,
     is_premium: false,
     console_enabled: role === 'admin',
-    profiles: [],
-    console_targets: Object.fromEntries(
-      Object.entries(UserAppConsoleTargetsModel).map(([key]) => [key, []])
-    ),
+    onboarding_status: 'pending',
     created: {
       at: FieldValue.serverTimestamp(),
       by: actorUid,
@@ -108,28 +105,46 @@ function membershipRepairPatch(data: DocumentData, actorUid: string) {
   const patch: Record<string, unknown> = {}
   if (typeof data.is_premium !== 'boolean') patch.is_premium = false
   if (typeof data.console_enabled !== 'boolean') patch.console_enabled = false
-  if (!Array.isArray(data.profiles)) patch.profiles = []
+  if (
+    data.onboarding_status !== 'pending' &&
+    data.onboarding_status !== 'completed' &&
+    data.onboarding_status !== 'skipped'
+  ) {
+    patch.onboarding_status = 'pending'
+  }
+  if ('profiles' in data && !Array.isArray(data.profiles)) {
+    patch.profiles = FieldValue.delete()
+  }
   if ('notifications' in data) patch.notifications = FieldValue.delete()
 
-  const currentTargets =
-    data.console_targets &&
-    typeof data.console_targets === 'object' &&
-    !Array.isArray(data.console_targets)
-      ? data.console_targets as Record<string, unknown>
-      : {}
-  const repairedTargets = Object.fromEntries(
-    Object.entries(UserAppConsoleTargetsModel).map(([key]) => [
-      key,
-      stringList(currentTargets[key], 50),
-    ])
-  )
-  const targetsNeedRepair = Object.keys(UserAppConsoleTargetsModel).some(
-    (key) => !Array.isArray(currentTargets[key])
-  )
-  if (targetsNeedRepair) {
-    patch.console_targets = {
-      ...currentTargets,
-      ...repairedTargets,
+  if ('console_targets' in data) {
+    const currentTargets =
+      data.console_targets &&
+      typeof data.console_targets === 'object' &&
+      !Array.isArray(data.console_targets)
+        ? (data.console_targets as Record<string, unknown>)
+        : null
+    const knownFields = new Set(Object.keys(UserAppConsoleTargetsModel))
+    const targetsNeedRepair =
+      !currentTargets ||
+      Object.entries(currentTargets).some(
+        ([key, value]) => !knownFields.has(key) || !Array.isArray(value)
+      )
+
+    if (targetsNeedRepair) {
+      const repairedTargets = currentTargets
+        ? Object.fromEntries(
+            Object.entries(currentTargets)
+              .filter(
+                ([key, value]) =>
+                  knownFields.has(key) && Array.isArray(value)
+              )
+              .map(([key, value]) => [key, stringList(value, 50)])
+          )
+        : {}
+      patch.console_targets = Object.keys(repairedTargets).length
+        ? repairedTargets
+        : FieldValue.delete()
     }
   }
 
@@ -241,7 +256,9 @@ function normalizedConsoleTargets(data: DocumentData) {
 
   return Object.fromEntries(
     Object.entries(source)
-      .filter(([key]) => /^[a-z][a-z0-9_]{0,63}$/.test(key))
+      .filter(([key]) =>
+        Object.prototype.hasOwnProperty.call(UserAppConsoleTargetsModel, key)
+      )
       .map(([key, value]) => [key, stringList(value, 50)])
   ) as Record<string, string[]>
 }
@@ -572,6 +589,32 @@ async function mutateInTransaction(
       }
     }
 
+    if (input.action === 'set-onboarding-status') {
+      if (!actorMembershipSnapshot.exists) {
+        forbidden(409, 'The current App membership does not exist.')
+      }
+      if (!roleFrom(actorMembership)) {
+        forbidden(409, 'The existing App membership has an invalid role.')
+      }
+      const status =
+        input.status === 'completed' || input.status === 'skipped'
+          ? input.status
+          : forbidden(400, 'Onboarding status must be completed or skipped.')
+
+      transaction.update(actorMembershipRef, {
+        onboarding_status: status,
+        updated: stamp(actorUid),
+      })
+      return {
+        ok: true,
+        action: input.action,
+        appId,
+        userId: actorUid,
+        onboardingStatus: status,
+        identityMirror: null,
+      }
+    }
+
     if (input.action === 'remove-member') {
       const userId = requireFirestoreDocumentId(
         input.userId || actorUid,
@@ -744,7 +787,10 @@ async function mutateInTransaction(
         forbidden(409, 'This console target list is full.')
       }
       targets[targetField] = next
-      const hasTargets = Object.values(targets).some((ids) => ids.length > 0)
+      const sparseTargets = Object.fromEntries(
+        Object.entries(targets).filter(([, ids]) => ids.length > 0)
+      )
+      const hasTargets = Object.keys(sparseTargets).length > 0
 
       if (created) {
         const blockSnapshot = await transaction.get(actorMembershipBlockRef)
@@ -754,12 +800,7 @@ async function mutateInTransaction(
         transaction.create(actorMembershipRef, {
           ...initialMembership(appId, actorUid, 'user'),
           console_enabled: hasTargets,
-          console_targets: {
-            ...Object.fromEntries(
-              Object.entries(UserAppConsoleTargetsModel).map(([key]) => [key, []])
-            ),
-            ...targets,
-          },
+          ...(hasTargets ? { console_targets: sparseTargets } : {}),
         })
         transaction.update(
           appRef,
@@ -771,7 +812,9 @@ async function mutateInTransaction(
         }
         transaction.update(actorMembershipRef, {
           console_enabled: isAdminMembership(membership) || hasTargets,
-          console_targets: targets,
+          console_targets: hasTargets
+            ? sparseTargets
+            : FieldValue.delete(),
           updated: stamp(actorUid),
         })
       }

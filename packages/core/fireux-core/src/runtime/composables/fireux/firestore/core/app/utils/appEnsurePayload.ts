@@ -88,13 +88,16 @@ export function buildAppEnsureRepairPatch(
     status: 'active',
     app_name: fireux.appName,
     app_short_name: fireux.appShortName,
-    role: fireux.role,
   }
 
   for (const [key, value] of Object.entries(ensureStringFields)) {
     if (!normalizeString(existing[key])) {
       patch[key] = value
     }
+  }
+
+  if (normalizeString(existing.role) !== fireux.role) {
+    patch.role = fireux.role
   }
 
   if (projectId && normalizeString(existing.project_id) !== projectId) {

@@ -89,6 +89,11 @@ Before each task:
   author/public APIs as Werkbox. Hospitality is only a configured category and
   presentation delta; Kitchen is never Job identity and Job creation never
   materializes a Kitchen.
+- Misebox Blogs use the shared `fireux-blogs` root and bounded public
+  projection. Every Misebox App `/blog` aggregates every public BlogPost whose
+  source ecosystem is Misebox; source App is provenance, not Blog visibility.
+  Tenant Futter feeds remain lightweight local/domain events and may reference
+  a canonical BlogPost slug without copying its authored content.
 - Misebox may compose Kitchen materialization for a Professional Experience
   Place reference. That adapter is profile-specific, delegates creation to
   `fireux-kitchens`, and must not enter the Job model, authoring flow, or public

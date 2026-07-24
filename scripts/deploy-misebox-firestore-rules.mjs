@@ -1379,6 +1379,27 @@ async function buildSecurityTests() {
     amount_minor: 2500,
     currency_code: 'CHF',
   }
+  const sparseMembershipProbePath =
+    'apps/misebox-app/users/security-rules-sparse-membership'
+  const sparseMembershipProbeData = {
+    role: 'user',
+    is_premium: false,
+    console_enabled: false,
+    onboarding_status: 'pending',
+    created: {
+      at: writeTime,
+      by: adminId,
+      app_id: 'misebox-app',
+    },
+    updated: { at: writeTime, by: adminId },
+  }
+  const partialTargetMembershipProbeData = {
+    ...sparseMembershipProbeData,
+    console_enabled: true,
+    console_targets: {
+      kitchen_ids: ['security-rules-probe'],
+    },
+  }
   const tests = [
     list(
       'raw public User collection listing uses projection API',
@@ -1608,12 +1629,72 @@ async function buildSecurityTests() {
       adminId,
       appAdminMocks(adminId, path)
     ),
+    readResource(
+      'canonical admin can read sparse UserApp membership',
+      'ALLOW',
+      sparseMembershipProbePath,
+      adminId,
+      sparseMembershipProbeData,
+      appAdminMocks(adminId, path)
+    ),
+    readResource(
+      'canonical admin can read partial UserApp Console targets',
+      'ALLOW',
+      sparseMembershipProbePath,
+      adminId,
+      partialTargetMembershipProbeData,
+      appAdminMocks(adminId, path)
+    ),
+    readResource(
+      'canonical admin cannot read invalid UserApp onboarding status',
+      'DENY',
+      sparseMembershipProbePath,
+      adminId,
+      {
+        ...sparseMembershipProbeData,
+        onboarding_status: 'forged',
+      },
+      appAdminMocks(adminId, path)
+    ),
+    readResource(
+      'canonical admin cannot read unknown UserApp Console target family',
+      'DENY',
+      sparseMembershipProbePath,
+      adminId,
+      {
+        ...sparseMembershipProbeData,
+        console_targets: { forged_ids: [] },
+      },
+      appAdminMocks(adminId, path)
+    ),
+    readResource(
+      'canonical admin cannot read malformed UserApp Console target list',
+      'DENY',
+      sparseMembershipProbePath,
+      adminId,
+      {
+        ...sparseMembershipProbeData,
+        console_targets: { kitchen_ids: 'not-a-list' },
+      },
+      appAdminMocks(adminId, path)
+    ),
     list(
-      'canonical admin can list UserApp memberships',
+      'canonical admin can list bounded sparse UserApp memberships',
       'ALLOW',
       'apps/misebox-app/users',
       adminId,
-      appAdminMocks(adminId, path)
+      appAdminMocks(adminId, path),
+      sparseMembershipProbeData,
+      { limit: 100 }
+    ),
+    list(
+      'canonical admin cannot list unbounded UserApp memberships',
+      'DENY',
+      'apps/misebox-app/users',
+      adminId,
+      appAdminMocks(adminId, path),
+      sparseMembershipProbeData,
+      { limit: 101 }
     ),
     ...customers.map((document) => {
       const userId = documentId(document)

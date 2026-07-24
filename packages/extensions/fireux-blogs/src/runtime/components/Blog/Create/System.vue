@@ -6,7 +6,7 @@
     @clear="handleClear"
   >
     <template #write>
-      <BlogCreateWrite />
+      <BlogCreateWrite ref="writeRef" />
     </template>
     <template #preview>
       <BlogCreatePreview />
@@ -26,13 +26,19 @@ const toast = useToastFn ? useToastFn() : undefined
 const { blogPost, resetCreateBlogPostState } = useBlogDraftState()
 const { submit } = useBlogCreateSubmit()
 const isCreating = ref(false)
+const writeRef = ref<{
+  uploadImages: (blogId: string) => Promise<{
+    featuredImage: string
+    socialImage: string
+  } | undefined>
+} | null>(null)
 const router = useRouter()
 
 async function handleCreate() {
   isCreating.value = true
 
   try {
-    const slug = await submit()
+    const slug = await submit(blogId => writeRef.value?.uploadImages(blogId))
 
     if (toast) {
       toast.add({

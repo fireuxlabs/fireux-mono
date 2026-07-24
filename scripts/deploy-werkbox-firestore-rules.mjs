@@ -669,6 +669,21 @@ function buildSecurityTests(databaseId) {
     created: created('migration-admin', appId),
     updated: updated('migration-admin'),
   })
+  const sparseMembership = {
+    role: 'user',
+    is_premium: false,
+    console_enabled: false,
+    onboarding_status: 'pending',
+    created: created('migration-admin', 'cleanbox-app'),
+    updated: updated('migration-admin'),
+  }
+  const partialTargetMembership = {
+    ...sparseMembership,
+    console_enabled: true,
+    console_targets: {
+      property_ids: ['security-rules-property'],
+    },
+  }
   const overlay = {
     created: created(ownerId),
     updated: updated(),
@@ -804,8 +819,13 @@ function buildSecurityTests(databaseId) {
     read('owner UserApp get', 'ALLOW', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership()),
     read('UserApp PII denied to stranger', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, strangerId, membership()),
     list('App admin bounded canonical UserApp list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, membership()),
+    list('App admin bounded sparse UserApp list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, sparseMembership),
+    list('App admin bounded partial-target UserApp list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, partialTargetMembership),
     list('App admin unbounded UserApp list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 101 }, membership()),
     list('App admin malformed UserApp list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...membership(), secret: true }),
+    list('App admin invalid UserApp onboarding status denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, onboarding_status: 'forged' }),
+    list('App admin unknown UserApp Console target denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, console_targets: { forged_ids: [] } }),
+    list('App admin malformed UserApp Console target denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, console_targets: { property_ids: 'not-a-list' } }),
     read('Richies UserApp isolated from Werkbox admin', 'DENY', databaseId, `apps/richies-reinigung/users/${ownerId}`, adminId, membership('user', 'richies-reinigung'), adminMocks),
     update('client UserApp privilege update denied', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership(), { ...membership(), role: 'admin' }, updateTime),
 

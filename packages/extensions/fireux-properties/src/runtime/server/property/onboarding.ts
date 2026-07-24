@@ -8,6 +8,7 @@ import {
   type FireuxAppScopeState,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
 import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -27,6 +28,7 @@ type MemberRole = 'admin' | 'user'
 type RuntimePolicy = {
   appId: string
   appRole: string
+  developerId: string
   appScopeState: Exclude<FireuxAppScopeState, 'root_only'>
   canCreate: boolean
   targetIds: string[]
@@ -78,6 +80,7 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   const fireux = record(useRuntimeConfig(event).public?.fireux)
   const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
   const appRole = text(fireux.role)
+  const developerId = text(fireux.developerId)
   const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
   if (!appScopeState) fail(403, 'This App cannot own a Property console.')
 
@@ -89,7 +92,14 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
     ? Array.from(new Set(propertyConfig.targetIds.map(text).filter(Boolean)))
     : []
 
-  return { appId, appRole, appScopeState, canCreate, targetIds }
+  return {
+    appId,
+    appRole,
+    developerId,
+    appScopeState,
+    canCreate,
+    targetIds,
+  }
 }
 
 function requireMemberRole(exists: boolean, value: unknown): MemberRole {
@@ -223,7 +233,11 @@ export async function completePropertyOnboarding(
     const [root, support, currentOperatorSupports] = await Promise.all([
       transaction.get(rootRef),
       transaction.get(supportRef),
-      membership.get('is_premium') === true
+      hasUserAppPremiumAccess(membershipData, {
+        isConfiguredDeveloper:
+          Boolean(current.developerId) &&
+          current.uid === current.developerId,
+      })
         ? Promise.resolve(null)
         : transaction.get(operatorQuery),
     ])

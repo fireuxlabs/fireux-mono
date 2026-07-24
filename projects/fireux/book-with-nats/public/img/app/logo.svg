@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Book with Nats</title>
+  <rect width="512" height="512" rx="256" fill="#263028"/>
+  <circle cx="256" cy="256" r="203" fill="none" stroke="#d8b878" stroke-width="8"/>
+  <path d="M151 362V150h42l126 145V150h42v212h-35L193 209v153z" fill="#fffaf0"/>
+</svg>

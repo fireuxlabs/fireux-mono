@@ -86,6 +86,11 @@ function normalizeUserApp(raw: UserApp, fallbackId: string): UserApp {
       typeof anyRaw.console_enabled === 'boolean'
         ? anyRaw.console_enabled
         : false,
+    onboarding_status:
+      anyRaw.onboarding_status === 'completed' ||
+      anyRaw.onboarding_status === 'skipped'
+        ? anyRaw.onboarding_status
+        : 'pending',
     profiles: asStringArray(anyRaw.profiles),
     console_targets: normalizeConsoleTargets(anyRaw.console_targets),
   }

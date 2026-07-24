@@ -6,7 +6,11 @@ import {
 } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
-import { UserAppStorage } from '../../../../models/core/user.model'
+import { resolveUserAppAccess } from '../../../../models/core/supporting/user-app-access'
+import {
+  UserAppConsoleTargetsModel,
+  UserAppStorage,
+} from '../../../../models/core/user.model'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { projectPublicApp } from '../../../utils/public-projection/public-app.dto'
@@ -19,16 +23,42 @@ function conflict(message: string): never {
   throw createError({ statusCode: 409, statusMessage: message })
 }
 
-function stringList(value: unknown, label: string): string[] {
-  if (!Array.isArray(value) || value.some(entry => typeof entry !== 'string')) {
+function stringList(
+  value: unknown,
+  label: string,
+  options: {
+    max: number
+    allowed?: ReadonlySet<string>
+    documentIds?: boolean
+  }
+): string[] {
+  if (
+    !Array.isArray(value) ||
+    value.length > options.max ||
+    value.some(entry => typeof entry !== 'string')
+  ) {
     conflict(`${label} is malformed.`)
   }
-  return [...new Set(value.map(entry => entry.trim()).filter(Boolean))]
+  const entries = value.map(entry => entry.trim())
+  if (
+    entries.some(
+      (entry, index) =>
+        !entry ||
+        entry !== value[index] ||
+        (options.documentIds && entry.includes('/')) ||
+        (options.allowed && !options.allowed.has(entry))
+    ) ||
+    new Set(entries).size !== entries.length
+  ) {
+    conflict(`${label} is malformed.`)
+  }
+  return entries
 }
 
 function membershipDto(
   id: string,
-  value: Record<string, unknown>
+  value: Record<string, unknown>,
+  isConfiguredDeveloper: boolean
 ): CurrentAppMembershipDto {
   const role = value.role
   if (role !== 'admin' && role !== 'user') {
@@ -40,30 +70,71 @@ function membershipDto(
   ) {
     conflict('Current App membership has invalid capability fields.')
   }
+  const onboardingStatus =
+    value.onboarding_status === undefined
+      ? 'pending'
+      : value.onboarding_status
+  if (
+    onboardingStatus !== 'pending' &&
+    onboardingStatus !== 'completed' &&
+    onboardingStatus !== 'skipped'
+  ) {
+    conflict('Current App membership has an invalid onboarding status.')
+  }
   const rawTargets = value.console_targets
-  if (!rawTargets || typeof rawTargets !== 'object' || Array.isArray(rawTargets)) {
+  if (
+    rawTargets !== undefined &&
+    (!rawTargets ||
+      typeof rawTargets !== 'object' ||
+      Array.isArray(rawTargets))
+  ) {
     conflict('Current App membership has invalid Console targets.')
   }
+  const knownTargetFields = new Set(Object.keys(UserAppConsoleTargetsModel))
+  if (
+    Object.keys(rawTargets ?? {}).some(key => !knownTargetFields.has(key))
+  ) {
+    conflict('Current App membership has an unknown Console target family.')
+  }
   const consoleTargets = Object.fromEntries(
-    Object.entries(rawTargets).map(([key, entries]) => [
+    Object.entries(rawTargets ?? {}).map(([key, entries]) => [
       key,
-      stringList(entries, `Console target ${key}`),
+      stringList(entries, `Console target ${key}`, {
+        max: 50,
+        documentIds: true,
+      }),
     ])
   )
+  const access = resolveUserAppAccess({
+    membership: value,
+    isConfiguredDeveloper,
+  })
 
   return {
     id,
     role,
     is_premium: value.is_premium,
+    access_tier: access.tier ?? 'free',
+    has_premium_access: access.hasPremiumAccess,
     console_enabled: value.console_enabled,
-    profiles: stringList(value.profiles, 'Current App profiles'),
+    onboarding_status: onboardingStatus,
+    profiles: stringList(value.profiles ?? [], 'Current App profiles', {
+      max: 20,
+      allowed: new Set([
+        'agent',
+        'chef',
+        'customer',
+        'driver',
+        'professional',
+      ]),
+    }),
     console_targets: consoleTargets,
   }
 }
 
 export default defineEventHandler(async (event: H3Event) => {
   const { uid } = await requireFirebaseBearerUser(event)
-  const { appId } = useFireUXConfig()
+  const { appId, developerId } = useFireUXConfig()
   const appRef = getRuntimeFirestore()
     .collection(AppStorage.collection)
     .doc(appId)
@@ -88,7 +159,8 @@ export default defineEventHandler(async (event: H3Event) => {
   const membership = membershipSnapshot.exists
     ? membershipDto(
         membershipSnapshot.id,
-        (membershipSnapshot.data() || {}) as Record<string, unknown>
+        (membershipSnapshot.data() || {}) as Record<string, unknown>,
+        Boolean(developerId) && uid === developerId
       )
     : null
 

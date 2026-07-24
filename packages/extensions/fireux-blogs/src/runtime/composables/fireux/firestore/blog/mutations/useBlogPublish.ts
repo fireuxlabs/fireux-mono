@@ -5,6 +5,7 @@ import { BlogPostStorage } from '../../../../../models/blogPost.model'
 export type BlogPublishInput = {
   slug: string
   title?: string
+  publicationScope?: 'app' | 'ecosystem'
 }
 
 function clean(value: unknown) {
@@ -34,6 +35,7 @@ export function useBlogPublish() {
       patch: {
         slug,
         visibility: 'public',
+        publication_scope: input.publicationScope || 'app',
       },
     })
   }

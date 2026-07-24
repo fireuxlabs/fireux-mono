@@ -1,18 +1,15 @@
 <template>
-  <UPageCTA
+  <UButton
+    v-if="showCTA"
     class="cta"
     data-entity-cta-family="admin-managed"
-    v-if="showCTA"
-    title="Publish a post"
-    :description="ctaDescription"
-    variant="naked"
-  >
-    <template #links>
-      <UButton color="primary" size="lg" to="/dashboard/admin/blogs/create">
-        Draft a post
-      </UButton>
-    </template>
-  </UPageCTA>
+    color="primary"
+    size="lg"
+    to="/dashboard/admin/blogs/create"
+    label="Write a post"
+    icon="i-lucide-pen-line"
+    :aria-label="`Write a post for ${appName}`"
+  />
 </template>
 
 <script setup lang="ts">
@@ -24,7 +21,4 @@ const { canPublishBlog } = useBlogPermissions()
 const { appName } = useFireUXConfig()
 
 const showCTA = computed(() => canPublishBlog.value)
-const ctaDescription = computed(
-  () => `Share updates, releases, and stories for ${appName}.`
-)
 </script>

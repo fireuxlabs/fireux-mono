@@ -20,16 +20,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useBlog } from '../../composables/fireux/firestore/blog/useBlog'
+import { usePublicBlogFetch } from '../../composables/fireux/blog/public/usePublicBlogFetch'
 import { useBlogSeo } from '../../composables/fireux/firestore/blog/utils/useBlogSeo'
 
 const route = useRoute()
-const { fetchBySlug } = useBlog()
-
-const postRef = await fetchBySlug(String(route.params.slug ?? ''))
-const post = computed(() => postRef.value ?? undefined)
-const pending = computed(() => postRef.value === undefined)
+const { post, pending } = usePublicBlogFetch(String(route.params.slug ?? ''))
 
 useBlogSeo(post)
 </script>

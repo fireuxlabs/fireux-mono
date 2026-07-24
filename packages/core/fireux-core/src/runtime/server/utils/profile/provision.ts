@@ -149,7 +149,7 @@ function requireAppMembership(snapshot: DocumentSnapshot) {
   }
 
   return assertProfileList(
-    data.profiles,
+    data.profiles ?? [],
     APP_PROFILE_ORDER,
     'The App membership'
   )

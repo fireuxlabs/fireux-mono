@@ -9,8 +9,23 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Interlaken Essen',
   shortName: 'Interlaken Essen',
   role: 'tenant',
+  selfJoinEnabled: true,
   consoles: [],
   modules: [],
+  authDefaultMode: 'sign-up',
+  authCompletion: {
+    path: '/blog',
+    title: 'Merci fürs Registriere!',
+    description: 'Du bisch derbi. Mir leite di grad zum Futter wiiter.',
+    delayMs: 1800,
+  },
+  authOnboarding: {
+    title: 'Registrier di bi Interlaken Essen',
+    description:
+      'Din Misebox-Zuegang isch bereit. Schlüss d Registrierig für Interlaken Essen ab.',
+    completeLabel: 'Registrierig abschliesse',
+    skipLabel: 'Für itz überspringe',
+  },
   seo: {
     siteUrl: 'https://interlaken-essen.misebox.app',
   },

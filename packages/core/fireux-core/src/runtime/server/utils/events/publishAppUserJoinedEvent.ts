@@ -8,6 +8,8 @@ import {
 } from '../../../models/core/supporting/event'
 import {
   UserAppStorage,
+  UserNotificationStorage,
+  UserStorage,
   type UserApp,
 } from '../../../models/core/user.model'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
@@ -21,6 +23,8 @@ export type PublishAppUserJoinedEventInput = {
 export type PublishAppUserJoinedEventResult = {
   created: boolean
   eventId: string
+  membershipRole: 'admin' | 'user'
+  occurredAt: string
 }
 
 function timestampOccurrenceKey(value: unknown): string {
@@ -45,11 +49,27 @@ function timestampOccurrenceKey(value: unknown): string {
   }`
 }
 
+function timestampIso(value: unknown): string {
+  if (value && typeof value === 'object') {
+    const timestamp = value as { toDate?: () => Date; toMillis?: () => number }
+    if (typeof timestamp.toDate === 'function') {
+      const date = timestamp.toDate()
+      if (Number.isFinite(date.getTime())) return date.toISOString()
+    }
+    if (typeof timestamp.toMillis === 'function') {
+      const millis = timestamp.toMillis()
+      if (Number.isFinite(millis)) return new Date(millis).toISOString()
+    }
+  }
+  return new Date().toISOString()
+}
+
 /**
  * Materializes the app-owned fact that a user membership exists.
  *
  * The deterministic event id makes sign-in retries and opportunistic backfills
- * idempotent. Notification delivery is intentionally owned by later consumers.
+ * idempotent. Existing App admins receive owner-only notification projections
+ * in the same transaction; external delivery remains a later consumer.
  */
 export async function publishAppUserJoinedEvent(
   input: PublishAppUserJoinedEventInput
@@ -60,6 +80,8 @@ export async function publishAppUserJoinedEvent(
     .collection(UserAppStorage.collection)
     .doc(input.userId)
   let eventId = ''
+  let membershipRole: 'admin' | 'user' = 'user'
+  let occurredAt = ''
 
   const created = await db.runTransaction(async (transaction) => {
     const [appSnapshot, membershipSnapshot] = await Promise.all([
@@ -76,17 +98,26 @@ export async function publishAppUserJoinedEvent(
 
     const membership = membershipSnapshot.data() as UserApp
     const membershipCreatedAt = membership?.created?.at
+    membershipRole = membership.role === 'admin' ? 'admin' : 'user'
+    occurredAt = timestampIso(membershipCreatedAt)
     eventId = appUserJoinedEventId(
       input.userId,
       timestampOccurrenceKey(membershipCreatedAt)
     )
-    const eventRef = appRef
-      .collection(AppEventStorage.collection)
-      .doc(eventId)
-    const eventSnapshot = await transaction.get(eventRef)
+    const eventRef = appRef.collection(AppEventStorage.collection).doc(eventId)
+    const adminsQuery = appRef
+      .collection(UserAppStorage.collection)
+      .where('role', '==', 'admin')
+      .limit(32)
+    const [eventSnapshot, adminsSnapshot] = await Promise.all([
+      transaction.get(eventRef),
+      transaction.get(adminsQuery),
+    ])
     if (eventSnapshot.exists) return false
 
     const ecosystemId = String(input.ecosystemId || '').trim()
+    const appName =
+      String(appSnapshot.data()?.app_name || '').trim() || input.appId
 
     transaction.create(eventRef, {
       id: eventId,
@@ -105,14 +136,33 @@ export async function publishAppUserJoinedEvent(
       },
       payload: {
         user_id: input.userId,
-        membership_role: membership.role === 'admin' ? 'admin' : 'user',
+        membership_role: membershipRole,
       },
       occurred_at: membershipCreatedAt || FieldValue.serverTimestamp(),
       published_at: FieldValue.serverTimestamp(),
     } as unknown as AppEvent)
 
+    for (const admin of adminsSnapshot.docs) {
+      if (admin.id === input.userId) continue
+
+      const notificationRef = db
+        .collection(UserStorage.rootCollection)
+        .doc(admin.id)
+        .collection(UserNotificationStorage.collection)
+        .doc(eventId)
+      transaction.create(notificationRef, {
+        message: `New user joined ${appName}.`,
+        scope: 'app',
+        created: {
+          at: FieldValue.serverTimestamp(),
+          app_id: input.appId,
+        },
+        read: false,
+      })
+    }
+
     return true
   })
 
-  return { created, eventId }
+  return { created, eventId, membershipRole, occurredAt }
 }

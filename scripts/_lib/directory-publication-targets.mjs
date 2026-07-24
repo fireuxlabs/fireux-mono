@@ -71,6 +71,13 @@ export const DIRECTORY_PUBLICATION_INFRASTRUCTURE = Object.freeze([
     databases: [DIRECTORY_PUBLICATION_DATABASES.ownerOutbox],
   }),
   infrastructure({
+    id: 'buenohost',
+    firebaseProjectId: 'buenohost-ecosystem',
+    appWorkspace: 'projects/fireux/buenohost',
+    location: 'eur3',
+    databases: [DIRECTORY_PUBLICATION_DATABASES.ownerOutbox],
+  }),
+  infrastructure({
     id: 'cleanbox',
     firebaseProjectId: 'cleanbox-f15bc',
     appWorkspace: 'projects/werkbox/werkbox-app',
@@ -144,11 +151,13 @@ export const DIRECTORY_PUBLICATION_TARGETS = Object.freeze([
   }),
   target({
     id: 'fireux-buenohost',
-    firebaseProjectId: 'fireux-2005',
+    firebaseProjectId: 'buenohost-ecosystem',
     databaseId: 'buenohost',
     projectId: 'fireux',
-    region: 'europe-west1',
-    appIds: ['buenohost'],
+    ecosystemId: 'buenohost',
+    region: 'europe-west6',
+    appIds: ['buenohost', 'book-with-nats'],
+    ecosystemIds: ['buenohost'],
   }),
   target({
     id: 'fireux-find-my-seo',

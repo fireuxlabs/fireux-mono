@@ -21,13 +21,14 @@
           >
             <div
               class="asset-frame"
-              :class="asset.wide ? 'asset-frame--wide' : 'asset-frame--square'"
+              :class="[
+                asset.wide ? 'asset-frame--wide' : 'asset-frame--square',
+                asset.surface
+                  ? `asset-frame--surface-${asset.surface}`
+                  : undefined,
+              ]"
             >
-              <img
-                :src="asset.src"
-                :alt="asset.label"
-                class="asset-image"
-              >
+              <img :src="asset.src" :alt="asset.label" class="asset-image" />
             </div>
 
             <div class="space-y-1">
@@ -69,12 +70,14 @@ const assetItems = computed(() => [
     label: 'Wordmark light',
     src: brandAssets.wordmarkLight,
     wide: true,
+    surface: 'light',
   },
   {
     key: 'wordmark-dark',
     label: 'Wordmark dark',
     src: brandAssets.wordmarkDark,
     wide: true,
+    surface: 'dark',
   },
   {
     key: 'thumbnail',
@@ -128,11 +131,31 @@ useSeoMeta({
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 2);
   background:
-    linear-gradient(45deg, color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 25%, transparent 25%),
-    linear-gradient(-45deg, color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 75%),
-    linear-gradient(-45deg, transparent 75%, color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 75%);
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+    linear-gradient(
+      45deg,
+      color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      -45deg,
+      color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 25%,
+      transparent 25%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 75%,
+      color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 75%
+    ),
+    linear-gradient(
+      -45deg,
+      transparent 75%,
+      color-mix(in oklab, var(--ui-bg-muted) 60%, transparent) 75%
+    );
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
   background-size: 16px 16px;
   padding: calc(var(--spacing) * 4);
 }
@@ -143,6 +166,14 @@ useSeoMeta({
 
 .asset-frame--wide {
   aspect-ratio: 16 / 9;
+}
+
+.asset-frame--surface-light {
+  background: var(--ui-color-neutral-50);
+}
+
+.asset-frame--surface-dark {
+  background: var(--ui-color-neutral-950);
 }
 
 .asset-image {

@@ -1087,19 +1087,28 @@ service cloud.firestore {
       match /users/{userId} {
         function isValidConsoleTargets(value) {
           return value is map &&
-            value.keys().size() <= 20 &&
-            value.keys().hasAll([
+            value.keys().hasOnly([
               'kitchen_ids',
               'supplier_ids',
               'property_ids',
               'portfolio_ids',
               'blank_ids'
             ]) &&
-            value.kitchen_ids is list && value.kitchen_ids.size() <= 50 &&
-            value.supplier_ids is list && value.supplier_ids.size() <= 50 &&
-            value.property_ids is list && value.property_ids.size() <= 50 &&
-            value.portfolio_ids is list && value.portfolio_ids.size() <= 50 &&
-            value.blank_ids is list && value.blank_ids.size() <= 50;
+            (!('kitchen_ids' in value) ||
+              (value.kitchen_ids is list &&
+                value.kitchen_ids.size() <= 50)) &&
+            (!('supplier_ids' in value) ||
+              (value.supplier_ids is list &&
+                value.supplier_ids.size() <= 50)) &&
+            (!('property_ids' in value) ||
+              (value.property_ids is list &&
+                value.property_ids.size() <= 50)) &&
+            (!('portfolio_ids' in value) ||
+              (value.portfolio_ids is list &&
+                value.portfolio_ids.size() <= 50)) &&
+            (!('blank_ids' in value) ||
+              (value.blank_ids is list &&
+                value.blank_ids.size() <= 50));
         }
 
         function isValidUserApp(data) {
@@ -1107,8 +1116,6 @@ service cloud.firestore {
               'role',
               'is_premium',
               'console_enabled',
-              'profiles',
-              'console_targets',
               'created',
               'updated'
             ]) &&
@@ -1116,6 +1123,7 @@ service cloud.firestore {
               'role',
               'is_premium',
               'console_enabled',
+              'onboarding_status',
               'profiles',
               'console_targets',
               'created',
@@ -1124,16 +1132,24 @@ service cloud.firestore {
             data.role in ['admin', 'user'] &&
             data.is_premium is bool &&
             data.console_enabled is bool &&
-            data.profiles is list &&
-            data.profiles.size() <= 20 &&
-            data.profiles.hasOnly([
-              'agent',
-              'chef',
-              'customer',
-              'driver',
-              'professional'
-            ]) &&
-            isValidConsoleTargets(data.console_targets) &&
+            (!('onboarding_status' in data) ||
+              data.onboarding_status in [
+                'pending',
+                'completed',
+                'skipped'
+              ]) &&
+            (!('profiles' in data) ||
+              (data.profiles is list &&
+                data.profiles.size() <= 20 &&
+                data.profiles.hasOnly([
+                  'agent',
+                  'chef',
+                  'customer',
+                  'driver',
+                  'professional'
+                ]))) &&
+            (!('console_targets' in data) ||
+              isValidConsoleTargets(data.console_targets)) &&
             validCreatedStamp(data.created) &&
             data.created.app_id == appId &&
             validUpdatedStamp(data.updated);
@@ -1141,7 +1157,9 @@ service cloud.firestore {
 
         allow get: if isOwner(userId) ||
           (isAppAdmin(appId) && isValidUserApp(resource.data));
-        allow list: if isAppAdmin(appId);
+        allow list: if isAppAdmin(appId) &&
+          request.query.limit <= 100 &&
+          isValidUserApp(resource.data);
         allow create, update, delete: if false;
       }
 

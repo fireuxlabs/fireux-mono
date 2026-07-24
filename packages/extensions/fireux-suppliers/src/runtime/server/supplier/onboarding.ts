@@ -7,6 +7,7 @@ import {
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
 import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -22,6 +23,7 @@ type MemberRole = 'admin' | 'user'
 type RuntimePolicy = {
   appId: string
   appRole: string
+  developerId: string
   appScopeState: 'parent_app' | 'tenant_app'
   canCreate: boolean
   targetIds: string[]
@@ -54,6 +56,7 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   const fireux = record(useRuntimeConfig(event).public?.fireux)
   const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
   const appRole = text(fireux.role)
+  const developerId = text(fireux.developerId)
   const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
   if (!appScopeState) fail(403, 'This App cannot own a Supplier console.')
 
@@ -65,7 +68,14 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
     ? Array.from(new Set(supplierConfig.targetIds.map(text).filter(Boolean)))
     : []
 
-  return { appId, appRole, appScopeState, canCreate, targetIds }
+  return {
+    appId,
+    appRole,
+    developerId,
+    appScopeState,
+    canCreate,
+    targetIds,
+  }
 }
 
 function assertRuntimeTarget(policy: RuntimePolicy, supplierId: string) {
@@ -290,7 +300,13 @@ export async function completeSupplierOnboarding(
       assertSupportCapacity(supportData, uid)
     }
 
-    if (!support.exists && membership.get('is_premium') !== true) {
+    if (
+      !support.exists &&
+      !hasUserAppPremiumAccess(membershipData, {
+        isConfiguredDeveloper:
+          Boolean(policy.developerId) && uid === policy.developerId,
+      })
+    ) {
       const operatorSupports = await transaction.get(
         db
           .collection(

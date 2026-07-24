@@ -56,6 +56,8 @@ contract.
 | Server API | `server-api.md` | Package registration and shared server primitives | Placement is clear; no-op hooks and repeated authority parsing remain |
 | Runtime package | `runtime-package.md` | Module wiring and package guards | Registration spine is shared; package lanes own deliberate deltas |
 | App config | `app-config.md` | `defineFireuxConfig`, Nuxt overrides, and `FireUXConfig` | Runtime role is explicit; repeated project defaults are drift |
+| Brand assets | `brand-assets.md` | Core source family plus `scripts/guards/fireux-brand-assets.mjs` | FireUX identity is Core-owned; parent ecosystem and App projections are guarded |
+| Project user monitor | `project-user-monitor.md` | App join events, OIDC receiver, and FireUX admin feed | Bounded signup projection is shared; production source scopes require deployment |
 | Layout | `layouts.md` | `AppShell` and current runtime layouts | Ownership is clear; slot versus direct route rendering is `to-confirm` |
 | Debug | `debug.md` | `DevJson` and `DevFireuxDebugPanel` | Two distinct surfaces are accepted; a third generic panel is drift |
 

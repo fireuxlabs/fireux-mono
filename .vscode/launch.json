@@ -230,6 +230,17 @@
       }
     },
     {
+      "name": "Book with Nats dev (3028)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:book-with-nats",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 19
+      }
+    },
+    {
       "name": "Kill FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
@@ -426,6 +437,17 @@
         "group": "Dev Servers",
         "order": 118
       }
+    },
+    {
+      "name": "Kill Book with Nats dev (3028)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:book-with-nats",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 119
+      }
     }
   ],
   "compounds": [
@@ -467,7 +489,8 @@
         "FireUX Blank dev (3015)",
         "Bangin Coffee dev (3016)",
         "Bären Ringgenberg dev (3017)",
-        "Interlaken Essen dev (3026)"
+        "Interlaken Essen dev (3026)",
+        "Book with Nats dev (3028)"
       ]
     }
   ]

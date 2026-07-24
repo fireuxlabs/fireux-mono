@@ -1,0 +1,34 @@
+<svg width="1280" height="720" viewBox="0 0 1280 720" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ember" x1="760" y1="110" x2="1220" y2="660" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF5A1F"/>
+      <stop offset="0.55" stop-color="#FF8614"/>
+      <stop offset="1" stop-color="#FFC928"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1030 370) rotate(150) scale(470 390)">
+      <stop stop-color="#FF5A1F" stop-opacity="0.42"/>
+      <stop offset="0.5" stop-color="#FF5A1F" stop-opacity="0.1"/>
+      <stop offset="1" stop-color="#FF5A1F" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M40 0H0V40" stroke="#FFFFFF" stroke-opacity="0.055"/>
+    </pattern>
+  </defs>
+  <rect width="1280" height="720" fill="#0B111C"/>
+  <rect width="1280" height="720" fill="url(#grid)"/>
+  <circle cx="1030" cy="370" r="390" fill="url(#glow)"/>
+  <path d="M844 144C1015 176 1134 291 1171 472" stroke="url(#ember)" stroke-width="3" stroke-linecap="round" opacity="0.55"/>
+  <path d="M824 615C989 592 1115 490 1162 337" stroke="#FFC928" stroke-width="2" stroke-linecap="round" stroke-dasharray="5 15" opacity="0.32"/>
+  <g transform="translate(92 158) scale(1.45)">
+    <path d="M50 5L82 49C96 69 87 97 64 107C40 116 14 100 13 76C12 58 22 42 39 25L38 55L52 39L50 5Z" fill="#FF5A1F"/>
+    <path d="M54 45L70 68C79 82 69 99 54 101C40 103 28 92 31 78C33 67 43 56 54 45Z" fill="#FFB000"/>
+    <path d="M54 70L62 82C66 89 61 97 53 98C45 99 39 92 42 85C44 79 49 74 54 70Z" fill="#FFF4D8"/>
+    <path d="M78 9L84 15L78 21L72 15L78 9Z" fill="#FFC928"/>
+  </g>
+  <text x="255" y="288" fill="#F9FAFB" font-family="Arial, Helvetica, sans-serif" font-size="122" font-weight="700" letter-spacing="-8">Fire</text>
+  <text x="471" y="288" fill="#FF5A1F" font-family="Arial, Helvetica, sans-serif" font-size="122" font-weight="800" letter-spacing="-8">UX</text>
+  <text x="102" y="445" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="54" font-weight="700" letter-spacing="-2">Your business. Your app.</text>
+  <text x="104" y="496" fill="#98A2B3" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="500">Web app. Accounts. Console. Hosting.</text>
+  <rect x="102" y="548" width="146" height="48" rx="24" fill="#FF5A1F"/>
+  <text x="132" y="580" fill="#FFFFFF" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" letter-spacing="1.4">IGNITION</text>
+</svg>

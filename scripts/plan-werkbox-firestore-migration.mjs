@@ -53,13 +53,6 @@ const KNOWN_DESCENDANT_COLLECTION_IDS = [
   'join-requests',
   'membership-blocks',
 ]
-const EMPTY_CONSOLE_TARGETS = {
-  kitchen_ids: [],
-  supplier_ids: [],
-  property_ids: [],
-  portfolio_ids: [],
-  blank_ids: [],
-}
 const ALLOWED_REMOVED_FIELDS = {
   'canonical-user': new Set([
     'adminOf',
@@ -557,8 +550,12 @@ function buildPlan(state) {
         role,
         is_premium: membershipSnapshot.get('is_premium') === true,
         console_enabled: false,
-        profiles,
-        console_targets: clone(EMPTY_CONSOLE_TARGETS),
+        onboarding_status:
+          membershipSnapshot.get('onboarding_status') === 'completed' ||
+          membershipSnapshot.get('onboarding_status') === 'skipped'
+            ? membershipSnapshot.get('onboarding_status')
+            : 'pending',
+        ...(profiles.length ? { profiles } : {}),
         created,
         updated,
       }

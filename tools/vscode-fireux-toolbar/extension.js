@@ -783,7 +783,7 @@ function activate(context) {
     },
     {
       key: 'buenohost',
-      ecosystem: 'fireux',
+      ecosystem: 'buenohost',
       name: 'BuenoHost',
       icon: '$(key)',
       port: 3012,
@@ -897,6 +897,19 @@ function activate(context) {
       pnpmCommand: 'pnpm dev:baeren-ringgenberg --host',
       tooltip: 'Start Bären Ringgenberg dev (port 3017)',
       url: 'http://localhost:3017',
+    },
+    {
+      key: 'book-with-nats',
+      ecosystem: 'buenohost',
+      name: 'Book with Nats',
+      icon: '$(home)',
+      port: 3028,
+      commandId: 'fireuxToolbar.startBookWithNats',
+      taskLabel: 'pnpm dev:book-with-nats',
+      terminalName: 'Book with Nats (3028)',
+      pnpmCommand: 'pnpm dev:book-with-nats --host',
+      tooltip: 'Start Book with Nats dev (port 3028)',
+      url: 'http://localhost:3028',
     },
     {
       key: 'bangin-coffee',
@@ -1018,6 +1031,7 @@ function activate(context) {
 
   const ecosystemViewIds = {
     fireux: 'fireuxToolbar.fireuxServersView',
+    buenohost: 'fireuxToolbar.buenohostServersView',
     misebox: 'fireuxToolbar.miseboxServersView',
     werkbox: 'fireuxToolbar.werkboxServersView',
     bringli: 'fireuxToolbar.bringliServersView',

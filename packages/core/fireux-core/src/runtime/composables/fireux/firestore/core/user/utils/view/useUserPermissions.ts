@@ -1,32 +1,41 @@
 // Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: derive one highest current-App tier without duplicating stored authority.
 import { computed } from '#imports'
 import type { UserApp } from '../../../../../../../models/core/user.model'
+import {
+  resolveUserAppAccess,
+  type UserAppAccessTier,
+} from '../../../../../../../models/core/supporting/user-app-access'
 import { useDeveloperAccess } from '../../../../../app/useDeveloperAccess'
 import type { UserRefs } from '../../fetch/useUserFetch'
 
-export type UserAccessTier = 'free' | 'premium' | 'admin' | 'dev'
+export type UserAccessTier = UserAppAccessTier
 
 export function useUserPermissions(user: UserRefs) {
   const appUser = user.appUser as { value: UserApp | null | undefined }
   const { isDeveloper } = useDeveloperAccess()
 
-  const isAdmin = computed(() => {
-    return appUser.value?.role === 'admin'
-  })
-
-  const isPremium = computed(() => appUser.value?.is_premium === true)
-  const accessTier = computed<UserAccessTier | null>(() => {
-    if (isDeveloper.value) return 'dev'
-    if (!appUser.value) return null
-    if (isAdmin.value) return 'admin'
-    if (isPremium.value) return 'premium'
-    return 'free'
-  })
-  const canOwnMultipleConsoles = computed(() => isPremium.value)
+  const access = computed(() =>
+    resolveUserAppAccess({
+      membership: appUser.value,
+      isConfiguredDeveloper: isDeveloper.value,
+    })
+  )
+  const isAdmin = computed(() => access.value.hasAdminAuthority)
+  const isPremiumEntitlement = computed(
+    () => access.value.hasExplicitPremiumEntitlement
+  )
+  const hasPremiumAccess = computed(() => access.value.hasPremiumAccess)
+  // Compatibility alias: callers historically consumed `isPremium`.
+  // It now means effective Premium-or-higher capability, not the raw grant.
+  const isPremium = hasPremiumAccess
+  const accessTier = computed<UserAccessTier | null>(() => access.value.tier)
+  const canOwnMultipleConsoles = hasPremiumAccess
 
   return {
     isAdmin,
     isPremium,
+    isPremiumEntitlement,
+    hasPremiumAccess,
     isDeveloper,
     accessTier,
     canOwnMultipleConsoles,

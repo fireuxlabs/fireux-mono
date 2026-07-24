@@ -18,6 +18,7 @@ export const BlogPayload = {
   owner_type: 'app',
   owner_id: '',
   visibility: 'app',
+  publication_scope: 'app',
   title: '',
   content: '',
   metaDescription: '',
@@ -81,6 +82,7 @@ export function useBlogCreate() {
       owner_type: ownerType,
       owner_id: ownerId,
       visibility: payload.visibility || 'app',
+      publication_scope: payload.publication_scope || 'app',
     } as Omit<BlogPost, 'created' | 'updated'>
 
     await setDocument<BlogPost>(

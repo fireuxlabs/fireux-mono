@@ -22,7 +22,13 @@
 
         <template v-if="isAuthenticated">
           <div class="w-full space-y-4">
-            <p class="font-medium">You're signed in.</p>
+            <UAlert
+              v-if="showCompletion"
+              color="success"
+              variant="subtle"
+              :title="authCompletionTitle"
+              :description="authCompletionDescription"
+            />
             <UAlert
               v-if="accountProvisionErrorMessage"
               color="error"
@@ -40,21 +46,35 @@
             >
               Retry account setup
             </UButton>
+            <AuthOnboarding
+              v-else-if="showOnboarding"
+              :title="authOnboarding!.title"
+              :description="authOnboarding!.description"
+              :complete-label="authOnboarding!.completeLabel"
+              :skip-label="authOnboarding!.skipLabel"
+              :loading="onboardingLoading"
+              :error="onboardingError"
+              @submit="handleOnboarding"
+            />
+            <UAlert
+              v-else-if="membershipLoading"
+              color="neutral"
+              variant="soft"
+              title="Registrierig wird vorbereitet"
+              :description="`Agmäldet aus ${authIdentityLabel}.`"
+            />
+
             <UserCardsPill
-              v-else-if="currentUserPill"
+              v-else-if="!showCompletion && currentUserPill"
               v-bind="currentUserPill"
               :link="Boolean(currentUserPill && currentUserPill.to)"
               :show-badges="false"
             />
-            <UAlert
-              v-else
-              color="neutral"
-              variant="soft"
-              title="Account sync in progress"
-              :description="`Signed in as ${authIdentityLabel}.`"
-            />
 
-            <div class="flex w-full flex-col gap-3">
+            <div
+              v-if="!showOnboarding && !membershipLoading"
+              class="flex w-full flex-col gap-3"
+            >
               <UButton
                 block
                 color="primary"
@@ -115,7 +135,10 @@
 
           <USeparator label="or continue with email" />
 
-          <AuthEmailPanel :brand-label="ecosystemLabel" />
+          <AuthEmailPanel
+            :brand-label="ecosystemLabel"
+            :default-mode="config.authDefaultMode"
+          />
         </template>
       </div>
     </UCard>
@@ -146,6 +169,10 @@ const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
 const providerError = ref('')
+const onboardingLoading = ref<'' | 'completed' | 'skipped'>('')
+const onboardingError = ref('')
+const submittedOnboardingStatus = ref<'' | 'completed' | 'skipped'>('')
+const navigationInFlight = ref(false)
 const googleConsentAcknowledged = ref(false)
 const accountProvisionErrorMessage = computed(() => {
   const error = lastAccountProvisionError.value
@@ -169,7 +196,14 @@ const ecosystemBrandAlt = computed(() => `${ecosystemBrandLabel.value} ecosystem
 const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
 const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
-const { currentUser } = useUser()
+const {
+  currentUser,
+  appUser,
+  appPending,
+  appOutcome,
+  app: appUpdates,
+} = useUser()
+const { membership } = appUpdates
 const { pill: userInterface } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
@@ -187,8 +221,62 @@ function sanitizeRedirect(value: unknown): string | null {
   return trimmed
 }
 
-const postAuthPath = computed(() => sanitizeRedirect(route.query.redirect) ?? '/dashboard')
-const authenticatedPrimaryLabel = 'Go to dashboard'
+const authCompletion = computed(() => config.authCompletion)
+const authOnboarding = computed(() => config.authOnboarding)
+const onboardingStatus = computed(
+  () =>
+    submittedOnboardingStatus.value ||
+    appUser.value?.onboarding_status ||
+    'pending'
+)
+const membershipLoading = computed(
+  () =>
+    Boolean(authOnboarding.value) &&
+    (appPending.value || appOutcome.value === 'pending' || appOutcome.value === 'idle')
+)
+const showOnboarding = computed(
+  () =>
+    Boolean(authOnboarding.value) &&
+    !membershipLoading.value &&
+    appOutcome.value === 'ready' &&
+    onboardingStatus.value === 'pending' &&
+    !accountProvisionErrorMessage.value
+)
+const showCompletion = computed(
+  () =>
+    Boolean(authCompletion.value) &&
+    (!authOnboarding.value || onboardingStatus.value === 'completed')
+)
+const authCompletionTitle = computed(
+  () => authCompletion.value?.title || 'Thanks for registering!'
+)
+const authCompletionDescription = computed(
+  () => authCompletion.value?.description || 'We’re taking you to the next page.'
+)
+const authenticatedPrimaryLabel = computed(() =>
+  authCompletion.value ? 'Wiiter zum Futter' : 'Go to dashboard'
+)
+const completionDelay = computed(() => {
+  const delay = authCompletion.value?.delayMs
+  return typeof delay === 'number' && Number.isFinite(delay)
+    ? Math.min(Math.max(delay, 0), 10_000)
+    : 0
+})
+const completionPath = computed(
+  () => sanitizeRedirect(authCompletion.value?.path) ?? '/dashboard'
+)
+const resolvedPostAuthPath = computed(
+  () => sanitizeRedirect(route.query.redirect) ?? completionPath.value
+)
+
+async function completeAuthNavigation(target: string, showDelay = true) {
+  if (navigationInFlight.value) return
+  navigationInFlight.value = true
+  if (showDelay && completionDelay.value > 0 && authCompletion.value) {
+    await new Promise(resolve => setTimeout(resolve, completionDelay.value))
+  }
+  await router.replace(target).catch(() => {})
+}
 
 watch(
   () =>
@@ -196,29 +284,51 @@ watch(
       route.path,
       hasAuthState.value,
       isAuthenticated.value,
-      postAuthPath.value,
+      resolvedPostAuthPath.value,
       creatingUser.value,
       lastAccountProvisionError.value,
+      appPending.value,
+      appOutcome.value,
+      onboardingStatus.value,
     ] as const,
-  async ([path, authReady, authenticated, target, creating, accountError]: readonly [
+  async ([
+    path,
+    authReady,
+    authenticated,
+    target,
+    creating,
+    accountError,
+    membershipPending,
+    membershipOutcome,
+    status,
+  ]: readonly [
     string,
     boolean,
     boolean,
     string,
     boolean,
     unknown,
+    boolean,
+    string,
+    string,
   ]) => {
     if (path !== '/auth') return
     if (!authReady || !authenticated) return
     if (creating) return
     if (accountError) return
-    await router.replace(target).catch(() => {})
+    if (authOnboarding.value) {
+      if (membershipPending || membershipOutcome !== 'ready') return
+      if (status === 'pending') return
+      await completeAuthNavigation(target, status === 'completed')
+      return
+    }
+    await completeAuthNavigation(target)
   },
   { immediate: true }
 )
 
 const goToDashboard = async () => {
-  await router.push(postAuthPath.value).catch(() => {})
+  await router.push(resolvedPostAuthPath.value).catch(() => {})
 }
 
 const handleSignOut = async () => {
@@ -235,15 +345,33 @@ const handleAccountRetry = async () => {
   await retryAccountProvisioning().catch(() => {})
 }
 
+const handleOnboarding = async (status: 'completed' | 'skipped') => {
+  if (onboardingLoading.value) return
+  onboardingError.value = ''
+  onboardingLoading.value = status
+  try {
+    await membership.setOnboardingStatus(status)
+    submittedOnboardingStatus.value = status
+    await completeAuthNavigation(
+      resolvedPostAuthPath.value,
+      status === 'completed'
+    )
+  } catch (error) {
+    onboardingError.value =
+      error instanceof Error && error.message.trim()
+        ? error.message
+        : 'D Registrierig het nid chönne gspeicheret wärde.'
+  } finally {
+    onboardingLoading.value = ''
+  }
+}
+
 const handleGoogle = async () => {
   if (providerLoading.value || !googleConsentAcknowledged.value) return
   providerError.value = ''
   providerLoading.value = true
   try {
-    const user = await signInWithGoogle(FIREUX_ACCOUNT_TERMS_VERSION)
-    if (user?.uid) {
-      await router.push(postAuthPath.value).catch(() => {})
-    }
+    await signInWithGoogle(FIREUX_ACCOUNT_TERMS_VERSION)
   } catch (error) {
     providerError.value =
       error instanceof Error && error.message.trim()

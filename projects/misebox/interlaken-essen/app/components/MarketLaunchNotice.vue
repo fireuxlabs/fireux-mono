@@ -11,7 +11,7 @@
     </span>
 
     <NuxtLink
-      to="/register"
+      to="/auth"
       class="market-launch__action"
     >
       Betrieb registriere

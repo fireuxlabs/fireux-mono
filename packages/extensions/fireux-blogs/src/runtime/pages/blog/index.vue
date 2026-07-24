@@ -1,33 +1,15 @@
 <template>
-  <UPage>
-    <UBreadcrumb :items="breadcrumbItems" class="mb-4" />
-
-    <UPageHeader :title="pageTitle" :description="pageDescription" />
-    <UPageBody>
-      <BlogCTA />
-      <BlogCollectionManager />
-    </UPageBody>
-  </UPage>
+  <BlogIndex />
 </template>
 
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import BlogIndex from '../../components/Blog/Index.vue'
 
 const { appName } = useFireUXConfig()
 
-const breadcrumbItems = [
-  {
-    label: 'Home',
-    to: '/',
-  },
-  {
-    label: 'Blog',
-  },
-]
-
 const pageTitle = 'Blog'
-const pageDescription = 'Read updates, releases, and stories.'
 
 definePageMeta({
   layout: 'default',
@@ -46,5 +28,4 @@ definePageMeta({
 })
 
 useHead({ title: `${appName} | ${pageTitle}` })
-
 </script>

@@ -445,7 +445,7 @@ export const metaContent = defineFireuxMeta({
       id: 'project.users',
       slug: 'users',
       title: 'Users',
-      description: 'Manage your users.',
+      description: 'Monitor new users across your projects and apps.',
       to: '/console/project/users',
       console: {
         id: 'project',

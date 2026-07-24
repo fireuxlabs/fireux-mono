@@ -71,7 +71,7 @@
     </div>
 
     <BlogCreateAdvanced />
-    <BlogCreateImages />
+    <BlogCreateImages ref="imagesRef" />
   </div>
 </template>
 
@@ -92,6 +92,12 @@ const EditorContent = defineAsyncComponent(async () => {
 })
 
 const editor = shallowRef<any>(null)
+const imagesRef = shallowRef<{
+  uploadImages: (blogId: string) => Promise<{
+    featuredImage: string
+    socialImage: string
+  }>
+} | null>(null)
 
 const { normalizeBlogSlug, computeReadingTime } = useBlogUtils()
 const { blogPost } = useBlogDraftState()
@@ -185,6 +191,10 @@ const can = (action: 'undo' | 'redo') => {
     ? editor.value.can().undo()
     : editor.value.can().redo()
 }
+
+defineExpose({
+  uploadImages: (blogId: string) => imagesRef.value?.uploadImages(blogId),
+})
 </script>
 
 <style scoped>

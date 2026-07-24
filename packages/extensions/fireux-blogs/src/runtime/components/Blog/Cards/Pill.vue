@@ -8,7 +8,7 @@
       <UAvatar
         v-if="avatarUrl"
         :src="avatarUrl || undefined"
-        :alt="title || ''"
+        alt=""
         size="sm"
       />
 
@@ -37,7 +37,7 @@
       <UAvatar
         v-if="avatarUrl"
         :src="avatarUrl || undefined"
-        :alt="title || ''"
+        alt=""
         size="sm"
       />
 

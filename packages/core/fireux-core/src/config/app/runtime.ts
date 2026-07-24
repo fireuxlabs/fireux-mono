@@ -37,6 +37,19 @@ export type RuntimeApp = {
   domains: readonly string[]
   profiles: readonly string[]
   selfJoinEnabled: boolean
+  authDefaultMode?: 'sign-in' | 'sign-up'
+  authCompletion?: {
+    path: string
+    title?: string
+    description?: string
+    delayMs?: number
+  }
+  authOnboarding?: {
+    title: string
+    description?: string
+    completeLabel?: string
+    skipLabel?: string
+  }
   navHiddenKeys?: readonly string[]
   navOverrides?: Record<
     string,

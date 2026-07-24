@@ -146,6 +146,9 @@ export async function run(ctx) {
 
       const publicViolation = checkProjectPublicImageLibrary(appPath)
       if (publicViolation) violations.push(publicViolation)
+
+      const authViolation = checkProjectAuthSpine(appPath)
+      if (authViolation) violations.push(authViolation)
     }
   }
 
@@ -154,6 +157,24 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ project apps valid')
+}
+
+function checkProjectAuthSpine(appPath) {
+  const localAuthPages = ['auth.vue', 'login.vue', 'register.vue']
+    .map((name) => path.join(appPath, 'app', 'pages', name))
+    .filter((filePath) => existsSync(filePath))
+
+  if (!localAuthPages.length) return null
+
+  return [
+    '[guard] ❌ project-local authentication route detected:',
+    ...localAuthPages.map((filePath) => `  - ${filePath}`),
+    '',
+    '[guard] Fix:',
+    '- Use the FireUX Core /auth route for sign-in and registration.',
+    '- Keep App identity and branding in project config and shared brand assets.',
+    '- Do not fork authentication behavior in a project page.',
+  ].join('\n')
 }
 
 function checkProjectApp(appPath) {

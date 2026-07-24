@@ -9,6 +9,7 @@ import type {
   AppRole,
   AppSocialLinks,
 } from '../../../models/core/supporting/app'
+import type { UserAppAccessTier } from '../../../models/core/supporting/user-app-access'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 
 export type PublicSeoDto = {
@@ -62,7 +63,10 @@ export type CurrentAppMembershipDto = {
   id: string
   role: 'admin' | 'user'
   is_premium: boolean
+  access_tier: UserAppAccessTier
+  has_premium_access: boolean
   console_enabled: boolean
+  onboarding_status: 'pending' | 'completed' | 'skipped'
   profiles: string[]
   console_targets: Record<string, string[]>
 }

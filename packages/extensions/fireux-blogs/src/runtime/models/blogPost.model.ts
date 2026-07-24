@@ -8,6 +8,7 @@ import {
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type BlogPostType = 'article' | 'product'
+export type BlogPublicationScope = 'app' | 'ecosystem'
 
 type WidenLiteral<T> =
   T extends string ? string
@@ -50,6 +51,7 @@ export const BlogPostStorage = {
 export const BlogPostModel = {
   id: '',
   ...FireuxRootScope,
+  publication_scope: 'app' as BlogPublicationScope,
   title: '',
   content: '',
   metaDescription: '',
@@ -90,3 +92,12 @@ export type BlogPostCreateInput = Omit<BlogPost, 'created' | 'updated'>
 export type BlogPostUpdateInput = Partial<
   Omit<BlogPost, 'id' | 'slug' | 'created' | 'updated'>
 >
+
+/**
+ * Lightweight feed events may reference canonical Blog truth without copying
+ * it. Feed-only events simply omit this reference.
+ */
+export type BlogPostFeedReference = {
+  kind: 'blog-post'
+  slug: string
+}

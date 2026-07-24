@@ -8,6 +8,7 @@ import {
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
 import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -21,6 +22,7 @@ type MemberRole = 'admin' | 'user'
 type RuntimePolicy = {
   appId: string
   appRole: string
+  developerId: string
   appScopeState: 'parent_app' | 'tenant_app'
   canCreate: boolean
   targetIds: string[]
@@ -131,6 +133,7 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   const fireux = record(useRuntimeConfig(event).public?.fireux)
   const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
   const appRole = text(fireux.role)
+  const developerId = text(fireux.developerId)
   const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
   if (!appScopeState) fail(403, 'This App cannot own a Portfolio console.')
 
@@ -142,7 +145,14 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
     ? Array.from(new Set(portfolioConfig.targetIds.map(text).filter(Boolean)))
     : []
 
-  return { appId, appRole, appScopeState, canCreate, targetIds }
+  return {
+    appId,
+    appRole,
+    developerId,
+    appScopeState,
+    canCreate,
+    targetIds,
+  }
 }
 
 async function actor(event: H3Event): Promise<Actor> {
@@ -353,7 +363,13 @@ export async function completePortfolioOnboarding(
       assertSupportCapacity(supportAuthority, current.uid)
     }
 
-    if (membershipData.is_premium !== true) {
+    if (
+      !hasUserAppPremiumAccess(membershipData, {
+        isConfiguredDeveloper:
+          Boolean(current.developerId) &&
+          current.uid === current.developerId,
+      })
+    ) {
       const otherPortfolio = operatorSupports.docs.find(
         snapshot => snapshot.id !== portfolioId
       )

@@ -385,6 +385,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/server/utils/events/publishAppUserJoinedEvent.ts'
   )
   assert.doesNotMatch(appUserJoinedPublisher, /app\.ecosystem_id/)
+  assert.match(appUserJoinedPublisher, /UserNotificationStorage/)
+  assert.match(appUserJoinedPublisher, /\.where\('role', '==', 'admin'\)/)
+  assert.match(appUserJoinedPublisher, /\.doc\(eventId\)/)
+  assert.match(appUserJoinedPublisher, /New user joined/)
   const ecosystemCreate = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/ecosystem/mutations/useEcosystemCreate.ts'
@@ -432,7 +436,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  for (const page of ['index', 'overview', 'identity', 'apps', 'ecosystem']) {
+  for (const page of [
+    'index',
+    'overview',
+    'identity',
+    'apps',
+    'ecosystem',
+    'users',
+  ]) {
     const source = read(
       repoRoot,
       `projects/fireux/fireux-app/app/pages/console/project/${page}.vue`
@@ -463,6 +474,39 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectControlApi, /membership\.role/)
   assert.match(projectControlApi, /===\s*['"]admin['"]/)
   assert.doesNotMatch(projectControlApi, /admin_ids/)
+
+  const projectUserJoinPage = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/pages/console/project/users.vue'
+  )
+  const projectUserJoinReceiver = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/api/internal/control/user-joins/publications.post.ts'
+  )
+  const projectUserJoinFeed = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/api/internal/control/user-joins/index.get.ts'
+  )
+  const projectUserJoinPublisher = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/server/utils/project-user-join/publish.ts'
+  )
+  assert.match(projectUserJoinPage, /\/api\/internal\/control\/user-joins/)
+  assert.match(projectUserJoinPage, /requiresSelection:\s*false/)
+  assert.match(projectUserJoinReceiver, /verifyServiceAccountOidc/)
+  assert.match(projectUserJoinReceiver, /sourceScopeAllows/)
+  assert.match(projectUserJoinReceiver, /ProjectUserJoinStorage\.collection/)
+  assert.match(projectUserJoinReceiver, /transaction\.set/)
+  assert.match(projectUserJoinReceiver, /ProjectUserJoinStorage\.maxItems/)
+  assert.doesNotMatch(projectUserJoinReceiver, /transaction\.(?:update|delete)/)
+  assert.match(projectUserJoinFeed, /requireFireuxAppAdmin/)
+  assert.match(projectUserJoinFeed, /ProjectUserJoinStorage\.document/)
+  assert.doesNotMatch(
+    projectUserJoinFeed,
+    /\.collectionGroup\(|\.where\(|\.orderBy\(/
+  )
+  assert.match(projectUserJoinPublisher, /getIdTokenClient/)
+  assert.match(projectUserJoinPublisher, /AbortSignal\.timeout/)
 
   for (const method of ['get', 'post']) {
     const registrySource = read(

@@ -45,6 +45,8 @@ const FIRESTORE_PATH =
   'packages/core/fireux-core/src/runtime/server/utils/directory-publication/firestore.ts'
 const OIDC_PATH =
   'packages/core/fireux-core/src/runtime/server/utils/directory-publication/oidc.ts'
+const SERVICE_ACCOUNT_OIDC_PATH =
+  'packages/core/fireux-core/src/runtime/server/utils/auth/service-account-oidc.ts'
 const OWNER_PATH =
   'packages/core/fireux-core/src/runtime/server/utils/directory-publication/owner.ts'
 const RECEIVER_PATH =
@@ -102,7 +104,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const validatorSource = read(repoRoot, VALIDATE_PATH)
   const reducerSource = read(repoRoot, REDUCE_PATH)
   const firestoreSource = read(repoRoot, FIRESTORE_PATH)
-  const oidcSource = read(repoRoot, OIDC_PATH)
+  const oidcSource = [
+    read(repoRoot, OIDC_PATH),
+    read(repoRoot, SERVICE_ACCOUNT_OIDC_PATH),
+  ].join('\n')
   const ownerSource = read(repoRoot, OWNER_PATH)
   const receiverSource = read(repoRoot, RECEIVER_PATH)
   const receiverConfigSource = read(repoRoot, RECEIVER_CONFIG_PATH)
@@ -300,6 +305,7 @@ function assertServerOnlyRulesTopology({
     'directory-publication-receipts',
     'directory-curation',
     'directory-sources',
+    'project-user-monitor',
   ]) {
     assert.match(
       rulesSource,
@@ -310,7 +316,7 @@ function assertServerOnlyRulesTopology({
   assert.doesNotMatch(rulesSource, /request\.auth|allow\s+[^;]+:\s*if\s+true/i)
   const allows =
     rulesSource.match(/allow\s+read,\s*write:\s*if\s+serverOnly\(\)\s*;/g) || []
-  assert.equal(allows.length, 7, 'Every rules match must use the false helper.')
+  assert.equal(allows.length, 8, 'Every rules match must use the false helper.')
 
   const rulesDirectory = path.join(repoRoot, RULES_DIRECTORY)
   const configFiles = readdirSync(rulesDirectory)
@@ -376,6 +382,7 @@ function assertPublisherTargets() {
   })
   const expectedInfrastructure = [
     ['bringli', 'bringli-b0517', 'europe-west6', ['directory-outbox']],
+    ['buenohost', 'buenohost-ecosystem', 'eur3', ['directory-outbox']],
     ['cleanbox', 'cleanbox-f15bc', 'eur3', ['directory-outbox']],
     [
       'fireux',
@@ -403,6 +410,7 @@ function assertPublisherTargets() {
   const expectedAppIds = [
     'baeren-ringgenberg',
     'bangin-coffee',
+    'book-with-nats',
     'bringli-app',
     'buenohost',
     'cleanbox-app',
@@ -421,6 +429,7 @@ function assertPublisherTargets() {
   ]
   const expectedEcosystemIds = [
     'bringli',
+    'buenohost',
     'cleanbox',
     'fireux',
     'granite',
@@ -431,7 +440,7 @@ function assertPublisherTargets() {
     ['bringli', 'europe-west6'],
     ['cleanbox', 'europe-west1'],
     ['fireux-blank', 'europe-west1'],
-    ['fireux-buenohost', 'europe-west1'],
+    ['fireux-buenohost', 'europe-west6'],
     ['fireux-ecosystem', 'europe-west1'],
     ['fireux-find-my-seo', 'europe-west1'],
     ['fireux-go-qr', 'europe-west1'],

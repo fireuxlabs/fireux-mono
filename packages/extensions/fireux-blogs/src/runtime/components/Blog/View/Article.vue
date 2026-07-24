@@ -40,10 +40,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import type { BlogPost } from '../../../models/blogPost.model';
+import type { PublicBlogPostProjection } from '../../../models/blogPost-public.model';
 import { useBlogInterface } from '../../../composables/fireux/firestore/blog/utils/view/useBlogInterface';
 
-const props = defineProps<{ post: BlogPost }>()
+const props = defineProps<{ post: PublicBlogPostProjection }>()
 
 const { preview: toPreview } = useBlogInterface()
 const card = computed(() => {

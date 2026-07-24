@@ -12,6 +12,7 @@ const defaultBlogPost: BlogPostCreateInput = {
   owner_type: 'app',
   owner_id: '',
   visibility: 'app',
+  publication_scope: 'app',
   title: '',
   content: '',
   metaDescription: '',
@@ -96,6 +97,7 @@ export function useBlogDraftState() {
       owner_type: 'app',
       owner_id: tenantId,
       visibility: 'app',
+      publication_scope: 'app',
     }
 
     featuredImageData.value = ''
@@ -111,6 +113,7 @@ export function useBlogDraftState() {
       owner_type: 'app',
       owner_id: tenantId || ecosystemId,
       visibility: blogPost.value.visibility || 'app',
+      publication_scope: blogPost.value.publication_scope || 'app',
     }
   }
 

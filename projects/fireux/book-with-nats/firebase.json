@@ -1,0 +1,30 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "book-with-nats-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "bookWithNats"
+    }
+  ],
+  "hosting": {
+    "site": "book-with-nats-buenohost",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "function": {
+          "functionId": "bookWithNats",
+          "codebase": "book-with-nats-ssr",
+          "region": "europe-west6"
+        }
+      }
+    ]
+  }
+}

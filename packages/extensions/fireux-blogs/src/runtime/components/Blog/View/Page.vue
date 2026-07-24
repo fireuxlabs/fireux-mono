@@ -22,9 +22,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BlogPost } from '../../../models/blogPost.model'
+import type { PublicBlogPostProjection } from '../../../models/blogPost-public.model'
 
-const props = defineProps<{ post: BlogPost }>()
+const props = defineProps<{ post: PublicBlogPostProjection }>()
 
 const authorLine = computed(() => {
   const author = props.post.author?.display_name || 'Unknown author'

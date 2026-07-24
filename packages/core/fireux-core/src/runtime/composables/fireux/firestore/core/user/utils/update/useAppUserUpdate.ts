@@ -12,6 +12,9 @@ type AppMembershipActions = {
   /** App-scoped premium entitlement. */
   setPremium: (isPremium: boolean) => Promise<void>
 
+  /** Completes or deliberately skips the current App's onboarding. */
+  setOnboardingStatus: (status: 'completed' | 'skipped') => Promise<void>
+
   /** Leaves the current app (removes membership overlay + mirrors). */
   leave: () => Promise<void>
 }
@@ -45,6 +48,12 @@ export function useAppUserUpdate(user: UserRefs) {
         action: 'set-premium',
         userId: uid,
         isPremium: Boolean(isPremium),
+      })
+    },
+    setOnboardingStatus: async (status) => {
+      await mutateAppMembership({
+        action: 'set-onboarding-status',
+        status,
       })
     },
     leave: async () => {

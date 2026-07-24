@@ -13,6 +13,14 @@
       </NuxtLink>
 
       <nav class="market-nav" aria-label="Hauptnavigation">
+        <NuxtLink
+          to="/marktplatz"
+          class="market-nav__marketplace"
+          exact-active-class="market-nav__link--active"
+        >
+          <UIcon name="i-lucide-store" aria-hidden="true" />
+          Marktplatz
+        </NuxtLink>
         <NuxtLink to="/choufe" exact-active-class="market-nav__link--active">
           <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
           Choufe

@@ -1,6 +1,6 @@
 // @fireux-script
-// last_used: 2026-07-15
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-23
+// usage_note: prepare isolated Firebase SSR dependencies with pnpm 11 build approvals.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
@@ -9,7 +9,7 @@ const outputPackageJson = join(outputServerDir, 'package.json')
 const outputWorkspaceYaml = join(outputServerDir, 'pnpm-workspace.yaml')
 const outputNpmrc = join(outputServerDir, '.npmrc')
 const packageJson = JSON.parse(readFileSync(outputPackageJson, 'utf8'))
-const onlyBuiltDependencies = ['@firebase/util', 'protobufjs', 'vue-demi', 'better-sqlite3']
+const allowedBuildDependencies = ['@firebase/util', 'protobufjs', 'vue-demi', 'better-sqlite3']
 
 packageJson.dependencies ||= {}
 packageJson.dependencies['@google-cloud/functions-framework'] ||= '^3.5.1'
@@ -23,8 +23,8 @@ writeFileSync(
     "  - '.'",
     'confirmModulesPurge: false',
     'strictDepBuilds: false',
-    'onlyBuiltDependencies:',
-    ...onlyBuiltDependencies.map((dependency) => `  - '${dependency}'`),
+    'allowBuilds:',
+    ...allowedBuildDependencies.map((dependency) => `  '${dependency}': true`),
     '',
   ].join('\n')
 )

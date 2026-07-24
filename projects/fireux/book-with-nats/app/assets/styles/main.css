@@ -1,0 +1,40 @@
+@layer base {
+  :root {
+    --color-theme-50: #f5f6ef;
+    --color-theme-100: #e8eadb;
+    --color-theme-200: #d2d6bd;
+    --color-theme-300: #b4bb98;
+    --color-theme-400: #919c71;
+    --color-theme-500: #6d7950;
+    --color-theme-600: #56613f;
+    --color-theme-700: #444c34;
+    --color-theme-800: #383e2d;
+    --color-theme-900: #303628;
+    --color-theme-950: #181c13;
+    --ui-primary: var(--color-theme-600);
+    --ui-primary-hover: var(--color-theme-700);
+    --ui-primary-active: var(--color-theme-800);
+    --nats-canvas: #f2eddf;
+    --nats-paper: #fbf8ef;
+    --nats-ink: #25271f;
+    --nats-muted: #69695d;
+    --nats-forest: #263028;
+    --nats-rust: #a75438;
+    --nats-gold: #d8b878;
+    --nats-line: #d9d0be;
+    --nats-on-dark: #fffaf0;
+    --brand-canvas: var(--nats-canvas);
+    --brand-ink: var(--nats-ink);
+    --brand-primary: var(--nats-forest);
+    --brand-accent: var(--nats-rust);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--nats-canvas);
+    color: var(--nats-ink);
+  }
+}

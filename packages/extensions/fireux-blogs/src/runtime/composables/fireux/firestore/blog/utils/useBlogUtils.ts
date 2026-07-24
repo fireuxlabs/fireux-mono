@@ -31,8 +31,8 @@ function getAuthor(
 
 function getDefaultImages(): { featuredImage: string; socialImage: string } {
   return {
-    featuredImage: '/img/app/wordmark-dark.png',
-    socialImage: '/img/app/logo.png',
+    featuredImage: '',
+    socialImage: '',
   }
 }
 

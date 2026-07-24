@@ -413,37 +413,48 @@
       match /users/{userId} {
         function isValidConsoleTargets(value) {
           return value is map &&
-            value.keys().hasAll([
-              'kitchen_ids', 'supplier_ids', 'property_ids',
-              'portfolio_ids', 'blank_ids'
-            ]) &&
             value.keys().hasOnly([
               'kitchen_ids', 'supplier_ids', 'property_ids',
               'portfolio_ids', 'blank_ids'
             ]) &&
-            value.kitchen_ids is list && value.kitchen_ids.size() <= 50 &&
-            value.supplier_ids is list && value.supplier_ids.size() <= 50 &&
-            value.property_ids is list && value.property_ids.size() <= 50 &&
-            value.portfolio_ids is list && value.portfolio_ids.size() <= 50 &&
-            value.blank_ids is list && value.blank_ids.size() <= 50;
+            (!('kitchen_ids' in value) ||
+              (value.kitchen_ids is list &&
+                value.kitchen_ids.size() <= 50)) &&
+            (!('supplier_ids' in value) ||
+              (value.supplier_ids is list &&
+                value.supplier_ids.size() <= 50)) &&
+            (!('property_ids' in value) ||
+              (value.property_ids is list &&
+                value.property_ids.size() <= 50)) &&
+            (!('portfolio_ids' in value) ||
+              (value.portfolio_ids is list &&
+                value.portfolio_ids.size() <= 50)) &&
+            (!('blank_ids' in value) ||
+              (value.blank_ids is list &&
+                value.blank_ids.size() <= 50));
         }
 
         function isValidUserApp(data) {
           return data.keys().hasAll([
-              'role', 'is_premium', 'console_enabled', 'profiles',
-              'console_targets', 'created', 'updated'
+              'role', 'is_premium', 'console_enabled', 'created', 'updated'
             ]) &&
             data.keys().hasOnly([
-              'role', 'is_premium', 'console_enabled', 'profiles',
-              'console_targets', 'created', 'updated'
+              'role', 'is_premium', 'console_enabled', 'onboarding_status',
+              'profiles', 'console_targets', 'created', 'updated'
             ]) &&
             data.role in ['admin', 'user'] &&
             data.is_premium is bool &&
             data.console_enabled is bool &&
-            data.profiles is list &&
-            data.profiles.size() <= 2 &&
-            data.profiles.hasOnly(['agent', 'professional']) &&
-            isValidConsoleTargets(data.console_targets) &&
+            (!('onboarding_status' in data) ||
+              data.onboarding_status in [
+                'pending', 'completed', 'skipped'
+              ]) &&
+            (!('profiles' in data) ||
+              (data.profiles is list &&
+                data.profiles.size() <= 2 &&
+                data.profiles.hasOnly(['agent', 'professional']))) &&
+            (!('console_targets' in data) ||
+              isValidConsoleTargets(data.console_targets)) &&
             validCreatedStamp(data.created) &&
             data.created.app_id == appId &&
             validUpdatedStamp(data.updated);

@@ -29,6 +29,16 @@
           new-item-placeholder="Add new tag"
         />
 
+        <UFormField
+          label="Feed promotion"
+          description="Public Blog pages are ecosystem-wide. This controls optional feed promotion."
+        >
+          <USelect
+            v-model="blogPost.publication_scope"
+            :items="publicationScopes"
+          />
+        </UFormField>
+
         <!-- Canonical URL -->
         <UFormField label="Canonical URL">
           <div class="input-with-prefix">
@@ -66,6 +76,10 @@
 import { useBlogDraftState } from '../../../composables/fireux/blog/editor/useBlogDraftState';
 
 const { blogPost } = useBlogDraftState()
+const publicationScopes = [
+  { label: 'Source App feeds', value: 'app' },
+  { label: 'Ecosystem feeds', value: 'ecosystem' },
+]
 </script>
 
 <style scoped>

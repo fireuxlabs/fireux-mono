@@ -119,6 +119,14 @@ UserPrivate is private account support. Neither support record is another User.
 The visible Dev/Admin/Premium/Free access badge is derived presentation. It is
 not stored on User and never replaces server or Rules authority.
 
+UserApp stores App governance (`role: user | admin`), an explicit Premium
+grant, and onboarding lifecycle separately. A configured developer with a
+valid membership resolves to Dev, an Admin resolves to Admin, then explicit
+Premium and Free follow. Dev and Admin include Premium product capability, but
+only the stored Admin role grants App administration. Empty profile and
+Console-target indexes may be absent at rest; readers normalize them without
+turning the indexes into authority.
+
 ### Root doorway plus scoped source
 
 Menu is a root public doorway. KitchenMenu is a distinct Kitchen-scoped Entity

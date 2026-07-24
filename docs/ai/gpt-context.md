@@ -17,6 +17,7 @@ chats.
 
 Current scoped context entrypoints:
 
+- BuenoHost: `docs/ai/buenohost-context.md`
 - Misebox: `docs/ai/misebox-context.md`
 - Werkbox: `docs/ai/werkbox-context.md`
 
@@ -80,6 +81,28 @@ Before each task:
 
 ## Console target and onboarding authority
 
+- FireUX Core owns the single `/auth` route and its sign-in, registration,
+  account-provisioning, and authenticated redirect behavior for every App.
+  Project Apps supply identity and branding through configuration and shared
+  assets; they do not add local `/auth`, `/login`, or `/register` pages.
+- A newly created App membership publishes one deterministic
+  `app.user.joined` event under that App. The event is the durable signup log
+  and atomically creates an owner-only in-app notification for each existing
+  App admin; routine returning sign-ins do not create events or notifications.
+- A configured source SSR runtime may publish the minimal join projection to
+  the FireUX control plane over fixed-audience Google OIDC. FireUX accepts only
+  exact service-account source scopes and exposes a bounded feed derived from
+  immutable local events through its App-admin Project Users API; browsers
+  never query tenant databases directly. See
+  `docs/concepts/project-user-monitor.md`.
+- UserApp persists orthogonal App authority and lifecycle: `role` remains
+  `user | admin`, `is_premium` remains the explicit entitlement, and
+  `onboarding_status` remains `pending | completed | skipped`. The shared
+  `user-app-access` resolver derives `dev > admin > premium > free` only for a
+  valid membership; Dev never manufactures Admin authority, while Dev and Admin
+  inherit Premium product capability. Empty `profiles` and `console_targets`
+  indexes are omitted at rest and normalized on read. Rules accept missing
+  optional indexes but reject malformed, unknown, or oversized values.
 - A family core owns the authoritative target items, outcome, and selection
   validity. Index and overview adapters consume that state; they do not create
   a second membership or target-outcome authority.
@@ -166,6 +189,38 @@ Before each task:
   unit. It is a mutable offer term, not a FinancialFact producer.
 - Ecosystem composition used by Professional Experience remains outside Job
   creation and cannot change this shared contract.
+
+## Shared Blog authority
+
+- `fireux-blogs` owns one canonical root BlogPost truth and a bounded
+  server-side public projection. Public browser routes do not read raw Blog
+  roots.
+- Every BlogPost names its source App and ecosystem. Every App in an ecosystem
+  sees that ecosystem's complete public Blog catalogue; source App remains
+  provenance, not public Blog visibility.
+- `publication_scope` is available to optional feed-promotion adapters; it
+  does not narrow the ecosystem-wide public `/blog` catalogue.
+- Blog media is shared durable HTTPS media. Project `/img/app` assets are
+  presentation/source material, not canonical Blog media URLs.
+- Lightweight marketplace feeds remain their own event family. They may
+  reference a BlogPost by canonical slug but do not copy Blog truth or turn
+  every feed event into a BlogPost.
+
+## Brand asset authority
+
+- FireUX Core owns the default FireUX platform asset family under
+  `packages/core/fireux-core/src/runtime/public/img/core/brand`.
+- The `fireux-fireux` ecosystem and FireUX parent App retain their required
+  public paths as deterministic projections. Check SVG masters, raster
+  derivatives, dimensions, and projections with
+  `scripts/render-fireux-brand-assets.mjs`; only its explicit `--write` mode
+  renders and updates them, and `scripts/guards/fireux-brand-assets.mjs`
+  rejects drift.
+- `wordmark-light` means a wordmark for a light surface; `wordmark-dark` means
+  one for a dark surface.
+- A genuinely branded child App may own a complete `/img/app` override. Do not
+  overwrite child identities or maintain an unguarded second FireUX logo
+  source. See `docs/concepts/brand-assets.md`.
 
 ## Firebase MCP targeting
 
