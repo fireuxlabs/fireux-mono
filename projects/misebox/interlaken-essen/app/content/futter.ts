@@ -32,13 +32,10 @@ export const futterPosts: FutterPost[] = [
   },
   {
     id: 'interlaken-essen-isch-live',
-    titleKey: 'feed_launch_title',
-    bodyKey: 'feed_launch_body',
-    imageByLanguage: {
-      gsw: '/img/app/social-launch.png',
-      en: '/img/app/social-launch-en.png',
-    },
-    imageAltKey: 'feed_launch_image_alt',
     labelKey: 'feed_welcome_label',
+    blogPost: {
+      kind: 'blog-post',
+      slug: 'interlaken-essen-isch-live',
+    },
   },
 ]

@@ -98,7 +98,7 @@
   flex: none;
 }
 
-.market-language button {
+button.market-language.sproochli-language-trigger--default {
   width: 2.35rem;
   height: 2.35rem;
   border: 1px solid rgba(251, 243, 223, 0.48);
@@ -107,10 +107,21 @@
   backdrop-filter: blur(8px);
 }
 
-.market-language button:hover {
+button.market-language.sproochli-language-trigger--default:hover {
   border-color: var(--market-cream);
   background: rgba(251, 243, 223, 0.92);
   color: var(--market-ink);
+}
+
+button.market-language.sproochli-language-trigger--emoji,
+button.market-language.sproochli-language-trigger--emoji:hover {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  backdrop-filter: none;
 }
 
 .market-nav a {
@@ -1008,6 +1019,63 @@
 }
 
 .market-personal__settings .is-spinning {
+  animation: market-personal-spin 0.8s linear infinite;
+}
+
+.market-personal__dev-reset {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  border: 1px dashed rgba(251, 243, 223, 0.46);
+  border-radius: calc(var(--ui-radius) * 2.5);
+  padding: 0.8rem 0.9rem;
+  background: rgba(23, 53, 43, 0.66);
+  color: var(--market-cream);
+  backdrop-filter: blur(10px);
+}
+
+.market-personal__dev-reset strong {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.market-personal__dev-reset p {
+  margin: 0.15rem 0 0;
+  color: rgba(251, 243, 223, 0.7);
+  font-size: 0.74rem;
+}
+
+.market-personal__dev-reset button {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  min-height: 2.4rem;
+  flex: none;
+  border: 1px solid rgba(251, 243, 223, 0.54);
+  border-radius: 9999px;
+  padding-inline: 0.8rem;
+  background: rgba(156, 47, 40, 0.76);
+  color: var(--market-cream);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.market-personal__dev-reset button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.market-personal__dev-reset-error {
+  color: #ffd0ca !important;
+}
+
+.market-personal__dev-reset .is-spinning {
   animation: market-personal-spin 0.8s linear infinite;
 }
 

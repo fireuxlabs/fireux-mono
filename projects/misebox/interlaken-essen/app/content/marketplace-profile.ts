@@ -43,3 +43,19 @@ export type MarketplaceAccountSettings = {
 export type MarketplaceAccountSettingsInput = {
   delivery_address: string
 }
+
+export type MarketplaceOnboardingStatus =
+  | 'pending'
+  | 'completed'
+  | 'skipped'
+
+export type MarketplaceAccountResponse = {
+  ok: true
+  settings: MarketplaceAccountSettings
+  access: {
+    seller_enabled: boolean
+  }
+  membership: {
+    onboarding_status: MarketplaceOnboardingStatus
+  }
+}

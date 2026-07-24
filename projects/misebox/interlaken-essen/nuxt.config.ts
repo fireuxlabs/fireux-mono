@@ -33,4 +33,10 @@ const fireuxConfig = defineFireuxConfig({
 
 export default withFireuxNuxtConfig(fireuxConfig, {
   css: ['@/assets/styles/main.css'],
+  fireuxBlogs: {
+    languages: ['gsw', 'en'],
+    defaultLanguage: 'gsw',
+    selectionCookie: 'interlaken-essen.sproochli',
+    queryParameter: 'sproochli',
+  },
 })

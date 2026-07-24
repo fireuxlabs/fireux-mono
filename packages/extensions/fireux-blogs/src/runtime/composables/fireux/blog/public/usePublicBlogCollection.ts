@@ -4,11 +4,18 @@ import type {
   PublicBlogIndexPage,
   PublicBlogPostIndexProjection,
 } from '../../../../models/blogPost-public.model'
+import { usePublicBlogLanguage } from './usePublicBlogLanguage'
 
 export function usePublicBlogCollection() {
+  const blogLanguage = usePublicBlogLanguage()
   const state = useAsyncData<PublicBlogIndexPage>(
     'public-blog-index',
-    () => $fetch<PublicBlogIndexPage>('/api/public/blogs')
+    () => $fetch<PublicBlogIndexPage>('/api/public/blogs', {
+      query: blogLanguage.query.value,
+    }),
+    {
+      watch: [blogLanguage.language],
+    }
   )
   const additionalItems = ref<PublicBlogPostIndexProjection[]>([])
   const nextCursor = ref('')
@@ -51,7 +58,10 @@ export function usePublicBlogCollection() {
     loadMoreError.value = null
     try {
       const page = await $fetch<PublicBlogIndexPage>('/api/public/blogs', {
-        query: { cursor: nextCursor.value },
+        query: {
+          cursor: nextCursor.value,
+          ...blogLanguage.query.value,
+        },
       })
       additionalItems.value = [
         ...additionalItems.value,

@@ -238,6 +238,47 @@
               </article>
             </div>
           </section>
+
+          <aside
+            v-if="showOnboardingReset"
+            class="market-personal__dev-reset"
+          >
+            <div>
+              <strong>{{ copy('account_dev_reset_title') }}</strong>
+              <p>{{ copy('account_dev_reset_description') }}</p>
+              <p
+                v-if="onboardingResetState === 'error'"
+                class="market-personal__dev-reset-error"
+                role="alert"
+              >
+                {{ copy('account_dev_reset_error') }}
+              </p>
+            </div>
+            <button
+              type="button"
+              :disabled="onboardingResetState === 'resetting'"
+              @click="resetOnboarding"
+            >
+              <UIcon
+                :name="
+                  onboardingResetState === 'resetting'
+                    ? 'i-lucide-loader-circle'
+                    : 'i-lucide-trash-2'
+                "
+                aria-hidden="true"
+                :class="{
+                  'is-spinning': onboardingResetState === 'resetting',
+                }"
+              />
+              {{
+                copy(
+                  onboardingResetState === 'resetting'
+                    ? 'account_dev_resetting'
+                    : 'account_dev_reset_action'
+                )
+              }}
+            </button>
+          </aside>
         </div>
 
         <template #fallback>
@@ -257,30 +298,26 @@
 
 <script setup lang="ts">
 import type {
+  MarketplaceAccountResponse,
   MarketplaceAccountSettings,
   MarketplaceAccountSettingsInput,
 } from '@/content/marketplace-profile'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { computed, ref, watch } from '#imports'
+import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboardingStatus'
+import { computed, navigateTo, ref, watch } from '#imports'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 
 type PersonalSurface = 'buyer' | 'seller'
 type SettingsState = 'idle' | 'loading' | 'saving' | 'saved' | 'error'
+type OnboardingResetState = 'idle' | 'resetting' | 'error'
 type SettingsMessageKey =
   | 'account_settings_load_error'
   | 'account_settings_saved'
   | 'account_settings_save_error'
-
-type MarketplaceAccountResponse = {
-  ok: true
-  settings: MarketplaceAccountSettings
-  access: {
-    seller_enabled: boolean
-  }
-}
 
 type MarketplaceSettingsResponse = {
   ok: true
@@ -292,6 +329,9 @@ definePageMeta({
 })
 
 const { copy } = useInterlakenCopy()
+const fireux = useFireUXConfig()
+const { setStatus: setOnboardingStatus } =
+  useInterlakenOnboardingStatus()
 
 useSeoMeta({
   title: () => copy('account_page_title'),
@@ -308,7 +348,14 @@ const sellerEnabled = ref(false)
 const deliveryAddress = ref('')
 const settingsState = ref<SettingsState>('idle')
 const settingsMessageKey = ref<SettingsMessageKey | null>(null)
+const onboardingResetState = ref<OnboardingResetState>('idle')
 let settingsRequest = 0
+
+const showOnboardingReset = computed(() =>
+  fireux.devMode &&
+  Boolean(fireux.developerId) &&
+  authUser.value?.uid === fireux.developerId
+)
 
 const surfaceTabsLabel = computed(() =>
   copy('account_surface_tabs_label', {
@@ -369,6 +416,7 @@ watch(
       )
       if (request !== settingsRequest) return
       sellerEnabled.value = response.access.seller_enabled
+      setOnboardingStatus(response.membership.onboarding_status)
       if (!sellerEnabled.value) activeSurface.value = 'buyer'
       deliveryAddress.value = response.settings.delivery_address
       settingsState.value = 'idle'
@@ -409,6 +457,36 @@ async function saveSettings() {
   } catch {
     settingsState.value = 'error'
     settingsMessageKey.value = 'account_settings_save_error'
+  }
+}
+
+async function resetOnboarding() {
+  const user = authUser.value
+  if (
+    !user ||
+    !showOnboardingReset.value ||
+    onboardingResetState.value === 'resetting'
+  ) return
+
+  const confirmed = globalThis.confirm(
+    copy('account_dev_reset_confirmation')
+  )
+  if (!confirmed) return
+
+  onboardingResetState.value = 'resetting'
+  try {
+    const token = await user.getIdToken()
+    const response = await $fetch<{
+      ok: true
+      onboarding_status: 'pending'
+    }>('/api/dev/onboarding-reset', {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    setOnboardingStatus(response.onboarding_status)
+    await navigateTo('/')
+  } catch {
+    onboardingResetState.value = 'error'
   }
 }
 </script>

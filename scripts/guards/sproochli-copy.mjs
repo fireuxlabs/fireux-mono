@@ -91,6 +91,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/misebox/interlaken-essen/app/components/marketplace/Shared.vue'
   )
+  const interlakenStyles = read(
+    repoRoot,
+    'projects/misebox/interlaken-essen/app/assets/styles/main.css'
+  )
   const interlakenOwnedCopyConsumers = [
     'projects/misebox/interlaken-essen/app/layouts/marketplace.vue',
     'projects/misebox/interlaken-essen/app/pages/index.vue',
@@ -245,9 +249,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /defaultCopy\('app_meta_seo_description'\)/
   )
   assert.doesNotMatch(interlakenMeta, /Local food, offered nearby/)
-  assert.match(interlakenFutter, /imageByLanguage/)
-  assert.match(interlakenFutter, /social-launch-en\.png/)
-  assert.match(interlakenFeed, /post\.imageByLanguage\[language\.value\]/)
+  assert.match(
+    interlakenFutter,
+    /slug: 'wo-sind-die-chuehlschraenke'/
+  )
+  assert.match(
+    interlakenFutter,
+    /slug: 'interlaken-essen-isch-live'/
+  )
+  assert.doesNotMatch(interlakenFutter, /feed_launch_title/)
+  assert.match(interlakenFeed, /blogPost\.featuredImage/)
+  assert.match(
+    interlakenStyles,
+    /button\.market-language\.sproochli-language-trigger--emoji/
+  )
   assert.equal(
     existsSync(
       path.join(
@@ -282,6 +297,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(languageTrigger, /triggerCopy\.heading/)
   assert.match(languageTrigger, /triggerCopy\.description/)
   assert.match(languageTrigger, /triggerCopy\.cached/)
+  assert.match(languageTrigger, /sproochli-language-trigger--emoji/)
+  assert.match(languageTrigger, /background: transparent !important/)
+  assert.doesNotMatch(languageTrigger, /transform:\s*scale/)
   assert.doesNotMatch(languageTrigger, /i-lucide-languages/)
   assert.match(languageTrigger, /defaultOption\.value\?\.label/)
   assert.match(

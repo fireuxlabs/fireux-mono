@@ -9,6 +9,33 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type BlogPostType = 'article' | 'product'
 export type BlogPublicationScope = 'app' | 'ecosystem'
+export type BlogPostTranslationStatus =
+  | 'draft'
+  | 'review'
+  | 'approved'
+  | 'archived'
+
+export type BlogPostTranslation = {
+  status: BlogPostTranslationStatus
+  title: string
+  content: string
+  metaDescription?: string
+  keywords?: string[]
+  tags?: string[]
+  featuredImage?: string
+  socialImage?: string
+  readingTime?: string
+  cta_text?: string
+  provenance?: {
+    reviewed_by?: string
+    reviewed_at?: FirebaseTimestamp
+  }
+}
+
+export type BlogPostSproochliAttachment = {
+  default_language: string
+  translations: Record<string, BlogPostTranslation>
+}
 
 type WidenLiteral<T> =
   T extends string ? string
@@ -73,6 +100,7 @@ export const BlogPostModel = {
   cta_text: '',
   type: 'article' as BlogPostType,
   product_id: '',
+  sproochli: undefined as BlogPostSproochliAttachment | undefined,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['created']['by'],

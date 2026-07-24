@@ -6,6 +6,9 @@ export const PUBLIC_BLOG_INDEX_MAX_SCAN_SIZE = 240
 export type PublicBlogPostProjection = {
   id: string
   slug: string
+  visibility: 'public'
+  language: string
+  available_languages: string[]
   title: string
   content: string
   metaDescription: string

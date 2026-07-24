@@ -39,6 +39,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogCollection.ts'
   )
+  const publicLanguage = read(
+    repoRoot,
+    'packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogLanguage.ts'
+  )
   const index = read(
     repoRoot,
     'packages/extensions/fireux-blogs/src/runtime/pages/blog/index.vue'
@@ -68,6 +72,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     "publication_scope: 'app'",
     'BlogPostFeedReference',
     "kind: 'blog-post'",
+    'BlogPostSproochliAttachment',
+    'sproochli: undefined',
   ]) {
     assert.ok(model.includes(token), `Blog root model must retain ${token}.`)
   }
@@ -77,6 +83,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'isFirestoreDocumentId(sourceAppId)',
     'httpsUrl(data.featuredImage)',
     'httpsUrl(data.socialImage)',
+    "translation.status !== 'approved'",
+    'available_languages',
   ]) {
     assert.ok(projection.includes(token), `Blog projection must retain ${token}.`)
   }
@@ -91,6 +99,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(editorialManager, /useBlogCollection/)
   assert.match(publicCollection, /nextCursor/)
   assert.match(publicCollection, /loadMore/)
+  assert.match(publicCollection, /blogLanguage\.query\.value/)
+  assert.match(publicCollection, /watch: \[blogLanguage\.language\]/)
+  assert.match(publicLanguage, /selectionCookie/)
+  assert.match(publicLanguage, /queryParameter/)
   assert.match(publicModel, /PublicBlogPostIndexProjection/)
   assert.match(publicModel, /'content'/)
   assert.match(projection, /const \{ content, \.\.\.indexPost \} = post/)

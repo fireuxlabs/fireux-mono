@@ -6,11 +6,16 @@
   >
     <UButton
       type="button"
-      color="primary"
-      variant="soft"
+      :color="triggerUsesDefaultMark ? 'primary' : 'neutral'"
+      :variant="triggerUsesDefaultMark ? 'soft' : 'ghost'"
       size="lg"
       square
-      class="h-11 w-11 rounded-full"
+      :class="[
+        'sproochli-language-trigger h-11 w-11 rounded-full',
+        triggerUsesDefaultMark
+          ? 'sproochli-language-trigger--default'
+          : 'sproochli-language-trigger--emoji',
+      ]"
       :aria-label="triggerLabel"
       :title="triggerLabel"
     >
@@ -20,7 +25,7 @@
       />
       <span
         v-else
-        class="text-xl leading-none"
+        class="sproochli-language-trigger__emoji text-2xl leading-none"
         aria-hidden="true"
       >
         {{ triggerSymbol }}
@@ -283,6 +288,13 @@ const optionName = (option: SproochliLanguageOption) =>
 </script>
 
 <style scoped>
+.sproochli-language-trigger--emoji {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
 .sproochli-language-card {
   width: min(20rem, calc(100vw - 1rem));
 }

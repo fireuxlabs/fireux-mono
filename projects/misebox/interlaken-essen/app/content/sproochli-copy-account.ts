@@ -102,6 +102,30 @@ export const interlakenAccountCopyEntries =
       en: 'Your delivery address could not be saved.',
       gsw: 'Dini Lieferadrässe het nid chönne gspeicheret wärde.',
     },
+    account_dev_reset_title: {
+      en: 'Developer test',
+      gsw: 'Entwickler-Test',
+    },
+    account_dev_reset_description: {
+      en: 'Clear your local profile and show the onboarding form again.',
+      gsw: 'Dis lokale Profil leere und ds Onboarding-Formular nomau zeige.',
+    },
+    account_dev_reset_action: {
+      en: 'Reset onboarding',
+      gsw: 'Onboarding zruggsetze',
+    },
+    account_dev_resetting: {
+      en: 'Resetting …',
+      gsw: 'Setze zrugg …',
+    },
+    account_dev_reset_confirmation: {
+      en: 'Your local Interlaken profile will be deleted. Your Misebox login and App administrator role will remain. Reset onboarding now?',
+      gsw: 'Dis lokale Interlaken-Profil wird glöscht. Dis Misebox-Login und dini App-Admin-Rolle bliibe erhalte. Onboarding itz zruggsetze?',
+    },
+    account_dev_reset_error: {
+      en: 'Onboarding could not be reset.',
+      gsw: 'Ds Onboarding het nid chönne zruggsetzt wärde.',
+    },
     account_seo_description: {
       en: 'Your orders, products and settings at Interlaken Essen.',
       gsw: 'Dini Bestellige, Produkte und Istellige bi Interlaken Essen.',

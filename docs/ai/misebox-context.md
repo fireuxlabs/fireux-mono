@@ -96,7 +96,10 @@ Before each task:
   projection. Every Misebox App `/blog` aggregates every public BlogPost whose
   source ecosystem is Misebox; source App is provenance, not Blog visibility.
   Tenant Futter feeds remain lightweight local/domain events and may reference
-  a canonical BlogPost slug without copying its authored content.
+  a canonical BlogPost slug without copying its authored content. When a
+  canonical post carries approved Blog-owned Sproochli fields, the shared
+  projection resolves the tenant's configured language and Futter consumes
+  that same localized DTO.
 - Misebox may compose Kitchen materialization for a Professional Experience
   Place reference. That adapter is profile-specific, delegates creation to
   `fireux-kitchens`, and must not enter the Job model, authoring flow, or public
@@ -176,10 +179,11 @@ Before each task:
 - Interlaken-owned marketplace routes, onboarding, account UI, SEO,
   accessibility copy, picker chrome, and language-bearing feed artwork resolve
   through that same pack. The app root owns the reactive document locale for
-  every route. Inherited Core Auth/default-shell/legal copy and canonical Blog
-  UI/editorial content remain with their owning packages; do not duplicate
-  those routes or strings locally. They require shared, locale-aware owner
-  projections before the complete inherited URL namespace is bilingual.
+  every route. Canonical Blog story fields use the Blog-owned approved
+  Sproochli projection and the same persisted selection; Futter stores only
+  Blog slug references. Inherited Core Auth/default-shell/legal copy and
+  generic Blog chrome remain with their owning packages; do not duplicate
+  those routes or strings locally.
 - Kitchen Sproochli participation is configured only on the canonical root
   Kitchen through the trusted Kitchen Console endpoint. Shared Menu projections
   show its Default/language trigger without requiring a public Kitchen route;

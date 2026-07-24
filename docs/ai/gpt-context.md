@@ -212,6 +212,12 @@ Before each task:
   does not narrow the ecosystem-wide public `/blog` catalogue.
 - Blog media is shared durable HTTPS media. Project `/img/app` assets are
   presentation/source material, not canonical Blog media URLs.
+- A BlogPost may carry one sparse Sproochli attachment with its default
+  language and field-complete translations. The Blog-owned public projection
+  accepts only a runtime-configured language, exposes only approved
+  translations, and falls back to canonical default-language fields. Apps own
+  their supported language order and persisted selection; feeds consume the
+  same localized Blog DTO rather than copying translated story truth.
 - Lightweight marketplace feeds remain their own event family. They may
   reference a BlogPost by canonical slug but do not copy Blog truth or turn
   every feed event into a BlogPost.

@@ -249,7 +249,14 @@
 
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import { computed, onMounted, onUnmounted, ref, watch } from '#imports'
+import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboardingStatus'
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from '#imports'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -262,6 +269,12 @@ import {
 
 const { copy } = useInterlakenCopy()
 const { authState, currentUser: authUser } = useAuth()
+const {
+  status: refreshedOnboardingStatus,
+  setStatus: setOnboardingStatus,
+  clearStatus: clearOnboardingStatus,
+  refresh: refreshOnboardingStatus,
+} = useInterlakenOnboardingStatus()
 const {
   appUser,
   appPending,
@@ -305,6 +318,9 @@ onUnmounted(() => {
 const isPendingOnboarding = computed(() => {
   if (authState.value !== 'AUTHENTICATED') return false
   if (!readyToCheck.value) return false
+  if (refreshedOnboardingStatus.value) {
+    return refreshedOnboardingStatus.value === 'pending'
+  }
   if (appPending.value) return false
 
   // Onboarding is a positive stored state, not a fallback for an unresolved or
@@ -316,6 +332,18 @@ const isPendingOnboarding = computed(() => {
 })
 
 const open = computed(() => !dismissed.value && isPendingOnboarding.value)
+
+watch(
+  [authState, () => authUser.value?.uid],
+  ([state, uid]) => {
+    if (state !== 'AUTHENTICATED' || !uid) {
+      clearOnboardingStatus()
+      return
+    }
+    void refreshOnboardingStatus().catch(() => undefined)
+  },
+  { immediate: true }
+)
 
 const authDisplayName = computed(() =>
   String(authUser.value?.displayName || '').trim()
@@ -391,6 +419,7 @@ async function completeOnboarding() {
       headers: { Authorization: `Bearer ${token}` },
       body,
     })
+    setOnboardingStatus('completed')
     completed.value = true
     completionTimer = window.setTimeout(() => {
       dismissed.value = true
@@ -410,6 +439,7 @@ async function skipOnboarding() {
 
   try {
     await membership.setOnboardingStatus('skipped')
+    setOnboardingStatus('skipped')
     dismissed.value = true
   } catch {
     errorKey.value = 'onboarding_error_save'

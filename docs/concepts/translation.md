@@ -72,10 +72,12 @@ source-controlled values and performs no visitor-time generation.
 The project-owned marketplace routes, onboarding, account UI, SEO,
 accessibility labels, picker chrome, and language-bearing launch artwork use
 that resolver. The project app root sets the selected document locale across
-all routes. Shared Core Auth/default-shell/legal wording and `fireux-blogs`
-chrome/editorial content are not copied into the tenant pack: their owning
-packages still need locale-aware reviewed projections before the entire
-inherited route namespace is bilingual.
+all routes. `fireux-blogs` now owns a sparse BlogPost Sproochli attachment and
+bounded approved-language projection; Interlaken supplies its supported
+language order and persisted selection, while Futter keeps only canonical Blog
+slug references. Shared Core Auth/default-shell/legal wording and generic Blog
+chrome are not copied into the tenant pack and still need owner-level
+locale-aware copy before the complete inherited route namespace is bilingual.
 
 Luna Piccante is the first canonical Kitchen-to-Menu attachment proof. Its
 mixed-source Menu displays the Default mark and complete language catalogue
@@ -94,6 +96,10 @@ content can become published copy.
 - Pilot site-language policy and persisted selection:
   `projects/misebox/interlaken-essen/app/content/sproochli-site.ts` and
   `projects/misebox/interlaken-essen/app/composables/useInterlakenSproochli.ts`
+- Localized Blog projection:
+  `packages/extensions/fireux-blogs/src/runtime/server/utils/blog/public-projection.ts`
+  and
+  `packages/extensions/fireux-blogs/src/runtime/composables/fireux/blog/public/usePublicBlogLanguage.ts`
 - Kitchen attachment authority and trusted mutation:
   `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sproochli.ts`
 - Public Menu projection:

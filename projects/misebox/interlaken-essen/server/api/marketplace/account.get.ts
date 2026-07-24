@@ -7,6 +7,8 @@ import {
   INTERLAKEN_ESSEN_APP_ID,
   MARKETPLACE_PROFILE_COLLECTION,
   type MarketplaceAccountSettings,
+  type MarketplaceAccountResponse,
+  type MarketplaceOnboardingStatus,
 } from '../../../app/content/marketplace-profile'
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -53,6 +55,12 @@ export default defineEventHandler(async (event) => {
     delivery_address:
       typeof storedAddress === 'string' ? storedAddress.trim() : '',
   }
+  const storedOnboardingStatus = membership.get('onboarding_status')
+  const onboardingStatus: MarketplaceOnboardingStatus =
+    storedOnboardingStatus === 'completed' ||
+    storedOnboardingStatus === 'skipped'
+      ? storedOnboardingStatus
+      : 'pending'
 
   return {
     ok: true,
@@ -60,5 +68,8 @@ export default defineEventHandler(async (event) => {
     access: {
       seller_enabled: storedOffersEnabled === true,
     },
-  }
+    membership: {
+      onboarding_status: onboardingStatus,
+    },
+  } satisfies MarketplaceAccountResponse
 })

@@ -249,18 +249,6 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     en: 'Welcome',
     gsw: 'Willkomme',
   },
-  feed_launch_title: {
-    en: 'Interlaken Essen is live!',
-    gsw: 'Interlaken Essen isch live!',
-  },
-  feed_launch_body: {
-    en: 'The local marketplace for milk, cheese, honey and more from our region.',
-    gsw: 'Dr lokali Marktplatz für Milch, Chäs, Honig und meh us üser Region.',
-  },
-  feed_launch_image_alt: {
-    en: 'Illustrated Interlaken panorama with milk, cheese, a billy goat and the words Interlaken Essen is live.',
-    gsw: 'Illustrierts Interlaken-Panorama mit Milch, Chäs, em Geissbock und em Text Interlaken Essen isch live.',
-  },
 })
 
 export type InterlakenPublicCopyKey =

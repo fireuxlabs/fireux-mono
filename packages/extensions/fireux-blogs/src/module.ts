@@ -12,6 +12,10 @@ import { configureServer } from './config/module/server-config'
 
 export type FireuxBlogsModuleOptions = {
   enabled?: boolean
+  languages?: string[]
+  defaultLanguage?: string
+  selectionCookie?: string
+  queryParameter?: string
 }
 
 function setBlogsRuntime(nuxt: any, overrides: Record<string, any>) {
@@ -54,6 +58,16 @@ export default defineNuxtModule({
       runtime: (nuxt) =>
         setBlogsRuntime(nuxt, {
           enabled: options.enabled ?? true,
+          ...(options.languages ? { languages: options.languages } : {}),
+          ...(options.defaultLanguage
+            ? { defaultLanguage: options.defaultLanguage }
+            : {}),
+          ...(options.selectionCookie
+            ? { selectionCookie: options.selectionCookie }
+            : {}),
+          ...(options.queryParameter
+            ? { queryParameter: options.queryParameter }
+            : {}),
         }),
       composables: configureComposables,
       components: configureComponents,
