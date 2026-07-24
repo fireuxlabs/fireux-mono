@@ -50,14 +50,17 @@ const error = ref('')
 const completed = ref(false)
 const dismissed = ref(false)
 
-const open = computed(
-  () =>
-    !dismissed.value &&
-    authState.value === 'AUTHENTICATED' &&
-    !appPending.value &&
-    appOutcome.value === 'ready' &&
-    (appUser.value?.onboarding_status ?? 'pending') === 'pending'
-)
+const isPendingOnboarding = computed(() => {
+  if (authState.value !== 'AUTHENTICATED') return false
+  if (appPending.value) return false
+
+  const status = appUser.value?.onboarding_status
+  if (status === 'completed' || status === 'skipped') return false
+
+  return appOutcome.value === 'ready'
+})
+
+const open = computed(() => !dismissed.value && isPendingOnboarding.value)
 
 async function handleOnboarding(status: 'completed' | 'skipped') {
   if (loading.value) return

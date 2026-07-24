@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-22
+// last_used: 2026-07-24
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/dev-app-with-smoke.mjs
 // Concurrent edit — 2026-07-20 15:54 CEST — Repo Efficiency Pass 1 of 6: run the Misebox route and contract smoke suite.
@@ -32,7 +32,7 @@ try {
 }
 
 function usage() {
-  console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--skip-prepare] [--skip-smoke] [--go-qr-provider deployed|local|url]')
+  console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--checked] [--prepare] [--smoke] [--go-qr-provider deployed|local|url]')
   console.error(`Known apps: ${DEV_APP_KEYS.join(', ')}`)
 }
 
@@ -47,12 +47,23 @@ if (!appKey) {
 }
 
 const app = getDevApp(appKey)
-const skipPrepare = args['skip-prepare'] === true
-const skipSmoke = args['skip-smoke'] === true
+const checked = args.checked === true
+const shouldPrepare =
+  args['skip-prepare'] !== true && (checked || args.prepare === true)
+const shouldSmoke =
+  args['skip-smoke'] !== true && (checked || args.smoke === true)
 
 function collectPassthroughArgs(argv) {
   const passthrough = []
-  const handled = new Set(['app', 'skip-prepare', 'skip-smoke', 'go-qr-provider'])
+  const handled = new Set([
+    'app',
+    'checked',
+    'prepare',
+    'smoke',
+    'skip-prepare',
+    'skip-smoke',
+    'go-qr-provider',
+  ])
 
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i]
@@ -192,10 +203,11 @@ async function reuseExistingApp(listenerPids) {
   try {
     await waitForAppReady(app)
 
-    if (!skipSmoke) {
+    if (shouldSmoke) {
       await runRouteSmokeForApp(app)
     }
 
+    console.log(`[dev] ${app.name} ready`)
     console.log(
       `[dev] Existing ${app.name} server is healthy; nothing new was started. ` +
       `Run pnpm kill:${appKey} first only when this terminal needs to own a fresh server.`
@@ -214,7 +226,7 @@ async function reuseExistingApp(listenerPids) {
 const existingListenerPids = getPortListenerPids(app.port)
 if (await reuseExistingApp(existingListenerPids)) process.exit(0)
 
-if (!skipPrepare) {
+if (shouldPrepare) {
   runPrepareForApp(app)
 }
 
@@ -254,11 +266,11 @@ child.on('exit', (code, signal) => {
 try {
   await waitForAppReady(app)
 
-  if (!skipSmoke) {
+  if (shouldSmoke) {
     await runRouteSmokeForApp(app)
   }
 
-  console.log(`[dev] ${app.name} smoke checks passed`)
+  console.log(`[dev] ${app.name} ready`)
 } catch (error) {
   const message = error instanceof Error ? error.message : String(error)
   console.error(message)

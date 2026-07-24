@@ -87,6 +87,12 @@
   align-items: center;
 }
 
+.market-header__tools {
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+}
+
 .market-nav a {
   display: inline-flex;
   gap: 0.45rem;
@@ -118,6 +124,47 @@
   border-color: var(--market-cream);
   background: var(--market-cream);
   color: var(--market-ink);
+}
+
+.market-account {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.market-account--signin {
+  min-height: 2.25rem;
+  border: 1px solid rgba(251, 243, 223, 0.56);
+  border-radius: 9999px;
+  padding-inline: 0.9rem;
+  background: rgba(23, 53, 43, 0.52);
+  color: var(--market-cream);
+  font-size: 0.82rem;
+  font-weight: 850;
+  text-decoration: none;
+  backdrop-filter: blur(8px);
+}
+
+.market-account--signin:hover {
+  background: rgba(251, 243, 223, 0.92);
+  color: var(--market-ink);
+}
+
+.market-account--avatar {
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid rgba(251, 243, 223, 0.64);
+  border-radius: 50%;
+  background: rgba(23, 53, 43, 0.42);
+  box-shadow: 0 0.2rem 0.9rem rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(8px);
+}
+
+.market-account__skeleton {
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 50%;
 }
 
 .market-page {
@@ -607,6 +654,14 @@
 
   .market-nav a {
     padding-inline: 0.65rem;
+  }
+
+  .market-header__tools {
+    gap: 0.35rem;
+  }
+
+  .market-account--signin {
+    padding-inline: 0.7rem;
   }
 
   .market-nav__marketplace {

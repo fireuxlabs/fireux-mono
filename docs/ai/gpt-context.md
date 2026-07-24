@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-07-23
+Updated: 2026-07-24
 Ref: 796952bf0
 Role: living context
 Scope: repo-wide
@@ -60,6 +60,11 @@ Before each task:
 - Treat a healthy app server from the current checkout as persistent workspace
   infrastructure. Verify and reuse it through `pnpm dev:<app>`; do not create a
   duplicate or restart, kill, or take ownership of it at task boundaries.
+- `pnpm dev:<app>` is the fast incremental-development path: it rebuilds the
+  required FireUX Core config helpers, starts or reuses the app, and waits only
+  for readiness. Use `pnpm dev:<app> -- --checked` when a fresh start must also
+  run `nuxi prepare` and the app's route smoke suite; preparation and smoke are
+  verification work, not a prerequisite for every local edit.
 - Prefer user-owned IDE or toolbar servers. Start one from an agent task only
   when none exists and live verification needs it. Replace it with the explicit
   `pnpm kill:<app>` command only when the user asks or a concrete runtime change

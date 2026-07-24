@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-24
 // usage_note: baseline after scripts cleanup; update when run.
 // Concurrent edit — 2026-07-21 13:11 CEST — Cleanbox-to-Werkbox migration: record the verified workspace registration sync.
 
@@ -29,7 +29,7 @@ const backgroundMatcher = {
   },
   background: {
     activeOnStart: true,
-    endsPattern: '^\\[dev\\] .* smoke checks passed$',
+    endsPattern: '^\\[dev\\] .* ready$',
   },
 }
 

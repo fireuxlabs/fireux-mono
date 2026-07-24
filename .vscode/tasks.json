@@ -68,7 +68,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -96,7 +96,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -124,7 +124,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -152,7 +152,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -180,7 +180,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -208,7 +208,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -236,7 +236,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -264,7 +264,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -292,7 +292,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -320,7 +320,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -348,7 +348,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -376,7 +376,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -404,7 +404,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -432,7 +432,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -460,7 +460,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -488,7 +488,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -516,7 +516,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -544,7 +544,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
@@ -572,7 +572,7 @@
         },
         "background": {
           "activeOnStart": true,
-          "endsPattern": "^\\[dev\\] .* smoke checks passed$"
+          "endsPattern": "^\\[dev\\] .* ready$"
         }
       },
       "presentation": {
