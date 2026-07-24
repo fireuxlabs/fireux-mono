@@ -1,45 +1,47 @@
+import type { InterlakenPublicCopyKey } from './sproochli-copy-public'
+
 export type MarketSection = {
   id: string
-  label: string
-  description: string
+  labelKey: InterlakenPublicCopyKey
+  descriptionKey: InterlakenPublicCopyKey
   icon: string
 }
 
 export const marketSections: MarketSection[] = [
   {
     id: 'rohmilch',
-    label: 'Rohmilch',
-    description: 'Frischi Milch direkt us dr Region.',
+    labelKey: 'section_raw_milk_label',
+    descriptionKey: 'section_raw_milk_description',
     icon: 'i-lucide-milk',
   },
   {
     id: 'chaes',
-    label: 'Chäs',
-    description: 'Lokale Chäs vo Alp, Hof und Chäserei.',
+    labelKey: 'section_cheese_label',
+    descriptionKey: 'section_cheese_description',
     icon: 'cheese',
   },
   {
     id: 'honig',
-    label: 'Honig',
-    description: 'Honig vo Imkerinne und Imker vo hie.',
+    labelKey: 'section_honey_label',
+    descriptionKey: 'section_honey_description',
     icon: 'i-lucide-hexagon',
   },
   {
     id: 'huusgmachts',
-    label: 'Huusgmachts',
-    description: 'Igmachts, Sirup und anders us lokaler Produktion.',
+    labelKey: 'section_homemade_label',
+    descriptionKey: 'section_homemade_description',
     icon: 'hut',
   },
   {
     id: 'bachigs',
-    label: 'Bachigs',
-    description: 'Brot, Chueche und süessi Sache.',
+    labelKey: 'section_baking_label',
+    descriptionKey: 'section_baking_description',
     icon: 'i-lucide-croissant',
   },
   {
     id: 'cooks',
-    label: 'Cooks & Catering',
-    description: 'Für BBQ, Airbnb, Fescht und Catering.',
+    labelKey: 'section_cooks_label',
+    descriptionKey: 'section_cooks_description',
     icon: 'i-lucide-chef-hat',
   },
 ]

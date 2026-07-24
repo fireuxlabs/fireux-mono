@@ -5,6 +5,14 @@
     :data-menu-identity="identityKind"
   >
     <div class="menu-identity__copy">
+      <div
+        v-if="$slots.utility"
+        class="menu-identity__utility"
+        data-menu-identity-utility
+      >
+        <slot name="utility" />
+      </div>
+
       <MenuClose
         v-if="showExit && !isKioskMenu"
         class="menu-identity__close"
@@ -227,6 +235,13 @@ function useNextAsset() {
   z-index: 2;
   top: 0.75rem;
   right: 0.75rem;
+}
+
+.menu-identity__utility {
+  position: absolute;
+  z-index: 2;
+  top: 0.75rem;
+  left: 0.75rem;
 }
 
 .menu-identity__kitchen {

@@ -2,6 +2,7 @@
   <SproochliLanguageTrigger
     :language-options="languageOptions"
     :selected-language="selectedLanguage"
+    :default-language="defaultLanguage"
     :show-group-labels="showGroupLabels"
   />
 </template>
@@ -36,6 +37,7 @@ const props = withDefaults(defineProps<{
 const selectedLanguage = computed<SproochliLanguageCode>(() =>
   normalizeSproochliLanguage(props.selectedLanguage)
 )
+const defaultLanguage = computed(() => props.defaultLanguage)
 
 const splitLanguages = (value: string) =>
   value

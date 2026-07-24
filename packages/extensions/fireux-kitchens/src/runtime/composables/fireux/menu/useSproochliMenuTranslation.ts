@@ -1,16 +1,25 @@
 import { computed, ref, watch, type ComputedRef, type Ref } from 'vue'
-import { useRoute, useRuntimeConfig } from '#imports'
+import { useRoute } from '#imports'
 import {
   isSproochliRtlLanguage,
   normalizeSproochliLanguage,
   requestSproochliMenuTranslations,
-  resolveSproochliLanguageState,
   type SproochliLanguageCode,
   type SproochliMenuTranslationField,
 } from 'fireux-sproochli/runtime/sproochli'
+import {
+  isMenuBrowseSurfaceCopyField,
+  MENU_BROWSE_SURFACE_COPY_FIELDS,
+  MENU_SURFACE_COPY_VERSION,
+  resolveMenuBrowseSurfaceCopy,
+} from '../../../content/menu-surface-copy'
 import type { MenuManifest } from '../../../models/kitchen/menu/menu-detail.model'
 
 const MAX_FIELDS_PER_REQUEST = 100
+type CachedLanguage = Exclude<SproochliLanguageCode, ''>
+const surfaceCopyCache = new Map<string, Map<string, string>>()
+const surfaceCopyCacheKey = (language: CachedLanguage) =>
+  `${MENU_SURFACE_COPY_VERSION}:${language}`
 const text = (value: unknown) => String(value ?? '').trim()
 const fieldSegment = (value: unknown) =>
   text(value).replace(/[^A-Za-z0-9_-]+/g, '-') || 'unknown'
@@ -18,7 +27,9 @@ const menuFieldKey = (menu: MenuManifest) => `menu:${fieldSegment(menu.content.i
 const dishFieldKey = (sectionId: string, itemId: string) =>
   `dish:${fieldSegment(sectionId)}__${fieldSegment(itemId)}`
 
-function translationFields(menu: MenuManifest): SproochliMenuTranslationField[] {
+function menuTranslationFields(
+  menu: MenuManifest
+): SproochliMenuTranslationField[] {
   const menuKey = menuFieldKey(menu)
   const fields: SproochliMenuTranslationField[] = [
     { id: `${menuKey}:name`, sourceText: text(menu.content.name) },
@@ -107,57 +118,82 @@ const chunks = <T>(values: T[], size: number) => {
   return result
 }
 
+const menuSourceKey = (menu: MenuManifest | null | undefined) =>
+  menu
+    ? JSON.stringify({
+        source: menu.source,
+        content: menu.content,
+      })
+    : ''
+
 export function useSproochliMenuTranslation(input: {
   menu: Ref<MenuManifest | null | undefined> | ComputedRef<MenuManifest | null | undefined>
 }) {
   const route = useRoute()
-  const runtimeConfig = useRuntimeConfig()
-  const sproochliConfig = computed(() => {
-    const value = (runtimeConfig.public as Record<string, any>)?.fireux?.sproochli
-    return value && typeof value === 'object' && !Array.isArray(value)
-      ? value as Record<string, unknown>
-      : {}
+  const sproochli = computed(() => input.menu.value?.sproochli || null)
+  const enabled = computed(() => sproochli.value?.enabled === true)
+  const sourceKey = computed(() => menuSourceKey(input.menu.value))
+  const cachedLanguages = ref<CachedLanguage[]>([])
+  const selectedLanguage = computed<SproochliLanguageCode>(() => {
+    if (!enabled.value) return ''
+
+    const requested = normalizeSproochliLanguage(route.query.sproochli)
+    return sproochli.value?.languageOptions.some(
+      option => option.code === requested
+    )
+      ? requested
+      : ''
   })
-  const enabled = computed(() => sproochliConfig.value.enabled === true)
-  const languageState = computed(() =>
-    resolveSproochliLanguageState({
-      ...sproochliConfig.value,
-      enabled: enabled.value,
-    })
-  )
-  const selectedLanguage = computed<SproochliLanguageCode>(() =>
-    enabled.value ? normalizeSproochliLanguage(route.query.sproochli) : ''
+  const languageOptions = computed(() => {
+    const cached = new Set<SproochliLanguageCode>(cachedLanguages.value)
+
+    return (sproochli.value?.languageOptions ?? []).map(option =>
+      cached.has(option.code)
+        ? {
+            ...option,
+            source: 'cache' as const,
+          }
+        : option
+    )
+  })
+  const defaultLanguage = computed(() =>
+    text(sproochli.value?.defaultLanguage).toLowerCase()
   )
   const translating = ref(false)
   const translationError = ref('')
   const translated = ref<MenuManifest | null>(null)
-  const cache = new Map<string, MenuManifest>()
+  const surfaceTranslations = ref<Map<string, string> | null>(null)
+  const cache = new Map<CachedLanguage, Map<string, string>>()
   let requestId = 0
+  let activeSourceKey = ''
 
   watch(
-    () => input.menu.value,
-    () => {
-      cache.clear()
-      translated.value = null
-    }
-  )
-
-  watch(
-    [() => input.menu.value, selectedLanguage, enabled],
-    async (values: [MenuManifest | null | undefined, SproochliLanguageCode, boolean]) => {
-      const [menu, language, isEnabled] = values
+    [sourceKey, selectedLanguage, enabled],
+    async (values: [string, SproochliLanguageCode, boolean]) => {
+      const [nextSourceKey, language, isEnabled] = values
+      const menu = input.menu.value
       const currentRequest = ++requestId
+      if (nextSourceKey !== activeSourceKey) {
+        activeSourceKey = nextSourceKey
+        cache.clear()
+        cachedLanguages.value = []
+      }
       translationError.value = ''
+      translated.value = null
 
       if (!import.meta.client || !isEnabled || !menu || !language) {
-        translated.value = null
+        surfaceTranslations.value = null
         translating.value = false
         return
       }
 
-      const cached = cache.get(language)
+      const cachedLanguage = language as CachedLanguage
+      const cachedSurfaceTranslations =
+        surfaceCopyCache.get(surfaceCopyCacheKey(cachedLanguage)) ?? null
+      surfaceTranslations.value = cachedSurfaceTranslations
+      const cached = cache.get(cachedLanguage)
       if (cached) {
-        translated.value = cached
+        translated.value = translatedMenu(menu, cached)
         translating.value = false
         return
       }
@@ -165,7 +201,18 @@ export function useSproochliMenuTranslation(input: {
       translating.value = true
       try {
         const translatedFields = new Map<string, string>()
-        const sourceFields = translationFields(menu)
+        const menuFields = menuTranslationFields(menu)
+        const sourceFields: SproochliMenuTranslationField[] = [
+          ...menuFields,
+          ...(
+            cachedSurfaceTranslations
+              ? []
+              : MENU_BROWSE_SURFACE_COPY_FIELDS.map(field => ({
+                  id: field.id,
+                  sourceText: field.sourceText,
+                }))
+          ),
+        ]
         const fieldGroups = chunks(sourceFields, MAX_FIELDS_PER_REQUEST)
 
         for (const fields of fieldGroups) {
@@ -182,13 +229,34 @@ export function useSproochliMenuTranslation(input: {
           })
         }
 
-        if (sourceFields.length && !translatedFields.size) {
+        const translatedMenuFields = new Map(
+          [...translatedFields].filter(
+            ([id]) => !isMenuBrowseSurfaceCopyField(id)
+          )
+        )
+        const translatedSurfaceFields = new Map(
+          [...translatedFields].filter(
+            ([id]) => isMenuBrowseSurfaceCopyField(id)
+          )
+        )
+
+        if (menuFields.length && !translatedMenuFields.size) {
           throw new Error('Sproochli returned no menu translations.')
         }
 
         if (currentRequest !== requestId) return
-        const result = translatedMenu(menu, translatedFields)
-        cache.set(language, result)
+        const result = translatedMenu(menu, translatedMenuFields)
+        cache.set(cachedLanguage, translatedMenuFields)
+        if (translatedSurfaceFields.size) {
+          surfaceCopyCache.set(
+            surfaceCopyCacheKey(cachedLanguage),
+            translatedSurfaceFields
+          )
+          surfaceTranslations.value = translatedSurfaceFields
+        }
+        cachedLanguages.value = [
+          ...new Set([...cachedLanguages.value, cachedLanguage]),
+        ]
         translated.value = result
       } catch (error) {
         if (currentRequest !== requestId) return
@@ -205,11 +273,16 @@ export function useSproochliMenuTranslation(input: {
 
   return {
     enabled,
-    languageOptions: computed(() => languageState.value.options),
+    defaultLanguage,
+    languageOptions,
     selectedLanguage,
+    cachedLanguages,
     translating,
     translationError,
     menu: computed(() => translated.value || input.menu.value || null),
+    surfaceCopy: computed(() =>
+      resolveMenuBrowseSurfaceCopy(surfaceTranslations.value)
+    ),
     direction: computed(() =>
       isSproochliRtlLanguage(selectedLanguage.value) ? 'rtl' : 'ltr'
     ),

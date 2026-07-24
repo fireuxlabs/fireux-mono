@@ -62,11 +62,9 @@ import {
   useUserInterface,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { useEcosystemAppDetail } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppDetail'
-import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
-import { resolveKitchenScopeCollectionPath } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import { useKitchenConsoleSelection } from '../../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
+import { useKitchenConsoleTargetCollection } from '../../../composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { PublicActionButton } from 'fireux-core/runtime/composables/fireux/app/ui/usePublicActionPanel'
 
@@ -74,7 +72,6 @@ const props = defineProps<{
   kitchen?: KitchenSurface | null
 }>()
 
-const claimedBy = computed(() => String(props.kitchen?.claimed_by ?? '').trim())
 const { pill } = useUserInterface()
 const { currentUser, isAdmin } = useUser()
 const { appId } = useFireUXConfig()
@@ -86,21 +83,12 @@ const isTenantConsoleHandoff = computed(() =>
   Boolean(operatorAppId.value && operatorAppId.value !== currentAppId.value)
 )
 const { app: operatorApp } = useEcosystemAppDetail(operatorAppId)
-const currentUserId = computed(() => String(currentUser.value?.id ?? '').trim())
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
-const operatorCollectionPath = computed(() =>
-  operatorAppId.value ? resolveKitchenScopeCollectionPath(operatorAppId.value) : ''
+const { kitchens: consoleTargets } = useKitchenConsoleTargetCollection()
+const consoleKitchen = computed(() =>
+  consoleTargets.value.find(kitchen => kitchen.id === kitchenId.value) || null
 )
-const { kitchen: consoleKitchen } = useKitchenFetch(kitchenId, {
-  collectionPath: operatorCollectionPath,
-  hydrate: false,
-})
-const hasConsoleAccess = computed(() =>
-  targetHasOperator(consoleKitchen.value, currentUserId.value)
-)
-const isClaimant = computed(() =>
-  Boolean(claimedBy.value && currentUserId.value === claimedBy.value)
-)
+const hasConsoleAccess = computed(() => Boolean(consoleKitchen.value))
 const subjectUserPill = computed(() =>
   hasConsoleAccess.value ? pill(currentUser.value) : null
 )
@@ -127,7 +115,7 @@ const accessIcon = computed(() =>
   hasConsoleAccess.value ? 'i-lucide-key-round' : 'i-lucide-users-round'
 )
 const canActivateConsole = computed(() =>
-  Boolean(isAdmin.value || isClaimant.value)
+  Boolean(isAdmin.value && !isTenantConsoleHandoff.value)
 )
 const showPanel = computed(() =>
   Boolean(hasConsoleAccess.value || canActivateConsole.value)

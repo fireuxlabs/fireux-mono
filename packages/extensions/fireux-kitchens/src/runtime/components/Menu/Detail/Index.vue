@@ -36,6 +36,7 @@
           <SproochliLanguageTrigger
             :language-options="translation.languageOptions.value"
             :selected-language="translation.selectedLanguage.value"
+            :default-language="translation.defaultLanguage.value"
           />
           <span v-if="translation.translating.value" class="menu-detail__translation-state">
             Translating menu…

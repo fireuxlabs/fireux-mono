@@ -1,4 +1,14 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { interlakenPublicCopyEntries } from './content/sproochli-copy-public.ts'
+
+const defaultCopy = (
+  key:
+    | 'app_meta_headline'
+    | 'app_meta_positioning'
+    | 'app_meta_promise'
+    | 'app_meta_console_bridge'
+    | 'app_meta_seo_description'
+) => interlakenPublicCopyEntries[key].target_text
 
 export const metaContent = defineFireuxMeta({
   app: {
@@ -8,17 +18,13 @@ export const metaContent = defineFireuxMeta({
   },
   copy: {
     big_personality: 'Interlaken Essen',
-    headline: 'Local food, offered nearby.',
-    positioning_html:
-      'A simple marketplace for food made, grown, and shared around Interlaken.',
-    promise_html:
-      'Help neighbours and local businesses find each other, buy locally, and waste less food.',
-    console_bridge_html:
-      'Marketplace tools will be added only after the local community proves what it needs.',
+    headline: defaultCopy('app_meta_headline'),
+    positioning_html: defaultCopy('app_meta_positioning'),
+    promise_html: defaultCopy('app_meta_promise'),
+    console_bridge_html: defaultCopy('app_meta_console_bridge'),
   },
   seo: {
     title: 'Interlaken Essen',
-    description:
-      'A local marketplace for food made, grown, and shared around Interlaken.',
+    description: defaultCopy('app_meta_seo_description'),
   },
 })

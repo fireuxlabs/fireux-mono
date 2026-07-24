@@ -9,6 +9,8 @@
     :data-menu-path="hasMenu ? menuPath : undefined"
     :class="themeClassName"
     :style="themeStyleVars"
+    :dir="translation.direction.value"
+    :lang="translation.selectedLanguage.value || undefined"
     :aria-labelledby="hasMenu
       ? 'menu-browse-title'
       : failure
@@ -37,21 +39,69 @@
         :logo-image-url="kitchenLogoImageUrl"
         :menu-name="menuName"
         :wordmark-image-url="kitchenWordmarkImageUrl"
-      />
+      >
+        <template
+          v-if="sproochli"
+          #utility
+        >
+          <div class="menu-browse__translation">
+            <SproochliLanguageTrigger
+              :language-options="sproochli.languageOptions"
+              :selected-language="sproochli.selectedLanguage"
+              :default-language="sproochli.defaultLanguage"
+              :show-group-labels="true"
+              :show-when-single-option="true"
+            />
+
+            <span
+              v-if="translation.translating.value"
+              class="menu-browse__translation-badge"
+              role="status"
+              title="Translating menu"
+            >
+              <UIcon
+                name="i-lucide-loader-circle"
+                class="size-3 animate-spin"
+                aria-hidden="true"
+              />
+              <span class="sr-only">Translating menu…</span>
+            </span>
+
+            <span
+              v-else-if="translation.translationError.value"
+              class="menu-browse__translation-badge menu-browse__translation-badge--error"
+              role="alert"
+              title="Translation unavailable. Showing the original menu."
+            >
+              <UIcon
+                name="i-lucide-triangle-alert"
+                class="size-3"
+                aria-hidden="true"
+              />
+              <span class="sr-only">
+                Translation unavailable. Showing the original menu.
+              </span>
+            </span>
+          </div>
+        </template>
+      </MenuIdentity>
 
       <MenuSurfaceSwitcher
         v-if="surfaceOptions.length"
         icon="i-lucide-book-open"
-        label="Browse"
-        message="View the menu or choose how you would like to order."
+        :label="browseSurfaceCopy.browseLabel"
+        :message="browseSurfaceCopy.browseDescription"
         open-by-default
         :options="surfaceOptions"
       />
 
-      <aside class="menu-browse__notice" aria-label="Allergy information">
-        <strong>Allergies or intolerances?</strong>
+      <aside
+        class="menu-browse__notice"
+        :aria-label="browseSurfaceCopy.allergyAriaLabel"
+      >
+        <strong>{{ browseSurfaceCopy.allergyTitle }}</strong>
         <span>
-          Please ask the kitchen about allergies or dietary requirements.
+          {{ browseSurfaceCopy.allergyBody }}
         </span>
       </aside>
 
@@ -70,10 +120,10 @@
       </template>
 
       <MenuBrowseCatalogue
-        v-else-if="renderKind === 'structured' && detailMenu"
+        v-else-if="renderKind === 'structured' && activeDetailMenu"
         :currency-code="currencyCode"
         :currency-format="currencyFormat"
-        :sections="detailMenu.content.sections"
+        :sections="activeDetailMenu.content.sections"
         :show-currency="showCurrency"
       />
     </template>
@@ -86,9 +136,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { setResponseStatus, useSeoMeta } from '#imports'
+import { setResponseStatus, useRoute, useSeoMeta } from '#imports'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import {
+  normalizeSproochliLanguage,
+} from 'fireux-sproochli/runtime/sproochli'
+import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
+import { useSproochliMenuTranslation } from '../../../composables/fireux/menu/useSproochliMenuTranslation'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import {
   rootMenuRouteScope,
@@ -107,8 +162,12 @@ const props = withDefaults(defineProps<{
   propagateResponseStatus: false,
 })
 
+const route = useRoute()
 const menuId = computed(() => String(props.menuId || '').trim())
 const menuRouteScope = computed(() => props.menuRouteScope)
+const requestedSproochliLanguage = computed(() =>
+  normalizeSproochliLanguage(route.query.sproochli)
+)
 const {
   pending,
   kitchenSlug,
@@ -119,7 +178,12 @@ const {
   manifest: detailMenu,
   failure,
   ready,
-} = useMenu(menuId, { routeScope: menuRouteScope })
+} = useMenu(menuId, {
+  routeScope: menuRouteScope,
+  sproochliLanguage: requestedSproochliLanguage,
+})
+const translation = useSproochliMenuTranslation({ menu: detailMenu })
+const browseSurfaceCopy = translation.surfaceCopy
 
 if (props.propagateResponseStatus) {
   await ready
@@ -129,14 +193,19 @@ if (props.propagateResponseStatus) {
 }
 
 const hasMenu = computed(() => renderKind.value !== 'unavailable')
+const activeDetailMenu = computed(() =>
+  translation.menu.value || detailMenu.value
+)
 const menuName = computed(() =>
-  detailMenu.value?.content.name || documentMenu.value?.name || 'Menu'
+  activeDetailMenu.value?.content.name || documentMenu.value?.name || 'Menu'
 )
 const menuDescription = computed(() =>
-  detailMenu.value?.content.description || documentMenu.value?.description || ''
+  activeDetailMenu.value?.content.description ||
+  documentMenu.value?.description ||
+  ''
 )
 const menuPresentation = computed(() =>
-  detailMenu.value?.presentation || documentMenu.value || null
+  activeDetailMenu.value?.presentation || documentMenu.value || null
 )
 const kitchenName = computed(() =>
   menuPresentation.value?.kitchenName || ''
@@ -167,12 +236,39 @@ const kitchenWordmarkImageUrl = computed(() =>
 const pageStyle = computed(() =>
   menuPresentation.value?.pageStyle || null
 )
-const surfaceOptions = computed(() => guestMenuSurfaceOptions({
-  behaviour: detailMenu.value?.behaviour,
-  menuId: menuId.value,
-  routeScope: menuRouteScope.value,
-  activeContext: 'generic',
-}))
+const sproochli = computed(() => {
+  const state = detailMenu.value?.sproochli
+  if (!state) return null
+
+  return {
+    ...state,
+    selectedLanguage: translation.selectedLanguage.value,
+    languageOptions: translation.languageOptions.value,
+  }
+})
+const preserveSproochliQuery = (to: string) => {
+  const language = sproochli.value?.selectedLanguage
+  if (!language) return to
+
+  const [pathAndQuery, hash = ''] = String(to || '').split('#', 2)
+  const [path, query = ''] = pathAndQuery.split('?', 2)
+  const params = new URLSearchParams(query)
+  params.set('sproochli', language)
+  const nextQuery = params.toString()
+
+  return `${path}${nextQuery ? `?${nextQuery}` : ''}${hash ? `#${hash}` : ''}`
+}
+const surfaceOptions = computed(() =>
+  guestMenuSurfaceOptions({
+    behaviour: detailMenu.value?.behaviour,
+    menuId: menuId.value,
+    routeScope: menuRouteScope.value,
+    activeContext: 'generic',
+  }).map((option) => ({
+    ...option,
+    to: preserveSproochliQuery(option.to),
+  }))
+)
 const documentUrl = computed(() => {
   const file = documentMenu.value?.file
   if (!file?.storage_path || !menuId.value) return file?.url || ''
@@ -214,6 +310,29 @@ useSeoMeta({
   font-size: 0.95rem;
   font-weight: var(--font-weight-bold);
   text-align: center;
+}
+
+.menu-browse__translation {
+  position: relative;
+  display: inline-grid;
+}
+
+.menu-browse__translation-badge {
+  position: absolute;
+  right: -0.2rem;
+  bottom: -0.2rem;
+  display: grid;
+  width: 1.2rem;
+  height: 1.2rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--menu-text) 20%, transparent);
+  border-radius: 9999px;
+  background: var(--menu-bg);
+  color: var(--menu-secondary);
+}
+
+.menu-browse__translation-badge--error {
+  color: var(--ui-color-error-500);
 }
 
 .menu-browse__notice {

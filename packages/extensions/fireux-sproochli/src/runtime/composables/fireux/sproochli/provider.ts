@@ -24,6 +24,7 @@ export type SproochliMenuTranslateRequest = {
 export type SproochliMenuTranslation = {
   cache_id?: string
   language?: string
+  memory_hit?: boolean
   provider?: string
   text?: string
 }
@@ -40,6 +41,11 @@ export type SproochliMenuTranslateResponse = {
     language?: string
     message?: string
   }>
+  translation_memory?: {
+    status?: 'ready' | 'degraded'
+    hits?: number
+    writes?: number
+  }
   glossary_version?: string
 }
 

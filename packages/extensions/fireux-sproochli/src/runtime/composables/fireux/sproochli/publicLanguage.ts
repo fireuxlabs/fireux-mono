@@ -10,6 +10,7 @@ type SproochliChromeLanguage =
   | 'fa'
   | 'fi'
   | 'fr'
+  | 'gsw'
   | 'he'
   | 'hi'
   | 'hu'
@@ -37,7 +38,12 @@ export type SproochliLanguageOption = {
   code: SproochliLanguageCode
   label: string
   name: string
-  source?: 'original' | 'attached' | 'cache' | 'public' | 'on_demand'
+  source?:
+    | 'original'
+    | 'attached'
+    | 'cache'
+    | 'public'
+    | 'on_demand'
 }
 
 export type SproochliLanguageState = {
@@ -70,6 +76,7 @@ const SPROOCHLI_LANGUAGE_LABELS: Record<SproochliChromeLanguage, string> = {
   fa: '🇮🇷',
   fi: '🇫🇮',
   fr: '🇫🇷',
+  gsw: '🇨🇭',
   he: '🇮🇱',
   hi: '🇮🇳',
   hu: '🇭🇺',
@@ -104,6 +111,7 @@ const SPROOCHLI_LANGUAGE_NAMES: Record<SproochliChromeLanguage, string> = {
   fa: 'فارسی',
   fi: 'Suomi',
   fr: 'Français',
+  gsw: 'Schwiizerdütsch',
   he: 'עברית',
   hi: 'हिन्दी',
   hu: 'Magyar',
@@ -144,6 +152,7 @@ export function normalizeSproochliLanguage(
     language === 'en' ||
     language === 'it' ||
     language === 'fr' ||
+    language === 'gsw' ||
     language === 'ar' ||
     language === 'es' ||
     language === 'pt' ||
@@ -237,7 +246,12 @@ export function resolveSproochliTranslatedText(input: {
 
 export function isSproochliRtlLanguage(value: unknown): boolean {
   const language = normalizeSproochliLanguage(value)
-  return language === 'ar' || language === 'he'
+  return (
+    language === 'ar' ||
+    language === 'fa' ||
+    language === 'he' ||
+    language === 'ur'
+  )
 }
 
 export function resolveSproochliLanguageOptions(
@@ -274,14 +288,15 @@ export function resolveSproochliLanguageOptions(
     ...cachedLanguages,
     ...publicLanguages,
   ])
+  const requestedOnDemandLanguages = Array.isArray(config.onDemandLanguages)
+    ? normalizeLanguageList(config.onDemandLanguages)
+    : SPROOCHLI_LANGUAGE_OPTIONS
+      .map((option) => option.code)
+      .filter((code): code is SproochliChromeLanguage => Boolean(code))
   const onDemandLanguages = uniqueLanguages(
-    (
-      normalizeLanguageList(config.onDemandLanguages).length
-        ? normalizeLanguageList(config.onDemandLanguages)
-        : SPROOCHLI_LANGUAGE_OPTIONS
-            .map((option) => option.code)
-            .filter((code): code is SproochliChromeLanguage => Boolean(code))
-    ).filter((language) => !configuredLanguageSet.has(language))
+    requestedOnDemandLanguages.filter(
+      (language) => !configuredLanguageSet.has(language)
+    )
   )
   const configuredLanguages = uniqueLanguages([
     ...attachedLanguages,
@@ -307,7 +322,6 @@ export function resolveSproochliLanguageOptions(
     name: SPROOCHLI_LANGUAGE_NAMES[language],
     source: 'on_demand' as const,
   }))
-
   return enabled === true
     ? [
         { code: '', label: '', name: 'Original', source: 'original' },

@@ -13,24 +13,49 @@
       </NuxtLink>
 
       <div class="market-header__tools">
-        <nav class="market-nav" aria-label="Hauptnavigation">
+        <nav class="market-nav" :aria-label="copy('site_main_navigation')">
           <NuxtLink
             to="/marktplatz"
             class="market-nav__marketplace"
             exact-active-class="market-nav__link--active"
+            :aria-label="copy('marketplace')"
           >
             <UIcon name="i-lucide-store" aria-hidden="true" />
-            Marktplatz
+            <span class="market-nav__label">{{ copy('marketplace') }}</span>
           </NuxtLink>
-          <NuxtLink to="/choufe" exact-active-class="market-nav__link--active">
+          <NuxtLink
+            to="/choufe"
+            exact-active-class="market-nav__link--active"
+            :aria-label="copy('buy')"
+          >
             <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
-            Choufe
+            <span class="market-nav__label">{{ copy('buy') }}</span>
           </NuxtLink>
-          <NuxtLink to="/verchoufe" exact-active-class="market-nav__link--active">
+          <NuxtLink
+            to="/verchoufe"
+            exact-active-class="market-nav__link--active"
+            :aria-label="copy('sell')"
+          >
             <UIcon name="i-lucide-circle-plus" aria-hidden="true" />
-            Verchoufe
+            <span class="market-nav__label">{{ copy('sell') }}</span>
           </NuxtLink>
         </nav>
+
+        <SproochliLanguageTrigger
+          class="market-language"
+          :language-options="siteSproochli.languageOptions"
+          :selected-language="siteSproochli.selectedLanguage.value"
+          :default-language="siteSproochli.defaultLanguage"
+          :copy="{
+            heading: copy('language_trigger_heading'),
+            description: copy('language_trigger_description'),
+            chooseLanguage: copy('language_trigger_choose'),
+            currentSelection: copy('language_trigger_current'),
+            defaultSelection: copy('language_trigger_default'),
+            originalSelection: copy('language_trigger_original'),
+            cached: copy('language_trigger_cached'),
+          }"
+        />
 
         <ClientOnly>
           <NuxtLink
@@ -38,25 +63,32 @@
             to="/auth"
             class="market-account market-account--signin"
           >
-            Sign in
+            <UIcon name="i-lucide-user-round" aria-hidden="true" />
+            <span class="market-account__label">{{ copy('sign_in') }}</span>
           </NuxtLink>
 
           <UTooltip
             v-else-if="isSignedIn"
-            :text="headerAvatarName || 'Signed in'"
+            :text="copy('my_interlaken_essen')"
           >
-            <span
+            <NuxtLink
+              to="/mis"
               class="market-account market-account--avatar"
-              :aria-label="`Signed in as ${headerAvatarName || 'user'}`"
+              active-class="market-account--active"
+              :aria-label="
+                headerAvatarName
+                  ? copy('account_named', { name: headerAvatarName })
+                  : copy('my_interlaken_essen')
+              "
             >
               <UAvatar
                 :src="headerAvatarSrc"
-                :alt="headerAvatarName || 'User avatar'"
+                :alt="headerAvatarName || copy('profile_picture')"
                 :text="headerAvatarText"
                 size="sm"
                 class="market-account__avatar-image"
               />
-            </span>
+            </NuxtLink>
           </UTooltip>
 
           <USkeleton
@@ -77,13 +109,15 @@
         alt="Misebox"
         class="market-footer__wordmark"
       >
-      <span>Gastro-Apps us Ringgenberg, für Betrib vo hie.</span>
+      <span>{{ copy('footer_tagline') }}</span>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from '#imports'
+import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
+import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import { useConsoleEntryState } from 'fireux-core/runtime/composables/fireux/app/ui/useConsoleEntryState'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -93,6 +127,8 @@ const { authPhase, isSignedIn } = useConsoleEntryState()
 const { currentUser, avatarSrc } = useUser()
 const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
+const siteSproochli = useInterlakenCopy()
+const { copy } = siteSproochli
 
 const headerAvatarName = computed(() =>
   String(

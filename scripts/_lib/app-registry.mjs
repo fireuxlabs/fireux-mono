@@ -16,6 +16,7 @@ import {
   appDetailContract,
   invalidMenuIndexCursorContract,
   jobIndexApiContract,
+  kitchenDetailApiContract,
   kitchenIndexApiContract,
   kitchenCollectionRecoveryContract,
   menuBrowseContract,
@@ -28,6 +29,7 @@ import {
   menuPreOrderContract,
   menuQrContract,
   missingMenuBrowseContract,
+  missingKitchenDetailApiContract,
   missingMenuIndexContract,
   missingMenuQrContract,
   profileIndexApiContract,
@@ -119,6 +121,13 @@ export const APP_REGISTRY = {
     httpContracts: [
       jobIndexApiContract('/api/public/jobs?limit=1'),
       kitchenIndexApiContract('/api/kitchens?limit=48'),
+      kitchenDetailApiContract(
+        '/api/kitchens/la-tapberne',
+        'la-tapberne'
+      ),
+      missingKitchenDetailApiContract(
+        '/api/kitchens/fireux-route-contract-missing'
+      ),
       privateKitchenIndexAuthContract('/api/kitchens?limit=48&visibility=all'),
       profileIndexApiContract('/api/public/chefs'),
       profileIndexApiContract('/api/public/drivers'),
@@ -641,7 +650,7 @@ export const APP_REGISTRY = {
     workspace: './projects/misebox/interlaken-essen',
     port: 3026,
     consoles: [],
-    smokeRoutes: ['/'],
+    smokeRoutes: ['/', '/mis', '/users'],
     launchOrder: 18,
   },
 }

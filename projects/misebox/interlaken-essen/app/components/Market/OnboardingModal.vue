@@ -4,8 +4,8 @@
       :open="open"
       :dismissible="false"
       prevent-close
-      title="Willkomme bi Interlaken Essen"
-      description="Dis Misebox-Profil und dr nächscht Schritt."
+      :title="copy('onboarding_modal_title')"
+      :description="copy('onboarding_modal_description')"
       :ui="{
         overlay: 'market-onboarding-modal__overlay',
         content: 'market-onboarding-modal__content',
@@ -38,33 +38,38 @@
 
           <div class="market-onboarding__paper">
             <p class="market-onboarding__eyebrow">
-              Interlaken &amp; Umgebung
+              {{ copy('onboarding_region') }}
             </p>
-            <h2>Chum cho esse.</h2>
+            <h2>{{ copy('come_and_eat') }}.</h2>
             <p class="market-onboarding__copy">
-              Säg üs nume, wo du dehei bisch. Wenn du öppis Lokals aabüte
-              wotsch, chasch es grad dazue säge.
+              {{ copy('onboarding_intro') }}
             </p>
 
             <div
               class="market-onboarding__identity"
-              :aria-label="`Signed in as ${authDisplayName || 'user'}`"
+              :aria-label="
+                copy('onboarding_signed_in_as', {
+                  name: authDisplayName || copy('onboarding_user'),
+                })
+              "
             >
               <UAvatar
                 :src="authAvatarSrc"
-                :alt="authDisplayName || 'Misebox user'"
+                :alt="authDisplayName || copy('onboarding_misebox_user')"
                 :text="authInitials"
                 size="md"
                 class="market-onboarding__identity-avatar"
               />
-              <strong>{{ authDisplayName || 'Misebox User' }}</strong>
+              <strong>
+                {{ authDisplayName || copy('onboarding_misebox_user') }}
+              </strong>
             </div>
 
             <div v-if="completed" class="market-onboarding__success">
               <UIcon name="i-lucide-check" aria-hidden="true" />
               <div>
-                <strong>Merci fürs Registriere!</strong>
-                <span>Du bisch jetzt bi Interlaken Essen debi.</span>
+                <strong>{{ copy('onboarding_success_title') }}</strong>
+                <span>{{ copy('onboarding_success_body') }}</span>
               </div>
             </div>
 
@@ -74,11 +79,13 @@
               @submit.prevent="completeOnboarding"
             >
               <fieldset class="market-onboarding__section">
-                <legend>Wo bisch dehei?</legend>
-                <p>Din Ort hilft üs, s Futter würkli lokal z halte.</p>
+                <legend>{{ copy('onboarding_locality_heading') }}</legend>
+                <p>{{ copy('onboarding_locality_body') }}</p>
 
                 <label class="market-onboarding__field" for="locality">
-                  <span>Ort oder PLZ</span>
+                  <span>
+                    {{ copy('onboarding_locality_and_postcode_label') }}
+                  </span>
                   <span class="market-onboarding__select-wrap">
                     <UIcon name="i-lucide-map-pin" aria-hidden="true" />
                     <select
@@ -87,7 +94,9 @@
                       required
                       :disabled="Boolean(loading)"
                     >
-                      <option value="" disabled>Ort uswähle</option>
+                      <option value="" disabled>
+                        {{ copy('onboarding_locality_select') }}
+                      </option>
                       <option
                         v-for="locality in INTERLAKEN_LOCALITIES"
                         :key="locality.id"
@@ -96,7 +105,7 @@
                         {{ locality.postalCode }} · {{ locality.label }}
                       </option>
                       <option :value="OTHER_LOCALITY_ID">
-                        Öppis anders
+                        {{ copy('onboarding_other_locality') }}
                       </option>
                     </select>
                     <UIcon name="i-lucide-chevron-down" aria-hidden="true" />
@@ -108,19 +117,19 @@
                   class="market-onboarding__other-locality"
                 >
                   <label class="market-onboarding__field" for="locality-label">
-                    <span>Ort</span>
+                    <span>{{ copy('onboarding_locality_label') }}</span>
                     <input
                       id="locality-label"
                       v-model="localityLabel"
                       type="text"
                       maxlength="80"
-                      placeholder="z. B. Mürren"
+                      :placeholder="copy('onboarding_locality_placeholder')"
                       required
                       :disabled="Boolean(loading)"
                     >
                   </label>
                   <label class="market-onboarding__field" for="postal-code">
-                    <span>PLZ</span>
+                    <span>{{ copy('onboarding_postcode_label') }}</span>
                     <input
                       id="postal-code"
                       v-model="postalCode"
@@ -146,10 +155,9 @@
                   @click="offersEnabled = !offersEnabled"
                 >
                   <span>
-                    <strong>Wotsch öppis aabüte?</strong>
+                    <strong>{{ copy('onboarding_offer_heading') }}</strong>
                     <small>
-                      Vom Chüelschrank bis zum Chuchi-Tisch – du bestimmisch
-                      sälber, was zu dir passt.
+                      {{ copy('onboarding_offer_body') }}
                     </small>
                   </span>
                   <span
@@ -166,28 +174,30 @@
                   class="market-onboarding__offer-fields"
                 >
                   <label class="market-onboarding__field" for="public-name">
-                    <span>Name vom Agebot</span>
+                    <span>{{ copy('onboarding_offer_name_label') }}</span>
                     <input
                       id="public-name"
                       v-model="publicName"
                       type="text"
                       minlength="2"
                       maxlength="80"
-                      placeholder="z. B. Daniels Honig"
+                      :placeholder="copy('onboarding_offer_name_placeholder')"
                       required
                       :disabled="Boolean(loading)"
                     >
                   </label>
 
                   <label class="market-onboarding__field" for="introduction">
-                    <span>Erzähl churz, was du machsch</span>
+                    <span>{{ copy('onboarding_introduction_label') }}</span>
                     <textarea
                       id="introduction"
                       v-model="introduction"
                       minlength="10"
                       maxlength="280"
                       rows="3"
-                      placeholder="Ganz frei – dini Produkt söue zu dir passe."
+                      :placeholder="
+                        copy('onboarding_introduction_placeholder')
+                      "
                       required
                       :disabled="Boolean(loading)"
                     />
@@ -197,12 +207,12 @@
               </fieldset>
 
               <div
-                v-if="error"
+                v-if="errorKey"
                 class="market-onboarding__error"
                 role="alert"
               >
-                <strong>Das het nid klappt.</strong>
-                <span>{{ error }}</span>
+                <strong>{{ copy('onboarding_error_heading') }}</strong>
+                <span>{{ copy(errorKey) }}</span>
               </div>
 
               <div class="market-onboarding__actions">
@@ -214,7 +224,7 @@
                   :disabled="Boolean(loading) || !formIsValid"
                   class="market-onboarding__submit"
                 >
-                  Fertig
+                  {{ copy('onboarding_submit') }}
                 </UButton>
                 <UButton
                   type="button"
@@ -226,7 +236,7 @@
                   class="market-onboarding__skip"
                   @click="skipOnboarding"
                 >
-                  Für itz überspringe
+                  {{ copy('onboarding_skip') }}
                 </UButton>
               </div>
             </form>
@@ -238,6 +248,7 @@
 </template>
 
 <script setup lang="ts">
+import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { computed, onMounted, onUnmounted, ref, watch } from '#imports'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -249,6 +260,7 @@ import {
   type MarketplaceOnboardingInput,
 } from '../../content/marketplace-profile'
 
+const { copy } = useInterlakenCopy()
 const { authState, currentUser: authUser } = useAuth()
 const {
   appUser,
@@ -267,12 +279,17 @@ const offersEnabled = ref(false)
 const publicName = ref('')
 const introduction = ref('')
 const loading = ref<'' | 'saving' | 'skipped'>('')
-const error = ref('')
+const errorKey = ref<
+  | 'onboarding_error_auth'
+  | 'onboarding_error_save_retry'
+  | 'onboarding_error_save'
+  | null
+>(null)
 const dismissed = ref(false)
 const completed = ref(false)
 const readyToCheck = ref(false)
-let readinessTimer: ReturnType<typeof setTimeout> | undefined
-let completionTimer: ReturnType<typeof setTimeout> | undefined
+let readinessTimer: number | undefined
+let completionTimer: number | undefined
 
 onMounted(() => {
   readinessTimer = window.setTimeout(() => {
@@ -290,14 +307,12 @@ const isPendingOnboarding = computed(() => {
   if (!readyToCheck.value) return false
   if (appPending.value) return false
 
-  const status = appUser.value?.onboarding_status
-  if (status === 'completed' || status === 'skipped') return false
-  if (appOutcome.value === 'missing') return false
-
-  // A returning member must not lose onboarding merely because the optional
-  // client projection resolved late or failed. The trusted submit action still
-  // verifies and updates the authenticated user's canonical membership.
-  return true
+  // Onboarding is a positive stored state, not a fallback for an unresolved or
+  // failed membership read. Unknown outcomes must never trap returning users.
+  return (
+    appOutcome.value === 'ready' &&
+    appUser.value?.onboarding_status === 'pending'
+  )
 })
 
 const open = computed(() => !dismissed.value && isPendingOnboarding.value)
@@ -335,7 +350,7 @@ const formIsValid = computed(() => {
   )
 })
 
-watch(offersEnabled, (enabled) => {
+watch(offersEnabled, (enabled: boolean) => {
   if (enabled && !publicName.value.trim()) {
     publicName.value = authDisplayName.value
   }
@@ -345,11 +360,11 @@ async function completeOnboarding() {
   if (loading.value || !formIsValid.value) return
   const user = authUser.value
   if (!user) {
-    error.value = 'Mir hei dini Amäldig verlore. Bitte lad d Site neu.'
+    errorKey.value = 'onboarding_error_auth'
     return
   }
 
-  error.value = ''
+  errorKey.value = null
   loading.value = 'saving'
 
   const body: MarketplaceOnboardingInput = {
@@ -381,8 +396,7 @@ async function completeOnboarding() {
       dismissed.value = true
     }, 1600)
   } catch {
-    error.value =
-      'D Registrierig het nid chönne gspeicheret wärde. Probier es bitte no einisch.'
+    errorKey.value = 'onboarding_error_save_retry'
   } finally {
     loading.value = ''
   }
@@ -391,17 +405,14 @@ async function completeOnboarding() {
 async function skipOnboarding() {
   if (loading.value) return
 
-  error.value = ''
+  errorKey.value = null
   loading.value = 'skipped'
 
   try {
     await membership.setOnboardingStatus('skipped')
     dismissed.value = true
-  } catch (cause) {
-    error.value =
-      cause instanceof Error && cause.message.trim()
-        ? cause.message
-        : 'D Registrierig het nid chönne gspeicheret wärde.'
+  } catch {
+    errorKey.value = 'onboarding_error_save'
   } finally {
     loading.value = ''
   }

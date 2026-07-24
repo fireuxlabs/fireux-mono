@@ -48,6 +48,9 @@ Before each task:
   bounded to their current App. The derived access badge grants no authority,
   unpublished/test preview rows never become public detail links, and legacy
   root-only, missing-support, cross-ecosystem, or malformed rows fail closed.
+  Kitchen detail exact-loads the same server-owned public projection and
+  allowlist by slug during SSR; it does not read the Kitchen root or AppKitchen
+  support record directly from the browser.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It composes the
   Place package's canonical onboarding, then atomically creates or connects the
   sparse Kitchen root, Misebox App access, and UserApp console target. Misebox
@@ -159,6 +162,32 @@ Before each task:
   **Alpine–Mœbius** direction governs that tenant's UI, editorial artwork,
   social assets, maps, and icons; shared Misebox packages must not generalize
   that project-specific presentation into the ecosystem spine.
+- Interlaken Essen is the first reviewed Sproochli copy consumer. Its
+  Berner-Oberland `gsw` profile, glossary, and approved phrase pack remain
+  project-owned; Sproochli owns workflow semantics and trusted drafting.
+  Public brand copy never depends on live runtime generation.
+- Interlaken Essen also owns its site-shell language policy. The fixed order is
+  currently `gsw`, `en`, with `gsw` as the default; German, French, and Italian
+  remain deferred until this first pair is coherent. The shared Sproochli
+  trigger renders only approved site-copy languages and the project persists
+  the visitor's valid choice across its own routes. Interlaken's bilingual
+  resolver uses the reviewed entry's English source and Swiss-German target;
+  it does not generate public copy during a visit.
+- Interlaken-owned marketplace routes, onboarding, account UI, SEO,
+  accessibility copy, picker chrome, and language-bearing feed artwork resolve
+  through that same pack. The app root owns the reactive document locale for
+  every route. Inherited Core Auth/default-shell/legal copy and canonical Blog
+  UI/editorial content remain with their owning packages; do not duplicate
+  those routes or strings locally. They require shared, locale-aware owner
+  projections before the complete inherited URL namespace is bilingual.
+- Kitchen Sproochli participation is configured only on the canonical root
+  Kitchen through the trusted Kitchen Console endpoint. Shared Menu projections
+  show its Default/language trigger without requiring a public Kitchen route;
+  AppKitchen remains access-only. Structured Menu choices use Sproochli's
+  server-side provider path and source-aware translation memory. The selected
+  view remains client-session state; saved provider output stays explicitly
+  unreviewed and does not become published copy. Luna Piccante is the first
+  Menu attachment proof.
 - Interlaken Essen onboarding keeps UserApp limited to App governance,
   capability, and lifecycle. Locality and offer presentation belong to the
   app-private `apps/interlaken-essen/marketplace-profiles/{uid}` record; the
@@ -166,6 +195,17 @@ Before each task:
   the UserApp `onboarding_status` transition in one transaction. The live
   contract is in the project's `app/content/marketplace-profile.ts` and
   `server/api/onboarding/profile.post.ts`.
+- Interlaken Essen's `/mis` route is a project-owned personal marketplace home,
+  not a Core Dashboard or Console. It reuses Core authentication, avatar, User,
+  and UserApp state. Its buyer surface may store sparse private settings such
+  as `delivery_address` on the existing app-private marketplace profile through
+  the fixed-runtime authenticated `/api/marketplace/account` projection. The
+  same bounded projection derives seller-surface visibility only from an
+  explicit valid `offers_enabled: true`; absent, false, or invalid seller state
+  fails closed to the buyer surface. Buyer and seller Product/Order lists
+  remain presentation until a canonical marketplace entity family exists;
+  `/mis` must not reuse KitchenOrder outside Menu fulfilment or create parallel
+  Product, Order, account, membership, or operational-console authority.
 
 Current code, executable guards, and tests are implementation truth. Concept
 maps provide navigation and working context. Deleted docs, previous chat

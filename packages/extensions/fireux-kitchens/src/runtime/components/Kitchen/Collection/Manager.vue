@@ -124,6 +124,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 22:10 CEST — Place-root authority pass: consume the bounded public Kitchen/Place projection without page-local search false negatives.
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: distinguish authorized all-Kitchen results from the public directory.
+// Concurrent edit — 2026-07-24 17:12 CEST — Collection canon: consume the projection through useKitchenCollection.
 import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
@@ -131,7 +132,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 import {
   computed,
 } from 'vue'
-import { usePublicKitchenIndex } from '../../../composables/fireux/kitchen/usePublicKitchenIndex'
+import { useKitchenCollection } from '../../../composables/fireux/firestore/kitchen/fetch/useKitchenCollection'
 import { useKitchenInterface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -166,14 +167,16 @@ const props = withDefaults(
   }
 )
 
-const fetched = usePublicKitchenIndex()
+const fetched = useKitchenCollection()
 const collectionSurface = computed<KitchenCollectionItem[]>(
   () => fetched.kitchens.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
-const loadMore = () => fetched.loadMore()
+const loadMore = async () => {
+  await fetched.loadMore()
+}
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )

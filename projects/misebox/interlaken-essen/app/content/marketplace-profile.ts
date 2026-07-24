@@ -35,3 +35,11 @@ export type MarketplaceOnboardingInput = {
   public_name?: string
   introduction?: string
 }
+
+export type MarketplaceAccountSettings = {
+  delivery_address: string
+}
+
+export type MarketplaceAccountSettingsInput = {
+  delivery_address: string
+}

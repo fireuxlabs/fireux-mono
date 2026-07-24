@@ -101,6 +101,7 @@
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: carry public biography through directory cards and live-self hydration.
 import { useFetch } from '#imports'
 import { computed } from 'vue'
+import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
@@ -158,14 +159,25 @@ const props = withDefaults(
 
 // Public index family: the server projection owns the browse DTO and prevents
 // private sibling records from entering the public surface.
+const { appId, isTenant } = useFireUXConfig()
 const fetched = useFetch<PublicUsersResponse>('/api/public/users', {
-  key: 'public-users-index',
+  key: `public-users-index-${isTenant ? appId : 'global'}`,
   query: { limit: 200 },
 })
-const { user: currentUser } = useUser()
+const {
+  user: currentUser,
+  appUser,
+  appOutcome,
+} = useUser()
 const liveSelfUser = computed<PublicUserDto | null>(() => {
   const user = currentUser.value
   if (!user) return null
+  if (
+    isTenant &&
+    (appOutcome.value !== 'ready' || !appUser.value)
+  ) {
+    return null
+  }
 
   const handle = String(user.handle || '').trim().toLowerCase()
   if (!handle) return null
@@ -279,6 +291,7 @@ const devJsonData = computed(() => ({
   },
   derived: {
     source: '/api/public/users',
+    scope: isTenant ? `app:${appId}` : 'global',
     count: publicUsers.value.length,
     visibleCount: visibleCount.value,
     variant: variant.value,

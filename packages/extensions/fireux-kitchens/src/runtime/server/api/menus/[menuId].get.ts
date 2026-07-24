@@ -7,6 +7,10 @@ import {
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import {
+  normalizeSproochliLanguage,
+  type SproochliLanguageCode,
+} from 'fireux-sproochli/runtime/sproochli'
 import { buildMenuPayload } from '../../menu/payload/build.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { readKitchenMenuSections } from '../../menu/manifest/sections.ts'
@@ -60,7 +64,8 @@ function safePublicMenuError(value: unknown) {
 
 async function readKitchenMenu(
   target: ScopedPublicMenuTarget,
-  menuContext: ReturnType<typeof normalizeMenuRouteContext>
+  menuContext: ReturnType<typeof normalizeMenuRouteContext>,
+  sproochliLanguage: SproochliLanguageCode
 ) {
   const db = getRuntimeFirestore()
   const data = target.menuData
@@ -83,6 +88,7 @@ async function readKitchenMenu(
     ...target.scope,
     sourceKind: readRecordString(data, 'source_kind') || 'kitchen-menu',
     menuContext,
+    sproochliLanguage,
     page_style: target.scope.page_style,
     sections,
     choices,
@@ -91,7 +97,8 @@ async function readKitchenMenu(
 
 async function readRootMenuDetail(
   target: RootPublicMenuTarget,
-  menuContext: ReturnType<typeof normalizeMenuRouteContext>
+  menuContext: ReturnType<typeof normalizeMenuRouteContext>,
+  sproochliLanguage: SproochliLanguageCode
 ) {
   const db = getRuntimeFirestore()
   const data = target.rootMenuData
@@ -123,6 +130,7 @@ async function readRootMenuDetail(
     ...kitchenScope,
     sourceMenu,
     menuContext,
+    sproochliLanguage,
     page_style: kitchenScope.page_style,
     sections: sourceSections,
     choices,
@@ -142,6 +150,7 @@ export default defineEventHandler(async (event) => {
     const menuContext = Object.hasOwn(query, 'context')
       ? normalizeMenuRouteContext(query.context)
       : target.context
+    const sproochliLanguage = normalizeSproochliLanguage(query.sproochli)
 
     if (!menuId) {
       throw createError({
@@ -152,10 +161,18 @@ export default defineEventHandler(async (event) => {
 
     const publicTarget = await resolvePublicMenuTarget(menuId, kitchenSlug)
     if (publicTarget.kind !== 'root-doorway') {
-      return await readKitchenMenu(publicTarget, menuContext)
+      return await readKitchenMenu(
+        publicTarget,
+        menuContext,
+        sproochliLanguage
+      )
     }
 
-    return await readRootMenuDetail(publicTarget, menuContext)
+    return await readRootMenuDetail(
+      publicTarget,
+      menuContext,
+      sproochliLanguage
+    )
   } catch (error) {
     throw safePublicMenuError(error)
   }

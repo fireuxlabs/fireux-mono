@@ -1,33 +1,150 @@
 <template>
-  <UPage>
-    <UPageHeader
-      title="Translation pages for real visitor information."
-      description="Create QR-ready pages for guest instructions, menus, signs, notices, and local guides."
-    >
-      <template #headline>
+  <div class="sproochli-landing">
+    <section class="sproochli-hero">
+      <div class="sproochli-hero__copy">
         <UBadge color="primary" variant="soft">
-          QR information pages
+          Source intent → reviewed public copy
         </UBadge>
-      </template>
 
-      <template #links>
-        <UButton
-          to="/info/bern-bike-rental/rental-instructions"
-          color="primary"
-          icon="i-lucide-info"
-        >
-          View info page
-        </UButton>
-        <UButton to="/menus" variant="soft" icon="i-lucide-book-open">
-          View menus
-        </UButton>
-      </template>
-    </UPageHeader>
+        <h1>Say it clearly.<br><span>Keep it yours.</span></h1>
 
-    <UPageBody>
+        <p>
+          Draft multilingual visitor information with AI, review every word,
+          then publish dependable copy for QR pages, menus, signs, and guides.
+        </p>
+
+        <div class="sproochli-hero__actions">
+          <UButton
+            to="/info/bern-bike-rental/rental-instructions"
+            color="primary"
+            size="xl"
+            icon="i-lucide-scan-line"
+          >
+            See a translated page
+          </UButton>
+          <UButton
+            to="/tools/menu"
+            color="neutral"
+            variant="soft"
+            size="xl"
+            icon="i-lucide-languages"
+          >
+            Explore the translation tool
+          </UButton>
+        </div>
+
+        <ul class="sproochli-hero__trust" aria-label="Product principles">
+          <li><UIcon name="i-lucide-file-input" /> Source preserved</li>
+          <li><UIcon name="i-lucide-badge-check" /> Human approved</li>
+          <li><UIcon name="i-lucide-shield-check" /> Trusted generation</li>
+        </ul>
+      </div>
+
+      <div class="sproochli-hero__visual" aria-hidden="true">
+        <img src="/img/app/cover.png" alt="">
+        <div class="sproochli-language-card sproochli-language-card--source">
+          <span>EN · source</span>
+          <strong>Come and eat</strong>
+        </div>
+        <div class="sproochli-language-card sproochli-language-card--approved">
+          <span>GSW · approved</span>
+          <strong>Chum cho esse</strong>
+          <UIcon name="i-lucide-badge-check" />
+        </div>
+      </div>
+    </section>
+
+    <section class="sproochli-loop" aria-labelledby="sproochli-loop-title">
+      <div class="sproochli-section-heading">
+        <span>One dependable loop</span>
+        <h2 id="sproochli-loop-title">From meaning to approved language.</h2>
+        <p>AI helps with the first draft. People remain responsible for the words that go public.</p>
+      </div>
+
+      <ol class="sproochli-loop__steps">
+        <li>
+          <span class="sproochli-step-number">01</span>
+          <UIcon name="i-lucide-message-square-text" />
+          <h3>Write the intent</h3>
+          <p>Keep the original source, context, and purpose together.</p>
+        </li>
+        <li>
+          <span class="sproochli-step-number">02</span>
+          <UIcon name="i-lucide-sparkles" />
+          <h3>Draft with context</h3>
+          <p>Use language, locale, glossary, and style—not a generic word swap.</p>
+        </li>
+        <li>
+          <span class="sproochli-step-number">03</span>
+          <UIcon name="i-lucide-badge-check" />
+          <h3>Review, then publish</h3>
+          <p>Provenance and approval stay visible before important copy ships.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="sproochli-proof" aria-labelledby="sproochli-proof-title">
+      <div class="sproochli-proof__copy">
+        <UBadge color="primary" variant="subtle">First dialect proof</UBadge>
+        <h2 id="sproochli-proof-title">Swiss German is not just “German”.</h2>
+        <p>
+          Sproochli treats dialect as authored language. Interlaken Essen’s
+          Berner Oberland profile carries its own locale, tone, and approved
+          glossary instead of falling back to standard German.
+        </p>
+        <div class="sproochli-phrases" aria-label="Approved Interlaken phrases">
+          <span>Choufe</span>
+          <span>Verchoufe</span>
+          <span>Futter</span>
+          <span>Chum cho esse</span>
+        </div>
+      </div>
+
+      <div class="sproochli-proof__record">
+        <div>
+          <span>Profile</span>
+          <strong>Berner Oberland</strong>
+        </div>
+        <div>
+          <span>Language</span>
+          <strong>gsw-CH</strong>
+        </div>
+        <div>
+          <span>Review state</span>
+          <strong><UIcon name="i-lucide-circle-check" /> Approved</strong>
+        </div>
+        <div>
+          <span>Public runtime</span>
+          <strong>No live generation</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="sproochli-solutions">
+      <div class="sproochli-section-heading">
+        <span>Where it works</span>
+        <h2>Useful language at the point of need.</h2>
+      </div>
       <LandingSolutions variant="preview" />
-    </UPageBody>
-  </UPage>
+    </section>
+
+    <section class="sproochli-closing">
+      <img src="/img/app/logo.svg" alt="" aria-hidden="true">
+      <div>
+        <span>Small pages. Many languages.</span>
+        <h2>Make the next thing people scan worth understanding.</h2>
+      </div>
+      <UButton
+        to="/info/bern-bike-rental/rental-instructions"
+        color="neutral"
+        variant="solid"
+        size="xl"
+        trailing-icon="i-lucide-arrow-right"
+      >
+        View the live example
+      </UButton>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -44,7 +161,323 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Sproochli',
-  description: 'QR-ready translation pages for guest instructions, menus, signs, notices, and local guides.',
+  title: 'Sproochli — reviewed multilingual copy',
+  description: 'Draft with AI, review every word, and publish dependable multilingual copy for QR pages, menus, signs, and visitor information.',
 })
 </script>
+
+<style scoped>
+.sproochli-landing {
+  --sproochli-ink: #111018;
+  --sproochli-cream: #fff4de;
+  --sproochli-violet: #8b5cf6;
+  --sproochli-coral: #ff7a66;
+  overflow: hidden;
+}
+
+.sproochli-hero,
+.sproochli-loop,
+.sproochli-proof,
+.sproochli-solutions,
+.sproochli-closing {
+  width: min(100% - calc(var(--spacing) * 8), 80rem);
+  margin-inline: auto;
+}
+
+.sproochli-hero {
+  display: grid;
+  gap: calc(var(--spacing) * 10);
+  align-items: center;
+  min-height: calc(100svh - var(--ui-header-height));
+  padding-block: calc(var(--spacing) * 16);
+}
+
+.sproochli-hero__copy {
+  position: relative;
+  z-index: 2;
+}
+
+.sproochli-hero h1 {
+  max-width: 13ch;
+  margin-block: calc(var(--spacing) * 5);
+  color: var(--ui-text-highlighted);
+  font-size: clamp(var(--text-5xl), 8vw, var(--text-8xl));
+  font-weight: var(--font-weight-black);
+  line-height: .92;
+  letter-spacing: var(--tracking-tighter);
+}
+
+.sproochli-hero h1 span {
+  color: var(--sproochli-violet);
+}
+
+.sproochli-hero__copy > p {
+  max-width: 42rem;
+  color: var(--ui-text-muted);
+  font-size: var(--text-xl);
+  line-height: var(--leading-relaxed);
+}
+
+.sproochli-hero__actions,
+.sproochli-hero__trust,
+.sproochli-phrases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 3);
+}
+
+.sproochli-hero__actions {
+  margin-top: calc(var(--spacing) * 8);
+}
+
+.sproochli-hero__trust {
+  margin-top: calc(var(--spacing) * 8);
+  padding: 0;
+  color: var(--ui-text-toned);
+  font-size: var(--text-sm);
+  list-style: none;
+}
+
+.sproochli-hero__trust li {
+  display: inline-flex;
+  gap: calc(var(--spacing) * 2);
+  align-items: center;
+}
+
+.sproochli-hero__visual {
+  position: relative;
+  min-height: calc(var(--spacing) * 96);
+}
+
+.sproochli-hero__visual > img {
+  width: 100%;
+  height: 100%;
+  min-height: calc(var(--spacing) * 96);
+  object-fit: cover;
+  border-radius: calc(var(--ui-radius) * 4);
+}
+
+.sproochli-language-card {
+  position: absolute;
+  display: grid;
+  gap: var(--spacing);
+  min-width: calc(var(--spacing) * 48);
+  padding: calc(var(--spacing) * 4);
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: calc(var(--ui-radius) * 2);
+  color: var(--sproochli-cream);
+  background: rgb(17 16 24 / 86%);
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: blur(16px);
+}
+
+.sproochli-language-card span {
+  color: rgb(255 244 222 / 62%);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.sproochli-language-card--source {
+  top: 12%;
+  left: -4%;
+}
+
+.sproochli-language-card--approved {
+  right: -2%;
+  bottom: 10%;
+  border-color: rgb(255 122 102 / 45%);
+}
+
+.sproochli-language-card--approved svg {
+  position: absolute;
+  top: calc(var(--spacing) * 3);
+  right: calc(var(--spacing) * 3);
+  color: var(--sproochli-coral);
+}
+
+.sproochli-loop,
+.sproochli-solutions {
+  padding-block: calc(var(--spacing) * 20);
+}
+
+.sproochli-section-heading {
+  max-width: 46rem;
+  margin-bottom: calc(var(--spacing) * 10);
+}
+
+.sproochli-section-heading > span,
+.sproochli-closing span {
+  color: var(--sproochli-coral);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.sproochli-section-heading h2,
+.sproochli-proof h2,
+.sproochli-closing h2 {
+  margin-block: calc(var(--spacing) * 3);
+  color: var(--ui-text-highlighted);
+  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
+  font-weight: var(--font-weight-black);
+  line-height: var(--leading-tight);
+}
+
+.sproochli-section-heading p,
+.sproochli-proof p {
+  color: var(--ui-text-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+}
+
+.sproochli-loop__steps {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+  padding: 0;
+  list-style: none;
+}
+
+.sproochli-loop__steps li {
+  position: relative;
+  padding: calc(var(--spacing) * 6);
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 3);
+  background: var(--ui-bg-elevated);
+}
+
+.sproochli-loop__steps svg {
+  width: calc(var(--spacing) * 7);
+  height: calc(var(--spacing) * 7);
+  margin-block: calc(var(--spacing) * 8) calc(var(--spacing) * 4);
+  color: var(--sproochli-violet);
+}
+
+.sproochli-step-number {
+  color: var(--ui-text-dimmed);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.sproochli-loop__steps h3 {
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-xl);
+  font-weight: var(--font-weight-bold);
+}
+
+.sproochli-loop__steps p {
+  margin-top: calc(var(--spacing) * 2);
+  color: var(--ui-text-muted);
+  line-height: var(--leading-relaxed);
+}
+
+.sproochli-proof {
+  display: grid;
+  gap: calc(var(--spacing) * 10);
+  padding: calc(var(--spacing) * 8);
+  border-radius: calc(var(--ui-radius) * 4);
+  background: var(--sproochli-cream);
+}
+
+.sproochli-proof h2,
+.sproochli-proof p {
+  color: var(--sproochli-ink);
+}
+
+.sproochli-proof p {
+  opacity: .72;
+}
+
+.sproochli-phrases {
+  margin-top: calc(var(--spacing) * 6);
+}
+
+.sproochli-phrases span {
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+  border-radius: 9999px;
+  color: var(--sproochli-cream);
+  background: var(--sproochli-ink);
+  font-weight: var(--font-weight-bold);
+}
+
+.sproochli-proof__record {
+  overflow: hidden;
+  align-self: center;
+  border: 1px solid rgb(17 16 24 / 14%);
+  border-radius: calc(var(--ui-radius) * 3);
+  background: rgb(255 255 255 / 48%);
+}
+
+.sproochli-proof__record > div {
+  display: flex;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
+  border-bottom: 1px solid rgb(17 16 24 / 10%);
+}
+
+.sproochli-proof__record > div:last-child {
+  border-bottom: 0;
+}
+
+.sproochli-proof__record span {
+  color: rgb(17 16 24 / 58%);
+}
+
+.sproochli-proof__record strong {
+  display: inline-flex;
+  gap: calc(var(--spacing) * 2);
+  align-items: center;
+  color: var(--sproochli-ink);
+  text-align: right;
+}
+
+.sproochli-closing {
+  display: grid;
+  gap: calc(var(--spacing) * 6);
+  align-items: center;
+  margin-bottom: calc(var(--spacing) * 20);
+  padding: calc(var(--spacing) * 8);
+  border-radius: calc(var(--ui-radius) * 4);
+  background: var(--sproochli-violet);
+}
+
+.sproochli-closing img {
+  width: calc(var(--spacing) * 16);
+  border-radius: calc(var(--ui-radius) * 3);
+}
+
+.sproochli-closing span,
+.sproochli-closing h2 {
+  color: var(--sproochli-cream);
+}
+
+.sproochli-closing h2 {
+  max-width: 20ch;
+  margin-bottom: 0;
+}
+
+/* Mobile-first baseline. Width queries below may only enhance this layout. */
+@media (min-width: 48rem) {
+  .sproochli-loop__steps {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .sproochli-proof {
+    grid-template-columns: 1.15fr .85fr;
+    padding: calc(var(--spacing) * 12);
+  }
+
+  .sproochli-closing {
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+@media (min-width: 64rem) {
+  .sproochli-hero {
+    grid-template-columns: 1.05fr .95fr;
+  }
+}
+</style>

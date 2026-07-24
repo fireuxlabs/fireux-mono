@@ -1,11 +1,11 @@
 <template>
   <div class="market-section-index">
-    <h1 :id="id">Choufe</h1>
-    <p class="market-intro">Was suechsch?</p>
+    <h1 :id="id">{{ copy('buy') }}</h1>
+    <p class="market-intro">{{ copy('buy_prompt') }}</p>
 
-    <nav class="market-sections" aria-label="Agebots-Kategorie">
+    <nav class="market-sections" :aria-label="copy('buy_categories_label')">
       <NuxtLink
-        v-for="section in marketSections"
+        v-for="section in resolvedMarketSections"
         :key="section.id"
         :to="`/choufe/${section.id}`"
         class="market-section-link"
@@ -59,9 +59,20 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { marketSections } from '../../content/market-sections'
 
 defineProps<{
   id?: string
 }>()
+
+const { copy } = useInterlakenCopy()
+const resolvedMarketSections = computed(() =>
+  marketSections.map(section => ({
+    ...section,
+    label: copy(section.labelKey),
+    description: copy(section.descriptionKey),
+  }))
+)
 </script>

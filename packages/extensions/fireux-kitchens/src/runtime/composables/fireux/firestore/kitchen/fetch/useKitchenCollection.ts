@@ -1,326 +1,222 @@
-// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
-// Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: reserve raw Kitchen collection reads for console and exact-target seams.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Kitchen App access-record joins directly.
+// Concurrent edit — 2026-07-24 18:12 CEST — Kitchen collection canon: own only the bounded directory projection.
+import { useAsyncData } from '#imports'
 import {
-  collection,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
-import { computed, isRef, type Ref } from 'vue'
+  computed,
+  ref,
+  watch,
+  type ComputedRef,
+  type Ref,
+} from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
-  readRuntimeSimulationFirestoreDatabaseId,
-  useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
-import type { KitchenSurface } from '../utils/view/useKitchenInterface'
-import { useKitchenInterface } from '../utils/view/useKitchenInterface'
-import type { KitchenFetchSource } from './useKitchenFetch'
-import { composeKitchenScopedSurface } from '../../../../../utils/kitchen-spine'
+  PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE,
+  type PublicKitchenIndexItem,
+  type PublicKitchenIndexPage,
+} from '../../../../../models/kitchen/kitchen-index.model'
 
-type KitchenCollectionDoc = KitchenSurface
-type KitchenCollectionFilterValue = string | number | null | undefined
-export type KitchenCollectionFilter = {
-  ids?: KitchenCollectionFilterValue[] | null | undefined
-  operatorId?: KitchenCollectionFilterValue
-  teamId?: KitchenCollectionFilterValue
+type KitchenCollectionControls = {
+  pending: ComputedRef<boolean>
+  error: ComputedRef<unknown>
+  refresh: () => Promise<void>
 }
 
-type UseKitchenCollectionOptions = {
-  ids?: string[] | Ref<string[] | null | undefined>
-  source?: KitchenFetchSource | Ref<KitchenFetchSource>
-  filter?: KitchenCollectionFilter | Ref<KitchenCollectionFilter | null | undefined>
+export type UseKitchenCollectionReturn = KitchenCollectionControls & {
+  kitchens: ComputedRef<PublicKitchenIndexItem[]>
+  count: ComputedRef<number>
+  privilegedPreview: ComputedRef<boolean>
+  ready: Promise<void>
+  outcome: ComputedRef<'pending' | 'error' | 'empty' | 'ready'>
+  hasMore: ComputedRef<boolean>
+  loadingMore: Ref<boolean>
+  loadMoreError: Ref<unknown>
+  loadMore: () => Promise<boolean>
 }
 
 const normalize = (value: unknown) => String(value ?? '').trim()
-const normalizeSource = (value: unknown): KitchenFetchSource => {
-  const source = normalize(value)
-  if (source === 'demo' || source === 'test') return source
-  return 'live'
-}
 
 /**
- * Raw root/scoped Kitchen collection seam.
+ * Canonical Kitchen directory collection.
  *
- * Console and exact-target reads use this Firestore adapter. The public
- * `/kitchens` directory uses `usePublicKitchenIndex`, whose bounded server
- * projection joins linked Place truth without client-side N+1 hydration.
+ * Like Place and Company collections, this composable consumes the bounded
+ * server projection. Signed-in users may receive the private projection when
+ * the server confirms current-App admin or local developer authority.
  */
-export function useKitchenCollection(options: UseKitchenCollectionOptions = {}) {
-  const db = useFirestore()
-  const { surface } = useKitchenInterface()
-  const { appId } = useFireUXConfig()
-  const liveRead = useFirestoreRead()
-  const sourceRef = computed<KitchenFetchSource>(() =>
-    normalizeSource(isRef(options.source) ? options.source.value : options.source)
+export function useKitchenCollection(): UseKitchenCollectionReturn {
+  const fireux = useFireUXConfig()
+  const { currentUser, hasAuthState } = useAuth()
+  const uid = computed(() => normalize(currentUser.value?.uid))
+  const shouldRequestPreview = computed(() =>
+    Boolean(import.meta.client && hasAuthState.value && uid.value)
   )
-  const resolvedAppId = computed(() => normalize(appId))
-  const resolvedFilter = computed<KitchenCollectionFilter | undefined>(() => {
-    if (isRef(options.filter)) return options.filter.value ?? undefined
-    return options.filter ?? undefined
-  })
-  const simulationDatabaseId = computed(() =>
-    sourceRef.value === 'test'
-      ? readRuntimeSimulationFirestoreDatabaseId() || ''
-      : ''
+  const endpoint = `/api/kitchens?limit=${PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE}`
+  const state = useAsyncData<PublicKitchenIndexPage>(
+    [
+      'kitchen-collection',
+      `app=${encodeURIComponent(fireux.appId || 'app')}`,
+      `limit=${PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE}`,
+    ].join('|'),
+    () => $fetch<PublicKitchenIndexPage>(endpoint)
   )
-  const simulationRead = useFirestoreRead({ databaseId: simulationDatabaseId })
-  const idSet = computed(() => {
-    const ids = isRef(options.ids) ? options.ids.value : options.ids
-    return new Set(
-      [
-        ...(ids ?? []),
-        ...(resolvedFilter.value?.ids ?? []),
-      ].map((id) => normalize(id)).filter(Boolean)
-    )
-  })
-  const hasIdFilter = computed(() => {
-    const ids = isRef(options.ids) ? options.ids.value : options.ids
-    return Array.isArray(ids) || Array.isArray(resolvedFilter.value?.ids)
-  })
-  const idList = computed(() => Array.from(idSet.value))
-  const filterOperatorId = computed(() =>
-    normalize(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
-  )
-  const rootCollectionPath = computed(() =>
-    sourceRef.value === 'live' && !hasIdFilter.value && !hasOperatorFilter.value
-      ? KitchenStorage.rootCollection
-      : ''
-  )
-  const testCollectionPath = computed(() =>
-    sourceRef.value === 'test' &&
-      !hasIdFilter.value &&
-      simulationDatabaseId.value
-      ? KitchenStorage.rootCollection
-      : ''
-  )
-  const rootSource = liveRead.firestoreFetchCollection<KitchenCollectionDoc>(
-    rootCollectionPath
-  )
-  const appSupportOperatorQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
-    if (sourceRef.value !== 'live' || !resolvedAppId.value) return null
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+  const previewPage = ref<PublicKitchenIndexPage | null>(null)
+  const previewPending = ref(false)
+  const previewError = ref<unknown>(null)
+  let previewGeneration = 0
 
-    return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, KitchenStorage.scopeCollection),
-      where('operator_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<KitchenCollectionDoc>
-  })
-  const appSupportTeamQuery = computed<Query<KitchenCollectionDoc> | null>(() => {
-    if (sourceRef.value !== 'live' || !resolvedAppId.value) return null
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+  async function requestPreview() {
+    const generation = ++previewGeneration
+    const user = currentUser.value
+    const requestUid = uid.value
+    previewPage.value = null
+    previewError.value = null
 
-    return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, KitchenStorage.scopeCollection),
-      where('team_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<KitchenCollectionDoc>
-  })
-  const appSupportOperatorSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
-    appSupportOperatorQuery,
-    undefined,
-    computed(() =>
-      resolvedAppId.value
-        ? `${AppStorage.collection}/${resolvedAppId.value}/${KitchenStorage.scopeCollection}`
-        : ''
-    )
-  )
-  const appSupportTeamSource = liveRead.firestoreQuery<KitchenCollectionDoc>(
-    appSupportTeamQuery,
-    undefined,
-    computed(() =>
-      resolvedAppId.value
-        ? `${AppStorage.collection}/${resolvedAppId.value}/${KitchenStorage.scopeCollection}`
-        : ''
-    )
-  )
-  const appSupportSource = computed<KitchenCollectionDoc[]>(() => {
-    const byId = new Map<string, KitchenCollectionDoc>()
-
-    for (const appSupport of [
-      ...(appSupportOperatorSource.value ?? []),
-      ...(appSupportTeamSource.value ?? []),
-    ]) {
-      const id = normalize(appSupport?.id)
-      if (id) byId.set(id, { ...appSupport, id })
+    if (
+      !import.meta.client ||
+      !hasAuthState.value ||
+      !user ||
+      user.uid !== requestUid
+    ) {
+      previewPending.value = false
+      return
     }
 
-    return [...byId.values()]
-  })
-  const allowedKitchenIds = computed(() =>
-    appSupportSource.value
-      .map((kitchen) => normalize(kitchen?.id))
-      .filter(Boolean)
-  )
-  const exactRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
-    collectionPath: computed(() =>
-      sourceRef.value === 'live' && hasIdFilter.value
-        ? KitchenStorage.rootCollection
-        : ''
-    ),
-    ids: idList,
-  })
-  const appSupportRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
-    collectionPath: computed(() =>
-      sourceRef.value === 'live' && hasOperatorFilter.value
-        ? KitchenStorage.rootCollection
-        : ''
-    ),
-    ids: allowedKitchenIds,
-  })
-  const testSource = simulationRead.firestoreFetchCollection<KitchenCollectionDoc>(
-    testCollectionPath
-  )
-  const exactTestSource = simulationRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
-    collectionPath: computed(() =>
-      sourceRef.value === 'test' &&
-        hasIdFilter.value &&
-        simulationDatabaseId.value
-        ? KitchenStorage.rootCollection
-        : ''
-    ),
-    ids: idList,
-  })
-  const rootDocs = computed<KitchenCollectionDoc[]>(() =>
-    sourceRef.value === 'demo'
-      ? []
-      : sourceRef.value === 'test'
-        ? hasIdFilter.value
-          ? exactTestSource.docs.value ?? []
-          : testSource.value ?? []
-        : hasOperatorFilter.value
-          ? mergeRootAndAppSupport(
-              appSupportRootSource.docs.value ?? [],
-              appSupportSource.value
-            )
-        : hasIdFilter.value
-          ? exactRootSource.docs.value ?? []
-          : rootSource.value ?? []
-  )
-  const kitchens = computed<KitchenCollectionDoc[]>(() =>
-    rootDocs.value
-      .map((kitchen) => {
-        const id = normalize(kitchen?.id)
-        if (!id) return null
-        if (hasIdFilter.value && !idSet.value.has(id)) return null
-        if (hasOperatorFilter.value) {
-          if (!filterOperatorId.value) return null
-          if (!targetHasConsoleAccess(kitchen, filterOperatorId.value)) return null
-        }
+    previewPending.value = true
+    try {
+      const token = await user.getIdToken()
+      const page = await $fetch<PublicKitchenIndexPage>(
+        `${endpoint}&visibility=all`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      )
+      if (generation === previewGeneration && uid.value === requestUid) {
+        previewPage.value = page
+      }
+    } catch (error) {
+      if (generation !== previewGeneration || uid.value !== requestUid) return
+      const statusCode = requestStatusCode(error)
+      if (statusCode !== 401 && statusCode !== 403) {
+        previewError.value = error
+      }
+    } finally {
+      if (generation === previewGeneration) {
+        previewPending.value = false
+      }
+    }
+  }
 
-        return surface({
-          kitchen: {
-            ...kitchen,
-            id,
-          },
-          routeScope:
-            sourceRef.value === 'demo' || sourceRef.value === 'test'
-              ? sourceRef.value
-              : kitchen.route_scope,
-        })
-      })
-      .filter(Boolean) as KitchenCollectionDoc[]
+  if (import.meta.client) {
+    watch(
+      [hasAuthState, uid],
+      () => {
+        void requestPreview()
+      },
+      { immediate: true, flush: 'post' }
+    )
+  }
+  const loadingMore = ref(false)
+  const loadMoreError = ref<unknown>(null)
+  const privilegedPreview = computed(() => Boolean(previewPage.value))
+  const page = computed(() => previewPage.value || state.data.value)
+  const kitchens = computed<PublicKitchenIndexItem[]>(
+    () => page.value?.items ?? []
   )
   const count = computed(() => kitchens.value.length)
-  const active = computed(() =>
-    sourceRef.value !== 'demo' &&
-      (sourceRef.value !== 'test' || Boolean(simulationDatabaseId.value))
-  )
-  const pending = computed(() => {
-    if (sourceRef.value === 'demo') return false
-    if (sourceRef.value === 'test' && !simulationDatabaseId.value) return false
-    if (sourceRef.value === 'live' && hasOperatorFilter.value) {
-      if (!filterOperatorId.value) return false
+  const nextCursor = computed(() => page.value?.nextCursor || '')
+  const hasMore = computed(() => Boolean(nextCursor.value))
+  const outcome = computed<'pending' | 'error' | 'empty' | 'ready'>(() => {
+    if (
+      state.pending.value ||
+      (shouldRequestPreview.value && previewPending.value)
+    ) return 'pending'
+    if (
+      state.error.value ||
+      !state.data.value ||
+      (shouldRequestPreview.value && previewError.value)
+    ) return 'error'
+    return kitchens.value.length ? 'ready' : 'empty'
+  })
 
-      return (
-        appSupportRootSource.pending.value ||
-        appSupportOperatorSource.pending.value ||
-        appSupportTeamSource.pending.value
+  async function loadMore() {
+    const cursor = nextCursor.value
+    if (!cursor || loadingMore.value) return false
+
+    loadingMore.value = true
+    loadMoreError.value = null
+    try {
+      const user = currentUser.value
+      const preview = privilegedPreview.value && user
+      const token = preview ? await user.getIdToken() : ''
+      const nextPage = await $fetch<PublicKitchenIndexPage>(
+        `${endpoint}&cursor=${encodeURIComponent(cursor)}${preview ? '&visibility=all' : ''}`,
+        preview ? { headers: { Authorization: `Bearer ${token}` } } : undefined
       )
-    }
+      const current = page.value
+      if (!current) return false
 
-    return hasIdFilter.value
-      ? sourceRef.value === 'test'
-        ? exactTestSource.pending.value
-        : exactRootSource.pending.value
-      : sourceRef.value === 'test'
-        ? testSource.pending.value
-        : rootSource.pending.value
-  })
-  const error = computed<unknown | undefined>(() => {
-    if (sourceRef.value === 'demo') return undefined
-    if (sourceRef.value === 'test' && !simulationDatabaseId.value) {
-      return undefined
+      const items = new Map(
+        current.items.map((item: PublicKitchenIndexItem) => [item.id, item])
+      )
+      for (const item of nextPage.items) items.set(item.id, item)
+      const merged = {
+        items: [...items.values()],
+        ...(nextPage.nextCursor ? { nextCursor: nextPage.nextCursor } : {}),
+      }
+      if (preview) {
+        previewPage.value = merged
+      } else {
+        state.data.value = merged
+      }
+      return true
+    } catch (error) {
+      loadMoreError.value = error
+      return false
+    } finally {
+      loadingMore.value = false
     }
-    if (sourceRef.value === 'live' && hasOperatorFilter.value) {
-      if (!filterOperatorId.value) return undefined
+  }
 
-      return appSupportOperatorSource.error.value ??
-        appSupportTeamSource.error.value ??
-        appSupportRootSource.error.value
-    }
-    if (hasIdFilter.value) {
-      return sourceRef.value === 'test'
-        ? exactTestSource.error.value
-        : exactRootSource.error.value
-    }
-    return sourceRef.value === 'test'
-      ? testSource.error.value
-      : rootSource.error.value
-  })
-  const { outcome } = useFirestoreCollectionState({
-    active,
-    count,
-    error,
-    pending,
-  })
+  const pending = computed(() =>
+    state.pending.value ||
+    (shouldRequestPreview.value && previewPending.value)
+  )
+  const error = computed<unknown>(() =>
+    state.error.value ?? previewError.value
+  )
+  const refresh = async () => {
+    await state.refresh()
+    await requestPreview()
+  }
 
   return {
     kitchens,
     count,
+    privilegedPreview,
     pending,
     error,
+    refresh,
+    ready: state.then(() => undefined),
     outcome,
+    hasMore,
+    loadingMore,
+    loadMoreError,
+    loadMore,
   }
 }
 
-function mergeRootAndAppSupport(
-  rootDocs: KitchenCollectionDoc[],
-  appSupportDocs: KitchenCollectionDoc[]
-) {
-  const rootById = new Map<string, KitchenCollectionDoc>()
-  const appSupportById = new Map<string, KitchenCollectionDoc>()
-  const seen = new Set<string>()
-  const merged: KitchenCollectionDoc[] = []
+function requestStatusCode(value: unknown) {
+  if (!value || typeof value !== 'object') return 0
 
-  for (const root of rootDocs) {
-    const id = normalize(root?.id)
-    if (id) rootById.set(id, { ...root, id })
+  const error = value as {
+    status?: unknown
+    statusCode?: unknown
+    data?: { status?: unknown, statusCode?: unknown }
+    response?: { status?: unknown }
   }
-
-  for (const appSupport of appSupportDocs) {
-    const id = normalize(appSupport?.id)
-    if (id) appSupportById.set(id, { ...appSupport, id })
-  }
-
-  for (const id of [...rootById.keys(), ...appSupportById.keys()]) {
-    if (seen.has(id)) continue
-    seen.add(id)
-
-    const item = composeKitchenScopedSurface(
-      rootById.get(id),
-      appSupportById.get(id)
-    )
-    if (item) merged.push({ ...item, id } as KitchenCollectionDoc)
-  }
-
-  return merged
+  return Number(
+    error.statusCode ??
+    error.status ??
+    error.data?.statusCode ??
+    error.data?.status ??
+    error.response?.status ??
+    0
+  )
 }

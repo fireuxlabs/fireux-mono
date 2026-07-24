@@ -1,5 +1,5 @@
-Primary: #6C3AED
-Secondary: #4828CC
-Accent: #FF5CA8
-Dark: #0F0F1A
-Light: #FFFFFF
+Primary: #8B5CF6
+Secondary: #5B36B8
+Accent: #FF7A66
+Dark: #111018
+Light: #FFF4DE

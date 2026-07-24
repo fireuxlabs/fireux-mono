@@ -1,6 +1,6 @@
 <template>
   <UPopover
-    v-if="visibleLanguageOptions.length > 1"
+    v-if="visibleLanguageOptions.length > 1 || (props.showWhenSingleOption && onlyOriginalOption)"
     v-model:open="open"
     :content="popoverContent"
   >
@@ -8,30 +8,34 @@
       type="button"
       color="primary"
       variant="soft"
-      size="sm"
-      trailing-icon="i-lucide-chevron-down"
-      class="max-w-[calc(100vw-2rem)] rounded-full pl-1.5"
+      size="lg"
+      square
+      class="h-11 w-11 rounded-full"
       :aria-label="triggerLabel"
+      :title="triggerLabel"
     >
-      <img
-        :src="triggerBrandSrc"
-        alt=""
+      <SproochliDefaultLanguageMark
+        v-if="triggerUsesDefaultMark"
+        class="size-6 shrink-0"
+      />
+      <span
+        v-else
+        class="text-xl leading-none"
         aria-hidden="true"
-        class="h-5 w-auto shrink-0"
       >
-      <span class="hidden sm:inline">Translate</span>
-      <span class="truncate text-muted">{{ selectedOption.name }}</span>
+        {{ triggerSymbol }}
+      </span>
     </UButton>
 
     <template #content>
-      <UCard class="w-[calc(100vw-1rem)] sm:w-80">
+      <UCard class="sproochli-language-card">
         <template #header>
           <div class="space-y-1">
             <div class="text-sm font-semibold text-highlighted">
-              Language
+              {{ triggerCopy.heading }}
             </div>
             <p class="text-xs text-muted">
-              Choose how to read this content.
+              {{ triggerCopy.description }}
             </p>
           </div>
         </template>
@@ -41,9 +45,15 @@
             v-for="group in languageGroups"
             :key="group.key"
           >
+            <div
+              v-if="showAdminGroupLabels && group.key === 'cached'"
+              class="px-3 text-xs font-semibold uppercase tracking-wide text-dimmed"
+            >
+              {{ triggerCopy.cached }}
+            </div>
+
             <USeparator
               v-if="group.showSeparator"
-              :label="showAdminGroupLabels ? group.label : undefined"
             />
 
             <div class="space-y-1">
@@ -55,7 +65,7 @@
                 block
                 :color="languageOptionActive(option.code) ? 'primary' : 'neutral'"
                 :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
-                class="min-h-11 justify-start"
+                class="sproochli-language-option min-h-11 justify-start"
                 @click="selectLanguage(option.code)"
               >
                 <span class="flex min-w-0 flex-1 items-center gap-3 text-left">
@@ -90,18 +100,28 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from 'vue'
 import { navigateTo, useRoute } from '#imports'
-import triggerBrandSrc from '../../assets/sproochli/translate-trigger-compact.png'
+import SproochliDefaultLanguageMark from './DefaultLanguageMark.vue'
 import {
   isSproochliRtlLanguage,
+  normalizeSproochliLanguage,
   type SproochliLanguageCode,
   type SproochliLanguageOption,
 } from '../../composables/fireux/sproochli/publicLanguage'
 
-type LanguageGroupKey = NonNullable<SproochliLanguageOption['source']>
+type LanguageGroupKey = 'cached' | 'languages'
+
+type SproochliLanguageTriggerCopy = {
+  heading: string
+  description: string
+  chooseLanguage: string
+  currentSelection: string
+  defaultSelection: string
+  originalSelection: string
+  cached: string
+}
 
 type LanguageGroup = {
   key: LanguageGroupKey
-  label: string
   showSeparator: boolean
   options: SproochliLanguageOption[]
 }
@@ -109,12 +129,29 @@ type LanguageGroup = {
 const props = defineProps<{
   languageOptions: SproochliLanguageOption[]
   selectedLanguage?: SproochliLanguageCode
+  defaultLanguage?: string
   showGroupLabels?: boolean
+  showWhenSingleOption?: boolean
+  copy?: Partial<SproochliLanguageTriggerCopy>
 }>()
 
 const route = useRoute()
 const open = ref(false)
+const triggerCopy = computed<SproochliLanguageTriggerCopy>(() => ({
+  heading: 'Language',
+  description: 'Choose how to read this content.',
+  chooseLanguage: 'Choose language',
+  currentSelection: 'Current selection',
+  defaultSelection: 'Default',
+  originalSelection: 'Original',
+  cached: 'Cached',
+  ...props.copy,
+}))
 const visibleLanguageOptions = computed(() => props.languageOptions ?? [])
+const onlyOriginalOption = computed(() =>
+  visibleLanguageOptions.value.length === 1 &&
+  !visibleLanguageOptions.value[0]?.code
+)
 const showAdminGroupLabels = computed(() => props.showGroupLabels === true)
 const popoverContent = {
   align: 'center' as const,
@@ -123,47 +160,30 @@ const popoverContent = {
   collisionPadding: 8,
 }
 
-const groupLabel: Record<LanguageGroupKey, string> = {
-  original: 'Original',
-  attached: 'Attached',
-  cache: 'Cached',
-  public: 'Public',
-  on_demand: 'On demand',
-}
-const groupOrder: LanguageGroupKey[] = [
-  'original',
-  'attached',
-  'cache',
-  'public',
-  'on_demand',
-]
-
-const optionGroup = (option: SproochliLanguageOption): LanguageGroupKey =>
-  option.source || (option.code ? 'public' : 'original')
-
 const languageGroups = computed<LanguageGroup[]>(() => {
-  const groups = new Map<LanguageGroupKey, SproochliLanguageOption[]>()
+  const cached = visibleLanguageOptions.value.filter(
+    option => option.source !== 'on_demand'
+  )
+  const languages = visibleLanguageOptions.value.filter(
+    option => option.source === 'on_demand'
+  )
 
-  for (const option of visibleLanguageOptions.value) {
-    const key = optionGroup(option)
-    groups.set(key, [...(groups.get(key) ?? []), option])
-  }
-
-  let hasRenderedGroup = false
-  return groupOrder
-    .map((key) => {
-      const options = groups.get(key) ?? []
-      if (!options.length) return null
-
-      const group: LanguageGroup = {
-        key,
-        label: groupLabel[key],
-        showSeparator: hasRenderedGroup,
-        options,
-      }
-      hasRenderedGroup = true
-      return group
-    })
+  return [
+    cached.length
+      ? {
+          key: 'cached' as const,
+          showSeparator: false,
+          options: cached,
+        }
+      : null,
+    languages.length
+      ? {
+          key: 'languages' as const,
+          showSeparator: cached.length > 0,
+          options: languages,
+        }
+      : null,
+  ]
     .filter((group): group is LanguageGroup => Boolean(group))
 })
 
@@ -178,8 +198,39 @@ const selectedOption = computed(
       name: 'Original',
     }
 )
+const normalizedDefaultLanguage = computed(() =>
+  normalizeSproochliLanguage(props.defaultLanguage)
+)
+const pageHasMixedSource = computed(() =>
+  String(props.defaultLanguage ?? '').trim().toLowerCase() === 'mixed'
+)
+const defaultOption = computed(() =>
+  visibleLanguageOptions.value.find(
+    (option) => option.code === normalizedDefaultLanguage.value
+  )
+)
+const triggerUsesDefaultMark = computed(() =>
+  !props.selectedLanguage &&
+  (
+    pageHasMixedSource.value ||
+    !normalizedDefaultLanguage.value ||
+    (props.showWhenSingleOption && onlyOriginalOption.value)
+  )
+)
+const triggerSymbol = computed(() =>
+  props.selectedLanguage
+    ? selectedOption.value.label
+    : defaultOption.value?.label || ''
+)
+const triggerCurrentSelection = computed(() => {
+  if (props.selectedLanguage) return selectedOption.value.name
+  if (triggerUsesDefaultMark.value) return triggerCopy.value.defaultSelection
+  return defaultOption.value?.name || triggerCopy.value.originalSelection
+})
 const triggerLabel = computed(
-  () => `Translate content. Current language: ${selectedOption.value.name}.`
+  () =>
+    `${triggerCopy.value.chooseLanguage}. ` +
+    `${triggerCopy.value.currentSelection}: ${triggerCurrentSelection.value}.`
 )
 const passThroughQuery = computed(() =>
   Object.fromEntries(
@@ -224,5 +275,15 @@ const selectLanguage = async (language: SproochliLanguageCode) => {
 const languageDirection = (language: SproochliLanguageCode) =>
   isSproochliRtlLanguage(language) ? 'rtl' : 'ltr'
 const optionName = (option: SproochliLanguageOption) =>
-  String(option.name || option.code || 'Original')
+  String(
+    option.name ||
+    option.code ||
+    triggerCopy.value.originalSelection
+  )
 </script>
+
+<style scoped>
+.sproochli-language-card {
+  width: min(20rem, calc(100vw - 1rem));
+}
+</style>

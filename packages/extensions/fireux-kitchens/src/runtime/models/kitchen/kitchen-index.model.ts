@@ -9,6 +9,7 @@ import type {
   KitchenOrdersConfig,
   KitchenTablesConfig,
 } from '../kitchen.model'
+import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 
 export const PUBLIC_KITCHEN_INDEX_PAGE_SIZE = 24
 export const PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE = 48
@@ -30,6 +31,27 @@ export type PublicKitchenIndexItem = {
 export type PublicKitchenIndexPage = {
   items: PublicKitchenIndexItem[]
   nextCursor?: string
+}
+
+export type PublicKitchenDetail = PublicKitchenIndexItem & {
+  app_scope_app_id: string
+  route_scope: 'live'
+  display_name: string
+  tagline?: string
+  display_image_url?: string
+  cover_image?: string
+  food_gallery?: string[]
+  about?: string
+  phone?: string
+  website?: string
+  google_maps_url?: string
+  currency_code?: string
+  lat?: number
+  lng?: number
+}
+
+export type PublicKitchenDetailResponse = {
+  item: PublicKitchenDetail
 }
 
 export const KITCHEN_CONSOLE_TARGET_LIMIT = 50
@@ -61,6 +83,7 @@ export type KitchenConsoleTargetItem = {
   orders?: KitchenOrdersConfig
   tables?: KitchenTablesConfig
   fulfilment: KitchenFulfilmentConfig
+  sproochli: SproochliAttachmentConfig
   show: boolean
   active: boolean
   is_test_kitchen: boolean

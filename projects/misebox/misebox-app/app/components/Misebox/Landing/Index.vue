@@ -9,8 +9,8 @@
       <LandingAppCollection
         :controller="appsController"
         eyebrow="Our apps"
-        title="See Misebox working in real hospitality businesses."
-        description="Each App keeps its own identity while sharing the Misebox foundation for public content, restaurant operations and team access."
+        title="Different businesses. One shared Misebox foundation."
+        description="Explore hospitality Apps that connect public content, restaurant operations and team access while keeping their own identity and workflow."
         action-label="Explore all Misebox apps"
         action-to="/apps"
         fallback-description="A live hospitality app built on the Misebox ecosystem."
@@ -37,12 +37,12 @@ const operations = kitchenOperations
 
 const content = {
   hero: {
-    badge: 'Restaurant menu and kitchen workflow',
-    kicker: 'For restaurant owners and kitchen operators.',
-    title: 'Keep your menu, prep and service',
-    accent: 'working together.',
+    badge: 'Menu and kitchen management',
+    kicker: 'For restaurant teams.',
+    title: 'Manage your menu and kitchen',
+    accent: 'in one place.',
     description:
-      'Misebox connects published menus with dishes, recipes, prep work and kitchen orders—so your team stops rebuilding the same details across PDFs, spreadsheets and messages.',
+      'Publish menus, organise prep and manage orders with Misebox.',
     primaryAction: {
       label: 'Try the interactive demo',
       to: '/demo',

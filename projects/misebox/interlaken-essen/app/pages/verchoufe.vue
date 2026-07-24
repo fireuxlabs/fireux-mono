@@ -12,13 +12,16 @@
 </template>
 
 <script setup lang="ts">
+import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
+
 definePageMeta({
   layout: 'marketplace',
 })
 
+const { copy } = useInterlakenCopy()
+
 useSeoMeta({
-  title: 'Verchoufe – Interlaken Essen',
-  description:
-    'Biet dini lokale Läbensmittel für Lüt rund um Interlake aa.',
+  title: () => copy('sell_seo_title'),
+  description: () => copy('sell_seo_description'),
 })
 </script>

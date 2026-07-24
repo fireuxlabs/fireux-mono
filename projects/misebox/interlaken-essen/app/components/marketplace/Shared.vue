@@ -1,8 +1,8 @@
 <template>
   <section class="market-feed" aria-labelledby="market-feed-title">
     <div class="market-feed__heading">
-      <p class="market-eyebrow">Was louft</p>
-      <h2 id="market-feed-title">Futter</h2>
+      <p class="market-eyebrow">{{ copy('feed_eyebrow') }}</p>
+      <h2 id="market-feed-title">{{ copy('feed') }}</h2>
     </div>
 
     <article
@@ -24,7 +24,7 @@
           :to="post.to"
           class="market-feed-post__link"
         >
-          Zum Biitrag
+          {{ copy('feed_read_post') }}
         </NuxtLink>
       </div>
     </article>
@@ -33,10 +33,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { usePublicBlogCollection } from 'fireux-blogs/runtime/composables/fireux/blog/public/usePublicBlogCollection'
 import type { PublicBlogPostProjection } from 'fireux-blogs/runtime/models/blogPost-public.model'
 import { futterPosts } from '../../content/futter'
 
+const { copy, language } = useInterlakenCopy()
 const { collection: blogPosts } = usePublicBlogCollection()
 const blogsBySlug = computed(
   () => new Map<string, PublicBlogPostProjection>(
@@ -51,13 +53,21 @@ const stripHtml = (value: string) =>
 const resolvedFutterPosts = computed(() =>
   futterPosts.flatMap(post => {
     if (!('blogPost' in post) || !post.blogPost) {
-      return [{ ...post, to: '' }]
+      return [{
+        id: post.id,
+        label: copy(post.labelKey),
+        title: copy(post.titleKey),
+        body: copy(post.bodyKey),
+        image: post.imageByLanguage[language.value],
+        imageAlt: copy(post.imageAltKey),
+        to: '',
+      }]
     }
     const blogPost = blogsBySlug.value.get(post.blogPost.slug)
     if (!blogPost) return []
     return [{
       id: post.id,
-      label: post.label,
+      label: copy(post.labelKey),
       title: blogPost.title,
       body: blogPost.metaDescription || stripHtml(blogPost.content),
       image: blogPost.featuredImage,

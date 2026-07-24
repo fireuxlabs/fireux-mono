@@ -31,7 +31,7 @@ function storedIds(value: unknown, label: string) {
   return ids
 }
 
-export function resolveRuntimeKitchenTargetIds(
+export function resolveKitchenConsoleTargetIds(
   event: H3Event,
   membership: StoredRecord
 ) {

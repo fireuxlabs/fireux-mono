@@ -56,7 +56,9 @@ import { run as runRootAppSupportAuthority } from './guards/root-app-support-aut
 import { run as runUserAppAccess } from './guards/user-app-access.mjs'
 import { run as runDirectoryReconciliation } from './guards/directory-reconciliation.mjs'
 import { run as runDirectoryPublication } from './guards/directory-publication.mjs'
+import { run as runKitchenPublicProjection } from './guards/kitchen-public-projection.mjs'
 import { run as runBlogAuthority } from './guards/blog-authority.mjs'
+import { run as runSproochliCopy } from './guards/sproochli-copy.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 
 const repoRoot = process.cwd()
@@ -96,7 +98,9 @@ const guards = [
   { key: 'user-app-access', run: runUserAppAccess },
   { key: 'directory-reconciliation', run: runDirectoryReconciliation },
   { key: 'directory-publication', run: runDirectoryPublication },
+  { key: 'kitchen-public-projection', run: runKitchenPublicProjection },
   { key: 'blog-authority', run: runBlogAuthority },
+  { key: 'sproochli-copy', run: runSproochliCopy },
   { key: 'projects', run: runProjects },
 ]
 

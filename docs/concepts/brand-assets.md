@@ -76,6 +76,12 @@ genuinely branded child App may own its own complete asset family and is not a
 FireUX projection target. Core fallback assets still provide the FireUX
 platform identity when an App-specific value is unavailable.
 
+The shared `/assets` catalogue always presents the conventional family above.
+An App may append a small, source-controlled product asset family through
+`app.config.ts` at `fireuxAssets.catalogue`; those entries must still resolve
+under the App-owned `/img/app` contract. This keeps product-specific marks
+visible without copying or replacing the Core catalogue page.
+
 Do not add a new FireUX logo copy to a child, ecosystem, component, or project
 and edit it independently. Either add it to the guarded projection declaration
 because it is FireUX identity, or keep it as an explicit product-brand

@@ -12,8 +12,10 @@ import {
   readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenMenuStyle,
+  readKitchenSproochliConfig,
   resolveKitchenOperationHours,
 } from '../../../utils/kitchen-spine'
+import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type {
   KitchenFulfilmentConfig,
   KitchenImageShade,
@@ -40,6 +42,7 @@ export type MenuKitchenScope = {
   page_style?: Record<string, unknown>
   fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
+  sproochli?: SproochliAttachmentConfig
 }
 
 const record = (value: unknown): Record<string, unknown> =>
@@ -227,6 +230,7 @@ export async function readRootMenuKitchenScope(
     appKitchenData,
     placeData
   )
+  const sproochli = readKitchenSproochliConfig(kitchenData)
 
   return {
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
@@ -253,5 +257,6 @@ export async function readRootMenuKitchenScope(
     ...(kitchenOperationHours.windows.length
       ? { kitchen_operation_hours: kitchenOperationHours }
       : {}),
+    ...(sproochli.enabled ? { sproochli } : {}),
   }
 }

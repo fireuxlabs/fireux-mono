@@ -5,6 +5,10 @@ import {
 } from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
+import {
+  readSproochliAttachmentConfig,
+  type SproochliAttachmentConfig,
+} from 'fireux-sproochli/runtime/sproochli'
 import type {
   KitchenFulfilmentConfig,
   KitchenFulfilmentPaymentMethod,
@@ -167,6 +171,11 @@ export const composeKitchenScopedSurface = (
     ...publicRecord,
     ...scopedRecord,
   }
+  if (Object.hasOwn(publicRecord, 'sproochli')) {
+    composed.sproochli = readSproochliAttachmentConfig(publicRecord.sproochli)
+  } else {
+    delete composed.sproochli
+  }
 
   for (const key of publicKitchenStringKeys) {
     if (text(composed[key])) continue
@@ -288,6 +297,11 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
     available: bool(menus.available, source.menu_available !== false),
   }
 }
+
+export const readKitchenSproochliConfig = (
+  value: KitchenSpineRecord
+): SproochliAttachmentConfig =>
+  readSproochliAttachmentConfig(record(value).sproochli)
 
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style

@@ -18,6 +18,11 @@ import type {
   PublicCollectionResponse,
   PublicUserDto,
 } from '../../utils/public-projection/public-dto.types'
+import {
+  readPublicUserScopeIds,
+  resolvePublicUserScope,
+  type PublicUserScope,
+} from '../../utils/public-projection/public-user-scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { UserStorage } from '../../../models/core/user.model'
 import { resolveUserAvatarSource } from '../../../models/core/supporting/user-avatar'
@@ -35,8 +40,9 @@ function normalizeHandle(value: unknown): string {
 }
 
 function mapUserDocToDto(
-  doc: FirebaseFirestore.QueryDocumentSnapshot
+  doc: FirebaseFirestore.DocumentSnapshot
 ): PublicUserDto | null {
+  if (!doc.exists) return null
   const data = (doc.data() || {}) as Record<string, unknown>
   const handle = normalizeHandle(data.handle)
   if (!handle) return null
@@ -75,21 +81,44 @@ function mapUserDocToDto(
   }
 }
 
-async function readCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
-  const snap = await getRuntimeIdentityFirestore()
+async function readGlobalCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
+  const snapshot = await getRuntimeIdentityFirestore()
     .collection(UserStorage.rootCollection)
     .orderBy('handle')
     .limit(limit)
     .get()
 
   const out: PublicUserDto[] = []
-  for (const doc of snap.docs) {
+  for (const doc of snapshot.docs) {
     const dto = mapUserDocToDto(doc)
     if (!dto) continue
     out.push(dto)
   }
 
   return out
+}
+
+async function readTenantCanonicalUsers(
+  scope: Extract<PublicUserScope, { kind: 'tenant' }>,
+  limit: number
+): Promise<PublicUserDto[]> {
+  const userIds = await readPublicUserScopeIds(scope, limit)
+  if (!userIds.length) return []
+
+  const identityDb = getRuntimeIdentityFirestore()
+  const snapshots = await identityDb.getAll(
+    ...userIds.map(userId =>
+      identityDb.collection(UserStorage.rootCollection).doc(userId)
+    )
+  )
+  const users = snapshots.flatMap((snapshot) => {
+    const dto = mapUserDocToDto(snapshot)
+    return dto ? [dto] : []
+  })
+
+  return users.sort((left, right) =>
+    left.handle.localeCompare(right.handle)
+  )
 }
 
 export default defineEventHandler(async (event: H3Event) => {
@@ -100,8 +129,12 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const query = getQuery(event)
   const limit = normalizeLimit(query.limit)
+  const scope = resolvePublicUserScope()
 
-  const users = await readCanonicalUsers(limit)
+  const users =
+    scope.kind === 'tenant'
+      ? await readTenantCanonicalUsers(scope, limit)
+      : await readGlobalCanonicalUsers(limit)
 
   const response: PublicCollectionResponse<PublicUserDto> & { users: PublicUserDto[] } = {
     ok: true,

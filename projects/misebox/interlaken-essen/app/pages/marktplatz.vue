@@ -5,12 +5,9 @@
   >
     <div class="market-directory__content">
       <header class="market-directory__heading">
-        <p class="market-eyebrow">Betrib vo hie</p>
-        <h1 id="marketplace-title">Üsi Aabieter</h1>
-        <p class="market-intro">
-          Entdeck Produzänte, Hofläde, Chäsereie, Imker und Chöch rund um
-          Interlake.
-        </p>
+        <p class="market-eyebrow">{{ copy('marketplace_eyebrow') }}</p>
+        <h1 id="marketplace-title">{{ copy('marketplace_title') }}</h1>
+        <p class="market-intro">{{ copy('marketplace_intro') }}</p>
       </header>
 
       <div v-if="sellers.length" class="market-seller-grid">
@@ -31,12 +28,12 @@
       <div v-else class="market-directory__empty">
         <UIcon name="i-lucide-store" aria-hidden="true" />
         <div>
-          <h2>Die erschte Aabieter chöme gli.</h2>
-          <p>Hesch e lokale Betrieb? Trag di jetzt gratis i.</p>
+          <h2>{{ copy('marketplace_empty_title') }}</h2>
+          <p>{{ copy('marketplace_empty_body') }}</p>
         </div>
         <NuxtLink to="/auth" class="market-action market-action--light">
           <UIcon name="i-lucide-circle-plus" aria-hidden="true" />
-          <strong>Betrib registriere</strong>
+          <strong>{{ copy('register_business') }}</strong>
           <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
         </NuxtLink>
       </div>
@@ -45,6 +42,8 @@
 </template>
 
 <script setup lang="ts">
+import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
+
 type MarketSeller = {
   id: string
   name: string
@@ -60,9 +59,10 @@ definePageMeta({
   layout: 'marketplace',
 })
 
+const { copy } = useInterlakenCopy()
+
 useSeoMeta({
-  title: 'Marktplatz – Interlaken Essen',
-  description:
-    'Lokali Produzänte, Hofläde, Chäsereie, Imker und Chöch rund um Interlake entdecke.',
+  title: () => copy('marketplace_seo_title'),
+  description: () => copy('marketplace_seo_description'),
 })
 </script>

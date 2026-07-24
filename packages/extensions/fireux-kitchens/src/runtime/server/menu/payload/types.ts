@@ -7,6 +7,10 @@ import type {
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
 // Concurrent edit — 2026-07-20 22:45 CEST — Nitro import repair: resolve the concrete core money model.
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
+import type {
+  SproochliAttachmentConfig,
+  SproochliLanguageCode,
+} from 'fireux-sproochli/runtime/sproochli'
 
 export type MenuPayloadScope = {
   kitchenId?: string
@@ -29,6 +33,8 @@ export type MenuPayloadScope = {
   sourceMenu?: Record<string, unknown>
   fulfilment?: KitchenFulfilmentConfig
   kitchen_operation_hours?: WeekdayTimeWindowsConfig
+  sproochli?: SproochliAttachmentConfig
+  sproochliLanguage?: SproochliLanguageCode
 }
 
 export type MenuPayloadFile = {

@@ -494,7 +494,7 @@ function assertPublisherTargets() {
   )
   assert.deepEqual(
     DIRECTORY_PUBLICATION_EXCLUSIONS.map((entry) => entry.entityId).sort(),
-    ['niederhorn', 'qrdoc']
+    ['qrdoc']
   )
 
   const seenApps = new Set()
@@ -1297,16 +1297,15 @@ function runRemediationFixtures() {
   assert.equal(plan.remoteWrites, false)
   assert.equal(plan.executionReady, false)
   assert.deepEqual(plan.summary, {
-    decisions: 13,
+    decisions: 12,
     relationRepairs: 5,
     ownerBootstraps: 6,
-    exclusions: 2,
+    exclusions: 1,
     deduplicatedRelationTargets: 9,
     remoteWrites: false,
     executionReady: false,
   })
   assert.deepEqual(plan.exclusions.map((entry) => entry.entity_id).sort(), [
-    'niederhorn',
     'qrdoc',
   ])
   assert.doesNotMatch(

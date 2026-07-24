@@ -35,6 +35,12 @@
               <h2 class="text-sm font-semibold text-highlighted">
                 {{ asset.label }}
               </h2>
+              <p
+                v-if="asset.description"
+                class="text-xs leading-5 text-muted"
+              >
+                {{ asset.description }}
+              </p>
               <code class="block break-all text-xs text-muted">
                 {{ asset.src }}
               </code>
@@ -48,18 +54,32 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSeoMeta } from '#imports'
+import { useAppConfig, useSeoMeta } from '#imports'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
 import { useAssets } from '../composables/fireux/app/useAssets'
 
+type AssetSurface = 'light' | 'dark'
+
+type AssetItem = {
+  key: string
+  label: string
+  src: string
+  description?: string
+  wide?: boolean
+  surface?: AssetSurface
+}
+
+type UnknownRecord = Record<string, unknown>
+
 const fireux = useFireUXConfig()
 const brandAssets = useAssets()
+const appConfig = useAppConfig() as UnknownRecord
 
 const appName = computed(() =>
   String(fireux.appName || fireux.appShortName || fireux.appId || 'App')
 )
 
-const assetItems = computed(() => [
+const standardAssetItems: AssetItem[] = [
   {
     key: 'logo',
     label: 'Logo',
@@ -101,6 +121,54 @@ const assetItems = computed(() => [
     label: 'PWA icon 512',
     src: brandAssets.pwaIcon512,
   },
+]
+
+const isRecord = (value: unknown): value is UnknownRecord =>
+  Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+
+const optionalText = (value: unknown) => {
+  const text = typeof value === 'string' ? value.trim() : ''
+  return text || undefined
+}
+
+const configuredAssetItems = computed<AssetItem[]>(() => {
+  const config = isRecord(appConfig.fireuxAssets)
+    ? appConfig.fireuxAssets
+    : undefined
+  const catalogue = config?.catalogue
+  if (!Array.isArray(catalogue)) return []
+
+  const seen = new Set(standardAssetItems.map((asset) => asset.key))
+  const items: AssetItem[] = []
+
+  for (const candidate of catalogue.slice(0, 24)) {
+    if (!isRecord(candidate)) continue
+
+    const key = optionalText(candidate.key)
+    const label = optionalText(candidate.label)
+    const src = optionalText(candidate.src)
+    if (!key || !label || !src?.startsWith('/img/app/') || seen.has(key)) continue
+
+    seen.add(key)
+    items.push({
+      key,
+      label,
+      src,
+      description: optionalText(candidate.description),
+      wide: candidate.wide === true,
+      surface:
+        candidate.surface === 'light' || candidate.surface === 'dark'
+          ? candidate.surface
+          : undefined,
+    })
+  }
+
+  return items
+})
+
+const assetItems = computed<AssetItem[]>(() => [
+  ...standardAssetItems,
+  ...configuredAssetItems.value,
 ])
 
 definePageMeta({

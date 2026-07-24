@@ -52,6 +52,7 @@ contract.
 | Create | `create.md` | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts` | Create families are classified; plan metadata and optional-field handling are not aligned |
 | Tool provider | `tool-provider.md` | Core registry, loader, iframe protocol, and provider APIs | Transport is shared; Go QR wrappers and dogfood config contain duplication |
 | AI document processing | `ai-document-processing.md` | `fireux-ai` document loop and Kitchen Menu adapter | Ownership is clear; only one domain adapter has proved the shared contract |
+| Translation and reviewed copy | `translation.md` | Sproochli copy model, Kitchen attachment/Menu projection, trusted draft endpoint, and copy guard | Authority and attachment are shared; reviewed-copy persistence and reviewer UI remain to-confirm |
 | Firestore entity stack | `firestore-entity.md` | `scripts/guards/canon.mjs` and entity authority guards | Folder spine is guarded; family-specific reads differ by authority |
 | Server API | `server-api.md` | Package registration and shared server primitives | Placement is clear; no-op hooks and repeated authority parsing remain |
 | Runtime package | `runtime-package.md` | Module wiring and package guards | Registration spine is shared; package lanes own deliberate deltas |

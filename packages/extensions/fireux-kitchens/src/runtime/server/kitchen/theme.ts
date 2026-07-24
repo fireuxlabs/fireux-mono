@@ -17,7 +17,7 @@ import {
   readKitchenOnboardingScope,
   readKitchenOnboardingSupport,
 } from './onboarding-policy.ts'
-import { resolveRuntimeKitchenTargetIds } from './console-targets.ts'
+import { resolveKitchenConsoleTargetIds } from './console-targets.ts'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -101,7 +101,7 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
       runtimeMembership.get('role'),
       'Current App membership is required to manage this Kitchen.'
     )
-    const runtimeTargetIds = resolveRuntimeKitchenTargetIds(
+    const runtimeTargetIds = resolveKitchenConsoleTargetIds(
       event,
       runtimeMembership.data() || {}
     )

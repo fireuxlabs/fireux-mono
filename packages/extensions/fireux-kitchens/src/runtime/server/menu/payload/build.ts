@@ -6,8 +6,14 @@ import type {
   MenuDetailPayload,
   MenuDocumentFileKind,
   MenuManifest,
+  MenuManifestSproochli,
 } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuChoice, MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
+import {
+  normalizeSproochliLanguage,
+  resolveSproochliLanguageState,
+  type SproochliLanguageCode,
+} from 'fireux-sproochli/runtime/sproochli'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
   menuContextProfile,
@@ -51,6 +57,38 @@ const readMenuSourceKind = (data: Record<string, unknown>): MenuPayloadSourceKin
     : 'doc'
 
 const sourceMenuData = (scope: MenuPayloadScope) => record(scope.sourceMenu)
+
+const menuSproochli = (
+  scope: MenuPayloadScope
+): MenuManifestSproochli | undefined => {
+  const attachment = scope.sproochli
+  if (!attachment?.enabled) return undefined
+
+  const defaultLanguage = attachment.default_language || 'mixed'
+  const languageState = resolveSproochliLanguageState({
+    enabled: true,
+    defaultLanguage:
+      defaultLanguage === 'mixed' ? undefined : defaultLanguage,
+    // Reviewed projections populate public languages. Every remaining
+    // supported language stays available through Sproochli's server-owned,
+    // read-through Menu translation memory.
+    publicLanguages: [],
+  })
+  const requestedLanguage = normalizeSproochliLanguage(
+    scope.sproochliLanguage
+  )
+  const selectedLanguage: SproochliLanguageCode =
+    languageState.selectableLanguages.includes(requestedLanguage)
+      ? requestedLanguage
+      : ''
+
+  return {
+    enabled: true,
+    defaultLanguage,
+    selectedLanguage,
+    languageOptions: languageState.options,
+  }
+}
 
 const menuDataForManifest = (
   rootMenuData: Record<string, unknown>,
@@ -198,6 +236,7 @@ export async function buildMenuManifestPayload(
   const imageShade = kitchenImageShade(scope.kitchenImageShade)
   const kioskSkinId = readRecordString(menuData, 'kiosk_skin_id')
   const kioskSkin = await readMenuKioskSkin(source.app_id, kioskSkinId)
+  const sproochli = menuSproochli(scope)
   if (!currencyCode) {
     throw createError({
       statusCode: 500,
@@ -242,6 +281,7 @@ export async function buildMenuManifestPayload(
       menuId: source.menu_id || menuId,
       kitchenSlug: source.kitchen_slug || '',
     },
+    ...(sproochli ? { sproochli } : {}),
   }
 
   return {

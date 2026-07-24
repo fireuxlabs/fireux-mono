@@ -1,16 +1,18 @@
 import type { BlogPostFeedReference } from 'fireux-blogs/runtime/models/blogPost.model'
+import type { InterlakenPublicCopyKey } from './sproochli-copy-public'
+import type { InterlakenSiteLanguage } from './sproochli-site'
 
 type FutterCard = {
   id: string
-  label: string
+  labelKey: InterlakenPublicCopyKey
 }
 
 export type FutterEvent = FutterCard & {
   blogPost?: never
-  title: string
-  body: string
-  image: string
-  imageAlt: string
+  titleKey: InterlakenPublicCopyKey
+  bodyKey: InterlakenPublicCopyKey
+  imageByLanguage: Record<InterlakenSiteLanguage, string>
+  imageAltKey: InterlakenPublicCopyKey
 }
 
 export type FutterBlogPost = FutterCard & {
@@ -22,7 +24,7 @@ export type FutterPost = FutterEvent | FutterBlogPost
 export const futterPosts: FutterPost[] = [
   {
     id: 'wo-sind-die-chuehlschraenke',
-    label: 'Us dr Region',
+    labelKey: 'from_region',
     blogPost: {
       kind: 'blog-post',
       slug: 'wo-sind-die-chuehlschraenke',
@@ -30,11 +32,13 @@ export const futterPosts: FutterPost[] = [
   },
   {
     id: 'interlaken-essen-isch-live',
-    title: 'Interlaken Essen isch live!',
-    body: 'Dr lokali Marktplatz für Milch, Chäs, Honig und meh us üser Region.',
-    image: '/img/app/social-launch.png',
-    imageAlt:
-      'Illustrierts Interlaken-Panorama mit Milch, Chäs, em Geissbock und em Text Interlaken Essen isch live.',
-    label: 'Willkomme',
+    titleKey: 'feed_launch_title',
+    bodyKey: 'feed_launch_body',
+    imageByLanguage: {
+      gsw: '/img/app/social-launch.png',
+      en: '/img/app/social-launch-en.png',
+    },
+    imageAltKey: 'feed_launch_image_alt',
+    labelKey: 'feed_welcome_label',
   },
 ]

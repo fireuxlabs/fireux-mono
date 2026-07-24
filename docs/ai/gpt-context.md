@@ -108,6 +108,11 @@ Before each task:
   inherit Premium product capability. Empty `profiles` and `console_targets`
   indexes are omitted at rest and normalized on read. Rules accept missing
   optional indexes but reject malformed, unknown, or oversized values.
+- Public User list and detail projections remain canonical-identity DTOs. On a
+  tenant runtime, candidate visibility comes only from exact valid
+  `apps/{appId}/users/{uid}` memberships before root User hydration; a guessed
+  global handle and the denormalized root `app_ids` field never establish
+  tenant visibility. Global runtimes retain the ecosystem-wide User catalogue.
 - A family core owns the authoritative target items, outcome, and selection
   validity. Index and overview adapters consume that state; they do not create
   a second membership or target-outcome authority.
@@ -226,6 +231,27 @@ Before each task:
 - A genuinely branded child App may own a complete `/img/app` override. Do not
   overwrite child identities or maintain an unguarded second FireUX logo
   source. See `docs/concepts/brand-assets.md`.
+
+## Translation and reviewed-copy authority
+
+- `fireux-translation` owns low-level language catalogues and transient client
+  request helpers; it owns no provider credentials or reviewed-copy workflow.
+- `fireux-sproochli` owns provider authority, multilingual documents, and the
+  reviewed authored-copy contract. Trusted generation stays server-side, and
+  important public copy resolves only from approved content.
+- Reusable domain participation is a sparse attachment on that entity's
+  canonical root. Scoped support records cannot override it; public projections
+  expose only bounded language state. Structured Menus request provider
+  translations from Sproochli's trusted server. Sproochli reuses successful
+  results from its source-aware, server-only translation memory; the client
+  keeps the selected view for its session. Translation-memory records are
+  explicitly unreviewed and never become approved or canonical public copy.
+- Reusable domain packages own their shared interface source copy once.
+  Sproochli translates that chrome through the same provider request and
+  translation memory; do not copy universal wording into every entity.
+- Apps own dialect profiles, glossaries, and approved phrase packs. `gsw`
+  authoring names its locale/region/style instead of collapsing into standard
+  German. See `docs/concepts/translation.md`.
 
 ## Firebase MCP targeting
 

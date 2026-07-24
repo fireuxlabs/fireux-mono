@@ -2,23 +2,29 @@
   <aside class="market-launch" aria-labelledby="market-launch-title">
     <span class="market-launch__date">
       <UIcon name="i-lucide-calendar-days" aria-hidden="true" />
-      20. August 2026
+      {{ copy('launch_date') }}
     </span>
 
     <span class="market-launch__copy">
-      <strong id="market-launch-title">Dr offizielli Start.</strong>
-      <span>Mäld din Betrieb jetzt aa – es bliibt immer gratis.</span>
+      <strong id="market-launch-title">{{ copy('launch_title') }}</strong>
+      <span>{{ copy('launch_body') }}</span>
     </span>
 
     <NuxtLink
       to="/auth"
       class="market-launch__action"
     >
-      Betrieb registriere
+      {{ copy('register_business') }}
       <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
     </NuxtLink>
   </aside>
 </template>
+
+<script setup lang="ts">
+import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
+
+const { copy } = useInterlakenCopy()
+</script>
 
 <style scoped>
 .market-launch {

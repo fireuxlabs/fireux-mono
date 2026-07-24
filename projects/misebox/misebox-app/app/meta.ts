@@ -13,11 +13,11 @@ const sourceMeta = {
   landing: {
     brand: {
       appName: 'misebox',
-      bigPersonality: 'Keep your menu, prep and service<br>working together.',
-      headline: 'Restaurant menu and kitchen workflow',
+      bigPersonality: 'Manage your menu and kitchen<br>in one place.',
+      headline: 'Menu and kitchen management',
     },
     heroPrimaryLine:
-      "Misebox connects published <strong>menus</strong> with dishes, recipes, prep work and Kitchen orders—so restaurant teams stop rebuilding the same details across PDFs, spreadsheets and messages.",
+      'Publish <strong>menus</strong>, organise prep and manage orders with Misebox.',
     primaryCtaLabel: 'Try the interactive demo',
     primaryCtaTo: '/demo',
     secondaryCtaLabel: 'See what works today',
@@ -47,9 +47,9 @@ const sourceMeta = {
       },
     ],
     seo: {
-      title: 'Misebox — Restaurant menu and kitchen workflow',
+      title: 'Misebox — Menu and kitchen management',
       description:
-        'Connect published menus with dishes, recipes, prep work and Kitchen orders, from guest choice to service handoff.',
+        'Publish menus, organise kitchen prep and manage restaurant orders with Misebox.',
     },
   },
   about: {

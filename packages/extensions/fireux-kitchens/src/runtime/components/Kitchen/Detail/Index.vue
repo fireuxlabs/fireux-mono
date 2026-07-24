@@ -1,70 +1,57 @@
 <template>
-  <ClientOnly>
-    <UPage>
-      <UPageBody class="pagebody">
-        <UPageCard v-if="pending" variant="subtle">
-          <p class="text-sm text-dimmed">Loading kitchen…</p>
-        </UPageCard>
+  <UPage>
+    <UPageBody class="pagebody">
+      <UPageCard v-if="outcome === 'pending'" variant="subtle">
+        <p class="text-sm text-dimmed">Loading kitchen…</p>
+      </UPageCard>
 
-        <UPageCard
-          v-else-if="!kitchen"
-          title="Kitchen not found"
-          description="This kitchen does not exist or is not public-ready."
-          variant="subtle"
+      <UPageCard
+        v-else-if="outcome === 'error'"
+        title="Kitchen unavailable"
+        description="This kitchen could not be loaded. Please try again."
+        variant="subtle"
+      />
+
+      <UPageCard
+        v-else-if="!kitchen"
+        title="Kitchen not found"
+        description="This kitchen does not exist or is not public-ready."
+        variant="subtle"
+      />
+
+      <div v-else class="kitchen-detail">
+        <KitchenDetailIdentity :kitchen="kitchen" />
+
+        <KitchenDetailMenus :kitchen="kitchen" />
+
+        <KitchenDetailFulfilment
+          :kitchen="kitchen"
+          :fulfilment="resolvedFulfilment"
         />
 
-        <div v-else class="kitchen-detail">
-          <KitchenDetailIdentity :kitchen="kitchen" />
-
-          <KitchenDetailMenus :kitchen="kitchen" />
-
-          <KitchenDetailFulfilment
-            :kitchen="kitchen"
-            :fulfilment="resolvedFulfilment"
-          />
-
-          <KitchenDetailOperatorPanel :kitchen="kitchen" />
-        </div>
-      </UPageBody>
-    </UPage>
-
-    <template #fallback>
-      <UPage>
-        <UPageBody class="pagebody">
-          <UPageCard variant="subtle">
-            <p class="text-sm text-dimmed">Loading kitchen…</p>
-          </UPageCard>
-        </UPageBody>
-      </UPage>
-    </template>
-  </ClientOnly>
+        <KitchenDetailOperatorPanel :kitchen="kitchen" />
+      </div>
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
 import { useFetch } from '#imports'
 import { computed } from 'vue'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import {
-  useKitchenFetch,
-  useKitchenSeo,
-} from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import type {
-  Kitchen,
-  KitchenFulfilmentConfig,
-} from '../../../models/kitchen.model'
-import { KitchenStorage } from '../../../models/kitchen.model'
-import {
-  composeKitchenScopedSurface,
-  readKitchenAppScope,
-} from '../../../utils/kitchen-spine'
+import type { KitchenFulfilmentConfig } from '../../../models/kitchen.model'
+import type { PublicKitchenDetail } from '../../../models/kitchen/kitchen-index.model'
+import type { KitchenDetailOutcome } from '../../../composables/fireux/kitchen/useKitchenDetail'
 
 const props = defineProps<{
-  locator: string
+  kitchen?: PublicKitchenDetail | null
+  outcome: KitchenDetailOutcome
 }>()
 
-const locator = computed(() => String(props.locator || '').trim())
+const kitchen = computed(() =>
+  props.kitchen as KitchenSurface | null | undefined
+)
+const locator = computed(() => String(props.kitchen?.slug || '').trim())
 const emptyFulfilment: KitchenFulfilmentConfig = {
   delivery_zones: [],
   payment_methods: [],
@@ -75,44 +62,6 @@ const fulfilmentPath = computed(() =>
     : ''
 )
 
-const { appId } = useFireUXConfig()
-const { kitchen: rootKitchen, pending } = useKitchenFetch(locator)
-const rootKitchenId = computed(() =>
-  String(rootKitchen.value?.id ?? '').trim()
-)
-const kitchenAppScope = computed(() => readKitchenAppScope(rootKitchen.value))
-const scopedKitchenAppId = computed(() => {
-  const state = kitchenAppScope.value.state
-  const scopedAppId = kitchenAppScope.value.appId
-  if ((state === 'parent_app' || state === 'tenant_app') && scopedAppId) {
-    return scopedAppId
-  }
-
-  return String(appId || '').trim()
-})
-const scopedKitchenCollection = computed(() => {
-  const resolvedAppId = scopedKitchenAppId.value
-  if (!resolvedAppId) return ''
-
-  return `${AppStorage.collection}/${resolvedAppId}/${KitchenStorage.scopeCollection}`
-})
-const scopedKitchenId = computed(() => {
-  if (!scopedKitchenCollection.value) return ''
-  return rootKitchenId.value
-})
-const { kitchen: scopedKitchen } = useKitchenFetch(scopedKitchenId, {
-  collectionPath: scopedKitchenCollection,
-  hydrate: false,
-})
-const kitchen = computed<KitchenSurface | null>(() =>
-  composeKitchenScopedSurface(
-    rootKitchen.value,
-    scopedKitchen.value
-  ) as KitchenSurface | null
-)
-const seoKitchen = computed(() =>
-  kitchen.value as Partial<Kitchen> | null
-)
 const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
   fulfilmentPath,
   {
@@ -121,8 +70,6 @@ const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
   }
 )
 const resolvedFulfilment = computed(() => fulfilmentData.value || emptyFulfilment)
-
-useKitchenSeo(seoKitchen)
 </script>
 
 <style scoped>

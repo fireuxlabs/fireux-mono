@@ -21,12 +21,13 @@ import type {
   KitchenTablesConfig,
 } from '../../../../models/kitchen.model.ts'
 import { readKitchenOnboardingSupport } from '../../../../server/kitchen/onboarding-policy.ts'
-import { resolveRuntimeKitchenTargetIds } from '../../../../server/kitchen/console-targets.ts'
+import { resolveKitchenConsoleTargetIds } from '../../../../server/kitchen/console-targets.ts'
 import { menuKitchenIdentity } from '../../../../server/menu/ownership/kitchen-scope.ts'
 import {
   readKitchenFulfilmentConfig,
   readKitchenIdentity,
   readKitchenMenusConfig,
+  readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../../../utils/kitchen-spine.ts'
 
@@ -159,6 +160,7 @@ function projectKitchenTarget(input: {
       ? { tables: tables as KitchenTablesConfig }
       : {}),
     fulfilment: readKitchenFulfilmentConfig(input.root),
+    sproochli: readKitchenSproochliConfig(input.root),
     show: visibility.show,
     active: visibility.active,
     is_test_kitchen: visibility.isTest,
@@ -211,7 +213,7 @@ export default defineEventHandler(
       })
     }
 
-    const targetIds = resolveRuntimeKitchenTargetIds(event, currentMembership)
+    const targetIds = resolveKitchenConsoleTargetIds(event, currentMembership)
     if (!targetIds.length) {
       setResponseHeaders(event, {
         'Content-Type': 'application/json; charset=utf-8',

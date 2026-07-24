@@ -127,6 +127,13 @@ only the stored Admin role grants App administration. Empty profile and
 Console-target indexes may be absent at rest; readers normalize them without
 turning the indexes into authority.
 
+Public User projections preserve the same split. Global runtimes may enumerate
+the canonical User catalogue. Tenant runtimes first enumerate exact valid
+UserApp memberships for their configured App, then hydrate only those canonical
+User identities. Root `User.app_ids` is denormalized identity metadata, not
+tenant-directory selection authority, and tenant detail routes apply the same
+membership decision as their list.
+
 ### Root doorway plus scoped source
 
 Menu is a root public doorway. KitchenMenu is a distinct Kitchen-scoped Entity

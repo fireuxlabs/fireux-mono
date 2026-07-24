@@ -11,7 +11,7 @@ const fireuxConfig = defineFireuxConfig({
   role: 'tenant',
   selfJoinEnabled: true,
   consoles: [],
-  modules: [],
+  modules: ['fireux-sproochli'],
   authDefaultMode: 'sign-up',
   authCompletion: {
     path: '/blog',

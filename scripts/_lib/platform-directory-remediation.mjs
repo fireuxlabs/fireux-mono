@@ -2,7 +2,7 @@
 // last_used: 2026-07-21
 // usage_note: provide the immutable resolution matrix and pure no-write directory remediation planner.
 // Concurrent edit — 2026-07-21 12:33 CEST — Cleanbox-to-Werkbox migration: keep the historical cleanbox decision bound to current local authority sources.
-// Concurrent edit — 2026-07-19 22:12 CEST — Directory Remediation Pass: lock the 13 blocker resolutions into a fail-closed no-write plan.
+// Concurrent edit — 2026-07-19 22:12 CEST — Directory Remediation Pass: lock the blocker resolutions into a fail-closed no-write plan.
 // Concurrent edit — 2026-07-20 11:26 CEST — Directory Live Provisioning Pass: reuse locked decisions as live write preconditions.
 
 import { isDeepStrictEqual } from 'node:util'
@@ -151,28 +151,6 @@ export const PLATFORM_DIRECTORY_REMEDIATION_DECISIONS = deepFreeze([
       'projects/fireux/go-qr/nuxt.config.ts',
       APP_ENSURE_CONTRACT_PATH,
     ],
-  },
-  {
-    entity_kind: 'app',
-    entity_id: 'niederhorn',
-    resolution: 'exclude_from_backfill',
-    exclusion_reason: 'no_current_configured_owner_mapping',
-    expected: {
-      classification: 'OWNER_ID_UNRESOLVED',
-      owner_exists: true,
-      platform_exists: true,
-      owner_public_hash:
-        '025496eaab1a74f5fffc3175e455f7da6e47f11aabeec20a077ba3436a1d27c5',
-      platform_public_hash:
-        '7b5ee2856badd6169badc59d83ef827f0dd50658817ca63a0ae892103c1ec941',
-      relation_issues: [],
-      source: {
-        firebase_project_id: 'misebox-78f9c',
-        database_id: 'misebox',
-        project_id: '',
-      },
-    },
-    authoritative_inputs: [APP_REGISTRY_PATH],
   },
   {
     entity_kind: 'app',
@@ -387,7 +365,7 @@ function assertResolutionMatrix() {
   const expectedCounts = {
     repair_relation: 5,
     bootstrap_owner: 6,
-    exclude_from_backfill: 2,
+    exclude_from_backfill: 1,
   }
   const seen = new Set()
   const counts = Object.fromEntries(
@@ -423,11 +401,11 @@ function assertResolutionMatrix() {
   }
 
   if (
-    PLATFORM_DIRECTORY_REMEDIATION_DECISIONS.length !== 13 ||
+    PLATFORM_DIRECTORY_REMEDIATION_DECISIONS.length !== 12 ||
     !isDeepStrictEqual(counts, expectedCounts)
   ) {
     throw new Error(
-      `Expected exactly 13 decisions (5 relation repairs, 6 owner bootstraps, 2 exclusions); received ${JSON.stringify(counts)}.`
+      `Expected exactly 12 decisions (5 relation repairs, 6 owner bootstraps, 1 exclusion); received ${JSON.stringify(counts)}.`
     )
   }
 }

@@ -1,5 +1,9 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { createError, useAsyncData } from '#imports'
+import {
+  normalizeSproochliLanguage,
+  type SproochliLanguageCode,
+} from 'fireux-sproochli/runtime/sproochli'
 import type {
   MenuDetailPayload,
   MenuDocumentPayload,
@@ -25,6 +29,9 @@ export type MenuLoadFailure = {
 type UseMenuOptions = {
   routeScope: MaybeRefOrGetter<MenuRouteScope>
   menuContext?: MaybeRefOrGetter<MenuRouteContext | string | null | undefined>
+  sproochliLanguage?: MaybeRefOrGetter<
+    SproochliLanguageCode | string | null | undefined
+  >
 }
 
 type MenuRequestError = {
@@ -89,6 +96,9 @@ export function useMenu(
   const menuContext = computed(() =>
     normalizeMenuRouteContext(toValue(options.menuContext))
   )
+  const sproochliLanguage = computed(() =>
+    normalizeSproochliLanguage(toValue(options.sproochliLanguage))
+  )
   const keyPart = (value: unknown) =>
     encodeURIComponent(String(value ?? '').trim())
   const key = computed(
@@ -99,6 +109,7 @@ export function useMenu(
         `kitchen=${keyPart(kitchenSlug.value)}`,
         `id=${keyPart(id.value)}`,
         `context=${menuContext.value}`,
+        `sproochli=${sproochliLanguage.value}`,
       ].join('|')
   )
   const indexPath = computed(() => menuRouteIndexPath(routeScope.value))
@@ -122,6 +133,9 @@ export function useMenu(
     const query = new URLSearchParams()
     if (kitchenSlug.value) query.set('kitchenSlug', kitchenSlug.value)
     if (menuContext.value !== 'generic') query.set('context', menuContext.value)
+    if (sproochliLanguage.value) {
+      query.set('sproochli', sproochliLanguage.value)
+    }
 
     const qs = query.toString()
     return `/api/menus/${encodeURIComponent(id.value)}${qs ? `?${qs}` : ''}`
@@ -175,6 +189,7 @@ export function useMenu(
     routeScope,
     kitchenSlug,
     menuContext,
+    sproochliLanguage,
     indexPath,
     menuPath,
     qrPath,

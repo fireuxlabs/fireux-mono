@@ -1,7 +1,8 @@
 {
   "name": "Interlaken Essen",
   "short_name": "Interlaken Essen",
-  "description": "Lokale Lebensmittel rund um Interlaken entdecken und anbieten.",
+  "description": "Lokali Läbensmittel rund um Interlake entdecke und aabüte.",
+  "lang": "gsw-CH",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#fbf8ef",

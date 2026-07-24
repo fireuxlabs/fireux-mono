@@ -25,8 +25,48 @@ export const TranslationStorage = {
   idParam: 'languageCode',
 } as const
 
+/**
+ * Server-owned provider cache.
+ *
+ * This is deliberately separate from TranslationDocumentStorage: translation
+ * memory is reusable, unreviewed machine output, while translation documents
+ * are the authored/reviewable publication family.
+ */
+export const TranslationMemoryStorage = {
+  shape: 'root',
+  path: 'translation_memory/{cacheId}',
+  collection: 'translation_memory',
+  idParam: 'cacheId',
+  access: 'server-only',
+} as const
+
 export type TranslationStatus = 'draft' | 'review' | 'published' | 'archived'
 export type TranslationDirection = 'ltr' | 'rtl'
+export type TranslationMemoryReviewStatus = 'unreviewed'
+export type TranslationMemoryProvenanceKind = 'ai' | 'machine_translation'
+
+export type TranslationMemoryRecord = {
+  id: string
+  cache_version: string
+  domain: string
+  field_kind: string
+  field_id: string
+  source_language: string
+  source_text: string
+  source_hash: string
+  target_language: string
+  translated_text: string
+  glossary_version: string
+  provider: string
+  review_status: TranslationMemoryReviewStatus
+  provenance: {
+    kind: TranslationMemoryProvenanceKind
+    provider: string
+    generated_by: 'sproochli-menu-translate'
+    generated_at?: unknown
+  }
+  updated_at?: unknown
+}
 
 export const TranslationDocumentModel = {
   id: '',

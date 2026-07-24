@@ -18,6 +18,10 @@ import type {
   PublicDetailResponse,
   PublicUserDto,
 } from '../../../utils/public-projection/public-dto.types'
+import {
+  publicUserBelongsToScope,
+  resolvePublicUserScope,
+} from '../../../utils/public-projection/public-user-scope'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 import { UserStorage } from '../../../../models/core/user.model'
 import { resolveUserAvatarSource } from '../../../../models/core/supporting/user-avatar'
@@ -97,7 +101,10 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const user = await readCanonicalUserByHandle(handle)
 
-  if (!user) {
+  if (
+    !user ||
+    !(await publicUserBelongsToScope(resolvePublicUserScope(), user.id))
+  ) {
     throw createError({
       statusCode: 404,
       statusMessage: 'User not found',

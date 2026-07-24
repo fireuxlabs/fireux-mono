@@ -17,6 +17,7 @@ import {
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenOrderType } from './kitchen/order.model'
 import type { WeekdayTimeWindowsConfig } from './shared/weekday-time.model'
 
@@ -233,6 +234,7 @@ export type Kitchen = Omit<
     app_scope: KitchenAppScope
     menus: KitchenMenusConfig
     fulfilment: KitchenFulfilmentConfig
+    sproochli?: SproochliAttachmentConfig
 
     // Flat kitchen surface fields used by collection, route, and console views.
     app_scope_state?: FireuxAppScopeShape['app_scope_state']

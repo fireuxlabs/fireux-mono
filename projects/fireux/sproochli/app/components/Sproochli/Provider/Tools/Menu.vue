@@ -66,7 +66,7 @@
       color="primary"
       variant="soft"
       title="Provider API ready"
-      description="Sproochli generates translations. The consuming app still owns reading and saving its menu records."
+      description="Sproochli reuses unreviewed provider translations from its server memory. The consuming app still owns its canonical menu records."
     />
 
     <UCard

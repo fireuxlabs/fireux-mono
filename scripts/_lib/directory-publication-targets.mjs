@@ -243,11 +243,6 @@ export const DIRECTORY_PUBLICATION_TARGETS = Object.freeze([
 export const DIRECTORY_PUBLICATION_EXCLUSIONS = Object.freeze([
   Object.freeze({
     entityKind: 'app',
-    entityId: 'niederhorn',
-    reason: 'not_a_fireux_project_app',
-  }),
-  Object.freeze({
-    entityKind: 'app',
     entityId: 'qrdoc',
     reason: 'not_a_fireux_project_app',
   }),

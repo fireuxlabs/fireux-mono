@@ -4,7 +4,10 @@ import { createError } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
-import { readKitchenAppScope } from '../../../utils/kitchen-spine.ts'
+import {
+  readKitchenAppScope,
+  readKitchenSproochliConfig,
+} from '../../../utils/kitchen-spine.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import {
   menuKitchenFulfilment,
@@ -247,6 +250,7 @@ const scopedTarget = async (
     appKitchenData,
     placeData
   )
+  const sproochli = readKitchenSproochliConfig(input.rootKitchenData)
 
   return {
     kind,
@@ -292,6 +296,7 @@ const scopedTarget = async (
       ...(kitchenOperationHours.windows.length
         ? { kitchen_operation_hours: kitchenOperationHours }
         : {}),
+      ...(sproochli.enabled ? { sproochli } : {}),
     },
   }
 }

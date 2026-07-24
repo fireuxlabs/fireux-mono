@@ -1,4 +1,4 @@
-import { createHash, createSign } from 'node:crypto'
+import { createSign } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
 import { isAbsolute, resolve } from 'node:path'
@@ -199,25 +199,6 @@ async function getGoogleAccessToken(account: SproochliServiceAccount | null) {
   }
 
   return cachedToken.token
-}
-
-export function makeSproochliSourceHash(sourceText: string) {
-  return createHash('sha256').update(normalizeSproochliText(sourceText), 'utf8').digest('hex')
-}
-
-export function makeSproochliMenuCacheKey(input: {
-  fieldId: string
-  targetLanguage: string
-}) {
-  const fieldId = normalizeSproochliText(input.fieldId)
-  const targetLanguage = normalizeSproochliLanguageCode(input.targetLanguage)
-  if (!fieldId || !targetLanguage) return ''
-
-  const hash = createHash('sha256')
-    .update([fieldId, targetLanguage].join('\n'), 'utf8')
-    .digest('hex')
-
-  return `${targetLanguage}__${hash.slice(0, 40)}`
 }
 
 export async function translateSproochliTextBatch(

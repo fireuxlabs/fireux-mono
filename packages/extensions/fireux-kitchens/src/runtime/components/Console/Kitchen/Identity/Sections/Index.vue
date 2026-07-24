@@ -30,6 +30,12 @@
           :can-write="canWrite"
         />
 
+        <ConsoleKitchenIdentitySectionsSproochli
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :can-write="canWrite"
+        />
+
         <ConsoleKitchenIdentitySectionsWordmark
           :kitchen="kitchen"
           :kitchen-id="kitchenId"

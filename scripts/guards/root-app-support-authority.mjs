@@ -161,13 +161,27 @@ const assertAtomicConsoleOnboarding = ({
   handlerPath,
 }) => {
   const clientOnboarding = functionBlock(clientSource, clientFunction)
+  const endpointPattern = new RegExp(`['\"]${escapeRegex(route)}['\"]`)
+  const endpointCaller = endpointPattern.test(clientOnboarding)
+    ? clientOnboarding
+    : functionBlock(clientSource, completionFunction)
+  if (endpointCaller !== clientOnboarding) {
+    assert.match(
+      clientOnboarding,
+      new RegExp(`\\b${escapeRegex(completionFunction)}\\s*\\(`),
+      `${name} live Console creation must delegate to its trusted onboarding client.`
+    )
+  }
   assert.match(
-    clientOnboarding,
-    new RegExp(`['\"]${escapeRegex(route)}['\"]`),
+    endpointCaller,
+    endpointPattern,
     `${name} live Console creation must call its trusted onboarding endpoint.`
   )
-  assert.match(clientOnboarding, /getIdToken\(\)/)
-  assert.match(clientOnboarding, /Authorization:\s*`Bearer \$\{token\}`/)
+  assert.match(endpointCaller, /getIdToken\(\)|authHeaders\(\)/)
+  assert.match(
+    endpointCaller,
+    /Authorization:\s*`Bearer \$\{token\}`|headers:\s*await authHeaders\(\)/
+  )
   assert.doesNotMatch(
     clientOnboarding,
     /\buseConsoleCreate\s*\(/,
@@ -331,6 +345,8 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsole.ts',
   kitchenTargetApi:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
+  kitchenTargetResolver:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/console-targets.ts',
   kitchenCreate:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts',
   kitchenOnboardingHandler:
@@ -784,7 +800,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /requireFirebaseBearerUser/)
   assert.match(source.kitchenTargetApi, /useFireUXConfig\(\)/)
   assert.match(source.kitchenTargetApi, /getRuntimeFirestore\(\)/)
-  assert.match(source.kitchenTargetApi, /KITCHEN_CONSOLE_TARGET_LIMIT/)
+  assert.match(
+    source.kitchenTargetApi,
+    /resolveKitchenConsoleTargetIds\(event,\s*currentMembership\)/
+  )
+  assert.match(source.kitchenTargetResolver, /KITCHEN_CONSOLE_TARGET_LIMIT/)
+  assert.match(
+    source.kitchenTargetResolver,
+    /ids\.length > KITCHEN_CONSOLE_TARGET_LIMIT/
+  )
   assert.match(source.kitchenTargetApi, /readCanonicalKitchenScope/)
   assert.match(source.kitchenTargetApi, /keys\.length !== 2/)
   assert.match(source.kitchenTargetApi, /state !== 'parent_app'/)

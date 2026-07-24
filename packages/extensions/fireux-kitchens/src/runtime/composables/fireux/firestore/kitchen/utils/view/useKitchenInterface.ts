@@ -11,6 +11,7 @@ import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type {
   Kitchen,
   KitchenMenusConfig,
@@ -19,6 +20,7 @@ import {
   readKitchenAppScope,
   readKitchenIdentity,
   readKitchenMenusConfig,
+  readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../../../../../utils/kitchen-spine'
 
@@ -85,6 +87,7 @@ export type KitchenSurface = {
   menu_show_currency?: boolean
   menu_available?: boolean
   menus?: KitchenMenusConfig
+  sproochli?: SproochliAttachmentConfig
   menu_style?: Partial<PageStyle>
   formatted_address?: string
   short_address?: string
@@ -277,6 +280,7 @@ export function useKitchenInterface() {
     const appScope = readKitchenAppScope(merged)
     const visibility = readKitchenVisibility(merged)
     const menus = readKitchenMenusConfig(merged)
+    const sproochli = readKitchenSproochliConfig(merged)
 
     return {
       ...merged,
@@ -295,6 +299,7 @@ export function useKitchenInterface() {
       menu_show_currency: menus.showCurrency,
       menu_style: menus.style,
       menu_available: menus.available,
+      sproochli,
       route_scope: parts.routeScope ?? merged.route_scope,
     }
   }

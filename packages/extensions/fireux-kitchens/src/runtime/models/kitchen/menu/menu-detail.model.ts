@@ -1,5 +1,10 @@
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import type {
+  SproochliDefaultLanguage,
+  SproochliLanguageCode,
+  SproochliLanguageOption,
+} from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenImageShade } from '../../kitchen.model'
 import type { DishItemKind } from '../dish.model'
 import type { MenuKioskSkin } from './kiosk-skin.model'
@@ -73,11 +78,19 @@ export type MenuManifestSource = {
   kitchenSlug: string
 }
 
+export type MenuManifestSproochli = {
+  enabled: true
+  defaultLanguage: SproochliDefaultLanguage
+  selectedLanguage: SproochliLanguageCode
+  languageOptions: SproochliLanguageOption[]
+}
+
 export type MenuManifest = {
   content: MenuManifestContent
   behaviour: MenuManifestBehaviour
   presentation: MenuManifestPresentation
   source: MenuManifestSource
+  sproochli?: MenuManifestSproochli
 }
 
 export type MenuDocumentFileKind = 'photo' | 'pdf' | 'document'

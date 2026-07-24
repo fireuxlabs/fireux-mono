@@ -69,6 +69,32 @@ const kitchenIndexApiContract = (route) => ({
   excludes: ['"publicly_visible": false', '"is_test_kitchen": true'],
 })
 
+const kitchenDetailApiContract = (route, slug) => ({
+  route,
+  status: 200,
+  contentType: 'application/json',
+  includes: [
+    '"item"',
+    `"slug": "${slug}"`,
+    '"publicly_visible": true',
+    '"route_scope": "live"',
+  ],
+  excludes: [
+    '"claimed_by"',
+    '"operator_ids"',
+    '"team_ids"',
+    '"created_by"',
+    '"updated_by"',
+  ],
+})
+
+const missingKitchenDetailApiContract = route => ({
+  route,
+  status: 404,
+  contentType: 'application/json',
+  includes: ['"statusCode": 404', '"statusMessage": "Kitchen not found."'],
+})
+
 const privateKitchenIndexAuthContract = (route) => ({
   route,
   status: 401,
@@ -605,6 +631,7 @@ export {
   appDetailContract,
   invalidMenuIndexCursorContract,
   jobIndexApiContract,
+  kitchenDetailApiContract,
   kitchenIndexApiContract,
   kitchenCollectionRecoveryContract,
   menuBrowseContract,
@@ -617,6 +644,7 @@ export {
   menuPreOrderContract,
   menuQrContract,
   missingMenuBrowseContract,
+  missingKitchenDetailApiContract,
   missingMenuIndexContract,
   missingMenuQrContract,
   profileIndexApiContract,
