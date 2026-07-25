@@ -15,21 +15,20 @@
       <div class="market-header__tools">
         <nav class="market-nav" :aria-label="copy('site_main_navigation')">
           <NuxtLink
-            to="/marktplatz"
-            class="market-nav__marketplace"
-            exact-active-class="market-nav__link--active"
-            :aria-label="copy('marketplace')"
-          >
-            <UIcon name="i-lucide-store" aria-hidden="true" />
-            <span class="market-nav__label">{{ copy('marketplace') }}</span>
-          </NuxtLink>
-          <NuxtLink
             to="/choufe"
             exact-active-class="market-nav__link--active"
             :aria-label="copy('buy')"
           >
             <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
             <span class="market-nav__label">{{ copy('buy') }}</span>
+          </NuxtLink>
+          <NuxtLink
+            to="/marktplatz"
+            exact-active-class="market-nav__link--active"
+            :aria-label="copy('marketplace')"
+          >
+            <UIcon name="i-lucide-store" aria-hidden="true" />
+            <span class="market-nav__label">{{ copy('marketplace') }}</span>
           </NuxtLink>
           <NuxtLink
             to="/verchoufe"

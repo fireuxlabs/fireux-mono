@@ -189,6 +189,34 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     en: 'Offer your local food to people around Interlaken.',
     gsw: 'Biet dini lokale Läbensmittel für Lüt rund um Interlake aa.',
   },
+  sell_eyebrow: {
+    en: 'For neighbours and local businesses',
+    gsw: 'Für Nachbare und Betrib vo hie',
+  },
+  sell_intro: {
+    en: 'Do you make or grow something locally? Introduce yourself and offer it directly around Interlaken.',
+    gsw: 'Machsch oder pflanzisch öppis vo hie? Stell di vor und biet es direkt rund um Interlake aa.',
+  },
+  sell_free: {
+    en: 'Always free',
+    gsw: 'Immer gratis',
+  },
+  sell_direct: {
+    en: 'Direct, with no commission',
+    gsw: 'Direkt, ohni Provision',
+  },
+  sell_local: {
+    en: 'Collection or delivery arranged locally',
+    gsw: 'Abholig oder Lieferig direkt abmache',
+  },
+  sell_register: {
+    en: 'Register for free',
+    gsw: 'Gratis registriere',
+  },
+  sell_open_account: {
+    en: 'Open my area',
+    gsw: 'Mis Interlaken Essen',
+  },
   section_raw_milk_label: {
     en: 'Raw milk',
     gsw: 'Rohmilch',
@@ -236,6 +264,14 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
   section_cooks_description: {
     en: 'For barbecues, Airbnb, parties and catering.',
     gsw: 'Für BBQ, Airbnb, Fescht und Catering.',
+  },
+  section_other_label: {
+    en: 'Something else',
+    gsw: 'Anderes',
+  },
+  section_other_description: {
+    en: 'Everything local that does not fit another category.',
+    gsw: 'Alles Lokale, wo i kei anderi Kategorie passt.',
   },
   feed_eyebrow: {
     en: 'What’s happening',

@@ -44,6 +44,12 @@ export const marketSections: MarketSection[] = [
     descriptionKey: 'section_cooks_description',
     icon: 'i-lucide-chef-hat',
   },
+  {
+    id: 'anderes',
+    labelKey: 'section_other_label',
+    descriptionKey: 'section_other_description',
+    icon: 'i-lucide-package-open',
+  },
 ]
 
 export function findMarketSection(id: string): MarketSection | undefined {

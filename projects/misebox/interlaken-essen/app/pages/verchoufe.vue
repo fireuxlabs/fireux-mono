@@ -5,8 +5,10 @@
     aria-labelledby="sell-title"
   >
     <div class="market-landing__content">
-      <VerchoufeMain id="sell-title" />
-      <MarketplaceShared />
+      <div class="market-browse__columns">
+        <VerchoufeMain id="sell-title" />
+        <MarketplaceShared />
+      </div>
     </div>
   </section>
 </template>
