@@ -1,7 +1,14 @@
 <!-- Concurrent edit — 2026-07-23 02:43 CEST — Central landing product family: own the reusable product-led index presentation. -->
 <template>
-  <div class="landing-product">
-    <section class="landing-product__hero" aria-labelledby="landing-product-title">
+  <div
+    class="landing-product"
+    :class="{ 'landing-product--full-hero': heroLayout === 'proof-wide' }"
+  >
+    <section
+      class="landing-product__hero"
+      :class="{ 'landing-product__hero--proof-wide': heroLayout === 'proof-wide' }"
+      aria-labelledby="landing-product-title"
+    >
       <div class="landing-product__hero-glow" aria-hidden="true" />
 
       <div class="landing-product__hero-copy">
@@ -26,7 +33,10 @@
           {{ content.hero.description }}
         </p>
 
-        <div class="landing-product__hero-actions">
+        <div
+          v-if="heroMode === 'full'"
+          class="landing-product__hero-actions"
+        >
           <UButton
             :to="content.hero.primaryAction.to"
             size="xl"
@@ -46,7 +56,7 @@
         </div>
 
         <NuxtLink
-          v-if="content.hero.quietAction"
+          v-if="heroMode === 'full' && content.hero.quietAction"
           :to="content.hero.quietAction.to"
           class="landing-product__quiet-link"
         >
@@ -57,7 +67,11 @@
           />
         </NuxtLink>
 
-        <ul class="landing-product__trust-list" aria-label="Product principles">
+        <ul
+          v-if="heroMode === 'full'"
+          class="landing-product__trust-list"
+          aria-label="Product principles"
+        >
           <li v-for="item in content.hero.trustItems" :key="item">
             <UIcon name="i-lucide-check" aria-hidden="true" />
             {{ item }}
@@ -69,6 +83,8 @@
         <slot name="hero-preview" />
       </div>
     </section>
+
+    <slot name="after-hero" />
 
     <nav v-reveal class="landing-product__loop" aria-label="Operating loop">
       <NuxtLink
@@ -286,9 +302,14 @@ import type { LandingProductIndexContent } from '../../../types/landing-product'
 
 type RevealDirection = 'up' | 'left' | 'right' | 'scale'
 
-defineProps<{
+withDefaults(defineProps<{
   content: LandingProductIndexContent
-}>()
+  heroLayout?: 'balanced' | 'proof-wide'
+  heroMode?: 'full' | 'copy-proof'
+}>(), {
+  heroLayout: 'balanced',
+  heroMode: 'full',
+})
 
 const revealObservers = new WeakMap<HTMLElement, IntersectionObserver>()
 
@@ -332,6 +353,17 @@ const vReveal: ObjectDirective<HTMLElement, RevealDirection> = {
   overflow-x: clip;
   gap: calc(var(--spacing) * 15);
   padding: calc(var(--spacing) * 5) 0 calc(var(--spacing) * 18);
+}
+
+.landing-product.landing-product--full-hero {
+  box-sizing: border-box;
+  width: 100dvw;
+  margin-inline: calc(50% - 50dvw);
+  padding-inline: clamp(
+    calc(var(--spacing) * 4),
+    2vw,
+    calc(var(--spacing) * 8)
+  );
 }
 
 .landing-product :where(h1, h2, h3, p) {
@@ -1027,6 +1059,10 @@ const vReveal: ObjectDirective<HTMLElement, RevealDirection> = {
     grid-template-columns: minmax(0, 1.06fr) minmax(26rem, 0.94fr);
   }
 
+  .landing-product__hero--proof-wide {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .landing-product__loop {
     grid-template-columns: repeat(4, 1fr);
   }
@@ -1044,6 +1080,16 @@ const vReveal: ObjectDirective<HTMLElement, RevealDirection> = {
 
   .landing-product__showcase {
     grid-template-columns: minmax(0, 0.9fr) minmax(25rem, 1.1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .landing-product__hero--proof-wide {
+    grid-template-columns: minmax(23rem, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  .landing-product__hero--proof-wide h1 {
+    font-size: clamp(3.65rem, 6.4vw, 7.5rem);
   }
 }
 

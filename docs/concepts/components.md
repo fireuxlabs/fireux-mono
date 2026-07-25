@@ -2,7 +2,8 @@
 <!-- Concurrent edit — 2026-07-23 02:43 CEST — Map the shared product-led landing surface and project proof slot. -->
 <!-- Concurrent edit — 2026-07-23 12:13 CEST — Record FireUX as the second shared product-landing consumer. -->
 <!-- Concurrent edit — 2026-07-23 — Extract the two-consumer product-preview frame without moving product proof into Core. -->
-Updated: 2026-07-23
+<!-- Concurrent edit — 2026-07-25 — Map Misebox's real Orders proof inside the shared Main App hero. -->
+Updated: 2026-07-25
 Ref: e98ffb195
 Role: map, not canon
 
@@ -59,11 +60,28 @@ Map component folder and naming conventions.
   product-led public landing composition and responsive/reveal behavior; app
   projects supply typed copy, routes, catalogues, and genuine product proof
   through its named slot rather than copying that presentation. FireUX and
-  Misebox are the current sibling consumers. Core
-  `LandingProductPreviewFrame` owns their repeated outer preview frame,
-  identity/status chrome, mode controls, panel transition, footer action, and
-  reduced-motion behavior; each project preview retains its active state,
-  product copy, routes, and complete proof body. Core
+  Misebox are the current sibling consumers. Misebox fills the shared hero's
+  proof slot with a read-only real Orders board reduced to three tickets in one
+  Pass rail, without a project-owned outer preview frame, and keeps the shared
+  typed hero text as the only explanation. Misebox reuses the existing Core
+  hero action hierarchy beside the proof for its project-owned conversion
+  routes and short capability notes; it does not add a detached CTA card.
+  Core's `copy-proof` presentation remains available when a consumer needs to
+  omit action and trust rows. Core's paired `proof-wide` layout owns the
+  mobile-first full-viewport hero breakout, retaining compact phone gutters
+  and adding the text/proof columns only at wider breakpoints. Core
+  exposes a post-hero slot for project-owned conversion content without
+  absorbing its routes or copy. Misebox uses that seam for its second landing
+  section, pairing a read-only canonical Kitchen Operations launcher with
+  project-owned Console copy. The launcher may switch local operation pages,
+  whose bodies remain empty until a truthful product-backed projection exists;
+  it does not acquire Console selection, live reads, or write authority;
+  mobile keeps the component before the text and desktop places it to the
+  left. Core
+  `LandingProductPreviewFrame` owns the
+  narrated-preview frame when a project genuinely needs identity/status
+  chrome, mode controls, panel transition, footer action, and reduced-motion
+  behavior; project proof truth never moves into Core. Core
   `LandingAppCollection` renders the bounded public App directory controller
   inside the product landing's named App slot; the project supplies only
   section copy and presentation-safe filtering, never a hard-coded tenant App

@@ -98,7 +98,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const interlakenOwnedCopyConsumers = [
     'projects/misebox/interlaken-essen/app/layouts/marketplace.vue',
     'projects/misebox/interlaken-essen/app/pages/index.vue',
-    'projects/misebox/interlaken-essen/app/pages/marktplatz.vue',
+    'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
+    'projects/misebox/interlaken-essen/app/pages/marktplatz/[sellerId].vue',
     'projects/misebox/interlaken-essen/app/pages/choufe/index.vue',
     'projects/misebox/interlaken-essen/app/pages/choufe/[sectionId].vue',
     'projects/misebox/interlaken-essen/app/pages/verchoufe.vue',
@@ -108,6 +109,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'projects/misebox/interlaken-essen/app/components/choufe/Main.vue',
     'projects/misebox/interlaken-essen/app/components/verchoufe/Main.vue',
     'projects/misebox/interlaken-essen/app/components/marketplace/Shared.vue',
+    'projects/misebox/interlaken-essen/app/components/marketplace/SellerCard.vue',
+    'projects/misebox/interlaken-essen/app/components/marketplace/Storefront.vue',
   ].map(relativePath => read(repoRoot, relativePath))
   const translationReadme = read(
     repoRoot,

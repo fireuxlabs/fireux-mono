@@ -11,18 +11,11 @@
       </header>
 
       <div v-if="sellers.length" class="market-seller-grid">
-        <article
+        <MarketplaceSellerCard
           v-for="seller in sellers"
           :key="seller.id"
-          class="market-seller-card"
-        >
-          <img :src="seller.image" :alt="seller.imageAlt">
-          <div class="market-seller-card__body">
-            <span>{{ seller.place }}</span>
-            <h2>{{ seller.name }}</h2>
-            <p>{{ seller.description }}</p>
-          </div>
-        </article>
+          :seller="seller"
+        />
       </div>
 
       <div v-else class="market-directory__empty">
@@ -43,17 +36,11 @@
 
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
+import {
+  marketplacePreviewSellers,
+} from '@/content/marketplace-preview'
 
-type MarketSeller = {
-  id: string
-  name: string
-  place: string
-  description: string
-  image: string
-  imageAlt: string
-}
-
-const sellers: MarketSeller[] = []
+const sellers = marketplacePreviewSellers
 
 definePageMeta({
   layout: 'marketplace',

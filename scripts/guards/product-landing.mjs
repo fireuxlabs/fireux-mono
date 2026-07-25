@@ -3,6 +3,7 @@
 // usage_note: keeps the shared product landing mobile-first and product truth at each project edge.
 // Concurrent edit — 2026-07-23 02:43 CEST — Guard the central landing surface and its Misebox adapter.
 // Concurrent edit — 2026-07-23 12:13 CEST — Extend the shared landing contract to the FireUX sibling consumer.
+// Concurrent edit — 2026-07-25 — Guard Misebox's real read-only Orders proof inside the shared hero.
 
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -17,6 +18,8 @@ const MISEBOX_ADAPTER_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue'
 const MISEBOX_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Preview.vue'
+const MISEBOX_CONSOLE_PREVIEW_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview.vue'
 const MISEBOX_META_PATH =
   'projects/misebox/misebox-app/app/meta.ts'
 const MISEBOX_JOBS_MIDDLEWARE_PATH =
@@ -367,6 +370,7 @@ export async function run(ctx) {
   const previewFrame = read(repoRoot, CORE_PREVIEW_FRAME_PATH)
   const miseboxAdapter = read(repoRoot, MISEBOX_ADAPTER_PATH)
   const miseboxPreview = read(repoRoot, MISEBOX_PREVIEW_PATH)
+  const miseboxConsolePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
   const miseboxMeta = read(repoRoot, MISEBOX_META_PATH)
   const miseboxJobsMiddleware = read(repoRoot, MISEBOX_JOBS_MIDDLEWARE_PATH)
   const miseboxJobsLayout = read(repoRoot, MISEBOX_JOBS_LAYOUT_PATH)
@@ -415,9 +419,8 @@ export async function run(ctx) {
     filePath: MISEBOX_PREVIEW_PATH,
     source: miseboxPreview,
     selectors: [
-      '.misebox-home__preview',
-      '.misebox-home__preview-metrics',
-      '.misebox-home__ticket-stack',
+      '.misebox-home__service-pass',
+      '.misebox-home__pass-tickets',
     ],
     breakpoints: ['640px'],
     violations,
@@ -437,6 +440,10 @@ export async function run(ctx) {
 
   if (!core.includes('<slot name="hero-preview"')) {
     violations.push(`${CORE_PATH}: missing the hero-preview slot`)
+  }
+
+  if (!core.includes('<slot name="after-hero"')) {
+    violations.push(`${CORE_PATH}: missing the post-hero conversion slot`)
   }
 
   if (!core.includes('<slot name="apps"')) {
@@ -478,6 +485,36 @@ export async function run(ctx) {
   }
 
   for (const required of [
+    "from 'fireux-kitchens/runtime/content/operations'",
+    'aria-label="Kitchen Operations"',
+    ':aria-current="operation.id === selectedOperationId',
+    '@click="selectedOperationId = operation.id"',
+    ':aria-label="`${selectedOperation.title} page canvas`"',
+    'min-h-[20rem]',
+  ]) {
+    if (!miseboxConsolePreview.includes(required)) {
+      violations.push(
+        `${MISEBOX_CONSOLE_PREVIEW_PATH}: missing local canonical Console navigation (${required})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    'useConsoleSelection',
+    'useKitchenConsoleOverview',
+    'useFirestore',
+    'firebase',
+    '{{ selectedOperation.description }}',
+    ':to="selectedOperation.to"',
+  ]) {
+    if (miseboxConsolePreview.includes(forbidden)) {
+      violations.push(
+        `${MISEBOX_CONSOLE_PREVIEW_PATH}: public Console preview acquired live authority (${forbidden})`
+      )
+    }
+  }
+
+  for (const required of [
     '<slot name="mark"',
     '<slot name="title"',
     '<slot name="subtitle"',
@@ -500,9 +537,21 @@ export async function run(ctx) {
       previewTag: 'MiseboxLandingPreview',
       required: [
         '<LandingProductIndex',
+        'hero-layout="proof-wide"',
+        'hero-mode="full"',
         '#hero-preview',
+        '#after-hero',
         '#apps',
         '<MiseboxLandingPreview',
+        '<MiseboxLandingConsolePreview',
+        'Every operation has a place.',
+        'Open Kitchen Console',
+        "to: '/get-started'",
+        "to: '/console/kitchen'",
+        "to: '/operations'",
+        'Get started',
+        'Go to console',
+        'Explore Kitchen Operations',
         '<LandingAppCollection',
         'useEcosystemAppCollection',
         ":exclude-ids=\"['misebox-app']\"",
@@ -576,27 +625,6 @@ export async function run(ctx) {
         'fireux-home__preview-footer',
       ],
     },
-    {
-      filePath: MISEBOX_PREVIEW_PATH,
-      source: miseboxPreview,
-      required: [
-        'class="misebox-home__preview"',
-        'controls-layout="flow"',
-        'misebox-home__preview-metrics',
-        'misebox-home__ticket-stack',
-        '--misebox-preview-ink',
-      ],
-      forbidden: [
-        'misebox-home__service-preview',
-        'misebox-home__preview-topbar',
-        'misebox-home__preview-mark',
-        'misebox-home__live-status',
-        'misebox-home__preview-flow',
-        'misebox-home__preview-content',
-        'misebox-home__preview-footer',
-        'misebox-home__preview-chevron',
-      ],
-    },
   ]
 
   for (const preview of previewConsumers) {
@@ -638,6 +666,55 @@ export async function run(ctx) {
     if (/landing-product-preview-frame__/.test(preview.source)) {
       violations.push(
         `${preview.filePath}: copied Core preview-frame presentation into the project`
+      )
+    }
+  }
+
+  for (const required of [
+    'class="misebox-home__service-pass"',
+    'class="misebox-home__pass-tickets"',
+    'label="Pass"',
+    ':count="heroPassOrders.length"',
+    'role="img"',
+    'aria-hidden="true"',
+    'inert',
+    '<ConsoleKitchenOperationsOrdersRail',
+    '<ConsoleKitchenOperationsOrdersCardsTicket',
+    'v-for="order in heroPassOrders"',
+    ':interactive="false"',
+    ':show-customer-details="false"',
+    'useMiseboxProductDemo()',
+    "status: 'ready'",
+    'customer: {}',
+  ]) {
+    if (!miseboxPreview.includes(required)) {
+      violations.push(
+        `${MISEBOX_PREVIEW_PATH}: missing real read-only Orders proof (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    "'landing-product--full-hero': heroLayout === 'proof-wide'",
+    'width: 100dvw',
+    'margin-inline: calc(50% - 50dvw)',
+  ]) {
+    if (!core.includes(required)) {
+      violations.push(
+        `${CORE_PATH}: missing mobile-first full-viewport hero seam (${required})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    '<LandingProductPreviewFrame',
+    'misebox-home__preview-metrics',
+    'misebox-home__ticket-stack',
+    '@update:model-value',
+  ]) {
+    if (miseboxPreview.includes(forbidden)) {
+      violations.push(
+        `${MISEBOX_PREVIEW_PATH}: retains the superseded explanatory preview (${forbidden})`
       )
     }
   }

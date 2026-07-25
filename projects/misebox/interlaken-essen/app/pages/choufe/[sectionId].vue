@@ -9,6 +9,17 @@
       </p>
       <h1 :id="titleId">{{ copy(section.labelKey) }}</h1>
       <p class="market-intro">{{ copy(section.descriptionKey) }}</p>
+      <div
+        v-if="sectionSellers.length"
+        class="market-category-sellers"
+        :aria-label="copy('storefront_category_sellers')"
+      >
+        <MarketplaceSellerCard
+          v-for="seller in sectionSellers"
+          :key="seller.id"
+          :seller="seller"
+        />
+      </div>
       <MarketplaceShared />
     </div>
   </section>
@@ -17,6 +28,9 @@
 <script setup lang="ts">
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { findMarketSection } from '../../content/market-sections'
+import {
+  marketplacePreviewSellers,
+} from '../../content/marketplace-preview'
 
 definePageMeta({
   layout: 'marketplace',
@@ -35,6 +49,9 @@ if (!section) {
 }
 
 const titleId = `section-${section.id}`
+const sectionSellers = marketplacePreviewSellers.filter(seller =>
+  seller.categoryIds.includes(section.id)
+)
 
 useSeoMeta({
   title: () => `${copy(section.labelKey)} – Interlaken Essen`,

@@ -2,8 +2,9 @@
 
 <!-- Concurrent edit — 2026-07-23 02:43 CEST — Record the Core-owned product landing and Misebox-owned proof boundary. -->
 <!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
+<!-- Concurrent edit — 2026-07-25 — Keep Main App hero copy in Core while Misebox proves it with the real Orders board. -->
 
-Updated: 2026-07-24
+Updated: 2026-07-25
 Ref: e98ffb195
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -121,14 +122,34 @@ Before each task:
   `LandingProductIndex`: page rhythm, hero/action hierarchy, operating loop,
   capability, operation and audience grids, proof-panel placement, closing CTA,
   reveal behavior, and responsive breakpoints. Misebox keeps its product copy,
-  routes, Kitchen Operations catalogue, and interactive Menu/Mise/Service proof
-  in its project adapter. Core `LandingProductPreviewFrame` owns only the
-  repeated outer frame, identity/status chrome, mode controls, panel transition,
-  footer action, and reduced-motion behavior; Misebox retains active state,
-  routes, labels, metrics, tickets, and all proof truth. The composition is
-  mobile-first: phone flow, touch targets, and compact product proof are
-  unconditioned defaults, while wider layouts enhance them only through
-  `min-width` breakpoints. The executable contract lives in
+  routes, Kitchen Operations catalogue, and product proof in its project
+  adapter. Its buyer-facing definition is “The Control Centre For Kitchen
+  Operations”; the Kitchen Console is the concrete workspace that runs menus,
+  preparation, service, supply, and finance. The Main App hero uses the shared
+  typed hero text once and fills its
+  named proof slot with the real read-only Kitchen Orders board, projected from
+  the named Product Demo adapter as a compact three-ticket Pass snapshot
+  without an additional project-owned preview frame; it does not add a second
+  explanatory hero or expose live state and controls. The existing Core hero
+  action system keeps the Get started and Go to console buttons, Operations
+  doorway, and concise capability notes directly beside that proof rather than
+  adding a detached CTA section. Its `proof-wide` layout breaks the Main hero
+  out of the landing container to the full viewport with mobile-first gutters
+  and breakpoint-only column enhancement. The later landing sections retain
+  the relevant product doorways. Section 2 uses Core's post-hero slot for a
+  mobile-first Kitchen Console introduction: the read-only component comes
+  first and projects the canonical Kitchen Operations catalogue without live
+  counts or customer data. Its navigation switches local, presentation-only
+  operation pages while their bodies remain intentionally empty; it never
+  invents page content, reads or writes a selected Kitchen, or approximates
+  live Console data. Wider screens place that component left of the buyer-facing
+  Console text. Core
+  `LandingProductPreviewFrame` remains the shared
+  narrated-preview frame when identity/status chrome, mode controls, panel
+  transition, footer action, and reduced-motion behavior are genuinely needed.
+  The composition is mobile-first: phone flow, touch targets, and compact
+  product proof are unconditioned defaults, while wider layouts enhance them
+  only through `min-width` breakpoints. The executable contract lives in
   `scripts/guards/product-landing.mjs`.
 - The main landing's Our Apps section consumes Core
   `LandingAppCollection` through the product landing's named App slot and the

@@ -1,8 +1,53 @@
 <!-- Concurrent edit — 2026-07-23 09:40 CEST — Lead with the restaurant job, live product scope, and safe proof. -->
 <template>
-  <LandingProductIndex :content="content">
+  <MiseboxLandingPractice />
+
+  <LandingProductIndex
+    :content="content"
+    hero-layout="proof-wide"
+    hero-mode="full"
+  >
     <template #hero-preview>
       <MiseboxLandingPreview />
+    </template>
+
+    <template #after-hero>
+      <section
+        class="grid gap-10 py-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:items-center lg:gap-16 lg:py-12"
+        aria-labelledby="misebox-console-section-title"
+      >
+        <MiseboxLandingConsolePreview />
+
+        <div class="grid gap-5">
+          <p class="fx-type-headline">
+            Kitchen Console
+          </p>
+          <h2
+            id="misebox-console-section-title"
+            class="text-4xl font-black tracking-tight text-highlighted sm:text-5xl lg:text-6xl"
+          >
+            Every operation has a place.
+          </h2>
+          <p class="text-lg leading-8 text-muted">
+            Move from menus and recipes into prep, service, suppliers and
+            finance without rebuilding the same kitchen information in
+            separate tools.
+          </p>
+          <p class="leading-7 text-toned">
+            The navigation stays flat, so the operation you need is always
+            close.
+          </p>
+          <div>
+            <UButton
+              to="/console/kitchen"
+              size="lg"
+              trailing-icon="i-lucide-arrow-right"
+            >
+              Open Kitchen Console
+            </UButton>
+          </div>
+        </div>
+      </section>
     </template>
 
     <template #apps>
@@ -24,6 +69,8 @@
 import type { LandingProductIndexContent } from 'fireux-core/types/landing-product'
 import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
 import { kitchenOperations } from 'fireux-kitchens/runtime/content/operations'
+import MiseboxLandingConsolePreview from './ConsolePreview.vue'
+import MiseboxLandingPractice from './Practice.vue'
 import MiseboxLandingPreview from './Preview.vue'
 
 const appsController = useEcosystemAppCollection()
@@ -37,29 +84,29 @@ const operations = kitchenOperations
 
 const content = {
   hero: {
-    badge: 'Menu and kitchen management',
-    kicker: 'For restaurant teams.',
-    title: 'Manage your menu and kitchen',
-    accent: 'in one place.',
+    badge: 'Misebox',
+    kicker: 'Kitchen Console',
+    title: 'The Control Centre For',
+    accent: 'Kitchen Operations',
     description:
-      'Publish menus, organise prep and manage orders with Misebox.',
+      'From the first menu update to the final order leaving the pass, keep recipes, prep, teams, suppliers and finances connected—so everyone works from the same clear picture.',
     primaryAction: {
-      label: 'Try the interactive demo',
-      to: '/demo',
+      label: 'Get started',
+      to: '/get-started',
     },
     secondaryAction: {
-      label: 'See what works today',
-      to: '/operations',
-      icon: 'i-lucide-list-checks',
+      label: 'Go to console',
+      to: '/console/kitchen',
+      icon: 'i-lucide-layout-dashboard',
     },
     quietAction: {
-      label: 'Explore public Kitchens',
-      to: '/kitchens',
+      label: 'Explore Kitchen Operations',
+      to: '/operations',
     },
     trustItems: [
-      'No signup required',
-      'Sample restaurant data',
-      'No live order is created',
+      'Menus through service',
+      'Prep and team coordination',
+      'Suppliers and finance',
     ],
   },
   operatingLoop: [
