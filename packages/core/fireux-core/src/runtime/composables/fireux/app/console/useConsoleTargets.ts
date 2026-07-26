@@ -1,10 +1,9 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: opt current-user console targeting into app membership reads only.
 // Concurrent edit — 2026-07-20 16:20 CEST — Console Spine pass: preserve App membership errors in target outcomes.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
-import { useAuth } from '../../firebase/useAuth'
-import { useUserFetch } from '../../firestore/core/user/fetch/useUserFetch'
 import { resolveUserAppConsoleTargetField } from '../../../../models/core/user.model'
 import { normalizeString, uniqueStrings } from '../../../../utils/string'
+import { useCurrentAppContext } from '../useCurrentAppContext'
 import {
   normalizeConsoleFamily,
   useConsole,
@@ -24,14 +23,15 @@ type ConsoleTargetFilter = Record<string, unknown>
 export function useConsoleTargets(options: UseConsoleTargetsOptions) {
   const family = normalizeConsoleFamily(options.family)
   const consoleRoot = useConsole(options.family)
-  const { uid } = useAuth()
   const mode: ConsoleAppMode = consoleRoot.mode
-  const membershipUid = computed(() => mode === 'tenant' ? null : uid.value)
-  const {
-    appUser,
-    appPending: membershipPending,
-    appError: membershipError,
-  } = useUserFetch(membershipUid, { app: true })
+  const appContext = mode === 'tenant' ? null : useCurrentAppContext()
+  const appUser = computed(() => appContext?.membership.value ?? null)
+  const membershipPending = computed(() =>
+    appContext ? Boolean(appContext.pending.value) : false
+  )
+  const membershipError = computed<unknown>(
+    () => appContext?.error.value ?? null
+  )
   const configTargetIds = uniqueStrings(consoleRoot.targetIds())
   const configDevTargetIds = uniqueStrings(consoleRoot.devTargetIds())
   const appUserTargetField = resolveUserAppConsoleTargetField(family)

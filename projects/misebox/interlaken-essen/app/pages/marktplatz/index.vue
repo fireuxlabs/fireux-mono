@@ -10,9 +10,14 @@
         <p class="market-intro">{{ copy('marketplace_intro') }}</p>
       </header>
 
-      <div v-if="sellers.length" class="market-seller-grid">
+      <div v-if="stores.length || previewSellers.length" class="market-seller-grid">
+        <MarketplaceCanonicalSellerCard
+          v-for="store in stores"
+          :key="store.id"
+          :store="store"
+        />
         <MarketplaceSellerCard
-          v-for="seller in sellers"
+          v-for="seller in previewSellers"
           :key="seller.id"
           :seller="seller"
         />
@@ -39,14 +44,26 @@ import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import {
   marketplacePreviewSellers,
 } from '@/content/marketplace-preview'
-
-const sellers = marketplacePreviewSellers
+import type {
+  PublicMarketplaceStoreListResponse,
+} from 'fireux-marketplace/runtime/models/marketplace-api.model'
 
 definePageMeta({
   layout: 'marketplace',
 })
 
 const { copy } = useInterlakenCopy()
+const { data } = await useFetch<PublicMarketplaceStoreListResponse>(
+  '/api/public/marketplace/stores',
+  { default: () => ({ items: [], truncated: false }) }
+)
+const stores = computed(() => data.value?.items || [])
+const previewSellers = computed(() => {
+  const canonicalIds = new Set(stores.value.map(store => store.id))
+  return marketplacePreviewSellers.filter(
+    seller => !canonicalIds.has(seller.id)
+  )
+})
 
 useSeoMeta({
   title: () => copy('marketplace_seo_title'),

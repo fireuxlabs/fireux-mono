@@ -1,17 +1,19 @@
 // Concurrent edit — 2026-07-22 15:11 CEST — User access badge pass: derive one highest current-App tier without duplicating stored authority.
 import { computed } from '#imports'
-import type { UserApp } from '../../../../../../../models/core/user.model'
 import {
   resolveUserAppAccess,
   type UserAppAccessTier,
 } from '../../../../../../../models/core/supporting/user-app-access'
+import type { CurrentAppMembershipDto } from '../../../../../../../server/utils/public-projection/public-dto.types'
 import { useDeveloperAccess } from '../../../../../app/useDeveloperAccess'
 import type { UserRefs } from '../../fetch/useUserFetch'
 
 export type UserAccessTier = UserAppAccessTier
 
 export function useUserPermissions(user: UserRefs) {
-  const appUser = user.appUser as { value: UserApp | null | undefined }
+  const appUser = user.appUser as {
+    value: CurrentAppMembershipDto | null | undefined
+  }
   const { isDeveloper } = useDeveloperAccess()
 
   const access = computed(() =>

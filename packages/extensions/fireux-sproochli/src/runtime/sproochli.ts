@@ -29,14 +29,20 @@ export {
 } from './composables/fireux/sproochli/provider.ts'
 
 export {
+  defineSproochliCopyProfile,
   defineSproochliCopyPack,
   defineSproochliDialectProfile,
   formatSproochliCopy,
   resolveApprovedSproochliCopy,
   type SproochliCopyEntry,
   type SproochliCopyPack,
+  type SproochliCopyProfile,
+  type SproochliCopyProfiles,
   type SproochliCopyProvenance,
   type SproochliCopyReviewStatus,
+  type SproochliCopyTargetLanguage,
+  type SproochliCopyTranslation,
+  type SproochliCopyTranslations,
   type SproochliCopyVariables,
   type SproochliDialectProfile,
   type SproochliReviewedCopyLanguage,

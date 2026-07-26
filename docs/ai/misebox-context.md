@@ -151,6 +151,13 @@ Before each task:
   product proof are unconditioned defaults, while wider layouts enhance them
   only through `min-width` breakpoints. The executable contract lives in
   `scripts/guards/product-landing.mjs`.
+- Misebox sells one Kitchen Console through three independent commercial axes:
+  capability (`Free` or `Premium`), service (self-managed or `Managed`), and
+  presentation (Misebox-branded or a `Dedicated App`). The project-owned
+  `/pricing` projection is the public authority for current CHF amounts and
+  inclusions. Managed service adds bounded human setup and support rather than
+  hidden software capability; a Dedicated App is a configured Misebox
+  deployment, not bespoke software.
 - The main landing's Our Apps section consumes Core
   `LandingAppCollection` through the product landing's named App slot and the
   existing `useEcosystemAppCollection` controller. It shows only active Apps
@@ -187,24 +194,31 @@ Before each task:
   social assets, maps, and icons; shared Misebox packages must not generalize
   that project-specific presentation into the ecosystem spine.
 - Interlaken Essen is the first reviewed Sproochli copy consumer. Its
-  Berner-Oberland `gsw` profile, glossary, and approved phrase pack remain
-  project-owned; Sproochli owns workflow semantics and trusted drafting.
-  Public brand copy never depends on live runtime generation.
+  Berner-Oberland `gsw` profile, Swiss Standard German `de-CH` profile,
+  glossaries, and approved phrase pack remain project-owned; Sproochli owns
+  per-language workflow semantics and trusted drafting. Public brand copy
+  never depends on live runtime generation.
 - Interlaken Essen also owns its site-shell language policy. The fixed order is
-  currently `gsw`, `en`, with `gsw` as the default; German, French, and Italian
-  remain deferred until this first pair is coherent. The shared Sproochli
-  trigger renders only approved site-copy languages and the project persists
-  the visitor's valid choice across its own routes. Interlaken's bilingual
-  resolver uses the reviewed entry's English source and Swiss-German target;
-  it does not generate public copy during a visit.
+  `gsw`, `de`, `en`, with `gsw` as the default; French and Italian remain
+  deferred. The shared Sproochli trigger renders only approved site-copy
+  languages and the project persists the visitor's valid choice across its
+  own routes. German is available on the project-owned marketplace route
+  family; inherited package routes fall back to their currently approved
+  language rather than presenting mixed copy. Interlaken's resolver uses the
+  reviewed entry's English source and exact approved target variant; it does
+  not generate public copy during a visit.
 - Interlaken-owned marketplace routes, onboarding, account UI, SEO,
   accessibility copy, picker chrome, and language-bearing feed artwork resolve
   through that same pack. The app root owns the reactive document locale for
   every route. Canonical Blog story fields use the Blog-owned approved
-  Sproochli projection and the same persisted selection; Futter stores only
-  Blog slug references. Inherited Core Auth/default-shell/legal copy and
-  generic Blog chrome remain with their owning packages; do not duplicate
-  those routes or strings locally.
+  Sproochli projection when that story language is approved; Futter stores
+  only Blog slug references and does not show a story in an unavailable
+  selected language. Inherited Core Auth/default-shell/legal copy and generic
+  Blog chrome remain with their owning packages; do not duplicate those routes
+  or strings locally. Future vendor or customer messages use versioned
+  approved `de-CH` templates and an explicit recipient preference on their
+  eventual canonical contact authority, never the browser cookie or live AI
+  generation.
 - Kitchen Sproochli participation is configured only on the canonical root
   Kitchen through the trusted Kitchen Console endpoint. Shared Menu projections
   show its Default/language trigger without requiring a public Kitchen route;
@@ -224,13 +238,17 @@ Before each task:
   not a Core Dashboard or Console. It reuses Core authentication, avatar, User,
   and UserApp state. Its buyer surface may store sparse private settings such
   as `delivery_address` on the existing app-private marketplace profile through
-  the fixed-runtime authenticated `/api/marketplace/account` projection. The
-  same bounded projection derives seller-surface visibility only from an
-  explicit valid `offers_enabled: true`; absent, false, or invalid seller state
-  fails closed to the buyer surface. Buyer and seller Product/Order lists
-  remain presentation until a canonical marketplace entity family exists;
-  `/mis` must not reuse KitchenOrder outside Menu fulfilment or create parallel
-  Product, Order, account, membership, or operational-console authority.
+  the fixed-runtime authenticated `/api/marketplace/account` projection.
+  `fireux-marketplace` owns the canonical App-scoped Store Entity, Store-owned
+  Offer Records, and private offline marketplace Order Records. Seller
+  visibility and writes derive from bounded Store owner/editor authority, not
+  the legacy profile `offers_enabled` presentation flag. App Admin creates
+  Stores and assigns existing App members; an unassigned draft cannot enter
+  review. Public Store/Offer reads and every private mutation use the package's
+  bounded trusted endpoints; raw browser Firestore access is closed.
+  Marketplace Orders must not reuse
+  KitchenOrder outside Menu fulfilment or create payment/FinancialFact truth.
+  See `docs/concepts/marketplace.md`.
 
 Current code, executable guards, and tests are implementation truth. Concept
 maps provide navigation and working context. Deleted docs, previous chat

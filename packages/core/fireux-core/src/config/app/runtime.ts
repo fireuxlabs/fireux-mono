@@ -42,6 +42,7 @@ export type RuntimeApp = {
     path: string
     title?: string
     description?: string
+    actionLabel?: string
     delayMs?: number
   }
   authOnboarding?: {

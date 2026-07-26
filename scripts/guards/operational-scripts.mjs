@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-07-26
 // usage_note: guard reusable local script safety mechanics and release-backup ordering.
 // Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: execute protected-artifact checks and lock Rules release backup order.
 // Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: lock read-only App media audit and guarded snapshot mutation contracts.
@@ -8,6 +8,7 @@
 // Concurrent edit — 2026-07-21 16:11 CEST — Shared Firestore Rules pass: lock lexical and wildcard-normalized frame identity.
 
 import assert from 'node:assert/strict'
+import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { access, mkdtemp, readFile, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
@@ -28,7 +29,162 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   await assertAppMediaOperationalSurface(repoRoot)
   await assertSnapshotSyncSafety(repoRoot)
   await assertUserIdentityPlannerReadOnly(repoRoot)
+  await assertFirebaseAuthDomainSync(repoRoot)
   console.log('[guard] ✅ operational script safety valid')
+}
+
+export async function assertFirebaseAuthDomainSync(repoRoot) {
+  const deploy = await readFile(
+    path.join(repoRoot, 'scripts/firebase-deploy.mjs'),
+    'utf8'
+  )
+  const sync = await readFile(
+    path.join(repoRoot, 'scripts/sync-firebase-auth-domains.mjs'),
+    'utf8'
+  )
+  const createEcosystem = await readFile(
+    path.join(repoRoot, 'scripts/create-ecosystem.mjs'),
+    'utf8'
+  )
+  const authDomainHelpers = await readFile(
+    path.join(repoRoot, 'scripts/_lib/firebase-auth-domains.mjs'),
+    'utf8'
+  )
+  const interlakenPackage = JSON.parse(
+    await readFile(
+      path.join(
+        repoRoot,
+        'projects/misebox/interlaken-essen/package.json'
+      ),
+      'utf8'
+    )
+  )
+
+  assert.match(deploy, /sync-firebase-auth-domains\.mjs/)
+  assert.match(deploy, /args\['auth-domains'\]/)
+  assert.match(sync, /updateMask=authorizedDomains/)
+  assert.match(sync, /new Set\(\[\.\.\.previous, \.\.\.domains\]\)/)
+  assert.match(sync, /verification failed/)
+  assert.match(sync, /parseFirebaseAuthDomains/)
+  assert.match(authDomainHelpers, /without protocol, path or port/)
+  assert.match(createEcosystem, /--auth-domain <hostname>/)
+  assert.match(createEcosystem, /--firebase-site <site-id>/)
+  assert.match(createEcosystem, /--sync-auth-domain/)
+  assert.match(createEcosystem, /--no-sync-auth-domain/)
+  assert.match(
+    createEcosystem,
+    /Add all intended public origins to Firebase Authentication authorized domains/
+  )
+  assert.match(createEcosystem, /\$\{firebaseSite\}\.web\.app/)
+  assert.match(createEcosystem, /Please answer yes or no/)
+  assert.match(createEcosystem, /!process\.stdin\.isTTY/)
+  assert.match(createEcosystem, /sync-firebase-auth-domains\.mjs/)
+
+  const createScript = path.join(repoRoot, 'scripts/create-ecosystem.mjs')
+  const fixtureArgs = [
+    createScript,
+    '--name',
+    'auth-domain-guard-fixture',
+    '--dry-run',
+    '--auth-domain',
+    'app.example.com',
+  ]
+  const missingDecision = spawnSync(process.execPath, fixtureArgs, {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    shell: false,
+  })
+  assert.notEqual(missingDecision.status, 0)
+  assert.match(
+    `${missingDecision.stdout}${missingDecision.stderr}`,
+    /needs an explicit Firebase Auth authorized-domain decision/
+  )
+
+  const explicitNo = spawnSync(
+    process.execPath,
+    [...fixtureArgs, '--no-sync-auth-domain'],
+    {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      shell: false,
+    }
+  )
+  assert.equal(explicitNo.status, 0)
+  assert.match(explicitNo.stdout, /would leave Firebase Auth domains unchanged/)
+  assert.match(explicitNo.stdout, /app\.example\.com/)
+  assert.match(
+    explicitNo.stdout,
+    /auth-domain-guard-fixture\.web\.app/
+  )
+
+  const explicitSite = spawnSync(
+    process.execPath,
+    [
+      ...fixtureArgs,
+      '--firebase-site',
+      'custom-hosting-site',
+      '--no-sync-auth-domain',
+    ],
+    {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      shell: false,
+    }
+  )
+  assert.equal(explicitSite.status, 0)
+  assert.match(explicitSite.stdout, /custom-hosting-site\.web\.app/)
+
+  const invalidHostname = spawnSync(
+    process.execPath,
+    [
+      createScript,
+      '--name',
+      'auth-domain-guard-fixture',
+      '--dry-run',
+      '--auth-domain',
+      'https://app.example.com',
+      '--no-sync-auth-domain',
+    ],
+    {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      shell: false,
+    }
+  )
+  assert.notEqual(invalidHostname.status, 0)
+  assert.match(
+    `${invalidHostname.stdout}${invalidHostname.stderr}`,
+    /without protocol, path or port/
+  )
+
+  const missingHostname = spawnSync(
+    process.execPath,
+    [
+      createScript,
+      '--name',
+      'auth-domain-guard-fixture',
+      '--dry-run',
+      '--sync-auth-domain',
+    ],
+    {
+      cwd: repoRoot,
+      encoding: 'utf8',
+      shell: false,
+    }
+  )
+  assert.notEqual(missingHostname.status, 0)
+  assert.match(
+    `${missingHostname.stdout}${missingHostname.stderr}`,
+    /require --auth-domain <hostname>/
+  )
+  assert.match(
+    interlakenPackage.scripts?.deploy || '',
+    /--auth-domains interlaken-essen\.misebox\.app,interlaken-essen\.web\.app/
+  )
+  assert.match(
+    interlakenPackage.scripts?.['deploy:hosting'] || '',
+    /--auth-domains interlaken-essen\.misebox\.app,interlaken-essen\.web\.app/
+  )
 }
 
 async function assertRulesFragmentScope(repoRoot) {

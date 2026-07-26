@@ -1,7 +1,9 @@
 <!-- Concurrent edit — 2026-07-23 12:13 CEST — FireUX landing makeover: adopt the shared product-led landing family. -->
 <template>
-  <EffectsStars />
-  <FireUXLandingIndex />
+  <div class="min-h-full">
+    <EffectsStars />
+    <FireUXLandingIndex />
+  </div>
 </template>
 
 <script setup lang="ts">

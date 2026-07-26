@@ -1,97 +1,99 @@
 <!-- Concurrent edit — 2026-07-24 — Project signup monitor: show the bounded cross-App user-join feed. -->
 <template>
-  <UDashboardPanel id="console-project-users">
-    <template #header>
-      <LayoutsConsoleNavbar title="Project Users">
-        <template #right>
-          <UButton
-            label="Refresh"
-            icon="i-lucide-refresh-cw"
-            color="neutral"
-            variant="ghost"
-            :loading="pending"
-            @click="refresh()"
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-project-users">
+      <template #header>
+        <LayoutsConsoleNavbar title="Project Users">
+          <template #right>
+            <UButton
+              label="Refresh"
+              icon="i-lucide-refresh-cw"
+              color="neutral"
+              variant="ghost"
+              :loading="pending"
+              @click="refresh()"
+            />
+          </template>
+        </LayoutsConsoleNavbar>
+      </template>
+
+      <template #body>
+        <div class="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
+          <UPageHeader
+            headline="Control plane"
+            title="New users across FireUX"
+            description="A minimal signup feed published by each App. Returning sign-ins are excluded."
           />
-        </template>
-      </LayoutsConsoleNavbar>
-    </template>
 
-    <template #body>
-      <div class="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
-        <UPageHeader
-          headline="Control plane"
-          title="New users across FireUX"
-          description="A minimal signup feed published by each App. Returning sign-ins are excluded."
-        />
+          <div class="grid gap-3 sm:grid-cols-3">
+            <UPageCard title="Recent joins" :description="String(items.length)" />
+            <UPageCard title="Apps" :description="String(appCount)" />
+            <UPageCard title="Projects" :description="String(projectCount)" />
+          </div>
 
-        <div class="grid gap-3 sm:grid-cols-3">
-          <UPageCard title="Recent joins" :description="String(items.length)" />
-          <UPageCard title="Apps" :description="String(appCount)" />
-          <UPageCard title="Projects" :description="String(projectCount)" />
-        </div>
+          <MoleculesStateCard
+            v-if="pending"
+            entity="project user activity"
+            kind="collection"
+            loading
+          />
+          <MoleculesStateCard
+            v-else-if="error"
+            entity="project user activity"
+            kind="collection"
+            state="error"
+          />
 
-        <MoleculesStateCard
-          v-if="pending"
-          entity="project user activity"
-          kind="collection"
-          loading
-        />
-        <MoleculesStateCard
-          v-else-if="error"
-          entity="project user activity"
-          kind="collection"
-          state="error"
-        />
+          <UAlert
+            v-else-if="!items.length"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-users"
+            title="No signup activity yet"
+            description="New App memberships will appear here after source publishing is enabled."
+          />
 
-        <UAlert
-          v-else-if="!items.length"
-          color="neutral"
-          variant="soft"
-          icon="i-lucide-users"
-          title="No signup activity yet"
-          description="New App memberships will appear here after source publishing is enabled."
-        />
-
-        <div v-else class="space-y-3">
-          <UCard v-for="item in items" :key="item.id" variant="subtle">
-            <div
-              class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
-            >
-              <div class="min-w-0">
-                <div class="flex flex-wrap items-center gap-2">
-                  <p class="font-medium text-highlighted">
-                    {{ item.app_id }}
+          <div v-else class="space-y-3">
+            <UCard v-for="item in items" :key="item.id" variant="subtle">
+              <div
+                class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <div class="min-w-0">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="font-medium text-highlighted">
+                      {{ item.app_id }}
+                    </p>
+                    <UBadge color="neutral" variant="soft">
+                      {{ item.project_id }}
+                    </UBadge>
+                    <UBadge
+                      :color="
+                        item.membership_role === 'admin' ? 'primary' : 'neutral'
+                      "
+                      variant="subtle"
+                    >
+                      {{ item.membership_role }}
+                    </UBadge>
+                  </div>
+                  <p class="mt-2 truncate text-sm text-muted">
+                    User {{ item.user_id }}
                   </p>
-                  <UBadge color="neutral" variant="soft">
-                    {{ item.project_id }}
-                  </UBadge>
-                  <UBadge
-                    :color="
-                      item.membership_role === 'admin' ? 'primary' : 'neutral'
-                    "
-                    variant="subtle"
-                  >
-                    {{ item.membership_role }}
-                  </UBadge>
                 </div>
-                <p class="mt-2 truncate text-sm text-muted">
-                  User {{ item.user_id }}
-                </p>
-              </div>
 
-              <div class="shrink-0 text-sm text-muted sm:text-right">
-                <p>{{ formatTime(item.occurred_at) }}</p>
-                <p class="mt-1 text-xs text-dimmed">
-                  {{ item.ecosystem_id || 'direct project app' }} ·
-                  {{ item.database_id }}
-                </p>
+                <div class="shrink-0 text-sm text-muted sm:text-right">
+                  <p>{{ formatTime(item.occurred_at) }}</p>
+                  <p class="mt-1 text-xs text-dimmed">
+                    {{ item.ecosystem_id || 'direct project app' }} ·
+                    {{ item.database_id }}
+                  </p>
+                </div>
               </div>
-            </div>
-          </UCard>
+            </UCard>
+          </div>
         </div>
-      </div>
-    </template>
-  </UDashboardPanel>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -6,22 +6,38 @@
 // Concurrent edit — 2026-07-22 13:56 CEST — Kiosk theme contrast pass: separate refined dining from bold counter-service typography and colour.
 // Concurrent edit — 2026-07-22 18:03 CEST — Deanos modernisation pass: align the Demo brand palette and typography with its new campaign photography.
 // Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add a reusable green-and-yellow pizzeria presentation world.
-import { PlaceModel, type Place } from 'fireux-places/runtime/models/place.model'
+import { PlaceModel, type Place } from 'fireux-places/runtime/models/place.model.ts'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
-import { KitchenModel, type Kitchen } from '../../models/kitchen.model'
+import {
+  KitchenModel,
+  type Kitchen,
+  type KitchenOrdersConfig,
+} from '../../models/kitchen.model'
 import type { KitchenFulfilmentPaymentPolicy } from '../../models/kitchen.model'
 import {
-  deanosKitchenDemoCatalogue,
-  miseboxRestaurantKitchenDemoCatalogue,
-  pizzaTheActionKitchenDemoCatalogue,
-} from './catalogue'
+  deanosKitchenDemoMenu,
+  deanosPartyDemoMenu,
+  deanosXmasDemoMenu,
+  miseboxRestaurantKitchenDemoMenu,
+  pizzaTheActionKitchenDemoMenu,
+} from './menus'
 import {
   deanosKitchenDemoIdentity,
+  kitchenDemoAssetBase,
   kitchenDemoCreated,
   kitchenDemoUpdated,
   miseboxRestaurantKitchenDemoIdentity,
   pizzaTheActionKitchenDemoIdentity,
 } from './fixtures'
+import {
+  deanosKitchenDemoFinance,
+  type KitchenDemoFinance,
+} from './finance'
+import {
+  deanosKitchenDemoIngredientLinks,
+  deanosKitchenDemoIngredients,
+  deanosKitchenDemoSupplierIngredientLinks,
+} from './ingredients'
 import {
   deanosKitchenDemoMiseTasks,
   deanosKitchenDemoOrders,
@@ -33,9 +49,21 @@ import {
   pizzaTheActionKitchenDemoOrders,
   pizzaTheActionKitchenDemoStations,
 } from './operations'
+import {
+  deanosKitchenDemoMise,
+  deanosKitchenDemoMenuItemComponentDeltas,
+  deanosKitchenDemoPrepItems,
+  deanosKitchenDemoRecipes,
+  deanosKitchenDemoSpecs,
+  type KitchenDemoDishSpec,
+  type KitchenDemoMenuItemComponentDelta,
+  type KitchenDemoMiseRequirement,
+  type KitchenDemoPrepItem,
+  type KitchenDemoProductionRecipe,
+} from './production'
 import type {
-  KitchenDemoCatalogue,
   KitchenDemoIdentity,
+  KitchenDemoMenu,
   KitchenDemoScenario,
 } from './types'
 
@@ -47,6 +75,7 @@ type DemoKitchenInput = {
   palette: SparseBrandPalette
   paymentMethods: KitchenFulfilmentPaymentPolicy[]
   tableCount: number
+  operationHours?: KitchenOrdersConfig['operation_hours']
 }
 
 type DemoPlaceInput = {
@@ -61,6 +90,10 @@ type DemoPlaceInput = {
   lat: number
   lng: number
   palette: SparseBrandPalette
+  imageUrl?: string
+  coverImage?: string
+  galleryImages?: string[]
+  imageShade?: Place['image_shade']
 }
 
 const kitchen = (input: DemoKitchenInput): Kitchen => ({
@@ -93,6 +126,9 @@ const kitchen = (input: DemoKitchenInput): Kitchen => ({
     style: input.menuStyle,
   },
   orders: {
+    ...(input.operationHours
+      ? { operation_hours: input.operationHours }
+      : {}),
     printing: {
       ticket_device_id: '',
     },
@@ -128,6 +164,10 @@ const place = (input: DemoPlaceInput): Place => ({
   lat: input.lat,
   lng: input.lng,
   timezone: 'Europe/Zurich',
+  image_url: input.imageUrl ?? '',
+  cover_image: input.coverImage ?? '',
+  gallery_images: input.galleryImages ?? [],
+  image_shade: input.imageShade ?? 'none',
   brand_palette: input.palette,
   types: ['restaurant'],
   tags: ['demo', 'restaurant'],
@@ -166,27 +206,228 @@ const scenario = (input: {
   identity: KitchenDemoIdentity
   kitchen: Kitchen
   place: Place
-  catalogue: KitchenDemoCatalogue
+  menu: KitchenDemoMenu
+  additionalMenus?: KitchenDemoMenu[]
+  dishSpecs?: KitchenDemoDishSpec[]
+  finance?: KitchenDemoFinance
+  ingredients?: KitchenDemoScenario['ingredients']
+  kitchenIngredients?: KitchenDemoScenario['kitchenIngredients']
+  menuItemComponentDeltas?: KitchenDemoMenuItemComponentDelta[]
+  miseRequirements?: KitchenDemoMiseRequirement[]
   orders: KitchenDemoScenario['orders']
+  prepItems?: KitchenDemoPrepItem[]
+  recipes?: KitchenDemoProductionRecipe[]
   stations: KitchenDemoScenario['stations']
+  supplierIngredientLinks?: KitchenDemoScenario['supplierIngredientLinks']
   miseTasks: KitchenDemoScenario['miseTasks']
-}): KitchenDemoScenario => ({
-  appId: input.identity.appId,
-  kitchen: input.kitchen,
-  place: input.place,
-  rootMenu: input.catalogue.rootMenu,
-  kitchenMenu: input.catalogue.kitchenMenu,
-  dishes: input.catalogue.dishes,
-  menuSections: input.catalogue.menuSections,
-  orders: input.orders,
-  stations: input.stations,
-  miseTasks: input.miseTasks,
-})
+}): KitchenDemoScenario => {
+  const menus = [input.menu, ...(input.additionalMenus ?? [])]
+  const ingredients = [...(input.ingredients ?? [])]
+  const kitchenIngredients = [...(input.kitchenIngredients ?? [])]
+  const supplierIngredientLinks = [...(input.supplierIngredientLinks ?? [])]
+  const dishSpecs = [...(input.dishSpecs ?? [])]
+  const finance = input.finance ?? null
+  const menuItemComponentDeltas = [
+    ...(input.menuItemComponentDeltas ?? []),
+  ]
+  const prepItems = [...(input.prepItems ?? [])]
+  const recipes = [...(input.recipes ?? [])]
+  const dishes = new Map(
+    menus
+      .flatMap(menu => menu.dishes)
+      .map(dish => [dish.id, dish])
+  )
+  const ingredientIds = new Set(ingredients.map(ingredient => ingredient.id))
+  const kitchenIngredientIds = new Set(
+    kitchenIngredients.map(ingredient => ingredient.ingredient_id)
+  )
+  const hasDuplicateIngredients =
+    ingredientIds.size !== ingredients.length ||
+    kitchenIngredientIds.size !== kitchenIngredients.length
+  const hasMissingIngredientRoot = kitchenIngredients.some(
+    ingredient => !ingredientIds.has(ingredient.ingredient_id)
+  )
+  const hasInvalidSupplierLink = supplierIngredientLinks.some(
+    link =>
+      link.kitchen_id !== input.identity.kitchenId ||
+      !kitchenIngredientIds.has(link.ingredient_id) ||
+      !link.supplier_id
+  )
+  const hasInvalidRecipeLine = recipes.some(recipe =>
+    !Number.isFinite(recipe.yield.quantity)
+    || recipe.yield.quantity <= 0
+    || recipe.ingredients.some(
+      ingredient =>
+        !ingredientIds.has(ingredient.ingredientId) ||
+        !Number.isFinite(ingredient.quantity) ||
+        ingredient.quantity <= 0
+    )
+  )
+  const prepItemIds = new Set(prepItems.map(prepItem => prepItem.id))
+  const recipeIds = new Set(recipes.map(recipe => recipe.id))
+  const dishSpecDishIds = dishSpecs.map(spec => spec.dishId)
+  const hasDuplicateProductionIds =
+    prepItemIds.size !== prepItems.length
+    || recipeIds.size !== recipes.length
+    || new Set(dishSpecDishIds).size !== dishSpecDishIds.length
+  const hasInvalidPrepItem = prepItems.some(prepItem =>
+    !ingredientIds.has(prepItem.input.ingredientId)
+    || !Number.isFinite(prepItem.input.quantity)
+    || prepItem.input.quantity <= 0
+    || !Number.isFinite(prepItem.yield.quantity)
+    || prepItem.yield.quantity <= 0
+  )
+  const hasInvalidDishSpec = dishSpecs.some(spec => {
+    if (!dishes.has(spec.dishId)) return true
+
+    const componentIds = new Set(spec.components.map(component => component.id))
+    if (componentIds.size !== spec.components.length) return true
+
+    return spec.components.some((component) => {
+      if (!Number.isFinite(component.quantity) || component.quantity <= 0) {
+        return true
+      }
+      if (component.source === 'ingredient') {
+        return !ingredientIds.has(component.ingredientId)
+      }
+      if (component.source === 'prep_item') {
+        return !prepItemIds.has(component.prepItemId)
+      }
+      return !recipeIds.has(component.recipeId)
+    })
+  })
+  const menuItemByScopedId = new Map(
+    menus.flatMap(menu =>
+      menu.menuSections.flatMap(({ section, items }) =>
+        items.map(item => [
+          `${menu.kitchenMenu.id}:${section.id}:${item.id}`,
+          item,
+        ] as const)
+      )
+    )
+  )
+  const menuItemDeltaIds = new Set(
+    menuItemComponentDeltas.map(delta => delta.id)
+  )
+  const hasInvalidMenuItemDelta =
+    menuItemDeltaIds.size !== menuItemComponentDeltas.length
+    || menuItemComponentDeltas.some((delta) => {
+      const item = menuItemByScopedId.get(
+        `${delta.menuId}:${delta.sectionId}:${delta.menuItemId}`
+      )
+      if (!item) return true
+
+      const hasChoice = delta.choice.kind === 'price_option'
+        ? Boolean(delta.choice.id) && item.price_options.some(
+            option => option.label === delta.choice.label
+          )
+        : item.add_ons.some(addOn => addOn.id === delta.choice.id)
+      if (!hasChoice) return true
+
+      const componentIds = new Set(
+        delta.components.map(component => component.id)
+      )
+      if (componentIds.size !== delta.components.length) return true
+
+      return delta.components.some((component) => {
+        if (!Number.isFinite(component.quantity) || component.quantity <= 0) {
+          return true
+        }
+        if (component.source === 'ingredient') {
+          return !ingredientIds.has(component.ingredientId)
+        }
+        if (component.source === 'prep_item') {
+          return !prepItemIds.has(component.prepItemId)
+        }
+        return !recipeIds.has(component.recipeId)
+      })
+    })
+  const hasIncompleteDishSpecs =
+    dishSpecs.length > 0
+    && (
+      dishSpecs.length !== dishes.size
+      || [...dishes.keys()].some(dishId => !dishSpecDishIds.includes(dishId))
+    )
+  const hasInvalidFinance = finance
+    ? Object.values(finance.grossSales).some(summary =>
+        !/^[A-Z]{3}$/.test(summary.currencyCode)
+        || !Number.isSafeInteger(summary.saleCount)
+        || summary.saleCount <= 0
+        || !Number.isSafeInteger(summary.grossSalesMinor)
+        || summary.grossSalesMinor <= 0
+      )
+    : false
+  const hasInvalidMiseRequirement = (input.miseRequirements ?? []).some(
+    requirement => {
+      if (
+        !Number.isFinite(requirement.amount.quantity)
+        || requirement.amount.quantity <= 0
+      ) {
+        return true
+      }
+      return requirement.source.kind === 'prep_item'
+        ? !prepItemIds.has(requirement.source.prepItemId)
+        : !recipeIds.has(requirement.source.recipeId)
+    }
+  )
+
+  if (
+    hasDuplicateIngredients ||
+    hasMissingIngredientRoot ||
+    hasInvalidSupplierLink ||
+    hasInvalidRecipeLine ||
+    hasDuplicateProductionIds ||
+    hasInvalidPrepItem ||
+    hasInvalidDishSpec ||
+    hasInvalidMenuItemDelta ||
+    hasIncompleteDishSpecs ||
+    hasInvalidFinance ||
+    hasInvalidMiseRequirement
+  ) {
+    throw new Error(
+      `Kitchen Demo production relationships are invalid for ${input.identity.kitchenId}.`
+    )
+  }
+
+  return {
+    appId: input.identity.appId,
+    kitchen: input.kitchen,
+    place: input.place,
+    menus,
+    ingredients,
+    kitchenIngredients,
+    supplierIngredientLinks,
+    rootMenu: input.menu.rootMenu,
+    kitchenMenu: input.menu.kitchenMenu,
+    dishes: [...dishes.values()],
+    dishSpecs,
+    finance,
+    menuItemComponentDeltas,
+    menuSections: input.menu.menuSections,
+    miseRequirements: [...(input.miseRequirements ?? [])],
+    orders: input.orders,
+    prepItems,
+    recipes,
+    stations: input.stations,
+    miseTasks: input.miseTasks,
+  }
+}
 
 const deanosPalette = {
   primary_color: '#ff4f2e',
   secondary_color: '#181817',
 } satisfies SparseBrandPalette
+
+const deanosMediaBase = `${kitchenDemoAssetBase}/deanos`
+const deanosProfileImage = `${deanosMediaBase}/deanos-classic.jpg`
+const deanosCoverImage = `${deanosMediaBase}/double-trouble.jpg`
+const deanosGalleryImages = [
+  deanosProfileImage,
+  deanosCoverImage,
+  `${deanosMediaBase}/hot-honey-chicken.jpg`,
+  `${deanosMediaBase}/dirty-deanos-fries.jpg`,
+  `${deanosMediaBase}/salted-caramel-shake.jpg`,
+]
 
 const deanosMenuStyle = {
   background_color_light: '#f5f1e8',
@@ -221,6 +462,25 @@ export const deanosKitchenDemoScenario = scenario({
       },
     ],
     tableCount: 8,
+    operationHours: {
+      source: 'custom',
+      timezone: 'Europe/Zurich',
+      windows: [
+        {
+          days: [
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday',
+          ],
+          open: '11:30',
+          close: '22:00',
+        },
+      ],
+    },
   }),
   place: place({
     identity: deanosKitchenDemoIdentity,
@@ -234,10 +494,27 @@ export const deanosKitchenDemoScenario = scenario({
     lat: 46.948,
     lng: 7.4474,
     palette: deanosPalette,
+    imageUrl: deanosProfileImage,
+    coverImage: deanosCoverImage,
+    galleryImages: deanosGalleryImages,
+    imageShade: 'none',
   }),
-  catalogue: deanosKitchenDemoCatalogue,
-  orders: deanosKitchenDemoOrders,
+  menu: deanosKitchenDemoMenu,
+  additionalMenus: [
+    deanosPartyDemoMenu,
+    deanosXmasDemoMenu,
+  ],
+  dishSpecs: deanosKitchenDemoSpecs,
+  finance: deanosKitchenDemoFinance,
+  ingredients: deanosKitchenDemoIngredients,
+  kitchenIngredients: deanosKitchenDemoIngredientLinks,
+  menuItemComponentDeltas: deanosKitchenDemoMenuItemComponentDeltas,
+  miseRequirements: deanosKitchenDemoMise,
+  orders: [],
+  prepItems: deanosKitchenDemoPrepItems,
+  recipes: deanosKitchenDemoRecipes,
   stations: deanosKitchenDemoStations,
+  supplierIngredientLinks: deanosKitchenDemoSupplierIngredientLinks,
   miseTasks: deanosKitchenDemoMiseTasks,
 })
 
@@ -293,7 +570,7 @@ export const pizzaTheActionKitchenDemoScenario = scenario({
     lng: 8.3093,
     palette: pizzaTheActionPalette,
   }),
-  catalogue: pizzaTheActionKitchenDemoCatalogue,
+  menu: pizzaTheActionKitchenDemoMenu,
   orders: pizzaTheActionKitchenDemoOrders,
   stations: pizzaTheActionKitchenDemoStations,
   miseTasks: pizzaTheActionKitchenDemoMiseTasks,
@@ -347,7 +624,7 @@ export const miseboxRestaurantKitchenDemoScenario = scenario({
     lng: 8.5417,
     palette: miseboxRestaurantPalette,
   }),
-  catalogue: miseboxRestaurantKitchenDemoCatalogue,
+  menu: miseboxRestaurantKitchenDemoMenu,
   orders: miseboxRestaurantKitchenDemoOrders,
   stations: miseboxRestaurantKitchenDemoStations,
   miseTasks: miseboxRestaurantKitchenDemoMiseTasks,
@@ -356,7 +633,10 @@ export const miseboxRestaurantKitchenDemoScenario = scenario({
 export const defaultKitchenDemoScenario = miseboxRestaurantKitchenDemoScenario
 export const featuredMenuDemoScenario = defaultKitchenDemoScenario
 export const featuredKioskDemoScenario = defaultKitchenDemoScenario
-export const featuredServiceDemoScenario = deanosKitchenDemoScenario
+export const featuredServiceDemoScenario: KitchenDemoScenario = {
+  ...deanosKitchenDemoScenario,
+  orders: deanosKitchenDemoOrders,
+}
 
 export const kitchenDemoScenarios: KitchenDemoScenario[] = [
   defaultKitchenDemoScenario,

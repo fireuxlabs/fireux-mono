@@ -1,5 +1,6 @@
 <template>
   <ConsoleKitchenOperationsOrdersRail
+    v-if="queueOrders.length"
     label="Queue"
     :count="queueOrders.length"
     empty-label="No orders in preparation"

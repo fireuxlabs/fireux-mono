@@ -1,6 +1,6 @@
 # Finance map
 
-Updated: 2026-07-22
+Updated: 2026-07-26
 Ref: 1e55eece7
 Role: map, not canon
 
@@ -92,10 +92,19 @@ reports into one generic Finance console.
   than returning partial or malformed totals, and exposes no Order lines,
   customer data, actors, source ids, or raw FinancialFacts.
 - The current UI offers 7, 30, and 90-day periods with gross sales, completed
-  Sale count, and average Sale. It does not synthesize Demo/Test or historical
-  values, and it never combines currencies.
+  Sale count, and average Sale. Live mode uses only the authenticated bounded
+  server projection and never synthesizes historical values. Demo mode may use
+  clearly labelled, deterministic, aggregate-only owner-local fixtures that
+  never become KitchenSales, FinancialFacts, Firestore records, or Test data.
+  Test remains the simulation database and does not fall back to Demo values.
+  The UI never combines currencies.
 - P&L, cashflow, cost, and period views are derived reports. They are not
   Console Operations and are not separately editable stored truth.
+- A Demo Dish detail may show a read-only cost-of-sales planning estimate by
+  expanding its current Spec through represented prep/recipe yields and the
+  preferred Supplier offer terms. It must identify incomplete price coverage,
+  exclude unrepresented labour, energy, tax, oil, and waste, and remain an
+  estimate rather than a KitchenSale, expense, or FinancialFact.
 - There is no generic Finance Console Operation in this pass. Kitchens keep
   Kitchen operations; Suppliers, Projects, and Portfolios keep their own future
   producer operations.
@@ -116,7 +125,9 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/reports/gross-sales.get.ts`
 - `packages/extensions/fireux-kitchens/src/config/module/server-config.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleFinance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/menus/payments/stripe-webhook.post.ts`

@@ -17,6 +17,7 @@ import { useDish } from '../../../../firestore/dish/useDish'
 import { useMenuItemCollection } from '../../../../firestore/menu/fetch/useMenuItemCollection'
 import { useMenuItemMutations } from '../../../../firestore/menu/mutations/useMenuItemMutations'
 import {
+  findKitchenConsoleDemoMenu,
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
@@ -54,6 +55,10 @@ export function useKitchenConsoleMenuSection() {
     demoData.data.value,
     menuState.kitchenId.value
   ))
+  const demoMenu = computed(() => findKitchenConsoleDemoMenu(
+    demoScenario.value,
+    menuState.menuId.value
+  ))
   const itemState = useMenuItemCollection(
     menuState.storageKitchenId,
     computed(() => menuState.menu.value ? menuState.menuId.value : ''),
@@ -74,7 +79,7 @@ export function useKitchenConsoleMenuSection() {
   const items = computed(() =>
     menuState.kitchenSource.value === 'demo'
       ? menuState.menu.value && section.value
-        ? demoScenario.value?.menuSections.find(
+        ? demoMenu.value?.menuSections.find(
             entry => clean(entry.section.id) === sectionId.value
           )?.items ?? []
         : []

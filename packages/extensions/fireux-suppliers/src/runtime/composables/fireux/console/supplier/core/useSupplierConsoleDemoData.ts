@@ -9,12 +9,14 @@ import {
 } from '../../../firestore/supplier/utils/view/useSupplierInterface'
 import type {
   SupplierCatalogue,
+  SupplierIngredient,
   SupplierItem,
 } from '../../../../../models/supplier/Supplier.model'
 
 export type SupplierConsoleDemoScenario = {
   appId: string
   supplier: SupplierSurface
+  ingredients: SupplierIngredient[]
   items: SupplierItem[]
   catalogues: SupplierCatalogue[]
 }
@@ -43,6 +45,9 @@ export function useSupplierConsoleDemoData(
           items.push({
             appId: scenario.appId,
             supplier,
+            ingredients: scenario.ingredients.map(ingredient => ({
+              ...ingredient,
+            })),
             items: scenario.items.map(item => ({ ...item })),
             catalogues: scenario.catalogues.map(catalogue => ({
               ...catalogue,

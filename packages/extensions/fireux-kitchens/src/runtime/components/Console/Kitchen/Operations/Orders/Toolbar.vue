@@ -2,7 +2,7 @@
   <!-- 2026-07-19 14:55 CEST: Keep this Teleport client-only; SSR leaves the navbar target empty and otherwise hydrates mismatched children. -->
   <ClientOnly>
     <Teleport to="#kitchen-orders-actions">
-      <div class="orders-toolbar__actions">
+      <div v-if="passOrders.length" class="orders-toolbar__actions">
         <UBadge color="success" variant="soft" size="sm">
           Pass {{ passOrders.length }}
         </UBadge>

@@ -1,5 +1,5 @@
-import { useCookie, useRuntimeConfig } from '#imports'
-import { computed, ref } from 'vue'
+import { useCookie, useRuntimeConfig, useState } from '#imports'
+import { computed, ref, watch } from 'vue'
 import { normalizeString, uniqueStrings } from '../../../../utils/string'
 import { useFireUXConfig } from '../FireUXConfig'
 
@@ -72,7 +72,7 @@ function readConsoleConfig(): ConsoleConfig {
 export function useConsole(family = '') {
   const fireux = useFireUXConfig()
   const normalizedFamily = normalizeConsoleFamily(family)
-  const sourceState = normalizedFamily
+  const sourceCookie = normalizedFamily
     ? useCookie<ConsoleSource>(
         `fireux-console-${normalizedFamily}-source`,
         {
@@ -81,6 +81,16 @@ export function useConsole(family = '') {
         }
       )
     : ref<ConsoleSource>('live')
+  const sourceState = normalizedFamily
+    ? useState<ConsoleSource>(
+        `fireux-console-${normalizedFamily}-source-state`,
+        () => normalizeConsoleSource(sourceCookie.value)
+      )
+    : ref<ConsoleSource>('live')
+  watch(sourceCookie, (value) => {
+    const nextSource = normalizeConsoleSource(value)
+    if (sourceState.value !== nextSource) sourceState.value = nextSource
+  })
   const source = computed<ConsoleSource>(() =>
     normalizeConsoleSource(sourceState.value)
   )
@@ -118,7 +128,9 @@ export function useConsole(family = '') {
   }
 
   const setSource = (value: ConsoleSource = 'live') => {
-    sourceState.value = normalizeConsoleSource(value)
+    const nextSource = normalizeConsoleSource(value)
+    sourceState.value = nextSource
+    sourceCookie.value = nextSource
   }
   const resetSource = () => setSource('live')
 

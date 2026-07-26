@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-07-24
+Updated: 2026-07-26
 Ref: 796952bf0
 Role: living context
 Scope: repo-wide
@@ -185,6 +185,36 @@ Before each task:
   identity as a financial fact. Add producers only when a dated authoritative
   operation exists.
 
+## Shared marketplace authority
+
+- `fireux-marketplace` owns App-scoped Store identity, Store-owned Offer
+  Records, and private offline marketplace Order Records. Buyer and seller are
+  product surfaces, not UserApp roles.
+- Store owner/editor ids are bounded private authority; App Admin creates and
+  moderates Stores and assigns existing App members. Public readers consume
+  only bounded published Store/Offer projections, while all writes and Order
+  reads use trusted fixed-runtime endpoints.
+- Marketplace prices reuse Finance minor-unit money, but catalogue prices and
+  offline order requests do not emit FinancialFacts. MarketplaceOrder and
+  KitchenOrder are separate fulfilment families.
+
+## Firebase Auth App domains
+
+- Every deployed App's custom hostname and generated Firebase Hosting
+  `*.web.app` hostname must be declared through the shared Firebase deploy
+  runner's `--auth-domains` option. The runner additively syncs those hostnames
+  before deployment and never replaces existing authorized domains. Hostnames
+  never include protocol, path, or port.
+- The canonical ecosystem/App creation workflow accepts a public/custom
+  hostname through `--auth-domain`, derives the Firebase Hosting
+  `<site-id>.web.app` hostname from the scaffold slug (or explicit
+  `--firebase-site`), and presents both in one Firebase Authentication
+  authorization decision. Interactive creation asks the developer;
+  non-interactive creation must pass `--sync-auth-domain` or
+  `--no-sync-auth-domain`. A yes decision sends the deduplicated hostname set
+  through the same shared additive sync path and never writes a replacement
+  domain list.
+
 ## Shared Job authority
 
 - `fireux-jobs` owns one Job root shape and trusted author/public boundary for
@@ -245,6 +275,10 @@ Before each task:
 - `fireux-sproochli` owns provider authority, multilingual documents, and the
   reviewed authored-copy contract. Trusted generation stays server-side, and
   important public copy resolves only from approved content.
+- Reviewed copy packs preserve one display-ready source intent and exact
+  per-language variants with their own profile, status, and provenance.
+  Missing or unapproved requested variants fail closed rather than falling
+  through to a different language.
 - Reusable domain participation is a sparse attachment on that entity's
   canonical root. Scoped support records cannot override it; public projections
   expose only bounded language state. Structured Menus request provider
@@ -255,9 +289,10 @@ Before each task:
 - Reusable domain packages own their shared interface source copy once.
   Sproochli translates that chrome through the same provider request and
   translation memory; do not copy universal wording into every entity.
-- Apps own dialect profiles, glossaries, and approved phrase packs. `gsw`
-  authoring names its locale/region/style instead of collapsing into standard
-  German. See `docs/concepts/translation.md`.
+- Apps own target-language profiles, glossaries, and approved phrase packs.
+  `gsw` authoring names its locale/region/style instead of collapsing into
+  standard German; Swiss Standard German uses `de` as its selector code and
+  `de-CH` as locale metadata. See `docs/concepts/translation.md`.
 
 ## Firebase MCP targeting
 

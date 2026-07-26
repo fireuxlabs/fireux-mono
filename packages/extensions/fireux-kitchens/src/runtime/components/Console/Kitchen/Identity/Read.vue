@@ -1,9 +1,16 @@
 <template>
   <div class="space-y-6">
     <UPageCard
-      v-if="!selectedKitchen"
+      v-if="!kitchenId"
       title="No kitchen selected"
       description="Select a kitchen to view its identity."
+      variant="subtle"
+    />
+
+    <UPageCard
+      v-else-if="!selectedKitchen"
+      title="Loading kitchen identity"
+      description="Restoring the selected kitchen."
       variant="subtle"
     />
 
@@ -156,6 +163,7 @@ import { menuAcceptsOrderType } from '../../../../utils/menu-ordering-policy'
 
 const {
   selectedKitchen,
+  kitchenId,
   name: kitchenName,
   tagline: kitchenTagline,
   placeId,

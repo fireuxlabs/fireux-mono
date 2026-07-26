@@ -14,6 +14,16 @@ export const deanosKitchenDemoIdentity = {
   serviceId: 'deanos-demo-lunch-service',
 } as const satisfies KitchenDemoIdentity
 
+export const deanosPartyMenuDemoIdentity = {
+  ...deanosKitchenDemoIdentity,
+  menuId: 'deanos-party-menu',
+} as const satisfies KitchenDemoIdentity
+
+export const deanosXmasMenuDemoIdentity = {
+  ...deanosKitchenDemoIdentity,
+  menuId: 'deanos-xmas-menu',
+} as const satisfies KitchenDemoIdentity
+
 export const miseboxRestaurantKitchenDemoIdentity = {
   appId: 'misebox-app',
   kitchenId: 'misebox-restaurant',

@@ -7,13 +7,17 @@ import {
   readKitchenIdentity,
 } from '../../../../../utils/kitchen-spine'
 
-export function useKitchenConsoleIdentity() {
+type KitchenConsoleState = ReturnType<typeof useKitchenConsole>
+
+export function useKitchenConsoleIdentity(
+  kitchenConsole: KitchenConsoleState = useKitchenConsole()
+) {
   const {
     targets,
     selection,
     runtime,
     actions,
-  } = useKitchenConsole()
+  } = kitchenConsole
   const selectedConsoleKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection

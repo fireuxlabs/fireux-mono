@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-07-25
 // usage_note: keeps console page composition explicit and surface metadata valid.
 // FILE: scripts/guards/console-pages.mjs
 // Concurrent edit — 2026-07-20 16:21 CEST — Console Spine project cleanup: remove the retired app redirect exception.
@@ -12,6 +12,15 @@ import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 const SOURCE_ROOTS = ['packages', 'projects']
 const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
 const PAGE_MARKER = '/pages/console/'
+const CONSOLE_LAYOUT = 'packages/core/fireux-core/src/runtime/layouts/console.vue'
+const KITCHEN_MENUS_COMPONENT_ROOT =
+  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus'
+const KITCHEN_RECIPES_COMPONENT_ROOT =
+  'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Recipes'
+const KITCHEN_RECIPES_FETCH =
+  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/recipe/fetch/useKitchenRecipeCollection.ts'
+const KITCHEN_RECIPES_CONTROLLER =
+  'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Recipes/useKitchenConsoleRecipes.ts'
 const STANDARD_SURFACES = new Set([
   'browse',
   'detail',
@@ -37,6 +46,10 @@ export async function run(ctx) {
   const violations = []
   const seenPages = new Set()
 
+  validateConsoleLayout(repoRoot, violations)
+  validateKitchenMenusWorkspace(repoRoot, violations)
+  validateKitchenRecipesWorkspace(repoRoot, violations)
+
   for (const rootName of SOURCE_ROOTS) {
     const rootPath = path.join(repoRoot, rootName)
     if (!existsSync(rootPath)) continue
@@ -57,6 +70,7 @@ export async function run(ctx) {
         .map((violation) => `  - ${violation}`),
       '',
       '[guard] Fix:',
+      '- Every Console page using the shared transition has one real root DOM element; only an explicit pageTransition: false route is exempt.',
       '- Console pages compose UDashboardPanel, LayoutsConsoleNavbar, and a body slot directly.',
       '- Pages own body width and spacing; named domain components own domain presentation.',
       '- Header actions belong in the console navbar right slot.',
@@ -67,6 +81,149 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ console pages use the explicit page contract')
+}
+
+function validateKitchenRecipesWorkspace(repoRoot, violations) {
+  const files = {
+    Index: {
+      required: /\bprovideKitchenRecipesWorkspace\s*\(/,
+      forbidden: /\buseKitchenConsoleRecipes\s*\(/,
+    },
+    Read: {
+      required: /\buseKitchenRecipesWorkspace\s*\(/,
+      forbidden: /\buseKitchenConsoleRecipes\s*\(/,
+    },
+    Write: {
+      required: /\buseKitchenRecipesWorkspace\s*\(/,
+      forbidden: /\buseKitchenConsoleRecipes\s*\(/,
+    },
+  }
+
+  for (const [name, contract] of Object.entries(files)) {
+    const relative = `${KITCHEN_RECIPES_COMPONENT_ROOT}/${name}.vue`
+    const fullPath = path.join(repoRoot, relative)
+    if (!existsSync(fullPath)) {
+      violations.push(`${relative} (missing Kitchen Recipes workspace consumer)`)
+      continue
+    }
+
+    const source = readFileSync(fullPath, 'utf8')
+    if (!contract.required.test(source)) {
+      violations.push(
+        `${relative} (must use the route-owned Kitchen Recipes workspace)`
+      )
+    }
+    if (contract.forbidden.test(source)) {
+      violations.push(
+        `${relative} (must not instantiate the Kitchen Recipes data graph directly)`
+      )
+    }
+    if (name === 'Read') {
+      for (const expected of [
+        'v-else-if="error"',
+        'title="Recipes unavailable"',
+        "outcome === 'empty'",
+      ]) {
+        if (!source.includes(expected)) {
+          violations.push(
+            `${relative} (must preserve explicit Recipes read states)`
+          )
+        }
+      }
+    }
+  }
+
+  const fetchSource = readFileSync(
+    path.join(repoRoot, KITCHEN_RECIPES_FETCH),
+    'utf8'
+  )
+  for (const expected of [
+    'useFirestoreCollectionState',
+    'error,',
+    'outcome,',
+  ]) {
+    if (!fetchSource.includes(expected)) {
+      violations.push(
+        `${KITCHEN_RECIPES_FETCH} (must preserve the canonical collection state)`
+      )
+    }
+  }
+  if (/collectionRef\.value\s*===\s*undefined/.test(fetchSource)) {
+    violations.push(
+      `${KITCHEN_RECIPES_FETCH} (must use the Firestore pending ref instead of inferring loading from collection data)`
+    )
+  }
+
+  const controllerSource = readFileSync(
+    path.join(repoRoot, KITCHEN_RECIPES_CONTROLLER),
+    'utf8'
+  )
+  for (const expected of [
+    'demoData.error.value',
+    'demoData.outcome.value',
+    'recipesError.value',
+    'recipesOutcome.value',
+  ]) {
+    if (!controllerSource.includes(expected)) {
+      violations.push(
+        `${KITCHEN_RECIPES_CONTROLLER} (must preserve source-aware Recipes outcomes)`
+      )
+    }
+  }
+}
+
+function validateKitchenMenusWorkspace(repoRoot, violations) {
+  const files = {
+    Index: {
+      required: /\bprovideKitchenMenusWorkspace\s*\(/,
+      forbidden: /\buseKitchenConsoleMenus\s*\(/,
+    },
+    List: {
+      required: /\buseKitchenMenusWorkspace\s*\(/,
+      forbidden: /\buseKitchenConsoleMenus\s*\(/,
+    },
+    Debug: {
+      required: /\buseKitchenMenusWorkspace\s*\(/,
+      forbidden: /\buseKitchenConsoleMenus\s*\(/,
+    },
+  }
+
+  for (const [name, contract] of Object.entries(files)) {
+    const relative = `${KITCHEN_MENUS_COMPONENT_ROOT}/${name}.vue`
+    const fullPath = path.join(repoRoot, relative)
+    if (!existsSync(fullPath)) {
+      violations.push(`${relative} (missing Kitchen Menus workspace consumer)`)
+      continue
+    }
+
+    const source = readFileSync(fullPath, 'utf8')
+    if (!contract.required.test(source)) {
+      violations.push(
+        `${relative} (must use the route-owned Kitchen Menus workspace)`
+      )
+    }
+    if (contract.forbidden.test(source)) {
+      violations.push(
+        `${relative} (must not instantiate the Kitchen Menus data graph directly)`
+      )
+    }
+  }
+}
+
+function validateConsoleLayout(repoRoot, violations) {
+  const fullPath = path.join(repoRoot, CONSOLE_LAYOUT)
+  if (!existsSync(fullPath)) {
+    violations.push(`${CONSOLE_LAYOUT} (missing shared Console layout)`)
+    return
+  }
+
+  const source = readFileSync(fullPath, 'utf8')
+  if (!/<slot\b[^>]*\bv-else\b/.test(source)) {
+    violations.push(`${CONSOLE_LAYOUT} (must consume the AppShell route through <slot v-else />)`)
+  }
+  if (/<NuxtPage\b/.test(source)) {
+    violations.push(`${CONSOLE_LAYOUT} (must not render a second route tree inside AppShell)`)
+  }
 }
 
 function scan(dir, repoRoot, violations, seenPages) {
@@ -94,6 +251,7 @@ function scan(dir, repoRoot, violations, seenPages) {
     const directContract = hasDirectContract(template)
 
     seenPages.add(relative)
+    validateRenderedPageRoot(relative, template, pageMeta, violations)
     validateRouteMetaPlacement(relative, pageMeta, violations)
 
     if (surface && !STANDARD_SURFACES.has(surface)) {
@@ -114,6 +272,20 @@ function scan(dir, repoRoot, violations, seenPages) {
     }
 
     validateDirectContract(relative, template, script, pageMeta, violations)
+  }
+}
+
+function validateRenderedPageRoot(relative, template, pageMeta, violations) {
+  if (/\bpageTransition\s*:\s*false\b/.test(pageMeta)) return
+
+  if (
+    !/^<template\b[^>]*>\s*<(?:div|main|section|article|aside|header|footer|nav|form)\b/.test(
+      template
+    )
+  ) {
+    violations.push(
+      `${relative} (page transition requires one real root DOM element)`
+    )
   }
 }
 

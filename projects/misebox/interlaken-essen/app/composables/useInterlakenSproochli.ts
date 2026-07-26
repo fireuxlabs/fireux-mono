@@ -3,6 +3,7 @@ import { useCookie, useRoute } from '#imports'
 import {
   INTERLAKEN_SITE_DEFAULT_LANGUAGE,
   INTERLAKEN_SITE_LANGUAGE_OPTIONS,
+  isInterlakenSiteLanguageAvailableOnPath,
   normalizeInterlakenSiteLanguage,
   resolveInterlakenSiteLanguage,
   type InterlakenSiteLanguage,
@@ -20,9 +21,17 @@ export function useInterlakenSproochli() {
   const requestedLanguage = computed(() =>
     normalizeInterlakenSiteLanguage(route.query.sproochli)
   )
+  const availableRequestedLanguage = computed(() => {
+    const language = requestedLanguage.value
+
+    return language &&
+      isInterlakenSiteLanguageAvailableOnPath(language, route.path)
+      ? language
+      : ''
+  })
 
   watch(
-    requestedLanguage,
+    availableRequestedLanguage,
     (language: InterlakenSiteLanguage | '') => {
       if (language && storedLanguage.value !== language) {
         storedLanguage.value = language
@@ -31,10 +40,21 @@ export function useInterlakenSproochli() {
     { immediate: true }
   )
 
-  const selectedLanguage = computed(() =>
-    requestedLanguage.value ||
-    resolveInterlakenSiteLanguage(storedLanguage.value)
-  )
+  const selectedLanguage = computed(() => {
+    if (availableRequestedLanguage.value) {
+      return availableRequestedLanguage.value
+    }
+
+    const language =
+      resolveInterlakenSiteLanguage(storedLanguage.value)
+
+    return isInterlakenSiteLanguageAvailableOnPath(
+      language,
+      route.path
+    )
+      ? language
+      : INTERLAKEN_SITE_DEFAULT_LANGUAGE
+  })
 
   return {
     defaultLanguage: INTERLAKEN_SITE_DEFAULT_LANGUAGE,

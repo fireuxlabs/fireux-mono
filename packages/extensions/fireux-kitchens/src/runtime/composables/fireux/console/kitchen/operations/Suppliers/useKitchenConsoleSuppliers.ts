@@ -4,6 +4,7 @@ import type { SupplierSurface } from 'fireux-suppliers/runtime/composables/fireu
 import { useKitchenSupplierFetch } from './fetch/useKitchenSupplierFetch'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
+import { useKitchenConsoleSupplyWorkspace } from './useKitchenConsoleSupplyWorkspace'
 
 export function useKitchenConsoleSuppliers() {
   const {
@@ -22,13 +23,35 @@ export function useKitchenConsoleSuppliers() {
       ? runtime.storageKitchenId.value
       : ''
   )
-  const { suppliers, pending: suppliersPending, collectionPath } =
+  const {
+    suppliers: fetchedSuppliers,
+    pending: fetchedSuppliersPending,
+    collectionPath: fetchedCollectionPath,
+  } =
     useKitchenSupplierFetch(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
       enabled,
     })
-  const typedSuppliers = computed<SupplierSurface[]>(() => suppliers.value as SupplierSurface[])
+  const supply = useKitchenConsoleSupplyWorkspace()
+  const demoSuppliers = computed<SupplierSurface[]>(() =>
+    supply.supplierScenarios.value.map(scenario => scenario.supplier)
+  )
+  const typedSuppliers = computed<SupplierSurface[]>(() =>
+    runtime.source.value === 'demo'
+      ? demoSuppliers.value
+      : fetchedSuppliers.value as SupplierSurface[]
+  )
+  const suppliersPending = computed(() =>
+    runtime.source.value === 'demo'
+      ? supply.pending.value
+      : fetchedSuppliersPending.value
+  )
+  const collectionPath = computed(() =>
+    runtime.source.value === 'demo'
+      ? `demo/kitchens/${kitchenId.value}/suppliers`
+      : fetchedCollectionPath.value
+  )
   const page = useKitchenConsoleReadPage<SupplierSurface>({
     collectionName: SupplierStorage.rootCollection,
     selectedKitchen,
@@ -47,6 +70,7 @@ export function useKitchenConsoleSuppliers() {
     collectionPath: collectionPath.value,
     count: count.value,
     pending: pending.value,
+    unresolvedSupplyLinks: supply.unresolvedLinks.value.map(link => link.id),
     readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
@@ -61,6 +85,9 @@ export function useKitchenConsoleSuppliers() {
     readOnly,
     canWrite,
     suppliers: consoleSuppliers,
+    supplierScenarios: supply.supplierScenarios,
+    supplyLines: supply.supplyLines,
+    unresolvedSupplyLinks: supply.unresolvedLinks,
     count,
     pending,
     debug,

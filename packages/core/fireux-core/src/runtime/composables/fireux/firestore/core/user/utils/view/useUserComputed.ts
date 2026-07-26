@@ -1,10 +1,8 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: resolve public and app-private profile membership.
 // Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: keep auth, read error, and missing states distinct.
 import { computed } from '#imports'
-import type {
-  UserApp,
-  User,
-} from '../../../../../../../models/core/user.model'
+import type { User } from '../../../../../../../models/core/user.model'
+import type { CurrentAppMembershipDto } from '../../../../../../../server/utils/public-projection/public-dto.types'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { useAuth } from '../../../../../firebase/useAuth'
@@ -37,7 +35,9 @@ const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
 export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   const coreUser = user.coreUser as { value: User | null | undefined }
-  const appUser = user.appUser as { value: UserApp | null | undefined }
+  const appUser = user.appUser as {
+    value: CurrentAppMembershipDto | null | undefined
+  }
 
   const {
     uid,

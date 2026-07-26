@@ -1,140 +1,142 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <!-- Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: gate task controls with Portfolio write authority. -->
 <template>
-  <UDashboardPanel id="console-portfolio-tasks">
-    <template #header>
-      <LayoutsConsoleNavbar title="Tasks" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-portfolio-tasks">
+      <template #header>
+        <LayoutsConsoleNavbar title="Tasks" />
+      </template>
 
-    <template #body>
-      <section class="space-y-6">
-        <UCard>
-          <div class="flex items-start gap-4">
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Task tracker</div>
-              <div class="text-xs text-dimmed">
-                Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
-                Source: <code>{{ isDemo ? 'demo scenario' : tasksPath }}</code>
+      <template #body>
+        <section class="space-y-6">
+          <UCard>
+            <div class="flex items-start gap-4">
+              <div class="space-y-1">
+                <div class="text-sm font-semibold">Task tracker</div>
+                <div class="text-xs text-dimmed">
+                  Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
+                  Source: <code>{{ isDemo ? 'demo scenario' : tasksPath }}</code>
+                </div>
               </div>
             </div>
-          </div>
-        </UCard>
+          </UCard>
 
-        <UCard>
-          <div class="grid gap-3 sm:grid-cols-3">
-            <div class="fx-inset-panel">
-              <div class="text-xs text-dimmed">Open</div>
-              <div class="text-xl font-semibold">{{ summary.open }}</div>
+          <UCard>
+            <div class="grid gap-3 sm:grid-cols-3">
+              <div class="fx-inset-panel">
+                <div class="text-xs text-dimmed">Open</div>
+                <div class="text-xl font-semibold">{{ summary.open }}</div>
+              </div>
+              <div class="fx-inset-panel">
+                <div class="text-xs text-dimmed">In progress</div>
+                <div class="text-xl font-semibold">{{ summary.inProgress }}</div>
+              </div>
+              <div class="fx-inset-panel">
+                <div class="text-xs text-dimmed">Done</div>
+                <div class="text-xl font-semibold">{{ summary.done }}</div>
+              </div>
             </div>
-            <div class="fx-inset-panel">
-              <div class="text-xs text-dimmed">In progress</div>
-              <div class="text-xl font-semibold">{{ summary.inProgress }}</div>
+          </UCard>
+
+          <UCard v-if="canWrite">
+            <template #header>
+              <div class="text-sm font-semibold">Create task</div>
+            </template>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <UInput
+                v-model="newTaskTitle"
+                :disabled="!canWrite"
+                placeholder="Task title"
+              />
+              <UInput
+                v-model="newTaskDueDate"
+                :disabled="!canWrite"
+                placeholder="Due date (YYYY-MM-DD)"
+              />
+              <UInput
+                v-model="newTaskDescription"
+                :disabled="!canWrite"
+                placeholder="Description"
+                class="sm:col-span-2"
+              />
             </div>
-            <div class="fx-inset-panel">
-              <div class="text-xs text-dimmed">Done</div>
-              <div class="text-xl font-semibold">{{ summary.done }}</div>
+
+            <div class="mt-3">
+              <UButton
+                size="sm"
+                icon="i-lucide-plus"
+                :disabled="!canWrite || !newTaskTitle.trim() || createBusy"
+                :loading="createBusy"
+                @click="createManualTask"
+              >
+                Create task
+              </UButton>
             </div>
-          </div>
-        </UCard>
+          </UCard>
 
-        <UCard v-if="canWrite">
-          <template #header>
-            <div class="text-sm font-semibold">Create task</div>
-          </template>
+          <UCard>
+            <template #header>
+              <div class="text-sm font-semibold">Task list</div>
+            </template>
 
-          <div class="grid gap-3 sm:grid-cols-2">
-            <UInput
-              v-model="newTaskTitle"
-              :disabled="!canWrite"
-              placeholder="Task title"
-            />
-            <UInput
-              v-model="newTaskDueDate"
-              :disabled="!canWrite"
-              placeholder="Due date (YYYY-MM-DD)"
-            />
-            <UInput
-              v-model="newTaskDescription"
-              :disabled="!canWrite"
-              placeholder="Description"
-              class="sm:col-span-2"
-            />
-          </div>
+            <div v-if="cards.length" class="space-y-3">
+              <div
+                v-for="item in cards"
+                :key="item.id"
+                class="fx-inset-panel"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="space-y-1">
+                    <div class="text-sm font-semibold">{{ item.title }}</div>
+                    <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
+                  </div>
 
-          <div class="mt-3">
-            <UButton
-              size="sm"
-              icon="i-lucide-plus"
-              :disabled="!canWrite || !newTaskTitle.trim() || createBusy"
-              :loading="createBusy"
-              @click="createManualTask"
-            >
-              Create task
-            </UButton>
-          </div>
-        </UCard>
+                  <div class="flex items-center gap-2">
+                    <UBadge :color="statusColor(item.status)" variant="soft">
+                      {{ item.status }}
+                    </UBadge>
 
-        <UCard>
-          <template #header>
-            <div class="text-sm font-semibold">Task list</div>
-          </template>
-
-          <div v-if="cards.length" class="space-y-3">
-            <div
-              v-for="item in cards"
-              :key="item.id"
-              class="fx-inset-panel"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div class="space-y-1">
-                  <div class="text-sm font-semibold">{{ item.title }}</div>
-                  <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
-                </div>
-
-                <div class="flex items-center gap-2">
-                  <UBadge :color="statusColor(item.status)" variant="soft">
-                    {{ item.status }}
-                  </UBadge>
-
-                  <div v-if="canWrite" class="flex gap-1">
-                    <UButton
-                      size="xs"
-                      variant="ghost"
-                      :disabled="!canWrite"
-                      @click="setStatus(item.id, 'open')"
-                      >Open</UButton
-                    >
-                    <UButton
-                      size="xs"
-                      variant="ghost"
-                      :disabled="!canWrite"
-                      @click="setStatus(item.id, 'in_progress')"
-                      >In progress</UButton
-                    >
-                    <UButton
-                      size="xs"
-                      variant="ghost"
-                      :disabled="!canWrite"
-                      @click="setStatus(item.id, 'done')"
-                      >Done</UButton
-                    >
+                    <div v-if="canWrite" class="flex gap-1">
+                      <UButton
+                        size="xs"
+                        variant="ghost"
+                        :disabled="!canWrite"
+                        @click="setStatus(item.id, 'open')"
+                        >Open</UButton
+                      >
+                      <UButton
+                        size="xs"
+                        variant="ghost"
+                        :disabled="!canWrite"
+                        @click="setStatus(item.id, 'in_progress')"
+                        >In progress</UButton
+                      >
+                      <UButton
+                        size="xs"
+                        variant="ghost"
+                        :disabled="!canWrite"
+                        @click="setStatus(item.id, 'done')"
+                        >Done</UButton
+                      >
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <UAlert
-            v-else
-            color="neutral"
-            variant="soft"
-            title="No tasks"
-            description="Create tasks manually or from compliance/documents workflows."
-          />
-        </UCard>
-      </section>
-    </template>
-  </UDashboardPanel>
+            <UAlert
+              v-else
+              color="neutral"
+              variant="soft"
+              title="No tasks"
+              description="Create tasks manually or from compliance/documents workflows."
+            />
+          </UCard>
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

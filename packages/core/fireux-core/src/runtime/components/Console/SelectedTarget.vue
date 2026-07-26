@@ -3,10 +3,17 @@
   <section class="space-y-2">
     <UPageCard
       v-if="selectedId"
-      :title="selectedTitle"
-      :description="selectedDescription"
+      :title="$slots.selected ? undefined : selectedTitle"
+      :description="$slots.selected ? undefined : selectedDescription"
       variant="subtle"
     >
+      <slot
+        v-if="$slots.selected"
+        name="selected"
+        :title="selectedTitle"
+        :description="selectedDescription"
+      />
+
       <template #footer>
         <UButton
           color="neutral"

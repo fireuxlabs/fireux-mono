@@ -10,9 +10,11 @@ export function useKitchenConsoleSupplierProcurement() {
   const {
     supplier,
     supplierId,
+    supplierScenario,
     hasIntegratedCatalogue,
     isEcosystemSupplier,
     cataloguePath,
+    supplierSupplyLines,
   } = supplierState
 
   const supplierName = computed(() =>
@@ -21,7 +23,34 @@ export function useKitchenConsoleSupplierProcurement() {
     supplierId.value
   )
   const linkedIngredientIds = computed(() =>
-    normalizeStringArray(supplier.value?.linked_ingredient_ids)
+    supplierScenario.value
+      ? supplierSupplyLines.value.map(line => line.ingredient.id)
+      : normalizeStringArray(supplier.value?.linked_ingredient_ids)
+  )
+  const procurementLines = computed(() =>
+    supplierSupplyLines.value.map((line) => {
+      const item = line.supplierItem
+      const packCostMinor = Number(item.pack_cost_minor)
+      const currencyCode =
+        normalizeString(item.currency_code).toUpperCase() || 'CHF'
+      const packPrice = Number.isFinite(packCostMinor) && packCostMinor > 0
+        ? new Intl.NumberFormat('de-CH', {
+            style: 'currency',
+            currency: currencyCode,
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(packCostMinor / 100)
+        : ''
+
+      return {
+        id: line.link.id,
+        ingredientId: line.ingredient.id,
+        ingredientName: line.ingredient.name,
+        supplierItemId: item.id,
+        packLabel: normalizeString(item.pack_size_label),
+        packPrice,
+      }
+    })
   )
   const title = computed(() =>
     supplierName.value ? `${supplierName.value} Procurement` : 'Supplier Procurement'
@@ -37,6 +66,7 @@ export function useKitchenConsoleSupplierProcurement() {
     title,
     description,
     linkedIngredientIds,
+    procurementLines,
     hasIntegratedCatalogue,
     cataloguePath,
   }

@@ -9,7 +9,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
+import { useKitchenMenusWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
 
 // Operation entry spine: docs/concepts/console.md
 const {
@@ -22,7 +22,7 @@ const {
   pending,
   readOnly,
   canWrite,
-} = useKitchenConsoleMenus()
+} = useKitchenMenusWorkspace()
 
 const text = (value: unknown) => String(value ?? '').trim()
 const menuDebugRow = (menu: Record<string, unknown>) => {

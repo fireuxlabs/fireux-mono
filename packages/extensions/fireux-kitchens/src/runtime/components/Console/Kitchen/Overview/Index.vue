@@ -1,12 +1,21 @@
 <template>
   <section class="console-surface">
     <UAlert
-      v-if="!selectedKitchen"
+      v-if="!kitchenId"
       color="neutral"
       variant="soft"
       icon="i-lucide-store"
       title="No kitchen selected"
       description="Select or create a kitchen before using the operations overview."
+    />
+
+    <UAlert
+      v-else-if="!selectedKitchen"
+      color="neutral"
+      variant="soft"
+      icon="i-lucide-loader-circle"
+      title="Loading kitchen"
+      description="Restoring the selected kitchen."
     />
 
     <div v-else class="space-y-4">
@@ -186,6 +195,7 @@ import { useKitchenConsoleOverview } from '../../../../composables/fireux/consol
 
 const {
   selectedKitchen,
+  kitchenId,
   kitchenTitle,
   kitchenSubtitle,
   identityImage,

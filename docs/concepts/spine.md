@@ -43,11 +43,13 @@ contract.
 | Family | Map | Strongest current evidence | Current status |
 | --- | --- | --- | --- |
 | Console entity | `family-console-entity.md` | `scripts/guards/console-indexes.mjs` | Index spine is strong; lifecycle sheets still vary |
+| Like-menu operation | `family-like-menu.md` | `scripts/guards/like-menu-family.mjs` | Menus is the guarded records-then-tools reference; new members require deliberate adoption |
 | Public index | `family-public-index.md` | Route pages plus collection-manager contracts | Data authority is strong; page presentation has drift |
 | Public detail | `family-public-detail.md` | Bounded SSR projections and route pages | Transport rule is strong; route identity and actions are incomplete |
 | Tenant/global | `family-tenant-global.md` | App config, `useFireUXConfig`, and `useConsole` | Runtime mode is shared; transfer and second-tenant proof remain incomplete |
 | Menu | `family-menu.md` | Entity declarations and menu route guard | Identity and route contexts are strong; content migration remains active |
 | Menu ordering | `menu-ordering.md` | Menu route grammar, order models, and lifecycle composables | One lifecycle is mapped; the older funnel tree remains migration debt |
+| Marketplace | `marketplace.md` | `fireux-marketplace` models, trusted handlers, and closed raw Rules | App-scoped Store identity and offline Order requests are explicit; Interlaken Essen is the first proof |
 | Collection manager | `collection-manager.md` | Shared directory components, manager siblings, and CSS guards | Ownership roles are clear; presentation classes still need deliberate classification |
 | Create | `create.md` | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts` | Create families are classified; plan metadata and optional-field handling are not aligned |
 | Tool provider | `tool-provider.md` | Core registry, loader, iframe protocol, and provider APIs | Transport is shared; Go QR wrappers and dogfood config contain duplication |

@@ -23,6 +23,7 @@ export interface FireUXConfig {
     path: string
     title?: string
     description?: string
+    actionLabel?: string
     delayMs?: number
   }
   authOnboarding?: {
@@ -194,6 +195,7 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
       cached.authCompletion?.path === cfg.authCompletion?.path &&
       cached.authCompletion?.title === cfg.authCompletion?.title &&
       cached.authCompletion?.description === cfg.authCompletion?.description &&
+      cached.authCompletion?.actionLabel === cfg.authCompletion?.actionLabel &&
       cached.authCompletion?.delayMs === cfg.authCompletion?.delayMs &&
       cached.authOnboarding?.title === cfg.authOnboarding?.title &&
       cached.authOnboarding?.description === cfg.authOnboarding?.description &&

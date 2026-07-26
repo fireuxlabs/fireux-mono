@@ -52,7 +52,7 @@
 import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import { useKitchenConsoleRecipes } from '../../../../../composables/fireux/console/kitchen/operations/Recipes/useKitchenConsoleRecipes'
+import { useKitchenRecipesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Recipes/useKitchenRecipesWorkspace'
 import { useRecipeCreate } from '../../../../../composables/fireux/firestore/recipe/mutations/useRecipeCreate'
 
 const {
@@ -60,7 +60,7 @@ const {
   rootCollection,
   databaseId,
   canWrite,
-} = useKitchenConsoleRecipes()
+} = useKitchenRecipesWorkspace()
 const { createRecipe } = useRecipeCreate({
   kitchenCollectionPath: rootCollection,
   databaseId,

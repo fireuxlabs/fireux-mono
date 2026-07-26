@@ -8,7 +8,14 @@ const defaultCopy = (
     | 'app_meta_promise'
     | 'app_meta_console_bridge'
     | 'app_meta_seo_description'
-) => interlakenPublicCopyEntries[key].target_text
+) => {
+  const copy = interlakenPublicCopyEntries[key].translations.gsw
+
+  if (!copy || copy.status !== 'approved')
+    throw new Error(`Missing approved Swiss German app meta copy: ${key}`)
+
+  return copy.text
+}
 
 export const metaContent = defineFireuxMeta({
   app: {

@@ -80,7 +80,6 @@
             >
               <fieldset class="market-onboarding__section">
                 <legend>{{ copy('onboarding_locality_heading') }}</legend>
-                <p>{{ copy('onboarding_locality_body') }}</p>
 
                 <label class="market-onboarding__field" for="locality">
                   <span>
@@ -156,9 +155,6 @@
                 >
                   <span>
                     <strong>{{ copy('onboarding_offer_heading') }}</strong>
-                    <small>
-                      {{ copy('onboarding_offer_body') }}
-                    </small>
                   </span>
                   <span
                     class="market-onboarding__switch"

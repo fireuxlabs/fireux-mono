@@ -79,6 +79,7 @@ The current declared Entities are:
 | User | core, identity | root | identity database | membership record | projection | no |
 | Project | system, console entity | root | FireUX control plane | none | none | yes |
 | Job | content | root | owning App database | none | projection | no |
+| MarketplaceStore | commerce | App-scoped | owning App database | none | projection | no |
 | Kitchen | kitchen, console entity | root | owning App database | access record | projection | yes |
 | KitchenMenu | menu, kitchen | Kitchen-scoped | parent | none | projection | no |
 | Menu | menu | root | owning App database | none | projection | no |
@@ -93,6 +94,8 @@ The current declared Records are:
 | MenuSourceUpload | Kitchen | none | It is source material for a Kitchen workflow |
 | MenuSection | KitchenMenu | none | It groups MenuItem records inside one Menu |
 | MenuItem | MenuSection | none | It is one parent-owned catalogue row |
+| MarketplaceOffer | MarketplaceStore | projection | It has no lifecycle outside its Store |
+| MarketplaceOrder | MarketplaceStore | none | It is private operational fulfilment truth for one Store |
 
 The executable source is `scripts/_lib/entity-matrix.mjs`; the guard is
 `scripts/guards/entity-matrix.mjs`. The matrix intentionally imports no runtime

@@ -1,16 +1,18 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Console Spine project cleanup: keep the create route thin. -->
 <template>
-  <UDashboardPanel id="console-blank-create">
-    <template #header>
-      <LayoutsConsoleNavbar title="Create Blank" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-blank-create">
+      <template #header>
+        <LayoutsConsoleNavbar title="Create Blank" />
+      </template>
 
-    <template #body>
-      <section class="space-y-4">
-        <BlankCreateSystem />
-      </section>
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <section class="space-y-4">
+          <BlankCreateSystem />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

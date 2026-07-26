@@ -6,6 +6,10 @@ import {
   type KitchenFinanceReportPeriod,
   type KitchenGrossSalesReport,
 } from '../../../../../models/kitchen/finance-report.model'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../core/useKitchenConsoleDemoData'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -13,9 +17,22 @@ const text = (value: unknown) => String(value ?? '').trim()
 export function useKitchenConsoleFinance() {
   const { currentUser } = useAuth()
   const { selection, runtime } = useKitchenConsole()
+  const isDemo = computed(() => selection.kitchenSource.value === 'demo')
+  const isLive = computed(() => selection.kitchenSource.value === 'live')
+  const isTest = computed(() => selection.kitchenSource.value === 'test')
+  const demoData = useKitchenConsoleDemoData(isDemo)
+  const demoScenario = computed(() =>
+    findKitchenConsoleDemoScenario(
+      demoData.data.value,
+      selection.kitchenId.value
+    )
+  )
   const selectedPeriod = ref<KitchenFinanceReportPeriod>('30d')
   const report = ref<KitchenGrossSalesReport | null>(null)
-  const pending = ref(false)
+  const requestPending = ref(false)
+  const pending = computed(() =>
+    isDemo.value ? demoData.pending.value : requestPending.value
+  )
   const error = ref('')
   let requestSequence = 0
 
@@ -24,27 +41,22 @@ export function useKitchenConsoleFinance() {
     { value: '30d' as const, label: '30 days' },
     { value: '90d' as const, label: '90 days' },
   ]
-  const isLive = computed(() => selection.kitchenSource.value === 'live')
   const canLoad = computed(() => Boolean(
-    isLive.value &&
-    text(runtime.appId.value) &&
-    text(selection.kitchenId.value) &&
-    currentUser.value
+    isDemo.value
+      ? demoScenario.value?.finance
+      : isLive.value &&
+        text(runtime.appId.value) &&
+        text(selection.kitchenId.value) &&
+        currentUser.value
   ))
 
   async function load() {
     const sequence = ++requestSequence
     report.value = null
     error.value = ''
-    pending.value = false
+    requestPending.value = false
     if (!canLoad.value) return
 
-    const user = currentUser.value
-    const appId = text(runtime.appId.value)
-    const kitchenId = text(selection.kitchenId.value)
-    if (!user || !appId || !kitchenId) return
-
-    pending.value = true
     const to = new Date()
     const periodDays = KitchenFinanceReportPeriodDays[
       selectedPeriod.value as KitchenFinanceReportPeriod
@@ -52,7 +64,48 @@ export function useKitchenConsoleFinance() {
     const from = new Date(
       to.getTime() - periodDays * 86_400_000
     )
+    if (isDemo.value) {
+      const scenario = demoScenario.value
+      const summary = scenario?.finance?.grossSales[selectedPeriod.value]
+      if (!scenario || !summary) return
+      const averageAmountMinor = Math.round(
+        summary.grossSalesMinor / summary.saleCount
+      )
 
+      report.value = {
+        app_id: scenario.appId,
+        kitchen_id: text(scenario.kitchen.id),
+        period: {
+          from: from.toISOString(),
+          to: to.toISOString(),
+        },
+        generated_at: to.toISOString(),
+        sale_count: summary.saleCount,
+        currencies: [
+          {
+            currency_code: summary.currencyCode,
+            sale_count: summary.saleCount,
+            gross_sales: {
+              amount_minor: summary.grossSalesMinor,
+              currency_code: summary.currencyCode,
+            },
+            average_sale: {
+              amount_minor: averageAmountMinor,
+              currency_code: summary.currencyCode,
+            },
+          },
+        ],
+        complete: true,
+      }
+      return
+    }
+
+    const user = currentUser.value
+    const appId = text(runtime.appId.value)
+    const kitchenId = text(selection.kitchenId.value)
+    if (!user || !appId || !kitchenId) return
+
+    requestPending.value = true
     try {
       const token = await user.getIdToken()
       if (sequence !== requestSequence) return
@@ -74,7 +127,7 @@ export function useKitchenConsoleFinance() {
       if (sequence !== requestSequence) return
       error.value = reportErrorMessage(caught)
     } finally {
-      if (sequence === requestSequence) pending.value = false
+      if (sequence === requestSequence) requestPending.value = false
     }
   }
 
@@ -85,6 +138,7 @@ export function useKitchenConsoleFinance() {
       selection.kitchenId,
       selection.kitchenSource,
       selectedPeriod,
+      demoData.data,
     ],
     () => void load(),
     { immediate: true }
@@ -100,6 +154,8 @@ export function useKitchenConsoleFinance() {
     pending,
     error,
     isLive,
+    isDemo,
+    isTest,
     canLoad,
     refresh: load,
   }

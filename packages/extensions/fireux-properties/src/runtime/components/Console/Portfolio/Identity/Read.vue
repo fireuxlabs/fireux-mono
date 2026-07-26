@@ -1,9 +1,16 @@
 <template>
   <div class="space-y-6">
     <UPageCard
-      v-if="!selectedPortfolio"
+      v-if="!portfolioId"
       title="No portfolio selected"
       description="Select a portfolio to view its identity."
+      variant="subtle"
+    />
+
+    <UPageCard
+      v-else-if="!selectedPortfolio"
+      title="Loading portfolio identity"
+      description="Restoring the selected portfolio."
       variant="subtle"
     />
 
@@ -64,6 +71,7 @@ import { usePortfolioConsoleIdentity } from '../../../../composables/fireux/cons
 
 const {
   selectedPortfolio,
+  portfolioId,
   name,
   tagline,
   imageUrl,

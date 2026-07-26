@@ -334,7 +334,12 @@ const miseTask = (
   stationId: string,
   status: KitchenMiseTask['status'],
   priority: KitchenMiseTask['priority'],
-  estimatedMinutes: number
+  estimatedMinutes: number,
+  production: {
+    ingredientIds?: string[]
+    prepItemIds?: string[]
+    recipeId?: string
+  } = {}
 ): KitchenMiseTask => ({
   ...KitchenMiseTaskModel,
   id,
@@ -345,7 +350,10 @@ const miseTask = (
   status,
   priority,
   estimated_minutes: estimatedMinutes,
+  ingredient_ids: [...(production.ingredientIds ?? [])],
+  mise_ids: [...(production.prepItemIds ?? [])],
   menu_id: deanosKitchenDemoIdentity.menuId,
+  recipe_id: production.recipeId ?? '',
   created: kitchenDemoCreated(
     deanosKitchenDemoIdentity,
     '2026-07-22T07:00:00.000Z'
@@ -354,8 +362,27 @@ const miseTask = (
 })
 
 export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
-  miseTask('shape-burger-patties', 'Shape burger patties', 'grill', 'done', 'high', 35),
-  miseTask('mix-house-sauce', 'Mix house sauce', 'pass', 'in_progress', 'normal', 20),
+  miseTask(
+    'shape-burger-patties',
+    'Shape burger patties',
+    'grill',
+    'done',
+    'high',
+    35,
+    {
+      ingredientIds: ['beef-mince'],
+      prepItemIds: ['smash-patty-80g'],
+    }
+  ),
+  miseTask(
+    'mix-house-sauce',
+    'Mix house sauce',
+    'pass',
+    'in_progress',
+    'normal',
+    20,
+    { recipeId: 'deanos-burger-sauce' }
+  ),
   miseTask('stock-takeaway-packaging', 'Stock takeaway packaging', 'pass', 'todo', 'normal', 10),
 ]
 

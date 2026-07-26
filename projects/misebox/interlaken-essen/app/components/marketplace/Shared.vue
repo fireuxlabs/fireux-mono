@@ -1,5 +1,9 @@
 <template>
-  <section class="market-feed" aria-labelledby="market-feed-title">
+  <section
+    v-if="resolvedFutterPosts.length"
+    class="market-feed"
+    aria-labelledby="market-feed-title"
+  >
     <div class="market-feed__heading">
       <p class="market-eyebrow">{{ copy('feed_eyebrow') }}</p>
       <h2 id="market-feed-title">{{ copy('feed') }}</h2>
@@ -64,7 +68,10 @@ const resolvedFutterPosts = computed(() =>
       }]
     }
     const blogPost = blogsBySlug.value.get(post.blogPost.slug)
-    if (!blogPost) return []
+    if (
+      !blogPost ||
+      !blogPost.available_languages.includes(language.value)
+    ) return []
     return [{
       id: post.id,
       label: copy(post.labelKey),

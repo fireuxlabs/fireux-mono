@@ -1,12 +1,35 @@
 import { computed, useAsyncData } from '#imports'
-import type { CurrentAppContextResponse } from '../../../server/utils/public-projection/public-dto.types'
+import type { ComputedRef } from 'vue'
+import type {
+  CurrentAppContextResponse,
+  CurrentAppMembershipDto,
+  PublicAppDto,
+} from '../../../server/utils/public-projection/public-dto.types'
 import { useAuth } from '../firebase/useAuth'
+import {
+  CURRENT_APP_CONTEXT_ASYNC_DATA_KEY,
+  fetchCurrentAppContext,
+} from './currentAppContext'
 
-export function useCurrentAppContext() {
+export type UseCurrentAppContextReturn = {
+  uid: ComputedRef<string>
+  app: ComputedRef<PublicAppDto | null>
+  membership: ComputedRef<CurrentAppMembershipDto | null>
+  pending: ComputedRef<boolean>
+  error: ComputedRef<unknown | undefined>
+  refresh: () => Promise<void>
+}
+
+type CurrentAppContextState = {
+  requestUid: string
+  response: CurrentAppContextResponse
+}
+
+export function useCurrentAppContext(): UseCurrentAppContextReturn {
   const { currentUser, hasAuthState } = useAuth()
   const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
-  const state = useAsyncData(
-    () => 'current-app-context',
+  const state = useAsyncData<CurrentAppContextState | null>(
+    CURRENT_APP_CONTEXT_ASYNC_DATA_KEY,
     async () => {
       const user = currentUser.value
       const requestUid = uid.value
@@ -18,13 +41,7 @@ export function useCurrentAppContext() {
       ) {
         return null
       }
-      const token = await user.getIdToken()
-      const response = await $fetch<CurrentAppContextResponse>(
-        '/api/internal/app/context',
-        {
-          headers: { authorization: `Bearer ${token}` },
-        }
-      )
+      const response = await fetchCurrentAppContext(user)
       return { requestUid, response }
     },
     {
@@ -42,12 +59,17 @@ export function useCurrentAppContext() {
   const app = computed(() => response.value?.app ?? null)
   const membership = computed(() => response.value?.membership ?? null)
   const pending = computed(() => !hasAuthState.value || state.pending.value)
+  const error = computed<unknown | undefined>(() => state.error.value)
+  const refresh = async () => {
+    await state.refresh()
+  }
 
   return {
+    uid,
     app,
     membership,
     pending,
-    error: state.error,
-    refresh: state.refresh,
+    error,
+    refresh,
   }
 }

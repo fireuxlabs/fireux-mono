@@ -1285,6 +1285,26 @@ service cloud.firestore {
       }
 
       // =============================================================
+      // App-scoped marketplace authority
+      // =============================================================
+      match /marketplace-stores/{storeId} {
+        // Store authority includes private owner/editor ids. Guests consume
+        // bounded public DTOs and members use trusted marketplace endpoints.
+        allow get, list, create, update, delete: if false;
+
+        match /offers/{offerId} {
+          // Offer publication and price validation are server-owned.
+          allow get, list, create, update, delete: if false;
+        }
+      }
+
+      match /marketplace-orders/{orderId} {
+        // Orders contain buyer identity, fulfilment details and immutable
+        // offer/price snapshots. All access uses trusted private endpoints.
+        allow get, list, create, update, delete: if false;
+      }
+
+      // =============================================================
       // Minimal app overlays for public identity profiles
       // =============================================================
       match /{profileCollection}/{userId} {

@@ -35,14 +35,23 @@
     <template #content>
       <UCard class="sproochli-language-card">
         <template #header>
-          <div class="space-y-1">
-            <div class="text-sm font-semibold text-highlighted">
-              {{ triggerCopy.heading }}
-            </div>
-            <p class="text-xs text-muted">
-              {{ triggerCopy.description }}
-            </p>
-          </div>
+          <a
+            :href="sproochliSiteHref"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="sproochli-language-brand"
+            :aria-label="triggerCopy.visitSproochli"
+            :title="triggerCopy.visitSproochli"
+            @click="open = false"
+          >
+            <SproochliWordmark class="sproochli-language-brand__wordmark" />
+            <span
+              class="sproochli-language-brand__segue"
+              aria-hidden="true"
+            >
+              <UIcon name="i-lucide-arrow-up-right" />
+            </span>
+          </a>
         </template>
 
         <div class="max-h-[min(32rem,calc(100dvh-8rem))] space-y-2 overflow-y-auto pr-1">
@@ -106,23 +115,26 @@
 import { computed, nextTick, ref } from 'vue'
 import { navigateTo, useRoute } from '#imports'
 import SproochliDefaultLanguageMark from './DefaultLanguageMark.vue'
+import SproochliWordmark from './Wordmark.vue'
 import {
   isSproochliRtlLanguage,
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
   type SproochliLanguageOption,
 } from '../../composables/fireux/sproochli/publicLanguage'
+import {
+  sproochliProviderBaseUrl,
+} from '../../composables/fireux/sproochli/provider'
 
 type LanguageGroupKey = 'cached' | 'languages'
 
 type SproochliLanguageTriggerCopy = {
-  heading: string
-  description: string
   chooseLanguage: string
   currentSelection: string
   defaultSelection: string
   originalSelection: string
   cached: string
+  visitSproochli: string
 }
 
 type LanguageGroup = {
@@ -137,21 +149,24 @@ const props = defineProps<{
   defaultLanguage?: string
   showGroupLabels?: boolean
   showWhenSingleOption?: boolean
+  brandHref?: string
   copy?: Partial<SproochliLanguageTriggerCopy>
 }>()
 
 const route = useRoute()
 const open = ref(false)
 const triggerCopy = computed<SproochliLanguageTriggerCopy>(() => ({
-  heading: 'Language',
-  description: 'Choose how to read this content.',
   chooseLanguage: 'Choose language',
   currentSelection: 'Current selection',
   defaultSelection: 'Default',
   originalSelection: 'Original',
   cached: 'Cached',
+  visitSproochli: 'Visit Sproochli',
   ...props.copy,
 }))
+const sproochliSiteHref = computed(
+  () => String(props.brandHref || sproochliProviderBaseUrl()).trim()
+)
 const visibleLanguageOptions = computed(() => props.languageOptions ?? [])
 const onlyOriginalOption = computed(() =>
   visibleLanguageOptions.value.length === 1 &&
@@ -297,5 +312,61 @@ const optionName = (option: SproochliLanguageOption) =>
 
 .sproochli-language-card {
   width: min(20rem, calc(100vw - 1rem));
+}
+
+.sproochli-language-brand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: -0.25rem;
+  padding: 0.25rem;
+  border-radius: 0.75rem;
+  color: var(--ui-text-highlighted);
+  text-decoration: none;
+  transition:
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.sproochli-language-brand:hover {
+  color: var(--ui-primary);
+}
+
+.sproochli-language-brand:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 3px;
+}
+
+.sproochli-language-brand__wordmark {
+  width: 9rem;
+  height: auto;
+}
+
+.sproochli-language-brand__segue {
+  display: inline-flex;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, currentColor 6%, transparent);
+  transition:
+    background 160ms ease,
+    transform 160ms ease;
+}
+
+.sproochli-language-brand:hover .sproochli-language-brand__segue {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+  transform: translate(0.1rem, -0.1rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sproochli-language-brand,
+  .sproochli-language-brand__segue {
+    transition: none;
+  }
 }
 </style>

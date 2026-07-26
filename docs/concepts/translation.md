@@ -1,6 +1,6 @@
 # Translation and reviewed copy
 
-Updated: 2026-07-24
+Updated: 2026-07-25
 Role: map, not canon
 
 ## Purpose
@@ -21,9 +21,13 @@ human-reviewed public copy.
 - Important public brand copy is served only from an approved phrase pack or a
   future bounded approved server projection. Browsers neither generate nor
   approve it at runtime.
+- A reviewed phrase-pack entry preserves one display-ready English source and
+  exact target-language variants. Every target variant carries its own
+  profile, status, and provenance; a missing or unapproved requested language
+  fails closed instead of displaying another language.
 - Dialect is explicit authoring context. `gsw` is not treated as generic `de`;
   profiles carry locale, region, style, and glossary metadata.
-- Apps own tenant-specific dialect profiles and phrase packs. Generic packages
+- Apps own tenant-specific language profiles and phrase packs. Generic packages
   own the workflow contract, never a tenant's vocabulary.
 - A sparse `sproochli` attachment on the canonical root Kitchen owns whether
   its shared public surfaces participate and which source state they present.
@@ -52,32 +56,37 @@ human-reviewed public copy.
   presents Sproochli's abstract Dialogue Loom mark as `Default`: violet and
   coral voice ribbons orbit one shared cream ellipsis. It is the sole static
   language-state asset. When a language is active, including English, the
-  trigger uses that language option's emoji. Ready and session-cached choices
-  appear above one divider; uncached provider choices remain below it.
+  trigger uses that language option's emoji. Its picker leads with the linked
+  Sproochli wordmark rather than explanatory language copy. Ready and
+  session-cached choices appear above one divider; uncached provider choices
+  remain below it.
 
 ## First proof
 
-Interlaken Essen owns the `interlaken-berner-oberland-v1` profile and its
-reviewed phrase pack. Public surfaces resolve approved entries such as
-`Choufe`, `Verchoufe`, `Futter`, and `Chum cho esse`; they do not request live
+Interlaken Essen owns the `interlaken-berner-oberland-v1` dialect profile, the
+`interlaken-swiss-standard-german-v1` professional profile, and their reviewed
+phrase pack. Public surfaces resolve approved entries such as `Choufe`,
+`Verchoufe`, `Futter`, and `Chum cho esse`; they do not request live
 generation.
 
-Its first project-owned site-shell pair is `gsw` and `en`, defaulting to `gsw`
-and persisting the visitor's valid choice across Interlaken routes. German,
-French, and Italian remain deferred until that pair is coherent. Each approved
-site entry carries display-ready English source intent and reviewed
-Swiss-German target copy; the language-aware resolver serves only those
+Its project-owned site-shell order is `gsw`, `de`, and `en`, defaulting to
+`gsw` and persisting the visitor's valid choice across Interlaken routes.
+German uses the selector code `de`, locale `de-CH`, Swiss orthography, and a
+professional formal register; French and Italian remain deferred. Each
+approved site entry carries display-ready English source intent and exact
+reviewed target variants; the language-aware resolver serves only those
 source-controlled values and performs no visitor-time generation.
 
 The project-owned marketplace routes, onboarding, account UI, SEO,
 accessibility labels, picker chrome, and language-bearing launch artwork use
 that resolver. The project app root sets the selected document locale across
-all routes. `fireux-blogs` now owns a sparse BlogPost Sproochli attachment and
-bounded approved-language projection; Interlaken supplies its supported
-language order and persisted selection, while Futter keeps only canonical Blog
-slug references. Shared Core Auth/default-shell/legal wording and generic Blog
-chrome are not copied into the tenant pack and still need owner-level
-locale-aware copy before the complete inherited route namespace is bilingual.
+all routes. German is currently bounded to project-owned marketplace routes.
+`fireux-blogs` owns a sparse BlogPost Sproochli attachment and bounded
+approved-language projection; Futter keeps only canonical Blog slug references
+and omits stories that lack the selected approved language. Shared Core
+Auth/default-shell/legal wording and generic Blog chrome are not copied into
+the tenant pack and still need owner-level locale-aware copy before those
+inherited routes can expose German.
 
 Luna Piccante is the first canonical Kitchen-to-Menu attachment proof. Its
 mixed-source Menu displays the Default mark and complete language catalogue

@@ -1,5 +1,5 @@
 # Console
-Updated: 2026-07-22
+Updated: 2026-07-26
 Ref: 796952bf0
 Role: map, not canon
 
@@ -11,6 +11,7 @@ Map the shared console system and domain adapters.
 - Parent: app-config.md
 - Child: family-console-entity.md
 - Child: family-tenant-global.md
+- Child: family-like-menu.md
 
 ## Horizontal links
 
@@ -45,7 +46,13 @@ Map the shared console system and domain adapters.
 
 ## Shared page rules
 
-- The page directly composes `UDashboardPanel`, `LayoutsConsoleNavbar`, a header slot, and a body slot. Do not hide that route shell in a generic component.
+- The page has one real root DOM element for the shared Nuxt page transition,
+  then directly composes `UDashboardPanel`, `LayoutsConsoleNavbar`, a header
+  slot, and a body slot inside it. Do not hide that route shell in a generic
+  component.
+- In the shared `UDashboardGroup` flex layout, the neutral route wrapper uses
+  `flex min-h-full min-w-0 flex-1`; a bare block wrapper can stop
+  `UDashboardPanel` from filling the remaining Console width.
 - The page owns high-level width and spacing. Family indexes may stay full width; simple forms may use `panels-narrow`; named domain components own their internal presentation.
 - Back navigation and page actions stay in the navbar right slot.
 - Create and edit share form behavior. Small primitives such as `ConsoleFormActions` may standardize Save, Cancel, pending, disabled, and status treatment without owning the page.
@@ -54,7 +61,12 @@ Map the shared console system and domain adapters.
 - A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
 - Adopted routes can declare `consoleSurface`; edit routes declare `edit` and live routes declare `live`.
-- The console-pages guard enforces the explicit panel/navbar/body contract for visible leaf pages. Only redirects, nested routers, and live layouts are structurally exempt; the guard does not constrain body geometry.
+- The console-pages guard enforces the real DOM root plus the explicit
+  panel/navbar/body contract for visible leaf pages. Redirects, nested routers,
+  and live layouts are exempt only from the panel shell; every rendered page
+  using the shared transition still needs the real root. Only an explicit,
+  justified `pageTransition: false` route is exempt from that root check. The
+  guard does not constrain body geometry.
 - The console-indexes guard separately enforces the shared selected → targets
   index rhythm, clear wiring, `useConsoleIndex` adapter, and shared selected and
   target-state presentation seams.
@@ -91,7 +103,9 @@ Map the shared console system and domain adapters.
   membership outcome.
 - Named selected wrappers map domain identity into `ConsoleSelectedTarget`;
   Core owns the selected/empty card anatomy and Clear action presentation, and
-  the family index forwards `actions.clear`.
+  the family index forwards `actions.clear`. A family may project its existing
+  entity card through the shared selected-content slot; it must not replace the
+  shared empty state or Clear behavior.
 - Tenant apps can auto-select single configured targets.
 - Global apps usually source target IDs from user/app data.
 - Target adapters must pass the collection `outcome` through `useConsoleIndex`;
@@ -108,6 +122,15 @@ Map the shared console system and domain adapters.
   one shared target presenter per source rather than flattening source state.
 - Persisted selection is validated only against a successful target read.
   Pending or failed target reads must not clear a saved selection.
+- Selected-target routes distinguish persistence from hydration. The persisted
+  family selection ID decides whether a target is selected; the asynchronously
+  loaded target object decides whether target content is ready. A missing
+  object while an ID exists is a loading state, never a false "select first"
+  empty state.
+- A Console family has one family-keyed reactive source state shared by every
+  composable instance. Its cookie is persistence, not a second live source
+  authority; source changes update both together so source-aware selection
+  cannot race between `live`, `demo`, and `test`.
 - Global target adapters compose UserApp membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
 - Global UserApp target IDs and tenant-configured IDs bound live reads. Exact
@@ -148,12 +171,27 @@ Map the shared console system and domain adapters.
 
 - Operations are child surfaces inside a selected console target.
 - Operations must not leak into Firestore entity root folders.
-- The default operation component spine is entry, optional tools seam, `Read.vue`, optional `Write.vue`, and optional `Detail.vue`.
-- A browse entry composes tools first and `Read.vue` for current state. A collapsed write lane is only for a small add/create action that belongs in browse context.
+- Operation browse families must name their visible jobs rather than relying on
+  folder symmetry alone. The `like-menu` family is the records-then-tools
+  reference for collection-led operations.
+- A `like-menu` browse entry owns create and collection read. Its child detail
+  route owns inspect, update, and delete. Self-explanatory lists and the single
+  create action may be visually unframed while retaining named semantic
+  sections. The domain owns their contents and authority.
+- Large creation, review, QR, configuration, and live workflows use dedicated
+  routes. A collapsed write lane is only for a genuinely small action on an
+  operation that has not adopted the `like-menu` family.
 - Persistent operation settings use the operation-level edit route and `consoleSurface: 'edit'`; do not hide configuration inside a browse-page dropdown.
-- `Read.vue` lists current records and should link each record to detail when the operation owns record identity.
+- `Read.vue` lists current records and must retain an explicit path to detail
+  when the operation owns record identity. A dense browse surface may open a
+  read-only quick look first when leaving the operation would interrupt the
+  operator's scan; that preview must expose the deliberate detail-route action.
 - `Detail.vue` is justified for operations; it can start as a small selected-record surface and grow detail-level read/write children.
 - The matching operation composable is `useXConsoleOperation`; it owns selected target, child collection path, pending/write permissions, and debug wiring.
+- A rendered operation mounts that stateful data graph once. Its operation root
+  provides a named workspace and descendant list, toolbar, and debug components
+  inject the same workspace; descendants must not independently call the
+  operation composable and duplicate target, auth, or Firestore lifecycles.
 - UI controls may hide or disable writes from `canWrite`, but mutations and
   storage uploads must enforce the same authority themselves. Demo and other
   read-only sources therefore remain non-writing even when invoked directly.

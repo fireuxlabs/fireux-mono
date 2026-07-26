@@ -1,14 +1,16 @@
 <!-- Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: add the private delivery operation to the FireUX Project Console. -->
 <template>
-  <UDashboardPanel id="console-project-ignitions">
-    <template #header>
-      <LayoutsConsoleNavbar title="Ignition Requests" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-project-ignitions">
+      <template #header>
+        <LayoutsConsoleNavbar title="Ignition Requests" />
+      </template>
 
-    <template #body>
-      <IgnitionQueue />
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <IgnitionQueue />
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

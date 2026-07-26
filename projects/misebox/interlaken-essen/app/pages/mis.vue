@@ -111,7 +111,24 @@
                   </div>
                 </header>
 
-                <div class="market-personal__empty">
+                <div v-if="buyerOrders.length" class="market-personal__records">
+                  <article v-for="order in buyerOrders" :key="order.id">
+                    <div>
+                      <strong>{{ order.store_name }}</strong>
+                      <span>{{ orderStatusLabel(order.status) }}</span>
+                    </div>
+                    <strong>{{ formatMoney(order.total) }}</strong>
+                    <button
+                      v-if="order.status === 'requested'"
+                      type="button"
+                      :disabled="orderActionId === order.id"
+                      @click="cancelBuyerOrder(order.id)"
+                    >
+                      {{ copy('market_cancel_order') }}
+                    </button>
+                  </article>
+                </div>
+                <div v-else class="market-personal__empty">
                   <p>{{ copy('account_orders_empty') }}</p>
                   <NuxtLink to="/choufe">
                     {{ copy('account_browse_offers') }}
@@ -210,10 +227,20 @@
                   </div>
                 </header>
 
-                <div class="market-personal__empty">
-                  <p>{{ copy('account_products_empty') }}</p>
-                  <NuxtLink to="/verchoufe">
-                    {{ copy('account_offer_something') }}
+                <div class="market-personal__records">
+                  <NuxtLink
+                    v-for="store in managedStores"
+                    :key="store.id"
+                    :to="`/mis/stores/${store.id}`"
+                  >
+                    <div>
+                      <strong>{{ store.name }}</strong>
+                      <span>{{ storeStateLabel(store.publication_state) }}</span>
+                    </div>
+                    <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+                  </NuxtLink>
+                  <NuxtLink to="/mis/stores">
+                    <strong>{{ copy('market_manage_stores') }}</strong>
                     <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
                   </NuxtLink>
                 </div>
@@ -233,7 +260,11 @@
                 </header>
 
                 <div class="market-personal__empty">
-                  <p>{{ copy('account_orders_empty') }}</p>
+                  <p>{{ copy('market_manage_stores') }}</p>
+                  <NuxtLink to="/mis/stores">
+                    {{ copy('market_orders') }}
+                    <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+                  </NuxtLink>
                 </div>
               </article>
             </div>
@@ -310,6 +341,12 @@ import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/us
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import type {
+  MarketplaceOrder,
+  MarketplaceOrderStatus,
+  MarketplaceStore,
+  MarketplaceStoreState,
+} from 'fireux-marketplace/runtime/models/marketplace.model'
 
 type PersonalSurface = 'buyer' | 'seller'
 type SettingsState = 'idle' | 'loading' | 'saving' | 'saved' | 'error'
@@ -328,8 +365,9 @@ definePageMeta({
   layout: 'marketplace',
 })
 
-const { copy } = useInterlakenCopy()
+const { copy, locale } = useInterlakenCopy()
 const fireux = useFireUXConfig()
+const marketplace = useMarketplaceClient()
 const { setStatus: setOnboardingStatus } =
   useInterlakenOnboardingStatus()
 
@@ -345,6 +383,9 @@ const { getProxiedAvatarUrl } = useAvatarProxy()
 
 const activeSurface = ref<PersonalSurface>('buyer')
 const sellerEnabled = ref(false)
+const managedStores = ref<MarketplaceStore[]>([])
+const buyerOrders = ref<MarketplaceOrder[]>([])
+const orderActionId = ref('')
 const deliveryAddress = ref('')
 const settingsState = ref<SettingsState>('idle')
 const settingsMessageKey = ref<SettingsMessageKey | null>(null)
@@ -400,6 +441,8 @@ watch(
     if (!uid || !authUser.value) {
       activeSurface.value = 'buyer'
       sellerEnabled.value = false
+      managedStores.value = []
+      buyerOrders.value = []
       deliveryAddress.value = ''
       settingsState.value = 'idle'
       return
@@ -415,7 +458,14 @@ watch(
         }
       )
       if (request !== settingsRequest) return
-      sellerEnabled.value = response.access.seller_enabled
+      const [storeResponse, orderResponse] = await Promise.all([
+        marketplace.managedStores(),
+        marketplace.orders('buyer'),
+      ])
+      if (request !== settingsRequest) return
+      managedStores.value = storeResponse.items
+      buyerOrders.value = orderResponse.items
+      sellerEnabled.value = managedStores.value.length > 0
       setOnboardingStatus(response.membership.onboarding_status)
       if (!sellerEnabled.value) activeSurface.value = 'buyer'
       deliveryAddress.value = response.settings.delivery_address
@@ -424,12 +474,50 @@ watch(
       if (request !== settingsRequest) return
       activeSurface.value = 'buyer'
       sellerEnabled.value = false
+      managedStores.value = []
+      buyerOrders.value = []
       settingsState.value = 'error'
       settingsMessageKey.value = 'account_settings_load_error'
     }
   },
   { immediate: true }
 )
+
+function formatMoney(money: { amount_minor: number; currency_code: string }) {
+  return new Intl.NumberFormat(locale.value, {
+    style: 'currency',
+    currency: money.currency_code,
+  }).format(money.amount_minor / 100)
+}
+
+function orderStatusLabel(status: MarketplaceOrderStatus) {
+  return copy(`market_order_${status}` as
+    | 'market_order_requested'
+    | 'market_order_accepted'
+    | 'market_order_ready'
+    | 'market_order_completed'
+    | 'market_order_rejected'
+    | 'market_order_cancelled')
+}
+
+function storeStateLabel(state: MarketplaceStoreState) {
+  return copy(`market_store_${state}` as
+    | 'market_store_draft'
+    | 'market_store_pending_review'
+    | 'market_store_published'
+    | 'market_store_paused')
+}
+
+async function cancelBuyerOrder(orderId: string) {
+  if (orderActionId.value) return
+  orderActionId.value = orderId
+  try {
+    await marketplace.transitionOrder(orderId, 'cancelled')
+    buyerOrders.value = (await marketplace.orders('buyer')).items
+  } finally {
+    orderActionId.value = ''
+  }
+}
 
 async function saveSettings() {
   const user = authUser.value

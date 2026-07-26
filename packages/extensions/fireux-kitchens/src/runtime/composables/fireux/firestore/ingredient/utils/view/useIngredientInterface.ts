@@ -2,14 +2,38 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 import type { Ingredient } from '../../../../../../models/ingredient.model'
 import type { KitchenIngredient } from '../../../../../../models/kitchen/ingredient.model'
 
-const joinSubtitle = (supplierRef = ''): string =>
-  safeString(supplierRef).trim()
+const formatPackPrice = (
+  costMinor?: number | null,
+  currencyCode?: string
+) => {
+  const amount = Number(costMinor)
+  if (!Number.isFinite(amount) || amount <= 0) return ''
+
+  return new Intl.NumberFormat('de-CH', {
+    style: 'currency',
+    currency: safeString(currencyCode).trim().toUpperCase() || 'CHF',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(amount / 100)
+}
+
+const joinSubtitle = (...parts: unknown[]): string =>
+  parts.map(part => safeString(part).trim()).filter(Boolean).join(' · ')
 
 export type IngredientInterfaceItem = Partial<Ingredient> & {
   id: string
   ingredient_id?: string
   kitchen_ingredient?: KitchenIngredient
   missing_root_ingredient?: boolean
+  supplier_currency_code?: string
+  supplier_id?: string
+  supplier_item_id?: string
+  supplier_name?: string
+  supplier_pack_cost_minor?: number | null
+  supplier_pack_label?: string
+  production_usage_label?: string
+  production_usage_menu_names?: string[]
+  production_usage_sources?: string[]
 }
 
 export namespace IngredientCard {
@@ -56,10 +80,22 @@ export function useIngredientInterface() {
     const id = safeString(ingredient.id).trim()
     const slug = safeString((ingredient as Ingredient).slug).trim() || id
     const name = safeString(ingredient.name).trim()
-    const status = safeString((ingredient as any)?.status).trim()
+    const status = safeString(
+      (ingredient as any)?.status || ingredient.production_usage_label
+    ).trim()
     const supplierName = safeString((ingredient as any)?.supplier_name).trim()
     const supplierId = safeString((ingredient as any)?.supplier_id).trim()
     const supplierRef = supplierName || supplierId
+    const supplierPackLabel = safeString(ingredient.supplier_pack_label).trim()
+    const supplierPackPrice = formatPackPrice(
+      ingredient.supplier_pack_cost_minor,
+      ingredient.supplier_currency_code
+    )
+    const supplierSummary = joinSubtitle(
+      supplierRef,
+      supplierPackLabel,
+      supplierPackPrice
+    )
 
     return {
       id,
@@ -67,8 +103,8 @@ export function useIngredientInterface() {
       to: '',
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
-      subtitle: joinSubtitle(supplierRef),
-      meta: supplierRef,
+      subtitle: supplierSummary,
+      meta: supplierSummary,
       badges: status ? [status] : [],
       summary: '',
       name,

@@ -5,6 +5,7 @@
     <ConsoleKitchenIndexSelected
       :kitchen="selection.kitchen"
       :kitchen-id="selection.kitchenId"
+      :source="selection.kitchenSource"
       @clear="actions.clear"
     />
 

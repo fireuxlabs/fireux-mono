@@ -171,8 +171,13 @@ Short anchor phrases are strongest:
 - Chum cho esse
 - Us dr Region
 
-English working notes are fine, but finished Interlaken-facing material follows
-the approved Swiss German wording.
+Finished Interlaken-facing material follows its approved language profile.
+Swiss German remains the default public voice, and the anchor phrases above
+remain Swiss German. English is the international visitor and owner-facing
+alternative. Swiss Standard German uses `de-CH`, Swiss orthography, and a warm
+professional `Sie` register for sellers, storefront facts, enquiries, account
+states, and future vendor or customer communication; it supports rather than
+replaces the local voice.
 
 ## What does not belong
 

@@ -1,6 +1,8 @@
 <template>
-  <EffectsSteam />
-  <MiseboxLandingIndex />
+  <div class="min-h-full">
+    <EffectsSteam />
+    <MiseboxLandingIndex />
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -9,9 +9,11 @@ import { useInterlakenSproochli } from './useInterlakenSproochli'
 export function useInterlakenCopy() {
   const sproochli = useInterlakenSproochli()
   const language = computed(() => sproochli.selectedLanguage.value)
-  const locale = computed(() =>
-    language.value === 'en' ? 'en-GB' : 'gsw-CH'
-  )
+  const locale = computed(() => ({
+    de: 'de-CH',
+    en: 'en-GB',
+    gsw: 'gsw-CH',
+  })[language.value])
 
   const copy = (
     key: InterlakenCopyKey,

@@ -44,6 +44,7 @@ export type FireuxAppConfig = {
     path: string
     title?: string
     description?: string
+    actionLabel?: string
     delayMs?: number
   }
   /** Optional app-owned onboarding step shown after shared account creation. */

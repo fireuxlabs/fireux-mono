@@ -189,7 +189,13 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
           : value as T
       },
     } as any)
-    guardFirestorePromise(binding as any, resolvedSsrKey || 'query')
+    const context = computed(
+      () =>
+        resolvedSsrKey ||
+        String(unref(devCollectionPath) || '').trim() ||
+        'query'
+    )
+    guardFirestorePromise(binding as any, context)
     return enhanceFirestoreRead(binding as any, {
       active,
       kind: 'collection',

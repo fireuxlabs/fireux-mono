@@ -1,6 +1,7 @@
 <template>
   <section class="console-surface">
     <ConsoleKitchenOperationsOrdersToolbar />
+    <ConsoleKitchenOperationsOrdersServiceState />
     <ConsoleKitchenOperationsOrdersPass />
     <ConsoleKitchenOperationsOrdersBoardToolbar />
     <ConsoleKitchenOperationsOrdersQueue />

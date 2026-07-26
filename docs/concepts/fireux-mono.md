@@ -1,5 +1,5 @@
 # FireUX Mono concept map
-Updated: 2026-07-22
+Updated: 2026-07-26
 Ref: 796952bf0
 Role: map, not canon
 
@@ -66,6 +66,12 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 
 ## New project app completion
 
+- When the App has a public/custom hostname, pass it as hostname-only to the
+  canonical creation workflow. Confirm both that hostname and the derived
+  Firebase Hosting `<site-id>.web.app` hostname in the single Firebase
+  Authentication decision; pass `--firebase-site` when the site id differs
+  from the scaffold slug. Automated creation must provide the corresponding
+  yes/no flag; it may not silently skip or mutate remote Auth configuration.
 - Add the app to `scripts/_lib/app-registry.mjs` with its unique port, workspace, identity, role, consoles, and focused smoke routes.
 - Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root dev/kill scripts, `.vscode/tasks.json`, or `.vscode/launch.json`.
 - Add the app to the app list in `tools/vscode-fireux-toolbar/extension.js` so VS Code exposes the standard start control and running spinner.

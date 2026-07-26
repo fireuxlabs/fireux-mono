@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-24
+// last_used: 2026-07-26
 // usage_note: run through pnpm guard; protects reviewed Sproochli copy authority, language-state assets, and the Interlaken pilot.
 
 import assert from 'node:assert/strict'
@@ -8,6 +8,7 @@ import path from 'node:path'
 import process from 'node:process'
 import {
   defineSproochliCopyPack,
+  defineSproochliCopyProfile,
   defineSproochliDialectProfile,
   formatSproochliCopy,
   resolveApprovedSproochliCopy,
@@ -35,6 +36,7 @@ import {
   INTERLAKEN_SITE_DEFAULT_LANGUAGE,
   INTERLAKEN_SITE_LANGUAGE_CODES,
   INTERLAKEN_SITE_LANGUAGE_OPTIONS,
+  isInterlakenSiteLanguageAvailableOnPath,
   normalizeInterlakenSiteLanguage,
   resolveInterlakenSiteLanguage,
 } from '../../projects/misebox/interlaken-essen/app/content/sproochli-site.ts'
@@ -63,6 +65,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/misebox/interlaken-essen/app/composables/useInterlakenSproochli.ts'
   )
+  const interlakenCopyComposable = read(
+    repoRoot,
+    'projects/misebox/interlaken-essen/app/composables/useInterlakenCopy.ts'
+  )
   const interlakenMarketplaceLayout = read(
     repoRoot,
     'projects/misebox/interlaken-essen/app/layouts/marketplace.vue'
@@ -74,6 +80,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const interlakenPublicCopy = read(
     repoRoot,
     'projects/misebox/interlaken-essen/app/content/sproochli-copy-public.ts'
+  )
+  const interlakenOnboardingModal = read(
+    repoRoot,
+    'projects/misebox/interlaken-essen/app/components/Market/OnboardingModal.vue'
   )
   const interlakenManifest = read(
     repoRoot,
@@ -123,6 +133,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const defaultLanguageMark = read(
     repoRoot,
     'packages/extensions/fireux-sproochli/src/runtime/components/Sproochli/DefaultLanguageMark.vue'
+  )
+  const sproochliWordmark = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/components/Sproochli/Wordmark.vue'
   )
   const assetsPage = read(
     repoRoot,
@@ -176,21 +190,28 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(languages, /\|\s*'gsw'/)
   assert.match(endpoint, /sourceLanguage !== 'en'/)
   assert.match(endpoint, /targetLanguage !== 'gsw'/)
+  assert.match(endpoint, /translations:\s*{\s*gsw:/s)
   assert.match(endpoint, /status: 'ai_draft'/)
+  assert.doesNotMatch(endpoint, /target_text/)
   assert.doesNotMatch(endpoint, /translateSproochliTextBatch|google/i)
   assert.match(pilot, /defineSproochliCopyPack/)
   assert.equal(
-    interlakenCopyPack.profile.id,
+    interlakenCopyPack.profiles.gsw.id,
     'interlaken-berner-oberland-v1'
   )
+  assert.equal(
+    interlakenCopyPack.profiles.de.id,
+    'interlaken-swiss-standard-german-v1'
+  )
+  assert.equal(interlakenCopyPack.profiles.de.locale, 'de-CH')
   assert.equal(INTERLAKEN_SITE_DEFAULT_LANGUAGE, 'gsw')
   assert.deepEqual(
     INTERLAKEN_SITE_LANGUAGE_CODES,
-    ['gsw', 'en']
+    ['gsw', 'de', 'en']
   )
   assert.deepEqual(
     INTERLAKEN_SITE_LANGUAGE_OPTIONS.map(option => option.code),
-    ['gsw', 'en']
+    ['gsw', 'de', 'en']
   )
   assert.ok(
     INTERLAKEN_SITE_LANGUAGE_OPTIONS.every(
@@ -201,22 +222,101 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     INTERLAKEN_SITE_LANGUAGE_OPTIONS.some(option => !option.code),
     false
   )
+  assert.equal(normalizeInterlakenSiteLanguage('de'), 'de')
+  assert.equal(normalizeInterlakenSiteLanguage('de-CH'), '')
   assert.equal(normalizeInterlakenSiteLanguage('en'), 'en')
   assert.equal(normalizeInterlakenSiteLanguage('fr'), '')
   assert.equal(normalizeInterlakenSiteLanguage('es'), '')
   assert.equal(resolveInterlakenSiteLanguage('unsupported'), 'gsw')
+  assert.equal(
+    isInterlakenSiteLanguageAvailableOnPath('de', '/'),
+    true
+  )
+  assert.equal(
+    isInterlakenSiteLanguageAvailableOnPath(
+      'de',
+      '/marktplatz/anja-honig'
+    ),
+    true
+  )
+  assert.equal(
+    isInterlakenSiteLanguageAvailableOnPath('de', '/blog'),
+    false
+  )
+  assert.equal(
+    isInterlakenSiteLanguageAvailableOnPath('de', '/auth'),
+    false
+  )
   assert.equal(interlakenCopy('buy', 'gsw'), 'Choufe')
+  assert.equal(interlakenCopy('buy', 'de'), 'Kaufen')
   assert.equal(interlakenCopy('buy', 'en'), 'Buy')
+  for (const removedKey of [
+    'onboarding_locality_body',
+    'onboarding_offer_body',
+  ]) {
+    assert.equal(
+      Object.hasOwn(interlakenCopyPack.entries, removedKey),
+      false
+    )
+    assert.doesNotMatch(interlakenOnboardingModal, new RegExp(removedKey))
+  }
+  assert.equal(
+    interlakenCopy('onboarding_introduction_placeholder', 'en'),
+    'My product is…'
+  )
+  assert.equal(
+    interlakenCopy('onboarding_introduction_placeholder', 'de'),
+    'Mein Produkt ist …'
+  )
+  assert.equal(
+    interlakenCopy('onboarding_introduction_placeholder', 'gsw'),
+    'Mis Produkt isch …'
+  )
+  assert.match(
+    interlakenOnboardingModal,
+    /copy\('onboarding_introduction_placeholder'\)/
+  )
   assert.ok(Object.keys(interlakenCopyPack.entries).length >= 100)
   assert.ok(
     Object.values(interlakenCopyPack.entries).every(
       entry =>
-        entry.status === 'approved' &&
         entry.source_language === 'en' &&
-        entry.target_language === 'gsw' &&
-        entry.provenance.reviewed_by === 'interlaken-essen' &&
-        Boolean(entry.provenance.reviewed_at)
+        ['de', 'gsw'].every((language) => {
+          const translation = entry.translations[language]
+          return (
+            translation?.status === 'approved' &&
+            translation.profile_id ===
+              interlakenCopyPack.profiles[language].id &&
+            translation.provenance.reviewed_by === 'interlaken-essen' &&
+            Boolean(translation.provenance.reviewed_at)
+          )
+        })
     )
+  )
+  assert.ok(
+    Object.values(interlakenCopyPack.entries).every(
+      entry =>
+        entry.translations.de.provenance.kind === 'ai' &&
+        entry.translations.de.provenance.provider === 'openai-codex' &&
+        Boolean(entry.translations.de.provenance.generated_at) &&
+        entry.translations.gsw.provenance.kind === 'human'
+    )
+  )
+  assert.doesNotMatch(
+    Object.values(interlakenCopyPack.entries)
+      .map(entry => entry.translations.de.text)
+      .join('\n'),
+    /ß/
+  )
+  assert.doesNotMatch(
+    Object.values(interlakenCopyPack.entries)
+      .flatMap(entry => [
+        entry.source_text,
+        ...Object.values(entry.translations)
+          .map(translation => translation?.text || ''),
+      ])
+      .join('\n'),
+    /Your location helps us keep the food truly local|From your fridge to your kitchen table|Anything goes – your products should feel like you|Din Ort hilft üs, s Futter würkli lokal z halte|Vom Chüelschrank bis zum Chuchi-Tisch|Ganz frei – dini Produkt söue zu dir passe/
   )
   for (const [key, entry] of Object.entries(interlakenCopyPack.entries)) {
     const variables = Object.fromEntries(
@@ -224,15 +324,34 @@ export async function run({ repoRoot = process.cwd() } = {}) {
         .map(match => [match[1], 'test'])
     )
     assert.equal(typeof interlakenCopy(key, 'en', variables), 'string')
+    assert.equal(typeof interlakenCopy(key, 'de', variables), 'string')
     assert.equal(typeof interlakenCopy(key, 'gsw', variables), 'string')
   }
   assert.match(interlakenSiteLanguage, /useCookie<string>/)
   assert.match(interlakenSiteLanguage, /route\.query\.sproochli/)
+  assert.match(
+    interlakenSiteLanguage,
+    /isInterlakenSiteLanguageAvailableOnPath/
+  )
+  assert.match(
+    interlakenSiteLanguage,
+    /watch\(\s*availableRequestedLanguage/
+  )
+  assert.match(interlakenCopyComposable, /de: 'de-CH'/)
+  assert.match(interlakenCopyComposable, /en: 'en-GB'/)
+  assert.match(interlakenCopyComposable, /gsw: 'gsw-CH'/)
   assert.match(interlakenMarketplaceLayout, /SproochliLanguageTrigger/)
   assert.match(interlakenMarketplaceLayout, /siteSproochli\.languageOptions/)
   assert.match(interlakenMarketplaceLayout, /siteSproochli\.selectedLanguage/)
-  assert.match(interlakenMarketplaceLayout, /language_trigger_heading/)
   assert.match(interlakenMarketplaceLayout, /language_trigger_current/)
+  assert.match(
+    interlakenMarketplaceLayout,
+    /language_trigger_visit_sproochli/
+  )
+  assert.doesNotMatch(
+    interlakenMarketplaceLayout,
+    /language_trigger_(heading|description)/
+  )
   assert.match(interlakenApp, /useInterlakenCopy/)
   assert.match(interlakenApp, /htmlAttrs/)
   assert.match(interlakenApp, /lang: locale\.value/)
@@ -242,7 +361,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       consumer => consumer.includes('useInterlakenCopy')
     )
   )
-  assert.match(interlakenPublicCopy, /language_trigger_description/)
+  assert.match(
+    interlakenPublicCopy,
+    /language_trigger_visit_sproochli/
+  )
+  assert.match(interlakenPublicCopy, /de: 'Sproochli besuchen'/)
+  assert.doesNotMatch(
+    interlakenPublicCopy,
+    /language_trigger_(heading|description)/
+  )
   assert.match(interlakenManifest, /Lokali Läbensmittel/)
   assert.match(interlakenManifest, /"lang": "gsw-CH"/)
   assert.doesNotMatch(interlakenManifest, /Lokale Lebensmittel/)
@@ -251,6 +378,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     interlakenMeta,
     /defaultCopy\('app_meta_seo_description'\)/
   )
+  assert.match(interlakenMeta, /copy\.status !== 'approved'/)
+  assert.doesNotMatch(interlakenMeta, /target_text/)
   assert.doesNotMatch(interlakenMeta, /Local food, offered nearby/)
   assert.match(
     interlakenFutter,
@@ -262,9 +391,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(interlakenFutter, /feed_launch_title/)
   assert.match(interlakenFeed, /blogPost\.featuredImage/)
+  assert.match(interlakenFeed, /blogPost\.available_languages\.includes/)
+  assert.match(interlakenFeed, /v-if="resolvedFutterPosts\.length"/)
   assert.match(
     interlakenStyles,
     /button\.market-language\.sproochli-language-trigger--emoji/
+  )
+  assert.match(
+    interlakenStyles,
+    /\.market-home__feed-wrap:not\(:has\(\.market-feed\)\)/
+  )
+  assert.match(
+    interlakenStyles,
+    /\.market-browse__columns:not\(:has\(> \.market-feed\)\)/
   )
   assert.equal(
     existsSync(
@@ -296,10 +435,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(translationReadme, /does not own reviewed authored copy/)
   assert.match(languageTrigger, /pageHasMixedSource/)
   assert.match(languageTrigger, /SproochliDefaultLanguageMark/)
+  assert.match(languageTrigger, /SproochliWordmark/)
+  assert.match(languageTrigger, /sproochliProviderBaseUrl/)
   assert.match(languageTrigger, /copy\?: Partial<SproochliLanguageTriggerCopy>/)
-  assert.match(languageTrigger, /triggerCopy\.heading/)
-  assert.match(languageTrigger, /triggerCopy\.description/)
   assert.match(languageTrigger, /triggerCopy\.cached/)
+  assert.match(languageTrigger, /triggerCopy\.visitSproochli/)
+  assert.match(languageTrigger, /target="_blank"/)
+  assert.match(languageTrigger, /rel="noopener noreferrer"/)
+  assert.doesNotMatch(
+    languageTrigger,
+    /Choose how to read this content/
+  )
   assert.match(languageTrigger, /sproochli-language-trigger--emoji/)
   assert.match(languageTrigger, /background: transparent !important/)
   assert.doesNotMatch(languageTrigger, /transform:\s*scale/)
@@ -334,6 +480,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     assert.ok(defaultLanguageMark.includes(signature))
     assert.ok(defaultAsset.includes(signature))
   }
+  for (const signature of ['#7C3AED', '#FFF4DE', '#F05F52']) {
+    assert.ok(sproochliWordmark.includes(signature))
+  }
+  assert.match(sproochliWordmark, />\s*sproochli\s*</)
   assert.equal(
     existsSync(
       path.join(
@@ -500,40 +650,67 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     style: 'Readable',
     glossary: {},
   })
+  const germanProfile = defineSproochliCopyProfile({
+    id: 'test-german-profile',
+    language_code: 'de',
+    locale: 'de-CH',
+    region: 'Switzerland',
+    style: 'Professional Swiss Standard German',
+    glossary: {},
+  })
   const approved = defineSproochliCopyPack({
     id: 'test-pack',
-    profile,
+    profiles: {
+      de: germanProfile,
+      gsw: profile,
+    },
     entries: {
       buy: {
         key: 'buy',
         source_language: 'en',
         source_text: 'Buy',
-        target_language: 'gsw',
-        target_text: 'Choufe',
-        profile_id: profile.id,
-        status: 'approved',
-        provenance: { kind: 'human', reviewed_by: 'reviewer' },
+        translations: {
+          de: {
+            text: 'Kaufen',
+            profile_id: germanProfile.id,
+            status: 'approved',
+            provenance: { kind: 'human', reviewed_by: 'reviewer' },
+          },
+          gsw: {
+            text: 'Choufe',
+            profile_id: profile.id,
+            status: 'approved',
+            provenance: { kind: 'human', reviewed_by: 'reviewer' },
+          },
+        },
       },
     },
   })
   assert.equal(resolveApprovedSproochliCopy(approved, 'buy'), 'Choufe')
+  assert.equal(
+    resolveApprovedSproochliCopy(approved, 'buy', 'de'),
+    'Kaufen'
+  )
   assert.equal(resolveApprovedSproochliCopy(approved, 'buy', 'en'), 'Buy')
   assert.equal(formatSproochliCopy('Hello {name}', { name: 'Ada' }), 'Hello Ada')
   assert.throws(() => formatSproochliCopy('Hello {name}'))
   assert.throws(() =>
     defineSproochliCopyPack({
       id: 'bad-token-pack',
-      profile,
+      profiles: { gsw: profile },
       entries: {
         greeting: {
           key: 'greeting',
           source_language: 'en',
           source_text: 'Hello {name}',
-          target_language: 'gsw',
-          target_text: 'Hoi {person}',
-          profile_id: profile.id,
-          status: 'approved',
-          provenance: { kind: 'human', reviewed_by: 'reviewer' },
+          translations: {
+            gsw: {
+              text: 'Hoi {person}',
+              profile_id: profile.id,
+              status: 'approved',
+              provenance: { kind: 'human', reviewed_by: 'reviewer' },
+            },
+          },
         },
       },
     })
@@ -542,9 +719,37 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     resolveApprovedSproochliCopy(
       {
         ...approved,
-        entries: { buy: { ...approved.entries.buy, status: 'ai_draft' } },
+        entries: {
+          buy: {
+            ...approved.entries.buy,
+            translations: {
+              ...approved.entries.buy.translations,
+              gsw: {
+                ...approved.entries.buy.translations.gsw,
+                status: 'ai_draft',
+              },
+            },
+          },
+        },
       },
       'buy'
+    )
+  )
+  assert.throws(() =>
+    resolveApprovedSproochliCopy(
+      {
+        ...approved,
+        entries: {
+          buy: {
+            ...approved.entries.buy,
+            translations: {
+              gsw: approved.entries.buy.translations.gsw,
+            },
+          },
+        },
+      },
+      'buy',
+      'de'
     )
   )
 }

@@ -1,9 +1,16 @@
 <template>
   <section class="console-surface">
     <UPageCard
-      v-if="!selectedSupplier"
+      v-if="!supplierId"
       title="No supplier selected"
       description="Select a supplier before editing its identity."
+      variant="subtle"
+    />
+
+    <UPageCard
+      v-else-if="!selectedSupplier"
+      title="Loading supplier identity"
+      description="Restoring the selected supplier."
       variant="subtle"
     />
 

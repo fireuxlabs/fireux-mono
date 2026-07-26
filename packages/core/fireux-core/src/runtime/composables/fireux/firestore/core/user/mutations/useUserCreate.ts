@@ -1,11 +1,8 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: self-create only an unprivileged runtime App membership.
 // Concurrent edit — 2026-07-20 16:37 CEST — Repo Efficiency Pass 1 of 6: distinguish fresh bootstrap from a failed App-status check.
 
-import { doc, getDoc } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { fetchCurrentAppContext } from '../../../../app/currentAppContext'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { AppStorage } from '../../../../../../models/core/app.model'
-import { UserAppStorage } from '../../../../../../models/core/user.model'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
   createCoreUserDocument,
@@ -115,25 +112,13 @@ export function useUserCreate() {
     // Sign-in should not mutate existing membership/admin roles.
     // Only create app membership when the app-scoped overlay is missing.
     let shouldCreateMembership = false
-    let membershipExists = false
-    try {
-      const db = useFirestore()
-      const appUserSnap = await getDoc(
-        doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)
+    const appContext = await fetchCurrentAppContext(auth)
+    if (appContext.appId !== appId) {
+      throw new Error(
+        '[useUserCreate] Current App context does not match the runtime App.'
       )
-
-      if (appUserSnap.exists()) {
-        membershipExists = true
-      }
-    } catch (error) {
-      if (import.meta.dev) {
-        console.warn('[useUserCreate] failed to inspect existing membership role', {
-          uid,
-          appId,
-          error,
-        })
-      }
     }
+    const membershipExists = appContext.membership !== null
 
     // Config declares the bootstrap/UX intent. The canonical App's persisted
     // self_join_enabled field remains the trusted server enforcement policy.

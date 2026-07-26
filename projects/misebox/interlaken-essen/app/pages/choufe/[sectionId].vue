@@ -10,12 +10,17 @@
       <h1 :id="titleId">{{ copy(section.labelKey) }}</h1>
       <p class="market-intro">{{ copy(section.descriptionKey) }}</p>
       <div
-        v-if="sectionSellers.length"
+        v-if="sectionStores.length || sectionPreviewSellers.length"
         class="market-category-sellers"
         :aria-label="copy('storefront_category_sellers')"
       >
+        <MarketplaceCanonicalSellerCard
+          v-for="store in sectionStores"
+          :key="store.id"
+          :store="store"
+        />
         <MarketplaceSellerCard
-          v-for="seller in sectionSellers"
+          v-for="seller in sectionPreviewSellers"
           :key="seller.id"
           :seller="seller"
         />
@@ -31,6 +36,9 @@ import { findMarketSection } from '../../content/market-sections'
 import {
   marketplacePreviewSellers,
 } from '../../content/marketplace-preview'
+import type {
+  PublicMarketplaceStoreListResponse,
+} from 'fireux-marketplace/runtime/models/marketplace-api.model'
 
 definePageMeta({
   layout: 'marketplace',
@@ -49,9 +57,22 @@ if (!section) {
 }
 
 const titleId = `section-${section.id}`
-const sectionSellers = marketplacePreviewSellers.filter(seller =>
-  seller.categoryIds.includes(section.id)
+const { data } = await useFetch<PublicMarketplaceStoreListResponse>(
+  '/api/public/marketplace/stores',
+  { default: () => ({ items: [], truncated: false }) }
 )
+const sectionStores = computed(() =>
+  (data.value?.items || []).filter(store =>
+    store.section_ids.includes(section.id)
+  )
+)
+const sectionPreviewSellers = computed(() => {
+  const canonicalIds = new Set(sectionStores.value.map(store => store.id))
+  return marketplacePreviewSellers.filter(seller =>
+    seller.categoryIds.includes(section.id) &&
+    !canonicalIds.has(seller.id)
+  )
+})
 
 useSeoMeta({
   title: () => `${copy(section.labelKey)} – Interlaken Essen`,

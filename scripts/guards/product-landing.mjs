@@ -16,6 +16,8 @@ const CORE_PREVIEW_FRAME_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductPreviewFrame.vue'
 const MISEBOX_ADAPTER_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue'
+const MISEBOX_PAGE_PATH =
+  'projects/misebox/misebox-app/app/pages/index.vue'
 const MISEBOX_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Preview.vue'
 const MISEBOX_CONSOLE_PREVIEW_PATH =
@@ -28,6 +30,8 @@ const MISEBOX_JOBS_LAYOUT_PATH =
   'projects/misebox/misebox-app/app/layouts/misebox-jobs.vue'
 const FIREUX_ADAPTER_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/Index.vue'
+const FIREUX_PAGE_PATH =
+  'projects/fireux/fireux-app/app/pages/index.vue'
 const FIREUX_PREVIEW_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/Preview.vue'
 const MOBILE_FIRST_MARKER =
@@ -369,14 +373,27 @@ export async function run(ctx) {
   const appCollection = read(repoRoot, CORE_APP_COLLECTION_PATH)
   const previewFrame = read(repoRoot, CORE_PREVIEW_FRAME_PATH)
   const miseboxAdapter = read(repoRoot, MISEBOX_ADAPTER_PATH)
+  const miseboxPage = read(repoRoot, MISEBOX_PAGE_PATH)
   const miseboxPreview = read(repoRoot, MISEBOX_PREVIEW_PATH)
   const miseboxConsolePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
   const miseboxMeta = read(repoRoot, MISEBOX_META_PATH)
   const miseboxJobsMiddleware = read(repoRoot, MISEBOX_JOBS_MIDDLEWARE_PATH)
   const miseboxJobsLayout = read(repoRoot, MISEBOX_JOBS_LAYOUT_PATH)
   const fireuxAdapter = read(repoRoot, FIREUX_ADAPTER_PATH)
+  const fireuxPage = read(repoRoot, FIREUX_PAGE_PATH)
   const fireuxPreview = read(repoRoot, FIREUX_PREVIEW_PATH)
   const violations = []
+
+  for (const [filePath, source] of [
+    [MISEBOX_PAGE_PATH, miseboxPage],
+    [FIREUX_PAGE_PATH, fireuxPage],
+  ]) {
+    if (!/^<template\b[^>]*>\s*<(?:div|main|section|article)\b/m.test(source)) {
+      violations.push(
+        `${filePath}: shared page transition requires one real root DOM element`
+      )
+    }
+  }
 
   checkMobileFirst({
     filePath: CORE_PATH,

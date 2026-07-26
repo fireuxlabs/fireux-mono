@@ -43,6 +43,7 @@ import { run as runComponents } from './guards/components.mjs'
 import { run as runCssSystem } from './guards/css-system.mjs'
 import { run as runConsolePages } from './guards/console-pages.mjs'
 import { run as runConsoleIndexes } from './guards/console-indexes.mjs'
+import { run as runLikeMenuFamily } from './guards/like-menu-family.mjs'
 import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
@@ -85,6 +86,7 @@ const guards = [
   { key: 'css-system', run: runCssSystem },
   { key: 'console-pages', run: runConsolePages },
   { key: 'console-indexes', run: runConsoleIndexes },
+  { key: 'like-menu-family', run: runLikeMenuFamily },
   { key: 'core', run: runCore },
   { key: 'ecosystem', run: runEcosystem },
   { key: 'extensions', run: runExtensions },

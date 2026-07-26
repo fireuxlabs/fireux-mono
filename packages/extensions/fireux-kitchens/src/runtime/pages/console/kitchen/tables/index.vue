@@ -1,32 +1,34 @@
 <template>
-  <UDashboardPanel id="console-kitchen-tables">
-    <template #header>
-      <LayoutsConsoleNavbar title="Kitchen Tables">
-        <template #right>
-          <UButton
-            v-if="canWrite"
-            to="/console/kitchen/tables/edit"
-            size="sm"
-            color="neutral"
-            variant="soft"
-            icon="i-lucide-pencil"
-          >
-            Edit tables
-          </UButton>
-        </template>
-      </LayoutsConsoleNavbar>
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-kitchen-tables">
+      <template #header>
+        <LayoutsConsoleNavbar title="Kitchen Tables">
+          <template #right>
+            <UButton
+              v-if="canWrite"
+              to="/console/kitchen/tables/edit"
+              size="sm"
+              color="neutral"
+              variant="soft"
+              icon="i-lucide-pencil"
+            >
+              Edit tables
+            </UButton>
+          </template>
+        </LayoutsConsoleNavbar>
+      </template>
 
-    <template #body>
-      <section class="space-y-6">
-        <p class="m-0 text-sm text-muted">
-          View table tabs, staged service rounds, and table billing.
-        </p>
+      <template #body>
+        <section class="space-y-6">
+          <p class="m-0 text-sm text-muted">
+            View table tabs, staged service rounds, and table billing.
+          </p>
 
-        <ConsoleKitchenOperationsTables />
-      </section>
-    </template>
-  </UDashboardPanel>
+          <ConsoleKitchenOperationsTables />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

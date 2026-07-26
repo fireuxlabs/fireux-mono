@@ -2,70 +2,64 @@
   <component
     :is="rootComponent"
     v-bind="rootAttrs"
-    class="group block w-full rounded-2xl border border-default bg-default p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/35 hover:bg-elevated hover:shadow-md"
+    class="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-default bg-default text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:bg-elevated hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
     @click="onClick"
   >
-    <div class="flex items-start gap-3">
-      <UAvatar
-        :src="imageUrl || undefined"
+    <div class="aspect-[4/3] overflow-hidden bg-elevated">
+      <img
+        v-if="imageUrl"
+        :src="imageUrl"
         :alt="title"
-        icon="i-lucide-utensils"
-        size="lg"
-        class="shrink-0 ring-1 ring-default"
-      />
+        class="size-full object-cover transition duration-300 group-hover:scale-[1.02]"
+        loading="lazy"
+      >
+      <div
+        v-else
+        class="flex size-full items-center justify-center text-muted"
+        aria-hidden="true"
+      >
+        <UIcon name="i-lucide-utensils" class="size-7" />
+      </div>
+    </div>
 
-      <div class="min-w-0 flex-1 space-y-2">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="truncate text-base font-semibold text-highlighted">
-              {{ title || 'Untitled dish' }}
-            </div>
-            <div
-              v-if="showSubtitle && subtitle"
-              class="truncate text-xs text-muted"
-            >
-              {{ subtitle }}
-            </div>
-          </div>
-        </div>
+    <div class="flex min-w-0 flex-1 flex-col gap-1.5 border-t border-default px-3 py-2.5">
+      <div class="flex min-w-0 items-start gap-2">
+        <h3 class="min-w-0 flex-1 truncate text-sm font-semibold text-highlighted">
+          {{ title || 'Untitled dish' }}
+        </h3>
+        <UIcon
+          v-if="action || (link && to)"
+          :name="action ? 'i-lucide-eye' : 'i-lucide-arrow-right'"
+          class="mt-0.5 size-3.5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
+          aria-hidden="true"
+        />
+      </div>
 
-        <p
-          v-if="showTagline"
-          class="line-clamp-2 min-h-9 text-sm leading-5 text-dimmed"
-          :class="{ italic: !description }"
+      <div class="flex min-w-0 items-center gap-2 text-xs">
+        <span v-if="meta" class="truncate text-muted">
+          {{ meta }}
+        </span>
+        <span
+          v-if="priceLabel"
+          class="ml-auto shrink-0 font-semibold text-toned"
         >
-          {{ description || 'No description yet.' }}
-        </p>
-
-        <div class="flex items-center justify-between gap-3 pt-1 text-xs text-muted">
-          <span class="truncate font-mono">{{ id }}</span>
-          <span
-            v-if="link && to"
-            class="inline-flex items-center gap-1 font-medium text-primary"
-          >
-            Open dish
-            <UIcon
-              name="i-lucide-arrow-right"
-              class="size-3 transition group-hover:translate-x-0.5"
-            />
-          </span>
-        </div>
+          {{ priceLabel }}
+        </span>
       </div>
     </div>
   </component>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, resolveComponent } from 'vue'
 
-import type { DishCard } from '../../../../../../composables/fireux/firestore/dish/useDish'
-
-type Props = Pick<
-  DishCard.Card,
-  'id' | 'to' | 'title' | 'subtitle' | 'imageUrl' | 'description' | 'meta'
-> & {
-  showSubtitle?: boolean
-  showTagline?: boolean
+type Props = {
+  id: string
+  to?: string
+  title: string
+  imageUrl?: string
+  meta?: string
+  priceLabel?: string
   link?: boolean
   action?: boolean
 }
@@ -75,17 +69,26 @@ const emit = defineEmits<{
 }>()
 
 const props = withDefaults(defineProps<Props>(), {
-  showSubtitle: false,
-  showTagline: true,
+  to: '',
+  imageUrl: '',
+  meta: '',
+  priceLabel: '',
   link: false,
   action: false,
 })
 
-const rootComponent = computed(() => props.link && props.to ? 'NuxtLink' : 'button')
+const nuxtLink = resolveComponent('NuxtLink')
+const rootComponent = computed(() => {
+  if (props.link && props.to) return nuxtLink
+  if (props.action) return 'button'
+  return 'article'
+})
 const rootAttrs = computed(() =>
   props.link && props.to
     ? { to: props.to }
-    : { type: 'button' }
+    : props.action
+      ? { type: 'button' }
+      : {}
 )
 
 const onClick = () => {

@@ -11,12 +11,13 @@ const fireuxConfig = defineFireuxConfig({
   role: 'tenant',
   selfJoinEnabled: true,
   consoles: [],
-  modules: ['fireux-sproochli'],
+  modules: ['fireux-sproochli', 'fireux-marketplace'],
   authDefaultMode: 'sign-up',
   authCompletion: {
-    path: '/blog',
+    path: '/mis',
     title: 'Merci fürs Registriere!',
-    description: 'Du bisch derbi. Mir leite di grad zum Futter wiiter.',
+    description: 'Du bisch derbi. Mir leite di grad zu dim Platz wiiter.',
+    actionLabel: 'Mis Interlaken Essen',
     delayMs: 1800,
   },
   authOnboarding: {

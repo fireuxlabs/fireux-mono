@@ -1,14 +1,16 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
-  <UDashboardPanel id="console-kitchen-menu-source">
-    <template #header>
-      <LayoutsConsoleNavbar title="Menu Source" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-kitchen-menu-source">
+      <template #header>
+        <LayoutsConsoleNavbar title="Menu Source" />
+      </template>
 
-    <template #body>
-      <ConsoleKitchenOperationsMenusSource />
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <ConsoleKitchenOperationsMenusSource />
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

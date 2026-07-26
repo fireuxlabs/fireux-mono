@@ -2,9 +2,17 @@
   <section class="console-surface">
     <ConsoleKitchenOperationsMenusWorkspaceHeader />
 
-    <ConsoleKitchenOperationsMenusEditDetails v-if="menu" />
+    <ConsoleKitchenOperationsMenusOverview v-if="menu" />
 
-    <ConsoleKitchenOperationsMenusOrderingServiceHours v-if="menu" />
+    <div
+      v-if="menu && canWrite"
+      class="grid items-start gap-4 xl:grid-cols-2"
+    >
+      <ConsoleKitchenOperationsMenusEditDetails />
+      <ConsoleKitchenOperationsMenusOrderingServiceHours />
+    </div>
+
+    <ConsoleKitchenOperationsMenusDelete v-if="menu" />
 
     <UAlert
       v-else-if="source"
@@ -35,6 +43,7 @@ const {
   menu,
   source,
   menuId,
+  canWrite,
 } = useKitchenConsoleMenu()
 const sourceActions = computed(() => [{
   label: 'Open Source',

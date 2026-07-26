@@ -3,6 +3,7 @@
 import { computed } from 'vue'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
+import { useKitchenConsoleIdentity } from '../../identity/useKitchenConsoleIdentity'
 import { useKitchenConsolePlace } from '../../identity/useKitchenConsolePlace'
 import { useKitchenMenuCollection } from '../../../../firestore/menu/fetch/useKitchenMenuCollection'
 import { useMenuCreate } from '../../../../firestore/menu/mutations/useMenuCreate'
@@ -18,6 +19,11 @@ import {
 } from '../../core/useKitchenConsoleDemoData'
 
 const text = (value: unknown) => String(value ?? '').trim()
+type MenuPreviewDish = {
+  name: string
+  imageUrl: string
+}
+
 const timestampSeconds = (value: unknown) => {
   if (!value || typeof value !== 'object') return 0
   const seconds = Number((value as Record<string, unknown>).seconds)
@@ -34,7 +40,8 @@ const sortMenuSources = (sources: MenuSourceUpload[]) =>
 
 export function useKitchenConsoleMenus() {
   const kitchenConsole = useKitchenConsole()
-  const { place } = useKitchenConsolePlace()
+  const identity = useKitchenConsoleIdentity(kitchenConsole)
+  const { place } = useKitchenConsolePlace(identity)
   const storageKitchenId = kitchenConsole.runtime.storageKitchenId
   const demoData = useKitchenConsoleDemoData(
     computed(() => kitchenConsole.runtime.source.value === 'demo')
@@ -78,7 +85,7 @@ export function useKitchenConsoleMenus() {
   )
   const rawMenus = computed(() =>
     kitchenConsole.runtime.source.value === 'demo'
-      ? demoScenario.value ? [demoScenario.value.kitchenMenu] : []
+      ? demoScenario.value?.menus.map(menu => menu.kitchenMenu) ?? []
       : fetchedMenus.value
   )
   const activeMenus = computed(() =>
@@ -101,6 +108,43 @@ export function useKitchenConsoleMenus() {
       ? []
       : sortMenuSources(sourceUploads.items.value)
   )
+  const menuPreviewDishes = computed(() => {
+    if (kitchenConsole.runtime.source.value !== 'demo') return {}
+
+    const previews: Record<string, MenuPreviewDish> = {}
+    const usedDishIds = new Set<string>()
+
+    for (const menu of demoScenario.value?.menus ?? []) {
+      const linkedDishIds = menu.menuSections
+          .filter(({ section }) => section.status === 'active')
+          .sort((left, right) =>
+            left.section.sort_order - right.section.sort_order
+          )
+          .flatMap(({ items }) =>
+            [...items]
+              .filter(item => item.status === 'active')
+              .sort((left, right) => left.sort_order - right.sort_order)
+          )
+          .map(item => text(item.dish_id))
+          .filter(Boolean)
+      const linkedDishes = linkedDishIds
+        .map(dishId => menu.dishes.find(dish => dish.id === dishId))
+        .filter(dish => Boolean(dish && text(dish.image)))
+      const dish =
+        linkedDishes.find(item => item && !usedDishIds.has(item.id)) ??
+        linkedDishes[0]
+
+      if (!dish) continue
+
+      usedDishIds.add(dish.id)
+      previews[menu.kitchenMenu.id] = {
+        name: text(dish.name) || 'Menu dish',
+        imageUrl: text(dish.image),
+      }
+    }
+
+    return previews
+  })
   const currencyCode = computed(() =>
     readPlaceCurrencyCode(place.value)
   )
@@ -169,6 +213,9 @@ export function useKitchenConsoleMenus() {
     pending,
     menuSources,
     menuSourcesPending: sourceUploads.pending,
+    menuPreviewDishes,
+    getMenuPreviewDish: (menuId: string) =>
+      menuPreviewDishes.value[text(menuId)] ?? null,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
     createMenu,
     menuCreateBlockedMessage,

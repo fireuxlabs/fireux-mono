@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleRecipes } from '../../../../../composables/fireux/console/kitchen/operations/Recipes/useKitchenConsoleRecipes'
+import { provideKitchenRecipesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Recipes/useKitchenRecipesWorkspace'
 
-const { readOnly, canWrite } = useKitchenConsoleRecipes()
+const { readOnly, canWrite } = provideKitchenRecipesWorkspace()
 </script>

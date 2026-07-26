@@ -2,6 +2,10 @@ import { computed } from 'vue'
 import { useKitchenRecipeCollection } from '../../../../firestore/recipe/fetch/useKitchenRecipeCollection'
 import { RecipeStorage, type Recipe } from '../../../../../../models/kitchen/recipe.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../../core/useKitchenConsoleDemoData'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -23,26 +27,62 @@ export function useKitchenConsoleRecipes() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
+  const demoData = useKitchenConsoleDemoData(
+    computed(() => runtime.source.value === 'demo')
+  )
+  const demoScenario = computed(() => findKitchenConsoleDemoScenario(
+    demoData.data.value,
+    kitchenId.value
+  ))
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
-  const { recipes, pending: recipesPending, collectionPath } =
+  const {
+    recipes: fetchedRecipes,
+    pending: recipesPending,
+    error: recipesError,
+    outcome: recipesOutcome,
+    collectionPath: fetchedCollectionPath,
+  } =
     useKitchenRecipeCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
   })
+  const consoleRecipes = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoScenario.value?.recipes ?? []
+      : fetchedRecipes.value
+  )
+  const pending = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoData.pending.value
+      : recipesPending.value
+  )
+  const error = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoData.error.value
+      : recipesError.value
+  )
+  const outcome = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoData.outcome.value
+      : recipesOutcome.value
+  )
+  const collectionPath = computed(() =>
+    runtime.source.value === 'demo'
+      ? `demo/kitchens/${kitchenId.value}/recipes`
+      : fetchedCollectionPath.value
+  )
   const page = useKitchenConsoleReadPage<Recipe>({
     collectionName: RecipeStorage.collection,
     selectedKitchen,
     kitchenId,
-    items: recipes,
-    pending: recipesPending,
+    items: consoleRecipes,
+    pending,
     collectionPath,
   })
-  const consoleRecipes = computed(() => page.collection.value.items)
   const dishes = computed(() => [])
   const count = computed(() => page.collection.value.count)
-  const pending = computed(() => page.collection.value.pending)
   const dishUsageByRecipeId = computed<Record<string, KitchenRecipeDishUsage[]>>(() => ({}))
   const getDishUsageForRecipe = (recipeId: string) =>
     dishUsageByRecipeId.value[normalizeString(recipeId)] || []
@@ -59,6 +99,8 @@ export function useKitchenConsoleRecipes() {
       0
     ),
     pending: pending.value,
+    outcome: outcome.value,
+    hasError: Boolean(error.value),
     readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
@@ -76,6 +118,9 @@ export function useKitchenConsoleRecipes() {
     dishes,
     count,
     pending,
+    error,
+    outcome,
+    demoScenario,
     dishUsageByRecipeId,
     getDishUsageForRecipe,
     debug,

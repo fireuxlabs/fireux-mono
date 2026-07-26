@@ -79,7 +79,7 @@
                 block
                 color="primary"
                 :disabled="creatingUser || Boolean(accountProvisionErrorMessage)"
-                @click="goToDashboard"
+                @click="goToCompletion"
               >
                 {{ authenticatedPrimaryLabel }}
               </UButton>
@@ -254,7 +254,8 @@ const authCompletionDescription = computed(
   () => authCompletion.value?.description || 'We’re taking you to the next page.'
 )
 const authenticatedPrimaryLabel = computed(() =>
-  authCompletion.value ? 'Wiiter zum Futter' : 'Go to dashboard'
+  authCompletion.value?.actionLabel ||
+  (authCompletion.value ? 'Continue' : 'Go to dashboard')
 )
 const completionDelay = computed(() => {
   const delay = authCompletion.value?.delayMs
@@ -327,7 +328,7 @@ watch(
   { immediate: true }
 )
 
-const goToDashboard = async () => {
+const goToCompletion = async () => {
   await router.push(resolvedPostAuthPath.value).catch(() => {})
 }
 

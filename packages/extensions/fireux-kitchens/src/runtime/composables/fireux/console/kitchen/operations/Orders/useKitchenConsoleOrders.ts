@@ -210,6 +210,7 @@ export function useKitchenConsoleOrders() {
     databaseId,
     readOnly,
     canWrite,
+    source: runtime.source,
     orders: consoleOrders,
     visibleOrders,
     ticketOrders,

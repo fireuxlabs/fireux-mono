@@ -39,6 +39,8 @@ export async function run(ctx) {
   for (const index of indexComponents) {
     validateIndex({ ...index, files, repoRoot, violations })
   }
+  validateSharedConsoleSource({ repoRoot, violations })
+  validateSelectionHydrationGates({ files, repoRoot, violations })
 
   if (violations.length) {
     throw new Error(
@@ -62,6 +64,56 @@ export async function run(ctx) {
   console.log(
     '[guard] ✅ console entity indexes use the shared presentation spine'
   )
+}
+
+function validateSharedConsoleSource({ repoRoot, violations }) {
+  const relative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsole.ts'
+  const fullPath = path.join(repoRoot, relative)
+  if (!existsSync(fullPath)) {
+    violations.push(`${relative} (missing shared Console source authority)`)
+    return
+  }
+
+  const source = readFileSync(fullPath, 'utf8')
+  assertMatch(
+    source,
+    /useState<ConsoleSource>\(\s*`fireux-console-\$\{normalizedFamily\}-source-state`/,
+    relative,
+    'Console source must use one family-keyed reactive state across composable instances',
+    violations
+  )
+  assertMatch(
+    source,
+    /sourceState\.value = nextSource\s*sourceCookie\.value = nextSource/,
+    relative,
+    'Console source changes must update shared reactive state and its persistence cookie together',
+    violations
+  )
+}
+
+function validateSelectionHydrationGates({ files, repoRoot, violations }) {
+  for (const fullPath of files) {
+    if (!fullPath.endsWith('.vue')) continue
+
+    const normalized = normalizePath(fullPath)
+    if (
+      !normalized.includes('/components/Console/') &&
+      !normalized.includes('/pages/console/')
+    ) {
+      continue
+    }
+
+    const source = readFileSync(fullPath, 'utf8')
+    const objectGate = source.match(
+      /\bv-if=["']!selected[A-Z][A-Za-z]+["']/
+    )
+    if (!objectGate) continue
+
+    violations.push(
+      `${relativePath(repoRoot, fullPath)} (${objectGate[0]} mistakes asynchronous target hydration for no persisted selection; gate the empty state on the family selection id and render loading separately)`
+    )
+  }
 }
 
 function validateIndex({ fullPath, family, files, repoRoot, violations }) {
@@ -401,6 +453,13 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
     /\bautoSelectTargetId\b/,
     coreRelative,
     'Kitchen core must leave auto-selection to the shared index adapter',
+    violations
+  )
+  assertMatch(
+    indexSource,
+    /const autoSelectTargetId = computed\(\(\) =>\s*consoleRuntime\.isTenant\.value\s*&&\s*targetOutcome\.value === ['"]ready['"]\s*&&\s*targetKitchens\.value\.length === 1/,
+    indexRelative,
+    'Kitchen single-target auto-selection must be tenant-only so a global Demo selection is not overwritten',
     violations
   )
   for (const watchSource of findCallSources(coreSource, 'watch')) {

@@ -1,18 +1,20 @@
 <template>
-  <UDashboardPanel id="console-kitchen-haccp">
-    <template #header>
-      <LayoutsConsoleNavbar title="Kitchen HACCP" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-kitchen-haccp">
+      <template #header>
+        <LayoutsConsoleNavbar title="Kitchen HACCP" />
+      </template>
 
-    <template #body>
-      <section class="space-y-4">
-        <ConsoleKitchenSundriesParked
-          alert-title="Kitchen HACCP is parked"
-          description="This kitchen console route is intentionally hidden until the HACCP workspace is wired."
-        />
-      </section>
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <section class="space-y-4">
+          <ConsoleKitchenSundriesParked
+            alert-title="Kitchen HACCP is parked"
+            description="This kitchen console route is intentionally hidden until the HACCP workspace is wired."
+          />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

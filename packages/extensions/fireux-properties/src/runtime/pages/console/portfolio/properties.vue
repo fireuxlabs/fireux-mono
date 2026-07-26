@@ -1,16 +1,18 @@
 <!-- Concurrent edit — 2026-07-20 16:22 CEST — Extension Console Spine pass: move route access metadata and park the unwired Properties view. -->
 <template>
-  <UDashboardPanel id="console-portfolio-properties">
-    <template #header>
-      <LayoutsConsoleNavbar title="Properties" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-portfolio-properties">
+      <template #header>
+        <LayoutsConsoleNavbar title="Properties" />
+      </template>
 
-    <template #body>
-      <section class="space-y-4">
-        <ConsolePortfolioOperationsProperties />
-      </section>
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <section class="space-y-4">
+          <ConsolePortfolioOperationsProperties />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

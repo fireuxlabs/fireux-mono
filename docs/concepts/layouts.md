@@ -1,6 +1,6 @@
 # Layouts spine map
 
-Updated: 2026-07-23
+Updated: 2026-07-25
 Ref: 796952bf0
 Role: map, not canon
 
@@ -35,26 +35,28 @@ declaring either one universal without render evidence.
 
 ## Current composition lanes
 
-### Slot-rendering leaf layouts
+### Slot-rendering layouts
 
 These layouts consume the page content supplied by the outer Nuxt layout
 composition:
 
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-menu.vue`
+- `packages/core/fireux-core/src/runtime/layouts/console.vue`
 - `projects/fireux/buenohost/app/layouts/property-info.vue`
 
 Their content boundary is `<slot />`. The Menu layout is the clearest package
 example: it owns route-family close chrome while the page remains the content
-owner.
+owner. Console follows the same route-rendering contract: `AppShell` renders
+the route once, while Console owns the selected-target guard and sidebar chrome.
 
 ### Route-rendering shell layouts
 
-Core layouts and several tenant/app layouts currently render `<NuxtPage />`
+Several Core and tenant/app layouts currently render `<NuxtPage />`
 directly:
 
 - `packages/core/fireux-core/src/runtime/layouts/default.vue`
-- `packages/core/fireux-core/src/runtime/layouts/console.vue`
+- `packages/core/fireux-core/src/runtime/layouts/dashboard.vue`
 - `packages/ecosystem/fireux-misebox/src/runtime/layouts/misebox-tenant.vue`
 - `projects/misebox/la-tap-berne/app/layouts/latap-default.vue`
 
@@ -75,7 +77,8 @@ currently uses it.
 | Difference | State | Reason or alignment trigger |
 | --- | --- | --- |
 | Package Menu layouts render `<slot />` | `accepted` | The outer shell supplies page content; the package layout adds route-family chrome without rendering another route tree |
-| Core and several tenant layouts render `<NuxtPage />` | `to-confirm` | It is current working source, but its relationship to `AppShell` must be verified with render-count and nested-route tests before becoming the universal rule |
+| Core Console consumes `<slot />` | `confirmed` | `AppShell` owns the route renderer; a nested Console `NuxtPage` duplicated the transition boundary and could leave stale or blank panels during client navigation |
+| Several Core and tenant layouts render `<NuxtPage />` | `to-confirm` | It is current source outside Console, but its relationship to `AppShell` must be verified with render-count and nested-route tests before becoming the universal rule |
 | Menu layout derives close behavior from route scope | `accepted` | Exit chrome is shared by the entire Menu route family and remains separate from Menu data fetching |
 | App-local branded layouts exist | `accepted` | Brand/navigation chrome can be app-owned; unexplained copies of package chrome remain drift |
 | Mechanically replacing every `<slot />` or `<NuxtPage />` | `drift` | Renderer choice depends on which layer already owns page rendering |

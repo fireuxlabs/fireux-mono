@@ -1,9 +1,16 @@
 <template>
   <section class="console-surface">
     <UPageCard
-      v-if="!selectedPortfolio"
+      v-if="!portfolioId"
       title="No portfolio selected"
       description="Select a portfolio before editing its identity."
+      variant="subtle"
+    />
+
+    <UPageCard
+      v-else-if="!selectedPortfolio"
+      title="Loading portfolio identity"
+      description="Restoring the selected portfolio."
       variant="subtle"
     />
 

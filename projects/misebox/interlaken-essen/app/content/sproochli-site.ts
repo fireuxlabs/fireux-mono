@@ -9,6 +9,7 @@ export const INTERLAKEN_SITE_DEFAULT_LANGUAGE = 'gsw' as const
 
 export const INTERLAKEN_SITE_LANGUAGE_CODES = [
   'gsw',
+  'de',
   'en',
 ] as const satisfies readonly Exclude<SproochliLanguageCode, ''>[]
 
@@ -16,6 +17,13 @@ export type InterlakenSiteLanguage =
   (typeof INTERLAKEN_SITE_LANGUAGE_CODES)[number]
 
 const languageCodeSet = new Set<string>(INTERLAKEN_SITE_LANGUAGE_CODES)
+const standardGermanRoutePrefixes = [
+  '/choufe',
+  '/admin',
+  '/marktplatz',
+  '/mis',
+  '/verchoufe',
+] as const
 const catalogueByCode = new Map(
   SPROOCHLI_LANGUAGE_OPTIONS.map(option => [option.code, option] as const)
 )
@@ -53,4 +61,19 @@ export function resolveInterlakenSiteLanguage(
     normalizeInterlakenSiteLanguage(value) ||
     INTERLAKEN_SITE_DEFAULT_LANGUAGE
   )
+}
+
+export function isInterlakenSiteLanguageAvailableOnPath(
+  language: InterlakenSiteLanguage,
+  path: string
+): boolean {
+  if (language !== 'de') return true
+
+  const normalizedPath = String(path || '/').replace(/\/+$/, '') || '/'
+  return normalizedPath === '/' ||
+    standardGermanRoutePrefixes.some(
+      prefix =>
+        normalizedPath === prefix ||
+        normalizedPath.startsWith(`${prefix}/`)
+    )
 }

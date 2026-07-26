@@ -1,16 +1,18 @@
 <!-- Concurrent edit — 2026-07-20 16:14 CEST — Console Spine project cleanup: adopt route-level console metadata. -->
 <template>
-  <UDashboardPanel id="console-project-ecosystem">
-    <template #header>
-      <LayoutsConsoleNavbar title="Project Ecosystem" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-project-ecosystem">
+      <template #header>
+        <LayoutsConsoleNavbar title="Project Ecosystem" />
+      </template>
 
-    <template #body>
-      <section class="space-y-6">
-        <ConsoleProjectOperationsEcosystem />
-      </section>
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <section class="space-y-6">
+          <ConsoleProjectOperationsEcosystem />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

@@ -28,6 +28,10 @@ const project =
     ? args.project.trim()
     : process.env.FIREBASE_PROJECT_ID || process.env.GCLOUD_PROJECT || ''
 const only = typeof args.only === 'string' && args.only.trim() ? args.only.trim() : ''
+const authDomains =
+  typeof args['auth-domains'] === 'string' && args['auth-domains'].trim()
+    ? args['auth-domains'].trim()
+    : ''
 
 if (args.help || args.h) {
   usage(0)
@@ -65,6 +69,16 @@ run('preflight', 'node', [
   appConfig,
 ])
 
+if (authDomains) {
+  run('sync Firebase Auth domains', 'node', [
+    path.join(repoRoot, 'scripts/sync-firebase-auth-domains.mjs'),
+    '--project',
+    project,
+    '--domains',
+    authDomains,
+  ])
+}
+
 run('build', 'pnpm', ['build'])
 run('prepare firebase output', 'pnpm', ['prepare:firebase-output'])
 
@@ -89,9 +103,9 @@ function usage(exitCode) {
   const stream = exitCode === 0 ? process.stdout : process.stderr
   stream.write(
     [
-      'Usage: node scripts/firebase-deploy.mjs --project <firebase-project> [--config firebase.json] [--only hosting,functions] [--cwd <app-root>]',
+      'Usage: node scripts/firebase-deploy.mjs --project <firebase-project> [--config firebase.json] [--only hosting,functions] [--auth-domains hostname[,hostname]] [--cwd <app-root>]',
       '',
-      'Runs preflight, build, Firebase output preparation, then Firebase CLI deploy with ignored stdin and --non-interactive.',
+      'Runs preflight, optional additive Auth-domain sync, build, Firebase output preparation, then Firebase CLI deploy with ignored stdin and --non-interactive.',
       '',
     ].join('\n')
   )

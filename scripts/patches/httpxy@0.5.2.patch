@@ -1,30 +1,54 @@
 diff --git a/dist/index.mjs b/dist/index.mjs
 --- a/dist/index.mjs
 +++ b/dist/index.mjs
-@@ -227,6 +227,82 @@
+@@ -227,6 +227,106 @@
  	307,
  	308
  ]);
-+const responseUpstreams = new WeakMap();
++const responseStateKey = Symbol.for("httpxy.responseState");
++function getResponseState(res) {
++	let state = res[responseStateKey];
++	if (state) return state;
++	state = {
++		upstreams: new Set(),
++		settlements: new Set()
++	};
++	Object.defineProperty(res, responseStateKey, {
++		configurable: true,
++		value: state
++	});
++	const settle = (error) => {
++		delete res[responseStateKey];
++		for (const upstream of state.upstreams) upstream.destroy(error);
++		state.upstreams.clear();
++		for (const current of state.settlements) {
++			if (error) current.reject(error);
++			else current.resolve();
++		}
++		state.settlements.clear();
++	};
++	res.once("close", () => settle());
++	res.once("error", (error) => settle(error));
++	return state;
++}
 +function trackResponseUpstream(res, upstream) {
 +	if (res.destroyed) {
 +		upstream.destroy();
 +		return;
 +	}
-+	let upstreams = responseUpstreams.get(res);
-+	if (!upstreams) {
-+		upstreams = new Set();
-+		responseUpstreams.set(res, upstreams);
-+		res.once("close", () => {
-+			responseUpstreams.delete(res);
-+			for (const current of upstreams) current.destroy();
-+			upstreams.clear();
-+		});
-+	}
-+	upstreams.add(upstream);
++	const state = getResponseState(res);
++	state.upstreams.add(upstream);
 +	upstream.once("close", () => {
-+		upstreams.delete(upstream);
++		state.upstreams.delete(upstream);
 +	});
++}
++function trackResponseSettlement(res, resolve, reject) {
++	const state = getResponseState(res);
++	const settlement = { resolve, reject };
++	state.settlements.add(settlement);
++	return () => {
++		state.settlements.delete(settlement);
++	};
 +}
 +function streamProxyResponse(proxyRes, res) {
 +	let waitingForDrain = false;
@@ -84,7 +108,7 @@ diff --git a/dist/index.mjs b/dist/index.mjs
  const webIncomingMiddleware = [
  	defineProxyMiddleware((req) => {
  		if ((req.method === "DELETE" || req.method === "OPTIONS") && !req.headers["content-length"]) {
-@@ -280,9 +356,7 @@
+@@ -280,9 +380,7 @@
  		if (options.proxyTimeout) proxyReq.setTimeout(options.proxyTimeout, function() {
  			proxyReq.destroy();
  		});
@@ -95,7 +119,7 @@ diff --git a/dist/index.mjs b/dist/index.mjs
  		const proxyError = createErrorHandler(proxyReq, options.target);
  		req.on("error", proxyError);
  		proxyReq.on("error", proxyError);
-@@ -366,9 +440,7 @@
+@@ -366,9 +464,7 @@
  			if (res.finished) {
  				if (server) server.emit("end", req, res, proxyRes);
  			} else {
@@ -106,7 +130,7 @@ diff --git a/dist/index.mjs b/dist/index.mjs
  				proxyRes.on("close", function() {
  					if (!proxyRes.complete && !res.destroyed) res.destroy();
  				});
-@@ -379,7 +451,7 @@
+@@ -379,7 +475,7 @@
  				proxyRes.on("end", function() {
  					if (server) server.emit("end", req, res, proxyRes);
  				});
@@ -115,3 +139,30 @@ diff --git a/dist/index.mjs b/dist/index.mjs
  			}
  		}
  		proxyReq.on("response", function(proxyRes) {
+@@ -542,16 +638,18 @@
+ 		}
+ 		let _resolve;
+ 		let _reject;
++		let cleanupResponseSettlement = () => {};
+ 		const callbackPromise = new Promise((resolve, reject) => {
+-			_resolve = resolve;
+-			_reject = reject;
+-		});
+-		res.on("close", () => {
+-			_resolve();
+-		});
+-		res.on("error", (error) => {
+-			_reject(error);
++			_resolve = () => {
++				cleanupResponseSettlement();
++				resolve();
++			};
++			_reject = (error) => {
++				cleanupResponseSettlement();
++				reject(error);
++			};
+ 		});
++		cleanupResponseSettlement = trackResponseSettlement(res, _resolve, _reject);
+ 		for (const pass of server._getPasses(type)) {
+ 			let stop;
+ 			try {

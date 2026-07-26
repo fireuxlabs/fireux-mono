@@ -1,5 +1,5 @@
 # Demo World and Demo Data spine map
-Updated: 2026-07-22
+Updated: 2026-07-25
 Ref: 796952bf0
 Role: map, not canon
 
@@ -25,6 +25,20 @@ Console Demo Data and a project's public Product Demo.
   authority, dev preview content, test data, or simulation data.
 - A fixture follows the current real entity/record shapes. Real models and
   adapters are authority; the application must never bend around a fixture.
+- Demo aggregation follows the owning domain's operation vocabulary. In
+  Kitchens that means Menu, Dish, Recipe, Mise, root Ingredient usage, and
+  Kitchen-owned Supplier links. Supplier Ingredient coverage, priced Item
+  offers, and `Catalogue` remain Supplier-owned and must not become Kitchen
+  fixture or scenario concepts.
+- The Kitchen Demo World may prove a production graph ahead of persisted model
+  promotion: a Kitchen-scoped Dish Spec consumes measured root Ingredients,
+  stable Prep items, or Recipes; a Menu selects the Dish; and dated Mise tasks
+  produce the required Prep item or Recipe. Mise is work, not a fourth Dish
+  component kind. Menu-item variants and add-ons own their component deltas
+  instead of changing the Dish base Spec.
+- This Demo production graph remains an explicit working seam, not storage
+  canon. Promote it only after the model, collection, Rules, adapter, and guard
+  contract have been agreed together.
 - Reusable fixtures live with their package under `src/runtime/demo`.
 - App-only fixtures live with their project under `app/demo`.
 - An owning Console composable adapter loads fixtures with a dynamic import and

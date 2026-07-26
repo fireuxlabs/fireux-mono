@@ -1,15 +1,17 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <!-- Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: register the focused Delivery settings route. -->
 <template>
-  <UDashboardPanel id="console-kitchen-menu-ordering-delivery">
-    <template #header>
-      <LayoutsConsoleNavbar title="Delivery" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-kitchen-menu-ordering-delivery">
+      <template #header>
+        <LayoutsConsoleNavbar title="Delivery" />
+      </template>
 
-    <template #body>
-      <ConsoleKitchenOperationsMenusOrderingDelivery />
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <ConsoleKitchenOperationsMenusOrderingDelivery />
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

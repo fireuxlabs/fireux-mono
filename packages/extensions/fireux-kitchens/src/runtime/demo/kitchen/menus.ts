@@ -1,10 +1,10 @@
-// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: define a current-model Dish and Menu catalogue with valid cross-record references.
-// Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: give Deanos and Garden Room distinct, reference-complete catalogues.
-// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: separate the smash-burger and polished restaurant catalogues.
-// Concurrent edit — 2026-07-22 15:09 CEST — Misebox Restaurant catalogue pass: expand the polished Demo to seven fully pictured sections.
+// Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: define current-model Dish and Menu fixtures with valid cross-record references.
+// Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: give Deanos and Garden Room distinct, reference-complete Menus.
+// Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: separate the smash-burger and polished restaurant Menus.
+// Concurrent edit — 2026-07-22 15:09 CEST — Misebox Restaurant Menu pass: expand the polished Demo to seven fully pictured sections.
 // Concurrent edit — 2026-07-22 15:27 CEST — Demo image review: align each generated photograph with its Dish identity and copy.
-// Concurrent edit — 2026-07-22 18:03 CEST — Deanos catalogue pass: build a focused four-section fast-food Menu with coherent Dish photography.
-// Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add a complete green-and-yellow pizzeria catalogue in the shared Demo shape.
+// Concurrent edit — 2026-07-22 18:03 CEST — Deanos Menu pass: build a focused four-section fast-food Menu with coherent Dish photography.
+// Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add a complete green-and-yellow pizzeria Menu in the shared Demo shape.
 import { DishModel, type Dish } from '../../models/kitchen/dish.model'
 import {
   KitchenMenuModel,
@@ -22,6 +22,8 @@ import {
 import type { Menu } from '../../models/kitchen/menu/menu.model'
 import {
   deanosKitchenDemoIdentity,
+  deanosPartyMenuDemoIdentity,
+  deanosXmasMenuDemoIdentity,
   kitchenDemoAssetBase,
   kitchenDemoCreated,
   kitchenDemoUpdated,
@@ -29,8 +31,8 @@ import {
   pizzaTheActionKitchenDemoIdentity,
 } from './fixtures'
 import type {
-  KitchenDemoCatalogue,
   KitchenDemoIdentity,
+  KitchenDemoMenu,
   KitchenDemoMenuSection,
 } from './types'
 
@@ -130,13 +132,13 @@ const menuItem = (
 
 const deanosRootMenu = rootMenu(
   deanosKitchenDemoIdentity,
-  'Deanos Smash Burger menu',
+  'Main Menu',
   'Lace-edged smash burgers, crispy chicken, loaded sides and hand-spun shakes.'
 )
 
 const deanosAssetBase = `${kitchenDemoAssetBase}/deanos`
 
-export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
+export const deanosKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: deanosRootMenu,
   kitchenMenu: kitchenMenu(deanosKitchenDemoIdentity, deanosRootMenu, [
     {
@@ -173,7 +175,7 @@ export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
     {
       id: 'double-trouble',
       name: 'Double Trouble',
-      description: 'Three smashed patties, American cheese, caramelised onions, pickles and smoky sauce.',
+      description: 'Two smashed patties, American cheese, caramelised onions, pickles and smoky sauce.',
       item_kind: 'food',
       image: `${deanosAssetBase}/double-trouble.jpg`,
     },
@@ -222,7 +224,7 @@ export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
     {
       id: 'onion-rings',
       name: 'Crispy onion rings',
-      description: 'A tall stack of crunchy beer-battered onion rings.',
+      description: 'A tall stack of onion rings in Deanos crispy batter.',
       item_kind: 'food',
       image: `${deanosAssetBase}/onion-rings.jpg`,
     },
@@ -392,6 +394,374 @@ export const deanosKitchenDemoCatalogue: KitchenDemoCatalogue = {
   ],
 }
 
+const deanosPartyRootMenu = rootMenu(
+  deanosPartyMenuDemoIdentity,
+  'Party Menu',
+  'A generous buffet spread of smash burger sliders, crispy sides and drinks, sized for the number of guests.'
+)
+
+export const deanosPartyDemoMenu: KitchenDemoMenu = {
+  rootMenu: deanosPartyRootMenu,
+  kitchenMenu: kitchenMenu(
+    deanosPartyMenuDemoIdentity,
+    deanosPartyRootMenu,
+    [
+      {
+        type: 'eat_in',
+        fulfilment: {
+          handoff_instructions: 'Watch the screen for your party tray number.',
+        },
+      },
+      {
+        type: 'collection',
+        asap_enabled: true,
+        fulfilment: {
+          handoff_instructions: 'Collect your party order from the counter.',
+        },
+        customer: {
+          required_fields: ['name', 'phone'],
+        },
+      },
+    ]
+  ),
+  dishes: dishes(deanosPartyMenuDemoIdentity, [
+    {
+      id: 'classic-smash-slider-platter',
+      name: 'Classic smash slider platter',
+      description: 'Seven mini Deanos smash burgers arranged on one party platter.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/party-classic-smash-slider-platter-7.jpg`,
+    },
+    {
+      id: 'hot-honey-chicken-slider-platter',
+      name: 'Hot honey chicken slider platter',
+      description: 'Seven mini hot honey chicken burgers arranged on one party platter.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/party-hot-honey-slider-platter-7.jpg`,
+    },
+    {
+      id: 'cauliflower-slider-platter',
+      name: 'Crispy cauliflower slider platter',
+      description: 'Seven mini crispy cauliflower burgers arranged on one party platter.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/party-cauliflower-slider-platter-7.jpg`,
+    },
+    {
+      id: 'party-fries-tray',
+      name: 'Skin-on fries sharing tray',
+      description: 'A buffet tray of golden skin-on fries with flaky sea salt.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/party-fries-sharing-platter.jpg`,
+    },
+    {
+      id: 'party-onion-ring-platter',
+      name: 'Crispy onion ring platter',
+      description: 'A buffet platter of onion rings in Deanos crispy batter.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/party-onion-ring-sharing-platter.jpg`,
+    },
+    {
+      id: 'party-lemonade',
+      name: 'House lemonade dispenser',
+      description: 'Fresh lemon, mint and sparkling water for the buffet table.',
+      item_kind: 'drink',
+      image: `${deanosAssetBase}/party-house-lemonade-dispenser.jpg`,
+    },
+    {
+      id: 'party-strawberry-lime-cooler',
+      name: 'Strawberry & lime cooler dispenser',
+      description: 'Sparkling strawberry, lime and basil cooler for the buffet table.',
+      item_kind: 'drink',
+      image: `${deanosAssetBase}/party-strawberry-lime-dispenser.jpg`,
+    },
+    {
+      id: 'party-cucumber-mint-cooler',
+      name: 'Cucumber & mint cooler dispenser',
+      description: 'A crisp cucumber, mint and lime cooler for the buffet table.',
+      item_kind: 'drink',
+      image: `${deanosAssetBase}/party-cucumber-mint-dispenser.jpg`,
+    },
+  ]),
+  menuSections: [
+    {
+      section: menuSection(
+        deanosPartyMenuDemoIdentity,
+        'slider-platters',
+        'Slider spread',
+        1
+      ),
+      items: [
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'classic-smash-slider-platter-item',
+          section_id: 'slider-platters',
+          dish_id: 'classic-smash-slider-platter',
+          price: 48,
+          price_options: [
+            { label: '1 platter · 7 sliders', quantity: 7, unit: 'sliders', price: 48 },
+            { label: '2 platters · 14 sliders', quantity: 14, unit: 'sliders', price: 92 },
+            { label: '3 platters · 21 sliders', quantity: 21, unit: 'sliders', price: 132 },
+          ],
+          sort_order: 1,
+        }),
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'hot-honey-chicken-slider-platter-item',
+          section_id: 'slider-platters',
+          dish_id: 'hot-honey-chicken-slider-platter',
+          price: 52,
+          price_options: [
+            { label: '1 platter · 7 sliders', quantity: 7, unit: 'sliders', price: 52 },
+            { label: '2 platters · 14 sliders', quantity: 14, unit: 'sliders', price: 100 },
+            { label: '3 platters · 21 sliders', quantity: 21, unit: 'sliders', price: 144 },
+          ],
+          sort_order: 2,
+        }),
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'cauliflower-slider-platter-item',
+          section_id: 'slider-platters',
+          dish_id: 'cauliflower-slider-platter',
+          price: 44,
+          price_options: [
+            { label: '1 platter · 7 sliders', quantity: 7, unit: 'sliders', price: 44 },
+            { label: '2 platters · 14 sliders', quantity: 14, unit: 'sliders', price: 84 },
+            { label: '3 platters · 21 sliders', quantity: 21, unit: 'sliders', price: 120 },
+          ],
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosPartyMenuDemoIdentity,
+        'party-sides',
+        'Buffet sides',
+        2
+      ),
+      items: [
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'party-fries-tray-item',
+          section_id: 'party-sides',
+          dish_id: 'party-fries-tray',
+          price: 32,
+          price_options: [
+            { label: '8 people', quantity: 8, unit: 'people', price: 32 },
+            { label: '16 people', quantity: 16, unit: 'people', price: 60 },
+            { label: '24 people', quantity: 24, unit: 'people', price: 84 },
+          ],
+          sort_order: 1,
+        }),
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'party-onion-ring-platter-item',
+          section_id: 'party-sides',
+          dish_id: 'party-onion-ring-platter',
+          price: 30,
+          price_options: [
+            { label: '8 people', quantity: 8, unit: 'people', price: 30 },
+            { label: '16 people', quantity: 16, unit: 'people', price: 56 },
+            { label: '24 people', quantity: 24, unit: 'people', price: 78 },
+          ],
+          sort_order: 2,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosPartyMenuDemoIdentity,
+        'party-drinks',
+        'Drinks station',
+        3
+      ),
+      items: [
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'party-lemonade-item',
+          section_id: 'party-drinks',
+          dish_id: 'party-lemonade',
+          price: 28,
+          price_options: [
+            { label: '8 people', quantity: 8, unit: 'people', price: 28 },
+            { label: '16 people', quantity: 16, unit: 'people', price: 52 },
+            { label: '24 people', quantity: 24, unit: 'people', price: 72 },
+          ],
+          sort_order: 1,
+        }),
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'party-strawberry-lime-cooler-item',
+          section_id: 'party-drinks',
+          dish_id: 'party-strawberry-lime-cooler',
+          price: 32,
+          price_options: [
+            { label: '8 people', quantity: 8, unit: 'people', price: 32 },
+            { label: '16 people', quantity: 16, unit: 'people', price: 60 },
+            { label: '24 people', quantity: 24, unit: 'people', price: 84 },
+          ],
+          sort_order: 2,
+        }),
+        menuItem(deanosPartyMenuDemoIdentity, {
+          id: 'party-cucumber-mint-cooler-item',
+          section_id: 'party-drinks',
+          dish_id: 'party-cucumber-mint-cooler',
+          price: 30,
+          price_options: [
+            { label: '8 people', quantity: 8, unit: 'people', price: 30 },
+            { label: '16 people', quantity: 16, unit: 'people', price: 56 },
+            { label: '24 people', quantity: 24, unit: 'people', price: 78 },
+          ],
+          sort_order: 3,
+        }),
+      ],
+    },
+  ],
+}
+
+const deanosXmasRootMenu = rootMenu(
+  deanosXmasMenuDemoIdentity,
+  'Xmas Menu',
+  'Christmas burgers stacked with all the trimmings, indulgent festive sides and a winter shake.'
+)
+
+export const deanosXmasDemoMenu: KitchenDemoMenu = {
+  rootMenu: deanosXmasRootMenu,
+  kitchenMenu: kitchenMenu(
+    deanosXmasMenuDemoIdentity,
+    deanosXmasRootMenu,
+    [
+      {
+        type: 'eat_in',
+        fulfilment: {
+          handoff_instructions: 'Watch the screen for your festive order number.',
+        },
+      },
+      {
+        type: 'collection',
+        asap_enabled: true,
+        fulfilment: {
+          handoff_instructions: 'Collect your festive order from the counter.',
+        },
+        customer: {
+          required_fields: ['name', 'phone'],
+        },
+      },
+    ]
+  ),
+  dishes: dishes(deanosXmasMenuDemoIdentity, [
+    {
+      id: 'deanos-christmas-stack',
+      name: 'The Deanos Christmas Stack',
+      description: 'Double smashed beef, smoked bacon, fried Camembert, cranberry relish, rocket and mustard mayo.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-christmas-stack-santa.jpg`,
+    },
+    {
+      id: 'turkey-dinner-burger',
+      name: 'The Turkey Dinner Burger',
+      description: 'Roast turkey, sage and onion stuffing, melted Brie, cranberry relish, gravy mayo and a pig in blanket.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-turkey-dinner-burger-reindeer.jpg`,
+    },
+    {
+      id: 'pigs-in-blankets-waffle-fries',
+      name: 'Pigs in blankets waffle fries',
+      description: 'Crispy waffle fries loaded with chopped pigs in blankets, cheese sauce, rich gravy, cranberry relish and crispy onions.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-pigs-in-blankets-waffle-fries-elf.jpg`,
+    },
+    {
+      id: 'fried-brie-bites',
+      name: 'Fried Brie bites',
+      description: 'Golden crumbed Brie bites served with cranberry and chilli dip.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-fried-brie-bites-snowman.jpg`,
+    },
+    {
+      id: 'stuffed-mini-yorkshires',
+      name: 'Stuffed mini Yorkshires',
+      description: 'Mini Yorkshire puddings filled with pulled turkey, sage stuffing, cranberry relish and gravy.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-stuffed-mini-yorkshires-gingerbread.jpg`,
+    },
+    {
+      id: 'gingerbread-caramel-shake',
+      name: 'Gingerbread caramel shake',
+      description: 'Vanilla soft serve, salted caramel, gingerbread spice and biscuit crumb.',
+      item_kind: 'drink',
+      image: `${deanosAssetBase}/xmas-gingerbread-caramel-shake-subtle.jpg`,
+    },
+  ]),
+  menuSections: [
+    {
+      section: menuSection(
+        deanosXmasMenuDemoIdentity,
+        'festive-burgers',
+        'Festive burgers',
+        1
+      ),
+      items: [
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'deanos-christmas-stack-item',
+          section_id: 'festive-burgers',
+          dish_id: 'deanos-christmas-stack',
+          price: 22,
+          sort_order: 1,
+        }),
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'turkey-dinner-burger-item',
+          section_id: 'festive-burgers',
+          dish_id: 'turkey-dinner-burger',
+          price: 21,
+          sort_order: 2,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosXmasMenuDemoIdentity,
+        'christmas-sides',
+        'Christmas sides',
+        2
+      ),
+      items: [
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'pigs-in-blankets-waffle-fries-item',
+          section_id: 'christmas-sides',
+          dish_id: 'pigs-in-blankets-waffle-fries',
+          price: 15,
+          sort_order: 1,
+        }),
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'fried-brie-bites-item',
+          section_id: 'christmas-sides',
+          dish_id: 'fried-brie-bites',
+          price: 7,
+          sort_order: 2,
+        }),
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'stuffed-mini-yorkshires-item',
+          section_id: 'christmas-sides',
+          dish_id: 'stuffed-mini-yorkshires',
+          price: 8,
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosXmasMenuDemoIdentity,
+        'winter-shakes',
+        'Winter shakes',
+        3
+      ),
+      items: [
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'gingerbread-caramel-shake-item',
+          section_id: 'winter-shakes',
+          dish_id: 'gingerbread-caramel-shake',
+          price: 9,
+          sort_order: 1,
+        }),
+      ],
+    },
+  ],
+}
+
 const pizzaTheActionRootMenu = rootMenu(
   pizzaTheActionKitchenDemoIdentity,
   'Pizza the Action menu',
@@ -400,7 +770,7 @@ const pizzaTheActionRootMenu = rootMenu(
 
 const pizzaTheActionAssetBase = `${kitchenDemoAssetBase}/pizza-the-action`
 
-export const pizzaTheActionKitchenDemoCatalogue: KitchenDemoCatalogue = {
+export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: pizzaTheActionRootMenu,
   kitchenMenu: kitchenMenu(
     pizzaTheActionKitchenDemoIdentity,
@@ -668,7 +1038,7 @@ const miseboxRestaurantRootMenu = rootMenu(
 const miseboxRestaurantAssetBase =
   `${kitchenDemoAssetBase}/misebox-restaurant`
 
-export const miseboxRestaurantKitchenDemoCatalogue: KitchenDemoCatalogue = {
+export const miseboxRestaurantKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: miseboxRestaurantRootMenu,
   kitchenMenu: kitchenMenu(
     miseboxRestaurantKitchenDemoIdentity,

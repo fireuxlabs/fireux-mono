@@ -22,7 +22,7 @@ export const kitchenOperations = [
     id: 'kitchen.ingredients',
     slug: 'ingredients',
     title: 'Ingredients',
-    description: 'Create and manage the kitchen ingredient catalogue.',
+    description: 'Create and manage the ingredients used by this kitchen.',
     to: '/console/kitchen/ingredients',
     console: kitchenConsole,
     icon: 'i-lucide-carrot',

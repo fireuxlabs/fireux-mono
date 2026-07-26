@@ -1,4 +1,5 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
@@ -44,16 +45,24 @@ export function useKitchenRecipeCollection(
   const recipes = computed<Recipe[]>(() =>
     (collectionRef.value ?? []).map((entry) => normalizeRecipe(entry))
   )
-  const pending = computed(
-    () => Boolean(collectionPath.value) && collectionRef.value === undefined
-  )
+  const count = computed(() => recipes.value.length)
+  const pending = computed(() => collectionRef.pending.value)
+  const error = computed(() => collectionRef.error.value)
+  const { outcome } = useFirestoreCollectionState({
+    active: computed(() => Boolean(collectionPath.value)),
+    count,
+    pending,
+    error,
+  })
 
   return {
     kitchenId: resolvedKitchenId,
     kitchenCollectionPath,
     collectionPath,
     recipes,
-    count: computed(() => recipes.value.length),
+    count,
     pending,
+    error,
+    outcome,
   }
 }

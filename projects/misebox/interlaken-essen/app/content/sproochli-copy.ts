@@ -1,5 +1,6 @@
 import {
   defineSproochliCopyPack,
+  defineSproochliCopyProfile,
   defineSproochliDialectProfile,
   resolveApprovedSproochliCopy,
   type SproochliCopyVariables,
@@ -8,8 +9,10 @@ import {
 import { interlakenAccountCopyEntries } from './sproochli-copy-account.ts'
 import {
   INTERLAKEN_DIALECT_PROFILE_ID,
+  INTERLAKEN_STANDARD_GERMAN_PROFILE_ID,
 } from './sproochli-copy-entry.ts'
 import { interlakenOnboardingCopyEntries } from './sproochli-copy-onboarding.ts'
+import { interlakenMarketplaceCopyEntries } from './sproochli-copy-marketplace.ts'
 import { interlakenPublicCopyEntries } from './sproochli-copy-public.ts'
 
 export const interlakenDialectProfile = defineSproochliDialectProfile({
@@ -27,13 +30,34 @@ export const interlakenDialectProfile = defineSproochliDialectProfile({
   },
 })
 
+export const interlakenStandardGermanProfile =
+  defineSproochliCopyProfile({
+    id: INTERLAKEN_STANDARD_GERMAN_PROFILE_ID,
+    language_code: 'de',
+    locale: 'de-CH',
+    region: 'Switzerland, with Berner Oberland context',
+    style:
+      'Clear, warm and professional Swiss Standard German. Use ss rather than ß and address readers formally with Sie and Ihr.',
+    glossary: {
+      buy: 'Kaufen',
+      sell: 'Verkaufen',
+      feed: 'Neuigkeiten',
+      'come and eat': 'Kommen Sie essen',
+      'from the region': 'Aus der Region',
+    },
+  })
+
 export const interlakenCopyPack = defineSproochliCopyPack({
-  id: 'interlaken-public-v1',
-  profile: interlakenDialectProfile,
+  id: 'interlaken-public-v2',
+  profiles: {
+    de: interlakenStandardGermanProfile,
+    gsw: interlakenDialectProfile,
+  },
   entries: {
     ...interlakenPublicCopyEntries,
     ...interlakenOnboardingCopyEntries,
     ...interlakenAccountCopyEntries,
+    ...interlakenMarketplaceCopyEntries,
   },
 })
 

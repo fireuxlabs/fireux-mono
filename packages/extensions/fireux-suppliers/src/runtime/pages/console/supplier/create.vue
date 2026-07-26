@@ -1,28 +1,30 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <template>
-  <UDashboardPanel id="console-supplier-create">
-    <template #header>
-      <LayoutsConsoleNavbar title="Create Supplier" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-supplier-create">
+      <template #header>
+        <LayoutsConsoleNavbar title="Create Supplier" />
+      </template>
 
-    <template #body>
-      <section class="space-y-4">
-        <SupplierCreateSystem
-          v-if="canCreate"
-          mode="console"
-          return-to="/console/supplier"
-          cancel-to="/console/supplier"
-        />
+      <template #body>
+        <section class="space-y-4">
+          <SupplierCreateSystem
+            v-if="canCreate"
+            mode="console"
+            return-to="/console/supplier"
+            cancel-to="/console/supplier"
+          />
 
-        <UPageCard
-          v-else
-          title="Supplier creation is not enabled here"
-          description="This app uses existing Supplier console targets."
-          variant="subtle"
-        />
-      </section>
-    </template>
-  </UDashboardPanel>
+          <UPageCard
+            v-else
+            title="Supplier creation is not enabled here"
+            description="This app uses existing Supplier console targets."
+            variant="subtle"
+          />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

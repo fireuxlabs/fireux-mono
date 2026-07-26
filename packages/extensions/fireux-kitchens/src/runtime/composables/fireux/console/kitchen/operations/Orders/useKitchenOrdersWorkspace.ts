@@ -7,6 +7,7 @@ import {
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 import { useKitchenConsoleOrders } from './useKitchenConsoleOrders'
 import { useKitchenOrderPassSelection } from './useKitchenOrderPassSelection'
+import { useKitchenOrderServiceState } from './useKitchenOrderServiceState'
 
 const normalizeId = (value: unknown) => String(value ?? '').trim()
 
@@ -20,6 +21,31 @@ function createKitchenOrdersWorkspace() {
     orders: orders.passOrders,
     isTransitioning: isOrderTransitioning,
     completeOrder: orders.completeOrder,
+  })
+  const scheduledWaitingOrders = computed(() =>
+    orders.incomingOrders.value.filter((order) => {
+      if (order.order_type === 'pre_order') return true
+      const collection = order.collection &&
+        typeof order.collection === 'object' &&
+        !Array.isArray(order.collection)
+        ? order.collection
+        : {}
+      return order.order_type === 'collection' &&
+        collection.mode === 'scheduled'
+    })
+  )
+  const activeOrderCount = computed(() =>
+    orders.paymentOrders.value.length +
+    orders.incomingOrders.value.length +
+    orders.queueOrders.value.length +
+    orders.passOrders.value.length
+  )
+  const service = useKitchenOrderServiceState({
+    activeOrderCount,
+    kitchenId: orders.kitchenId,
+    selectedKitchen: orders.selectedKitchen,
+    source: orders.source,
+    waitingOrderCount: computed(() => scheduledWaitingOrders.value.length),
   })
 
   function isOrderTransitioning(orderId: unknown) {
@@ -52,6 +78,7 @@ function createKitchenOrdersWorkspace() {
 
   return {
     incomingOrders: orders.incomingOrders,
+    paymentOrders: orders.paymentOrders,
     passOrders: orders.passOrders,
     queueOrders: orders.queueOrders,
     recentOrders: orders.recentOrders,
@@ -64,6 +91,8 @@ function createKitchenOrdersWorkspace() {
     normalizeId,
     pass,
     returnPassOrder,
+    scheduledWaitingOrders,
+    service,
   }
 }
 

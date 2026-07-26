@@ -1,130 +1,88 @@
 <template>
-  <div class="space-y-6">
-    <UCard>
-      <template #header>
-        <div class="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h2 class="text-base font-semibold text-highlighted">Dishes</h2>
-            <p class="text-sm text-dimmed">
-              Search and maintain the kitchen dish library.
-            </p>
-          </div>
+  <section aria-label="Dishes" class="space-y-4">
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <UInput
+        v-model="query"
+        icon="i-lucide-search"
+        placeholder="Search dishes"
+        class="w-full sm:max-w-sm"
+      />
 
-          <div class="flex flex-wrap gap-2">
-            <UBadge color="neutral" variant="soft">{{ dishes.length }} total</UBadge>
-            <UBadge color="neutral" variant="soft">{{ imageCount }} with images</UBadge>
-          </div>
-        </div>
-      </template>
-
-      <div class="space-y-4">
-        <div class="grid gap-3 xl:grid-cols-[minmax(18rem,1fr)_auto_auto]">
-          <UInput
-            v-model="query"
-            icon="i-lucide-search"
-            placeholder="Search dishes"
-            :ui="{ root: 'w-full' }"
-          />
-
-          <UButtonGroup>
-            <UButton
-              v-for="option in kindOptions"
-              :key="option.value"
-              size="sm"
-              :icon="option.icon"
-              :color="kindFilter === option.value ? 'primary' : 'neutral'"
-              :variant="kindFilter === option.value ? 'solid' : 'soft'"
-              @click="kindFilter = option.value"
-            >
-              {{ option.label }}
-            </UButton>
-          </UButtonGroup>
-
-          <UButtonGroup>
-            <UButton
-              v-for="option in imageOptions"
-              :key="option.value"
-              size="sm"
-              :icon="option.icon"
-              :color="imageFilter === option.value ? 'primary' : 'neutral'"
-              :variant="imageFilter === option.value ? 'solid' : 'soft'"
-              @click="imageFilter = option.value"
-            >
-              {{ option.label }}
-            </UButton>
-          </UButtonGroup>
-        </div>
-
-        <div class="flex flex-wrap items-center justify-between gap-3">
-          <p class="text-sm text-dimmed">
-            Showing {{ visibleDishes.length }} of {{ dishes.length }}
-          </p>
-
-          <UButton
-            v-if="hasFilters"
-            size="sm"
-            color="neutral"
-            variant="ghost"
-            icon="i-lucide-x"
-            @click="clearFilters"
-          >
-            Clear
-          </UButton>
-        </div>
-
-        <UAlert
-          v-if="pending"
-          color="neutral"
-          variant="soft"
-          title="Loading dishes"
-        />
-
-        <UAlert
-          v-else-if="!dishes.length"
-          color="neutral"
-          variant="soft"
-          title="No dishes yet"
-          description="Create or import dishes before organizing this kitchen library."
-        />
-
-        <UAlert
-          v-else-if="!visibleDishes.length"
-          color="neutral"
-          variant="soft"
-          title="No matching dishes"
-          description="Clear a filter or search for another dish name."
-        />
-
-        <div v-else class="space-y-5">
-          <section
-            v-for="group in groupedDishes"
-            :key="group.key"
-            class="space-y-3"
-          >
-            <div class="flex items-center gap-2">
-              <UBadge color="neutral" variant="soft">{{ group.label }}</UBadge>
-              <span class="text-xs text-dimmed">{{ group.dishes.length }}</span>
-            </div>
-
-            <div class="grid gap-3 lg:grid-cols-2 2xl:grid-cols-3">
-              <ConsoleKitchenOperationsDishesCardsCell
-                v-for="dish in group.dishes"
-                :id="dish.id"
-                :key="dish.id"
-                :to="`/console/kitchen/dishes/${encodeURIComponent(dish.id)}`"
-                :title="dish.name || dish.id"
-                :subtitle="dishSubtitle(dish)"
-                :image-url="dish.image"
-                :description="dish.description"
-                :meta="dish.item_kind"
-                show-subtitle
-                link
-              />
-            </div>
-          </section>
-        </div>
+      <div class="flex gap-1 overflow-x-auto">
+        <UButton
+          v-for="option in kindOptions"
+          :key="option.value"
+          size="sm"
+          :icon="option.icon"
+          :color="kindFilter === option.value ? 'primary' : 'neutral'"
+          :variant="kindFilter === option.value ? 'solid' : 'soft'"
+          @click="kindFilter = option.value"
+        >
+          {{ option.label }}
+        </UButton>
       </div>
-    </UCard>
+
+      <span class="text-sm text-dimmed sm:ml-auto">
+        {{ visibleDishes.length }} dishes
+      </span>
+    </div>
+
+    <div v-if="pending" class="text-sm text-dimmed">
+      Loading dishes...
+    </div>
+
+    <UAlert
+      v-else-if="error"
+      color="error"
+      variant="soft"
+      icon="i-lucide-circle-alert"
+      title="Dishes unavailable"
+      description="The dishes for this kitchen could not be loaded. Please try again."
+    />
+
+    <UAlert
+      v-else-if="!dishes.length"
+      color="neutral"
+      variant="soft"
+      title="No dishes yet"
+      :description="readOnly
+        ? 'No dishes are available in this read-only source.'
+        : 'Create the first dish for this kitchen.'"
+    />
+
+    <UAlert
+      v-else-if="!visibleDishes.length"
+      color="neutral"
+      variant="soft"
+      title="No matching dishes"
+      description="Try another search or choose a different type."
+    />
+
+    <div
+      v-else
+      class="flex flex-wrap gap-3"
+    >
+      <ConsoleKitchenOperationsDishesCardsCell
+        v-for="dish in visibleDishes"
+        :id="dish.id"
+        :key="dish.id"
+        :title="dish.name || dish.id"
+        :image-url="dish.image"
+        :meta="kindLabel(dish)"
+        :price-label="getPriceLabelForDish(dish.id)"
+        class="w-32 sm:w-36"
+        action
+        @action="openQuickLook(dish)"
+      />
+    </div>
+
+    <ConsoleKitchenOperationsDishesQuickLook
+      v-model:open="quickLookOpen"
+      :dish="selectedDish"
+      :menu-usage="selectedDishMenuUsage"
+      :price-label="selectedDishPriceLabel"
+      @after-leave="selectedDish = null"
+    />
 
     <DevJson
       title="Kitchen dishes debug"
@@ -132,81 +90,63 @@
       :data="dishDebug"
       :default-open="false"
     />
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
+import { useKitchenDishesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
 import type { Dish } from '../../../../../models/kitchen/dish.model'
 
 type DishKindFilter = 'all' | 'food' | 'drink' | 'deal'
-type DishImageFilter = 'all' | 'with_image' | 'without_image'
 
-const { dishes, pending, debug } = useKitchenConsoleDishes()
+const {
+  dishes,
+  pending,
+  error,
+  readOnly,
+  debug,
+  getMenuUsageForDish,
+  getPriceLabelForDish,
+} = useKitchenDishesWorkspace()
 
 const query = ref('')
 const kindFilter = ref<DishKindFilter>('all')
-const imageFilter = ref<DishImageFilter>('all')
+const quickLookOpen = ref(false)
+const selectedDish = ref<Dish | null>(null)
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const searchable = (dish: Dish) =>
   [
     dish.name,
-    dish.id,
     dish.description,
     dish.item_kind,
     dish.is_deal ? 'deal' : '',
   ].map(clean).join(' ').toLowerCase()
-const hasImage = (dish: Dish) => Boolean(clean(dish.image))
 const kindLabel = (dish: Dish) =>
   dish.is_deal ? 'Deal' : dish.item_kind === 'drink' ? 'Drink' : 'Food'
-const dishSubtitle = (dish: Dish) =>
-  [
-    kindLabel(dish),
-    hasImage(dish) ? 'Image' : 'No image',
-    clean(dish.description) ? '' : 'No description',
-  ].filter(Boolean).join(' · ')
 
 const kindOptions: Array<{
   value: DishKindFilter
   label: string
   icon: string
 }> = [
-  { value: 'all', label: 'All', icon: 'i-lucide-list-filter' },
+  { value: 'all', label: 'All', icon: 'i-lucide-layout-grid' },
   { value: 'food', label: 'Food', icon: 'i-lucide-utensils' },
   { value: 'drink', label: 'Drinks', icon: 'i-lucide-glass-water' },
   { value: 'deal', label: 'Deals', icon: 'i-lucide-tags' },
 ]
-const imageOptions: Array<{
-  value: DishImageFilter
-  label: string
-  icon: string
-}> = [
-  { value: 'all', label: 'Any image', icon: 'i-lucide-images' },
-  { value: 'with_image', label: 'With image', icon: 'i-lucide-image' },
-  { value: 'without_image', label: 'No image', icon: 'i-lucide-image-off' },
-]
-const imageCount = computed(() =>
-  dishes.value.filter((dish) => hasImage(dish)).length
-)
-const hasFilters = computed(() =>
-  Boolean(clean(query.value)) ||
-    kindFilter.value !== 'all' ||
-    imageFilter.value !== 'all'
-)
 const visibleDishes = computed(() => {
   const needle = clean(query.value).toLowerCase()
 
   return dishes.value
     .filter((dish) => {
       if (needle && !searchable(dish).includes(needle)) return false
-      if (kindFilter.value === 'food' && dish.item_kind !== 'food') return false
-      if (kindFilter.value === 'drink' && dish.item_kind !== 'drink') return false
-      if (kindFilter.value === 'deal' && !dish.is_deal) return false
-      if (imageFilter.value === 'with_image' && !hasImage(dish)) return false
-      if (imageFilter.value === 'without_image' && hasImage(dish)) return false
-
+      if (kindFilter.value === 'food') {
+        return dish.item_kind === 'food' && !dish.is_deal
+      }
+      if (kindFilter.value === 'drink') return dish.item_kind === 'drink'
+      if (kindFilter.value === 'deal') return dish.is_deal
       return true
     })
     .slice()
@@ -214,25 +154,15 @@ const visibleDishes = computed(() => {
       clean(left.name || left.id).localeCompare(clean(right.name || right.id))
     )
 })
-const groupedDishes = computed(() => {
-  const groups = new Map<string, Dish[]>()
-
-  for (const dish of visibleDishes.value) {
-    const first = clean(dish.name || dish.id).slice(0, 1).toUpperCase()
-    const key = /^[A-Z]$/.test(first) ? first : '#'
-    groups.set(key, [...(groups.get(key) || []), dish])
-  }
-
-  return [...groups.entries()].map(([key, groupDishes]) => ({
-    key,
-    label: key,
-    dishes: groupDishes,
-  }))
-})
-const clearFilters = () => {
-  query.value = ''
-  kindFilter.value = 'all'
-  imageFilter.value = 'all'
+const selectedDishPriceLabel = computed(() =>
+  selectedDish.value ? getPriceLabelForDish(selectedDish.value.id) : ''
+)
+const selectedDishMenuUsage = computed(() =>
+  selectedDish.value ? getMenuUsageForDish(selectedDish.value.id) : []
+)
+const openQuickLook = (dish: Dish) => {
+  selectedDish.value = dish
+  quickLookOpen.value = true
 }
 const dishDebug = computed(() => ({
   objects: {
@@ -241,15 +171,13 @@ const dishDebug = computed(() => ({
       name: dish.name,
       item_kind: dish.item_kind,
       is_deal: dish.is_deal,
-      hasDescription: Boolean(clean(dish.description)),
-      hasImage: hasImage(dish),
+      priceLabel: getPriceLabelForDish(dish.id),
       kitchenId: dish.kitchen_id,
     })),
   },
   derived: {
     ...debug.value,
     visibleCount: visibleDishes.value.length,
-    imageCount: imageCount.value,
   },
 }))
 </script>

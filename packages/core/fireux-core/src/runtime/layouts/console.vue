@@ -114,7 +114,7 @@
         </template>
       </UDashboardPanel>
 
-      <NuxtPage v-else />
+      <slot v-else />
     </div>
   </UDashboardGroup>
 

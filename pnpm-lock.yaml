@@ -17,7 +17,7 @@ overrides:
   nuxt-vuefire: ^1.1.0
 
 patchedDependencies:
-  httpxy@0.5.2: 99cdf1b44e901ee75274decd93709767fd85b93f89931f571cdc881f8d8d6673
+  httpxy@0.5.2: 71759ae5258da9f8ed935cd9dbd3455531811ccc0e3ba120754660bfa4a84ec2
 
 importers:
 
@@ -503,6 +503,22 @@ importers:
       '@types/qrcode':
         specifier: ^1.5.6
         version: 1.5.6
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  packages/extensions/fireux-marketplace:
+    dependencies:
+      fireux-core:
+        specifier: workspace:*
+        version: link:../../core/fireux-core
+      fireux-finance:
+        specifier: workspace:*
+        version: link:../fireux-finance
+    devDependencies:
+      '@nuxt/module-builder':
+        specifier: ^1.0.2
+        version: 1.0.2(@nuxt/cli@3.35.2(@nuxt/schema@4.4.6)(cac@6.7.14)(magicast@0.5.3))(@vue/compiler-core@3.5.34)(esbuild@0.28.0)(sass@1.96.0)(typescript@5.9.2)(vue-tsc@3.3.0(typescript@5.9.2))(vue@3.5.20(typescript@5.9.2))
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -1274,6 +1290,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-marketplace:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-marketplace
       fireux-misebox:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-misebox
@@ -16655,7 +16674,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  httpxy@0.5.2(patch_hash=99cdf1b44e901ee75274decd93709767fd85b93f89931f571cdc881f8d8d6673): {}
+  httpxy@0.5.2(patch_hash=71759ae5258da9f8ed935cd9dbd3455531811ccc0e3ba120754660bfa4a84ec2): {}
 
   human-signals@5.0.0: {}
 
@@ -17801,7 +17820,7 @@ snapshots:
       gzip-size: 7.0.0
       h3: 1.15.11
       hookable: 5.5.3
-      httpxy: 0.5.2(patch_hash=99cdf1b44e901ee75274decd93709767fd85b93f89931f571cdc881f8d8d6673)
+      httpxy: 0.5.2(patch_hash=71759ae5258da9f8ed935cd9dbd3455531811ccc0e3ba120754660bfa4a84ec2)
       ioredis: 5.10.1
       jiti: 2.7.0
       klona: 2.0.6

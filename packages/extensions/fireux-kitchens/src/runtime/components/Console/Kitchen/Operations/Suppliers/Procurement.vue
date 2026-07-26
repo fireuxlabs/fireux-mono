@@ -29,10 +29,27 @@
           :description="statusDescription"
         />
 
-        <div
-          v-if="linkedIngredientIds.length"
-          class="flex flex-wrap gap-2"
-        >
+        <div v-if="procurementLines.length" class="grid gap-2">
+          <div
+            v-for="line in procurementLines"
+            :key="line.id"
+            class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-default bg-elevated/30 p-3"
+          >
+            <div>
+              <p class="text-sm font-semibold text-highlighted">
+                {{ line.ingredientName }}
+              </p>
+              <p class="mt-1 text-xs text-muted">
+                {{ line.packLabel }}
+              </p>
+            </div>
+            <UBadge color="neutral" variant="soft">
+              {{ line.packPrice }}
+            </UBadge>
+          </div>
+        </div>
+
+        <div v-else-if="linkedIngredientIds.length" class="flex flex-wrap gap-2">
           <UBadge
             v-for="ingredientId in linkedIngredientIds"
             :key="ingredientId"
@@ -62,6 +79,7 @@ const {
   supplierBasePath,
   hasIntegratedCatalogue,
   linkedIngredientIds,
+  procurementLines,
   cataloguePath,
   title,
   description,

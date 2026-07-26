@@ -33,6 +33,8 @@ export function useKitchenConsoleIndex() {
       Boolean(consoleSelection.kitchen.value)
   )
   const autoSelectTargetId = computed(() =>
+    consoleRuntime.isTenant.value &&
+    targetOutcome.value === 'ready' &&
     targetKitchens.value.length === 1
       ? String(targetKitchens.value[0]?.id ?? '').trim()
       : ''

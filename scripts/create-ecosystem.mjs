@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-20
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-26
+// usage_note: canonical ecosystem/App scaffold with explicit Firebase Auth hostname decisions.
 // Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: scaffold the v1 builder without a direct mkdist dependency.
+import { spawnSync } from 'node:child_process'
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { createInterface } from 'node:readline/promises'
+
+import { assertFirebaseAuthDomain } from './_lib/firebase-auth-domains.mjs'
 
 function parseArgs(argv) {
   const args = {}
@@ -14,7 +18,13 @@ function parseArgs(argv) {
     if (!token.startsWith('--')) continue
 
     const key = token.slice(2)
-    if (key === 'help' || key === 'dry-run' || key === 'force') {
+    if (
+      key === 'help' ||
+      key === 'dry-run' ||
+      key === 'force' ||
+      key === 'sync-auth-domain' ||
+      key === 'no-sync-auth-domain'
+    ) {
       args[key] = true
       continue
     }
@@ -39,6 +49,10 @@ Options:
   --name <slug>                 Required. Ecosystem slug or package name (e.g. <name> or fireux-<name>)
   --description <text>          Optional. Package description line
   --firebase-project <id>       Optional. Firebase project id (default: <slug>-dev)
+  --auth-domain <hostname>      Optional. Public/custom hostname (no protocol, path, or port)
+  --firebase-site <site-id>     Optional. Hosting site id (default: <slug> with --auth-domain)
+  --sync-auth-domain            Answer yes: add the custom and generated Hosting hostnames
+  --no-sync-auth-domain         Answer no: do not change Firebase Auth authorized domains
   --ssr-region <region>         Optional. SSR region (default: europe-west1)
   --team <team>                 Optional. Registry team (default: fireux)
   --force                       Optional. Allow scaffold into existing directory (file overwrite still blocked)
@@ -47,7 +61,7 @@ Options:
 
 Examples:
   pnpm create:ecosystem -- --name <name>
-  pnpm create:ecosystem -- --name <name> --firebase-project <firebase-project-id>
+  pnpm create:ecosystem -- --name <name> --firebase-project <firebase-project-id> --auth-domain app.example.com
 `) }
 
 function normalizeEcosystemName(value) {
@@ -460,7 +474,73 @@ const cfg = useFireUXConfig()
   ]
 }
 
-function main() {
+async function resolveAuthDomainSyncDecision(args, authDomains) {
+  const sync = args['sync-auth-domain'] === true
+  const skip = args['no-sync-auth-domain'] === true
+  if (sync && skip) {
+    throw new Error(
+      'Choose only one of --sync-auth-domain or --no-sync-auth-domain.'
+    )
+  }
+  if (!authDomains.length && (sync || skip)) {
+    throw new Error(
+      '--sync-auth-domain and --no-sync-auth-domain require --auth-domain <hostname>.'
+    )
+  }
+  if (!authDomains.length) return false
+  if (sync) return true
+  if (skip) return false
+
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    throw new Error(
+      `[create-ecosystem] Firebase Auth domain set (${authDomains.join(', ')}) ` +
+      'needs an explicit Firebase Auth ' +
+      'authorized-domain decision in non-interactive mode. Re-run with ' +
+      '--sync-auth-domain to add it additively, or --no-sync-auth-domain ' +
+      'to leave Firebase unchanged.'
+    )
+  }
+
+  const prompt = createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+  try {
+    while (true) {
+      const answer = await prompt.question(
+        'Add all intended public origins to Firebase Authentication authorized domains?\n' +
+        `${authDomains.map(domain => `  - ${domain}`).join('\n')}\n` +
+        'Authorize all? [y/n] '
+      )
+      if (/^(?:y|yes)$/i.test(answer.trim())) return true
+      if (/^(?:n|no)$/i.test(answer.trim())) return false
+      console.log('Please answer yes or no.')
+    }
+  } finally {
+    prompt.close()
+  }
+}
+
+function syncFirebaseAuthDomains({ repoRoot, firebaseProject, authDomains }) {
+  const script = path.join(repoRoot, 'scripts', 'sync-firebase-auth-domains.mjs')
+  const result = spawnSync(
+    process.execPath,
+    [script, '--project', firebaseProject, '--domains', authDomains.join(',')],
+    {
+      cwd: repoRoot,
+      stdio: 'inherit',
+      shell: false,
+    }
+  )
+
+  if (result.status !== 0) {
+    throw new Error(
+      `[create-ecosystem] Firebase Auth domain sync failed for: ${authDomains.join(', ')}.`
+    )
+  }
+}
+
+async function main() {
   const args = parseArgs(process.argv.slice(2))
 
   if (args.help) {
@@ -477,6 +557,20 @@ function main() {
   const pkgName = `fireux-${slug}`
   const displayName = toTitle(slug)
   const firebaseProject = args['firebase-project'] || `${slug}-dev`
+  const authDomain = args['auth-domain']
+    ? assertFirebaseAuthDomain(args['auth-domain'])
+    : ''
+  const firebaseSite = String(args['firebase-site'] || slug)
+    .trim()
+    .toLowerCase()
+  const hostingAuthDomain = authDomain
+    ? assertFirebaseAuthDomain(`${firebaseSite}.web.app`)
+    : ''
+  const authDomains = [...new Set([authDomain, hostingAuthDomain].filter(Boolean))]
+  const shouldSyncAuthDomain = await resolveAuthDomainSyncDecision(
+    args,
+    authDomains
+  )
   const ssrRegion = args['ssr-region'] || 'europe-west1'
   const team = args.team || 'fireux'
   const description =
@@ -504,6 +598,13 @@ function main() {
     console.log(`[dry-run] would create ecosystem package: ${pkgName}`)
     files.forEach(([rel]) => console.log(`  - packages/ecosystem/${pkgName}/${rel}`))
     console.log('[dry-run] would update tsconfig refs and path aliases')
+    if (authDomain) {
+      console.log(
+        shouldSyncAuthDomain
+          ? `[dry-run] would additively sync Firebase Auth domains: ${authDomains.join(', ')}`
+          : `[dry-run] would leave Firebase Auth domains unchanged: ${authDomains.join(', ')}`
+      )
+    }
     return
   }
 
@@ -517,18 +618,28 @@ function main() {
   updateTsProjectRefs(repoRoot, slug)
   ensureServiceAccountIgnoreContract(repoRoot)
 
+  if (shouldSyncAuthDomain) {
+    syncFirebaseAuthDomains({ repoRoot, firebaseProject, authDomains })
+  }
+
   console.log(`Scaffolded ecosystem package: ${pkgName}`)
   console.log(`Path: packages/ecosystem/${pkgName}`)
   console.log('Next steps:')
   console.log(`  1. Fill Firebase values in packages/ecosystem/${pkgName}/src/config/firebase/ecosystem.config.ts`)
   console.log(`  2. Keep service-account.example.json inert; supply real Admin credentials through environment/application-default credentials`)
   console.log('  3. In Firebase Auth, enable Email/Password, Google, and Anonymous sign-in providers')
-  console.log('  4. In Firebase Auth authorized domains, add localhost, Hosting domains, and any custom domains')
+  console.log(
+    authDomain
+      ? shouldSyncAuthDomain
+        ? `  4. Firebase Auth authorized domains additively synced: ${authDomains.join(', ')}`
+        : `  4. Firebase Auth authorized domains intentionally not changed: ${authDomains.join(', ')}`
+      : '  4. If the App gains a public/custom hostname, rerun creation with --auth-domain and make an explicit sync decision'
+  )
   console.log(`  5. Run: pnpm install --lockfile-only && pnpm guard`)
 }
 
 try {
-  main()
+  await main()
 } catch (error) {
   console.error(error instanceof Error ? error.message : String(error))
   process.exit(1)

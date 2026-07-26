@@ -7,7 +7,7 @@ import {
   query,
   type Query,
 } from 'firebase/firestore'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { UserNotification } from '../../../../../../models/core/supporting/user'
 import {
   UserNotificationStorage,
@@ -38,7 +38,12 @@ export function useUserNotifications() {
   const { currentUser } = useAuth()
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const identityDb = useFirestore(identityDatabaseId)
+  const clientReady = ref(false)
+  onMounted(() => {
+    clientReady.value = true
+  })
   const ownerUid = computed(() => {
+    if (!clientReady.value) return ''
     const user = currentUser.value
     return user && !user.isAnonymous ? user.uid : ''
   })

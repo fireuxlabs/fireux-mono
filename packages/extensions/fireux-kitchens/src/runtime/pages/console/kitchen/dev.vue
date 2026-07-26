@@ -1,18 +1,20 @@
 <template>
-  <UDashboardPanel id="console-kitchen-dev">
-    <template #header>
-      <LayoutsConsoleNavbar title="Kitchen Dev" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-kitchen-dev">
+      <template #header>
+        <LayoutsConsoleNavbar title="Kitchen Dev" />
+      </template>
 
-    <template #body>
-      <section class="space-y-4">
-        <ConsoleKitchenSundriesParked
-          alert-title="Kitchen dev is parked"
-          description="This kitchen console route is intentionally hidden until a console-owned dev workspace is needed."
-        />
-      </section>
-    </template>
-  </UDashboardPanel>
+      <template #body>
+        <section class="space-y-4">
+          <ConsoleKitchenSundriesParked
+            alert-title="Kitchen dev is parked"
+            description="This kitchen console route is intentionally hidden until a console-owned dev workspace is needed."
+          />
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

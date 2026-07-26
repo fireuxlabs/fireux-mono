@@ -3,7 +3,11 @@
     class="market-page market-storefront"
     aria-labelledby="storefront-title"
   >
-    <MarketplaceStorefront :seller="seller" />
+    <MarketplaceCanonicalStorefront
+      v-if="canonicalStore"
+      :store="canonicalStore"
+    />
+    <MarketplaceStorefront v-else-if="previewSeller" :seller="previewSeller" />
   </section>
 </template>
 
@@ -14,6 +18,9 @@ import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import {
   findMarketplacePreviewSeller,
 } from '@/content/marketplace-preview'
+import type {
+  PublicMarketplaceStoreResponse,
+} from 'fireux-marketplace/runtime/models/marketplace-api.model'
 
 definePageMeta({
   layout: 'marketplace',
@@ -21,11 +28,16 @@ definePageMeta({
 
 const { copy } = useInterlakenCopy()
 const sellerId = useRouteParam('sellerId')
-const seller = computed(() =>
+const { data } = await useFetch<PublicMarketplaceStoreResponse>(
+  () => `/api/public/marketplace/stores/${encodeURIComponent(sellerId.value)}`,
+  { default: () => null }
+)
+const canonicalStore = computed(() => data.value?.store)
+const previewSeller = computed(() =>
   findMarketplacePreviewSeller(sellerId.value)
 )
 
-if (!seller.value) {
+if (!canonicalStore.value && !previewSeller.value) {
   throw createError({
     statusCode: 404,
     statusMessage: copy('storefront_not_found'),
@@ -34,10 +46,9 @@ if (!seller.value) {
 
 useSeoMeta({
   title: () =>
-    `${copy(seller.value?.nameKey || 'storefront_honey_name')} – Interlaken Essen`,
+    `${canonicalStore.value?.name || copy(previewSeller.value?.nameKey || 'storefront_honey_name')} – Interlaken Essen`,
   description: () =>
-    copy(
-      seller.value?.descriptionKey || 'storefront_honey_description'
-    ),
+    canonicalStore.value?.description ||
+    copy(previewSeller.value?.descriptionKey || 'storefront_honey_description'),
 })
 </script>

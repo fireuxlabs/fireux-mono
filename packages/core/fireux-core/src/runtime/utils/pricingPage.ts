@@ -3,6 +3,7 @@ export interface PricingPlan {
   title?: string
   description?: string
   price?: string
+  priceCurrency?: string
   [key: string]: unknown
 }
 
@@ -54,7 +55,7 @@ export function buildPricingOfferCatalog(input: {
         name: plan.title,
         ...(plan.description ? { description: plan.description } : {}),
         price: priceAmount(plan.price),
-        priceCurrency: 'USD',
+        priceCurrency: plan.priceCurrency || 'USD',
         ...(group.title ? { category: group.title } : {}),
       })),
     })),

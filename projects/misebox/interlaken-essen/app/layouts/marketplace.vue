@@ -46,13 +46,12 @@
           :selected-language="siteSproochli.selectedLanguage.value"
           :default-language="siteSproochli.defaultLanguage"
           :copy="{
-            heading: copy('language_trigger_heading'),
-            description: copy('language_trigger_description'),
             chooseLanguage: copy('language_trigger_choose'),
             currentSelection: copy('language_trigger_current'),
             defaultSelection: copy('language_trigger_default'),
             originalSelection: copy('language_trigger_original'),
             cached: copy('language_trigger_cached'),
+            visitSproochli: copy('language_trigger_visit_sproochli'),
           }"
         />
 

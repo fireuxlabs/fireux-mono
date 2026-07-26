@@ -1,173 +1,175 @@
 <!-- Concurrent edit — 2026-07-20 16:19 CEST — Extension Console Spine pass: move console access metadata to the route and classify its surface. -->
 <!-- Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: gate document controls with Portfolio write authority. -->
 <template>
-  <UDashboardPanel id="console-portfolio-documents">
-    <template #header>
-      <LayoutsConsoleNavbar title="Documents" />
-    </template>
+  <div class="flex min-h-full min-w-0 flex-1">
+    <UDashboardPanel id="console-portfolio-documents">
+      <template #header>
+        <LayoutsConsoleNavbar title="Documents" />
+      </template>
 
-    <template #body>
-      <section class="space-y-6">
-        <UCard>
-          <div class="flex items-start gap-4">
-            <div class="space-y-1">
-              <div class="text-sm font-semibold">Document vault</div>
-              <div class="text-xs text-dimmed">
-                Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
-                Source:
-                <code>{{ isDemo ? 'demo scenario' : documentsPath }}</code>
-              </div>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard>
-          <div class="grid gap-3 sm:grid-cols-2">
-            <div class="fx-inset-panel">
-              <div class="text-xs text-dimmed">Documents</div>
-              <div class="text-xl font-semibold">{{ documents.length }}</div>
-            </div>
-            <div class="fx-inset-panel">
-              <div class="text-xs text-dimmed">Links</div>
-              <div class="text-xl font-semibold">{{ links.length }}</div>
-            </div>
-          </div>
-        </UCard>
-
-        <UCard v-if="canWrite">
-          <template #header>
-            <div class="text-sm font-semibold">Upload document</div>
-          </template>
-
-          <div class="space-y-3">
-            <input
-              type="file"
-              class="block w-full rounded border border-default p-2 text-sm"
-              :disabled="!canWrite"
-              @change="handleFileInput"
-            />
-
-            <UInput
-              v-model="uploadNotes"
-              :disabled="!canWrite"
-              placeholder="Optional notes"
-            />
-
-            <UButton
-              size="sm"
-              icon="i-lucide-upload"
-              :disabled="!selectedFile || !canWrite || uploadBusy"
-              :loading="uploadBusy"
-              @click="uploadSelectedFile"
-            >
-              Upload to vault
-            </UButton>
-
-            <div class="text-xs text-dimmed">
-              Generic file upload. No image-only assumptions.
-            </div>
-          </div>
-        </UCard>
-
-        <UCard v-if="canWrite">
-          <template #header>
-            <div class="text-sm font-semibold">Link document to entity</div>
-          </template>
-
-          <div class="grid gap-3 sm:grid-cols-2">
-            <UInput
-              v-model="linkDocumentId"
-              :disabled="!canWrite"
-              placeholder="Document id"
-            />
-            <UInput
-              v-model="linkTargetType"
-              :disabled="!canWrite"
-              placeholder="Target type (property, compliance-record, tenancy, ...)"
-            />
-            <UInput
-              v-model="linkTargetId"
-              :disabled="!canWrite"
-              placeholder="Target id"
-            />
-            <UInput
-              v-model="linkTargetLabel"
-              :disabled="!canWrite"
-              placeholder="Target label (optional)"
-            />
-          </div>
-
-          <div class="mt-3 flex items-center gap-2">
-            <UButton
-              size="sm"
-              icon="i-lucide-link"
-              :disabled="!canWrite || linkBusy"
-              :loading="linkBusy"
-              @click="createLink"
-            >
-              Link document
-            </UButton>
-
-            <UButton
-              size="sm"
-              variant="soft"
-              icon="i-lucide-list-checks"
-              :disabled="!canWrite || linkBusy"
-              @click="createLink(true)"
-            >
-              Link + create task
-            </UButton>
-          </div>
-
-          <div class="mt-2 text-xs text-dimmed">
-            Allowed target types: {{ allowedTargetTypesLabel }}
-          </div>
-        </UCard>
-
-        <UCard>
-          <template #header>
-            <div class="text-sm font-semibold">Vault documents</div>
-          </template>
-
-          <div v-if="cards.length" class="space-y-3">
-            <div
-              v-for="item in cards"
-              :key="item.id"
-              class="fx-inset-panel"
-            >
-              <div class="flex items-start justify-between gap-3">
-                <div class="space-y-1">
-                  <div class="text-sm font-semibold">{{ item.title }}</div>
-                  <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
-                  <div class="text-xs text-dimmed">{{ item.meta }}</div>
-                  <div class="text-xs text-dimmed">
-                    Links: {{ linkCountByDocument[item.id] || 0 }}
-                  </div>
+      <template #body>
+        <section class="space-y-6">
+          <UCard>
+            <div class="flex items-start gap-4">
+              <div class="space-y-1">
+                <div class="text-sm font-semibold">Document vault</div>
+                <div class="text-xs text-dimmed">
+                  Mode: <span class="font-medium">{{ runtimeMode }}</span> ·
+                  Source:
+                  <code>{{ isDemo ? 'demo scenario' : documentsPath }}</code>
                 </div>
-
-                <UButton
-                  size="xs"
-                  variant="ghost"
-                  icon="i-lucide-copy"
-                  @click="useForLink(item.id)"
-                >
-                  Use id
-                </UButton>
               </div>
             </div>
-          </div>
+          </UCard>
 
-          <UAlert
-            v-else
-            color="neutral"
-            variant="soft"
-            title="No documents"
-            description="Upload files to populate the vault."
-          />
-        </UCard>
-      </section>
-    </template>
-  </UDashboardPanel>
+          <UCard>
+            <div class="grid gap-3 sm:grid-cols-2">
+              <div class="fx-inset-panel">
+                <div class="text-xs text-dimmed">Documents</div>
+                <div class="text-xl font-semibold">{{ documents.length }}</div>
+              </div>
+              <div class="fx-inset-panel">
+                <div class="text-xs text-dimmed">Links</div>
+                <div class="text-xl font-semibold">{{ links.length }}</div>
+              </div>
+            </div>
+          </UCard>
+
+          <UCard v-if="canWrite">
+            <template #header>
+              <div class="text-sm font-semibold">Upload document</div>
+            </template>
+
+            <div class="space-y-3">
+              <input
+                type="file"
+                class="block w-full rounded border border-default p-2 text-sm"
+                :disabled="!canWrite"
+                @change="handleFileInput"
+              />
+
+              <UInput
+                v-model="uploadNotes"
+                :disabled="!canWrite"
+                placeholder="Optional notes"
+              />
+
+              <UButton
+                size="sm"
+                icon="i-lucide-upload"
+                :disabled="!selectedFile || !canWrite || uploadBusy"
+                :loading="uploadBusy"
+                @click="uploadSelectedFile"
+              >
+                Upload to vault
+              </UButton>
+
+              <div class="text-xs text-dimmed">
+                Generic file upload. No image-only assumptions.
+              </div>
+            </div>
+          </UCard>
+
+          <UCard v-if="canWrite">
+            <template #header>
+              <div class="text-sm font-semibold">Link document to entity</div>
+            </template>
+
+            <div class="grid gap-3 sm:grid-cols-2">
+              <UInput
+                v-model="linkDocumentId"
+                :disabled="!canWrite"
+                placeholder="Document id"
+              />
+              <UInput
+                v-model="linkTargetType"
+                :disabled="!canWrite"
+                placeholder="Target type (property, compliance-record, tenancy, ...)"
+              />
+              <UInput
+                v-model="linkTargetId"
+                :disabled="!canWrite"
+                placeholder="Target id"
+              />
+              <UInput
+                v-model="linkTargetLabel"
+                :disabled="!canWrite"
+                placeholder="Target label (optional)"
+              />
+            </div>
+
+            <div class="mt-3 flex items-center gap-2">
+              <UButton
+                size="sm"
+                icon="i-lucide-link"
+                :disabled="!canWrite || linkBusy"
+                :loading="linkBusy"
+                @click="createLink"
+              >
+                Link document
+              </UButton>
+
+              <UButton
+                size="sm"
+                variant="soft"
+                icon="i-lucide-list-checks"
+                :disabled="!canWrite || linkBusy"
+                @click="createLink(true)"
+              >
+                Link + create task
+              </UButton>
+            </div>
+
+            <div class="mt-2 text-xs text-dimmed">
+              Allowed target types: {{ allowedTargetTypesLabel }}
+            </div>
+          </UCard>
+
+          <UCard>
+            <template #header>
+              <div class="text-sm font-semibold">Vault documents</div>
+            </template>
+
+            <div v-if="cards.length" class="space-y-3">
+              <div
+                v-for="item in cards"
+                :key="item.id"
+                class="fx-inset-panel"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="space-y-1">
+                    <div class="text-sm font-semibold">{{ item.title }}</div>
+                    <div class="text-xs text-dimmed">{{ item.subtitle }}</div>
+                    <div class="text-xs text-dimmed">{{ item.meta }}</div>
+                    <div class="text-xs text-dimmed">
+                      Links: {{ linkCountByDocument[item.id] || 0 }}
+                    </div>
+                  </div>
+
+                  <UButton
+                    size="xs"
+                    variant="ghost"
+                    icon="i-lucide-copy"
+                    @click="useForLink(item.id)"
+                  >
+                    Use id
+                  </UButton>
+                </div>
+              </div>
+            </div>
+
+            <UAlert
+              v-else
+              color="neutral"
+              variant="soft"
+              title="No documents"
+              description="Upload files to populate the vault."
+            />
+          </UCard>
+        </section>
+      </template>
+    </UDashboardPanel>
+  </div>
 </template>
 
 <script setup lang="ts">

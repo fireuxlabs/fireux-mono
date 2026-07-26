@@ -127,6 +127,60 @@ export function run({ repoRoot }) {
   assert.match(context, /Object\.entries\(rawTargets \?\? \{\}\)/)
   assert.match(context, /has_premium_access: access\.hasPremiumAccess/)
 
+  const activeUserFetch = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch.ts'
+  )
+  assert.match(activeUserFetch, /useCurrentAppContext/)
+  assert.doesNotMatch(
+    activeUserFetch,
+    /\b(?:AppStorage|UserAppStorage|normalizeUserApp)\b/,
+    'Active User membership must use the bounded current-App server projection.'
+  )
+
+  const consoleTargets = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargets.ts'
+  )
+  assert.match(consoleTargets, /useCurrentAppContext/)
+  assert.doesNotMatch(
+    consoleTargets,
+    /useUserFetch/,
+    'Generic Console targets must consume the bounded membership projection directly.'
+  )
+
+  const routeAuthGuard = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/utils/routeAuthGuard.ts'
+  )
+  assert.match(routeAuthGuard, /fetchCurrentAppContext/)
+  assert.doesNotMatch(
+    routeAuthGuard,
+    /firebase\/firestore|UserAppStorage/,
+    'Client route authority must use the bounded current-App server projection.'
+  )
+
+  const userCreate = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate.ts'
+  )
+  assert.match(userCreate, /fetchCurrentAppContext/)
+  assert.doesNotMatch(
+    userCreate,
+    /\b(?:getDoc|UserAppStorage)\b/,
+    'User provisioning must not inspect App membership through browser Firestore.'
+  )
+
+  const membershipMutation = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/appMembershipMutation.ts'
+  )
+  assert.match(
+    membershipMutation,
+    /refreshNuxtData\(CURRENT_APP_CONTEXT_ASYNC_DATA_KEY\)/,
+    'Membership mutations must refresh the bounded current-App projection.'
+  )
+
   for (const relativePath of [
     'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules',
     'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules',

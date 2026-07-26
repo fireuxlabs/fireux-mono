@@ -1,8 +1,7 @@
 import { getApp, getApps, type FirebaseApp } from 'firebase/app'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { doc, getDoc, getFirestore } from 'firebase/firestore'
-import { AppStorage } from '../models/core/app.model'
-import { UserAppStorage } from '../models/core/user.model'
+import { fetchCurrentAppContext } from '../composables/fireux/app/currentAppContext'
+import type { CurrentAppMembershipDto } from '../server/utils/public-projection/public-dto.types'
 
 type AuthGuardState = {
   uid: string | null
@@ -90,15 +89,8 @@ export async function resolveClientAppAdmin(
     const app = await waitForFirebaseApp(options.timeoutMs)
     if (!app) return false
 
-    const databaseId = String(options.databaseId || '').trim()
-    const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app)
-
-    const appUserSnap = await getDoc(
-      doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)
-    )
-    if (!appUserSnap.exists()) return false
-
-    return appUserSnap.data()?.role === 'admin'
+    const membership = await resolveCurrentAppMembership(app, uid, appId)
+    return membership?.role === 'admin'
   }
 
   return withTimeout(run(), options.timeoutMs, false)
@@ -117,15 +109,27 @@ export async function resolveClientAppMember(
     const app = await waitForFirebaseApp(options.timeoutMs)
     if (!app) return false
 
-    const databaseId = String(options.databaseId || '').trim()
-    const db = databaseId ? getFirestore(app, databaseId) : getFirestore(app)
-
-    const appUserSnap = await getDoc(
-      doc(db, AppStorage.collection, appId, UserAppStorage.collection, uid)
-    )
-
-    return appUserSnap.exists()
+    const membership = await resolveCurrentAppMembership(app, uid, appId)
+    return membership !== null
   }
 
   return withTimeout(run(), options.timeoutMs, false)
+}
+
+async function resolveCurrentAppMembership(
+  app: FirebaseApp,
+  uid: string,
+  appId: string
+): Promise<CurrentAppMembershipDto | null> {
+  const user = getAuth(app).currentUser
+  if (!user || user.uid !== uid) return null
+
+  const context = await fetchCurrentAppContext(user)
+  if (context.appId !== appId) {
+    throw new Error(
+      'Current App context does not match the route authority App.'
+    )
+  }
+
+  return context.membership
 }

@@ -29,6 +29,9 @@ export default defineEventHandler(async (event) => {
   if (body?.sourceLanguage !== 'en' || body?.targetLanguage !== 'gsw') {
     throw createError({ statusCode: 400, statusMessage: 'Copy drafting supports en to gsw.' })
   }
+  if (profile.language_code !== 'gsw') {
+    throw createError({ statusCode: 400, statusMessage: 'A gsw copy profile is required.' })
+  }
 
   const profileId = normalizeSproochliText(profile.id)
   const locale = normalizeSproochliText(profile.locale)
@@ -55,14 +58,17 @@ export default defineEventHandler(async (event) => {
     key: normalizeSproochliText(body?.key),
     source_language: 'en',
     source_text: sourceText,
-    target_language: 'gsw',
-    target_text: draft.text,
-    profile_id: profileId,
-    status: 'ai_draft',
-    provenance: {
-      kind: 'ai',
-      provider: draft.provider,
-      generated_at: new Date().toISOString(),
+    translations: {
+      gsw: {
+        text: draft.text,
+        profile_id: profileId,
+        status: 'ai_draft',
+        provenance: {
+          kind: 'ai',
+          provider: draft.provider,
+          generated_at: new Date().toISOString(),
+        },
+      },
     },
   }
 })

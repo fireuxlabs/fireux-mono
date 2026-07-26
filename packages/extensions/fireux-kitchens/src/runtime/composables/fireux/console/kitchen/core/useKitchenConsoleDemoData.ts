@@ -39,16 +39,85 @@ export function useKitchenConsoleDemoData(
           })
           if (!kitchen) return items
 
+          const menus = scenario.menus.map(menu => ({
+            ...menu,
+            dishes: [...menu.dishes],
+            menuSections: menu.menuSections.map(section => ({
+              section: section.section,
+              items: [...section.items],
+            })),
+          }))
+
           items.push({
             ...scenario,
             kitchen,
+            menus,
             dishes: [...scenario.dishes],
+            ingredients: scenario.ingredients.map(ingredient => ({
+              ...ingredient,
+              names: ingredient.names ? { ...ingredient.names } : undefined,
+            })),
+            kitchenIngredients: scenario.kitchenIngredients.map(ingredient => ({
+              ...ingredient,
+            })),
+            supplierIngredientLinks: scenario.supplierIngredientLinks.map(link => ({
+              ...link,
+            })),
+            dishSpecs: scenario.dishSpecs.map(spec => ({
+              ...spec,
+              assembly: [...spec.assembly],
+              components: spec.components.map(component => ({
+                ...component,
+              })),
+            })),
+            finance: scenario.finance
+              ? {
+                  grossSales: Object.fromEntries(
+                    Object.entries(scenario.finance.grossSales).map(
+                      ([period, summary]) => [
+                        period,
+                        { ...summary },
+                      ]
+                    )
+                  ) as NonNullable<
+                    KitchenConsoleDemoScenario['finance']
+                  >['grossSales'],
+                }
+              : null,
+            menuItemComponentDeltas: scenario.menuItemComponentDeltas.map(
+              delta => ({
+                ...delta,
+                choice: { ...delta.choice },
+                components: delta.components.map(component => ({
+                  ...component,
+                })),
+              })
+            ),
             menuSections: scenario.menuSections.map(section => ({
               section: section.section,
               items: [...section.items],
             })),
+            miseRequirements: scenario.miseRequirements.map(requirement => ({
+              ...requirement,
+              amount: { ...requirement.amount },
+              source: { ...requirement.source },
+            })),
             miseTasks: [...scenario.miseTasks],
             orders: [...scenario.orders],
+            prepItems: scenario.prepItems.map(prepItem => ({
+              ...prepItem,
+              input: { ...prepItem.input },
+              yield: { ...prepItem.yield },
+              method: [...prepItem.method],
+            })),
+            recipes: scenario.recipes.map(recipe => ({
+              ...recipe,
+              yield: { ...recipe.yield },
+              ingredients: recipe.ingredients.map(ingredient => ({
+                ...ingredient,
+              })),
+              method: [...recipe.method],
+            })),
             stations: [...scenario.stations],
           })
           return items
@@ -73,4 +142,16 @@ export function findKitchenConsoleDemoScenario(
   if (!id) return null
 
   return data?.scenarios.find((scenario) => scenario.kitchen.id === id) ?? null
+}
+
+export function findKitchenConsoleDemoMenu(
+  scenario: KitchenConsoleDemoScenario | null | undefined,
+  menuId: string
+) {
+  const id = String(menuId ?? '').trim()
+  if (!id) return null
+
+  return scenario?.menus.find(
+    menu => String(menu.kitchenMenu.id ?? '').trim() === id
+  ) ?? null
 }

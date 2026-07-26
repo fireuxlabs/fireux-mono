@@ -33,6 +33,42 @@ export type MiseboxProductDemoKiosk = {
 }
 
 export type MiseboxProductDemo = {
+  console: {
+    dishes: {
+      id: string
+      imageUrl: string
+      kind: string
+      name: string
+      priceLabel: string
+      spec: {
+        assembly: string[]
+        id: string
+        recipeIds: string[]
+        station: string
+        summary: string
+      }
+    }[]
+    mise: {
+      id: string
+      quantity: string
+      recipeId: string
+      station: string
+      title: string
+    }[]
+    recipes: {
+      id: string
+      ingredientCount: number
+      method: string[]
+      name: string
+      yield: string
+    }[]
+    menus: {
+      id: string
+      imageAlt: string
+      imageUrl: string
+      name: string
+    }[]
+  }
   menu: {
     kitchenName: string
     kitchenTagline: string
@@ -87,6 +123,7 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
   const menuScenario = scenarioModule.featuredMenuDemoScenario
   const kioskScenario = scenarioModule.featuredKioskDemoScenario
   const serviceScenario = scenarioModule.featuredServiceDemoScenario
+  const consoleScenario = scenarioModule.deanosKitchenDemoScenario
   const menuManifest = presentationModule.featuredMenuDemoManifest
   const kioskPresentations = [
     {
@@ -135,7 +172,157 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
     throw new Error('The featured Kitchen Demo Worlds are internally inconsistent.')
   }
 
+  const consoleMenus = consoleScenario.menus.map((menu) => {
+    const linkedDishIds = menu.menuSections
+      .filter(({ section }) => section.status === 'active')
+      .sort((left, right) => left.section.sort_order - right.section.sort_order)
+      .flatMap(({ items }) =>
+        [...items]
+          .filter(item => item.status === 'active')
+          .sort((left, right) => left.sort_order - right.sort_order)
+      )
+      .map(item => String(item.dish_id || '').trim())
+      .filter(Boolean)
+    const previewDish = linkedDishIds
+      .map(dishId =>
+        menu.dishes.find(dish => dish.id === dishId)
+      )
+      .find(dish => Boolean(dish?.image))
+
+    return {
+      id: menu.kitchenMenu.id,
+      imageAlt: previewDish
+        ? `${previewDish.name} from ${menu.kitchenMenu.name}`
+        : menu.kitchenMenu.name,
+      imageUrl: String(previewDish?.image || '').trim(),
+      name: menu.kitchenMenu.name,
+    }
+  })
+  const consoleCurrencyCode = String(
+    consoleScenario.place.default_currency_code || 'CHF'
+  ).trim()
+  const consolePriceFormatter = new Intl.NumberFormat('en-CH', {
+    style: 'currency',
+    currency: consoleCurrencyCode,
+    maximumFractionDigits: 2,
+  })
+  const formatProductionAmount = (
+    amount: { quantity: number; unit: string }
+  ) => {
+    const unit = amount.unit === 'portion' && amount.quantity !== 1
+      ? 'portions'
+      : amount.unit
+    return `${amount.quantity} ${unit}`
+  }
+  const consoleMenuItems = consoleScenario.menus.flatMap(menu =>
+    menu.menuSections.flatMap(({ items }) => items)
+  )
+  const consoleDishes = consoleScenario.menus
+    .flatMap(menu => menu.dishes)
+    .map((dish) => {
+      const spec = consoleScenario.dishSpecs
+        .find(candidate => candidate.dishId === dish.id)
+      const prices = consoleMenuItems
+        .filter(item => item.dish_id === dish.id)
+        .flatMap(item => [
+          Number(item.price),
+          ...item.price_options.map(option => Number(option.price)),
+        ])
+        .filter(price => Number.isFinite(price) && price >= 0)
+      const price = prices.length ? Math.min(...prices) : null
+
+      return {
+        id: dish.id,
+        imageUrl: String(dish.image || '').trim(),
+        kind: dish.is_deal
+          ? 'Deal'
+          : dish.item_kind === 'drink'
+            ? 'Drink'
+            : 'Food',
+        name: dish.name || dish.id,
+        priceLabel: price === null ? '' : consolePriceFormatter.format(price),
+        spec: spec
+          ? {
+              assembly: [...spec.assembly],
+              id: spec.id,
+              recipeIds: spec.components
+                .filter(component => component.source === 'recipe')
+                .map(component => component.recipeId),
+              station: spec.station,
+              summary: spec.summary,
+            }
+          : {
+              assembly: [],
+              id: '',
+              recipeIds: [],
+              station: '',
+              summary: '',
+            },
+      }
+    })
+    .sort((left, right) => left.name.localeCompare(right.name))
+  const menuDishIds = new Set(
+    consoleScenario.menus
+      .flatMap(menu => menu.menuSections)
+      .flatMap(({ items }) => items)
+      .map(item => String(item.dish_id || '').trim())
+      .filter(Boolean)
+  )
+  const dishSpecs = consoleScenario.dishSpecs
+  const ingredientIds = new Set(
+    consoleScenario.ingredients.map(ingredient => ingredient.id)
+  )
+  const prepItemIds = new Set(
+    consoleScenario.prepItems.map(prepItem => prepItem.id)
+  )
+  const recipeIds = new Set(
+    consoleScenario.recipes.map(recipe => recipe.id)
+  )
+  const missingSpecs = [...menuDishIds]
+    .filter(dishId => !dishSpecs.some(spec => spec.dishId === dishId))
+  const unknownSpecDishes = dishSpecs
+    .filter(spec => !menuDishIds.has(spec.dishId))
+  const unknownComponentReferences = dishSpecs
+    .flatMap(spec => spec.components)
+    .filter((component) => {
+      if (component.source === 'ingredient') {
+        return !ingredientIds.has(component.ingredientId)
+      }
+      if (component.source === 'prep_item') {
+        return !prepItemIds.has(component.prepItemId)
+      }
+      return !recipeIds.has(component.recipeId)
+    })
+
+  if (
+    missingSpecs.length
+    || unknownSpecDishes.length
+    || unknownComponentReferences.length
+  ) {
+    throw new Error('The Deanos production-planning demo is internally inconsistent.')
+  }
+
   return {
+    console: {
+      dishes: consoleDishes,
+      mise: consoleScenario.miseRequirements.map(requirement => ({
+        id: requirement.id,
+        quantity: formatProductionAmount(requirement.amount),
+        recipeId: requirement.source.kind === 'recipe'
+          ? requirement.source.recipeId
+          : '',
+        station: requirement.station,
+        title: requirement.title,
+      })),
+      recipes: consoleScenario.recipes.map(recipe => ({
+        id: recipe.id,
+        ingredientCount: recipe.ingredients.length,
+        method: [...recipe.method],
+        name: recipe.name,
+        yield: formatProductionAmount(recipe.yield),
+      })),
+      menus: consoleMenus,
+    },
     menu: {
       kitchenName: menuManifest.presentation.kitchenName,
       kitchenTagline: String(menuScenario.kitchen.identity.tagline || '').trim(),
@@ -160,8 +347,19 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
 
 export async function useMiseboxProductDemo() {
   const state = await useAsyncData<MiseboxProductDemo>(
-    'misebox-product-demo',
-    loadMiseboxProductDemo,
+    'misebox-product-demo-production-v1',
+    async () => {
+      try {
+        return await loadMiseboxProductDemo()
+      }
+      catch (error) {
+        console.error(
+          '[misebox-product-demo] Failed to load demo data.',
+          error instanceof Error ? error.message : String(error)
+        )
+        throw error
+      }
+    },
     { deep: false }
   )
 

@@ -1,28 +1,26 @@
 <template>
   <section class="console-surface">
-    <!-- Tools: add operation-level actions here when a real tool emerges. -->
-    <ConsoleKitchenOperationsDishesRead />
+    <div v-if="kitchenId" class="space-y-4">
+      <ConsoleKitchenOperationsDishesRead />
+      <ConsoleKitchenOperationsDishesTools />
+    </div>
 
     <UAlert
-      v-if="readOnly"
+      v-else
       color="neutral"
       variant="soft"
-      title="Read only"
-      description="This kitchen can be inspected, but changes are disabled."
+      title="Select a kitchen"
+      description="Choose a kitchen before managing dishes."
     />
-
-    <ConsoleOperationWritePanel
-      v-if="canWrite"
-      title="Create dish"
-      description="Add a dish to this kitchen library."
-    >
-      <ConsoleKitchenOperationsDishesWrite />
-    </ConsoleOperationWritePanel>
   </section>
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
+import { provideKitchenDishesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
+import ConsoleKitchenOperationsDishesRead from './Read.vue'
+import ConsoleKitchenOperationsDishesTools from './Tools.vue'
 
-const { readOnly, canWrite } = useKitchenConsoleDishes({ resolveMenuSections: false })
+const {
+  kitchenId,
+} = provideKitchenDishesWorkspace()
 </script>

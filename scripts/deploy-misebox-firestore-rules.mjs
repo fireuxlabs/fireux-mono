@@ -2685,6 +2685,78 @@ async function buildSecurityTests() {
       appAdminMocks(adminId, path)
     ),
     read(
+      'guest cannot read a raw marketplace Store',
+      'DENY',
+      'apps/misebox-app/marketplace-stores/security-store'
+    ),
+    read(
+      'Store member cannot read raw private Store authority',
+      'DENY',
+      'apps/misebox-app/marketplace-stores/security-store',
+      regularId
+    ),
+    list(
+      'App admin must use the marketplace administration API',
+      'DENY',
+      'apps/misebox-app/marketplace-stores',
+      adminId
+    ),
+    deniedCreate(
+      'Store member cannot create a raw Store',
+      'apps/misebox-app/marketplace-stores/security-store',
+      regularId,
+      { owner_ids: [regularId], publication_state: 'draft' }
+    ),
+    deniedUpdate(
+      'App admin cannot bypass Store lifecycle endpoints',
+      'apps/misebox-app/marketplace-stores/security-store',
+      adminId,
+      { publication_state: 'pending_review' },
+      { publication_state: 'published' }
+    ),
+    read(
+      'guest cannot read a raw published Offer',
+      'DENY',
+      'apps/misebox-app/marketplace-stores/security-store/offers/security-offer'
+    ),
+    deniedCreate(
+      'Store member cannot create a raw Offer',
+      'apps/misebox-app/marketplace-stores/security-store/offers/security-offer',
+      regularId,
+      { state: 'draft' }
+    ),
+    list(
+      'Store member must use the managed Offer API',
+      'DENY',
+      'apps/misebox-app/marketplace-stores/security-store/offers',
+      regularId
+    ),
+    read(
+      'buyer cannot read a raw marketplace Order',
+      'DENY',
+      'apps/misebox-app/marketplace-orders/security-order',
+      regularId
+    ),
+    deniedCreate(
+      'buyer cannot create a raw marketplace Order',
+      'apps/misebox-app/marketplace-orders/security-order',
+      regularId,
+      { buyer_uid: regularId, status: 'requested' }
+    ),
+    deniedUpdate(
+      'Store member cannot bypass Order lifecycle endpoints',
+      'apps/misebox-app/marketplace-orders/security-order',
+      regularId,
+      { status: 'requested' },
+      { status: 'completed' }
+    ),
+    read(
+      'cross-App user cannot read another App marketplace Store',
+      'DENY',
+      'apps/security-other-app/marketplace-stores/security-store',
+      regularId
+    ),
+    read(
       'membership blocks remain server-only',
       'DENY',
       `apps/misebox-app/membership-blocks/${regularId}`,

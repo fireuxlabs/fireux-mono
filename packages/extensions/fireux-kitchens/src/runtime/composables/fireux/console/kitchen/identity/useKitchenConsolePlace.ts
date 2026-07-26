@@ -9,10 +9,14 @@ import {
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../core/useKitchenConsoleDemoData'
-import { useKitchenConsoleIdentity } from './useKitchenConsoleIdentity'
+import {
+  useKitchenConsoleIdentity,
+  type KitchenConsoleIdentityState,
+} from './useKitchenConsoleIdentity'
 
-export function useKitchenConsolePlace() {
-  const identity = useKitchenConsoleIdentity()
+export function useKitchenConsolePlace(
+  identity: KitchenConsoleIdentityState = useKitchenConsoleIdentity()
+) {
   const livePlaceId = computed(() =>
     identity.source.value === 'live' ? identity.placeId.value : ''
   )

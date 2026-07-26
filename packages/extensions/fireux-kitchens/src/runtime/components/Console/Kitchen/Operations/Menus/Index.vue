@@ -1,38 +1,14 @@
 <template>
   <section class="console-surface">
-    <template v-if="selectedKitchen">
-      <ConsoleKitchenOperationsMenusList />
+    <div v-if="kitchenId" class="space-y-4">
+      <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.48fr)]">
+        <ConsoleKitchenOperationsMenusList />
 
-      <UAlert
-        v-if="readOnly"
-        color="neutral"
-        variant="soft"
-        title="Read only"
-        description="This kitchen can be inspected, but changes are disabled."
-      />
+        <ConsoleKitchenOperationsMenusTools />
+      </div>
 
-      <UAlert
-        v-else-if="!canCreateMenu"
-        color="warning"
-        variant="soft"
-        title="Currency required"
-        :description="menuCreateBlockedMessage"
-      />
-
-      <ConsoleOperationWritePanel
-        v-if="canWrite && canCreateMenu"
-        title="Menu creation tools"
-        description="Upload sources, process drafts, and create kitchen menus."
-      >
-        <div class="space-y-6">
-          <ConsoleKitchenOperationsMenusCreation />
-          <ConsoleKitchenOperationsMenusCreationQueue />
-        </div>
-      </ConsoleOperationWritePanel>
-
-      <ConsoleKitchenOperationsMenusQR v-if="menus.length" />
       <ConsoleKitchenOperationsMenusDebug />
-    </template>
+    </div>
 
     <UAlert
       v-else
@@ -45,14 +21,9 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
+import { provideKitchenMenusWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
 
 const {
-  selectedKitchen,
-  readOnly,
-  canWrite,
-  canCreateMenu,
-  menuCreateBlockedMessage,
-  menus,
-} = useKitchenConsoleMenus()
+  kitchenId,
+} = provideKitchenMenusWorkspace()
 </script>

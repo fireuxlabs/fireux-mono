@@ -1,9 +1,16 @@
 <template>
   <div class="space-y-6">
     <UPageCard
-      v-if="!selectedSupplier"
+      v-if="!supplierId"
       title="No supplier selected"
       description="Select a supplier to view its identity."
+      variant="subtle"
+    />
+
+    <UPageCard
+      v-else-if="!selectedSupplier"
+      title="Loading supplier identity"
+      description="Restoring the selected supplier."
       variant="subtle"
     />
 
@@ -65,6 +72,7 @@ import { useSupplierConsoleIdentity } from '../../../../composables/fireux/conso
 
 const {
   selectedSupplier,
+  supplierId,
   name,
   tagline,
   headline,

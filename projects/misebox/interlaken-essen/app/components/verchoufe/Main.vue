@@ -21,7 +21,7 @@
 
     <ClientOnly>
       <NuxtLink
-        :to="isSignedIn ? '/mis' : '/auth'"
+        :to="isSignedIn ? '/mis/stores' : '/auth'"
         class="market-action market-action--light market-sell-start__action"
       >
         <UIcon
@@ -36,7 +36,7 @@
           {{
             copy(
               isSignedIn
-                ? 'sell_open_account'
+                ? 'market_manage_stores'
                 : 'sell_register'
             )
           }}

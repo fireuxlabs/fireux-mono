@@ -1,5 +1,7 @@
 <template>
-  <ConsoleKitchenOperationsOrders />
+  <div class="flex min-h-full min-w-0 flex-1">
+    <ConsoleKitchenOperationsOrders />
+  </div>
 </template>
 
 <script setup lang="ts">

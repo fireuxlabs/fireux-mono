@@ -1,5 +1,9 @@
 <template>
-  <div class="orders-pass" data-order-rail="pass">
+  <div
+    v-if="passOrders.length"
+    class="orders-pass"
+    data-order-rail="pass"
+  >
     <ConsoleKitchenOperationsOrdersTicket
       v-for="ticket in passOrders"
       :key="ticket.id"

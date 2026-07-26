@@ -3,15 +3,33 @@
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import type { MenuItemPriceOption } from '../../../../../../models/kitchen/menu/menu-item.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
 import { useMenuSectionCollection } from '../../../../firestore/menu/fetch/useMenuSectionCollection'
 import { useMenuSectionMutations } from '../../../../firestore/menu/mutations/useMenuSectionMutations'
 import {
+  findKitchenConsoleDemoMenu,
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
 
 const clean = (value: unknown) => String(value ?? '').trim()
+
+export type KitchenConsoleMenuPreviewItem = {
+  id: string
+  name: string
+  imageUrl: string
+  price: number
+  priceOptions: MenuItemPriceOption[]
+}
+
+export type KitchenConsoleMenuSectionPreview = {
+  id: string
+  label: string
+  description: string
+  itemCount: number | null
+  items: KitchenConsoleMenuPreviewItem[]
+}
 
 export function useKitchenConsoleMenu() {
   const state = useKitchenConsoleMenus()
@@ -29,6 +47,10 @@ export function useKitchenConsoleMenu() {
     demoData.data.value,
     state.kitchenId.value
   ))
+  const demoMenu = computed(() => findKitchenConsoleDemoMenu(
+    demoScenario.value,
+    menuId.value
+  ))
   const sectionMenuId = computed(() => menu.value ? menuId.value : '')
   const sectionState = useMenuSectionCollection(
     state.storageKitchenId,
@@ -45,7 +67,7 @@ export function useKitchenConsoleMenu() {
   const sections = computed(() =>
     state.kitchenSource.value === 'demo'
       ? menu.value && clean(menu.value.id) === menuId.value
-        ? demoScenario.value?.menuSections.map(entry => entry.section) ?? []
+        ? demoMenu.value?.menuSections.map(entry => entry.section) ?? []
         : []
       : sectionState.sections.value
   )
@@ -58,6 +80,38 @@ export function useKitchenConsoleMenu() {
     state.kitchenSource.value === 'demo'
       ? `demo/kitchens/${state.kitchenId.value}/menus/${menuId.value}/sections`
       : sectionState.collectionPath.value
+  )
+  const sectionPreviews = computed<KitchenConsoleMenuSectionPreview[]>(() =>
+    [...sections.value]
+      .sort((left, right) => left.sort_order - right.sort_order)
+      .map((section) => {
+        const demoSection = demoMenu.value?.menuSections.find(
+          entry => clean(entry.section.id) === clean(section.id)
+        )
+        const activeItems = demoSection?.items
+          .filter(item => item.status === 'active')
+          .sort((left, right) => left.sort_order - right.sort_order) ?? []
+
+        return {
+          id: clean(section.id),
+          label: clean(section.label) || clean(section.id) || 'Section',
+          description: clean(section.description),
+          itemCount: demoSection ? activeItems.length : null,
+          items: activeItems.map((item) => {
+            const dish = demoMenu.value?.dishes.find(
+              candidate => clean(candidate.id) === clean(item.dish_id)
+            )
+
+            return {
+              id: clean(item.id),
+              name: clean(dish?.name) || clean(item.dish_id) || 'Menu item',
+              imageUrl: clean(dish?.image),
+              price: Number.isFinite(Number(item.price)) ? Number(item.price) : 0,
+              priceOptions: [...(item.price_options ?? [])],
+            }
+          }),
+        }
+      })
   )
 
   function assertCanWrite() {
@@ -102,6 +156,7 @@ export function useKitchenConsoleMenu() {
     menu,
     source,
     sections,
+    sectionPreviews,
     sectionsPending,
     sectionsCollectionPath,
     debug: computed(() => ({

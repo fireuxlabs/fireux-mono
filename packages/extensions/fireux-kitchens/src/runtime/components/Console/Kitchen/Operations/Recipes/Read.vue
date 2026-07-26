@@ -12,7 +12,20 @@
         </div>
       </template>
 
-      <div v-if="cards.length" class="space-y-3">
+      <p v-if="pending" class="text-sm text-dimmed">
+        Loading recipes...
+      </p>
+
+      <UAlert
+        v-else-if="error"
+        color="error"
+        variant="soft"
+        icon="i-lucide-circle-alert"
+        title="Recipes unavailable"
+        description="The recipes for this kitchen could not be loaded. Please try again."
+      />
+
+      <div v-else-if="cards.length" class="space-y-3">
         <ConsoleKitchenOperationsRecipesCardsCell
           v-for="card in cards"
           :key="card.id"
@@ -21,7 +34,7 @@
         />
       </div>
 
-      <p v-else class="text-sm text-dimmed">
+      <p v-else-if="outcome === 'empty'" class="text-sm text-dimmed">
         No recipes found.
       </p>
     </UCard>
@@ -37,9 +50,15 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRecipeInterface } from '../../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
-import { useKitchenConsoleRecipes } from '../../../../../composables/fireux/console/kitchen/operations/Recipes/useKitchenConsoleRecipes'
+import { useKitchenRecipesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Recipes/useKitchenRecipesWorkspace'
 
-const { recipes, debug } = useKitchenConsoleRecipes()
+const {
+  recipes,
+  pending,
+  error,
+  outcome,
+  debug,
+} = useKitchenRecipesWorkspace()
 const { cell } = useRecipeInterface()
 const cards = computed(() =>
   recipes.value

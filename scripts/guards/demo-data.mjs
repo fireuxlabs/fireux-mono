@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-22
+// last_used: 2026-07-25
 // usage_note: enforces owner-local, deferred, read-only Demo World consumers.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: lock fixture ownership and lazy console consumption.
 // Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: admit one named project adapter and the public route namespace.
@@ -470,6 +470,26 @@ export async function run(ctx) {
     const source = readFileSync(file, 'utf8')
     const imports = importsForFile(file, source)
     const consoleCore = consoleCoreFamily(relativeFile, source)
+    const kitchenDemo =
+      relativeFile.startsWith(
+        'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/'
+      )
+
+    if (
+      kitchenDemo &&
+      (
+        relativeFile.endsWith('/catalogue.ts') ||
+        /\bKitchenDemoCatalogue\b/.test(source) ||
+        /\.catalogues\b/.test(source)
+      )
+    ) {
+      violations.push({
+        code: 'kitchen-operation-vocabulary',
+        file: relativeFile,
+        message:
+          'Kitchen Demo fixtures must follow Menu, Dish, Recipe, and Mise operation vocabulary; Catalogue belongs to the Supplier family.',
+      })
+    }
 
     if (
       consoleCore &&
