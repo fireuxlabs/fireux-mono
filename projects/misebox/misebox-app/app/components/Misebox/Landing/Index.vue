@@ -69,7 +69,7 @@
 import type { LandingProductIndexContent } from 'fireux-core/types/landing-product'
 import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
 import { kitchenOperations } from 'fireux-kitchens/runtime/content/operations'
-import MiseboxLandingConsolePreview from './ConsolePreview.vue'
+import MiseboxLandingConsolePreview from './ConsolePreview/Index.vue'
 import MiseboxLandingPractice from './Practice.vue'
 import MiseboxLandingPreview from './Preview.vue'
 

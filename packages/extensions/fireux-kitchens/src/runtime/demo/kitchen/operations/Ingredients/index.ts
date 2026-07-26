@@ -8,20 +8,20 @@
 import {
   IngredientModel,
   type Ingredient,
-} from '../../models/ingredient.model'
+} from '../../../../models/ingredient.model'
 import {
   KitchenIngredientModel,
   type KitchenIngredient,
-} from '../../models/kitchen/ingredient.model'
+} from '../../../../models/kitchen/ingredient.model'
 import {
   KitchenSupplierIngredientModel,
   type KitchenSupplierIngredient,
-} from '../../models/kitchen/supplier-ingredient.model'
+} from '../../../../models/kitchen/supplier-ingredient.model'
 import {
   deanosKitchenDemoIdentity,
   kitchenDemoCreated,
   kitchenDemoUpdated,
-} from './fixtures'
+} from '../../core/fixtures'
 
 type DeanosIngredientDefinition = {
   id: string

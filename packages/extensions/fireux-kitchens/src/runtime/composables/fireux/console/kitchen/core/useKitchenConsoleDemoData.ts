@@ -8,7 +8,7 @@ import {
   useKitchenInterface,
   type KitchenSurface,
 } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
-import type { KitchenDemoScenario } from '../../../../../demo/kitchen/types'
+import type { KitchenDemoScenario } from '../../../../../demo/kitchen/core/types'
 
 export type KitchenConsoleDemoScenario = Omit<KitchenDemoScenario, 'kitchen'> & {
   kitchen: KitchenSurface

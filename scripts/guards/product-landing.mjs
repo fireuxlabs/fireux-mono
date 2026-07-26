@@ -21,7 +21,35 @@ const MISEBOX_PAGE_PATH =
 const MISEBOX_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Preview.vue'
 const MISEBOX_CONSOLE_PREVIEW_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview.vue'
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue'
+const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
+  menus:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Menus.vue',
+  dishes:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes.vue',
+  dishCollection:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Collection.vue',
+  dishDetail:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Detail.vue',
+  dishDetailSections:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/DetailSections.vue',
+  dishFinance:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Finance.vue',
+  dishSpec:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Spec.vue',
+  dishPrepItems:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/PrepItems.vue',
+  dishRecipes:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Recipes.vue',
+  dishMise:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Dishes/Mise.vue',
+  recipes:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Recipes.vue',
+  mise:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Mise.vue',
+  emptyCanvas:
+    'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/EmptyCanvas.vue',
+}
 const MISEBOX_META_PATH =
   'projects/misebox/misebox-app/app/meta.ts'
 const MISEBOX_JOBS_MIDDLEWARE_PATH =
@@ -376,6 +404,10 @@ export async function run(ctx) {
   const miseboxPage = read(repoRoot, MISEBOX_PAGE_PATH)
   const miseboxPreview = read(repoRoot, MISEBOX_PREVIEW_PATH)
   const miseboxConsolePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
+  const miseboxConsolePreviewComponents = Object.fromEntries(
+    Object.entries(MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS)
+      .map(([key, filePath]) => [key, read(repoRoot, filePath)])
+  )
   const miseboxMeta = read(repoRoot, MISEBOX_META_PATH)
   const miseboxJobsMiddleware = read(repoRoot, MISEBOX_JOBS_MIDDLEWARE_PATH)
   const miseboxJobsLayout = read(repoRoot, MISEBOX_JOBS_LAYOUT_PATH)
@@ -505,14 +537,119 @@ export async function run(ctx) {
     "from 'fireux-kitchens/runtime/content/operations'",
     'aria-label="Kitchen Operations"',
     ':aria-current="operation.id === selectedOperationId',
-    '@click="selectedOperationId = operation.id"',
-    ':aria-label="`${selectedOperation.title} page canvas`"',
-    'min-h-[20rem]',
+    '@click="selectOperation(operation.id)"',
+    "const selectedDishId = ref('')",
+    "const selectedDishPage = ref<DishChildPage>('detail')",
+    '<MiseboxLandingConsolePreviewMenus',
+    '<MiseboxLandingConsolePreviewDishes',
+    '<MiseboxLandingConsolePreviewRecipes',
+    '<MiseboxLandingConsolePreviewMise',
+    '<MiseboxLandingConsolePreviewEmptyCanvas',
   ]) {
     if (!miseboxConsolePreview.includes(required)) {
       violations.push(
         `${MISEBOX_CONSOLE_PREVIEW_PATH}: missing local canonical Console navigation (${required})`
       )
+    }
+  }
+
+  if (count(miseboxConsolePreview, /useMiseboxProductDemo\(/g) !== 1) {
+    violations.push(
+      `${MISEBOX_CONSOLE_PREVIEW_PATH}: root must own exactly one Product Demo load`
+    )
+  }
+
+  for (const forbidden of [
+    'Build spec',
+    'aria-label="Dish detail sections"',
+    'console-preview-menus',
+    'console-preview-dishes',
+    'selectedDishSection',
+    '<ConsoleKitchenOperationsDishesCardsCell',
+  ]) {
+    if (miseboxConsolePreview.includes(forbidden)) {
+      violations.push(
+        `${MISEBOX_CONSOLE_PREVIEW_PATH}: thin root re-owned operation presentation (${forbidden})`
+      )
+    }
+  }
+
+  const componentContracts = {
+    menus: ['aria-label="Menus preview"', 'console-preview-menus'],
+    dishes: [
+      'aria-label="Dish preview breadcrumb"',
+      '<MiseboxLandingConsolePreviewDishesDetail',
+      '<MiseboxLandingConsolePreviewDishesCollection',
+      '<MiseboxLandingConsolePreviewDishesFinance',
+      '<MiseboxLandingConsolePreviewDishesSpec',
+      '<MiseboxLandingConsolePreviewDishesPrepItems',
+      '<MiseboxLandingConsolePreviewDishesRecipes',
+      '<MiseboxLandingConsolePreviewDishesMise',
+    ],
+    dishCollection: [
+      '<ConsoleKitchenOperationsDishesCardsCell',
+      'console-preview-dishes',
+      "@action=\"$emit('select', dish.id)\"",
+    ],
+    dishDetail: [
+      'Build spec',
+      'sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]',
+      '<MiseboxLandingConsolePreviewDishesDetailSections',
+    ],
+    dishDetailSections: [
+      'aria-label="Dish detail sections"',
+      "@click=\"$emit('select', section.id)\"",
+      "id: 'finance' as const",
+      "id: 'spec' as const",
+      "id: 'prep' as const",
+      "id: 'recipes' as const",
+      "id: 'mise' as const",
+    ],
+    dishFinance: [
+      'aria-label="Dish Finance preview"',
+      'Selling price',
+      'Cost of sales',
+      'Gross profit',
+      'Food cost',
+      'Gross margin',
+    ],
+    dishSpec: ['aria-label="Dish Spec preview"', 'dish.spec.assembly'],
+    dishPrepItems: ['aria-label="Dish Prep items preview"', 'dish.prepItems'],
+    dishRecipes: ['aria-label="Dish Recipes preview"', 'dish.recipes'],
+    dishMise: ['aria-label="Dish Mise en place preview"', 'dish.mise'],
+    recipes: ['aria-label="Recipes preview"'],
+    mise: ['aria-label="Mise en place preview"'],
+    emptyCanvas: [
+      ':aria-label="`${title} page canvas`"',
+      'min-h-[20rem]',
+    ],
+  }
+  for (const [key, requiredMarkers] of Object.entries(componentContracts)) {
+    const source = miseboxConsolePreviewComponents[key]
+    const filePath = MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]
+    for (const required of requiredMarkers) {
+      if (!source.includes(required)) {
+        violations.push(
+          `${filePath}: missing owned Console preview contract (${required})`
+        )
+      }
+    }
+  }
+
+  for (const [key, source] of Object.entries(miseboxConsolePreviewComponents)) {
+    const filePath = MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]
+    for (const forbidden of [
+      'useMiseboxProductDemo(',
+      'useKitchenConsole',
+      'useConsoleSelection',
+      'useFirestore',
+      'firebase',
+    ]) {
+      if (source.includes(forbidden)) {
+        violations.push(
+          `${filePath}: child acquired data or live Console authority (${forbidden})`
+        )
+      }
     }
   }
 

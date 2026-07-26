@@ -7,14 +7,14 @@ import type {
   MenuManifest,
   MenuManifestItem,
   MenuManifestSection,
-} from '../../models/kitchen/menu/menu-detail.model'
-import type { MenuItem } from '../../models/kitchen/menu/menu-item.model'
+} from '../../../models/kitchen/menu/menu-detail.model'
+import type { MenuItem } from '../../../models/kitchen/menu/menu-item.model'
 import {
   featuredKioskDemoScenario,
   featuredMenuDemoScenario,
   featuredServiceDemoScenario,
-} from './scenarios'
-import type { KitchenDemoScenario } from './types'
+} from '../scenarios'
+import type { KitchenDemoScenario } from '../core/types'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const imageShade = (value: unknown) => {

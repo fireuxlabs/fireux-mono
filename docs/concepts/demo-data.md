@@ -41,6 +41,14 @@ Console Demo Data and a project's public Product Demo.
   contract have been agreed together.
 - Reusable fixtures live with their package under `src/runtime/demo`.
 - App-only fixtures live with their project under `app/demo`.
+- A mature Demo owner keeps shared identity/types under `core/`, operation
+  records under `operations/<ExactConsoleOperation>/`, and derived guest or
+  showroom projections under optional `presentation/`. Root `scenarios.ts`
+  composes and validates those owner-local seams; it does not become a second
+  fixture graph.
+- Operation folders are capability-shaped, not parity placeholders. Add an
+  exact operation folder only when it owns real records; do not create empty
+  folders merely to make unrelated owners or scenarios look symmetrical.
 - An owning Console composable adapter loads fixtures with a dynamic import and
   `useConsoleDemoData`; inactive Consoles do not import or evaluate them.
 - Every Console core that accepts the shared Demo source owns a matching lazy

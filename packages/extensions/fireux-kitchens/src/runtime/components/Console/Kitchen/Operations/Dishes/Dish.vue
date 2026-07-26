@@ -15,195 +15,252 @@
     />
 
     <template v-else>
-      <ConsoleKitchenOperationsDishesCardsProfile :dish="dish" />
+      <UCard>
+        <div class="flex items-start gap-3">
+          <UAvatar
+            :src="dish.image || undefined"
+            :alt="dish.name || 'Dish'"
+            icon="i-lucide-utensils"
+            size="lg"
+            class="shrink-0"
+          />
 
-      <div
-        v-if="menuPlacements.length"
-        class="flex flex-wrap gap-2"
-        aria-label="Menu placements"
-      >
-        <UBadge
-          v-for="placement in menuPlacements"
-          :key="placement.key"
-          color="neutral"
-          variant="soft"
-        >
-          {{ placement.label }}
-        </UBadge>
-      </div>
+          <div class="min-w-0">
+            <p
+              class="text-xs font-semibold uppercase tracking-wide text-primary"
+            >
+              Basics
+            </p>
+            <h2 class="mt-1 text-xl font-semibold text-highlighted">
+              {{ dish.name }}
+            </h2>
+            <p
+              v-if="dish.description"
+              class="mt-1 max-w-2xl text-sm text-dimmed"
+            >
+              {{ dish.description }}
+            </p>
 
-      <ConsoleKitchenOperationsDishesFinance
-        :finance="finance"
-        :pending="financePending"
-        :error="financeError"
-      />
-
-      <UCard v-if="dishSpec">
-        <template #header>
-          <div class="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-wide text-primary">
-                Spec
-              </p>
-            </div>
-            <div class="flex flex-wrap gap-2">
-              <UBadge color="neutral" variant="soft">
-                {{ dishSpec.station }}
-              </UBadge>
+            <div
+              v-if="menuPlacements.length"
+              class="mt-3 flex flex-wrap gap-2"
+              aria-label="Menu placements"
+            >
               <UBadge
-                v-if="dishSpec.portion"
+                v-for="placement in menuPlacements"
+                :key="placement.key"
                 color="neutral"
                 variant="soft"
               >
-                {{ dishSpec.portion }} portion
+                {{ placement.label }}
               </UBadge>
             </div>
           </div>
-        </template>
-
-        <p class="text-sm text-toned">
-          {{ dishSpec.summary }}
-        </p>
-
-        <div v-if="componentViews.length" class="mt-5">
-          <h2 class="text-sm font-semibold text-highlighted">
-            Components
-          </h2>
-          <ul class="mt-2 grid gap-2 sm:grid-cols-2">
-            <li
-              v-for="component in componentViews"
-              :key="component.id"
-              class="flex items-start justify-between gap-3 rounded-lg border border-default bg-elevated/30 p-3"
-            >
-              <div>
-                <p class="text-sm font-semibold text-highlighted">
-                  {{ component.name }}
-                </p>
-                <p class="mt-1 text-xs text-muted">
-                  {{ component.sourceLabel }}
-                </p>
-              </div>
-              <UBadge color="neutral" variant="soft">
-                {{ component.amount }}
-              </UBadge>
-            </li>
-          </ul>
-        </div>
-
-        <div v-if="dishSpec.assembly.length" class="mt-5">
-          <h2 class="text-sm font-semibold text-highlighted">
-            Assembly
-          </h2>
-          <ol class="mt-2 grid gap-3">
-            <li
-              v-for="(step, index) in dishSpec.assembly"
-              :key="step"
-              class="flex gap-3 text-sm text-toned"
-            >
-              <span
-                class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
-              >
-                {{ Number(index) + 1 }}
-              </span>
-              <span class="pt-0.5">{{ step }}</span>
-            </li>
-          </ol>
         </div>
       </UCard>
 
-      <div
-        v-if="prepItems.length || recipes.length || miseRequirements.length"
-        class="grid gap-4 lg:grid-cols-2"
+      <MoleculesDisclosurePanel
+        title="Finance"
+        description="Cost and margin summary."
+        icon="i-lucide-chart-no-axes-column"
+        :unmount-on-hide="false"
       >
-        <UCard v-for="prepItem in prepItems" :key="prepItem.id">
+        <div class="mt-3">
+          <ConsoleKitchenOperationsDishesFinance
+            :finance="finance"
+            :pending="financePending"
+            :error="financeError"
+          />
+        </div>
+      </MoleculesDisclosurePanel>
+
+      <MoleculesDisclosurePanel
+        v-if="dishSpec"
+        title="Spec"
+        description="Components and assembly."
+        icon="i-lucide-clipboard-list"
+      >
+        <UCard class="mt-3">
           <template #header>
-            <div class="flex items-start justify-between gap-3">
+            <div class="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <p class="text-xs font-semibold uppercase tracking-wide text-primary">
-                  Prep item
-                </p>
-                <h2 class="mt-1 text-base font-semibold text-highlighted">
-                  {{ prepItem.name }}
-                </h2>
-              </div>
-              <UBadge color="neutral" variant="soft">
-                {{ prepItem.station }}
-              </UBadge>
-            </div>
-          </template>
-
-          <dl class="grid gap-2 text-sm">
-            <div class="flex items-start justify-between gap-3">
-              <dt class="text-muted">
-                Input
-              </dt>
-              <dd class="text-right text-toned">
-                {{ formatRecipeIngredient(prepItem.input) }}
-              </dd>
-            </div>
-            <div class="flex items-start justify-between gap-3">
-              <dt class="text-muted">
-                Yield
-              </dt>
-              <dd class="text-right text-toned">
-                {{ formatProductionAmount(prepItem.yield) }}
-              </dd>
-            </div>
-          </dl>
-
-          <ol class="mt-4 grid gap-1 text-sm text-toned">
-            <li v-for="methodStep in prepItem.method" :key="methodStep">
-              {{ methodStep }}
-            </li>
-          </ol>
-        </UCard>
-
-        <UCard v-for="recipe in recipes" :key="recipe.id">
-          <template #header>
-            <div>
-              <p class="text-xs font-semibold uppercase tracking-wide text-primary">
-                Recipe
-              </p>
-              <h2 class="mt-1 text-base font-semibold text-highlighted">
-                {{ recipe.name }}
-              </h2>
-              <p class="mt-1 text-xs text-muted">
-                Yield · {{ formatProductionAmount(recipe.yield) }}
-              </p>
-            </div>
-          </template>
-
-          <div class="grid gap-4 sm:grid-cols-2">
-            <div>
-              <h3 class="text-sm font-semibold text-highlighted">
-                Ingredients
-              </h3>
-              <ul class="mt-2 grid gap-1 text-sm text-toned">
-                <li
-                  v-for="ingredient in recipe.ingredients"
-                  :key="`${ingredient.ingredientId}:${ingredient.quantity}:${ingredient.unit}`"
+                <p
+                  class="text-xs font-semibold uppercase tracking-wide text-primary"
                 >
-                  {{ formatRecipeIngredient(ingredient) }}
-                </li>
-              </ul>
+                  Spec
+                </p>
+              </div>
+              <div class="flex flex-wrap gap-2">
+                <UBadge color="neutral" variant="soft">
+                  {{ dishSpec.station }}
+                </UBadge>
+                <UBadge v-if="dishSpec.portion" color="neutral" variant="soft">
+                  {{ dishSpec.portion }} portion
+                </UBadge>
+              </div>
             </div>
-            <div>
-              <h3 class="text-sm font-semibold text-highlighted">
-                Method
-              </h3>
-              <ol class="mt-2 grid gap-1 text-sm text-toned">
-                <li v-for="methodStep in recipe.method" :key="methodStep">
-                  {{ methodStep }}
-                </li>
-              </ol>
-            </div>
+          </template>
+
+          <p class="text-sm text-toned">
+            {{ dishSpec.summary }}
+          </p>
+
+          <div v-if="componentViews.length" class="mt-5">
+            <h2 class="text-sm font-semibold text-highlighted">Components</h2>
+            <ul class="mt-2 grid gap-2 sm:grid-cols-2">
+              <li
+                v-for="component in componentViews"
+                :key="component.id"
+                class="flex items-start justify-between gap-3 rounded-lg border border-default bg-elevated/30 p-3"
+              >
+                <div>
+                  <p class="text-sm font-semibold text-highlighted">
+                    {{ component.name }}
+                  </p>
+                  <p class="mt-1 text-xs text-muted">
+                    {{ component.sourceLabel }}
+                  </p>
+                </div>
+                <UBadge color="neutral" variant="soft">
+                  {{ component.amount }}
+                </UBadge>
+              </li>
+            </ul>
+          </div>
+
+          <div v-if="dishSpec.assembly.length" class="mt-5">
+            <h2 class="text-sm font-semibold text-highlighted">Assembly</h2>
+            <ol class="mt-2 grid gap-3">
+              <li
+                v-for="(step, index) in dishSpec.assembly"
+                :key="step"
+                class="flex gap-3 text-sm text-toned"
+              >
+                <span
+                  class="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+                >
+                  {{ Number(index) + 1 }}
+                </span>
+                <span class="pt-0.5">{{ step }}</span>
+              </li>
+            </ol>
           </div>
         </UCard>
+      </MoleculesDisclosurePanel>
 
-        <UCard v-if="miseRequirements.length">
+      <MoleculesDisclosurePanel
+        v-if="prepItems.length"
+        title="Prep items"
+        :description="`${prepItems.length} ${prepItems.length === 1 ? 'item' : 'items'}`"
+        icon="i-lucide-list-checks"
+      >
+        <div class="mt-3 grid gap-4 lg:grid-cols-2">
+          <UCard v-for="prepItem in prepItems" :key="prepItem.id">
+            <template #header>
+              <div class="flex items-start justify-between gap-3">
+                <div>
+                  <p
+                    class="text-xs font-semibold uppercase tracking-wide text-primary"
+                  >
+                    Prep item
+                  </p>
+                  <h2 class="mt-1 text-base font-semibold text-highlighted">
+                    {{ prepItem.name }}
+                  </h2>
+                </div>
+                <UBadge color="neutral" variant="soft">
+                  {{ prepItem.station }}
+                </UBadge>
+              </div>
+            </template>
+
+            <dl class="grid gap-2 text-sm">
+              <div class="flex items-start justify-between gap-3">
+                <dt class="text-muted">Input</dt>
+                <dd class="text-right text-toned">
+                  {{ formatRecipeIngredient(prepItem.input) }}
+                </dd>
+              </div>
+              <div class="flex items-start justify-between gap-3">
+                <dt class="text-muted">Yield</dt>
+                <dd class="text-right text-toned">
+                  {{ formatProductionAmount(prepItem.yield) }}
+                </dd>
+              </div>
+            </dl>
+
+            <ol class="mt-4 grid gap-1 text-sm text-toned">
+              <li v-for="methodStep in prepItem.method" :key="methodStep">
+                {{ methodStep }}
+              </li>
+            </ol>
+          </UCard>
+        </div>
+      </MoleculesDisclosurePanel>
+
+      <MoleculesDisclosurePanel
+        v-if="recipes.length"
+        title="Recipes"
+        :description="`${recipes.length} ${recipes.length === 1 ? 'recipe' : 'recipes'}`"
+        icon="i-lucide-notebook-tabs"
+      >
+        <div class="mt-3 grid gap-4 lg:grid-cols-2">
+          <UCard v-for="recipe in recipes" :key="recipe.id">
+            <template #header>
+              <div>
+                <p
+                  class="text-xs font-semibold uppercase tracking-wide text-primary"
+                >
+                  Recipe
+                </p>
+                <h2 class="mt-1 text-base font-semibold text-highlighted">
+                  {{ recipe.name }}
+                </h2>
+                <p class="mt-1 text-xs text-muted">
+                  Yield · {{ formatProductionAmount(recipe.yield) }}
+                </p>
+              </div>
+            </template>
+
+            <div class="grid gap-4 sm:grid-cols-2">
+              <div>
+                <h3 class="text-sm font-semibold text-highlighted">
+                  Ingredients
+                </h3>
+                <ul class="mt-2 grid gap-1 text-sm text-toned">
+                  <li
+                    v-for="ingredient in recipe.ingredients"
+                    :key="`${ingredient.ingredientId}:${ingredient.quantity}:${ingredient.unit}`"
+                  >
+                    {{ formatRecipeIngredient(ingredient) }}
+                  </li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="text-sm font-semibold text-highlighted">Method</h3>
+                <ol class="mt-2 grid gap-1 text-sm text-toned">
+                  <li v-for="methodStep in recipe.method" :key="methodStep">
+                    {{ methodStep }}
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </UCard>
+        </div>
+      </MoleculesDisclosurePanel>
+
+      <MoleculesDisclosurePanel
+        v-if="miseRequirements.length"
+        title="Mise en place"
+        :description="`${miseRequirements.length} ${miseRequirements.length === 1 ? 'requirement' : 'requirements'}`"
+        icon="i-lucide-chef-hat"
+      >
+        <UCard class="mt-3">
           <template #header>
             <div>
-              <p class="text-xs font-semibold uppercase tracking-wide text-primary">
+              <p
+                class="text-xs font-semibold uppercase tracking-wide text-primary"
+              >
                 Mise en place
               </p>
             </div>
@@ -229,7 +286,7 @@
             </div>
           </div>
         </UCard>
-      </div>
+      </MoleculesDisclosurePanel>
 
       <template v-if="canWrite">
         <ConsoleKitchenOperationsDishesEdit />
@@ -281,18 +338,21 @@ const formatRecipeIngredient = (ingredient: {
     formatProductionAmount(ingredient),
     getIngredientName(ingredient.ingredientId),
     preparation ? `(${preparation})` : '',
-  ].filter(Boolean).join(' ')
+  ]
+    .filter(Boolean)
+    .join(' ')
 }
 const menuPlacements = computed(() =>
   menuUsage.value.map((usage) => {
     const price = Number(usage.price)
-    const priceLabel = Number.isFinite(price) && price > 0
-      ? new Intl.NumberFormat('en-CH', {
-          style: 'currency',
-          currency: normalizeString(usage.currencyCode) || 'CHF',
-          maximumFractionDigits: 2,
-        }).format(price)
-      : ''
+    const priceLabel =
+      Number.isFinite(price) && price > 0
+        ? new Intl.NumberFormat('en-CH', {
+            style: 'currency',
+            currency: normalizeString(usage.currencyCode) || 'CHF',
+            maximumFractionDigits: 2,
+          }).format(price)
+        : ''
     const parts = [
       normalizeString(usage.menuName),
       normalizeString(usage.sectionLabel),

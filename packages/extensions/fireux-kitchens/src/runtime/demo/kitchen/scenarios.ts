@@ -20,7 +20,7 @@ import {
   deanosXmasDemoMenu,
   miseboxRestaurantKitchenDemoMenu,
   pizzaTheActionKitchenDemoMenu,
-} from './menus'
+} from './operations/Menus'
 import {
   deanosKitchenDemoIdentity,
   kitchenDemoAssetBase,
@@ -28,7 +28,7 @@ import {
   kitchenDemoUpdated,
   miseboxRestaurantKitchenDemoIdentity,
   pizzaTheActionKitchenDemoIdentity,
-} from './fixtures'
+} from './core/fixtures'
 import {
   deanosKitchenDemoFinance,
   type KitchenDemoFinance,
@@ -37,7 +37,7 @@ import {
   deanosKitchenDemoIngredientLinks,
   deanosKitchenDemoIngredients,
   deanosKitchenDemoSupplierIngredientLinks,
-} from './ingredients'
+} from './operations/Ingredients'
 import {
   deanosKitchenDemoMiseTasks,
   deanosKitchenDemoOrders,
@@ -65,7 +65,8 @@ import type {
   KitchenDemoIdentity,
   KitchenDemoMenu,
   KitchenDemoScenario,
-} from './types'
+  KitchenDemoScenarioDescriptor,
+} from './core/types'
 
 type DemoKitchenInput = {
   identity: KitchenDemoIdentity
@@ -644,4 +645,46 @@ export const kitchenDemoScenarios: KitchenDemoScenario[] = [
   pizzaTheActionKitchenDemoScenario,
 ]
 
-export type { KitchenDemoScenario } from './types'
+export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
+  {
+    kitchenId: miseboxRestaurantKitchenDemoIdentity.kitchenId,
+    maturity: 'presentation',
+    operationCoverage: [],
+    presentation: ['menu', 'kiosk'],
+  },
+  {
+    kitchenId: deanosKitchenDemoIdentity.kitchenId,
+    maturity: 'operational',
+    operationCoverage: [
+      'dishes',
+      'ingredients',
+      'menus',
+      'mise',
+      'orders',
+      'recipes',
+      'stations',
+      'suppliers',
+      'tables',
+    ],
+    presentation: ['menu', 'kiosk', 'service'],
+  },
+  {
+    kitchenId: pizzaTheActionKitchenDemoIdentity.kitchenId,
+    maturity: 'presentation',
+    operationCoverage: [],
+    presentation: ['menu', 'kiosk'],
+  },
+]
+
+const scenarioIds = kitchenDemoScenarios.map(value => value.kitchen.id).sort()
+const descriptorIds = kitchenDemoScenarioDescriptors
+  .map(value => value.kitchenId)
+  .sort()
+if (
+  scenarioIds.length !== descriptorIds.length
+  || scenarioIds.some((value, index) => value !== descriptorIds[index])
+) {
+  throw new Error('Every Kitchen Demo scenario requires one maturity descriptor.')
+}
+
+export type { KitchenDemoScenario } from './core/types'

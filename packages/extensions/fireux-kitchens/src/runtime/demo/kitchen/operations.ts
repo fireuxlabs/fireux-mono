@@ -28,8 +28,8 @@ import {
   kitchenDemoCreated,
   kitchenDemoTimestamp,
   kitchenDemoUpdated,
-} from './fixtures'
-import type { KitchenDemoIdentity } from './types'
+} from './core/fixtures'
+import type { KitchenDemoIdentity } from './core/types'
 
 type DemoOrderItemInput = {
   id: string

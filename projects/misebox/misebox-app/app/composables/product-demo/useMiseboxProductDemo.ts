@@ -40,6 +40,34 @@ export type MiseboxProductDemo = {
       kind: string
       name: string
       priceLabel: string
+      finance: {
+        currencyCode: string
+        minorUnitDigits: number
+        sellingPriceMinor: number | null
+        costOfSalesMinor: number
+        grossProfitMinor: number | null
+        foodCostPercentage: number | null
+        grossMarginPercentage: number | null
+      } | null
+      prepItems: {
+        id: string
+        name: string
+        station: string
+        yield: string
+      }[]
+      recipes: {
+        id: string
+        ingredientCount: number
+        method: string[]
+        name: string
+        yield: string
+      }[]
+      mise: {
+        id: string
+        quantity: string
+        station: string
+        title: string
+      }[]
       spec: {
         assembly: string[]
         id: string
@@ -116,10 +144,40 @@ const experiences: readonly MiseboxProductDemoExperience[] = [
 ]
 
 async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
-  const [scenarioModule, presentationModule] = await Promise.all([
+  const [
+    scenarioModule,
+    presentationModule,
+    supplierModule,
+    financeModule,
+  ] = await Promise.all([
     import('fireux-kitchens/runtime/demo/kitchen/scenarios'),
-    import('fireux-kitchens/runtime/demo/kitchen/presentation'),
+    import('fireux-kitchens/runtime/demo/kitchen/presentation/index'),
+    import('fireux-suppliers/runtime/demo/supplier/scenarios'),
+    import('fireux-kitchens/runtime/utils/kitchen/dish-finance'),
   ])
+  const supplierIngredients = new Set(
+    supplierModule.supplierDemoScenarios.flatMap(scenario =>
+      scenario.ingredients.map(ingredient =>
+        `${scenario.supplier.id}:${ingredient.ingredient_id}`
+      )
+    )
+  )
+  const unresolvedSupplierLinks = scenarioModule.kitchenDemoScenarios.flatMap(
+    scenario =>
+      scenario.supplierIngredientLinks
+        .filter(link =>
+          !supplierIngredients.has(`${link.supplier_id}:${link.ingredient_id}`)
+        )
+        .map(link =>
+          `${scenario.kitchen.id}:${link.supplier_id}:${link.ingredient_id}`
+        )
+  )
+  if (unresolvedSupplierLinks.length) {
+    throw new Error(
+      `Kitchen Demo supplier relationships are unresolved: ${unresolvedSupplierLinks.join(', ')}`
+    )
+  }
+
   const menuScenario = scenarioModule.featuredMenuDemoScenario
   const kioskScenario = scenarioModule.featuredKioskDemoScenario
   const serviceScenario = scenarioModule.featuredServiceDemoScenario
@@ -217,6 +275,38 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
   const consoleMenuItems = consoleScenario.menus.flatMap(menu =>
     menu.menuSections.flatMap(({ items }) => items)
   )
+  const consoleSupplierScenarioById = new Map(
+    supplierModule.supplierDemoScenarios.map(scenario => [
+      String(scenario.supplier.id || '').trim(),
+      scenario,
+    ])
+  )
+  const consoleIngredientById = new Map(
+    consoleScenario.ingredients.map(ingredient => [ingredient.id, ingredient])
+  )
+  const consoleSupplyLineByIngredientId = new Map(
+    consoleScenario.supplierIngredientLinks.flatMap((link) => {
+      const ingredientId = String(link.ingredient_id || '').trim()
+      const supplierId = String(link.supplier_id || '').trim()
+      const ingredient = consoleIngredientById.get(ingredientId)
+      const supplierScenario = consoleSupplierScenarioById.get(supplierId)
+      const supplierIngredient = supplierScenario?.ingredients.find(item =>
+        item.active !== false
+        && item.ingredient_id === ingredientId
+        && item.supplier_id === supplierId
+      )
+      const supplierItem = supplierScenario?.items.find(item =>
+        item.active !== false
+        && item.availability_state !== 'unavailable'
+        && item.ingredient_id === ingredientId
+        && item.product_id === supplierIngredient?.preferred_product_id
+        && item.supplier_id === supplierId
+      )
+      return ingredient && supplierScenario && supplierItem
+        ? [[ingredientId, { ingredient, supplierScenario, supplierItem }] as const]
+        : []
+    })
+  )
   const consoleDishes = consoleScenario.menus
     .flatMap(menu => menu.dishes)
     .map((dish) => {
@@ -230,6 +320,47 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
         ])
         .filter(price => Number.isFinite(price) && price >= 0)
       const price = prices.length ? Math.min(...prices) : null
+      const finance = spec
+        ? financeModule.estimateKitchenDishFinance({
+            dishSpec: spec,
+            scenario: consoleScenario,
+            supplyLineByIngredientId: consoleSupplyLineByIngredientId,
+            menuUsage: consoleScenario.menus.flatMap(menu =>
+              menu.menuSections.flatMap(({ section, items }) =>
+                items
+                  .filter(item => item.dish_id === dish.id)
+                  .map((item) => {
+                    const itemPrices = [
+                      Number(item.price),
+                      ...item.price_options.map(option => Number(option.price)),
+                    ].filter(value => Number.isFinite(value) && value > 0)
+                    return {
+                      active:
+                        item.status === 'active' && section.status === 'active',
+                      currencyCode: consoleCurrencyCode,
+                      price: itemPrices.length ? Math.min(...itemPrices) : 0,
+                    }
+                  })
+              )
+            ),
+          })
+        : null
+      const prepItemIds = new Set(
+        spec?.components
+          .filter(component => component.source === 'prep_item')
+          .map(component => component.prepItemId)
+        || []
+      )
+      const recipeIds = new Set(
+        spec?.components
+          .filter(component => component.source === 'recipe')
+          .map(component => component.recipeId)
+        || []
+      )
+      const componentSourceKeys = new Set([
+        ...[...prepItemIds].map(id => `prep_item:${id}`),
+        ...[...recipeIds].map(id => `recipe:${id}`),
+      ])
 
       return {
         id: dish.id,
@@ -241,6 +372,47 @@ async function loadMiseboxProductDemo(): Promise<MiseboxProductDemo> {
             : 'Food',
         name: dish.name || dish.id,
         priceLabel: price === null ? '' : consolePriceFormatter.format(price),
+        finance: finance
+          ? {
+              currencyCode: finance.currencyCode,
+              minorUnitDigits: finance.minorUnitDigits,
+              sellingPriceMinor: finance.sellingPriceMinor,
+              costOfSalesMinor: finance.costOfSalesMinor,
+              grossProfitMinor: finance.grossProfitMinor,
+              foodCostPercentage: finance.foodCostPercentage,
+              grossMarginPercentage: finance.grossMarginPercentage,
+            }
+          : null,
+        prepItems: consoleScenario.prepItems
+          .filter(item => prepItemIds.has(item.id))
+          .map(item => ({
+            id: item.id,
+            name: item.name,
+            station: item.station,
+            yield: formatProductionAmount(item.yield),
+          })),
+        recipes: consoleScenario.recipes
+          .filter(recipe => recipeIds.has(recipe.id))
+          .map(recipe => ({
+            id: recipe.id,
+            ingredientCount: recipe.ingredients.length,
+            method: [...recipe.method],
+            name: recipe.name,
+            yield: formatProductionAmount(recipe.yield),
+          })),
+        mise: consoleScenario.miseRequirements
+          .filter((requirement) => {
+            const sourceKey = requirement.source.kind === 'prep_item'
+              ? `prep_item:${requirement.source.prepItemId}`
+              : `recipe:${requirement.source.recipeId}`
+            return componentSourceKeys.has(sourceKey)
+          })
+          .map(requirement => ({
+            id: requirement.id,
+            quantity: formatProductionAmount(requirement.amount),
+            station: requirement.station,
+            title: requirement.title,
+          })),
         spec: spec
           ? {
               assembly: [...spec.assembly],

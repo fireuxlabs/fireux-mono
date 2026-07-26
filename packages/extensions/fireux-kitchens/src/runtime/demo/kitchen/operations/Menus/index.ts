@@ -5,21 +5,21 @@
 // Concurrent edit — 2026-07-22 15:27 CEST — Demo image review: align each generated photograph with its Dish identity and copy.
 // Concurrent edit — 2026-07-22 18:03 CEST — Deanos Menu pass: build a focused four-section fast-food Menu with coherent Dish photography.
 // Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add a complete green-and-yellow pizzeria Menu in the shared Demo shape.
-import { DishModel, type Dish } from '../../models/kitchen/dish.model'
+import { DishModel, type Dish } from '../../../../models/kitchen/dish.model'
 import {
   KitchenMenuModel,
   type KitchenMenu,
   type MenuOrderTypeConfig,
-} from '../../models/kitchen/menu/kitchen-menu.model'
+} from '../../../../models/kitchen/menu/kitchen-menu.model'
 import {
   MenuItemModel,
   type MenuItem,
-} from '../../models/kitchen/menu/menu-item.model'
+} from '../../../../models/kitchen/menu/menu-item.model'
 import {
   MenuSectionModel,
   type MenuSection,
-} from '../../models/kitchen/menu/menu-section.model'
-import type { Menu } from '../../models/kitchen/menu/menu.model'
+} from '../../../../models/kitchen/menu/menu-section.model'
+import type { Menu } from '../../../../models/kitchen/menu/menu.model'
 import {
   deanosKitchenDemoIdentity,
   deanosPartyMenuDemoIdentity,
@@ -29,12 +29,12 @@ import {
   kitchenDemoUpdated,
   miseboxRestaurantKitchenDemoIdentity,
   pizzaTheActionKitchenDemoIdentity,
-} from './fixtures'
+} from '../../core/fixtures'
 import type {
   KitchenDemoIdentity,
   KitchenDemoMenu,
   KitchenDemoMenuSection,
-} from './types'
+} from '../../core/types'
 
 type DishDefinition = Pick<
   Dish,

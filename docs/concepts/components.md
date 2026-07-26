@@ -73,11 +73,18 @@ Map component folder and naming conventions.
   exposes a post-hero slot for project-owned conversion content without
   absorbing its routes or copy. Misebox uses that seam for its second landing
   section, pairing a read-only canonical Kitchen Operations launcher with
-  project-owned Console copy. The launcher may switch local operation pages,
-  whose bodies remain empty until a truthful product-backed projection exists;
-  it does not acquire Console selection, live reads, or write authority;
-  mobile keeps the component before the text and desktop places it to the
-  left. Core
+  project-owned Console copy. Its thin root owns frame/navigation, local page
+  state, and one Product Demo load. Named Menus, Dishes, Recipes, Mise, and
+  empty-canvas children own their projected bodies; Dishes further separates
+  Collection, image-led Detail, and named Finance/Spec/Prep/Recipes/Mise child
+  pages. The root owns local Dish page identity, the Dishes coordinator owns
+  its breadcrumb and page dispatch, and detail tiles are navigation doorways
+  rather than inline expanders. Children consume typed read-only props and do
+  not acquire Console selection, Demo loading, live reads, Firebase, or write
+  authority. The project source begins at
+  `projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue`.
+  Mobile keeps the component before the text and desktop places it to the left.
+  Core
   `LandingProductPreviewFrame` owns the
   narrated-preview frame when a project genuinely needs identity/status
   chrome, mode controls, panel transition, footer action, and reduced-motion

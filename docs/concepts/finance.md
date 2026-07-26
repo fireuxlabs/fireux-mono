@@ -104,7 +104,9 @@ reports into one generic Finance console.
   expanding its current Spec through represented prep/recipe yields and the
   preferred Supplier offer terms. It must identify incomplete price coverage,
   exclude unrepresented labour, energy, tax, oil, and waste, and remain an
-  estimate rather than a KitchenSale, expense, or FinancialFact.
+  estimate rather than a KitchenSale, expense, or FinancialFact. The pure
+  Kitchen estimator is shared by the real Console adapter and presentation-only
+  Demo projections so those surfaces cannot drift into competing arithmetic.
 - There is no generic Finance Console Operation in this pass. Kitchens keep
   Kitchen operations; Suppliers, Projects, and Portfolios keep their own future
   producer operations.
@@ -125,6 +127,7 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/reports/gross-sales.get.ts`
 - `packages/extensions/fireux-kitchens/src/config/module/server-config.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleFinance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/dish-finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Finance.vue`

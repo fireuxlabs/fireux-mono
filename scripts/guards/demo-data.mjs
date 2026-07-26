@@ -640,6 +640,72 @@ export async function run(ctx) {
     }
   }
 
+  const kitchenScenariosFile =
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts'
+  const kitchenDemoStructure = [
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/fixtures.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/types.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Ingredients/index.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Menus/index.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/presentation/index.ts',
+  ]
+  for (const requiredFile of kitchenDemoStructure) {
+    if (!existsSync(path.join(repoRoot, requiredFile))) {
+      violations.push({
+        code: 'kitchen-owner-structure',
+        file: requiredFile,
+        message:
+          'Kitchen Demo owner seams must use core/, exact operations/<Operation>/, and optional presentation/ folders.',
+      })
+    }
+  }
+
+  const kitchenScenariosPath = path.join(repoRoot, kitchenScenariosFile)
+  if (existsSync(kitchenScenariosPath)) {
+    const source = readFileSync(kitchenScenariosPath, 'utf8')
+    for (const required of [
+      'kitchenDemoScenarioDescriptors',
+      "maturity: 'operational'",
+      "maturity: 'presentation'",
+      'operationCoverage:',
+      'presentation:',
+      'Every Kitchen Demo scenario requires one maturity descriptor.',
+    ]) {
+      if (!source.includes(required)) {
+        violations.push({
+          code: 'kitchen-scenario-maturity',
+          file: kitchenScenariosFile,
+          message:
+            'Every Kitchen Demo scenario must be explicitly classified as operational or presentation-only.',
+        })
+        break
+      }
+    }
+  }
+
+  const miseboxProductDemoFile =
+    'projects/misebox/misebox-app/app/composables/product-demo/useMiseboxProductDemo.ts'
+  const miseboxProductDemoPath = path.join(repoRoot, miseboxProductDemoFile)
+  if (existsSync(miseboxProductDemoPath)) {
+    const source = readFileSync(miseboxProductDemoPath, 'utf8')
+    for (const required of [
+      "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
+      'scenarioModule.kitchenDemoScenarios',
+      'scenario.supplierIngredientLinks',
+      'supplierModule.supplierDemoScenarios',
+    ]) {
+      if (!source.includes(required)) {
+        violations.push({
+          code: 'demo-world-composition',
+          file: miseboxProductDemoFile,
+          message:
+            'Misebox Product Demo must compose all Kitchen scenarios with Supplier-owned ingredients through stable relationships.',
+        })
+        break
+      }
+    }
+  }
+
   if (violations.length) throw new Error(formatViolations(violations))
 
   console.log(

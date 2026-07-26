@@ -2,26 +2,26 @@
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as separate coherent scenarios.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: keep the two named restaurant scenarios distinct.
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import type { Ingredient } from '../../models/ingredient.model'
-import type { Dish } from '../../models/kitchen/dish.model'
-import type { KitchenIngredient } from '../../models/kitchen/ingredient.model'
-import type { KitchenMiseTask } from '../../models/kitchen/mise.model'
-import type { KitchenOrder } from '../../models/kitchen/order.model'
-import type { KitchenStation } from '../../models/kitchen/station.model'
-import type { KitchenSupplierIngredient } from '../../models/kitchen/supplier-ingredient.model'
-import type { Kitchen } from '../../models/kitchen.model'
-import type { KitchenMenu } from '../../models/kitchen/menu/kitchen-menu.model'
-import type { MenuItem } from '../../models/kitchen/menu/menu-item.model'
-import type { MenuSection } from '../../models/kitchen/menu/menu-section.model'
-import type { Menu } from '../../models/kitchen/menu/menu.model'
-import type { KitchenDemoFinance } from './finance'
+import type { Ingredient } from '../../../models/ingredient.model'
+import type { Dish } from '../../../models/kitchen/dish.model'
+import type { KitchenIngredient } from '../../../models/kitchen/ingredient.model'
+import type { KitchenMiseTask } from '../../../models/kitchen/mise.model'
+import type { KitchenOrder } from '../../../models/kitchen/order.model'
+import type { KitchenStation } from '../../../models/kitchen/station.model'
+import type { KitchenSupplierIngredient } from '../../../models/kitchen/supplier-ingredient.model'
+import type { Kitchen } from '../../../models/kitchen.model'
+import type { KitchenMenu } from '../../../models/kitchen/menu/kitchen-menu.model'
+import type { MenuItem } from '../../../models/kitchen/menu/menu-item.model'
+import type { MenuSection } from '../../../models/kitchen/menu/menu-section.model'
+import type { Menu } from '../../../models/kitchen/menu/menu.model'
+import type { KitchenDemoFinance } from '../finance'
 import type {
   KitchenDemoDishSpec,
   KitchenDemoMenuItemComponentDelta,
   KitchenDemoMiseRequirement,
   KitchenDemoPrepItem,
   KitchenDemoProductionRecipe,
-} from './production'
+} from '../production'
 
 export type KitchenDemoMenuSection = {
   section: MenuSection
@@ -72,4 +72,32 @@ export type KitchenDemoScenario = {
   recipes: KitchenDemoProductionRecipe[]
   stations: KitchenStation[]
   miseTasks: KitchenMiseTask[]
+}
+
+export type KitchenDemoScenarioMaturity = 'operational' | 'presentation'
+
+export type KitchenDemoOperation =
+  | 'dishes'
+  | 'ingredients'
+  | 'menus'
+  | 'mise'
+  | 'orders'
+  | 'recipes'
+  | 'stations'
+  | 'suppliers'
+  | 'tables'
+
+export type KitchenDemoPresentation = 'kiosk' | 'menu' | 'service'
+
+/**
+ * Explicitly classifies how much of the Kitchen Console a scenario proves.
+ *
+ * This metadata stays separate from the real Kitchen and operation records so
+ * Demo maturity never leaks into a canonical model or changes fixture output.
+ */
+export type KitchenDemoScenarioDescriptor = {
+  kitchenId: string
+  maturity: KitchenDemoScenarioMaturity
+  operationCoverage: readonly KitchenDemoOperation[]
+  presentation: readonly KitchenDemoPresentation[]
 }

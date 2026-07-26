@@ -139,11 +139,21 @@ Before each task:
   the relevant product doorways. Section 2 uses Core's post-hero slot for a
   mobile-first Kitchen Console introduction: the read-only component comes
   first and projects the canonical Kitchen Operations catalogue without live
-  counts or customer data. Its navigation switches local, presentation-only
-  operation pages while their bodies remain intentionally empty; it never
-  invents page content, reads or writes a selected Kitchen, or approximates
-  live Console data. Wider screens place that component left of the buyer-facing
-  Console text. Core
+  counts or customer data. Its thin frame owns the single Product Demo load,
+  local operation/page selection, and navigation; named operation children
+  receive typed read-only projections. Menus, Dishes, Recipes, and Mise own
+  truthful projected bodies, unsupported operations use one named empty
+  canvas, and Dishes separates Collection, image-led Detail, and five named
+  Finance/Spec/Prep/Recipes/Mise child pages. The root retains local Dish page
+  state while the Dishes coordinator owns its clickable breadcrumb; detail
+  tiles emit navigation and never expand a second canvas in place. No child
+  loads Demo data, reads or writes a selected Kitchen, or acquires live
+  Console/Firebase authority. The Finance child receives the additive
+  presentation projection of the shared Kitchen Dish finance estimate; it does
+  not recalculate supplier costs or menu profitability in the component. Wider
+  screens place that component left of the buyer-facing Console text. The
+  source family begins at
+  `app/components/Misebox/Landing/ConsolePreview/Index.vue`. Core
   `LandingProductPreviewFrame` remains the shared
   narrated-preview frame when identity/status chrome, mode controls, panel
   transition, footer action, and reduced-motion behavior are genuinely needed.
