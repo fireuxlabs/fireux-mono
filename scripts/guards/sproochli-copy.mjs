@@ -85,10 +85,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/misebox/interlaken-essen/app/components/Market/OnboardingModal.vue'
   )
-  const interlakenManifest = read(
-    repoRoot,
-    'projects/misebox/interlaken-essen/public/manifest.webmanifest'
-  )
   const interlakenMeta = read(
     repoRoot,
     'projects/misebox/interlaken-essen/app/meta.ts'
@@ -370,9 +366,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     interlakenPublicCopy,
     /language_trigger_(heading|description)/
   )
-  assert.match(interlakenManifest, /Lokali Läbensmittel/)
-  assert.match(interlakenManifest, /"lang": "gsw-CH"/)
-  assert.doesNotMatch(interlakenManifest, /Lokale Lebensmittel/)
   assert.match(interlakenMeta, /defaultCopy\('app_meta_headline'\)/)
   assert.match(
     interlakenMeta,

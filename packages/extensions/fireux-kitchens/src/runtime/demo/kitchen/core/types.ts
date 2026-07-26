@@ -2,7 +2,6 @@
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: preserve Deanos and Garden Room as separate coherent scenarios.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: keep the two named restaurant scenarios distinct.
 import type { Place } from 'fireux-places/runtime/models/place.model'
-import type { Ingredient } from '../../../models/ingredient.model'
 import type { Dish } from '../../../models/kitchen/dish.model'
 import type { KitchenIngredient } from '../../../models/kitchen/ingredient.model'
 import type { KitchenMiseTask } from '../../../models/kitchen/mise.model'
@@ -15,6 +14,7 @@ import type { MenuItem } from '../../../models/kitchen/menu/menu-item.model'
 import type { MenuSection } from '../../../models/kitchen/menu/menu-section.model'
 import type { Menu } from '../../../models/kitchen/menu/menu.model'
 import type { KitchenDemoFinance } from '../finance'
+import type { KitchenDemoDishFinance } from '../operations/Dishes/finance'
 import type {
   KitchenDemoDishSpec,
   KitchenDemoMenuItemComponentDelta,
@@ -56,13 +56,13 @@ export type KitchenDemoScenario = {
   kitchen: Kitchen
   place: Place
   menus: KitchenDemoMenu[]
-  ingredients: Ingredient[]
   kitchenIngredients: KitchenIngredient[]
   supplierIngredientLinks: KitchenSupplierIngredient[]
   rootMenu: Menu
   kitchenMenu: KitchenMenu
   dishes: Dish[]
   dishSpecs: KitchenDemoDishSpec[]
+  dishFinance: KitchenDemoDishFinance[]
   finance: KitchenDemoFinance | null
   menuItemComponentDeltas: KitchenDemoMenuItemComponentDelta[]
   menuSections: KitchenDemoMenuSection[]

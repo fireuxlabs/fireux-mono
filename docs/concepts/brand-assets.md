@@ -1,6 +1,6 @@
 # Brand asset authority map
 
-Updated: 2026-07-24
+Updated: 2026-07-26
 Ref: current source
 Role: map, not canon
 
@@ -37,6 +37,14 @@ and the boundary that lets genuinely branded Apps own a different identity.
   `scripts/sync-fireux-brand-assets.mjs`
 - Executable guard:
   `scripts/guards/fireux-brand-assets.mjs`
+- BuenoHost ecosystem source family:
+  `packages/ecosystem/fireux-buenohost/src/runtime/public/img/ecosystem/brand`
+- BuenoHost render/projection declaration:
+  `scripts/_lib/buenohost-brand-render.mjs` and
+  `scripts/_lib/buenohost-brand-assets.mjs`
+- BuenoHost renderer and guard:
+  `scripts/render-buenohost-brand-assets.mjs` and
+  `scripts/guards/buenohost-brand-assets.mjs`
 
 ## Authority contract
 
@@ -55,9 +63,14 @@ Light and dark name the intended surface:
 - `wordmark-light` is used on a light surface and carries the dark `Fire` text.
 - `wordmark-dark` is used on a dark surface and carries the light `Fire` text.
 
-The primary identity palette is ember `#FF5A1F`, amber `#FFB000`, spark
-`#FFC928`, ink `#0B111C`, and core cream `#FFF4D8`. Change the SVG masters
-only in the Core source family, then run:
+The primary identity is the flowing FireUX flame: four separate ember, amber,
+yellow, and hot-core regions form one rising mark, while the space between
+them inherits the surface beneath. The palette is ember `#FF4F00` to
+`#FF6900`, amber `#FF9500` to `#F5A500`, yellow `#FFB800` to `#FFD21F`, hot
+core `#FFF3A6` to `#FFF085`, theme yellow `#EAB308`, and ink `#0B111C`.
+Wordmark masters retain tight visible bounds and transparent raster padding
+so centred consumers centre clean artwork rather than a padded or opaque
+canvas. Change the SVG masters only in the Core source family, then run:
 
 ```sh
 node scripts/render-fireux-brand-assets.mjs --write
@@ -86,6 +99,22 @@ Do not add a new FireUX logo copy to a child, ecosystem, component, or project
 and edit it independently. Either add it to the guarded projection declaration
 because it is FireUX identity, or keep it as an explicit product-brand
 override.
+
+## Ecosystem-owned identity
+
+BuenoHost is an ecosystem-owned identity rather than a FireUX platform
+projection. Its SVG masters live in the BuenoHost ecosystem package, and its
+global App paths are deterministic projections of that source. The house mark,
+light/dark wordmarks, full-bleed app icon, PWA icons, favicon, thumbnail, and
+cover are rendered and checked with:
+
+```sh
+node scripts/render-buenohost-brand-assets.mjs --write
+```
+
+Running the command without `--write` is the read-only drift check. Branded
+tenant Apps such as Book with Nats remain outside the projection list and keep
+their own complete identity.
 
 ## Delta register
 

@@ -6,11 +6,15 @@ import process from 'node:process'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { inspectFireuxBrandAssetProjections } from '../_lib/fireux-brand-assets.mjs'
-import { inspectFireuxBrandRasterAssets } from '../_lib/fireux-brand-render.mjs'
+import {
+  inspectFireuxBrandRasterAssets,
+  inspectFireuxBrandTransparentPadding,
+} from '../_lib/fireux-brand-render.mjs'
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const violations = [
     ...inspectFireuxBrandRasterAssets(repoRoot),
+    ...(await inspectFireuxBrandTransparentPadding(repoRoot)),
     ...inspectFireuxBrandAssetProjections(repoRoot),
   ]
   const assetsPage = readFileSync(

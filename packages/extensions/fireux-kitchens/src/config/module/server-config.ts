@@ -16,6 +16,31 @@ import {
 
 const baseServerHandlers = [
   {
+    route: '/api/ingredients',
+    method: 'get',
+    handler: './runtime/server/api/ingredients/index.get',
+  },
+  {
+    route: '/api/ingredients/:id',
+    method: 'get',
+    handler: './runtime/server/api/ingredients/[id].get',
+  },
+  {
+    route: '/api/internal/ingredients',
+    method: 'get',
+    handler: './runtime/server/api/internal/ingredients/index.get',
+  },
+  {
+    route: '/api/internal/ingredients',
+    method: 'post',
+    handler: './runtime/server/api/internal/ingredients/index.post',
+  },
+  {
+    route: '/api/internal/ingredients/:id',
+    method: 'patch',
+    handler: './runtime/server/api/internal/ingredients/[id].patch',
+  },
+  {
     route: '/api/kitchens',
     method: 'get',
     handler: './runtime/server/api/kitchens/index.get',

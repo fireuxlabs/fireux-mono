@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 320" role="img" aria-labelledby="title">
+  <title id="title">AUSFinn Apartments</title>
+  <rect width="1200" height="320" rx="52" fill="#153b37"/>
+  <g transform="translate(42 42) scale(.46)">
+    <rect width="512" height="512" rx="116" fill="#fffdf8"/>
+    <path d="M92 278 256 118l164 160v128H92Z" fill="#e9b86d"/>
+    <path d="m154 276 102-98 102 98v130H154Z" fill="#153b37"/>
+    <path d="M218 406V294h76v112" fill="#e06d51"/>
+    <circle cx="256" cy="239" r="24" fill="#377f82"/>
+  </g>
+  <text x="320" y="160" fill="#fffdf8" font-family="Georgia, serif" font-size="108" font-weight="700" letter-spacing="-5">AUSFinn</text>
+  <text x="326" y="220" fill="#e9b86d" font-family="Arial, sans-serif" font-size="28" font-weight="700" letter-spacing="8">HOLIDAY APARTMENTS</text>
+</svg>

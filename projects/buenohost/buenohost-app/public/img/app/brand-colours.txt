@@ -1,0 +1,38 @@
+BuenoHost asset pack
+
+Suggested app.config.ts:
+
+export default defineAppConfig({
+  ui: {
+    colors: {
+      primary: 'sky',
+      neutral: 'slate',
+    },
+  },
+})
+
+Palette used in exports:
+- ink: #102A38
+- parchment: #F5F0E7
+- alpine-air: #5EA9B8
+- welcome-apricot: #F27A52
+
+Canonical SVG masters:
+- packages/ecosystem/fireux-buenohost/src/runtime/public/img/ecosystem/brand/logo.svg
+- packages/ecosystem/fireux-buenohost/src/runtime/public/img/ecosystem/brand/wordmark-light.svg
+- packages/ecosystem/fireux-buenohost/src/runtime/public/img/ecosystem/brand/wordmark-dark.svg
+- packages/ecosystem/fireux-buenohost/src/runtime/public/img/ecosystem/brand/app-icon.svg
+- packages/ecosystem/fireux-buenohost/src/runtime/public/img/ecosystem/brand/cover.svg
+
+Rendered canon files:
+- thumbnail.png 1200x630
+- logo.png 512x512
+- wordmark-light.png 768x192
+- wordmark-dark.png 768x192
+- cover.png 1280x720
+- pwa/icon-192.png
+- pwa/icon-512.png
+- favicon.ico 64x64
+
+Render and project:
+node scripts/render-buenohost-brand-assets.mjs --write

@@ -7,9 +7,9 @@
       "width": 512,
       "height": 512,
       "format": "png",
-      "fit": "fill",
-      "sourceSha256": "7a27e6b6df68fe7fd7331ce2f7d54afc86fbb6002739c87f87fd031b34a8bfac",
-      "outputSha256": "1cf4b88246eeec8e92a78bdd38c7d4c4b92b0a19288c6b22e4c8af888c09808f"
+      "fit": "contain",
+      "sourceSha256": "e63c90747a4624f0561d76a7b4a632c13e04b1e30516f7d3eb7c3cd23a65affb",
+      "outputSha256": "2dd6d039ca5629f4fe4194fc753ba2722be595b574505dab48f2cd23e8177a7b"
     },
     {
       "source": "wordmark-light.svg",
@@ -17,9 +17,9 @@
       "width": 768,
       "height": 192,
       "format": "png",
-      "fit": "fill",
-      "sourceSha256": "de687d65eb1ff110b68b42e862a80b902fde26167e46305472f6a333ff632daa",
-      "outputSha256": "43f15fcf3cce74b74fd6afa4323a63aeed2877d84896ec7057a4fd491b246bfa"
+      "fit": "contain",
+      "sourceSha256": "940b90c6718fcf4458ed0e7811481b0266d7c2aeac976b6473f6edac30e05b33",
+      "outputSha256": "c7d0a3876ccf27f231beadf6cf41b4195e07597c8a18ce854a1c771583ac9321"
     },
     {
       "source": "wordmark-dark.svg",
@@ -27,9 +27,9 @@
       "width": 768,
       "height": 192,
       "format": "png",
-      "fit": "fill",
-      "sourceSha256": "3364206cce11d0c4826c7d33b5e49d4d4081362d11e68c0f1d06a68794442727",
-      "outputSha256": "c2ce25c452a724b8eb3af73fbd3c97ee29addb2704953e0939396685a93057c9"
+      "fit": "contain",
+      "sourceSha256": "bc084de417fbd129e125f88bb137e6ba74bc22633740101bec48bf21633fa92d",
+      "outputSha256": "189d3d0ce8f33f58cc849a6d900f78a3eddcecba154abe1f9fcc2645f359c553"
     },
     {
       "source": "app-icon.svg",
@@ -38,8 +38,8 @@
       "height": 512,
       "format": "png",
       "fit": "fill",
-      "sourceSha256": "9662c9cd40ff6871f79bc2278eadfe1443e25bc63fcd07d61b290253329a5a87",
-      "outputSha256": "2f64ed7c960de72fdae18b37d9734ee931b720a00f9fd62d17d11848e7f9af63"
+      "sourceSha256": "d745e4ececedd7b627c385402fb861a2f37a2063440542a3b69ed04a89a1d431",
+      "outputSha256": "b16d45aa8ed5e6e0327c24e2a91dcfddb39ca648c739ec32e02f03a39c7a90f1"
     },
     {
       "source": "cover.svg",
@@ -48,8 +48,8 @@
       "height": 720,
       "format": "png",
       "fit": "fill",
-      "sourceSha256": "63374ee1eadd0592ca7e30b2f2ebd6839b74ba0ac9663acc3c11d2cd86a96a95",
-      "outputSha256": "c5f0078fdd14a3e500650f75db1ce1ed0007269bdbee148780db6d16e15f7ff4"
+      "sourceSha256": "7ac909e7080428170865098b831111ae3849a593fc4a2475b4277b312ad50b78",
+      "outputSha256": "b88694e48b2ca7c6c2d5f6faeeb778c23ad0e6bb33cff43a6663e1c2893d0718"
     },
     {
       "source": "cover.svg",
@@ -58,8 +58,8 @@
       "height": 630,
       "format": "png",
       "fit": "cover",
-      "sourceSha256": "63374ee1eadd0592ca7e30b2f2ebd6839b74ba0ac9663acc3c11d2cd86a96a95",
-      "outputSha256": "36a6ca8297fcb747bc2d3d6a28e640100e700afcef58257d159252e2c95115af"
+      "sourceSha256": "7ac909e7080428170865098b831111ae3849a593fc4a2475b4277b312ad50b78",
+      "outputSha256": "0e1f8b02e321b22f9f0bb4aa32f56aa9d12513b23b396d135197c44e484365c9"
     },
     {
       "source": "app-icon.svg",
@@ -68,8 +68,8 @@
       "height": 192,
       "format": "png",
       "fit": "fill",
-      "sourceSha256": "9662c9cd40ff6871f79bc2278eadfe1443e25bc63fcd07d61b290253329a5a87",
-      "outputSha256": "85196ac9a7acb5360746c549efa640509b52512369199fb26ed2b571fe0174b2"
+      "sourceSha256": "d745e4ececedd7b627c385402fb861a2f37a2063440542a3b69ed04a89a1d431",
+      "outputSha256": "53534105bdae0a5f3c6426467bc896056ec8bd238d6261aa2f6ceb9246453a12"
     },
     {
       "source": "app-icon.svg",
@@ -78,8 +78,8 @@
       "height": 512,
       "format": "png",
       "fit": "fill",
-      "sourceSha256": "9662c9cd40ff6871f79bc2278eadfe1443e25bc63fcd07d61b290253329a5a87",
-      "outputSha256": "2f64ed7c960de72fdae18b37d9734ee931b720a00f9fd62d17d11848e7f9af63"
+      "sourceSha256": "d745e4ececedd7b627c385402fb861a2f37a2063440542a3b69ed04a89a1d431",
+      "outputSha256": "b16d45aa8ed5e6e0327c24e2a91dcfddb39ca648c739ec32e02f03a39c7a90f1"
     },
     {
       "source": "app-icon.svg",
@@ -88,8 +88,8 @@
       "height": 64,
       "format": "ico",
       "fit": "fill",
-      "sourceSha256": "9662c9cd40ff6871f79bc2278eadfe1443e25bc63fcd07d61b290253329a5a87",
-      "outputSha256": "c7ee8fa15f258d14a177b54e86496cf7b0c0446f3d88e85810dbca022cf95516"
+      "sourceSha256": "d745e4ececedd7b627c385402fb861a2f37a2063440542a3b69ed04a89a1d431",
+      "outputSha256": "5d986e063ee388eb58f1f2053b0dbc0d9306ada113c9bd275c4f11f01a477778"
     }
   ]
 }

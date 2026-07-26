@@ -15,6 +15,7 @@ export function useKitchenConsoleIngredient() {
     canWrite,
     ingredients,
     pending,
+    loadError,
   } = useKitchenConsoleIngredients()
 
   const ingredientId = useRouteParam('ingredientId')
@@ -37,6 +38,7 @@ export function useKitchenConsoleIngredient() {
     ingredientId: ingredientId.value,
     hasIngredient: Boolean(ingredient.value),
     pending: pending.value,
+    loadError: Boolean(loadError.value),
     readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
@@ -50,6 +52,7 @@ export function useKitchenConsoleIngredient() {
     canWrite,
     ingredients,
     pending,
+    loadError,
     ingredientId,
     ingredient,
     debug,

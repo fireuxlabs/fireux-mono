@@ -38,6 +38,8 @@ export function useKitchenConsoleDishFinance(
   return {
     estimate,
     pending: supply.pending,
-    error: supply.supplierDemoError,
+    error: computed(
+      () => supply.supplierDemoError.value ?? supply.ingredientRootError.value
+    ),
   }
 }

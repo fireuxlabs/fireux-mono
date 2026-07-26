@@ -1,6 +1,7 @@
 import { defineEventHandler, setHeader } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { useAssets } from '../composables/fireux/app/useAssets'
+import { withBuildVersion } from '../utils/buildVersionUrl'
 
 const DEFAULT_BACKGROUND = '#ffffff'
 const DEFAULT_THEME = '#0f172a'
@@ -25,10 +26,12 @@ export default defineEventHandler((event) => {
     (typeof pub.primaryColor === 'string' && pub.primaryColor.trim()) ||
     DEFAULT_THEME
   const brandAssets = useAssets()
+  const buildId = runtimeConfig.app?.buildId
 
   setHeader(event, 'content-type', 'application/manifest+json')
 
   return {
+    id: '/',
     name,
     short_name: shortName,
     description,
@@ -38,13 +41,13 @@ export default defineEventHandler((event) => {
     theme_color: themeColor,
     icons: [
       {
-        src: brandAssets.pwaIcon192,
+        src: withBuildVersion(brandAssets.pwaIcon192, buildId),
         sizes: '192x192',
         type: 'image/png',
         purpose: 'any maskable',
       },
       {
-        src: brandAssets.pwaIcon512,
+        src: withBuildVersion(brandAssets.pwaIcon512, buildId),
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any maskable',

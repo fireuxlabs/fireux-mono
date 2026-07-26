@@ -61,9 +61,9 @@ identical.
 
 | Class                | Members                                                                                                       | Required behavior                                                                    |
 | -------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Root Simple          | Menu doorway rows, Place, Product, Ingredient, plus currently direct Supplier/Portfolio/Property browse       | Manager consumes self-contained bounded rows without client N+1 hydration            |
+| Root Simple          | Menu doorway rows, Place, Product, plus currently direct Supplier/Portfolio/Property browse                   | Manager consumes self-contained bounded rows without client N+1 hydration            |
 | Root Synced Snapshot | Company                                                                                                       | Copied public card fields are an explicit read model; Place remains source authority |
-| Root Projected       | App, Ecosystem, User, Kitchen, Blog, Job, Chef, Driver, Agent, Professional                                   | Server projection owns allowlists, publication, joins, and safe DTO shape            |
+| Root Projected       | App, Ecosystem, User, Kitchen, Ingredient, Blog, Job, Chef, Driver, Agent, Professional                       | Server projection owns allowlists, publication, joins, and safe DTO shape            |
 | Scoped surface       | Dish, Recipe, Station, Team, Kitchen Supplier, Supplier Item/Ingredient/Catalogue and operations              | Never masquerades as a root collection manager just to reuse UI                      |
 
 The detailed manager matrix lives in `collection-manager.md`.

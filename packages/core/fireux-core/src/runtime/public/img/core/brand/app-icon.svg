@@ -1,10 +1,16 @@
-<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" fill="#0B111C"/>
-  <rect x="20" y="20" width="472" height="472" rx="112" stroke="#FFFFFF" stroke-opacity="0.18" stroke-width="5"/>
-  <g transform="translate(144 144) scale(2)">
-    <path d="M50 5L82 49C96 69 87 97 64 107C40 116 14 100 13 76C12 58 22 42 39 25L38 55L52 39L50 5Z" fill="#FF5A1F"/>
-    <path d="M54 45L70 68C79 82 69 99 54 101C40 103 28 92 31 78C33 67 43 56 54 45Z" fill="#FFB000"/>
-    <path d="M54 70L62 82C66 89 61 97 53 98C45 99 39 92 42 85C44 79 49 74 54 70Z" fill="#FFF4D8"/>
-    <path d="M78 9L84 15L78 21L72 15L78 9Z" fill="#FFC928"/>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">FireUX app icon</title>
+  <defs>
+    <linearGradient id="ember" x1="150" y1="0" x2="45" y2="286" gradientUnits="userSpaceOnUse"><stop stop-color="#FF4F00"/><stop offset="1" stop-color="#FF6900"/></linearGradient>
+    <linearGradient id="amber" x1="181" y1="75" x2="90" y2="274" gradientUnits="userSpaceOnUse"><stop stop-color="#FF9500"/><stop offset="1" stop-color="#F5A500"/></linearGradient>
+    <linearGradient id="yellow" x1="201" y1="140" x2="172" y2="274" gradientUnits="userSpaceOnUse"><stop stop-color="#FFB800"/><stop offset="1" stop-color="#FFD21F"/></linearGradient>
+    <linearGradient id="core" x1="151" y1="189" x2="135" y2="286" gradientUnits="userSpaceOnUse"><stop stop-color="#FFF3A6"/><stop offset="1" stop-color="#FFF085"/></linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="#0B111C"/>
+  <g transform="translate(123.5 77.25) scale(1.25)">
+    <path d="M148 0C165 22 177 48 172 72C168 94 154 107 135 123L94 151C66 171 54 190 55 215C56 244 77 270 112 285C64 285 31 269 13 238C-4 208-3 169 20 130C28 118 38 110 51 100C47 117 47 136 54 150C68 116 88 90 116 58C136 35 144 18 148 0Z" fill="url(#ember)"/>
+    <path d="M181 75C193 92 198 116 190 139C181 159 165 171 145 182L115 196C96 205 87 220 88 240C89 253 94 264 103 274C81 261 68 244 67 224C66 201 79 182 98 165L145 131C166 115 178 96 181 75Z" fill="url(#amber)"/>
+    <path d="M201 140C214 164 216 198 207 228C200 250 187 266 167 274C179 257 185 241 183 224C182 207 175 193 164 184C181 174 195 158 201 140Z" fill="url(#yellow)"/>
+    <path d="M151 189C166 201 173 219 173 237C173 257 160 276 136 286C113 277 100 259 100 239C100 221 110 207 127 201L151 189Z" fill="url(#core)"/>
   </g>
 </svg>

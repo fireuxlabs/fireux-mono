@@ -1,12 +1,13 @@
 # Demo World and Demo Data spine map
-Updated: 2026-07-25
+Updated: 2026-07-26
 Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
 
-Map the deterministic read-only Demo World and its two named consumers:
-Console Demo Data and a project's public Product Demo.
+Map the deterministic read-only Demo records and their two named consumers:
+Console Demo Data and a project's public Product Demo. Shared canonical roots
+remain real data even when a Demo record links to them.
 
 ## Vertical links
 
@@ -26,10 +27,15 @@ Console Demo Data and a project's public Product Demo.
 - A fixture follows the current real entity/record shapes. Real models and
   adapters are authority; the application must never bend around a fixture.
 - Demo aggregation follows the owning domain's operation vocabulary. In
-  Kitchens that means Menu, Dish, Recipe, Mise, root Ingredient usage, and
+  Kitchens that means Menu, Dish, Recipe, Mise, Ingredient usage links, and
   Kitchen-owned Supplier links. Supplier Ingredient coverage, priced Item
   offers, and `Catalogue` remain Supplier-owned and must not become Kitchen
   fixture or scenario concepts.
+- Ingredient identity is never Demo data. Kitchen and Supplier Demo records
+  store only stable `ingredient_id` references; names, aliases, taxonomy,
+  lifecycle, parents, and images hydrate from the real canonical
+  `/ingredients/{ingredientId}` authority through the bounded public
+  projection. A Demo fixture must not copy or locally decorate those roots.
 - The Kitchen Demo World may prove a production graph ahead of persisted model
   promotion: a Kitchen-scoped Dish Spec consumes measured root Ingredients,
   stable Prep items, or Recipes; a Menu selects the Dish; and dated Mise tasks
@@ -55,18 +61,40 @@ Console Demo Data and a project's public Product Demo.
   Demo adapter. Demo targets use the same selected-target and outcome spine as
   Live targets, and operation records remain scoped to their selected Demo
   parent rather than falling through to an empty or remote collection.
+- Selecting Demo deactivates Live target and operation providers before they
+  can issue a request. The narrow exception is a bounded public projection
+  read required to hydrate a shared canonical root explicitly referenced by a
+  Demo operation record, currently Ingredient. This is reference hydration,
+  not a Live operation provider or a second Demo identity source.
 - `useConsoleDemoData` caches a successful local load and exposes
   `idle`, `pending`, `error`, `empty`, or `ready` without remote work.
 - A project Product Demo has one named adapter at
   `app/composables/product-demo/use*ProductDemo.ts`. That adapter dynamically
   composes only its project's fixtures and Demo Worlds owned by packages the
   project consumes. It never imports another project's Demo World.
+- When a Product Demo promises a complete derived projection for every
+  represented fixture, its adapter validates that projection fail-closed at
+  composition time. Canonical Demo Dish records use a deterministic
+  file-backed collection provider and pass through the same `normalizeDish`
+  and collection-state contract as Live Firestore records. The provider swap
+  does not create a second Dish model or downstream Console collection shape.
+  The still-unpromoted Spec, Prep, Recipe, Mise-requirement, and Finance graph
+  remains isolated behind the existing derived adapter until those record
+  models are explicitly agreed; it is not canonical Dish storage. Product
+  adapters must not repeat Menu, Spec, Supplier, production, or Finance joins.
+  The derived adapter rejects duplicate or incomplete identity coverage,
+  unresolved requirements, unsafe minor-unit arithmetic, and incoherent
+  percentages through the shared Kitchen estimator. Fictional
+  Dish-level sales quantities stay in the Kitchen package's owner-local Dishes
+  Demo fixture; Product Demo derives total sales from those quantities and the
+  estimator's resolved selling price instead of reading Orders or Sales.
 - Public Product Demo pages occupy the reserved `app/pages/demo` route family.
   They remain thin route compositions and consume the named adapter; they do
   not import fixture modules directly or become a second data authority.
 - Demo World is read-only. Fixture modules do not depend on Firestore, Storage,
-  Firebase Admin, server code, public adapters, or mutation code. Arbitrary
-  runtime imports remain forbidden.
+  Firebase Admin, server code, public adapters, or mutation code. Consumer
+  adapters may hydrate explicitly linked shared roots through their bounded
+  public read projection; arbitrary runtime imports remain forbidden.
 - Test and simulation sources remain separate because they are allowed to
   exercise writes. Dev fixtures remain with authenticated dev tooling.
 
@@ -82,5 +110,6 @@ Console Demo Data and a project's public Product Demo.
 - Run the Demo Data guard through `pnpm guard`.
 - Typecheck every owning package or app whose fixtures or adapters changed.
 - Verify an inactive console reports `idle` and does not invoke its loader.
-- Verify a Product Demo remains deterministic and performs no live, test, or
-  simulation storage work.
+- Verify a Product Demo's fictional records remain deterministic and perform
+  no live operational, test, or simulation storage work. Verify any canonical
+  root hydration is bounded to the stable IDs present in those records.

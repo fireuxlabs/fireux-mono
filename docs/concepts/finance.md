@@ -107,6 +107,12 @@ reports into one generic Finance console.
   estimate rather than a KitchenSale, expense, or FinancialFact. The pure
   Kitchen estimator is shared by the real Console adapter and presentation-only
   Demo projections so those surfaces cannot drift into competing arithmetic.
+- A Product Demo may pair that estimate with explicitly fictional owner-local
+  Dish quantity fixtures. Any displayed total sales must be derived exactly
+  from the fixture quantity and resolved selling price and must not be
+  presented as Orders, KitchenSales, FinancialFacts, or real customer
+  performance. The surrounding source selection distinguishes Demo from Live;
+  reusable Finance field labels remain source-agnostic.
 - There is no generic Finance Console Operation in this pass. Kitchens keep
   Kitchen operations; Suppliers, Projects, and Portfolios keep their own future
   producer operations.
@@ -128,6 +134,8 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/config/module/server-config.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/dish-finance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-dishes.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Dishes/finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Finance.vue`

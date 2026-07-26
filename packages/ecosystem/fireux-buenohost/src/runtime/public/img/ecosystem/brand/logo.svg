@@ -1,0 +1,15 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">BuenoHost house mark</title>
+  <defs>
+    <mask id="house">
+      <rect width="512" height="512" fill="black"/>
+      <path d="M85 226L229 93C244 79 268 79 283 93L427 226C452 249 436 290 402 290H397V414C397 433 382 448 363 448H149C130 448 115 433 115 414V290H110C76 290 60 249 85 226Z" fill="white"/>
+      <path d="M202 448V332C202 302 226 278 256 278C286 278 310 302 310 332V448H202Z" fill="black"/>
+    </mask>
+  </defs>
+  <g mask="url(#house)">
+    <rect width="256" height="512" fill="#102A38"/>
+    <rect x="256" width="256" height="512" fill="#5EA9B8"/>
+  </g>
+  <path d="M225 448V358C225 341 239 327 256 327C273 327 287 341 287 358V448H225Z" fill="#F27A52"/>
+</svg>

@@ -273,7 +273,7 @@ const APPROVED_PROJECT_RAW_PALETTE_UTILITIES = new Map([
   ],
   // Fixed white QR/sticker output must remain predictable and scannable.
   [
-    'projects/fireux/buenohost/app/pages/index.vue',
+    'projects/buenohost/buenohost-app/app/pages/index.vue',
     new Set(['text-slate-950', 'text-slate-500', 'border-slate-200']),
   ],
   [

@@ -1,9 +1,11 @@
 # Firestore Rules source map
-Updated: 2026-07-21
+
+Updated: 2026-07-26
 Ref: 318378b20
 Role: map, not canon
 
 ## Purpose
+
 Map how FireUX authors and releases main-database Firestore Security Rules.
 
 ## Vertical links
@@ -49,6 +51,12 @@ Map how FireUX authors and releases main-database Firestore Security Rules.
   target rules start with an explicit child collection/document pair before a
   recursive tail, because a Rules v2 recursive wildcard also matches zero
   segments and must not bypass the support-record validator.
+  Canonical `/ingredients/{ingredientId}` roots are server-only and reach
+  clients through the bounded Ingredient projection API. A Kitchen may store
+  only an exact stamped `ingredient_id` reference whose canonical root is
+  active; generic Kitchen-child branches explicitly exclude Ingredients.
+  Stale Kitchen references remain deletable after a root is deprecated or
+  merged.
 - Werkbox: legacy physical Firebase project `cleanbox-f15bc`; databases
   `cleanbox` and `cleanbox-simulation`.
 - Directory-publication server-only databases separately reuse the exact

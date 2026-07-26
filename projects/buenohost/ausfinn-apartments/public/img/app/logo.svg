@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">AUSFinn Apartments</title>
+  <rect width="512" height="512" rx="116" fill="#153b37"/>
+  <path d="M92 278 256 118l164 160v128H92Z" fill="#e9b86d"/>
+  <path d="m154 276 102-98 102 98v130H154Z" fill="#fffdf8"/>
+  <path d="M218 406V294h76v112" fill="#e06d51"/>
+  <circle cx="256" cy="239" r="24" fill="#377f82"/>
+</svg>

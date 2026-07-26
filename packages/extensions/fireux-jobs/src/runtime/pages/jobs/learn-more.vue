@@ -41,16 +41,22 @@
             &nbsp;— job seekers can maintain a reusable professional profile
             without duplicating their core User identity.
           </li>
+          <li>
+            <strong class="font-medium text-highlighted"
+              >Applications and engagements</strong
+            >
+            &nbsp;— professionals can apply, employers can make an offer, and
+            an accepted offer becomes a private engagement.
+          </li>
         </ul>
       </section>
 
       <section class="space-y-3">
-        <h3 class="text-base font-semibold">Application status</h3>
+        <h3 class="text-base font-semibold">Direct employment</h3>
         <p class="text-sm text-toned">
-          Native applications and shortlist management are not available yet.
-          The current product supports honest job discovery, professional
-          profiles, and employer publishing without pretending that an
-          application has been submitted.
+          The named employer—not Misebox, Werkbox, or FireUX—employs and pays
+          each person directly. The platform records applications, offers, and
+          engagement progress without becoming the employer or moving wages.
         </p>
       </section>
 

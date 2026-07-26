@@ -574,6 +574,16 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /ingredients/{ingredientId} {
+      // The shared Ingredient library is curated and projected by trusted
+      // server APIs. Browsers never read or mutate canonical root documents.
+      allow get, list, create, update, delete: if false;
+
+      match /{nested=**} {
+        allow get, list, create, update, delete: if false;
+      }
+    }
+
     function isValidUser(data) {
       return data.keys().hasAll([
           'display_name',
@@ -1372,6 +1382,70 @@ service cloud.firestore {
               kitchenAuthorityUnchanged()));
         allow delete: if false;
 
+        match /ingredients/{ingredientId} {
+          function isValidKitchenIngredient(data) {
+            return data is map &&
+              data.keys().hasAll([
+                'ingredient_id',
+                'created',
+                'updated'
+              ]) &&
+              data.keys().hasOnly([
+                'ingredient_id',
+                'created',
+                'updated'
+              ]) &&
+              isValidFirestoreDocumentId(data.ingredient_id) &&
+              data.ingredient_id == ingredientId &&
+              validCreatedStamp(data.created) &&
+              data.created.keys().hasAll(['at', 'by', 'app_id']) &&
+              data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
+              data.created.app_id == appId &&
+              validUpdatedStamp(data.updated) &&
+              data.updated.keys().hasAll(['at', 'by']) &&
+              data.updated.keys().hasOnly(['at', 'by']);
+          }
+
+          function hasActiveCanonicalIngredient() {
+            return exists(
+                /databases/$(database)/documents/ingredients/$(ingredientId)
+              ) &&
+              get(
+                /databases/$(database)/documents/ingredients/$(ingredientId)
+              ).data.status == 'active';
+          }
+
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetMember(appId, 'kitchens', kitchenId);
+          allow create: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenIngredient(request.resource.data) &&
+            hasActiveCanonicalIngredient() &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenIngredient(request.resource.data) &&
+            hasActiveCanonicalIngredient() &&
+            request.resource.data.ingredient_id == resource.data.ingredient_id &&
+            request.resource.data.created == resource.data.created &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'updated'
+            ]) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          // Removing a stale selection remains possible after its canonical
+          // root is deprecated or merged.
+          allow delete: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
+        }
+
         match /orders/{orderId} {
           allow get, list: if isTargetOperator(appId, 'kitchens', kitchenId);
           allow create, update, delete: if false;
@@ -1384,32 +1458,34 @@ service cloud.firestore {
         }
 
         match /{childCollection}/{childId} {
-          allow get, list: if childCollection != 'orders' &&
-            childCollection != 'sales' &&
+          function isGenericKitchenChildCollection() {
+            return !(childCollection in [
+              'ingredients',
+              'orders',
+              'sales'
+            ]);
+          }
+
+          allow get, list: if isGenericKitchenChildCollection() &&
             (isAppAdmin(appId) ||
               isTargetMember(appId, 'kitchens', kitchenId));
-          allow create, update: if childCollection != 'orders' &&
-            childCollection != 'sales' &&
+          allow create, update: if isGenericKitchenChildCollection() &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, 'kitchens', kitchenId)) &&
             request.resource.data.keys().size() <= 100;
-          allow delete: if childCollection != 'orders' &&
-            childCollection != 'sales' &&
+          allow delete: if isGenericKitchenChildCollection() &&
             (isAppAdmin(appId) ||
               isTargetOperator(appId, 'kitchens', kitchenId));
 
           match /{nested=**} {
-            allow get, list: if childCollection != 'orders' &&
-              childCollection != 'sales' &&
+            allow get, list: if isGenericKitchenChildCollection() &&
               (isAppAdmin(appId) ||
                 isTargetMember(appId, 'kitchens', kitchenId));
-            allow create, update: if childCollection != 'orders' &&
-              childCollection != 'sales' &&
+            allow create, update: if isGenericKitchenChildCollection() &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, 'kitchens', kitchenId)) &&
               request.resource.data.keys().size() <= 100;
-            allow delete: if childCollection != 'orders' &&
-              childCollection != 'sales' &&
+            allow delete: if isGenericKitchenChildCollection() &&
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, 'kitchens', kitchenId));
           }

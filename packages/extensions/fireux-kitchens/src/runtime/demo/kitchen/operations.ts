@@ -28,6 +28,8 @@ import {
   kitchenDemoCreated,
   kitchenDemoTimestamp,
   kitchenDemoUpdated,
+  miseboxRestaurantKitchenDemoIdentity,
+  pizzaTheActionKitchenDemoIdentity,
 } from './core/fixtures'
 import type { KitchenDemoIdentity } from './core/types'
 
@@ -307,6 +309,7 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
 ]
 
 const station = (
+  identity: KitchenDemoIdentity,
   id: string,
   name: string,
   description: string,
@@ -314,21 +317,22 @@ const station = (
 ): KitchenStation => ({
   ...KitchenStationModel,
   id,
-  kitchen_id: deanosKitchenDemoIdentity.kitchenId,
+  kitchen_id: identity.kitchenId,
   name,
   description,
   sort_order: sortOrder,
-  created: kitchenDemoCreated(deanosKitchenDemoIdentity),
+  created: kitchenDemoCreated(identity),
   updated: kitchenDemoUpdated(),
 })
 
 export const deanosKitchenDemoStations: KitchenStation[] = [
-  station('grill', 'Grill', 'Burgers and hot holding.', 1),
-  station('fryers', 'Fryers', 'Chicken and fries.', 2),
-  station('pass', 'Pass', 'Final checks and guest handoff.', 3),
+  station(deanosKitchenDemoIdentity, 'grill', 'Grill', 'Burgers and hot holding.', 1),
+  station(deanosKitchenDemoIdentity, 'fryers', 'Fryers', 'Chicken and fries.', 2),
+  station(deanosKitchenDemoIdentity, 'pass', 'Pass', 'Final checks and guest handoff.', 3),
 ]
 
 const miseTask = (
+  identity: KitchenDemoIdentity,
   id: string,
   title: string,
   stationId: string,
@@ -343,7 +347,7 @@ const miseTask = (
 ): KitchenMiseTask => ({
   ...KitchenMiseTaskModel,
   id,
-  kitchen_id: deanosKitchenDemoIdentity.kitchenId,
+  kitchen_id: identity.kitchenId,
   title,
   station: stationId,
   service_date: '2026-07-22',
@@ -352,10 +356,10 @@ const miseTask = (
   estimated_minutes: estimatedMinutes,
   ingredient_ids: [...(production.ingredientIds ?? [])],
   mise_ids: [...(production.prepItemIds ?? [])],
-  menu_id: deanosKitchenDemoIdentity.menuId,
+  menu_id: identity.menuId,
   recipe_id: production.recipeId ?? '',
   created: kitchenDemoCreated(
-    deanosKitchenDemoIdentity,
+    identity,
     '2026-07-22T07:00:00.000Z'
   ),
   updated: kitchenDemoUpdated('2026-07-22T08:00:00.000Z'),
@@ -363,6 +367,7 @@ const miseTask = (
 
 export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
   miseTask(
+    deanosKitchenDemoIdentity,
     'shape-burger-patties',
     'Shape burger patties',
     'grill',
@@ -375,6 +380,7 @@ export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
     }
   ),
   miseTask(
+    deanosKitchenDemoIdentity,
     'mix-house-sauce',
     'Mix house sauce',
     'pass',
@@ -383,16 +389,211 @@ export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
     20,
     { recipeId: 'deanos-burger-sauce' }
   ),
-  miseTask('stock-takeaway-packaging', 'Stock takeaway packaging', 'pass', 'todo', 'normal', 10),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'stock-takeaway-packaging',
+    'Stock takeaway packaging',
+    'pass',
+    'todo',
+    'normal',
+    10
+  ),
 ]
 
-// Misebox Restaurant deliberately demonstrates the Menu/Kiosk presentation without
-// implying that a service board, Stations or Mise workflow is already active.
-export const miseboxRestaurantKitchenDemoOrders: KitchenOrder[] = []
-export const miseboxRestaurantKitchenDemoStations: KitchenStation[] = []
-export const miseboxRestaurantKitchenDemoMiseTasks: KitchenMiseTask[] = []
+export const miseboxRestaurantKitchenDemoOrders: KitchenOrder[] = [
+  makeOrder({
+    identity: miseboxRestaurantKitchenDemoIdentity,
+    serviceNumber: 21,
+    status: 'accepted',
+    orderType: 'eat_in',
+    channel: 'kiosk',
+    createdAt: '2026-07-22T11:41:00.000Z',
+    updatedAt: '2026-07-22T11:43:00.000Z',
+    updatedBy: 'demo-operator',
+    estimatedMinutes: 18,
+    estimatedAt: '2026-07-22T12:01:00.000Z',
+    customerName: 'Mara',
+    handoff: 'tray',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'ember-roasted-chicken-item',
+        dishId: 'ember-roasted-chicken',
+        itemKind: 'food',
+        label: 'Ember-roasted chicken',
+        unitPrice: 29,
+      },
+    ],
+  }),
+  makeOrder({
+    identity: miseboxRestaurantKitchenDemoIdentity,
+    serviceNumber: 22,
+    status: 'ready',
+    orderType: 'takeaway',
+    channel: 'kiosk',
+    createdAt: '2026-07-22T11:44:00.000Z',
+    updatedAt: '2026-07-22T11:55:00.000Z',
+    updatedBy: 'demo-operator',
+    estimatedMinutes: 12,
+    estimatedAt: '2026-07-22T11:56:00.000Z',
+    customerName: 'Jonas',
+    handoff: 'bag',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'green-tahini-falafel-bowl-item',
+        dishId: 'green-tahini-falafel-bowl',
+        itemKind: 'food',
+        label: 'Green tahini falafel bowl',
+        unitPrice: 23,
+        checked: true,
+      },
+      {
+        id: 'item-2',
+        itemId: 'cucumber-mint-cooler-item',
+        dishId: 'cucumber-mint-cooler',
+        itemKind: 'drink',
+        label: 'Cucumber & mint cooler',
+        unitPrice: 7,
+        checked: true,
+      },
+    ],
+  }),
+]
 
-// Pizza the Action is likewise a Menu/Kiosk presentation world for now.
-export const pizzaTheActionKitchenDemoOrders: KitchenOrder[] = []
-export const pizzaTheActionKitchenDemoStations: KitchenStation[] = []
-export const pizzaTheActionKitchenDemoMiseTasks: KitchenMiseTask[] = []
+export const miseboxRestaurantKitchenDemoStations: KitchenStation[] = [
+  station(
+    miseboxRestaurantKitchenDemoIdentity,
+    'hearth',
+    'Hearth',
+    'Wood-fired breads, vegetables and roasting.',
+    1
+  ),
+  station(
+    miseboxRestaurantKitchenDemoIdentity,
+    'garden-pass',
+    'Garden pass',
+    'Cold assembly, drinks and final checks.',
+    2
+  ),
+]
+
+export const miseboxRestaurantKitchenDemoMiseTasks: KitchenMiseTask[] = [
+  miseTask(
+    miseboxRestaurantKitchenDemoIdentity,
+    'prep-hearth-chicken',
+    'Brine hearth chicken',
+    'hearth',
+    'in_progress',
+    'high',
+    30,
+    { ingredientIds: ['chicken-breast', 'lemon'] }
+  ),
+  miseTask(
+    miseboxRestaurantKitchenDemoIdentity,
+    'press-cucumber-cooler',
+    'Press cucumber and mint cooler base',
+    'garden-pass',
+    'todo',
+    'normal',
+    20,
+    { ingredientIds: ['cucumber', 'mint', 'lime'] }
+  ),
+]
+
+export const pizzaTheActionKitchenDemoOrders: KitchenOrder[] = [
+  makeOrder({
+    identity: pizzaTheActionKitchenDemoIdentity,
+    serviceNumber: 31,
+    status: 'pending_acceptance',
+    orderType: 'collection',
+    channel: 'menu',
+    createdAt: '2026-07-22T17:36:00.000Z',
+    customerName: 'Elena',
+    customerPhone: '+41 79 555 01 31',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'action-margherita-item',
+        dishId: 'action-margherita',
+        itemKind: 'food',
+        label: 'Action Margherita',
+        unitPrice: 18,
+      },
+    ],
+  }),
+  makeOrder({
+    identity: pizzaTheActionKitchenDemoIdentity,
+    serviceNumber: 32,
+    status: 'ready',
+    orderType: 'takeaway',
+    channel: 'kiosk',
+    createdAt: '2026-07-22T17:38:00.000Z',
+    updatedAt: '2026-07-22T17:50:00.000Z',
+    updatedBy: 'demo-operator',
+    estimatedMinutes: 12,
+    estimatedAt: '2026-07-22T17:50:00.000Z',
+    customerName: 'Nico',
+    handoff: 'bag',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'pepperoni-punch-item',
+        dishId: 'pepperoni-punch',
+        itemKind: 'food',
+        label: 'Pepperoni Punch',
+        unitPrice: 23,
+        checked: true,
+      },
+      {
+        id: 'item-2',
+        itemId: 'garlic-knots-item',
+        dishId: 'garlic-knots',
+        itemKind: 'food',
+        label: 'Garlic knots',
+        unitPrice: 8,
+        checked: true,
+      },
+    ],
+  }),
+]
+
+export const pizzaTheActionKitchenDemoStations: KitchenStation[] = [
+  station(
+    pizzaTheActionKitchenDemoIdentity,
+    'pizza-oven',
+    'Pizza oven',
+    'Stretching, topping and wood-fired baking.',
+    1
+  ),
+  station(
+    pizzaTheActionKitchenDemoIdentity,
+    'pizza-pass',
+    'Pizza pass',
+    'Sides, slicing and guest handoff.',
+    2
+  ),
+]
+
+export const pizzaTheActionKitchenDemoMiseTasks: KitchenMiseTask[] = [
+  miseTask(
+    pizzaTheActionKitchenDemoIdentity,
+    'mix-pizza-dough',
+    'Mix and portion pizza dough',
+    'pizza-oven',
+    'done',
+    'high',
+    45,
+    { ingredientIds: ['flour', 'sea-salt'] }
+  ),
+  miseTask(
+    pizzaTheActionKitchenDemoIdentity,
+    'prep-pizza-garnishes',
+    'Prep tomato, basil and rocket',
+    'pizza-pass',
+    'in_progress',
+    'normal',
+    25,
+    { ingredientIds: ['tomato', 'basil', 'rocket'] }
+  ),
+]

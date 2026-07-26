@@ -51,6 +51,28 @@ const serverHandlers = [
     handler: './runtime/server/api/internal/jobs/[id]/publish.post',
   },
   {
+    route: '/api/internal/jobs/:id/applications',
+    method: 'post',
+    handler: './runtime/server/api/internal/jobs/[id]/applications.post',
+  },
+  {
+    route: '/api/internal/job-applications',
+    method: 'get',
+    handler: './runtime/server/api/internal/job-applications.get',
+  },
+  {
+    route: '/api/internal/job-applications/:id',
+    method: 'patch',
+    handler:
+      './runtime/server/api/internal/job-applications/[id].patch',
+  },
+  {
+    route: '/api/internal/job-engagements/:id',
+    method: 'patch',
+    handler:
+      './runtime/server/api/internal/job-engagements/[id].patch',
+  },
+  {
     route: '/api/public/jobs',
     method: 'get',
     handler: './runtime/server/api/public/jobs.get',

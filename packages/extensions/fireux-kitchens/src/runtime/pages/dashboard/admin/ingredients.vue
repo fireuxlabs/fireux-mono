@@ -1,10 +1,24 @@
 <template>
-  <AdminDomainCurationPanel
-    domain="ingredient"
-    title="Ingredients"
-    description="Add comma-separated ingredient slugs to feature on public ingredient surfaces."
-    placeholder="tomatoes, basil"
-  />
+  <UPage>
+    <UPageHeader
+      title="Ingredients"
+      description="Curate the shared Ingredient world used by Kitchen and Supplier operations."
+    >
+      <template #ctas>
+        <UButton to="/ingredients/add" icon="i-lucide-plus" size="sm">
+          Add Ingredient
+        </UButton>
+      </template>
+    </UPageHeader>
+
+    <UPageBody>
+      <IngredientCollectionManager
+        title="Canonical library"
+        description="All active, deprecated, and merged Ingredient roots. Open one to edit, reactivate, retire, or merge it."
+        include-inactive
+      />
+    </UPageBody>
+  </UPage>
 </template>
 
 <script setup lang="ts">
@@ -15,7 +29,7 @@ definePageMeta({
     key: 'ingredients',
     domain: 'ingredients',
     label: 'Ingredients',
-    description: 'Feature ingredient slugs on public ingredient surfaces.',
+    description: 'Curate the canonical Ingredient library.',
     icon: 'i-lucide-carrot',
     order: 140,
   },

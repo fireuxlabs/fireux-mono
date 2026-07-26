@@ -5,30 +5,24 @@ import { DishStorage, type Dish } from '../../../../../../models/kitchen/dish.mo
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 import {
+  findKitchenConsoleDemoDishRecords,
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
+import type {
+  KitchenDemoDishMenuUsage,
+  KitchenDemoDishesOperation,
+  KitchenDemoDishSection,
+} from '../../../../../../utils/kitchen/demo-dishes'
+import {
+  buildKitchenDemoDishesOperation,
+} from '../../../../../../utils/kitchen/demo-dishes'
+import { useKitchenConsoleSupplyWorkspace } from '../Suppliers/useKitchenConsoleSupplyWorkspace'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
-export type KitchenDishSection = {
-  id: string
-  label: string
-  dishIds: string[]
-  count: number
-}
-
-export type KitchenDishMenuUsage = {
-  dishId: string
-  menuId: string
-  sectionId: string
-  itemId: string
-  price?: number
-  currencyCode?: string
-  menuName?: string
-  sectionLabel?: string
-  active?: boolean
-}
+export type KitchenDishSection = KitchenDemoDishSection
+export type KitchenDishMenuUsage = KitchenDemoDishMenuUsage
 
 export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolean } = {}) {
   const {
@@ -48,45 +42,76 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     demoData.data.value,
     kitchenId.value
   ))
+  const supply = useKitchenConsoleSupplyWorkspace()
+  const demoDishOperationState = computed<{
+    operation: KitchenDemoDishesOperation | null
+    error?: unknown
+  }>(() => {
+    if (
+      runtime.source.value !== 'demo' ||
+      demoData.pending.value ||
+      supply.pending.value ||
+      demoData.error.value ||
+      supply.supplierDemoError.value ||
+      supply.ingredientRootError.value
+    ) {
+      return { operation: null }
+    }
+
+    const scenario = demoScenario.value
+    if (!scenario) return { operation: null }
+
+    try {
+      return {
+        operation: buildKitchenDemoDishesOperation({
+          scenario,
+          supplierScenarios: supply.supplierScenarios.value,
+          ingredientRoots: supply.ingredientRoots.value,
+        }),
+      }
+    } catch (error) {
+      return { operation: null, error }
+    }
+  })
+  const demoDishOperation = computed(
+    () => demoDishOperationState.value.operation
+  )
+  const demoPending = computed(
+    () => demoData.pending.value || supply.pending.value
+  )
+  const demoError = computed(
+    () =>
+      demoData.error.value ??
+      supply.supplierDemoError.value ??
+      supply.ingredientRootError.value ??
+      demoDishOperationState.value.error
+  )
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
+  const demoDishRecords = computed(() =>
+    findKitchenConsoleDemoDishRecords(demoData.data.value, kitchenId.value)
+  )
   const {
-    dishes: fetchedDishes,
-    pending: dishesPending,
-    error: dishesError,
-    outcome: dishesOutcome,
-    collectionPath: fetchedCollectionPath,
+    dishes: consoleDishes,
+    pending,
+    error,
+    outcome,
+    collectionPath,
   } =
     useKitchenDishCollection(fetchKitchenId, {
       kitchenCollectionPath: rootCollection,
       databaseId,
+      recordProvider: {
+        active: computed(() => runtime.source.value === 'demo'),
+        records: demoDishRecords,
+        pending: demoPending,
+        error: demoError,
+        collectionPath: computed(
+          () => `demo/kitchens/${kitchenId.value}/dishes`
+        ),
+      },
   })
-  const consoleDishes = computed(() =>
-    runtime.source.value === 'demo'
-      ? demoScenario.value?.dishes ?? []
-      : fetchedDishes.value
-  )
-  const pending = computed(() =>
-    runtime.source.value === 'demo'
-      ? demoData.pending.value
-      : dishesPending.value
-  )
-  const error = computed(() =>
-    runtime.source.value === 'demo'
-      ? demoData.error.value
-      : dishesError.value
-  )
-  const outcome = computed(() =>
-    runtime.source.value === 'demo'
-      ? demoData.outcome.value
-      : dishesOutcome.value
-  )
-  const collectionPath = computed(() =>
-    runtime.source.value === 'demo'
-      ? `demo/kitchens/${kitchenId.value}/dishes`
-      : fetchedCollectionPath.value
-  )
   const page = useKitchenConsoleReadPage<Dish>({
     collectionName: DishStorage.collection,
     selectedKitchen,
@@ -98,51 +123,18 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
   const sections = computed<KitchenDishSection[]>(() => {
     if (runtime.source.value !== 'demo') return []
 
-    return (demoScenario.value?.menus ?? []).flatMap(menu =>
-      menu.menuSections.map(({ section, items }) => ({
-        id: `${menu.kitchenMenu.id}:${section.id}`,
-        label: `${menu.kitchenMenu.name} · ${section.label}`,
-        dishIds: items.map(item => clean(item.dish_id)).filter(Boolean),
-        count: items.length,
-      }))
-    )
+    return demoDishOperation.value?.sections ?? []
   })
   const menuUsageByDishId = computed<Record<string, KitchenDishMenuUsage[]>>(
     () => {
       if (runtime.source.value !== 'demo') return {}
 
-      const usage: Record<string, KitchenDishMenuUsage[]> = {}
-      const scenario = demoScenario.value
-      if (!scenario) return usage
-      const currencyCode =
-        clean(scenario.place.default_currency_code).toUpperCase() || 'CHF'
-
-      scenario.menus.forEach((menu) => {
-        menu.menuSections.forEach(({ section, items }) => {
-          items.forEach((item) => {
-            const dishId = clean(item.dish_id)
-            if (!dishId) return
-            const prices = [
-              Number(item.price),
-              ...(item.price_options ?? []).map(option => Number(option.price)),
-            ].filter(price => Number.isFinite(price) && price > 0)
-            const entries = usage[dishId] ||= []
-            entries.push({
-              dishId,
-              menuId: menu.kitchenMenu.id,
-              sectionId: section.id,
-              itemId: item.id,
-              ...(prices.length ? { price: Math.min(...prices) } : {}),
-              currencyCode,
-              menuName: menu.kitchenMenu.name,
-              sectionLabel: section.label,
-              active: item.status === 'active' && section.status === 'active',
-            })
-          })
-        })
-      })
-
-      return usage
+      return Object.fromEntries(
+        (demoDishOperation.value?.items ?? []).map(item => [
+          clean(item.dish.id),
+          item.menuUsage,
+        ])
+      )
     }
   )
 
@@ -156,6 +148,7 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     readOnly,
     canWrite,
     demoScenario,
+    demoDishOperation,
     dishes: consoleDishes,
     pending,
     error,

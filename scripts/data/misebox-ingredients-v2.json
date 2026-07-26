@@ -1,0 +1,854 @@
+{
+  "format": "fireux-misebox-ingredient-v2-manifest/1",
+  "executor": "scripts/migrate-misebox-ingredients-v2.mjs",
+  "target": {
+    "project_id": "misebox-78f9c",
+    "database_id": "misebox",
+    "collection": "ingredients"
+  },
+  "schema_version": 2,
+  "source": {
+    "expected_document_count": 91,
+    "legacy_fields_removed": [
+      "app_id",
+      "default_locale",
+      "names",
+      "source_language"
+    ],
+    "policy": "stable ids and slugs; no merges or deletes"
+  },
+  "entries": [
+    {
+      "id": "american-cheese",
+      "slug": "american-cheese",
+      "name": "American Cheese",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "anchovies",
+      "slug": "anchovies",
+      "name": "Anchovies",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "artichokes",
+      "slug": "artichokes",
+      "name": "Artichokes",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "aubergine",
+      "slug": "aubergine",
+      "name": "Aubergine",
+      "aliases": ["Eggplant"],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "avocado-oil",
+      "slug": "avocado-oil",
+      "name": "Avocado Oil",
+      "aliases": [],
+      "category": "pantry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "bacon",
+      "slug": "bacon",
+      "name": "Bacon",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "baked-beans",
+      "slug": "baked-beans",
+      "name": "Baked Beans",
+      "aliases": [],
+      "category": "prepared",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "basil",
+      "slug": "basil",
+      "name": "Basil",
+      "aliases": [],
+      "category": "herbs-spices",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "bbq-sauce",
+      "slug": "bbq-sauce",
+      "name": "BBQ Sauce",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "beef-carpaccio",
+      "slug": "beef-carpaccio",
+      "name": "Beef Carpaccio",
+      "aliases": [],
+      "category": "prepared",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "beef-cubes",
+      "slug": "beef-cubes",
+      "name": "Beef Cubes",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "cut",
+      "status": "active"
+    },
+    {
+      "id": "beef-patty",
+      "slug": "beef-patty",
+      "name": "Beef Patty",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "composite",
+      "status": "active"
+    },
+    {
+      "id": "beef-smash-patties",
+      "slug": "beef-smash-patties",
+      "name": "Beef Smash Patties",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "composite",
+      "status": "active"
+    },
+    {
+      "id": "beef-strips",
+      "slug": "beef-strips",
+      "name": "Beef Strips",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "cut",
+      "status": "active"
+    },
+    {
+      "id": "black-olives",
+      "slug": "black-olives",
+      "name": "Black Olives",
+      "aliases": [],
+      "category": "produce",
+      "kind": "variety",
+      "parent_ingredient_id": "olives",
+      "status": "active"
+    },
+    {
+      "id": "black-pepper",
+      "slug": "black-pepper",
+      "name": "Black Pepper",
+      "aliases": [],
+      "category": "herbs-spices",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "buffalo-mozzarella",
+      "slug": "buffalo-mozzarella",
+      "name": "Buffalo Mozzarella",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "parent_ingredient_id": "mozzarella",
+      "status": "active"
+    },
+    {
+      "id": "burger-buns",
+      "slug": "burger-buns",
+      "name": "Burger Buns",
+      "aliases": [],
+      "category": "bakery",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "burrata",
+      "slug": "burrata",
+      "name": "Burrata",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "calamaris",
+      "slug": "calamaris",
+      "name": "Calamari",
+      "aliases": ["Calamaris"],
+      "category": "seafood",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "capers",
+      "slug": "capers",
+      "name": "Capers",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "cecina",
+      "slug": "cecina",
+      "name": "Cecina",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "cheddar-cheese",
+      "slug": "cheddar-cheese",
+      "name": "Cheddar Cheese",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "cherry-tomatoes",
+      "slug": "cherry-tomatoes",
+      "name": "Cherry Tomatoes",
+      "aliases": [],
+      "category": "produce",
+      "kind": "variety",
+      "parent_ingredient_id": "tomato",
+      "status": "active"
+    },
+    {
+      "id": "chicken",
+      "slug": "chicken",
+      "name": "Chicken",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "chicken-breast",
+      "slug": "chicken-breast",
+      "name": "Chicken Breast",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "cut",
+      "parent_ingredient_id": "chicken",
+      "status": "active"
+    },
+    {
+      "id": "corn",
+      "slug": "corn",
+      "name": "Corn",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "crevetten",
+      "slug": "crevetten",
+      "name": "Crevetten",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "croutons",
+      "slug": "croutons",
+      "name": "Croutons",
+      "aliases": [],
+      "category": "bakery",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "curd-cheese",
+      "slug": "curd-cheese",
+      "name": "Curd Cheese",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "curry",
+      "slug": "curry",
+      "name": "Curry",
+      "aliases": [],
+      "category": "herbs-spices",
+      "kind": "composite",
+      "status": "active"
+    },
+    {
+      "id": "dill-pickles",
+      "slug": "dill-pickles",
+      "name": "Dill Pickles",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "egg",
+      "slug": "egg",
+      "name": "Egg",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "english-muffin",
+      "slug": "english-muffin",
+      "name": "English Muffin",
+      "aliases": [],
+      "category": "bakery",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "field-salad",
+      "slug": "field-salad",
+      "name": "Field Salad",
+      "aliases": ["Corn Salad", "Lamb's Lettuce"],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "flat-mushroom",
+      "slug": "flat-mushroom",
+      "name": "Flat Mushroom",
+      "aliases": [],
+      "category": "produce",
+      "kind": "variety",
+      "parent_ingredient_id": "mushrooms",
+      "status": "active"
+    },
+    {
+      "id": "fresh-chili",
+      "slug": "fresh-chili",
+      "name": "Fresh Chili",
+      "aliases": [],
+      "category": "produce",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "fresh-herbs",
+      "slug": "fresh-herbs",
+      "name": "Fresh Herbs",
+      "aliases": [],
+      "category": "herbs-spices",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "garlic",
+      "slug": "garlic",
+      "name": "Garlic",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "gorgonzola",
+      "slug": "gorgonzola",
+      "name": "Gorgonzola",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "grana-padano",
+      "slug": "grana-padano",
+      "name": "Grana Padano",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "green-pepper",
+      "slug": "green-pepper",
+      "name": "Green Pepper",
+      "aliases": ["Green Bell Pepper"],
+      "category": "produce",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "green-salad",
+      "slug": "green-salad",
+      "name": "Green Salad",
+      "aliases": [],
+      "category": "prepared",
+      "kind": "composite",
+      "status": "active"
+    },
+    {
+      "id": "ham",
+      "slug": "ham",
+      "name": "Ham",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "ham-slice",
+      "slug": "ham-slice",
+      "name": "Ham Slice",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "cut",
+      "parent_ingredient_id": "ham",
+      "status": "active"
+    },
+    {
+      "id": "iceberg-lettuce",
+      "slug": "iceberg-lettuce",
+      "name": "Iceberg Lettuce",
+      "aliases": [],
+      "category": "produce",
+      "kind": "variety",
+      "parent_ingredient_id": "lettuce",
+      "status": "active"
+    },
+    {
+      "id": "jalapeno",
+      "slug": "jalapeno",
+      "name": "Jalapeño",
+      "aliases": ["Jalapeno"],
+      "category": "produce",
+      "kind": "variety",
+      "parent_ingredient_id": "fresh-chili",
+      "status": "active"
+    },
+    {
+      "id": "jamon",
+      "slug": "jamon",
+      "name": "Jamón",
+      "aliases": ["Jamon"],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "ketchup",
+      "slug": "ketchup",
+      "name": "Ketchup",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "lamb-strips",
+      "slug": "lamb-strips",
+      "name": "Lamb Strips",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "cut",
+      "status": "active"
+    },
+    {
+      "id": "lemon",
+      "slug": "lemon",
+      "name": "Lemon",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "lettuce",
+      "slug": "lettuce",
+      "name": "Lettuce",
+      "aliases": [],
+      "category": "produce",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "lime",
+      "slug": "lime",
+      "name": "Lime",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "lomo-iberico",
+      "slug": "lomo-iberico",
+      "name": "Lomo Ibérico",
+      "aliases": ["Lomo Iberico"],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "manchego",
+      "slug": "manchego",
+      "name": "Manchego",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "mayonnaise",
+      "slug": "mayonnaise",
+      "name": "Mayonnaise",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "mozzarella",
+      "slug": "mozzarella",
+      "name": "Mozzarella",
+      "aliases": [],
+      "category": "dairy-eggs",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "mushrooms",
+      "slug": "mushrooms",
+      "name": "Mushrooms",
+      "aliases": [],
+      "category": "produce",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "octopus",
+      "slug": "octopus",
+      "name": "Octopus",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "olive-oil",
+      "slug": "olive-oil",
+      "name": "Olive Oil",
+      "aliases": [],
+      "category": "pantry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "olives",
+      "slug": "olives",
+      "name": "Olives",
+      "aliases": [],
+      "category": "produce",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "onion",
+      "slug": "onion",
+      "name": "Onion",
+      "aliases": [],
+      "category": "produce",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "onion-rings",
+      "slug": "onion-rings",
+      "name": "Onion Rings",
+      "aliases": [],
+      "category": "prepared",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "oregano",
+      "slug": "oregano",
+      "name": "Oregano",
+      "aliases": [],
+      "category": "herbs-spices",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "parma-ham",
+      "slug": "parma-ham",
+      "name": "Parma Ham",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "pear",
+      "slug": "pear",
+      "name": "Pear",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "pineapple",
+      "slug": "pineapple",
+      "name": "Pineapple",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "porcini",
+      "slug": "porcini",
+      "name": "Porcini",
+      "aliases": [],
+      "category": "produce",
+      "kind": "variety",
+      "parent_ingredient_id": "mushrooms",
+      "status": "active"
+    },
+    {
+      "id": "pork-sausage",
+      "slug": "pork-sausage",
+      "name": "Pork Sausage",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "composite",
+      "status": "active"
+    },
+    {
+      "id": "potato",
+      "slug": "potato",
+      "name": "Potato",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "potato-buns",
+      "slug": "potato-buns",
+      "name": "Potato Buns",
+      "aliases": [],
+      "category": "bakery",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "red-pepper",
+      "slug": "red-pepper",
+      "name": "Red Pepper",
+      "aliases": ["Red Bell Pepper"],
+      "category": "produce",
+      "kind": "variety",
+      "status": "active"
+    },
+    {
+      "id": "rocket",
+      "slug": "rocket",
+      "name": "Rocket",
+      "aliases": ["Arugula", "Rucola"],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "salami",
+      "slug": "salami",
+      "name": "Salami",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "salchich-n-iberico",
+      "slug": "salchich-n-iberico",
+      "name": "Salchichón Ibérico",
+      "aliases": ["Salchichon Iberico"],
+      "category": "meat-poultry",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "salmon",
+      "slug": "salmon",
+      "name": "Salmon",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "sea-salt",
+      "slug": "sea-salt",
+      "name": "Sea Salt",
+      "aliases": [],
+      "category": "pantry",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "seafood",
+      "slug": "seafood",
+      "name": "Seafood",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "shrimps",
+      "slug": "shrimps",
+      "name": "Shrimps",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "smoked-salmon",
+      "slug": "smoked-salmon",
+      "name": "Smoked Salmon",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "prepared",
+      "parent_ingredient_id": "salmon",
+      "status": "active"
+    },
+    {
+      "id": "spicy-salami",
+      "slug": "spicy-salami",
+      "name": "Spicy Salami",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "variety",
+      "parent_ingredient_id": "salami",
+      "status": "active"
+    },
+    {
+      "id": "spinach",
+      "slug": "spinach",
+      "name": "Spinach",
+      "aliases": [],
+      "category": "produce",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "streaky-bacon",
+      "slug": "streaky-bacon",
+      "name": "Streaky Bacon",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "variety",
+      "parent_ingredient_id": "bacon",
+      "status": "active"
+    },
+    {
+      "id": "tomato",
+      "slug": "tomato",
+      "name": "Tomato",
+      "aliases": [],
+      "category": "produce",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "tomato-sauce",
+      "slug": "tomato-sauce",
+      "name": "Tomato Sauce",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "tuna",
+      "slug": "tuna",
+      "name": "Tuna",
+      "aliases": [],
+      "category": "seafood",
+      "kind": "base",
+      "status": "active"
+    },
+    {
+      "id": "veal-strips",
+      "slug": "veal-strips",
+      "name": "Veal Strips",
+      "aliases": [],
+      "category": "meat-poultry",
+      "kind": "cut",
+      "status": "active"
+    },
+    {
+      "id": "vegetables",
+      "slug": "vegetables",
+      "name": "Vegetables",
+      "aliases": [],
+      "category": "produce",
+      "kind": "group",
+      "status": "active"
+    },
+    {
+      "id": "vinegar",
+      "slug": "vinegar",
+      "name": "Vinegar",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "prepared",
+      "status": "active"
+    },
+    {
+      "id": "white-onion",
+      "slug": "white-onion",
+      "name": "White Onion",
+      "aliases": [],
+      "category": "produce",
+      "kind": "variety",
+      "parent_ingredient_id": "onion",
+      "status": "active"
+    },
+    {
+      "id": "yellow-mustard",
+      "slug": "yellow-mustard",
+      "name": "Yellow Mustard",
+      "aliases": [],
+      "category": "sauces-condiments",
+      "kind": "prepared",
+      "status": "active"
+    }
+  ]
+}

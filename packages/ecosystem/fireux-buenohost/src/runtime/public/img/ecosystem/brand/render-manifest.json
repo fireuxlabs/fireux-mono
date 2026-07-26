@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "source": "logo.svg",
+      "output": "logo.png",
+      "width": 512,
+      "height": 512,
+      "format": "png",
+      "fit": "contain",
+      "sourceSha256": "ab6c019ba8ce4515555e45d202005be92e282bf8c25035a25f66ab0139892ae1",
+      "outputSha256": "baff6a87917f3d9885ba2efcd8c7fba775ff4707a77be996972b6ac28b1a1804"
+    },
+    {
+      "source": "wordmark-light.svg",
+      "output": "wordmark-light.png",
+      "width": 768,
+      "height": 192,
+      "format": "png",
+      "fit": "contain",
+      "sourceSha256": "d49389b43e563c8e343676995e24185a1b91b16eb09595cc2202a22f90bf31f6",
+      "outputSha256": "fbe60613d6daeed4316b785abc07ee9db4b8a205c93af7a8df21a46c1cd912e4"
+    },
+    {
+      "source": "wordmark-dark.svg",
+      "output": "wordmark-dark.png",
+      "width": 768,
+      "height": 192,
+      "format": "png",
+      "fit": "contain",
+      "sourceSha256": "8102ebd1f545cbf6752234e011d59c2e835d645c1fd997a0b5ed5b0a111aacdc",
+      "outputSha256": "ab7ac652d14dd3bbdcdd0f491281040fa7a4fe2596945fa40ccb8f1a119d89ef"
+    },
+    {
+      "source": "app-icon.svg",
+      "output": "app-icon.png",
+      "width": 512,
+      "height": 512,
+      "format": "png",
+      "fit": "fill",
+      "sourceSha256": "07594d93e00a870b2fe9b49f8563753705618336de46998994bb0ee570ca7112",
+      "outputSha256": "fd89f2aa72dcb03b0250d423f4ad061f2dfe558951b8bbc14c829e5e87ba861e"
+    },
+    {
+      "source": "cover.svg",
+      "output": "cover.png",
+      "width": 1280,
+      "height": 720,
+      "format": "png",
+      "fit": "fill",
+      "sourceSha256": "f041a5eb59e0385b1dd856be667d109540c7def97448de5ced6ee6ace7e0d4a0",
+      "outputSha256": "76f4dac8e72b9df1a5697e325f0ce26735501096cbae90b9ca450df0bef7223d"
+    },
+    {
+      "source": "cover.svg",
+      "output": "thumbnail.png",
+      "width": 1200,
+      "height": 630,
+      "format": "png",
+      "fit": "cover",
+      "sourceSha256": "f041a5eb59e0385b1dd856be667d109540c7def97448de5ced6ee6ace7e0d4a0",
+      "outputSha256": "61d64f66e426b51aade9744f854b52851de66ca7671e8266b8f4c07aaab7545a"
+    },
+    {
+      "source": "app-icon.svg",
+      "output": "pwa/icon-192.png",
+      "width": 192,
+      "height": 192,
+      "format": "png",
+      "fit": "fill",
+      "sourceSha256": "07594d93e00a870b2fe9b49f8563753705618336de46998994bb0ee570ca7112",
+      "outputSha256": "c5ce78d17596cdaebe22c615bcd4038f2be3fc1b76babdbe7cfb9b99d4b601fb"
+    },
+    {
+      "source": "app-icon.svg",
+      "output": "pwa/icon-512.png",
+      "width": 512,
+      "height": 512,
+      "format": "png",
+      "fit": "fill",
+      "sourceSha256": "07594d93e00a870b2fe9b49f8563753705618336de46998994bb0ee570ca7112",
+      "outputSha256": "fd89f2aa72dcb03b0250d423f4ad061f2dfe558951b8bbc14c829e5e87ba861e"
+    },
+    {
+      "source": "app-icon.svg",
+      "output": "favicon.ico",
+      "width": 64,
+      "height": 64,
+      "format": "ico",
+      "fit": "fill",
+      "sourceSha256": "07594d93e00a870b2fe9b49f8563753705618336de46998994bb0ee570ca7112",
+      "outputSha256": "5ed4028486e83668fe00c8568e2b1efeab895f3096d2618ac22e9064b26ff89a"
+    }
+  ]
+}

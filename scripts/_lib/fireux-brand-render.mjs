@@ -20,6 +20,7 @@ export const FIREUX_BRAND_RENDER_SPECS = Object.freeze([
     width: 512,
     height: 512,
     format: 'png',
+    fit: 'contain',
   },
   {
     source: 'wordmark-light.svg',
@@ -27,6 +28,7 @@ export const FIREUX_BRAND_RENDER_SPECS = Object.freeze([
     width: 768,
     height: 192,
     format: 'png',
+    fit: 'contain',
   },
   {
     source: 'wordmark-dark.svg',
@@ -34,6 +36,7 @@ export const FIREUX_BRAND_RENDER_SPECS = Object.freeze([
     width: 768,
     height: 192,
     format: 'png',
+    fit: 'contain',
   },
   {
     source: 'app-icon.svg',
@@ -130,6 +133,7 @@ async function renderSpec(repoRoot, spec) {
     .resize(spec.width, spec.height, {
       fit: spec.fit ?? 'fill',
       position: 'centre',
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
     })
     .png({
       adaptiveFiltering: true,
@@ -267,4 +271,42 @@ export function inspectFireuxBrandRasterAssets(repoRoot) {
   }
 
   return [...new Set(violations)]
+}
+
+export async function inspectFireuxBrandTransparentPadding(repoRoot) {
+  const violations = []
+
+  for (const output of [
+    'logo.png',
+    'wordmark-light.png',
+    'wordmark-dark.png',
+  ]) {
+    const outputPath = canonicalPath(repoRoot, output)
+
+    if (!existsSync(outputPath)) continue
+
+    const { data, info } = await sharp(outputPath)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true })
+    const corners = [
+      [0, 0],
+      [info.width - 1, 0],
+      [0, info.height - 1],
+      [info.width - 1, info.height - 1],
+    ]
+
+    if (
+      corners.some(([x, y]) => {
+        const alphaIndex = (y * info.width + x) * info.channels + 3
+        return data[alphaIndex] !== 0
+      })
+    ) {
+      violations.push(
+        `render output ${output} must retain transparent corner padding`
+      )
+    }
+  }
+
+  return violations
 }

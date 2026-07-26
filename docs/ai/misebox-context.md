@@ -4,7 +4,7 @@
 <!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
 <!-- Concurrent edit — 2026-07-25 — Keep Main App hero copy in Core while Misebox proves it with the real Orders board. -->
 
-Updated: 2026-07-25
+Updated: 2026-07-26
 Ref: e98ffb195
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -115,9 +115,12 @@ Before each task:
   they should not recreate shared domain truth locally.
 - Misebox App's public `/demo` family is a project-owned showroom composition.
   It consumes package-owned deterministic Demo Worlds only through the named
-  Product Demo adapter, reuses real domain components, and performs no live or
-  Test reads or writes. Demo records remain owned by their domain package; the
-  project owns only route selection, marketing copy, and local interaction.
+  Product Demo adapter, reuses real domain components, and performs no live
+  operational or Test reads or writes. A bounded public Ingredient projection
+  may hydrate the real canonical roots referenced by Demo operation links;
+  those roots are not Demo records. Demo records remain owned by their domain
+  package; the project owns only route selection, marketing copy, and local
+  interaction.
 - Shared product-led landing presentation belongs to Core
   `LandingProductIndex`: page rhythm, hero/action hierarchy, operating loop,
   capability, operation and audience grids, proof-panel placement, closing CTA,
@@ -149,8 +152,14 @@ Before each task:
   tiles emit navigation and never expand a second canvas in place. No child
   loads Demo data, reads or writes a selected Kitchen, or acquires live
   Console/Firebase authority. The Finance child receives the additive
-  presentation projection of the shared Kitchen Dish finance estimate; it does
-  not recalculate supplier costs or menu profitability in the component. Wider
+  presentation DTO from the Kitchen-owned Demo Dishes operation adapter, which
+  composes the shared Dish estimate, package-owned quantities, and derived
+  total sales once for both Console Demo and Product Demo. Neither the project
+  adapter nor the child recalculates Supplier costs, Menu profitability, Dish
+  relationships, or sales totals, and neither reads Orders or KitchenSales.
+  The Console or
+  preview source selection carries Demo/Live context; Finance field labels stay
+  source-agnostic. Wider
   screens place that component left of the buyer-facing Console text. The
   source family begins at
   `app/components/Misebox/Landing/ConsolePreview/Index.vue`. Core
@@ -161,13 +170,16 @@ Before each task:
   product proof are unconditioned defaults, while wider layouts enhance them
   only through `min-width` breakpoints. The executable contract lives in
   `scripts/guards/product-landing.mjs`.
-- Misebox sells one Kitchen Console through three independent commercial axes:
-  capability (`Free` or `Premium`), service (self-managed or `Managed`), and
-  presentation (Misebox-branded or a `Dedicated App`). The project-owned
-  `/pricing` projection is the public authority for current CHF amounts and
-  inclusions. Managed service adds bounded human setup and support rather than
-  hidden software capability; a Dedicated App is a configured Misebox
-  deployment, not bespoke software.
+- Misebox sells one connected Kitchen and Jobs membership. Free includes
+  unlimited permanent and fixed-term publishing and hiring, unlimited
+  temporary advertising and applications, and one active temporary
+  Engagement. Premium is CHF 20 per month and unlocks multiple concurrent
+  temporary Engagements together with the Premium Kitchen Console; Misebox
+  takes no hiring percentage. The project-owned `/pricing` projection is the
+  public authority for current CHF amounts and inclusions. Managed service adds
+  bounded human setup and support rather than acting as a recruiter, employer,
+  payroll provider, or personnel lessor. A Dedicated App is a configured
+  Misebox deployment, not bespoke software.
 - The main landing's Our Apps section consumes Core
   `LandingAppCollection` through the product landing's named App slot and the
   existing `useEcosystemAppCollection` controller. It shows only active Apps
@@ -237,6 +249,23 @@ Before each task:
   view remains client-session state; saved provider output stays explicitly
   unreviewed and does not become published copy. Luna Piccante is the first
   Menu attachment proof.
+- Ingredient is one shared culinary world rooted at `/ingredients/{id}` and
+  currently owned by `fireux-kitchens`. `Ingredient.name` is simply the
+  popular canonical name used across Kitchen and Supplier Consoles, including
+  names such as Cecina and Porcini; Ingredient stores no source-language or
+  translated-name map. Synonym-only aliases, taxonomy, parent relationships,
+  and lifecycle belong to the root. Active canonical names and aliases cannot
+  collide. Every active root carries its canonical presentation image; blank
+  images are not valid active Ingredient state. Kitchen and Supplier operations
+  store stable `ingredient_id` links and hydrate bounded `/api/ingredients`
+  projections. Only a global Misebox App
+  admin may curate the all-status library through trusted server commands, and
+  roots retire or merge instead of hard-delete. Ingredient has no language or
+  Sproochli fields today. A future localization projection may attach by stable
+  Ingredient ID without changing Ingredient identity or this root schema.
+  Ingredient identity is never fixture or Demo data: Kitchen and Supplier Demo
+  worlds may contain usage, offer, and production links, but they must not copy
+  root names, taxonomy, lifecycle, parents, or images.
 - Interlaken Essen onboarding keeps UserApp limited to App governance,
   capability, and lifecycle. Locality and offer presentation belong to the
   app-private `apps/interlaken-essen/marketplace-profiles/{uid}` record; the

@@ -9,12 +9,14 @@ import {
   type KitchenSurface,
 } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenDemoScenario } from '../../../../../demo/kitchen/core/types'
+import type { Dish } from '../../../../../models/kitchen/dish.model'
 
 export type KitchenConsoleDemoScenario = Omit<KitchenDemoScenario, 'kitchen'> & {
   kitchen: KitchenSurface
 }
 
 export type KitchenConsoleDemoData = {
+  dishRecordsByKitchenId: Readonly<Record<string, readonly Dish[]>>
   kitchens: KitchenSurface[]
   scenarios: KitchenConsoleDemoScenario[]
 }
@@ -27,9 +29,13 @@ export function useKitchenConsoleDemoData(
   return useConsoleDemoData<KitchenConsoleDemoData>({
     active,
     loader: async () => {
-      const { kitchenDemoScenarios } = await import(
-        '../../../../../demo/kitchen/scenarios'
-      )
+      const [
+        { kitchenDemoScenarios },
+        { kitchenDemoDishRecordsByKitchenId },
+      ] = await Promise.all([
+        import('../../../../../demo/kitchen/scenarios'),
+        import('../../../../../demo/kitchen/operations/Dishes'),
+      ])
       const scenarios = kitchenDemoScenarios.reduce<KitchenConsoleDemoScenario[]>(
         (items, scenario) => {
           const kitchen = surface({
@@ -53,10 +59,6 @@ export function useKitchenConsoleDemoData(
             kitchen,
             menus,
             dishes: [...scenario.dishes],
-            ingredients: scenario.ingredients.map(ingredient => ({
-              ...ingredient,
-              names: ingredient.names ? { ...ingredient.names } : undefined,
-            })),
             kitchenIngredients: scenario.kitchenIngredients.map(ingredient => ({
               ...ingredient,
             })),
@@ -126,12 +128,23 @@ export function useKitchenConsoleDemoData(
       )
 
       return {
+        dishRecordsByKitchenId: kitchenDemoDishRecordsByKitchenId,
         kitchens: scenarios.map((scenario) => scenario.kitchen),
         scenarios,
       }
     },
     isEmpty: (value) => value.kitchens.length === 0,
   })
+}
+
+export function findKitchenConsoleDemoDishRecords(
+  data: KitchenConsoleDemoData | undefined,
+  kitchenId: string
+) {
+  const id = String(kitchenId ?? '').trim()
+  if (!id) return []
+
+  return data?.dishRecordsByKitchenId[id] ?? []
 }
 
 export function findKitchenConsoleDemoScenario(

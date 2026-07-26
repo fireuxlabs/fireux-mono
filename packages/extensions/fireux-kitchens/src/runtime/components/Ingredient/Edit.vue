@@ -2,8 +2,11 @@
   <UCard>
     <template #header>
       <div class="space-y-1">
-        <div class="text-sm font-semibold">Edit</div>
-        <p class="text-xs text-dimmed">Update the ingredient details.</p>
+        <div class="text-sm font-semibold">Curate Ingredient</div>
+        <p class="text-xs text-dimmed">
+          Keep one popular canonical name. Aliases are synonyms, not
+          translations.
+        </p>
       </div>
     </template>
 
@@ -26,35 +29,52 @@
         <UInput v-model="form.name" placeholder="Ingredient name" />
       </UFormField>
 
-      <div class="space-y-3">
-        <div>
-          <div class="text-sm font-semibold">Language names</div>
-          <p class="text-xs text-dimmed">
-            Root ingredient names for menu and recipe translation.
-          </p>
-        </div>
-
-        <UFormField label="Source language">
+      <div class="grid gap-3 sm:grid-cols-2">
+        <UFormField label="Category" required>
           <USelect
-            v-model="form.source_language"
-            :options="sourceLanguageOptions"
-            placeholder="Select source language"
+            v-model="form.category"
+            :items="INGREDIENT_CATEGORY_OPTIONS"
           />
         </UFormField>
 
-        <div class="grid gap-3 sm:grid-cols-2">
-          <UFormField
-            v-for="field in languageNameFields"
-            :key="field.code"
-            :label="field.label"
-          >
-            <UInput
-              v-model="form.names[field.code]"
-              :placeholder="field.placeholder"
-            />
-          </UFormField>
-        </div>
+        <UFormField label="Kind" required>
+          <USelect v-model="form.kind" :items="INGREDIENT_KIND_OPTIONS" />
+        </UFormField>
       </div>
+
+      <UFormField label="Aliases" hint="Comma-separated synonyms only">
+        <UInput v-model="form.aliases" placeholder="e.g. Rucola, Arugula" />
+      </UFormField>
+
+      <UFormField label="Parent Ingredient ID">
+        <UInput
+          v-model="form.parent_ingredient_id"
+          placeholder="Optional active Ingredient ID"
+        />
+      </UFormField>
+
+      <div class="grid gap-3 sm:grid-cols-2">
+        <UFormField label="Lifecycle" required>
+          <USelect v-model="form.status" :items="INGREDIENT_STATUS_OPTIONS" />
+        </UFormField>
+
+        <UFormField
+          label="Replacement Ingredient ID"
+          :required="form.status === 'merged'"
+          hint="Required only when merged"
+        >
+          <UInput
+            v-model="form.replaced_by_ingredient_id"
+            :disabled="form.status !== 'merged'"
+            placeholder="Active replacement ID"
+          />
+        </UFormField>
+      </div>
+
+      <p class="text-xs text-dimmed">
+        Ingredient roots are retired or merged, never hard-deleted, so Kitchen
+        and Supplier references cannot be left dangling.
+      </p>
 
       <div class="flex flex-wrap justify-end gap-2">
         <UButton
@@ -63,15 +83,6 @@
           @click="resetForm"
         >
           Reset
-        </UButton>
-        <UButton
-          color="error"
-          variant="soft"
-          icon="i-lucide-trash"
-          :loading="deleting"
-          @click="requestDelete"
-        >
-          Delete
         </UButton>
         <UButton
           color="primary"
@@ -87,138 +98,122 @@
 </template>
 
 <script setup lang="ts">
-import { navigateTo } from '#imports'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import {
-  FIREUX_CORE_LANGUAGE_OPTIONS,
-} from 'fireux-translation/runtime/languages'
 import { computed, reactive, ref, watchEffect } from 'vue'
 import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
-import type {
-  Ingredient,
-  IngredientUpdateInput,
-} from '../../models/ingredient.model'
+import {
+  INGREDIENT_CATEGORY_OPTIONS,
+  INGREDIENT_KIND_OPTIONS,
+  INGREDIENT_STATUS_OPTIONS,
+  type IngredientCategory,
+  type IngredientKind,
+  type IngredientStatus,
+} from '../../models/ingredient-taxonomy'
+import type { IngredientUpdateInput } from '../../models/ingredient.model'
+import type { PublicIngredient } from '../../models/ingredient-public.model'
 
-// Ingredient edit stays as a simple root edit component until it needs child panels.
-// See docs/concepts/components.md for the file-vs-directory component spine.
 const props = defineProps<{
   ingredientId: string
-  ingredient: Ingredient
+  ingredient: PublicIngredient
 }>()
 
-const {
-  updateIngredient,
-  deleteIngredient,
-} = useIngredient()
+const { updateIngredient } = useIngredient()
 const { uploadImage } = useImageStorage()
 const toast = useToastify()
 
 const saving = ref(false)
-const deleting = ref(false)
 const imageUploading = ref(false)
-
-const sourceLanguageOptions = FIREUX_CORE_LANGUAGE_OPTIONS.map((language) => ({
-  label: `${language.label} (${language.code})`,
-  value: language.code,
-}))
-const languageNameFields = FIREUX_CORE_LANGUAGE_OPTIONS.map((language) => ({
-  code: language.code,
-  label: `${language.label} name`,
-  placeholder: language.label,
-}))
 
 const form = reactive<{
   name: string
-  source_language: string
-  names: Record<string, string>
+  aliases: string
+  category: IngredientCategory
+  kind: IngredientKind
+  parent_ingredient_id: string
+  status: IngredientStatus
+  replaced_by_ingredient_id: string
 }>({
   name: '',
-  source_language: 'en',
-  names: {},
+  aliases: '',
+  category: 'other',
+  kind: 'base',
+  parent_ingredient_id: '',
+  status: 'active',
+  replaced_by_ingredient_id: '',
 })
 
-const trimString = (value: unknown) => String(value || '').trim()
-const normalizeLanguageCode = (value: unknown) =>
-  trimString(value).replace(/_/g, '-')
+const clean = (value: unknown) => String(value ?? '').trim()
+const aliasList = (value: string) => [
+  ...new Set(
+    value
+      .split(',')
+      .map((alias) => clean(alias))
+      .filter(Boolean)
+  ),
+]
 
-const normalizeNames = (value: unknown): Record<string, string> => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
+const snapshot = computed(() =>
+  JSON.stringify({
+    name: clean(props.ingredient.name),
+    aliases: [...(props.ingredient.aliases ?? [])],
+    category: props.ingredient.category,
+    kind: props.ingredient.kind,
+    parent_ingredient_id: clean(props.ingredient.parent_ingredient_id),
+    status: props.ingredient.status,
+    replaced_by_ingredient_id: clean(
+      props.ingredient.replaced_by_ingredient_id
+    ),
+  })
+)
 
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>)
-      .map(([language, name]) => [normalizeLanguageCode(language), trimString(name)])
-      .filter(([language, name]) => Boolean(language && name))
-  )
-}
-const serializeNames = (value: Record<string, string>) =>
-  JSON.stringify(Object.entries(value).sort(([left], [right]) => left.localeCompare(right)))
-
-const buildNamesPatch = (entry: Ingredient): Record<string, string> => {
-  const names = normalizeNames(entry.names)
-
-  for (const field of languageNameFields) {
-    const value = trimString(form.names[field.code])
-    if (value) {
-      names[field.code] = value
-    } else {
-      delete names[field.code]
-    }
-  }
-
-  return names
-}
-
-watchEffect(() => {
-  form.name = props.ingredient.name ?? ''
-  form.source_language = normalizeLanguageCode(props.ingredient.source_language) || 'en'
-
-  const names = normalizeNames(props.ingredient.names)
-  for (const field of languageNameFields) {
-    form.names[field.code] = names[field.code] ?? ''
-  }
-})
-
-const isDirty = computed(() => {
-  const currentNames = normalizeNames(props.ingredient.names)
-  const nextNames = buildNamesPatch(props.ingredient)
-  const currentSourceLanguage = normalizeLanguageCode(props.ingredient.source_language)
-  const nextSourceLanguage = normalizeLanguageCode(form.source_language) || 'en'
-
-  return (
-    form.name.trim() !== String(props.ingredient.name ?? '').trim() ||
-    currentSourceLanguage !== nextSourceLanguage ||
-    serializeNames(currentNames) !== serializeNames(nextNames)
-  )
-})
+const formSnapshot = computed(() =>
+  JSON.stringify({
+    name: clean(form.name),
+    aliases: aliasList(form.aliases),
+    category: form.category,
+    kind: form.kind,
+    parent_ingredient_id: clean(form.parent_ingredient_id),
+    status: form.status,
+    replaced_by_ingredient_id:
+      form.status === 'merged' ? clean(form.replaced_by_ingredient_id) : '',
+  })
+)
 
 const resetForm = () => {
-  form.name = props.ingredient.name ?? ''
-  form.source_language = normalizeLanguageCode(props.ingredient.source_language) || 'en'
-
-  const names = normalizeNames(props.ingredient.names)
-  for (const field of languageNameFields) {
-    form.names[field.code] = names[field.code] ?? ''
-  }
+  form.name = props.ingredient.name
+  form.aliases = (props.ingredient.aliases ?? []).join(', ')
+  form.category = props.ingredient.category
+  form.kind = props.ingredient.kind
+  form.parent_ingredient_id = props.ingredient.parent_ingredient_id ?? ''
+  form.status = props.ingredient.status
+  form.replaced_by_ingredient_id =
+    props.ingredient.replaced_by_ingredient_id ?? ''
 }
 
+watchEffect(resetForm)
+
+const isDirty = computed(() => snapshot.value !== formSnapshot.value)
+
 const imageInitials = computed(() => {
-  const rawName = String(props.ingredient.name || '').trim()
-  if (!rawName) return 'I'
-  const parts = rawName.split(/\s+/).filter(Boolean)
+  const parts = clean(props.ingredient.name).split(/\s+/).filter(Boolean)
+  if (!parts.length) return 'I'
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
-  return `${parts[0][0] || ''}${parts[1][0] || ''}`.toUpperCase()
+  return `${parts[0]?.[0] || ''}${parts[1]?.[0] || ''}`.toUpperCase()
 })
 
 const handleImageUpload = async (file: File) => {
   if (!props.ingredientId) return
   imageUploading.value = true
   try {
-    const url = await uploadImage(`ingredients/${props.ingredientId}/image_url`, file)
+    const url = await uploadImage(
+      `ingredients/${props.ingredientId}/image_url`,
+      file
+    )
     await updateIngredient(props.ingredientId, { image_url: url })
     toast.success('Ingredient image updated')
   } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to update ingredient image'))
+    toast.error(String(error?.message || 'Failed to update Ingredient image'))
     throw error
   } finally {
     imageUploading.value = false
@@ -226,56 +221,25 @@ const handleImageUpload = async (file: File) => {
 }
 
 const saveChanges = async () => {
-  if (!props.ingredientId || !isDirty.value) return
+  if (!props.ingredientId || !isDirty.value || saving.value) return
   saving.value = true
   try {
-    const nextNames = buildNamesPatch(props.ingredient)
-    const nextSourceLanguage = normalizeLanguageCode(form.source_language) || 'en'
     const patch: IngredientUpdateInput = {
-      ...(form.name.trim() !== String(props.ingredient.name ?? '').trim()
-        ? { name: form.name.trim() }
-        : {}),
-      ...(normalizeLanguageCode(props.ingredient.source_language) !== nextSourceLanguage
-        ? { source_language: nextSourceLanguage }
-        : {}),
-      ...(serializeNames(normalizeNames(props.ingredient.names)) !== serializeNames(nextNames)
-        ? { names: nextNames }
-        : {}),
+      name: clean(form.name),
+      aliases: aliasList(form.aliases),
+      category: form.category,
+      kind: form.kind,
+      parent_ingredient_id: clean(form.parent_ingredient_id),
+      status: form.status,
+      replaced_by_ingredient_id:
+        form.status === 'merged' ? clean(form.replaced_by_ingredient_id) : '',
     }
-
-    if (!Object.keys(patch).length) return
-
     await updateIngredient(props.ingredientId, patch)
     toast.success('Ingredient updated')
   } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to update ingredient'))
+    toast.error(String(error?.message || 'Failed to update Ingredient'))
   } finally {
     saving.value = false
-  }
-}
-
-const deleteDescription = computed(() => {
-  const name = props.ingredient.name || props.ingredientId || 'this ingredient'
-  return `Delete ${name}? This cannot be undone.`
-})
-
-const requestDelete = async () => {
-  if (!props.ingredientId || deleting.value) return
-  if (import.meta.client && !window.confirm(deleteDescription.value)) return
-  await confirmDelete()
-}
-
-const confirmDelete = async () => {
-  if (!props.ingredientId) return
-  deleting.value = true
-  try {
-    await deleteIngredient(props.ingredientId)
-    toast.success('Ingredient deleted')
-    await navigateTo('/ingredients')
-  } catch (error: any) {
-    toast.error(String(error?.message || 'Failed to delete ingredient'))
-  } finally {
-    deleting.value = false
   }
 }
 </script>

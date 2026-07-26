@@ -1,13 +1,14 @@
 <template>
   <PublicPricingPage
-    title="One Kitchen Console. Four ways to run it."
+    title="One Misebox membership. Kitchen and Jobs together."
     :description="description"
     :plan-groups="planGroups"
   >
     <template #intro>
       <p class="text-sm leading-6 text-toned">
-        Start free, add the operational tools your team needs, ask us to manage
-        the setup, or put the same Misebox system behind your own brand.
+        Post permanent jobs freely, coordinate one temporary engagement, and
+        run a Kitchen workspace. Premium adds operating depth and concurrent
+        temporary engagements without taking a cut from anyone’s wages.
       </p>
     </template>
   </PublicPricingPage>
@@ -22,26 +23,28 @@ const enquiryButton = {
 }
 
 const description =
-  'Choose the level of capability, support and branding that fits your restaurant.'
+  'Hire people and run the operation in one connected Misebox workspace.'
 
 const planGroups = [
   {
-    id: 'kitchen-console',
-    title: 'Kitchen Console',
+    id: 'misebox-workspace',
+    title: 'Misebox workspace',
     description:
-      'Free helps you create and publish. Premium helps your team run the operation.',
+      'Permanent hiring stays free. Premium adds concurrent temporary engagements and deeper Kitchen operations.',
     plans: [
       {
         id: 'free',
         title: 'Misebox Free',
-        description: 'Create and publish.',
+        description: 'Hire and start operating.',
         price: 'CHF 0',
         priceCurrency: 'CHF',
         features: [
           'One Kitchen workspace',
           'One published menu',
-          'Dishes, recipes and ingredients',
-          'A Misebox-branded QR menu',
+          'Unlimited permanent and fixed-term job posts and hires',
+          'Unlimited temporary job advertising',
+          'One active temporary engagement',
+          'Applications, offers and hire tracking',
           'Self-service setup',
         ],
         button: {
@@ -53,12 +56,13 @@ const planGroups = [
       {
         id: 'premium',
         title: 'Misebox Premium',
-        description: 'Run the operation.',
+        description: 'Coordinate the whole operation.',
         price: 'CHF 20',
         priceCurrency: 'CHF',
         billingCycle: '/month',
         features: [
           'Everything in Free',
+          'Multiple active temporary engagements',
           'Multiple menus',
           'Team access and permissions',
           'Preparation, stations, tables and orders',
@@ -127,9 +131,9 @@ const planGroups = [
   },
 ] as const
 
-const seoTitle = 'Kitchen Console pricing · Misebox'
+const seoTitle = 'Kitchen and Jobs pricing · Misebox'
 const seoDescription =
-  'Start a Misebox Kitchen Console free, upgrade to Premium for CHF 20 per month, choose Managed Misebox for CHF 50 per month, or launch a Dedicated App.'
+  'Start hiring and operating free, upgrade to Misebox Premium for CHF 20 per month for concurrent temporary engagements and advanced Kitchen operations, or choose managed setup.'
 
 definePageMeta({
   layout: 'landing',

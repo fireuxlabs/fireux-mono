@@ -1,7 +1,13 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts
 
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type {
+  IngredientCategory,
+  IngredientKind,
+  IngredientStatus,
+} from './ingredient-taxonomy'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
@@ -13,26 +19,45 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Decision note:
  * - Ingredient is reusable shared truth at root.
+ * - `name` is canonical display identity, not a declared source language.
+ * - Language variants may attach later by stable Ingredient id; they are not
+ *   Ingredient root fields today.
+ * - Every active Ingredient carries its canonical presentation image.
  * - Kitchen usage should be represented through scoped companion records rather than by mutating root identity.
  * - If that rule changes later, update the models README first, then this file.
  */
 export const IngredientStorage = {
-  shape: 'root',
+  shape: 'public/root',
   path: 'ingredients/{ingredientId}',
   collection: 'ingredients',
   idParam: 'ingredientId',
 } as const
 
+export const IngredientEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Ingredient',
+  family: ['kitchen', 'supplier'],
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'none',
+  publicRead: 'projection',
+  status: 'confirmed',
+  console: false,
+  root: IngredientStorage.path,
+})
+
 export const IngredientModel = {
   id: '' as string,
-
+  schema_version: 2 as const,
   name: '' as string,
-  source_language: undefined as string | undefined,
-  names: undefined as Partial<Record<string, string>> | undefined,
+  aliases: [] as string[],
   slug: '' as string,
+  category: 'other' as IngredientCategory,
+  kind: 'base' as IngredientKind,
+  parent_ingredient_id: undefined as string | undefined,
+  status: 'active' as IngredientStatus,
+  replaced_by_ingredient_id: undefined as string | undefined,
   image_url: '' as string,
-  // Legacy top-level scope field still used by demo scenarios.
-  app_id: '' as string,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -49,5 +74,11 @@ export type Ingredient = {
   [K in keyof typeof IngredientModel]: (typeof IngredientModel)[K]
 }
 
-export type IngredientCreateInput = Omit<Ingredient, 'id' | 'created' | 'updated'>
-export type IngredientUpdateInput = Partial<Omit<Ingredient, 'id' | 'created' | 'updated'>>
+export type IngredientCreateInput = Omit<
+  Ingredient,
+  'id' | 'schema_version' | 'slug' | 'created' | 'updated'
+>
+
+export type IngredientUpdateInput = Partial<
+  Omit<Ingredient, 'id' | 'schema_version' | 'slug' | 'created' | 'updated'>
+>

@@ -20,10 +20,7 @@ type KitchenConsoleIngredientItem = IngredientInterfaceItem & {
 }
 
 export function useKitchenConsoleIngredients() {
-  const {
-    selection,
-    runtime,
-  } = useKitchenConsole()
+  const { selection, runtime } = useKitchenConsole()
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
@@ -39,32 +36,32 @@ export function useKitchenConsoleIngredients() {
   const {
     ingredients: fetchedIngredients,
     pending: fetchedIngredientsPending,
+    error: fetchedIngredientsError,
     collectionPath: fetchedCollectionPath,
-  } =
-    useKitchenIngredients(fetchKitchenId, {
-      kitchenCollectionPath: rootCollection,
-      databaseId,
-      enabled,
-    })
+  } = useKitchenIngredients(fetchKitchenId, {
+    kitchenCollectionPath: rootCollection,
+    databaseId,
+    enabled,
+  })
   const supply = useKitchenConsoleSupplyWorkspace()
   const demoIngredients = computed<KitchenConsoleIngredientItem[]>(() => {
     const scenario = supply.scenario.value
     if (!scenario) return []
 
-    const rootById = new Map(
-      scenario.ingredients.map(ingredient => [ingredient.id, ingredient])
-    )
+    const rootById = supply.ingredientRootById.value
     const prepItemById = new Map(
-      scenario.prepItems.map(prepItem => [prepItem.id, prepItem])
+      scenario.prepItems.map((prepItem) => [prepItem.id, prepItem])
     )
     const recipeById = new Map(
-      scenario.recipes.map(recipe => [recipe.id, recipe])
+      scenario.recipes.map((recipe) => [recipe.id, recipe])
     )
     const specByDishId = new Map(
-      scenario.dishSpecs.map(spec => [spec.dishId, spec])
+      scenario.dishSpecs.map((spec) => [spec.dishId, spec])
     )
-    const deltasByScopedMenuItemId =
-      new Map<string, KitchenDemoDishComponent[]>()
+    const deltasByScopedMenuItemId = new Map<
+      string,
+      KitchenDemoDishComponent[]
+    >()
     scenario.menuItemComponentDeltas.forEach((delta) => {
       const key = `${delta.menuId}:${delta.sectionId}:${delta.menuItemId}`
       const components = deltasByScopedMenuItemId.get(key) ?? []
@@ -111,13 +108,12 @@ export function useKitchenConsoleIngredients() {
       menu.menuSections.forEach(({ section, items }) => {
         items.forEach((item) => {
           const spec = specByDishId.get(String(item.dish_id || '').trim())
-          const scopedMenuItemId =
-            `${menu.kitchenMenu.id}:${section.id}:${item.id}`
+          const scopedMenuItemId = `${menu.kitchenMenu.id}:${section.id}:${item.id}`
           const components = [
             ...(spec?.components ?? []),
             ...(deltasByScopedMenuItemId.get(scopedMenuItemId) ?? []),
           ]
-          components.forEach(component =>
+          components.forEach((component) =>
             recordComponentUsage(component, menu.kitchenMenu.name)
           )
         })
@@ -149,11 +145,12 @@ export function useKitchenConsoleIngredients() {
       const productionSources = [
         ...(sourcesByIngredientId.get(ingredientId) ?? []),
       ].sort()
-      const productionUsageLabel = menuNames.length === 1
-        ? menuNames[0]
-        : menuNames.length > 1
-          ? `${menuNames.length} menus`
-          : 'Not used'
+      const productionUsageLabel =
+        menuNames.length === 1
+          ? menuNames[0]
+          : menuNames.length > 1
+            ? `${menuNames.length} menus`
+            : 'Not used'
 
       return {
         ...root,
@@ -186,6 +183,11 @@ export function useKitchenConsoleIngredients() {
       ? supply.pending.value
       : fetchedIngredientsPending.value
   )
+  const loadError = computed(() =>
+    runtime.source.value === 'demo'
+      ? supply.ingredientRootError.value
+      : fetchedIngredientsError.value
+  )
   const collectionPath = computed(() =>
     runtime.source.value === 'demo'
       ? `demo/kitchens/${kitchenId.value}/ingredients`
@@ -202,14 +204,91 @@ export function useKitchenConsoleIngredients() {
   const consoleIngredients = computed(() => page.collection.value.items)
   const count = computed(() => page.collection.value.count)
   const pending = computed(() => page.collection.value.pending)
+  const kitchenName = computed(() =>
+    String(
+      selectedKitchen.value?.display_name ||
+        selectedKitchen.value?.name ||
+        kitchenId.value ||
+        ''
+    ).trim()
+  )
+  const scenarioIngredientIds = computed(() =>
+    (supply.scenario.value?.kitchenIngredients ?? [])
+      .map(ingredient => String(ingredient.ingredient_id || '').trim())
+      .filter(Boolean)
+  )
+  const hasDemoProductionGraph = computed(() => runtime.source.value === 'demo')
+  const usedByMenuProductionCount = computed<number | null>(() =>
+    hasDemoProductionGraph.value
+      ? consoleIngredients.value.filter((ingredient) =>
+          Boolean(ingredient.production_usage_menu_names?.length)
+        ).length
+      : null
+  )
+  const unusedByMenuProductionCount = computed<number | null>(() =>
+    usedByMenuProductionCount.value === null
+      ? null
+      : count.value - usedByMenuProductionCount.value
+  )
   const debug = computed(() => ({
-    kitchenId: kitchenId.value,
-    rootCollection: rootCollection.value,
-    databaseId: databaseId.value,
-    collectionPath: collectionPath.value,
-    count: count.value,
+    kitchen: {
+      id: kitchenId.value,
+      name: kitchenName.value,
+    },
+    usage: {
+      label: kitchenName.value
+        ? `Used in ${kitchenName.value}`
+        : 'Used in selected Kitchen',
+      assignedIngredientCount: count.value,
+      menuProductionGraphAvailable: hasDemoProductionGraph.value,
+      usedByMenuProductionCount: usedByMenuProductionCount.value,
+      unusedByMenuProductionCount: unusedByMenuProductionCount.value,
+      allAssignedAreUsedByMenuProduction:
+        usedByMenuProductionCount.value === null
+          ? null
+          : usedByMenuProductionCount.value === count.value,
+    },
+    dataSource: {
+      kind:
+        runtime.source.value === 'demo'
+          ? 'demo-usage+canonical-ingredient-roots'
+          : runtime.source.value,
+      usage: {
+        path: collectionPath.value,
+        firestore: runtime.source.value !== 'demo',
+      },
+      ingredientRoots:
+        runtime.source.value === 'demo'
+          ? {
+              authority: '/ingredients/{ingredientId}',
+              projection: '/api/ingredients?ids={ingredientIds}',
+              requestedIds: scenarioIngredientIds.value,
+              resolvedCount: supply.ingredientRoots.value.length,
+            }
+          : {
+              authority: '/ingredients/{ingredientId}',
+              projection: '/api/ingredients?ids={ingredientIds}',
+            },
+      ingredientImages: {
+        firestoreField: '/ingredients/{ingredientId}.image_url',
+        canonicalStorageObject: 'ingredients/{ingredientId}/image_url',
+        kitchenRecordOwnsImage: false,
+      },
+      ...(runtime.source.value !== 'demo'
+        ? {
+            path: collectionPath.value,
+            firestore: true,
+            rootCollection: rootCollection.value,
+            databaseId: databaseId.value,
+          }
+        : {
+            path: collectionPath.value,
+            firestore: false,
+          }),
+    },
     pending: pending.value,
-    unresolvedSupplyLinks: supply.unresolvedLinks.value.map(link => link.id),
+    loadError: Boolean(loadError.value),
+    unresolvedSupplyLinks: supply.unresolvedLinks.value.map((link) => link.id),
     readOnly: readOnly.value,
     canWrite: canWrite.value,
   }))
@@ -225,7 +304,9 @@ export function useKitchenConsoleIngredients() {
     canWrite,
     ingredients: consoleIngredients,
     count,
+    kitchenName,
     pending,
+    loadError,
     debug,
   }
 }

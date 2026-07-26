@@ -43,7 +43,7 @@ composition:
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/menu.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/layouts/kitchen-menu.vue`
 - `packages/core/fireux-core/src/runtime/layouts/console.vue`
-- `projects/fireux/buenohost/app/layouts/property-info.vue`
+- `projects/buenohost/buenohost-app/app/layouts/property-info.vue`
 
 Their content boundary is `<slot />`. The Menu layout is the clearest package
 example: it owns route-family close chrome while the page remains the content

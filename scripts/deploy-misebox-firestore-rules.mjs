@@ -20,6 +20,7 @@
 // Concurrent edit — 2026-07-21 23:02 CEST — Console authority alignment: prove team membership cannot exercise operator mutations.
 // Concurrent edit — 2026-07-21 23:16 CEST — Console authority hardening: trace deny failures and prove complete Supplier support cannot bypass validation.
 // Concurrent edit — 2026-07-22 15:55 CEST — Developer identity migration: pin Misebox bootstrap authority to Daniel's retained Firebase identity.
+// Concurrent edit — 2026-07-26 — Ingredient authority: release the API-projected root while red-teaming Kitchen references.
 
 import process from 'node:process'
 import { createHash } from 'node:crypto'
@@ -45,7 +46,6 @@ const BLOCKED_PRODUCTION_ROOTS = [
   'blogs',
   'companies',
   'ecosystems',
-  'ingredients',
   'jobs',
   'menus',
   'places',
@@ -961,6 +961,29 @@ async function buildSecurityTests() {
       pathEncoding: 'PLAIN',
     },
   })
+  const allowedDelete = (
+    name,
+    value,
+    uid,
+    currentData,
+    functionMocks = [],
+    time = updateTime
+  ) => ({
+    name,
+    testCase: {
+      expectation: 'ALLOW',
+      request: {
+        auth: auth(uid),
+        path: path(value),
+        method: 'delete',
+        time,
+      },
+      resource: { data: currentData },
+      ...(functionMocks.length ? { functionMocks } : {}),
+      pathEncoding: 'PLAIN',
+      expressionReportLevel: 'VISITED',
+    },
+  })
   const appDriverDocument = appDrivers.find(
     (document) => documentId(document) === driverId
   )
@@ -1340,6 +1363,32 @@ async function buildSecurityTests() {
     display_name: 'Rules Team Member',
     active: true,
   }
+  const activeIngredientId = 'security-rules-active-ingredient'
+  const inactiveIngredientId = 'security-rules-inactive-ingredient'
+  const rootIngredientProbeData = {
+    schema_version: 2,
+    name: 'Rules Ingredient',
+    slug: activeIngredientId,
+    aliases: [],
+    category: 'other',
+    kind: 'base',
+    status: 'active',
+    image_url: '',
+  }
+  const kitchenIngredientProbePath =
+    `apps/misebox-app/kitchens/security-rules-probe/ingredients/${activeIngredientId}`
+  const kitchenIngredientData = (userId, ingredientId = activeIngredientId) => ({
+    ingredient_id: ingredientId,
+    created: {
+      at: writeTime,
+      by: userId,
+      app_id: 'misebox-app',
+    },
+    updated: {
+      at: writeTime,
+      by: userId,
+    },
+  })
   const appSupplierProbePath =
     'apps/misebox-app/suppliers/security-rules-supplier-probe'
   const teamSupplierSupportData = {
@@ -2208,6 +2257,50 @@ async function buildSecurityTests() {
         teamIds: [],
       })
     ),
+    read(
+      'App admin must use the Ingredient projection API for root detail',
+      'DENY',
+      `ingredients/${activeIngredientId}`,
+      adminId,
+      appAdminMocks(adminId, path)
+    ),
+    list(
+      'App admin must use the Ingredient projection API for root listing',
+      'DENY',
+      'ingredients',
+      adminId,
+      appAdminMocks(adminId, path)
+    ),
+    deniedCreate(
+      'App admin cannot create a root Ingredient in the browser',
+      `ingredients/${activeIngredientId}`,
+      adminId,
+      rootIngredientProbeData,
+      writeTime,
+      appAdminMocks(adminId, path)
+    ),
+    deniedUpdate(
+      'App admin cannot update a root Ingredient in the browser',
+      `ingredients/${activeIngredientId}`,
+      adminId,
+      rootIngredientProbeData,
+      { ...rootIngredientProbeData, name: 'Forged Ingredient' },
+      appAdminMocks(adminId, path)
+    ),
+    deniedDelete(
+      'App admin cannot delete a root Ingredient in the browser',
+      `ingredients/${activeIngredientId}`,
+      adminId,
+      rootIngredientProbeData,
+      appAdminMocks(adminId, path)
+    ),
+    read(
+      'root Ingredient descendants remain server-only',
+      'DENY',
+      `ingredients/${activeIngredientId}/private/secret`,
+      adminId,
+      appAdminMocks(adminId, path)
+    ),
     allowedUpdate(
       'canonical App admin can update allowlisted App content',
       'apps/misebox-app',
@@ -2347,6 +2440,313 @@ async function buildSecurityTests() {
         targetId: 'security-rules-authority-probe',
         teamIds: [regularId],
       })
+    ),
+    readResource(
+      'Kitchen team member can read a selected Ingredient reference',
+      'ALLOW',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    list(
+      'Kitchen team member can list selected Ingredient references',
+      'ALLOW',
+      'apps/misebox-app/kitchens/security-rules-probe/ingredients',
+      regularId,
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      }),
+      kitchenIngredientData(regularId)
+    ),
+    allowedCreate(
+      'Kitchen operator can select an active canonical Ingredient',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    allowedCreate(
+      'App admin can select an active canonical Ingredient',
+      kitchenIngredientProbePath,
+      adminId,
+      kitchenIngredientData(adminId),
+      writeTime,
+      [
+        ...appAdminMocks(adminId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen team member cannot select an Ingredient',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      writeTime,
+      [
+        ...targetAuthorityMocks(regularId, path, {
+          collectionName: 'kitchens',
+          targetId: 'security-rules-probe',
+          teamIds: [regularId],
+        }),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen operator cannot select a missing canonical Ingredient',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId, { exists: false }),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen operator cannot select an inactive canonical Ingredient',
+      `apps/misebox-app/kitchens/security-rules-probe/ingredients/${inactiveIngredientId}`,
+      regularId,
+      kitchenIngredientData(regularId, inactiveIngredientId),
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, inactiveIngredientId, {
+          status: 'deprecated',
+        }),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen Ingredient id must match its document id',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId, inactiveIngredientId),
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen Ingredient cannot duplicate root identity',
+      kitchenIngredientProbePath,
+      regularId,
+      {
+        ...kitchenIngredientData(regularId),
+        name: 'Forged root name',
+      },
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen Ingredient requires a complete update stamp',
+      kitchenIngredientProbePath,
+      regularId,
+      Object.fromEntries(
+        Object.entries(kitchenIngredientData(regularId))
+          .filter(([field]) => field !== 'updated')
+      ),
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen Ingredient cannot forge its App stamp',
+      kitchenIngredientProbePath,
+      regularId,
+      {
+        ...kitchenIngredientData(regularId),
+        created: {
+          ...kitchenIngredientData(regularId).created,
+          app_id: 'security-other-app',
+        },
+      },
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen Ingredient cannot forge its creator',
+      kitchenIngredientProbePath,
+      regularId,
+      {
+        ...kitchenIngredientData(regularId),
+        created: {
+          ...kitchenIngredientData(regularId).created,
+          by: 'security-rules-victim',
+        },
+      },
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen Ingredient cannot forge its updater',
+      kitchenIngredientProbePath,
+      regularId,
+      {
+        ...kitchenIngredientData(regularId),
+        updated: {
+          ...kitchenIngredientData(regularId).updated,
+          by: 'security-rules-victim',
+        },
+      },
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedCreate(
+      'Kitchen Ingredient stamps must use request time',
+      kitchenIngredientProbePath,
+      regularId,
+      {
+        ...kitchenIngredientData(regularId),
+        created: {
+          ...kitchenIngredientData(regularId).created,
+          at: updateTime,
+        },
+        updated: {
+          ...kitchenIngredientData(regularId).updated,
+          at: updateTime,
+        },
+      },
+      writeTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    allowedUpdate(
+      'Kitchen operator can refresh only the selected Ingredient update stamp',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      {
+        ...kitchenIngredientData(regularId),
+        updated: { at: updateTime, by: regularId },
+      },
+      updateTime,
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedUpdate(
+      'Kitchen Ingredient update cannot change its canonical reference',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      {
+        ...kitchenIngredientData(regularId),
+        ingredient_id: inactiveIngredientId,
+        updated: { at: updateTime, by: regularId },
+      },
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedUpdate(
+      'Kitchen Ingredient update cannot reset its creation stamp',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      {
+        ...kitchenIngredientData(regularId),
+        created: {
+          ...kitchenIngredientData(regularId).created,
+          at: updateTime,
+        },
+        updated: { at: updateTime, by: regularId },
+      },
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedUpdate(
+      'Kitchen Ingredient update cannot add scoped payload fields',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      {
+        ...kitchenIngredientData(regularId),
+        note: 'forged',
+        updated: { at: updateTime, by: regularId },
+      },
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId),
+      ]
+    ),
+    deniedUpdate(
+      'Kitchen Ingredient update requires an active canonical root',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      {
+        ...kitchenIngredientData(regularId),
+        updated: { at: updateTime, by: regularId },
+      },
+      [
+        ...kitchenOperatorMocks(regularId, path),
+        ...ingredientRootMocks(path, activeIngredientId, {
+          status: 'merged',
+        }),
+      ]
+    ),
+    allowedDelete(
+      'Kitchen operator can remove a stale selected Ingredient reference',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      kitchenOperatorMocks(regularId, path)
+    ),
+    deniedDelete(
+      'Kitchen team member cannot remove a selected Ingredient reference',
+      kitchenIngredientProbePath,
+      regularId,
+      kitchenIngredientData(regularId),
+      targetAuthorityMocks(regularId, path, {
+        collectionName: 'kitchens',
+        targetId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    read(
+      'Kitchen Ingredient nested documents are denied',
+      'DENY',
+      `${kitchenIngredientProbePath}/private/secret`,
+      regularId
+    ),
+    deniedCreate(
+      'Kitchen operator cannot create nested Ingredient data',
+      `${kitchenIngredientProbePath}/private/secret`,
+      regularId,
+      { note: 'forged' },
+      writeTime,
+      kitchenOperatorMocks(regularId, path)
     ),
     readResource(
       'Kitchen team member can read ordinary Kitchen child data',
@@ -3219,6 +3619,33 @@ function missingKitchenSupportMocks(path, appId, kitchenId) {
       args: [{ exactValue: path(`apps/${appId}/kitchens/${kitchenId}`) }],
       result: { value: false },
     },
+  ]
+}
+
+function ingredientRootMocks(path, ingredientId, options = {}) {
+  const ingredientPath = path(`ingredients/${ingredientId}`)
+  const exists = options.exists !== false
+  return [
+    {
+      function: 'exists',
+      args: [{ exactValue: ingredientPath }],
+      result: { value: exists },
+    },
+    ...(exists
+      ? [
+          {
+            function: 'get',
+            args: [{ exactValue: ingredientPath }],
+            result: {
+              value: {
+                data: {
+                  status: String(options.status || 'active'),
+                },
+              },
+            },
+          },
+        ]
+      : []),
   ]
 }
 

@@ -10,6 +10,7 @@ import {
 } from './_lib/fireux-brand-assets.mjs'
 import {
   inspectFireuxBrandRasterAssets,
+  inspectFireuxBrandTransparentPadding,
   writeFireuxBrandRasterAssets,
 } from './_lib/fireux-brand-render.mjs'
 
@@ -35,6 +36,7 @@ if (unknownArguments.length) {
 
   const violations = [
     ...inspectFireuxBrandRasterAssets(process.cwd()),
+    ...(await inspectFireuxBrandTransparentPadding(process.cwd())),
     ...inspectFireuxBrandAssetProjections(process.cwd()),
   ]
 

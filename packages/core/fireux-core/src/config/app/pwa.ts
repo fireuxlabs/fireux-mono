@@ -28,21 +28,9 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
       // fallback, especially in installed PWAs where redirect auth is more common.
       navigateFallbackDenylist: [/^\/__\//],
     },
-    manifest: {
-      ...(((nuxt as any).pwa?.manifest || {}) as Record<string, unknown>),
-      name: c.name,
-      short_name: c.shortName,
-      scope: '/',
-      start_url: '/',
-      display: 'standalone',
-      background_color: c.backgroundColor,
-      theme_color: c.themeColor,
-      lang: c.lang,
-      icons: [
-        { src: brandAssets.pwaIcon192, sizes: '192x192', type: 'image/png' },
-        { src: brandAssets.pwaIcon512, sizes: '512x512', type: 'image/png' },
-      ],
-    },
+    // Core's server route owns the manifest so it can version configured assets
+    // with Nuxt's per-build id. Keep Vite PWA focused on service-worker behavior.
+    manifest: false,
   }
 
   const app = (nuxt.app ||= {} as any)
@@ -58,7 +46,6 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
   )
 
   head.link.push(
-    { rel: 'manifest', href: '/manifest.webmanifest' },
     { rel: 'icon', href: brandAssets.favicon },
     { rel: 'apple-touch-icon', sizes: '180x180', href: brandAssets.pwaIcon192 }
   )

@@ -6,13 +6,9 @@ import {
   findSupplierConsoleDemoScenario,
   useSupplierConsoleDemoData,
 } from '../../core/useSupplierConsoleDemoData'
+import { useSupplierIngredientRoots } from './fetch/useSupplierIngredientRoots'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const titleFromId = (value: string) =>
-  value
-    .split('-')
-    .map((part) => part ? `${part[0]?.toUpperCase()}${part.slice(1)}` : '')
-    .join(' ')
 
 export function useSupplierConsoleIngredients() {
   const {
@@ -47,22 +43,34 @@ export function useSupplierConsoleIngredients() {
       ? demoScenario.value?.ingredients ?? []
       : supplierIngredientsFromStore.value
   )
-  const pending = computed(() =>
-    runtime.source.value === 'demo'
-      ? demoData.pending.value
-      : supplierIngredientsPending.value
-  )
   const linkedIngredientIds = computed(() =>
     supplierIngredients.value
       .map(ingredient => normalizeString(ingredient.ingredient_id))
       .filter(Boolean)
   )
+  const ingredientRoots = useSupplierIngredientRoots(linkedIngredientIds, {
+    enabled: computed(() => Boolean(linkedIngredientIds.value.length)),
+  })
+  const pending = computed(() =>
+    runtime.source.value === 'demo'
+      ? demoData.pending.value || ingredientRoots.pending.value
+      : supplierIngredientsPending.value || ingredientRoots.pending.value
+  )
+  const loadError = ingredientRoots.error
   const ingredientItems = computed<SupplierIngredientInterfaceItem[]>(() =>
     supplierIngredients.value.map((ingredient) => {
       const ingredientId = normalizeString(ingredient.ingredient_id)
+      const root = ingredientRoots.rootById.value.get(ingredientId)
+      const hydrationUnavailable = Boolean(
+        loadError.value || ingredientRoots.pending.value
+      )
       return {
         ...ingredient,
-        label: titleFromId(ingredientId),
+        label: root?.name || (hydrationUnavailable ? '' : 'Missing Ingredient'),
+        image_url: root?.image_url || '',
+        category: root?.category || '',
+        root_status: root?.status || (hydrationUnavailable ? '' : 'missing'),
+        missing_root_ingredient: !hydrationUnavailable && !root,
         path: selection.supplierId.value
           ? `suppliers/${selection.supplierId.value}/ingredients/${ingredientId}`
           : `suppliers/{supplierId}/ingredients/${ingredientId}`,
@@ -81,7 +89,11 @@ export function useSupplierConsoleIngredients() {
     collectionPath: collectionPath.value,
     ingredientItemsCount: ingredientItems.value.length,
     ingredientIds: linkedIngredientIds.value,
+    missingRootIngredientIds: ingredientItems.value
+      .filter(item => item.missing_root_ingredient)
+      .map(item => item.ingredient_id),
     pending: pending.value,
+    loadError: Boolean(loadError.value),
     readOnly: runtime.readOnly.value,
     canWrite: runtime.canWrite.value,
   }))
@@ -95,6 +107,7 @@ export function useSupplierConsoleIngredients() {
     linkedIngredientIds,
     ingredientItems,
     pending,
+    loadError,
     ingredientsTitle,
     ingredientsDescription,
     readOnly: runtime.readOnly,

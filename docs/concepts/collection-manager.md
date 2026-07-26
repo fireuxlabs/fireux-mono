@@ -54,7 +54,6 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - `Menu`.
 - `Place`.
 - `Product`.
-- `Ingredient`.
 - `Recipe` is not in this class: current recipe storage/fetch is kitchen-scoped and public recipe projection is deferred.
 
 ## Root Synced Snapshot Collection Manager members
@@ -76,6 +75,9 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   that join their allowlisted profile fields to canonical User identity by uid.
 - `Job` uses its bounded public API to exact-validate open/public roots and join
   safe Company and canonical work-Place display truth.
+- `Ingredient` consumes `/api/ingredients`. The API exposes only the canonical
+  culinary identity needed by public browse and exact Kitchen/Supplier
+  hydration; raw root documents and curator writes remain server-only.
 - Blog's public `BlogCollectionEditorialManager` consumes `/api/public/blogs`,
   which applies publication and ecosystem scope, exposes a bounded index-card
   DTO, and owns cursor pagination. The authenticated/dev
@@ -204,7 +206,6 @@ Root Simple Collection Managers
 | `Menu`       | Route-owned `/api/menus` controller | Self              | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
 | `Place`      | None in manager                     | Self              | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                            |
 | `Product`    | None in manager                     | Self              | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                        |
-| `Ingredient` | None in root manager                | Self              | Root index manager fetches ingredients; Ingredient can be source truth for synced snapshots elsewhere.                                                  |
 | `Supplier`   | None for root browse                | Self/App support  | Root browse fetches Suppliers. Operator-filtered console/access flows may join same-id App support records.                                             |
 | `Portfolio`  | None for root browse                | Self/App support  | Root browse fetches Portfolios. Operator-filtered console/access flows may join same-id App support records.                                            |
 | `Property`   | None for root browse                | Self/App support  | Root browse fetches Properties. The `root-with-app-support` read shape is explicit via options.                                                         |
@@ -214,6 +215,7 @@ Root Projected Collection Managers
 | Manager        | Projection source                                    | Direction                 | Current note                                                                                                                |
 | -------------- | ---------------------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
 | `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join explicit `place_id` and canonical App scope without copied snapshots or client N+1 reads. |
+| `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests hydrate Kitchen and Supplier links without exposing raw root documents. |
 | `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                     |
 | `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                    |
 | `User`         | `/api/public/users`                                  | Server projection         | Public users index gets safe user DTOs, then maps them through `useUserInterface()`.                                        |

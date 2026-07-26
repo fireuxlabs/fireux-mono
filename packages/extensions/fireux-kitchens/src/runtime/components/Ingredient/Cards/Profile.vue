@@ -29,8 +29,14 @@
           </UBadge>
         </div>
 
-        <div class="grid gap-1 text-xs text-dimmed sm:grid-cols-1">
-          <div>Status: {{ model.status || '—' }}</div>
+        <div class="grid gap-2 text-xs text-dimmed sm:grid-cols-2">
+          <div
+            v-for="detail in model.details"
+            :key="detail.label"
+          >
+            <span class="font-medium text-toned">{{ detail.label }}:</span>
+            {{ detail.value }}
+          </div>
         </div>
       </div>
     </div>

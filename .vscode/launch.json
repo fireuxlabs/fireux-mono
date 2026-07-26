@@ -241,6 +241,17 @@
       }
     },
     {
+      "name": "AUSFinn Apartments dev (3029)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:ausfinn-apartments",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 20
+      }
+    },
+    {
       "name": "Kill FireUX dev (3000)",
       "type": "node-terminal",
       "request": "launch",
@@ -448,6 +459,17 @@
         "group": "Dev Servers",
         "order": 119
       }
+    },
+    {
+      "name": "Kill AUSFinn Apartments dev (3029)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:ausfinn-apartments",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 120
+      }
     }
   ],
   "compounds": [
@@ -490,7 +512,8 @@
         "Bangin Coffee dev (3016)",
         "Bären Ringgenberg dev (3017)",
         "Interlaken Essen dev (3026)",
-        "Book with Nats dev (3028)"
+        "Book with Nats dev (3028)",
+        "AUSFinn Apartments dev (3029)"
       ]
     }
   ]

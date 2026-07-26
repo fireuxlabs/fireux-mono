@@ -84,6 +84,18 @@ Before each task:
 - Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
   `scripts/guards/css-system.mjs` when this contract changes.
 
+## Shared PWA manifest authority
+
+- FireUX Core exclusively owns the runtime `manifest.webmanifest`; project Apps
+  do not add static manifests or emit their own manifest links.
+- The shared App shell versions its manifest URL with Nuxt's per-build
+  `runtimeConfig.app.buildId`. The Core manifest keeps stable identity with
+  `id: '/'` and applies the same build version to configured 192px and 512px
+  icon URLs while preserving their existing paths and query strings.
+- When no build id is available, Core leaves manifest and icon URLs unchanged.
+  Start at `App/Shell.vue`, `manifest.webmanifest.get.ts`, and the project guard
+  when this contract changes.
+
 ## Console target and onboarding authority
 
 - FireUX Core owns the single `/auth` route and its sign-in, registration,
@@ -227,6 +239,21 @@ Before each task:
   tenant identity always makes the public Job projection ineligible.
 - Optional compensation uses the Finance minor-unit money primitive plus a pay
   unit. It is a mutable offer term, not a FinancialFact producer.
+- `fireux-jobs` also owns the private Application and Engagement lifecycle.
+  Both are exposed only through trusted server commands with exact candidate
+  and employer partitions; browsers do not read their root collections.
+- Direct hiring means the named employer employs and pays the worker. The
+  platform records the offer, both parties' actions, the agreed Job revision,
+  and versioned acknowledgement of that relationship; it is not the employer,
+  payroll provider, personnel lessor, or recipient of a hiring percentage.
+- Permanent and fixed-term hiring is unrestricted on every plan. Temporary
+  hiring uses one atomic employer capacity record: Free permits one active
+  temporary Engagement and Premium permits multiple; completion or
+  cancellation releases capacity. Publishing and applications remain
+  unrestricted.
+- An accepted Engagement is evidence for a later Team or rota adapter. It never
+  grants Team membership, console access, App governance, or operator authority
+  by itself.
 - Ecosystem composition used by Professional Experience remains outside Job
   creation and cannot change this shared contract.
 

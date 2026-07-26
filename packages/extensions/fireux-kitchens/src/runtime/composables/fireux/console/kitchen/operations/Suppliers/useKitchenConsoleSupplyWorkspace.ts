@@ -7,7 +7,7 @@ import type {
   SupplierItem,
 } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
 import { computed } from 'vue'
-import type { Ingredient } from '../../../../../../models/ingredient.model'
+import type { PublicIngredient } from '../../../../../../models/ingredient-public.model'
 import type { KitchenIngredient } from '../../../../../../models/kitchen/ingredient.model'
 import type { KitchenSupplierIngredient } from '../../../../../../models/kitchen/supplier-ingredient.model'
 import {
@@ -15,11 +15,12 @@ import {
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
+import { useKitchenIngredientRoots } from '../Ingredients/fetch/useKitchenIngredientRoots'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
 export type KitchenConsoleSupplyLine = {
-  ingredient: Ingredient
+  ingredient: PublicIngredient
   kitchenIngredient: KitchenIngredient
   link: KitchenSupplierIngredient
   supplierScenario: SupplierConsoleDemoScenario
@@ -58,14 +59,15 @@ export function useKitchenConsoleSupplyWorkspace() {
       ])
     )
   )
-  const ingredientById = computed(() =>
-    new Map(
-      (scenario.value?.ingredients ?? []).map(ingredient => [
-        clean(ingredient.id),
-        ingredient,
-      ])
-    )
+  const linkedIngredientIds = computed(() =>
+    (scenario.value?.kitchenIngredients ?? [])
+      .map(ingredient => clean(ingredient.ingredient_id))
+      .filter(Boolean)
   )
+  const ingredientRoots = useKitchenIngredientRoots(linkedIngredientIds, {
+    enabled: active,
+  })
+  const ingredientById = ingredientRoots.rootById
   const kitchenIngredientById = computed(() =>
     new Map(
       (scenario.value?.kitchenIngredients ?? []).map(ingredient => [
@@ -144,12 +146,20 @@ export function useKitchenConsoleSupplyWorkspace() {
     )
   })
   const pending = computed(() =>
-    active.value && (kitchenDemo.pending.value || supplierDemo.pending.value)
+    active.value &&
+    (
+      kitchenDemo.pending.value ||
+      supplierDemo.pending.value ||
+      ingredientRoots.pending.value
+    )
   )
 
   return {
     active,
     scenario,
+    ingredientRoots: ingredientRoots.roots,
+    ingredientRootById: ingredientRoots.rootById,
+    ingredientRootError: ingredientRoots.error,
     supplierScenarios,
     supplierScenarioById,
     supplyLines,

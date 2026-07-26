@@ -171,8 +171,7 @@ projection; it does not establish raw root-read authority.
 
 The repository contains domain concepts whose models, routes, or collections
 predate executable entity declarations. Examples include Place, Company,
-Ingredient, profile roots, Dish, KitchenOrder, Customer, Station, Task, and
-Blog content.
+profile roots, Dish, KitchenOrder, Customer, Station, Task, and Blog content.
 
 Their existence is real; their FireUX Entity classification is not yet declared
 by the matrix. Treat each as `to-confirm` for classification work. Do not
@@ -185,6 +184,12 @@ The matrix already records these explicit questions:
 | Recipe | `to-confirm` | Does it remain Kitchen-scoped operational truth or gain root identity? |
 | Product | `to-confirm` | Is it root identity with Supplier and Kitchen wrappers? |
 | Supplier/Place relationship | `to-confirm` | Is Supplier company-level, site-level, or related to several Places? |
+
+Ingredient is now a declared shared culinary root owned by
+`fireux-kitchens`. Kitchen and Supplier operational records reference its
+stable document id and hydrate only the bounded public projection. Its
+canonical `name` is the popular name used by the shared world; language and
+translation state are not Ingredient identity.
 
 ## Storage and route implications
 

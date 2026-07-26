@@ -97,7 +97,9 @@ export function useKitchenConsole() {
   const kitchenSource = computed<KitchenFetchSource>(() =>
     normalizeSource(consoleRoot.source.value)
   )
-  const liveTargetCollection = useKitchenConsoleTargetCollection()
+  const liveTargetCollection = useKitchenConsoleTargetCollection({
+    enabled: computed(() => kitchenSource.value === 'live'),
+  })
   const demoData = useKitchenConsoleDemoData(
     computed(() => kitchenSource.value === 'demo')
   )

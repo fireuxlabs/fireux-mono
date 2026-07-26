@@ -123,15 +123,21 @@
 <script setup lang="ts">
 import { computed, ref, type CSSProperties } from 'vue'
 import { useRouter } from 'vue-router'
-import { useFetch, useHead } from '#imports'
+import { useFetch, useHead, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
 import { useAppOnboarding } from '../../composables/fireux/app/utils/useAppOnboarding'
+import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev
 const router = useRouter()
 const fireuxConfig = useFireUXConfig()
+const runtimeConfig = useRuntimeConfig()
+const manifestHref = withBuildVersion(
+  '/manifest.webmanifest',
+  runtimeConfig.app?.buildId
+)
 // App shell owns global colour-mode activation; components should only consume resolved mode.
 useColorMode()
 const { panelOpen, notesVisible, supportsInlineNotes, toggleNotes, togglePanel } = useDevUi()
@@ -175,7 +181,7 @@ useHead({
   meta: fireuxConfig.isTenant
     ? [{ name: 'robots', content: 'noindex, nofollow' }]
     : [],
-  link: [{ rel: 'manifest', href: '/manifest.webmanifest' }],
+  link: [{ rel: 'manifest', href: manifestHref }],
 })
 
 function goToDev() {

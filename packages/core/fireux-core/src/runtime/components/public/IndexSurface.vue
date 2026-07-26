@@ -1,13 +1,28 @@
 <template>
   <UPage class="public-index">
-    <header class="public-index__hero">
+    <header
+      class="public-index__hero"
+      :class="{ 'public-index__hero--background': $slots.background }"
+    >
+      <div v-if="$slots.background" class="public-index__hero-background">
+        <slot name="background" />
+      </div>
+
       <div class="public-index__hero-copy">
         <p class="public-index__eyebrow">{{ eyebrow }}</p>
         <h1>{{ title }}</h1>
         <p>{{ description }}</p>
+
+        <div v-if="$slots.actions" class="public-index__hero-actions">
+          <slot name="actions" />
+        </div>
       </div>
 
-      <div class="public-index__hero-mark" aria-hidden="true">
+      <div v-if="$slots.hero" class="public-index__hero-content">
+        <slot name="hero" />
+      </div>
+
+      <div v-else class="public-index__hero-mark" aria-hidden="true">
         <UIcon :name="icon" />
       </div>
     </header>
@@ -69,6 +84,34 @@ withDefaults(defineProps<{
   position: relative;
 }
 
+.public-index__hero-background {
+  inset: 0;
+  overflow: hidden;
+  position: absolute;
+  z-index: 0;
+}
+
+.public-index__hero--background::before {
+  background:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--ui-bg) 98%, transparent) 0%,
+      color-mix(in srgb, var(--ui-bg) 88%, transparent) 40%,
+      color-mix(in srgb, var(--ui-bg) 34%, transparent) 72%,
+      color-mix(in srgb, var(--ui-bg) 16%, transparent) 100%
+    ),
+    linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--ui-bg) 46%, transparent),
+      transparent 48%
+    );
+  content: '';
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
 .public-index__hero::after {
   border: 1px solid color-mix(in srgb, var(--ui-primary) 15%, transparent);
   border-radius: 9999px;
@@ -116,6 +159,21 @@ withDefaults(defineProps<{
   max-width: calc(var(--spacing) * 144);
 }
 
+.public-index__hero-actions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 3);
+  margin-top: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 10));
+}
+
+.public-index__hero-content {
+  max-width: calc(var(--spacing) * 94);
+  position: relative;
+  width: min(32vw, calc(var(--spacing) * 94));
+  z-index: 1;
+}
+
 .public-index__hero-mark {
   align-items: center;
   backdrop-filter: blur(calc(var(--spacing) * 3));
@@ -159,6 +217,26 @@ withDefaults(defineProps<{
 
   .public-index__hero-mark {
     justify-self: end;
+  }
+
+  .public-index__hero-content {
+    max-width: none;
+    width: 100%;
+  }
+
+  .public-index__hero--background::before {
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--ui-bg) 94%, transparent) 0%,
+        color-mix(in srgb, var(--ui-bg) 74%, transparent) 55%,
+        color-mix(in srgb, var(--ui-bg) 92%, transparent) 100%
+      ),
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--ui-bg) 88%, transparent),
+        color-mix(in srgb, var(--ui-bg) 34%, transparent)
+      );
   }
 }
 </style>

@@ -101,6 +101,8 @@
                 </div>
               </div>
             </UCard>
+
+            <JobApplyPanel :job-id="job.id" />
           </div>
         </div>
       </template>
@@ -113,6 +115,7 @@ import { setResponseStatus } from '#imports'
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import JobCardsProfile from '../../components/Job/Cards/Profile.vue'
+import JobApplyPanel from '../../components/Job/Apply/Panel.vue'
 import { usePublicJobFetch } from '../../composables/fireux/jobs/public/usePublicJobFetch'
 import { useJobSeo } from '../../composables/fireux/firestore/jobs/utils/useJobSeo'
 import { useJobInterface } from '../../composables/fireux/firestore/jobs/utils/view/useJobInterface'

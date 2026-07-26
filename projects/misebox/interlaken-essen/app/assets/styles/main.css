@@ -124,6 +124,40 @@ button.market-language.sproochli-language-trigger--emoji:hover {
   backdrop-filter: none;
 }
 
+button.market-language.sproochli-language-trigger--emoji
+  .sproochli-language-trigger__emoji {
+  display: inline-block;
+  transform-origin: 12% 50%;
+  backface-visibility: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  button.market-language.sproochli-language-trigger--emoji:is(:hover, :focus-visible)
+    .sproochli-language-trigger__emoji {
+    animation: interlaken-sproochli-flag-fold 560ms
+      cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+
+@keyframes interlaken-sproochli-flag-fold {
+  0%,
+  100% {
+    transform: perspective(8rem) rotateY(0deg) rotateZ(0deg) translateY(0);
+  }
+
+  28% {
+    transform: perspective(8rem) rotateY(-24deg) rotateZ(-3deg) translateY(-1px);
+  }
+
+  55% {
+    transform: perspective(8rem) rotateY(12deg) rotateZ(2deg) translateY(0);
+  }
+
+  76% {
+    transform: perspective(8rem) rotateY(-5deg) rotateZ(-1deg) translateY(0);
+  }
+}
+
 .market-nav a {
   display: inline-flex;
   gap: 0.45rem;
@@ -217,16 +251,10 @@ button.market-language.sproochli-language-trigger--emoji:hover {
 }
 
 .market-home__feed-wrap {
-  min-height: 100svh;
   padding:
-    clamp(7rem, 12vh, 9rem)
+    clamp(3rem, 7vh, 5rem)
     clamp(1rem, 5vw, 4rem)
     clamp(8rem, 14vh, 11rem);
-  background: linear-gradient(
-    180deg,
-    rgba(23, 53, 43, 0.2),
-    rgba(23, 53, 43, 0.94) 28%
-  );
 }
 
 .market-home__feed-wrap:not(:has(.market-feed)) {
@@ -1778,7 +1806,6 @@ button.market-language.sproochli-language-trigger--emoji:hover {
 
   .market-home__feed-wrap {
     min-height: auto;
-    background: var(--market-ink);
   }
 
   .market-landing {

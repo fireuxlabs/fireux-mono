@@ -1,0 +1,47 @@
+@layer base {
+  :root {
+    --color-theme-50: #eff8f6;
+    --color-theme-100: #d8eee9;
+    --color-theme-200: #b4ddd4;
+    --color-theme-300: #84c5b9;
+    --color-theme-400: #52a99b;
+    --color-theme-500: #348d80;
+    --color-theme-600: #287167;
+    --color-theme-700: #245b54;
+    --color-theme-800: #214a45;
+    --color-theme-900: #1e3e3a;
+    --color-theme-950: #0c2523;
+    --ui-primary: var(--color-theme-600);
+    --ui-primary-hover: var(--color-theme-700);
+    --ui-primary-active: var(--color-theme-800);
+    --aus-ink: #17302e;
+    --aus-forest: #153b37;
+    --aus-lake: #377f82;
+    --aus-sun: #e9b86d;
+    --aus-coral: #e06d51;
+    --aus-mist: #e9f1ed;
+    --aus-paper: #f7f3e9;
+    --aus-white: #fffdf8;
+    --aus-muted: #5f6c67;
+    --aus-line: rgb(23 48 46 / 16%);
+    --brand-canvas: var(--aus-paper);
+    --brand-ink: var(--aus-ink);
+    --brand-primary: var(--aus-forest);
+    --brand-accent: var(--aus-coral);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background: var(--aus-paper);
+    color: var(--aus-ink);
+  }
+
+  ::selection {
+    background: var(--aus-sun);
+    color: var(--aus-ink);
+  }
+}

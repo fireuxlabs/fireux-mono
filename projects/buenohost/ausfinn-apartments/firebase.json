@@ -1,0 +1,14 @@
+{
+  "hosting": {
+    "site": "ausfinn-apartments",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/200.html"
+      }
+    ]
+  }
+}

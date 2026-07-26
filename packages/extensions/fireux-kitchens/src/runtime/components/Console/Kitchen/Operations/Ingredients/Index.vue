@@ -1,20 +1,22 @@
 <template>
   <section class="console-surface">
-    <!-- Tools: add operation-level actions here when a real tool emerges. -->
-    <ConsoleKitchenOperationsIngredientsRead />
+    <div v-if="kitchenId" class="space-y-6">
+      <ConsoleKitchenOperationsIngredientsRead />
+      <ConsoleKitchenOperationsIngredientsTools />
+    </div>
 
-    <ConsoleOperationWritePanel
-      v-if="canWrite"
-      title="Add ingredient"
-      description="Select or create an ingredient for this kitchen."
-    >
-      <ConsoleKitchenOperationsIngredientsWrite />
-    </ConsoleOperationWritePanel>
+    <UAlert
+      v-else
+      color="neutral"
+      variant="soft"
+      title="Select a kitchen"
+      description="Choose a kitchen before managing ingredients."
+    />
   </section>
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleIngredients } from '../../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenConsoleIngredients'
+import { provideKitchenIngredientsWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenIngredientsWorkspace'
 
-const { canWrite } = useKitchenConsoleIngredients()
+const { kitchenId } = provideKitchenIngredientsWorkspace()
 </script>

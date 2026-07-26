@@ -1,0 +1,16 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title">
+  <title id="title">BuenoHost app icon</title>
+  <rect width="512" height="512" fill="#5EA9B8"/>
+  <defs>
+    <mask id="house">
+      <rect width="512" height="512" fill="black"/>
+      <path d="M96 225L230 102C244 89 268 89 282 102L416 225C440 247 425 284 394 284H389V397C389 415 375 429 357 429H155C137 429 123 415 123 397V284H118C87 284 72 247 96 225Z" fill="white"/>
+    </mask>
+  </defs>
+  <g mask="url(#house)">
+    <rect width="256" height="512" fill="#F5F0E7"/>
+    <rect x="256" width="256" height="512" fill="#102A38"/>
+  </g>
+  <path d="M205 429V326C205 298 228 275 256 275C284 275 307 298 307 326V429H205Z" fill="#F5F0E7"/>
+  <path d="M226 429V352C226 335 239 322 256 322C273 322 286 335 286 352V429H226Z" fill="#F27A52"/>
+</svg>

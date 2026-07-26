@@ -91,7 +91,9 @@
     "dev:interlaken-essen": "node scripts/dev-app-with-smoke.mjs --app interlaken-essen",
     "kill:interlaken-essen": "node scripts/free-port.mjs 3026",
     "dev:book-with-nats": "node scripts/dev-app-with-smoke.mjs --app book-with-nats",
-    "kill:book-with-nats": "node scripts/free-port.mjs 3028"
+    "kill:book-with-nats": "node scripts/free-port.mjs 3028",
+    "dev:ausfinn-apartments": "node scripts/dev-app-with-smoke.mjs --app ausfinn-apartments",
+    "kill:ausfinn-apartments": "node scripts/free-port.mjs 3029"
   },
   "engines": {
     "node": ">=22.23 <23",

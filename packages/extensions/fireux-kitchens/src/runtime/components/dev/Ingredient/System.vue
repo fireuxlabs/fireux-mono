@@ -15,7 +15,8 @@
               Ingredients collection
             </p>
             <p class="text-xs text-muted">
-              Browse ingredients resolved for this runtime and filter by model drift.
+              Browse ingredients resolved for this runtime and filter by model
+              drift.
             </p>
             <DevDriftToolbar
               :drift-kind="driftKind"
@@ -48,15 +49,17 @@ import { useIngredientCollection } from '../../../composables/fireux/firestore/i
 import {
   IngredientStorage,
   IngredientModel as IngredientModelRuntime,
-  type Ingredient as IngredientType,
 } from '../../../models/ingredient.model'
+import type { PublicIngredient } from '../../../models/ingredient-public.model'
 
 defineOptions({ name: 'DevIngredientSystem' })
 
 const ingredientModelRuntime = IngredientModelRuntime
 
 const { ingredients } = useIngredientCollection()
-const ingredientsCollection = computed<IngredientType[]>(() => ingredients.value ?? [])
+const ingredientsCollection = computed<PublicIngredient[]>(
+  () => ingredients.value ?? []
+)
 
 const {
   driftKind,
@@ -84,7 +87,8 @@ const filteredDriftPayload = buildDriftPayload({
 })
 
 const driftCopyPayload = buildCopyPayload({
-  modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts',
+  modelPath:
+    'packages/extensions/fireux-kitchens/src/runtime/models/ingredient.model.ts',
   itemsKey: IngredientStorage.collection,
   items: filteredDriftPayload,
   total: computed(() => ingredientsCollection.value.length),

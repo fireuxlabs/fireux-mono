@@ -608,6 +608,8 @@ export async function run(ctx) {
     dishFinance: [
       'aria-label="Dish Finance preview"',
       'Selling price',
+      'Quantity sold',
+      'Total sales',
       'Cost of sales',
       'Gross profit',
       'Food cost',

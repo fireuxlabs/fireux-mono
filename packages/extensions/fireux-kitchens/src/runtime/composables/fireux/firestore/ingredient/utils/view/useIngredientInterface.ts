@@ -1,5 +1,9 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { Ingredient } from '../../../../../../models/ingredient.model'
+import {
+  ingredientCategoryLabel,
+  ingredientKindLabel,
+} from '../../../../../../models/ingredient-taxonomy'
 import type { KitchenIngredient } from '../../../../../../models/kitchen/ingredient.model'
 
 const formatPackPrice = (
@@ -50,6 +54,10 @@ export namespace IngredientCard {
     name: string
     status: string
     supplierName: string
+    categoryLabel: string
+    kindLabel: string
+    aliases: string[]
+    parentIngredientId: string
   }
 }
 
@@ -58,6 +66,7 @@ export type IngredientProfile = {
   title: string
   subtitle: string
   status: string
+  details: Array<{ label: string; value: string }>
 }
 
 export function useIngredientInterface() {
@@ -96,6 +105,15 @@ export function useIngredientInterface() {
       supplierPackLabel,
       supplierPackPrice
     )
+    const categoryLabel = ingredientCategoryLabel(ingredient.category)
+    const kindLabel = ingredientKindLabel(ingredient.kind)
+    const aliases = Array.isArray(ingredient.aliases)
+      ? ingredient.aliases.map(safeString).map(value => value.trim()).filter(Boolean)
+      : []
+    const parentIngredientId = safeString(
+      ingredient.parent_ingredient_id
+    ).trim()
+    const taxonomySummary = joinSubtitle(categoryLabel, kindLabel)
 
     return {
       id,
@@ -103,13 +121,17 @@ export function useIngredientInterface() {
       to: '',
       imageUrl: safeString(ingredient.image_url).trim(),
       title: name,
-      subtitle: supplierSummary,
-      meta: supplierSummary,
+      subtitle: supplierSummary || taxonomySummary,
+      meta: supplierSummary || taxonomySummary,
       badges: status ? [status] : [],
       summary: '',
       name,
       status,
       supplierName: supplierRef,
+      categoryLabel,
+      kindLabel,
+      aliases,
+      parentIngredientId,
     }
   }
 
@@ -177,6 +199,16 @@ export function useIngredientInterface() {
       title: base.title,
       subtitle: base.subtitle,
       status: base.status,
+      details: [
+        { label: 'Category', value: base.categoryLabel },
+        { label: 'Kind', value: base.kindLabel },
+        ...(base.aliases.length
+          ? [{ label: 'Aliases', value: base.aliases.join(', ') }]
+          : []),
+        ...(base.parentIngredientId
+          ? [{ label: 'Parent', value: base.parentIngredientId }]
+          : []),
+      ],
     }
   }
 

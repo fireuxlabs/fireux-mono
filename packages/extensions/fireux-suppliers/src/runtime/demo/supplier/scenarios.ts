@@ -122,13 +122,18 @@ const supplierRoot = (
   company_id: '',
   slug: input.id,
   supplier_organization_name: input.name,
+  tagline: input.headline,
   supplier_headline: input.headline,
   summary: `${input.name} is a deterministic read-only Supplier Console example.`,
+  supplier_bio: `${input.name} supplies connected Demo Kitchens through one shared read-only Misebox world.`,
   supplier_item_categories: [...input.categories],
   supplier_delivery_areas: ['Switzerland'],
   state: input.state,
   catalogue_state: input.catalogueState,
-  linked_ingredient_ids: ingredients.map(ingredient => ingredient.ingredient_id),
+  linked_ingredient_ids: ingredients.map(
+    (ingredient) => ingredient.ingredient_id
+  ),
+  hello: `Welcome to ${input.name}.`,
   created,
   updated,
 })
@@ -149,10 +154,10 @@ const supplierCatalogue = (
     label: section.label,
     description: section.description,
     items: offers
-      .filter(offer => offer.sectionId === section.id)
+      .filter((offer) => offer.sectionId === section.id)
       .map((offer, itemIndex) => {
         const item = items.find(
-          candidate => candidate.ingredient_id === offer.ingredientId
+          (candidate) => candidate.ingredient_id === offer.ingredientId
         )
         if (!item) {
           throw new Error(
@@ -180,50 +185,44 @@ const sameStringSet = (left: string[], right: string[]) => {
   const normalizedLeft = [...new Set(left)].sort()
   const normalizedRight = [...new Set(right)].sort()
   return (
-    normalizedLeft.length === normalizedRight.length
-    && normalizedLeft.every((value, index) => value === normalizedRight[index])
+    normalizedLeft.length === normalizedRight.length &&
+    normalizedLeft.every((value, index) => value === normalizedRight[index])
   )
 }
 
 const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
   const supplierId = scenario.supplier.id
   const ingredientIds = scenario.ingredients.map(
-    ingredient => ingredient.ingredient_id
+    (ingredient) => ingredient.ingredient_id
   )
 
-  if (
-    !sameStringSet(
-      scenario.supplier.linked_ingredient_ids,
-      ingredientIds
-    )
-  ) {
+  if (!sameStringSet(scenario.supplier.linked_ingredient_ids, ingredientIds)) {
     throw new Error(
       `Supplier Demo ${supplierId} root ingredient index is inconsistent.`
     )
   }
 
   if (new Set(ingredientIds).size !== ingredientIds.length) {
-    throw new Error(
-      `Supplier Demo ${supplierId} repeats a SupplierIngredient.`
-    )
+    throw new Error(`Supplier Demo ${supplierId} repeats a SupplierIngredient.`)
   }
 
   for (const ingredient of scenario.ingredients) {
     if (
-      ingredient.id !== ingredient.ingredient_id
-      || ingredient.supplier_id !== supplierId
-      || ingredient.active !== true
+      ingredient.id !== ingredient.ingredient_id ||
+      ingredient.supplier_id !== supplierId ||
+      ingredient.active !== true
     ) {
       throw new Error(
         `Supplier Demo ${supplierId}/${ingredient.id} has invalid coverage authority.`
       )
     }
 
-    const matchingOffers = scenario.items.filter(item =>
-      item.active === true
-      && item.supplier_id === supplierId
-      && item.ingredient_id === ingredient.ingredient_id
-      && item.product_id === ingredient.preferred_product_id
+    const matchingOffers = scenario.items.filter(
+      (item) =>
+        item.active === true &&
+        item.supplier_id === supplierId &&
+        item.ingredient_id === ingredient.ingredient_id &&
+        item.product_id === ingredient.preferred_product_id
     )
     if (matchingOffers.length !== 1) {
       throw new Error(
@@ -233,12 +232,12 @@ const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
 
     const [matchingOffer] = matchingOffers
     if (
-      !matchingOffer
-      || !Number.isFinite(matchingOffer.quantity_per_pack)
-      || Number(matchingOffer.quantity_per_pack) <= 0
-      || !Number.isSafeInteger(matchingOffer.pack_cost_minor)
-      || Number(matchingOffer.pack_cost_minor) <= 0
-      || matchingOffer.currency_code !== 'CHF'
+      !matchingOffer ||
+      !Number.isFinite(matchingOffer.quantity_per_pack) ||
+      Number(matchingOffer.quantity_per_pack) <= 0 ||
+      !Number.isSafeInteger(matchingOffer.pack_cost_minor) ||
+      Number(matchingOffer.pack_cost_minor) <= 0 ||
+      matchingOffer.currency_code !== 'CHF'
     ) {
       throw new Error(
         `Supplier Demo ${supplierId}/${ingredient.id} has invalid pack terms.`
@@ -246,7 +245,7 @@ const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
     }
   }
 
-  const itemIds = new Set(scenario.items.map(item => item.id))
+  const itemIds = new Set(scenario.items.map((item) => item.id))
   const catalogueItemIds: string[] = []
   for (const catalogue of scenario.catalogues) {
     for (const section of catalogue.sections) {
@@ -262,8 +261,8 @@ const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
   }
 
   if (
-    scenario.supplier.catalogue_state === 'integrated'
-    && !sameStringSet([...itemIds], catalogueItemIds)
+    scenario.supplier.catalogue_state === 'integrated' &&
+    !sameStringSet([...itemIds], catalogueItemIds)
   ) {
     throw new Error(
       `Supplier Demo ${supplierId} catalogue must contain every SupplierItem exactly once.`
@@ -274,8 +273,8 @@ const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
 const buildSupplierDemoScenario = (
   input: SupplierDemoScenarioSeed
 ): SupplierDemoScenario => {
-  const items = input.offers.map(offer => supplierItem(input.id, offer))
-  const ingredients = items.map(item => supplierIngredient(input.id, item))
+  const items = input.offers.map((offer) => supplierItem(input.id, offer))
+  const ingredients = items.map((item) => supplierIngredient(input.id, item))
   const scenario: SupplierDemoScenario = {
     appId: 'misebox-app',
     supplier: supplierRoot(input, ingredients),
@@ -290,95 +289,24 @@ const buildSupplierDemoScenario = (
   return scenario
 }
 
-const cityButchers = buildSupplierDemoScenario({
-  id: 'city-butchers',
-  name: 'City Butchers',
-  headline: 'Whole cuts and daily meat deliveries',
-  categories: ['Meat', 'Poultry'],
+const alpineFoodservice = buildSupplierDemoScenario({
+  id: 'alpine-foodservice',
+  name: 'Alpine Foodservice',
+  headline: 'Fresh meat, dairy, bakery and frozen kitchen essentials',
+  categories: ['Meat', 'Poultry', 'Dairy', 'Bakery', 'Frozen'],
   state: 'official',
   catalogueState: 'integrated',
   catalogue: {
-    id: 'city-butchers-core-range',
-    name: 'Core kitchen range',
-    description: 'The everyday meat range available to connected kitchens.',
+    id: 'alpine-foodservice-core-range',
+    name: 'Foodservice essentials',
+    description:
+      'Fresh, chilled, bakery and frozen lines for everyday service.',
     sections: [
       {
         id: 'fresh-meat',
         label: 'Fresh meat',
         description: 'Chilled meat and poultry for daily kitchen service.',
       },
-    ],
-  },
-  offers: [
-    {
-      ingredientId: 'beef-mince',
-      name: 'Beef mince 80/20',
-      sku: 'CB-BEEF-5',
-      pack: '5 kg case',
-      unit: 'kg',
-      quantity: 5,
-      costMinor: 8250,
-      sectionId: 'fresh-meat',
-      itemId: 'city-butchers-beef-mince-5kg',
-      productId: 'beef-mince-80-20',
-    },
-    {
-      ingredientId: 'chicken-breast',
-      name: 'Fresh chicken breast',
-      sku: 'CB-CHICKEN-5',
-      pack: '5 kg case',
-      unit: 'kg',
-      quantity: 5,
-      costMinor: 6950,
-      sectionId: 'fresh-meat',
-      itemId: 'city-butchers-chicken-breast-5kg',
-      productId: 'chicken-breast-fresh',
-    },
-    {
-      ingredientId: 'turkey-breast',
-      name: 'Roasting turkey breast',
-      sku: 'CB-TURKEY-5',
-      pack: '5 kg case',
-      unit: 'kg',
-      quantity: 5,
-      costMinor: 7600,
-      sectionId: 'fresh-meat',
-    },
-    {
-      ingredientId: 'smoked-bacon',
-      name: 'Smoked streaky bacon',
-      sku: 'CB-BACON-3',
-      pack: '3 kg case',
-      unit: 'kg',
-      quantity: 3,
-      costMinor: 5400,
-      sectionId: 'fresh-meat',
-    },
-    {
-      ingredientId: 'pigs-in-blankets',
-      name: 'Pigs in blankets',
-      sku: 'CB-PIB-3',
-      pack: '3 kg case',
-      unit: 'kg',
-      quantity: 3,
-      costMinor: 4900,
-      sectionId: 'fresh-meat',
-    },
-  ],
-})
-
-const alpineFoodservice = buildSupplierDemoScenario({
-  id: 'alpine-foodservice',
-  name: 'Alpine Foodservice',
-  headline: 'Dairy, bakery and frozen kitchen essentials',
-  categories: ['Dairy', 'Bakery', 'Frozen'],
-  state: 'official',
-  catalogueState: 'integrated',
-  catalogue: {
-    id: 'alpine-foodservice-core-range',
-    name: 'Foodservice essentials',
-    description: 'Chilled, bakery and frozen lines for everyday service.',
-    sections: [
       {
         id: 'dairy',
         label: 'Dairy',
@@ -397,6 +325,58 @@ const alpineFoodservice = buildSupplierDemoScenario({
     ],
   },
   offers: [
+    {
+      ingredientId: 'beef-mince',
+      name: 'Beef mince 80/20',
+      sku: 'AF-BEEF-5',
+      pack: '5 kg case',
+      unit: 'kg',
+      quantity: 5,
+      costMinor: 8250,
+      sectionId: 'fresh-meat',
+      productId: 'beef-mince-80-20',
+    },
+    {
+      ingredientId: 'chicken-breast',
+      name: 'Fresh chicken breast',
+      sku: 'AF-CHICKEN-5',
+      pack: '5 kg case',
+      unit: 'kg',
+      quantity: 5,
+      costMinor: 6950,
+      sectionId: 'fresh-meat',
+      productId: 'chicken-breast-fresh',
+    },
+    {
+      ingredientId: 'turkey-breast',
+      name: 'Roasting turkey breast',
+      sku: 'AF-TURKEY-5',
+      pack: '5 kg case',
+      unit: 'kg',
+      quantity: 5,
+      costMinor: 7600,
+      sectionId: 'fresh-meat',
+    },
+    {
+      ingredientId: 'smoked-bacon',
+      name: 'Smoked streaky bacon',
+      sku: 'AF-BACON-3',
+      pack: '3 kg case',
+      unit: 'kg',
+      quantity: 3,
+      costMinor: 5400,
+      sectionId: 'fresh-meat',
+    },
+    {
+      ingredientId: 'chipolatas',
+      name: 'Pork chipolatas',
+      sku: 'AF-CHIP-3',
+      pack: '3 kg case',
+      unit: 'kg',
+      quantity: 3,
+      costMinor: 4900,
+      sectionId: 'fresh-meat',
+    },
     {
       ingredientId: 'american-cheese',
       name: 'American cheese slices',
@@ -418,7 +398,7 @@ const alpineFoodservice = buildSupplierDemoScenario({
       sectionId: 'dairy',
     },
     {
-      ingredientId: 'cheddar',
+      ingredientId: 'cheddar-cheese',
       name: 'Mature cheddar',
       sku: 'AF-CHEDDAR-25',
       pack: '2.5 kg block',
@@ -621,7 +601,7 @@ const pantryHouse = buildSupplierDemoScenario({
       sectionId: 'condiments',
     },
     {
-      ingredientId: 'american-mustard',
+      ingredientId: 'yellow-mustard',
       name: 'American mustard',
       sku: 'PH-AMUSTARD-4',
       pack: '4 litre tub',
@@ -651,7 +631,7 @@ const pantryHouse = buildSupplierDemoScenario({
       sectionId: 'condiments',
     },
     {
-      ingredientId: 'jalapenos',
+      ingredientId: 'jalapeno',
       name: 'Sliced jalapeños',
       sku: 'PH-JALAPENO-24',
       pack: '6 × 400 g jars',
@@ -914,7 +894,7 @@ const bernMarketGarden = buildSupplierDemoScenario({
   },
   offers: [
     {
-      ingredientId: 'onions',
+      ingredientId: 'onion',
       name: 'Brown onions',
       sku: 'BMG-ONION-10',
       pack: '10 kg sack',
@@ -1096,31 +1076,35 @@ const bernMarketGarden = buildSupplierDemoScenario({
   ],
 })
 
-const greenLarder = buildSupplierDemoScenario({
-  id: 'green-larder',
-  name: 'Green Larder',
-  headline: 'Seasonal produce and kitchen herbs',
-  categories: ['Produce', 'Herbs'],
-  state: 'public',
-  catalogueState: 'public_only',
-  offers: [],
-})
-
 export const supplierDemoScenarios: SupplierDemoScenario[] = [
-  cityButchers,
   alpineFoodservice,
   pantryHouse,
   bernMarketGarden,
-  greenLarder,
 ]
 
+if (
+  supplierDemoScenarios.length !== 3 ||
+  supplierDemoScenarios.some(
+    (scenario) =>
+      !scenario.ingredients.length ||
+      !scenario.items.length ||
+      !scenario.catalogues.length
+  )
+) {
+  throw new Error(
+    'The Misebox Demo World requires exactly three operational Suppliers.'
+  )
+}
+
 const coveredIngredientIds = supplierDemoScenarios
-  .flatMap(scenario => scenario.ingredients)
-  .map(ingredient => ingredient.ingredient_id)
+  .flatMap((scenario) => scenario.ingredients)
+  .map((ingredient) => ingredient.ingredient_id)
 if (new Set(coveredIngredientIds).size !== coveredIngredientIds.length) {
-  throw new Error('Supplier Demo ingredients must resolve through one supplier only.')
+  throw new Error(
+    'Supplier Demo ingredients must resolve through one supplier only.'
+  )
 }
 
 export const supplierDemoRecords: Supplier[] = supplierDemoScenarios.map(
-  scenario => scenario.supplier
+  (scenario) => scenario.supplier
 )

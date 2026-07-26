@@ -1,12 +1,10 @@
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import type {
-  Ingredient,
-  IngredientUpdateInput,
-} from '../../../../../models/ingredient.model'
-import { IngredientStorage } from '../../../../../models/ingredient.model'
+import { refreshNuxtData } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import type { IngredientUpdateInput } from '../../../../../models/ingredient.model'
+import type { PublicIngredientDetailResponse } from '../../../../../models/ingredient-public.model'
 
 export function useIngredientUpdate() {
-  const { updateDocument } = useFirestoreUpdate()
+  const { currentUser } = useAuth()
 
   const updateIngredient = async (
     ingredientId: string,
@@ -15,11 +13,23 @@ export function useIngredientUpdate() {
     const resolvedIngredientId = String(ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
-    await updateDocument<Ingredient>(
-      IngredientStorage.collection,
-      resolvedIngredientId,
-      patch as Partial<Ingredient>
+    const user = currentUser.value
+    if (!user) throw new Error('Sign in to curate Ingredients')
+    const token = await user.getIdToken()
+    const response = await $fetch<PublicIngredientDetailResponse>(
+      `/api/internal/ingredients/${encodeURIComponent(resolvedIngredientId)}`,
+      {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+        body: patch,
+      }
     )
+    await refreshNuxtData([
+      `public-ingredient-${resolvedIngredientId}`,
+      'public-ingredient-library-v2',
+      'curator-ingredient-library-v2',
+    ])
+    return response.item
   }
 
   return { updateIngredient }

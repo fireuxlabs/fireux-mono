@@ -54,16 +54,9 @@
         />
       </UFormField>
 
-      <div class="grid gap-4 md:grid-cols-3">
+      <div class="grid gap-4 md:grid-cols-2">
         <UFormField label="Contract" required>
           <USelect v-model="contractType" :options="contractTypeOptions" />
-        </UFormField>
-
-        <UFormField label="Management" required>
-          <USelect
-            v-model="form.management_mode"
-            :options="managementModeOptions"
-          />
         </UFormField>
 
         <UFormField label="Openings" required>
@@ -152,11 +145,6 @@ const contractTypeOptions = [
   { label: 'Temporary', value: 'temporary' },
   { label: 'Fixed term', value: 'fixed_term' },
   { label: 'Permanent', value: 'permanent' },
-]
-
-const managementModeOptions = [
-  { label: 'Direct hire', value: 'direct' },
-  { label: 'Managed placement', value: 'managed' },
 ]
 
 const payUnitOptions = [

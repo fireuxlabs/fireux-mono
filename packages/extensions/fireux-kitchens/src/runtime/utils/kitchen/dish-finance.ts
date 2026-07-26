@@ -6,7 +6,7 @@ import type {
   KitchenDemoDishSpec,
   KitchenDemoProductionAmount,
 } from '../../demo/kitchen/production'
-import type { KitchenConsoleDemoScenario } from '../../composables/fireux/console/kitchen/core/useKitchenConsoleDemoData'
+import type { KitchenDemoScenario } from '../../demo/kitchen/core/types'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -106,7 +106,7 @@ const scaleFactor = (
 
 const buildRequirements = (
   spec: KitchenDemoDishSpec,
-  scenario: KitchenConsoleDemoScenario
+  scenario: Pick<KitchenDemoScenario, 'prepItems' | 'recipes'>
 ) => {
   const prepItemById = new Map(scenario.prepItems.map(item => [clean(item.id), item]))
   const recipeById = new Map(scenario.recipes.map(recipe => [clean(recipe.id), recipe]))
@@ -163,7 +163,7 @@ const buildRequirements = (
 export function estimateKitchenDishFinance(input: {
   dishSpec: KitchenDemoDishSpec
   menuUsage: readonly KitchenDishFinanceMenuUsage[]
-  scenario: KitchenConsoleDemoScenario
+  scenario: Pick<KitchenDemoScenario, 'prepItems' | 'recipes'>
   supplyLineByIngredientId: ReadonlyMap<string, KitchenDishFinanceSupplyLine>
 }): KitchenDishFinanceEstimate | null {
   const { requirements, unresolvedRequirementIds: unresolvedComponents }

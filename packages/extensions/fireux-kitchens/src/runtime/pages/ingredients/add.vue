@@ -37,6 +37,8 @@ definePageMeta({
     hidden: true,
     layouts: ['default'],
   },
+  requiresAuth: true,
+  roles: ['admin'],
 })
 
 const { appName } = useFireUXConfig()

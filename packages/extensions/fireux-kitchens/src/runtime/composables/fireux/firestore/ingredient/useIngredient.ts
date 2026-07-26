@@ -2,7 +2,6 @@ import type { Ingredient } from '../../../../models/ingredient.model'
 import { useIngredientCollection } from './fetch/useIngredientCollection'
 import { useIngredientFetch } from './fetch/useIngredientFetch'
 import { useIngredientCreate } from './mutations/useIngredientCreate'
-import { useIngredientDelete } from './mutations/useIngredientDelete'
 import { useIngredientUpdate } from './mutations/useIngredientUpdate'
 import { useIngredientSeo } from './utils/useIngredientSeo'
 import { useIngredientComputed } from './utils/view/useIngredientComputed'
@@ -15,19 +14,26 @@ export {
   useIngredientFetch,
   useIngredientCreate,
   useIngredientUpdate,
-  useIngredientDelete,
   useIngredientSeo,
   useIngredientComputed,
   useIngredientInterface,
 }
 
-export function useIngredient() {
+export type UseIngredientResult = ReturnType<typeof useIngredientCollection> &
+  ReturnType<typeof useIngredientFetch> &
+  ReturnType<typeof useIngredientCreate> &
+  ReturnType<typeof useIngredientUpdate> &
+  ReturnType<typeof useIngredientComputed> &
+  ReturnType<typeof useIngredientInterface> & {
+    useIngredientSeo: typeof useIngredientSeo
+  }
+
+export function useIngredient(): UseIngredientResult {
   return {
     ...useIngredientCollection(),
     ...useIngredientFetch(),
     ...useIngredientCreate(),
     ...useIngredientUpdate(),
-    ...useIngredientDelete(),
     ...useIngredientComputed(),
     ...useIngredientInterface(),
     useIngredientSeo,

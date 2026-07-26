@@ -18,6 +18,13 @@
         Loading ingredient...
       </div>
 
+      <MoleculesStateCard
+        v-else-if="fetchError"
+        entity="Ingredient"
+        state="error"
+        surface="bare"
+      />
+
       <div v-else-if="!ingredient" class="space-y-2">
         <h1 class="text-lg font-semibold">Ingredient Not Found</h1>
         <p>The ingredient you are looking for does not exist.</p>
@@ -85,8 +92,10 @@ const {
 } = useIngredient()
 const { isAdmin } = useUser()
 
-const ingredient = fetchIngredient(docId)
-const loading = computed(() => ingredient.value === undefined)
+const fetchedIngredient = fetchIngredient(docId)
+const ingredient = fetchedIngredient.ingredient
+const loading = fetchedIngredient.pending
+const fetchError = fetchedIngredient.error
 
 const ingredientProfile = computed(() => profile(ingredient.value))
 

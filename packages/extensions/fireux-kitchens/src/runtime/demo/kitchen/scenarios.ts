@@ -34,9 +34,16 @@ import {
   type KitchenDemoFinance,
 } from './finance'
 import {
+  deanosKitchenDemoDishFinance,
+  type KitchenDemoDishFinance,
+} from './operations/Dishes/finance'
+import {
   deanosKitchenDemoIngredientLinks,
-  deanosKitchenDemoIngredients,
   deanosKitchenDemoSupplierIngredientLinks,
+  miseboxRestaurantKitchenDemoIngredientLinks,
+  miseboxRestaurantKitchenDemoSupplierIngredientLinks,
+  pizzaTheActionKitchenDemoIngredientLinks,
+  pizzaTheActionKitchenDemoSupplierIngredientLinks,
 } from './operations/Ingredients'
 import {
   deanosKitchenDemoMiseTasks,
@@ -210,8 +217,8 @@ const scenario = (input: {
   menu: KitchenDemoMenu
   additionalMenus?: KitchenDemoMenu[]
   dishSpecs?: KitchenDemoDishSpec[]
+  dishFinance?: KitchenDemoDishFinance[]
   finance?: KitchenDemoFinance
-  ingredients?: KitchenDemoScenario['ingredients']
   kitchenIngredients?: KitchenDemoScenario['kitchenIngredients']
   menuItemComponentDeltas?: KitchenDemoMenuItemComponentDelta[]
   miseRequirements?: KitchenDemoMiseRequirement[]
@@ -223,10 +230,10 @@ const scenario = (input: {
   miseTasks: KitchenDemoScenario['miseTasks']
 }): KitchenDemoScenario => {
   const menus = [input.menu, ...(input.additionalMenus ?? [])]
-  const ingredients = [...(input.ingredients ?? [])]
   const kitchenIngredients = [...(input.kitchenIngredients ?? [])]
   const supplierIngredientLinks = [...(input.supplierIngredientLinks ?? [])]
   const dishSpecs = [...(input.dishSpecs ?? [])]
+  const dishFinance = [...(input.dishFinance ?? [])]
   const finance = input.finance ?? null
   const menuItemComponentDeltas = [
     ...(input.menuItemComponentDeltas ?? []),
@@ -238,20 +245,15 @@ const scenario = (input: {
       .flatMap(menu => menu.dishes)
       .map(dish => [dish.id, dish])
   )
-  const ingredientIds = new Set(ingredients.map(ingredient => ingredient.id))
-  const kitchenIngredientIds = new Set(
+  const ingredientIds = new Set(
     kitchenIngredients.map(ingredient => ingredient.ingredient_id)
   )
   const hasDuplicateIngredients =
-    ingredientIds.size !== ingredients.length ||
-    kitchenIngredientIds.size !== kitchenIngredients.length
-  const hasMissingIngredientRoot = kitchenIngredients.some(
-    ingredient => !ingredientIds.has(ingredient.ingredient_id)
-  )
+    ingredientIds.size !== kitchenIngredients.length
   const hasInvalidSupplierLink = supplierIngredientLinks.some(
     link =>
       link.kitchen_id !== input.identity.kitchenId ||
-      !kitchenIngredientIds.has(link.ingredient_id) ||
+      !ingredientIds.has(link.ingredient_id) ||
       !link.supplier_id
   )
   const hasInvalidRecipeLine = recipes.some(recipe =>
@@ -266,6 +268,8 @@ const scenario = (input: {
   )
   const prepItemIds = new Set(prepItems.map(prepItem => prepItem.id))
   const recipeIds = new Set(recipes.map(recipe => recipe.id))
+  const menuIds = new Set(menus.map(menu => menu.kitchenMenu.id))
+  const stationIds = new Set(input.stations.map(station => station.id))
   const dishSpecDishIds = dishSpecs.map(spec => spec.dishId)
   const hasDuplicateProductionIds =
     prepItemIds.size !== prepItems.length
@@ -349,6 +353,23 @@ const scenario = (input: {
       dishSpecs.length !== dishes.size
       || [...dishes.keys()].some(dishId => !dishSpecDishIds.includes(dishId))
     )
+  const dishFinanceDishIds = dishFinance.map(entry => entry.dishId)
+  const hasInvalidDishFinance =
+    new Set(dishFinanceDishIds).size !== dishFinanceDishIds.length
+    || dishFinance.some(entry =>
+      !dishes.has(entry.dishId)
+      || !Number.isSafeInteger(entry.quantitySold)
+      || entry.quantitySold <= 0
+    )
+    || (
+      dishFinance.length > 0
+      && (
+        dishFinance.length !== dishes.size
+        || [...dishes.keys()].some(
+          dishId => !dishFinanceDishIds.includes(dishId)
+        )
+      )
+    )
   const hasInvalidFinance = finance
     ? Object.values(finance.grossSales).some(summary =>
         !/^[A-Z]{3}$/.test(summary.currencyCode)
@@ -371,10 +392,30 @@ const scenario = (input: {
         : !recipeIds.has(requirement.source.recipeId)
     }
   )
+  const hasInvalidStation =
+    stationIds.size !== input.stations.length
+    || input.stations.some(station =>
+      station.kitchen_id !== input.identity.kitchenId
+      || !station.id
+      || !station.name
+    )
+  const hasInvalidOrder = input.orders.some(order =>
+    order.kitchen_id !== input.identity.kitchenId
+    || !menuIds.has(order.menu_id)
+    || !order.items.length
+    || order.items.some(item => !dishes.has(item.dish_id))
+  )
+  const hasInvalidMiseTask = input.miseTasks.some(task =>
+    task.kitchen_id !== input.identity.kitchenId
+    || !menuIds.has(task.menu_id)
+    || !stationIds.has(task.station)
+    || task.ingredient_ids.some(id => !ingredientIds.has(id))
+    || task.mise_ids.some(id => !prepItemIds.has(id))
+    || Boolean(task.recipe_id && !recipeIds.has(task.recipe_id))
+  )
 
   if (
     hasDuplicateIngredients ||
-    hasMissingIngredientRoot ||
     hasInvalidSupplierLink ||
     hasInvalidRecipeLine ||
     hasDuplicateProductionIds ||
@@ -382,8 +423,12 @@ const scenario = (input: {
     hasInvalidDishSpec ||
     hasInvalidMenuItemDelta ||
     hasIncompleteDishSpecs ||
+    hasInvalidDishFinance ||
     hasInvalidFinance ||
-    hasInvalidMiseRequirement
+    hasInvalidMiseRequirement ||
+    hasInvalidStation ||
+    hasInvalidOrder ||
+    hasInvalidMiseTask
   ) {
     throw new Error(
       `Kitchen Demo production relationships are invalid for ${input.identity.kitchenId}.`
@@ -395,13 +440,13 @@ const scenario = (input: {
     kitchen: input.kitchen,
     place: input.place,
     menus,
-    ingredients,
     kitchenIngredients,
     supplierIngredientLinks,
     rootMenu: input.menu.rootMenu,
     kitchenMenu: input.menu.kitchenMenu,
     dishes: [...dishes.values()],
     dishSpecs,
+    dishFinance,
     finance,
     menuItemComponentDeltas,
     menuSections: input.menu.menuSections,
@@ -506,12 +551,12 @@ export const deanosKitchenDemoScenario = scenario({
     deanosXmasDemoMenu,
   ],
   dishSpecs: deanosKitchenDemoSpecs,
+  dishFinance: deanosKitchenDemoDishFinance,
   finance: deanosKitchenDemoFinance,
-  ingredients: deanosKitchenDemoIngredients,
   kitchenIngredients: deanosKitchenDemoIngredientLinks,
   menuItemComponentDeltas: deanosKitchenDemoMenuItemComponentDeltas,
   miseRequirements: deanosKitchenDemoMise,
-  orders: [],
+  orders: deanosKitchenDemoOrders,
   prepItems: deanosKitchenDemoPrepItems,
   recipes: deanosKitchenDemoRecipes,
   stations: deanosKitchenDemoStations,
@@ -572,8 +617,10 @@ export const pizzaTheActionKitchenDemoScenario = scenario({
     palette: pizzaTheActionPalette,
   }),
   menu: pizzaTheActionKitchenDemoMenu,
+  kitchenIngredients: pizzaTheActionKitchenDemoIngredientLinks,
   orders: pizzaTheActionKitchenDemoOrders,
   stations: pizzaTheActionKitchenDemoStations,
+  supplierIngredientLinks: pizzaTheActionKitchenDemoSupplierIngredientLinks,
   miseTasks: pizzaTheActionKitchenDemoMiseTasks,
 })
 
@@ -626,8 +673,11 @@ export const miseboxRestaurantKitchenDemoScenario = scenario({
     palette: miseboxRestaurantPalette,
   }),
   menu: miseboxRestaurantKitchenDemoMenu,
+  kitchenIngredients: miseboxRestaurantKitchenDemoIngredientLinks,
   orders: miseboxRestaurantKitchenDemoOrders,
   stations: miseboxRestaurantKitchenDemoStations,
+  supplierIngredientLinks:
+    miseboxRestaurantKitchenDemoSupplierIngredientLinks,
   miseTasks: miseboxRestaurantKitchenDemoMiseTasks,
 })
 
@@ -648,9 +698,18 @@ export const kitchenDemoScenarios: KitchenDemoScenario[] = [
 export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
   {
     kitchenId: miseboxRestaurantKitchenDemoIdentity.kitchenId,
-    maturity: 'presentation',
-    operationCoverage: [],
-    presentation: ['menu', 'kiosk'],
+    maturity: 'operational',
+    operationCoverage: [
+      'dishes',
+      'ingredients',
+      'menus',
+      'mise',
+      'orders',
+      'stations',
+      'suppliers',
+      'tables',
+    ],
+    presentation: ['menu', 'kiosk', 'service'],
   },
   {
     kitchenId: deanosKitchenDemoIdentity.kitchenId,
@@ -670,9 +729,18 @@ export const kitchenDemoScenarioDescriptors: KitchenDemoScenarioDescriptor[] = [
   },
   {
     kitchenId: pizzaTheActionKitchenDemoIdentity.kitchenId,
-    maturity: 'presentation',
-    operationCoverage: [],
-    presentation: ['menu', 'kiosk'],
+    maturity: 'operational',
+    operationCoverage: [
+      'dishes',
+      'ingredients',
+      'menus',
+      'mise',
+      'orders',
+      'stations',
+      'suppliers',
+      'tables',
+    ],
+    presentation: ['menu', 'kiosk', 'service'],
   },
 ]
 
@@ -685,6 +753,42 @@ if (
   || scenarioIds.some((value, index) => value !== descriptorIds[index])
 ) {
   throw new Error('Every Kitchen Demo scenario requires one maturity descriptor.')
+}
+
+const miseboxDemoSupplierIds = [
+  'alpine-foodservice',
+  'bern-market-garden',
+  'pantry-house',
+]
+const sameStringSet = (left: string[], right: string[]) => {
+  const normalizedLeft = [...new Set(left)].sort()
+  const normalizedRight = [...new Set(right)].sort()
+  return (
+    normalizedLeft.length === normalizedRight.length
+    && normalizedLeft.every((value, index) => value === normalizedRight[index])
+  )
+}
+
+if (
+  kitchenDemoScenarios.length !== 3
+  || kitchenDemoScenarios.some(scenario =>
+    !scenario.menus.length
+    || !scenario.dishes.length
+    || !scenario.kitchenIngredients.length
+    || !scenario.supplierIngredientLinks.length
+    || !scenario.orders.length
+    || !scenario.stations.length
+    || !scenario.miseTasks.length
+    || Number(scenario.kitchen.tables.count) <= 0
+    || !sameStringSet(
+      scenario.supplierIngredientLinks.map(link => link.supplier_id),
+      miseboxDemoSupplierIds
+    )
+  )
+) {
+  throw new Error(
+    'The Misebox Demo World requires exactly three operational Kitchens connected to the same three Suppliers.'
+  )
 }
 
 export type { KitchenDemoScenario } from './core/types'

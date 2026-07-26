@@ -2,7 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import type { Ref } from 'vue'
-import { computed, unref } from 'vue'
+import { computed, toValue, unref, type MaybeRefOrGetter } from 'vue'
 import { DishStorage, normalizeDish, type Dish } from '../../../../../models/kitchen/dish.model'
 import { resolveKitchenChildCollectionBasePath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 
@@ -12,6 +12,13 @@ const resolveDishesPath = (kitchenCollectionPath: string, kitchenId: string) =>
 type UseKitchenDishCollectionOptions = {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
+  recordProvider?: {
+    active: MaybeRefOrGetter<boolean>
+    records: MaybeRefOrGetter<readonly unknown[] | undefined>
+    pending: MaybeRefOrGetter<boolean>
+    error: MaybeRefOrGetter<unknown | undefined>
+    collectionPath: MaybeRefOrGetter<string>
+  }
 }
 
 export function useKitchenDishCollection(
@@ -38,18 +45,42 @@ export function useKitchenDishCollection(
       ? resolveDishesPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
+  const usesRecordProvider = computed(() =>
+    Boolean(options.recordProvider && toValue(options.recordProvider.active))
+  )
+  const remoteCollectionPath = computed(() =>
+    usesRecordProvider.value ? '' : collectionPath.value
+  )
   const collectionRef = firestoreFetchCollection<Record<string, unknown>>(
-    collectionPath
+    remoteCollectionPath
+  )
+  const resolvedCollectionPath = computed(() =>
+    usesRecordProvider.value
+      ? String(toValue(options.recordProvider?.collectionPath) || '').trim()
+      : collectionPath.value
+  )
+  const rawRecords = computed<readonly unknown[]>(() =>
+    usesRecordProvider.value
+      ? toValue(options.recordProvider?.records) ?? []
+      : collectionRef.value ?? []
   )
 
   const dishes = computed<Dish[]>(() =>
-    (collectionRef.value ?? []).map((entry) => normalizeDish(entry))
+    rawRecords.value.map(entry => normalizeDish(entry))
   )
   const count = computed(() => dishes.value.length)
-  const pending = computed(() => collectionRef.pending.value)
-  const error = computed(() => collectionRef.error.value)
+  const pending = computed(() =>
+    usesRecordProvider.value
+      ? Boolean(toValue(options.recordProvider?.pending))
+      : collectionRef.pending.value
+  )
+  const error = computed(() =>
+    usesRecordProvider.value
+      ? toValue(options.recordProvider?.error)
+      : collectionRef.error.value
+  )
   const { outcome } = useFirestoreCollectionState({
-    active: computed(() => Boolean(collectionPath.value)),
+    active: computed(() => Boolean(resolvedCollectionPath.value)),
     count,
     pending,
     error,
@@ -58,7 +89,7 @@ export function useKitchenDishCollection(
   return {
     kitchenId: resolvedKitchenId,
     kitchenCollectionPath,
-    collectionPath,
+    collectionPath: resolvedCollectionPath,
     dishes,
     count,
     pending,

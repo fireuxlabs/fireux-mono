@@ -76,7 +76,7 @@ export const PLATFORM_DIRECTORY_REMEDIATION_DECISIONS = deepFreeze([
       },
     },
     authoritative_inputs: [
-      'projects/fireux/buenohost/nuxt.config.ts',
+      'projects/buenohost/buenohost-app/nuxt.config.ts',
       APP_ENSURE_CONTRACT_PATH,
     ],
   },

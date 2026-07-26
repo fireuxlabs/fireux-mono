@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-24
+// last_used: 2026-07-26
 // usage_note: validates the authored repository spine after repo-efficiency passes.
 // Concurrent edit — 2026-07-24 — FireUX brand authority: guard Core-owned projections into the parent ecosystem and app.
 // Concurrent edit — 2026-07-22 01:05 CEST — Dish media verification: record the full repository guard run used for this pass.
@@ -51,6 +51,7 @@ import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
 import { run as runProductLanding } from './guards/product-landing.mjs'
 import { run as runFireuxBrandAssets } from './guards/fireux-brand-assets.mjs'
+import { run as runBuenoHostBrandAssets } from './guards/buenohost-brand-assets.mjs'
 import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runRootAppSupportAuthority } from './guards/root-app-support-authority.mjs'
@@ -58,6 +59,7 @@ import { run as runUserAppAccess } from './guards/user-app-access.mjs'
 import { run as runDirectoryReconciliation } from './guards/directory-reconciliation.mjs'
 import { run as runDirectoryPublication } from './guards/directory-publication.mjs'
 import { run as runKitchenPublicProjection } from './guards/kitchen-public-projection.mjs'
+import { run as runIngredientAuthority } from './guards/ingredient-authority.mjs'
 import { run as runBlogAuthority } from './guards/blog-authority.mjs'
 import { run as runSproochliCopy } from './guards/sproochli-copy.mjs'
 import { run as runProjects } from './guards/projects.mjs'
@@ -94,6 +96,7 @@ const guards = [
   { key: 'menu-route-contract', run: runMenuRouteContract },
   { key: 'product-landing', run: runProductLanding },
   { key: 'fireux-brand-assets', run: runFireuxBrandAssets },
+  { key: 'buenohost-brand-assets', run: runBuenoHostBrandAssets },
   { key: 'entity-matrix', run: runEntityMatrix },
   { key: 'entity-authority', run: runEntityAuthority },
   { key: 'root-app-support-authority', run: runRootAppSupportAuthority },
@@ -101,6 +104,7 @@ const guards = [
   { key: 'directory-reconciliation', run: runDirectoryReconciliation },
   { key: 'directory-publication', run: runDirectoryPublication },
   { key: 'kitchen-public-projection', run: runKitchenPublicProjection },
+  { key: 'ingredient-authority', run: runIngredientAuthority },
   { key: 'blog-authority', run: runBlogAuthority },
   { key: 'sproochli-copy', run: runSproochliCopy },
   { key: 'projects', run: runProjects },

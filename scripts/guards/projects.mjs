@@ -1,6 +1,6 @@
 // @fireux-script
-// last_used: 2026-07-21
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-07-26
+// usage_note: guard project App shape and Core-owned PWA manifest authority.
 // Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify the replacement project app shapes.
 // FILE: scripts/guards/projects.mjs
 // FireUX Projects (Apps) Guard
@@ -11,7 +11,9 @@
 // MUST NOT be run directly.
 
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
+import assert from 'node:assert/strict'
 import path from 'node:path'
+import { withBuildVersion } from '../../packages/core/fireux-core/src/runtime/utils/buildVersionUrl.ts'
 import {
   inspectLevelOne,
   LOCAL_GENERATED_NOISE_NAMES,
@@ -108,6 +110,8 @@ export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const projectsRoot = path.join(repoRoot, 'projects')
 
+  assertCorePwaCacheVersioning(repoRoot)
+
   if (!existsSync(projectsRoot)) {
     console.warn('[guard] ⚠️  /projects not found, skipping projects guard')
     return
@@ -149,6 +153,9 @@ export async function run(ctx) {
 
       const authViolation = checkProjectAuthSpine(appPath)
       if (authViolation) violations.push(authViolation)
+
+      const manifestViolation = checkProjectManifestAuthority(appPath)
+      if (manifestViolation) violations.push(manifestViolation)
     }
   }
 
@@ -157,6 +164,93 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ project apps valid')
+}
+
+export function assertCorePwaCacheVersioning(repoRoot) {
+  assert.equal(
+    withBuildVersion('/manifest.webmanifest', ''),
+    '/manifest.webmanifest'
+  )
+  assert.equal(
+    withBuildVersion('/manifest.webmanifest', 'build /?#'),
+    '/manifest.webmanifest?v=build%20%2F%3F%23'
+  )
+  assert.equal(
+    withBuildVersion('/img/icon.png?variant=maskable', 'build 2'),
+    '/img/icon.png?variant=maskable&v=build%202'
+  )
+  assert.equal(
+    withBuildVersion('/img/icon.png?variant=maskable#preview', 'build 2'),
+    '/img/icon.png?variant=maskable&v=build%202#preview'
+  )
+
+  const shell = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/components/App/Shell.vue'
+    ),
+    'utf8'
+  )
+  const manifestRoute = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/server/manifest.webmanifest.get.ts'
+    ),
+    'utf8'
+  )
+  const pwaConfig = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/config/app/pwa.ts'
+    ),
+    'utf8'
+  )
+  const coreModule = readFileSync(
+    path.join(repoRoot, 'packages/core/fireux-core/src/module.ts'),
+    'utf8'
+  )
+
+  assert.match(shell, /withBuildVersion\(\s*'\/manifest\.webmanifest'/)
+  assert.match(shell, /runtimeConfig\.app\?\.buildId/)
+  assert.match(manifestRoute, /id:\s*'\/'/)
+  assert.match(
+    manifestRoute,
+    /withBuildVersion\(brandAssets\.pwaIcon192,\s*buildId\)/
+  )
+  assert.match(
+    manifestRoute,
+    /withBuildVersion\(brandAssets\.pwaIcon512,\s*buildId\)/
+  )
+  assert.doesNotMatch(
+    pwaConfig,
+    /\{\s*rel:\s*'manifest'/,
+    'Core PWA config must not emit a second unversioned manifest link.'
+  )
+  assert.match(
+    pwaConfig,
+    /manifest:\s*false/,
+    'Vite PWA manifest generation must remain disabled in favor of the Core server route.'
+  )
+  assert.match(
+    coreModule,
+    /route:\s*['"]\/manifest\.webmanifest['"][\s\S]*?handler:\s*resolver\.resolve\(['"]\.\/runtime\/server\/manifest\.webmanifest\.get['"]\)/,
+    'Core must explicitly register the authoritative PWA manifest server route.'
+  )
+}
+
+function checkProjectManifestAuthority(appPath) {
+  const localManifest = path.join(appPath, 'public', 'manifest.webmanifest')
+  if (!existsSync(localManifest)) return null
+
+  return [
+    '[guard] ❌ project-local PWA manifest detected:',
+    `  - ${localManifest}`,
+    '',
+    '[guard] Fix:',
+    '- Use the FireUX Core manifest.webmanifest server route.',
+    '- Keep manifest identity and build-versioned asset URLs Core-owned.',
+    '- Configure shared App identity/assets instead of adding a static manifest.',
+  ].join('\n')
 }
 
 function checkProjectAuthSpine(appPath) {

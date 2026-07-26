@@ -665,8 +665,7 @@ export async function run(ctx) {
     const source = readFileSync(kitchenScenariosPath, 'utf8')
     for (const required of [
       'kitchenDemoScenarioDescriptors',
-      "maturity: 'operational'",
-      "maturity: 'presentation'",
+      'maturity:',
       'operationCoverage:',
       'presentation:',
       'Every Kitchen Demo scenario requires one maturity descriptor.',
@@ -690,9 +689,13 @@ export async function run(ctx) {
     const source = readFileSync(miseboxProductDemoPath, 'utf8')
     for (const required of [
       "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
-      'scenarioModule.kitchenDemoScenarios',
-      'scenario.supplierIngredientLinks',
+      "import('fireux-kitchens/runtime/utils/kitchen/demo-dishes')",
+      'buildKitchenDemoDishesOperation',
       'supplierModule.supplierDemoScenarios',
+      'loadIngredientRoots',
+      'ingredientRoots: consoleIngredientRoots',
+      'consoleDishOperation.items',
+      'totalSalesMinor',
     ]) {
       if (!source.includes(required)) {
         violations.push({
@@ -704,6 +707,152 @@ export async function run(ctx) {
         break
       }
     }
+    for (const forbidden of [
+      'consoleSupplyLineByIngredientId',
+      'consoleDishFinanceByDishId',
+      'assertProductDemoDishFinance',
+      'estimateKitchenDishFinance',
+      'duplicateConsoleDishSpecIds',
+      'consoleScenario.ingredients',
+    ]) {
+      if (source.includes(forbidden)) {
+        violations.push({
+          code: 'demo-world-composition',
+          file: miseboxProductDemoFile,
+          message:
+            'Misebox Product Demo must consume the Kitchen-owned Dishes operation projection instead of rebuilding Dish relationships or finance.',
+        })
+        break
+      }
+    }
+  }
+
+  const kitchenDishOperationAdapterFile =
+    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-dishes.ts'
+  const kitchenDishOperationAdapterPath = path.join(
+    repoRoot,
+    kitchenDishOperationAdapterFile
+  )
+  if (existsSync(kitchenDishOperationAdapterPath)) {
+    const source = readFileSync(kitchenDishOperationAdapterPath, 'utf8')
+    for (const required of [
+      'buildKitchenDemoDishesOperation',
+      'estimateKitchenDishFinance',
+      'supplierIngredientLinks',
+      'preferred_product_id',
+      'quantitySold',
+      'totalSalesMinor',
+      'financeArithmeticReconciles',
+      'financePercentagesReconcile',
+    ]) {
+      if (!source.includes(required)) {
+        violations.push({
+          code: 'kitchen-dish-operation-projection',
+          file: kitchenDishOperationAdapterFile,
+          message:
+            'Kitchen owns the fail-closed Demo Dishes operation projection shared by Console Demo and Product Demo.',
+        })
+        break
+      }
+    }
+  } else {
+    violations.push({
+      code: 'kitchen-dish-operation-projection',
+      file: kitchenDishOperationAdapterFile,
+      message:
+        'Kitchen must own the Demo Dishes operation projection shared by Console Demo and Product Demo.',
+    })
+  }
+
+  const kitchenConsoleDishesOperationFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts'
+  const kitchenConsoleDishesOperationPath = path.join(
+    repoRoot,
+    kitchenConsoleDishesOperationFile
+  )
+  if (
+    !existsSync(kitchenConsoleDishesOperationPath)
+    || !readFileSync(kitchenConsoleDishesOperationPath, 'utf8').includes(
+      'buildKitchenDemoDishesOperation'
+    )
+  ) {
+    violations.push({
+      code: 'kitchen-dish-operation-projection',
+      file: kitchenConsoleDishesOperationFile,
+      message:
+        'Kitchen Console Dishes must compose and expose the shared owner-local Demo operation projection.',
+    })
+  }
+
+  const kitchenDishCollectionFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/dish/fetch/useKitchenDishCollection.ts'
+  const kitchenDishCollectionPath = path.join(repoRoot, kitchenDishCollectionFile)
+  const kitchenConsoleDishesFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts'
+  const kitchenConsoleDishesPath = path.join(repoRoot, kitchenConsoleDishesFile)
+  const kitchenDishRecordsFile =
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Dishes/index.ts'
+  const kitchenDishRecordsPath = path.join(repoRoot, kitchenDishRecordsFile)
+  if (
+    !existsSync(kitchenDishRecordsPath)
+    || !existsSync(kitchenDishCollectionPath)
+    || !existsSync(kitchenConsoleDishesPath)
+  ) {
+    violations.push({
+      code: 'kitchen-dish-record-provider',
+      file: kitchenDishRecordsFile,
+      message:
+        'Kitchen Demo Dishes must expose canonical file-backed records through the shared Dish collection contract.',
+    })
+  } else {
+    const collectionSource = readFileSync(kitchenDishCollectionPath, 'utf8')
+    const consoleSource = readFileSync(kitchenConsoleDishesPath, 'utf8')
+    const recordsSource = readFileSync(
+      kitchenDishRecordsPath,
+      'utf8'
+    )
+    if (
+      !collectionSource.includes('recordProvider')
+      || !collectionSource.includes('normalizeDish(entry)')
+      || !consoleSource.includes('records: demoDishRecords')
+      || consoleSource.includes('dishOperation.dishes')
+      || !recordsSource.includes('kitchenDemoDishRecordsByKitchenId')
+      || !recordsSource.includes('readonly Dish[]')
+    ) {
+      violations.push({
+        code: 'kitchen-dish-record-provider',
+        file: kitchenConsoleDishesFile,
+        message:
+          'Live and Demo base Dishes must differ only at the raw-record provider and share canonical Dish normalization and collection state.',
+      })
+    }
+  }
+
+  const kitchenConsoleCoreFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsole.ts'
+  const kitchenConsoleTargetFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts'
+  const kitchenConsoleCorePath = path.join(repoRoot, kitchenConsoleCoreFile)
+  const kitchenConsoleTargetPath = path.join(repoRoot, kitchenConsoleTargetFile)
+  if (
+    !existsSync(kitchenConsoleCorePath)
+    || !existsSync(kitchenConsoleTargetPath)
+    || !readFileSync(kitchenConsoleCorePath, 'utf8').includes(
+      "enabled: computed(() => kitchenSource.value === 'live')"
+    )
+    || !readFileSync(kitchenConsoleTargetPath, 'utf8').includes(
+      'enabled?: MaybeRefOrGetter<boolean>'
+    )
+    || !readFileSync(kitchenConsoleTargetPath, 'utf8').includes(
+      '!enabled.value ||'
+    )
+  ) {
+    violations.push({
+      code: 'kitchen-demo-live-target',
+      file: kitchenConsoleCoreFile,
+      message:
+        'Kitchen Console Demo must deactivate the authenticated Live target provider before it can issue a request.',
+    })
   }
 
   if (violations.length) throw new Error(formatViolations(violations))

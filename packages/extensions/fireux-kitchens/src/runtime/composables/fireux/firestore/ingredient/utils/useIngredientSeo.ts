@@ -7,7 +7,7 @@ const clean = (value: unknown) => String(value ?? '').trim()
 export function buildIngredientJsonLd(ingredient: Partial<Ingredient> | null | undefined) {
   const name = clean(ingredient?.name)
   const id = clean(ingredient?.id)
-  if (!name || !id || (ingredient as any)?.visibility !== 'public') return null
+  if (!name || !id || (ingredient as any)?.status !== 'active') return null
 
   return {
     '@context': 'https://schema.org',
@@ -20,11 +20,18 @@ export function buildIngredientJsonLd(ingredient: Partial<Ingredient> | null | u
 export function useIngredientSeo(ingredient: MaybeRefOrGetter<Partial<Ingredient> | null | undefined>) {
   const entry = computed(() => toValue(ingredient))
   const id = computed(() => clean(entry.value?.id))
-  const isPublic = computed(() => Boolean((entry.value as any)?.visibility === 'public' && id.value))
+  const isPublic = computed(() =>
+    Boolean((entry.value as any)?.status === 'active' && id.value)
+  )
 
   return useSeo({
     title: computed(() => clean(entry.value?.name) || 'Ingredient'),
-    description: computed(() => 'Ingredient details.'),
+    description: computed(() => {
+      const category = clean((entry.value as any)?.category)
+      return category
+        ? `${clean(entry.value?.name) || 'Ingredient'} · ${category}`
+        : 'Ingredient details.'
+    }),
     image: computed(() => clean(entry.value?.image_url)),
     path: computed(() =>
       id.value ? `/${IngredientStorage.collection}/${encodeURIComponent(id.value)}` : ''

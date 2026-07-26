@@ -1,6 +1,6 @@
+import { useAsyncData } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
-import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import {
   useCollection,
   useFirestoreResolver,
@@ -11,9 +11,9 @@ import type { Ref } from 'vue'
 import { computed, ref, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
-  IngredientStorage,
-  type Ingredient,
-} from '../../../../../../../models/ingredient.model'
+  type PublicIngredient,
+  type PublicIngredientCollectionResponse,
+} from '../../../../../../../models/ingredient-public.model'
 import {
   KitchenIngredientStorage,
   type KitchenIngredient,
@@ -28,7 +28,7 @@ type UseKitchenIngredientsOptions = {
   enabled?: boolean | Ref<boolean | null | undefined>
 }
 
-export type KitchenIngredientRecord = Partial<Ingredient> & {
+export type KitchenIngredientRecord = Partial<PublicIngredient> & {
   id: string
   ingredient_id: string
   kitchen_ingredient: KitchenIngredient
@@ -39,9 +39,6 @@ export function useKitchenIngredients(
   kitchenId: Ref<string> | string,
   options: UseKitchenIngredientsOptions = {}
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead({
-    databaseId: options.databaseId,
-  })
   const { appId } = useFireUXConfig()
   const isEnabled = computed(() => unref(options.enabled) !== false)
 
@@ -89,13 +86,42 @@ export function useKitchenIngredients(
     ? ref(undefined) as Ref<KitchenIngredient[] | undefined>
     : (kitchenBinding as any).data as Ref<KitchenIngredient[] | undefined>
 
-  const globalCollectionPath = computed(() =>
-    isEnabled.value ? IngredientStorage.collection : ''
+  const linkedIngredientIds = computed(() => [
+    ...new Set(
+      (kitchenItems.value ?? [])
+        .map(entry => String(entry.ingredient_id || entry.id || '').trim())
+        .filter(Boolean)
+    ),
+  ].sort())
+  const linkedIngredientKey = computed(() => linkedIngredientIds.value.join(','))
+  const rootState = useAsyncData<PublicIngredientCollectionResponse>(
+    () =>
+      `kitchen-ingredient-roots-${collectionPath.value || 'empty'}-${linkedIngredientKey.value || 'none'}`,
+    async () => {
+      const ids = linkedIngredientIds.value
+      if (!ids.length) return { items: [] }
+
+      const pages = await Promise.all(
+        Array.from({ length: Math.ceil(ids.length / 100) }, (_, index) => {
+          const chunk = ids.slice(index * 100, (index + 1) * 100)
+          return $fetch<PublicIngredientCollectionResponse>(
+            `/api/ingredients?ids=${encodeURIComponent(chunk.join(','))}`
+          )
+        })
+      )
+      return { items: pages.flatMap(page => page.items) }
+    },
+    {
+      server: false,
+      dedupe: 'defer',
+      watch: [collectionPath, linkedIngredientKey],
+    }
   )
-  const globalIngredients = firestoreFetchCollection<Ingredient>(globalCollectionPath)
+  const globalIngredients = computed(() => rootState.data.value?.items)
+  const rootIngredientsError = computed(() => rootState.error.value ?? null)
 
   const ingredientById = computed(() => {
-    const map = new Map<string, Ingredient>()
+    const map = new Map<string, PublicIngredient>()
     for (const ingredient of globalIngredients.value ?? []) {
       const id = String(ingredient.id || '').trim()
       if (!id) continue
@@ -106,6 +132,9 @@ export function useKitchenIngredients(
 
   const ingredients = computed<KitchenIngredientRecord[]>(() => {
     const kitchenEntries = kitchenItems.value ?? []
+    const hydrationUnavailable = Boolean(
+      rootIngredientsError.value || rootState.pending.value
+    )
 
     return kitchenEntries.map((entry) => {
       const linkId = String((entry as any).ingredient_id || entry.id || '').trim()
@@ -120,11 +149,11 @@ export function useKitchenIngredients(
         return {
           id: linkId,
           ingredient_id: linkId,
-          name: 'Missing ingredient',
+          name: hydrationUnavailable ? '' : 'Missing ingredient',
           slug: '',
           image_url: '',
           kitchen_ingredient: usage,
-          missing_root_ingredient: true,
+          missing_root_ingredient: !hydrationUnavailable,
         }
       }
 
@@ -144,7 +173,7 @@ export function useKitchenIngredients(
 
     return (
       kitchenItems.value === undefined ||
-      globalIngredients.value === undefined
+      (linkedIngredientIds.value.length > 0 && rootState.pending.value)
     )
   })
   const { byId: ingredient } = useCollectionById(ingredients)
@@ -157,5 +186,6 @@ export function useKitchenIngredients(
     ingredient,
     count,
     pending,
+    error: rootIngredientsError,
   }
 }

@@ -73,7 +73,7 @@ export const DIRECTORY_PUBLICATION_INFRASTRUCTURE = Object.freeze([
   infrastructure({
     id: 'buenohost',
     firebaseProjectId: 'buenohost-ecosystem',
-    appWorkspace: 'projects/fireux/buenohost',
+    appWorkspace: 'projects/buenohost/buenohost-app',
     location: 'eur3',
     databases: [DIRECTORY_PUBLICATION_DATABASES.ownerOutbox],
   }),

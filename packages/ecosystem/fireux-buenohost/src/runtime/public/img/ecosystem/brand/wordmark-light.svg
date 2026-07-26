@@ -1,0 +1,28 @@
+<svg width="860" height="192" viewBox="0 0 860 192" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title" data-wordmark-surface="light">
+  <title id="title">BuenoHost wordmark for light surfaces</title>
+  <defs>
+    <mask id="house-light">
+      <rect width="512" height="512" fill="black"/>
+      <path d="M85 226L229 93C244 79 268 79 283 93L427 226C452 249 436 290 402 290H397V414C397 433 382 448 363 448H149C130 448 115 433 115 414V290H110C76 290 60 249 85 226Z" fill="white"/>
+      <path d="M202 448V332C202 302 226 278 256 278C286 278 310 302 310 332V448H202Z" fill="black"/>
+    </mask>
+  </defs>
+  <g transform="translate(12 20) scale(.296875)">
+    <g mask="url(#house-light)">
+      <rect width="256" height="512" fill="#102A38"/>
+      <rect x="256" width="256" height="512" fill="#5EA9B8"/>
+    </g>
+    <path d="M225 448V358C225 341 239 327 256 327C273 327 287 341 287 358V448H225Z" fill="#F27A52"/>
+  </g>
+  <g fill="none" stroke="#102A38" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M190 144V50H222C241 50 252 60 252 75C252 90 241 99 222 99H190M222 99C244 99 258 107 258 122C258 136 246 144 222 144H190"/>
+    <path d="M280 82V119C280 135 289 144 304 144C319 144 328 135 328 119V82"/>
+    <path d="M396 125C390 138 379 144 365 144C345 144 334 131 334 113C334 94 346 80 365 80C383 80 394 91 396 108H336"/>
+    <path d="M421 144V82M421 109C424 91 434 80 449 80C464 80 472 90 472 108V144"/>
+    <ellipse cx="512" cy="112" rx="25" ry="32"/>
+    <path d="M571 50V144M628 50V144M571 99H628"/>
+    <ellipse cx="668" cy="112" rx="25" ry="32"/>
+    <path d="M770 89C763 82 754 79 744 80C731 81 724 88 726 97C728 106 738 109 749 112C763 116 771 121 771 132C771 141 762 146 749 146C738 146 729 143 722 137"/>
+    <path d="M807 57V128C807 139 814 145 824 145M792 83H824"/>
+  </g>
+</svg>

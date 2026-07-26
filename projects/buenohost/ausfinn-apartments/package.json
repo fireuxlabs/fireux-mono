@@ -1,0 +1,35 @@
+{
+  "name": "ausfinn-apartments",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev --port 3029",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview",
+    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
+    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project buenohost-ecosystem --config firebase.json",
+    "deploy": "pnpm generate && pnpm dlx firebase-tools@15.8.0 deploy --project buenohost-ecosystem --config firebase.json --only hosting --non-interactive",
+    "deploy:hosting": "pnpm deploy",
+    "check:env": "node ../../../scripts/check-env.mjs",
+    "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
+    "clean": "rimraf .nuxt app/.nuxt .output dist"
+  },
+  "dependencies": {
+    "@nuxt/icon": "2.x",
+    "@nuxt/ui": "^4.0.0-alpha.2",
+    "firebase-functions": "^6.3.2",
+    "fireux-core": "workspace:*",
+    "fireux-buenohost": "workspace:*",
+    "fireux-properties": "workspace:*",
+    "fireux-reservations": "workspace:*",
+    "nuxt": "4.4.6",
+    "vue": "3.5.20",
+    "vue-router": "4.5.1"
+  },
+  "devDependencies": {
+    "@iconify-json/lucide": "^1.2.62",
+    "@vite-pwa/nuxt": "^1.0.4",
+    "rimraf": "^6.0.1"
+  }
+}

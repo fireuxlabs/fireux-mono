@@ -1,6 +1,6 @@
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use shared public-directory chrome and truthful projected outcomes. -->
 <template>
-  <section class="collection-directory job-directory">
+  <section id="open-jobs" class="collection-directory job-directory">
     <CollectionDirectoryHeader :title="title" :description="description">
       <template #controls>
         <UInput
@@ -94,7 +94,22 @@
           : hasMore
             ? 'Continue through the bounded directory to check the remaining listings.'
             : 'Published opportunities will appear here when employers make them public.'"
-      />
+      >
+        <template v-if="!query && !hasMore" #actions>
+          <UButton
+            to="/jobs/manage"
+            label="Post the first job"
+            icon="i-lucide-circle-plus"
+          />
+          <UButton
+            to="/jobs/learn-more"
+            label="See how it works"
+            icon="i-lucide-arrow-right"
+            color="neutral"
+            variant="soft"
+          />
+        </template>
+      </CollectionDirectoryState>
 
       <div v-if="hasMore && !query">
         <UButton
@@ -150,8 +165,8 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
   }>(),
   {
-    title: 'Jobs',
-    description: 'Choose a published job to review the role, employer, and location.',
+    title: 'Open opportunities',
+    description: 'Explore roles, meet the employer, and understand the work before you apply.',
     link: true,
     searchPlaceholder: 'Search jobs…',
     showSearch: true,

@@ -9,7 +9,7 @@
       </div>
     </template>
 
-    <UFormField label="Image">
+    <UFormField label="Image" required>
       <div class="flex flex-col items-center gap-2">
         <MoleculesFormsFirestoreImagePicker
           :src="form.image_url || ''"
@@ -37,7 +37,7 @@
       <UButton
         color="primary"
         :loading="submitting || imageUploading"
-        :disabled="imageUploading"
+        :disabled="imageUploading || !form.image_url"
         @click="handleCreate"
       >
         Add ingredient
@@ -161,17 +161,26 @@ const handleImageUpload = async (file: File) => {
 
 const handleCreate = async () => {
   if (submitting.value || imageUploading.value) return
+  if (!form.value.image_url) {
+    toast.error('Add an ingredient image before creating the root')
+    return
+  }
   submitting.value = true
 
   try {
-    const result = await createIngredient(form.value)
-    if (result.failedLanguages.length) {
-      toast.warn(
-        `Ingredient added, but translation failed for ${result.failedLanguages.join(', ')}`
-      )
-    } else {
-      toast.success('Ingredient added')
-    }
+    const result = await createIngredient({
+      name: form.value.name,
+      aliases: form.value.aliases
+        .split(',')
+        .map((alias: string) => alias.trim())
+        .filter(Boolean),
+      category: form.value.category,
+      kind: form.value.kind,
+      parent_ingredient_id: form.value.parent_ingredient_id || undefined,
+      status: 'active',
+      image_url: form.value.image_url,
+    })
+    toast.success('Ingredient added')
     clearDraft()
     emit('created', result.id)
   } catch (error: any) {

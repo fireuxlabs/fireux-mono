@@ -7,16 +7,31 @@
           <p>{{ description }}</p>
         </div>
 
-        <div
-          class="collection-manager__controls"
-        >
-          <div class="ml-auto flex items-center gap-2">
+        <div class="collection-manager__controls">
+          <div
+            class="ml-auto flex w-full flex-wrap items-center justify-end gap-2"
+          >
+            <USelect
+              v-model="category"
+              size="xs"
+              :items="categoryOptions"
+              aria-label="Filter Ingredient category"
+              class="min-w-36 shrink-0"
+            />
+            <USelect
+              v-model="kind"
+              size="xs"
+              :items="kindOptions"
+              aria-label="Filter Ingredient kind"
+              class="min-w-36 shrink-0"
+            />
             <UInput
               v-if="showSearchInput"
               v-model="query"
               size="xs"
               :placeholder="searchPlaceholder"
               :aria-label="searchPlaceholder"
+              class="min-w-36 shrink-0"
             />
             <UButton
               v-if="showVariantToggle"
@@ -62,7 +77,12 @@
       :variant="variant"
     >
       <template #pill="{ card }">
-        <IngredientCardsPill v-bind="card" :link="linkEnabled" />
+        <IngredientCardsPill
+          v-bind="card"
+          :link="linkEnabled"
+          :show-subtitle="false"
+          :show-badges="false"
+        />
       </template>
       <template #cell="{ card }">
         <IngredientCardsCell v-bind="card" :link="linkEnabled" />
@@ -74,11 +94,19 @@
       entity="ingredients"
       state="empty"
       surface="bare"
-      :title="query ? 'No ingredients match your search' : 'No ingredients yet'"
+      :title="
+        query
+          ? 'No ingredients match your search'
+          : hasActiveFilters
+            ? 'No ingredients match your filters'
+            : 'No ingredients yet'
+      "
       :description="
         query
           ? 'Try a different search term.'
-          : 'Once ingredients are added, they will display here.'
+          : hasActiveFilters
+            ? 'Try a different category or kind.'
+            : 'Once ingredients are added, they will display here.'
       "
     />
 
@@ -102,12 +130,16 @@ import { useCollectionRouteContext } from 'fireux-core/runtime/composables/share
 import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useIngredientCollection } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientCollection'
 import {
   useIngredientInterface,
   type IngredientInterfaceItem,
 } from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import {
+  INGREDIENT_CATEGORY_OPTIONS,
+  INGREDIENT_KIND_OPTIONS,
+} from '../../../models/ingredient-taxonomy'
 
 const props = withDefaults(
   defineProps<{
@@ -127,6 +159,7 @@ const props = withDefaults(
     collectionKey?: string
     baseRoute?: string
     resolveTo?: (id: string) => string
+    includeInactive?: boolean
   }>(),
   {
     title: 'Ingredients',
@@ -138,6 +171,7 @@ const props = withDefaults(
     showCount: true,
     initialVariant: 'pill',
     collectionKey: 'ingredients',
+    includeInactive: false,
   }
 )
 
@@ -153,8 +187,32 @@ const makePill = (ingredient: IngredientInterfaceItem) =>
 const makeCell = (ingredient: IngredientInterfaceItem) =>
   withIngredientRoute(makeIngredientCell(ingredient))
 
-const fetched = useIngredientCollection()
-const collection = computed<IngredientInterfaceItem[]>(() => fetched.ingredients.value ?? [])
+const fetched = useIngredientCollection({
+  includeInactive: props.includeInactive,
+})
+const collection = computed<IngredientInterfaceItem[]>(
+  () => fetched.ingredients.value ?? []
+)
+const category = ref('all')
+const categoryOptions = [
+  { label: 'All categories', value: 'all' },
+  ...INGREDIENT_CATEGORY_OPTIONS,
+]
+const kind = ref('all')
+const kindOptions = [
+  { label: 'All kinds', value: 'all' },
+  ...INGREDIENT_KIND_OPTIONS,
+]
+const filteredCollection = computed(() =>
+  collection.value.filter(
+    (ingredient) =>
+      (category.value === 'all' || ingredient.category === category.value) &&
+      (kind.value === 'all' || ingredient.kind === kind.value)
+  )
+)
+const hasActiveFilters = computed(
+  () => category.value !== 'all' || kind.value !== 'all'
+)
 const outcome = computed(() => fetched.outcome.value)
 const { resolveTo } = useCollectionRouteContext({
   collectionKey: computed(() => props.collectionKey),
@@ -176,9 +234,7 @@ const {
   devJsonData: augmentedDevJsonData,
   loadDevJson,
   unloadDevJson,
-} = useDevCollectionJson(
-  sourceDevJsonCollection
-)
+} = useDevCollectionJson(sourceDevJsonCollection)
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
   String(props.searchPlaceholder || 'Search ingredients...')
@@ -196,8 +252,19 @@ const { query, variant, toggleVariant, visibleItems, visibleCount } =
     IngredientInterfaceItem,
     NonNullable<ReturnType<typeof makeCard>>
   >({
-    items: collection,
+    items: filteredCollection,
     makeCard,
+    searchText: (ingredient) =>
+      [
+        ingredient.id,
+        ingredient.name,
+        ...(Array.isArray(ingredient.aliases) ? ingredient.aliases : []),
+        ingredient.category,
+        ingredient.kind,
+        ingredient.status,
+      ]
+        .join(' ')
+        .toLocaleLowerCase(),
     initialVariant: props.initialVariant,
   })
 
@@ -210,7 +277,7 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 })
 
 const countLabel = computed(() =>
-  showSearchInput.value && query.value
+  (showSearchInput.value && query.value) || hasActiveFilters.value
     ? `${visibleCount.value} / ${totalCount.value}`
     : `${totalCount.value}`
 )

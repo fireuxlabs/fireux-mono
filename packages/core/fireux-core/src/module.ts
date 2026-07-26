@@ -72,6 +72,11 @@ export default defineNuxtModule({
       handler: resolver.resolve('./runtime/server/sitemaps/[entity]-[page].xml.get'),
     })
     addServerHandler({
+      route: '/manifest.webmanifest',
+      method: 'get',
+      handler: resolver.resolve('./runtime/server/manifest.webmanifest.get'),
+    })
+    addServerHandler({
       route: '/api/public/users',
       handler: resolver.resolve('./runtime/server/api/public/users.get'),
     })

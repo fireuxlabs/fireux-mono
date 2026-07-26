@@ -5,6 +5,10 @@ export type SupplierIngredientInterfaceItem = Partial<SupplierIngredient> & {
   id: string
   ingredient_id: string
   label?: string
+  image_url?: string
+  category?: string
+  root_status?: string
+  missing_root_ingredient?: boolean
   path?: string
 }
 
@@ -16,19 +20,16 @@ export namespace SupplierIngredientItemCard {
     subtitle: string
     ingredientId: string
     path: string
+    imageUrl: string
+    status: string
+    warning: string
   }
 }
-
-const titleFromId = (value: string) =>
-  value
-    .split('-')
-    .map((part) => part ? `${part[0]?.toUpperCase()}${part.slice(1)}` : '')
-    .join(' ')
 
 export function useSupplierIngredientInterface() {
   function map(item: SupplierIngredientInterfaceItem): SupplierIngredientItemCard.Card {
     const ingredientId = safeString(item.ingredient_id || item.id).trim()
-    const title = safeString(item.label).trim() || titleFromId(ingredientId)
+    const title = safeString(item.label).trim()
     const path = safeString(item.path).trim()
 
     return {
@@ -38,6 +39,9 @@ export function useSupplierIngredientInterface() {
       subtitle: ingredientId,
       ingredientId,
       path,
+      imageUrl: safeString(item.image_url).trim(),
+      status: safeString(item.root_status || item.status).trim(),
+      warning: item.missing_root_ingredient ? 'Missing root Ingredient' : '',
     }
   }
 
