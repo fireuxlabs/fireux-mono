@@ -142,7 +142,7 @@ const breadcrumbItems = [
   );
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tighter);
-  line-height: var(--leading-none);
+  line-height: 1;
   margin: calc(var(--spacing) * 3) 0 0;
   text-wrap: balance;
 }

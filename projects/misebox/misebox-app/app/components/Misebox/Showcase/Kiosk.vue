@@ -333,7 +333,7 @@ function openPortraitPreview() {
 .showcase-kiosk__popup-switcher-label {
   padding-inline-start: calc(var(--spacing) * 1.5);
   color: #475569;
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -375,7 +375,7 @@ function openPortraitPreview() {
 .showcase-kiosk__preview-status small {
   overflow: hidden;
   color: var(--ui-text-dimmed);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -411,7 +411,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk__kitchen-picker-label {
   color: var(--ui-text-muted);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-bold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -463,8 +463,8 @@ function openPortraitPreview() {
 }
 
 .showcase-kiosk--refined .showcase-kiosk__canvas {
-  --menu-radius: 2.25rem;
-  --menu-radius-control: 1.65rem;
+  --menu-radius: calc(var(--ui-radius) * 6);
+  --menu-radius-control: calc(var(--ui-radius) * 6);
 }
 
 .showcase-kiosk--refined .showcase-kiosk__kitchen-options :deep(button[aria-pressed='true']) {
@@ -481,29 +481,29 @@ function openPortraitPreview() {
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-start) {
   width: min(100%, 58rem);
-  gap: clamp(3rem, 8vh, 6rem);
+  gap: clamp(calc(var(--spacing) * 12), 8vh, calc(var(--spacing) * 24));
 }
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-start__identity h1) {
-  font-size: clamp(2.25rem, 4vw, 3.75rem);
-  font-weight: 600;
+  font-size: clamp(var(--text-4xl), 4vw, var(--text-6xl));
+  font-weight: var(--font-weight-semibold);
   letter-spacing: -0.035em;
 }
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-start__identity p) {
   font-family: var(--menu-font);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   letter-spacing: 0.24em;
 }
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-start__prompt h2) {
   font-size: clamp(3.1rem, 6.5vw, 5.4rem);
-  font-weight: 600;
-  letter-spacing: -0.025em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
 }
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-start__options) {
-  gap: clamp(1.5rem, 3vw, 2.25rem);
+  gap: clamp(calc(var(--spacing) * 6), 3vw, calc(var(--spacing) * 9));
 }
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-start__option) {
@@ -511,7 +511,7 @@ function openPortraitPreview() {
   justify-items: center;
   min-height: clamp(12rem, 22vh, 15rem);
   border-color: color-mix(in srgb, var(--menu-secondary) 32%, transparent);
-  border-radius: 2.25rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--menu-bg) 93%, var(--menu-secondary));
   text-align: center;
   box-shadow: 0 2rem 5rem color-mix(in srgb, var(--menu-text) 7%, transparent);
@@ -530,7 +530,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-start__option-copy strong) {
   font-family: var(--menu-title-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
 }
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk__toolbar) {
@@ -547,7 +547,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk--refined :deep(.menu-order-kiosk-item) {
   border-color: color-mix(in srgb, var(--menu-secondary) 16%, transparent);
-  border-radius: 1.75rem;
+  border-radius: calc(var(--ui-radius) * 6);
   box-shadow: 0 1.25rem 3.5rem color-mix(in srgb, var(--menu-text) 7%, transparent);
 }
 
@@ -566,8 +566,8 @@ function openPortraitPreview() {
 }
 
 .showcase-kiosk--pizzeria .showcase-kiosk__canvas {
-  --menu-radius: 1.8rem;
-  --menu-radius-control: 1.2rem;
+  --menu-radius: calc(var(--ui-radius) * 6);
+  --menu-radius-control: calc(var(--ui-radius) * 4);
 }
 
 .showcase-kiosk--pizzeria .showcase-kiosk__kitchen-options :deep(button[aria-pressed='true']) {
@@ -587,12 +587,12 @@ function openPortraitPreview() {
 
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-start) {
   width: min(100%, 62rem);
-  gap: clamp(2.75rem, 6vh, 4.75rem);
+  gap: clamp(calc(var(--spacing) * 11), 6vh, calc(var(--spacing) * 19));
 }
 
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-start__identity h1),
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-start__prompt h2) {
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.06em;
 }
 
@@ -614,7 +614,7 @@ function openPortraitPreview() {
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-start__option) {
   min-height: clamp(10rem, 18vh, 13rem);
   border: 2px solid color-mix(in srgb, var(--menu-primary) 18%, transparent);
-  border-radius: 1.8rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--menu-bg) 82%, white);
   box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--menu-primary) 10%, transparent);
 }
@@ -652,7 +652,7 @@ function openPortraitPreview() {
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-catalogue__section) {
   font-family: var(--menu-title-font);
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.025em;
+  letter-spacing: var(--tracking-tight);
   color: color-mix(in srgb, var(--menu-bg) 72%, transparent);
 }
 
@@ -665,13 +665,13 @@ function openPortraitPreview() {
 
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-catalogue__header h2) {
   font-size: clamp(2.6rem, 4.8vw, 4.2rem);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.065em;
 }
 
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-item) {
   border: 2px solid color-mix(in srgb, var(--menu-primary) 14%, transparent);
-  border-radius: 1.65rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--menu-bg) 72%, white);
   box-shadow: 0 1.25rem 3.5rem color-mix(in srgb, var(--menu-primary) 9%, transparent);
 }
@@ -687,7 +687,7 @@ function openPortraitPreview() {
 }
 
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-item h3) {
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.045em;
 }
 
@@ -698,7 +698,7 @@ function openPortraitPreview() {
 }
 
 .showcase-kiosk--pizzeria :deep(.menu-order-kiosk-item__add) {
-  padding: 0.8rem 1rem;
+  padding: 0.8rem calc(var(--spacing) * 4);
   border: 0;
   border-radius: 9999px;
   background: var(--menu-primary);
@@ -715,7 +715,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk--pizzeria :deep(.menu-order-basket-summary) {
   border: 2px solid color-mix(in srgb, var(--menu-secondary) 70%, transparent);
-  border-radius: 1.4rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: var(--menu-primary);
   box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--menu-primary) 22%, transparent);
   color: var(--menu-bg);
@@ -728,8 +728,8 @@ function openPortraitPreview() {
 }
 
 .showcase-kiosk--counter .showcase-kiosk__canvas {
-  --menu-radius: 1.75rem;
-  --menu-radius-control: 1.25rem;
+  --menu-radius: calc(var(--ui-radius) * 6);
+  --menu-radius-control: calc(var(--ui-radius) * 4);
 }
 
 .showcase-kiosk--counter .showcase-kiosk__kitchen-options :deep(button[aria-pressed='true']) {
@@ -748,7 +748,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-start) {
   width: min(100%, 64rem);
-  gap: clamp(2.5rem, 6vh, 4.5rem);
+  gap: clamp(calc(var(--spacing) * 10), 6vh, calc(var(--spacing) * 18));
 }
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-start__identity h1) {
@@ -772,13 +772,13 @@ function openPortraitPreview() {
 }
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-start__options) {
-  gap: clamp(1.75rem, 3vw, 2.75rem);
+  gap: clamp(calc(var(--spacing) * 7), 3vw, calc(var(--spacing) * 11));
 }
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-start__option) {
   min-height: clamp(10rem, 18vh, 13rem);
   border: 1px solid color-mix(in srgb, var(--menu-secondary) 12%, transparent);
-  border-radius: 1.75rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--menu-bg) 84%, white);
   box-shadow: 0 1.75rem 4.5rem color-mix(in srgb, var(--menu-secondary) 10%, transparent);
 }
@@ -793,7 +793,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-start__option-icon) {
   border: 0;
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: var(--menu-primary);
   color: white;
 }
@@ -830,12 +830,12 @@ function openPortraitPreview() {
 .showcase-kiosk--counter :deep(.menu-order-kiosk-catalogue__section) {
   font-family: var(--menu-title-font);
   font-weight: var(--font-weight-bold);
-  letter-spacing: -0.025em;
+  letter-spacing: var(--tracking-tight);
   color: color-mix(in srgb, var(--menu-bg) 68%, transparent);
 }
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-catalogue__section--active) {
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: var(--menu-primary);
   box-shadow: none;
   color: white;
@@ -849,7 +849,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-item) {
   border: 1px solid color-mix(in srgb, var(--menu-secondary) 9%, transparent);
-  border-radius: 1.5rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: color-mix(in srgb, var(--menu-bg) 72%, white);
   box-shadow: 0 1.25rem 3.5rem color-mix(in srgb, var(--menu-secondary) 9%, transparent);
 }
@@ -876,7 +876,7 @@ function openPortraitPreview() {
 }
 
 .showcase-kiosk--counter :deep(.menu-order-kiosk-item__add) {
-  padding: 0.8rem 1rem;
+  padding: 0.8rem calc(var(--spacing) * 4);
   border: 0;
   border-radius: 9999px;
   background: var(--menu-primary);
@@ -893,7 +893,7 @@ function openPortraitPreview() {
 
 .showcase-kiosk--counter :deep(.menu-order-basket-summary) {
   border: 0;
-  border-radius: 1.35rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: var(--menu-secondary);
   box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--menu-secondary) 24%, transparent);
   color: var(--menu-bg);

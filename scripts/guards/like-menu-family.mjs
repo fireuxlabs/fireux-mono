@@ -37,7 +37,7 @@ const MEMBERS = [
       'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Dish.vue',
     recordsTag: '<ConsoleKitchenOperationsDishesRead',
     toolsTag: '<ConsoleKitchenOperationsDishesTools',
-    inspectTag: '<ConsoleKitchenOperationsDishesCardsProfile',
+    inspectTag: 'aria-label="Menu placements"',
     updateTag: '<ConsoleKitchenOperationsDishesEdit',
     deleteTag: '<ConsoleKitchenOperationsDishesDelete',
     recordsLabel: 'aria-label="Dishes"',
@@ -278,9 +278,9 @@ function validateCollectionState(repoRoot, member, recordsSource, violations) {
   if (controllerSource) {
     for (const [expected, message] of [
       ['demoData.error.value', 'controller must preserve Demo read errors'],
-      ['demoData.outcome.value', 'controller must preserve Demo read outcomes'],
-      ['dishesError.value', 'controller must preserve live read errors'],
-      ['dishesOutcome.value', 'controller must preserve live read outcomes'],
+      ['recordProvider:', 'controller must preserve Demo read outcomes'],
+      ['error,', 'controller must preserve live read errors'],
+      ['outcome,', 'controller must preserve live read outcomes'],
     ]) {
       requireText(
         controllerSource,

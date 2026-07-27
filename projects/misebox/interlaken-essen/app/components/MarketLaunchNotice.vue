@@ -30,11 +30,11 @@ const { copy } = useInterlakenCopy()
 .market-launch {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
   width: min(100%, 48rem);
   border: 1px solid rgba(251, 243, 223, 0.5);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   padding: 0.85rem;
   background: rgba(23, 53, 43, 0.8);
   box-shadow: 0 1rem 2.5rem rgba(12, 35, 31, 0.3);
@@ -47,11 +47,11 @@ const { copy } = useInterlakenCopy()
   gap: 0.45rem;
   align-items: center;
   border-radius: calc(var(--ui-radius) * 3);
-  padding: 0.65rem 0.75rem;
+  padding: 0.65rem calc(var(--spacing) * 3);
   background: #f4c45f;
   color: var(--market-ink);
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   white-space: nowrap;
 }
 
@@ -68,7 +68,7 @@ const { copy } = useInterlakenCopy()
 
 .market-launch__copy strong {
   font-size: 0.95rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-launch__copy span {

@@ -4,7 +4,7 @@
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p
-            class="text-xs font-semibold uppercase tracking-[0.18em] text-primary"
+            class="text-xs font-semibold uppercase tracking-widest text-primary"
           >
             Employer flow
           </p>

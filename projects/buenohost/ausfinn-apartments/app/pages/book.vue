@@ -259,9 +259,9 @@ aside > p {
 aside h2 {
   margin: calc(var(--spacing) * 4) 0 calc(var(--spacing) * 8);
   font-family: var(--font-serif);
-  font-size: 3rem;
+  font-size: var(--text-5xl);
   font-weight: var(--font-weight-normal);
-  letter-spacing: -0.05em;
+  letter-spacing: var(--tracking-tighter);
   line-height: 0.95;
 }
 
@@ -277,7 +277,7 @@ aside li {
   grid-template-columns: calc(var(--spacing) * 8) 1fr;
   gap: calc(var(--spacing) * 3);
   color: var(--aus-muted);
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 aside li span {

@@ -4,7 +4,7 @@
       <div class="flex items-center gap-2">
         <span
           class="size-2 rounded-full"
-          :class="isOpen ? 'bg-success' : 'bg-neutral-400'"
+          :class="isOpen ? 'bg-success' : 'bg-muted'"
           aria-hidden="true"
         />
         <h2 class="text-sm font-semibold text-highlighted">

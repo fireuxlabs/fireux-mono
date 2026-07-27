@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { normalizeFireuxJobSourceAppDoorways } from '../src/config/jobs.config.ts'
+import { normalizeFireuxJobSourceAppDoorways } from '../config/jobs.config.ts'
 
 test('normalizes trusted HTTPS source-App doorways', () => {
   assert.deepEqual(

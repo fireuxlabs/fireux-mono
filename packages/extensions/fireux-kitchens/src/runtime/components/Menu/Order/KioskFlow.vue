@@ -157,13 +157,13 @@ function clearSelection() {
 .menu-order-kiosk__toolbar {
   display: grid;
   grid-template-columns: minmax(6rem, 1fr) auto minmax(6rem, 1fr);
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
   min-height: 4.5rem;
   padding:
-    max(0.75rem, env(safe-area-inset-top))
-    clamp(0.75rem, 2vw, 1.5rem)
-    0.75rem;
+    max(calc(var(--spacing) * 3), env(safe-area-inset-top))
+    clamp(calc(var(--spacing) * 3), 2vw, calc(var(--spacing) * 6))
+    calc(var(--spacing) * 3);
   border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 13%, transparent);
   background: var(--menu-bg);
 }
@@ -174,7 +174,7 @@ function clearSelection() {
   min-height: 2.75rem;
   align-items: center;
   gap: 0.55rem;
-  padding: 0.55rem 0.75rem;
+  padding: 0.55rem calc(var(--spacing) * 3);
   border: 0;
   border-radius: var(--menu-radius-control);
   background: transparent;
@@ -222,7 +222,7 @@ function clearSelection() {
 }
 
 .menu-order-kiosk__identity small {
-  margin-top: 0.25rem;
+  margin-top: var(--spacing);
   color: var(--menu-muted);
   font-size: 0.7rem;
   font-weight: var(--font-weight-bold);
@@ -240,7 +240,7 @@ function clearSelection() {
   .menu-order-kiosk__toolbar {
     grid-template-columns: auto minmax(0, 1fr) auto;
     min-height: 4.5rem;
-    padding-inline: 0.75rem;
+    padding-inline: calc(var(--spacing) * 3);
   }
 
   .menu-order-kiosk__change span {

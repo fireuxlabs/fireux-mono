@@ -79,7 +79,7 @@ The current declared Entities are:
 | User | core, identity | root | identity database | membership record | projection | no |
 | Project | system, console entity | root | FireUX control plane | none | none | yes |
 | Job | content | root | owning App database | none | projection | no |
-| MarketplaceStore | commerce | App-scoped | owning App database | none | projection | no |
+| MarketplaceStore | commerce | App-scoped | parent | none | projection | no |
 | Kitchen | kitchen, console entity | root | owning App database | access record | projection | yes |
 | KitchenMenu | menu, kitchen | Kitchen-scoped | parent | none | projection | no |
 | Menu | menu | root | owning App database | none | projection | no |

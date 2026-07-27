@@ -181,7 +181,7 @@ useSeoMeta({
   max-width: 32rem;
   font-size: 1.2rem;
   font-weight: var(--font-weight-bold);
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .stay__copy > span {

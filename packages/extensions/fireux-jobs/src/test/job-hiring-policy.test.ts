@@ -4,7 +4,7 @@ import {
   nextApplicationStatus,
   nextEngagementStatus,
   temporaryCapacityAllowsAcceptance,
-} from '../src/runtime/utils/job-hiring-policy.ts'
+} from '../runtime/utils/job-hiring-policy.ts'
 
 test('employer and candidate application transitions stay separate', () => {
   assert.equal(nextApplicationStatus('submitted', 'offer', 'employer'), 'offered')

@@ -51,7 +51,7 @@ yarn.lock
 !templates/.env.app.template
 
 # Build output
-dist/
+dist
 build/
 .nuxt/
 .data/

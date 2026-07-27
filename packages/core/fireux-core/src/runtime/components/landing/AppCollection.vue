@@ -98,7 +98,7 @@
             <p>{{ roleLabel(app) }}</p>
             <h3>{{ displayName(app) }}</h3>
           </div>
-          <p>{{ summary(app) }}</p>
+          <p>{{ app.description }}</p>
           <span>
             View app
             <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
@@ -133,13 +133,11 @@ const props = withDefaults(
     description: string
     actionLabel?: string
     actionTo?: string
-    fallbackDescription?: string
     excludeIds?: readonly string[]
   }>(),
   {
     actionLabel: 'Explore all apps',
     actionTo: '/apps',
-    fallbackDescription: 'A live app in this ecosystem.',
     excludeIds: () => [],
   }
 )
@@ -154,10 +152,6 @@ const outcome = computed(() => props.controller.outcome.value)
 
 function displayName(app: AppDirectoryEntry): string {
   return app.app_name || app.app_short_name || app.slug || app.id
-}
-
-function summary(app: AppDirectoryEntry): string {
-  return app.tagline || app.short_bio || app.description || props.fallbackDescription
 }
 
 function roleLabel(app: AppDirectoryEntry): string {
@@ -315,7 +309,7 @@ function avatarText(app: AppDirectoryEntry): string {
 .landing-app-collection__body > div > p {
   color: var(--ui-primary);
   font-size: var(--text-xs);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
 }

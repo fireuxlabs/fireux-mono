@@ -29,8 +29,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-
 definePageMeta({
   layout: 'console',
   consoleSurface: 'detail',
@@ -39,8 +37,5 @@ definePageMeta({
   requiresSelection: true,
 })
 
-const route = useRoute()
-const reservationId = computed(() =>
-  String(route.params.reservationId ?? '').trim()
-)
+const reservationId = useRouteParam('reservationId')
 </script>

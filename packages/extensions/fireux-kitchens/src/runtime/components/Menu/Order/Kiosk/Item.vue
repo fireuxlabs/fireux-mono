@@ -199,7 +199,7 @@ function formatPrice(price: number) {
   min-width: 0;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--kiosk-item-text) 14%, transparent);
-  border-radius: var(--menu-radius-control, calc(var(--ui-radius) * 2));
+  border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--kiosk-item-bg) 96%, var(--kiosk-item-primary));
   box-shadow: 0 0.8rem 2.2rem color-mix(in srgb, var(--kiosk-item-text) 5%, transparent);
   color: var(--kiosk-item-text);
@@ -275,7 +275,7 @@ function formatPrice(price: number) {
   min-height: 2.5rem;
   padding: 0.45rem 0.65rem;
   border: 1px solid color-mix(in srgb, var(--kiosk-item-text) 16%, transparent);
-  border-radius: 0.75rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: var(--kiosk-item-bg);
   color: var(--kiosk-item-muted);
   cursor: pointer;
@@ -307,7 +307,7 @@ function formatPrice(price: number) {
   min-height: 2.75rem;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   margin-top: auto;
   padding: 0.55rem 0;
   border: 0;
@@ -324,7 +324,7 @@ function formatPrice(price: number) {
   display: inline-flex;
   min-width: 0;
   align-items: center;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .menu-order-kiosk-item__add > strong {
@@ -363,7 +363,11 @@ function formatPrice(price: number) {
 .menu-order-kiosk-item--without-media .menu-order-kiosk-item__body {
   min-height: 100%;
   align-content: end;
-  padding-top: clamp(4rem, 10vw, 8rem);
+  padding-top: clamp(
+    calc(var(--spacing) * 16),
+    10vw,
+    calc(var(--spacing) * 32)
+  );
 }
 
 .menu-order-kiosk-item--without-media h3 {

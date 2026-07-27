@@ -13,23 +13,20 @@ import {
 } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type {
-  KitchenOrderPaymentMethod,
   KitchenOrderStatus,
   KitchenOrderType,
 } from '../../../../models/kitchen/order.model'
 import type { CreatedMenuOrder } from '../../../../models/kitchen/menu/menu-ordering.model'
-import type { CustomerOrderPage, CustomerOrderSummary } from '../../../../models/customer/order.model'
-import type { MenuOrderBasketLine } from './useMenuOrderBasket'
+import type { CustomerOrderSummary } from '../../../../models/customer/order.model'
 import { menuOrderAccessHeaders } from '../../../../utils/menu-order-capability'
 import {
   createdMenuOrderBasketLines,
   createMenuOrderRequestKey,
   createdMenuOrderTrackingStatus,
   customerOrderRequestError,
-  isTerminalMenuOrderStatus,
-  menuOrderWaitingFor,
-  recoveredMenuOrderBasketLines,
+  isTransientCustomerOrderRequestFailure,
 } from '../../../../utils/menu-order-customer-recovery'
+import { useMenuOrderCustomerRecovery } from './useMenuOrderCustomerRecovery'
 import {
   useMenuOrderTrackingSession,
   type MenuOrderTrackingStatus,
@@ -60,8 +57,6 @@ const pausedTrackingStatuses = new Set<KitchenOrderStatus>([
 const statusRefreshDelay = 2500
 const maximumStatusRefreshDelay = 15_000
 const visibleStatusFailureThreshold = 3
-const customerRecoveryRetryDelay = 5000
-const maximumCustomerRecoveryRetryDelay = 30_000
 
 // Surface wrappers own request details; this seam owns submission, tracking, recovery, and customer response.
 export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
@@ -76,14 +71,21 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
   const error = ref('')
   const responseError = ref('')
   const statusError = ref('')
-  const recovery = ref<Record<string, unknown>>({ phase: 'idle' })
-  const amendmentLines = ref<MenuOrderBasketLine[]>([])
   let statusTimer: ReturnType<typeof setTimeout> | undefined
-  let recoveryTimer: ReturnType<typeof setTimeout> | undefined
   let consecutiveStatusFailures = 0
-  let consecutiveRecoveryFailures = 0
   let requestKey = ''
   let requestSignature = ''
+  const customerRecovery = useMenuOrderCustomerRecovery({
+    currentUser: () => currentUser.value,
+    fulfilmentLabel: options.fulfilmentLabel,
+    kitchenId: options.kitchenId,
+    orderType: options.orderType,
+    scheduleStatusRefresh,
+    scopeKey: options.scopeKey,
+    sourceMenuId: options.sourceMenuId,
+    tracking,
+  })
+  const { amendmentLines, recovery } = customerRecovery
 
   const endpointBase = computed(() => {
     const menuId = text(toValue(options.menuId))
@@ -190,7 +192,7 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       return next
     } catch (caught) {
       consecutiveStatusFailures += 1
-      if (!isTransientStatusFailure(caught)) {
+      if (!isTransientCustomerOrderRequestFailure(caught)) {
         statusError.value = customerOrderRequestError(
           caught,
           'Order status could not be checked.'
@@ -255,149 +257,9 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
 
   function reset() {
     stopStatusRefresh()
-    stopRecoveryRetry()
+    customerRecovery.stopRetry()
     tracking.acknowledge()
     resetTransientState()
-  }
-
-  async function restoreOrder() {
-    stopRecoveryRetry()
-    const expectedScope = text(toValue(options.scopeKey))
-    const restoredLocally = tracking.sentOrder.value
-      ? true
-      : tracking.restore()
-    if (restoredLocally) scheduleStatusRefresh(0)
-    const user = currentUser.value
-    const expectedUserId = user?.uid || ''
-    const kitchenId = text(toValue(options.kitchenId))
-    const sourceMenuId = text(toValue(options.sourceMenuId))
-    recovery.value = {
-      phase: user ? 'resolving-customer-order' : 'checking-customer-session',
-      signed_in: Boolean(user),
-      waiting_for: user ? '' : 'customer',
-      kitchen_id: kitchenId,
-      source_menu_id: sourceMenuId,
-      scope_ready: Boolean(expectedScope),
-    }
-    if (!user || !expectedUserId || !expectedScope || !kitchenId || !sourceMenuId) return
-
-    try {
-      const token = await user.getIdToken()
-      const page = await $fetch<CustomerOrderPage>('/api/customer/orders', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      if (
-        expectedScope !== text(toValue(options.scopeKey)) ||
-        expectedUserId !== currentUser.value?.uid
-      ) return
-      consecutiveRecoveryFailures = 0
-
-      const trackedId = text(tracking.sentOrder.value?.id)
-      const trackedCandidate = trackedId
-        ? page.items.find(order => order.id === trackedId)
-        : undefined
-      const matching = page.items.filter(order =>
-        order.order_type === options.orderType &&
-        order.kitchen.id === kitchenId &&
-        order.menu.id === sourceMenuId &&
-        !tracking.isAcknowledged(order.id)
-      )
-      const recovered = trackedCandidate &&
-        !isTerminalMenuOrderStatus(trackedCandidate.status)
-        ? trackedCandidate
-        : matching.find(order => !isTerminalMenuOrderStatus(order.status))
-      recovery.value = {
-        phase: recovered ? 'customer-order' : 'no-match',
-        signed_in: true,
-        order_count: page.items.length,
-        recovered_order_id: recovered?.id || '',
-        waiting_for: menuOrderWaitingFor(recovered?.status),
-      }
-      if (!recovered) {
-        if (trackedCandidate && isTerminalMenuOrderStatus(trackedCandidate.status)) {
-          tracking.acknowledge()
-          amendmentLines.value = []
-        }
-        return
-      }
-
-      restoreCustomerOrder(recovered)
-      tracking.save()
-      scheduleStatusRefresh(0)
-    } catch (caught) {
-      consecutiveRecoveryFailures += 1
-      const transientFailure = isTransientStatusFailure(caught)
-      recovery.value = {
-        phase: 'customer-order-error',
-        signed_in: true,
-        waiting_for: 'customer',
-        error: transientFailure
-          ? 'Customer order recovery is temporarily unavailable.'
-          : customerOrderRequestError(caught, 'Customer order recovery failed.'),
-      }
-      if (transientFailure) scheduleRecoveryRetry()
-    }
-  }
-
-  function scheduleRecoveryRetry() {
-    stopRecoveryRetry()
-    if (
-      !import.meta.client ||
-      !currentUser.value ||
-      hasActiveTrackedOrder()
-    ) return
-
-    recoveryTimer = setTimeout(
-      () => { void restoreOrder() },
-      nextCustomerRecoveryDelay(consecutiveRecoveryFailures)
-    )
-  }
-
-  function stopRecoveryRetry() {
-    if (recoveryTimer) clearTimeout(recoveryTimer)
-    recoveryTimer = undefined
-  }
-
-  function hasActiveTrackedOrder() {
-    const status = tracking.status.value?.status || tracking.sentOrder.value?.status
-
-    return Boolean(status && !isTerminalMenuOrderStatus(status))
-  }
-
-  function restoreCustomerOrder(order: CustomerOrderSummary) {
-    tracking.capabilityToken.value = ''
-    tracking.sentOrder.value = {
-      id: order.id,
-      order_number: order.order_number,
-      status: order.status,
-      order_type: order.order_type,
-      channel: recoveredChannel(order.order_type),
-      ...(order.collection ? { collection: order.collection } : {}),
-    }
-    tracking.status.value = {
-      id: order.id,
-      order_number: order.order_number,
-      status: order.status,
-      order_type: order.order_type,
-      estimated_ready_minutes: order.estimated_ready_minutes,
-      estimated_ready_at: order.estimated_ready_at,
-      ...(order.kitchen_note ? { kitchen_note: order.kitchen_note } : {}),
-      ...(order.collection ? { collection: order.collection } : {}),
-    }
-    tracking.fulfilmentLabel.value = options.fulfilmentLabel(order)
-    tracking.paymentLabel.value = paymentLabel(order.payment?.method)
-    amendmentLines.value = recoveredMenuOrderBasketLines(order)
-  }
-
-  function paymentLabel(method: KitchenOrderPaymentMethod | undefined) {
-    if (method === 'online_card') return 'Pay online'
-    if (!method) return ''
-    if (options.orderType === 'collection') return 'Pay when you collect'
-    if (options.orderType === 'delivery') return 'Pay when delivered'
-    if (options.orderType === 'eat_in' || options.orderType === 'takeaway') {
-      return 'Pay at the counter'
-    }
-    return 'Pay later'
   }
 
   function resetTransientState() {
@@ -407,25 +269,28 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     requestKey = ''
     requestSignature = ''
     consecutiveStatusFailures = 0
-    consecutiveRecoveryFailures = 0
-    amendmentLines.value = []
+    customerRecovery.resetTransientState()
   }
 
   watch(() => text(toValue(options.scopeKey)), () => {
     stopStatusRefresh()
-    stopRecoveryRetry()
+    customerRecovery.stopRetry()
     tracking.resetMemory()
     resetTransientState()
-    void restoreOrder()
+    void customerRecovery.restoreOrder()
   })
-  watch(currentUser, user => { if (user) void restoreOrder() })
+  watch(currentUser, user => {
+    if (user) void customerRecovery.restoreOrder()
+  })
   watch(hasAuthState, resolved => {
-    if (resolved && !tracking.sentOrder.value) void restoreOrder()
+    if (resolved && !tracking.sentOrder.value) {
+      void customerRecovery.restoreOrder()
+    }
   })
-  onMounted(() => { void restoreOrder() })
+  onMounted(() => { void customerRecovery.restoreOrder() })
   onBeforeUnmount(() => {
     stopStatusRefresh()
-    stopRecoveryRetry()
+    customerRecovery.stopRetry()
   })
 
   return {
@@ -456,27 +321,4 @@ function nextStatusRefreshDelay(failures: number) {
     maximumStatusRefreshDelay,
     statusRefreshDelay * (2 ** Math.min(failures, 3))
   )
-}
-
-function nextCustomerRecoveryDelay(failures: number) {
-  return Math.min(
-    maximumCustomerRecoveryRetryDelay,
-    customerRecoveryRetryDelay * (2 ** Math.min(Math.max(failures - 1, 0), 3))
-  )
-}
-
-function isTransientStatusFailure(caught: unknown) {
-  const source = caught && typeof caught === 'object'
-    ? caught as { status?: unknown, statusCode?: unknown }
-    : {}
-  const status = Number(source.statusCode || source.status)
-
-  return !Number.isFinite(status) || status === 0 || status === 408 ||
-    status === 429 || status >= 500
-}
-
-function recoveredChannel(orderType: KitchenOrderType) {
-  return orderType === 'eat_in' || orderType === 'takeaway'
-    ? 'kiosk' as const
-    : 'menu' as const
 }

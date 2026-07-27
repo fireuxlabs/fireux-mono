@@ -7,7 +7,7 @@ import { createError, defineEventHandler } from 'h3'
 
 export const WERKBOX_SECURITY_CONTRACT = 'werkbox-firestore-v1' as const
 export const WERKBOX_SERVER_SOURCE_SHA256 =
-  '5cb894e43cb1acd6c0c2f005f34de158d97a6bea8afa359b7235b1cd26ea7d5e' as const
+  'fa563fcaa4b404227fe18ad945ac2d6aa2b2fc3eedcb96cfe71bcd4897506763' as const
 
 export default defineEventHandler((event) => {
   const runtime = useRuntimeConfig(event) as any

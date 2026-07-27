@@ -12,7 +12,7 @@ Firestore Rules remain authority.
 ## Classification and storage
 
 - `MarketplaceStore` is an App-scoped Entity with a public route and
-  independent publication lifecycle.
+  independent publication lifecycle. Its App parent owns its authority.
 - `MarketplaceOffer` is a Store-owned Record. A fixed CHF minor-unit price is
   required before it can be published.
 - `MarketplaceOrder` is a private operational Record owned by a Store and

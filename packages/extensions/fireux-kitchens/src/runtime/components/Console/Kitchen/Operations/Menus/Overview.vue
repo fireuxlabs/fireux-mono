@@ -5,7 +5,7 @@
   >
     <header class="flex flex-wrap items-start justify-between gap-3 border-b border-default px-4 py-4 sm:px-5">
       <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+        <p class="text-xs font-semibold uppercase tracking-widest text-primary">
           Menu structure
         </p>
         <h2 id="menu-overview-title" class="mt-1 text-lg font-semibold text-highlighted">

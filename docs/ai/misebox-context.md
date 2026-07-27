@@ -297,7 +297,7 @@ Before each task:
 - Tenant branding, content, routes, and genuine app-specific presentation may
   remain in the relevant project app.
 - Interlaken Essen's durable visual canon is the project-owned
-  `projects/misebox/interlaken-essen/artistic-direction.md`. Its
+  `projects/misebox/interlaken-essen/docs/artistic-direction.md`. Its
   **Alpine–Mœbius** direction governs that tenant's UI, editorial artwork,
   social assets, maps, and icons; shared Misebox packages must not generalize
   that project-specific presentation into the ecosystem spine.

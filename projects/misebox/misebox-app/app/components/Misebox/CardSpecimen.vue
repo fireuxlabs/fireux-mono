@@ -84,7 +84,7 @@ const copyReference = async () => {
   grid-template-rows: minmax(0, 1fr) auto;
   overflow: hidden;
   border: 1px solid var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   background: var(--ui-bg-elevated);
 }
 

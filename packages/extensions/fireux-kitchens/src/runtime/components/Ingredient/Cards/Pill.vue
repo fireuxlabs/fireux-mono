@@ -134,7 +134,7 @@ const onClick = (event?: MouseEvent) => {
   min-height: 4rem;
   max-width: 15.5rem;
   padding: calc(var(--spacing) * 1.5);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
 }
 
 .ingredient-card-pill__layout {
@@ -150,7 +150,7 @@ const onClick = (event?: MouseEvent) => {
   height: 3rem;
   flex: 0 0 auto;
   border: 1px solid color-mix(in srgb, var(--ui-border) 76%, transparent);
-  border-radius: calc(var(--ui-radius) * 3.5);
+  border-radius: calc(var(--ui-radius) * 4);
   box-shadow: 0 0.4rem 1rem color-mix(
     in srgb,
     var(--ui-bg-inverted) 10%,

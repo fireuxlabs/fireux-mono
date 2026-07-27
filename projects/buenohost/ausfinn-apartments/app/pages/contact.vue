@@ -91,7 +91,7 @@ useSeoMeta({
   max-width: 12ch;
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 6vw, 6rem);
+  font-size: clamp(var(--text-5xl), 6vw, var(--text-8xl));
   font-weight: var(--font-weight-normal);
   letter-spacing: -0.06em;
   line-height: 0.94;

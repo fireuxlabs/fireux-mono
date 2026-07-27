@@ -140,6 +140,16 @@ export function createdMenuOrderTrackingStatus(
 export const isTerminalMenuOrderStatus = (status: KitchenOrderStatus) =>
   status === 'completed' || status === 'cancelled' || status === 'trashed'
 
+export function isTransientCustomerOrderRequestFailure(caught: unknown) {
+  const source = caught && typeof caught === 'object'
+    ? caught as { status?: unknown, statusCode?: unknown }
+    : {}
+  const status = Number(source.statusCode || source.status)
+
+  return !Number.isFinite(status) || status === 0 || status === 408 ||
+    status === 429 || status >= 500
+}
+
 const text = (value: unknown) => String(value ?? '').trim()
 
 function receiptItemName(item: CreatedMenuOrderReceiptLine) {

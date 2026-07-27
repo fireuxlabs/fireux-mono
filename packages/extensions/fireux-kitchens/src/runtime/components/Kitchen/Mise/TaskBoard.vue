@@ -89,10 +89,10 @@
             class="mt-3 space-y-1.5 rounded-lg bg-elevated/70 p-2.5"
           >
             <div class="flex items-center justify-between gap-2">
-              <p class="text-[0.7rem] font-semibold uppercase tracking-wide text-muted">
+              <p class="text-xs font-semibold uppercase tracking-wide text-muted">
                 Checklist
               </p>
-              <span class="text-[0.7rem] text-dimmed">
+              <span class="text-xs text-dimmed">
                 {{ task.checklistDoneCount }}/{{ task.checklist.length }}
               </span>
             </div>

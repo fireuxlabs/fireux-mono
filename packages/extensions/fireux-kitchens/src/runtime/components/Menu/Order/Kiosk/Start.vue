@@ -89,12 +89,16 @@ const identityImageUrl = computed(() =>
   width: min(100%, 64rem);
   min-height: 100%;
   align-content: center;
-  gap: clamp(2.5rem, 7vh, 5rem);
+  gap: clamp(
+    calc(var(--spacing) * 10),
+    7vh,
+    calc(var(--spacing) * 20)
+  );
   margin: 0 auto;
   padding:
-    max(2rem, env(safe-area-inset-top))
-    clamp(1.25rem, 5vw, 5rem)
-    max(2rem, env(safe-area-inset-bottom));
+    max(calc(var(--spacing) * 8), env(safe-area-inset-top))
+    clamp(calc(var(--spacing) * 5), 5vw, calc(var(--spacing) * 20))
+    max(calc(var(--spacing) * 8), env(safe-area-inset-bottom));
 }
 
 .menu-order-kiosk-start__identity {
@@ -157,16 +161,24 @@ const identityImageUrl = computed(() =>
 .menu-order-kiosk-start__options {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(1rem, 2vw, 1.5rem);
+  gap: clamp(
+    calc(var(--spacing) * 4),
+    2vw,
+    calc(var(--spacing) * 6)
+  );
 }
 
 .menu-order-kiosk-start__option {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
   min-height: clamp(7.5rem, 14vh, 10rem);
-  padding: clamp(1.25rem, 2.8vw, 2rem);
+  padding: clamp(
+    calc(var(--spacing) * 5),
+    2.8vw,
+    calc(var(--spacing) * 8)
+  );
   border: 1px solid color-mix(in srgb, var(--menu-text) 18%, transparent);
   border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--menu-bg) 89%, var(--menu-primary));
@@ -214,7 +226,7 @@ const identityImageUrl = computed(() =>
 
 .menu-order-kiosk-start__option-copy strong {
   color: var(--menu-title);
-  font-size: clamp(1.55rem, 3vw, 2.25rem);
+  font-size: clamp(1.55rem, 3vw, var(--text-4xl));
   line-height: 1.1;
 }
 
@@ -232,7 +244,7 @@ const identityImageUrl = computed(() =>
 @media (max-width: 700px) {
   .menu-order-kiosk-start {
     align-content: start;
-    gap: 2rem;
+    gap: calc(var(--spacing) * 8);
     overflow-y: auto;
   }
 

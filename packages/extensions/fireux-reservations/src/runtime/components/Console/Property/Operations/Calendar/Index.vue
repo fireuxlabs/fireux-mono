@@ -233,16 +233,16 @@ const calendarDays = computed(() => {
 })
 
 const sourceLegend = [
-  { source: 'direct', label: 'Direct', dot: 'bg-emerald-500' },
-  { source: 'airbnb', label: 'Airbnb', dot: 'bg-rose-500' },
-  { source: 'booking_com', label: 'Booking.com', dot: 'bg-blue-500' },
-  { source: 'other', label: 'Other', dot: 'bg-slate-500' },
+  { source: 'direct', label: 'Direct', dot: 'bg-success' },
+  { source: 'airbnb', label: 'Airbnb', dot: 'bg-error' },
+  { source: 'booking_com', label: 'Booking.com', dot: 'bg-info' },
+  { source: 'other', label: 'Other', dot: 'bg-accented' },
 ] as const
 
 const sourceClasses = (source: ReservationSource) => {
-  if (source === 'airbnb') return 'bg-rose-50 text-rose-800 ring-rose-200 dark:bg-rose-950/40 dark:text-rose-200 dark:ring-rose-900'
-  if (source === 'booking_com') return 'bg-blue-50 text-blue-800 ring-blue-200 dark:bg-blue-950/40 dark:text-blue-200 dark:ring-blue-900'
-  if (source === 'direct') return 'bg-emerald-50 text-emerald-800 ring-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-200 dark:ring-emerald-900'
+  if (source === 'airbnb') return 'bg-error/10 text-error ring-error/25'
+  if (source === 'booking_com') return 'bg-info/10 text-info ring-info/25'
+  if (source === 'direct') return 'bg-success/10 text-success ring-success/25'
   return 'bg-muted text-highlighted ring-default'
 }
 

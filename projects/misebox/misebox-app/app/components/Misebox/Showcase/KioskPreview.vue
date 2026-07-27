@@ -125,7 +125,7 @@ watch(open, (isOpen) => {
   position: absolute;
   inset: 0;
   overflow: auto;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
   overscroll-behavior: contain;
 }
 
@@ -134,7 +134,7 @@ watch(open, (isOpen) => {
   grid-template-columns: 1080px 15rem;
   align-items: start;
   width: max-content;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   margin-inline: auto;
 }
 
@@ -185,10 +185,10 @@ watch(open, (isOpen) => {
   position: sticky;
   top: 1rem;
   display: grid;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   padding: 0.65rem;
   border: 1px solid rgb(255 255 255 / 14%);
-  border-radius: 1.25rem;
+  border-radius: calc(var(--ui-radius) * 4);
   background: rgb(17 24 39 / 88%);
   box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 28%);
   color: white;
@@ -196,7 +196,7 @@ watch(open, (isOpen) => {
 }
 
 .showcase-kiosk-preview__menus > span {
-  padding: 0.45rem 0.65rem 0.25rem;
+  padding: 0.45rem 0.65rem calc(var(--spacing) * 1);
   color: rgb(255 255 255 / 54%);
   font-size: 0.65rem;
   font-weight: var(--font-weight-bold);
@@ -210,7 +210,7 @@ watch(open, (isOpen) => {
   width: 100%;
   padding: 0.8rem;
   border: 1px solid transparent;
-  border-radius: 0.85rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: transparent;
   color: rgb(255 255 255 / 72%);
   cursor: pointer;

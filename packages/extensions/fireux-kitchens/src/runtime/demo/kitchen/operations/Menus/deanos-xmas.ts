@@ -1,0 +1,166 @@
+import {
+  deanosXmasMenuDemoIdentity,
+  kitchenDemoAssetBase,
+} from '../../core/fixtures'
+import type { KitchenDemoMenu } from '../../core/types'
+import {
+  dishes,
+  kitchenMenu,
+  menuItem,
+  menuSection,
+  rootMenu,
+} from './builders'
+
+const deanosAssetBase = `${kitchenDemoAssetBase}/deanos`
+
+const deanosXmasRootMenu = rootMenu(
+  deanosXmasMenuDemoIdentity,
+  'Xmas Menu',
+  'Christmas burgers stacked with all the trimmings, indulgent festive sides and a winter shake.'
+)
+
+export const deanosXmasDemoMenu: KitchenDemoMenu = {
+  rootMenu: deanosXmasRootMenu,
+  kitchenMenu: kitchenMenu(deanosXmasMenuDemoIdentity, deanosXmasRootMenu, [
+    {
+      type: 'eat_in',
+      fulfilment: {
+        handoff_instructions: 'Watch the screen for your festive order number.',
+      },
+    },
+    {
+      type: 'collection',
+      asap_enabled: true,
+      fulfilment: {
+        handoff_instructions: 'Collect your festive order from the counter.',
+      },
+      customer: {
+        required_fields: ['name', 'phone'],
+      },
+    },
+  ]),
+  dishes: dishes(deanosXmasMenuDemoIdentity, [
+    {
+      id: 'deanos-christmas-stack',
+      name: 'The Deanos Christmas Stack',
+      description:
+        'Double smashed beef, smoked bacon, fried Camembert, cranberry relish, rocket and mustard mayo.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-christmas-stack-santa.jpg`,
+    },
+    {
+      id: 'turkey-dinner-burger',
+      name: 'The Turkey Dinner Burger',
+      description:
+        'Roast turkey, sage and onion stuffing, melted Brie, cranberry relish, gravy mayo and a pig in blanket.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-turkey-dinner-burger-reindeer.jpg`,
+    },
+    {
+      id: 'pigs-in-blankets-waffle-fries',
+      name: 'Pigs in blankets waffle fries',
+      description:
+        'Crispy waffle fries loaded with chopped pigs in blankets, cheese sauce, rich gravy, cranberry relish and crispy onions.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-pigs-in-blankets-waffle-fries-elf.jpg`,
+    },
+    {
+      id: 'fried-brie-bites',
+      name: 'Fried Brie bites',
+      description:
+        'Golden crumbed Brie bites served with cranberry and chilli dip.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-fried-brie-bites-snowman.jpg`,
+    },
+    {
+      id: 'stuffed-mini-yorkshires',
+      name: 'Stuffed mini Yorkshires',
+      description:
+        'Mini Yorkshire puddings filled with pulled turkey, sage stuffing, cranberry relish and gravy.',
+      item_kind: 'food',
+      image: `${deanosAssetBase}/xmas-stuffed-mini-yorkshires-gingerbread.jpg`,
+    },
+    {
+      id: 'gingerbread-caramel-shake',
+      name: 'Gingerbread caramel shake',
+      description:
+        'Vanilla soft serve, salted caramel, gingerbread spice and biscuit crumb.',
+      item_kind: 'drink',
+      image: `${deanosAssetBase}/xmas-gingerbread-caramel-shake-subtle.jpg`,
+    },
+  ]),
+  menuSections: [
+    {
+      section: menuSection(
+        deanosXmasMenuDemoIdentity,
+        'festive-burgers',
+        'Festive burgers',
+        1
+      ),
+      items: [
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'deanos-christmas-stack-item',
+          section_id: 'festive-burgers',
+          dish_id: 'deanos-christmas-stack',
+          price: 22,
+          sort_order: 1,
+        }),
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'turkey-dinner-burger-item',
+          section_id: 'festive-burgers',
+          dish_id: 'turkey-dinner-burger',
+          price: 21,
+          sort_order: 2,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosXmasMenuDemoIdentity,
+        'christmas-sides',
+        'Christmas sides',
+        2
+      ),
+      items: [
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'pigs-in-blankets-waffle-fries-item',
+          section_id: 'christmas-sides',
+          dish_id: 'pigs-in-blankets-waffle-fries',
+          price: 15,
+          sort_order: 1,
+        }),
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'fried-brie-bites-item',
+          section_id: 'christmas-sides',
+          dish_id: 'fried-brie-bites',
+          price: 7,
+          sort_order: 2,
+        }),
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'stuffed-mini-yorkshires-item',
+          section_id: 'christmas-sides',
+          dish_id: 'stuffed-mini-yorkshires',
+          price: 8,
+          sort_order: 3,
+        }),
+      ],
+    },
+    {
+      section: menuSection(
+        deanosXmasMenuDemoIdentity,
+        'winter-shakes',
+        'Winter shakes',
+        3
+      ),
+      items: [
+        menuItem(deanosXmasMenuDemoIdentity, {
+          id: 'gingerbread-caramel-shake-item',
+          section_id: 'winter-shakes',
+          dish_id: 'gingerbread-caramel-shake',
+          price: 9,
+          sort_order: 1,
+        }),
+      ],
+    },
+  ],
+}

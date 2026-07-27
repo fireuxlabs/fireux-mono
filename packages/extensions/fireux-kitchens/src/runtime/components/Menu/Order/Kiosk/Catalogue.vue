@@ -155,8 +155,16 @@ function finishDialog() {
 }
 
 .menu-order-kiosk-catalogue__rail {
-  padding: clamp(0.75rem, 2vw, 1.25rem) 0.65rem;
-  padding-bottom: max(6.5rem, env(safe-area-inset-bottom));
+  padding: clamp(
+      calc(var(--spacing) * 3),
+      2vw,
+      calc(var(--spacing) * 5)
+    )
+    0.65rem;
+  padding-bottom: max(
+    calc(var(--spacing) * 26),
+    env(safe-area-inset-bottom)
+  );
   border-right: 1px solid color-mix(in srgb, var(--menu-text) 13%, transparent);
   background: color-mix(in srgb, var(--menu-bg) 94%, transparent);
 }
@@ -177,7 +185,7 @@ function finishDialog() {
   color: var(--menu-muted);
   cursor: pointer;
   font: inherit;
-  font-size: clamp(0.88rem, 1.35vw, 1rem);
+  font-size: clamp(0.88rem, 1.35vw, var(--text-base));
   font-weight: var(--font-weight-extrabold);
   text-align: left;
 }
@@ -198,12 +206,24 @@ function finishDialog() {
 }
 
 .menu-order-kiosk-catalogue__content {
-  padding: clamp(1.5rem, 3vw, 2.5rem);
-  padding-bottom: clamp(7rem, 14vh, 9rem);
+  padding: clamp(
+    calc(var(--spacing) * 6),
+    3vw,
+    calc(var(--spacing) * 10)
+  );
+  padding-bottom: clamp(
+    calc(var(--spacing) * 28),
+    14vh,
+    calc(var(--spacing) * 36)
+  );
 }
 
 .menu-order-kiosk-catalogue__header {
-  margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+  margin-bottom: clamp(
+    calc(var(--spacing) * 5),
+    2.5vw,
+    calc(var(--spacing) * 7)
+  );
 }
 
 .menu-order-kiosk-catalogue__header h2 {
@@ -221,7 +241,11 @@ function finishDialog() {
 .menu-order-kiosk-catalogue__items {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1rem, 2vw, 1.5rem);
+  gap: clamp(
+    calc(var(--spacing) * 4),
+    2vw,
+    calc(var(--spacing) * 6)
+  );
   align-items: stretch;
 }
 
@@ -230,7 +254,7 @@ function finishDialog() {
   place-self: center;
   margin: 0;
   color: var(--menu-muted);
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: var(--font-weight-bold);
 }
 
@@ -241,7 +265,7 @@ function finishDialog() {
   }
 
   .menu-order-kiosk-catalogue__rail {
-    padding: 0.65rem 0.75rem;
+    padding: 0.65rem calc(var(--spacing) * 3);
     overflow-y: visible;
     border-right: 0;
     border-bottom: 1px solid color-mix(in srgb, var(--menu-text) 13%, transparent);
@@ -249,7 +273,7 @@ function finishDialog() {
 
   .menu-order-kiosk-catalogue__rail nav {
     display: flex;
-    gap: 0.5rem;
+    gap: calc(var(--spacing) * 2);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scrollbar-width: none;
@@ -272,7 +296,7 @@ function finishDialog() {
 
   .menu-order-kiosk-catalogue__content {
     padding: 1.1rem;
-    padding-bottom: 12rem;
+    padding-bottom: calc(var(--spacing) * 48);
   }
 
   .menu-order-kiosk-catalogue__header h2 {

@@ -318,10 +318,10 @@ const optionName = (option: SproochliLanguageOption) =>
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin: -0.25rem;
-  padding: 0.25rem;
-  border-radius: 0.75rem;
+  gap: calc(var(--spacing) * 4);
+  margin: calc(var(--spacing) * -1);
+  padding: var(--spacing);
+  border-radius: calc(var(--ui-radius) * 3);
   color: var(--ui-text-highlighted);
   text-decoration: none;
   transition:
@@ -351,7 +351,7 @@ const optionName = (option: SproochliLanguageOption) =>
   align-items: center;
   justify-content: center;
   border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: color-mix(in srgb, currentColor 6%, transparent);
   transition:
     background 160ms ease,

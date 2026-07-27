@@ -43,7 +43,7 @@
           <div class="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p
-                class="text-xs font-semibold uppercase tracking-[0.18em] text-primary"
+                class="text-xs font-semibold uppercase tracking-widest text-primary"
               >
                 Employer workspace
               </p>

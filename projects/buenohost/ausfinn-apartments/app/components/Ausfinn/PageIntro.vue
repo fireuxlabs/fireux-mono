@@ -47,7 +47,7 @@ defineProps<{
   max-width: 11ch;
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-size: clamp(3.5rem, 10vw, var(--text-9xl));
   font-weight: var(--font-weight-normal);
   letter-spacing: -0.065em;
   line-height: 0.84;
@@ -58,7 +58,7 @@ defineProps<{
   max-width: 38rem;
   margin-top: calc(var(--spacing) * 7);
   color: rgb(255 253 248 / 76%);
-  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-size: clamp(var(--text-base), 2vw, var(--text-xl));
   line-height: 1.65;
 }
 </style>

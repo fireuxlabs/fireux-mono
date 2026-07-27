@@ -34,7 +34,7 @@
           <template #header>
             <div>
               <p
-                class="text-xs font-semibold uppercase tracking-[0.18em] text-primary"
+                class="text-xs font-semibold uppercase tracking-widest text-primary"
               >
                 Posting as
               </p>

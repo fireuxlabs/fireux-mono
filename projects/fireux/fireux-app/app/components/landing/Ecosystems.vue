@@ -86,7 +86,7 @@
 
         <div class="fireux-ecosystems__body">
           <h3>{{ ecosystem.name }}</h3>
-          <p>{{ ecosystem.description || fallbackDescription }}</p>
+          <p>{{ ecosystem.description }}</p>
           <span>
             Explore ecosystem
             <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
@@ -120,9 +120,6 @@ const ecosystems = computed(() =>
       && !retiredEcosystemSlugs.has(ecosystem.slug)
   )
 )
-const fallbackDescription =
-  'Connected apps and operations for a specific kind of work.'
-
 function appCountLabel(count: number): string {
   return `${count} ${count === 1 ? 'app' : 'apps'}`
 }
@@ -207,7 +204,7 @@ function appCountLabel(count: number): string {
   gap: calc(var(--spacing) * 4);
   min-height: 8.5rem;
   padding: calc(var(--spacing) * 5);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   background:
     radial-gradient(
       circle at 18% 20%,

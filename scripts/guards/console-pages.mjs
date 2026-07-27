@@ -218,8 +218,16 @@ function validateConsoleLayout(repoRoot, violations) {
   }
 
   const source = readFileSync(fullPath, 'utf8')
-  if (!/<slot\b[^>]*\bv-else\b/.test(source)) {
-    violations.push(`${CONSOLE_LAYOUT} (must consume the AppShell route through <slot v-else />)`)
+  const hasDirectSlot = /<slot\b[^>]*\bv-else\b/.test(source)
+  const hasGuardedSlot =
+    /<NuxtErrorBoundary\b[^>]*\bv-else\b/.test(source) &&
+    /<NuxtErrorBoundary\b[\s\S]*?<slot\s*\/>[\s\S]*?<template\s+#error=/.test(source) &&
+    /console-page-unavailable/.test(source) &&
+    /clearPageError/.test(source)
+  if (!hasDirectSlot && !hasGuardedSlot) {
+    violations.push(
+      `${CONSOLE_LAYOUT} (must consume the AppShell route through a direct or failure-isolated slot)`
+    )
   }
   if (/<NuxtPage\b/.test(source)) {
     violations.push(`${CONSOLE_LAYOUT} (must not render a second route tree inside AppShell)`)

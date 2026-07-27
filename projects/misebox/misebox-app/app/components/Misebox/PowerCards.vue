@@ -686,7 +686,7 @@ const kioskItem = {
   font-size: clamp(var(--text-4xl), 10vw, var(--text-6xl));
   font-weight: var(--font-weight-extrabold);
   letter-spacing: var(--tracking-tighter);
-  line-height: var(--leading-none);
+  line-height: 1;
 }
 
 .misebox-card-specimens__search {

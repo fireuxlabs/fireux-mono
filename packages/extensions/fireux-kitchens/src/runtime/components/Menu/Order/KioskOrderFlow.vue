@@ -186,7 +186,11 @@ async function cancelOrder() {
 
 .menu-order-kiosk-order__status {
   min-height: 0;
-  padding: clamp(1rem, 4vw, 3rem);
+  padding: clamp(
+    calc(var(--spacing) * 4),
+    4vw,
+    calc(var(--spacing) * 12)
+  );
   overflow-y: auto;
 }
 

@@ -130,7 +130,7 @@ const cardClass = computed(() => ({
   min-height: 6.5rem;
   padding: calc(var(--spacing) * 3);
   border-color: color-mix(in srgb, var(--ui-border) 72%, transparent);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   background:
     radial-gradient(
       circle at 0 0,
@@ -167,7 +167,7 @@ const cardClass = computed(() => ({
 
 .kitchen-card-cell .card__title {
   font-size: var(--text-base);
-  letter-spacing: -0.025em;
+  letter-spacing: var(--tracking-tight);
   line-height: var(--leading-tight);
 }
 

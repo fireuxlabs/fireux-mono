@@ -457,7 +457,7 @@ async function skipOnboarding() {
   max-height: calc(100dvh - 1.5rem);
   overflow: hidden;
   border: 1px solid rgba(251, 243, 223, 0.78);
-  border-radius: 1.35rem;
+  border-radius: calc(var(--ui-radius) * 6);
   background: #fbf3df;
   box-shadow:
     0 2rem 6rem rgba(4, 23, 21, 0.5),
@@ -537,7 +537,7 @@ async function skipOnboarding() {
 
 .market-onboarding__paper {
   position: relative;
-  padding: 1.45rem clamp(1.35rem, 5vw, 2.25rem) 1.6rem;
+  padding: 1.45rem clamp(1.35rem, 5vw, calc(var(--spacing) * 9)) 1.6rem;
   background:
     radial-gradient(circle at 100% 0, rgba(244, 198, 83, 0.22), transparent 35%),
     #fbf3df;
@@ -548,7 +548,7 @@ async function skipOnboarding() {
   width: 2.8rem;
   height: 0.28rem;
   margin-bottom: 0.85rem;
-  border-radius: 999px;
+  border-radius: 9999px;
   background: #cf4438;
   content: "";
   transform: rotate(-3deg);
@@ -558,7 +558,7 @@ async function skipOnboarding() {
   margin: 0 0 0.3rem;
   color: #2f6a50;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.16em;
   text-transform: uppercase;
 }
@@ -567,7 +567,7 @@ async function skipOnboarding() {
   margin: 0;
   color: #17352b;
   font-family: var(--market-display);
-  font-size: clamp(2.8rem, 10vw, 4.5rem);
+  font-size: clamp(2.8rem, 10vw, var(--text-7xl));
   font-weight: 950;
   letter-spacing: -0.045em;
   line-height: 0.88;
@@ -576,17 +576,17 @@ async function skipOnboarding() {
 
 .market-onboarding__copy {
   max-width: 27rem;
-  margin: 1rem 0 0;
+  margin: calc(var(--spacing) * 4) 0 0;
   color: rgba(23, 53, 43, 0.82);
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 650;
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .market-onboarding__error {
   display: grid;
   gap: 0.15rem;
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
   border-left: 0.25rem solid #cf4438;
   padding: 0.65rem 0.8rem;
   background: rgba(207, 68, 56, 0.09);
@@ -601,7 +601,7 @@ async function skipOnboarding() {
   align-items: center;
   margin-top: 1.2rem;
   border: 1px solid rgba(23, 53, 43, 0.2);
-  border-radius: 999px;
+  border-radius: 9999px;
   padding: 0.35rem 0.85rem 0.35rem 0.35rem;
   background: rgba(255, 252, 241, 0.62);
   box-shadow: 0 0.35rem 1.2rem rgba(23, 53, 43, 0.08);
@@ -624,7 +624,7 @@ async function skipOnboarding() {
 .market-onboarding__form {
   display: grid;
   gap: 0.8rem;
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
 }
 
 .market-onboarding__section {
@@ -633,7 +633,7 @@ async function skipOnboarding() {
   gap: 0.65rem;
   margin: 0;
   border: 1px solid rgba(23, 53, 43, 0.18);
-  border-radius: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
   padding: 0.9rem;
   background:
     linear-gradient(135deg, rgba(255, 252, 241, 0.86), rgba(244, 198, 83, 0.09));
@@ -650,7 +650,7 @@ async function skipOnboarding() {
 }
 
 .market-onboarding__section > p {
-  margin: -0.25rem 0 0;
+  margin: calc(var(--spacing) * -1) 0 0;
   color: rgba(23, 53, 43, 0.66);
   font-size: 0.78rem;
   font-weight: 650;
@@ -666,7 +666,7 @@ async function skipOnboarding() {
 .market-onboarding__field > span:first-child {
   color: #2f6a50;
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -676,7 +676,7 @@ async function skipOnboarding() {
 .market-onboarding__field textarea {
   width: 100%;
   border: 1px solid rgba(23, 53, 43, 0.28);
-  border-radius: 0.72rem;
+  border-radius: calc(var(--ui-radius) * 3);
   outline: none;
   padding: 0.72rem 0.78rem;
   background: rgba(255, 252, 241, 0.92);
@@ -779,7 +779,7 @@ async function skipOnboarding() {
 }
 
 .market-onboarding__offer-toggle:focus-visible {
-  border-radius: 0.45rem;
+  border-radius: calc(var(--ui-radius) * 2);
   outline: 0.15rem solid rgba(207, 68, 56, 0.7);
   outline-offset: 0.25rem;
 }
@@ -793,7 +793,7 @@ async function skipOnboarding() {
 .market-onboarding__offer-toggle strong {
   color: #17352b;
   font-size: 0.98rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-onboarding__offer-toggle small {
@@ -810,7 +810,7 @@ async function skipOnboarding() {
   width: 3.1rem;
   height: 1.75rem;
   border: 1px solid rgba(23, 53, 43, 0.3);
-  border-radius: 999px;
+  border-radius: 9999px;
   background: rgba(23, 53, 43, 0.12);
   box-shadow: inset 0 0.15rem 0.35rem rgba(23, 53, 43, 0.12);
   transition:
@@ -824,7 +824,7 @@ async function skipOnboarding() {
   left: 0.2rem;
   width: 1.25rem;
   height: 1.25rem;
-  border-radius: 46% 54% 52% 48%;
+  border-radius: 50%;
   background: #fbf3df;
   box-shadow: 0 0.15rem 0.35rem rgba(23, 53, 43, 0.28);
   transition: transform 180ms ease;
@@ -852,10 +852,10 @@ async function skipOnboarding() {
   display: flex;
   gap: 0.8rem;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
   border: 1px solid rgba(47, 106, 80, 0.28);
-  border-radius: 1rem;
-  padding: 1rem;
+  border-radius: calc(var(--ui-radius) * 4);
+  padding: calc(var(--spacing) * 4);
   background: rgba(47, 106, 80, 0.1);
   color: #17352b;
 }
@@ -874,7 +874,7 @@ async function skipOnboarding() {
 
 .market-onboarding__success strong {
   font-size: 0.95rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-onboarding__success span {
@@ -891,10 +891,10 @@ async function skipOnboarding() {
 
 :deep(.market-onboarding__submit) {
   min-height: 2.85rem;
-  border-radius: 0.8rem;
+  border-radius: calc(var(--ui-radius) * 3);
   background: #cf4438;
   color: #fff8e8;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   box-shadow: 0 0.55rem 1.2rem rgba(128, 43, 34, 0.2);
 }
 
@@ -910,7 +910,7 @@ async function skipOnboarding() {
 
 :deep(.market-onboarding__skip) {
   color: rgba(23, 53, 43, 0.7);
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 @keyframes market-onboarding-reveal {

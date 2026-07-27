@@ -159,7 +159,6 @@
         description="Explore hospitality Apps that connect public content, restaurant operations and team access while keeping their own identity and workflow."
         action-label="Explore all Misebox apps"
         action-to="/apps"
-        fallback-description="A live hospitality app built on the Misebox ecosystem."
         :exclude-ids="['misebox-app']"
       />
     </template>

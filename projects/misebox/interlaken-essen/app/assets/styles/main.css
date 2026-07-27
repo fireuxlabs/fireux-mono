@@ -51,7 +51,7 @@
   justify-content: space-between;
   min-height: 4.75rem;
   border-bottom: 1px solid rgba(251, 243, 223, 0.18);
-  padding-inline: clamp(1rem, 4vw, 3.5rem);
+  padding-inline: clamp(calc(var(--spacing) * 4), 4vw, calc(var(--spacing) * 14));
   background: linear-gradient(180deg, rgba(13, 42, 46, 0.58), transparent);
 }
 
@@ -172,7 +172,7 @@ button.market-language.sproochli-language-trigger--emoji
   padding: 0.55rem 0.8rem;
   color: rgba(251, 243, 223, 0.82);
   font-size: 0.82rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   text-decoration: none;
 }
 
@@ -257,9 +257,9 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-home__feed-wrap {
   padding:
-    clamp(3rem, 7vh, 5rem)
-    clamp(1rem, 5vw, 4rem)
-    clamp(8rem, 14vh, 11rem);
+    clamp(calc(var(--spacing) * 12), 7vh, calc(var(--spacing) * 20))
+    clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16))
+    clamp(calc(var(--spacing) * 32), 14vh, calc(var(--spacing) * 44));
 }
 
 .market-home__feed-wrap:not(:has(.market-feed)) {
@@ -280,7 +280,7 @@ button.market-language.sproochli-language-trigger--emoji
   align-items: center;
   color: rgba(251, 243, 223, 0.64);
   font-size: 0.68rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: 0.03em;
   text-shadow: 0 0.15rem 0.8rem rgba(0, 0, 0, 0.5);
 }
@@ -295,9 +295,9 @@ button.market-language.sproochli-language-trigger--emoji
   display: grid;
   align-items: end;
   padding:
-    clamp(7rem, 14vh, 10rem)
-    clamp(1rem, 5vw, 4rem)
-    clamp(2rem, 8vh, 5rem);
+    clamp(calc(var(--spacing) * 28), 14vh, calc(var(--spacing) * 40))
+    clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16))
+    clamp(calc(var(--spacing) * 8), 8vh, calc(var(--spacing) * 20));
 }
 
 .market-landing__content {
@@ -309,7 +309,7 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-browse {
   align-items: start;
-  padding-top: clamp(6.5rem, 12vh, 8rem);
+  padding-top: clamp(calc(var(--spacing) * 26), 12vh, calc(var(--spacing) * 32));
 }
 
 .market-browse .market-landing__content {
@@ -328,7 +328,7 @@ button.market-language.sproochli-language-trigger--emoji
     minmax(18rem, 26rem)
     minmax(18rem, 26rem)
     minmax(0, 1fr);
-  gap: clamp(1.5rem, 5vw, 4rem);
+  gap: clamp(calc(var(--spacing) * 6), 5vw, calc(var(--spacing) * 16));
   align-items: start;
 }
 
@@ -338,10 +338,10 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-browse__columns .market-feed {
   max-height: calc(100svh - clamp(11rem, 21vh, 15rem));
-  margin-top: clamp(4rem, 9vh, 7rem);
+  margin-top: clamp(calc(var(--spacing) * 16), 9vh, calc(var(--spacing) * 28));
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 0 0.4rem 5rem 0;
+  padding: 0 0.4rem calc(var(--spacing) * 20) 0;
   scrollbar-color: rgba(251, 243, 223, 0.48) transparent;
   scrollbar-width: thin;
 }
@@ -357,7 +357,7 @@ button.market-language.sproochli-language-trigger--emoji
 }
 
 .market-browse h1 {
-  font-size: clamp(3.75rem, 10vw, 7rem);
+  font-size: clamp(var(--text-6xl), 10vw, 7rem);
 }
 
 .market-eyebrow,
@@ -369,7 +369,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-eyebrow {
   color: rgba(251, 243, 223, 0.76);
   font-size: 0.72rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -381,7 +381,7 @@ button.market-language.sproochli-language-trigger--emoji
   color: var(--market-cream);
   font-family: var(--market-display);
   font-size: clamp(4.25rem, 15vw, 9rem);
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.01em;
   line-height: 0.82;
   text-shadow: 0 0.25rem 2rem rgba(0, 0, 0, 0.48);
@@ -400,29 +400,29 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-directory {
   padding:
-    clamp(7rem, 13vh, 9rem)
-    clamp(1rem, 5vw, 4rem)
-    clamp(7rem, 12vh, 9rem);
+    clamp(calc(var(--spacing) * 28), 13vh, calc(var(--spacing) * 36))
+    clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16))
+    clamp(calc(var(--spacing) * 28), 12vh, calc(var(--spacing) * 36));
   overflow-y: auto;
 }
 
 .market-directory__content {
   display: grid;
-  gap: 2rem;
+  gap: calc(var(--spacing) * 8);
   width: min(100%, 72rem);
   margin-inline: auto;
 }
 
 .market-directory__heading {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .market-directory__heading h1 {
   margin: 0;
   color: var(--market-cream);
   font-family: var(--market-display);
-  font-size: clamp(3.75rem, 10vw, 7rem);
+  font-size: clamp(var(--text-6xl), 10vw, 7rem);
   letter-spacing: 0.01em;
   line-height: 0.88;
   text-shadow: 0 0.25rem 2rem rgba(0, 0, 0, 0.48);
@@ -432,13 +432,13 @@ button.market-language.sproochli-language-trigger--emoji
 .market-seller-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .market-seller-card,
 .market-directory__empty {
   border: 1px solid rgba(251, 243, 223, 0.44);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   background: rgba(251, 243, 223, 0.78);
   box-shadow: 0 0.8rem 2rem rgba(12, 35, 31, 0.24);
   color: var(--market-ink);
@@ -462,13 +462,13 @@ button.market-language.sproochli-language-trigger--emoji
 .market-seller-card__body {
   display: grid;
   gap: 0.4rem;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
 }
 
 .market-seller-card__body span {
   color: var(--market-moss);
   font-size: 0.68rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -483,7 +483,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-seller-card h2,
 .market-directory__empty h2 {
   font-size: 1.1rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-seller-card p,
@@ -505,9 +505,9 @@ button.market-language.sproochli-language-trigger--emoji
   justify-content: space-between;
   margin-top: 0.45rem;
   border-top: 1px solid rgba(23, 53, 43, 0.18);
-  padding-top: 0.75rem;
+  padding-top: calc(var(--spacing) * 3);
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-seller-card__action svg {
@@ -518,9 +518,9 @@ button.market-language.sproochli-language-trigger--emoji
 .market-directory__empty {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) minmax(15rem, 21rem);
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
-  padding: 1.25rem;
+  padding: calc(var(--spacing) * 5);
 }
 
 .market-directory__empty > svg {
@@ -553,7 +553,7 @@ button.market-language.sproochli-language-trigger--emoji
   min-height: 25rem;
   aspect-ratio: auto;
   border: 1px solid rgba(23, 53, 43, 0.42);
-  border-radius: 18% 44% 16% 38% / 28% 13% 34% 18%;
+  border-radius: calc(var(--ui-radius) * 6);
   box-shadow: 0.9rem 1rem 0 rgba(23, 53, 43, 0.13);
   transform: rotate(1.5deg);
 }
@@ -619,7 +619,7 @@ button.market-language.sproochli-language-trigger--emoji
   width: 4.2rem;
   height: 0.75rem;
   border: 2px solid var(--market-ink);
-  border-radius: 28% 22% 18% 26%;
+  border-radius: calc(var(--ui-radius) * 6);
   background: #cf4438;
   transform: rotate(-1deg);
 }
@@ -632,7 +632,7 @@ button.market-language.sproochli-language-trigger--emoji
   place-items: center;
   overflow: hidden;
   border: 2px solid var(--market-ink);
-  border-radius: 12% 9% 17% 14%;
+  border-radius: calc(var(--ui-radius) * 6);
   background: rgba(251, 243, 223, 0.54);
 }
 
@@ -668,7 +668,7 @@ button.market-language.sproochli-language-trigger--emoji
   position: relative;
   z-index: 2;
   border: 1px solid var(--market-ink);
-  border-radius: 45% 55% 47% 53%;
+  border-radius: 50%;
   padding: 0.35rem 0.55rem;
   background: var(--market-cream);
   font-size: 0.64rem;
@@ -685,7 +685,7 @@ button.market-language.sproochli-language-trigger--emoji
   height: 3.2rem;
   place-items: center;
   border: 2px solid var(--market-ink);
-  border-radius: 47% 53% 42% 58%;
+  border-radius: 50%;
   background: var(--market-cream);
   color: #cf4438;
   transform: rotate(-9deg);
@@ -699,14 +699,14 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront {
   overflow-y: auto;
   padding:
-    clamp(6.5rem, 11vh, 8rem)
-    clamp(1rem, 5vw, 4rem)
-    clamp(8rem, 14vh, 11rem);
+    clamp(calc(var(--spacing) * 26), 11vh, calc(var(--spacing) * 32))
+    clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16))
+    clamp(calc(var(--spacing) * 32), 14vh, calc(var(--spacing) * 44));
 }
 
 .market-storefront__content {
   display: grid;
-  gap: clamp(1rem, 3vw, 2rem);
+  gap: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 8));
   width: min(100%, 68rem);
   margin-inline: auto;
 }
@@ -729,11 +729,11 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__hero {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(20rem, 0.92fr);
-  gap: clamp(1.5rem, 5vw, 4rem);
+  gap: clamp(calc(var(--spacing) * 6), 5vw, calc(var(--spacing) * 16));
   align-items: center;
   border: 1px solid rgba(251, 243, 223, 0.64);
-  border-radius: calc(var(--ui-radius) * 5);
-  padding: clamp(1.25rem, 4vw, 3.5rem);
+  border-radius: calc(var(--ui-radius) * 6);
+  padding: clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 14));
   background: rgba(251, 243, 223, 0.92);
   box-shadow: 0 1.2rem 3.6rem rgba(12, 35, 31, 0.3);
   color: var(--market-ink);
@@ -763,7 +763,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__facts {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .market-storefront__facts span {
@@ -774,7 +774,7 @@ button.market-language.sproochli-language-trigger--emoji
   border-radius: 9999px;
   padding: 0.45rem 0.7rem;
   font-size: 0.7rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-storefront__facts svg {
@@ -784,9 +784,9 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-storefront__description {
   max-width: 34rem;
-  margin: 0.5rem 0 0;
+  margin: calc(var(--spacing) * 2) 0 0;
   color: rgba(23, 53, 43, 0.82);
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 650;
   line-height: 1.55;
 }
@@ -795,11 +795,11 @@ button.market-language.sproochli-language-trigger--emoji
   display: flex;
   gap: 0.55rem;
   align-items: flex-start;
-  margin: 0.5rem 0 0;
+  margin: calc(var(--spacing) * 2) 0 0;
   border-top: 1px solid rgba(23, 53, 43, 0.2);
   padding-top: 0.8rem;
   color: rgba(23, 53, 43, 0.68);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   font-weight: 750;
   line-height: 1.45;
 }
@@ -815,7 +815,7 @@ button.market-language.sproochli-language-trigger--emoji
   display: grid;
   gap: 1.2rem;
   border: 1px solid rgba(251, 243, 223, 0.44);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   padding: clamp(1.2rem, 3vw, 2.2rem);
   background: rgba(23, 53, 43, 0.82);
   backdrop-filter: blur(12px);
@@ -824,7 +824,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__offers > header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(14rem, 24rem);
-  gap: 1.5rem;
+  gap: calc(var(--spacing) * 6);
   align-items: end;
 }
 
@@ -833,7 +833,7 @@ button.market-language.sproochli-language-trigger--emoji
   margin: 0.2rem 0 0;
   color: var(--market-cream);
   font-family: var(--market-display);
-  font-size: clamp(2.6rem, 6vw, 4.5rem);
+  font-size: clamp(2.6rem, 6vw, var(--text-7xl));
   letter-spacing: 0.02em;
   line-height: 0.86;
   text-transform: uppercase;
@@ -842,7 +842,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__offers > header > p {
   margin: 0;
   color: rgba(251, 243, 223, 0.76);
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .market-storefront__offer-grid {
@@ -854,7 +854,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__offer {
   position: relative;
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   border: 1px solid rgba(251, 243, 223, 0.46);
   border-radius: calc(var(--ui-radius) * 4);
   padding: 1.2rem;
@@ -902,7 +902,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__offer dt {
   color: rgba(23, 53, 43, 0.58);
   font-size: 0.67rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -910,25 +910,25 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__offer dd {
   margin: 0;
   font-size: 0.76rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
   text-align: right;
 }
 
 .market-storefront__offer button {
   display: inline-flex;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   align-items: center;
   justify-content: center;
   min-height: 2.8rem;
   border: 1px solid var(--market-ink);
   border-radius: 9999px;
-  padding-inline: 1rem;
+  padding-inline: calc(var(--spacing) * 4);
   background: var(--market-ink);
   color: var(--market-cream);
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-storefront__interest {
@@ -937,8 +937,8 @@ button.market-language.sproochli-language-trigger--emoji
   gap: 1.2rem;
   align-items: center;
   border: 1px solid rgba(251, 243, 223, 0.6);
-  border-radius: calc(var(--ui-radius) * 5);
-  padding: clamp(1.2rem, 3vw, 2rem);
+  border-radius: calc(var(--ui-radius) * 6);
+  padding: clamp(1.2rem, 3vw, calc(var(--spacing) * 8));
   background: rgba(47, 106, 80, 0.94);
   box-shadow: 0 1rem 2.8rem rgba(12, 35, 31, 0.26);
 }
@@ -946,7 +946,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-storefront__interest p {
   margin: 0.65rem 0 0;
   color: rgba(251, 243, 223, 0.8);
-  line-height: 1.5;
+  line-height: var(--leading-normal);
 }
 
 .market-storefront__interest .market-action {
@@ -973,12 +973,12 @@ button.market-language.sproochli-language-trigger--emoji
 }
 
 .market-browse .market-sell-start h1 {
-  font-size: clamp(3.75rem, 7vw, 5.25rem);
+  font-size: clamp(var(--text-6xl), 7vw, 5.25rem);
 }
 
 .market-sell-points {
   display: grid;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   margin: 0.7rem 0 0;
   padding: 0;
   list-style: none;
@@ -1028,7 +1028,7 @@ button.market-language.sproochli-language-trigger--emoji
   align-items: center;
   border: 1px solid var(--market-line);
   border-radius: 9999px;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem calc(var(--spacing) * 4);
   background: rgba(251, 243, 223, 0.68);
   box-shadow: 0 0.7rem 1.8rem rgba(12, 35, 31, 0.22);
   color: var(--market-ink);
@@ -1062,13 +1062,13 @@ button.market-language.sproochli-language-trigger--emoji
 }
 
 .market-section-link strong {
-  font-size: 1rem;
-  font-weight: 900;
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-black);
 }
 
 .market-section-link small {
   color: rgba(23, 53, 43, 0.72);
-  font-size: 0.75rem;
+  font-size: var(--text-xs);
   line-height: 1.35;
 }
 
@@ -1078,9 +1078,9 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-feed {
   display: grid;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   width: min(100%, 26rem);
-  margin-top: 1.25rem;
+  margin-top: calc(var(--spacing) * 5);
 }
 
 .market-feed__heading {
@@ -1102,7 +1102,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-feed-post {
   overflow: hidden;
   border: 1px solid rgba(251, 243, 223, 0.44);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   background: rgba(251, 243, 223, 0.72);
   box-shadow: 0 0.8rem 2rem rgba(12, 35, 31, 0.24);
   color: var(--market-ink);
@@ -1119,13 +1119,13 @@ button.market-language.sproochli-language-trigger--emoji
 .market-feed-post__body {
   display: grid;
   gap: 0.4rem;
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
 }
 
 .market-feed-post__label {
   color: var(--market-moss);
   font-size: 0.68rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
@@ -1137,7 +1137,7 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-feed-post h3 {
   font-size: 1.1rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   line-height: 1.2;
 }
 
@@ -1159,15 +1159,15 @@ button.market-language.sproochli-language-trigger--emoji
   display: grid;
   place-items: center;
   padding:
-    clamp(7rem, 12vh, 9rem)
-    clamp(1rem, 5vw, 4rem)
-    clamp(6rem, 12vh, 9rem);
+    clamp(calc(var(--spacing) * 28), 12vh, calc(var(--spacing) * 36))
+    clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16))
+    clamp(calc(var(--spacing) * 24), 12vh, calc(var(--spacing) * 36));
 }
 
 .market-register__content {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(18rem, 28rem);
-  gap: clamp(2rem, 6vw, 6rem);
+  gap: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 24));
   align-items: center;
   width: min(100%, 64rem);
 }
@@ -1182,7 +1182,7 @@ button.market-language.sproochli-language-trigger--emoji
   color: var(--market-cream);
   font-family: var(--market-display);
   font-size: clamp(3.5rem, 9vw, 7rem);
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.01em;
   line-height: 0.88;
   text-shadow: 0 0.25rem 2rem rgba(0, 0, 0, 0.48);
@@ -1197,7 +1197,7 @@ button.market-language.sproochli-language-trigger--emoji
   align-items: center;
   border: 1px solid var(--market-line);
   border-radius: calc(var(--ui-radius) * 4);
-  padding: 0.85rem 1rem;
+  padding: 0.85rem calc(var(--spacing) * 4);
   text-decoration: none;
   box-shadow: 0 0.7rem 1.8rem rgba(12, 35, 31, 0.22);
   transition:
@@ -1234,9 +1234,9 @@ button.market-language.sproochli-language-trigger--emoji
 .market-personal {
   overflow-y: auto;
   padding:
-    clamp(7rem, 13vh, 9rem)
-    clamp(1rem, 5vw, 4rem)
-    clamp(8rem, 14vh, 11rem);
+    clamp(calc(var(--spacing) * 28), 13vh, calc(var(--spacing) * 36))
+    clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16))
+    clamp(calc(var(--spacing) * 32), 14vh, calc(var(--spacing) * 44));
 }
 
 .market-personal__content {
@@ -1247,9 +1247,9 @@ button.market-language.sproochli-language-trigger--emoji
 .market-personal__header {
   display: grid;
   grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
-  gap: clamp(2rem, 6vw, 6rem);
+  gap: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 24));
   align-items: end;
-  margin-bottom: clamp(1.5rem, 4vw, 3rem);
+  margin-bottom: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 12));
 }
 
 .market-personal__header h1,
@@ -1259,7 +1259,7 @@ button.market-language.sproochli-language-trigger--emoji
   color: var(--market-cream);
   font-family: var(--market-display);
   font-size: clamp(3.8rem, 10vw, 7.4rem);
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.01em;
   line-height: 0.82;
   text-shadow: 0 0.25rem 2rem rgba(0, 0, 0, 0.48);
@@ -1273,7 +1273,7 @@ button.market-language.sproochli-language-trigger--emoji
   width: fit-content;
   border: 1px solid rgba(251, 243, 223, 0.4);
   border-radius: 9999px;
-  padding: 0.55rem 1rem 0.55rem 0.55rem;
+  padding: 0.55rem calc(var(--spacing) * 4) 0.55rem 0.55rem;
   background: rgba(23, 53, 43, 0.54);
   backdrop-filter: blur(10px);
 }
@@ -1287,7 +1287,7 @@ button.market-language.sproochli-language-trigger--emoji
   color: rgba(251, 243, 223, 0.66);
   font-size: 0.64rem;
   font-weight: 850;
-  letter-spacing: 0.1em;
+  letter-spacing: var(--tracking-widest);
   text-transform: uppercase;
 }
 
@@ -1307,7 +1307,9 @@ button.market-language.sproochli-language-trigger--emoji
   margin: 0 0 0.7rem clamp(0.7rem, 2vw, 1.3rem);
   border: 1px solid rgba(251, 243, 223, 0.42);
   border-bottom: 0;
-  border-radius: 1.1rem 1.1rem 0 0;
+  border-radius: calc(var(--ui-radius) * 4);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
   padding: 0.35rem 0.35rem 0;
   background: rgba(23, 53, 43, 0.7);
   backdrop-filter: blur(10px);
@@ -1315,18 +1317,20 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-personal__tabs button {
   display: inline-flex;
-  gap: 0.5rem;
+  gap: calc(var(--spacing) * 2);
   align-items: center;
   min-height: 2.8rem;
   border: 0;
-  border-radius: 0.75rem 0.75rem 0 0;
-  padding-inline: clamp(0.9rem, 3vw, 1.5rem);
+  border-radius: calc(var(--ui-radius) * 3);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
+  padding-inline: clamp(0.9rem, 3vw, calc(var(--spacing) * 6));
   background: transparent;
   color: rgba(251, 243, 223, 0.72);
   cursor: pointer;
   font: inherit;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1345,7 +1349,7 @@ button.market-language.sproochli-language-trigger--emoji
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(251, 243, 223, 0.72);
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
   padding: clamp(1.2rem, 3vw, 2.4rem);
   background: rgba(251, 243, 223, 0.94);
   box-shadow: 0 1.5rem 4rem rgba(9, 32, 29, 0.34);
@@ -1361,7 +1365,9 @@ button.market-language.sproochli-language-trigger--emoji
   width: 25rem;
   height: 15rem;
   border: 1px solid rgba(47, 106, 80, 0.18);
-  border-radius: 48% 52% 0 0;
+  border-radius: 50%;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
   content: "";
   transform: rotate(-8deg);
 }
@@ -1373,11 +1379,11 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-personal__workspace-header {
   display: flex;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: end;
   justify-content: space-between;
-  margin-bottom: clamp(1.2rem, 3vw, 2rem);
-  padding-bottom: 1rem;
+  margin-bottom: clamp(1.2rem, 3vw, calc(var(--spacing) * 8));
+  padding-bottom: calc(var(--spacing) * 4);
   border-bottom: 1px solid rgba(23, 53, 43, 0.22);
 }
 
@@ -1391,10 +1397,10 @@ button.market-language.sproochli-language-trigger--emoji
 }
 
 .market-personal__section-kicker {
-  margin: 0 0 0.25rem;
+  margin: 0 0 calc(var(--spacing) * 1);
   color: rgba(23, 53, 43, 0.62);
   font-size: 0.65rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.14em;
   text-transform: uppercase;
 }
@@ -1418,8 +1424,8 @@ button.market-language.sproochli-language-trigger--emoji
   min-height: 17rem;
   flex-direction: column;
   border: 1px solid rgba(23, 53, 43, 0.24);
-  border-radius: calc(var(--ui-radius) * 3.5);
-  padding: clamp(1rem, 2.4vw, 1.5rem);
+  border-radius: calc(var(--ui-radius) * 4);
+  padding: clamp(calc(var(--spacing) * 4), 2.4vw, calc(var(--spacing) * 6));
   background: rgba(251, 243, 223, 0.66);
 }
 
@@ -1432,7 +1438,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-personal__section-header h3 {
   margin: 0;
   font-family: var(--market-display);
-  font-size: clamp(2rem, 4vw, 3rem);
+  font-size: clamp(2rem, 4vw, var(--text-5xl));
   letter-spacing: 0.02em;
   line-height: 0.9;
   text-transform: uppercase;
@@ -1445,7 +1451,7 @@ button.market-language.sproochli-language-trigger--emoji
   flex: none;
   place-items: center;
   border: 1px solid rgba(23, 53, 43, 0.7);
-  border-radius: 48% 52% 45% 55%;
+  border-radius: 50%;
   transform: rotate(-4deg);
 }
 
@@ -1461,15 +1467,15 @@ button.market-language.sproochli-language-trigger--emoji
   flex-direction: column;
   align-items: flex-start;
   justify-content: end;
-  margin-top: 2rem;
+  margin-top: calc(var(--spacing) * 8);
   border-top: 1px solid rgba(23, 53, 43, 0.14);
   padding-top: 1.2rem;
 }
 
 .market-personal__empty p {
-  margin: 0 0 0.75rem;
+  margin: 0 0 calc(var(--spacing) * 3);
   color: rgba(23, 53, 43, 0.64);
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
 }
 
 .market-personal__empty a,
@@ -1482,10 +1488,10 @@ button.market-language.sproochli-language-trigger--emoji
   min-height: 2.9rem;
   border: 1px solid currentcolor;
   border-radius: 9999px;
-  padding-inline: 1rem;
+  padding-inline: calc(var(--spacing) * 4);
   color: inherit;
   font-size: 0.82rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   text-decoration: none;
 }
 
@@ -1511,7 +1517,7 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-personal__settings label > span {
   font-size: 0.74rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1521,7 +1527,7 @@ button.market-language.sproochli-language-trigger--emoji
   min-height: 7rem;
   resize: vertical;
   border: 1px solid rgba(23, 53, 43, 0.34);
-  border-radius: calc(var(--ui-radius) * 2.2);
+  border-radius: calc(var(--ui-radius) * 2);
   padding: 0.85rem 0.9rem;
   background: rgba(255, 252, 243, 0.82);
   color: var(--market-ink);
@@ -1553,7 +1559,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-personal__settings-message {
   color: var(--market-moss);
   font-size: 0.78rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-extrabold);
 }
 
 .market-personal__settings-message.is-error {
@@ -1566,12 +1572,12 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-personal__dev-reset {
   display: flex;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   align-items: center;
   justify-content: space-between;
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
   border: 1px dashed rgba(251, 243, 223, 0.46);
-  border-radius: calc(var(--ui-radius) * 2.5);
+  border-radius: calc(var(--ui-radius) * 3);
   padding: 0.8rem 0.9rem;
   background: rgba(23, 53, 43, 0.66);
   color: var(--market-cream);
@@ -1629,12 +1635,12 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-personal__guest {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: min(100%, 38rem);
 }
 
 .market-personal__guest .market-intro {
-  margin-bottom: 0.5rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 .market-personal__primary-action {
@@ -1645,7 +1651,7 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-personal__loading {
   display: grid;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: min(100%, 44rem);
 }
 
@@ -1663,7 +1669,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-personal__loading-card {
   width: 100%;
   height: 20rem;
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 6);
 }
 
 @media (max-width: 64rem) {
@@ -1679,7 +1685,7 @@ button.market-language.sproochli-language-trigger--emoji
   .market-footer {
     position: static;
     justify-content: center;
-    margin: 2rem clamp(1rem, 5vw, 4rem) 3rem;
+    margin: calc(var(--spacing) * 8) clamp(calc(var(--spacing) * 4), 5vw, calc(var(--spacing) * 16)) calc(var(--spacing) * 12);
   }
 }
 
@@ -1690,7 +1696,7 @@ button.market-language.sproochli-language-trigger--emoji
 
   .market-browse__columns .market-feed {
     max-height: none;
-    margin-top: 1.25rem;
+    margin-top: calc(var(--spacing) * 5);
     overflow: visible;
     padding: 0;
   }
@@ -1715,13 +1721,13 @@ button.market-language.sproochli-language-trigger--emoji
 
 @media (max-width: 40rem) {
   .market-app .public-index__hero {
-    padding-top: 5.5rem;
+    padding-top: calc(var(--spacing) * 22);
   }
 
   .market-header {
     min-height: 4.25rem;
-    gap: 0.5rem;
-    padding-inline: 0.75rem;
+    gap: calc(var(--spacing) * 2);
+    padding-inline: calc(var(--spacing) * 3);
   }
 
   .market-brand > span:last-child {
@@ -1736,7 +1742,7 @@ button.market-language.sproochli-language-trigger--emoji
     justify-content: center;
     height: 3.6rem;
     border: 0;
-    border-radius: 0.85rem;
+    border-radius: calc(var(--ui-radius) * 3);
     padding: 0.35rem 0.55rem;
     color: rgba(23, 53, 43, 0.72);
   }
@@ -1774,9 +1780,9 @@ button.market-language.sproochli-language-trigger--emoji
     left: 0.75rem;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.25rem;
+    gap: calc(var(--spacing) * 1);
     border: 1px solid rgba(251, 243, 223, 0.74);
-    border-radius: 1.15rem;
+    border-radius: calc(var(--ui-radius) * 4);
     padding: 0.3rem;
     background: rgba(251, 243, 223, 0.94);
     box-shadow: 0 0.8rem 2.2rem rgba(9, 32, 29, 0.38);
@@ -1837,7 +1843,7 @@ button.market-language.sproochli-language-trigger--emoji
 
   .market-browse__columns .market-feed {
     max-height: none;
-    margin-top: 1.25rem;
+    margin-top: calc(var(--spacing) * 5);
     overflow: visible;
     padding: 0;
   }
@@ -1872,13 +1878,13 @@ button.market-language.sproochli-language-trigger--emoji
   }
 
   .market-personal {
-    padding-top: 6.75rem;
+    padding-top: calc(var(--spacing) * 27);
     background: linear-gradient(180deg, transparent 32svh, var(--market-ink) 56svh);
   }
 
   .market-personal__header {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: calc(var(--spacing) * 6);
   }
 
   .market-personal__identity {
@@ -1901,7 +1907,7 @@ button.market-language.sproochli-language-trigger--emoji
   }
 
   .market-personal__workspace {
-    border-radius: calc(var(--ui-radius) * 3.5);
+    border-radius: calc(var(--ui-radius) * 4);
   }
 
   .market-personal__section {
@@ -1917,18 +1923,18 @@ button.market-language.sproochli-language-trigger--emoji
   }
 
   .market-storefront {
-    padding-top: 6.5rem;
+    padding-top: calc(var(--spacing) * 26);
     background: linear-gradient(180deg, transparent 32svh, var(--market-ink) 58svh);
   }
 
   .market-storefront__hero {
-    border-radius: calc(var(--ui-radius) * 3.5);
-    padding: 1rem;
+    border-radius: calc(var(--ui-radius) * 4);
+    padding: calc(var(--spacing) * 4);
   }
 
   .market-honey-art--large {
     min-height: 18rem;
-    border-radius: 18% 44% 16% 38% / 28% 13% 34% 18%;
+    border-radius: calc(var(--ui-radius) * 6);
   }
 
   .market-storefront__intro h1 {
@@ -1947,7 +1953,7 @@ button.market-language.sproochli-language-trigger--emoji
 
   .market-footer {
     position: static;
-    margin: 2rem 1rem calc(5.5rem + env(safe-area-inset-bottom));
+    margin: calc(var(--spacing) * 8) calc(var(--spacing) * 4) calc(calc(var(--spacing) * 22) + env(safe-area-inset-bottom));
     flex-direction: column;
     gap: 0.3rem;
     text-align: center;
@@ -1985,7 +1991,9 @@ button.market-language.sproochli-language-trigger--emoji
 .market-canonical-store__art::after {
   position: absolute;
   inset: 42% -12% -18%;
-  border-radius: 50% 46% 0 0;
+  border-radius: 50%;
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
   background:
     linear-gradient(145deg, transparent 20%, rgba(251, 243, 223, 0.12) 21% 23%, transparent 24%),
     rgba(251, 243, 223, 0.08);
@@ -2006,7 +2014,7 @@ button.market-language.sproochli-language-trigger--emoji
   z-index: 1;
   display: flex;
   align-items: end;
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
   color: var(--market-cream);
 }
 
@@ -2021,7 +2029,7 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-canonical-store__art {
   min-height: 24rem;
-  border-radius: 28% 12% 30% 14% / 12% 30% 14% 28%;
+  border-radius: calc(var(--ui-radius) * 6);
 }
 
 .market-canonical-store__art .iconify:first-child {
@@ -2036,7 +2044,7 @@ button.market-language.sproochli-language-trigger--emoji
 
 .market-canonical-store__price {
   display: block;
-  margin-top: 1rem;
+  margin-top: calc(var(--spacing) * 4);
   color: var(--market-rust);
   font-size: 1.35rem;
 }
@@ -2044,7 +2052,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-canonical-store__empty {
   border: 1px solid rgba(251, 243, 223, 0.28);
   border-radius: calc(var(--ui-radius) * 3);
-  padding: 2rem;
+  padding: calc(var(--spacing) * 8);
   color: rgba(251, 243, 223, 0.76);
 }
 
@@ -2055,7 +2063,7 @@ button.market-language.sproochli-language-trigger--emoji
 .market-canonical-order__form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   width: 100%;
 }
 
@@ -2097,15 +2105,15 @@ button.market-language.sproochli-language-trigger--emoji
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: 2rem;
-  margin-bottom: 2rem;
+  gap: calc(var(--spacing) * 8);
+  margin-bottom: calc(var(--spacing) * 8);
   color: var(--market-cream);
 }
 
 .market-workbench__header h1 {
   margin: 0;
   font-family: var(--market-display);
-  font-size: clamp(3rem, 8vw, 6rem);
+  font-size: clamp(var(--text-5xl), 8vw, var(--text-8xl));
   line-height: 0.9;
 }
 
@@ -2120,8 +2128,8 @@ button.market-language.sproochli-language-trigger--emoji
   justify-content: center;
   gap: 0.45rem;
   border: 0;
-  border-radius: 999px;
-  padding: 0.72rem 1rem;
+  border-radius: 9999px;
+  padding: 0.72rem calc(var(--spacing) * 4);
   background: var(--market-sun);
   color: var(--market-ink);
   font-weight: 850;
@@ -2136,8 +2144,8 @@ button.market-language.sproochli-language-trigger--emoji
 .market-workbench__grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
-  gap: 1rem;
-  margin-bottom: 1.5rem;
+  gap: calc(var(--spacing) * 4);
+  margin-bottom: calc(var(--spacing) * 6);
 }
 
 .market-workbench__card,
@@ -2165,8 +2173,8 @@ button.market-language.sproochli-language-trigger--emoji
 .market-admin__list header span,
 .market-offer-admin header span {
   color: var(--market-rust);
-  font-size: 0.75rem;
-  font-weight: 900;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-black);
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -2184,14 +2192,14 @@ button.market-language.sproochli-language-trigger--emoji
   cursor: pointer;
   font-family: var(--market-display);
   font-size: 1.8rem;
-  font-weight: 900;
+  font-weight: var(--font-weight-black);
 }
 
 .market-workbench__form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  margin-top: 1.25rem;
+  gap: calc(var(--spacing) * 4);
+  margin-top: calc(var(--spacing) * 5);
 }
 
 .market-workbench__wide {
@@ -2201,14 +2209,14 @@ button.market-language.sproochli-language-trigger--emoji
 .market-workbench fieldset {
   border: 1px solid rgba(23, 53, 43, 0.16);
   border-radius: calc(var(--ui-radius) * 2);
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
 }
 
 .market-workbench__check {
   display: inline-flex !important;
   grid-template-columns: auto 1fr;
   align-items: center;
-  margin: 0.35rem 1rem 0.35rem 0;
+  margin: 0.35rem calc(var(--spacing) * 4) 0.35rem 0;
 }
 
 .market-workbench__check input {
@@ -2223,7 +2231,7 @@ button.market-language.sproochli-language-trigger--emoji
 }
 
 .market-workbench__section {
-  margin-top: 1.5rem;
+  margin-top: calc(var(--spacing) * 6);
 }
 
 .market-workbench__section > header,
@@ -2233,7 +2241,7 @@ button.market-language.sproochli-language-trigger--emoji
   display: flex;
   align-items: start;
   justify-content: space-between;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
 }
 
 .market-workbench__section h2,
@@ -2247,15 +2255,15 @@ button.market-language.sproochli-language-trigger--emoji
 .market-order-admin,
 .market-admin__list {
   display: grid;
-  gap: 1rem;
-  margin-top: 1.25rem;
+  gap: calc(var(--spacing) * 4);
+  margin-top: calc(var(--spacing) * 5);
 }
 
 .market-offer-admin > article,
 .market-order-admin > article {
   border: 1px solid rgba(23, 53, 43, 0.16);
-  border-radius: calc(var(--ui-radius) * 2.5);
-  padding: 1rem;
+  border-radius: calc(var(--ui-radius) * 3);
+  padding: calc(var(--spacing) * 4);
 }
 
 .market-offer-admin form,
@@ -2263,8 +2271,8 @@ button.market-language.sproochli-language-trigger--emoji
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: end;
-  gap: 0.75rem;
-  margin: 1rem 0;
+  gap: calc(var(--spacing) * 3);
+  margin: calc(var(--spacing) * 4) 0;
 }
 
 .market-admin__member {
@@ -2281,7 +2289,7 @@ button.market-language.sproochli-language-trigger--emoji
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: calc(var(--spacing) * 4);
   border: 1px solid rgba(23, 53, 43, 0.14);
   border-radius: calc(var(--ui-radius) * 2);
   padding: 0.85rem;

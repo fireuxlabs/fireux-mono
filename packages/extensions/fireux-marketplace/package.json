@@ -17,7 +17,7 @@
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",
-    "test": "nuxt-module-build build && node --test test/*.test.mjs",
+    "test": "nuxt-module-build build && node --test src/test/*.test.mjs",
     "postbuild": "rimraf src/**/*.map",
     "clean": "rimraf dist"
   },

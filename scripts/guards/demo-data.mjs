@@ -498,9 +498,9 @@ export async function run(ctx) {
 
     if (
       consoleCore &&
-      !new RegExp(`use${consoleCore.typeName}ConsoleDemoData\\s*\\(`).test(
-        source
-      )
+      !new RegExp(
+        `use${consoleCore.typeName}ConsoleDemo(?:Data|Targets)\\s*\\(`
+      ).test(source)
     ) {
       violations.push({
         code: 'console-shape',

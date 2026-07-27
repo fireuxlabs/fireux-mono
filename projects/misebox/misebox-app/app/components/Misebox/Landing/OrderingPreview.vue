@@ -255,18 +255,18 @@ const {
 
 .landing-ordering-preview__kiosk
   :deep(.menu-order-kiosk-catalogue__content) {
-  padding: 1rem;
+  padding: calc(var(--spacing) * 4);
 }
 
 .landing-ordering-preview__kiosk
   :deep(.menu-order-kiosk-catalogue__header h2) {
-  font-size: 1.5rem;
+  font-size: var(--text-2xl);
 }
 
 .landing-ordering-preview__kiosk
   :deep(.menu-order-kiosk-catalogue__items) {
   grid-template-columns: minmax(0, 1fr);
-  gap: 0.75rem;
+  gap: calc(var(--spacing) * 3);
 }
 
 .landing-ordering-preview__kiosk
@@ -310,7 +310,7 @@ const {
 
 .landing-ordering-preview__phone-content {
   display: grid;
-  gap: 0.25rem;
+  gap: calc(var(--spacing) * 1);
   padding: calc(var(--spacing) * 5);
   overflow: visible;
 }
@@ -341,7 +341,7 @@ const {
 
 .landing-ordering-preview__phone
   :deep(.menu-catalogue-section__heading) {
-  font-size: 1.25rem;
+  font-size: var(--text-xl);
 }
 
 .landing-ordering-preview__phone
@@ -375,7 +375,9 @@ const {
     overflow: hidden;
     border: 0.4rem solid color-mix(in srgb, var(--menu-text) 86%, black);
     border-bottom: 0;
-    border-radius: 2rem 2rem 0 0;
+    border-radius: calc(var(--ui-radius) * 6);
+  border-end-start-radius: 0;
+  border-end-end-radius: 0;
   }
 
   .landing-ordering-preview__phone-bar {

@@ -70,7 +70,7 @@
   width: calc(var(--spacing) * 11);
   aspect-ratio: 1;
   place-items: center;
-  border-radius: 50% 50% 46% 46%;
+  border-radius: 50%;
   background: var(--aus-sun);
   color: var(--aus-ink);
   font-family: var(--font-serif);
@@ -140,8 +140,8 @@ footer p {
   max-width: 14ch;
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(2rem, 4vw, 4.5rem);
-  letter-spacing: -0.05em;
+  font-size: clamp(2rem, 4vw, var(--text-7xl));
+  letter-spacing: var(--tracking-tighter);
   line-height: 0.98;
 }
 

@@ -152,7 +152,7 @@ useSeoMeta({
 .hero h1 {
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(4.5rem, 13vw, 11rem);
+  font-size: clamp(var(--text-7xl), 13vw, 11rem);
   font-weight: var(--font-weight-normal);
   letter-spacing: -0.075em;
   line-height: 0.78;
@@ -170,7 +170,7 @@ useSeoMeta({
 .hero__footer span {
   max-width: 34rem;
   color: rgb(255 253 248 / 72%);
-  font-size: clamp(1rem, 2vw, 1.35rem);
+  font-size: clamp(var(--text-base), 2vw, 1.35rem);
   line-height: 1.6;
 }
 
@@ -219,7 +219,7 @@ useSeoMeta({
   max-width: 11ch;
   margin: 0;
   font-family: var(--font-serif);
-  font-size: clamp(3rem, 7vw, 6.5rem);
+  font-size: clamp(var(--text-5xl), 7vw, 6.5rem);
   font-weight: var(--font-weight-normal);
   letter-spacing: -0.06em;
   line-height: 0.92;
@@ -316,7 +316,7 @@ useSeoMeta({
   font-family: var(--font-serif);
   font-size: clamp(2rem, 4vw, 4rem);
   font-weight: var(--font-weight-normal);
-  letter-spacing: -0.05em;
+  letter-spacing: var(--tracking-tighter);
   line-height: 1;
 }
 

@@ -70,6 +70,7 @@ const RULES_PATH = `${RULES_DIRECTORY}/server-only.rules`
 
 const RULE_CONFIG_DATABASES = new Map([
   ['bringli.firebase.json', ['directory-outbox']],
+  ['buenohost.firebase.json', ['directory-outbox']],
   ['cleanbox.firebase.json', ['directory-outbox']],
   ['fireux.firebase.json', ['directory-outbox', 'platform-directory']],
   ['granite.firebase.json', ['directory-outbox']],

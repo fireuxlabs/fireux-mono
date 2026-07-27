@@ -13,7 +13,7 @@ import {
   normalizeSproochliLanguage,
   resolveSproochliLanguageState,
   type SproochliLanguageCode,
-} from 'fireux-sproochli/runtime/sproochli'
+} from 'fireux-sproochli/runtime/sproochli.ts'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
   menuContextProfile,

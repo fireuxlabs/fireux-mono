@@ -10,7 +10,7 @@ import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
-} from 'fireux-sproochli/runtime/sproochli'
+} from 'fireux-sproochli/runtime/sproochli.ts'
 import { buildMenuPayload } from '../../menu/payload/build.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { readKitchenMenuSections } from '../../menu/manifest/sections.ts'

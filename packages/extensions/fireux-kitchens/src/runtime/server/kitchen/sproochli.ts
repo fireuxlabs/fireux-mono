@@ -8,7 +8,7 @@ import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamp
 import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,
-} from 'fireux-sproochli/runtime/sproochli'
+} from 'fireux-sproochli/runtime/sproochli.ts'
 import { KitchenStorage } from '../../models/kitchen.model.ts'
 import {
   readKitchenOnboardingScope,
