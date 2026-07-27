@@ -1,5 +1,6 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import {
@@ -16,6 +17,7 @@ export function useKitchenStationUpdate(options: {
   kitchenCollectionPath?: string | Ref<string | null | undefined>
   databaseId?: string | Ref<string | null | undefined>
 } = {}) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
 
@@ -24,6 +26,7 @@ export function useKitchenStationUpdate(options: {
     stationId: string,
     patch: KitchenStationUpdateInput
   ) {
+    requireWritableData()
     const resolvedKitchenId = normalizeString(kitchenId)
     const resolvedStationId = normalizeString(stationId)
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')

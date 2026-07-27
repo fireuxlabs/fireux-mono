@@ -4,7 +4,9 @@ import {
   toValue,
   type MaybeRefOrGetter,
 } from 'vue'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import type { KitchenOrderTransition } from '../../../../../../../models/kitchen/order.model'
 
 type KitchenOrderTransitionOptions = {
@@ -18,6 +20,8 @@ export function useKitchenOrderTransition(options: {
   appId: MaybeRefOrGetter<string | null | undefined>
 }) {
   const { currentUser } = useAuth()
+  const { selectedId } = useConsoleSelection('kitchen')
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const error = ref('')
   const pendingByOrderId = ref<Record<string, boolean>>({})
   const pendingCount = computed(() =>
@@ -42,6 +46,7 @@ export function useKitchenOrderTransition(options: {
     transition: KitchenOrderTransition,
     transitionOptions: KitchenOrderTransitionOptions = {}
   ) {
+    requireWritableData()
     const appId = text(toValue(options.appId))
     const resolvedKitchenId = text(kitchenId)
     const resolvedOrderId = text(orderId)
@@ -56,6 +61,13 @@ export function useKitchenOrderTransition(options: {
 
       const token = await currentUser.value?.getIdToken()
       if (!token) throw new Error('Sign in before processing kitchen orders.')
+      requireWritableData()
+      if (
+        text(toValue(options.appId)) !== appId ||
+        text(selectedId.value) !== resolvedKitchenId
+      ) {
+        throw new Error('The selected Kitchen changed before the order could update.')
+      }
 
       return await $fetch('/api/console/kitchen/orders/transition', {
         method: 'POST',

@@ -6,12 +6,43 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 
 :where(.preview) {
 	width: 100%;
+	overflow: hidden;
+	border-color: color-mix(in srgb, var(--ui-border) 78%, transparent);
+	border-radius: calc(var(--ui-radius) * 6);
+	background:
+		radial-gradient(
+			circle at 100% 0%,
+			color-mix(in srgb, var(--ui-primary) 13%, transparent),
+			transparent 42%
+		),
+		linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--ui-bg-elevated) 97%, var(--ui-primary) 3%),
+			var(--ui-bg)
+		);
+	box-shadow:
+		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 7%, transparent) inset,
+		0 0.9rem 2.4rem color-mix(in srgb, var(--ui-bg-inverted) 10%, transparent);
+	transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+:where(a.preview:hover, button.preview:hover, [role='button'].preview:hover) {
+	border-color: color-mix(in srgb, var(--ui-primary) 46%, var(--ui-border));
+	box-shadow:
+		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 10%, transparent) inset,
+		0 1.25rem 3rem color-mix(in srgb, var(--ui-bg-inverted) 14%, transparent);
+	transform: translateY(-3px);
+}
+
+:where(a.preview, button.preview, [role='button'].preview):focus-visible {
+	outline: 2px solid color-mix(in srgb, var(--ui-primary) 78%, white);
+	outline-offset: 3px;
 }
 
 :where(.preview__row) {
 	display: flex;
 	align-items: flex-start;
-	gap: calc(var(--spacing) * 3);
+	gap: calc(var(--spacing) * 4);
 }
 
 :where(.preview__main) {
@@ -28,7 +59,10 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 
 :where(.preview__title) {
 	min-width: 0;
-	font-weight: var(--font-weight-semibold);
+	font-size: var(--text-base);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: -0.015em;
+	color: var(--ui-text-highlighted);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -52,9 +86,11 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 }
 
 :where(.preview__body) {
-	margin-top: calc(var(--spacing) * 2);
+	margin-top: calc(var(--spacing) * 3);
 	display: grid;
-	gap: var(--spacing);
+	gap: calc(var(--spacing) * 2);
+	padding-top: calc(var(--spacing) * 3);
+	border-top: 1px solid color-mix(in srgb, var(--ui-border) 72%, transparent);
 }
 
 :where(.preview__line) {
@@ -67,4 +103,14 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 	flex-wrap: wrap;
 	align-items: center;
 	gap: calc(var(--spacing) * 2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:where(.preview) {
+		transition: none;
+	}
+
+	:where(a.preview:hover, button.preview:hover, [role='button'].preview:hover) {
+		transform: none;
+	}
 }

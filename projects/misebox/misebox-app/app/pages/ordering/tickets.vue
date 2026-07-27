@@ -113,7 +113,7 @@
           </header>
 
           <div class="flex flex-1 justify-center">
-            <ConsoleKitchenOperationsOrdersCardsTicket :order="ticket.order" />
+            <ConsoleKitchenOperationsOrdersTicketPresentation :order="ticket.order" />
           </div>
 
           <p class="m-0 flex items-center gap-2 text-xs font-semibold text-primary">

@@ -112,6 +112,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { usePlaceUpdate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceUpdate'
 import { computed, ref } from 'vue'
@@ -128,6 +129,7 @@ const props = defineProps<{
 
 const { uploadImage } = useImageStorage()
 const toast = useToastify()
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
@@ -222,10 +224,16 @@ const handleLogoUpload = async (file: File) => {
 
   logoUploading.value = true
   try {
-    const storagePath = `places/${placeId.value}/avatar`
+    requireWritableData()
+    const targetPlaceId = placeId.value
+    const storagePath = `places/${targetPlaceId}/avatar`
     const url = await uploadImage(storagePath, file)
+    requireWritableData()
+    if (!props.canWrite || placeId.value !== targetPlaceId) {
+      throw new Error('The selected Place changed before the logo could be saved.')
+    }
     await updatePlace(
-      () => updatePlaceImage(url, { id: placeId.value }),
+      () => updatePlaceImage(url, { id: targetPlaceId }),
       'Logo updated',
       'Failed to update logo'
     )

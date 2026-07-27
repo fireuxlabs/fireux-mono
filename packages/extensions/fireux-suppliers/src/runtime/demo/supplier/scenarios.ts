@@ -327,7 +327,7 @@ const alpineFoodservice = buildSupplierDemoScenario({
   offers: [
     {
       ingredientId: 'beef-mince',
-      name: 'Beef mince 80/20',
+      name: 'Ground beef 80/20',
       sku: 'AF-BEEF-5',
       pack: '5 kg case',
       unit: 'kg',

@@ -25,7 +25,10 @@
           <p class="truncate text-xs font-semibold text-highlighted">
             {{ menu.name }}
           </p>
-          <UIcon name="i-lucide-arrow-right" class="ml-auto size-3.5 shrink-0 text-muted" />
+          <UIcon
+            name="i-lucide-arrow-right"
+            class="ml-auto size-3.5 shrink-0 text-muted"
+          />
         </div>
       </article>
 

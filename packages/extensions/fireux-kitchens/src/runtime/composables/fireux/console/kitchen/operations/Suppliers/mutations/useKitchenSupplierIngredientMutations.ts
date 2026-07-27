@@ -2,6 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { unref, type Ref } from 'vue'
 import {
   KitchenSupplierIngredientStorage,
@@ -20,6 +21,7 @@ type Options = {
 }
 
 export function useKitchenSupplierIngredientMutations(options: Options = {}) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { appId } = useFireUXConfig()
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
@@ -36,6 +38,7 @@ export function useKitchenSupplierIngredientMutations(options: Options = {}) {
   const createKitchenSupplierIngredient = async (
     input: KitchenSupplierIngredientCreateInput
   ) => {
+    requireWritableData()
     const kitchenId = normalizeString(input.kitchen_id)
     const supplierId = normalizeString(input.supplier_id)
     const ingredientId = normalizeString(input.ingredient_id)
@@ -61,6 +64,7 @@ export function useKitchenSupplierIngredientMutations(options: Options = {}) {
     supplierIngredientId: string,
     patch: KitchenSupplierIngredientUpdateInput
   ) => {
+    requireWritableData()
     const collectionPath = path(kitchenId)
     const id = normalizeString(supplierIngredientId)
     if (!collectionPath || !id) throw new Error('Missing supplier ingredient')
@@ -71,6 +75,7 @@ export function useKitchenSupplierIngredientMutations(options: Options = {}) {
     kitchenId: string,
     supplierIngredientId: string
   ) => {
+    requireWritableData()
     const collectionPath = path(kitchenId)
     const id = normalizeString(supplierIngredientId)
     if (!collectionPath || !id) throw new Error('Missing supplier ingredient')

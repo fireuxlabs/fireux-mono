@@ -23,6 +23,15 @@
             <strong>{{ copy('sell') }}</strong>
             <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
           </NuxtLink>
+
+          <NuxtLink
+            to="/jobs"
+            class="market-action market-action--quiet market-action--jobs"
+          >
+            <UIcon name="i-lucide-briefcase-business" aria-hidden="true" />
+            <strong>{{ copy('jobs') }}</strong>
+            <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
+          </NuxtLink>
         </nav>
       </div>
     </section>

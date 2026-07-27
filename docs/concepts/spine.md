@@ -1,6 +1,6 @@
 # Spine
 
-Updated: 2026-07-22
+Updated: 2026-07-27
 Ref: 796952bf0
 Role: map, not canon
 
@@ -51,6 +51,8 @@ contract.
 | Menu ordering | `menu-ordering.md` | Menu route grammar, order models, and lifecycle composables | One lifecycle is mapped; the older funnel tree remains migration debt |
 | Marketplace | `marketplace.md` | `fireux-marketplace` models, trusted handlers, and closed raw Rules | App-scoped Store identity and offline Order requests are explicit; Interlaken Essen is the first proof |
 | Collection manager | `collection-manager.md` | Shared directory components, manager siblings, and CSS guards | Ownership roles are clear; presentation classes still need deliberate classification |
+| Card | `card-family.md` | Prop-driven Card variants plus `scripts/guards/components.mjs` | Cell/Pill/Preview are canonical; legacy Cards/Profile paths are frozen migration debt |
+| Product language | `product-language.md` | Atomic source fields, child surfaces, operation catalogues, and parent composition | Bottom-up derivation is defined; existing cross-repo copy still needs progressive review |
 | Create | `create.md` | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts` | Create families are classified; plan metadata and optional-field handling are not aligned |
 | Tool provider | `tool-provider.md` | Core registry, loader, iframe protocol, and provider APIs | Transport is shared; Go QR wrappers and dogfood config contain duplication |
 | AI document processing | `ai-document-processing.md` | `fireux-ai` document loop and Kitchen Menu adapter | Ownership is clear; only one domain adapter has proved the shared contract |

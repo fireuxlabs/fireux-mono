@@ -1,12 +1,13 @@
 // @fireux-script
-// last_used: 2026-07-21
-// usage_note: keeps console entity indexes on the shared selected-target and outcome-driven target presentation spine.
+// last_used: 2026-07-27
+// usage_note: keeps console entity indexes on the shared selected-target, typed-data, and outcome-driven presentation spine.
 // FILE: scripts/guards/console-indexes.mjs
 // Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: prevent selected-target and target-state presentation forks.
 // Concurrent edit — 2026-07-21 22:38 CEST — Console authority alignment: lock family-owned target resolution and outcome-bound selection.
 
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
+import ts from 'typescript'
 import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 
 const SOURCE_ROOTS = ['packages', 'projects']
@@ -18,6 +19,27 @@ const MEMBERSHIP_TARGET_FAMILIES = new Set([
   'Property',
   'Supplier',
 ])
+const MUTATION_EFFECT_CALLS = new Set([
+  '$fetch',
+  'addDoc',
+  'createDocument',
+  'deleteDoc',
+  'deleteDocument',
+  'deleteObject',
+  'runTransaction',
+  'setDoc',
+  'setDocument',
+  'updateDoc',
+  'updateDocument',
+  'uploadBytes',
+  'uploadBytesResumable',
+  'uploadString',
+  'writeBatch',
+])
+const CONSOLE_WRITE_GATE_RE =
+  /^(?:requireWritableData|require[A-Z][A-Za-z0-9]*ConsoleWrite)$/
+const SOURCE_TYPE_VIEW_BRANCH_RE =
+  /\bsource(?:\.value)?\s*(?:===|!==)\s*['"](?:demo|live|test)['"]|['"](?:demo|live|test)['"]\s*(?:===|!==)\s*\bsource(?:\.value)?/
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -40,6 +62,9 @@ export async function run(ctx) {
     validateIndex({ ...index, files, repoRoot, violations })
   }
   validateSharedConsoleSource({ repoRoot, violations })
+  validateConsoleDataContract({ files, repoRoot, violations })
+  validateSourceIgnorantViews({ files, repoRoot, violations })
+  validateMutationWriteGates({ files, repoRoot, violations })
   validateSelectionHydrationGates({ files, repoRoot, violations })
 
   if (violations.length) {
@@ -56,14 +81,306 @@ export async function run(ctx) {
         '- Render target pending/error/ready/empty state only through ConsoleTargetCollection.',
         '- Resolve membership target IDs and outcomes once in the family core; index adapters only consume that authority.',
         '- Bind Kitchen selection to its live/demo target items and outcome, with auto-selection left to useConsoleIndex.',
+        '- Stamp selected-parent data at each provider boundary as { type, value }; persist and validate { id, type }.',
+        '- Derive isDemo, readOnly, and canWrite from the selected typed data; missing or mismatched provenance stays read-only and inactive.',
+        '- Keep operation/detail views source-ignorant and gate every mutation adapter before its first side effect.',
         '- Domain wrappers retain entity mapping, copy, cards, actions, and intentional multi-source composition.',
       ].join('\n')
     )
   }
 
   console.log(
-    '[guard] ✅ console entity indexes use the shared presentation spine'
+    '[guard] ✅ console indexes, typed data, and write gates use the shared spine'
   )
+}
+
+function validateConsoleDataContract({ files, repoRoot, violations }) {
+  const dataRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleData.ts'
+  const selectionRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleSelection.ts'
+  const runtimeRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleEntityRuntime.ts'
+  const writeGuardRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleWriteGuard.ts'
+  const dataAuthorityRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleDataAuthority.ts'
+  const dataSource = readRequiredSource(
+    repoRoot,
+    dataRelative,
+    'missing shared ConsoleData envelope',
+    violations
+  )
+  const selectionSource = readRequiredSource(
+    repoRoot,
+    selectionRelative,
+    'missing typed Console selection authority',
+    violations
+  )
+  const runtimeSource = readRequiredSource(
+    repoRoot,
+    runtimeRelative,
+    'missing typed Console entity runtime',
+    violations
+  )
+  const writeGuardSource = readRequiredSource(
+    repoRoot,
+    writeGuardRelative,
+    'missing Console mutation write gate',
+    violations
+  )
+  const dataAuthoritySource = readRequiredSource(
+    repoRoot,
+    dataAuthorityRelative,
+    'missing resolved Console data authority',
+    violations
+  )
+
+  if (dataSource) {
+    assertMatch(
+      dataSource,
+      /type ConsoleData<T> = Readonly<\{\s*type:\s*ConsoleDataType\s*value:\s*T\s*\}>/,
+      dataRelative,
+      'ConsoleData must keep provenance outside domain records as { type, value }',
+      violations
+    )
+    assertMatch(
+      dataSource,
+      /return\s*\{\s*type:\s*normalizedType,\s*value,\s*\}/,
+      dataRelative,
+      'consoleData must stamp the normalized type at the provider boundary',
+      violations
+    )
+    assertNoMatch(
+      dataSource,
+      /\bdata_type\b/,
+      dataRelative,
+      'Console provenance must use the envelope, not mutate records with data_type',
+      violations
+    )
+  }
+
+  if (selectionSource) {
+    assertMatch(
+      selectionSource,
+      /type ConsoleSelectionState = \{[\s\S]{0,80}\bid\??:\s*string[\s\S]{0,160}\btype\??:\s*ConsoleDataType/,
+      selectionRelative,
+      'persisted Console selection must write the canonical { id, type } shape, with legacy fields read only for migration',
+      violations
+    )
+    assertMatch(
+      selectionSource,
+      /const selectedId = computed\(\(\) =>[\s\S]{0,100}normalizeString\(state\.value\?\.id(?:\s*\?\?\s*state\.value\?\.selectedId)?\)/,
+      selectionRelative,
+      'selected id must prefer the canonical persisted id',
+      violations
+    )
+    assertMatch(
+      selectionSource,
+      /const selectedType = computed<ConsoleDataType \| null>/,
+      selectionRelative,
+      'selection must normalize the persisted data type',
+      violations
+    )
+    assertMatch(
+      selectionSource,
+      /state\.value = \{\s*id:\s*nextId,\s*type:\s*nextType,\s*\}/,
+      selectionRelative,
+      'selection writes must persist id and type together',
+      violations
+    )
+    assertMatch(
+      selectionSource,
+      /getTargetId\(item\) === id[\s\S]{0,180}getTargetType\(item\) === selectedType\.value/,
+      selectionRelative,
+      'selected targets must match both persisted id and provider type',
+      violations
+    )
+  }
+
+  if (runtimeSource) {
+    assertMatch(
+      runtimeSource,
+      /targetData:\s*ValueRef<[\s\S]{0,160}ConsoleData<TTarget>/,
+      runtimeRelative,
+      'entity runtime must receive typed target envelopes',
+      violations
+    )
+    assertMatch(
+      runtimeSource,
+      /getId:\s*data\s*=>\s*options\.getId\(data\.value\),\s*getType:\s*data\s*=>\s*data\.type/,
+      runtimeRelative,
+      'entity runtime selection must bind envelope value and type together',
+      violations
+    )
+    assertMatch(
+      runtimeSource,
+      /selectedData\.value\?\.type === source\.value[\s\S]{0,100}\?\s*selectedData\.value\.type\s*:\s*null/,
+      runtimeRelative,
+      'source and selected-provider type mismatch must fail closed',
+      violations
+    )
+    assertMatch(
+      runtimeSource,
+      /active:\s*computed\(\(\) => Boolean\(dataType\.value\)\)/,
+      runtimeRelative,
+      'missing typed data must deactivate storage',
+      violations
+    )
+    assertMatch(
+      runtimeSource,
+      /useConsoleDataAuthority\(options\.family\)[\s\S]{0,360}setAuthority\(id,\s*type\)/,
+      runtimeRelative,
+      'entity runtime must publish only its resolved selected { id, type } authority',
+      violations
+    )
+    assertMatch(
+      runtimeSource,
+      /!dataType\.value[\s\S]{0,100}isDemo\.value/,
+      runtimeRelative,
+      'readOnly must derive from missing or Demo typed data',
+      violations
+    )
+    assertMatch(
+      runtimeSource,
+      /!readOnly\.value[\s\S]{0,120}targetHasOperator/,
+      runtimeRelative,
+      'canWrite must derive from typed-data readOnly state and operator authority',
+      violations
+    )
+  }
+
+  if (writeGuardSource) {
+    assertMatch(
+      writeGuardSource,
+      /const type = selectedType\.value[\s\S]{0,180}!type[\s\S]{0,100}type === ['"]demo['"][\s\S]{0,180}type !== expectedType/,
+      writeGuardRelative,
+      'write gate must reject missing, Demo, and mismatched selected data types',
+      violations
+    )
+    assertMatch(
+      writeGuardSource,
+      /resolved\.id === selection\.selectedId\.value[\s\S]{0,100}resolved\.type === selection\.selectedType\.value/,
+      writeGuardRelative,
+      'write gate must require resolved provider authority to match the persisted selection',
+      violations
+    )
+  }
+
+  if (dataAuthoritySource) {
+    assertMatch(
+      dataAuthoritySource,
+      /type ConsoleDataAuthority = Readonly<\{\s*id:\s*string\s*type:\s*ConsoleDataType\s*\}>/,
+      dataAuthorityRelative,
+      'resolved data authority must retain the exact selected { id, type } pair',
+      violations
+    )
+    assertMatch(
+      dataAuthoritySource,
+      /state\.value =[\s\S]{0,160}nextId && nextType[\s\S]{0,120}\?\s*\{[\s\S]{0,80}id:\s*nextId,[\s\S]{0,80}type:\s*nextType,[\s\S]{0,80}\}\s*:\s*null/,
+      dataAuthorityRelative,
+      'missing provider id or type must clear data authority',
+      violations
+    )
+  }
+
+  for (const fullPath of files) {
+    const relative = relativePath(repoRoot, fullPath)
+    if (
+      !/\/composables\/fireux\/console\/([^/]+)\/core\/use[A-Z][A-Za-z0-9]*Console\.ts$/.test(
+        relative
+      )
+    ) {
+      continue
+    }
+
+    const source = readFileSync(fullPath, 'utf8')
+    if (!/\bconsoleData\s*\(/.test(source)) {
+      violations.push(
+        `${relative} (Console core must stamp each selected-parent provider with consoleData(type, value))`
+      )
+      continue
+    }
+    assertNoMatch(
+      source,
+      /consoleData\(\s*consoleRoot\.source(?:\.value)?\s*,/,
+      relative,
+      'provider provenance must not be copied from chooser state',
+      violations
+    )
+    if (/\buse[A-Z][A-Za-z0-9]*ConsoleDemoData\s*\(/.test(source)) {
+      assertMatch(
+        source,
+        /consoleData\(\s*(?:['"]demo['"]|type)\s*,/,
+        relative,
+        'Demo target providers must stamp Demo explicitly',
+        violations
+      )
+    }
+  }
+}
+
+function validateSourceIgnorantViews({ files, repoRoot, violations }) {
+  for (const fullPath of files) {
+    if (!fullPath.endsWith('.vue')) continue
+
+    const relative = relativePath(repoRoot, fullPath)
+    if (
+      !relative.includes('/components/Console/') &&
+      !relative.includes('/pages/console/')
+    ) {
+      continue
+    }
+    if (/\/components\/Console\/[^/]+\/Index\//.test(relative)) continue
+
+    const source = readFileSync(fullPath, 'utf8')
+    const branch = source.match(SOURCE_TYPE_VIEW_BRANCH_RE)
+    if (!branch) continue
+
+    violations.push(
+      `${relative} (${branch[0]} branches a Console view on chooser state; consume data-derived isDemo, readOnly, or canWrite instead)`
+    )
+  }
+}
+
+function validateMutationWriteGates({ files, repoRoot, violations }) {
+  for (const fullPath of files) {
+    if (!fullPath.endsWith('.ts')) continue
+
+    const relative = relativePath(repoRoot, fullPath)
+    if (
+      !relative.includes('/composables/fireux/console/') ||
+      !relative.includes('/mutations/')
+    ) {
+      continue
+    }
+
+    const source = readFileSync(fullPath, 'utf8')
+    const sourceFile = ts.createSourceFile(
+      relative,
+      source,
+      ts.ScriptTarget.Latest,
+      true,
+      ts.ScriptKind.TS
+    )
+    const calls = collectCallExpressions(sourceFile)
+    const gates = calls.filter(call =>
+      CONSOLE_WRITE_GATE_RE.test(callExpressionName(call))
+    )
+
+    for (const effect of calls.filter(call =>
+      MUTATION_EFFECT_CALLS.has(callExpressionName(call))
+    )) {
+      if (hasPriorGateInAction(effect, gates)) continue
+
+      const position = sourceFile.getLineAndCharacterOfPosition(
+        effect.getStart(sourceFile)
+      )
+      violations.push(
+        `${relative}:${position.line + 1} (${callExpressionName(effect)} issues a side effect before a Console data write gate)`
+      )
+    }
+  }
 }
 
 function validateSharedConsoleSource({ repoRoot, violations }) {
@@ -426,6 +743,20 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
     'Kitchen index must consume, not recreate, the core target collection',
     violations
   )
+  assertMatch(
+    indexSource,
+    /useKitchenConsole\(\{\s*keepLiveTargetsAvailable:\s*true,\s*\}\)/,
+    indexRelative,
+    'Kitchen index must keep the bounded Live chooser available beside Demo targets',
+    violations
+  )
+  assertMatch(
+    coreSource,
+    /kitchenSource\.value === ['"]live['"]\s*\|\|\s*options\.keepLiveTargetsAvailable === true/,
+    coreRelative,
+    'Kitchen core must limit the Live-while-Demo exception to an explicit target chooser request',
+    violations
+  )
 
   const selectionCalls = findCallSources(coreSource, 'useConsoleSelection')
   if (selectionCalls.length !== 1) {
@@ -457,9 +788,9 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
   )
   assertMatch(
     indexSource,
-    /const autoSelectTargetId = computed\(\(\) =>\s*consoleRuntime\.isTenant\.value\s*&&\s*targetOutcome\.value === ['"]ready['"]\s*&&\s*targetKitchens\.value\.length === 1/,
+    /const autoSelectTargetId = computed\(\(\) =>\s*consoleRuntime\.isTenant\.value\s*&&\s*isLiveSelection\.value\s*&&\s*targetOutcome\.value === ['"]ready['"]\s*&&\s*targetKitchens\.value\.length === 1/,
     indexRelative,
-    'Kitchen single-target auto-selection must be tenant-only so a global Demo selection is not overwritten',
+    'Kitchen single-target auto-selection must be tenant-only and Live-only so a Demo selection is not overwritten',
     violations
   )
   for (const watchSource of findCallSources(coreSource, 'watch')) {
@@ -569,6 +900,65 @@ function readSelfClosingTag(source, componentName) {
       new RegExp(`<${escapeRegex(componentName)}\\b[\\s\\S]*?\\/>`)
     )?.[0] ?? ''
   )
+}
+
+function readRequiredSource(
+  repoRoot,
+  relative,
+  missingMessage,
+  violations
+) {
+  const fullPath = path.join(repoRoot, relative)
+  if (!existsSync(fullPath)) {
+    violations.push(`${relative} (${missingMessage})`)
+    return ''
+  }
+  return readFileSync(fullPath, 'utf8')
+}
+
+function collectCallExpressions(sourceFile) {
+  const calls = []
+  const visit = (node) => {
+    if (ts.isCallExpression(node)) calls.push(node)
+    ts.forEachChild(node, visit)
+  }
+  visit(sourceFile)
+  return calls
+}
+
+function callExpressionName(call) {
+  const expression = call.expression
+  if (ts.isIdentifier(expression)) return expression.text
+  if (ts.isPropertyAccessExpression(expression)) return expression.name.text
+  return ''
+}
+
+function nearestFunctionLike(node) {
+  let current = node.parent
+  while (current) {
+    if (ts.isFunctionLike(current)) return current
+    current = current.parent
+  }
+  return null
+}
+
+function hasPriorGateInAction(effect, gates) {
+  let scope = nearestFunctionLike(effect)
+
+  while (scope) {
+    if (
+      gates.some(
+        gate =>
+          gate.getStart() < effect.getStart() &&
+          nearestFunctionLike(gate) === scope
+      )
+    ) {
+      return true
+    }
+    scope = nearestFunctionLike(scope)
+  }
+
+  return false
 }
 
 function assertMatch(source, pattern, relative, message, violations) {

@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'ConsoleKitchenOperationsOrdersCardsTicketHeader' })
+defineOptions({ name: 'ConsoleKitchenOperationsOrdersTicketHeader' })
 
 defineProps<{
   canReturn: boolean

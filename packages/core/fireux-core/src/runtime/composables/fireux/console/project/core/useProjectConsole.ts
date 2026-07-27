@@ -5,6 +5,7 @@ import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { consoleData } from '../../../app/console/useConsoleData'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import {
   useProjectCollection,
@@ -13,7 +14,7 @@ import {
 import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { ProjectStorage } from 'fireux-core/runtime/models/system/project.model'
 import type { Ref } from 'vue'
-import { useProjectConsoleDemoData } from './useProjectConsoleDemoData'
+import { useProjectConsoleDemoTargets } from './useProjectConsoleDemoTargets'
 
 type ProjectConsoleEntity = ProjectSurface
 
@@ -42,33 +43,42 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
     source: consoleRoot.source,
     filter: options.filter,
   })
-  const demoData = useProjectConsoleDemoData(
+  const demoTargets = useProjectConsoleDemoTargets(
     computed(() => consoleRoot.source.value === 'demo')
   )
   const targetProjects = computed(() =>
     consoleRoot.source.value === 'demo'
-      ? (demoData.data.value?.projects ?? [])
+      ? (demoTargets.data.value?.projects ?? [])
       : liveCollection.projects.value
   )
+  const targetData = computed(() => {
+    const type =
+      consoleRoot.source.value === 'demo'
+        ? 'demo'
+        : consoleRoot.source.value === 'test'
+          ? 'test'
+          : 'live'
+    return targetProjects.value.map(project => consoleData(type, project))
+  })
   const targetsPending = computed(() =>
     consoleRoot.source.value === 'demo'
-      ? demoData.pending.value
+      ? demoTargets.pending.value
       : liveCollection.pending.value
   )
   const targetsError = computed(() =>
     consoleRoot.source.value === 'demo'
-      ? demoData.error.value
+      ? demoTargets.error.value
       : liveCollection.error.value
   )
   const targetsOutcome = computed(() =>
     consoleRoot.source.value === 'demo'
-      ? demoData.outcome.value
+      ? demoTargets.outcome.value
       : liveCollection.outcome.value
   )
   const entity = useConsoleEntityRuntime<ProjectSurface>({
     family: 'project',
     storageFamily: ProjectStorage.collection,
-    targetItems: targetProjects,
+    targetData,
     targetOutcome: targetsOutcome,
     getId: (project) => normalizeString(project?.id),
     mode: consoleRoot.source,

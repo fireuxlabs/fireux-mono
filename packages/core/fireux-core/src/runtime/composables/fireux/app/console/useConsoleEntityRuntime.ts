@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: carry authoritative target outcomes into selection.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose App support collection selection directly.
-import { computed, unref, type MaybeRef } from 'vue'
+import { computed, unref, watch, type MaybeRef } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 import { useAuth } from '../../firebase/useAuth'
 import {
@@ -12,16 +12,23 @@ import type {
   ConsoleEntityScopeTarget,
 } from '../../firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { targetHasOperator } from './useConsoleAccess'
+import {
+  type ConsoleData,
+  type ConsoleDataType,
+} from './useConsoleData'
+import { useConsoleDataAuthority } from './useConsoleDataAuthority'
 import { normalizeConsoleSource, useConsole } from './useConsole'
 import type { ConsoleTargetOutcome } from './useConsoleIndex'
 import { useConsoleSelection } from './useConsoleSelection'
 
 type ValueRef<T> = MaybeRef<T>
 
-export type UseConsoleEntityRuntimeOptions<TTarget> = {
+export type UseConsoleEntityRuntimeOptions<TTarget extends object> = {
   family: string
   storageFamily: ValueRef<ConsoleEntityCollectionFamily>
-  targetItems: ValueRef<(TTarget | null | undefined)[] | null | undefined>
+  targetData: ValueRef<
+    (ConsoleData<TTarget> | null | undefined)[] | null | undefined
+  >
   targetOutcome: ValueRef<ConsoleTargetOutcome>
   getId: (target: TTarget) => string
   appId?: ValueRef<string | null | undefined>
@@ -33,7 +40,7 @@ export type UseConsoleEntityRuntimeOptions<TTarget> = {
   userId?: ValueRef<string | null | undefined>
 }
 
-export function useConsoleEntityRuntime<TTarget>(
+export function useConsoleEntityRuntime<TTarget extends object>(
   options: UseConsoleEntityRuntimeOptions<TTarget>
 ) {
   const consoleRoot = useConsole(options.family)
@@ -47,16 +54,41 @@ export function useConsoleEntityRuntime<TTarget>(
   const userId = computed(
     () => normalizeString(unref(options.userId)) || normalizeString(uid.value)
   )
+  const targetData = computed<Array<ConsoleData<TTarget>>>(() =>
+    (unref(options.targetData) ?? [])
+      .filter((data): data is ConsoleData<TTarget> => data != null)
+  )
   const {
     selectedId,
-    selectedTarget,
+    selectedTarget: selectedData,
     selectTarget,
     clearSelection,
-  } = useConsoleSelection<TTarget>(options.family, {
-    targetItems: computed(() => unref(options.targetItems) ?? []),
+  } = useConsoleSelection<ConsoleData<TTarget>>(options.family, {
+    targetItems: targetData,
     targetOutcome: computed(() => unref(options.targetOutcome)),
-    getId: options.getId,
+    getId: data => options.getId(data.value),
+    getType: data => data.type,
   })
+  const selectedTarget = computed<TTarget | null>(
+    () => selectedData.value?.value ?? null
+  )
+  const dataType = computed<ConsoleDataType | null>(() =>
+    selectedData.value?.type === source.value
+      ? selectedData.value.type
+      : null
+  )
+  const dataAuthority = useConsoleDataAuthority(options.family)
+  watch(
+    () => ({
+      id: selectedData.value
+        ? normalizeString(options.getId(selectedData.value.value))
+        : '',
+      type: dataType.value,
+    }),
+    ({ id, type }) => dataAuthority.setAuthority(id, type),
+    { immediate: true }
+  )
+  const isDemo = computed(() => dataType.value === 'demo')
 
   const entityId = computed(() => {
     const target = selectedTarget.value
@@ -70,13 +102,17 @@ export function useConsoleEntityRuntime<TTarget>(
     appId: computed(
       () => normalizeString(unref(options.appId)) || consoleRoot.appId
     ),
-    mode: source,
+    mode: dataType,
+    active: computed(() => Boolean(dataType.value)),
     explicitPath: options.explicitPath,
     testCollectionPath: options.testCollectionPath,
     useAppSupport: options.useAppSupport,
   })
   const readOnly = computed(
-    () => source.value === 'demo' || Boolean(unref(options.readOnly))
+    () =>
+      !dataType.value ||
+      isDemo.value ||
+      Boolean(unref(options.readOnly))
   )
   const canWrite = computed(
     () =>
@@ -105,6 +141,8 @@ export function useConsoleEntityRuntime<TTarget>(
       usesAppSupport: firestore.usesAppSupport,
       writeCollection: firestore.writeCollection,
       source,
+      dataType,
+      isDemo,
       readOnly,
       canWrite,
     },

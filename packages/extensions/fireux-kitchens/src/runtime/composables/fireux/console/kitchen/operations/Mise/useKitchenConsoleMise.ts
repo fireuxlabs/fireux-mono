@@ -1,9 +1,11 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: project read-only Demo mise tasks without Firestore access.
 import { computed } from 'vue'
 import { useKitchenMiseCollection } from './fetch/useKitchenMiseCollection'
-import { useKitchenMiseToggleDone } from './mutations/useKitchenMiseToggleDone'
+import { useKitchenMiseStatusUpdate } from './mutations/useKitchenMiseStatusUpdate'
 import {
   KitchenMiseTaskStorage,
+  normalizeKitchenMiseStatus,
+  type KitchenMiseStatus,
   type KitchenMiseTask,
 } from '../../../../../../models/kitchen/mise.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
@@ -12,6 +14,7 @@ import {
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
+import { useKitchenConsoleDemoMenuService } from '../../core/useKitchenConsoleDemoMenuService'
 
 export function useKitchenConsoleMise() {
   const {
@@ -25,18 +28,33 @@ export function useKitchenConsoleMise() {
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const demoData = useKitchenConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoScenario = computed(() => findKitchenConsoleDemoScenario(
     demoData.data.value,
     kitchenId.value
   ))
+  const stationNames = computed<Readonly<Record<string, string>>>(() =>
+    Object.fromEntries(
+      (demoScenario.value?.stations ?? [])
+        .map(station => [
+          String(station.id || '').trim(),
+          String(station.name || '').trim(),
+        ])
+        .filter(([stationId, stationName]) =>
+          Boolean(stationId && stationName)
+        )
+    )
+  )
+  const demoMenuService = useKitchenConsoleDemoMenuService(demoScenario)
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
     miseTasks: fetchedMiseTasks,
     pending: misePending,
+    error: miseError,
+    outcome: miseOutcome,
     collectionPath: fetchedCollectionPath,
   } =
     useKitchenMiseCollection(fetchKitchenId, {
@@ -44,17 +62,31 @@ export function useKitchenConsoleMise() {
       databaseId,
   })
   const consoleMiseTasks = computed(() =>
-    runtime.source.value === 'demo'
-      ? demoScenario.value?.miseTasks ?? []
+    runtime.isDemo.value
+      ? (demoScenario.value?.miseTasks ?? []).filter((task) => {
+          return demoMenuService.isTaskInService(task)
+        })
       : fetchedMiseTasks.value
   )
   const pending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.pending.value
       : misePending.value
   )
+  const error = computed(() =>
+    runtime.isDemo.value
+      ? demoData.error.value
+      : miseError.value
+  )
+  const outcome = computed(() => {
+    if (pending.value) return 'pending' as const
+    if (error.value) return 'error' as const
+    if (!kitchenId.value) return 'idle' as const
+    if (!runtime.isDemo.value) return miseOutcome.value
+    return consoleMiseTasks.value.length ? 'ready' as const : 'empty' as const
+  })
   const collectionPath = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? `demo/kitchens/${kitchenId.value}/mise`
       : fetchedCollectionPath.value
   )
@@ -66,28 +98,21 @@ export function useKitchenConsoleMise() {
     pending,
     collectionPath,
   })
-  const { toggleKitchenMiseDone } = useKitchenMiseToggleDone()
-  const canToggleMise = computed(
+  const { updateKitchenMiseStatus } = useKitchenMiseStatusUpdate()
+  const canUpdateMiseStatus = computed(
     () => canWrite.value && Boolean(rootCollection.value && kitchenId.value)
   )
-  const isDone = (task: KitchenMiseTask) => {
-    const source = task as Record<string, unknown>
-    if (task.status === 'done') return true
-    return Boolean(
-      source.done ||
-        source.checked ||
-        source.complete ||
-        source.completed
-    )
-  }
-  const toggleDone = async (task: KitchenMiseTask) => {
+  const setStatus = async (
+    task: KitchenMiseTask,
+    nextStatus: KitchenMiseStatus
+  ) => {
     const taskId = String(task?.id || '').trim()
-    if (!canToggleMise.value || !taskId) return
+    if (!canUpdateMiseStatus.value || !taskId) return
 
-    await toggleKitchenMiseDone({
+    await updateKitchenMiseStatus({
       kitchenId: kitchenId.value,
       taskId,
-      done: !isDone(task),
+      status: normalizeKitchenMiseStatus(nextStatus),
       kitchenCollectionPath: rootCollection.value,
     })
   }
@@ -97,10 +122,16 @@ export function useKitchenConsoleMise() {
     databaseId: databaseId.value,
     collectionPath: collectionPath.value,
     count: consoleMiseTasks.value.length,
+    demoMenuAvailability: demoMenuService.cascade.value?.menus.map(menu => ({
+      ...menu,
+      inService: demoMenuService.isMenuInService(menu.id),
+    })) ?? [],
     pending: pending.value,
+    outcome: outcome.value,
+    loadError: Boolean(error.value),
     readOnly: readOnly.value,
     canWrite: canWrite.value,
-    canToggleMise: canToggleMise.value,
+    canUpdateMiseStatus: canUpdateMiseStatus.value,
   }))
 
   return {
@@ -112,10 +143,13 @@ export function useKitchenConsoleMise() {
     databaseId,
     readOnly,
     canWrite,
-    canToggleMise,
+    canUpdateMiseStatus,
     miseTasks: consoleMiseTasks,
+    stationNames,
     pending,
-    toggleDone,
+    error,
+    outcome,
+    setStatus,
     debug,
   }
 }

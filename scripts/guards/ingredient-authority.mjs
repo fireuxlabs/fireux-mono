@@ -59,6 +59,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const deploy = read(repoRoot, 'scripts/deploy-misebox-firestore-rules.mjs')
   const model = read(repoRoot, `${kitchenBase}models/ingredient.model.ts`)
+  const foodGroupModel = read(
+    repoRoot,
+    `${kitchenBase}models/ingredient-food-group.ts`
+  )
   const publicProjection = read(
     repoRoot,
     `${kitchenBase}server/ingredient/public-projection.ts`
@@ -108,6 +112,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}composables/fireux/console/kitchen/operations/Ingredients/useKitchenConsoleIngredients.ts`
   )
+  const kitchenConsoleIngredientRead = read(
+    repoRoot,
+    `${kitchenBase}components/Console/Kitchen/Operations/Ingredients/Read.vue`
+  )
   const kitchenIngredientRoots = read(
     repoRoot,
     `${kitchenBase}composables/fireux/console/kitchen/operations/Ingredients/fetch/useKitchenIngredientRoots.ts`
@@ -139,6 +147,27 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   assert.match(model, /publicRead:\s*'projection'/)
+  assert.match(
+    foodGroupModel,
+    /\bexport const INGREDIENT_FOOD_GROUP_OPTIONS\b/
+  )
+  assert.match(
+    foodGroupModel,
+    /\bexport const resolveIngredientFoodGroup\b/
+  )
+  assert.match(
+    kitchenConsoleIngredientRead,
+    /\bINGREDIENT_FOOD_GROUP_OPTIONS\b/
+  )
+  assert.match(
+    kitchenConsoleIngredientRead,
+    /\bresolveIngredientFoodGroup\b/
+  )
+  assert.doesNotMatch(
+    kitchenConsoleIngredientRead,
+    /\bconst (?:INGREDIENT_FOOD_GROUP_OPTIONS|resolveFoodGroup)\b/,
+    'Kitchen Ingredient presentation must consume the shared food-group resolver.'
+  )
   for (const [label, source] of [
     ['Ingredient model', model],
     ['Ingredient public projection', publicProjection],
@@ -228,6 +257,22 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(supplierConsoleIngredients, /\buseSupplierIngredientRoots\b/)
   assert.match(productDemo, /\bloadIngredientRoots\b/)
   assert.match(productDemo, /\bingredientRoots:\s*consoleIngredientRoots\b/)
+  assert.match(productDemo, /\bconst consoleIngredientRootById = new Map\b/)
+  assert.match(
+    productDemo,
+    /imageUrl = String\(ingredient\.image_url \|\| ''\)\.trim\(\)/
+  )
+  assert.match(
+    productDemo,
+    /name = String\(ingredient\.name \|\| ''\)\.trim\(\)/
+  )
+  assert.match(
+    productDemo,
+    /foodGroup:\s*resolveIngredientFoodGroup\(\{/
+  )
+  assert.match(productDemo, /category:\s*ingredient\.category/)
+  assert.match(productDemo, /kind:\s*ingredient\.kind/)
+  assert.match(productDemo, /\bingredients:\s*consoleIngredients\b/)
   assert.equal(
     promotionManifest.format,
     'fireux-misebox-kitchen-ingredient-promotion/1'

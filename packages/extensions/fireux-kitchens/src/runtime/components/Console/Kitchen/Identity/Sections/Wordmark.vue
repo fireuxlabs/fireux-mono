@@ -101,6 +101,7 @@ const kioskWordmarkImageUrl = computed(() =>
 )
 
 const openWordmarkUpload = (kind: KitchenWordmarkKind) => {
+  if (!props.canWrite || pending.value) return
   wordmarkUploadKind.value = kind
   wordmarkInput.value?.click()
 }
@@ -110,6 +111,10 @@ const handleWordmarkFileChange = async (event: Event) => {
   const file = input?.files?.[0]
   if (input) input.value = ''
   if (!file) return
+  if (!props.canWrite) {
+    toast.error('This Kitchen is read-only.')
+    return
+  }
 
   try {
     await uploadKitchenWordmark(

@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'ConsoleKitchenOperationsOrdersCardsTicketFooter' })
+defineOptions({ name: 'ConsoleKitchenOperationsOrdersTicketFooter' })
 
 defineProps<{
   expanded: boolean

@@ -14,6 +14,7 @@ import {
 
 export type UseConsoleEntityFirestoreOptions = {
   family: MaybeRef<ConsoleEntityCollectionFamily>
+  active?: MaybeRef<boolean | null | undefined>
   mode?: MaybeRef<ConsoleEntityRuntimeMode | null | undefined>
   appId?: MaybeRef<string | null | undefined>
   target?: MaybeRef<ConsoleEntityScopeTarget | null | undefined>
@@ -41,6 +42,9 @@ export function useConsoleEntityFirestore(
 ) {
   const fireux = useFireUXConfig()
   const family = computed(() => text(unref(options.family)))
+  const active = computed(
+    () => options.active === undefined || Boolean(unref(options.active))
+  )
   const target = computed(() => unref(options.target) ?? null)
   const mode = computed(() => resolveMode(unref(options.mode)))
   const appId = computed(
@@ -67,11 +71,11 @@ export function useConsoleEntityFirestore(
     })
   })
   const appSupportCollection = computed(() => {
-    if (mode.value !== 'live') return ''
+    if (!active.value || mode.value !== 'live') return ''
     return appSupportCollectionPath(family.value, appId.value)
   })
   const collectionPath = computed(() => {
-    if (mode.value === 'demo') return ''
+    if (!active.value || mode.value === 'demo') return ''
 
     const explicitPath = text(unref(options.explicitPath))
     if (explicitPath) return explicitPath

@@ -7,6 +7,7 @@ import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { consoleData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
@@ -62,6 +63,18 @@ export function useSupplierConsole(
       ? demoData.data.value?.suppliers ?? []
       : sourceCollection.suppliers.value
   )
+  const targetData = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? (demoData.data.value?.suppliers ?? []).map(supplier =>
+          consoleData('demo', supplier)
+        )
+      : sourceCollection.suppliers.value.map(supplier =>
+          consoleData(
+            consoleRoot.source.value === 'test' ? 'test' : 'live',
+            supplier
+          )
+        )
+  )
   const targetsPending = computed(() =>
     consoleRoot.source.value === 'demo'
       ? demoData.pending.value
@@ -89,7 +102,7 @@ export function useSupplierConsole(
   const entity = useConsoleEntityRuntime<SupplierSurface>({
     family: 'supplier',
     storageFamily: SupplierStorage.rootCollection,
-    targetItems: targetSuppliers,
+    targetData,
     targetOutcome: targetsOutcome,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
     mode: consoleRoot.source,

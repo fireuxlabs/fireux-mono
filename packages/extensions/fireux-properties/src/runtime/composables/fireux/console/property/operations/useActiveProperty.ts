@@ -1,15 +1,14 @@
 import { computed, type ComputedRef, type Ref } from 'vue'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { ConsoleDataType } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import type { Property } from '../../../../../models/property.model'
+import type { PropertySurface } from '../../../firestore/property/utils/view/usePropertyInterface'
 import { usePropertyConsole } from '../core/usePropertyConsole'
 
 export type ActivePropertyRuntime = {
-  source: ComputedRef<ConsoleSource>
-  mode: ComputedRef<ConsoleSource>
+  dataType: ComputedRef<ConsoleDataType | null>
   isDemo: ComputedRef<boolean>
   id: ComputedRef<string>
-  entity: ComputedRef<Property | null>
+  entity: ComputedRef<PropertySurface | null>
   rootCollection: ComputedRef<string>
   consoleAppId: ComputedRef<string>
   targetOutcome: Readonly<Ref<ConsoleTargetOutcome>>
@@ -50,9 +49,8 @@ export function useActiveProperty(): ActivePropertyRuntime {
     normalizeString(selection.property.value?.id) ||
     normalizeString(selection.propertyId.value)
   )
-  const source = runtime.source
   const rootCollection = computed(() =>
-    normalizePath(runtime.canonicalRootCollection.value)
+    normalizePath(runtime.rootCollection.value)
   )
   const propertyPath = computed(() => {
     if (!rootCollection.value || !id.value) return ''
@@ -65,9 +63,8 @@ export function useActiveProperty(): ActivePropertyRuntime {
   )
 
   return {
-    source,
-    mode: source,
-    isDemo: computed(() => source.value === 'demo'),
+    dataType: runtime.dataType,
+    isDemo: runtime.isDemo,
     id,
     entity: selection.property,
     rootCollection,

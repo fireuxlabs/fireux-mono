@@ -48,9 +48,7 @@ export function useKitchenConsoleMenuSection() {
       menuState.sections.value.find((item) => clean(item.id) === sectionId.value) ??
       null
   )
-  const demoData = useKitchenConsoleDemoData(
-    computed(() => menuState.kitchenSource.value === 'demo')
-  )
+  const demoData = useKitchenConsoleDemoData(menuState.isDemo)
   const demoScenario = computed(() => findKitchenConsoleDemoScenario(
     demoData.data.value,
     menuState.kitchenId.value
@@ -77,7 +75,7 @@ export function useKitchenConsoleMenuSection() {
     databaseId: menuState.databaseId,
   })
   const items = computed(() =>
-    menuState.kitchenSource.value === 'demo'
+    menuState.isDemo.value
       ? menuState.menu.value && section.value
         ? demoMenu.value?.menuSections.find(
             entry => clean(entry.section.id) === sectionId.value
@@ -86,12 +84,12 @@ export function useKitchenConsoleMenuSection() {
       : itemState.items.value
   )
   const itemsPending = computed(() =>
-    menuState.kitchenSource.value === 'demo'
+    menuState.isDemo.value
       ? demoData.pending.value
       : itemState.pending.value
   )
   const itemsCollectionPath = computed(() =>
-    menuState.kitchenSource.value === 'demo'
+    menuState.isDemo.value
       ? `demo/kitchens/${menuState.kitchenId.value}/menus/${menuState.menuId.value}/sections/${sectionId.value}/items`
       : itemState.collectionPath.value
   )

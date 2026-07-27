@@ -1,5 +1,6 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import {
   KitchenIngredientStorage,
   KitchenIngredientModel,
@@ -18,6 +19,7 @@ const buildKitchenIngredientPayload = (
 })
 
 export function useKitchenIngredientSelection() {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { setDocument } = useFirestoreCreate()
   const { deleteDocument } = useFirestoreDelete()
 
@@ -39,6 +41,7 @@ export function useKitchenIngredientSelection() {
     ingredientId: string,
     options: { kitchenCollectionPath: string }
   ) => {
+    requireWritableData()
     const resolvedIngredientId = String(ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 
@@ -61,6 +64,7 @@ export function useKitchenIngredientSelection() {
     ingredientId: string,
     options: { kitchenCollectionPath: string }
   ) => {
+    requireWritableData()
     const resolvedIngredientId = String(ingredientId || '').trim()
     if (!resolvedIngredientId) throw new Error('Ingredient id is required')
 

@@ -1,5 +1,5 @@
 <template>
-  <ConsoleKitchenOperationsOrdersCardsTicket
+  <ConsoleKitchenOperationsOrdersTicketPresentation
     :order="order"
     :interactive="interactive"
     prominent

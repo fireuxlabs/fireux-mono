@@ -100,7 +100,7 @@ const status = computed(() =>
   normalizeString((props.supplier as { state?: unknown } | null)?.state)
 )
 const categories = computed(() =>
-  normalizeStringArray(props.supplier?.supplier_product_categories)
+  normalizeStringArray(props.supplier?.supplier_item_categories)
 )
 const deliveryAreas = computed(() =>
   normalizeStringArray(props.supplier?.supplier_delivery_areas)

@@ -8,8 +8,22 @@ import type {
   PublicIngredient,
   PublicIngredientCollectionResponse,
 } from 'fireux-kitchens/runtime/models/ingredient-public.model'
+import {
+  resolveIngredientFoodGroup,
+  type IngredientFoodGroup,
+} from 'fireux-kitchens/runtime/models/ingredient-food-group'
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
+import { useKitchenInterface } from 'fireux-kitchens/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
+import type {
+  KitchenFinanceReportPeriod,
+} from 'fireux-kitchens/runtime/models/kitchen/finance-report.model'
+import {
+  projectKitchenMiseTasks,
+  type KitchenMiseTaskSummary,
+} from 'fireux-kitchens/runtime/models/kitchen/mise-presentation'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
+import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 
 export type MiseboxProductDemoExperience = {
   to: '/demo/menu' | '/demo/kiosk' | '/demo/service'
@@ -38,10 +52,19 @@ export type MiseboxProductDemoKiosk = {
 
 export type MiseboxProductDemo = {
   console: {
+    kitchenId: string
+    kitchenName: string
+    kitchenPill: {
+      title: string
+      subtitle: string
+      imageUrl: string
+      imageShade?: PlaceImageShade
+    }
     dishes: {
       id: string
       imageUrl: string
       kind: string
+      menuIds: string[]
       name: string
       priceLabel: string
       finance: {
@@ -82,24 +105,62 @@ export type MiseboxProductDemo = {
         summary: string
       }
     }[]
-    mise: {
+    ingredients: {
+      foodGroup: IngredientFoodGroup
       id: string
-      quantity: string
-      recipeId: string
-      station: string
-      title: string
+      imageUrl: string
+      menuIds: string[]
+      name: string
     }[]
+    finance: {
+      periods: {
+        id: KitchenFinanceReportPeriod
+        label: string
+        currencyCode: string
+        minorUnitDigits: number
+        saleCount: number
+        grossSalesMinor: number
+        averageSaleMinor: number
+      }[]
+    }
+    miseTasks: (KitchenMiseTaskSummary & {
+      menuIds: string[]
+    })[]
+    orders: KitchenOrder[]
     recipes: {
       id: string
       ingredientCount: number
       method: string[]
+      menuIds: string[]
       name: string
       yield: string
     }[]
+    stations: {
+      id: string
+      name: string
+      description: string
+      active: boolean
+      sortOrder: number
+    }[]
+    suppliers: {
+      id: string
+      name: string
+      headline: string
+      imageUrl: string
+      categories: string[]
+      deliveryAreas: string[]
+      linkedIngredientCount: number
+      catalogueCount: number
+    }[]
+    tables: {
+      configuredCount: number
+    }
     menus: {
       id: string
       imageAlt: string
       imageUrl: string
+      defaultInService: boolean
+      mode: KitchenDemoMenuMode
       name: string
     }[]
   }
@@ -108,6 +169,10 @@ export type MiseboxProductDemo = {
     kitchenTagline: string
     manifest: MenuManifest
     placeLabel: string
+  }
+  ordering: {
+    kitchenName: string
+    manifest: MenuManifest
   }
   kiosk: {
     defaultId: string
@@ -149,6 +214,12 @@ const experiences: readonly MiseboxProductDemoExperience[] = [
   },
 ]
 
+const consoleFinancePeriodLabels = {
+  '7d': '7 days',
+  '30d': '30 days',
+  '90d': '90 days',
+} satisfies Record<KitchenFinanceReportPeriod, string>
+
 async function loadMiseboxProductDemo(
   loadIngredientRoots: (ids: string[]) => Promise<PublicIngredient[]>
 ): Promise<MiseboxProductDemo> {
@@ -157,11 +228,19 @@ async function loadMiseboxProductDemo(
     presentationModule,
     supplierModule,
     dishesModule,
+    suppliersModule,
+    financeModule,
+    kitchenSpineModule,
+    menuCascadeModule,
   ] = await Promise.all([
     import('fireux-kitchens/runtime/demo/kitchen/scenarios'),
     import('fireux-kitchens/runtime/demo/kitchen/presentation/index'),
     import('fireux-suppliers/runtime/demo/supplier/scenarios'),
     import('fireux-kitchens/runtime/utils/kitchen/demo-dishes'),
+    import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers'),
+    import('fireux-kitchens/runtime/utils/kitchen/demo-finance'),
+    import('fireux-kitchens/runtime/utils/kitchen-spine'),
+    import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'),
   ])
   const supplierIngredients = new Set(
     supplierModule.supplierDemoScenarios.flatMap(scenario =>
@@ -187,9 +266,102 @@ async function loadMiseboxProductDemo(
   }
 
   const menuScenario = scenarioModule.featuredMenuDemoScenario
+  const orderingScenario = scenarioModule.pizzaTheActionKitchenDemoScenario
   const kioskScenario = scenarioModule.featuredKioskDemoScenario
   const serviceScenario = scenarioModule.featuredServiceDemoScenario
   const consoleScenario = scenarioModule.deanosKitchenDemoScenario
+  const consoleMenuCascade =
+    menuCascadeModule.projectKitchenDemoMenuCascade({
+      scenario: consoleScenario,
+      modeByMenuId: consoleScenario.menuModes,
+    })
+  const consoleMenuCascadeById = new Map(
+    consoleMenuCascade.menus.map(menu => [menu.id, menu])
+  )
+  const consoleDishCascadeById = new Map(
+    consoleMenuCascade.dishes.map(dish => [dish.id, dish])
+  )
+  const consoleRecipeCascadeById = new Map(
+    consoleMenuCascade.recipes.map(recipe => [recipe.id, recipe])
+  )
+  const consoleIngredientCascadeById = new Map(
+    consoleMenuCascade.ingredients.map(ingredient => [
+      ingredient.id,
+      ingredient,
+    ])
+  )
+  const { pill: projectKitchenPill, surface: projectKitchenSurface } =
+    useKitchenInterface()
+  const consoleKitchenPill = projectKitchenPill(projectKitchenSurface({
+    kitchen: consoleScenario.kitchen,
+    place: consoleScenario.place,
+    routeScope: 'demo',
+  }))
+  if (!consoleKitchenPill) {
+    throw new Error('Product Demo Kitchen pill is incomplete.')
+  }
+  const consoleSupplierOperation =
+    suppliersModule.buildKitchenDemoSuppliersOperation({
+      links: consoleScenario.supplierIngredientLinks,
+      supplierScenarios: supplierModule.supplierDemoScenarios,
+    })
+  const consoleTableCount = kitchenSpineModule.readKitchenTableCount(
+    consoleScenario.kitchen
+  )
+  if (!consoleTableCount) {
+    throw new Error('Product Demo Kitchen Tables are not configured.')
+  }
+  const consoleFinance = consoleScenario.finance
+  if (!consoleFinance) {
+    throw new Error('Product Demo Kitchen Finance is not configured.')
+  }
+  const consoleFinancePeriods = (
+    Object.keys(consoleFinancePeriodLabels) as KitchenFinanceReportPeriod[]
+  ).map((period) => {
+    const summary = financeModule.projectKitchenDemoFinanceSummary(
+      consoleFinance,
+      period
+    )
+    return {
+      id: period,
+      label: consoleFinancePeriodLabels[period],
+      currencyCode: summary.currencyCode,
+      minorUnitDigits: summary.minorUnitDigits,
+      saleCount: summary.saleCount,
+      grossSalesMinor: summary.grossSalesMinor,
+      averageSaleMinor: summary.averageSaleMinor,
+    }
+  })
+  const consoleStations = consoleScenario.stations
+    .map((station) => {
+      const id = String(station.id || '').trim()
+      const name = String(station.name || '').trim()
+      if (!id || !name) {
+        throw new Error('Product Demo Kitchen Station is incomplete.')
+      }
+      const sortOrder = Number(station.sort_order)
+      return {
+        id,
+        name,
+        description: String(station.description || '').trim(),
+        active: station.active !== false,
+        sortOrder: Number.isFinite(sortOrder)
+          ? sortOrder
+          : Number.MAX_SAFE_INTEGER,
+      }
+    })
+    .sort((left, right) =>
+      left.sortOrder - right.sortOrder
+      || left.name.localeCompare(right.name, undefined, {
+        sensitivity: 'base',
+      })
+    )
+  const consoleStationNames = Object.fromEntries(
+    consoleScenario.stations.map(station => [station.id, station.name])
+  )
+  const consoleMiseTaskById = new Map(
+    consoleScenario.miseTasks.map(task => [task.id, task])
+  )
   const consoleIngredientIds = [
     ...new Set(
       consoleScenario.kitchenIngredients
@@ -210,12 +382,53 @@ async function loadMiseboxProductDemo(
       }`
     )
   }
+  const consoleIngredientRootById = new Map(
+    consoleIngredientRoots.map(ingredient => [ingredient.id, ingredient])
+  )
+  const consoleIngredients = consoleIngredientIds
+    .map((ingredientId) => {
+      const ingredient = consoleIngredientRootById.get(ingredientId)
+      if (!ingredient) {
+        throw new Error(
+          `Product Demo canonical Ingredient is unresolved: ${ingredientId}`
+        )
+      }
+      const imageUrl = String(ingredient.image_url || '').trim()
+      const name = String(ingredient.name || '').trim()
+      if (!imageUrl || !name) {
+        throw new Error(
+          `Product Demo canonical Ingredient presentation is incomplete: ${ingredientId}`
+        )
+      }
+
+      return {
+        foodGroup: resolveIngredientFoodGroup({
+          id: ingredient.id,
+          category: ingredient.category,
+          kind: ingredient.kind,
+        }),
+        id: ingredient.id,
+        imageUrl,
+        menuIds: [
+          ...(consoleIngredientCascadeById.get(ingredient.id)?.menuIds ?? []),
+        ],
+        name,
+      }
+    })
+    .sort((left, right) =>
+      left.name.localeCompare(right.name, undefined, {
+        sensitivity: 'base',
+      })
+    )
   const consoleDishOperation = dishesModule.buildKitchenDemoDishesOperation({
     scenario: consoleScenario,
     supplierScenarios: supplierModule.supplierDemoScenarios,
     ingredientRoots: consoleIngredientRoots,
   })
   const menuManifest = presentationModule.featuredMenuDemoManifest
+  const orderingManifest = presentationModule.kitchenDemoManifest(
+    orderingScenario
+  )
   const kioskPresentations = [
     {
       appearance: 'refined' as const,
@@ -258,6 +471,8 @@ async function loadMiseboxProductDemo(
   if (
     menuManifest.source.kitchenId !== menuScenario.kitchen.id
     || menuManifest.source.menuId !== menuScenario.kitchenMenu.id
+    || orderingManifest.source.kitchenId !== orderingScenario.kitchen.id
+    || orderingManifest.source.menuId !== orderingScenario.kitchenMenu.id
     || !kioskKitchens.some(kitchen => kitchen.id === kioskScenario.kitchen.id)
   ) {
     throw new Error('The featured Kitchen Demo Worlds are internally inconsistent.')
@@ -282,10 +497,15 @@ async function loadMiseboxProductDemo(
 
     return {
       id: menu.kitchenMenu.id,
+      defaultInService:
+        consoleMenuCascadeById.get(menu.kitchenMenu.id)?.inService === true,
       imageAlt: previewDish
         ? `${previewDish.name} from ${menu.kitchenMenu.name}`
         : menu.kitchenMenu.name,
       imageUrl: String(previewDish?.image || '').trim(),
+      mode:
+        consoleMenuCascadeById.get(menu.kitchenMenu.id)?.mode
+        ?? 'off',
       name: menu.kitchenMenu.name,
     }
   })
@@ -327,6 +547,9 @@ async function loadMiseboxProductDemo(
           : dish.item_kind === 'drink'
             ? 'Drink'
             : 'Food',
+        menuIds: [
+          ...(consoleDishCascadeById.get(dish.id)?.menuIds ?? []),
+        ],
         name: dish.name || dish.id,
         priceLabel: price === null ? '' : consolePriceFormatter.format(price),
         finance: finance
@@ -376,23 +599,60 @@ async function loadMiseboxProductDemo(
 
   return {
     console: {
+      kitchenId: consoleScenario.kitchen.id,
+      kitchenName:
+        consoleScenario.kitchen.identity.display_name
+        || consoleScenario.place.name,
+      kitchenPill: {
+        title: consoleKitchenPill.title,
+        subtitle: consoleKitchenPill.subtitle,
+        imageUrl: consoleKitchenPill.imageUrl,
+        imageShade: consoleKitchenPill.imageShade,
+      },
       dishes: consoleDishes,
-      mise: consoleScenario.miseRequirements.map(requirement => ({
-        id: requirement.id,
-        quantity: formatProductionAmount(requirement.amount),
-        recipeId: requirement.source.kind === 'recipe'
-          ? requirement.source.recipeId
-          : '',
-        station: requirement.station,
-        title: requirement.title,
+      ingredients: consoleIngredients,
+      finance: {
+        periods: consoleFinancePeriods,
+      },
+      miseTasks: projectKitchenMiseTasks(
+        consoleScenario.miseTasks,
+        {
+          stationNames: consoleStationNames,
+        }
+      ).map(summary => ({
+        ...summary,
+        menuIds: (() => {
+          const task = consoleMiseTaskById.get(summary.id)
+          if (!task) {
+            throw new Error(
+              `Product Demo Mise task projection is unresolved: ${summary.id}`
+            )
+          }
+          return menuCascadeModule.projectKitchenDemoMiseTaskMenuIds(
+            task,
+            consoleMenuCascade
+          )
+        })(),
+      })),
+      orders: consoleScenario.orders.map(order => ({
+        ...order,
+        customer: {},
       })),
       recipes: consoleScenario.recipes.map(recipe => ({
         id: recipe.id,
         ingredientCount: recipe.ingredients.length,
         method: [...recipe.method],
+        menuIds: [
+          ...(consoleRecipeCascadeById.get(recipe.id)?.menuIds ?? []),
+        ],
         name: recipe.name,
         yield: formatProductionAmount(recipe.yield),
       })),
+      stations: consoleStations,
+      suppliers: consoleSupplierOperation.items,
+      tables: {
+        configuredCount: consoleTableCount,
+      },
       menus: consoleMenus,
     },
     menu: {
@@ -404,6 +664,10 @@ async function loadMiseboxProductDemo(
         || menuScenario.place.formatted_address
         || ''
       ).trim(),
+    },
+    ordering: {
+      kitchenName: orderingManifest.presentation.kitchenName,
+      manifest: orderingManifest,
     },
     kiosk: {
       defaultId: kioskScenario.kitchen.id,
@@ -433,7 +697,7 @@ export async function useMiseboxProductDemo() {
     )
   }
   const state = await useAsyncData<MiseboxProductDemo>(
-    'misebox-product-demo-production-v2',
+    'misebox-product-demo-production-v12',
     async () => {
       try {
         return await loadMiseboxProductDemo(loadIngredientRoots)

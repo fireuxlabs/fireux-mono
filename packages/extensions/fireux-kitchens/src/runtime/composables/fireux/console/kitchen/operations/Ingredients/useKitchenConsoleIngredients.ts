@@ -6,6 +6,7 @@ import { useKitchenIngredients } from './fetch/useKitchenIngredients'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
 import { useKitchenConsoleSupplyWorkspace } from '../Suppliers/useKitchenConsoleSupplyWorkspace'
+import { useKitchenConsoleDemoMenuService } from '../../core/useKitchenConsoleDemoMenuService'
 
 type KitchenConsoleIngredientItem = IngredientInterfaceItem & {
   supplier_id?: string
@@ -17,6 +18,7 @@ type KitchenConsoleIngredientItem = IngredientInterfaceItem & {
   production_usage_label?: string
   production_usage_menu_names?: string[]
   production_usage_sources?: string[]
+  in_service?: boolean
 }
 
 export function useKitchenConsoleIngredients() {
@@ -27,7 +29,7 @@ export function useKitchenConsoleIngredients() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const enabled = computed(() => runtime.source.value !== 'demo')
+  const enabled = computed(() => !runtime.isDemo.value)
   const fetchKitchenId = computed(() =>
     rootCollection.value && runtime.storageKitchenId.value
       ? runtime.storageKitchenId.value
@@ -44,6 +46,9 @@ export function useKitchenConsoleIngredients() {
     enabled,
   })
   const supply = useKitchenConsoleSupplyWorkspace()
+  const demoMenuService = useKitchenConsoleDemoMenuService(
+    computed(() => supply.scenario.value)
+  )
   const demoIngredients = computed<KitchenConsoleIngredientItem[]>(() => {
     const scenario = supply.scenario.value
     if (!scenario) return []
@@ -134,6 +139,10 @@ export function useKitchenConsoleIngredients() {
           image_url: '',
           kitchen_ingredient: kitchenIngredient,
           missing_root_ingredient: true,
+          in_service: demoMenuService.isEntityInService(
+            'ingredients',
+            ingredientId
+          ),
         }
       }
 
@@ -157,6 +166,10 @@ export function useKitchenConsoleIngredients() {
         ingredient_id: ingredientId,
         kitchen_ingredient: kitchenIngredient,
         missing_root_ingredient: false,
+        in_service: demoMenuService.isEntityInService(
+          'ingredients',
+          ingredientId
+        ),
         production_usage_label: productionUsageLabel,
         production_usage_menu_names: menuNames,
         production_usage_sources: productionSources,
@@ -174,22 +187,22 @@ export function useKitchenConsoleIngredients() {
     })
   })
   const ingredients = computed<KitchenConsoleIngredientItem[]>(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoIngredients.value
       : fetchedIngredients.value
   )
   const ingredientsPending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? supply.pending.value
       : fetchedIngredientsPending.value
   )
   const loadError = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? supply.ingredientRootError.value
       : fetchedIngredientsError.value
   )
   const collectionPath = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? `demo/kitchens/${kitchenId.value}/ingredients`
       : fetchedCollectionPath.value
   )
@@ -217,7 +230,7 @@ export function useKitchenConsoleIngredients() {
       .map(ingredient => String(ingredient.ingredient_id || '').trim())
       .filter(Boolean)
   )
-  const hasDemoProductionGraph = computed(() => runtime.source.value === 'demo')
+  const hasDemoProductionGraph = runtime.isDemo
   const usedByMenuProductionCount = computed<number | null>(() =>
     hasDemoProductionGraph.value
       ? consoleIngredients.value.filter((ingredient) =>
@@ -250,15 +263,15 @@ export function useKitchenConsoleIngredients() {
     },
     dataSource: {
       kind:
-        runtime.source.value === 'demo'
+        runtime.isDemo.value
           ? 'demo-usage+canonical-ingredient-roots'
-          : runtime.source.value,
+          : runtime.dataType.value,
       usage: {
         path: collectionPath.value,
-        firestore: runtime.source.value !== 'demo',
+        firestore: !runtime.isDemo.value,
       },
       ingredientRoots:
-        runtime.source.value === 'demo'
+        runtime.isDemo.value
           ? {
               authority: '/ingredients/{ingredientId}',
               projection: '/api/ingredients?ids={ingredientIds}',
@@ -274,7 +287,7 @@ export function useKitchenConsoleIngredients() {
         canonicalStorageObject: 'ingredients/{ingredientId}/image_url',
         kitchenRecordOwnsImage: false,
       },
-      ...(runtime.source.value !== 'demo'
+      ...(!runtime.isDemo.value
         ? {
             path: collectionPath.value,
             firestore: true,
@@ -307,6 +320,9 @@ export function useKitchenConsoleIngredients() {
     kitchenName,
     pending,
     loadError,
+    isIngredientInService: (ingredientId: string) =>
+      !runtime.isDemo.value
+      || demoMenuService.isEntityInService('ingredients', ingredientId),
     debug,
   }
 }

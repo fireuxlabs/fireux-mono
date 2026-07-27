@@ -1,5 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { menuPath } from '../utils/paths'
@@ -12,10 +13,12 @@ export function useMenuDelete(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
 
   async function deleteMenu(kitchenId: string, menuId: string) {
+    requireWritableData()
     const collectionPath = menuPath({
       kitchenCollectionPath: clean(unref(options.kitchenCollectionPath)),
       kitchenId,

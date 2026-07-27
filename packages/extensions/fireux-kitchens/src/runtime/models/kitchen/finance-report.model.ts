@@ -10,11 +10,34 @@ export const KitchenFinanceReportPeriodDays = {
 export type KitchenFinanceReportPeriod =
   keyof typeof KitchenFinanceReportPeriodDays
 
+export type KitchenFinanceItemSummary = {
+  menu_id: string
+  source_item_id: string
+  dish_id: string
+  item_kind?: string
+  variant_id?: string
+  label: string
+  variant_label?: string
+  quantity: number
+  sale_count: number
+  line_gross: FinancialMoney
+}
+
 export type KitchenFinanceCurrencySummary = {
   currency_code: string
   sale_count: number
   gross_sales: FinancialMoney
   average_sale: FinancialMoney
+  item_quantity: number
+  item_sales: FinancialMoney
+  delivery_fees: FinancialMoney
+  items: KitchenFinanceItemSummary[]
+}
+
+export type KitchenFinanceDailySummary = {
+  date: string
+  sale_count: number
+  currencies: KitchenFinanceCurrencySummary[]
 }
 
 /**
@@ -28,8 +51,10 @@ export type KitchenGrossSalesReport = {
     from: string
     to: string
   }
+  timezone: string
   generated_at: string
   sale_count: number
   currencies: KitchenFinanceCurrencySummary[]
+  daily: KitchenFinanceDailySummary[]
   complete: true
 }

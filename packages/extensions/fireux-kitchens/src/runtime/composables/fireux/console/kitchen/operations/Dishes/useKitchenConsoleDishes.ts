@@ -18,6 +18,7 @@ import {
   buildKitchenDemoDishesOperation,
 } from '../../../../../../utils/kitchen/demo-dishes'
 import { useKitchenConsoleSupplyWorkspace } from '../Suppliers/useKitchenConsoleSupplyWorkspace'
+import { useKitchenConsoleDemoMenuService } from '../../core/useKitchenConsoleDemoMenuService'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 
@@ -36,19 +37,20 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const demoData = useKitchenConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoScenario = computed(() => findKitchenConsoleDemoScenario(
     demoData.data.value,
     kitchenId.value
   ))
+  const demoMenuService = useKitchenConsoleDemoMenuService(demoScenario)
   const supply = useKitchenConsoleSupplyWorkspace()
   const demoDishOperationState = computed<{
     operation: KitchenDemoDishesOperation | null
     error?: unknown
   }>(() => {
     if (
-      runtime.source.value !== 'demo' ||
+      !runtime.isDemo.value ||
       demoData.pending.value ||
       supply.pending.value ||
       demoData.error.value ||
@@ -103,7 +105,7 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
       kitchenCollectionPath: rootCollection,
       databaseId,
       recordProvider: {
-        active: computed(() => runtime.source.value === 'demo'),
+        active: runtime.isDemo,
         records: demoDishRecords,
         pending: demoPending,
         error: demoError,
@@ -121,13 +123,13 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     collectionPath,
   })
   const sections = computed<KitchenDishSection[]>(() => {
-    if (runtime.source.value !== 'demo') return []
+    if (!runtime.isDemo.value) return []
 
     return demoDishOperation.value?.sections ?? []
   })
   const menuUsageByDishId = computed<Record<string, KitchenDishMenuUsage[]>>(
     () => {
-      if (runtime.source.value !== 'demo') return {}
+      if (!runtime.isDemo.value) return {}
 
       return Object.fromEntries(
         (demoDishOperation.value?.items ?? []).map(item => [
@@ -159,6 +161,9 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
     menuUsageByDishId,
     getMenuUsageForDish: (dishId: string) =>
       menuUsageByDishId.value[clean(dishId)] || [],
+    isDishInService: (dishId: string) =>
+      !runtime.isDemo.value
+      || demoMenuService.isEntityInService('dishes', dishId),
     getPriceLabelForDish: (dishId: string) => {
       const entries = menuUsageByDishId.value[clean(dishId)] ?? []
       const prices = entries
@@ -187,6 +192,12 @@ export function useKitchenConsoleDishes(_options: { resolveMenuSections?: boolea
       hasError: Boolean(error.value),
       readOnly: readOnly.value,
       canWrite: canWrite.value,
+      inServiceCount:
+        runtime.isDemo.value
+          ? consoleDishes.value.filter(dish =>
+              demoMenuService.isEntityInService('dishes', dish.id)
+            ).length
+          : consoleDishes.value.length,
     })),
   }
 }

@@ -14,7 +14,7 @@ export function useProjectConsoleEcosystem() {
   const { selection, runtime } = useProjectConsole()
 
   const ecosystemCollectionPath = computed(() =>
-    runtime.source.value === 'live' ? 'ecosystems' : ''
+    runtime.dataType.value === 'live' ? 'ecosystems' : ''
   )
   const {
     ecosystems: ecosystemCollection,
@@ -22,14 +22,14 @@ export function useProjectConsoleEcosystem() {
     error,
   } = useEcosystemCollection(ecosystemCollectionPath)
   const demoData = useProjectConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const ecosystems = computed(() => {
     const projectId = normalizeString(selection.projectId.value)
     if (!projectId) return []
 
     const source =
-      runtime.source.value === 'demo'
+      runtime.isDemo.value
         ? (findProjectConsoleDemoScenario(demoData.data.value, projectId)
             ?.ecosystems ?? [])
         : (ecosystemCollection.value ?? [])
@@ -41,13 +41,13 @@ export function useProjectConsoleEcosystem() {
   const { outcome } = useFirestoreCollectionState({
     active: computed(
       () =>
-        runtime.source.value === 'demo' ||
+        runtime.isDemo.value ||
         Boolean(ecosystemCollectionPath.value)
     ),
     count,
     error,
     pending: computed(() =>
-      runtime.source.value === 'demo' ? demoData.pending.value : pending.value
+      runtime.isDemo.value ? demoData.pending.value : pending.value
     ),
   })
   const debug = computed(() => ({

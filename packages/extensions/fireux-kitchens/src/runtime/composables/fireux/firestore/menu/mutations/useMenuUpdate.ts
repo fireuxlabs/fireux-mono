@@ -10,6 +10,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useRuntimeConfig } from '#imports'
@@ -59,6 +60,7 @@ export function useMenuUpdate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const resolveDb = useFirestoreResolver(options.databaseId)
   const fireux = useFireUXConfig()
@@ -99,6 +101,7 @@ export function useMenuUpdate(
   }
 
   async function updateMenu(kitchenId: string, menuId: string, patch: MenuUpdateInput) {
+    requireWritableData()
     const path = collectionPath(kitchenId)
     const id = clean(menuId)
     if (!path || !id) throw new Error('Menu id is required')
@@ -166,6 +169,7 @@ export function useMenuUpdate(
   }
 
   async function renameMenu(kitchenId: string, menuId: string, nextMenuId: string) {
+    requireWritableData()
     const path = collectionPath(kitchenId)
     const oldId = clean(menuId)
     const nextId = normalizeSlug(nextMenuId)

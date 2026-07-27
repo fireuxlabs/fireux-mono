@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: create sparse KitchenMenus using their exact linked Place authority.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { doc, getDoc } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
@@ -103,6 +104,7 @@ export function useMenuCreate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { createDocument, createDocumentWithId } = useFirestoreCreate({
     databaseId: options.databaseId,
   })
@@ -137,6 +139,7 @@ export function useMenuCreate(
   }
 
   async function createMenu(input: MenuCreateInput): Promise<{ created: boolean; id: string }> {
+    requireWritableData()
     const kitchenId = normalizeString(input.kitchenId || defaultKitchenId.value)
     const name = normalizeString(input.name)
     const menuId = normalizeSlug(input.id || name)

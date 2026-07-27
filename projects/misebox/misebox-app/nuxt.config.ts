@@ -72,6 +72,12 @@ const fireuxConfig = defineFireuxConfig({
       'fireux-jobs',
       {
         categories: ['hospitality'],
+        sourceAppDoorways: {
+          'interlaken-essen': {
+            label: 'Apply with Interlaken Essen',
+            url: 'https://interlaken-essen.misebox.app',
+          },
+        },
       },
     ],
     'fireux-ai',

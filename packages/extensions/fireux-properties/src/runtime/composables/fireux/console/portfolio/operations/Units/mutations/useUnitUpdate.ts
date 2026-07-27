@@ -1,5 +1,6 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
@@ -19,10 +20,7 @@ export function useUnitUpdate(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function updateUnit(unitId: string, patch: UnitUpdateInput): Promise<void> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-properties] portfolio id is required.')
-    }
+    requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-properties')
 
     const normalizedUnitId = normalizeString(unitId)
     if (!normalizedUnitId) {

@@ -43,7 +43,17 @@ const { suppliers, debug } = useKitchenConsoleSuppliers()
 const { cell } = useSupplierInterface()
 const cards = computed(() =>
   suppliers.value
-    .map((supplier) => cell(supplier))
+    .map((supplier) => {
+      const card = cell(supplier)
+      return card
+        ? {
+            ...card,
+            to: `/console/kitchen/suppliers/${
+              encodeURIComponent(card.id)
+            }`,
+          }
+        : null
+    })
     .filter((card): card is NonNullable<ReturnType<typeof cell>> =>
       Boolean(card)
     )

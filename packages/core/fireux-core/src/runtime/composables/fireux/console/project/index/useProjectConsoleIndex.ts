@@ -38,7 +38,7 @@ export function useProjectConsoleIndex(
     selectedProject: consoleSelection.project.value,
     targetCount: projects.count.value,
     authority: 'fireux-app-admin',
-    source: consoleRuntime.source.value,
+    dataType: consoleRuntime.dataType.value,
   }))
 
   return useConsoleIndex({

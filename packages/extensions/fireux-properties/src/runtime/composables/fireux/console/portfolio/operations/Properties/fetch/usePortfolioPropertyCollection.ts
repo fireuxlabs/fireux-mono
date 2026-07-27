@@ -37,7 +37,7 @@ export function usePortfolioPropertyCollection(
     )
   )
   const collectionPath = computed(() =>
-    runtimePortfolio.source.value === 'live' && canRead.value
+    runtimePortfolio.dataType.value === 'live' && canRead.value
       ? PropertyStorage.rootCollection
       : ''
   )

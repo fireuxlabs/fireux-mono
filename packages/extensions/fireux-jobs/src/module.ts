@@ -5,7 +5,9 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   defaultFireuxJobsConfig,
+  normalizeFireuxJobSourceAppDoorways,
   type FireuxJobCategorySelection,
+  type FireuxJobSourceAppDoorways,
 } from './config/jobs.config'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
@@ -21,6 +23,7 @@ import { configureServer } from './config/module/server-config'
 export interface ModuleOptions {
   prefix?: string
   categories?: FireuxJobCategorySelection
+  sourceAppDoorways?: FireuxJobSourceAppDoorways
 }
 
 function normalizeIdentifiers(value: unknown, fallback: string[] = []): string[] {
@@ -70,12 +73,16 @@ export default defineNuxtModule<ModuleOptions>({
       categoryScope === 'allowlist' ? options?.categories : [],
       defaultFireuxJobsConfig.categories
     )
+    const sourceAppDoorways = normalizeFireuxJobSourceAppDoorways(
+      options?.sourceAppDoorways
+    )
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
         configureRuntime(nuxt, 'jobs', {
           enabled: true,
           categoryScope,
           categories,
+          sourceAppDoorways,
         }),
       composables: configureComposables,
       components: configureComponents,

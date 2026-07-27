@@ -25,6 +25,8 @@ import {
 } from '../../models/kitchen/station.model'
 import {
   deanosKitchenDemoIdentity,
+  deanosPartyMenuDemoIdentity,
+  deanosXmasMenuDemoIdentity,
   kitchenDemoCreated,
   kitchenDemoTimestamp,
   kitchenDemoUpdated,
@@ -306,6 +308,101 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
       },
     ],
   }),
+  makeOrder({
+    identity: deanosKitchenDemoIdentity,
+    serviceNumber: 6,
+    status: 'pending_acceptance',
+    orderType: 'collection',
+    channel: 'menu',
+    createdAt: '2026-07-22T10:08:00.000Z',
+    customerName: 'Lea',
+    customerPhone: '+41 79 555 01 06',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'swiss-melt-item',
+        dishId: 'swiss-melt',
+        itemKind: 'food',
+        label: 'Swiss Melt',
+        unitPrice: 22,
+      },
+      {
+        id: 'item-2',
+        itemId: 'onion-rings-item',
+        dishId: 'onion-rings',
+        itemKind: 'food',
+        label: 'Crispy onion rings',
+        unitPrice: 7,
+      },
+    ],
+  }),
+  makeOrder({
+    identity: deanosKitchenDemoIdentity,
+    serviceNumber: 7,
+    status: 'accepted',
+    orderType: 'takeaway',
+    channel: 'kiosk',
+    createdAt: '2026-07-22T10:09:00.000Z',
+    updatedAt: '2026-07-22T10:10:00.000Z',
+    updatedBy: 'demo-operator',
+    estimatedMinutes: 12,
+    estimatedAt: '2026-07-22T10:22:00.000Z',
+    customerName: 'Mateo',
+    handoff: 'bag',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'double-trouble-item',
+        dishId: 'double-trouble',
+        itemKind: 'food',
+        label: 'Double Trouble',
+        unitPrice: 27,
+        addOns: [{ id: 'smoked-bacon', label: 'Smoked bacon', price: 3 }],
+      },
+      {
+        id: 'item-2',
+        itemId: 'dirty-deanos-fries-item',
+        dishId: 'dirty-deanos-fries',
+        itemKind: 'food',
+        label: 'Dirty Deanos fries',
+        unitPrice: 13,
+      },
+    ],
+  }),
+  makeOrder({
+    identity: deanosKitchenDemoIdentity,
+    serviceNumber: 8,
+    status: 'ready',
+    orderType: 'eat_in',
+    channel: 'kiosk',
+    createdAt: '2026-07-22T10:10:00.000Z',
+    updatedAt: '2026-07-22T10:18:00.000Z',
+    updatedBy: 'demo-operator',
+    estimatedMinutes: 10,
+    estimatedAt: '2026-07-22T10:20:00.000Z',
+    customerName: 'Nora',
+    handoff: 'tray',
+    items: [
+      {
+        id: 'item-1',
+        itemId: 'crispy-cauliflower-item',
+        dishId: 'crispy-cauliflower',
+        itemKind: 'food',
+        label: 'Crispy Cauliflower',
+        unitPrice: 18,
+        checked: true,
+      },
+      {
+        id: 'item-2',
+        itemId: 'cherry-vanilla-shake-item',
+        dishId: 'cherry-vanilla-shake',
+        itemKind: 'drink',
+        label: 'Cherry vanilla shake',
+        unitPrice: 8,
+        checked: true,
+      },
+    ],
+  }),
 ]
 
 const station = (
@@ -326,10 +423,19 @@ const station = (
 })
 
 export const deanosKitchenDemoStations: KitchenStation[] = [
-  station(deanosKitchenDemoIdentity, 'grill', 'Grill', 'Burgers and hot holding.', 1),
-  station(deanosKitchenDemoIdentity, 'fryers', 'Fryers', 'Chicken and fries.', 2),
-  station(deanosKitchenDemoIdentity, 'pass', 'Pass', 'Final checks and guest handoff.', 3),
+  station(deanosKitchenDemoIdentity, 'prep', 'Prep', 'Cold prep, sauces and batch work.', 1),
+  station(deanosKitchenDemoIdentity, 'grill', 'Grill', 'Burgers and hot holding.', 2),
+  station(deanosKitchenDemoIdentity, 'fryers', 'Fryers', 'Chicken and fries.', 3),
+  station(deanosKitchenDemoIdentity, 'drinks', 'Drinks', 'Shakes, coolers and garnish.', 4),
+  station(deanosKitchenDemoIdentity, 'pass', 'Pass', 'Final checks and guest handoff.', 5),
 ]
+
+type DemoMiseChecklistInput =
+  | string
+  | {
+      done?: boolean
+      label: string
+    }
 
 const miseTask = (
   identity: KitchenDemoIdentity,
@@ -340,16 +446,21 @@ const miseTask = (
   priority: KitchenMiseTask['priority'],
   estimatedMinutes: number,
   production: {
+    checklist?: DemoMiseChecklistInput[]
+    description?: string
     ingredientIds?: string[]
     prepItemIds?: string[]
     recipeId?: string
+    workflowStage?: KitchenMiseTask['workflow_stage']
   } = {}
 ): KitchenMiseTask => ({
   ...KitchenMiseTaskModel,
   id,
   kitchen_id: identity.kitchenId,
   title,
+  description: production.description ?? '',
   station: stationId,
+  workflow_stage: production.workflowStage ?? '',
   service_date: '2026-07-22',
   status,
   priority,
@@ -358,6 +469,11 @@ const miseTask = (
   mise_ids: [...(production.prepItemIds ?? [])],
   menu_id: identity.menuId,
   recipe_id: production.recipeId ?? '',
+  checklist: (production.checklist ?? []).map((item, index) => ({
+    id: `${id}-step-${index + 1}`,
+    label: typeof item === 'string' ? item : item.label,
+    done: typeof item === 'string' ? false : item.done === true,
+  })),
   created: kitchenDemoCreated(
     identity,
     '2026-07-22T07:00:00.000Z'
@@ -365,38 +481,636 @@ const miseTask = (
   updated: kitchenDemoUpdated('2026-07-22T08:00:00.000Z'),
 })
 
+type DemoRecipeMiseTaskInput = {
+  identity: KitchenDemoIdentity
+  minutes: number
+  priority?: KitchenMiseTask['priority']
+  recipeId: string
+  stage: KitchenMiseTask['workflow_stage']
+  station: string
+  status?: KitchenMiseTask['status']
+  title: string
+}
+
+const recipeMiseTask = (
+  input: DemoRecipeMiseTaskInput
+): KitchenMiseTask => {
+  const status = input.status ?? 'todo'
+  const completedSteps = status === 'done'
+    ? 3
+    : status === 'in_progress'
+      ? 1
+      : 0
+
+  return miseTask(
+    input.identity,
+    `batch-${input.recipeId}`,
+    input.title,
+    input.station,
+    status,
+    input.priority ?? 'normal',
+    input.minutes,
+    {
+      recipeId: input.recipeId,
+      workflowStage: input.stage,
+      description: 'Prepare one labelled service batch from the linked recipe.',
+      checklist: [
+        { label: 'Weigh and check ingredients', done: completedSteps >= 1 },
+        { label: 'Follow the batch method', done: completedSteps >= 2 },
+        { label: 'Label, date and store', done: completedSteps >= 3 },
+      ],
+    }
+  )
+}
+
+const deanosKitchenDemoRecipeTaskDefinitions: DemoRecipeMiseTaskInput[] = [
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'deanos-burger-sauce',
+    title: 'Make Deanos burger sauce',
+    stage: 'make',
+    station: 'prep',
+    status: 'in_progress',
+    priority: 'high',
+    minutes: 20,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'smoky-burger-sauce',
+    title: 'Make smoky burger sauce',
+    stage: 'make',
+    station: 'prep',
+    minutes: 15,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'peppercorn-mayo',
+    title: 'Make peppercorn mayo',
+    stage: 'make',
+    station: 'prep',
+    minutes: 12,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'ranch-dressing',
+    title: 'Make herbed ranch',
+    stage: 'make',
+    station: 'prep',
+    minutes: 18,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'chilli-mayo',
+    title: 'Make chilli mayo',
+    stage: 'make',
+    station: 'prep',
+    minutes: 10,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'smoky-vegan-mayo',
+    title: 'Make smoky vegan mayo',
+    stage: 'make',
+    station: 'prep',
+    minutes: 10,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'deanos-crispy-batter',
+    title: 'Mix crispy batter',
+    stage: 'make',
+    station: 'fryers',
+    priority: 'high',
+    minutes: 15,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'buttermilk-chicken',
+    title: 'Marinate buttermilk chicken',
+    stage: 'make',
+    station: 'prep',
+    status: 'done',
+    priority: 'high',
+    minutes: 25,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'red-cabbage-slaw',
+    title: 'Make red cabbage slaw',
+    stage: 'make',
+    station: 'prep',
+    status: 'done',
+    minutes: 20,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'hot-honey-glaze',
+    title: 'Make hot-honey glaze',
+    stage: 'cook_chill',
+    station: 'prep',
+    minutes: 15,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'caramelised-onions',
+    title: 'Cook caramelised onions',
+    stage: 'cook_chill',
+    station: 'grill',
+    status: 'in_progress',
+    priority: 'high',
+    minutes: 45,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'dirty-fries-cheese-sauce',
+    title: 'Cook dirty-fries cheese sauce',
+    stage: 'cook_chill',
+    station: 'prep',
+    minutes: 25,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'salted-caramel-sauce',
+    title: 'Cook salted-caramel sauce',
+    stage: 'cook_chill',
+    station: 'drinks',
+    status: 'done',
+    minutes: 25,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'cherry-vanilla-syrup',
+    title: 'Cook cherry-vanilla syrup',
+    stage: 'cook_chill',
+    station: 'drinks',
+    minutes: 20,
+  },
+  {
+    identity: deanosKitchenDemoIdentity,
+    recipeId: 'house-lemonade-cordial',
+    title: 'Make lemonade cordial',
+    stage: 'cook_chill',
+    station: 'drinks',
+    minutes: 20,
+  },
+  {
+    identity: deanosPartyMenuDemoIdentity,
+    recipeId: 'strawberry-lime-cooler-base',
+    title: 'Make party strawberry & lime cooler',
+    stage: 'cook_chill',
+    station: 'drinks',
+    minutes: 25,
+  },
+  {
+    identity: deanosPartyMenuDemoIdentity,
+    recipeId: 'cucumber-mint-cooler-base',
+    title: 'Make party cucumber & mint cooler',
+    stage: 'make',
+    station: 'drinks',
+    minutes: 20,
+  },
+  {
+    identity: deanosXmasMenuDemoIdentity,
+    recipeId: 'pigs-in-blankets',
+    title: 'Make pigs in blankets',
+    stage: 'make',
+    station: 'prep',
+    priority: 'high',
+    minutes: 30,
+  },
+  {
+    identity: deanosXmasMenuDemoIdentity,
+    recipeId: 'fried-camembert',
+    title: 'Crumb Camembert portions',
+    stage: 'make',
+    station: 'fryers',
+    minutes: 25,
+  },
+  {
+    identity: deanosXmasMenuDemoIdentity,
+    recipeId: 'mustard-mayo',
+    title: 'Make mustard mayo',
+    stage: 'make',
+    station: 'prep',
+    minutes: 10,
+  },
+  {
+    identity: deanosXmasMenuDemoIdentity,
+    recipeId: 'sage-onion-stuffing',
+    title: 'Cook sage & onion stuffing',
+    stage: 'cook_chill',
+    station: 'prep',
+    minutes: 35,
+  },
+  {
+    identity: deanosXmasMenuDemoIdentity,
+    recipeId: 'gravy-mayo',
+    title: 'Make gravy mayo',
+    stage: 'make',
+    station: 'prep',
+    minutes: 12,
+  },
+  {
+    identity: deanosXmasMenuDemoIdentity,
+    recipeId: 'fried-brie-bites',
+    title: 'Crumb Brie bites',
+    stage: 'make',
+    station: 'fryers',
+    minutes: 25,
+  },
+  {
+    identity: deanosXmasMenuDemoIdentity,
+    recipeId: 'cranberry-chilli-dip',
+    title: 'Make cranberry chilli dip',
+    stage: 'make',
+    station: 'prep',
+    minutes: 10,
+  },
+]
+const deanosKitchenDemoRecipeTasks =
+  deanosKitchenDemoRecipeTaskDefinitions.map(recipeMiseTask)
+
 export const deanosKitchenDemoMiseTasks: KitchenMiseTask[] = [
   miseTask(
     deanosKitchenDemoIdentity,
-    'shape-burger-patties',
-    'Shape burger patties',
+    'wash-main-service-produce',
+    'Wash and clean service produce',
+    'prep',
+    'in_progress',
+    'high',
+    30,
+    {
+      workflowStage: 'wash',
+      ingredientIds: [
+        'lettuce',
+        'tomato',
+        'spring-onion',
+        'mint',
+        'lemon',
+        'brown-mushrooms',
+      ],
+      prepItemIds: [
+        'washed-shredded-lettuce',
+        'sliced-tomato',
+        'sliced-spring-onion',
+        'washed-mint',
+        'lemon-garnish',
+        'sliced-brown-mushrooms',
+      ],
+      checklist: [
+        { label: 'Wash and spin lettuce', done: true },
+        { label: 'Wash tomatoes and spring onions', done: true },
+        'Wash mint and lemons',
+        'Clean mushrooms without soaking',
+      ],
+    }
+  ),
+  miseTask(
+    deanosPartyMenuDemoIdentity,
+    'wash-party-produce',
+    'Wash party produce',
+    'prep',
+    'todo',
+    'normal',
+    15,
+    {
+      workflowStage: 'wash',
+      ingredientIds: ['basil', 'cucumber'],
+      prepItemIds: ['washed-basil', 'sliced-cucumber'],
+      checklist: ['Wash and dry basil', 'Wash cucumbers'],
+    }
+  ),
+  miseTask(
+    deanosXmasMenuDemoIdentity,
+    'wash-xmas-rocket',
+    'Wash Xmas rocket',
+    'prep',
+    'todo',
+    'normal',
+    10,
+    {
+      workflowStage: 'wash',
+      ingredientIds: ['rocket'],
+      prepItemIds: ['washed-rocket'],
+      checklist: ['Wash rocket', 'Spin dry and hold chilled'],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'shape-main-patties',
+    'Portion burger balls',
     'grill',
     'done',
     'high',
     35,
     {
+      workflowStage: 'cut_portion',
       ingredientIds: ['beef-mince'],
       prepItemIds: ['smash-patty-80g'],
+      checklist: [
+        { label: 'Weigh 80 g portions', done: true },
+        { label: 'Roll into loose balls', done: true },
+        { label: 'Tray, cover and chill', done: true },
+      ],
     }
   ),
   miseTask(
     deanosKitchenDemoIdentity,
-    'mix-house-sauce',
-    'Mix house sauce',
-    'pass',
-    'in_progress',
+    'split-main-buns',
+    'Split burger buns',
+    'prep',
+    'todo',
     'normal',
-    20,
-    { recipeId: 'deanos-burger-sauce' }
+    15,
+    {
+      workflowStage: 'cut_portion',
+      prepItemIds: ['split-burger-bun'],
+      checklist: ['Split buns cleanly', 'Tray for service'],
+    }
   ),
   miseTask(
     deanosKitchenDemoIdentity,
-    'stock-takeaway-packaging',
-    'Stock takeaway packaging',
+    'slice-main-cheese',
+    'Slice and portion cheese',
+    'prep',
+    'todo',
+    'normal',
+    20,
+    {
+      workflowStage: 'cut_portion',
+      ingredientIds: ['swiss-cheese', 'cheddar-cheese'],
+      prepItemIds: ['sliced-swiss-cheese', 'sliced-cheddar'],
+      checklist: ['Slice Swiss cheese', 'Slice cheddar', 'Cover and chill'],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'cut-main-produce',
+    'Cut service produce',
+    'prep',
+    'todo',
+    'high',
+    30,
+    {
+      workflowStage: 'cut_portion',
+      prepItemIds: [
+        'washed-shredded-lettuce',
+        'sliced-brown-mushrooms',
+        'sliced-tomato',
+        'sliced-spring-onion',
+      ],
+      checklist: [
+        'Shred lettuce',
+        'Slice mushrooms',
+        'Slice tomatoes',
+        'Slice spring onions',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'portion-fryer-veg',
+    'Cut and portion fryer vegetables',
+    'fryers',
+    'todo',
+    'normal',
+    25,
+    {
+      workflowStage: 'cut_portion',
+      prepItemIds: ['cauliflower-florets', 'sliced-onion-rings'],
+      checklist: [
+        'Cut even cauliflower florets',
+        'Slice and separate onion rings',
+        'Dry and portion',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'portion-drinks-garnish',
+    'Portion drinks garnish',
+    'drinks',
+    'todo',
+    'normal',
+    15,
+    {
+      workflowStage: 'cut_portion',
+      prepItemIds: [
+        'washed-mint',
+        'lemon-garnish',
+        'service-ready-vanilla-soft-serve',
+      ],
+      checklist: [
+        'Pick mint sprigs',
+        'Slice lemon garnish',
+        'Check soft-serve level',
+      ],
+    }
+  ),
+  miseTask(
+    deanosPartyMenuDemoIdentity,
+    'portion-party-burgers',
+    'Portion party sliders',
+    'prep',
+    'todo',
+    'high',
+    35,
+    {
+      workflowStage: 'cut_portion',
+      prepItemIds: ['slider-patty-60g', 'split-slider-bun'],
+      checklist: [
+        'Shape 60 g slider patties',
+        'Split slider buns',
+        'Count against party order',
+      ],
+    }
+  ),
+  miseTask(
+    deanosXmasMenuDemoIdentity,
+    'portion-xmas-cheese',
+    'Slice Xmas Brie',
+    'prep',
+    'todo',
+    'normal',
+    15,
+    {
+      workflowStage: 'cut_portion',
+      prepItemIds: ['sliced-brie'],
+      checklist: ['Slice Brie evenly', 'Cover and chill'],
+    }
+  ),
+  ...deanosKitchenDemoRecipeTasks,
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'cook-smoked-bacon',
+    'Cook and portion smoked bacon',
+    'grill',
+    'todo',
+    'high',
+    25,
+    {
+      workflowStage: 'cook_chill',
+      prepItemIds: ['cooked-smoked-bacon'],
+      checklist: [
+        'Cook bacon until crisp',
+        'Drain and cool safely',
+        'Portion for service',
+      ],
+    }
+  ),
+  miseTask(
+    deanosXmasMenuDemoIdentity,
+    'roast-xmas-turkey',
+    'Roast, chill and portion turkey',
+    'grill',
+    'todo',
+    'high',
+    90,
+    {
+      workflowStage: 'cook_chill',
+      prepItemIds: ['roast-turkey'],
+      checklist: [
+        'Roast turkey to safe core temperature',
+        'Record temperature',
+        'Chill, slice and label',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'set-grill-station',
+    'Set the grill station',
+    'grill',
+    'todo',
+    'high',
+    15,
+    {
+      workflowStage: 'set_stations',
+      checklist: [
+        'Load patties, cheese and buns',
+        'Set onions, mushrooms and bacon',
+        'Check scraper, seasoning and cloths',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'set-fryer-station',
+    'Set the fryer station',
+    'fryers',
+    'todo',
+    'high',
+    15,
+    {
+      workflowStage: 'set_stations',
+      checklist: [
+        'Load chicken, cauliflower and sides',
+        'Set batter and draining trays',
+        'Check oil temperature',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'set-drinks-station',
+    'Set the drinks station',
+    'drinks',
+    'todo',
+    'normal',
+    12,
+    {
+      workflowStage: 'set_stations',
+      checklist: [
+        'Load syrups and cordial',
+        'Set cups, lids and straws',
+        'Check soft serve and sparkling water',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'set-pass',
+    'Set the pass and packaging',
     'pass',
     'todo',
     'normal',
-    10
+    12,
+    {
+      workflowStage: 'set_stations',
+      checklist: [
+        'Stock trays, bags and napkins',
+        'Set sauces and garnishes',
+        'Check printer and order screen',
+      ],
+    }
+  ),
+  miseTask(
+    deanosPartyMenuDemoIdentity,
+    'set-party-packing',
+    'Set the party packing area',
+    'pass',
+    'todo',
+    'normal',
+    15,
+    {
+      workflowStage: 'set_stations',
+      checklist: [
+        'Count platters and drink vessels',
+        'Label collection order',
+        'Set holding and handoff space',
+      ],
+    }
+  ),
+  miseTask(
+    deanosXmasMenuDemoIdentity,
+    'set-xmas-pass',
+    'Set the Xmas pass',
+    'pass',
+    'todo',
+    'normal',
+    15,
+    {
+      workflowStage: 'set_stations',
+      checklist: [
+        'Set cranberry and gravy garnishes',
+        'Check festive packaging',
+        'Brief pass on Xmas builds',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'final-allergen-check',
+    'Complete allergen and label check',
+    'pass',
+    'todo',
+    'urgent',
+    12,
+    {
+      workflowStage: 'final_checks',
+      checklist: [
+        'Check every batch label and date',
+        'Confirm allergen utensils and containers',
+        'Brief the service team',
+      ],
+    }
+  ),
+  miseTask(
+    deanosKitchenDemoIdentity,
+    'final-par-temperature-check',
+    'Check par, temperatures and readiness',
+    'pass',
+    'todo',
+    'high',
+    10,
+    {
+      workflowStage: 'final_checks',
+      checklist: [
+        'Check chilled and hot-hold temperatures',
+        'Confirm opening pars',
+        'Sign off every station',
+      ],
+    }
   ),
 ]
 

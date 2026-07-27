@@ -11,6 +11,11 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     de: 'Verkaufen',
     gsw: 'Verchoufe',
   },
+  jobs: {
+    en: 'Local jobs',
+    de: 'Lokale Jobs',
+    gsw: 'Jobs vo hie',
+  },
   feed: {
     en: 'Food feed',
     de: 'Food-Feed',
@@ -97,9 +102,9 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     gsw: 'Interlaken & Umgebung',
   },
   home_market_intro: {
-    en: 'The free local marketplace.',
-    de: 'Der kostenlose lokale Marktplatz.',
-    gsw: 'Dr gratis lokali Marktplatz.',
+    en: 'The free local marketplace—and jobs from nearby.',
+    de: 'Der kostenlose lokale Marktplatz – und Jobs aus der Region.',
+    gsw: 'Dr gratis lokali Marktplatz – und Jobs vo hie.',
   },
   home_actions_label: {
     en: 'What would you like to do?',
@@ -112,9 +117,9 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     gsw: 'Interlaken Essen',
   },
   home_seo_description: {
-    en: 'Buy and sell local food around Interlaken.',
-    de: 'Lokale Lebensmittel rund um Interlaken kaufen und verkaufen.',
-    gsw: 'Lokali Läbensmittel rund um Interlake choufe und verchoufe.',
+    en: 'Buy and sell local food, or find hospitality jobs around Interlaken.',
+    de: 'Lokale Lebensmittel kaufen und verkaufen oder Gastro-Jobs rund um Interlaken finden.',
+    gsw: 'Lokals Futter choufe und verchoufe oder Gastro-Jobs rund um Interlake finde.',
   },
   app_meta_headline: {
     en: 'Local food, offered nearby.',

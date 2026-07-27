@@ -3,7 +3,7 @@
 <!-- Concurrent edit — 2026-07-23 12:13 CEST — Record FireUX as the second shared product-landing consumer. -->
 <!-- Concurrent edit — 2026-07-23 — Extract the two-consumer product-preview frame without moving product proof into Core. -->
 <!-- Concurrent edit — 2026-07-25 — Map Misebox's real Orders proof inside the shared Main App hero. -->
-Updated: 2026-07-25
+Updated: 2026-07-27
 Ref: e98ffb195
 Role: map, not canon
 
@@ -15,6 +15,7 @@ Map component folder and naming conventions.
 - Child: family-console-entity.md
 - Child: family-public-index.md
 - Child: family-public-detail.md
+- Child: card-family.md
 
 ## Horizontal links
 - pages.md
@@ -48,10 +49,12 @@ Map component folder and naming conventions.
   copy, routes, data authority, actions, and one-off presentation remain in the
   named component or page that owns them.
 - The intended cross-tree mappings are: entity and preview card molecules to
-  named `X/Cards/*` components; collection organisms to `X/Collection/*` and
+  the prop/view-model-driven `X/Cards/Cell`, `Pill`, and `Preview` family
+  classified in `card-family.md`; collection organisms to `X/Collection/*` and
   console indexes; console header/summary molecules plus the console surface
   organism to `Console/X/*`; public-action organisms to claim/operator panels;
-  profile cards to named `Cards/Profile` trees; the public specialist-profile
+  legacy `Cards/Profile` compositions are migration debt rather than ordinary
+  Cards; the public specialist-profile
   family composes Core `PublicProfileHero`, `PublicProfileSection`, and
   `PublicProfileDirectoryCard` presentation while each named domain retains
   its content; profile editors use Nuxt UI cards and named `Edit/*` form
@@ -74,14 +77,40 @@ Map component folder and naming conventions.
   absorbing its routes or copy. Misebox uses that seam for its second landing
   section, pairing a read-only canonical Kitchen Operations launcher with
   project-owned Console copy. Its thin root owns frame/navigation, local page
-  state, and one Product Demo load. Named Menus, Dishes, Recipes, Mise, and
-  empty-canvas children own their projected bodies; Dishes further separates
-  Collection, image-led Detail, and named Finance/Spec/Prep/Recipes/Mise child
-  pages. The root owns local Dish page identity, the Dishes coordinator owns
-  its breadcrumb and page dispatch, and detail tiles are navigation doorways
-  rather than inline expanders. Children consume typed read-only props and do
-  not acquire Console selection, Demo loading, live reads, Firebase, or write
-  authority. The project source begins at
+  state, and one Product Demo load. Named Menus, Dishes, Ingredients, Recipes,
+  Mise, and empty-canvas children own their projected bodies; Dishes further
+  separates Collection, Overview, and named Finance/Spec/Prep/Recipes/Mise
+  child pages beneath one persistent image-backed Dish context. Ingredients
+  receives the selected Demo Kitchen's usage links already hydrated through
+  canonical root Ingredients; it does not copy name or image truth. Its compact
+  collapsible groups use the same ordered food-group resolver as the real
+  Kitchen Console.
+  Mise uses the real `KitchenMiseTask` collection and a Kitchen-owned summary
+  projector, prop-only collection presentation, and task board shared with the
+  Console. The landing disables task navigation and owns only its outer scroll
+  boundary; it does not maintain a compact Mise variant. Product Demo exposes
+  those records as `console.miseTasks`; production requirements remain confined
+  to their derived Dish graph. The shared board groups collapsible cards by
+  chef workflow stage rather than status; status remains a badge/action state,
+  checklist progress stays inside the task card, and missing stages appear in
+  Unsorted. Menu availability controls belong to the real Console; the landing
+  Menu child stays presentation-only. The Console and landing roots consume
+  the Kitchen-owned Demo service state and pass filtered Mise. Inactive-card
+  styling remains a real Console concern; landing Dish, Recipe, Ingredient,
+  and Menu cards stay visually neutral. The persistent `Open full Console`
+  header doorway selects the Deanos Demo target before entering
+  `/console/kitchen`; the root otherwise owns only local Dish page identity,
+  filters Drink records from the entry-level Dishes showcase, and suppresses
+  Food/Drink type labels there, while the
+  Dishes
+  coordinator owns its breadcrumb, persistent image-backed icon-only page
+  selector, and page dispatch. The muted Dish image remains stable while child
+  pages change; its circled information icon represents the selected Dish
+  overview, and accessible names and hover titles preserve each icon's meaning.
+  Detail tiles are navigation doorways rather than inline expanders.
+  Children consume typed read-only props and do not acquire Console selection,
+  Demo loading, live reads, Firebase, or write authority. The project source
+  begins at
   `projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue`.
   Mobile keeps the component before the text and desktop places it to the left.
   Core

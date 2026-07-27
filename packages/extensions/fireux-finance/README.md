@@ -1,11 +1,20 @@
-# TODO
+# FireUX Finance
 
-<!-- Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: add the guard-required package placeholder. -->
-
-Updated: 2026-07-21
+Updated: 2026-07-27
 Ref: 1e55eece7
-Role: guard-required placeholder, not canon
+Role: package router, not canon
 
-TODO: Rebuild this README only after the concept maps and package contracts are settled.
+Product-neutral Finance primitives for FireUX products:
 
-Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and the relevant `docs/concepts/*.md`.
+- validated minor-unit money and locale-aware formatting;
+- immutable FinancialFact identity/model and trusted server builders;
+- typed, view-model-driven report metric and trend presentation.
+
+Producing domains continue to own their operations, records, authorization,
+transactions, report queries, labels, and adapters. This package does not own a
+generic Finance console and its presentation does not load data or infer
+financial meaning.
+
+Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and
+`docs/concepts/finance.md`. Import runtime contracts explicitly from
+`fireux-finance/runtime/*`.

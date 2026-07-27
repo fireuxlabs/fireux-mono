@@ -9,8 +9,24 @@
       </div>
     </template>
 
+    <div v-if="applicationDoorway" class="space-y-4">
+      <UAlert
+        color="primary"
+        variant="soft"
+        icon="i-lucide-map-pinned"
+        title="Apply with the local app"
+        description="This opportunity is managed by its local community. Continue there to sign in and apply."
+      />
+      <UButton
+        :to="applicationDoorway.url"
+        :label="applicationDoorway.label"
+        icon="i-lucide-arrow-up-right"
+        block
+      />
+    </div>
+
     <UAlert
-      v-if="submitted"
+      v-else-if="submitted"
       color="success"
       variant="soft"
       icon="i-lucide-circle-check"
@@ -61,10 +77,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import type { FireuxJobSourceAppDoorway } from '../../../../config/jobs.config'
 import { applyToJobRequest } from '../../../composables/fireux/jobs/hiring/jobHiringClient'
 
 const props = defineProps<{
   jobId: string
+  applicationDoorway?: FireuxJobSourceAppDoorway
 }>()
 
 const message = ref('')
@@ -104,4 +122,3 @@ async function submit() {
   }
 }
 </script>
-

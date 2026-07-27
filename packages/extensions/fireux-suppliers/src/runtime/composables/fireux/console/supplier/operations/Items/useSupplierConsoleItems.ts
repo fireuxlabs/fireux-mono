@@ -32,7 +32,7 @@ export function useSupplierConsoleItems() {
     normalizeString(selection.supplier.value?.catalogue_state)
   )
   const supplierItemsEnabled = computed(() =>
-    runtime.source.value !== 'demo'
+    !runtime.isDemo.value
     && Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
@@ -45,19 +45,19 @@ export function useSupplierConsoleItems() {
   })
 
   const demoData = useSupplierConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoScenario = computed(() => findSupplierConsoleDemoScenario(
     demoData.data.value,
     selection.supplierId.value
   ))
   const supplierItems = computed<SupplierItemSurface[]>(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoScenario.value?.items ?? []
       : supplierItemsFromStore.value
   )
   const pending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.pending.value
       : supplierItemsPending.value
   )

@@ -6,11 +6,15 @@ import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { consoleData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useBlankCollection } from '../../../firestore/blank/useBlank'
-import { BlankStorage, type Blank } from '../../../../../models/blank.model'
+import {
+  BlankStorage,
+  type BlankSurface,
+} from '../../../../../models/blank.model'
 import { useBlankConsoleDemoData } from './useBlankConsoleDemoData'
 
 /**
@@ -46,16 +50,21 @@ export function useBlankConsole() {
       ? (demoData.data.value ?? [])
       : blankRecords.value
   )
-  const entity = useConsoleEntityRuntime<Blank>({
+  const targetData = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? (demoData.data.value ?? []).map(blank => consoleData('demo', blank))
+      : blankRecords.value.map(blank => consoleData('live', blank))
+  )
+  const entity = useConsoleEntityRuntime<BlankSurface>({
     family: 'blank',
     storageFamily: BlankStorage.rootCollection,
-    targetItems: targetBlanks,
+    targetData,
     targetOutcome,
     getId: (target) => normalizeString(target?.id),
     mode: consoleRoot.source,
     readOnly: true,
   })
-  const selectedBlank = computed<Blank | null>(
+  const selectedBlank = computed<BlankSurface | null>(
     () => entity.selection.selectedTarget.value
   )
   const blankId = entity.selection.entityId

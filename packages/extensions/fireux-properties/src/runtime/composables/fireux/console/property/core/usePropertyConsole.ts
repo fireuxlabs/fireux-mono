@@ -7,17 +7,18 @@ import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { consoleData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   PropertyStorage,
-  type Property,
 } from '../../../../../models/property.model'
 import {
   usePropertyCollection,
   type PropertyCollectionFilter,
 } from '../../../firestore/property/fetch/usePropertyCollection'
+import type { PropertySurface } from '../../../firestore/property/utils/view/usePropertyInterface'
 import { usePropertyConsoleDemoData } from './usePropertyConsoleDemoData'
 
 type UsePropertyConsoleOptions = {
@@ -60,11 +61,25 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   const demoData = usePropertyConsoleDemoData(
     computed(() => consoleRoot.source.value === 'demo')
   )
-  const targetProperties = computed(() =>
+  const targetProperties = computed<PropertySurface[]>(() =>
     consoleRoot.source.value === 'demo'
-      ? demoData.properties.value
+      ? demoData.properties.value.map(property => ({
+          ...property,
+          operator_ids: [],
+          team_ids: [],
+          join_requests: [],
+        }))
       : liveCollection.properties.value
   )
+  const targetData = computed(() => {
+    const type =
+      consoleRoot.source.value === 'demo'
+        ? 'demo'
+        : consoleRoot.source.value === 'test'
+          ? 'test'
+          : 'live'
+    return targetProperties.value.map(property => consoleData(type, property))
+  })
   const targetsPending = computed(() =>
     consoleRoot.source.value === 'demo'
       ? demoData.pending.value
@@ -88,17 +103,17 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
       : membershipAwareTargetsOutcome.value
   )
 
-  const entity = useConsoleEntityRuntime<Property>({
+  const entity = useConsoleEntityRuntime<PropertySurface>({
     family: 'property',
     storageFamily: PropertyStorage.rootCollection,
-    targetItems: targetProperties,
+    targetData,
     targetOutcome: targetsOutcome,
     getId: (property) => normalizeString(property?.id),
     mode: consoleRoot.source,
     userId,
   })
 
-  const selectedProperty = computed<Property | null>(
+  const selectedProperty = computed<PropertySurface | null>(
     () => entity.selection.selectedTarget.value
   )
   const propertyId = entity.selection.entityId

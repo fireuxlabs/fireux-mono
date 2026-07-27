@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-07-26
+Updated: 2026-07-27
 Ref: 796952bf0
 Role: living context
 Scope: repo-wide
@@ -30,6 +30,11 @@ currently documented family and cross-cutting spine to the smallest relevant
 map and summarizes the alignment queue. Every family difference must be
 classified as accepted, migration, drift, or to-confirm; see
 `docs/concepts/documentation.md`.
+
+Product literature starts at `docs/concepts/product-language.md`. Derive copy
+bottom-up from current source atoms and child surfaces. Each parent summarises
+its children; ecosystem and landing copy summarise the proven product tree
+without inventing a parallel marketing vocabulary.
 
 ## Refresh instructions
 
@@ -83,6 +88,20 @@ Before each task:
   or copy the shared generated-selector CSS into projects.
 - Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
   `scripts/guards/css-system.mjs` when this contract changes.
+
+## Shared Card family
+
+- `Cards/Cell`, `Cards/Pill`, and `Cards/Preview` are dumb, reusable
+  prop/view-model-driven presentation. They may format, navigate to a supplied
+  target, or emit presentation actions, but never fetch, subscribe, or own
+  storage authority.
+- Managers, indexes, read/detail controllers, and routes acquire data;
+  `useXInterface` and named projectors create bounded view models; Profile,
+  Detail, Order Ticket, Catalogue, and other specialist compositions remain
+  separate families.
+- Existing guarded `Cards/Profile` paths are migration debt, not precedent for
+  new Cards. See `docs/concepts/card-family.md` and
+  `scripts/guards/components.mjs`.
 
 ## Shared PWA manifest authority
 
@@ -242,6 +261,10 @@ Before each task:
 - `fireux-jobs` also owns the private Application and Engagement lifecycle.
   Both are exposed only through trusted server commands with exact candidate
   and employer partitions; browsers do not read their root collections.
+- A tenant App owns applications for Jobs it sourced. A broader ecosystem Job
+  catalogue may hand an applicant back to that tenant only through an
+  explicitly configured, normalized HTTPS source-App doorway; public Job DTOs
+  never expose source App identity or invent a second application path.
 - Direct hiring means the named employer employs and pays the worker. The
   platform records the offer, both parties' actions, the agreed Job revision,
   and versioned acknowledgement of that relationship; it is not the employer,

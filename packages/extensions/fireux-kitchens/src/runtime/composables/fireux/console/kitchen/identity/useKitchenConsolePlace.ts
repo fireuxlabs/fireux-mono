@@ -6,9 +6,9 @@ import type { Place } from 'fireux-places/runtime/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 import {
-  findKitchenConsoleDemoScenario,
-  useKitchenConsoleDemoData,
-} from '../core/useKitchenConsoleDemoData'
+  findKitchenConsoleDemoTarget,
+  useKitchenConsoleDemoTargets,
+} from '../core/useKitchenConsoleDemoTargets'
 import {
   useKitchenConsoleIdentity,
   type KitchenConsoleIdentityState,
@@ -17,22 +17,21 @@ import {
 export function useKitchenConsolePlace(
   identity: KitchenConsoleIdentityState = useKitchenConsoleIdentity()
 ) {
+  const isLive = computed(() => identity.dataType.value === 'live')
   const livePlaceId = computed(() =>
-    identity.source.value === 'live' ? identity.placeId.value : ''
+    isLive.value ? identity.placeId.value : ''
   )
   const live = usePlaceFetch(livePlaceId)
-  const demoData = useKitchenConsoleDemoData(
-    computed(() => identity.source.value === 'demo')
-  )
+  const demoTargets = useKitchenConsoleDemoTargets(identity.isDemo)
   const demoPlace = computed<Place | null>(() => {
-    if (identity.source.value !== 'demo') return null
+    if (!identity.isDemo.value) return null
 
-    const scenario = findKitchenConsoleDemoScenario(
-      demoData.data.value,
+    const target = findKitchenConsoleDemoTarget(
+      demoTargets.data.value,
       identity.kitchenId.value
     )
-    if (!scenario) return null
-    const place = scenario.place
+    if (!target) return null
+    const place = target.place
 
     const kitchen = identity.selectedKitchen.value as Record<string, unknown> | null
     const kitchenIdentity = readKitchenIdentity(kitchen)
@@ -46,14 +45,14 @@ export function useKitchenConsolePlace(
     } as Place
   })
   const place = computed<Place | null>(() => {
-    if (identity.source.value === 'demo') return demoPlace.value
-    if (identity.source.value === 'live') return live.place.value
+    if (identity.isDemo.value) return demoPlace.value
+    if (isLive.value) return live.place.value
     return null
   })
   const pending = computed(() =>
-    identity.source.value === 'demo'
-      ? demoData.pending.value
-      : identity.source.value === 'live'
+    identity.isDemo.value
+      ? demoTargets.pending.value
+      : isLive.value
         ? live.pending.value
         : false
   )

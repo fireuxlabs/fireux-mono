@@ -67,6 +67,14 @@
               :title="card.title"
               :image-url="card.imageUrl"
               :icon="group.icon"
+              :data-service-state="
+                card.inService ? 'active' : 'inactive'
+              "
+              :class="
+                card.inService
+                  ? ''
+                  : 'opacity-45 saturate-50'
+              "
             />
           </div>
         </section>
@@ -88,105 +96,21 @@ import { computed } from 'vue'
 import { useIngredientInterface } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
 import { useKitchenIngredientsWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenIngredientsWorkspace'
 import {
-  INGREDIENT_CATEGORY_OPTIONS,
-  type IngredientCategory,
-} from '../../../../../models/ingredient-taxonomy'
+  INGREDIENT_FOOD_GROUP_OPTIONS,
+  resolveIngredientFoodGroup,
+  type IngredientFoodGroup,
+} from '../../../../../models/ingredient-food-group'
 
-const { ingredients, kitchenName, pending, loadError, debug } =
+const {
+  ingredients,
+  kitchenName,
+  pending,
+  loadError,
+  isIngredientInService,
+  debug,
+} =
   useKitchenIngredientsWorkspace()
 const { pill } = useIngredientInterface()
-const categoryIds = new Set<IngredientCategory>(
-  INGREDIENT_CATEGORY_OPTIONS.map((option) => option.value)
-)
-const resolveCategory = (value: unknown): IngredientCategory => {
-  const category = String(value ?? '').trim() as IngredientCategory
-  return categoryIds.has(category) ? category : 'other'
-}
-
-type IngredientFoodGroup =
-  | 'fruit'
-  | 'vegetables'
-  | 'raw-meat-poultry'
-  | 'prepared-meat'
-  | 'seafood'
-  | 'dairy-eggs'
-  | 'bakery'
-  | 'herbs-spices'
-  | 'sauces-condiments'
-  | 'pantry'
-  | 'prepared-foods'
-  | 'other'
-
-type IngredientFoodGroupOption = {
-  value: IngredientFoodGroup
-  label: string
-  icon: string
-}
-
-const INGREDIENT_FOOD_GROUP_OPTIONS: readonly IngredientFoodGroupOption[] = [
-  { value: 'fruit', label: 'Fruit', icon: 'i-lucide-apple' },
-  { value: 'vegetables', label: 'Vegetables', icon: 'i-lucide-carrot' },
-  {
-    value: 'raw-meat-poultry',
-    label: 'Raw meat & poultry',
-    icon: 'i-lucide-beef',
-  },
-  { value: 'prepared-meat', label: 'Prepared meat', icon: 'i-lucide-ham' },
-  { value: 'seafood', label: 'Seafood', icon: 'i-lucide-fish' },
-  { value: 'dairy-eggs', label: 'Dairy & eggs', icon: 'i-lucide-milk' },
-  { value: 'bakery', label: 'Bakery', icon: 'i-lucide-wheat' },
-  {
-    value: 'herbs-spices',
-    label: 'Herbs & spices',
-    icon: 'i-lucide-leaf',
-  },
-  {
-    value: 'sauces-condiments',
-    label: 'Sauces & condiments',
-    icon: 'i-lucide-cooking-pot',
-  },
-  { value: 'pantry', label: 'Pantry', icon: 'i-lucide-package' },
-  {
-    value: 'prepared-foods',
-    label: 'Prepared foods',
-    icon: 'i-lucide-chef-hat',
-  },
-  {
-    value: 'other',
-    label: 'Other',
-    icon: 'i-lucide-circle-ellipsis',
-  },
-]
-
-const fruitIngredientIds = new Set([
-  'cherries',
-  'lemon',
-  'lime',
-  'strawberries',
-])
-
-const resolveFoodGroup = ({
-  id,
-  category,
-  kind,
-}: {
-  id: string
-  category: IngredientCategory
-  kind: string
-}): IngredientFoodGroup => {
-  if (category === 'produce') {
-    return fruitIngredientIds.has(id) ? 'fruit' : 'vegetables'
-  }
-
-  if (category === 'meat-poultry') {
-    return kind === 'prepared' || kind === 'composite'
-      ? 'prepared-meat'
-      : 'raw-meat-poultry'
-  }
-
-  if (category === 'prepared') return 'prepared-foods'
-  return category
-}
 
 const debugTitle = computed(() =>
   kitchenName.value
@@ -200,6 +124,7 @@ const collectionDescription = computed(() =>
 )
 type KitchenIngredientPill = NonNullable<ReturnType<typeof pill>> & {
   foodGroup: IngredientFoodGroup
+  inService: boolean
 }
 type IngredientFoodGroupSection = {
   value: IngredientFoodGroup
@@ -218,10 +143,11 @@ const cards = computed<KitchenIngredientPill[]>(() =>
     return [
       {
         ...card,
-        foodGroup: resolveFoodGroup({
+        inService: isIngredientInService(ingredientId),
+        foodGroup: resolveIngredientFoodGroup({
           id: ingredientId,
-          category: resolveCategory(ingredient.category),
-          kind: String(ingredient.kind ?? '').trim(),
+          category: ingredient.category,
+          kind: ingredient.kind,
         }),
         to: `/console/kitchen/ingredients/${encodeURIComponent(ingredientId)}`,
       },

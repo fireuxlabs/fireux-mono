@@ -56,6 +56,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
@@ -67,6 +68,7 @@ const {
   kitchenId,
 } = useKitchenConsoleMenus()
 const { currentUser } = useAuth()
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const menuName = ref('')
 const sourceUrl = ref('')
 const authToken = ref('')
@@ -100,6 +102,7 @@ async function save() {
   error.value = ''
 
   try {
+    requireWritableData('live')
     // Creation stage 1: save a source only. The real kitchen menu is created after AI review + confirm.
     await $fetch('/api/console/kitchen/menus/source-url', {
       method: 'POST',

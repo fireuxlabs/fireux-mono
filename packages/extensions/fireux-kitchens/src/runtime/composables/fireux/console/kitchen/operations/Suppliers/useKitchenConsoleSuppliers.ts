@@ -17,7 +17,7 @@ export function useKitchenConsoleSuppliers() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
-  const enabled = computed(() => runtime.source.value !== 'demo')
+  const enabled = computed(() => !runtime.isDemo.value)
   const fetchKitchenId = computed(() =>
     rootCollection.value && runtime.storageKitchenId.value
       ? runtime.storageKitchenId.value
@@ -38,17 +38,17 @@ export function useKitchenConsoleSuppliers() {
     supply.supplierScenarios.value.map(scenario => scenario.supplier)
   )
   const typedSuppliers = computed<SupplierSurface[]>(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoSuppliers.value
       : fetchedSuppliers.value as SupplierSurface[]
   )
   const suppliersPending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? supply.pending.value
       : fetchedSuppliersPending.value
   )
   const collectionPath = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? `demo/kitchens/${kitchenId.value}/suppliers`
       : fetchedCollectionPath.value
   )

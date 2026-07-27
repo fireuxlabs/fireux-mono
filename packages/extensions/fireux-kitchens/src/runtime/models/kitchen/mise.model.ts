@@ -8,7 +8,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Family: Kitchen-scoped
  * Storage: scoped operational record
- * Path: /kitchens/<kitchenId>/mise/<taskId>
+ * Path: apps/{appId}/kitchens/{kitchenId}/mise/{taskId}
  * Owner app scope: Kitchen
  *
  * Decision note:
@@ -18,14 +18,145 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenMiseTaskStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/mise/{taskId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/mise/{taskId}',
   collection: 'mise',
   parent: 'kitchen',
   idParam: 'taskId',
 } as const
 
-export type KitchenMiseStatus = 'todo' | 'in_progress' | 'done' | 'blocked'
-export type KitchenMisePriority = 'low' | 'normal' | 'high' | 'urgent'
+export const KITCHEN_MISE_STATUSES = [
+  'todo',
+  'in_progress',
+  'done',
+  'blocked',
+] as const
+export type KitchenMiseStatus = (typeof KITCHEN_MISE_STATUSES)[number]
+
+export const KITCHEN_MISE_STATUS_OPTIONS = [
+  {
+    value: 'todo',
+    label: 'To do',
+    icon: 'i-lucide-circle',
+    color: 'neutral',
+  },
+  {
+    value: 'in_progress',
+    label: 'In progress',
+    icon: 'i-lucide-loader-circle',
+    color: 'primary',
+  },
+  {
+    value: 'done',
+    label: 'Done',
+    icon: 'i-lucide-circle-check',
+    color: 'success',
+  },
+  {
+    value: 'blocked',
+    label: 'Blocked',
+    icon: 'i-lucide-circle-alert',
+    color: 'error',
+  },
+] as const
+
+export const KITCHEN_MISE_PRIORITIES = [
+  'low',
+  'normal',
+  'high',
+  'urgent',
+] as const
+export type KitchenMisePriority = (typeof KITCHEN_MISE_PRIORITIES)[number]
+
+export const KITCHEN_MISE_PRIORITY_OPTIONS = [
+  { value: 'low', label: 'Low' },
+  { value: 'normal', label: 'Normal' },
+  { value: 'high', label: 'High' },
+  { value: 'urgent', label: 'Urgent' },
+] as const
+
+export const KITCHEN_MISE_WORKFLOW_STAGES = [
+  'wash',
+  'cut_portion',
+  'make',
+  'cook_chill',
+  'set_stations',
+  'final_checks',
+] as const
+export type KitchenMiseWorkflowStage =
+  (typeof KITCHEN_MISE_WORKFLOW_STAGES)[number]
+
+export const KITCHEN_MISE_WORKFLOW_STAGE_OPTIONS = [
+  {
+    value: 'wash',
+    label: 'Wash & clean',
+    icon: 'i-lucide-droplets',
+  },
+  {
+    value: 'cut_portion',
+    label: 'Cut & portion',
+    icon: 'i-lucide-scaling',
+  },
+  {
+    value: 'make',
+    label: 'Make',
+    icon: 'i-lucide-cooking-pot',
+  },
+  {
+    value: 'cook_chill',
+    label: 'Cook & chill',
+    icon: 'i-lucide-thermometer-snowflake',
+  },
+  {
+    value: 'set_stations',
+    label: 'Set stations',
+    icon: 'i-lucide-panels-top-left',
+  },
+  {
+    value: 'final_checks',
+    label: 'Final checks',
+    icon: 'i-lucide-clipboard-check',
+  },
+] as const
+
+const kitchenMiseStatuses = new Set<string>(KITCHEN_MISE_STATUSES)
+const kitchenMisePriorities = new Set<string>(KITCHEN_MISE_PRIORITIES)
+const kitchenMiseWorkflowStages = new Set<string>(
+  KITCHEN_MISE_WORKFLOW_STAGES
+)
+
+export const normalizeKitchenMiseStatus = (
+  value: unknown
+): KitchenMiseStatus => {
+  const status = String(value ?? '').trim()
+  return kitchenMiseStatuses.has(status)
+    ? status as KitchenMiseStatus
+    : 'todo'
+}
+
+export const normalizeKitchenMisePriority = (
+  value: unknown
+): KitchenMisePriority => {
+  const priority = String(value ?? '').trim()
+  return kitchenMisePriorities.has(priority)
+    ? priority as KitchenMisePriority
+    : 'normal'
+}
+
+export const normalizeKitchenMiseWorkflowStage = (
+  value: unknown
+): KitchenMiseWorkflowStage | '' => {
+  const stage = String(value ?? '').trim()
+  return kitchenMiseWorkflowStages.has(stage)
+    ? stage as KitchenMiseWorkflowStage
+    : ''
+}
+
+export const kitchenMisePriorityLabel = (value: unknown) => {
+  const priority = normalizeKitchenMisePriority(value)
+  return KITCHEN_MISE_PRIORITY_OPTIONS.find(
+    option => option.value === priority
+  )?.label || 'Normal'
+}
 
 export type KitchenMiseChecklistItem = {
   id: string
@@ -40,6 +171,7 @@ export const KitchenMiseTaskModel = {
   title: '' as string,
   description: '' as string,
   station: '' as string,
+  workflow_stage: '' as KitchenMiseWorkflowStage | '',
   service_date: '' as string, // YYYY-MM-DD
   status: 'todo' as KitchenMiseStatus,
   priority: 'normal' as KitchenMisePriority,
@@ -68,11 +200,105 @@ export const KitchenMiseTaskModel = {
   },
 } as const
 
-export type KitchenMiseTask = {
-  [K in keyof typeof KitchenMiseTaskModel]: (typeof KitchenMiseTaskModel)[K]
+type MutableKitchenMiseTaskModel = {
+  -readonly [K in keyof typeof KitchenMiseTaskModel]: (typeof KitchenMiseTaskModel)[K]
 }
+
+export type KitchenMiseTask =
+  Omit<MutableKitchenMiseTaskModel, 'workflow_stage'>
+  & {
+    /**
+     * Additive workflow classification. Missing legacy records remain visible
+     * in the Unsorted group until a chef classifies them.
+     */
+    workflow_stage?: KitchenMiseWorkflowStage | ''
+  }
 
 export type KitchenMiseTaskCreateInput = Omit<KitchenMiseTask, 'created' | 'updated'>
 export type KitchenMiseTaskUpdateInput = Partial<
   Omit<KitchenMiseTask, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >
+
+const kitchenMiseRecord = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {}
+
+const kitchenMiseString = (value: unknown) => String(value ?? '').trim()
+
+const kitchenMiseStringArray = (value: unknown) =>
+  Array.from(
+    new Set(
+      (Array.isArray(value) ? value : [])
+        .map(item => kitchenMiseString(item))
+        .filter(Boolean)
+    )
+  )
+
+const normalizeKitchenMiseChecklist = (
+  value: unknown
+): KitchenMiseChecklistItem[] =>
+  (Array.isArray(value) ? value : [])
+    .map((item) => {
+      const source = kitchenMiseRecord(item)
+      return {
+        id: kitchenMiseString(source.id),
+        label: kitchenMiseString(source.label),
+        done: source.done === true,
+      }
+    })
+    .filter(item => item.id && item.label)
+
+const kitchenMiseTimestamp = (
+  value: unknown,
+  fallback: FirebaseTimestamp
+): FirebaseTimestamp =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? value as FirebaseTimestamp
+    : fallback
+
+const kitchenMiseEstimatedMinutes = (value: unknown) => {
+  const minutes = Number(value)
+  return Number.isFinite(minutes) && minutes >= 0 ? minutes : 0
+}
+
+export function normalizeKitchenMiseTask(value: unknown): KitchenMiseTask {
+  const source = kitchenMiseRecord(value)
+  const created = source.created && typeof source.created === 'object'
+    ? source.created as KitchenMiseTask['created']
+    : KitchenMiseTaskModel.created
+  const updated = source.updated && typeof source.updated === 'object'
+    ? source.updated as KitchenMiseTask['updated']
+    : KitchenMiseTaskModel.updated
+
+  return {
+    ...KitchenMiseTaskModel,
+    id: kitchenMiseString(source.id),
+    kitchen_id: kitchenMiseString(source.kitchen_id),
+    title: kitchenMiseString(source.title),
+    description: kitchenMiseString(source.description),
+    station: kitchenMiseString(source.station),
+    workflow_stage: normalizeKitchenMiseWorkflowStage(source.workflow_stage),
+    service_date: kitchenMiseString(source.service_date),
+    status: normalizeKitchenMiseStatus(source.status),
+    priority: normalizeKitchenMisePriority(source.priority),
+    estimated_minutes: kitchenMiseEstimatedMinutes(source.estimated_minutes),
+    ingredient_ids: kitchenMiseStringArray(source.ingredient_ids),
+    mise_ids: kitchenMiseStringArray(source.mise_ids),
+    menu_id: kitchenMiseString(source.menu_id),
+    recipe_id: kitchenMiseString(source.recipe_id),
+    assignee_ids: kitchenMiseStringArray(source.assignee_ids),
+    checklist: normalizeKitchenMiseChecklist(source.checklist),
+    due_at: kitchenMiseTimestamp(
+      source.due_at,
+      KitchenMiseTaskModel.due_at
+    ),
+    completed_at: kitchenMiseTimestamp(
+      source.completed_at,
+      KitchenMiseTaskModel.completed_at
+    ),
+    notes: kitchenMiseString(source.notes),
+    created,
+    updated,
+  }
+}

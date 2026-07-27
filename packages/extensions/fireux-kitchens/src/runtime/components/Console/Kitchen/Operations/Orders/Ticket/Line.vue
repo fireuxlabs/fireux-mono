@@ -24,7 +24,7 @@
 <script setup lang="ts">
 import type { KitchenOrderTicketLine } from '../../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrderTicket'
 
-defineOptions({ name: 'ConsoleKitchenOperationsOrdersCardsTicketLine' })
+defineOptions({ name: 'ConsoleKitchenOperationsOrdersTicketLine' })
 
 defineProps<{
   line: KitchenOrderTicketLine

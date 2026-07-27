@@ -18,7 +18,7 @@
       :count="recentOrders.length"
       empty-label="No completed orders yet"
     >
-      <ConsoleKitchenOperationsOrdersCardsTicket
+      <ConsoleKitchenOperationsOrdersTicketPresentation
         v-for="order in recentOrders"
         :key="order.id"
         :order="order"

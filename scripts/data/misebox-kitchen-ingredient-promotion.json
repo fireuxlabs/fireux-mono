@@ -39,8 +39,8 @@
     {
       "ingredient_id": "beef-mince",
       "source_asset_id": "beef-mince",
-      "name": "Beef Mince",
-      "aliases": [],
+      "name": "Ground Beef",
+      "aliases": ["Beef Mince"],
       "category": "meat-poultry",
       "kind": "cut",
       "status": "active"

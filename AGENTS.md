@@ -22,6 +22,7 @@ Use the smallest current context that fits the task.
 - Repo-wide agent context: `docs/ai/gpt-context.md`
 - Misebox-specific work: `docs/ai/misebox-context.md`
 - Werkbox-specific work: `docs/ai/werkbox-context.md`
+- Product literature and common tongue: `docs/concepts/product-language.md`
 - Concept maps and family language: `docs/concepts/*.md`
 - Source shape and executable authority: `scripts/guards/*`
 - Package/app entrypoints: `src/module.ts`, `src/config/module/*`, `nuxt.config.ts`, `package.json`
@@ -43,6 +44,15 @@ Before editing an entity, console, route family, model, collection manager, publ
 5. Patch the smallest useful slice.
 
 If a tiny behavior needs a broad diff, stop and report the missing seam.
+
+## Literature Rule
+
+Before writing product, Console, operation, help, empty-state, or landing copy,
+read `docs/concepts/product-language.md`. Start at the smallest current source
+atoms and work upward: each parent explains its children, and the landing
+summarises the proven tree. Use the present tense for a source-defined release
+capability. Do not invent slogans, benefits, or promises that the child source
+cannot explain.
 
 ## Authority Order
 

@@ -33,7 +33,7 @@ export function useKitchenConsoleOrders() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const demoData = useKitchenConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoOrders = computed<KitchenOrder[]>(() =>
     findKitchenConsoleDemoScenario(
@@ -66,17 +66,17 @@ export function useKitchenConsoleOrders() {
     collectionPath: ordersPath,
   })
   const consoleOrders = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoOrders.value
       : page.collection.value.items
   )
   const pending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.pending.value
       : page.collection.value.pending
   )
   const orderBoardPath = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? `demo/kitchens/${kitchenId.value}/orders`
       : ordersPath.value
   )
@@ -180,7 +180,7 @@ export function useKitchenConsoleOrders() {
     },
     derived: {
       kitchenId: kitchenId.value,
-      source: runtime.source.value,
+      dataType: runtime.dataType.value,
       rootCollection: rootCollection.value,
       databaseId: databaseId.value,
       collectionPath: orderBoardPath.value,
@@ -210,7 +210,7 @@ export function useKitchenConsoleOrders() {
     databaseId,
     readOnly,
     canWrite,
-    source: runtime.source,
+    canOpenServiceSession: runtime.isDemo,
     orders: consoleOrders,
     visibleOrders,
     ticketOrders,

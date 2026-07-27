@@ -1,4 +1,5 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import {
   KitchenStationStorage,
   KitchenStationModel,
@@ -21,9 +22,11 @@ const slugifyStationName = (value: string) =>
     .replace(/^-+|-+$/g, '')
 
 export function useKitchenStationCreate() {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { setDocument } = useFirestoreCreate()
 
   const createKitchenStation = async (input: CreateKitchenStationInput) => {
+    requireWritableData()
     const kitchenId = normalizeString(input.kitchenId)
     const rootCollection = normalizeString(input.kitchenCollectionPath)
     const name = normalizeString(input.name)

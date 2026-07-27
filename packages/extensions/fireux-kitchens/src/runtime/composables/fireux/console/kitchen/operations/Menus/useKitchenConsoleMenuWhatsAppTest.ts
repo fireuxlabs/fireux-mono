@@ -4,6 +4,7 @@ import {
   toValue,
   type MaybeRefOrGetter,
 } from 'vue'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -14,11 +15,13 @@ export function useKitchenConsoleMenuWhatsAppTest(options: {
   menuId: MaybeRefOrGetter<string | null | undefined>
 }) {
   const { currentUser } = useAuth()
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const error = ref('')
   const pending = ref(false)
   const sent = ref(false)
 
   async function sendTest() {
+    requireWritableData('live')
     if (pending.value) return
 
     error.value = ''
@@ -34,6 +37,14 @@ export function useKitchenConsoleMenuWhatsAppTest(options: {
 
       const token = await currentUser.value?.getIdToken()
       if (!token) throw new Error('Sign in before testing WhatsApp.')
+      requireWritableData('live')
+      if (
+        text(toValue(options.appId)) !== appId ||
+        text(toValue(options.kitchenId)) !== kitchenId ||
+        text(toValue(options.menuId)) !== menuId
+      ) {
+        throw new Error('The selected Menu changed before the WhatsApp test.')
+      }
 
       await $fetch('/api/console/kitchen/menus/whatsapp-test', {
         method: 'POST',

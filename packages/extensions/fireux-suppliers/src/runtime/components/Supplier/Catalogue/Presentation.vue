@@ -117,7 +117,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierCatalogueItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueInterface'
+import type { SupplierCatalogueItemCard } from '../../../composables/fireux/firestore/supplier/utils/view/useSupplierCatalogueInterface'
 
 withDefaults(
   defineProps<SupplierCatalogueItemCard.Card & {

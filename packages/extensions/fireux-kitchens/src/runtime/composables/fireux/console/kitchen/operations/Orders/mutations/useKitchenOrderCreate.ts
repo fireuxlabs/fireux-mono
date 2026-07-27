@@ -1,4 +1,5 @@
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import type {
   CreatedMenuOrder,
   MenuOrderingSubmitBody,
@@ -16,8 +17,10 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 export function useKitchenOrderCreate() {
   const { currentUser } = useAuth()
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
 
   const createOrder = async (input: CreateKitchenOrderInput) => {
+    requireWritableData()
     const menuId = text(input.menuId)
     const kitchenSlug = text(input.kitchenSlug)
     if (!menuId) throw new Error('Menu id is required.')
@@ -26,6 +29,7 @@ export function useKitchenOrderCreate() {
 
     const token = await currentUser.value?.getIdToken()
     if (!token) throw new Error('Sign in before using Staff POS.')
+    requireWritableData()
 
     const query = new URLSearchParams({ kitchenSlug })
     return $fetch<CreatedMenuOrder>(

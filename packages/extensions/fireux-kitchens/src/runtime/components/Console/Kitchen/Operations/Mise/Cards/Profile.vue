@@ -2,8 +2,7 @@
   <UCard>
     <div class="flex items-start gap-3">
       <UAvatar
-        :src="imageUrl || undefined"
-        :icon="icon"
+        icon="i-lucide-list-checks"
         size="md"
       />
 
@@ -27,32 +26,62 @@
           </div>
 
           <UBadge
-            v-if="status"
+            v-if="statusOption"
             size="xs"
             variant="soft"
-            color="neutral"
+            :color="statusOption.color"
             class="shrink-0"
           >
-            {{ status }}
+            {{ statusOption.label }}
           </UBadge>
         </div>
 
         <div class="console-summary-grid">
           <div class="console-summary-field">
-            Type:
-            <span class="console-summary-value">{{ typeLabel || 'Missing type' }}</span>
+            Station:
+            <span class="console-summary-value">
+              {{ summary?.station || 'Missing station' }}
+            </span>
           </div>
           <div class="console-summary-field">
-            Station:
-            <span class="console-summary-value">{{ station || 'Missing station' }}</span>
+            Priority:
+            <span class="console-summary-value">
+              {{ kitchenMisePriorityLabel(summary?.priority) }}
+            </span>
+          </div>
+          <div class="console-summary-field">
+            Estimate:
+            <span class="console-summary-value">
+              {{
+                summary?.estimatedMinutes
+                  ? `${summary.estimatedMinutes} min`
+                  : 'No estimate'
+              }}
+            </span>
+          </div>
+          <div class="console-summary-field">
+            Service date:
+            <span class="console-summary-value">
+              {{ summary?.serviceDate || 'No service date' }}
+            </span>
           </div>
           <div class="console-summary-field">
             Recipe:
-            <span class="console-summary-value">{{ recipeId || 'No linked recipe' }}</span>
+            <span class="console-summary-value">
+              {{ summary?.recipeId || 'No linked recipe' }}
+            </span>
           </div>
           <div class="console-summary-field">
-            Status:
-            <span class="console-summary-value">{{ status || 'Missing status' }}</span>
+            Ingredients:
+            <span class="console-summary-value">
+              {{ summary?.ingredientCount || 0 }}
+            </span>
+          </div>
+          <div class="console-summary-field">
+            Prep items:
+            <span class="console-summary-value">
+              {{ summary?.prepItemCount || 0 }}
+            </span>
           </div>
         </div>
       </div>
@@ -62,47 +91,26 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { KitchenMiseTask } from '../../../../../../models/kitchen/mise.model'
+import {
+  KITCHEN_MISE_STATUS_OPTIONS,
+  kitchenMisePriorityLabel,
+  type KitchenMiseTask,
+} from '../../../../../../models/kitchen/mise.model'
+import { projectKitchenMiseTask } from '../../../../../../models/kitchen/mise-presentation'
 
 const props = defineProps<{
   task: KitchenMiseTask
 }>()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const taskRecord = computed(() => props.task as Record<string, unknown>)
+const summary = computed(() => projectKitchenMiseTask(props.task))
 const title = computed(() => normalizeString(props.task.title))
 const hasMissingTitle = computed(() => !title.value)
 const displayTitle = computed(() => title.value || 'Missing mise title')
 const description = computed(() => normalizeString(props.task.description))
-const status = computed(() => normalizeString(props.task.status))
-const station = computed(() =>
-  [
-    props.task.station,
-    taskRecord.value.station_id,
-    taskRecord.value.station_name,
-    taskRecord.value.responsibility,
-    taskRecord.value.responsible_station,
-  ]
-    .map((value) => normalizeString(value))
-    .find(Boolean) || ''
+const statusOption = computed(() =>
+  KITCHEN_MISE_STATUS_OPTIONS.find(
+    option => option.value === summary.value?.status
+  )
 )
-const typeLabel = computed(() =>
-  [
-    taskRecord.value.type,
-    taskRecord.value.category,
-    taskRecord.value.kind,
-    taskRecord.value.task_type,
-  ]
-    .map((value) => normalizeString(value))
-    .find(Boolean) || ''
-)
-const recipeId = computed(() => normalizeString(props.task.recipe_id))
-const imageUrl = computed(() => normalizeString((props.task as any).image_url))
-const icon = computed(() => {
-  const kind = typeLabel.value.toLowerCase()
-  if (/^(food|mise|food_mise|prep|component)$/.test(kind)) {
-    return 'i-lucide-utensils'
-  }
-  return 'i-lucide-list-checks'
-})
 </script>

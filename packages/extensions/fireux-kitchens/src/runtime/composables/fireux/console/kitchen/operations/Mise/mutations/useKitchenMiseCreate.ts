@@ -1,9 +1,12 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenMiseTaskStorage,
   KitchenMiseTaskModel,
+  normalizeKitchenMisePriority,
+  normalizeKitchenMiseStatus,
   type KitchenMiseChecklistItem,
   type KitchenMisePriority,
   type KitchenMiseStatus,
@@ -31,18 +34,6 @@ type KitchenMiseCreateDraft = {
   notes?: string
 }
 
-const resolveStatus = (value: unknown): KitchenMiseStatus => {
-  const allowed = new Set<KitchenMiseStatus>(['todo', 'in_progress', 'done', 'blocked'])
-  const normalized = normalizeString(value) as KitchenMiseStatus
-  return allowed.has(normalized) ? normalized : 'todo'
-}
-
-const resolvePriority = (value: unknown): KitchenMisePriority => {
-  const allowed = new Set<KitchenMisePriority>(['low', 'normal', 'high', 'urgent'])
-  const normalized = normalizeString(value) as KitchenMisePriority
-  return allowed.has(normalized) ? normalized : 'normal'
-}
-
 const toSafeNumber = (value: unknown, defaultValue = 0) => {
   const n = Number(value)
   return Number.isFinite(n) ? n : defaultValue
@@ -64,8 +55,8 @@ const buildMisePayload = (kitchenId: string, draft: KitchenMiseCreateDraft): Kit
   description: normalizeString(draft.description),
   station: normalizeString(draft.station),
   service_date: normalizeString(draft.service_date),
-  status: resolveStatus(draft.status),
-  priority: resolvePriority(draft.priority),
+  status: normalizeKitchenMiseStatus(draft.status),
+  priority: normalizeKitchenMisePriority(draft.priority),
   estimated_minutes: toSafeNumber(draft.estimated_minutes),
   ingredient_ids: toStringArray(draft.ingredient_ids),
   mise_ids: toStringArray(draft.mise_ids),
@@ -77,6 +68,7 @@ const buildMisePayload = (kitchenId: string, draft: KitchenMiseCreateDraft): Kit
 })
 
 export function useKitchenMiseCreate() {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { createDocument } = useFirestoreCreate()
   const { appId } = useFireUXConfig()
 
@@ -85,6 +77,7 @@ export function useKitchenMiseCreate() {
     draft: KitchenMiseCreateDraft,
     options: { kitchenCollectionPath?: string } = {}
   ) => {
+    requireWritableData()
     const resolvedKitchenId = normalizeString(kitchenId)
     if (!resolvedKitchenId) throw new Error('Kitchen id is required')
 

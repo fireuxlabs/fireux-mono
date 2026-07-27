@@ -37,7 +37,7 @@ export const resolveKitchenCollectionBasePath = (
   appId?: string | null | undefined
 ): string => {
   const explicitPath = normalizeString(kitchenCollectionPath)
-  if (explicitPath) return explicitPath
+  if (kitchenCollectionPath !== undefined) return explicitPath
   return resolveKitchenScopeCollectionPath(appId)
 }
 

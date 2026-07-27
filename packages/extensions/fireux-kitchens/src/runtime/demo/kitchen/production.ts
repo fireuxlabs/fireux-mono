@@ -154,19 +154,25 @@ export const formatKitchenDemoProductionAmount = (
 export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'smash-patty-80g',
-    name: '80 g smash patty',
+    name: '80 g burger ball',
     station: 'Grill',
     input: { ingredientId: 'beef-mince', quantity: 80, unit: 'g' },
     yield: { quantity: 1, unit: 'each' },
-    method: ['Weigh the beef.', 'Shape loosely and hold chilled for service.'],
+    method: [
+      'Weigh 80 g of ground beef.',
+      'Roll loosely into a ball and hold chilled for service.',
+    ],
   },
   {
     id: 'slider-patty-60g',
-    name: '60 g slider patty',
+    name: '60 g slider ball',
     station: 'Grill',
     input: { ingredientId: 'beef-mince', quantity: 60, unit: 'g' },
     yield: { quantity: 1, unit: 'each' },
-    method: ['Weigh the beef.', 'Shape loosely and hold chilled for service.'],
+    method: [
+      'Weigh 60 g of ground beef.',
+      'Roll loosely into a ball and hold chilled for service.',
+    ],
   },
   {
     id: 'washed-shredded-lettuce',

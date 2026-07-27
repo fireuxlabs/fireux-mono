@@ -70,7 +70,15 @@
         :image-url="dish.image"
         :meta="kindLabel(dish)"
         :price-label="getPriceLabelForDish(dish.id)"
+        :data-service-state="
+          isDishInService(dish.id) ? 'active' : 'inactive'
+        "
         class="w-32 sm:w-36"
+        :class="
+          isDishInService(dish.id)
+            ? ''
+            : 'opacity-45 saturate-50'
+        "
         action
         @action="openQuickLook(dish)"
       />
@@ -108,6 +116,7 @@ const {
   debug,
   getMenuUsageForDish,
   getPriceLabelForDish,
+  isDishInService,
 } = useKitchenDishesWorkspace()
 
 const query = ref('')

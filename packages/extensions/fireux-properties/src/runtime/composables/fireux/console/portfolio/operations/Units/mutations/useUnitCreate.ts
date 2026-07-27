@@ -1,5 +1,6 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
@@ -19,10 +20,10 @@ export function useUnitCreate(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function createUnit(input: UnitCreateInput): Promise<string> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-properties] portfolio id is required.')
-    }
+    const portfolioId = requirePortfolioConsoleWrite(
+      runtimePortfolio,
+      'fireux-properties'
+    )
 
     const propertyId = normalizeString(input.property_id)
     const label = normalizeString(input.label)

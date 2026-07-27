@@ -27,21 +27,79 @@
       </UFormField>
 
       <div class="grid gap-4 sm:grid-cols-2">
-        <UFormField label="Type">
-          <select
-            v-model="type"
-            :disabled="!canEditMise"
-            class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
-          >
-            <option value="food">Food</option>
-            <option value="non-food">Non-food</option>
-          </select>
-        </UFormField>
-
         <UFormField label="Station / responsibility">
           <UInput
             v-model="station"
             placeholder="Station"
+            :disabled="!canEditMise"
+          />
+        </UFormField>
+
+        <UFormField label="Service date">
+          <UInput
+            v-model="serviceDate"
+            type="date"
+            :disabled="!canEditMise"
+          />
+        </UFormField>
+      </div>
+
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <UFormField label="Workflow stage">
+          <select
+            v-model="workflowStage"
+            :disabled="!canEditMise"
+            class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
+          >
+            <option value="">Unsorted</option>
+            <option
+              v-for="option in KITCHEN_MISE_WORKFLOW_STAGE_OPTIONS"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </UFormField>
+
+        <UFormField label="Status">
+          <select
+            v-model="status"
+            :disabled="!canEditMise"
+            class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
+          >
+            <option
+              v-for="option in KITCHEN_MISE_STATUS_OPTIONS"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </UFormField>
+
+        <UFormField label="Priority">
+          <select
+            v-model="priority"
+            :disabled="!canEditMise"
+            class="w-full rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted"
+          >
+            <option
+              v-for="option in KITCHEN_MISE_PRIORITY_OPTIONS"
+              :key="option.value"
+              :value="option.value"
+            >
+              {{ option.label }}
+            </option>
+          </select>
+        </UFormField>
+
+        <UFormField label="Estimated minutes">
+          <UInput
+            v-model="estimatedMinutes"
+            type="number"
+            min="0"
+            step="1"
             :disabled="!canEditMise"
           />
         </UFormField>
@@ -65,8 +123,19 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
-import type { KitchenMiseTask } from '../../../../../models/kitchen/mise.model'
-import { useKitchenConsoleMiseTask } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenConsoleMiseTask'
+import {
+  KITCHEN_MISE_PRIORITY_OPTIONS,
+  KITCHEN_MISE_STATUS_OPTIONS,
+  KITCHEN_MISE_WORKFLOW_STAGE_OPTIONS,
+  normalizeKitchenMisePriority,
+  normalizeKitchenMiseStatus,
+  normalizeKitchenMiseWorkflowStage,
+  type KitchenMisePriority,
+  type KitchenMiseStatus,
+  type KitchenMiseTask,
+  type KitchenMiseWorkflowStage,
+} from '../../../../../models/kitchen/mise.model'
+import { useKitchenMiseTaskWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenMiseTaskWorkspace'
 import { useKitchenMiseUpdate } from '../../../../../composables/fireux/console/kitchen/operations/Mise/mutations/useKitchenMiseUpdate'
 
 const props = defineProps<{
@@ -74,25 +143,37 @@ const props = defineProps<{
 }>()
 
 const { kitchenId, rootCollection, miseId, canEditMise } =
-  useKitchenConsoleMiseTask()
+  useKitchenMiseTaskWorkspace()
 const { updateKitchenMise } = useKitchenMiseUpdate()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const title = ref('')
 const description = ref('')
-const type = ref<'food' | 'non-food'>('food')
 const station = ref('')
+const workflowStage = ref<KitchenMiseWorkflowStage | ''>('')
+const serviceDate = ref('')
+const status = ref<KitchenMiseStatus>('todo')
+const priority = ref<KitchenMisePriority>('normal')
+const estimatedMinutes = ref<number | string>(0)
 const saving = ref(false)
 const message = ref('')
 
 watch(
   () => props.task,
   (task: KitchenMiseTask) => {
-    const source = task as Record<string, unknown>
     title.value = normalizeString(task.title)
     description.value = normalizeString(task.description)
-    type.value = normalizeString(source.type) === 'non-food' ? 'non-food' : 'food'
     station.value = normalizeString(task.station)
+    workflowStage.value = normalizeKitchenMiseWorkflowStage(
+      task.workflow_stage
+    )
+    serviceDate.value = normalizeString(task.service_date)
+    status.value = normalizeKitchenMiseStatus(task.status)
+    priority.value = normalizeKitchenMisePriority(task.priority)
+    estimatedMinutes.value = Math.max(
+      0,
+      Math.round(Number(task.estimated_minutes) || 0)
+    )
     message.value = ''
   },
   { immediate: true }
@@ -112,8 +193,12 @@ const save = async () => {
       patch: {
         title: title.value,
         description: description.value,
-        type: type.value,
         station: station.value,
+        workflow_stage: workflowStage.value,
+        service_date: serviceDate.value,
+        status: status.value,
+        priority: priority.value,
+        estimated_minutes: Number(estimatedMinutes.value),
       },
     })
     message.value = 'Saved.'

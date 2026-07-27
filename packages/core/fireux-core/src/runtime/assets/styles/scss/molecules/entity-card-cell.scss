@@ -1,11 +1,22 @@
 /* Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: own shared entity-card root and content anatomy. */
 :where(.card.card--cell, .fx-card--cell) {
-	border-radius: calc(var(--ui-radius) * 2);
-	padding: calc(var(--spacing) * 3);
-	border: 1px solid var(--ui-border);
-	background: var(--ui-bg);
-	transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease,
-		transform 160ms ease;
+	position: relative;
+	isolation: isolate;
+	overflow: hidden;
+	border-radius: calc(var(--ui-radius) * 4);
+	padding: calc(var(--spacing) * 3.5);
+	border: 1px solid color-mix(in srgb, var(--ui-border) 82%, transparent);
+	background:
+		linear-gradient(
+			145deg,
+			color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary) 4%),
+			var(--ui-bg) 72%
+		);
+	box-shadow:
+		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 6%, transparent) inset,
+		0 0.45rem 1.4rem color-mix(in srgb, var(--ui-bg-inverted) 7%, transparent);
+	transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease,
+		transform 180ms ease;
 }
 
 :where(.card.card--cell) {
@@ -20,13 +31,18 @@
 }
 
 :where(
-	.card.card--cell:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover,
-	.fx-card--cell:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover
+	a.card.card--cell:not([data-disabled='true']):not([aria-disabled='true']):hover,
+	a .fx-card--cell:not([data-disabled='true']):not([aria-disabled='true']):hover,
+	button.card.card--cell:not(:disabled):hover,
+	button.fx-card--cell:not(:disabled):hover,
+	[role='button'].card.card--cell:not([aria-disabled='true']):hover,
+	[role='button'].fx-card--cell:not([aria-disabled='true']):hover
 ) {
-	background: var(--ui-bg-muted);
-	border-color: var(--ui-border);
-	box-shadow: 0 6px 16px color-mix(in srgb, var(--ui-bg-inverted) 8%, transparent);
-	transform: none;
+	border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
+	box-shadow:
+		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 9%, transparent) inset,
+		0 0.9rem 2rem color-mix(in srgb, var(--ui-bg-inverted) 12%, transparent);
+	transform: translateY(-2px);
 }
 
 :where(.fx-action-surface[data-disabled='true'] .fx-card--cell:hover) {
@@ -34,6 +50,30 @@
 	border-color: var(--ui-border);
 	box-shadow: none;
 	transform: none;
+}
+
+:where(
+	a.card.card--cell,
+	a:has(> .fx-card--cell),
+	button.card.card--cell,
+	button.fx-card--cell,
+	[role='button'].card.card--cell,
+	[role='button'].fx-card--cell
+) {
+	color: inherit;
+	text-decoration: none;
+}
+
+:where(
+	a.card.card--cell,
+	a:has(> .fx-card--cell),
+	button.card.card--cell,
+	button.fx-card--cell,
+	[role='button'].card.card--cell,
+	[role='button'].fx-card--cell
+):focus-visible {
+	outline: 2px solid color-mix(in srgb, var(--ui-primary) 78%, white);
+	outline-offset: 3px;
 }
 
 :where(.card__media, .fx-card__media) {
@@ -67,7 +107,9 @@
 
 :where(.card__title, .fx-card__title) {
 	font-size: var(--text-sm);
-	font-weight: var(--font-weight-semibold);
+	font-weight: var(--font-weight-bold);
+	letter-spacing: -0.012em;
+	color: var(--ui-text-highlighted);
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -86,6 +128,23 @@
 	flex-wrap: wrap;
 	justify-content: flex-end;
 	gap: var(--spacing);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:where(.card.card--cell, .fx-card--cell) {
+		transition: none;
+	}
+
+	:where(
+		a.card.card--cell:hover,
+		a .fx-card--cell:hover,
+		button.card.card--cell:hover,
+		button.fx-card--cell:hover,
+		[role='button'].card.card--cell:hover,
+		[role='button'].fx-card--cell:hover
+	) {
+		transform: none;
+	}
 }
 
 :where(.fx-card__icon) {

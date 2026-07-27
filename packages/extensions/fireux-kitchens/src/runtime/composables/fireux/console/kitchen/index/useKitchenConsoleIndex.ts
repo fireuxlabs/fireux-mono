@@ -15,7 +15,9 @@ export function useKitchenConsoleIndex() {
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
-  } = useKitchenConsole()
+  } = useKitchenConsole({
+    keepLiveTargetsAvailable: true,
+  })
   const demoCollection = useKitchenConsoleDemoData(true)
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
@@ -25,15 +27,20 @@ export function useKitchenConsoleIndex() {
     kitchenId: consoleSelection.kitchenId.value,
     kitchenSource: consoleSelection.kitchenSource.value,
   }))
+  const isLiveSelection = computed(
+    () => consoleSelection.kitchenSource.value === 'live'
+  )
   const isTenantSingleTarget = computed(
     () =>
       consoleRuntime.isTenant.value &&
+      isLiveSelection.value &&
       targetOutcome.value === 'ready' &&
       targetKitchens.value.length === 1 &&
       Boolean(consoleSelection.kitchen.value)
   )
   const autoSelectTargetId = computed(() =>
     consoleRuntime.isTenant.value &&
+    isLiveSelection.value &&
     targetOutcome.value === 'ready' &&
     targetKitchens.value.length === 1
       ? String(targetKitchens.value[0]?.id ?? '').trim()

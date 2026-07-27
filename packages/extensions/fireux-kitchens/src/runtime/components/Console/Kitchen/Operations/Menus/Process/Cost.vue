@@ -103,6 +103,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 
@@ -121,6 +122,7 @@ const {
   canWrite,
 } = useKitchenConsoleMenu()
 const { currentUser } = useAuth()
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const estimate = ref<Record<string, unknown> | null>(null)
 const pending = ref(false)
 const error = ref('')
@@ -191,7 +193,21 @@ async function refreshEstimate() {
   pending.value = true
 
   try {
+    const appId = activeKitchenAppId.value
+    const selectedKitchenId = kitchenId.value
+    const selectedMenuId = menuId.value
+    const selectedUploadId = uploadId.value
     const token = await currentUser.value.getIdToken()
+    requireWritableData('live')
+    if (
+      !canWrite.value ||
+      activeKitchenAppId.value !== appId ||
+      kitchenId.value !== selectedKitchenId ||
+      menuId.value !== selectedMenuId ||
+      uploadId.value !== selectedUploadId
+    ) {
+      return
+    }
     const response = await fetch('/api/console/kitchen/menus/process-estimate', {
       method: 'POST',
       headers: {
@@ -199,10 +215,10 @@ async function refreshEstimate() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        appId: activeKitchenAppId.value,
-        kitchenId: kitchenId.value,
-        menuId: menuId.value,
-        uploadId: uploadId.value,
+        appId,
+        kitchenId: selectedKitchenId,
+        menuId: selectedMenuId,
+        uploadId: selectedUploadId,
       }),
     })
     const payload = await response.json().catch(() => null)

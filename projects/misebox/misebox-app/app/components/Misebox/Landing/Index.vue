@@ -1,49 +1,150 @@
 <!-- Concurrent edit — 2026-07-23 09:40 CEST — Lead with the restaurant job, live product scope, and safe proof. -->
 <template>
-  <MiseboxLandingPractice />
-
   <LandingProductIndex
     :content="content"
     hero-layout="proof-wide"
     hero-mode="full"
   >
     <template #hero-preview>
-      <MiseboxLandingPreview />
+      <div
+        class="min-w-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/20 ring-1 ring-white/5 sm:rounded-3xl"
+      >
+        <MiseboxLandingPreview />
+      </div>
     </template>
 
     <template #after-hero>
       <section
-        class="grid gap-10 py-6 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:items-center lg:gap-16 lg:py-12"
+        class="grid gap-8 border-y border-default/70 py-10 sm:gap-12 sm:py-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:items-center lg:gap-16 lg:py-16"
         aria-labelledby="misebox-console-section-title"
       >
-        <MiseboxLandingConsolePreview />
+        <div
+          class="min-w-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/20 ring-1 ring-white/5 sm:rounded-3xl"
+        >
+          <MiseboxLandingConsolePreview
+            v-model:surface-id="selectedConsoleSurfaceId"
+          />
+        </div>
 
-        <div class="grid gap-5">
+        <div class="grid max-w-xl content-center gap-4 lg:justify-self-end">
           <p class="fx-type-headline">
-            Kitchen Console
+            {{ selectedConsoleCopy.eyebrow }}
           </p>
           <h2
             id="misebox-console-section-title"
             class="text-4xl font-black tracking-tight text-highlighted sm:text-5xl lg:text-6xl"
           >
-            Every operation has a place.
+            {{ selectedConsoleCopy.title }}
           </h2>
-          <p class="text-lg leading-8 text-muted">
-            Move from menus and recipes into prep, service, suppliers and
-            finance without rebuilding the same kitchen information in
-            separate tools.
+          <p
+            v-if="selectedConsoleCopy.description"
+            class="max-w-lg text-lg leading-8 text-muted"
+          >
+            {{ selectedConsoleCopy.description }}
           </p>
-          <p class="leading-7 text-toned">
-            The navigation stays flat, so the operation you need is always
-            close.
+          <ul
+            v-if="selectedConsoleCopy.items?.length"
+            class="flex max-w-lg flex-wrap gap-2"
+            :aria-label="`${selectedConsoleCopy.eyebrow} includes`"
+          >
+            <li
+              v-for="item in selectedConsoleCopy.items"
+              :key="item"
+              class="rounded-full border border-default bg-elevated px-3 py-1.5 text-sm font-semibold text-toned"
+            >
+              {{ item }}
+            </li>
+          </ul>
+          <p
+            v-if="selectedConsoleCopy.supporting"
+            class="max-w-lg leading-7 text-toned"
+          >
+            {{ selectedConsoleCopy.supporting }}
           </p>
-          <div>
+          <div class="pt-2">
             <UButton
-              to="/console/kitchen"
+              :to="selectedConsoleCopy.to"
               size="lg"
               trailing-icon="i-lucide-arrow-right"
             >
-              Open Kitchen Console
+              {{ selectedConsoleCopy.action }}
+            </UButton>
+          </div>
+        </div>
+      </section>
+
+      <section
+        class="grid gap-8 py-10 sm:gap-12 sm:py-14 lg:py-16"
+        aria-labelledby="misebox-ordering-section-title"
+      >
+        <div
+          class="grid gap-5 lg:grid-cols-[minmax(0,0.9fr)_minmax(22rem,1.1fr)] lg:items-end lg:gap-16"
+        >
+          <div class="grid max-w-3xl gap-4">
+            <p class="fx-type-headline">
+              Guest ordering
+            </p>
+            <h2
+              id="misebox-ordering-section-title"
+              class="text-4xl font-black tracking-tight text-highlighted sm:text-5xl lg:text-6xl"
+            >
+              Take orders from phones, tables and kiosks.
+            </h2>
+          </div>
+
+          <div class="grid max-w-2xl gap-4 lg:justify-self-end">
+            <p class="text-lg leading-8 text-muted">
+              Guests scan at the table, order for collection or delivery, or
+              use a self-service kiosk.
+            </p>
+            <p class="leading-7 text-toned">
+              Each order uses the same menu and enters the Kitchen Console.
+            </p>
+            <div class="pt-2">
+              <UButton
+                to="/demo/kiosk"
+                size="lg"
+                trailing-icon="i-lucide-arrow-right"
+              >
+                Explore guest ordering
+              </UButton>
+            </div>
+          </div>
+        </div>
+
+        <MiseboxLandingOrderingPreview />
+      </section>
+
+      <section
+        class="grid gap-8 border-t border-default/70 py-10 sm:gap-12 sm:py-14 lg:grid-cols-[minmax(0,1.15fr)_minmax(22rem,0.85fr)] lg:items-center lg:gap-16 lg:py-16"
+        aria-labelledby="misebox-finance-section-title"
+      >
+        <MiseboxLandingFinancePreview />
+
+        <div class="grid max-w-xl content-center gap-4 lg:justify-self-end">
+          <p class="fx-type-headline">
+            Kitchen Finance
+          </p>
+          <h2
+            id="misebox-finance-section-title"
+            class="text-4xl font-black tracking-tight text-highlighted sm:text-5xl lg:text-6xl"
+          >
+            Review Kitchen sales.
+          </h2>
+          <p class="max-w-lg text-lg leading-8 text-muted">
+            Compare gross sales, completed sales, and average sale for the
+            selected period.
+          </p>
+          <p class="max-w-lg leading-7 text-toned">
+            Choose 7, 30, or 90 days. Each currency remains separate.
+          </p>
+          <div class="pt-2">
+            <UButton
+              to="/console/kitchen/finance"
+              size="lg"
+              trailing-icon="i-lucide-arrow-right"
+            >
+              Open Kitchen Finance
             </UButton>
           </div>
         </div>
@@ -66,14 +167,172 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import type { LandingProductIndexContent } from 'fireux-core/types/landing-product'
 import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
 import { kitchenOperations } from 'fireux-kitchens/runtime/content/operations'
 import MiseboxLandingConsolePreview from './ConsolePreview/Index.vue'
-import MiseboxLandingPractice from './Practice.vue'
+import MiseboxLandingFinancePreview from './FinancePreview.vue'
+import MiseboxLandingOrderingPreview from './OrderingPreview.vue'
 import MiseboxLandingPreview from './Preview.vue'
 
+type ConsoleSurfaceCopy = {
+  action: string
+  description?: string
+  eyebrow: string
+  items?: readonly string[]
+  supporting?: string
+  title: string
+  to: string
+}
+
 const appsController = useEcosystemAppCollection()
+const selectedConsoleSurfaceId = ref('kitchen.dishes')
+
+const consoleSurfaceCopy = {
+  'kitchen.dishes': {
+    eyebrow: 'Kitchen Console · Dishes',
+    title: 'Develop your dishes.',
+    description:
+      'Set each dish’s specification and selling price, connect its recipes and prep items, organise mise en place, and track sales and costs.',
+    items: [
+      'Specification',
+      'Prep items',
+      'Recipes',
+      'Mise en place',
+      'Sales and costs',
+    ],
+    action: 'Open Dishes',
+    to: '/console/kitchen/dishes',
+  },
+  'kitchen.ingredients': {
+    eyebrow: 'Kitchen Console · Ingredients',
+    title: 'Track your ingredients.',
+    description:
+      'Make stocktaking faster, control supplier ordering, and keep nutritional information ready for menus and dishes.',
+    items: [
+      'Stocktaking',
+      'Supplier ordering',
+      'Nutritional information',
+    ],
+    action: 'Open Ingredients',
+    to: '/console/kitchen/ingredients',
+  },
+  'kitchen.menus': {
+    eyebrow: 'Kitchen Console · Menus',
+    title: 'Create your menus.',
+    description:
+      'Arrange dishes into ordering sections, choose how each menu is used, and publish QR codes for guests.',
+    items: [
+      'Ordering sections',
+      'Dishes',
+      'Ordering formats',
+      'QR codes',
+    ],
+    action: 'Open Menus',
+    to: '/console/kitchen/menus',
+  },
+  'kitchen.mise': {
+    eyebrow: 'Kitchen Console · Mise',
+    title: 'Prepare for service.',
+    description:
+      'Create prep tasks from dishes and recipes, assign them to stations, set quantities, and track completion before service.',
+    items: [
+      'Prep tasks',
+      'Quantities',
+      'Stations',
+      'Completion',
+    ],
+    action: 'Open Mise',
+    to: '/console/kitchen/mise',
+  },
+  'kitchen.orders': {
+    eyebrow: 'Kitchen Console · Orders',
+    title: 'Process your orders.',
+    description:
+      'Receive orders from every ordering surface, organise the service queue, and track each order from acceptance to handoff.',
+    items: [
+      'Incoming orders',
+      'Service queue',
+      'Preparation status',
+      'Handoff',
+    ],
+    action: 'Open Orders',
+    to: '/console/kitchen/orders',
+  },
+  'kitchen.recipes': {
+    eyebrow: 'Kitchen Console · Recipes',
+    title: 'Record your recipes.',
+    description:
+      'Record ingredients, quantities, methods and yields. Connect recipes to dishes.',
+    items: [
+      'Ingredients',
+      'Quantities',
+      'Method',
+      'Yield',
+    ],
+    action: 'Open Recipes',
+    to: '/console/kitchen/recipes',
+  },
+  'kitchen.stations': {
+    eyebrow: 'Kitchen Console · Stations',
+    title: 'Coordinate your stations.',
+    description:
+      'Assign dishes, prep tasks, and service work to the station responsible for completing them.',
+    items: [
+      'Dishes',
+      'Prep tasks',
+      'Service work',
+      'Responsibilities',
+    ],
+    action: 'Open Stations',
+    to: '/console/kitchen/stations',
+  },
+  'kitchen.suppliers': {
+    eyebrow: 'Kitchen Console · Suppliers',
+    title: 'Source your ingredients.',
+    description:
+      'Connect supplier catalogues and pack prices to the ingredients you buy, compare supply options, and prepare orders.',
+    items: [
+      'Catalogues',
+      'Products',
+      'Pack prices',
+      'Ordering',
+    ],
+    action: 'Open Suppliers',
+    to: '/console/kitchen/suppliers',
+  },
+  'kitchen.tables': {
+    eyebrow: 'Kitchen Console · Tables',
+    title: 'Set up your tables.',
+    description:
+      'Create table numbers and QR entry points so dine-in orders arrive with the correct table.',
+    items: [
+      'Table numbers',
+      'QR entry points',
+      'Dine-in ordering',
+      'Order destinations',
+    ],
+    action: 'Open Tables',
+    to: '/console/kitchen/tables',
+  },
+  'kitchen.finance': {
+    eyebrow: 'Kitchen Console · Finance',
+    title: 'Review Kitchen sales.',
+    description:
+      'Compare gross sales, completed sales, and average sale for the selected period.',
+    supporting:
+      'Choose 7, 30, or 90 days. Each currency remains separate.',
+    action: 'Open Kitchen Finance',
+    to: '/console/kitchen/finance',
+  },
+} as const satisfies Record<string, ConsoleSurfaceCopy>
+
+const selectedConsoleCopy = computed<ConsoleSurfaceCopy>(() =>
+  consoleSurfaceCopy[
+    selectedConsoleSurfaceId.value as keyof typeof consoleSurfaceCopy
+  ] || consoleSurfaceCopy['kitchen.dishes']
+)
 
 const operations = kitchenOperations
   .filter(operation => operation.slug)

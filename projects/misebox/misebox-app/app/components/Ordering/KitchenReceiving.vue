@@ -27,7 +27,7 @@
           </UBadge>
         </div>
 
-        <ConsoleKitchenOperationsOrdersCardsTicket :order="displayOrder" />
+        <ConsoleKitchenOperationsOrdersTicketPresentation :order="displayOrder" />
       </div>
     </div>
 

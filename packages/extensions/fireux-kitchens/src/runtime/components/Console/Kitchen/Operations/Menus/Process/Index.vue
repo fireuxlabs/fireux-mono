@@ -145,6 +145,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
 
@@ -157,6 +158,7 @@ const {
   canWrite,
 } = useKitchenConsoleMenu()
 const { currentUser } = useAuth()
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const authToken = ref('')
 const pendingMode = ref<'standard' | 'strong' | ''>('')
 const error = ref('')
@@ -341,6 +343,7 @@ async function processSource(mode: 'standard' | 'strong') {
   pendingMode.value = mode
 
   try {
+    requireWritableData('live')
     const response = await fetch('/api/console/kitchen/menus/process', {
       method: 'POST',
       headers: {

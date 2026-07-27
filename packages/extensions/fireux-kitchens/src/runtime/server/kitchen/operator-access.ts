@@ -5,6 +5,8 @@ import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
 import { KitchenStorage } from '../../models/kitchen.model.ts'
 import {
   readKitchenOnboardingScope,
@@ -15,6 +17,17 @@ const ids = (value: unknown) =>
   Array.isArray(value)
     ? value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
     : []
+
+const linkedDocumentId = (value: unknown, label: string) => {
+  const id = typeof value === 'string' ? value.trim() : ''
+  if (!isFirestoreDocumentId(id)) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: `${label} is missing or invalid.`,
+    })
+  }
+  return id
+}
 
 export async function requireKitchenOperator(
   event: H3Event,
@@ -40,11 +53,30 @@ export async function requireKitchenReportReader(
   event: H3Event,
   input: { appId: string; kitchenId: string }
 ) {
-  return requireKitchenWriter(
+  const access = await requireKitchenWriter(
     event,
     input,
     'Sign in to view Kitchen finance.'
   )
+  const placeId = linkedDocumentId(
+    access.rootKitchen.place_id,
+    'Kitchen Place link'
+  )
+  const rootPlaceSnapshot = await access.db
+    .collection(PlaceStorage.collection)
+    .doc(placeId)
+    .get()
+  if (!rootPlaceSnapshot.exists) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'The Kitchen linked Place does not exist.',
+    })
+  }
+
+  return {
+    ...access,
+    rootPlace: rootPlaceSnapshot.data() ?? {},
+  }
 }
 
 export async function requireKitchenWriter(
@@ -115,5 +147,9 @@ export async function requireKitchenWriter(
     })
   }
 
-  return { db, uid: user.uid }
+  return {
+    db,
+    uid: user.uid,
+    rootKitchen: rootKitchenSnapshot.data() ?? {},
+  }
 }

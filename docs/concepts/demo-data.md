@@ -42,6 +42,23 @@ remain real data even when a Demo record links to them.
   produce the required Prep item or Recipe. Mise is work, not a fourth Dish
   component kind. Menu-item variants and add-ons own their component deltas
   instead of changing the Dish base Spec.
+- Demo Menu publication and operational service availability are separate.
+  The package-owned pure cascade at
+  `runtime/utils/kitchen/demo-menu-cascade.ts` projects Menu provenance through
+  Dish Specs, Menu-item deltas, Prep items, Recipes, root Ingredient links, and
+  Mise candidates without mutating any record. Shared dependencies remain
+  required while at least one in-service Menu uses them. Deanos' owner-local
+  summer defaults are Main `on`, Party `order_led`, and Xmas `off`.
+- Console Demo and Product Demo may share local route-stable Menu service
+  selection through the Kitchen-owned Demo composable. That selection is a
+  read-only demonstration control: it filters operational Mise and marks
+  inactive-only Dishes, Recipes, and Ingredients for presentation, but it
+  never becomes fixture truth, publication state, Firestore, or local storage.
+- `KitchenMiseTask.workflow_stage` is the chef-facing work order: Wash & clean,
+  Cut & portion, Make, Cook & chill, Set stations, then Final checks. Status,
+  priority, station, Menu provenance, and checklist completion remain separate.
+  Missing legacy stages stay visible as Unsorted rather than receiving an
+  invented default.
 - This Demo production graph remains an explicit working seam, not storage
   canon. Promote it only after the model, collection, Rules, adapter, and guard
   contract have been agreed together.
@@ -61,11 +78,15 @@ remain real data even when a Demo record links to them.
   Demo adapter. Demo targets use the same selected-target and outcome spine as
   Live targets, and operation records remain scoped to their selected Demo
   parent rather than falling through to an empty or remote collection.
-- Selecting Demo deactivates Live target and operation providers before they
-  can issue a request. The narrow exception is a bounded public projection
-  read required to hydrate a shared canonical root explicitly referenced by a
-  Demo operation record, currently Ingredient. This is reference hydration,
-  not a Live operation provider or a second Demo identity source.
+- Selecting Demo deactivates selected Live target and operation providers
+  before they can issue a request. The Kitchen Console index may retain its
+  bounded authenticated Live target chooser so the user can leave Demo without
+  losing sight of their Kitchens; that navigation read does not activate a
+  selected Live Kitchen or its operations. The other narrow exception is a
+  bounded public projection read required to hydrate a shared canonical root
+  explicitly referenced by a Demo operation record, currently Ingredient.
+  This is reference hydration, not a Live operation provider or a second Demo
+  identity source.
 - `useConsoleDemoData` caches a successful local load and exposes
   `idle`, `pending`, `error`, `empty`, or `ready` without remote work.
 - A project Product Demo has one named adapter at
@@ -81,6 +102,27 @@ remain real data even when a Demo record links to them.
   The still-unpromoted Spec, Prep, Recipe, Mise-requirement, and Finance graph
   remains isolated behind the existing derived adapter until those record
   models are explicitly agreed; it is not canonical Dish storage. Product
+  Demo operation-level Mise instead projects the owner-local
+  `KitchenMiseTask` records used by the real Console through the Kitchen-owned
+  summary projector and exposes them as `console.miseTasks`; it does not
+  present that derived requirement graph as a task collection. Menu service
+  provenance may be derived from each task's linked Prep item, Recipe, or
+  Ingredient and included in the presentation DTO so the consumer can filter
+  tasks without rebuilding the production graph.
+  Product Demo operation-level Orders projects the selected Console scenario's
+  canonical `KitchenOrder` fixtures as `console.orders`, derives board rails
+  from the shared lifecycle helper, and remains read-only.
+  Stations projects the same ordered `KitchenStation` records. Kitchen
+  Suppliers resolves Kitchen-owned usage links through a Kitchen-owned pure
+  adapter into Supplier-owned identity and coverage. Tables projects only the
+  Kitchen's configured count unless real owner-local Table Tab records are
+  explicitly added. A Product Demo may expose the separate Kitchen Finance
+  report from its aggregate-only owner-local fixture through the shared
+  Kitchen projector. One deterministic daily aggregate series may derive
+  reconciled current/prior period totals, item rollups, calendar days, grouped
+  trend points, selected-day detail, and sales-only insights, but Finance does
+  not enter the operation catalogue or create Sales and FinancialFacts.
+  Product
   adapters must not repeat Menu, Spec, Supplier, production, or Finance joins.
   The derived adapter rejects duplicate or incomplete identity coverage,
   unresolved requirements, unsafe minor-unit arithmetic, and incoherent

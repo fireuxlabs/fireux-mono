@@ -1,6 +1,6 @@
 <template>
   <div class="order-ticket-body">
-    <ConsoleKitchenOperationsOrdersCardsTicketLine
+    <ConsoleKitchenOperationsOrdersTicketLine
       v-for="line in lines"
       :key="line.id"
       :line="line"
@@ -42,7 +42,7 @@
 <script setup lang="ts">
 import type { KitchenOrderTicketLine } from '../../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrderTicket'
 
-defineOptions({ name: 'ConsoleKitchenOperationsOrdersCardsTicketBody' })
+defineOptions({ name: 'ConsoleKitchenOperationsOrdersTicketBody' })
 
 defineProps<{
   canToggleLines: boolean

@@ -6,6 +6,7 @@ import {
   useConsole,
   type ConsoleSource,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { consoleData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
 import { useConsoleTargets } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleTargets'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
@@ -73,6 +74,15 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
         })
       : liveCollection.portfolios.value
   )
+  const targetData = computed(() => {
+    const type =
+      consoleRoot.source.value === 'demo'
+        ? 'demo'
+        : consoleRoot.source.value === 'test'
+          ? 'test'
+          : 'live'
+    return targetPortfolios.value.map(portfolio => consoleData(type, portfolio))
+  })
   const targetsPending = computed(() =>
     consoleRoot.source.value === 'demo'
       ? demoData.pending.value
@@ -99,7 +109,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const entity = useConsoleEntityRuntime<PortfolioConsoleEntity>({
     family: 'portfolio',
     storageFamily: PortfolioStorage.rootCollection,
-    targetItems: targetPortfolios,
+    targetData,
     targetOutcome: targetsOutcome,
     getId: (portfolio) =>
       normalizeString((portfolio as PortfolioConsoleEntity)?.id),

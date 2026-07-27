@@ -41,29 +41,34 @@
       :error="error"
       @select="$emit('select', $event)"
     />
-    <MiseboxLandingConsolePreviewDishesDetail
-      v-else-if="page === 'detail'"
+    <MiseboxLandingConsolePreviewDishesDetailSections
+      v-if="dish"
       :dish="dish"
-      @select-section="$emit('select-page', $event)"
+      :selected="page"
+      @select="$emit('select-page', $event)"
+    />
+    <MiseboxLandingConsolePreviewDishesDetail
+      v-if="dish && page === 'detail'"
+      :dish="dish"
     />
     <MiseboxLandingConsolePreviewDishesFinance
-      v-else-if="page === 'finance'"
+      v-else-if="dish && page === 'finance'"
       :dish="dish"
     />
     <MiseboxLandingConsolePreviewDishesSpec
-      v-else-if="page === 'spec'"
+      v-else-if="dish && page === 'spec'"
       :dish="dish"
     />
     <MiseboxLandingConsolePreviewDishesPrepItems
-      v-else-if="page === 'prep'"
+      v-else-if="dish && page === 'prep'"
       :dish="dish"
     />
     <MiseboxLandingConsolePreviewDishesRecipes
-      v-else-if="page === 'recipes'"
+      v-else-if="dish && page === 'recipes'"
       :dish="dish"
     />
     <MiseboxLandingConsolePreviewDishesMise
-      v-else
+      v-else-if="dish"
       :dish="dish"
     />
   </div>
@@ -82,7 +87,7 @@ const props = defineProps<{
 
 defineEmits<{
   (event: 'select', dishId: string): void
-  (event: 'select-page', page: Exclude<DishChildPage, 'detail'>): void
+  (event: 'select-page', page: DishChildPage): void
   (event: 'show-collection'): void
   (event: 'show-detail'): void
 }>()

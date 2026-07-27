@@ -7,6 +7,13 @@ export type FinancialMoneyValidationOptions = {
   label?: string
 }
 
+export type FinancialMoneyFormatOptions = {
+  locales?: Intl.LocalesArgument
+  currencyDisplay?: Intl.NumberFormatOptions['currencyDisplay']
+  currencySign?: Intl.NumberFormatOptions['currencySign']
+  useGrouping?: Intl.NumberFormatOptions['useGrouping']
+}
+
 type IntlCurrencySupport = typeof Intl & {
   supportedValuesOf: (key: 'currency') => string[]
 }
@@ -62,6 +69,28 @@ export function financialCurrencyMinorUnitDigits(value: unknown): number {
   } catch {
     return financialMoneyError('Currency code', 'is not supported by Intl.')
   }
+}
+
+export function formatFinancialMinorAmount(
+  amountMinor: unknown,
+  currencyCode: unknown,
+  options: FinancialMoneyFormatOptions = {}
+): string {
+  const money = requireFinancialMoney({
+    amount_minor: amountMinor,
+    currency_code: currencyCode,
+  })
+  const minorUnitDigits = financialCurrencyMinorUnitDigits(
+    money.currency_code
+  )
+
+  return new Intl.NumberFormat(options.locales, {
+    style: 'currency',
+    currency: money.currency_code,
+    currencyDisplay: options.currencyDisplay,
+    currencySign: options.currencySign,
+    useGrouping: options.useGrouping,
+  }).format(money.amount_minor / 10 ** minorUnitDigits)
 }
 
 export function requireFinancialMinorAmount(

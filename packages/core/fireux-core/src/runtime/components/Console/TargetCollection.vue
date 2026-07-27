@@ -28,7 +28,16 @@
         state="error"
         surface="bare"
         :description="errorDescription"
-      />
+      >
+        <UButton
+          v-if="retryable"
+          size="sm"
+          variant="soft"
+          @click="emit('retry')"
+        >
+          Retry
+        </UButton>
+      </MoleculesStateCard>
 
       <div v-else-if="outcome === 'ready'" :class="itemsClass">
         <slot />
@@ -59,11 +68,16 @@ const props = withDefaults(
     emptyTitle: string
     emptyDescription: string
     itemsClass?: string
+    retryable?: boolean
   }>(),
   {
     itemsClass: 'space-y-3',
+    retryable: false,
   }
 )
+const emit = defineEmits<{
+  (event: 'retry'): void
+}>()
 
 const isSettled = computed(() =>
   props.outcome === 'ready' || props.outcome === 'empty'

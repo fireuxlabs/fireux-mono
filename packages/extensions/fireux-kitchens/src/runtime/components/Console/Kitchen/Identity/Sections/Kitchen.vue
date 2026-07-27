@@ -110,6 +110,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
@@ -133,6 +134,7 @@ const props = defineProps<{
 
 const collectionPath = computed(() => props.collectionPath)
 const { updateKitchen } = useKitchenUpdate({ collectionPath })
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const toast = useToastify()
 
 const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
@@ -209,8 +211,17 @@ async function handleCoverFile(event: Event) {
 
   coverUploading.value = true
   try {
+    const kitchenId = props.kitchenId
     const coverBlob = await resizeImageToCover(file)
-    const url = await uploadImage(`kitchens/${props.kitchenId}/cover`, coverBlob)
+    requireWritableData()
+    if (!props.canWrite || props.kitchenId !== kitchenId) {
+      throw new Error('The selected Kitchen changed before the cover upload.')
+    }
+    const url = await uploadImage(`kitchens/${kitchenId}/cover`, coverBlob)
+    requireWritableData()
+    if (!props.canWrite || props.kitchenId !== kitchenId) {
+      throw new Error('The selected Kitchen changed before the cover could be saved.')
+    }
     await updateKitchenField(
       { cover_image: url },
       'Cover image updated',

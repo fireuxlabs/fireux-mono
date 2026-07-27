@@ -1,5 +1,6 @@
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
@@ -19,10 +20,10 @@ export function useClientCreate(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function createClient(input: ClientCreateInput): Promise<string> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-properties] portfolio id is required.')
-    }
+    const portfolioId = requirePortfolioConsoleWrite(
+      runtimePortfolio,
+      'fireux-properties'
+    )
 
     const displayName = normalizeString(input.display_name)
     if (!displayName) {

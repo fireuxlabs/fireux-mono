@@ -1,6 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { unref, type Ref } from 'vue'
 import {
   MenuSectionModel,
@@ -17,6 +18,7 @@ const clean = (value: unknown) => String(value ?? '').trim()
 const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(value))
 
 export function useMenuSectionMutations(options: Options = {}) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
@@ -36,6 +38,7 @@ export function useMenuSectionMutations(options: Options = {}) {
     description?: string
     sort_order?: number
   }) => {
+    requireWritableData()
     const collectionPath = path(input.kitchenId, input.menuId)
     const label = clean(input.label)
     if (!collectionPath) throw new Error('Missing menu')
@@ -61,6 +64,7 @@ export function useMenuSectionMutations(options: Options = {}) {
     sectionId: string,
     patch: Partial<MenuSection>
   ) => {
+    requireWritableData()
     const collectionPath = path(kitchenId, menuId)
     const id = clean(sectionId)
     if (!collectionPath || !id) throw new Error('Missing section')

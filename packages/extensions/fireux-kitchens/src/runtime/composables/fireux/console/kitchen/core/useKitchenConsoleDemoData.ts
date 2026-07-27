@@ -74,16 +74,15 @@ export function useKitchenConsoleDemoData(
             })),
             finance: scenario.finance
               ? {
-                  grossSales: Object.fromEntries(
-                    Object.entries(scenario.finance.grossSales).map(
-                      ([period, summary]) => [
-                        period,
-                        { ...summary },
-                      ]
-                    )
-                  ) as NonNullable<
-                    KitchenConsoleDemoScenario['finance']
-                  >['grossSales'],
+                  asOfDate: scenario.finance.asOfDate,
+                  currencyCode: scenario.finance.currencyCode,
+                  timezone: scenario.finance.timezone,
+                  dailyGrossSales: scenario.finance.dailyGrossSales.map(
+                    day => ({
+                      ...day,
+                      items: day.items.map(item => ({ ...item })),
+                    })
+                  ),
                 }
               : null,
             menuItemComponentDeltas: scenario.menuItemComponentDeltas.map(

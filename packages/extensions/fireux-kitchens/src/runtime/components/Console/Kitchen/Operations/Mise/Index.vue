@@ -13,8 +13,8 @@
 
     <ConsoleOperationWritePanel
       v-if="canWrite"
-      title="Add mise task"
-      description="Create prep work for this kitchen."
+      title="Prep status board"
+      description="Move current prep tasks through their working states."
     >
       <ConsoleKitchenOperationsMiseWrite />
     </ConsoleOperationWritePanel>
@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenConsoleMise } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenConsoleMise'
+import { provideKitchenMiseWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenMiseWorkspace'
 
-const { readOnly, canWrite } = useKitchenConsoleMise()
+const { readOnly, canWrite } = provideKitchenMiseWorkspace()
 </script>

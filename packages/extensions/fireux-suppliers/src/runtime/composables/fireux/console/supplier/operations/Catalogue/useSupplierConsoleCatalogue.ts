@@ -24,7 +24,7 @@ export function useSupplierConsoleCatalogue() {
     normalizeString(selection.supplier.value?.catalogue_state)
   )
   const supplierCataloguesEnabled = computed(() =>
-    runtime.source.value !== 'demo'
+    !runtime.isDemo.value
     && Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
@@ -45,19 +45,19 @@ export function useSupplierConsoleCatalogue() {
   })
 
   const demoData = useSupplierConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoScenario = computed(() => findSupplierConsoleDemoScenario(
     demoData.data.value,
     selection.supplierId.value
   ))
   const supplierItems = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoScenario.value?.items ?? []
       : supplierItemsFromStore.value
   )
   const rawCatalogues = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoScenario.value?.catalogues ?? []
       : supplierCatalogues.value
   )
@@ -68,7 +68,7 @@ export function useSupplierConsoleCatalogue() {
     }))
   )
   const pending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.pending.value
       : supplierCataloguesPending.value || supplierItemsPending.value
   )

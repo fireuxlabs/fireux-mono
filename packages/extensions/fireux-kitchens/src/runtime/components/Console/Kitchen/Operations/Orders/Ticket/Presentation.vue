@@ -30,7 +30,7 @@
       @keydown.space.self.prevent="touchBody"
     >
       <template #header>
-        <ConsoleKitchenOperationsOrdersCardsTicketHeader
+        <ConsoleKitchenOperationsOrdersTicketHeader
           :icon="headerIcon"
           :label="headerLabel"
           :waiting="isWaitingForAcceptance"
@@ -51,7 +51,7 @@
         />
       </template>
 
-      <ConsoleKitchenOperationsOrdersCardsTicketBody
+      <ConsoleKitchenOperationsOrdersTicketBody
         :lines="visibleLines"
         :has-lines="Boolean(lines.length)"
         :can-toggle-lines="canToggleLines"
@@ -63,7 +63,7 @@
       />
 
       <template #footer>
-        <ConsoleKitchenOperationsOrdersCardsTicketFooter
+        <ConsoleKitchenOperationsOrdersTicketFooter
           :expanded="linesExpanded"
           :order-label="orderLabel"
           :placed-time-label="placedTimeLabel"

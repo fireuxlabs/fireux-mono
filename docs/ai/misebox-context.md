@@ -4,7 +4,7 @@
 <!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
 <!-- Concurrent edit — 2026-07-25 — Keep Main App hero copy in Core while Misebox proves it with the real Orders board. -->
 
-Updated: 2026-07-26
+Updated: 2026-07-27
 Ref: e98ffb195
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -82,10 +82,23 @@ Before each task:
   not Misebox Console Operations or separately editable truth.
 - The first visible report is the Kitchen-owned `/console/kitchen/finance`
   sheet. Its authenticated, aggregate-only server projection reads a bounded
-  period of immutable Sales for the selected Kitchen, keeps currencies
-  separate, and exposes gross sales, completed-Sale count, and average Sale.
-  It does not read raw FinancialFacts in the browser or invent Demo/Test and
-  pre-producer history.
+  7, 30, or 90 complete owner-local-day period of immutable Sales for the
+  selected Kitchen. The server resolves a valid custom Kitchen timezone or the
+  exact linked Place timezone, keeps currencies separate, and exposes
+  reconciled period/daily gross sales, completed-Sale count, average Sale,
+  item quantities, item sales, delivery fees, and stable item rollups. It does
+  not expose raw Sales, Orders, customers, or FinancialFacts in the browser or
+  invent Live/Test and pre-producer history. Demo may use the explicit
+  aggregate-only owner-local fixture; it never becomes Sale or FinancialFact
+  history. Its
+  `KitchenFinanceSummary` and `KitchenFinanceTrend` adapters supply Kitchen
+  labels and values to dumb product-neutral Finance presentation used by
+  Console and Product Demo. Kitchen-owned calendar, selected-day item, and
+  roundup components retain daily sales semantics. Deanos derives
+  current/prior 7, 30, and 90-day totals, grouped trend points, calendar days,
+  best/quietest days, weekday averages, top items, and daily averages from one
+  deterministic 180-day aggregate series with reconciled item rollups; it does
+  not add expense or accounting truth.
 - Supplier catalogue costs, parked purchase orders, Property/Portfolio values,
   and FireUX Project identity are not Finance producers until their own dated
   operational lifecycles exist.
@@ -93,6 +106,12 @@ Before each task:
   author/public APIs as Werkbox. Hospitality is only a configured category and
   presentation delta; Kitchen is never Job identity and Job creation never
   materializes a Kitchen.
+- Misebox tenant Apps may compose that shared Jobs family with a hospitality
+  allowlist. Their public catalogue remains exact-source scoped, while the main
+  Misebox catalogue can aggregate those public Jobs and return applicants to
+  the source tenant through a configured HTTPS doorway. Interlaken Essen is
+  the first such local doorway: its `/jobs` route, Companies, Places, Agents,
+  and Professionals are shared capabilities, not tenant-owned entity forks.
 - Misebox Blogs use the shared `fireux-blogs` root and bounded public
   projection. Every Misebox App `/blog` aggregates every public BlogPost whose
   source ecosystem is Misebox; source App is provenance, not Blog visibility.
@@ -113,6 +132,12 @@ Before each task:
   resolution, and ordering projections belong to `fireux-kitchens`.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
+- Misebox product literature follows `docs/concepts/product-language.md`.
+  Start with the owning package's fields, states, commands, and child pages;
+  derive operation copy from those children, derive Kitchen Console copy from
+  its operations, and derive the landing from its product sections. Use
+  concrete hospitality nouns and actions in the present tense. Do not add a
+  second vocabulary of slogans or vague benefits at the project edge.
 - Misebox App's public `/demo` family is a project-owned showroom composition.
   It consumes package-owned deterministic Demo Worlds only through the named
   Product Demo adapter, reuses real domain components, and performs no live
@@ -121,6 +146,11 @@ Before each task:
   those roots are not Demo records. Demo records remain owned by their domain
   package; the project owns only route selection, marketing copy, and local
   interaction.
+- Misebox `/cards` is a searchable project-owned PowerCards candidate gallery.
+  Its main collection consumes package-owned `Cell`, `Pill`, and `Preview`
+  components with local fixture props. Named specialist presentations may join
+  only as explicitly labelled candidates, such as `Kiosk · Item`; they do not
+  become members of the generic Card family.
 - Shared product-led landing presentation belongs to Core
   `LandingProductIndex`: page rhythm, hero/action hierarchy, operating loop,
   capability, operation and audience grids, proof-panel placement, closing CTA,
@@ -144,14 +174,70 @@ Before each task:
   first and projects the canonical Kitchen Operations catalogue without live
   counts or customer data. Its thin frame owns the single Product Demo load,
   local operation/page selection, and navigation; named operation children
-  receive typed read-only projections. Menus, Dishes, Recipes, and Mise own
-  truthful projected bodies, unsupported operations use one named empty
-  canvas, and Dishes separates Collection, image-led Detail, and five named
-  Finance/Spec/Prep/Recipes/Mise child pages. The root retains local Dish page
-  state while the Dishes coordinator owns its clickable breadcrumb; detail
-  tiles emit navigation and never expand a second canvas in place. No child
+  receive typed read-only projections. Menus, Dishes, Ingredients, Recipes,
+  Mise, Orders, Stations, Suppliers, and Tables own truthful projected bodies;
+  future unsupported operations use one named empty canvas. Dishes separates
+  Collection, Overview, and five named Finance/Spec/Prep/Recipes/Mise child
+  pages beneath one persistent image-backed Dish context. Ingredients presents
+  the Deanos Kitchen usage-link set through the adapter's canonical root
+  projection; its names and images remain shared Ingredient truth. The real
+  Console and landing child consume the same ordered food-group resolver, while
+  the landing child keeps those groups compact and collapsible. Mise projects
+  the Deanos `KitchenMiseTask` records through the Kitchen-owned summary
+  projector, collection presentation, and task board shared by the real
+  Console and landing child. The landing disables task navigation and supplies
+  its own outer scroll boundary, but it does not own a compact Mise variant.
+  That shared board is chef-process first: `workflow_stage` orders Wash &
+  clean, Cut & portion, Make, Cook & chill, Set stations, and Final checks;
+  status, priority, station, and checklist progress remain orthogonal task
+  metadata, while unclassified legacy records remain visible under Unsorted.
+  The Product Demo names that operation projection `console.miseTasks`;
+  Dish-level `mise` remains the derived production-requirement graph. The
+  operation-level preview does not substitute those requirements for tasks.
+  Deanos Demo Menu publication remains separate from local operational
+  availability. The package-owned summer default keeps Main in service, Party
+  order-led, and Xmas off. One Kitchen-owned production projection carries
+  those Menu relationships through Dishes, Prep items, Recipes, Ingredients,
+  and Mise; shared dependencies stay active when any enabled Menu needs them.
+  Console Demo and the landing Console preview share route-stable local Menu
+  service state and filter inactive Mise tasks. Availability badges, switches,
+  and inactive-card dimming belong only to the real Console; the landing Menu,
+  Dish, Recipe, and Ingredient cards remain visually neutral. This state is
+  Demo interaction only: it does not mutate fixtures, reuse publication
+  status, or write Firestore.
+  The landing Dishes entry is a food-dish showcase: it omits Drink records and
+  suppresses Food/Drink type labels. The full Console retains the complete
+  Kitchen catalogue and its operational vocabulary.
+  The preview header keeps one `Open full Console` doorway visible across
+  every operation. It selects Deanos as the read-only Demo Kitchen before
+  entering `/console/kitchen`; the public preview does not acquire Console
+  target authority. The Kitchen index continues to present the bounded Live
+  and Demo target choosers together, so this doorway never hides the user's
+  real Kitchens.
+  Orders projects the Deanos `KitchenOrder` records as
+  `console.orders`, derives Incoming/Queue/Pass from the canonical Order
+  lifecycle, and reuses the shared Order rail and ticket components without
+  mutation controls.
+  Stations projects the same ordered `KitchenStation` records used by Console
+  Demo. Suppliers resolves Kitchen-owned usage links through a Kitchen-owned
+  pure adapter into Supplier-owned identity and coverage; no Supplier truth is
+  copied into the Kitchen fixture or rebuilt by the project. Tables projects
+  only the canonical Deanos `Kitchen.tables.count`, so the eight configured
+  tables are available and no active Table Tab is invented. The separate
+  Reports navigation exposes the Kitchen Finance sheet without adding Finance
+  to `kitchenOperations` or `KitchenDemoOperation`; it receives the explicit
+  aggregate-only Deanos daily series through the same Kitchen-owned reconciled
+  period/trend projector as Console Demo.
+  The root
+  retains local Dish page
+  state while the Dishes coordinator owns its clickable breadcrumb and
+  persistent image-backed, icon-only page selector. The muted Dish image stays
+  in place while child pages change, the circled information icon represents
+  the selected Dish overview, and every icon retains an accessible name and
+  hover title. Detail tiles emit navigation and never expand a second canvas
+  in place. No child
   loads Demo data, reads or writes a selected Kitchen, or acquires live
-  Console/Firebase authority. The Finance child receives the additive
+  Console/Firebase authority. The Dish Finance child receives the additive
   presentation DTO from the Kitchen-owned Demo Dishes operation adapter, which
   composes the shared Dish estimate, package-owned quantities, and derived
   total sales once for both Console Demo and Product Demo. Neither the project

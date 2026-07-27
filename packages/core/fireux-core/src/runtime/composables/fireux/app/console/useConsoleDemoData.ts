@@ -26,6 +26,7 @@ type UseConsoleDemoDataReturn<T> = {
   readonly pending: ComputedRef<boolean>
   readonly error: ComputedRef<unknown | undefined>
   readonly outcome: ComputedRef<ConsoleDemoDataOutcome>
+  readonly retry: () => void
 }
 
 function defaultIsEmpty(value: unknown): boolean {
@@ -49,7 +50,10 @@ export function useConsoleDemoData<T>(
     if (!active.value) return 'idle'
     if (pending.value) return 'pending'
     if (error.value) return 'error'
-    if (!loaded) return 'empty'
+    // Activation and its watcher can be observed in the same render turn.
+    // Treat that pre-load instant as pending so selection validation cannot
+    // mistake an unstarted provider for an authoritative empty result.
+    if (!loaded) return 'pending'
 
     const value = data.value
     if (value === undefined) return 'empty'
@@ -85,10 +89,19 @@ export function useConsoleDemoData<T>(
     if (isActive) load()
   }, { immediate: true })
 
+  const retry = () => {
+    if (!active.value || inFlight) return
+    cachedData.value = undefined
+    loadError.value = undefined
+    loaded = false
+    load()
+  }
+
   return {
     data,
     pending,
     error,
     outcome,
+    retry,
   }
 }

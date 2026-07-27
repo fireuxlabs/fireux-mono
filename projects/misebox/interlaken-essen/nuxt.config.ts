@@ -10,8 +10,21 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Interlaken Essen',
   role: 'tenant',
   selfJoinEnabled: true,
+  domains: ['jobs'],
+  profiles: ['agent', 'professional'],
   consoles: [],
-  modules: ['fireux-sproochli', 'fireux-marketplace'],
+  modules: [
+    'fireux-sproochli',
+    'fireux-marketplace',
+    'fireux-places',
+    'fireux-companies',
+    [
+      'fireux-jobs',
+      {
+        categories: ['hospitality'],
+      },
+    ],
+  ],
   authDefaultMode: 'sign-up',
   authCompletion: {
     path: '/mis',

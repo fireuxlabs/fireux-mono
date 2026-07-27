@@ -62,6 +62,7 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type {
   SproochliAttachmentConfig,
@@ -87,10 +88,11 @@ const defaultLanguageOptions = [
 }>
 
 const toast = useToastify()
-const { refreshTargets, source } = useKitchenConsoleIdentity()
+const { refreshTargets } = useKitchenConsoleIdentity()
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const saving = ref(false)
 const saveState = ref('')
-const writable = computed(() => props.canWrite && source.value === 'live')
+const writable = computed(() => props.canWrite)
 const config = computed(() => readKitchenSproochliConfig(props.kitchen))
 const enabled = computed(() => config.value.enabled)
 const defaultLanguage = computed<SproochliDefaultLanguage>(
@@ -123,6 +125,10 @@ async function save(
   try {
     const user = await useRequireUser()
     const token = await user.getIdToken()
+    requireWritableData('live')
+    if (!writable.value || props.kitchenId !== kitchenId) {
+      throw new Error('The selected Kitchen changed before Sproochli could be saved.')
+    }
     const result = await $fetch<{
       ok: true
       app_id: string

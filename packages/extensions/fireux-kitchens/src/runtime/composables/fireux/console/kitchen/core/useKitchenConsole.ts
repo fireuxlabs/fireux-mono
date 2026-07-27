@@ -9,6 +9,12 @@ import { computed, watch } from 'vue'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useConsole } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import {
+  consoleData,
+  type ConsoleData,
+  type ConsoleDataType,
+} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
+import { useConsoleDataAuthority } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDataAuthority'
 import { targetHasOperator } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { resolveConsoleEntityAppId } from 'fireux-core/runtime/composables/fireux/firestore/system/console/utils/resolveConsoleEntityCollectionPath'
@@ -26,10 +32,14 @@ import {
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsoleTargetCollection } from '../index/useKitchenConsoleTargetCollection'
 import {
-  useKitchenConsoleDemoData,
-} from './useKitchenConsoleDemoData'
+  useKitchenConsoleDemoTargets,
+} from './useKitchenConsoleDemoTargets'
 
 type KitchenConsoleEntity = KitchenSurface
+
+type UseKitchenConsoleOptions = {
+  keepLiveTargetsAvailable?: boolean
+}
 
 const normalizeSource = (value: unknown): KitchenFetchSource => {
   const source = normalizeString(value)
@@ -74,7 +84,7 @@ const composeConsoleKitchen = (
  * Index pages own Kitchen target collection reads.
  * It should not own Kitchen child operation records; those live under console/kitchen/operations.
  */
-export function useKitchenConsole() {
+export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
   /*
    * Input:
    * - runtime app config
@@ -98,17 +108,31 @@ export function useKitchenConsole() {
     normalizeSource(consoleRoot.source.value)
   )
   const liveTargetCollection = useKitchenConsoleTargetCollection({
-    enabled: computed(() => kitchenSource.value === 'live'),
+    enabled: computed(
+      () =>
+        kitchenSource.value === 'live'
+        || options.keepLiveTargetsAvailable === true
+    ),
   })
-  const demoData = useKitchenConsoleDemoData(
+  const demoTargets = useKitchenConsoleDemoTargets(
     computed(() => kitchenSource.value === 'demo')
   )
-  const selectionTargets = computed<KitchenSurface[]>(() => {
+  const liveTargetData = computed<Array<ConsoleData<KitchenSurface>>>(() =>
+    liveTargetCollection.kitchens.value.map(kitchen =>
+      consoleData('live', kitchen)
+    )
+  )
+  const demoTargetData = computed<Array<ConsoleData<KitchenSurface>>>(() =>
+    (demoTargets.data.value?.kitchens ?? []).map(kitchen =>
+      consoleData('demo', kitchen)
+    )
+  )
+  const selectionTargets = computed<Array<ConsoleData<KitchenSurface>>>(() => {
     if (kitchenSource.value === 'live') {
-      return liveTargetCollection.kitchens.value
+      return liveTargetData.value
     }
     if (kitchenSource.value === 'demo') {
-      return demoData.data.value?.kitchens ?? []
+      return demoTargetData.value
     }
     return []
   })
@@ -116,18 +140,19 @@ export function useKitchenConsole() {
     if (kitchenSource.value === 'live') {
       return liveTargetCollection.outcome.value
     }
-    if (kitchenSource.value === 'demo') return demoData.outcome.value
+    if (kitchenSource.value === 'demo') return demoTargets.outcome.value
     return 'idle' as const
   })
   const {
     selectedId,
-    selectedTarget,
+    selectedTarget: selectedData,
     selectTarget,
     clearSelection,
-  } = useConsoleSelection<KitchenSurface>('kitchen', {
+  } = useConsoleSelection<ConsoleData<KitchenSurface>>('kitchen', {
     targetItems: selectionTargets,
     targetOutcome: selectionOutcome,
-    getId: kitchen => normalizeString(kitchen.id),
+    getId: data => normalizeString(data.value.id),
+    getType: data => data.type,
   })
   const kitchenId = computed(() => normalizeString(selectedId.value))
   const directFetchSource = computed<KitchenFetchSource>(() =>
@@ -136,10 +161,53 @@ export function useKitchenConsole() {
   const { kitchen: fetchedPublicKitchen } = useKitchenFetch(kitchenId, {
     source: directFetchSource,
   })
+  const testTargetData = computed<ConsoleData<KitchenSurface> | null>(() =>
+    kitchenSource.value === 'test' && fetchedPublicKitchen.value
+      ? consoleData(
+          'test',
+          fetchedPublicKitchen.value as KitchenSurface
+        )
+      : null
+  )
+  const resolvedSelectedData = computed<ConsoleData<KitchenSurface> | null>(
+    () => {
+      const data = kitchenSource.value === 'test'
+        ? testTargetData.value
+        : selectedData.value
+      if (
+        !data ||
+        data.type !== kitchenSource.value ||
+        normalizeString(data.value.id) !== kitchenId.value
+      ) {
+        return null
+      }
+      return data
+    }
+  )
+  const dataType = computed<ConsoleDataType | null>(
+    () => resolvedSelectedData.value?.type ?? null
+  )
+  const isDemo = computed(() => dataType.value === 'demo')
   const selectedPublicKitchen = computed<KitchenConsoleEntity | null>(
-    () => kitchenSource.value === 'test'
-      ? fetchedPublicKitchen.value as KitchenConsoleEntity | null
-      : selectedTarget.value as KitchenConsoleEntity | null
+    () => resolvedSelectedData.value?.value ?? null
+  )
+  const {
+    setAuthority,
+    clearAuthority,
+  } = useConsoleDataAuthority('kitchen')
+  watch(
+    () => ({
+      id: normalizeString(selectedPublicKitchen.value?.id),
+      dataType: dataType.value,
+    }),
+    ({ id, dataType: resolvedDataType }) => {
+      if (!id || id !== kitchenId.value || !resolvedDataType) {
+        clearAuthority()
+        return
+      }
+      setAuthority(id, resolvedDataType)
+    },
+    { immediate: true }
   )
   const scopedAppId = computed(() =>
     kitchenSource.value === 'live'
@@ -155,15 +223,16 @@ export function useKitchenConsole() {
     family: KitchenStorage.scopeCollection,
     target: selectedPublicKitchen,
     appId: scopedAppId,
-    mode: kitchenSource,
+    mode: dataType,
+    active: computed(() => Boolean(dataType.value)),
     testCollectionPath: KitchenStorage.rootCollection,
     useAppSupport: computed(
-      () => kitchenSource.value === 'live' && Boolean(scopedAppId.value)
+      () => dataType.value === 'live' && Boolean(scopedAppId.value)
     ),
   })
   const kitchenCollectionPath = firestore.writeCollection
   const liveScopedKitchenId = computed(() =>
-    kitchenSource.value === 'live' ? kitchenId.value : ''
+    dataType.value === 'live' ? kitchenId.value : ''
   )
   const { kitchen: scopedKitchen } = useKitchenFetch(liveScopedKitchenId, {
     collectionPath: kitchenCollectionPath,
@@ -171,7 +240,7 @@ export function useKitchenConsole() {
   })
   const selectedKitchen = computed<KitchenConsoleEntity | null>(
     () =>
-      kitchenSource.value === 'live'
+      dataType.value === 'live'
         ? composeConsoleKitchen(
             selectedPublicKitchen.value,
             scopedKitchen.value as KitchenConsoleEntity | null
@@ -179,12 +248,12 @@ export function useKitchenConsole() {
         : selectedPublicKitchen.value
   )
   const storageKitchenId = computed(() =>
-    kitchenSource.value === 'demo' ? '' : kitchenId.value
+    isDemo.value ? '' : kitchenId.value
   )
-  const readOnly = computed(() => consoleRoot.readOnly.value)
+  const readOnly = computed(() => !dataType.value || isDemo.value)
   const canWrite = computed(() =>
     !readOnly.value &&
-      (kitchenSource.value === 'live'
+      (dataType.value === 'live'
         ? selectedPublicKitchen.value?.can_write === true
         : targetHasOperator(selectedKitchen.value, normalizeString(uid.value)))
   )
@@ -208,18 +277,16 @@ export function useKitchenConsole() {
     kitchen: selectedKitchen,
     kitchenId,
     kitchenSource,
-    hasSelection: computed(() =>
-      kitchenSource.value === 'test'
-        ? Boolean(fetchedPublicKitchen.value)
-        : Boolean(selectedTarget.value)
-    ),
-    demoPending: demoData.pending,
-    demoError: demoData.error,
-    demoOutcome: demoData.outcome,
+    hasSelection: computed(() => Boolean(resolvedSelectedData.value)),
+    demoPending: demoTargets.pending,
+    demoError: demoTargets.error,
+    demoOutcome: demoTargets.outcome,
   }
   const runtime = {
     appId: firestore.appId,
     source: kitchenSource,
+    dataType,
+    isDemo,
     canonicalRootCollection: firestore.rootCollection,
     collectionPath: firestore.collectionPath,
     isTenantOwned: firestore.isTenantOwned,
@@ -234,7 +301,9 @@ export function useKitchenConsole() {
     isTenant: computed(() => consoleRoot.isTenant),
     readOnly,
     canWrite,
-    canCreate: computed(() => consoleRoot.canCreateTarget()),
+    canCreate: computed(
+      () => !isDemo.value && consoleRoot.canCreateTarget()
+    ),
   }
   const actions = {
     selectKitchen,

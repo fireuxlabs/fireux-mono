@@ -6,7 +6,6 @@
       :key="dish.id"
       :title="dish.name"
       :image-url="dish.imageUrl"
-      :meta="dish.kind"
       :price-label="dish.priceLabel"
       :action="Boolean(dish.spec.id)"
       class="w-28 sm:w-32"
@@ -38,9 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MiseboxProductDemo } from '~/composables/product-demo/useMiseboxProductDemo'
-
-type ProductDemoDish = MiseboxProductDemo['console']['dishes'][number]
+import type { ProductDemoDish } from './types'
 
 defineProps<{
   dishes: ProductDemoDish[]

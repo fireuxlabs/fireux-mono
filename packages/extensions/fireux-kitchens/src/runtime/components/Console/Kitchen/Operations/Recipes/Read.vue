@@ -31,6 +31,14 @@
           :key="card.id"
           v-bind="card"
           :link="true"
+          :data-service-state="
+            isRecipeInService(card.id) ? 'active' : 'inactive'
+          "
+          :class="
+            isRecipeInService(card.id)
+              ? ''
+              : 'opacity-45 saturate-50'
+          "
         />
       </div>
 
@@ -58,6 +66,7 @@ const {
   error,
   outcome,
   debug,
+  isRecipeInService,
 } = useKitchenRecipesWorkspace()
 const { cell } = useRecipeInterface()
 const cards = computed(() =>

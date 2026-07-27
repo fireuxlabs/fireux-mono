@@ -24,7 +24,7 @@ export function useKitchenConsoleStations() {
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const demoData = useKitchenConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoScenario = computed(() => findKitchenConsoleDemoScenario(
     demoData.data.value,
@@ -46,17 +46,17 @@ export function useKitchenConsoleStations() {
     }
   )
   const consoleStations = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoScenario.value?.stations ?? []
       : fetchedStations.value
   )
   const pending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.pending.value
       : stationsPending.value
   )
   const collectionPath = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? `demo/kitchens/${kitchenId.value}/stations`
       : fetchedCollectionPath.value
   )

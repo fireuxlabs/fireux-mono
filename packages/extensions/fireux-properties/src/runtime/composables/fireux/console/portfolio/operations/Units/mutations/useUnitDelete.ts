@@ -1,5 +1,6 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
@@ -15,10 +16,7 @@ export function useUnitDelete(runtimePortfolio = useActivePortfolio()) {
   )
 
   async function deleteUnit(unitId: string): Promise<void> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-properties] portfolio id is required.')
-    }
+    requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-properties')
 
     const normalizedUnitId = normalizeString(unitId)
     if (!normalizedUnitId) {

@@ -42,7 +42,7 @@
         empty-label="Nothing is waiting for acceptance."
         label="Incoming"
       >
-        <ConsoleKitchenOperationsOrdersCardsTicket
+        <ConsoleKitchenOperationsOrdersTicketPresentation
           v-for="order in incomingOrders"
           :key="order.id"
           :order="order"
@@ -58,7 +58,7 @@
         empty-label="The preparation queue is clear."
         label="Queue"
       >
-        <ConsoleKitchenOperationsOrdersCardsTicket
+        <ConsoleKitchenOperationsOrdersTicketPresentation
           v-for="order in queueOrders"
           :key="order.id"
           :order="order"
@@ -74,7 +74,7 @@
         empty-label="No orders are waiting at the pass."
         label="Pass"
       >
-        <ConsoleKitchenOperationsOrdersCardsTicket
+        <ConsoleKitchenOperationsOrdersTicketPresentation
           v-for="order in passOrders"
           :key="order.id"
           :order="order"

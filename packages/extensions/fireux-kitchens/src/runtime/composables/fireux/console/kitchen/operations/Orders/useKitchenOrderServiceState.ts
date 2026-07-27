@@ -6,15 +6,14 @@ import {
   watch,
   type ComputedRef,
 } from 'vue'
-import type { KitchenFetchSource } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { readWeekdayTimeOpenState } from '../../../../../../utils/weekday-time'
 
 type UseKitchenOrderServiceStateOptions = {
   activeOrderCount: ComputedRef<number>
+  allowManualOpen: ComputedRef<boolean>
   kitchenId: ComputedRef<string>
   selectedKitchen: ComputedRef<KitchenSurface | null>
-  source: ComputedRef<KitchenFetchSource>
   waitingOrderCount: ComputedRef<number>
 }
 
@@ -60,7 +59,7 @@ export function useKitchenOrderServiceState(
     scheduledState.value.open || sessionOpen.value
   )
   const canOpenNow = computed(() =>
-    options.source.value === 'demo' && !isOpen.value
+    options.allowManualOpen.value && !isOpen.value
   )
   const statusLabel = computed(() =>
     isOpen.value

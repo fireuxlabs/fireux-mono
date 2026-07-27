@@ -1,5 +1,6 @@
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import {
+  requirePortfolioConsoleWrite,
   useActivePortfolio,
   usePortfolioConsoleChildPath,
 } from '../../useActivePortfolio'
@@ -22,10 +23,7 @@ export function useClientUpdate(runtimePortfolio = useActivePortfolio()) {
     clientId: string,
     patch: ClientUpdateInput
   ): Promise<void> {
-    const portfolioId = normalizeString(runtimePortfolio.id.value)
-    if (!portfolioId) {
-      throw new Error('[fireux-properties] portfolio id is required.')
-    }
+    requirePortfolioConsoleWrite(runtimePortfolio, 'fireux-properties')
 
     const normalizedClientId = normalizeString(clientId)
     if (!normalizedClientId) {

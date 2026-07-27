@@ -22,6 +22,7 @@ import type {
   KitchenDemoPrepItem,
   KitchenDemoProductionRecipe,
 } from '../production'
+import type { KitchenDemoMenuMode } from '../../../utils/kitchen/demo-menu-cascade'
 
 export type KitchenDemoMenuSection = {
   section: MenuSection
@@ -56,6 +57,7 @@ export type KitchenDemoScenario = {
   kitchen: Kitchen
   place: Place
   menus: KitchenDemoMenu[]
+  menuModes: Readonly<Record<string, KitchenDemoMenuMode>>
   kitchenIngredients: KitchenIngredient[]
   supplierIngredientLinks: KitchenSupplierIngredient[]
   rootMenu: Menu

@@ -1,4 +1,5 @@
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { computed, unref, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { RecipeStorage } from '../../../../../models/kitchen/recipe.model'
@@ -13,6 +14,7 @@ export function useRecipeDelete(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
@@ -26,6 +28,7 @@ export function useRecipeDelete(
     recipeId: string,
     overrides: { kitchenId?: string } = {}
   ) => {
+    requireWritableData()
     const resolvedRecipeId = trim(recipeId)
     if (!resolvedRecipeId) throw new Error('Recipe id is required')
 

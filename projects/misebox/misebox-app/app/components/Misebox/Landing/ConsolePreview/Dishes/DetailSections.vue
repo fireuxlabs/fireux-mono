@@ -1,19 +1,45 @@
 <template>
   <div
-    class="mt-4 grid grid-cols-3 gap-1.5 sm:grid-cols-5"
-    aria-label="Dish detail sections"
+    class="relative mb-3 min-h-28 overflow-hidden rounded-xl border border-default bg-elevated shadow-sm"
   >
-    <button
-      v-for="section in sectionItems"
-      :key="section.id"
-      type="button"
-      class="flex min-w-0 items-center justify-center gap-1 rounded-md border border-default bg-elevated/40 px-1.5 py-1.5 text-xs font-semibold text-toned transition-colors hover:bg-elevated hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-      :title="`${section.label}: ${section.summary}`"
-      @click="$emit('select', section.id)"
+    <img
+      v-if="dish.imageUrl"
+      :src="dish.imageUrl"
+      alt=""
+      class="absolute inset-0 size-full object-cover"
     >
-      <UIcon :name="section.icon" class="size-3.5 shrink-0" />
-      <span class="truncate">{{ section.label }}</span>
-    </button>
+    <div
+      v-else
+      class="absolute inset-0 flex items-center justify-center text-muted"
+      aria-hidden="true"
+    >
+      <UIcon name="i-lucide-utensils" class="size-9" />
+    </div>
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-transparent via-default/25 to-default/65"
+      aria-hidden="true"
+    />
+
+    <nav
+      class="relative flex min-h-28 flex-wrap items-end gap-1.5 p-3"
+      aria-label="Dish detail sections"
+    >
+      <button
+        v-for="section in sectionItems"
+        :key="section.id"
+        type="button"
+        class="flex size-9 shrink-0 items-center justify-center rounded-md border text-toned shadow-sm backdrop-blur-sm transition-colors hover:bg-default/90 hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        :class="section.id === selected
+          ? 'border-primary bg-default/90 text-primary ring-1 ring-primary/20'
+          : 'border-default/80 bg-default/70'"
+        :aria-label="section.label"
+        :aria-current="section.id === selected ? 'page' : undefined"
+        :title="`${section.label}: ${section.summary}`"
+        @click="$emit('select', section.id)"
+      >
+        <UIcon :name="section.icon" class="size-4" aria-hidden="true" />
+      </button>
+    </nav>
   </div>
 </template>
 
@@ -23,13 +49,20 @@ import type { DishChildPage, ProductDemoDish } from './types'
 
 const props = defineProps<{
   dish: ProductDemoDish
+  selected: DishChildPage
 }>()
 
 defineEmits<{
-  (event: 'select', page: Exclude<DishChildPage, 'detail'>): void
+  (event: 'select', page: DishChildPage): void
 }>()
 
 const sectionItems = computed(() => [
+  {
+    id: 'detail' as const,
+    icon: 'i-lucide-info',
+    label: 'Dish overview',
+    summary: props.dish.name,
+  },
   {
     id: 'finance' as const,
     icon: 'i-lucide-chart-no-axes-column',

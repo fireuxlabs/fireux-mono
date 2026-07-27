@@ -4,6 +4,10 @@
 // Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: fail closed when runtime role or tenant identity is invalid.
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
+import {
+  normalizeFireuxJobSourceAppDoorways,
+  type FireuxJobSourceAppDoorways,
+} from '../../../../config/jobs.config.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { projectPublicCompany } from 'fireux-companies/runtime/server/company/public-projection.ts'
 import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection.ts'
@@ -29,6 +33,7 @@ export type PublicJobRuntimeScope = {
   categoryScope: 'all' | 'allowlist'
   categories: ReadonlySet<string>
   tenantAppId: string | null
+  sourceAppDoorways: FireuxJobSourceAppDoorways
 }
 
 export type PublicJobLinkedRoots = {
@@ -58,6 +63,25 @@ export function readPublicJobRuntimeScope(
       eligible && role === 'tenant'
         ? appId
         : null,
+    sourceAppDoorways: eligible
+      ? normalizeFireuxJobSourceAppDoorways(jobs.sourceAppDoorways)
+      : {},
+  }
+}
+
+function projectApplicationDoorway(
+  jobId: string,
+  sourceAppId: string,
+  scope: PublicJobRuntimeScope
+) {
+  if (scope.tenantAppId === sourceAppId) return null
+  const doorway = scope.sourceAppDoorways[sourceAppId]
+  if (!doorway) return null
+
+  const path = `/jobs/${encodeURIComponent(jobId)}`
+  return {
+    label: doorway.label,
+    url: `${doorway.url}${path}`,
   }
 }
 
@@ -118,6 +142,11 @@ export function projectPublicJob(
   if (!isPublicJobCandidate(id, data, scope)) return null
 
   const job = canonicalJobRoot(id, data)
+  const applicationDoorway = projectApplicationDoorway(
+    job.id,
+    job.source_app_id,
+    scope
+  )
   const company = projectPublicCompany(
     job.company_id,
     linked.company,
@@ -152,5 +181,8 @@ export function projectPublicJob(
     end_at: timestampIso(job.end_at),
     title: job.title,
     description: job.description,
+    ...(applicationDoorway
+      ? { application_doorway: applicationDoorway }
+      : {}),
   }
 }

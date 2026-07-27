@@ -2,6 +2,7 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { unref, type Ref } from 'vue'
 import {
   KitchenTeamJoinRequestStorage,
@@ -18,6 +19,7 @@ type Options = {
 }
 
 export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { appId } = useFireUXConfig()
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
@@ -37,6 +39,7 @@ export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
     name?: string
     message?: string
   }) => {
+    requireWritableData()
     const kitchenId = normalizeString(input.kitchenId)
     const userId = normalizeString(input.userId)
     const collectionPath = path(kitchenId)
@@ -62,6 +65,7 @@ export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
     requestId: string,
     patch: Partial<Omit<KitchenTeamJoinRequest, 'id' | 'created' | 'updated' | 'kitchen_id'>>
   ) => {
+    requireWritableData()
     const collectionPath = path(kitchenId)
     const id = normalizeString(requestId)
     if (!collectionPath || !id) throw new Error('Missing join request')
@@ -72,6 +76,7 @@ export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
     kitchenId: string,
     requestId: string
   ) => {
+    requireWritableData()
     const collectionPath = path(kitchenId)
     const id = normalizeString(requestId)
     if (!collectionPath || !id) throw new Error('Missing join request')

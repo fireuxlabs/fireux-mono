@@ -114,7 +114,41 @@
         </template>
       </UDashboardPanel>
 
-      <slot v-else />
+      <NuxtErrorBoundary v-else :key="route.fullPath">
+        <slot />
+
+        <template #error="{ clearError: clearPageError }">
+          <UDashboardPanel id="console-page-unavailable">
+            <template #header>
+              <LayoutsConsoleNavbar :title="`${familyLabel} unavailable`" />
+            </template>
+
+            <template #body>
+              <section class="flex min-h-[55vh] items-center">
+                <UAlert
+                  class="w-full max-w-2xl"
+                  color="error"
+                  variant="subtle"
+                  icon="i-lucide-triangle-alert"
+                  :title="`${familyLabel} page unavailable`"
+                  description="This page could not be loaded. The rest of the Console is still available."
+                >
+                  <template #actions>
+                    <UButton
+                      color="neutral"
+                      variant="soft"
+                      icon="i-lucide-refresh-cw"
+                      @click="clearPageError"
+                    >
+                      Retry
+                    </UButton>
+                  </template>
+                </UAlert>
+              </section>
+            </template>
+          </UDashboardPanel>
+        </template>
+      </NuxtErrorBoundary>
     </div>
   </UDashboardGroup>
 
@@ -208,7 +242,7 @@ watch(
     if (state.selectedId) return
     if (state.targetIds.length !== 1 || !onlyTargetId) return
 
-    activeSelection.selectTarget(onlyTargetId)
+    activeSelection.selectTarget(onlyTargetId, 'live')
   },
   { immediate: true }
 )

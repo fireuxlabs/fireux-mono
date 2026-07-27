@@ -15,7 +15,7 @@
       aria-hidden="true"
       inert
     >
-      <ConsoleKitchenOperationsOrdersCardsTicket
+      <ConsoleKitchenOperationsOrdersTicketPresentation
         v-for="order in heroPassOrders"
         :key="order.id"
         :order="order"

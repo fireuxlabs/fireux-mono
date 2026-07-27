@@ -42,9 +42,9 @@ function createKitchenOrdersWorkspace() {
   )
   const service = useKitchenOrderServiceState({
     activeOrderCount,
+    allowManualOpen: orders.canOpenServiceSession,
     kitchenId: orders.kitchenId,
     selectedKitchen: orders.selectedKitchen,
-    source: orders.source,
     waitingOrderCount: computed(() => scheduledWaitingOrders.value.length),
   })
 

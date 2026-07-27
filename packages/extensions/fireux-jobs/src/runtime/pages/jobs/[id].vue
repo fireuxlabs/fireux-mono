@@ -102,7 +102,10 @@
               </div>
             </UCard>
 
-            <JobApplyPanel :job-id="job.id" />
+            <JobApplyPanel
+              :job-id="job.id"
+              :application-doorway="job.application_doorway"
+            />
           </div>
         </div>
       </template>

@@ -2,41 +2,36 @@
   <UCard>
     <template #header>
       <div class="console-card-header">
-        <div class="console-card-header__title">Prep Whiteboard</div>
+        <div class="console-card-header__title">Prep status board</div>
         <p class="console-card-header__description">
-          Toggle prep tasks done or not done for the selected kitchen.
+          Move prep tasks through To do, In progress, Done, or Blocked.
         </p>
       </div>
     </template>
 
-    <div v-if="canToggleMise && tasksSorted.length" class="space-y-2">
-      <button
+    <div v-if="canUpdateMiseStatus && tasksSorted.length" class="space-y-2">
+      <div
         v-for="task in tasksSorted"
         :key="task.id || task.title"
-        type="button"
-        class="flex w-full items-start gap-3 rounded-lg border border-default bg-default p-3 text-left transition hover:bg-elevated/60"
-        :class="isDone(task) ? 'opacity-60' : ''"
-        @click="toggleDone(task)"
+        class="flex w-full flex-col gap-3 rounded-lg border border-default bg-default p-3 sm:flex-row sm:items-start"
       >
         <span
-          class="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border"
-          :class="
-            isDone(task)
-              ? 'border-primary bg-primary text-inverted'
-              : 'border-default text-dimmed'
-          "
+          class="flex size-8 shrink-0 items-center justify-center rounded-lg bg-elevated text-muted"
         >
           <UIcon
-            v-if="isDone(task)"
-            name="i-lucide-check"
-            class="size-3.5"
+            :name="statusOption(task).icon"
+            class="size-4"
           />
         </span>
 
         <span class="min-w-0 flex-1 space-y-1">
           <span
             class="block text-sm font-medium text-highlighted"
-            :class="isDone(task) ? 'line-through' : ''"
+            :class="
+              normalizeKitchenMiseStatus(task.status) === 'done'
+                ? 'line-through opacity-70'
+                : ''
+            "
           >
             {{ taskDisplayTitle(task) }}
           </span>
@@ -52,11 +47,26 @@
             {{ taskDescription(task) }}
           </span>
         </span>
-      </button>
+
+        <select
+          :value="normalizeKitchenMiseStatus(task.status)"
+          :aria-label="`Status for ${taskDisplayTitle(task)}`"
+          class="w-full shrink-0 rounded-md border border-default bg-default px-3 py-2 text-sm text-highlighted sm:w-36"
+          @change="changeStatus(task, $event)"
+        >
+          <option
+            v-for="option in KITCHEN_MISE_STATUS_OPTIONS"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
     </div>
 
     <UAlert
-      v-else-if="canToggleMise"
+      v-else-if="canUpdateMiseStatus"
       color="neutral"
       variant="soft"
       title="No mise tasks"
@@ -67,21 +77,29 @@
       v-else
       color="neutral"
       variant="soft"
-      title="Prep whiteboard unavailable"
-      description="Choose a writable kitchen to toggle mise tasks."
+      title="Prep status board unavailable"
+      description="Choose a writable kitchen to update mise tasks."
     />
   </UCard>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useKitchenConsoleMise } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenConsoleMise'
-import type { KitchenMiseTask } from '../../../../../models/kitchen/mise.model'
+import { useKitchenMiseWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Mise/useKitchenMiseWorkspace'
+import {
+  KITCHEN_MISE_STATUS_OPTIONS,
+  normalizeKitchenMiseStatus,
+  type KitchenMiseTask,
+} from '../../../../../models/kitchen/mise.model'
 
-const { miseTasks, canToggleMise, toggleDone } = useKitchenConsoleMise()
+const { miseTasks, canUpdateMiseStatus, setStatus } =
+  useKitchenMiseWorkspace()
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const statusRank = (task: KitchenMiseTask) => (isDone(task) ? 1 : 0)
+const statusRank = (task: KitchenMiseTask) =>
+  KITCHEN_MISE_STATUS_OPTIONS.findIndex(
+    option => option.value === normalizeKitchenMiseStatus(task.status)
+  )
 
 const tasksSorted = computed(() =>
   [...miseTasks.value].sort((a, b) => {
@@ -93,17 +111,6 @@ const tasksSorted = computed(() =>
   })
 )
 
-const isDone = (task: KitchenMiseTask) => {
-  const source = task as Record<string, unknown>
-  if (task.status === 'done') return true
-  return Boolean(
-    source.done ||
-      source.checked ||
-      source.complete ||
-      source.completed
-  )
-}
-
 const taskTitle = (task: KitchenMiseTask) =>
   normalizeString(task.title)
 
@@ -114,4 +121,15 @@ const hasMissingTitle = (task: KitchenMiseTask) => !taskTitle(task)
 
 const taskDescription = (task: KitchenMiseTask) =>
   normalizeString(task.description) || normalizeString(task.notes)
+
+const statusOption = (task: KitchenMiseTask) =>
+  KITCHEN_MISE_STATUS_OPTIONS.find(
+    option => option.value === normalizeKitchenMiseStatus(task.status)
+  ) ?? KITCHEN_MISE_STATUS_OPTIONS[0]
+
+const changeStatus = (task: KitchenMiseTask, event: Event) => {
+  const target = event.target
+  if (!(target instanceof HTMLSelectElement)) return
+  void setStatus(task, normalizeKitchenMiseStatus(target.value))
+}
 </script>

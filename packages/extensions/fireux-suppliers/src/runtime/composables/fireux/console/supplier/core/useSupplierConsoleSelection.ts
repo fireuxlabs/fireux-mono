@@ -18,7 +18,7 @@ export function useSupplierConsoleSelection() {
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.supplierId)
       : selectedId.value
 
-    selectTarget(nextId)
+    selectTarget(nextId, 'live')
   }
 
   return {

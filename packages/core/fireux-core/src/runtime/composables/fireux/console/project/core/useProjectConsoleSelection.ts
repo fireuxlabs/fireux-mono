@@ -18,7 +18,7 @@ export function useProjectConsoleSelection() {
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
       : selectedId.value
 
-    selectTarget(nextId)
+    selectTarget(nextId, 'live')
   }
 
   return {

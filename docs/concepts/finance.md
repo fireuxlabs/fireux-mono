@@ -1,6 +1,6 @@
 # Finance map
 
-Updated: 2026-07-26
+Updated: 2026-07-27
 Ref: 1e55eece7
 Role: map, not canon
 
@@ -10,8 +10,9 @@ reports into one generic Finance console.
 
 ## Authority and ownership
 
-- `packages/extensions/fireux-finance` owns reusable money validation,
-  deterministic FinancialFact identity, and the minimal fact model.
+- `packages/extensions/fireux-finance` owns reusable money validation and
+  formatting, deterministic FinancialFact identity, the minimal fact model,
+  and product-neutral report metric and trend presentation.
 - Producing domains own their operation, named record, authorization, and
   transaction. Finance imports FireUX Core only; domains depend on Finance.
 - App-scoped FinancialFacts live at
@@ -24,15 +25,19 @@ reports into one generic Finance console.
 ## Family checkpoint
 
 - Family: explicit-import extension library plus domain adapters.
-- Nearest package sibling: `fireux-translation` for a module with no registered
-  runtime UI; Finance's accepted delta is explicit model, utility, and trusted
-  server helpers.
+- Nearest presentation sibling: the shared Card family. Finance report
+  presentation is likewise dumb and view-model-driven, but remains a distinct
+  metric-summary family rather than a Card.
 - Nearest record sibling: Core `AppEvent` for an App-scoped immutable record
   with deterministic identity and source/actor timestamps.
 - `FinancialMoney` is a primitive. `KitchenSale` and `FinancialFact` are
   parent-owned records, not entities. Neither has an independent mutable
   lifecycle, public route, collection stack, or direct Console surface. The
   Kitchen Finance sheet is a derived report over Sales, not a record editor.
+- `FinancialReportMetricSummaryView`, `FinancialReportTrendView`, and their
+  Finance presentation components accept already-labelled display values.
+  Producing domains own those labels, report semantics, states, queries, and
+  authorization.
 
 ## Current fact contract
 
@@ -85,19 +90,40 @@ reports into one generic Finance console.
   explicit.
 - The first projection is the Kitchen-owned `/console/kitchen/finance` sheet.
   Its authenticated `/api/console/kitchen/reports/gross-sales` endpoint queries
-  only the selected Kitchen's immutable Sales for a from-inclusive,
-  to-exclusive period, then returns aggregate totals grouped by currency.
+  only the selected Kitchen's immutable Sales for the selected 7, 30, or
+  90-day period. The trusted server resolves the Kitchen's effective timezone
+  from its valid custom operation-hours override or its exact linked Place,
+  then derives a from-inclusive, to-exclusive range of complete owner-local
+  calendar days.
 - The projection requires a valid App membership plus App-admin or Kitchen
   operator authority. It accepts at most 93 days and 5,000 Sales, fails rather
-  than returning partial or malformed totals, and exposes no Order lines,
-  customer data, actors, source ids, or raw FinancialFacts.
-- The current UI offers 7, 30, and 90-day periods with gross sales, completed
-  Sale count, and average Sale. Live mode uses only the authenticated bounded
-  server projection and never synthesizes historical values. Demo mode may use
-  clearly labelled, deterministic, aggregate-only owner-local fixtures that
-  never become KitchenSales, FinancialFacts, Firestore records, or Test data.
-  Test remains the simulation database and does not fall back to Demo values.
-  The UI never combines currencies.
+  than returning partial, oversized, or malformed totals. It returns
+  reconciled period and owner-local daily aggregates grouped by currency:
+  gross sales, completed-Sale count, average Sale, item quantity, item sales,
+  delivery fees, and stable item rollups. It exposes no raw Sale or Order ids,
+  customer data, actors, add-on detail, or raw FinancialFacts.
+- The current UI offers 7, 30, and 90-day periods with a currency-safe metric
+  summary, current-period trend, owner-local calendar, selected-day item
+  detail, and a bounded period roundup. Live mode uses only the authenticated
+  server projection; a missing daily bucket inside its complete range is zero
+  completed sales, not invented history. Demo mode may use clearly labelled,
+  deterministic, aggregate-only owner-local fixtures that never become
+  KitchenSales, FinancialFacts, Firestore records, or Test data. Test remains
+  the simulation database and does not fall back to Demo values. The UI never
+  combines currencies.
+- `KitchenFinanceSummary` is the Kitchen adapter over the shared Finance metric
+  summary. It retains gross-sale semantics and completed-service labels while
+  both Console and Product Demo reuse the same product-neutral layout and money
+  formatter.
+- Live current-period trend, calendar, day detail, and roundup are derived only
+  from the same bounded daily projection. Deanos Demo owns one deterministic
+  180-day daily aggregate series with reconciled item rollups, from which its
+  Kitchen projector derives current/prior 7, 30, and 90-day totals, grouped
+  trend points, best and quietest days, weekday averages, top items, and daily
+  averages.
+- That ordered Demo series justifies the product-neutral
+  `FinancialReportTrendView` presentation contract. The shared component uses
+  native Vue/SVG and adds no React/Recharts or chart-library dependency.
 - P&L, cashflow, cost, and period views are derived reports. They are not
   Console Operations and are not separately editable stored truth.
 - A Demo Dish detail may show a read-only cost-of-sales planning estimate by
@@ -113,6 +139,11 @@ reports into one generic Finance console.
   presented as Orders, KitchenSales, FinancialFacts, or real customer
   performance. The surrounding source selection distinguishes Demo from Live;
   reusable Finance field labels remain source-agnostic.
+- A Product Demo may also expose the separate Kitchen Finance report from the
+  explicit aggregate-only Demo fixture. Console Demo and Product Demo share
+  the Kitchen-owned average/minor-unit projector, and the landing keeps the
+  report under a distinct Reports affordance rather than adding Finance to the
+  Kitchen operation catalogue.
 - There is no generic Finance Console Operation in this pass. Kitchens keep
   Kitchen operations; Suppliers, Projects, and Portfolios keep their own future
   producer operations.
@@ -121,8 +152,12 @@ reports into one generic Finance console.
 
 - `packages/extensions/fireux-finance/src/runtime/models/money.model.ts`
 - `packages/extensions/fireux-finance/src/runtime/models/financial-fact.model.ts`
+- `packages/extensions/fireux-finance/src/runtime/models/report-presentation.model.ts`
 - `packages/extensions/fireux-finance/src/runtime/utils/money.ts`
+- `packages/extensions/fireux-finance/src/runtime/components/Finance/ReportMetricSummary.vue`
+- `packages/extensions/fireux-finance/src/runtime/components/Finance/ReportTrend.vue`
 - `packages/extensions/fireux-finance/src/runtime/server/financial-fact.ts`
+- `scripts/guards/finance.mjs`
 - `packages/extensions/fireux-kitchens/src/runtime/models/kitchen/order.model.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/models/kitchen/sale.model.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/models/kitchen/finance-report.model.ts`
@@ -133,11 +168,18 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/reports/gross-sales.get.ts`
 - `packages/extensions/fireux-kitchens/src/config/module/server-config.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleFinance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/finance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/dish-finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-dishes.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Dishes/finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceSummary.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceTrend.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceCalendar.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceDayDetail.vue`
+- `packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceRoundup.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/orders/transition.post.ts`

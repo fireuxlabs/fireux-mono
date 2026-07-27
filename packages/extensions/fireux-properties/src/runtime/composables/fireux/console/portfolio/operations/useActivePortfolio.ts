@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: centralize Portfolio operation write authorization.
 // Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: expose access-resolved target readiness for related Property reads.
 import { computed, type ComputedRef, type Ref } from 'vue'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { ConsoleDataType } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleData'
 import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
 import {
   resolvePortfolioConsoleCollectionPath,
@@ -16,8 +16,7 @@ import { usePropertiesConsoleDemoData } from '../../shared/usePropertiesConsoleD
 import type { PropertiesConsoleDemoScenario } from '../../shared/usePropertiesConsoleDemoData'
 
 export type ActivePortfolioRuntime = {
-  source: ComputedRef<ConsoleSource>
-  mode: ComputedRef<ConsoleSource>
+  dataType: ComputedRef<ConsoleDataType | null>
   isDemo: ComputedRef<boolean>
   scenario: ComputedRef<PropertiesConsoleDemoScenario | null>
   id: ComputedRef<string>
@@ -63,16 +62,15 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
       selection.selectedId.value
   )
   const collectionPath = computed(() => {
-    if (!id.value) return ''
+    const dataType = runtime.dataType.value
+    if (!id.value || !dataType) return ''
 
     return resolvePortfolioConsoleCollectionPath(
       runtime.appId.value,
-      runtime.source.value
+      dataType
     )
   })
-  const source = runtime.source
-  const mode = source
-  const isDemo = computed(() => source.value === 'demo')
+  const isDemo = runtime.isDemo
   const demoData = usePropertiesConsoleDemoData(isDemo)
   const scenario = computed<PropertiesConsoleDemoScenario | null>(() => {
     if (!isDemo.value) return null
@@ -89,8 +87,7 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
   )
 
   return {
-    source,
-    mode,
+    dataType: runtime.dataType,
     isDemo,
     scenario,
     id,

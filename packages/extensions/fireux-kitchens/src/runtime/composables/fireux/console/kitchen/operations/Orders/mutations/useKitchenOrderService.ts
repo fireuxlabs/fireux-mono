@@ -4,6 +4,7 @@ import {
   type MaybeRefOrGetter,
 } from 'vue'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -12,10 +13,12 @@ export function useKitchenOrderService(options: {
   kitchenId: MaybeRefOrGetter<string | null | undefined>
 }) {
   const { currentUser } = useAuth()
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const error = ref('')
   const pending = ref(false)
 
   async function endService() {
+    requireWritableData()
     if (pending.value) return
 
     error.value = ''
@@ -27,6 +30,13 @@ export function useKitchenOrderService(options: {
       if (!appId) throw new Error('App id is required.')
       if (!kitchenId) throw new Error('Kitchen id is required.')
       if (!token) throw new Error('Sign in before ending kitchen service.')
+      requireWritableData()
+      if (
+        text(toValue(options.appId)) !== appId ||
+        text(toValue(options.kitchenId)) !== kitchenId
+      ) {
+        throw new Error('The selected Kitchen changed before service could end.')
+      }
 
       return await $fetch('/api/console/kitchen/orders/end-service', {
         method: 'POST',

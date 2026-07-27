@@ -22,7 +22,7 @@
         Loading supplier catalogue...
       </div>
       <div v-else-if="cards.length" class="space-y-4">
-        <SupplierCatalogueCardsPill
+        <SupplierCataloguePresentation
           v-for="card in cards"
           :key="card.id"
           v-bind="card"

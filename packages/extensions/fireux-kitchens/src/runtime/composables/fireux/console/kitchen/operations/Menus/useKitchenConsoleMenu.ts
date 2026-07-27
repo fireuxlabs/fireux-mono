@@ -40,9 +40,7 @@ export function useKitchenConsoleMenu() {
   const source = computed(
     () => state.menuSources.value.find((item) => clean(item.id) === menuId.value) ?? null
   )
-  const demoData = useKitchenConsoleDemoData(
-    computed(() => state.kitchenSource.value === 'demo')
-  )
+  const demoData = useKitchenConsoleDemoData(state.isDemo)
   const demoScenario = computed(() => findKitchenConsoleDemoScenario(
     demoData.data.value,
     state.kitchenId.value
@@ -65,19 +63,19 @@ export function useKitchenConsoleMenu() {
     databaseId: state.databaseId,
   })
   const sections = computed(() =>
-    state.kitchenSource.value === 'demo'
+    state.isDemo.value
       ? menu.value && clean(menu.value.id) === menuId.value
         ? demoMenu.value?.menuSections.map(entry => entry.section) ?? []
         : []
       : sectionState.sections.value
   )
   const sectionsPending = computed(() =>
-    state.kitchenSource.value === 'demo'
+    state.isDemo.value
       ? demoData.pending.value
       : sectionState.pending.value
   )
   const sectionsCollectionPath = computed(() =>
-    state.kitchenSource.value === 'demo'
+    state.isDemo.value
       ? `demo/kitchens/${state.kitchenId.value}/menus/${menuId.value}/sections`
       : sectionState.collectionPath.value
   )

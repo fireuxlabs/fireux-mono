@@ -18,7 +18,7 @@ export function usePortfolioConsoleSelection() {
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.portfolioId)
       : selectedId.value
 
-    selectTarget(nextId)
+    selectTarget(nextId, 'live')
   }
 
   return {

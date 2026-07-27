@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-22 01:09 CEST — Dish media ownership: reject raw image URL patches outside the canonical upload boundary.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { computed, unref, type Ref } from 'vue'
 import {
   DishStorage,
@@ -19,6 +20,7 @@ export function useDishUpdate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
@@ -33,6 +35,7 @@ export function useDishUpdate(
     patch: Partial<DishUpdateInput> & Record<string, unknown>,
     overrides: { kitchenId?: string } = {}
   ) => {
+    requireWritableData()
     const resolvedDishId = trim(dishId)
     if (!resolvedDishId) throw new Error('Dish id is required')
 

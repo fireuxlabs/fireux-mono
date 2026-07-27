@@ -1,30 +1,14 @@
 <template>
   <article
-    class="grid min-h-[24rem] overflow-hidden rounded-xl border border-default bg-default shadow-sm sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]"
+    class="min-h-[20rem] overflow-hidden rounded-xl border border-default bg-default shadow-sm"
   >
-    <div class="min-h-48 bg-elevated">
-      <img
-        v-if="dish.imageUrl"
-        :src="dish.imageUrl"
-        :alt="dish.name"
-        class="size-full object-cover"
-      >
-      <div
-        v-else
-        class="flex size-full items-center justify-center text-muted"
-        aria-hidden="true"
-      >
-        <UIcon name="i-lucide-utensils" class="size-10" />
-      </div>
-    </div>
-
     <div class="flex min-w-0 flex-col p-4 sm:p-5">
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div class="min-w-0">
           <p class="text-xs font-semibold uppercase tracking-wide text-primary">Dish</p>
           <h3 class="mt-1 text-xl font-semibold text-highlighted">{{ dish.name }}</h3>
-          <p class="mt-1 text-sm text-muted">
-            {{ [dish.kind, dish.priceLabel].filter(Boolean).join(' · ') }}
+          <p v-if="dish.priceLabel" class="mt-1 text-sm text-muted">
+            {{ dish.priceLabel }}
           </p>
         </div>
         <UBadge v-if="dish.spec.station" color="neutral" variant="soft">
@@ -48,23 +32,14 @@
           </li>
         </ol>
       </div>
-
-      <MiseboxLandingConsolePreviewDishesDetailSections
-        :dish="dish"
-        @select="$emit('select-section', $event)"
-      />
     </div>
   </article>
 </template>
 
 <script setup lang="ts">
-import type { DishChildPage, ProductDemoDish } from './types'
+import type { ProductDemoDish } from './types'
 
 defineProps<{
   dish: ProductDemoDish
-}>()
-
-defineEmits<{
-  (event: 'select-section', page: Exclude<DishChildPage, 'detail'>): void
 }>()
 </script>

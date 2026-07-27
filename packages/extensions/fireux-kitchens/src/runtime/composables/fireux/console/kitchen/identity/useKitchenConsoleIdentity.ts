@@ -22,7 +22,8 @@ export function useKitchenConsoleIdentity(
   const kitchenId = selection.kitchenId
   const rootCollection = runtime.rootCollection
   const appId = runtime.appId
-  const source = runtime.source
+  const dataType = runtime.dataType
+  const isDemo = runtime.isDemo
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const refreshTargets: () => Promise<void> = async () => {
@@ -69,7 +70,8 @@ export function useKitchenConsoleIdentity(
     kitchenId,
     appId,
     rootCollection,
-    source,
+    dataType,
+    isDemo,
     readOnly,
     canWrite,
     refreshTargets,

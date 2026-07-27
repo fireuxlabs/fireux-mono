@@ -38,22 +38,39 @@
             <UIcon name="i-lucide-circle-plus" aria-hidden="true" />
             <span class="market-nav__label">{{ copy('sell') }}</span>
           </NuxtLink>
+          <NuxtLink
+            to="/jobs"
+            exact-active-class="market-nav__link--active"
+            :aria-label="copy('jobs')"
+          >
+            <UIcon name="i-lucide-briefcase-business" aria-hidden="true" />
+            <span class="market-nav__label">{{ copy('jobs') }}</span>
+          </NuxtLink>
         </nav>
 
-        <SproochliLanguageTrigger
-          class="market-language"
-          :language-options="siteSproochli.languageOptions"
-          :selected-language="siteSproochli.selectedLanguage.value"
-          :default-language="siteSproochli.defaultLanguage"
-          :copy="{
-            chooseLanguage: copy('language_trigger_choose'),
-            currentSelection: copy('language_trigger_current'),
-            defaultSelection: copy('language_trigger_default'),
-            originalSelection: copy('language_trigger_original'),
-            cached: copy('language_trigger_cached'),
-            visitSproochli: copy('language_trigger_visit_sproochli'),
-          }"
-        />
+        <ClientOnly>
+          <SproochliLanguageTrigger
+            class="market-language"
+            :language-options="siteSproochli.languageOptions"
+            :selected-language="siteSproochli.selectedLanguage.value"
+            :default-language="siteSproochli.defaultLanguage"
+            :copy="{
+              chooseLanguage: copy('language_trigger_choose'),
+              currentSelection: copy('language_trigger_current'),
+              defaultSelection: copy('language_trigger_default'),
+              originalSelection: copy('language_trigger_original'),
+              cached: copy('language_trigger_cached'),
+              visitSproochli: copy('language_trigger_visit_sproochli'),
+            }"
+          />
+
+          <template #fallback>
+            <span
+              class="market-language market-language--placeholder"
+              aria-hidden="true"
+            />
+          </template>
+        </ClientOnly>
 
         <ClientOnly>
           <NuxtLink

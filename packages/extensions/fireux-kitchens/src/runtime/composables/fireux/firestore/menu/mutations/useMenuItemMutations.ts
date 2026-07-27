@@ -1,6 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { unref, type Ref } from 'vue'
 import {
@@ -63,6 +64,7 @@ const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
 }
 
 export function useMenuItemMutations(options: Options = {}) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
@@ -84,6 +86,7 @@ export function useMenuItemMutations(options: Options = {}) {
     price?: number
     sort_order?: number
   }) => {
+    requireWritableData()
     const collectionPath = path(input.kitchenId, input.menuId, input.sectionId)
     const dishId = clean(input.dishId)
     if (!collectionPath) throw new Error('Missing section')
@@ -111,6 +114,7 @@ export function useMenuItemMutations(options: Options = {}) {
     itemId: string,
     patch: Partial<MenuItem>
   ) => {
+    requireWritableData()
     const collectionPath = path(kitchenId, menuId, sectionId)
     const id = clean(itemId)
     if (!collectionPath || !id) throw new Error('Missing menu item')

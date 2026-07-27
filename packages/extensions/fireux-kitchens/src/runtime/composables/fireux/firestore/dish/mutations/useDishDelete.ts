@@ -1,5 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { computed, unref, type Ref } from 'vue'
 import { DishStorage } from '../../../../../models/kitchen/dish.model'
 import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
@@ -13,6 +14,7 @@ export function useDishDelete(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
@@ -26,6 +28,7 @@ export function useDishDelete(
     dishId: string,
     overrides: { kitchenId?: string } = {}
   ) => {
+    requireWritableData()
     const resolvedDishId = trim(dishId)
     if (!resolvedDishId) throw new Error('Dish id is required')
 

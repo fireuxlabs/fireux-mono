@@ -7,6 +7,7 @@ import {
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
 import { useKitchenConsoleReadPage } from '../Shared/useKitchenConsoleReadPage'
+import { useKitchenConsoleDemoMenuService } from '../../core/useKitchenConsoleDemoMenuService'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
@@ -28,12 +29,13 @@ export function useKitchenConsoleRecipes() {
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
   const demoData = useKitchenConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoScenario = computed(() => findKitchenConsoleDemoScenario(
     demoData.data.value,
     kitchenId.value
   ))
+  const demoMenuService = useKitchenConsoleDemoMenuService(demoScenario)
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
@@ -49,27 +51,27 @@ export function useKitchenConsoleRecipes() {
       databaseId,
   })
   const consoleRecipes = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoScenario.value?.recipes ?? []
       : fetchedRecipes.value
   )
   const pending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.pending.value
       : recipesPending.value
   )
   const error = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.error.value
       : recipesError.value
   )
   const outcome = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.outcome.value
       : recipesOutcome.value
   )
   const collectionPath = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? `demo/kitchens/${kitchenId.value}/recipes`
       : fetchedCollectionPath.value
   )
@@ -123,6 +125,9 @@ export function useKitchenConsoleRecipes() {
     demoScenario,
     dishUsageByRecipeId,
     getDishUsageForRecipe,
+    isRecipeInService: (recipeId: string) =>
+      !runtime.isDemo.value
+      || demoMenuService.isEntityInService('recipes', recipeId),
     debug,
   }
 }

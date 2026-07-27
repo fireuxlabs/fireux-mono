@@ -20,7 +20,7 @@ export function useSupplierConsoleIngredients() {
     normalizeString(selection.supplier.value?.supplier_organization_name)
   )
   const supplierIngredientsEnabled = computed(() =>
-    runtime.source.value !== 'demo'
+    !runtime.isDemo.value
     && Boolean(runtime.rootCollection.value && selection.supplierId.value)
   )
   const {
@@ -32,14 +32,14 @@ export function useSupplierConsoleIngredients() {
     supplierCollectionPath: runtime.rootCollection,
   })
   const demoData = useSupplierConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const demoScenario = computed(() => findSupplierConsoleDemoScenario(
     demoData.data.value,
     selection.supplierId.value
   ))
   const supplierIngredients = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoScenario.value?.ingredients ?? []
       : supplierIngredientsFromStore.value
   )
@@ -52,7 +52,7 @@ export function useSupplierConsoleIngredients() {
     enabled: computed(() => Boolean(linkedIngredientIds.value.length)),
   })
   const pending = computed(() =>
-    runtime.source.value === 'demo'
+    runtime.isDemo.value
       ? demoData.pending.value || ingredientRoots.pending.value
       : supplierIngredientsPending.value || ingredientRoots.pending.value
   )

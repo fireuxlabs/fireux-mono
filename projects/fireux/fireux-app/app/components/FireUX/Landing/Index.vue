@@ -1,8 +1,16 @@
 <!-- Concurrent edit — 2026-07-23 12:13 CEST — Adapt FireUX product truth to the shared Core landing surface. -->
 <template>
-  <LandingProductIndex :content="content">
+  <LandingProductIndex
+    :content="content"
+    hero-layout="proof-wide"
+    hero-mode="full"
+  >
     <template #hero-preview>
       <FireUXLandingPreview :operations="operations" />
+    </template>
+
+    <template #after-hero>
+      <LandingEcosystems />
     </template>
   </LandingProductIndex>
 </template>
@@ -75,10 +83,10 @@ const content = {
     },
   ],
   system: {
-    eyebrow: 'The product',
-    title: 'One app. Two sides.',
+    eyebrow: 'What you get',
+    title: 'Your app. Your console. We keep it running.',
     description:
-      'Customers or staff use the app. You run the work from its console. FireUX keeps it deployed.',
+      'One useful app for customers or staff, one console for the people running it, and FireUX behind both.',
     areas: [
       {
         eyebrow: 'For the people you serve',

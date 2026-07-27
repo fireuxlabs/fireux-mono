@@ -28,8 +28,8 @@
           {{ title || 'Untitled dish' }}
         </h3>
         <UIcon
-          v-if="action || (link && to)"
-          :name="action ? 'i-lucide-eye' : 'i-lucide-arrow-right'"
+          v-if="link && to"
+          name="i-lucide-arrow-right"
           class="mt-0.5 size-3.5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
           aria-hidden="true"
         />

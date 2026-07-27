@@ -57,6 +57,7 @@
 // Concurrent edit — 2026-07-22 12:44 CEST — Canonical Kitchen theme write: retain lossless target-bound drafts while writes refresh authority.
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
@@ -84,10 +85,11 @@ import {
 const {
   selectedKitchen,
   kitchenId,
-  source,
+  dataType,
   canWrite,
   refreshTargets,
 } = useKitchenConsoleIdentity()
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const { menus } = useKitchenConsoleMenus()
 const toast = useToastify()
 const fireux = useFireUXConfig()
@@ -153,8 +155,10 @@ const previewMenu = computed(() =>
   fallbackPreviewMenu.value
 )
 const previewMenuId = computed(() => normalizeString(previewMenu.value?.id))
+const isLiveData = computed(() => dataType.value === 'live')
+const canWriteTheme = computed(() => canWrite.value && isLiveData.value)
 const livePreviewMenuId = computed(() =>
-  source.value === 'live' ? previewMenuId.value : ''
+  isLiveData.value ? previewMenuId.value : ''
 )
 const previewMenuRouteScope = computed(() =>
   fireux.isTenant
@@ -181,7 +185,7 @@ const previewSections = computed(() => {
   ]
 })
 const menuUrl = computed(() => {
-  if (source.value !== 'live' || !kitchenSlug.value) return ''
+  if (!isLiveData.value || !kitchenSlug.value) return ''
 
   const menuId = previewMenuId.value
   const routeScope = directoryMenuRouteScope(kitchenSlug.value)
@@ -207,7 +211,7 @@ type ThemeSaveRequest = {
 const activeThemeTarget = computed(() => {
   const appId = kitchenAppId.value
   const id = normalizeString(kitchenId.value)
-  return appId && id
+  return canWriteTheme.value && appId && id
     ? { appId, kitchenId: id, key: `${appId}:${id}` }
     : null
 })
@@ -217,9 +221,10 @@ const pendingThemeSaves = new Map<string, ThemeSaveRequest>()
 let inFlightThemeSave: ThemeSaveRequest | null = null
 let saveTimer: ReturnType<typeof setTimeout> | undefined
 watch(
-  [kitchenId, kitchenAppId],
+  [kitchenId, kitchenAppId, canWriteTheme],
   () => {
-    flushQueuedThemeSave()
+    discardQueuedThemeSave()
+    pendingThemeSaves.clear()
     locallySavedPageStyle.value = null
     saveState.value = ''
     const target = activeThemeTarget.value
@@ -273,7 +278,7 @@ function selectPreviewMenu(menuId: string) {
 
 function queueThemeSave(style: Partial<PageStyle>) {
   const target = activeThemeTarget.value
-  if (!canWrite.value || !target) return
+  if (!canWriteTheme.value || !target) return
 
   const normalized = normalizePageStyle(style)
   const baseline = storedPageStyle.value
@@ -292,9 +297,7 @@ function queueThemeSave(style: Partial<PageStyle>) {
   }
   targetDrafts.set(request.key, request.style)
   if (queuedThemeSave && queuedThemeSave.key !== request.key) {
-    const previous = queuedThemeSave
     queuedThemeSave = null
-    void flushThemeSave(previous)
   }
   queuedThemeSave = request
 
@@ -310,11 +313,17 @@ function flushQueuedThemeSave() {
   saveTimer = undefined
   const request = queuedThemeSave
   queuedThemeSave = null
-  if (request) void flushThemeSave(request)
+  if (request && isActiveThemeTarget(request)) void flushThemeSave(request)
+}
+
+function discardQueuedThemeSave() {
+  if (saveTimer) clearTimeout(saveTimer)
+  saveTimer = undefined
+  queuedThemeSave = null
 }
 
 function isActiveThemeTarget(request: ThemeSaveRequest) {
-  return activeThemeTarget.value?.key === request.key
+  return canWriteTheme.value && activeThemeTarget.value?.key === request.key
 }
 
 function hasNewerThemeSave(request: ThemeSaveRequest) {
@@ -329,6 +338,7 @@ function hasOutstandingThemeSave(key: string) {
 }
 
 async function flushThemeSave(request: ThemeSaveRequest) {
+  if (!isActiveThemeTarget(request)) return
   pendingThemeSaves.set(request.key, request)
   if (saving.value) return
   saving.value = true
@@ -338,12 +348,15 @@ async function flushThemeSave(request: ThemeSaveRequest) {
     if (!entry) break
     const [key, next] = entry
     pendingThemeSaves.delete(key)
+    if (!isActiveThemeTarget(next)) continue
     inFlightThemeSave = next
 
     if (isActiveThemeTarget(next)) saveState.value = 'Saving...'
     try {
       const user = await useRequireUser()
       const token = await user.getIdToken()
+      if (!isActiveThemeTarget(next)) continue
+      requireWritableData('live')
       const result = await $fetch<{
         ok: true
         app_id: string
@@ -391,6 +404,7 @@ async function flushThemeSave(request: ThemeSaveRequest) {
 }
 
 onBeforeUnmount(() => {
-  flushQueuedThemeSave()
+  discardQueuedThemeSave()
+  pendingThemeSaves.clear()
 })
 </script>

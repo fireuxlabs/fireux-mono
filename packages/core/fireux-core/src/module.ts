@@ -4,6 +4,7 @@
 // Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: register trusted handle reservation.
 // Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: register exact public identity and App-admin people endpoints.
+import { defaultMaxListeners, setMaxListeners } from 'node:events'
 import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   collectAutoSitemapPaths,
@@ -18,6 +19,8 @@ import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
+
+const DEV_RESPONSE_MAX_LISTENERS = 32
 
 function asSeoConfig(value: unknown): FireuxSeoConfig | undefined {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
@@ -41,6 +44,10 @@ export default defineNuxtModule({
     const resolver = createResolver(import.meta.url)
 
     if (nuxt.options.dev) {
+      if (defaultMaxListeners < DEV_RESPONSE_MAX_LISTENERS) {
+        setMaxListeners(DEV_RESPONSE_MAX_LISTENERS)
+      }
+
       type NuxtOptionsWithRouteRules = typeof nuxt.options & {
         routeRules?: Record<string, { ssr?: boolean }>
       }

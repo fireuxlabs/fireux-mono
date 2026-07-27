@@ -54,6 +54,13 @@ export function useKitchenConsoleTargetCollection(
       }
 
       const token = await user.getIdToken()
+      if (
+        !enabled.value ||
+        !hasAuthState.value ||
+        currentUser.value?.uid !== requestUid
+      ) {
+        return null
+      }
       const response = await $fetch<KitchenConsoleTargetsResponse>(
         '/api/console/kitchen/targets',
         { headers: { Authorization: `Bearer ${token}` } }

@@ -1,5 +1,7 @@
 // Concurrent edit — 2026-07-22 00:37 CEST — Dish media ownership: upload Dish images through the Kitchen-owned server boundary.
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
+import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { ref } from 'vue'
 
 type DishImageUploadResponse = {
@@ -13,6 +15,8 @@ const text = (value: unknown) => String(value ?? '').trim()
 
 export function useDishImageUpload() {
   const { currentUser } = useAuth()
+  const { selectedId } = useConsoleSelection('kitchen')
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const pending = ref(false)
 
   async function uploadDishImage(input: {
@@ -23,13 +27,21 @@ export function useDishImageUpload() {
     const dishId = text(input.dishId)
     const kitchenId = text(input.kitchenId)
 
+    requireWritableData()
     if (!kitchenId) throw new Error('Kitchen id is required.')
+    if (text(selectedId.value) !== kitchenId) {
+      throw new Error('Select this Kitchen before uploading its Dish image.')
+    }
     if (!dishId) throw new Error('Dish id is required.')
     if (!(input.file instanceof File)) throw new Error('Dish image is required.')
     if (pending.value) throw new Error('A Dish image is already uploading.')
 
     const token = await currentUser.value?.getIdToken()
     if (!token) throw new Error('Sign in before uploading a Dish image.')
+    requireWritableData()
+    if (text(selectedId.value) !== kitchenId) {
+      throw new Error('The selected Kitchen changed before the Dish image upload.')
+    }
 
     const form = new FormData()
     form.set('file', input.file, input.file.name || 'dish-image')

@@ -120,6 +120,10 @@ Map the shared console system and domain adapters.
 - Domain wrappers retain entity-to-card mapping, selection validation, copy,
   card components, and actions. A multi-source family such as Kitchen composes
   one shared target presenter per source rather than flattening source state.
+- The Kitchen index keeps its bounded authenticated Live target chooser and
+  lazy Demo target chooser available together, even while a Demo Kitchen is
+  selected. This is a navigation exception only: selected Live target and
+  operation providers remain inactive in Demo mode.
 - Persisted selection is validated only against a successful target read.
   Pending or failed target reads must not clear a saved selection.
 - Selected-target routes distinguish persistence from hydration. The persisted

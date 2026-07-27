@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-07-25
-// usage_note: enforces owner-local, deferred, read-only Demo World consumers.
+// usage_note: enforces owner-local, deferred, typed, read-only Demo World consumers.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: lock fixture ownership and lazy console consumption.
 // Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: admit one named project adapter and the public route namespace.
 // Concurrent edit — 2026-07-22 13:03 CEST — Product Demo dependency pass: enforce pure adapters and project-declared package Demo owners.
@@ -80,6 +80,10 @@ function isProductDemoRouteDirectory(relativePath) {
   return /^(projects\/[^/]+\/[^/]+\/app\/pages\/demo)(?:\/|$)/.test(
     relativePath
   )
+}
+
+function isDemoAssetDirectory(relativePath) {
+  return /\/(?:assets|public|static)(?:\/|$)/.test(`/${relativePath}`)
 }
 
 function ownerRoot(relativePath) {
@@ -452,7 +456,8 @@ export async function run(ctx) {
     const relativeDirectory = repoRelative(repoRoot, directory)
     if (
       !canonicalDemoRoot(relativeDirectory) &&
-      !isProductDemoRouteDirectory(relativeDirectory)
+      !isProductDemoRouteDirectory(relativeDirectory) &&
+      !isDemoAssetDirectory(relativeDirectory)
     ) {
       violations.push({
         code: 'owner-path',
@@ -690,10 +695,37 @@ export async function run(ctx) {
     for (const required of [
       "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
       "import('fireux-kitchens/runtime/utils/kitchen/demo-dishes')",
+      "import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers')",
+      "import('fireux-kitchens/runtime/utils/kitchen/demo-finance')",
+      "import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade')",
       'buildKitchenDemoDishesOperation',
+      'buildKitchenDemoSuppliersOperation',
+      'projectKitchenDemoFinanceSummary',
       'supplierModule.supplierDemoScenarios',
       'loadIngredientRoots',
       'ingredientRoots: consoleIngredientRoots',
+      'consoleScenario.kitchenIngredients',
+      'consoleScenario.kitchen.identity.display_name',
+      'ingredients: consoleIngredients',
+      'finance: {',
+      'periods: consoleFinancePeriods',
+      'kitchenName:',
+      'consoleScenario.miseTasks',
+      'projectKitchenMiseTasks',
+      'miseTasks: projectKitchenMiseTasks(',
+      'consoleScenario.miseTasks,',
+      'consoleScenario.stations',
+      'consoleScenario.orders',
+      'orders: consoleScenario.orders.map',
+      'customer: {}',
+      'stations: consoleStations',
+      'suppliers: consoleSupplierOperation.items',
+      'configuredCount: consoleTableCount',
+      'projectKitchenDemoMenuCascade',
+      'projectKitchenDemoMiseTaskMenuIds',
+      'modeByMenuId: consoleScenario.menuModes',
+      'defaultInService:',
+      'menuIds:',
       'consoleDishOperation.items',
       'totalSalesMinor',
     ]) {
@@ -702,10 +734,23 @@ export async function run(ctx) {
           code: 'demo-world-composition',
           file: miseboxProductDemoFile,
           message:
-            'Misebox Product Demo must compose all Kitchen scenarios with Supplier-owned ingredients through stable relationships.',
+            'Misebox Product Demo must compose Kitchen scenarios through stable Supplier relationships and canonical Ingredient roots.',
         })
         break
       }
+    }
+    if (
+      source.includes('mise: consoleScenario.miseRequirements')
+      || source.includes(
+        'miseTasks: projectKitchenMiseTasks(consoleScenario.miseRequirements'
+      )
+    ) {
+      violations.push({
+        code: 'demo-world-mise-projection',
+        file: miseboxProductDemoFile,
+        message:
+          'The landing Mise operation must project real KitchenMiseTask records; production requirements remain a derived Dish graph.',
+      })
     }
     for (const forbidden of [
       'consoleSupplyLineByIngredientId',
@@ -724,6 +769,174 @@ export async function run(ctx) {
         })
         break
       }
+    }
+  }
+
+  const kitchenDemoMenuCascadeFile =
+    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-menu-cascade.ts'
+  const kitchenDemoMenuCascadePath = path.join(
+    repoRoot,
+    kitchenDemoMenuCascadeFile
+  )
+  if (existsSync(kitchenDemoMenuCascadePath)) {
+    const source = readFileSync(kitchenDemoMenuCascadePath, 'utf8')
+    for (const required of [
+      'projectKitchenDemoMenuCascade',
+      "mode === 'on'",
+      "mode === 'order_led'",
+      'menuItemComponentDeltas',
+      'prepItem.input.ingredientId',
+      'recipe?.ingredients',
+      'neededForService',
+      'projectKitchenDemoMiseTaskMenuIds',
+    ]) {
+      if (!source.includes(required)) {
+        violations.push({
+          code: 'kitchen-demo-menu-cascade',
+          file: kitchenDemoMenuCascadeFile,
+          message:
+            'Kitchen must own one non-destructive Demo Menu service cascade across Dishes, Recipes, Ingredients, Prep and Mise.',
+        })
+        break
+      }
+    }
+  } else {
+    violations.push({
+      code: 'kitchen-demo-menu-cascade',
+      file: kitchenDemoMenuCascadeFile,
+      message:
+        'Kitchen must own the Demo Menu service cascade used by Console and Product Demo.',
+    })
+  }
+
+  const kitchenDemoMenuAvailabilityFile =
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Menus/availability.ts'
+  const kitchenDemoMenuAvailabilityPath = path.join(
+    repoRoot,
+    kitchenDemoMenuAvailabilityFile
+  )
+  if (
+    !existsSync(kitchenDemoMenuAvailabilityPath)
+    || ![
+      "[deanosKitchenDemoIdentity.menuId]: 'on'",
+      "[deanosPartyMenuDemoIdentity.menuId]: 'order_led'",
+      "[deanosXmasMenuDemoIdentity.menuId]: 'off'",
+    ].every(marker =>
+      readFileSync(kitchenDemoMenuAvailabilityPath, 'utf8').includes(marker)
+    )
+  ) {
+    violations.push({
+      code: 'kitchen-demo-menu-availability',
+      file: kitchenDemoMenuAvailabilityFile,
+      message:
+        'Deanos summer defaults must keep Main on, Party order-led, and Xmas off without changing Menu publication.',
+    })
+  }
+
+  const kitchenDemoMenuServiceFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/kitchen/useKitchenMenuServiceSelection.ts'
+  const kitchenConsoleDemoMenuServiceFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsoleDemoMenuService.ts'
+  for (const [file, markers] of [
+    [
+      kitchenDemoMenuServiceFile,
+      [
+        "useState<Record<string, Record<string, boolean>>>",
+        'useKitchenMenuServiceSelection',
+        'defaultInService',
+        'setMenuInService',
+        'does not write Firestore',
+      ],
+    ],
+    [
+      kitchenConsoleDemoMenuServiceFile,
+      [
+        'useKitchenMenuServiceSelection',
+        'projectKitchenDemoMenuCascade',
+        'isEntityInService',
+        'isTaskInService',
+      ],
+    ],
+  ]) {
+    const filePath = path.join(repoRoot, file)
+    const source = existsSync(filePath)
+      ? readFileSync(filePath, 'utf8')
+      : ''
+    if (!markers.every(marker => source.includes(marker))) {
+      violations.push({
+        code: 'kitchen-demo-menu-service-state',
+        file,
+        message:
+          'Console and landing must share route-stable local Demo Menu service state without persistence.',
+      })
+    }
+  }
+
+  for (const file of [
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Ingredients/useKitchenConsoleIngredients.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Recipes/useKitchenConsoleRecipes.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Mise/useKitchenConsoleMise.ts',
+  ]) {
+    const source = readFileSync(path.join(repoRoot, file), 'utf8')
+    if (!source.includes('useKitchenConsoleDemoMenuService')) {
+      violations.push({
+        code: 'kitchen-demo-menu-service-consumer',
+        file,
+        message:
+          'Every affected Demo Console operation must consume the shared Menu service projection.',
+      })
+    }
+  }
+
+  const kitchenMiseModelFile =
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise.model.ts'
+  const kitchenMisePresentationFile =
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise-presentation.ts'
+  const kitchenDemoOperationsFile =
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations.ts'
+  for (const [file, markers] of [
+    [
+      kitchenMiseModelFile,
+      [
+        'KITCHEN_MISE_WORKFLOW_STAGES',
+        "'wash'",
+        "'cut_portion'",
+        "'make'",
+        "'cook_chill'",
+        "'set_stations'",
+        "'final_checks'",
+      ],
+    ],
+    [
+      kitchenMisePresentationFile,
+      [
+        'groupKitchenMiseTaskSummariesByWorkflow',
+        'checklistDoneCount',
+        "'unsorted'",
+      ],
+    ],
+    [
+      kitchenDemoOperationsFile,
+      [
+        'wash-main-service-produce',
+        'shape-main-patties',
+        'set-grill-station',
+        'final-allergen-check',
+        'deanosPartyMenuDemoIdentity',
+        'deanosXmasMenuDemoIdentity',
+      ],
+    ],
+  ]) {
+    const source = readFileSync(path.join(repoRoot, file), 'utf8')
+    if (!markers.every(marker => source.includes(marker))) {
+      violations.push({
+        code: 'kitchen-mise-workflow',
+        file,
+        message:
+          'Kitchen Mise must remain process-first, checklist-capable, and visibly season-scoped in Demo.',
+      })
     }
   }
 
@@ -761,6 +974,105 @@ export async function run(ctx) {
       file: kitchenDishOperationAdapterFile,
       message:
         'Kitchen must own the Demo Dishes operation projection shared by Console Demo and Product Demo.',
+    })
+  }
+
+  const kitchenSupplierOperationAdapterFile =
+    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-suppliers.ts'
+  const kitchenSupplierOperationAdapterPath = path.join(
+    repoRoot,
+    kitchenSupplierOperationAdapterFile
+  )
+  if (existsSync(kitchenSupplierOperationAdapterPath)) {
+    const source = readFileSync(kitchenSupplierOperationAdapterPath, 'utf8')
+    for (const required of [
+      'selectKitchenDemoSupplierScenarios',
+      'buildKitchenDemoSuppliersOperation',
+      'KitchenSupplierIngredient',
+      'linkedIngredientCount',
+      'supplier_item_categories',
+      'catalogueCount',
+      'coverage is unresolved',
+    ]) {
+      if (!source.includes(required)) {
+        violations.push({
+          code: 'kitchen-supplier-operation-projection',
+          file: kitchenSupplierOperationAdapterFile,
+          message:
+            'Kitchen must project its usage links through Supplier-owned Demo identity and coverage.',
+        })
+        break
+      }
+    }
+  } else {
+    violations.push({
+      code: 'kitchen-supplier-operation-projection',
+      file: kitchenSupplierOperationAdapterFile,
+      message:
+        'Kitchen must own the Demo Supplier operation projection shared by Console Demo and Product Demo.',
+    })
+  }
+
+  const kitchenConsoleSupplyWorkspaceFile =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Suppliers/useKitchenConsoleSupplyWorkspace.ts'
+  const kitchenConsoleSupplyWorkspacePath = path.join(
+    repoRoot,
+    kitchenConsoleSupplyWorkspaceFile
+  )
+  if (
+    !existsSync(kitchenConsoleSupplyWorkspacePath)
+    || !readFileSync(kitchenConsoleSupplyWorkspacePath, 'utf8').includes(
+      'selectKitchenDemoSupplierScenarios'
+    )
+  ) {
+    violations.push({
+      code: 'kitchen-supplier-operation-projection',
+      file: kitchenConsoleSupplyWorkspaceFile,
+      message:
+        'Kitchen Console Suppliers and Product Demo must share the owner-local Supplier selection seam.',
+    })
+  }
+
+  const kitchenFinanceProjectionFile =
+    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance.ts'
+  const kitchenFinanceProjectionPath = path.join(
+    repoRoot,
+    kitchenFinanceProjectionFile
+  )
+  if (existsSync(kitchenFinanceProjectionPath)) {
+    const source = readFileSync(kitchenFinanceProjectionPath, 'utf8')
+    for (const required of [
+      'projectKitchenDemoFinanceReport',
+      'dailyGrossSales',
+      'previousGrossSalesMinor',
+      'grossSalesChangePercent',
+      'groupTrend',
+      'groupItems',
+      'groupWeekdays',
+      'financialCurrencyMinorUnitDigits',
+      'averageSaleMinor',
+      'itemQuantity',
+      'itemSalesMinor',
+      'deliveryFeesMinor',
+      'lineGrossMinor',
+      'Math.round',
+    ]) {
+      if (!source.includes(required)) {
+        violations.push({
+          code: 'kitchen-finance-demo-projection',
+          file: kitchenFinanceProjectionFile,
+          message:
+            'Kitchen must own the shared aggregate-only Demo Finance arithmetic.',
+        })
+        break
+      }
+    }
+  } else {
+    violations.push({
+      code: 'kitchen-finance-demo-projection',
+      file: kitchenFinanceProjectionFile,
+      message:
+        'Kitchen must own the shared aggregate-only Demo Finance projection.',
     })
   }
 
@@ -834,24 +1146,28 @@ export async function run(ctx) {
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts'
   const kitchenConsoleCorePath = path.join(repoRoot, kitchenConsoleCoreFile)
   const kitchenConsoleTargetPath = path.join(repoRoot, kitchenConsoleTargetFile)
+  const kitchenConsoleCoreSource = existsSync(kitchenConsoleCorePath)
+    ? readFileSync(kitchenConsoleCorePath, 'utf8')
+    : ''
+  const kitchenConsoleTargetSource = existsSync(kitchenConsoleTargetPath)
+    ? readFileSync(kitchenConsoleTargetPath, 'utf8')
+    : ''
   if (
-    !existsSync(kitchenConsoleCorePath)
-    || !existsSync(kitchenConsoleTargetPath)
-    || !readFileSync(kitchenConsoleCorePath, 'utf8').includes(
-      "enabled: computed(() => kitchenSource.value === 'live')"
+    !/enabled:\s*computed\(\s*\(\)\s*=>\s*kitchenSource\.value === ['"]live['"]\s*\|\|\s*options\.keepLiveTargetsAvailable === true\s*,?\s*\)/.test(
+      kitchenConsoleCoreSource
     )
-    || !readFileSync(kitchenConsoleTargetPath, 'utf8').includes(
+    || !kitchenConsoleCoreSource.includes("consoleData('live', kitchen)")
+    || !kitchenConsoleCoreSource.includes("consoleData('demo', kitchen)")
+    || !kitchenConsoleTargetSource.includes(
       'enabled?: MaybeRefOrGetter<boolean>'
     )
-    || !readFileSync(kitchenConsoleTargetPath, 'utf8').includes(
-      '!enabled.value ||'
-    )
+    || !kitchenConsoleTargetSource.includes('!enabled.value ||')
   ) {
     violations.push({
       code: 'kitchen-demo-live-target',
       file: kitchenConsoleCoreFile,
       message:
-        'Kitchen Console Demo must deactivate the authenticated Live target provider before it can issue a request.',
+        'Kitchen Demo must use typed target providers and keep Live requests off except for the explicit bounded target chooser.',
     })
   }
 

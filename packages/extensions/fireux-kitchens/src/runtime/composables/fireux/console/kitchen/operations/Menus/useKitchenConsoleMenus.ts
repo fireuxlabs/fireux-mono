@@ -17,6 +17,7 @@ import {
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
+import { useKitchenConsoleDemoMenuService } from '../../core/useKitchenConsoleDemoMenuService'
 
 const text = (value: unknown) => String(value ?? '').trim()
 type MenuPreviewDish = {
@@ -44,12 +45,13 @@ export function useKitchenConsoleMenus() {
   const { place } = useKitchenConsolePlace(identity)
   const storageKitchenId = kitchenConsole.runtime.storageKitchenId
   const demoData = useKitchenConsoleDemoData(
-    computed(() => kitchenConsole.runtime.source.value === 'demo')
+    kitchenConsole.runtime.isDemo
   )
   const demoScenario = computed(() => findKitchenConsoleDemoScenario(
     demoData.data.value,
     kitchenConsole.selection.kitchenId.value
   ))
+  const demoMenuService = useKitchenConsoleDemoMenuService(demoScenario)
   const fetchKitchenId = computed(() =>
     kitchenConsole.runtime.rootCollection.value &&
     storageKitchenId.value
@@ -84,32 +86,32 @@ export function useKitchenConsoleMenus() {
     }
   )
   const rawMenus = computed(() =>
-    kitchenConsole.runtime.source.value === 'demo'
+    kitchenConsole.runtime.isDemo.value
       ? demoScenario.value?.menus.map(menu => menu.kitchenMenu) ?? []
       : fetchedMenus.value
   )
   const activeMenus = computed(() =>
-    kitchenConsole.runtime.source.value === 'demo'
+    kitchenConsole.runtime.isDemo.value
       ? (rawMenus.value ?? []).filter(menu => menu.status !== 'archived')
       : fetchedActiveMenus.value
   )
   const pending = computed(() =>
-    kitchenConsole.runtime.source.value === 'demo'
+    kitchenConsole.runtime.isDemo.value
       ? demoData.pending.value
       : menusPending.value
   )
   const collectionPath = computed(() =>
-    kitchenConsole.runtime.source.value === 'demo'
+    kitchenConsole.runtime.isDemo.value
       ? `demo/kitchens/${kitchenConsole.selection.kitchenId.value}/menus`
       : fetchedCollectionPath.value
   )
   const menuSources = computed(() =>
-    kitchenConsole.runtime.source.value === 'demo'
+    kitchenConsole.runtime.isDemo.value
       ? []
       : sortMenuSources(sourceUploads.items.value)
   )
   const menuPreviewDishes = computed(() => {
-    if (kitchenConsole.runtime.source.value !== 'demo') return {}
+    if (!kitchenConsole.runtime.isDemo.value) return {}
 
     const previews: Record<string, MenuPreviewDish> = {}
     const usedDishIds = new Set<string>()
@@ -160,6 +162,9 @@ export function useKitchenConsoleMenus() {
       ? ''
       : 'Set the linked Place currency before creating menus.'
   })
+  const canManageMenuService = computed(() =>
+    kitchenConsole.runtime.isDemo.value
+  )
 
   async function createMenu(input: Parameters<typeof create.createMenu>[0]) {
     if (!canCreateMenu.value) {
@@ -200,7 +205,8 @@ export function useKitchenConsoleMenus() {
     kitchenId: kitchenConsole.selection.kitchenId,
     storageKitchenId,
     activeKitchenAppId: kitchenConsole.runtime.appId,
-    kitchenSource: kitchenConsole.runtime.source,
+    dataType: kitchenConsole.runtime.dataType,
+    isDemo: kitchenConsole.runtime.isDemo,
     rootCollection: kitchenConsole.runtime.rootCollection,
     databaseId: kitchenConsole.runtime.databaseId,
     readOnly: kitchenConsole.runtime.readOnly,
@@ -214,8 +220,14 @@ export function useKitchenConsoleMenus() {
     menuSources,
     menuSourcesPending: sourceUploads.pending,
     menuPreviewDishes,
+    canManageMenuService,
     getMenuPreviewDish: (menuId: string) =>
       menuPreviewDishes.value[text(menuId)] ?? null,
+    isMenuInService: (menuId: string) =>
+      !kitchenConsole.runtime.isDemo.value
+      || demoMenuService.isMenuInService(menuId),
+    menuServiceMode: demoMenuService.menuMode,
+    setMenuInService: demoMenuService.setMenuInService,
     menuSourcesCollectionPath: sourceUploads.collectionPath,
     createMenu,
     menuCreateBlockedMessage,
@@ -235,6 +247,11 @@ export function useKitchenConsoleMenus() {
       menuSourcesPending: sourceUploads.pending.value,
       readOnly: kitchenConsole.runtime.readOnly.value,
       canWrite: kitchenConsole.runtime.canWrite.value,
+      demoMenuAvailability:
+        demoMenuService.cascade.value?.menus.map(menu => ({
+          ...menu,
+          inService: demoMenuService.isMenuInService(menu.id),
+        })) ?? [],
     })),
   }
 }

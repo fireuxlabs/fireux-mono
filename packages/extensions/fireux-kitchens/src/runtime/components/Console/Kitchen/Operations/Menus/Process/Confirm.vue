@@ -43,6 +43,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 
 const props = defineProps<{
   source?: unknown | null
@@ -58,6 +59,7 @@ const emit = defineEmits<{
 }>()
 
 const pending = ref(false)
+const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const error = ref('')
 const confirmResult = ref<Record<string, unknown> | null>(null)
 const text = (value: unknown) => String(value ?? '').trim()
@@ -123,6 +125,7 @@ async function confirmDraft() {
   pending.value = true
 
   try {
+    requireWritableData('live')
     // Creation stage 3: apply the reviewed draft into dishes, sections, items, and the public root menu row.
     const response = await fetch('/api/console/kitchen/menus/confirm', {
       method: 'POST',

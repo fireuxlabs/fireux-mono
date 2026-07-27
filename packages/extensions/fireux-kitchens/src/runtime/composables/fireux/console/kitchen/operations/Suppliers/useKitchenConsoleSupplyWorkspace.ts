@@ -11,6 +11,9 @@ import type { PublicIngredient } from '../../../../../../models/ingredient-publi
 import type { KitchenIngredient } from '../../../../../../models/kitchen/ingredient.model'
 import type { KitchenSupplierIngredient } from '../../../../../../models/kitchen/supplier-ingredient.model'
 import {
+  selectKitchenDemoSupplierScenarios,
+} from '../../../../../../utils/kitchen/demo-suppliers'
+import {
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
@@ -30,7 +33,7 @@ export type KitchenConsoleSupplyLine = {
 
 export function useKitchenConsoleSupplyWorkspace() {
   const { selection, runtime } = useKitchenConsole()
-  const active = computed(() => runtime.source.value === 'demo')
+  const active = runtime.isDemo
   const kitchenDemo = useKitchenConsoleDemoData(active)
   const supplierDemo = useSupplierConsoleDemoData(active)
   const scenario = computed(() =>
@@ -39,17 +42,11 @@ export function useKitchenConsoleSupplyWorkspace() {
       selection.kitchenId.value
     )
   )
-  const selectedSupplierIds = computed(() =>
-    new Set(
-      (scenario.value?.supplierIngredientLinks ?? [])
-        .map(link => clean(link.supplier_id))
-        .filter(Boolean)
-    )
-  )
   const supplierScenarios = computed(() =>
-    (supplierDemo.data.value?.scenarios ?? []).filter(supplierScenario =>
-      selectedSupplierIds.value.has(clean(supplierScenario.supplier.id))
-    )
+    selectKitchenDemoSupplierScenarios({
+      links: scenario.value?.supplierIngredientLinks ?? [],
+      supplierScenarios: supplierDemo.data.value?.scenarios ?? [],
+    })
   )
   const supplierScenarioById = computed(() =>
     new Map(

@@ -1,5 +1,6 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { computed, unref, type Ref } from 'vue'
 import {
   normalizeTranslatedText,
@@ -20,6 +21,7 @@ export function useRecipeUpdate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
@@ -34,6 +36,7 @@ export function useRecipeUpdate(
     patch: Partial<RecipeUpdateInput> & Record<string, unknown>,
     overrides: { kitchenId?: string } = {}
   ) => {
+    requireWritableData()
     const resolvedRecipeId = trim(recipeId)
     if (!resolvedRecipeId) throw new Error('Recipe id is required')
 

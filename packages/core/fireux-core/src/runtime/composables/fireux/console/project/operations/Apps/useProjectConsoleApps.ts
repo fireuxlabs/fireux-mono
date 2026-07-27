@@ -15,7 +15,7 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useProjectConsoleApps() {
   const { selection, runtime } = useProjectConsole()
   const appCollectionPath = computed(() =>
-    runtime.source.value === 'live' ? AppStorage.collection : ''
+    runtime.dataType.value === 'live' ? AppStorage.collection : ''
   )
   const {
     apps: appCollection,
@@ -23,14 +23,14 @@ export function useProjectConsoleApps() {
     error,
   } = useAppCollection(appCollectionPath)
   const demoData = useProjectConsoleDemoData(
-    computed(() => runtime.source.value === 'demo')
+    runtime.isDemo
   )
   const apps = computed<App[]>(() => {
     const currentProjectId = selection.projectId.value
     const seen = new Set<string>()
 
     const source =
-      runtime.source.value === 'demo'
+      runtime.isDemo.value
         ? (findProjectConsoleDemoScenario(demoData.data.value, currentProjectId)
             ?.apps ?? [])
         : (appCollection.value ?? [])
@@ -48,12 +48,12 @@ export function useProjectConsoleApps() {
   const count = computed(() => apps.value.length)
   const { outcome } = useFirestoreCollectionState({
     active: computed(
-      () => runtime.source.value === 'demo' || Boolean(appCollectionPath.value)
+      () => runtime.isDemo.value || Boolean(appCollectionPath.value)
     ),
     count,
     error,
     pending: computed(() =>
-      runtime.source.value === 'demo' ? demoData.pending.value : pending.value
+      runtime.isDemo.value ? demoData.pending.value : pending.value
     ),
   })
   const debug = computed(() => ({

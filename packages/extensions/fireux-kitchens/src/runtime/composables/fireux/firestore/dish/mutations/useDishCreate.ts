@@ -2,6 +2,7 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { computed, unref, type Ref } from 'vue'
@@ -53,6 +54,7 @@ export function useDishCreate(
     databaseId?: string | Ref<string | null | undefined>
   } = {}
 ) {
+  const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { setDocument } = useFirestoreCreate({ databaseId: options.databaseId })
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
@@ -67,6 +69,7 @@ export function useDishCreate(
     draft: DishCreateDraft,
     overrides: { kitchenId?: string } = {}
   ): Promise<DishCreateResult> => {
+    requireWritableData()
     const kitchenId = normalizeString(overrides.kitchenId || selectedId.value)
     if (!kitchenId) throw new Error('Kitchen id is required')
 

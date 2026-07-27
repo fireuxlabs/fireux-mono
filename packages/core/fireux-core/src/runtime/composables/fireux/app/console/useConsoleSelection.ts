@@ -7,10 +7,17 @@ import {
   useConsole,
   type ConsoleSource,
 } from './useConsole'
+import {
+  normalizeConsoleDataType,
+  type ConsoleDataType,
+} from './useConsoleData'
 import type { ConsoleTargetOutcome } from './useConsoleIndex'
 
 type ConsoleSelectionState = {
-  selectedId: string
+  id?: string
+  /** @deprecated Read only for bounded migration to `id`. */
+  selectedId?: string
+  type?: ConsoleDataType
 }
 
 type ValueRef<T> = Ref<T> | ComputedRef<T>
@@ -19,6 +26,7 @@ export type UseConsoleSelectionOptions<TTarget> = {
   targetItems: ValueRef<(TTarget | null | undefined)[] | null | undefined>
   targetOutcome: ValueRef<ConsoleTargetOutcome>
   getId: (item: TTarget) => string
+  getType?: (item: TTarget) => ConsoleDataType
 }
 
 const isPresent = <T>(value: T | null | undefined): value is T => value != null
@@ -37,7 +45,12 @@ export function useConsoleSelection<TTarget = never>(
       sameSite: 'lax',
     }
   )
-  const selectedId = computed(() => normalizeString(state.value?.selectedId))
+  const selectedId = computed(() =>
+    normalizeString(state.value?.id ?? state.value?.selectedId)
+  )
+  const selectedType = computed<ConsoleDataType | null>(() =>
+    normalizeConsoleDataType(state.value?.type)
+  )
   const targetItems = computed<TTarget[]>(() => {
     const items = options ? unref(options.targetItems) : []
     return Array.isArray(items) ? items.filter(isPresent) : []
@@ -48,7 +61,7 @@ export function useConsoleSelection<TTarget = never>(
 
   const selectTarget = (
     id: string,
-    source: ConsoleSource = consoleRoot.source.value
+    type: ConsoleSource = 'live'
   ) => {
     const nextId = normalizeString(id)
     if (!nextId) {
@@ -56,9 +69,11 @@ export function useConsoleSelection<TTarget = never>(
       return
     }
 
-    consoleRoot.setSource(source)
+    const nextType = normalizeConsoleDataType(type) ?? 'live'
+    consoleRoot.setSource(nextType)
     state.value = {
-      selectedId: nextId,
+      id: nextId,
+      type: nextType,
     }
   }
 
@@ -71,39 +86,82 @@ export function useConsoleSelection<TTarget = never>(
     if (!item || !options) return ''
     return normalizeString(options.getId(item))
   }
+  const getTargetType = (item: TTarget | null | undefined) =>
+    item && options?.getType ? options.getType(item) : null
 
   const selectedTarget = computed<TTarget | null>(() => {
     const id = selectedId.value
     if (!id || !options) return null
 
-    return targetItems.value.find((item) => getTargetId(item) === id) ?? null
+    return targetItems.value.find((item) =>
+      getTargetId(item) === id &&
+      (!options.getType || getTargetType(item) === selectedType.value)
+    ) ?? null
   })
+
+  // Legacy selections used `selectedId` and could omit type. Canonicalize them
+  // once without deriving authority from the separate source cookie. A former
+  // Demo id that is not present in Live is then cleared by the target outcome.
+  watch(
+    () => ({
+      id: selectedId.value,
+      type: selectedType.value,
+      canonicalId: normalizeString(state.value?.id),
+    }),
+    ({ id, type, canonicalId }) => {
+      if (!id || (canonicalId === id && type)) return
+      state.value = {
+        id,
+        type: type ?? 'live',
+      }
+    },
+    { immediate: true }
+  )
 
   if (options) {
     watch(
       () => ({
         id: selectedId.value,
+        type: selectedType.value,
         items: targetItems.value,
         outcome: targetOutcome.value,
       }),
       (state: {
         id: string
+        type: ConsoleDataType | null
         items: TTarget[]
         outcome: ConsoleTargetOutcome
       }) => {
-        const { id, items, outcome } = state
+        const { id, type, items, outcome } = state
         if (!id || (outcome !== 'ready' && outcome !== 'empty')) return
-        if (items.some((item) => getTargetId(item) === id)) return
+        if (
+          items.some((item) =>
+            getTargetId(item) === id &&
+            (!options.getType || getTargetType(item) === type)
+          )
+        ) return
         clearSelection()
       },
       { immediate: true }
     )
   }
+  watch(
+    () => ({
+      id: selectedId.value,
+      type: selectedType.value,
+    }),
+    ({ id, type }) => {
+      if (!id || !type || consoleRoot.source.value === type) return
+      consoleRoot.setSource(type)
+    },
+    { immediate: true }
+  )
 
   return {
     family: normalizedFamily,
     source: consoleRoot.source,
     selectedId,
+    selectedType,
     selectedTarget,
     selectTarget,
     clearSelection,
