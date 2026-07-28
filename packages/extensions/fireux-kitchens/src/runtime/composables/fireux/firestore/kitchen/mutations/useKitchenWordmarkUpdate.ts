@@ -17,10 +17,6 @@ const identityField = (kind: KitchenWordmarkKind) =>
   kind === 'no-logo'
     ? 'identity.wordmark_no_logo_image_url'
     : 'identity.wordmark_image_url'
-const flatField = (kind: KitchenWordmarkKind) =>
-  kind === 'no-logo'
-    ? 'wordmark_no_logo_image_url'
-    : 'wordmark_image_url'
 
 export function useKitchenWordmarkUpdate(
   options: UseKitchenWordmarkUpdateOptions = {}
@@ -58,7 +54,6 @@ export function useKitchenWordmarkUpdate(
       }
       await updateKitchen(id, {
         [identityField(kind)]: url,
-        [flatField(kind)]: url,
       })
 
       return url

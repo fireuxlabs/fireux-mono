@@ -150,7 +150,7 @@ export const deanosKitchenDemoMenu: KitchenDemoMenu = {
           id: 'deanos-classic-item',
           section_id: 'smash-burgers',
           dish_id: 'deanos-classic',
-          price: 19,
+          price: 16,
           sort_order: 1,
           price_options: [
             { label: 'Single', quantity: 1, unit: 'burger', price: 16 },

@@ -4,7 +4,6 @@ import { computed } from 'vue'
 import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import type { Place } from 'fireux-places/runtime/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
-import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 import {
   findKitchenConsoleDemoTarget,
   useKitchenConsoleDemoTargets,
@@ -31,18 +30,7 @@ export function useKitchenConsolePlace(
       identity.kitchenId.value
     )
     if (!target) return null
-    const place = target.place
-
-    const kitchen = identity.selectedKitchen.value as Record<string, unknown> | null
-    const kitchenIdentity = readKitchenIdentity(kitchen)
-
-    return {
-      ...place,
-      name: kitchenIdentity.displayName || place.short_name,
-      image_url: kitchenIdentity.imageUrl,
-      cover_image: String(kitchen?.cover_image ?? '').trim(),
-      image_shade: kitchenIdentity.imageShade,
-    } as Place
+    return target.place
   })
   const place = computed<Place | null>(() => {
     if (identity.isDemo.value) return demoPlace.value

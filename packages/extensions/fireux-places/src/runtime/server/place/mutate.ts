@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 21:54 CEST — Place-root authority pass: transactionally authorize and normalize sparse Place writes.
 // Concurrent edit — 2026-07-21 15:07 CEST — Place provenance/privacy hardening: remove claim-derived privilege and require explicit App-admin or Kitchen-operator authority.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: validate brand colours at the trusted Place mutation boundary.
+// Concurrent edit — 2026-07-28 — Entity-family audit: require the exact nested Kitchen App scope for Place operator authority.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
@@ -200,10 +201,30 @@ function normalizePatch(raw: unknown) {
   return patch
 }
 
-function readRootKitchenAppId(value: unknown) {
+function readRootKitchenAppScope(value: unknown) {
   const kitchen = record(value)
+  if (
+    Object.hasOwn(kitchen, 'app_scope_state') ||
+    Object.hasOwn(kitchen, 'app_scope_app_id')
+  ) {
+    return null
+  }
+
   const appScope = record(kitchen.app_scope)
-  return text(appScope.app_id || kitchen.app_scope_app_id)
+  const keys = Object.keys(appScope).sort()
+  const state = text(appScope.state)
+  const appId = text(appScope.app_id)
+  if (
+    keys.length !== 2 ||
+    keys[0] !== 'app_id' ||
+    keys[1] !== 'state' ||
+    (state !== 'parent_app' && state !== 'tenant_app') ||
+    !isFirestoreDocumentId(appId)
+  ) {
+    return null
+  }
+
+  return { appId, state }
 }
 
 export async function mutatePlace(
@@ -229,6 +250,18 @@ export async function mutatePlace(
       }
     : null
   const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
+  if (
+    kitchenAuthority &&
+    (
+      !isFirestoreDocumentId(runtimeAppId) ||
+      kitchenAuthority.appId !== runtimeAppId
+    )
+  ) {
+    throw createError({
+      statusCode: 403,
+      statusMessage: 'Kitchen Place authority must belong to the current App.',
+    })
+  }
   const runtimeMembershipRef = isFirestoreDocumentId(runtimeAppId)
     ? db.doc(`apps/${runtimeAppId}/users/${uid}`)
     : null
@@ -260,13 +293,14 @@ export async function mutatePlace(
     const place = placeSnapshot.data() || {}
     const runtimeAdmin = runtimeMembershipSnapshot?.data()?.role === 'admin'
     const rootKitchen = rootKitchenSnapshot?.data() || {}
+    const rootKitchenScope = readRootKitchenAppScope(rootKitchen)
     const scopedKitchen = scopedKitchenSnapshot?.data() || {}
     const kitchenAccess = Boolean(
       kitchenAuthority &&
       rootKitchenSnapshot?.exists &&
       scopedKitchenSnapshot?.exists &&
       text(rootKitchen.place_id) === id &&
-      readRootKitchenAppId(rootKitchen) === kitchenAuthority.appId &&
+      rootKitchenScope?.appId === kitchenAuthority.appId &&
       ids(scopedKitchen.operator_ids).includes(uid)
     )
     if (!runtimeAdmin && !kitchenAccess) {

@@ -1,71 +1,95 @@
 <template>
   <div class="starfield" aria-hidden="true">
-    <div v-for="n in count" :key="n" class="star" />
+    <span
+      v-for="(star, index) in stars"
+      :key="index"
+      class="star"
+      :style="star"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
-import { useStarfield } from '../../composables/useStarfield'
+import { computed } from 'vue'
+import {
+  ambientRange,
+  ambientUnit,
+} from 'fireux-core/runtime/utils/ambient-field'
 
 const props = withDefaults(defineProps<{ count?: number }>(), { count: 64 })
-const count = props.count
 
-const { initializeStars } = useStarfield()
+type StarStyle = Record<`--star-${string}`, string>
 
-onMounted(() => {
-  initializeStars()
-})
+const stars = computed<StarStyle[]>(() =>
+  Array.from({ length: props.count }, (_, index) => {
+    const travelDuration = ambientRange(index, 5, 340, 680, 17)
+    const twinkleDuration = ambientRange(index, 4, 3, 6.5, 17)
+
+    return {
+      '--star-left': `${ambientRange(index, 0, 0, 100, 17).toFixed(2)}%`,
+      '--star-top': `${ambientRange(index, 1, 0, 100, 17).toFixed(2)}%`,
+      '--star-size': `${ambientRange(index, 2, 0.8, 2.5, 17).toFixed(2)}px`,
+      '--star-opacity': ambientRange(index, 3, 0.16, 0.72, 17).toFixed(2),
+      '--star-twinkle': `${twinkleDuration.toFixed(2)}s`,
+      '--star-twinkle-delay': `${(-twinkleDuration * ambientUnit(index, 6, 17)).toFixed(2)}s`,
+      '--star-travel': `${travelDuration.toFixed(2)}s`,
+      '--star-travel-delay': `${(-travelDuration * ambientUnit(index, 7, 17)).toFixed(2)}s`,
+      '--star-glow': `${ambientRange(index, 8, 0, 5, 17).toFixed(2)}px`,
+    }
+  })
+)
 </script>
 
 <style scoped>
 .starfield {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  position: absolute;
+  inset: 0;
   overflow: hidden;
-  z-index: -1;
   pointer-events: none;
 }
 
 .star {
   position: absolute;
-  background: var(--color-primary-500, var(--ui-primary));
+  top: var(--star-top);
+  left: var(--star-left);
+  width: var(--star-size);
+  height: var(--star-size);
   border-radius: 50%;
-  animation-name: twinkle, moveUp;
-  animation-duration: 4s, 60s;
-  animation-iteration-count: infinite, infinite;
-  animation-direction: alternate, normal;
-  animation-timing-function: ease, linear;
-  animation-fill-mode: none, none;
+  background: var(--ui-primary);
+  box-shadow: 0 0 var(--star-glow)
+    color-mix(in srgb, var(--ui-primary) 44%, transparent);
+  opacity: var(--star-opacity);
+  animation:
+    star-twinkle var(--star-twinkle) ease-in-out var(--star-twinkle-delay)
+      infinite alternate,
+    star-drift var(--star-travel) linear var(--star-travel-delay) infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .star {
     animation: none;
+    opacity: calc(var(--star-opacity) * 0.7);
   }
 }
 
-@keyframes twinkle {
+@keyframes star-twinkle {
   0% {
-    opacity: 0.2;
+    opacity: calc(var(--star-opacity) * 0.35);
   }
   50% {
-    opacity: 1;
+    opacity: var(--star-opacity);
   }
   100% {
-    opacity: 0.2;
+    opacity: calc(var(--star-opacity) * 0.45);
   }
 }
 
-@keyframes moveUp {
+@keyframes star-drift {
   0% {
-    transform: translateY(100vh);
+    transform: translate3d(0, 100vh, 0);
   }
   100% {
-    transform: translateY(-100vh);
+    transform: translate3d(0, -100vh, 0);
   }
 }
 </style>

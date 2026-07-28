@@ -1,10 +1,7 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
-// Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: distinguish absent support arrays from malformed stored authority.
+// Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
-import {
-  normalizeFireuxAppScopeState,
-  type FireuxAppScopeState,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
+import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model.ts'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
@@ -49,29 +46,32 @@ export function readKitchenOnboardingScope(value: Record<string, unknown>) {
   const nested = onboardingRecord(value.app_scope)
   const nestedState = onboardingText(nested.state)
   const nestedAppId = onboardingText(nested.app_id)
-  const flatState = onboardingText(value.app_scope_state)
-  const flatAppId = onboardingText(value.app_scope_app_id)
-  const rawState = nestedState || flatState
-  const appId = nestedState ? nestedAppId : flatAppId
-  const state = normalizeFireuxAppScopeState(rawState)
+  const keys = Object.keys(nested).sort()
+  const state: FireuxAppScopeState | '' =
+    nestedState === 'root_only' ||
+    nestedState === 'parent_app' ||
+    nestedState === 'tenant_app'
+      ? nestedState
+      : ''
 
-  if (!state) fail(409, 'Kitchen App scope is missing or invalid.')
-  if (nestedState && flatState) {
-    if (
-      normalizeFireuxAppScopeState(flatState) !== state ||
-      (flatAppId && flatAppId !== nestedAppId)
-    ) {
-      fail(409, 'Kitchen App scope contains conflicting stored values.')
-    }
+  if (
+    Object.hasOwn(value, 'app_scope_state') ||
+    Object.hasOwn(value, 'app_scope_app_id') ||
+    keys.length !== 2 ||
+    keys[0] !== 'app_id' ||
+    keys[1] !== 'state' ||
+    !state
+  ) {
+    fail(409, 'Kitchen App scope is missing or invalid.')
   }
-  if (state === 'root_only' && appId) {
+  if (state === 'root_only' && nestedAppId) {
     fail(409, 'An unattached Kitchen cannot name an App.')
   }
-  if (state !== 'root_only' && !appId) {
+  if (state !== 'root_only' && !nestedAppId) {
     fail(409, 'An attached Kitchen must name its App.')
   }
 
-  return { state: state as FireuxAppScopeState, appId }
+  return { state: state as FireuxAppScopeState, appId: nestedAppId }
 }
 
 export function assertKitchenOnboardingScope(
@@ -99,48 +99,27 @@ export function assertKitchenOnboardingPlaceDefaults(
 export function readKitchenOnboardingSupport(
   value: Record<string, unknown> | null
 ) {
-  const candidate = readKitchenOnboardingSupportForTrustedRepair(value)
-  if (candidate.missingFields.length > 0) {
-    fail(409, 'Kitchen App support is missing required authority arrays.')
-  }
-  return candidate.support
-}
-
-type KitchenOnboardingSupportField =
-  | 'operator_ids'
-  | 'team_ids'
-  | 'join_requests'
-
-export function readKitchenOnboardingSupportForTrustedRepair(
-  value: Record<string, unknown> | null
-) {
-  if (!value) {
-    return {
-      support: null,
-      missingFields: [] as KitchenOnboardingSupportField[],
-    }
-  }
-
-  const missingFields: KitchenOnboardingSupportField[] = []
-  const ids = (
-    key: KitchenOnboardingSupportField,
-    max: number,
-    label: string
-  ) => {
-    if (value[key] === undefined) {
-      missingFields.push(key)
-      return []
-    }
-    return boundedIds(value[key], max, label)
+  if (!value) return null
+  const allowedKeys = new Set([
+    'operator_ids',
+    'team_ids',
+    'join_requests',
+    'created',
+    'updated',
+  ])
+  const unsupported = Object.keys(value).find(key => !allowedKeys.has(key))
+  if (unsupported) {
+    fail(409, `Kitchen App support contains unsupported field: ${unsupported}.`)
   }
 
   return {
-    support: {
-      operatorIds: ids('operator_ids', 50, 'Kitchen operators'),
-      teamIds: ids('team_ids', 100, 'Kitchen team'),
-      joinRequests: ids('join_requests', 100, 'Kitchen join requests'),
-    },
-    missingFields,
+    operatorIds: boundedIds(value.operator_ids, 50, 'Kitchen operators'),
+    teamIds: boundedIds(value.team_ids, 100, 'Kitchen team'),
+    joinRequests: boundedIds(
+      value.join_requests,
+      100,
+      'Kitchen join requests'
+    ),
   }
 }
 

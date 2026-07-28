@@ -47,6 +47,8 @@ Explain workspace/package command context.
 - `pnpm firebase:rules:render` (read-only drift check; pass `--write` only for
   an intentional local artifact regeneration)
 - `pnpm sync:misebox-public-card-snapshots -- --project <id> --database <id>`
+  (dry-run the guarded Kitchen/Place-to-Menu display snapshot sync; Company
+  roots are excluded)
 - `pnpm gitsave`
 - `pnpm --dir <package-or-app> exec tsc --noEmit`
 - `pnpm --dir <app> exec nuxi typecheck`

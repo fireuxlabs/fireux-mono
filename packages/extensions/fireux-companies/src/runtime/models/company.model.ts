@@ -1,19 +1,20 @@
 // FILE: packages/extensions/fireux-companies/src/runtime/models/company.model.ts
 
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Executable canon: CompanyRoleRecord below and scripts/_lib/entity-matrix.mjs.
  *
- * Family: Domain Root
- * Storage: root canonical model
+ * Family: Place-owned role Record
+ * Storage: root-stored same-id role marker
  * Root path: /companies/<placeId>
  * Root link: company identity is anchored to Place via the same root id
  *
  * Decision note:
- * - Company is a root entity layered on top of Place, not a console-owned record.
- * - The root Place id stays the stable link instead of inventing a second company identity.
- * - If that relationship changes later, update the models README first, then this file.
+ * - Company is a Place role, not a second independent identity.
+ * - The root Place id stays the stable link instead of inventing a company id.
+ * - Promote Company only if independent legal/lifecycle truth later survives a Place.
  */
 export const CompanyStorage = {
   shape: 'public/root',
@@ -21,6 +22,24 @@ export const CompanyStorage = {
   collection: 'companies',
   idParam: 'placeId',
 } as const
+
+export const CompanyRoleRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'Company',
+  family: ['place'],
+  identity: 'root',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'projection',
+  status: 'confirmed',
+  console: false,
+  root: CompanyStorage.path,
+  parent: 'Place',
+  notes: [
+    'Company is an exact stamps-only same-id role marker over a required canonical Place.',
+    'Company stores no Place identity and has no independent lifecycle or App support.',
+  ],
+})
 
 export const CompanyModel = {
   id: '' as string,

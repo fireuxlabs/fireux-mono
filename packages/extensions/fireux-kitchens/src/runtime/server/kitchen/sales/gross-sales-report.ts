@@ -15,6 +15,7 @@ import type {
   KitchenFinanceDailySummary,
   KitchenFinanceItemSummary,
   KitchenFinanceReportPeriod,
+  KitchenFinanceTransactionSummary,
   KitchenGrossSalesReport,
 } from '../../../models/kitchen/finance-report.model.ts'
 import {
@@ -62,6 +63,11 @@ type ValidatedReportLine = Omit<
 }
 
 type ValidatedReportSale = {
+  sourceId: string
+  closedById: string
+  orderNumber: string
+  orderType: KitchenFinanceTransactionSummary['order_type']
+  channel: KitchenFinanceTransactionSummary['channel']
   currencyCode: string
   occurredAt: Date
   grossSalesMinor: number
@@ -325,6 +331,80 @@ export function requireKitchenGrossSalesReportPeriodRange(input: {
   }
 }
 
+function requireLocalDate(value: unknown, label: string): string {
+  if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+    return inputError(`${label} must be a YYYY-MM-DD date.`)
+  }
+  const date = new Date(`${value}T00:00:00.000Z`)
+  if (!Number.isFinite(date.getTime()) || date.toISOString().slice(0, 10) !== value) {
+    return inputError(`${label} must be a valid calendar date.`)
+  }
+  return value
+}
+
+export function requireKitchenGrossSalesReportLocalDateRange(input: {
+  fromDate: unknown
+  toDate: unknown
+  timezone: unknown
+  now?: Date
+}) {
+  const timezone = requireCanonicalTimezone(input.timezone)
+  const now = input.now ?? new Date()
+  if (!(now instanceof Date) || !Number.isFinite(now.getTime())) {
+    return invariantError('Kitchen Finance current time is invalid.')
+  }
+  const formatter = localDateFormatter(timezone)
+  const fromLocalDate = requireLocalDate(input.fromDate, 'Report start')
+  const toLocalDate = requireLocalDate(input.toDate, 'Report end')
+  const today = formatLocalDate(now, formatter)
+  if (fromLocalDate > toLocalDate) {
+    return inputError('Report end must be on or after report start.')
+  }
+  if (toLocalDate > today) {
+    return inputError('Report end must not be after today.')
+  }
+  const exclusiveToLocalDate = addLocalDateDays(toLocalDate, 1)
+  const range = requireKitchenGrossSalesReportRange({
+    from: startOfLocalDate(fromLocalDate, formatter).toISOString(),
+    to: startOfLocalDate(exclusiveToLocalDate, formatter).toISOString(),
+  })
+  return { timezone, now, range }
+}
+
+export function requireKitchenGrossSalesReportPresetRange(input: {
+  preset: unknown
+  timezone: unknown
+  now?: Date
+}) {
+  if (input.preset !== 'today' && input.preset !== 'last-week') {
+    return inputError('Report preset must be today or last-week.')
+  }
+  const timezone = requireCanonicalTimezone(input.timezone)
+  const now = input.now ?? new Date()
+  if (!(now instanceof Date) || !Number.isFinite(now.getTime())) {
+    return invariantError('Kitchen Finance current time is invalid.')
+  }
+  const formatter = localDateFormatter(timezone)
+  const today = formatLocalDate(now, formatter)
+  if (input.preset === 'today') {
+    return requireKitchenGrossSalesReportLocalDateRange({
+      fromDate: today,
+      toDate: today,
+      timezone,
+      now,
+    })
+  }
+  const weekday = new Date(`${today}T00:00:00.000Z`).getUTCDay()
+  const daysSinceMonday = (weekday + 6) % 7
+  const thisMonday = addLocalDateDays(today, -daysSinceMonday)
+  return requireKitchenGrossSalesReportLocalDateRange({
+    fromDate: addLocalDateDays(thisMonday, -7),
+    toDate: addLocalDateDays(thisMonday, -1),
+    timezone,
+    now,
+  })
+}
+
 function money(amountMinor: number, currencyCode: string): FinancialMoney {
   return {
     amount_minor: requireReportMinorAmount(
@@ -582,6 +662,14 @@ function validateSale(input: {
   }
 
   return {
+    sourceId: input.row.id,
+    closedById: requiredId(
+      record(sale.actor).id,
+      'Kitchen Sale closing user id'
+    ),
+    orderNumber: requiredText(sale.order_number, 'Kitchen Sale order number', 120),
+    orderType: sale.order_type,
+    channel: sale.channel,
     currencyCode: pricing.total.currency_code,
     occurredAt: new Date(occurredAtMs),
     grossSalesMinor: pricing.total.amount_minor,
@@ -927,6 +1015,7 @@ export function aggregateKitchenGrossSalesReport(input: {
   range: ReportRange
   timezone: unknown
   rows: readonly ReportRow[]
+  actorDisplayNames?: ReadonlyMap<string, string>
   generatedAt?: Date
 }): KitchenGrossSalesReport {
   const appId = requiredId(input.appId, 'Kitchen Finance App id')
@@ -942,6 +1031,7 @@ export function aggregateKitchenGrossSalesReport(input: {
   }
   const totals = new Map<string, CurrencyAccumulator>()
   const daily = new Map<string, DailyAccumulator>()
+  const transactions: KitchenFinanceTransactionSummary[] = []
   const itemGroupCounter = { value: 0 }
   const seenRows = new Set<string>()
   const dateFormatter = localDateFormatter(timezone)
@@ -977,6 +1067,39 @@ export function aggregateKitchenGrossSalesReport(input: {
     totals.set(sale.currencyCode, currency)
 
     const date = formatLocalDate(sale.occurredAt, dateFormatter)
+    const itemQuantity = sale.lines.reduce(
+      (total, line) => addCount(
+        total,
+        line.quantity,
+        'Kitchen Finance transaction item quantity'
+      ),
+      0
+    )
+    const firstLine = sale.lines[0]
+    transactions.push({
+      source: {
+        kind: 'kitchen_sale',
+        id: sale.sourceId,
+      },
+      order_number: sale.orderNumber,
+      occurred_at: sale.occurredAt.toISOString(),
+      status: 'completed',
+      order_type: sale.orderType,
+      channel: sale.channel,
+      closed_by: input.actorDisplayNames?.get(sale.closedById) ?? 'Team member',
+      counterparty: 'Guest',
+      summary: sale.lines.length === 1
+        ? `${firstLine.label} · ${itemQuantity} item${itemQuantity === 1 ? '' : 's'}`
+        : `${firstLine.label} + ${sale.lines.length - 1} · ${itemQuantity} items`,
+      item_quantity: itemQuantity,
+      signed_amount: money(sale.grossSalesMinor, sale.currencyCode),
+      gross_sale: money(sale.grossSalesMinor, sale.currencyCode),
+      items: sale.lines.map(line => ({
+        label: line.label,
+        quantity: line.quantity,
+        line_gross: money(line.lineGrossMinor, sale.currencyCode),
+      })),
+    })
     const day = daily.get(date) ?? {
       saleCount: 0,
       currencies: new Map(),
@@ -1002,6 +1125,33 @@ export function aggregateKitchenGrossSalesReport(input: {
     .map(buildCurrencySummary)
   const dailySummaries = buildDailySummaries(daily)
   reconcileDailySummaries(currencies, dailySummaries, input.rows.length)
+  transactions.sort((left, right) =>
+    right.occurred_at.localeCompare(left.occurred_at)
+    || right.order_number.localeCompare(left.order_number)
+  )
+  const transactionTotals = new Map<string, number>()
+  for (const transaction of transactions) {
+    transactionTotals.set(
+      transaction.gross_sale.currency_code,
+      requireReportMinorAmount(
+        (transactionTotals.get(transaction.gross_sale.currency_code) ?? 0)
+        + transaction.gross_sale.amount_minor,
+        'Kitchen Finance transaction total'
+      )
+    )
+  }
+  if (
+    transactions.length !== input.rows.length
+    || transactionTotals.size !== currencies.length
+    || currencies.some(currency =>
+      transactionTotals.get(currency.currency_code)
+      !== currency.gross_sales.amount_minor
+    )
+  ) {
+    return invariantError(
+      'Kitchen Finance transactions do not reconcile to the report.'
+    )
+  }
 
   return {
     app_id: appId,
@@ -1015,6 +1165,7 @@ export function aggregateKitchenGrossSalesReport(input: {
     sale_count: input.rows.length,
     currencies,
     daily: dailySummaries,
+    transactions,
     complete: true,
   }
 }
@@ -1023,17 +1174,33 @@ export async function readKitchenGrossSalesReport(input: {
   db: Firestore
   appId: string
   kitchenId: string
-  period: unknown
+  period?: unknown
+  preset?: unknown
+  fromDate?: unknown
+  toDate?: unknown
   timezone: unknown
   now?: Date
 }): Promise<KitchenGrossSalesReport> {
   const appId = requiredId(input.appId, 'Kitchen Finance App id')
   const kitchenId = requiredId(input.kitchenId, 'Kitchen Finance Kitchen id')
-  const selection = requireKitchenGrossSalesReportPeriodRange({
-    period: input.period,
-    timezone: input.timezone,
-    ...(input.now ? { now: input.now } : {}),
-  })
+  const selection = input.preset != null
+    ? requireKitchenGrossSalesReportPresetRange({
+        preset: input.preset,
+        timezone: input.timezone,
+        ...(input.now ? { now: input.now } : {}),
+      })
+    : input.fromDate != null || input.toDate != null
+      ? requireKitchenGrossSalesReportLocalDateRange({
+        fromDate: input.fromDate,
+        toDate: input.toDate,
+        timezone: input.timezone,
+        ...(input.now ? { now: input.now } : {}),
+        })
+      : requireKitchenGrossSalesReportPeriodRange({
+          period: input.period,
+          timezone: input.timezone,
+          ...(input.now ? { now: input.now } : {}),
+        })
   const snapshot = await input.db
     .collection(`apps/${appId}/kitchens/${kitchenId}/sales`)
     .where('occurred_at', '>=', selection.range.fromTimestamp)
@@ -1041,6 +1208,26 @@ export async function readKitchenGrossSalesReport(input: {
     .orderBy('occurred_at', 'asc')
     .limit(KITCHEN_GROSS_SALES_REPORT_MAX_SALES + 1)
     .get()
+  const actorIds = [...new Set(snapshot.docs.flatMap((row) => {
+    const actorId = record(record(row.data()).actor).id
+    return typeof actorId === 'string' && actorId.trim() ? [actorId] : []
+  }))]
+  const actorSnapshots = actorIds.length
+    ? await input.db.getAll(
+        ...actorIds.map(actorId => input.db.collection('users').doc(actorId))
+      )
+    : []
+  const actorDisplayNames = new Map(
+    actorSnapshots.flatMap((actorSnapshot) => {
+      if (!actorSnapshot.exists) return []
+      const user = record(actorSnapshot.data())
+      const identity = record(user.identity)
+      const displayName = String(
+        identity.display_name ?? user.display_name ?? user.name ?? ''
+      ).trim().slice(0, 120)
+      return displayName ? [[actorSnapshot.id, displayName] as const] : []
+    })
+  )
 
   return aggregateKitchenGrossSalesReport({
     appId,
@@ -1048,6 +1235,7 @@ export async function readKitchenGrossSalesReport(input: {
     range: selection.range,
     timezone: selection.timezone,
     rows: snapshot.docs,
+    actorDisplayNames,
     generatedAt: selection.now,
   })
 }

@@ -1,6 +1,6 @@
 <template>
   <PublicProfileDirectoryCard
-    variant="card"
+    variant="preview"
     kind-label="Professional"
     icon="i-lucide-briefcase-business"
     :to="to"

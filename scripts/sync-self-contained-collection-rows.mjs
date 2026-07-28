@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 // @fireux-script
 // last_used: 2026-07-22
-// usage_note: sync approved Misebox downstream list/card snapshots through an explicit, backed-up operation.
+// usage_note: sync approved Misebox Menu list/card snapshots through an explicit, backed-up operation.
 // Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: classify the explicit dry-run-first snapshot sync entrypoint.
 // Concurrent edit — 2026-07-20 14:14 CEST — User identity boundary: stop materializing User identity in root or app profile rows.
 // Concurrent edit — 2026-07-20 22:04 CEST — Place-root authority pass: stop copying Place truth onto Kitchen roots or inferring same-id links.
 // Concurrent edit — 2026-07-20 22:10 CEST — Repo Efficiency Pass 4 of 6: add explicit target, protected preimage, atomic version checks, verification, and cleanup.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: stop copying workplace snapshots onto canonical Job roots.
+// Concurrent edit — 2026-07-28 — Company authority audit: stop copying Place snapshots onto canonical stamps-only Company roots.
 
 import path from 'node:path'
 import { mkdir } from 'node:fs/promises'
@@ -237,21 +238,6 @@ const kitchenPlaceCardSnapshot = (place) =>
     image_shade: text(place.image_shade),
   })
 
-const placeSnapshot = (place) =>
-  compactObject({
-    name: text(place.name),
-    short_name: text(place.short_name),
-    brand_tagline: text(place.brand_tagline),
-    short_address: text(place.short_address),
-    formatted_address: text(place.formatted_address),
-    lat: typeof place.lat === 'number' ? place.lat : undefined,
-    lng: typeof place.lng === 'number' ? place.lng : undefined,
-    image_url: text(place.image_url || place.cover_image),
-    image_shade: text(place.image_shade),
-    phone: text(place.phone),
-    website: text(place.website),
-  })
-
 function kitchenName(kitchen) {
   const identity = record(kitchen.identity)
   return (
@@ -304,10 +290,9 @@ function queuePatch({
 }
 
 async function buildPlan(db, actor) {
-  const [places, kitchens, companies, menus] = await Promise.all([
+  const [places, kitchens, menus] = await Promise.all([
     loadCollection(db, 'places'),
     loadCollection(db, 'kitchens'),
-    loadCollection(db, 'companies'),
     loadCollection(db, 'menus'),
   ])
   const now = Timestamp.now()
@@ -325,20 +310,6 @@ async function buildPlan(db, actor) {
       ...kitchenPlaceCardSnapshot(place.effectiveData),
     }
     kitchen.dependencies = uniqueEntries([kitchen, place])
-  }
-
-  for (const company of companies.values()) {
-    const place = places.get(company.id)
-    if (!place) continue
-    queuePatch({
-      actor,
-      dependencies: [place],
-      now,
-      patch: placeSnapshot(place.effectiveData),
-      patches,
-      reason: 'company place public card snapshot',
-      target: company,
-    })
   }
 
   for (const menu of menus.values()) {

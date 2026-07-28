@@ -13,11 +13,17 @@
       </div>
       <div class="rounded-lg border border-primary/20 bg-primary/5 p-3">
         <dt class="text-xs text-muted">Quantity sold</dt>
-        <dd class="mt-1 text-lg font-semibold text-highlighted">{{ dish.finance.quantitySold }}</dd>
+        <dd class="mt-1 text-lg font-semibold text-highlighted">
+          {{ dish.finance.quantitySold ?? 'No completed sales' }}
+        </dd>
       </div>
       <div class="rounded-lg border border-primary/20 bg-primary/5 p-3 text-right">
         <dt class="text-xs text-muted">Total sales</dt>
-        <dd class="mt-1 text-lg font-semibold text-highlighted">{{ formatMoney(dish.finance.totalSalesMinor) }}</dd>
+        <dd class="mt-1 text-lg font-semibold text-highlighted">
+          {{ dish.finance.totalSalesMinor === null
+            ? '—'
+            : formatMoney(dish.finance.totalSalesMinor) }}
+        </dd>
       </div>
       <div class="rounded-lg bg-elevated/40 p-3">
         <dt class="text-xs text-muted">Cost of sales</dt>

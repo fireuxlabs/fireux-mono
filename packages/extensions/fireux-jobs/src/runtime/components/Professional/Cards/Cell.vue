@@ -1,6 +1,6 @@
 <template>
   <PublicProfileDirectoryCard
-    variant="card"
+    variant="cell"
     kind-label="Professional"
     icon="i-lucide-briefcase-business"
     tone="primary"

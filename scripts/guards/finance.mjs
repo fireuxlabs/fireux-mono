@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-27
+// last_used: 2026-07-28
 // usage_note: validates the product-neutral Finance presentation boundary.
 // FILE: scripts/guards/finance.mjs
 
@@ -27,10 +27,18 @@ const FILES = {
     'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/FinanceRoundup.vue',
   kitchenConsole:
     'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue',
+  kitchenConsolePage:
+    'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/finance.vue',
   kitchenReportModel:
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/finance-report.model.ts',
   kitchenReportProjection:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report.ts',
+  kitchenDemoFinance:
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/finance.ts',
+  kitchenDemoOrderHistory:
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Orders/history.ts',
+  kitchenDemoScenarios:
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts',
 }
 
 function read(repoRoot, file, violations) {
@@ -66,6 +74,12 @@ export async function run(ctx) {
   const kitchenDayDetail = read(repoRoot, FILES.kitchenDayDetail, violations)
   const kitchenRoundup = read(repoRoot, FILES.kitchenRoundup, violations)
   const kitchenConsole = read(repoRoot, FILES.kitchenConsole, violations)
+  const kitchenConsolePage = read(
+    repoRoot,
+    FILES.kitchenConsolePage,
+    violations
+  )
+  const kitchenConsoleComposition = `${kitchenConsolePage}\n${kitchenConsole}`
   const kitchenReportModel = read(
     repoRoot,
     FILES.kitchenReportModel,
@@ -74,6 +88,21 @@ export async function run(ctx) {
   const kitchenReportProjection = read(
     repoRoot,
     FILES.kitchenReportProjection,
+    violations
+  )
+  const kitchenDemoFinance = read(
+    repoRoot,
+    FILES.kitchenDemoFinance,
+    violations
+  )
+  const kitchenDemoOrderHistory = read(
+    repoRoot,
+    FILES.kitchenDemoOrderHistory,
+    violations
+  )
+  const kitchenDemoScenarios = read(
+    repoRoot,
+    FILES.kitchenDemoScenarios,
     violations
   )
   const packageSource = read(repoRoot, FILES.package, violations)
@@ -95,19 +124,66 @@ export async function run(ctx) {
     }
   }
 
-  for (const marker of [
-    'aria-label="Finance report period"',
-    ':aria-pressed="selectedPeriod === option.value"',
-    '<KitchenFinanceSummary',
-    '<KitchenFinanceTrend',
-    '<KitchenFinanceCalendar',
-    '<KitchenFinanceDayDetail',
-    '<KitchenFinanceRoundup',
-    'report.timezone',
-    'activeCurrencyCode',
-    '<MoleculesStateCard',
+  for (const [source, file, markers] of [
+    [kitchenDemoFinance, FILES.kitchenDemoFinance, [
+      "kind: 'completed_order'",
+      'source: {',
+      'orderId: order.id',
+      'placedAt: order.placedAt',
+      'occurredAt: order.completedAt',
+      'closedByTeamMemberId:',
+      'signedAmountMinor: order.pricing.totalMinor',
+      "counterparty: 'Guest'",
+      'summary:',
+    ]],
+    [kitchenDemoOrderHistory, FILES.kitchenDemoOrderHistory, [
+      'KitchenDemoCompletedOrder',
+      'serviceNumber: number',
+      'placedAt: string',
+      'completedAt: string',
+      'unitPriceMinor: number',
+      'lineTotalMinor: number',
+      'deanosKitchenDemoServices',
+      'deanosKitchenDemoCompletedOrders',
+    ]],
+    [kitchenDemoScenarios, FILES.kitchenDemoScenarios, [
+      'seenFinanceOrderIds',
+      "transaction.source.kind !== 'completed_order'",
+      'transaction.source.id !== sourceOrder.id',
+      'transaction.occurredAt !== sourceOrder.completedAt',
+      'transaction.signedAmountMinor !== sourceOrder.pricing.totalMinor',
+      'closer.display_name !== transaction.closedBy',
+    ]],
   ]) {
-    if (!kitchenConsole.includes(marker)) {
+    for (const marker of markers) {
+      if (!source.includes(marker)) {
+        violations.push(
+          `${file}: missing Deanos completed-order identity reconciliation (${marker})`
+        )
+      }
+    }
+  }
+
+  for (const marker of [
+    '<UDashboardToolbar>',
+    'aria-label="Finance report period"',
+    '<UPopover>',
+    '<UCalendar',
+    'range',
+    'selectedPeriodLabel',
+    'Simulation date · Today:',
+    'simulationDate',
+    ':from-date=',
+    ':to-date=',
+    'aria-label="Transaction direction"',
+    'filteredTransactions',
+    'Inspect order',
+    '<UModal',
+    'No Kitchen-owned outgoing source is connected for this view.',
+    "label: 'Source'",
+    "label: 'Service'",
+  ]) {
+    if (!kitchenConsoleComposition.includes(marker)) {
       violations.push(
         `${FILES.kitchenConsole}: missing Kitchen Finance report composition (${marker})`
       )
@@ -118,6 +194,21 @@ export async function run(ctx) {
     violations.push(
       `${FILES.kitchenConsole}: Kitchen Console must not read raw FinancialFacts`
     )
+  }
+  for (const unsupported of [
+    "value: 'costs'",
+    "value: 'profit-loss'",
+    "value: 'tax-cash'",
+    'Profit & loss',
+    'VAT collected',
+    'Unpaid supplier invoices',
+    'Operating profit',
+  ]) {
+    if (kitchenConsole.includes(unsupported)) {
+      violations.push(
+        `${FILES.kitchenConsole}: unsupported Finance family has no dated domain producer (${unsupported})`
+      )
+    }
   }
 
   for (const marker of [
@@ -141,6 +232,16 @@ export async function run(ctx) {
     'delivery_fees',
     'timezone: string',
     'daily: KitchenFinanceDailySummary[]',
+    'transactions: KitchenFinanceTransactionSummary[]',
+    'source: {',
+    "kind: 'completed_order' | 'kitchen_sale'",
+    'placed_at?: string',
+    "status: 'completed'",
+    'counterparty: string',
+    'summary: string',
+    'signed_amount: FinancialMoney',
+    'items: {',
+    'closed_by: string',
   ]) {
     if (!kitchenReportModel.includes(marker)) {
       violations.push(
@@ -156,9 +257,16 @@ export async function run(ctx) {
     'KITCHEN_GROSS_SALES_REPORT_MAX_LINES_PER_SALE',
     'KITCHEN_GROSS_SALES_REPORT_MAX_LINES',
     'requireKitchenGrossSalesReportPeriodRange',
+    'requireKitchenGrossSalesReportLocalDateRange',
+    'requireKitchenGrossSalesReportPresetRange',
     'requireKitchenOrderPricing',
     'localDateFormatter',
     'reconcileDailySummaries',
+    'transactions do not reconcile',
+    "kind: 'kitchen_sale'",
+    "status: 'completed'",
+    "counterparty: 'Guest'",
+    'signed_amount:',
     'item_sales',
     'delivery_fees',
   ]) {

@@ -32,7 +32,7 @@ try {
 }
 
 function usage() {
-  console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--checked] [--prepare] [--smoke] [--go-qr-provider deployed|local|url]')
+  console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--checked] [--prepare] [--smoke] [--host [host]] [--go-qr-provider deployed|local|url]')
   console.error(`Known apps: ${DEV_APP_KEYS.join(', ')}`)
 }
 
@@ -98,8 +98,31 @@ function collectPassthroughArgs(argv) {
 }
 
 const passthroughArgs = collectPassthroughArgs(rawArgs)
+const loopbackHosts = new Set(['localhost', '127.0.0.1', '::1', '[::1]'])
+const hasExplicitHost = passthroughArgs.some(
+  token => token === '--host' || token?.startsWith('--host=')
+)
 const deployedGoQrProvider = 'https://go-qr.web.app'
 const localGoQrProvider = 'http://localhost:3013'
+
+function requestsNetworkHost(argv) {
+  for (let index = 0; index < argv.length; index += 1) {
+    const token = argv[index]
+    if (token === '--host') {
+      const value = argv[index + 1]
+      return !value || value.startsWith('--') || !loopbackHosts.has(value)
+    }
+
+    if (token?.startsWith('--host=')) {
+      const value = token.slice('--host='.length).trim()
+      return !value || !loopbackHosts.has(value)
+    }
+  }
+
+  return false
+}
+
+const shouldExposeNetwork = requestsNetworkHost(passthroughArgs)
 
 function normalizeUrl(value) {
   return String(value || '').trim().replace(/\/+$/, '')
@@ -169,6 +192,43 @@ function getProcessCwd(pid) {
   return pathLine?.slice(1) || ''
 }
 
+function getProcessListenerNames(pid) {
+  const check = spawnSync(
+    'lsof',
+    ['-nP', '-a', '-p', pid, `-iTCP:${app.port}`, '-sTCP:LISTEN', '-Fn'],
+    { encoding: 'utf8' }
+  )
+
+  if (check.error || check.status !== 0) return []
+
+  return String(check.stdout || '')
+    .split(/\r?\n/)
+    .filter(line => line.startsWith('n'))
+    .map(line => line.slice(1))
+}
+
+function hasNetworkVisibleListener(pid) {
+  return getProcessListenerNames(pid).some((listener) => {
+    const host = listener.slice(0, listener.lastIndexOf(':'))
+    return host === '*' || host === '0.0.0.0' || host === '[::]'
+  })
+}
+
+async function waitForPortRelease(port, timeoutMs = 5000) {
+  const startedAt = Date.now()
+
+  while (Date.now() - startedAt < timeoutMs) {
+    if (!getPortListenerPids(port).length) return
+    await new Promise(resolve => setTimeout(resolve, 100))
+  }
+
+  console.error(
+    `[dev] The existing ${app.name} server did not release port ${port}. ` +
+    `Run pnpm kill:${appKey}, then retry.`
+  )
+  process.exit(1)
+}
+
 function isSameAppWorkspace(pid) {
   const processCwd = getProcessCwd(pid)
   if (!processCwd) return false
@@ -192,6 +252,24 @@ async function reuseExistingApp(listenerPids) {
       ].join('\n')
     )
     process.exit(1)
+  }
+
+  if (hasExplicitHost) {
+    const bindingReason =
+      shouldExposeNetwork && !listenerPids.some(hasNetworkVisibleListener)
+        ? 'is loopback-only'
+        : 'is already running'
+    console.log(
+      `[dev] Existing ${app.name} server ${bindingReason}; explicit --host starts ` +
+      'a fresh same-checkout server owned by this terminal.'
+    )
+
+    for (const pid of listenerPids) {
+      process.kill(Number(pid), 'SIGTERM')
+    }
+
+    await waitForPortRelease(app.port)
+    return false
   }
 
   const pidLabel = listenerPids.length === 1 ? 'PID' : 'PIDs'

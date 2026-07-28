@@ -92,7 +92,7 @@
               </div>
               <div class="flex flex-wrap gap-2">
                 <UBadge color="neutral" variant="soft">
-                  {{ dishSpec.station }}
+                  {{ getStationName(dishSpec.station) }}
                 </UBadge>
                 <UBadge v-if="dishSpec.portion" color="neutral" variant="soft">
                   {{ dishSpec.portion }} portion
@@ -169,7 +169,7 @@
                   </h2>
                 </div>
                 <UBadge color="neutral" variant="soft">
-                  {{ prepItem.station }}
+                  {{ getStationName(prepItem.station) }}
                 </UBadge>
               </div>
             </template>
@@ -277,7 +277,7 @@
                   {{ requirement.title }}
                 </p>
                 <p class="mt-1 text-xs text-muted">
-                  {{ requirement.station }}
+                  {{ getStationName(requirement.station) }}
                 </p>
               </div>
               <UBadge color="neutral" variant="soft">
@@ -318,6 +318,7 @@ const {
   recipes,
   formatProductionAmount,
   getIngredientName,
+  getStationName,
   miseRequirements,
   menuUsage,
   finance,

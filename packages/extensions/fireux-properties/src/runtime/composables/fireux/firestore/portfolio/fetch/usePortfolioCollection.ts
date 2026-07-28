@@ -36,7 +36,8 @@ type PortfolioCollectionDoc = Partial<Portfolio> & {
 type PortfolioCollectionItem = PortfolioSurface & { id?: string }
 
 const DEFAULT_COLLECTION_PATH = PortfolioStorage.rootCollection
-const TEST_COLLECTION_PATH = 'test-portfolios'
+const UNSUPPORTED_TEST_SOURCE_MESSAGE =
+  '[fireux-properties] Portfolio Test source is unsupported: no canonical simulation producer exists.'
 
 export type PortfolioCollectionFilterValue = string | number | null | undefined
 export type PortfolioCollectionFilter = {
@@ -108,9 +109,6 @@ export function usePortfolioCollection(
   const usesTargetedRootRead = computed(
     () => hasFilter.value || hasOperatorFilter.value
   )
-  const testCollectionPath = computed(() =>
-    sourceMode.value === 'test' ? TEST_COLLECTION_PATH : ''
-  )
   const liveRootCollectionPath = computed(() =>
     sourceMode.value === 'live' && !usesTargetedRootRead.value
       ? DEFAULT_COLLECTION_PATH
@@ -120,9 +118,6 @@ export function usePortfolioCollection(
     sourceMode.value === 'live' && usesTargetedRootRead.value
       ? DEFAULT_COLLECTION_PATH
       : ''
-  )
-  const testSource = firestoreFetchCollection<PortfolioCollectionDoc>(
-    testCollectionPath
   )
   const resolvedAppId = computed(() => normalizeString(appId))
   const appSupportCollectionPath = computed(() =>
@@ -266,9 +261,7 @@ export function usePortfolioCollection(
 
   const collectionItems = computed<PortfolioCollectionItem[]>(() => {
     if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') {
-      return normalizeRootItems(testSource.value ?? [])
-    }
+    if (sourceMode.value === 'test') return []
     if (!usesTargetedRootRead.value) {
       return normalizeRootItems(liveRootSource.value ?? [])
     }
@@ -297,7 +290,7 @@ export function usePortfolioCollection(
   const count = computed(() => portfolios.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    if (sourceMode.value === 'test') return testSource.pending.value
+    if (sourceMode.value === 'test') return false
     if (!usesTargetedRootRead.value) return liveRootSource.pending.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
@@ -435,7 +428,9 @@ export function usePortfolioCollection(
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
-    if (sourceMode.value === 'test') return testSource.error.value
+    if (sourceMode.value === 'test') {
+      return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
+    }
     if (!usesTargetedRootRead.value) return liveRootSource.error.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
     return (hasOperatorFilter.value

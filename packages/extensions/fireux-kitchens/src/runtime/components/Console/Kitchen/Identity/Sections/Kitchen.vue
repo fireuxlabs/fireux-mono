@@ -110,8 +110,10 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { usePlaceUpdate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceUpdate'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { computed, ref } from 'vue'
@@ -134,6 +136,10 @@ const props = defineProps<{
 
 const collectionPath = computed(() => props.collectionPath)
 const { updateKitchen } = useKitchenUpdate({ collectionPath })
+const { appId } = useFireUXConfig()
+const { updateCoverImage } = usePlaceUpdate({
+  authority: () => ({ appId, kitchenId: props.kitchenId }),
+})
 const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const toast = useToastify()
 
@@ -222,11 +228,10 @@ async function handleCoverFile(event: Event) {
     if (!props.canWrite || props.kitchenId !== kitchenId) {
       throw new Error('The selected Kitchen changed before the cover could be saved.')
     }
-    await updateKitchenField(
-      { cover_image: url },
-      'Cover image updated',
-      'Failed to update cover image'
-    )
+    const placeId = String(props.kitchen?.place_id ?? '').trim()
+    if (!placeId) throw new Error('The linked Place is required.')
+    await updateCoverImage(url, { id: placeId })
+    toast.add({ title: 'Cover image updated', icon: 'i-heroicons-check-circle' })
   } catch (error) {
     const description =
       error instanceof Error ? error.message : 'Please try again.'

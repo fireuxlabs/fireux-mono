@@ -1,6 +1,6 @@
 <template>
   <PublicProfileDirectoryCard
-    variant="card"
+    variant="cell"
     kind-label="Chef"
     icon="i-lucide-chef-hat"
     tone="warning"

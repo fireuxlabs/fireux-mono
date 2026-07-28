@@ -34,7 +34,8 @@ type UseSupplierFetchOptions = {
 }
 
 const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
-const TEST_COLLECTION_PATH = 'test-suppliers'
+const UNSUPPORTED_TEST_SOURCE_MESSAGE =
+  '[fireux-suppliers] Supplier Test source is unsupported: no canonical simulation producer exists.'
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 const normalizeIds = (value: unknown) =>
   Array.isArray(value)
@@ -59,17 +60,13 @@ export function useSupplierFetch(
     : computed<SupplierFetchSource>(() =>
         typeof options.source === 'string' ? options.source : 'live'
       )
-  const pathRef = computed(() => {
-    return sourceRef.value === 'test' ? TEST_COLLECTION_PATH : DEFAULT_COLLECTION_PATH
-  })
-
   const documentPath = computed(() =>
-    sourceRef.value === 'demo' || keyRef.value === 'slug'
+    sourceRef.value !== 'live' || keyRef.value === 'slug'
       ? ''
-      : String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
+      : DEFAULT_COLLECTION_PATH
   )
   const documentId = computed(() =>
-    sourceRef.value === 'demo' || keyRef.value === 'slug'
+    sourceRef.value !== 'live' || keyRef.value === 'slug'
       ? ''
       : String(idRef.value || '').trim()
   )
@@ -95,7 +92,7 @@ export function useSupplierFetch(
 
   const supplier = computed<SupplierFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
-    if (sourceRef.value === 'demo') return null
+    if (sourceRef.value !== 'live') return null
 
     if (keyRef.value === 'slug') {
       const entry = slugSource.value?.[0]
@@ -116,13 +113,16 @@ export function useSupplierFetch(
 
   const pending = computed(() => {
     const docId = String(idRef.value || '').trim()
-    if (sourceRef.value === 'demo') return false
+    if (sourceRef.value !== 'live') return false
     if (!docId) return false
     if (keyRef.value === 'slug') return slugSource.pending.value
     return source.pending.value
   })
   const error = computed(() => {
     if (sourceRef.value === 'demo') return undefined
+    if (sourceRef.value === 'test') {
+      return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
+    }
     return keyRef.value === 'slug'
       ? slugSource.error.value
       : source.error.value

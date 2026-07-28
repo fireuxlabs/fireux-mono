@@ -265,9 +265,9 @@ export function useKitchenConsoleOverview() {
     {
       key: 'tables',
       label: 'Tables',
-      detail: 'Open table tabs, staged rounds, and billing.',
+      detail: 'Configured tables; open tabs remain separate.',
       icon: 'i-lucide-layout-grid',
-      count: count(tableState.activeTabs.value),
+      count: tableState.tableCount.value,
       pending: Boolean(tableState.pending.value),
       to: '/console/kitchen/tables',
     },

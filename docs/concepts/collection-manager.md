@@ -45,7 +45,7 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 ## Root index manager classes
 
 - Root Simple Collection Manager: fetch root/public collection and render through `useXInterface()` with authored row fields.
-- Root Synced Snapshot Collection Manager: fetch root/public collection whose list/card fields are copied from source truth by `scripts/sync-self-contained-collection-rows.mjs`.
+- Root Synced Snapshot Collection Manager: fetch a root/public collection whose list/card fields are deliberately copied from source truth by an explicit sync seam.
 - Root Projected Collection Manager: fetch a safe server projection because the raw root collection contains fields that should not power public browse UI.
 - Scoped Surface: not a collection manager class; it owns parent-scoped fetching and may reuse cards/lists underneath.
 
@@ -56,13 +56,11 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - `Product`.
 - `Recipe` is not in this class: current recipe storage/fetch is kitchen-scoped and public recipe projection is deferred.
 
-## Root Synced Snapshot Collection Manager members
-
-- `Company` carries public Place snapshot fields copied onto the Company row.
-- `Recipe` may extend Root Simple Collection Manager later if public recipe projection becomes real root truth and needs ingredient/dish enrichment.
-
 ## Root Projected Collection Manager members
 
+- `Company` receives a bounded public Company/Place projection. The canonical
+  Company root is a stamps-only same-id role marker; Place remains the display
+  authority and no Place fields are copied onto Company.
 - `Kitchen` receives a bounded public Kitchen/Place projection. Raw Kitchen
   rows stay sparse and no longer copy shared Place fields. Only published,
   non-test Kitchens with a slug and an existing explicit Place reference enter
@@ -88,6 +86,13 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 ## Snapshot ownership rule
 
 - Generic source entities stay ignorant of consumers. `Place` does not know who copies it.
+- Company roots stay stamps-only; Company list and detail reads join the
+  same-id Place through the bounded server projection.
+- `Place` collection rows always serialize the same bounded ten-key
+  `PublicPlaceProjection`. Live roots and Demo roots may remain sparse/full
+  according to their owning source, but both derive the identical collection
+  JSON shape; unavailable optional display values serialize as empty strings,
+  `image_shade: 'none'`, or `verified: false`.
 - Domain parents may cascade into their domain children. Job roots do not copy
   Company or Place display snapshots; their public projection owns the joins.
 - `User` is the only stored public identity. Profile writes and sync scripts must not copy it into root or app profile rows.
@@ -181,7 +186,10 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 - Scoped operation surfaces should not blindly fetch; they need parent scope and a named scoped surface.
 - Root/public collection managers consume self-contained rows or bounded server
   projections; they do not batch-load linked identities in the browser.
-- Source truth changes must be propagated by an explicit sync seam, currently `scripts/sync-self-contained-collection-rows.mjs`.
+- Deliberately stored downstream snapshots must be propagated by an explicit
+  sync seam. The current `scripts/sync-self-contained-collection-rows.mjs`
+  operation updates Menu display snapshots from their Kitchen/Place source; it
+  must never write Company roots.
 - Its supported command is `pnpm sync:misebox-public-card-snapshots`; it is
   dry-run-first and requires an explicit project/database, target-bound
   confirmation, protected preimage, unchanged source versions, and post-write
@@ -225,12 +233,7 @@ Root Projected Collection Managers
 | `Agent`        | `/api/public/agents`                                 | Server profile/User join  | Jobs-owned allowlist includes deliberate public business contacts only.                                                     |
 | `Professional` | `/api/public/professionals`                          | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                |
 | `Job`          | `/api/public/jobs`                                   | Server Company/Place join | Exact open/public roots join bounded employer and work-location display truth; raw ids, owner, source, and stamps stay private. |
-
-Root Synced Snapshot Collection Managers
-
-| Manager   | Snapshot source                     | Direction | Current note                                                |
-| --------- | ----------------------------------- | --------- | ----------------------------------------------------------- |
-| `Company` | Place by same id                    | Up        | Public Place card fields are copied onto root Company rows. |
+| `Company`      | `/api/companies`                                     | Server Place join         | Exact stamps-only Company roots join the same-id canonical Place; Place display fields are never copied onto Company.       |
 
 Scoped/provided collection surfaces
 

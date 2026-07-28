@@ -1,20 +1,20 @@
 <template>
-  <UCard class="overflow-hidden">
-    <div class="space-y-3">
-      <div class="flex items-center gap-3">
+  <UCard class="preview">
+    <div class="fx-card__stack fx-card__stack--spaced">
+      <div class="fx-card__media">
         <UAvatar
           :src="imageUrl || undefined"
           icon="i-lucide-carrot"
           size="xl"
         />
 
-        <div class="min-w-0 flex-1">
-          <div class="flex items-start justify-between gap-2">
-            <div class="min-w-0">
-              <div class="truncate text-base font-semibold">{{ name }}</div>
+        <div class="fx-card__content">
+          <div class="fx-card__header">
+            <div class="fx-card__content">
+              <div class="fx-card__title fx-card__title--lg">{{ name }}</div>
               <div
                 v-if="subtitle"
-                class="truncate text-xs text-dimmed"
+                class="fx-card__subtitle"
               >
                 {{ subtitle }}
               </div>
@@ -25,7 +25,7 @@
               variant="soft"
               color="neutral"
               size="xs"
-              class="shrink-0"
+              class="fx-card__badge"
             >
               {{ status }}
             </UBadge>
@@ -33,7 +33,7 @@
 
           <div
             v-if="showBody"
-            class="mt-1 line-clamp-2 text-xs text-dimmed"
+            class="fx-card__body"
           >
             <span v-if="prop">{{ prop }}</span>
             <span v-else class="italic">missing</span>
@@ -41,7 +41,7 @@
         </div>
       </div>
 
-      <div v-if="showBadges && (badges?.length ?? 0)" class="flex flex-wrap items-center gap-1">
+      <div v-if="showBadges && (badges?.length ?? 0)" class="fx-card__chips">
         <UBadge
           v-for="badge in badges"
           :key="badge"
@@ -55,23 +55,23 @@
 
       <div
         v-if="details?.length"
-        class="space-y-2 text-xs text-dimmed"
+        class="fx-card__stack fx-card__stack--tight"
       >
         <div
           v-for="item in details"
           :key="item.label"
-          class="grid gap-0.5"
+          class="fx-card__stack"
         >
-          <div class="fx-type-label">
+          <div class="fx-card__label">
             {{ item.label }}
           </div>
-          <div class="truncate">
+          <div class="fx-truncate">
             {{ formatValue(item.value) }}
           </div>
         </div>
       </div>
 
-      <div v-if="$slots.actions" class="pt-1">
+      <div v-if="$slots.actions" class="fx-card__actions">
         <slot name="actions" />
       </div>
     </div>

@@ -1,8 +1,5 @@
 <template>
-  <section
-    class="fireux-ecosystems"
-    aria-labelledby="fireux-ecosystems-title"
-  >
+  <section class="fireux-ecosystems" aria-labelledby="fireux-ecosystems-title">
     <div class="fireux-ecosystems__heading">
       <div>
         <p class="fx-type-headline">Our ecosystems</p>
@@ -11,8 +8,8 @@
 
       <div>
         <p>
-          Each ecosystem brings together apps and operations for a kind of
-          work. If one fits, start there.
+          Each ecosystem brings together apps and operations for a kind of work.
+          If one fits, start there.
         </p>
         <UButton
           to="/ecosystems"
@@ -54,7 +51,7 @@
           label: 'Try again',
           color: 'error',
           variant: 'soft',
-          onClick: () => ecosystemsController.refresh?.(),
+          onClick: refreshEcosystems,
         },
       ]"
     />
@@ -115,11 +112,16 @@ const outcome = computed(() => ecosystemsController.outcome.value)
 const retiredEcosystemSlugs = new Set(['cleanbox'])
 const ecosystems = computed(() =>
   ecosystemsController.ecosystems.value.filter(
-    ecosystem =>
-      ecosystem.status === 'active'
-      && !retiredEcosystemSlugs.has(ecosystem.slug)
+    (ecosystem) =>
+      ecosystem.status === 'active' &&
+      !retiredEcosystemSlugs.has(ecosystem.slug)
   )
 )
+
+async function refreshEcosystems(): Promise<void> {
+  await ecosystemsController.refresh?.()
+}
+
 function appCountLabel(count: number): string {
   return `${count} ${count === 1 ? 'app' : 'apps'}`
 }
@@ -205,13 +207,7 @@ function appCountLabel(count: number): string {
   min-height: 8.5rem;
   padding: calc(var(--spacing) * 5);
   border-radius: calc(var(--ui-radius) * 6);
-  background:
-    radial-gradient(
-      circle at 18% 20%,
-      color-mix(in srgb, var(--ui-primary) 24%, transparent),
-      transparent 52%
-    ),
-    var(--ui-bg-elevated);
+  background: var(--ui-bg-elevated);
 }
 
 .fireux-ecosystems__body {

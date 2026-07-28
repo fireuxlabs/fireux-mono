@@ -1,42 +1,17 @@
 <template>
-  <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: write Place-owned logo truth through explicit linked-Kitchen authority. -->
   <MoleculesDisclosurePanel
-    title="Place"
-    description="Logo, location, and public details."
-    icon="i-lucide-map-pin"
+    title="Kitchen logo"
+    description="The logo used across this Kitchen's Console, menus, and cards."
+    icon="i-lucide-image"
   >
     <div class="mt-4 space-y-4">
         <UCard>
-          <UAlert
-            v-if="!placeId"
-            color="warning"
-            variant="soft"
-            title="No linked Place"
-            description="This kitchen does not have a linked Place yet."
-          />
-
-          <MoleculesStateCard
-            v-else-if="pending"
-            entity="linked place"
-            kind="document"
-            surface="bare"
-            loading
-          />
-
-          <UAlert
-            v-else-if="!place"
-            color="warning"
-            variant="soft"
-            title="Linked Place not found"
-            :description="`Kitchen points to Place ${placeId}, but that record is not available.`"
-          />
-
-          <div v-else class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
+          <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
             <div class="flex flex-col items-center gap-2">
               <MoleculesFormsFirestoreImagePicker
                 v-if="canWrite"
                 :src="logoImageUrl"
-                :alt="place.name || name || 'Kitchen logo'"
+                :alt="name || 'Kitchen logo'"
                 :initials="logoInitials"
                 :avatar-class="logoShadeClass"
                 :update-function="handleLogoUpload"
@@ -44,7 +19,7 @@
               <UAvatar
                 v-else
                 :src="logoImageUrl || undefined"
-                :alt="place.name || name || 'Kitchen logo'"
+                :alt="name || 'Kitchen logo'"
                 :text="logoInitials"
                 icon="i-lucide-image"
                 size="3xl"
@@ -65,7 +40,7 @@
                   Logo
                 </p>
                 <p class="text-xs text-dimmed">
-                  Logo is owned by the linked Place and inherited by Kitchen menus and cards.
+                  This Kitchen identity is the single source for its logo.
                 </p>
               </div>
 
@@ -94,6 +69,7 @@
 
               <div class="flex flex-wrap gap-2">
                 <UButton
+                  v-if="placeId"
                   size="sm"
                   color="neutral"
                   variant="soft"
@@ -112,11 +88,8 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
-import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { usePlaceUpdate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceUpdate'
-import { computed, ref } from 'vue'
-import { useKitchenConsolePlace } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
+import { computed } from 'vue'
+import { useKitchenLogoUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenLogoUpdate'
 import type { KitchenImageShade } from '../../../../../models/kitchen.model'
 import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
 
@@ -127,39 +100,26 @@ const props = defineProps<{
   canWrite: boolean
 }>()
 
-const { uploadImage } = useImageStorage()
 const toast = useToastify()
-const { requireWritableData } = useConsoleWriteGuard('kitchen')
 
-const name = computed(() => readKitchenIdentity(props.kitchen).displayName)
+const identity = computed(() => readKitchenIdentity(props.kitchen))
+const name = computed(() => identity.value.displayName)
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
 const {
-  appId,
-  kitchenId: selectedKitchenId,
-  place,
-  pending,
-} = useKitchenConsolePlace()
-const mutationAuthority = computed(() => ({
-  appId: appId.value,
-  kitchenId: selectedKitchenId.value,
-}))
-const { updateImageShade, updatePlaceImage } = usePlaceUpdate({
-  authority: mutationAuthority,
+  pending: logoUploading,
+  uploadKitchenLogo,
+  updateKitchenLogoShade,
+} = useKitchenLogoUpdate({
+  collectionPath: computed(() => props.collectionPath),
 })
-const imageShade = computed(() => {
-  const placeShade = String(place.value?.image_shade ?? '').trim()
-  return (placeShade || readKitchenIdentity(props.kitchen).imageShade) as KitchenImageShade
-})
+const imageShade = computed(
+  () => identity.value.imageShade as KitchenImageShade
+)
 const logoImageUrl = computed(() =>
-  String(
-    place.value?.image_url ||
-      place.value?.cover_image ||
-      readKitchenIdentity(props.kitchen).imageUrl ||
-      ''
-  ).trim()
+  String(identity.value.logoImageUrl || '').trim()
 )
 const logoInitials = computed(() => {
-  const label = place.value?.name || name.value || 'Kitchen'
+  const label = name.value || 'Kitchen'
   const parts = label.split(/\s+/).filter(Boolean)
   if (!parts.length) return 'K'
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase()
@@ -170,7 +130,6 @@ const logoShadeClass = computed(() => {
   if (imageShade.value === 'dark') return 'fx-avatar-shade--dark'
   return ''
 })
-const logoUploading = ref(false)
 const imageShadeOptions: Array<{
   value: KitchenImageShade
   label: string
@@ -180,17 +139,13 @@ const imageShadeOptions: Array<{
   { value: 'dark', label: 'Dark logo' },
 ]
 
-const updatePlace = async (
+const updateLogo = async (
   action: () => Promise<void>,
   successTitle: string,
   failTitle: string
 ) => {
   if (!props.canWrite) {
     throw new Error('This kitchen is read-only.')
-  }
-
-  if (!placeId.value) {
-    throw new Error('This kitchen has no linked Place.')
   }
 
   try {
@@ -212,33 +167,22 @@ const updatePlace = async (
 
 const handleImageShade = async (value: KitchenImageShade) => {
   if (!props.canWrite) return
-  return updatePlace(
-    () => updateImageShade(value, { id: placeId.value }),
+  return updateLogo(
+    () => updateKitchenLogoShade(props.kitchenId, value),
     'Logo tone updated',
     'Failed to update logo tone'
   )
 }
 
 const handleLogoUpload = async (file: File) => {
-  if (!props.canWrite || !placeId.value || logoUploading.value) return
+  if (!props.canWrite || logoUploading.value) return
 
-  logoUploading.value = true
-  try {
-    requireWritableData()
-    const targetPlaceId = placeId.value
-    const storagePath = `places/${targetPlaceId}/avatar`
-    const url = await uploadImage(storagePath, file)
-    requireWritableData()
-    if (!props.canWrite || placeId.value !== targetPlaceId) {
-      throw new Error('The selected Place changed before the logo could be saved.')
-    }
-    await updatePlace(
-      () => updatePlaceImage(url, { id: targetPlaceId }),
-      'Logo updated',
-      'Failed to update logo'
-    )
-  } finally {
-    logoUploading.value = false
-  }
+  return updateLogo(
+    async () => {
+      await uploadKitchenLogo(props.kitchenId, file)
+    },
+    'Logo updated',
+    'Failed to update logo'
+  )
 }
 </script>

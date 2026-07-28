@@ -16,13 +16,14 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   normalizeFireuxAppScopeState,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
 import {
   BlankStorage,
   type AppBlank,
   type Blank,
   type BlankSurface,
 } from '../../../../models/blank.model'
+import { composeBlankSurface } from '../../../../utils/blank-surface'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -90,7 +91,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
     const appSupportById = new Map<string, AppBlank>()
 
     for (const appSupport of authorisedAppBlanks.value) {
-      const id = text(appSupport.blank_id || appSupport.id)
+      const id = text(appSupport.id)
       if (id) appSupportById.set(id, appSupport)
     }
 
@@ -98,22 +99,18 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
       const id = text(blank.id)
       const appSupport = appSupportById.get(id)
       const authority = readConsoleTargetAuthority(appSupport)
-      const scopeState = normalizeFireuxAppScopeState(blank.app_scope_state)
       if (
         !appSupport ||
         !authority ||
-        !targetIdSet.value.has(id) ||
-        (scopeState !== 'parent_app' && scopeState !== 'tenant_app') ||
-        text(blank.app_scope_app_id) !== text(appId)
+        !targetIdSet.value.has(id)
       ) return []
 
-      return [{
-        ...blank,
-        id,
-        operator_ids: authority.operatorIds,
-        team_ids: authority.teamIds,
-        join_requests: authority.joinRequestIds,
-      }]
+      const surface = composeBlankSurface({
+        blank: { ...blank, id },
+        appSupport,
+        appId: text(appId),
+      })
+      return surface ? [surface] : []
     })
   })
   const active = computed(() => source.value === 'live')
@@ -155,7 +152,7 @@ export function useBlankCollection(options: UseBlankCollectionOptions = {}) {
         failures.push(`${id}: malformed App support authority`)
         continue
       }
-      if (text(support.blank_id || support.id) !== id) {
+      if (text(support.blank_id) !== id) {
         failures.push(`${id}: App support id mismatch`)
       }
       if (

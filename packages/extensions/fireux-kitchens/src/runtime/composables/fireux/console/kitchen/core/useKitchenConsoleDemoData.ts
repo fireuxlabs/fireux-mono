@@ -11,7 +11,10 @@ import {
 import type { KitchenDemoScenario } from '../../../../../demo/kitchen/core/types'
 import type { Dish } from '../../../../../models/kitchen/dish.model'
 
-export type KitchenConsoleDemoScenario = Omit<KitchenDemoScenario, 'kitchen'> & {
+export type KitchenConsoleDemoScenario = Omit<
+  KitchenDemoScenario,
+  'kitchen' | 'services' | 'completedOrders'
+> & {
   kitchen: KitchenSurface
 }
 
@@ -41,6 +44,7 @@ export function useKitchenConsoleDemoData(
           const kitchen = surface({
             kitchen: scenario.kitchen,
             place: scenario.place,
+            scope: scenario.appSupport,
             routeScope: 'demo',
           })
           if (!kitchen) return items
@@ -53,9 +57,14 @@ export function useKitchenConsoleDemoData(
               items: [...section.items],
             })),
           }))
+          const {
+            services: _services,
+            completedOrders: _completedOrders,
+            ...consoleScenario
+          } = scenario
 
           items.push({
-            ...scenario,
+            ...consoleScenario,
             kitchen,
             menus,
             dishes: [...scenario.dishes],
@@ -81,10 +90,15 @@ export function useKitchenConsoleDemoData(
                     day => ({
                       ...day,
                       items: day.items.map(item => ({ ...item })),
+                      transactions: day.transactions.map(transaction => ({
+                        ...transaction,
+                        items: transaction.items.map(item => ({ ...item })),
+                      })),
                     })
                   ),
                 }
               : null,
+            team: scenario.team.map(member => ({ ...member })),
             menuItemComponentDeltas: scenario.menuItemComponentDeltas.map(
               delta => ({
                 ...delta,

@@ -1,6 +1,7 @@
 // FILE: packages/core/fireux-core/config/app/runtime.ts
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: carry explicit App self-join policy into runtime config.
 import type { NuxtConfig } from '@nuxt/schema'
+import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
@@ -12,8 +13,8 @@ export type RuntimeApp = {
   shortName: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
-  /** Optional app-level design pack. Surface-specific packs belong in designPacks. */
-  designPack?: Record<string, unknown>
+  /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */
+  designPack?: FireuxDesignPackConfig
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
   designPacks?: Record<string, Record<string, unknown>>
   /** Optional signed-in uid allowed to access developer-only dashboard tools. */

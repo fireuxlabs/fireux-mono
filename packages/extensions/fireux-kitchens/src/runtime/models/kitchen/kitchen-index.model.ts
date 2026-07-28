@@ -24,6 +24,7 @@ export type PublicKitchenIndexItem = {
   brand_tagline?: string
   formatted_address?: string
   short_address?: string
+  logo_image_url?: string
   image_url?: string
   image_shade?: KitchenImageShade
 }
@@ -74,6 +75,7 @@ export type KitchenConsoleTargetItem = {
     display_name: string
     tagline: string
     image_url: string
+    logo_image_url?: string
     image_shade: KitchenImageShade
     wordmark_no_logo_image_url?: string
     wordmark_image_url?: string

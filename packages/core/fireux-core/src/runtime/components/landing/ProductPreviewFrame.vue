@@ -7,12 +7,10 @@
       `landing-product-preview-frame--controls-${controlsLayout}`,
       `landing-product-preview-frame--footer-${footerTone}`,
       {
-        'landing-product-preview-frame--glow': glow,
-        'landing-product-preview-frame--mark-halo': markHalo,
-        'landing-product-preview-frame--status-wide': statusVisibility === 'wide',
+        'landing-product-preview-frame--status-wide':
+          statusVisibility === 'wide',
         'landing-product-preview-frame--content-inset': contentInset,
         'landing-product-preview-frame--content-stable': contentStable,
-        'landing-product-preview-frame--strong-shadow': strongShadow,
       },
     ]"
     :aria-label="label"
@@ -28,10 +26,7 @@
         </div>
       </div>
 
-      <span
-        v-if="$slots.status"
-        class="landing-product-preview-frame__status"
-      >
+      <span v-if="$slots.status" class="landing-product-preview-frame__status">
         <i aria-hidden="true" />
         <slot name="status" />
       </span>
@@ -61,23 +56,13 @@
       </template>
     </div>
 
-    <div
-      :key="modelValue"
-      class="landing-product-preview-frame__content"
-    >
+    <div :key="modelValue" class="landing-product-preview-frame__content">
       <slot />
     </div>
 
-    <NuxtLink
-      :to="footerTo"
-      class="landing-product-preview-frame__footer"
-    >
+    <NuxtLink :to="footerTo" class="landing-product-preview-frame__footer">
       <span>
-        <UIcon
-          v-if="footerIcon"
-          :name="footerIcon"
-          aria-hidden="true"
-        />
+        <UIcon v-if="footerIcon" :name="footerIcon" aria-hidden="true" />
         {{ footerLabel }}
       </span>
       <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
@@ -92,34 +77,31 @@ type ProductPreviewTab = {
   icon: string
 }
 
-withDefaults(defineProps<{
-  modelValue: string
-  tabs: readonly ProductPreviewTab[]
-  label: string
-  controlsLabel: string
-  footerTo: string
-  footerLabel: string
-  footerIcon?: string
-  controlsLayout?: 'equal' | 'flow'
-  density?: 'compact' | 'comfortable'
-  footerTone?: 'neutral' | 'primary'
-  statusVisibility?: 'always' | 'wide'
-  contentInset?: boolean
-  contentStable?: boolean
-  glow?: boolean
-  markHalo?: boolean
-  strongShadow?: boolean
-}>(), {
-  controlsLayout: 'equal',
-  density: 'comfortable',
-  footerTone: 'neutral',
-  statusVisibility: 'always',
-  contentInset: false,
-  contentStable: false,
-  glow: false,
-  markHalo: false,
-  strongShadow: false,
-})
+withDefaults(
+  defineProps<{
+    modelValue: string
+    tabs: readonly ProductPreviewTab[]
+    label: string
+    controlsLabel: string
+    footerTo: string
+    footerLabel: string
+    footerIcon?: string
+    controlsLayout?: 'equal' | 'flow'
+    density?: 'compact' | 'comfortable'
+    footerTone?: 'neutral' | 'primary'
+    statusVisibility?: 'always' | 'wide'
+    contentInset?: boolean
+    contentStable?: boolean
+  }>(),
+  {
+    controlsLayout: 'equal',
+    density: 'comfortable',
+    footerTone: 'neutral',
+    statusVisibility: 'always',
+    contentInset: false,
+    contentStable: false,
+  }
+)
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
@@ -138,15 +120,8 @@ const emit = defineEmits<{
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--ui-border) 80%, var(--ui-primary));
   border-radius: calc(var(--ui-radius) * 6);
-  background:
-    linear-gradient(
-      160deg,
-      color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary)),
-      var(--ui-bg)
-    );
-  box-shadow:
-    0 calc(var(--spacing) * 6) calc(var(--spacing) * 14) rgb(0 0 0 / 16%);
-  transform: none;
+  background: var(--ui-bg-elevated);
+  box-shadow: var(--shadow-sm);
 }
 
 .landing-product-preview-frame--comfortable {
@@ -158,25 +133,6 @@ const emit = defineEmits<{
   --landing-product-preview-control-pad-inline: calc(var(--spacing) * 4);
 }
 
-.landing-product-preview-frame--strong-shadow {
-  box-shadow:
-    0 calc(var(--spacing) * 10) calc(var(--spacing) * 24) rgb(0 0 0 / 18%);
-}
-
-.landing-product-preview-frame--glow {
-  background:
-    radial-gradient(
-      circle at 85% 0%,
-      color-mix(in srgb, var(--ui-primary) 13%, transparent),
-      transparent 42%
-    ),
-    linear-gradient(
-      155deg,
-      color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary)),
-      var(--ui-bg)
-    );
-}
-
 :where(
   .landing-product-preview-frame__topbar,
   .landing-product-preview-frame__footer
@@ -185,8 +141,7 @@ const emit = defineEmits<{
   justify-content: space-between;
   align-items: center;
   gap: calc(var(--spacing) * 4);
-  padding:
-    var(--landing-product-preview-block-pad)
+  padding: var(--landing-product-preview-block-pad)
     var(--landing-product-preview-inline-pad);
 }
 
@@ -216,7 +171,8 @@ const emit = defineEmits<{
 }
 
 .landing-product-preview-frame--compact
-  .landing-product-preview-frame__identity-copy strong {
+  .landing-product-preview-frame__identity-copy
+  strong {
   font-size: var(--text-sm);
 }
 
@@ -228,18 +184,7 @@ const emit = defineEmits<{
   place-items: center;
   border-radius: calc(var(--ui-radius) * 3);
   background: var(--ui-primary);
-  color:
-    var(
-      --landing-product-preview-ink,
-      var(--ui-text-highlighted)
-    );
-}
-
-.landing-product-preview-frame--mark-halo
-  .landing-product-preview-frame__mark {
-  box-shadow:
-    0 0 0 calc(var(--spacing) * 1.5)
-    color-mix(in srgb, var(--ui-primary) 15%, transparent);
+  color: var(--landing-product-preview-ink, var(--ui-text-highlighted));
 }
 
 .landing-product-preview-frame__status {
@@ -247,9 +192,7 @@ const emit = defineEmits<{
   flex: 0 0 auto;
   gap: calc(var(--spacing) * 2);
   align-items: center;
-  padding:
-    calc(var(--spacing) * 1.5)
-    calc(var(--spacing) * 2.5);
+  padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2.5);
   border-radius: 9999px;
   background: color-mix(in srgb, var(--ui-success) 12%, transparent);
   color: var(--ui-success);
@@ -262,9 +205,6 @@ const emit = defineEmits<{
   height: calc(var(--spacing) * 2);
   border-radius: 50%;
   background: var(--ui-success);
-  box-shadow:
-    0 0 0 calc(var(--spacing) * 1.25)
-    color-mix(in srgb, var(--ui-success) 14%, transparent);
 }
 
 .landing-product-preview-frame--status-wide
@@ -276,8 +216,7 @@ const emit = defineEmits<{
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--landing-product-preview-control-gap);
-  padding:
-    var(--landing-product-preview-control-pad-block)
+  padding: var(--landing-product-preview-control-pad-block)
     var(--landing-product-preview-control-pad-inline);
   border-bottom: 1px solid var(--ui-border);
 }
@@ -301,13 +240,12 @@ const emit = defineEmits<{
 }
 
 .landing-product-preview-frame--controls-flow
-  .landing-product-preview-frame__controls button {
+  .landing-product-preview-frame__controls
+  button {
   flex-direction: column;
   min-height: calc(var(--spacing) * 13);
   gap: calc(var(--spacing) * 0.7);
-  padding:
-    calc(var(--spacing) * 1.4)
-    calc(var(--spacing) * 0.6);
+  padding: calc(var(--spacing) * 1.4) calc(var(--spacing) * 0.6);
   font-size: calc(var(--text-xs) * 0.83);
 }
 
@@ -338,8 +276,7 @@ const emit = defineEmits<{
 
 .landing-product-preview-frame--content-inset
   .landing-product-preview-frame__content {
-  padding:
-    var(--landing-product-preview-block-pad)
+  padding: var(--landing-product-preview-block-pad)
     var(--landing-product-preview-inline-pad);
 }
 
@@ -370,8 +307,7 @@ const emit = defineEmits<{
     background 160ms ease;
 }
 
-.landing-product-preview-frame--compact
-  .landing-product-preview-frame__footer {
+.landing-product-preview-frame--compact .landing-product-preview-frame__footer {
   min-height: calc(var(--spacing) * 12);
 }
 
@@ -391,10 +327,6 @@ const emit = defineEmits<{
 }
 
 @media (min-width: 640px) {
-  .landing-product-preview-frame {
-    transform: perspective(1000px) rotateY(-1.5deg) rotateX(1deg);
-  }
-
   .landing-product-preview-frame--compact {
     --landing-product-preview-inline-pad: calc(var(--spacing) * 4.4);
     --landing-product-preview-block-pad: calc(var(--spacing) * 4);
@@ -402,9 +334,7 @@ const emit = defineEmits<{
     --landing-product-preview-control-gap: calc(var(--spacing) * 2.2);
     --landing-product-preview-control-pad-block: calc(var(--spacing) * 4.4);
     --landing-product-preview-control-pad-inline: calc(var(--spacing) * 4.4);
-    box-shadow:
-      0 calc(var(--spacing) * 10) calc(var(--spacing) * 24)
-      rgb(0 0 0 / 18%);
+    box-shadow: var(--shadow-md);
   }
 
   .landing-product-preview-frame--comfortable {
@@ -412,7 +342,8 @@ const emit = defineEmits<{
   }
 
   .landing-product-preview-frame--compact
-    .landing-product-preview-frame__identity-copy strong {
+    .landing-product-preview-frame__identity-copy
+    strong {
     font-size: inherit;
   }
 
@@ -429,14 +360,13 @@ const emit = defineEmits<{
   }
 
   .landing-product-preview-frame--controls-flow
-    .landing-product-preview-frame__controls button {
+    .landing-product-preview-frame__controls
+    button {
     flex-direction: row;
     justify-content: normal;
     min-height: 0;
     gap: calc(var(--spacing) * 1.4);
-    padding:
-      calc(var(--spacing) * 1.5)
-      calc(var(--spacing) * 2.2);
+    padding: calc(var(--spacing) * 1.5) calc(var(--spacing) * 2.2);
     font-size: var(--text-xs);
   }
 

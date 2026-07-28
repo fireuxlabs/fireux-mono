@@ -1,21 +1,26 @@
-import { doc, getDoc } from 'firebase/firestore'
+import { doc, getDoc, writeBatch } from 'firebase/firestore'
 import type { ConsoleRootCreateResult } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { stampDoc } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/core/meta.model'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { computed } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
-import { KitchenStorage, type Kitchen } from '../../../../../models/kitchen.model'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
+import {
+  KitchenStorage,
+  type AppKitchen,
+  type Kitchen,
+} from '../../../../../models/kitchen.model'
 
 type KitchenTestCreateInput = {
   id?: string
   displayName?: string
   display_name?: string
-  display_image_url?: string
 }
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -48,13 +53,8 @@ export function useKitchenTestCreate() {
     () => requireSimulationDatabaseId()
   )
   const simulationDb = useFirestore(simulationDatabaseId)
-  const { setDocument } = useFirestoreCreate({
-    databaseId: simulationDatabaseId,
-  })
-  const { updateDocument } = useFirestoreUpdate({
-    databaseId: simulationDatabaseId,
-  })
   const { uid, currentUser } = useAuth()
+  const { appId, role } = useFireUXConfig()
 
   async function createTestKitchen(
     input: KitchenTestCreateInput = {}
@@ -66,61 +66,65 @@ export function useKitchenTestCreate() {
     const name =
       normalizeString(input.display_name) ||
       resolveTestKitchenName(displayName, uid.value)
-    const imageUrl =
-      normalizeString(input.display_image_url) ||
-      normalizeString(currentUser.value?.photoURL)
-
     if (!testId) {
       throw new Error('Test kitchen id is required')
     }
 
-    const ref = doc(simulationDb, KitchenStorage.rootCollection, testId)
-    const snap = await getDoc(ref)
-    if (snap.exists()) {
-      const existingImageUrl = normalizeString(snap.data()?.display_image_url)
-      await updateDocument<Kitchen>(KitchenStorage.rootCollection, testId, {
-        display_name: name,
-        slug: resolveTestKitchenSlug(displayName, uid.value),
-        ...(existingImageUrl ? {} : { display_image_url: imageUrl }),
-      })
-      return { id: testId, created: false }
-    }
-
     const slug = resolveTestKitchenSlug(displayName, uid.value)
-
     if (!slug) {
       throw new Error('Test kitchen slug is required')
     }
+    const scopeState = resolveFireuxAppScopeStateForRole(role)
+    const actorId = normalizeString(uid.value)
+    if (!scopeState || !actorId) {
+      throw new Error('A signed-in App member is required for a Test Kitchen.')
+    }
 
-    await setDocument<Partial<Kitchen> & {
-      slug?: string
-      display_name?: string
-      display_image_url?: string
-      operator_ids?: string[]
-      team_ids?: string[]
-      simulation_kind?: string
-      can_write?: boolean
-      is_test_kitchen?: boolean
-    }>(
-      KitchenStorage.rootCollection,
-      testId,
-      {
-        place_id: testId,
-        slug,
-        display_name: name,
-        display_image_url: imageUrl,
-        operator_ids: [testId],
-        team_ids: [testId],
-        simulation_kind: 'test',
-        can_write: true,
-        is_test_kitchen: true,
-      },
-      {
-        creator: false,
-      }
+    const kitchenRef = doc(simulationDb, KitchenStorage.rootCollection, testId)
+    const placeRef = doc(simulationDb, PlaceStorage.collection, testId)
+    const supportRef = doc(
+      simulationDb,
+      `apps/${appId}/${KitchenStorage.scopeCollection}`,
+      testId
     )
+    const existed = (await getDoc(kitchenRef)).exists()
+    const kitchen = await stampDoc<Partial<Kitchen>>({
+      place_id: testId,
+      slug,
+      app_scope: {
+        state: scopeState,
+        app_id: appId,
+      },
+      visibility: {
+        show: false,
+        active: true,
+        is_test: true,
+      },
+    }, { creator: true })
+    const place = await stampDoc<Partial<Place>>({
+      name,
+      short_name: name,
+      place_type: 'non_physical',
+      timezone: 'Europe/Zurich',
+      default_currency_code: 'CHF',
+      source: 'manual',
+      slug,
+      types: ['restaurant'],
+      tags: ['test'],
+      entity_families: ['kitchen'],
+    }, { creator: true })
+    const support = await stampDoc<Omit<AppKitchen, 'id' | 'created' | 'updated'>>({
+      operator_ids: [actorId],
+      team_ids: [actorId],
+      join_requests: [],
+    }, { creator: true, app: true })
+    const batch = writeBatch(simulationDb)
+    batch.set(placeRef, place)
+    batch.set(kitchenRef, kitchen)
+    batch.set(supportRef, support)
+    await batch.commit()
 
-    return { id: testId, created: true }
+    return { id: testId, created: !existed }
   }
 
   return { createTestKitchen }

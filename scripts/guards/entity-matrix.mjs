@@ -316,6 +316,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     declaredNames.add(row.classification.name)
   }
 
+  for (const row of entityMatrix.filter(
+    (candidate) =>
+      candidate.state === 'declared' && candidate.classification.parent
+  )) {
+    assert.equal(
+      declaredNames.has(row.classification.parent),
+      true,
+      `${row.id} names undeclared parent ${row.classification.parent}.`
+    )
+  }
+
   const modelFiles = MODEL_ROOTS.flatMap((root) =>
     filesBelow(path.join(repoRoot, root))
   )

@@ -1,6 +1,6 @@
 # Entities
 
-Updated: 2026-07-22
+Updated: 2026-07-28
 Ref: 796952bf0
 Role: map, not canon
 
@@ -79,6 +79,7 @@ The current declared Entities are:
 | User | core, identity | root | identity database | membership record | projection | no |
 | Project | system, console entity | root | FireUX control plane | none | none | yes |
 | Job | content | root | owning App database | none | projection | no |
+| Place | place | root | owning App database | none | projection | no |
 | MarketplaceStore | commerce | App-scoped | parent | none | projection | no |
 | Kitchen | kitchen, console entity | root | owning App database | access record | projection | yes |
 | KitchenMenu | menu, kitchen | Kitchen-scoped | parent | none | projection | no |
@@ -91,6 +92,7 @@ The current declared Records are:
 
 | Record | Parent | Public read | Why it is not an Entity |
 | --- | --- | --- | --- |
+| Company | Place | projection | It is an exact same-id role marker; Place owns identity and location truth |
 | MenuSourceUpload | Kitchen | none | It is source material for a Kitchen workflow |
 | MenuSection | KitchenMenu | none | It groups MenuItem records inside one Menu |
 | MenuItem | MenuSection | none | It is one parent-owned catalogue row |
@@ -113,6 +115,25 @@ identity and must not become a copied profile.
 Joined reads require both valid halves and correct App scope. Missing or
 mismatched support must fail closed rather than produce a selectable partial
 target.
+
+### Root plus same-id role
+
+Place is the shared location Entity. Company is a root-stored, same-id Place
+role Record whose exact persisted payload is only canonical creation and update
+stamps. A Company marker is valid only with its valid same-id Place; it stores
+no copied Place identity and has no App support or independent lifecycle.
+
+Live, Demo, and Test use the same Place and Company model contracts. Scenario
+wrappers may pair those roots for deterministic presentation, but they are not
+alternate entity shapes. Public Company reads first validate the role marker
+and then return the bounded exact Place projection; that transport DTO is not
+either root.
+
+Promote Company to an independent Entity only if product behavior establishes
+legal or lifecycle truth that survives a Place, or a Company must own several
+replaceable Places. Supplier currently links through `company_id` to this
+Company role and then to the same-id Place; Supplier does not add a synonymous
+`place_id`.
 
 ### Identity plus membership
 
@@ -170,8 +191,8 @@ projection; it does not establish raw root-read authority.
 ## Coverage boundary
 
 The repository contains domain concepts whose models, routes, or collections
-predate executable entity declarations. Examples include Place, Company,
-profile roots, Dish, KitchenOrder, Customer, Station, Task, and Blog content.
+predate executable entity declarations. Examples include profile roots, Dish,
+KitchenOrder, Customer, Station, Task, and Blog content.
 
 Their existence is real; their FireUX Entity classification is not yet declared
 by the matrix. Treat each as `to-confirm` for classification work. Do not
@@ -183,7 +204,6 @@ The matrix already records these explicit questions:
 | --- | --- | --- |
 | Recipe | `to-confirm` | Does it remain Kitchen-scoped operational truth or gain root identity? |
 | Product | `to-confirm` | Is it root identity with Supplier and Kitchen wrappers? |
-| Supplier/Place relationship | `to-confirm` | Is Supplier company-level, site-level, or related to several Places? |
 
 Ingredient is now a declared shared culinary root owned by
 `fireux-kitchens`. Kitchen and Supplier operational records reference its
@@ -214,11 +234,13 @@ Public Index and Public Detail family maps.
 | Difference | State | Required direction |
 | --- | --- | --- |
 | Existing domain concepts exceed the executable matrix | `drift` | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm |
-| Kitchen legacy App rows duplicate Kitchen identity/style | `migration` | Move identity to the canonical Kitchen root and leave App support access-only after verified data cutover |
+| Place plus same-id Company role | `accepted` | Place owns shared location identity; Company remains an exact stamps-only role marker and public reads reuse the Place projection |
+| Kitchen root + Place + App support composition | `accepted` | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration, Place owns location presentation, and App support owns access only |
 | Supplier and Portfolio public-read contracts are unresolved | `to-confirm` | Define bounded public DTOs before claiming public family parity |
 | Recipe independent identity is unresolved | `to-confirm` | Keep it Kitchen-scoped until an independent lifecycle is proved |
 | Product wrapper relationship is unresolved | `to-confirm` | Confirm root Product before formalizing Supplier Item or Kitchen Dish relationships around it |
-| Supplier-to-Place relationship is unresolved | `to-confirm` | Decide company-level versus site-level Supplier meaning before adding an edge |
+| Supplier location chain | `accepted` | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`. |
+| Supplier creation may leave `company_id` empty | `drift` | Reconcile onboarding and existing roots before enforcing the accepted Company/Place chain in production reads and writes. |
 | Directory publication implementation history lived in this map | `drift` | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family |
 
 ## Alignment roadmap
@@ -234,9 +256,11 @@ Public Index and Public Detail family maps.
 
 1. Reconcile existing undeclared domain concepts one owning package at a time.
 2. Complete the Kitchen root/App-support identity migration.
-3. Resolve Recipe, Product, and Supplier/Place from product behavior rather
-   than folder symmetry.
-4. Define Supplier and Portfolio bounded public-read contracts.
+3. Resolve Recipe and Product from product behavior rather than folder
+   symmetry.
+4. Reconcile Supplier onboarding and existing roots with the accepted
+   Supplier → Company → same-id Place relationship.
+5. Define Supplier and Portfolio bounded public-read contracts.
 
 ### Later
 

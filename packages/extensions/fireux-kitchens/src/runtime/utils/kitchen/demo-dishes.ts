@@ -61,6 +61,7 @@ export type KitchenDemoDishOperationItem = {
 export type KitchenDemoDishesOperation = {
   dishes: Dish[]
   ingredientNameById: Record<string, string>
+  stationNameById: Record<string, string>
   items: KitchenDemoDishOperationItem[]
   sections: KitchenDemoDishSection[]
 }
@@ -85,6 +86,7 @@ type KitchenDemoDishesScenario = Pick<
   | 'place'
   | 'prepItems'
   | 'recipes'
+  | 'stations'
   | 'supplierIngredientLinks'
 >
 
@@ -179,9 +181,6 @@ export function buildKitchenDemoDishesOperation(input: {
   const unprojectedSpecs = specDishIds.filter(
     dishId => !projectedDishIdSet.has(dishId)
   )
-  const missingFinance = scenario.dishFinance.length
-    ? projectedDishIds.filter(dishId => !financeDishIds.includes(dishId))
-    : []
   const unknownFinance = financeDishIds.filter(
     dishId => !projectedDishIdSet.has(dishId)
   )
@@ -193,7 +192,6 @@ export function buildKitchenDemoDishesOperation(input: {
     ...missingProjectedDishes,
     ...missingSpecs,
     ...unprojectedSpecs,
-    ...missingFinance,
     ...unknownFinance,
   ]
   if (identityErrors.length) {
@@ -220,6 +218,9 @@ export function buildKitchenDemoDishesOperation(input: {
   )
   const recipeById = new Map(
     scenario.recipes.map(recipe => [clean(recipe.id), recipe])
+  )
+  const stationNameById = new Map(
+    scenario.stations.map(station => [clean(station.id), clean(station.name)])
   )
   const financeByDishId = new Map(
     scenario.dishFinance.map(entry => [clean(entry.dishId), entry])
@@ -366,7 +367,7 @@ export function buildKitchenDemoDishesOperation(input: {
     }) ?? false
 
     if (
-      scenario.dishFinance.length > 0
+      demoFinance
       && (
         !spec
         || hasUnknownComponent
@@ -421,6 +422,7 @@ export function buildKitchenDemoDishesOperation(input: {
   return {
     dishes: items.map(item => item.dish),
     ingredientNameById: Object.fromEntries(ingredientNameById),
+    stationNameById: Object.fromEntries(stationNameById),
     items,
     sections: scenario.menus.flatMap(menu =>
       menu.menuSections.map(({ section, items: menuItems }) => ({

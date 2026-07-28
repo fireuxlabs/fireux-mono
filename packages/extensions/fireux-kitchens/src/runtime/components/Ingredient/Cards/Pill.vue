@@ -151,11 +151,7 @@ const onClick = (event?: MouseEvent) => {
   flex: 0 0 auto;
   border: 1px solid color-mix(in srgb, var(--ui-border) 76%, transparent);
   border-radius: calc(var(--ui-radius) * 4);
-  box-shadow: 0 0.4rem 1rem color-mix(
-    in srgb,
-    var(--ui-bg-inverted) 10%,
-    transparent
-  );
+  box-shadow: var(--fx-elevation-low);
 }
 
 .ingredient-card-pill__content {

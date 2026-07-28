@@ -1,7 +1,10 @@
 import type { FireuxAppConfig } from './types'
 import { moduleName } from './modules'
+import { validateAppDesignPack } from './design-packs'
 
 export function validateFireuxAppConfig(app: FireuxAppConfig): void {
+  validateAppDesignPack(app.designPack)
+
   if (!String(app.projectId || '').trim()) {
     throw new Error('[fireux] app.projectId must name the canonical FireUX Project entity.')
   }

@@ -3,7 +3,6 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Kitchen root identity and access-only App support.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type {
-  FireuxAppScope as FireuxAppScopeShape,
   FireuxConsoleEntityAppScope,
   FireuxConsoleEntityIdentity,
   FireuxConsoleEntityVisibility,
@@ -11,7 +10,6 @@ import type {
 } from 'fireux-core/runtime/models/core/meta.model.ts'
 import {
   FireuxConsoleEntityAppScopeModel,
-  FireuxConsoleEntityIdentityModel,
   FireuxConsoleEntityVisibilityModel,
 } from 'fireux-core/runtime/models/core/meta.model.ts'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
@@ -80,8 +78,12 @@ export type KitchenVisibility = FireuxConsoleEntityVisibility
 
 export type KitchenImageShade = 'light' | 'dark' | 'none'
 
-export type KitchenIdentity = FireuxConsoleEntityIdentity & {
+export type KitchenIdentity = Omit<
+  FireuxConsoleEntityIdentity,
+  'image_url' | 'gallery'
+> & {
   image_shade?: KitchenImageShade
+  logo_image_url?: string
   wordmark_no_logo_image_url?: string
   wordmark_image_url?: string
 }
@@ -172,8 +174,10 @@ export const KitchenModel = {
   } as KitchenVisibility,
 
   identity: {
-    ...FireuxConsoleEntityIdentityModel,
+    display_name: '',
+    tagline: '',
     image_shade: 'none',
+    logo_image_url: '',
     wordmark_no_logo_image_url: '',
     wordmark_image_url: '',
   } as KitchenIdentity,
@@ -237,8 +241,8 @@ export type Kitchen = Omit<
     sproochli?: SproochliAttachmentConfig
 
     // Flat kitchen surface fields used by collection, route, and console views.
-    app_scope_state?: FireuxAppScopeShape['app_scope_state']
-    app_scope_app_id?: FireuxAppScopeShape['app_scope_app_id']
+    app_scope_state?: KitchenAppScope['state']
+    app_scope_app_id?: KitchenAppScope['app_id']
     is_test_kitchen?: boolean
     show?: boolean
     active?: boolean
@@ -275,10 +279,6 @@ export type KitchenCreateInput = Partial<
     | 'id'
     | 'place_id'
     | 'slug'
-    | 'claimed_by'
-    | 'formatted_address'
-    | 'short_address'
-    | 'cover_image'
     | 'identity'
     | 'menus'
     | 'orders'

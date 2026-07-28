@@ -1,8 +1,11 @@
 <template>
-  <MiseboxPowerCards />
+  <MiseboxCardStyleLab />
+  <MiseboxOtherCards />
 </template>
 
 <script setup lang="ts">
+import MiseboxCardStyleLab from '../components/Misebox/CardStyleLab.vue'
+
 definePageMeta({
   layout: 'landing',
 })

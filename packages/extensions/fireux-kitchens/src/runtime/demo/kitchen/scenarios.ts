@@ -6,8 +6,6 @@
 // Concurrent edit — 2026-07-22 13:56 CEST — Kiosk theme contrast pass: separate refined dining from bold counter-service typography and colour.
 // Concurrent edit — 2026-07-22 18:03 CEST — Deanos modernisation pass: align the Demo brand palette and typography with its new campaign photography.
 // Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add a reusable green-and-yellow pizzeria presentation world.
-import type { Place } from 'fireux-places/runtime/models/place.model.ts'
-import type { Kitchen } from '../../models/kitchen.model'
 import { KITCHEN_MISE_WORKFLOW_STAGES } from '../../models/kitchen/mise.model'
 import {
   deanosKitchenDemoMenu,
@@ -22,11 +20,6 @@ import {
   miseboxRestaurantKitchenDemoIdentity,
   pizzaTheActionKitchenDemoIdentity,
 } from './core/fixtures'
-import {
-  deanosKitchenDemoTarget,
-  miseboxRestaurantKitchenDemoTarget,
-  pizzaTheActionKitchenDemoTarget,
-} from './core/targets'
 import {
   deanosKitchenDemoFinance,
   type KitchenDemoFinance,
@@ -76,18 +69,40 @@ import {
   KITCHEN_DEMO_MENU_MODES,
   type KitchenDemoMenuMode,
 } from '../../utils/kitchen/demo-menu-cascade'
-import { projectKitchenDemoFinanceReport } from '../../utils/kitchen/demo-finance'
+import {
+  projectKitchenDemoFinanceReport,
+} from '../../utils/kitchen/demo-finance'
+import {
+  deanosKitchenDemoTeam,
+  type KitchenDemoTeamMember,
+} from './team'
+import {
+  deanosKitchenDemoCompletedOrders,
+  deanosKitchenDemoOrderNumber,
+  deanosKitchenDemoServices,
+  type KitchenDemoCompletedOrder,
+  type KitchenDemoService,
+} from './operations/Orders/history'
+import {
+  deanosKitchenDemoTarget,
+  miseboxRestaurantKitchenDemoTarget,
+  pizzaTheActionKitchenDemoTarget,
+} from './core/targets'
 
 const scenario = (input: {
   identity: KitchenDemoIdentity
-  kitchen: Kitchen
-  place: Place
+  appSupport: KitchenDemoScenario['appSupport']
+  kitchen: KitchenDemoScenario['kitchen']
+  place: KitchenDemoScenario['place']
   menu: KitchenDemoMenu
   menuModes?: Readonly<Record<string, KitchenDemoMenuMode>>
   additionalMenus?: KitchenDemoMenu[]
   dishSpecs?: KitchenDemoDishSpec[]
   dishFinance?: KitchenDemoDishFinance[]
   finance?: KitchenDemoFinance
+  team?: readonly KitchenDemoTeamMember[]
+  services?: readonly KitchenDemoService[]
+  completedOrders?: readonly KitchenDemoCompletedOrder[]
   kitchenIngredients?: KitchenDemoScenario['kitchenIngredients']
   menuItemComponentDeltas?: KitchenDemoMenuItemComponentDelta[]
   miseRequirements?: KitchenDemoMiseRequirement[]
@@ -110,6 +125,9 @@ const scenario = (input: {
   const dishSpecs = [...(input.dishSpecs ?? [])]
   const dishFinance = [...(input.dishFinance ?? [])]
   const finance = input.finance ?? null
+  const services = [...(input.services ?? [])]
+  const completedOrders = [...(input.completedOrders ?? [])]
+  const miseRequirements = [...(input.miseRequirements ?? [])]
   const menuItemComponentDeltas = [
     ...(input.menuItemComponentDeltas ?? []),
   ]
@@ -156,14 +174,15 @@ const scenario = (input: {
     || recipeIds.size !== recipes.length
     || new Set(dishSpecDishIds).size !== dishSpecDishIds.length
   const hasInvalidPrepItem = prepItems.some(prepItem =>
-    !ingredientIds.has(prepItem.input.ingredientId)
+    !stationIds.has(prepItem.station)
+    || !ingredientIds.has(prepItem.input.ingredientId)
     || !Number.isFinite(prepItem.input.quantity)
     || prepItem.input.quantity <= 0
     || !Number.isFinite(prepItem.yield.quantity)
     || prepItem.yield.quantity <= 0
   )
   const hasInvalidDishSpec = dishSpecs.some(spec => {
-    if (!dishes.has(spec.dishId)) return true
+    if (!dishes.has(spec.dishId) || !stationIds.has(spec.station)) return true
 
     const componentIds = new Set(spec.components.map(component => component.id))
     if (componentIds.size !== spec.components.length) return true
@@ -208,6 +227,16 @@ const scenario = (input: {
           )
         : item.add_ons.some(addOn => addOn.id === delta.choice.id)
       if (!hasChoice) return true
+      if (
+        delta.componentMultiplier !== undefined
+        && (
+          !Number.isFinite(delta.componentMultiplier)
+          || delta.componentMultiplier <= 1
+          || delta.components.length > 0
+        )
+      ) {
+        return true
+      }
 
       const componentIds = new Set(
         delta.components.map(component => component.id)
@@ -227,6 +256,30 @@ const scenario = (input: {
         return !recipeIds.has(component.recipeId)
       })
     })
+  const hasMissingMenuItemDelta =
+    dishSpecs.length > 0
+    && menus.some(menu =>
+      menu.menuSections.some(({ section, items }) =>
+        items.some((item) => {
+          const baseOption = item.price_options[0]
+          if (!baseOption || item.price_options.length < 2) return false
+          return item.price_options.slice(1).some((option) => {
+            const delta = menuItemComponentDeltas.find(candidate =>
+              candidate.menuId === menu.kitchenMenu.id
+              && candidate.sectionId === section.id
+              && candidate.menuItemId === item.id
+              && candidate.choice.kind === 'price_option'
+              && candidate.choice.label === option.label
+            )
+            if (!delta) return true
+            const multiplier = option.quantity / baseOption.quantity
+            return multiplier > 1
+              && delta.components.length === 0
+              && delta.componentMultiplier !== multiplier
+          })
+        })
+      )
+    )
   const hasIncompleteDishSpecs =
     dishSpecs.length > 0
     && (
@@ -241,31 +294,256 @@ const scenario = (input: {
       || !Number.isSafeInteger(entry.quantitySold)
       || entry.quantitySold <= 0
     )
-    || (
-      dishFinance.length > 0
-      && (
-        dishFinance.length !== dishes.size
-        || [...dishes.keys()].some(
-          dishId => !dishFinanceDishIds.includes(dishId)
+    || dishFinance.some(entry => {
+      const sourceQuantity = completedOrders.reduce(
+        (total, order) =>
+          total + order.items
+            .filter(item => item.dishId === entry.dishId)
+            .reduce((quantity, item) => quantity + item.quantity, 0),
+        0
+      )
+      return entry.quantitySold !== sourceQuantity
+    })
+  const hasInvalidService = (() => {
+    if (!services.length && !completedOrders.length) return false
+    const menuItemById = new Map(
+      menus.flatMap(menu =>
+        menu.menuSections.flatMap(({ items }) =>
+          items.map(item => [
+            `${menu.kitchenMenu.id}:${item.id}`,
+            item,
+          ] as const)
         )
       )
     )
-  const hasInvalidFinance = (() => {
-    if (!finance) {
-      return false
-    }
+    const serviceIds = new Set(services.map(service => service.id))
+    const serviceDates = new Set(services.map(service => service.date))
+    const serviceOrderIds = services.flatMap(service =>
+      service.completedOrders.map(order => order.id)
+    )
+    const completedOrderIds = completedOrders.map(order => order.id)
+    const completedOrderIdSet = new Set(completedOrderIds)
+    const firstPlacedAtMs = Math.min(
+      ...completedOrders.map(order => Date.parse(order.placedAt))
+    )
+    const sourceCreatedAtMs = [
+      input.kitchen,
+      ...menus.flatMap(menu => [
+        menu.rootMenu,
+        menu.kitchenMenu,
+        ...menu.dishes,
+        ...menu.menuSections.flatMap(section => [
+          section.section,
+          ...section.items,
+        ]),
+      ]),
+      ...(input.team ?? []),
+      ...input.stations,
+    ].map(record => Number(record.created.at.seconds) * 1_000)
 
+    return (
+      serviceIds.size !== services.length
+      || serviceDates.size !== services.length
+      || new Set(serviceOrderIds).size !== serviceOrderIds.length
+      || new Set(completedOrderIds).size !== completedOrderIds.length
+      || serviceOrderIds.length !== completedOrderIds.length
+      || serviceOrderIds.some(id => !completedOrderIdSet.has(id))
+      || !Number.isFinite(firstPlacedAtMs)
+      || sourceCreatedAtMs.some(createdAt =>
+        !Number.isFinite(createdAt) || createdAt >= firstPlacedAtMs
+      )
+      || services.some(service =>
+        service.kitchenId !== input.identity.kitchenId
+        || service.completedOrders.some((order, index) =>
+          order.kitchenId !== input.identity.kitchenId
+          || order.serviceId !== service.id
+          || order.serviceNumber !== index + 1
+          || order.menuId !== input.identity.menuId
+          || order.status !== 'completed'
+          || order.currencyCode !== 'CHF'
+          || order.pricing.minorUnitDigits !== 2
+          || order.pricing.deliveryFeeMinor !== 0
+          || order.pricing.subtotalMinor <= 0
+          || order.pricing.totalMinor <= 0
+          || order.pricing.subtotalMinor
+            + order.pricing.deliveryFeeMinor !== order.pricing.totalMinor
+          || order.items.length === 0
+          || !order.placedAt.startsWith(service.date)
+          || !order.completedAt.startsWith(service.date)
+          || Date.parse(order.placedAt) >= Date.parse(order.completedAt)
+          || order.placedAt.slice(11, 16) < '11:30'
+          || order.completedAt.slice(11, 16) > '22:00'
+          || (
+            service.date < '2026-03-29'
+              ? !order.completedAt.endsWith('+01:00')
+              : !order.completedAt.endsWith('+02:00')
+          )
+          || order.items.some((item) => {
+            const menuItem = menuItemById.get(
+              `${order.menuId}:${item.sourceItemId}`
+            )
+            const dish = dishes.get(item.dishId)
+            const priceOption = item.variantLabel
+              ? menuItem?.price_options.find(
+                  option => option.label === item.variantLabel
+                )
+              : undefined
+            const expectedUnitPriceMinor = Math.round(
+              Number(priceOption?.price ?? menuItem?.price ?? 0) * 100
+            )
+            return item.menuId !== order.menuId
+              || !dish
+              || !menuItem
+              || menuItem.dish_id !== item.dishId
+              || dish.name !== item.label
+              || (
+                menuItem.price_options.length > 0
+                && (
+                  !priceOption
+                  || item.variantId
+                    !== priceOption.label.toLowerCase().replaceAll(' ', '-')
+                )
+              )
+              || item.unitPriceMinor <= 0
+              || item.quantity <= 0
+              || item.lineTotalMinor <= 0
+              || expectedUnitPriceMinor !== item.unitPriceMinor
+              || item.unitPriceMinor * item.quantity !== item.lineTotalMinor
+          })
+          || order.items.reduce(
+            (total, item) => total + item.lineTotalMinor,
+            0
+          ) !== order.pricing.subtotalMinor
+        )
+      )
+    )
+  })()
+  const hasInvalidFinance = (() => {
+    if (!finance) return completedOrders.length > 0
     try {
       projectKitchenDemoFinanceReport(finance, '90d')
+      const teamById = new Map(
+        (input.team ?? []).map(member => [member.id, member])
+      )
+      const sourceOrderById = new Map(
+        completedOrders.map(order => [order.id, order])
+      )
+      const seenFinanceOrderIds = new Set<string>()
+      if (finance.dailyGrossSales.length !== services.length) return true
+
+      for (const [dayIndex, day] of finance.dailyGrossSales.entries()) {
+        const service = services[dayIndex]
+        if (
+          !service
+          || day.date !== service.date
+          || day.transactions.length !== service.completedOrders.length
+        ) {
+          return true
+        }
+        for (const transaction of day.transactions) {
+          const closer = teamById.get(transaction.closedByTeamMemberId)
+          const sourceOrder = sourceOrderById.get(transaction.orderId)
+          if (
+            !closer
+            || closer.display_name !== transaction.closedBy
+            || !sourceOrder
+            || seenFinanceOrderIds.has(transaction.orderId)
+            || transaction.orderNumber !== sourceOrder.orderNumber
+            || transaction.serviceId !== sourceOrder.serviceId
+            || transaction.serviceNumber !== sourceOrder.serviceNumber
+            || transaction.placedAt !== sourceOrder.placedAt
+            || transaction.occurredAt !== sourceOrder.completedAt
+            || transaction.orderType !== sourceOrder.orderType
+            || transaction.channel !== sourceOrder.channel
+            || transaction.status !== sourceOrder.status
+            || transaction.closedByTeamMemberId
+              !== sourceOrder.closedByTeamMemberId
+            || transaction.signedAmountMinor !== sourceOrder.pricing.totalMinor
+            || transaction.grossSalesMinor !== sourceOrder.pricing.totalMinor
+            || transaction.source.kind !== 'completed_order'
+            || transaction.source.id !== sourceOrder.id
+            || transaction.source.serviceId !== sourceOrder.serviceId
+            || transaction.source.serviceNumber !== sourceOrder.serviceNumber
+            || transaction.counterparty !== 'Guest'
+            || !transaction.summary
+            || transaction.items.length !== sourceOrder.items.length
+            || transaction.items.some((item, index) => {
+              const sourceItem = sourceOrder.items[index]
+              return (
+                item.menuId !== sourceItem?.menuId
+                || item.sourceItemId !== sourceItem?.sourceItemId
+                || item.dishId !== sourceItem?.dishId
+                || item.itemKind !== sourceItem?.itemKind
+                || item.label !== sourceItem?.label
+                || item.unitPriceMinor !== sourceItem?.unitPriceMinor
+                || item.quantity !== sourceItem?.quantity
+                || item.lineGrossMinor !== sourceItem?.lineTotalMinor
+                || item.variantId !== sourceItem?.variantId
+                || item.variantLabel !== sourceItem?.variantLabel
+              )
+            })
+          ) {
+            return true
+          }
+          seenFinanceOrderIds.add(transaction.orderId)
+        }
+      }
+      if (seenFinanceOrderIds.size !== completedOrders.length) return true
+
+      const recentTransactions =
+        finance.dailyGrossSales.at(-1)?.transactions.slice(-3) ?? []
+      const completedOrderById = new Map(
+        input.orders
+          .filter(order => order.status === 'completed')
+          .map(order => [order.id, order])
+      )
+      if (
+        recentTransactions.length !== 3
+        || completedOrderById.size !== recentTransactions.length
+      ) {
+        return true
+      }
+      for (const transaction of recentTransactions) {
+        const order = completedOrderById.get(transaction.orderId)
+        if (
+          !order
+          || order.order_number !== transaction.orderNumber
+          || order.service_id !== transaction.serviceId
+          || order.service_number !== transaction.serviceNumber
+          || order.order_type !== transaction.orderType
+          || order.channel !== transaction.channel
+          || order.updated.by !== transaction.closedByTeamMemberId
+          || order.pricing.subtotal.amount_minor !== transaction.grossSalesMinor
+          || order.pricing.total.amount_minor !== transaction.grossSalesMinor
+          || order.items.length !== transaction.items.length
+          || order.items.some((item, index) => {
+            const transactionItem = transaction.items[index]
+            return (
+              item.source_item_id !== transactionItem?.sourceItemId
+              || item.dish_id !== transactionItem?.dishId
+              || item.item_kind !== transactionItem?.itemKind
+              || item.label !== transactionItem?.label
+              || Math.round(Number(item.unit_price || 0) * 100)
+                !== transactionItem?.unitPriceMinor
+              || item.quantity !== transactionItem?.quantity
+              || Math.round(Number(item.unit_price || 0) * 100)
+                * item.quantity !== transactionItem?.lineGrossMinor
+            )
+          })
+        ) {
+          return true
+        }
+      }
       return false
     } catch {
       return true
     }
   })()
-  const hasInvalidMiseRequirement = (input.miseRequirements ?? []).some(
+  const hasInvalidMiseRequirement = miseRequirements.some(
     requirement => {
       if (
-        !Number.isFinite(requirement.amount.quantity)
+        !stationIds.has(requirement.station)
+        || !Number.isFinite(requirement.amount.quantity)
         || requirement.amount.quantity <= 0
       ) {
         return true
@@ -282,12 +560,117 @@ const scenario = (input: {
       || !station.id
       || !station.name
     )
-  const hasInvalidOrder = input.orders.some(order =>
-    order.kitchen_id !== input.identity.kitchenId
-    || !menuIds.has(order.menu_id)
-    || !order.items.length
-    || order.items.some(item => !dishes.has(item.dish_id))
-  )
+  const team = [...(input.team ?? [])]
+  const teamIds = new Set(team.map(member => member.id))
+  const kitchenTeamIds = input.appSupport.team_ids
+  const kitchenOperatorIds = input.appSupport.operator_ids
+  const hasInvalidTeam =
+    teamIds.size !== team.length
+    || team.some(member =>
+      member.kitchen_id !== input.identity.kitchenId
+      || !member.id
+      || !member.display_name
+      || member.station_ids.some(stationId => !stationIds.has(stationId))
+    )
+    || kitchenTeamIds.length !== team.length
+    || new Set(kitchenTeamIds).size !== teamIds.size
+    || kitchenTeamIds.some(id => !teamIds.has(id))
+    || new Set(kitchenOperatorIds).size !== kitchenOperatorIds.length
+    || kitchenOperatorIds.some(id => !teamIds.has(id))
+    || input.appSupport.id !== input.identity.kitchenId
+    || input.appSupport.join_requests.length !== 0
+  const hasInvalidOrder = (() => {
+    const itemByMenuAndId = new Map(
+      menus.flatMap(menu =>
+        menu.menuSections.flatMap(({ items }) =>
+          items.map(item => [
+            `${menu.kitchenMenu.id}:${item.id}`,
+            item,
+          ] as const)
+        )
+      )
+    )
+    const serviceNumbers = input.orders.map(order => order.service_number)
+    const sortedServiceNumbers = [...serviceNumbers].sort((a, b) => a - b)
+    const hasInvalidCurrentSequence =
+      services.length > 0
+      && (
+        new Set(serviceNumbers).size !== serviceNumbers.length
+        || sortedServiceNumbers.some((number, index) =>
+          number !== sortedServiceNumbers[0] + index
+        )
+      )
+
+    return hasInvalidCurrentSequence || input.orders.some((order) => {
+      const expectedSubtotalMinor = order.items.reduce((total, item) => {
+        const menuItem = item.source_item_id
+          ? itemByMenuAndId.get(`${order.menu_id}:${item.source_item_id}`)
+          : undefined
+        const priceOption = item.variant_label
+          ? menuItem?.price_options.find(
+              option => option.label === item.variant_label
+            )
+          : undefined
+        const addOnMinor = (item.add_ons ?? []).reduce(
+          (sum, addOn) => sum + Math.round(Number(addOn.price ?? 0) * 100),
+          0
+        )
+        const expectedUnitMinor = Math.round(
+          Number(priceOption?.price ?? menuItem?.price ?? 0) * 100
+        ) + addOnMinor
+        const unitPriceMinor = Math.round(Number(item.unit_price ?? 0) * 100)
+        if (
+          !menuItem
+          || !dishes.has(item.dish_id)
+          || menuItem.dish_id !== item.dish_id
+          || (
+            menuItem.price_options.length > 0
+            && (
+              !priceOption
+              || item.variant_id
+                !== priceOption.label.toLowerCase().replaceAll(' ', '-')
+            )
+          )
+          || expectedUnitMinor !== unitPriceMinor
+          || !Number.isSafeInteger(item.quantity)
+          || item.quantity <= 0
+        ) {
+          return Number.NaN
+        }
+        return total + unitPriceMinor * item.quantity
+      }, 0)
+      const currentService = services.at(-1)
+
+      return order.kitchen_id !== input.identity.kitchenId
+        || !menuIds.has(order.menu_id)
+        || !order.items.length
+        || !Number.isSafeInteger(expectedSubtotalMinor)
+        || order.pricing.subtotal.amount_minor !== expectedSubtotalMinor
+        || order.pricing.delivery_fee.amount_minor !== 0
+        || order.pricing.total.amount_minor !== expectedSubtotalMinor
+        || Boolean(
+          currentService
+          && (
+            order.service_id !== currentService.id
+            || order.order_number !== deanosKitchenDemoOrderNumber(
+              currentService.date,
+              order.service_number
+            )
+          )
+        )
+        || Boolean(
+          order.payment.amount_chf !== undefined
+          && Math.round(order.payment.amount_chf * 100)
+            !== order.pricing.total.amount_minor
+        )
+        || Boolean(
+          order.updated.by
+          && order.updated.by !== 'menu'
+          && order.updated.by !== 'demo-operator'
+          && !teamIds.has(order.updated.by)
+        )
+    })
+  })()
   const miseTaskIds = new Set(input.miseTasks.map(task => task.id))
   const hasInvalidMiseTask =
     miseTaskIds.size !== input.miseTasks.length
@@ -304,34 +687,56 @@ const scenario = (input: {
         || task.ingredient_ids.some(id => !ingredientIds.has(id))
         || task.mise_ids.some(id => !prepItemIds.has(id))
         || Boolean(task.recipe_id && !recipeIds.has(task.recipe_id))
+        || Boolean(
+          task.recipe_id
+          && miseRequirements.some(requirement =>
+            requirement.source.kind === 'recipe'
+            && requirement.source.recipeId === task.recipe_id
+            && requirement.station !== task.station
+          )
+        )
+        || Boolean(
+          task.menu_id === input.identity.menuId
+          && services.length > 0
+          && (
+            task.status !== 'done'
+            || task.checklist.some(item => !item.done)
+          )
+        )
         || new Set(checklistIds).size !== checklistIds.length
         || task.checklist.some(item => !item.id || !item.label)
     })
 
-  if (
-    hasDuplicateIngredients ||
-    hasInvalidMenuMode ||
-    hasInvalidSupplierLink ||
-    hasInvalidRecipeLine ||
-    hasDuplicateProductionIds ||
-    hasInvalidPrepItem ||
-    hasInvalidDishSpec ||
-    hasInvalidMenuItemDelta ||
-    hasIncompleteDishSpecs ||
-    hasInvalidDishFinance ||
-    hasInvalidFinance ||
-    hasInvalidMiseRequirement ||
-    hasInvalidStation ||
-    hasInvalidOrder ||
-    hasInvalidMiseTask
-  ) {
+  const invalidRelationships = [
+    hasDuplicateIngredients && 'duplicate ingredients',
+    hasInvalidMenuMode && 'menu modes',
+    hasInvalidSupplierLink && 'supplier links',
+    hasInvalidRecipeLine && 'recipe lines',
+    hasDuplicateProductionIds && 'production ids',
+    hasInvalidPrepItem && 'prep items',
+    hasInvalidDishSpec && 'dish specs',
+    hasInvalidMenuItemDelta && 'menu item deltas',
+    hasMissingMenuItemDelta && 'menu item delta coverage',
+    hasIncompleteDishSpecs && 'incomplete dish specs',
+    hasInvalidDishFinance && 'dish finance',
+    hasInvalidService && 'service',
+    hasInvalidFinance && 'finance',
+    hasInvalidMiseRequirement && 'mise requirements',
+    hasInvalidStation && 'stations',
+    hasInvalidTeam && 'team',
+    hasInvalidOrder && 'orders',
+    hasInvalidMiseTask && 'mise tasks',
+  ].filter((item): item is string => Boolean(item))
+
+  if (invalidRelationships.length) {
     throw new Error(
-      `Kitchen Demo production relationships are invalid for ${input.identity.kitchenId}.`
+      `Kitchen Demo production relationships are invalid for ${input.identity.kitchenId}: ${invalidRelationships.join(', ')}.`
     )
   }
 
   return {
     appId: input.identity.appId,
+    appSupport: input.appSupport,
     kitchen: input.kitchen,
     place: input.place,
     menus,
@@ -344,9 +749,12 @@ const scenario = (input: {
     dishSpecs,
     dishFinance,
     finance,
+    team,
+    services,
+    completedOrders,
     menuItemComponentDeltas,
     menuSections: input.menu.menuSections,
-    miseRequirements: [...(input.miseRequirements ?? [])],
+    miseRequirements,
     orders: input.orders,
     prepItems,
     recipes,
@@ -357,6 +765,7 @@ const scenario = (input: {
 
 export const deanosKitchenDemoScenario = scenario({
   identity: deanosKitchenDemoIdentity,
+  appSupport: deanosKitchenDemoTarget.appSupport,
   kitchen: deanosKitchenDemoTarget.kitchen,
   place: deanosKitchenDemoTarget.place,
   menu: deanosKitchenDemoMenu,
@@ -368,6 +777,9 @@ export const deanosKitchenDemoScenario = scenario({
   dishSpecs: deanosKitchenDemoSpecs,
   dishFinance: deanosKitchenDemoDishFinance,
   finance: deanosKitchenDemoFinance,
+  team: deanosKitchenDemoTeam,
+  services: deanosKitchenDemoServices,
+  completedOrders: deanosKitchenDemoCompletedOrders,
   kitchenIngredients: deanosKitchenDemoIngredientLinks,
   menuItemComponentDeltas: deanosKitchenDemoMenuItemComponentDeltas,
   miseRequirements: deanosKitchenDemoMise,
@@ -381,6 +793,7 @@ export const deanosKitchenDemoScenario = scenario({
 
 export const pizzaTheActionKitchenDemoScenario = scenario({
   identity: pizzaTheActionKitchenDemoIdentity,
+  appSupport: pizzaTheActionKitchenDemoTarget.appSupport,
   kitchen: pizzaTheActionKitchenDemoTarget.kitchen,
   place: pizzaTheActionKitchenDemoTarget.place,
   menu: pizzaTheActionKitchenDemoMenu,
@@ -393,6 +806,7 @@ export const pizzaTheActionKitchenDemoScenario = scenario({
 
 export const miseboxRestaurantKitchenDemoScenario = scenario({
   identity: miseboxRestaurantKitchenDemoIdentity,
+  appSupport: miseboxRestaurantKitchenDemoTarget.appSupport,
   kitchen: miseboxRestaurantKitchenDemoTarget.kitchen,
   place: miseboxRestaurantKitchenDemoTarget.place,
   menu: miseboxRestaurantKitchenDemoMenu,

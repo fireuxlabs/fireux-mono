@@ -8,12 +8,17 @@ import type { KitchenMiseTask } from '../../../models/kitchen/mise.model'
 import type { KitchenOrder } from '../../../models/kitchen/order.model'
 import type { KitchenStation } from '../../../models/kitchen/station.model'
 import type { KitchenSupplierIngredient } from '../../../models/kitchen/supplier-ingredient.model'
-import type { Kitchen } from '../../../models/kitchen.model'
+import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import type { KitchenMenu } from '../../../models/kitchen/menu/kitchen-menu.model'
 import type { MenuItem } from '../../../models/kitchen/menu/menu-item.model'
 import type { MenuSection } from '../../../models/kitchen/menu/menu-section.model'
 import type { Menu } from '../../../models/kitchen/menu/menu.model'
 import type { KitchenDemoFinance } from '../finance'
+import type { KitchenDemoTeamMember } from '../team'
+import type {
+  KitchenDemoCompletedOrder,
+  KitchenDemoService,
+} from '../operations/Orders/history'
 import type { KitchenDemoDishFinance } from '../operations/Dishes/finance'
 import type {
   KitchenDemoDishSpec,
@@ -54,6 +59,7 @@ export type KitchenDemoMenu = {
 
 export type KitchenDemoScenario = {
   appId: string
+  appSupport: AppKitchen
   kitchen: Kitchen
   place: Place
   menus: KitchenDemoMenu[]
@@ -66,6 +72,9 @@ export type KitchenDemoScenario = {
   dishSpecs: KitchenDemoDishSpec[]
   dishFinance: KitchenDemoDishFinance[]
   finance: KitchenDemoFinance | null
+  team: readonly KitchenDemoTeamMember[]
+  services: readonly KitchenDemoService[]
+  completedOrders: readonly KitchenDemoCompletedOrder[]
   menuItemComponentDeltas: KitchenDemoMenuItemComponentDelta[]
   menuSections: KitchenDemoMenuSection[]
   miseRequirements: KitchenDemoMiseRequirement[]

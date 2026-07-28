@@ -5,7 +5,7 @@
     class="block w-full"
   >
     <div
-      class="flex w-full items-start gap-3 rounded-lg border border-default bg-elevated/30 p-3 transition hover:bg-elevated/60"
+      class="fx-card--cell"
     >
       <UAvatar
         v-if="avatarUrl"
@@ -73,7 +73,7 @@
     @click="onClick"
   >
     <div
-      class="flex w-full items-start gap-3 rounded-lg border border-default bg-elevated/30 p-3 transition hover:bg-elevated/60"
+      class="fx-card--cell"
     >
       <UAvatar
         v-if="avatarUrl"

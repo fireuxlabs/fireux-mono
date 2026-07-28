@@ -3,23 +3,13 @@
 	align-items: center;
 	gap: calc(var(--spacing) * 2);
 	padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2.5);
-	border: 1px solid color-mix(in srgb, var(--ui-border) 82%, transparent);
-	border-radius: calc(var(--ui-radius) * 4);
-	background:
-		linear-gradient(
-			135deg,
-			color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary) 4%),
-			var(--ui-bg)
-		);
 	color: var(--ui-text);
 	min-height: 3.25rem;
 	min-width: 10rem;
 	width: 100%;
-	max-width: 14rem;
-	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 6%, transparent) inset,
-		0 0.35rem 1rem color-mix(in srgb, var(--ui-bg-inverted) 6%, transparent);
-	transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+	max-width: 100%;
+	flex-wrap: wrap;
+	row-gap: var(--spacing);
 }
 
 :where(
@@ -27,11 +17,25 @@
 	button.pill:not(:disabled):hover,
 	[role='button'].pill:not([aria-disabled='true']):hover
 ) {
-	border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
-	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 9%, transparent) inset,
-		0 0.65rem 1.5rem color-mix(in srgb, var(--ui-bg-inverted) 10%, transparent);
-	transform: translateY(-2px);
+	border-color: var(--ui-border-accented);
+	background: var(--ui-bg-elevated);
+}
+
+:where(
+	.pill[data-selected='true'],
+	.pill[aria-pressed='true'],
+	.pill[aria-current='true'],
+	.pill[aria-current='page']
+) {
+	border-color: var(--ui-border-accented);
+	background: var(--ui-bg-accented);
+}
+
+:where(.pill[data-disabled='true'], .pill[aria-disabled='true'], button.pill:disabled) {
+	cursor: not-allowed;
+	opacity: 0.58;
+	box-shadow: none;
+	transform: none;
 }
 
 :where(a.pill, button.pill, [role='button'].pill) {
@@ -40,24 +44,19 @@
 }
 
 :where(a.pill, button.pill, [role='button'].pill):focus-visible {
-	outline: 2px solid color-mix(in srgb, var(--ui-primary) 78%, white);
-	outline-offset: 3px;
+	outline: 2px solid var(--fx-card-surface-accent);
+	outline-offset: var(--spacing);
 }
 
 @media (prefers-reduced-motion: reduce) {
-	:where(.pill) {
-		transition: none;
-	}
-
 	:where(a.pill:hover, button.pill:hover, [role='button'].pill:hover) {
 		transform: none;
 	}
 }
 
-@media (max-width: 640px) {
+@media (min-width: 640px) {
 	:where(.pill) {
-		max-width: 100%;
-		flex-wrap: wrap;
-		row-gap: var(--spacing);
+		max-width: 14rem;
+		flex-wrap: nowrap;
 	}
 }

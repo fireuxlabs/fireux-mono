@@ -11,136 +11,135 @@
     :footer-icon="activeMode.icon"
     content-inset
     content-stable
-    glow
-    mark-halo
-    strong-shadow
     @update:model-value="setActiveMode"
   >
     <template #mark>
       <UIcon name="i-lucide-flame" aria-hidden="true" />
     </template>
-    <template #title>
-      FireUX
-    </template>
-    <template #subtitle>
-      Example app delivery
-    </template>
-    <template #status>
-      Managed
-    </template>
+    <template #title> FireUX </template>
+    <template #subtitle> Example app delivery </template>
+    <template #status> Managed </template>
 
-      <section
-        v-if="activeModeId === 'request'"
-        class="fireux-home__request"
-        aria-labelledby="fireux-preview-request-title"
-      >
-        <div class="fireux-home__preview-heading">
-          <div>
-            <small>Example Ignition</small>
-            <h2 id="fireux-preview-request-title">North Star Repairs</h2>
-          </div>
-          <UBadge color="warning" variant="soft">Review</UBadge>
+    <section
+      v-if="activeModeId === 'request'"
+      class="fireux-home__request"
+      aria-labelledby="fireux-preview-request-title"
+    >
+      <div class="fireux-home__preview-heading">
+        <div>
+          <small>Example Ignition</small>
+          <h2 id="fireux-preview-request-title">North Star Repairs</h2>
         </div>
+        <UBadge color="warning" variant="soft">Review</UBadge>
+      </div>
 
-        <article class="fireux-home__job">
-          <span><UIcon name="i-lucide-crosshair" aria-hidden="true" /></span>
-          <div>
-            <small>The one job</small>
-            <strong>Let customers request a repair and track the appointment.</strong>
-          </div>
-        </article>
-
-        <dl class="fireux-home__request-facts">
-          <div>
-            <dt>People</dt>
-            <dd>Customers · owner · technicians</dd>
-          </div>
-          <div>
-            <dt>Surfaces</dt>
-            <dd>Request form · queue · updates</dd>
-          </div>
-        </dl>
-
-        <ol class="fireux-home__stages" aria-label="Ignition stages">
-          <li class="is-active">
-            <span>1</span>
-            <div><strong>Review</strong><small>Check the fit</small></div>
-          </li>
-          <li>
-            <span>2</span>
-            <div><strong>Build</strong><small>Configure scope</small></div>
-          </li>
-          <li>
-            <span>3</span>
-            <div><strong>Launch</strong><small>Approve and deploy</small></div>
-          </li>
-        </ol>
-      </section>
-
-      <section
-        v-else-if="activeModeId === 'app'"
-        class="fireux-home__app"
-        aria-labelledby="fireux-preview-app-title"
-      >
-        <div class="fireux-home__preview-heading">
-          <div>
-            <small>Ignition scope</small>
-            <h2 id="fireux-preview-app-title">What launches</h2>
-          </div>
-          <UBadge color="primary" variant="soft">Included</UBadge>
-        </div>
-
-        <div class="fireux-home__app-grid">
-          <article v-for="surface in appSurfaces" :key="surface.title">
-            <span><UIcon :name="surface.icon" aria-hidden="true" /></span>
-            <div>
-              <strong>{{ surface.title }}</strong>
-              <small>{{ surface.copy }}</small>
-            </div>
-            <UIcon name="i-lucide-check" aria-hidden="true" />
-          </article>
-        </div>
-
-        <div class="fireux-home__price-strip">
-          <div>
-            <small>Configure and launch</small>
-            <strong>$150</strong>
-          </div>
-          <div>
-            <small>Hosting and maintenance</small>
-            <strong>$15 <span>/ month</span></strong>
-          </div>
-        </div>
-      </section>
-
-      <section
-        v-else
-        class="fireux-home__project"
-        aria-labelledby="fireux-preview-project-title"
-      >
-        <div class="fireux-home__preview-heading">
-          <div>
-            <small>FireUX Project</small>
-            <h2 id="fireux-preview-project-title">Project operations</h2>
-          </div>
-          <UBadge color="neutral" variant="soft">{{ operations.length }} areas</UBadge>
-        </div>
-
-        <div class="fireux-home__operation-grid">
-          <NuxtLink
-            v-for="operation in operations"
-            :key="operation.id"
-            :to="operation.to"
+      <article class="fireux-home__job">
+        <span><UIcon name="i-lucide-crosshair" aria-hidden="true" /></span>
+        <div>
+          <small>The one job</small>
+          <strong
+            >Let customers request a repair and track the appointment.</strong
           >
-            <span><UIcon :name="operation.icon || 'i-lucide-circle-dot'" aria-hidden="true" /></span>
-            <div>
-              <strong>{{ operation.title }}</strong>
-              <small>{{ operation.description }}</small>
-            </div>
-            <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
-          </NuxtLink>
         </div>
-      </section>
+      </article>
+
+      <dl class="fireux-home__request-facts">
+        <div>
+          <dt>People</dt>
+          <dd>Customers · owner · technicians</dd>
+        </div>
+        <div>
+          <dt>Surfaces</dt>
+          <dd>Request form · queue · updates</dd>
+        </div>
+      </dl>
+
+      <ol class="fireux-home__stages" aria-label="Ignition stages">
+        <li class="is-active">
+          <span>1</span>
+          <div><strong>Review</strong><small>Check the fit</small></div>
+        </li>
+        <li>
+          <span>2</span>
+          <div><strong>Build</strong><small>Configure scope</small></div>
+        </li>
+        <li>
+          <span>3</span>
+          <div><strong>Launch</strong><small>Approve and deploy</small></div>
+        </li>
+      </ol>
+    </section>
+
+    <section
+      v-else-if="activeModeId === 'app'"
+      class="fireux-home__app"
+      aria-labelledby="fireux-preview-app-title"
+    >
+      <div class="fireux-home__preview-heading">
+        <div>
+          <small>Ignition scope</small>
+          <h2 id="fireux-preview-app-title">What launches</h2>
+        </div>
+        <UBadge color="primary" variant="soft">Included</UBadge>
+      </div>
+
+      <div class="fireux-home__app-grid">
+        <article v-for="surface in appSurfaces" :key="surface.title">
+          <span><UIcon :name="surface.icon" aria-hidden="true" /></span>
+          <div>
+            <strong>{{ surface.title }}</strong>
+            <small>{{ surface.copy }}</small>
+          </div>
+          <UIcon name="i-lucide-check" aria-hidden="true" />
+        </article>
+      </div>
+
+      <div class="fireux-home__price-strip">
+        <div>
+          <small>Configure and launch</small>
+          <strong>$150</strong>
+        </div>
+        <div>
+          <small>Hosting and maintenance</small>
+          <strong>$15 <span>/ month</span></strong>
+        </div>
+      </div>
+    </section>
+
+    <section
+      v-else
+      class="fireux-home__project"
+      aria-labelledby="fireux-preview-project-title"
+    >
+      <div class="fireux-home__preview-heading">
+        <div>
+          <small>FireUX Project</small>
+          <h2 id="fireux-preview-project-title">Project operations</h2>
+        </div>
+        <UBadge color="neutral" variant="soft"
+          >{{ operations.length }} areas</UBadge
+        >
+      </div>
+
+      <div class="fireux-home__operation-grid">
+        <NuxtLink
+          v-for="operation in operations"
+          :key="operation.id"
+          :to="operation.to"
+        >
+          <span
+            ><UIcon
+              :name="operation.icon || 'i-lucide-circle-dot'"
+              aria-hidden="true"
+          /></span>
+          <div>
+            <strong>{{ operation.title }}</strong>
+            <small>{{ operation.description }}</small>
+          </div>
+          <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
+        </NuxtLink>
+      </div>
+    </section>
   </LandingProductPreviewFrame>
 </template>
 
@@ -163,9 +162,17 @@ type PreviewMode = {
   action: string
 }
 
-defineProps<{
-  operations: readonly PreviewOperation[]
-}>()
+type PreviewModeId = PreviewMode['id']
+
+const props = withDefaults(
+  defineProps<{
+    operations: readonly PreviewOperation[]
+    initialMode?: PreviewModeId
+  }>(),
+  {
+    initialMode: 'request',
+  }
+)
 
 const previewModes = [
   {
@@ -214,15 +221,15 @@ const appSurfaces = [
   },
 ] as const
 
-type PreviewModeId = typeof previewModes[number]['id']
-
-const activeModeId = ref<PreviewModeId>('request')
-const activeMode = computed(() =>
-  previewModes.find(mode => mode.id === activeModeId.value) ?? previewModes[0]
+const activeModeId = ref<PreviewModeId>(props.initialMode)
+const activeMode = computed(
+  () =>
+    previewModes.find((mode) => mode.id === activeModeId.value) ??
+    previewModes[0]
 )
 
 function setActiveMode(value: string) {
-  const mode = previewModes.find(candidate => candidate.id === value)
+  const mode = previewModes.find((candidate) => candidate.id === value)
   if (mode) activeModeId.value = mode.id
 }
 </script>

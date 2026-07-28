@@ -142,6 +142,21 @@ export function useKitchenFetch(
     'kitchen-fetch-place',
     PlaceStorage.collection
   )
+  const testPlaceQuery = computed<Query<Place> | null>(() => {
+    const resolvedPlaceId = String(placeId.value || '').trim()
+    if (!shouldHydrate || sourceRef.value !== 'test' || !resolvedPlaceId) return null
+
+    return fsq(
+      collection(resolveSimulationDb(), PlaceStorage.collection),
+      where(documentId(), '==', resolvedPlaceId),
+      limit(1)
+    ) as Query<Place>
+  })
+  const testPlaceSource = simulationRead.firestoreQuery<Place>(
+    testPlaceQuery,
+    'kitchen-fetch-test-place',
+    PlaceStorage.collection
+  )
   const rootKitchen = computed<KitchenFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
     const entry = sourceEntry.value
@@ -157,7 +172,11 @@ export function useKitchenFetch(
     const entry = rootKitchen.value
     if (!entry) return null
 
-    const place = shouldHydrate ? placeSource.value?.[0] ?? null : null
+    const place = shouldHydrate
+      ? sourceRef.value === 'test'
+        ? testPlaceSource.value?.[0] ?? null
+        : placeSource.value?.[0] ?? null
+      : null
 
     return surface({
       place,
@@ -173,7 +192,11 @@ export function useKitchenFetch(
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value === 'demo') return false
     if (!docId) return false
-    if (sourceRef.value === 'test') return testSource.value === undefined
+    if (sourceRef.value === 'test') {
+      return testSource.value === undefined ||
+        (shouldHydrate && Boolean(placeId.value) &&
+          testPlaceSource.value === undefined)
+    }
     return liveSource.value === undefined || liveSlugSource.value === undefined
   })
 

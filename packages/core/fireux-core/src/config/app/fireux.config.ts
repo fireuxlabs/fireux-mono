@@ -30,6 +30,7 @@ import { normalizeSiteUrl } from './seo'
 import { resolveSeoConfig } from './static-paths'
 import type { FireuxAppConfig } from './types'
 import { validateFireuxAppConfig } from './validate'
+import { configureAppDesignPack } from './design-packs'
 
 declare module '@nuxt/schema' {
   interface NuxtConfig {
@@ -59,6 +60,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   configureIconServerBundle(nuxt)
   configureDashboardPanelDefaults(nuxt)
   configureCoreCss(nuxt)
+  configureAppDesignPack(nuxt, app.designPack)
 
   const envDomain = reqEnv('APP_DOMAIN')
   const siteUrl = normalizeSiteUrl(app.seo?.siteUrl || envDomain)

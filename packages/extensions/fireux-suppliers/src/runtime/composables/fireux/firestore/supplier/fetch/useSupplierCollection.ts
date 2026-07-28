@@ -42,7 +42,8 @@ type AppSupplierRecord = Partial<AppSupplier> & {
 }
 
 const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
-const TEST_COLLECTION_PATH = 'test-suppliers'
+const UNSUPPORTED_TEST_SOURCE_MESSAGE =
+  '[fireux-suppliers] Supplier Test source is unsupported: no canonical simulation producer exists.'
 
 export type SupplierCollectionFilterValue = string | number | null | undefined
 export type SupplierCollectionFilter = {
@@ -114,9 +115,6 @@ export function useSupplierCollection(
   const usesTargetedRootRead = computed(
     () => hasFilter.value || hasOperatorFilter.value
   )
-  const testCollectionPath = computed(() =>
-    sourceMode.value === 'test' ? TEST_COLLECTION_PATH : ''
-  )
   const liveRootCollectionPath = computed(() =>
     sourceMode.value === 'live' && !usesTargetedRootRead.value
       ? DEFAULT_COLLECTION_PATH
@@ -126,9 +124,6 @@ export function useSupplierCollection(
     sourceMode.value === 'live' && usesTargetedRootRead.value
       ? DEFAULT_COLLECTION_PATH
       : ''
-  )
-  const testSource = firestoreFetchCollection<SupplierCollectionDoc>(
-    testCollectionPath
   )
   const resolvedAppId = computed(() => normalizeString(appId))
   const appSupportCollectionPath = computed(() =>
@@ -269,9 +264,7 @@ export function useSupplierCollection(
 
   const collectionItems = computed<SupplierCollectionDoc[]>(() => {
     if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') {
-      return normalizeRootItems(testSource.value ?? [])
-    }
+    if (sourceMode.value === 'test') return []
     if (!usesTargetedRootRead.value) {
       return normalizeRootItems(liveRootSource.value ?? [])
     }
@@ -425,7 +418,7 @@ export function useSupplierCollection(
   const count = computed(() => suppliers.value.length)
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    if (sourceMode.value === 'test') return testSource.pending.value
+    if (sourceMode.value === 'test') return false
     if (!usesTargetedRootRead.value) return liveRootSource.pending.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
@@ -437,7 +430,9 @@ export function useSupplierCollection(
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
-    if (sourceMode.value === 'test') return testSource.error.value
+    if (sourceMode.value === 'test') {
+      return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
+    }
     if (!usesTargetedRootRead.value) return liveRootSource.error.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
     return (hasOperatorFilter.value

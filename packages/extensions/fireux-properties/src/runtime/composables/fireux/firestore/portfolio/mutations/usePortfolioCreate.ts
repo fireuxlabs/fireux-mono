@@ -9,7 +9,6 @@ import type {
   ConsoleCreateResult,
   ConsoleRootCreateResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
@@ -22,15 +21,8 @@ import type {
 import { PortfolioStorage } from '../../../../../models/portfolio.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const resolveTestUserLabel = (displayName: unknown, uid: unknown) => {
-  const resolvedDisplayName = normalizeString(displayName)
-  if (resolvedDisplayName) return resolvedDisplayName
-
-  const resolvedUid = normalizeString(uid)
-  if (!resolvedUid) return 'User'
-
-  return `User ${resolvedUid.slice(0, 6)}`
-}
+const UNSUPPORTED_TEST_WRITE_MESSAGE =
+  '[fireux-properties] Portfolio Test writes are unsupported: no canonical simulation producer exists.'
 
 export type PortfolioCreateOptions = {
   test?: boolean
@@ -63,68 +55,24 @@ export const PortfolioCreatePlan = defineFireuxCreatePlan({
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
   const { setDocument } = useFirestoreCreate()
-  const { uid, currentUser } = useAuth()
-  const collectionPath =
-    options.test === true ? 'test-portfolios' : PortfolioStorage.rootCollection
-  const isTestPortfolioCollection = options.test === true
+  const collectionPath = PortfolioStorage.rootCollection
+
+  const requireCanonicalWriteSource = () => {
+    if (options.test === true) {
+      throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
+    }
+  }
 
   async function createTestPortfolio(
-    input: PortfolioTestCreateInput = {}
+    _input: PortfolioTestCreateInput = {}
   ): Promise<ConsoleRootCreateResult> {
-    const id = normalizeString(input.id) || normalizeString(uid.value)
-    const userLabel =
-      normalizeString(input.subtitle) ||
-      resolveTestUserLabel(currentUser.value?.displayName, uid.value)
-    const name = normalizeString(input.name) || 'Test Portfolio'
-    const slug = normalizeSlug(normalizeString(input.slug) || 'test-portfolio')
-
-    if (!id) {
-      throw new Error('Test portfolio id is required')
-    }
-
-    if (!slug) {
-      throw new Error('Test portfolio slug is required')
-    }
-
-    const ref = doc(db, 'test-portfolios', id)
-    const snap = await getDoc(ref)
-    if (snap.exists()) {
-      return { id, created: false }
-    }
-
-    const payload: Partial<Portfolio> & { image_url?: string } = {
-      name,
-      slug,
-      owner_label: userLabel,
-      region_label: userLabel,
-    }
-
-    const imageUrl = normalizeString(input.image_url)
-    if (imageUrl) {
-      payload.image_url = imageUrl
-    }
-
-    await setDocument<Partial<Portfolio> & { image_url?: string }>(
-      'test-portfolios',
-      id,
-      payload,
-      {
-        creator: true,
-      }
-    )
-
-    return { id, created: true }
+    throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
   }
 
   async function createPortfolioRoot(input: PortfolioCreateInput): Promise<string> {
-    const defaultTestName = isTestPortfolioCollection
-      ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Portfolio`
-      : ''
+    requireCanonicalWriteSource()
     const requestedName = normalizeString(input?.name)
-    const name =
-      isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
-        ? defaultTestName
-        : requestedName
+    const name = requestedName
     const slug = normalizeSlug(normalizeString(input?.slug) || name)
 
     if (!name) {
@@ -147,11 +95,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       tagline: normalizeString(input?.tagline),
       image_url: normalizeString(input?.image_url),
       slug,
-      owner_label:
-        normalizeString(input?.owner_label) ||
-        (isTestPortfolioCollection
-          ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
-          : ''),
+      owner_label: normalizeString(input?.owner_label),
       status: input?.status || 'active',
       strategy_label: normalizeString(input?.strategy_label),
       region_label: normalizeString(input?.region_label),
@@ -179,15 +123,10 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
   ): Promise<ConsoleRootCreateResult> {
+    requireCanonicalWriteSource()
     const requestedRootId = normalizeString(createOptions.existingRootId)
-    const defaultTestName = isTestPortfolioCollection
-      ? `${resolveTestUserLabel(currentUser.value?.displayName, uid.value)} Test Portfolio`
-      : ''
     const requestedName = normalizeString(input?.name)
-    const name =
-      isTestPortfolioCollection && (!requestedName || requestedName === normalizeString(uid.value))
-        ? defaultTestName
-        : requestedName
+    const name = requestedName
     const slug = requestedRootId || normalizeSlug(normalizeString(input?.slug) || name)
 
     if (!name) {
@@ -212,11 +151,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       tagline: normalizeString(input?.tagline),
       image_url: normalizeString(input?.image_url),
       slug,
-      owner_label:
-        normalizeString(input?.owner_label) ||
-        (isTestPortfolioCollection
-          ? resolveTestUserLabel(currentUser.value?.displayName, uid.value)
-          : ''),
+      owner_label: normalizeString(input?.owner_label),
       status: input?.status || 'active',
       strategy_label: normalizeString(input?.strategy_label),
       region_label: normalizeString(input?.region_label),
@@ -256,9 +191,7 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
     input: PortfolioCreateInput,
     createOptions: PortfolioCreateModeOptions = {}
   ): Promise<ConsoleCreateResult> {
-    if (isTestPortfolioCollection) {
-      throw new Error('Test Portfolio creation does not use live Console onboarding.')
-    }
+    requireCanonicalWriteSource()
 
     const user = await useRequireUser()
     const token = await user.getIdToken()

@@ -1,6 +1,6 @@
 <template>
   <PublicProfileDirectoryCard
-    variant="card"
+    variant="preview"
     kind-label="Chef"
     icon="i-lucide-chef-hat"
     :to="to"

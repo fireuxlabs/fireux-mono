@@ -1,13 +1,15 @@
 // FILE: packages/extensions/fireux-places/src/runtime/models/place.model.ts
 // Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: distinguish sparse stored Place truth from resolved runtime display defaults.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: make shared venue colours optional canonical Place truth.
+// Concurrent edit — 2026-07-28 — Entity canon: declare Place as the independent shared location root.
 
+import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
 import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Executable canon: PlaceEntity below and scripts/_lib/entity-matrix.mjs.
  *
  * Family: Domain Root
  * Storage: root canonical model
@@ -26,6 +28,23 @@ export const PlaceStorage = {
   collection: 'places',
   idParam: 'placeId',
 } as const
+
+export const PlaceEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Place',
+  family: ['place'],
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'none',
+  publicRead: 'projection',
+  status: 'confirmed',
+  console: false,
+  root: PlaceStorage.path,
+  notes: [
+    'Place owns shared location identity independently of Kitchen, Company, Property, and Job relationships.',
+    'Public consumers receive bounded projections rather than canonical Place roots.',
+  ],
+})
 
 /** Canonical sources: google (provider), fireux (stored), manual (user-entered). */
 export type PlaceSource = 'google' | 'fireux' | 'manual'

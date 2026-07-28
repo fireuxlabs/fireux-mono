@@ -16,6 +16,7 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Misebox',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
+  designPack: { preset: 'sci-fire' },
   consoles: ['kitchen', 'supplier'],
   domains: ['kitchens', 'suppliers', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],

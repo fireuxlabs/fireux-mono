@@ -9,6 +9,10 @@ import {
 } from '../../../../../models/kitchen/team.model'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 import { useKitchenConsoleReadPage } from '../operations/Shared/useKitchenConsoleReadPage'
+import {
+  findKitchenConsoleDemoScenario,
+  useKitchenConsoleDemoData,
+} from '../core/useKitchenConsoleDemoData'
 
 export function useKitchenConsoleTeam() {
   const {
@@ -21,6 +25,13 @@ export function useKitchenConsoleTeam() {
   const databaseId = runtime.databaseId
   const readOnly = runtime.readOnly
   const canWrite = runtime.canWrite
+  const demoData = useKitchenConsoleDemoData(runtime.isDemo)
+  const demoTeamMembers = computed<KitchenTeamMember[]>(() =>
+    findKitchenConsoleDemoScenario(
+      demoData.data.value,
+      kitchenId.value
+    )?.team.map(member => ({ ...member })) ?? []
+  )
   const access = useConsoleTeam({
     target: selectedKitchen,
     targetId: kitchenId,
@@ -31,8 +42,8 @@ export function useKitchenConsoleTeam() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
-    items: teamMembers,
-    pending: teamPending,
+    items: fetchedTeamMembers,
+    pending: fetchedTeamPending,
     collectionPath,
   } = useKitchenChildCollection<KitchenTeamMember>(
     KitchenTeamMemberStorage.collection,
@@ -41,6 +52,12 @@ export function useKitchenConsoleTeam() {
       kitchenCollectionPath: rootCollection,
       databaseId,
     }
+  )
+  const teamMembers = computed(() =>
+    runtime.isDemo.value ? demoTeamMembers.value : fetchedTeamMembers.value
+  )
+  const teamPending = computed(() =>
+    runtime.isDemo.value ? demoData.pending.value : fetchedTeamPending.value
   )
   const {
     items: joinRequestItems,

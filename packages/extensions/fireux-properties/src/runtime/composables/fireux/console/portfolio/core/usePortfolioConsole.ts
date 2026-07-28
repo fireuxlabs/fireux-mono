@@ -69,6 +69,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
   const targetPortfolios = computed<PortfolioConsoleEntity[]>(() =>
     consoleRoot.source.value === 'demo'
       ? (demoData.data.value ?? []).flatMap((scenario) => {
+          if (!scenario.portfolio) return []
           const item = pill(scenario.portfolio)
           return item ? [{ ...scenario.portfolio, ...item }] : []
         })

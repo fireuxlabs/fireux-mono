@@ -746,7 +746,7 @@ async function assertAppMediaOperationalSurface(repoRoot) {
   }
 }
 
-async function assertSnapshotSyncSafety(repoRoot) {
+export async function assertSnapshotSyncSafety(repoRoot) {
   const packageJson = JSON.parse(
     await readFile(path.join(repoRoot, 'package.json'), 'utf8')
   )
@@ -761,6 +761,16 @@ async function assertSnapshotSyncSafety(repoRoot) {
     'utf8'
   )
   assert.doesNotMatch(source, /--commit|args\.commit/)
+  assert.doesNotMatch(
+    source,
+    /loadCollection\(db,\s*['"]companies['"]\)/,
+    'The snapshot sync must not load or mutate canonical stamps-only Company roots.'
+  )
+  assert.doesNotMatch(
+    source,
+    /company place public card snapshot/i,
+    'Company display truth must remain a server-side Company/Place projection.'
+  )
 
   for (const token of [
     'Pass both --project <projectId> and --database <databaseId>.',

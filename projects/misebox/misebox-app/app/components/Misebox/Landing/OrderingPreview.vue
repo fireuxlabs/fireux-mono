@@ -69,7 +69,7 @@
             <UIcon name="i-lucide-smartphone" aria-hidden="true" />
             Mobile ordering
           </span>
-          <small>QR · table · collection · delivery</small>
+          <small>Published Menu · configured fulfilment</small>
         </header>
 
         <div
@@ -105,12 +105,20 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import type {
+  MiseboxProductDemo,
+  MiseboxProductDemoKiosk,
+} from '../../../composables/product-demo/useMiseboxProductDemo'
+
+type PreviewMenuSection =
+  MiseboxProductDemo['ordering']['manifest']['content']['sections'][number]
 
 const { data: productDemo, error } = await useMiseboxProductDemo()
 const selectedPreview = ref<'mobile' | 'kiosk'>('mobile')
 const kioskManifest = computed(() =>
   productDemo.value?.kiosk.kitchens.find(
-    kitchen => kitchen.id === productDemo.value?.kiosk.defaultId
+    (kitchen: MiseboxProductDemoKiosk) =>
+      kitchen.id === productDemo.value?.kiosk.defaultId
   )?.manifest || null
 )
 const mobileManifest = computed(() =>
@@ -119,7 +127,7 @@ const mobileManifest = computed(() =>
 const kioskPreviewSections = computed(() =>
   (kioskManifest.value?.content.sections || [])
     .slice(0, 3)
-    .map(section => ({
+    .map((section: PreviewMenuSection) => ({
       ...section,
       items: section.items.slice(0, 1),
     }))
@@ -127,7 +135,7 @@ const kioskPreviewSections = computed(() =>
 const mobilePreviewSections = computed(() =>
   (mobileManifest.value?.content.sections || [])
     .slice(0, 3)
-    .map(section => ({
+    .map((section: PreviewMenuSection) => ({
       ...section,
       items: section.items.slice(0, 1),
     }))

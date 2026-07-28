@@ -6,37 +6,16 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 
 :where(.preview) {
 	width: 100%;
-	overflow: hidden;
-	border-color: color-mix(in srgb, var(--ui-border) 78%, transparent);
-	border-radius: calc(var(--ui-radius) * 6);
-	background:
-		radial-gradient(
-			circle at 100% 0%,
-			color-mix(in srgb, var(--ui-primary) 13%, transparent),
-			transparent 42%
-		),
-		linear-gradient(
-			145deg,
-			color-mix(in srgb, var(--ui-bg-elevated) 97%, var(--ui-primary) 3%),
-			var(--ui-bg)
-		);
-	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 7%, transparent) inset,
-		0 0.9rem 2.4rem color-mix(in srgb, var(--ui-bg-inverted) 10%, transparent);
-	transition: border-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
 }
 
 :where(a.preview:hover, button.preview:hover, [role='button'].preview:hover) {
-	border-color: color-mix(in srgb, var(--ui-primary) 46%, var(--ui-border));
-	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 10%, transparent) inset,
-		0 1.25rem 3rem color-mix(in srgb, var(--ui-bg-inverted) 14%, transparent);
-	transform: translateY(-3px);
+	border-color: var(--ui-border-accented);
+	background: var(--ui-bg-elevated);
 }
 
 :where(a.preview, button.preview, [role='button'].preview):focus-visible {
-	outline: 2px solid color-mix(in srgb, var(--ui-primary) 78%, white);
-	outline-offset: 3px;
+	outline: 2px solid var(--fx-card-surface-accent);
+	outline-offset: var(--spacing);
 }
 
 :where(.preview__row) {
@@ -59,9 +38,9 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 
 :where(.preview__title) {
 	min-width: 0;
-	font-size: var(--text-base);
+	font-size: var(--text-lg);
 	font-weight: var(--font-weight-bold);
-	letter-spacing: -0.015em;
+	letter-spacing: var(--tracking-tight);
 	color: var(--ui-text-highlighted);
 	white-space: nowrap;
 	overflow: hidden;
@@ -71,6 +50,7 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 :where(.preview__subtitle) {
 	margin-top: var(--spacing);
 	font-size: var(--text-sm);
+	line-height: var(--leading-snug);
 	color: var(--ui-text-muted, var(--ui-text));
 	white-space: nowrap;
 	overflow: hidden;
@@ -95,7 +75,20 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 
 :where(.preview__line) {
 	font-size: var(--text-sm);
+	line-height: var(--leading-relaxed);
 	color: var(--ui-text);
+}
+
+:where(.preview) :where(.fx-card__title) {
+	font-size: var(--text-lg);
+	line-height: var(--leading-tight);
+	letter-spacing: var(--tracking-tight);
+}
+
+:where(.preview) :where(.fx-card__body) {
+	margin-top: calc(var(--spacing) * 2);
+	font-size: var(--text-sm);
+	line-height: var(--leading-relaxed);
 }
 
 :where(.preview__meta) {
@@ -106,10 +99,6 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 }
 
 @media (prefers-reduced-motion: reduce) {
-	:where(.preview) {
-		transition: none;
-	}
-
 	:where(a.preview:hover, button.preview:hover, [role='button'].preview:hover) {
 		transform: none;
 	}

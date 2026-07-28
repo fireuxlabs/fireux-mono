@@ -105,7 +105,9 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
+import { usePlaceUpdate } from 'fireux-places/runtime/composables/fireux/firestore/place/mutations/usePlaceUpdate'
 import { computed, ref } from 'vue'
 import { useKitchenUpdate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenUpdate'
 import type { Kitchen, KitchenUpdateInput } from '../../../models/kitchen.model'
@@ -120,6 +122,10 @@ const props = defineProps<{
 }>()
 
 const { updateKitchen } = useKitchenUpdate()
+const { appId } = useFireUXConfig()
+const { updateCoverImage, updateGalleryImages } = usePlaceUpdate({
+  authority: () => ({ appId, kitchenId: kitchenId.value }),
+})
 const toast = useToastify()
 
 const clean = (value: unknown) => String(value ?? '').trim()
@@ -182,7 +188,7 @@ async function updateKitchenIdentity(
 
 async function handleDisplayName(value: string) {
   await updateKitchenIdentity(
-    { display_name: clean(value) },
+    { 'identity.display_name': clean(value) },
     'Kitchen name updated',
     'Failed to update kitchen name'
   )
@@ -190,7 +196,7 @@ async function handleDisplayName(value: string) {
 
 async function handleTagline(value: string) {
   await updateKitchenIdentity(
-    { tagline: clean(value) },
+    { 'identity.tagline': clean(value) },
     'Tagline updated',
     'Failed to update tagline'
   )
@@ -228,11 +234,10 @@ async function handleCoverFile(event: Event) {
       throw error
     }
 
-    await updateKitchenIdentity(
-      { cover_image: url },
-      'Cover image updated',
-      'Failed to update cover image'
-    )
+    const placeId = clean((props.kitchen as any)?.place_id)
+    if (!placeId) throw new Error('The linked Place is required.')
+    await updateCoverImage(url, { id: placeId })
+    toast.success('Cover image updated')
   } finally {
     coverUploading.value = false
     if (input) input.value = ''
@@ -240,11 +245,10 @@ async function handleCoverFile(event: Event) {
 }
 
 async function handleFoodGallery(value: string) {
-  await updateKitchenIdentity(
-    { food_gallery: normalizeStringArray(value) },
-    'Food gallery updated',
-    'Failed to update food gallery'
-  )
+  const placeId = clean((props.kitchen as any)?.place_id)
+  if (!placeId) throw new Error('The linked Place is required.')
+  await updateGalleryImages(normalizeStringArray(value), { id: placeId })
+  toast.success('Food gallery updated')
 }
 
 function loadImage(file: File): Promise<HTMLImageElement> {

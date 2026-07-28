@@ -4,6 +4,7 @@ import type {
   PlaceBusinessHours,
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
+  PlaceImageShade,
 } from '../models/place.model'
 
 const days = [
@@ -54,6 +55,17 @@ const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
     ? value as Record<string, unknown>
     : {}
+const stringArray = (value: unknown) =>
+  Array.isArray(value)
+    ? value.map(text).filter(Boolean)
+    : []
+
+const imageShade = (value: unknown): PlaceImageShade => {
+  const shade = text(value).toLowerCase()
+  return shade === 'light' || shade === 'dark' || shade === 'none'
+    ? shade
+    : 'none'
+}
 
 const time = (value: unknown) => {
   const source = text(value)
@@ -129,6 +141,30 @@ export const readPlaceBusinessHours = (value: unknown) => {
   return timezone && businessHours
     ? { timezone, windows: businessHours.windows }
     : null
+}
+
+/**
+ * Canonical Place-owned presentation used by Place-backed entity projections.
+ * Kitchen and App support records must not duplicate these fields.
+ */
+export const readPlacePresentation = (value: unknown) => {
+  const source = record(value)
+
+  return {
+    name: text(source.name),
+    shortName: text(source.short_name),
+    brandTagline: text(source.brand_tagline),
+    about: text(source.about),
+    formattedAddress: text(source.formatted_address),
+    shortAddress: text(source.short_address),
+    imageUrl: text(source.image_url),
+    coverImage: text(source.cover_image),
+    gallery: stringArray(source.gallery_images),
+    imageShade: imageShade(source.image_shade),
+    phone: text(source.phone),
+    website: text(source.website),
+    googleMapsUrl: text(source.google_maps_url),
+  }
 }
 
 export const placeBusinessHoursFromGooglePeriods = (

@@ -60,6 +60,16 @@ const childEnv = {
   FIREBASE_CLI_DISABLE_UPDATE_CHECK: '1',
   NO_UPDATE_NOTIFIER: '1',
 }
+const buildEnv = {
+  ...childEnv,
+  NODE_OPTIONS: [
+    process.env.NODE_OPTIONS
+      ?.split(/\s+/)
+      .filter(option => !option.startsWith('--max-old-space-size='))
+      .join(' '),
+    '--max-old-space-size=8192',
+  ].filter(Boolean).join(' '),
+}
 
 run('preflight', 'node', [
   path.join(repoRoot, 'scripts/firebase-deploy-preflight.mjs'),
@@ -79,7 +89,7 @@ if (authDomains) {
   ])
 }
 
-run('build', 'pnpm', ['build'])
+run('build', 'pnpm', ['build'], { env: buildEnv })
 run('prepare firebase output', 'pnpm', ['prepare:firebase-output'])
 
 const deployArgs = [
@@ -112,13 +122,13 @@ function usage(exitCode) {
   process.exit(exitCode)
 }
 
-function run(label, command, commandArgs) {
+function run(label, command, commandArgs, { env = childEnv } = {}) {
   console.log(`\n[firebase-deploy] ${label}`)
   console.log(`[firebase-deploy] ${command} ${commandArgs.join(' ')}`)
 
   const result = spawnSync(command, commandArgs, {
     cwd: appRoot,
-    env: childEnv,
+    env,
     stdio: ['ignore', 'inherit', 'inherit'],
     shell: false,
   })

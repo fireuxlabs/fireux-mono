@@ -179,7 +179,7 @@ function statusColor(status: KitchenOrderStatus) {
 }
 
 function kitchenImage(order: CustomerOrderSummary) {
-  return order.kitchen.logo_image_url || order.kitchen.image_url || ''
+  return order.kitchen.logo_image_url || ''
 }
 
 function kitchenAvatarClass(order: CustomerOrderSummary) {

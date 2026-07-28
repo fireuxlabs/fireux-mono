@@ -190,9 +190,7 @@ const showSearchInput = computed(
 
 const makeCard = (menu: PublicMenuIndexItem) => makeMenuCard({
   ...menu,
-  image_url:
-    menu.kitchen?.logo_image_url ||
-    menu.kitchen?.image_url,
+  image_url: menu.kitchen?.logo_image_url,
   image_shade: menu.kitchen?.image_shade,
 })
 

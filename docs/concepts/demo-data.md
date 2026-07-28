@@ -1,5 +1,5 @@
 # Demo World and Demo Data spine map
-Updated: 2026-07-26
+Updated: 2026-07-28
 Ref: 796952bf0
 Role: map, not canon
 
@@ -26,6 +26,46 @@ remain real data even when a Demo record links to them.
   authority, dev preview content, test data, or simulation data.
 - A fixture follows the current real entity/record shapes. Real models and
   adapters are authority; the application must never bend around a fixture.
+- Demo has no universal `Place` top level. Its top-level target is the entity
+  selected by the current Console, and every linked root/support record follows
+  that owning family's declaration. Console adapters filter scenarios by their
+  declared App before projection; a tenant or sibling App never receives
+  another App's fixtures.
+- Project, Portfolio, and Blank have no direct Place relationship. Kitchen
+  requires Place. Supplier reaches location only through
+  `Supplier.company_id -> Company`, where Company and its canonical Place have
+  the same id. Property directly references a sparse canonical Place through
+  `place_id`.
+- Every Kitchen Demo target includes one same-id access-only AppKitchen fixture
+  and one linked Demo Place. Demo Kitchen roots never duplicate Place media or
+  location presentation, and their App scope names the same parent App as that
+  support fixture. Each target also derives the same exact bounded
+  `PublicPlaceProjection` key set as the Live Place collection without
+  flattening its full Demo Place root. Writable Test Kitchen creation
+  atomically creates the equivalent Kitchen, Test Place, and App support pair
+  in the simulation database.
+- Supplier Demo targets pair the Supplier root with same-id access-only
+  `AppSupplier` support, link an independently identified Company through
+  `company_id`, and keep Ingredients, Items, and Catalogues Supplier-owned.
+  Each linked Company is a stamps-only role root paired with its same-id sparse
+  Place; Supplier never gains a duplicate `place_id`. SupplierItem-to-Product
+  roots remain unresolved and are not manufactured by Demo.
+- Portfolio Demo targets pair a Portfolio root with same-id access-only
+  `AppPortfolio` support. Property Demo targets pair the Property root with
+  same-id access-only `AppProperty` support and its linked sparse residential
+  Place root; an optional `portfolio_id` must resolve inside the same scenario.
+  BuenoHost's standalone Demo Property therefore has no invented Portfolio,
+  while Granite's Property resolves its real Demo Portfolio relationship.
+  Portfolio has neither a direct Place nor a Company relationship today;
+  `owner_label` is not a Company reference.
+- Blank Demo is the minimal same-id `Blank` + access-only `AppBlank` pair. It
+  has no Place, operations, or Test producer. Project Demo is the control-plane
+  exception: `Project`, `App`, and `Ecosystem` are model-shaped roots linked by
+  ids, and Project has no App-support entity.
+- Reservation Demo records are Property-scoped and must reconcile their parent
+  Property id, App stamp, dates, status, currency, and non-overlapping stay
+  lifecycle. They do not turn Property estimated values into rent or Finance
+  events.
 - Demo aggregation follows the owning domain's operation vocabulary. In
   Kitchens that means Menu, Dish, Recipe, Mise, Ingredient usage links, and
   Kitchen-owned Supplier links. Supplier Ingredient coverage, priced Item
@@ -36,6 +76,13 @@ remain real data even when a Demo record links to them.
   lifecycle, parents, and images hydrate from the real canonical
   `/ingredients/{ingredientId}` authority through the bounded public
   projection. A Demo fixture must not copy or locally decorate those roots.
+- A Kitchen Demo scenario owns Kitchen-shaped team records with stable member
+  IDs. Operator audit stamps and Finance transaction closers reference those
+  IDs; Console Team and Finance resolve presentation names from the same
+  selected-Kitchen scenario rather than copying local operator strings. Demo
+  team/operator access uses a separate read-only `AppKitchen`-shaped support
+  fixture composed into the selected-Kitchen surface; those ids do not leak
+  onto the canonical Kitchen root or create Live membership.
 - The Kitchen Demo World may prove a production graph ahead of persisted model
   promotion: a Kitchen-scoped Dish Spec consumes measured root Ingredients,
   stable Prep items, or Recipes; a Menu selects the Dish; and dated Mise tasks
@@ -89,10 +136,11 @@ remain real data even when a Demo record links to them.
   identity source.
 - `useConsoleDemoData` caches a successful local load and exposes
   `idle`, `pending`, `error`, `empty`, or `ready` without remote work.
-- A project Product Demo has one named adapter at
-  `app/composables/product-demo/use*ProductDemo.ts`. That adapter dynamically
+- Each independently loaded project Product Demo surface has one named adapter
+  at `app/composables/product-demo/use*ProductDemo.ts`. The adapter declares a
+  unique `productDemoSurface` and `productDemoDataSource = 'demo'`, dynamically
   composes only its project's fixtures and Demo Worlds owned by packages the
-  project consumes. It never imports another project's Demo World.
+  project consumes, and never imports another project's Demo World.
 - When a Product Demo promises a complete derived projection for every
   represented fixture, its adapter validates that projection fail-closed at
   composition time. Canonical Demo Dish records use a deterministic
@@ -112,24 +160,50 @@ remain real data even when a Demo record links to them.
   Product Demo operation-level Orders projects the selected Console scenario's
   canonical `KitchenOrder` fixtures as `console.orders`, derives board rails
   from the shared lifecycle helper, and remains read-only.
+  Deanos historical completed Orders live under dated Kitchen-owned Services
+  in `operations/Orders/history.ts`. Every Order keeps stable source identity,
+  a service-local sequence and operator-facing number, placed/completed
+  timestamps in `Europe/Zurich`, canonical Menu-item pricing, item detail, and
+  the stable Team-member id that closed it. The Orders operation exposes the
+  three most recent completed rows from that same source; their ids, numbers,
+  channels, items, pricing, service identity, and Team closers are not copied.
+  Finance projects one incoming transaction per completed Order and preserves
+  its source id, service, placed/occurred timestamps, signed CHF minor amount,
+  counterparty, summary, status, closer, and inspectable line detail.
+  Composition validates the one-to-one relationship and exact arithmetic
+  before any Console or Product Demo consumes it. These rows are not
+  `KitchenSale` records, FinancialFacts, Firestore documents, or customer
+  history.
   Stations projects the same ordered `KitchenStation` records. Kitchen
   Suppliers resolves Kitchen-owned usage links through a Kitchen-owned pure
   adapter into Supplier-owned identity and coverage. Tables projects only the
   Kitchen's configured count unless real owner-local Table Tab records are
   explicitly added. A Product Demo may expose the separate Kitchen Finance
-  report from its aggregate-only owner-local fixture through the shared
-  Kitchen projector. One deterministic daily aggregate series may derive
-  reconciled current/prior period totals, item rollups, calendar days, grouped
-  trend points, selected-day detail, and sales-only insights, but Finance does
-  not enter the operation catalogue or create Sales and FinancialFacts.
+  report from its completed-Order projection through the shared Kitchen
+  projector. The dated transaction rows derive reconciled daily aggregates,
+  current/prior period totals, item rollups, calendar days, grouped trend
+  points, selected-day detail, and sales-only insights, but Finance does not
+  enter the operation catalogue or create Sales or FinancialFacts. Supplier
+  deliveries/invoices, staff pay, recurring rent, refunds, expenses, wages,
+  VAT, labour, cashflow, profit, and P&L remain absent until their owning
+  domains expose real dated producers.
   Product
   adapters must not repeat Menu, Spec, Supplier, production, or Finance joins.
   The derived adapter rejects duplicate or incomplete identity coverage,
   unresolved requirements, unsafe minor-unit arithmetic, and incoherent
-  percentages through the shared Kitchen estimator. Fictional
-  Dish-level sales quantities stay in the Kitchen package's owner-local Dishes
-  Demo fixture; Product Demo derives total sales from those quantities and the
-  estimator's resolved selling price instead of reading Orders or Sales.
+  percentages through the shared Kitchen estimator. Dish-level sold quantities
+  are derived from the same completed Orders and stay sparse for Dishes with no
+  completed sales. Product Demo derives any displayed Dish sales total from
+  that quantity and the estimator's resolved selling price; it does not create
+  a second local sales fixture or read Live Orders or Sales.
+- Product Demo proof such as Misebox PowerCards receives one typed,
+  discriminated projection from its named surface adapter. A Demo orbit is
+  network-free and may include only owner-local Demo records and pure
+  projections; it cannot hydrate canonical Live roots or fall back to Live
+  records. Misebox therefore keeps canonical Ingredient hydration in its
+  Console/showroom Product Demo and excludes Ingredient-dependent Cards from
+  the Demo-only orbit. Presentation components must not carry their own Deanos
+  Kitchen, Menu, Dish, Recipe, Mise, Supplier, or item fixtures.
 - Public Product Demo pages occupy the reserved `app/pages/demo` route family.
   They remain thin route compositions and consume the named adapter; they do
   not import fixture modules directly or become a second data authority.
@@ -139,12 +213,31 @@ remain real data even when a Demo record links to them.
   public read projection; arbitrary runtime imports remain forbidden.
 - Test and simulation sources remain separate because they are allowed to
   exercise writes. Dev fixtures remain with authenticated dev tooling.
+- Kitchen is the current source-backed writable Test family. Supplier,
+  Portfolio, and Property Test sources fail closed until an atomic
+  simulation-database producer exists for each family's canonical root/support
+  contract; the retired default-database `test-*` collections are not valid
+  Test authority. Project's dev-only Test read is unseeded, and Blank declares
+  no Test mode.
+- Tasks, Compliance, Documents, and DocumentLinks currently have no owner-local
+  Demo records. Their Portfolio operation adapters still contain disconnected
+  scenario-field compatibility shims and must not be described as Demo
+  capability; remove those shims or add full owner-local model fixtures in a
+  separately owned change.
+- Company Demo roots exist only where another Demo relationship needs them.
+  They remain stamps-only same-id roles over sparse canonical Place roots and
+  never copy Place identity. Current Supplier Demo uses that relationship;
+  Portfolio does not.
 
 ## Authority and refresh
 
 - Entity models, DTOs, and console adapters define current shapes.
 - `scripts/guards/demo-data.mjs` enforces location, deferred loading, consumer,
-  ownership, and dependency boundaries.
+  ownership, and dependency boundaries and executes Kitchen, Company, Supplier,
+  Portfolio/Property, Reservation, Blank, and Project scenario composition so
+  relationship and arithmetic validators fail closed. Misebox Product Demo
+  additionally proves every Supplier Company id resolves to a same-id Company
+  and Place pair.
 - Refresh fixtures in the same change when a real shape used by Demo changes.
 
 ## Verification

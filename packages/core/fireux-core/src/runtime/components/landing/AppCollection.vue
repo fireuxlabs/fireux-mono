@@ -1,6 +1,9 @@
 <!-- Concurrent edit — 2026-07-23 — Render the canonical public App projection inside product landings. -->
 <template>
-  <div class="landing-app-collection">
+  <section
+    class="landing-app-collection"
+    aria-labelledby="landing-product-apps-title"
+  >
     <div class="landing-app-collection__heading">
       <div>
         <p class="fx-type-headline">{{ eyebrow }}</p>
@@ -49,7 +52,7 @@
           label: 'Try again',
           color: 'error',
           variant: 'soft',
-          onClick: () => controller.refresh(),
+          onClick: refreshApps,
         },
       ]"
     />
@@ -73,15 +76,29 @@
             :alt="`${displayName(app)} app preview`"
             loading="lazy"
             decoding="async"
-          >
-          <UIcon
-            v-else
-            name="i-lucide-app-window"
-            aria-hidden="true"
           />
+          <UIcon v-else name="i-lucide-app-window" aria-hidden="true" />
 
           <div class="landing-app-collection__identity">
+            <div
+              v-if="wordmarkUrl(app)"
+              class="landing-app-collection__wordmark"
+              :class="{
+                'landing-app-collection__wordmark--labelled': mediaLabel(app),
+              }"
+            >
+              <img
+                :src="wordmarkUrl(app)"
+                :alt="displayName(app)"
+                loading="lazy"
+                decoding="async"
+              />
+              <span v-if="mediaLabel(app)">
+                {{ mediaLabel(app) }}
+              </span>
+            </div>
             <UAvatar
+              v-else
               :src="logoUrl(app) || undefined"
               :text="avatarText(app)"
               :alt="displayName(app)"
@@ -115,7 +132,7 @@
       title="No published apps yet"
       description="Active apps in this ecosystem will appear here."
     />
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -124,6 +141,13 @@ import type {
   AppDirectoryController,
   AppDirectoryEntry,
 } from '../../models/core/supporting/directory'
+
+type LandingAppMediaOverride = {
+  coverUrl?: string
+  logoUrl?: string
+  mediaLabel?: string
+  wordmarkUrl?: string
+}
 
 const props = withDefaults(
   defineProps<{
@@ -134,28 +158,48 @@ const props = withDefaults(
     actionLabel?: string
     actionTo?: string
     excludeIds?: readonly string[]
+    featuredIds?: readonly string[]
+    limit?: number
+    mediaOverrides?: Readonly<Record<string, LandingAppMediaOverride>>
   }>(),
   {
     actionLabel: 'Explore all apps',
     actionTo: '/apps',
     excludeIds: () => [],
+    featuredIds: () => [],
+    limit: 0,
+    mediaOverrides: () => ({}),
   }
 )
 
 const excludedIds = computed(() => new Set(props.excludeIds))
-const apps = computed(() =>
-  props.controller.apps.value.filter(
-    app => app.status === 'active' && !excludedIds.value.has(app.id)
+const apps = computed(() => {
+  const available = props.controller.apps.value.filter(
+    (app) => app.status === 'active' && !excludedIds.value.has(app.id)
   )
-)
+  const selected = props.featuredIds.length
+    ? props.featuredIds
+        .map((id) => available.find((app) => app.id === id))
+        .filter((app): app is AppDirectoryEntry => Boolean(app))
+    : available
+
+  return props.limit > 0 ? selected.slice(0, props.limit) : selected
+})
 const outcome = computed(() => props.controller.outcome.value)
+
+async function refreshApps(): Promise<void> {
+  await props.controller.refresh?.()
+}
 
 function displayName(app: AppDirectoryEntry): string {
   return app.app_name || app.app_short_name || app.slug || app.id
 }
 
 function roleLabel(app: AppDirectoryEntry): string {
-  return app.role === 'global' ? 'Platform app' : 'Hospitality app'
+  if (app.role === 'global') return 'Platform app'
+  return props.controller.source === 'platform'
+    ? 'Ecosystem app'
+    : 'Hospitality app'
 }
 
 function portableMediaUrl(value: unknown): string {
@@ -165,17 +209,27 @@ function portableMediaUrl(value: unknown): string {
 
 function mediaUrl(app: AppDirectoryEntry): string {
   return (
-    portableMediaUrl(app.media?.cover_url)
-    || portableMediaUrl(app.media?.thumbnail_url)
-    || portableMediaUrl(app.media?.logo_url)
+    portableMediaUrl(props.mediaOverrides[app.id]?.coverUrl) ||
+    portableMediaUrl(app.media?.cover_url) ||
+    portableMediaUrl(app.media?.thumbnail_url) ||
+    portableMediaUrl(app.media?.logo_url)
   )
 }
 
 function logoUrl(app: AppDirectoryEntry): string {
   return (
-    portableMediaUrl(app.media?.logo_url)
-    || portableMediaUrl(app.media?.thumbnail_url)
+    portableMediaUrl(props.mediaOverrides[app.id]?.logoUrl) ||
+    portableMediaUrl(app.media?.logo_url) ||
+    portableMediaUrl(app.media?.thumbnail_url)
   )
+}
+
+function wordmarkUrl(app: AppDirectoryEntry): string {
+  return portableMediaUrl(props.mediaOverrides[app.id]?.wordmarkUrl)
+}
+
+function mediaLabel(app: AppDirectoryEntry): string {
+  return String(props.mediaOverrides[app.id]?.mediaLabel || '').trim()
 }
 
 function avatarText(app: AppDirectoryEntry): string {
@@ -183,7 +237,7 @@ function avatarText(app: AppDirectoryEntry): string {
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map(part => part[0]?.toUpperCase())
+    .map((part) => part[0]?.toUpperCase())
     .join('')
 }
 </script>
@@ -265,9 +319,7 @@ function avatarText(app: AppDirectoryEntry): string {
   overflow: hidden;
   place-items: center;
   border-radius: calc(var(--ui-radius) * 4);
-  background:
-    radial-gradient(circle at 70% 20%, color-mix(in srgb, var(--ui-primary) 22%, transparent), transparent 45%),
-    var(--ui-bg-elevated);
+  background: var(--ui-bg-elevated);
   color: var(--ui-primary);
   font-size: 2.5rem;
 }
@@ -276,11 +328,6 @@ function avatarText(app: AppDirectoryEntry): string {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.landing-app-collection__card:hover .landing-app-collection__media > img {
-  transform: scale(1.035);
 }
 
 .landing-app-collection__identity {
@@ -292,6 +339,46 @@ function avatarText(app: AppDirectoryEntry): string {
   justify-content: space-between;
   gap: calc(var(--spacing) * 3);
   align-items: end;
+}
+
+.landing-app-collection__wordmark {
+  display: grid;
+  width: fit-content;
+  min-width: 4.5rem;
+  max-width: min(11rem, 66%);
+  min-height: 3.25rem;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 58%);
+  border-radius: calc(var(--ui-radius) * 3);
+  background: rgb(255 252 245);
+}
+
+.landing-app-collection__wordmark img {
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 3.75rem;
+  object-fit: contain;
+}
+
+.landing-app-collection__wordmark--labelled {
+  grid-template-columns: auto minmax(0, 1fr);
+  max-width: min(14rem, 76%);
+  gap: calc(var(--spacing) * 2);
+}
+
+.landing-app-collection__wordmark--labelled img {
+  height: 3.5rem;
+}
+
+.landing-app-collection__wordmark span {
+  color: #231811;
+  font-size: 0.72rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  text-wrap: balance;
 }
 
 .landing-app-collection__body {
@@ -383,13 +470,7 @@ function avatarText(app: AppDirectoryEntry): string {
 
 @media (min-width: 1024px) {
   .landing-app-collection__rail {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .landing-app-collection__media > img {
-    transition: none;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 </style>

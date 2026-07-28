@@ -24,6 +24,7 @@
     "pnpm": "11.9.0"
   },
   "dependencies": {
+    "@internationalized/date": "^3.10.1",
     "fireux-ai": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-finance": "workspace:*",

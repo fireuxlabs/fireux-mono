@@ -1,0 +1,204 @@
+/*
+ * Sci-Fire is the optional FireUX ecosystem design pack.
+ * Nuxt UI keeps component structure, type, spacing, radius, colour mode, and
+ * semantic state authority. This layer adds app-primary edges and a 2% grid.
+ */
+
+:root {
+  --fx-sci-fire-accent: var(--ui-primary);
+  --fx-sci-fire-edge: color-mix(
+    in srgb,
+    var(--fx-sci-fire-accent) 30%,
+    var(--ui-border)
+  );
+  --fx-sci-fire-edge-strong: color-mix(
+    in srgb,
+    var(--fx-sci-fire-accent) 58%,
+    var(--ui-border)
+  );
+  --fx-sci-fire-grid: color-mix(
+    in srgb,
+    var(--fx-sci-fire-accent) 2%,
+    transparent
+  );
+  --fx-sci-fire-grid-size: calc(var(--spacing) * 8);
+}
+
+.fx-layout-shell {
+  min-height: 100svh;
+  background:
+    linear-gradient(var(--fx-sci-fire-grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--fx-sci-fire-grid) 1px, transparent 1px),
+    var(--ui-bg);
+  background-size:
+    var(--fx-sci-fire-grid-size) var(--fx-sci-fire-grid-size),
+    var(--fx-sci-fire-grid-size) var(--fx-sci-fire-grid-size),
+    auto;
+}
+
+.fx-layout-main :where(main.bg-default) {
+  background: transparent;
+}
+
+.fx-sci-fire-header {
+  isolation: isolate;
+  border-color: var(--fx-sci-fire-edge);
+  background: color-mix(in srgb, var(--ui-bg) 96%, var(--fx-sci-fire-accent));
+}
+
+.fx-sci-fire-page-header {
+  border-color: var(--fx-sci-fire-edge);
+  background: color-mix(in srgb, var(--ui-bg) 97%, var(--fx-sci-fire-accent));
+}
+
+.fx-sci-fire-surface,
+:where(.card.card--cell, .fx-card--cell, .pill, .preview) {
+  --fx-card-surface-accent: var(--fx-card-accent, var(--fx-sci-fire-accent));
+
+  border-color: color-mix(
+    in srgb,
+    var(--fx-card-surface-accent) 24%,
+    var(--ui-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--ui-bg-elevated) 97%,
+    var(--fx-card-surface-accent)
+  );
+}
+
+.fx-sci-fire-interactive {
+  transition:
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+.fx-sci-fire-interactive:hover {
+  border-color: var(--fx-sci-fire-edge-strong);
+  transform: translateY(calc(var(--spacing) * -1));
+}
+
+.fx-sci-fire-interactive:has(a:focus-visible) {
+  outline: 2px solid
+    color-mix(in srgb, var(--fx-sci-fire-accent) 72%, var(--ui-text));
+  outline-offset: var(--spacing);
+}
+
+.fx-sci-fire-icon-well {
+  display: inline-flex;
+  width: calc(var(--spacing) * 10);
+  height: calc(var(--spacing) * 10);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid
+    color-mix(in srgb, var(--fx-sci-fire-accent) 34%, var(--ui-border));
+  border-radius: calc(var(--ui-radius) * 2);
+  background: color-mix(
+    in srgb,
+    var(--fx-sci-fire-accent) 8%,
+    var(--ui-bg-elevated)
+  );
+}
+
+:where(
+  a.card.card--cell:not([data-disabled='true']):not(
+      [aria-disabled='true']
+    ):hover,
+  a
+    .fx-card--cell:not([data-disabled='true']):not(
+      [aria-disabled='true']
+    ):hover,
+  button.card.card--cell:not(:disabled):hover,
+  button.fx-card--cell:not(:disabled):hover,
+  [role='button'].card.card--cell:not([aria-disabled='true']):hover,
+  [role='button'].fx-card--cell:not([aria-disabled='true']):hover,
+  a.pill:not([data-disabled='true']):not([aria-disabled='true']):hover,
+  button.pill:not(:disabled):hover,
+  [role='button'].pill:not([aria-disabled='true']):hover,
+  a.preview:hover,
+  button.preview:hover,
+  [role='button'].preview:hover
+) {
+  border-color: color-mix(
+    in srgb,
+    var(--fx-card-surface-accent) 48%,
+    var(--ui-border)
+  );
+  transform: translateY(calc(var(--spacing) * -1));
+}
+
+:where(
+    a.card.card--cell:not([data-disabled='true']):hover,
+    a .fx-card--cell:not([data-disabled='true']):hover,
+    button.card.card--cell:not(:disabled):hover,
+    button.fx-card--cell:not(:disabled):hover,
+    [role='button'].card.card--cell:not([aria-disabled='true']):hover,
+    [role='button'].fx-card--cell:not([aria-disabled='true']):hover,
+    a.pill:not([data-disabled='true']):hover,
+    button.pill:not(:disabled):hover,
+    [role='button'].pill:not([aria-disabled='true']):hover,
+    a.preview:hover,
+    button.preview:hover,
+    [role='button'].preview:hover
+  )
+  :where(img) {
+  transform: scale(1.035);
+}
+
+:where(.preview) {
+  box-shadow: var(--shadow-sm);
+}
+
+:where(
+  .card.card--cell[data-selected='true'],
+  .fx-card--cell[data-selected='true'],
+  .card.card--cell[aria-current='true'],
+  .fx-card--cell[aria-current='true'],
+  .pill[data-selected='true'],
+  .pill[aria-pressed='true'],
+  .pill[aria-current='true'],
+  .pill[aria-current='page']
+) {
+  border-color: color-mix(
+    in srgb,
+    var(--fx-card-surface-accent) 62%,
+    var(--ui-border)
+  );
+  background: color-mix(
+    in srgb,
+    var(--ui-bg-elevated) 90%,
+    var(--fx-card-surface-accent)
+  );
+  box-shadow: var(--shadow-sm);
+}
+
+.fx-layout-shell > footer {
+  border-color: var(--fx-sci-fire-edge);
+  background: color-mix(in srgb, var(--ui-bg) 96%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fx-sci-fire-interactive,
+  :where(.card.card--cell, .fx-card--cell, .pill, .preview),
+  :where(.card.card--cell, .fx-card--cell, .pill, .preview) :where(img) {
+    transition: none;
+  }
+
+  .fx-sci-fire-interactive:hover,
+  :where(
+    a.card.card--cell:hover,
+    a .fx-card--cell:hover,
+    button.card.card--cell:hover,
+    button.fx-card--cell:hover,
+    [role='button'].card.card--cell:hover,
+    [role='button'].fx-card--cell:hover,
+    a.pill:hover,
+    button.pill:hover,
+    [role='button'].pill:hover,
+    a.preview:hover,
+    button.preview:hover,
+    [role='button'].preview:hover
+  ) {
+    transform: none;
+  }
+}

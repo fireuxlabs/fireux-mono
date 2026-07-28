@@ -48,6 +48,41 @@ function compactRecord(source: unknown): Record<string, unknown> {
 function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
   const source = patch as Record<string, unknown>
   const next = { ...source }
+  const unsupportedStoredFields = [
+    'display_name',
+    'name',
+    'tagline',
+    'display_image_url',
+    'image_url',
+    'logo_image_url',
+    'wordmark_no_logo_image_url',
+    'wordmark_image_url',
+    'cover_image',
+    'image_shade',
+    'food_gallery',
+    'currency_format',
+    'menu_currency_format',
+    'show_currency',
+    'menu_show_currency',
+    'menu_available',
+    'menu_style',
+    'style',
+    'show',
+    'active',
+    'is_test_kitchen',
+    'app_scope_state',
+    'app_scope_app_id',
+    'app_id',
+    'app_scope',
+    'identity.image_url',
+    'identity.gallery',
+  ]
+  const unsupported = unsupportedStoredFields.find(key => hasOwn(source, key))
+  if (unsupported) {
+    throw new Error(
+      `Kitchen update contains non-canonical field "${unsupported}".`
+    )
+  }
 
   const moveString = (
     from: string,
@@ -68,15 +103,6 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     const value = clean(source[from])
     if (from !== to) next[from] = deleteField()
     next[to] = value && value !== defaultValue ? value : deleteField()
-  }
-
-  const moveStringArray = (from: string, to: string) => {
-    if (!hasOwn(source, from)) return
-    const values = Array.isArray(source[from])
-      ? (source[from] as unknown[]).map(clean).filter(Boolean)
-      : []
-    if (from !== to) next[from] = deleteField()
-    next[to] = values.length ? values : deleteField()
   }
 
   const moveBoolean = (
@@ -107,12 +133,17 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
 
   if (isRecord(source.identity)) {
     const identity = source.identity
+    if (hasOwn(identity, 'image_url') || hasOwn(identity, 'gallery')) {
+      throw new Error('Kitchen media belongs to the linked Place.')
+    }
     delete next.identity
     if (hasOwn(identity, 'display_name')) {
       source['identity.display_name'] = identity.display_name
     }
     if (hasOwn(identity, 'tagline')) source['identity.tagline'] = identity.tagline
-    if (hasOwn(identity, 'image_url')) source['identity.image_url'] = identity.image_url
+    if (hasOwn(identity, 'logo_image_url')) {
+      source['identity.logo_image_url'] = identity.logo_image_url
+    }
     if (hasOwn(identity, 'wordmark_no_logo_image_url')) {
       source['identity.wordmark_no_logo_image_url'] =
         identity.wordmark_no_logo_image_url
@@ -123,7 +154,6 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     if (hasOwn(identity, 'image_shade')) {
       source['identity.image_shade'] = identity.image_shade
     }
-    if (hasOwn(identity, 'gallery')) source['identity.gallery'] = identity.gallery
   }
 
   if (isRecord(source.menus)) {
@@ -148,58 +178,24 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     }
   }
 
-  if (isRecord(source.app_scope)) {
-    const appScope = source.app_scope
-    delete next.app_scope
-    if (hasOwn(appScope, 'state')) source['app_scope.state'] = appScope.state
-    if (hasOwn(appScope, 'app_id')) source['app_scope.app_id'] = appScope.app_id
-  }
-
-  moveString('display_name', 'identity.display_name')
-  moveString('name', 'identity.display_name')
   moveString('identity.display_name', 'identity.display_name')
-  moveString('tagline', 'identity.tagline')
   moveString('identity.tagline', 'identity.tagline')
-  moveString('display_image_url', 'identity.image_url')
-  moveString('image_url', 'identity.image_url')
-  moveString('identity.image_url', 'identity.image_url')
-  moveString('wordmark_no_logo_image_url', 'identity.wordmark_no_logo_image_url')
+  moveString('identity.logo_image_url', 'identity.logo_image_url')
   moveString(
     'identity.wordmark_no_logo_image_url',
     'identity.wordmark_no_logo_image_url'
   )
-  moveString('wordmark_image_url', 'identity.wordmark_image_url')
   moveString('identity.wordmark_image_url', 'identity.wordmark_image_url')
-  moveString('cover_image', 'cover_image')
-  normalizeImageShade('image_shade', 'identity.image_shade')
   normalizeImageShade('identity.image_shade', 'identity.image_shade')
-  moveStringArray('food_gallery', 'identity.gallery')
-  moveStringArray('identity.gallery', 'identity.gallery')
 
-  moveDefaultString('currency_format', 'menus.currency_format', 'dash')
-  moveDefaultString('menu_currency_format', 'menus.currency_format', 'dash')
   moveDefaultString('menus.currency_format', 'menus.currency_format', 'dash')
-  moveBoolean('show_currency', 'menus.show_currency', true)
-  moveBoolean('menu_show_currency', 'menus.show_currency', true)
   moveBoolean('menus.show_currency', 'menus.show_currency', true)
-  moveBoolean('menu_available', 'menus.available', true)
   moveBoolean('menus.available', 'menus.available', true)
-  moveStyle('menu_style', 'menus.style')
-  moveStyle('style', 'menus.style')
   moveStyle('menus.style', 'menus.style')
 
-  moveBoolean('show', 'visibility.show', false)
-  moveBoolean('active', 'visibility.active', true)
-  moveBoolean('is_test_kitchen', 'visibility.is_test', false)
   moveBoolean('visibility.show', 'visibility.show', false)
   moveBoolean('visibility.active', 'visibility.active', true)
   moveBoolean('visibility.is_test', 'visibility.is_test', false)
-
-  moveString('app_scope_state', 'app_scope.state')
-  moveString('app_scope_app_id', 'app_scope.app_id')
-  moveString('app_id', 'app_scope.app_id')
-  moveString('app_scope.state', 'app_scope.state')
-  moveString('app_scope.app_id', 'app_scope.app_id')
 
   return next as Partial<Kitchen>
 }

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, App access, and UserApp target.
-// Concurrent edit — 2026-07-21 22:05 CEST — Kitchen onboarding repair: normalize only absent support authority arrays inside the trusted transaction.
+// Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
@@ -32,7 +32,7 @@ import {
   onboardingRecord as record,
   onboardingText as text,
   readKitchenOnboardingScope,
-  readKitchenOnboardingSupportForTrustedRepair,
+  readKitchenOnboardingSupport,
   requireOnboardingMemberRole as memberRole,
   type KitchenOnboardingMemberRole as MemberRole,
 } from './onboarding-policy'
@@ -126,7 +126,7 @@ async function kitchenForPlace(db: Firestore, placeId: string): Promise<Locator>
     fail(409, 'More than one Kitchen references this Place.')
   }
   if (matches.size === 1) {
-    const match = matches.docs[0]
+    const match = matches.docs[0]!
     return { placeId, kitchenId: match.id, kitchen: match.data() || {} }
   }
   if (exactData) {
@@ -186,11 +186,7 @@ export async function previewKitchenOnboarding(
   }
 
   const supportData = support.exists ? support.data() || {} : null
-  const supportCandidate = readKitchenOnboardingSupportForTrustedRepair(supportData)
-  if (supportCandidate.missingFields.length > 0 && current.role !== 'admin') {
-    fail(409, 'An App admin must repair this Kitchen access record.')
-  }
-  const supportAuthority = supportCandidate.support
+  const supportAuthority = readKitchenOnboardingSupport(supportData)
   const decision = kitchenOnboardingAccessDecision({
     kitchen: locator.kitchen,
     support: supportAuthority,
@@ -281,11 +277,7 @@ export async function completeKitchenOnboarding(
     if (!rootData && supportData) {
       fail(409, 'Kitchen access exists without its canonical root.')
     }
-    const supportCandidate = readKitchenOnboardingSupportForTrustedRepair(supportData)
-    if (supportCandidate.missingFields.length > 0 && role !== 'admin') {
-      fail(409, 'An App admin must repair this Kitchen access record.')
-    }
-    const supportAuthority = supportCandidate.support
+    const supportAuthority = readKitchenOnboardingSupport(supportData)
     const decision = kitchenOnboardingAccessDecision({
       kitchen: rootData,
       support: supportAuthority,
@@ -337,23 +329,11 @@ export async function completeKitchenOnboarding(
       })
     } else {
       const scope = readKitchenOnboardingScope(rootData || {})
-      const hasLegacyScope =
-        Object.prototype.hasOwnProperty.call(rootData, 'app_scope_state') ||
-        Object.prototype.hasOwnProperty.call(rootData, 'app_scope_app_id')
       if (
         scope.state !== current.appScopeState ||
-        scope.appId !== current.appId ||
-        hasLegacyScope
+        scope.appId !== current.appId
       ) {
-        transaction.update(rootRef, {
-          app_scope: {
-            state: current.appScopeState,
-            app_id: current.appId,
-          },
-          app_scope_state: FieldValue.delete(),
-          app_scope_app_id: FieldValue.delete(),
-          updated: serverAuditStamp({ by: current.uid }),
-        })
+        fail(409, 'Kitchen App scope does not match this App.')
       }
     }
 
@@ -369,9 +349,6 @@ export async function completeKitchenOnboarding(
       transaction.update(supportRef, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
-        ...(supportCandidate.missingFields.includes('join_requests')
-          ? { join_requests: [] }
-          : {}),
         updated: serverAuditStamp({ by: current.uid }),
       })
     }

@@ -39,7 +39,8 @@ type AppPropertyRecord = Partial<AppProperty> & {
 }
 
 const DEFAULT_COLLECTION_PATH = PropertyStorage.rootCollection
-const TEST_COLLECTION_PATH = 'test-properties'
+const UNSUPPORTED_TEST_SOURCE_MESSAGE =
+  '[fireux-properties] Property Test source is unsupported: no canonical simulation producer exists.'
 
 export type PropertyCollectionFilterValue = string | number | null | undefined
 export type PropertyCollectionFilter = {
@@ -114,7 +115,7 @@ export function usePropertyCollection(
   )
   const rootCollectionPath = computed(() => {
     if (sourceMode.value === 'demo') return ''
-    if (sourceMode.value === 'test') return TEST_COLLECTION_PATH
+    if (sourceMode.value === 'test') return ''
     if (usesTargetedRootRead.value) return ''
     return DEFAULT_COLLECTION_PATH
   })
@@ -222,13 +223,7 @@ export function usePropertyCollection(
   })
   const targetItems = computed<PropertySurface[]>(() => {
     if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') {
-      return (rootSource.value ?? []).reduce<PropertySurface[]>((items, property) => {
-        const surface = composePropertySurface({ source: property as Property })
-        if (surface) items.push(surface)
-        return items
-      }, [])
-    }
+    if (sourceMode.value === 'test') return []
     if (!usesTargetedRootRead.value) {
       return (rootSource.value ?? []).reduce<PropertySurface[]>((items, property) => {
         const surface = composePropertySurface({ source: property as Property })
@@ -447,7 +442,7 @@ export function usePropertyCollection(
   })
   const pending = computed(() => {
     if (sourceMode.value === 'demo') return false
-    if (sourceMode.value === 'test') return rootSource.pending.value
+    if (sourceMode.value === 'test') return false
     if (!usesTargetedRootRead.value) return rootSource.pending.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
@@ -461,7 +456,9 @@ export function usePropertyCollection(
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceMode.value === 'demo') return undefined
-    if (sourceMode.value === 'test') return rootSource.error.value
+    if (sourceMode.value === 'test') {
+      return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
+    }
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
     if (!usesTargetedRootRead.value && rootSource.error.value) {
       return rootSource.error.value

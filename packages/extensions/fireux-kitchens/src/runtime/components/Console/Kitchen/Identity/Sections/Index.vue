@@ -10,7 +10,7 @@
       />
 
       <div class="space-y-4">
-        <ConsoleKitchenIdentitySectionsPlace
+        <ConsoleKitchenIdentitySectionsLogo
           :kitchen="kitchen"
           :kitchen-id="kitchenId"
           :collection-path="rootCollection"
@@ -85,7 +85,7 @@ import { useKitchenInterface } from '../../../../../composables/fireux/firestore
 import type { KitchenSurface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { menuAcceptsOrderType } from '../../../../../utils/menu-ordering-policy'
 import ConsoleKitchenIdentitySectionsKitchen from './Kitchen.vue'
-import ConsoleKitchenIdentitySectionsPlace from './Place.vue'
+import ConsoleKitchenIdentitySectionsLogo from './Logo.vue'
 import ConsoleKitchenIdentitySectionsWordmark from './Wordmark.vue'
 
 const { selectedKitchen, kitchenId, rootCollection, canWrite } =

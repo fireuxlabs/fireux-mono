@@ -79,7 +79,6 @@ Index outcome contract.
 
 | Difference | State | Required direction |
 | --- | --- | --- |
-| Legacy AppKitchen rows still carry duplicate Kitchen identity/style input and a compatibility composer | `migration` | Migrate to canonical Kitchen root identity and access-only App support; remove compatibility composition after verified data cutover |
 | Supplier and Portfolio public-read contracts remain `to-confirm` | `to-confirm` | Decide the bounded public projection before claiming public detail/index parity |
 | Property lacks an explicit standalone Identity/Create decision | `to-confirm` | Decide whether Property owns those sheets or deliberately enters through Portfolio; document and guard the result |
 | Team access presentation does not yet hydrate polished people consistently outside Kitchen | `drift` | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed |
@@ -122,7 +121,8 @@ composition delta, not permission to fork the Console Index spine.
 
 ### Next
 
-- Complete the AppKitchen migration and delete duplicate identity composition.
+- Keep Kitchen root + required Place + access-only AppKitchen composition
+  guarded across Live, Demo, and Test sources.
 - Restore Kitchen live Create to the trusted onboarding endpoint and remove the
   forbidden `RuntimeKitchen` naming flagged by `pnpm guard`.
 - Resolve Property's standalone Identity/Create lifecycle.

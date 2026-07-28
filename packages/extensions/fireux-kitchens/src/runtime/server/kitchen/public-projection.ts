@@ -3,6 +3,7 @@ import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRu
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine.ts'
 import type {
   PublicKitchenDetail,
   PublicKitchenIndexItem,
@@ -38,8 +39,7 @@ type PublicKitchenProjectionParts = {
   placeData: Record<string, unknown>
   identity: ReturnType<typeof menuKitchenIdentity>
   rootIdentity: ReturnType<typeof readKitchenIdentity>
-  appIdentity: ReturnType<typeof readKitchenIdentity>
-  placeIdentity: ReturnType<typeof readKitchenIdentity>
+  place: ReturnType<typeof readPlacePresentation>
   publiclyVisible: boolean
   isTestKitchen: boolean
 }
@@ -171,8 +171,7 @@ function publicKitchenProjectionParts(
     placeData,
     identity,
     rootIdentity: readKitchenIdentity(rootData),
-    appIdentity: readKitchenIdentity(appData),
-    placeIdentity: readKitchenIdentity(placeData),
+    place: readPlacePresentation(placeData),
     publiclyVisible: isPublishedKitchen(rootData),
     isTestKitchen: visibility.isTest,
   }
@@ -195,9 +194,8 @@ export function projectPublicKitchenIndexItem(
   const slug = readRecordString(rootData, 'slug')
   const shortName = readRecordString(parts.placeData, 'short_name')
   const brandTagline = text(
-    parts.appIdentity.tagline ||
     parts.rootIdentity.tagline ||
-    readRecordString(parts.placeData, 'brand_tagline')
+    parts.place.brandTagline
   )
   const formattedAddress = readRecordString(
     parts.placeData,
@@ -205,8 +203,9 @@ export function projectPublicKitchenIndexItem(
   )
   const shortAddress = readRecordString(parts.placeData, 'short_address')
   const imageUrl = text(
-    parts.identity.imageUrl || parts.identity.logoImageUrl
+    parts.identity.imageUrl
   )
+  const logoImageUrl = text(parts.rootIdentity.logoImageUrl)
 
   return {
     id: parts.document.id,
@@ -218,9 +217,10 @@ export function projectPublicKitchenIndexItem(
     ...(brandTagline ? { brand_tagline: brandTagline } : {}),
     ...(formattedAddress ? { formatted_address: formattedAddress } : {}),
     ...(shortAddress ? { short_address: shortAddress } : {}),
+    ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
     ...(imageUrl ? { image_url: imageUrl } : {}),
-    ...(imageUrl && parts.identity.imageShade !== 'none'
-      ? { image_shade: parts.identity.imageShade }
+    ...(logoImageUrl && parts.rootIdentity.imageShade !== 'none'
+      ? { image_shade: parts.rootIdentity.imageShade }
       : {}),
   }
 }
@@ -244,20 +244,14 @@ export function projectPublicKitchenDetail(
 
   const place = parts.placeData
   const placeSocialLinks = record(place.social_links)
-  const coverImage = readRecordString(place, 'cover_image')
-  const gallery = (
-    parts.placeIdentity.gallery.length
-      ? parts.placeIdentity.gallery
-      : parts.appIdentity.gallery.length
-        ? parts.appIdentity.gallery
-        : parts.rootIdentity.gallery
-  ).map(text).filter(Boolean)
-  const about = readRecordString(place, 'about')
-  const phone = readRecordString(place, 'phone')
+  const coverImage = parts.place.coverImage
+  const gallery = parts.place.gallery
+  const about = parts.place.about
+  const phone = parts.place.phone
   const website =
-    readRecordString(place, 'website') ||
+    parts.place.website ||
     readRecordString(placeSocialLinks, 'website')
-  const googleMapsUrl = readRecordString(place, 'google_maps_url')
+  const googleMapsUrl = parts.place.googleMapsUrl
   const latitude = number(place.lat)
   const longitude = number(place.lng)
   const tagline = item.brand_tagline || ''

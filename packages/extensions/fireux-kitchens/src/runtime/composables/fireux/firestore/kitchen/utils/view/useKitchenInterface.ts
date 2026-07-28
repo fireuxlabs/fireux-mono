@@ -95,6 +95,7 @@ export type KitchenSurface = {
   lng?: number
   image_url?: string
   display_image_url?: string
+  logo_image_url?: string
   image_shade?: PlaceImageShade
   claimed_by?: string
   brand_tagline?: string
@@ -241,7 +242,12 @@ export function useKitchenInterface() {
     const merged = {
       ...place,
       ...kitchenDelta,
-      ...scopeDelta,
+      ...(Array.isArray(scopeDelta.operator_ids)
+        ? { operator_ids: scopeDelta.operator_ids }
+        : {}),
+      ...(Array.isArray(scopeDelta.team_ids)
+        ? { team_ids: scopeDelta.team_ids }
+        : {}),
     } as TKitchen & KitchenSurface
     for (const key of placeBaselineKeys) {
       if (Object.hasOwn(place, key)) {
@@ -250,14 +256,10 @@ export function useKitchenInterface() {
     }
     const identityDelta = {
       ...meaningfulSurfaceDelta(kitchenDelta.identity),
-      ...meaningfulSurfaceDelta(scopeDelta.identity),
     }
     if (Object.hasOwn(place, 'image_url')) {
       delete merged.display_image_url
       delete identityDelta.image_url
-    }
-    if (Object.hasOwn(place, 'image_shade')) {
-      delete identityDelta.image_shade
     }
     if (Object.hasOwn(place, 'gallery_images')) {
       delete merged.food_gallery
@@ -290,11 +292,13 @@ export function useKitchenInterface() {
       show: visibility.show,
       active: visibility.active,
       is_test_kitchen: visibility.isTest,
-      display_name: identity.displayName || merged.display_name,
-      tagline: identity.tagline || merged.tagline,
-      display_image_url: identity.imageUrl || merged.display_image_url,
+      display_name: identity.displayName || safeString(place.name),
+      tagline: identity.tagline || safeString(place.brand_tagline),
+      display_image_url: safeString(place.image_url),
       image_shade: identity.imageShade || merged.image_shade,
-      food_gallery: identity.gallery.length ? identity.gallery : merged.food_gallery,
+      food_gallery: Array.isArray(place.gallery_images)
+        ? place.gallery_images as string[]
+        : [],
       menu_currency_format: menus.currencyFormat,
       menu_show_currency: menus.showCurrency,
       menu_style: menus.style,
@@ -314,7 +318,9 @@ export function useKitchenInterface() {
     const shortAddress = toShortAddress(
       safeString(kitchen.short_address) || formattedAddress
     )
-    const imageUrl = safeString(identity.imageUrl || kitchen.image_url)
+    const imageUrl = safeString(
+      identity.logoImageUrl || kitchen.logo_image_url
+    )
 
     const isPubliclyVisible = kitchen.publicly_visible !== false
     const badges = isPubliclyVisible
@@ -371,8 +377,12 @@ export function useKitchenInterface() {
     const identity = readKitchenIdentity(target)
     const displayName = safeString(identity.displayName || target.name).trim()
     const tagline = safeString(identity.tagline).trim()
-    const imageUrl = safeString(identity.imageUrl || target.image_url).trim()
-    const foodGallery = identity.gallery
+    const imageUrl = safeString(
+      identity.logoImageUrl || target.logo_image_url
+    ).trim()
+    const foodGallery = Array.isArray(target.food_gallery)
+      ? target.food_gallery
+      : []
     const hasKitchenDisplayData = Boolean(
       displayName ||
         tagline ||

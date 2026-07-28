@@ -97,9 +97,8 @@ const heroImage = computed(() =>
   clean(raw.value.cover_image)
 )
 const logoImage = computed(() =>
-  clean(identityRecord.value.image_url) ||
-  clean(raw.value.display_image_url) ||
-  clean(raw.value.image_url)
+  clean(identityRecord.value.logo_image_url) ||
+  clean(raw.value.logo_image_url)
 )
 const foodGallery = computed(() => {
   const gallery = Array.isArray(raw.value.food_gallery)

@@ -45,6 +45,7 @@ export type FireuxEntityFamily =
   | 'commerce'
   | 'kitchen'
   | 'menu'
+  | 'place'
   | 'supplier'
   | 'property'
   | 'portfolio'

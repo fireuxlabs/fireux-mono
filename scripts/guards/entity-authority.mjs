@@ -566,6 +566,31 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const jobPermissions = read(repoRoot, jobPermissionsPath)
   const jobPublishSurface = read(repoRoot, jobPublishSurfacePath)
   const agentProvisionSurface = read(repoRoot, agentProvisionSurfacePath)
+  const placeMutation = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
+  )
+
+  assert.match(
+    placeMutation,
+    /Object\.hasOwn\(kitchen,\s*['"]app_scope_state['"]\)/
+  )
+  assert.match(
+    placeMutation,
+    /Object\.hasOwn\(kitchen,\s*['"]app_scope_app_id['"]\)/
+  )
+  assert.match(
+    placeMutation,
+    /rootKitchenScope\?\.appId\s*===\s*kitchenAuthority\.appId/
+  )
+  assert.match(
+    placeMutation,
+    /kitchenAuthority\.appId\s*!==\s*runtimeAppId/
+  )
+  assert.doesNotMatch(
+    placeMutation,
+    /appScope\.app_id\s*\|\|\s*kitchen\.app_scope_app_id/
+  )
 
   assert.deepEqual(typeFields(jobModel, 'Job'), [
     'category_id',
@@ -749,6 +774,94 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/components/dev/DriftToolbar.vue'
   )
   assert.doesNotMatch(driftToolbar, /useDevDriftCopyMeta|migration\s*[,}]/)
+
+  const publicPlaceModel = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/models/place-public.model.ts'
+  )
+  const publicPlaceNormalizer = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/utils/public-place-projection.ts'
+  )
+  const publicPlaceServerProjection = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/server/place/public-projection.ts'
+  )
+  assert.deepEqual(typeFields(publicPlaceModel, 'PublicPlaceProjection'), [
+    'brand_tagline',
+    'id',
+    'image_shade',
+    'image_url',
+    'name',
+    'place_type',
+    'short_address',
+    'short_name',
+    'slug',
+    'verified',
+  ])
+  assert.doesNotMatch(
+    publicPlaceModel,
+    /^  (?:brand_tagline|image_shade|image_url|short_address|short_name|slug|verified)\?:/m,
+    'Public Place collection rows must serialize one exact key set.'
+  )
+  assert.match(
+    publicPlaceNormalizer,
+    /return \{\s*id,\s*name,\s*place_type:\s*type,\s*short_name:[\s\S]*brand_tagline:[\s\S]*short_address:[\s\S]*image_url:[\s\S]*image_shade:[\s\S]*verified:[\s\S]*slug:/,
+    'The shared Place normalizer must materialize every public collection-row key.'
+  )
+  assert.match(
+    publicPlaceServerProjection,
+    /normalizePublicPlaceProjection\(\{[\s\S]*return result/,
+    'The Live Place API must use the shared exact public collection-row normalizer.'
+  )
+
+  const companyModel = read(
+    repoRoot,
+    'packages/extensions/fireux-companies/src/runtime/models/company.model.ts'
+  )
+  const canonicalCompany = read(
+    repoRoot,
+    'packages/extensions/fireux-companies/src/runtime/server/company/canonical.ts'
+  )
+  const companyMaterializer = read(
+    repoRoot,
+    'packages/extensions/fireux-companies/src/runtime/server/company/materialize.ts'
+  )
+  const publicCompanyModel = read(
+    repoRoot,
+    'packages/extensions/fireux-companies/src/runtime/models/company-public.model.ts'
+  )
+  const publicCompanyProjection = read(
+    repoRoot,
+    'packages/extensions/fireux-companies/src/runtime/server/company/public-projection.ts'
+  )
+  assert.match(companyModel, /kind:\s*'record'/)
+  assert.match(companyModel, /parent:\s*'Place'/)
+  assert.match(companyModel, /root:\s*CompanyStorage\.path/)
+  assert.match(
+    canonicalCompany,
+    /hasExactKeys\(company,\s*\['created', 'updated'\]\)/
+  )
+  assert.match(canonicalCompany, /hasExactKeys\(stamp,\s*\['at'\]\)/)
+  assert.match(companyMaterializer, /projectPublicPlace\(id,\s*placeSnapshot\.data\(\) \|\| \{\}\)/)
+  assert.match(
+    companyMaterializer,
+    /canonicalCompanyRole\(id,\s*companySnapshot\.data\(\)\)/
+  )
+  assert.match(
+    publicCompanyModel,
+    /export type PublicCompanyProjection = PublicPlaceProjection/
+  )
+  assert.match(
+    publicCompanyProjection,
+    /canonicalCompanyRole\(id,\s*companyValue\)/
+  )
+  assert.match(publicCompanyProjection, /return place/)
+  assert.doesNotMatch(
+    publicCompanyProjection,
+    /\.\.\.\(place\./,
+    'Company public reads must not maintain a second optional copy of the exact Place projection.'
+  )
 
   assert.equal(
     existsSync(

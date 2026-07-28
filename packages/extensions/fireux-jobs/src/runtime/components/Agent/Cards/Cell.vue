@@ -1,6 +1,6 @@
 <template>
   <PublicProfileDirectoryCard
-    variant="card"
+    variant="cell"
     kind-label="Agent"
     icon="i-lucide-handshake"
     tone="info"

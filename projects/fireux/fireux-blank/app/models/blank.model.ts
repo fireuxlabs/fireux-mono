@@ -1,10 +1,19 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: type Blank App access as a support record.
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep Blank access exclusively in same-id App support.
-import type {
-  FireuxAppAccessRecord,
+import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
+import {
+  FireuxAppAccessRecordModel,
   FireuxAppScope,
-  FireuxStamped,
-} from 'fireux-core/runtime/models/core/meta.model'
+} from 'fireux-core/runtime/models/core/meta.model.ts'
+
+type WidenLiteral<T> =
+  T extends string ? string
+  : T extends number ? number
+  : T extends boolean ? boolean
+  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
+  : T extends Record<string, unknown>
+    ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
+  : T
 
 export type BlankStatus = 'active' | 'archived'
 
@@ -22,18 +31,31 @@ export const BlankStorage = {
  * - demo targets are static, selectable, and read-only
  * - no test mode, no operations, no child records
  */
-export type Blank = Partial<FireuxStamped> &
-  FireuxAppScope & {
-    id?: string
-    name: string
-    slug: string
-    status: BlankStatus
-  }
+export const BlankModel = {
+  id: '',
+  ...FireuxAppScope,
+  name: '',
+  slug: '',
+  status: 'active' as BlankStatus,
+  created: {
+    at: {} as FireuxStamped['created']['at'],
+    by: undefined as FireuxStamped['created']['by'],
+    app_id: undefined as FireuxStamped['created']['app_id'],
+  },
+  updated: {
+    at: {} as FireuxStamped['updated']['at'],
+    by: undefined as FireuxStamped['updated']['by'],
+  },
+} as const
 
-export type AppBlank = Partial<FireuxAppAccessRecord> & {
-  id?: string
-  blank_id: string
-}
+export type Blank = WidenLiteral<typeof BlankModel>
+
+export const AppBlankModel = {
+  ...FireuxAppAccessRecordModel,
+  blank_id: '',
+} as const
+
+export type AppBlank = WidenLiteral<typeof AppBlankModel>
 
 export type BlankSurface = Blank &
-  Pick<FireuxAppAccessRecord, 'operator_ids' | 'team_ids' | 'join_requests'>
+  Pick<AppBlank, 'operator_ids' | 'team_ids' | 'join_requests'>

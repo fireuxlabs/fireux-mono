@@ -3,7 +3,7 @@
 <!-- Concurrent edit — 2026-07-23 12:13 CEST — Record FireUX as the second shared product-landing consumer. -->
 <!-- Concurrent edit — 2026-07-23 — Extract the two-consumer product-preview frame without moving product proof into Core. -->
 <!-- Concurrent edit — 2026-07-25 — Map Misebox's real Orders proof inside the shared Main App hero. -->
-Updated: 2026-07-27
+Updated: 2026-07-28
 Ref: e98ffb195
 Role: map, not canon
 
@@ -59,24 +59,24 @@ Map component folder and naming conventions.
   `PublicProfileDirectoryCard` presentation while each named domain retains
   its content; profile editors use Nuxt UI cards and named `Edit/*` form
   composition; and page organisms to genuinely shared layout and route
-  regions. Core `LandingProductIndex` owns the
-  product-led public landing composition and responsive/reveal behavior; app
-  projects supply typed copy, routes, catalogues, and genuine product proof
-  through its named slot rather than copying that presentation. FireUX and
-  Misebox are the current sibling consumers. Misebox fills the shared hero's
-  proof slot with a read-only real Orders board reduced to three tickets in one
-  Pass rail, without a project-owned outer preview frame, and keeps the shared
-  typed hero text as the only explanation. Misebox reuses the existing Core
-  hero action hierarchy beside the proof for its project-owned conversion
-  routes and short capability notes; it does not add a detached CTA card.
-  Core's `copy-proof` presentation remains available when a consumer needs to
-  omit action and trust rows. Core's paired `proof-wide` layout owns the
-  mobile-first full-viewport hero breakout, retaining compact phone gutters
-  and adding the text/proof columns only at wider breakpoints. Core
-  exposes a post-hero slot for project-owned conversion content without
-  absorbing its routes or copy. Misebox uses that seam for its second landing
-  section, pairing a read-only canonical Kitchen Operations launcher with
-  project-owned Console copy. Its thin root owns frame/navigation, local page
+  regions. Core `LandingProductIndex` owns the fixed product-led landing order:
+  `hero-preview`, plain `onboarding` text, `console`, `specifics`,
+  `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
+  places shared product copy on the left and the app-owned orbit projection on
+  the right. `LandingProductProofSection` owns the recurring proof-and-copy
+  split, and `LandingProductCatalogue` owns the shared Tools, Solutions, and
+  Operations grid. Core keeps their responsive/reveal behavior and flat
+  semantic presentation free of decorative gradients and flares. App projects
+  supply truthful data, copy, routes, and proof through named slots and may
+  omit a slot when no public capability exists. FireUX places Ecosystems before
+  Apps and does not fabricate Tools; Misebox supplies Menu surfaces and Finance
+  under `specifics`, its bounded Apps projection, and the real Ordering tool
+  before Solutions and Operations. FireUX and Misebox are the current sibling
+  consumers. Slotted content opts into Core's single IntersectionObserver
+  reveal system with `data-landing-reveal`; projects do not create a second
+  scroll-animation observer or stylesheet. Misebox's Console proof pairs a
+  read-only canonical Kitchen Operations launcher with project-owned Console
+  copy. Its thin root owns frame/navigation, local page
   state, and one Product Demo load. Named Menus, Dishes, Ingredients, Recipes,
   Mise, and empty-canvas children own their projected bodies; Dishes further
   separates Collection, Overview, and named Finance/Spec/Prep/Recipes/Mise
@@ -118,6 +118,24 @@ Map component folder and naming conventions.
   narrated-preview frame when a project genuinely needs identity/status
   chrome, mode controls, panel transition, footer action, and reduced-motion
   behavior; project proof truth never moves into Core. Core
+  `LandingCardOrbit` owns deterministic sphere geometry, drag/keyboard
+  interaction, visibility-aware desktop autoplay, static mobile defaults, and
+  reduced-motion behavior for card showcases. It receives typed items and one
+  dumb item slot; FireUX projects its bounded public App/Ecosystem directory
+  into canonical Cards from the explicit `live` source, while Misebox projects
+  network-free PowerCards from the explicit `demo` source. The shared source
+  discriminant is closed to `demo | live`; one orbit cannot mix, hydrate, or
+  fall back across those sources. Static ids, labels, and coordinates are
+  geometry metadata only. Project adapters own that metadata and Card content
+  but never copy orbit math, page-scroll coupling, or motion CSS. The orbit is
+  a landing compositor, not a fourth Card variant and not a Sci-Fire-only
+  component. Core
+  `EffectsAmbient` owns the fixed viewport, isolation, content-stack, and print
+  contract for project-owned landing art. FireUX Stars and Misebox Steam are
+  the sibling visual consumers: they share the outer layer and reduced-motion
+  contract while retaining distinct app-owned character. FireUX Stars uses the
+  deterministic Core field helper; Misebox Steam retains its project-owned
+  client-initialized puff lifecycle. Core
   `LandingAppCollection` renders the bounded public App directory controller
   inside the product landing's named App slot; the project supplies only
   section copy and presentation-safe filtering, never a hard-coded tenant App

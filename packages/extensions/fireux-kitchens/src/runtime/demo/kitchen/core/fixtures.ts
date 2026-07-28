@@ -11,8 +11,14 @@ export const deanosKitchenDemoIdentity = {
   kitchenSlug: 'deanos',
   placeId: 'demo-deanos-place',
   menuId: 'deanos-menu',
-  serviceId: 'deanos-demo-lunch-service',
+  serviceId: 'deanos-service-2026-07-26',
 } as const satisfies KitchenDemoIdentity
+
+export const deanosKitchenDemoTeamMemberIds = [
+  'deanos-alex',
+  'deanos-sam',
+  'deanos-jo',
+] as const
 
 export const deanosPartyMenuDemoIdentity = {
   ...deanosKitchenDemoIdentity,
@@ -44,6 +50,9 @@ export const pizzaTheActionKitchenDemoIdentity = {
 
 export const kitchenDemoAssetBase = '/img/showcase/menu'
 
+export const DEANOS_KITCHEN_DEMO_ORIGIN_ISO =
+  '2025-11-03T09:00:00.000Z'
+
 export const kitchenDemoTimestamp = (iso: string): FirebaseTimestamp => ({
   seconds: Math.floor(Date.parse(iso) / 1000),
   nanoseconds: 0,
@@ -51,10 +60,17 @@ export const kitchenDemoTimestamp = (iso: string): FirebaseTimestamp => ({
 
 export const kitchenDemoCreated = (
   identity: KitchenDemoIdentity,
-  iso = '2026-07-22T09:00:00.000Z',
+  iso?: string,
   by = 'demo'
 ) => ({
-  at: kitchenDemoTimestamp(iso),
+  at: kitchenDemoTimestamp(
+    iso
+    ?? (
+      identity.kitchenId === deanosKitchenDemoIdentity.kitchenId
+        ? DEANOS_KITCHEN_DEMO_ORIGIN_ISO
+        : '2026-07-22T09:00:00.000Z'
+    )
+  ),
   by,
   app_id: identity.appId,
 })

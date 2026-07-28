@@ -128,20 +128,6 @@ const cardClass = computed(() => ({
 <style scoped>
 .kitchen-card-cell {
   min-height: 6.5rem;
-  padding: calc(var(--spacing) * 3);
-  border-color: color-mix(in srgb, var(--ui-border) 72%, transparent);
-  border-radius: calc(var(--ui-radius) * 6);
-  background:
-    radial-gradient(
-      circle at 0 0,
-      color-mix(in srgb, var(--ui-primary) 9%, transparent),
-      transparent 42%
-    ),
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--ui-bg-elevated) 98%, var(--ui-primary) 2%),
-      var(--ui-bg) 76%
-    );
 }
 
 .kitchen-card-cell .card__media {
@@ -156,9 +142,6 @@ const cardClass = computed(() => ({
   border: 1px solid color-mix(in srgb, var(--ui-border) 76%, transparent);
   border-radius: calc(var(--ui-radius) * 4);
   background: color-mix(in srgb, var(--ui-bg-elevated) 94%, transparent);
-  box-shadow:
-    0 1px 0 color-mix(in srgb, white 10%, transparent) inset,
-    0 0.65rem 1.4rem color-mix(in srgb, var(--ui-bg-inverted) 12%, transparent);
 }
 
 .kitchen-card-cell .card__stack {
@@ -173,10 +156,8 @@ const cardClass = computed(() => ({
 
 .kitchen-card-cell .card__subtitle {
   margin-top: var(--spacing);
-  font-size: 0.6875rem;
+  font-size: var(--text-xs);
   font-weight: var(--font-weight-semibold);
-  letter-spacing: 0.055em;
-  text-transform: uppercase;
 }
 
 .kitchen-card-cell .card__subtitle svg {
@@ -219,7 +200,7 @@ const cardClass = computed(() => ({
       color-mix(in srgb, var(--ui-primary) 9%, var(--ui-bg)),
       var(--ui-bg) 68%
     );
-  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.1);
+  box-shadow: var(--fx-elevation-medium);
   transform: translateY(-2px);
 }
 
@@ -235,7 +216,7 @@ const cardClass = computed(() => ({
 }
 
 .kitchen-card-cell--directory .card__stack {
-  gap: 0.55rem;
+  gap: calc(var(--spacing) * 2);
 }
 
 .kitchen-card-cell--directory .card__title {
@@ -283,7 +264,7 @@ const cardClass = computed(() => ({
     var(--ui-bg);
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--ui-primary) 20%, transparent),
-    0 12px 28px rgba(15, 23, 42, 0.08);
+    var(--fx-elevation-medium);
 }
 
 .kitchen-card-cell--selected:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover {

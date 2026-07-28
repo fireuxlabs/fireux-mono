@@ -16,6 +16,7 @@ import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
 } from '../../utils/place-spine'
+import { normalizePublicPlaceProjection } from '../../utils/public-place-projection'
 
 const placeTypes = new Set<PlaceType>(['physical', 'non_physical'])
 
@@ -65,33 +66,21 @@ export function projectPublicPlace(
   const placeType = text(value.place_type, 40) as PlaceType
   if (!name || !placeTypes.has(placeType)) return null
 
-  const result: PublicPlaceProjection = {
+  const result = normalizePublicPlaceProjection({
     id,
     name,
     place_type: placeType,
-  }
-
-  const shortName = text(value.short_name, 120)
-  if (shortName) result.short_name = shortName
-
-  const brandTagline = text(value.brand_tagline, 240)
-  if (brandTagline) result.brand_tagline = brandTagline
-
-  const shortAddress = coarseAddress(value.address)
-  if (shortAddress) result.short_address = shortAddress
-
-  const imageUrl = httpsUrl(value.image_url)
-  if (imageUrl) result.image_url = imageUrl
-
-  const imageShade = text(value.image_shade, 10) as PlaceImageShade
-  if (imageShade === 'light' || imageShade === 'dark') {
-    result.image_shade = imageShade
-  }
-
-  if (value.verified === true) result.verified = true
-
-  const slug = text(value.slug, 240).toLowerCase()
-  if (/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) result.slug = slug
+    short_name: text(value.short_name, 120),
+    brand_tagline: text(value.brand_tagline, 240),
+    short_address: coarseAddress(value.address),
+    image_url: httpsUrl(value.image_url),
+    image_shade: text(value.image_shade, 10) as PlaceImageShade,
+    verified: value.verified === true,
+    slug: (() => {
+      const slug = text(value.slug, 240).toLowerCase()
+      return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) ? slug : ''
+    })(),
+  })
 
   return result
 }

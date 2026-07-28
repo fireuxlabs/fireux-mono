@@ -25,6 +25,9 @@ import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.
 import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 
+const productDemoSurface = 'showroom' as const
+const productDemoDataSource = 'demo' as const
+
 export type MiseboxProductDemoExperience = {
   to: '/demo/menu' | '/demo/kiosk' | '/demo/service'
   eyebrow: string
@@ -51,6 +54,8 @@ export type MiseboxProductDemoKiosk = {
 }
 
 export type MiseboxProductDemo = {
+  surface: 'showroom'
+  dataSource: 'demo'
   console: {
     kitchenId: string
     kitchenName: string
@@ -75,8 +80,8 @@ export type MiseboxProductDemo = {
         grossProfitMinor: number | null
         foodCostPercentage: number | null
         grossMarginPercentage: number | null
-        quantitySold: number
-        totalSalesMinor: number
+        quantitySold: number | null
+        totalSalesMinor: number | null
       } | null
       prepItems: {
         id: string
@@ -226,6 +231,7 @@ async function loadMiseboxProductDemo(
   const [
     scenarioModule,
     presentationModule,
+    companyModule,
     supplierModule,
     dishesModule,
     suppliersModule,
@@ -235,6 +241,7 @@ async function loadMiseboxProductDemo(
   ] = await Promise.all([
     import('fireux-kitchens/runtime/demo/kitchen/scenarios'),
     import('fireux-kitchens/runtime/demo/kitchen/presentation/index'),
+    import('fireux-companies/runtime/demo/company/scenarios'),
     import('fireux-suppliers/runtime/demo/supplier/scenarios'),
     import('fireux-kitchens/runtime/utils/kitchen/demo-dishes'),
     import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers'),
@@ -242,6 +249,31 @@ async function loadMiseboxProductDemo(
     import('fireux-kitchens/runtime/utils/kitchen-spine'),
     import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'),
   ])
+  const companyTargetById = new Map(
+    companyModule.companyDemoTargets.map(target => [
+      target.company.id,
+      target,
+    ])
+  )
+  const unresolvedSupplierCompanies =
+    supplierModule.supplierDemoScenarios.flatMap((scenario) => {
+      const companyId = String(scenario.supplier.company_id || '').trim()
+      const target = companyTargetById.get(companyId)
+      return (
+        companyId &&
+        target?.company.id === companyId &&
+        target.place.id === companyId &&
+        !('place_id' in scenario.supplier)
+      )
+        ? []
+        : [scenario.supplier.id]
+    })
+  if (unresolvedSupplierCompanies.length) {
+    throw new Error(
+      `Supplier Demo Company/Place relationships are unresolved: ${unresolvedSupplierCompanies.join(', ')}`
+    )
+  }
+
   const supplierIngredients = new Set(
     supplierModule.supplierDemoScenarios.flatMap(scenario =>
       scenario.ingredients.map(ingredient =>
@@ -359,6 +391,8 @@ async function loadMiseboxProductDemo(
   const consoleStationNames = Object.fromEntries(
     consoleScenario.stations.map(station => [station.id, station.name])
   )
+  const consoleStationName = (stationId: string) =>
+    consoleStationNames[stationId] || stationId
   const consoleMiseTaskById = new Map(
     consoleScenario.miseTasks.map(task => [task.id, task])
   )
@@ -531,8 +565,6 @@ async function loadMiseboxProductDemo(
       if (
         !spec
         || !finance
-        || item.quantitySold === null
-        || item.totalSalesMinor === null
       ) {
         throw new Error(`Product Demo Dish projection is incomplete: ${dish.id}`)
       }
@@ -568,7 +600,7 @@ async function loadMiseboxProductDemo(
         prepItems: item.prepItems.map(prepItem => ({
           id: prepItem.id,
           name: prepItem.name,
-          station: prepItem.station,
+          station: consoleStationName(prepItem.station),
           yield: formatProductionAmount(prepItem.yield),
         })),
         recipes: item.recipes.map(recipe => ({
@@ -581,7 +613,7 @@ async function loadMiseboxProductDemo(
         mise: item.miseRequirements.map(requirement => ({
           id: requirement.id,
           quantity: formatProductionAmount(requirement.amount),
-          station: requirement.station,
+          station: consoleStationName(requirement.station),
           title: requirement.title,
         })),
         spec: {
@@ -590,7 +622,7 @@ async function loadMiseboxProductDemo(
           recipeIds: spec.components
             .filter(component => component.source === 'recipe')
             .map(component => component.recipeId),
-          station: spec.station,
+          station: consoleStationName(spec.station),
           summary: spec.summary,
         },
       }
@@ -598,6 +630,8 @@ async function loadMiseboxProductDemo(
     .sort((left, right) => left.name.localeCompare(right.name))
 
   return {
+    surface: productDemoSurface,
+    dataSource: productDemoDataSource,
     console: {
       kitchenId: consoleScenario.kitchen.id,
       kitchenName:

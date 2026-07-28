@@ -1,6 +1,10 @@
 import { computed } from 'vue'
 import { useKitchenRecipeCollection } from '../../../../firestore/recipe/fetch/useKitchenRecipeCollection'
-import { RecipeStorage, type Recipe } from '../../../../../../models/kitchen/recipe.model'
+import {
+  normalizeRecipe,
+  RecipeStorage,
+  type Recipe,
+} from '../../../../../../models/kitchen/recipe.model'
 import { useKitchenConsole } from '../../core/useKitchenConsole'
 import {
   findKitchenConsoleDemoScenario,
@@ -35,6 +39,22 @@ export function useKitchenConsoleRecipes() {
     demoData.data.value,
     kitchenId.value
   ))
+  const demoRecipes = computed<Recipe[]>(() =>
+    (demoScenario.value?.recipes ?? []).map(recipe =>
+      normalizeRecipe({
+        id: recipe.id,
+        name: recipe.name,
+        slug: recipe.id,
+        description: recipe.method.join(' '),
+        source_language: 'en',
+        names: { en: recipe.name },
+        descriptions: {
+          en: recipe.method.join(' '),
+        },
+        kitchen_id: kitchenId.value,
+      })
+    )
+  )
   const demoMenuService = useKitchenConsoleDemoMenuService(demoScenario)
   const fetchKitchenId = computed(() =>
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
@@ -50,9 +70,9 @@ export function useKitchenConsoleRecipes() {
       kitchenCollectionPath: rootCollection,
       databaseId,
   })
-  const consoleRecipes = computed(() =>
+  const consoleRecipes = computed<Recipe[]>(() =>
     runtime.isDemo.value
-      ? demoScenario.value?.recipes ?? []
+      ? demoRecipes.value
       : fetchedRecipes.value
   )
   const pending = computed(() =>
@@ -83,9 +103,37 @@ export function useKitchenConsoleRecipes() {
     pending,
     collectionPath,
   })
-  const dishes = computed(() => [])
+  const dishes = computed(() =>
+    runtime.isDemo.value ? demoScenario.value?.dishes ?? [] : []
+  )
   const count = computed(() => page.collection.value.count)
-  const dishUsageByRecipeId = computed<Record<string, KitchenRecipeDishUsage[]>>(() => ({}))
+  const dishUsageByRecipeId = computed<Record<string, KitchenRecipeDishUsage[]>>(
+    () => {
+      if (!runtime.isDemo.value || !demoScenario.value) return {}
+      const dishById = new Map(
+        demoScenario.value.dishes.map(dish => [normalizeString(dish.id), dish])
+      )
+      const usage: Record<string, KitchenRecipeDishUsage[]> = {}
+      for (const spec of demoScenario.value.dishSpecs) {
+        const dish = dishById.get(normalizeString(spec.dishId))
+        if (!dish) continue
+        for (const component of spec.components) {
+          if (component.source !== 'recipe') continue
+          const recipeId = normalizeString(component.recipeId)
+          const entries = usage[recipeId] ?? []
+          if (!entries.some(entry => entry.dishId === dish.id)) {
+            entries.push({
+              recipeId,
+              dishId: dish.id,
+              dishName: normalizeString(dish.name) || dish.id,
+            })
+          }
+          usage[recipeId] = entries
+        }
+      }
+      return usage
+    }
+  )
   const getDishUsageForRecipe = (recipeId: string) =>
     dishUsageByRecipeId.value[normalizeString(recipeId)] || []
   const debug = computed(() => ({

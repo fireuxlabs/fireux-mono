@@ -21,8 +21,7 @@ export function useMenuCardPresentation(
     (source.value.kind === 'doc' ? source.value.description : '')
   ))
   const kitchenImageUrl = computed(() => text(
-    source.value.kitchen?.logo_image_url ||
-    source.value.kitchen?.image_url
+    source.value.kitchen?.logo_image_url
   ))
   const avatarClass = computed(() => {
     const shade = source.value.kitchen?.image_shade

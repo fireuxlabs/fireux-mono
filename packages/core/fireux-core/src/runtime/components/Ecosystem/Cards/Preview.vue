@@ -1,6 +1,6 @@
 <template>
-  <UCard class="space-y-3">
-    <div class="flex items-start gap-3">
+  <UCard class="preview">
+    <div class="preview__row">
       <UAvatar
         :src="item.imageUrl || undefined"
         :alt="item.name"
@@ -9,19 +9,19 @@
         size="sm"
       />
 
-      <div class="min-w-0 flex-1 space-y-2">
-        <div class="flex flex-wrap items-start justify-between gap-2">
+      <div class="preview__main">
+        <div class="preview__top">
           <div class="min-w-0">
-            <div class="truncate text-sm font-semibold text-default">
+            <div class="preview__title">
               {{ item.name }}
             </div>
-            <div class="truncate text-xs text-dimmed">
+            <div class="preview__subtitle">
               <span v-if="item.slug">{{ item.slug }}</span>
               <span v-else class="italic">missing slug</span>
             </div>
           </div>
 
-          <div class="flex flex-wrap gap-1">
+          <div class="preview__badges">
             <UBadge v-if="item.status" variant="soft" color="neutral" size="xs">
               {{ item.status }}
             </UBadge>
@@ -31,13 +31,14 @@
           </div>
         </div>
 
-        <div class="text-sm text-dimmed">
-          <span v-if="item.description">{{ item.description }}</span>
-          <span v-else class="italic">missing</span>
-        </div>
-
-        <div class="flex flex-wrap items-center gap-2 text-xs text-dimmed">
-          <span v-if="item.id" class="font-mono break-all">{{ item.id }}</span>
+        <div class="preview__body">
+          <div class="preview__line">
+            <span v-if="item.description">{{ item.description }}</span>
+            <span v-else class="italic">missing</span>
+          </div>
+          <div v-if="item.id" class="preview__meta">
+            <span class="break-all font-mono text-xs text-dimmed">{{ item.id }}</span>
+          </div>
         </div>
       </div>
     </div>

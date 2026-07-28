@@ -335,6 +335,10 @@ const files = {
     'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/portfolio/operations/Properties/fetch/usePropertyDocument.ts',
   kitchenModel:
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
+  kitchenSpine:
+    'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen-spine.ts',
+  kitchenDemoTargets:
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/targets.ts',
   kitchenTargetModel:
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/kitchen-index.model.ts',
   kitchenTargetCollection:
@@ -353,6 +357,12 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding.ts',
+  kitchenOnboardingPolicy:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-policy.ts',
+  kitchenTestCreate:
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenTestCreate.ts',
+  kitchenTestScenario:
+    'packages/extensions/fireux-kitchens/src/runtime/test/kitchen/scenario.ts',
   kitchenServerConfig:
     'packages/extensions/fireux-kitchens/src/config/module/server-config.ts',
   blankCollection:
@@ -728,7 +738,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.blankModel,
-    /export type BlankSurface[\s\S]*Pick<FireuxAppAccessRecord, 'operator_ids' \| 'team_ids' \| 'join_requests'>/,
+    /export const BlankModel[\s\S]*export const AppBlankModel[\s\S]*export type BlankSurface[\s\S]*Pick<AppBlank, 'operator_ids' \| 'team_ids' \| 'join_requests'>/,
     'Blank Console surfaces must project access explicitly from AppBlank support.'
   )
   const blankRootCreate = callBlocks(
@@ -755,6 +765,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'team_ids',
     'updated',
   ])
+  assert.match(
+    source.kitchenModel,
+    /Omit<[\s\S]*FireuxConsoleEntityIdentity,[\s\S]*'image_url' \| 'gallery'[\s\S]*>/,
+    'Kitchen identity must exclude Place-owned media.'
+  )
+  assert.doesNotMatch(
+    source.kitchenSpine,
+    /normalizeFireuxAppScopeState|dedicated_app/,
+    'Kitchen readers must accept only current exact App scope vocabulary.'
+  )
+  assert.match(
+    source.kitchenDemoTargets,
+    /app_scope:\s*\{\s*state:\s*'parent_app',\s*app_id:\s*input\.identity\.appId/,
+    'Every Demo Kitchen must carry the same explicit App relationship as its access-only Demo support.'
+  )
+  assert.match(
+    source.kitchenDemoTargets,
+    /publicPlace:\s*PublicPlaceProjection[\s\S]*normalizePublicPlaceProjection[\s\S]*hasExactPublicPlaceProjectionShape\(item\.publicPlace\)/,
+    'Every Demo Kitchen target must expose its Place through the exact shared public collection-row projection.'
+  )
 
   assert.match(source.kitchenTargetModel, /KITCHEN_CONSOLE_TARGET_LIMIT = 50/)
   assert.match(source.kitchenTargetModel, /type KitchenConsoleTargetsResponse/)
@@ -837,19 +867,90 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenCreate, /Authorization:\s*`Bearer/)
   assert.doesNotMatch(
     source.kitchenCreate,
-    /\buseConsoleCreate\s*\(|createAppSupport|normalizeKitchenRootScope/,
+    /\buseConsoleCreate\s*\(|createAppSupport|normalizeKitchenRootScope|createKitchenPayload|createKitchenRoot|setDocument/,
     'Kitchen Console creation must use the atomic trusted onboarding transaction.'
+  )
+  assert.match(
+    source.kitchenCreate,
+    /function createKitchen\([\s\S]*return createKitchenConsole\(input, createOptions\)/,
+    'Every Live Kitchen create entrypoint must delegate to trusted onboarding.'
   )
   assert.match(
     source.kitchenOnboarding,
     /transaction\.create\(supportRef,[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
     'Trusted Kitchen onboarding must seed every AppKitchen authority array.'
   )
-  assert.match(
+  assert.doesNotMatch(
     source.kitchenOnboarding,
-    /readKitchenOnboardingSupportForTrustedRepair[\s\S]*missingFields\.length > 0 && role !== 'admin'[\s\S]*missingFields\.includes\('join_requests'\)[\s\S]*join_requests: \[\]/,
-    'Trusted Kitchen onboarding must repair only absent authority arrays and reserve that repair for App admins.'
+    /readKitchenOnboardingSupportForTrustedRepair|missingFields|app_scope_state:\s*FieldValue\.delete|app_scope_app_id:\s*FieldValue\.delete/,
+    'Pre-release Kitchen onboarding must reject malformed roots/support instead of repairing legacy shapes.'
   )
+  assert.doesNotMatch(
+    source.kitchenOnboardingPolicy,
+    /const flatState|const flatAppId|app_scope_state\)\s*\|\||app_scope_app_id\)\s*\|\||normalizeFireuxAppScopeState|dedicated_app/,
+    'Kitchen scope authority must read only the exact current nested App scope.'
+  )
+  assert.match(
+    source.kitchenOnboardingPolicy,
+    /unsupported field:[\s\S]*boundedIds\(value\.operator_ids[\s\S]*boundedIds\(value\.team_ids[\s\S]*value\.join_requests/,
+    'AppKitchen support must reject domain payload and require the three access arrays.'
+  )
+  for (const pattern of [
+    /PlaceStorage\.collection/,
+    /KitchenStorage\.rootCollection/,
+    /KitchenStorage\.scopeCollection/,
+    /writeBatch\(simulationDb\)/,
+    /batch\.set\(placeRef/,
+    /batch\.set\(kitchenRef/,
+    /batch\.set\(supportRef/,
+  ]) {
+    assert.match(
+      source.kitchenTestCreate,
+      pattern,
+      'A Test Kitchen must atomically create its canonical Place, Kitchen root, and access-only App support.'
+    )
+  }
+  assert.match(
+    source.kitchenTestScenario,
+    /state:\s*'parent_app'[\s\S]*appSupport:\s*\{[\s\S]*scenario\.kitchen\.id !== scenario\.place\.id[\s\S]*scenario\.kitchen\.id !== scenario\.appSupport\.id/,
+    'The static Kitchen Test seed must retain its same-App Kitchen, Place, and access-only AppKitchen relationship.'
+  )
+  assert.doesNotMatch(
+    source.kitchenTestScenario,
+    /state:\s*'root_only'/,
+    'A Test Kitchen associated with App support must not claim root_only scope.'
+  )
+  for (const [name, sources, retiredPath] of [
+    [
+      'Supplier',
+      [source.supplierCollection, source.supplierFetch, source.supplierCreate],
+      'test-suppliers',
+    ],
+    [
+      'Portfolio',
+      [source.portfolioCollection, source.portfolioCreate],
+      'test-portfolios',
+    ],
+    [
+      'Property',
+      [source.propertyCollection],
+      'test-properties',
+    ],
+  ]) {
+    for (const testSource of sources) {
+      assert.doesNotMatch(
+        testSource,
+        new RegExp(retiredPath),
+        `${name} Test must not use an ad hoc default-database collection.`
+      )
+    }
+    assert.ok(
+      sources.some(testSource =>
+        testSource.includes('no canonical simulation producer exists')
+      ),
+      `${name} Test must fail closed until a canonical simulation producer exists.`
+    )
+  }
   assert.match(
     source.miseboxRules,
     /function hasBoundedKitchenAuthority\(\)[\s\S]*operator_ids is list[\s\S]*team_ids is list[\s\S]*join_requests is list[\s\S]*join_requests\.size\(\) <= 100;/,

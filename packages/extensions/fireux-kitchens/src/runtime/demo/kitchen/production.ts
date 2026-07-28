@@ -5,10 +5,19 @@
  * to inspect before promoting them into canonical persisted Spec and expanded
  * Recipe models.
  */
+import { deanosPartyDemoMenu } from './operations/Menus/deanos-party'
+
+export type KitchenDemoStationId =
+  | 'prep'
+  | 'grill'
+  | 'fryers'
+  | 'drinks'
+  | 'pass'
+
 export type KitchenDemoDishSpec = {
   id: string
   dishId: string
-  station: string
+  station: KitchenDemoStationId
   portion?: string
   summary: string
   assembly: string[]
@@ -64,6 +73,7 @@ export type KitchenDemoMenuItemComponentDelta = {
         label?: never
       }
   components: KitchenDemoDishComponent[]
+  componentMultiplier?: number
 }
 
 export type KitchenDemoProductionRecipe = {
@@ -84,7 +94,7 @@ export type KitchenDemoRecipeIngredient = {
 export type KitchenDemoPrepItem = {
   id: string
   name: string
-  station: string
+  station: KitchenDemoStationId
   input: KitchenDemoRecipeIngredient
   yield: KitchenDemoProductionAmount
   method: string[]
@@ -103,7 +113,7 @@ type KitchenDemoMiseRequirementSource =
 export type KitchenDemoMiseRequirement = {
   id: string
   title: string
-  station: string
+  station: KitchenDemoStationId
   amount: KitchenDemoProductionAmount
   source: KitchenDemoMiseRequirementSource
 }
@@ -155,7 +165,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'smash-patty-80g',
     name: '80 g burger ball',
-    station: 'Grill',
+    station: 'grill',
     input: { ingredientId: 'beef-mince', quantity: 80, unit: 'g' },
     yield: { quantity: 1, unit: 'each' },
     method: [
@@ -166,7 +176,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'slider-patty-60g',
     name: '60 g slider ball',
-    station: 'Grill',
+    station: 'grill',
     input: { ingredientId: 'beef-mince', quantity: 60, unit: 'g' },
     yield: { quantity: 1, unit: 'each' },
     method: [
@@ -177,7 +187,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'washed-shredded-lettuce',
     name: 'Washed shredded lettuce',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'lettuce', quantity: 1000, unit: 'g' },
     yield: { quantity: 850, unit: 'g' },
     method: [
@@ -188,7 +198,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'split-burger-bun',
     name: 'Split burger bun',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'burger-buns', quantity: 1, unit: 'each' },
     yield: { quantity: 1, unit: 'each' },
     method: ['Split the bun cleanly.', 'Tray ready for service.'],
@@ -196,7 +206,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'split-slider-bun',
     name: 'Split slider bun',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'slider-buns', quantity: 1, unit: 'each' },
     yield: { quantity: 1, unit: 'each' },
     method: ['Split the bun cleanly.', 'Tray ready for service.'],
@@ -204,7 +214,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-swiss-cheese',
     name: 'Sliced Swiss cheese',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'swiss-cheese', quantity: 1000, unit: 'g' },
     yield: { quantity: 1000, unit: 'g' },
     method: ['Slice into 20 g service portions.', 'Cover and hold chilled.'],
@@ -212,7 +222,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-cheddar',
     name: 'Sliced cheddar',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'cheddar-cheese', quantity: 1000, unit: 'g' },
     yield: { quantity: 1000, unit: 'g' },
     method: ['Slice into 20 g service portions.', 'Cover and hold chilled.'],
@@ -220,7 +230,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-brown-mushrooms',
     name: 'Sliced brown mushrooms',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'brown-mushrooms', quantity: 1000, unit: 'g' },
     yield: { quantity: 900, unit: 'g' },
     method: ['Clean the mushrooms.', 'Slice evenly and hold chilled.'],
@@ -228,7 +238,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-tomato',
     name: 'Sliced tomato',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'tomato', quantity: 1000, unit: 'g' },
     yield: { quantity: 900, unit: 'g' },
     method: ['Wash the tomatoes.', 'Slice evenly and hold chilled.'],
@@ -236,7 +246,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'cauliflower-florets',
     name: 'Portioned cauliflower florets',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'cauliflower', quantity: 1000, unit: 'g' },
     yield: { quantity: 800, unit: 'g' },
     method: ['Trim the cauliflower.', 'Cut into even florets and portion.'],
@@ -244,7 +254,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-onion-rings',
     name: 'Sliced and dried onion rings',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'onion', quantity: 1000, unit: 'g' },
     yield: { quantity: 850, unit: 'g' },
     method: [
@@ -255,7 +265,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-spring-onion',
     name: 'Sliced spring onion',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'spring-onion', quantity: 500, unit: 'g' },
     yield: { quantity: 450, unit: 'g' },
     method: [
@@ -266,7 +276,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'washed-mint',
     name: 'Washed mint',
-    station: 'Drinks',
+    station: 'drinks',
     input: { ingredientId: 'mint', quantity: 100, unit: 'g' },
     yield: { quantity: 90, unit: 'g' },
     method: ['Wash the mint.', 'Spin dry and hold chilled.'],
@@ -274,7 +284,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'lemon-garnish',
     name: 'Lemon garnish',
-    station: 'Drinks',
+    station: 'drinks',
     input: { ingredientId: 'lemon', quantity: 1000, unit: 'g' },
     yield: { quantity: 40, unit: 'each' },
     method: ['Wash the lemons.', 'Slice into even service garnishes.'],
@@ -282,7 +292,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'service-ready-vanilla-soft-serve',
     name: 'Service-ready vanilla soft serve',
-    station: 'Drinks',
+    station: 'drinks',
     input: { ingredientId: 'vanilla-soft-serve', quantity: 1000, unit: 'ml' },
     yield: { quantity: 1000, unit: 'ml' },
     method: [
@@ -293,7 +303,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'washed-basil',
     name: 'Washed basil',
-    station: 'Drinks',
+    station: 'drinks',
     input: { ingredientId: 'basil', quantity: 100, unit: 'g' },
     yield: { quantity: 90, unit: 'g' },
     method: ['Wash the basil.', 'Spin dry and hold chilled.'],
@@ -301,7 +311,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-cucumber',
     name: 'Sliced cucumber',
-    station: 'Drinks',
+    station: 'drinks',
     input: { ingredientId: 'cucumber', quantity: 1000, unit: 'g' },
     yield: { quantity: 900, unit: 'g' },
     method: ['Wash the cucumber.', 'Slice evenly and hold chilled.'],
@@ -309,7 +319,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'washed-rocket',
     name: 'Washed ruccola',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'rocket', quantity: 1000, unit: 'g' },
     yield: { quantity: 900, unit: 'g' },
     method: ['Wash the ruccola carefully.', 'Spin dry and hold chilled.'],
@@ -317,7 +327,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'cooked-smoked-bacon',
     name: 'Cooked smoked bacon',
-    station: 'Grill',
+    station: 'grill',
     input: { ingredientId: 'smoked-bacon', quantity: 1000, unit: 'g' },
     yield: { quantity: 700, unit: 'g' },
     method: ['Cook until crisp.', 'Drain and hold ready for service.'],
@@ -325,7 +335,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'sliced-brie',
     name: 'Sliced Brie',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'brie', quantity: 1000, unit: 'g' },
     yield: { quantity: 950, unit: 'g' },
     method: ['Trim only where required.', 'Slice and hold chilled.'],
@@ -333,7 +343,7 @@ export const deanosKitchenDemoPrepItems: KitchenDemoPrepItem[] = [
   {
     id: 'roast-turkey',
     name: 'Roast turkey',
-    station: 'Prep',
+    station: 'prep',
     input: { ingredientId: 'turkey-breast', quantity: 1000, unit: 'g' },
     yield: { quantity: 750, unit: 'g' },
     method: [
@@ -767,7 +777,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'deanos-classic-spec',
     dishId: 'deanos-classic',
-    station: 'Grill',
+    station: 'grill',
     summary: 'Classic smash burger built hot, crisp and balanced.',
     assembly: [
       'Toast the bun.',
@@ -796,7 +806,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'double-trouble-spec',
     dishId: 'double-trouble',
-    station: 'Grill',
+    station: 'grill',
     summary:
       'Two smashed patties layered with cheese, caramelised onions and smoky sauce.',
     assembly: [
@@ -821,7 +831,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'swiss-melt-spec',
     dishId: 'swiss-melt',
-    station: 'Grill',
+    station: 'grill',
     summary:
       'Smash burger finished with Swiss cheese, mushrooms and peppercorn mayo.',
     assembly: [
@@ -846,7 +856,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'hot-honey-chicken-spec',
     dishId: 'hot-honey-chicken',
-    station: 'Fry',
+    station: 'fryers',
     summary: 'Buttermilk chicken with crunchy slaw, hot honey and chilli mayo.',
     assembly: [
       'Toast the bun and fry the chicken.',
@@ -870,7 +880,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'ranch-chicken-spec',
     dishId: 'ranch-chicken',
-    station: 'Fry',
+    station: 'fryers',
     summary: 'Crisp chicken burger finished with cool herb ranch.',
     assembly: [
       'Toast the bun and fry the chicken.',
@@ -894,7 +904,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'crispy-cauliflower-spec',
     dishId: 'crispy-cauliflower',
-    station: 'Fry',
+    station: 'fryers',
     summary:
       'Freshly battered cauliflower built as a crisp plant-based burger.',
     assembly: [
@@ -929,7 +939,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'skin-on-fries-spec',
     dishId: 'skin-on-fries',
-    station: 'Fry',
+    station: 'fryers',
     summary: 'Crisp fries seasoned immediately after cooking.',
     assembly: [
       'Fry from chilled until crisp.',
@@ -944,7 +954,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'dirty-deanos-fries-spec',
     dishId: 'dirty-deanos-fries',
-    station: 'Fry',
+    station: 'fryers',
     summary: 'Fries loaded with warm cheese sauce and burger garnish.',
     assembly: [
       'Cook and season the fries and chopped smash beef.',
@@ -985,7 +995,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'onion-rings-spec',
     dishId: 'onion-rings',
-    station: 'Fry',
+    station: 'fryers',
     portion: '120 g',
     summary: 'Cold-battered onion rings fried until light and crisp.',
     assembly: [
@@ -1007,7 +1017,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'salted-caramel-shake-spec',
     dishId: 'salted-caramel-shake',
-    station: 'Drinks',
+    station: 'drinks',
     summary: 'Thick vanilla shake blended with house salted caramel.',
     assembly: [
       'Measure shake base and caramel sauce.',
@@ -1034,7 +1044,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'cherry-vanilla-shake-spec',
     dishId: 'cherry-vanilla-shake',
-    station: 'Drinks',
+    station: 'drinks',
     summary: 'Vanilla shake layered with bright cherry syrup.',
     assembly: [
       'Measure shake base and cherry syrup.',
@@ -1055,7 +1065,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'house-lemonade-spec',
     dishId: 'house-lemonade',
-    station: 'Drinks',
+    station: 'drinks',
     summary: 'House cordial lengthened with sparkling water and fresh lemon.',
     assembly: [
       'Measure cordial over ice.',
@@ -1078,7 +1088,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'classic-smash-slider-platter-spec',
     dishId: 'classic-smash-slider-platter',
-    station: 'Grill',
+    station: 'grill',
     portion: '7 sliders',
     summary: 'Seven mini classic smash burgers assembled as one party platter.',
     assembly: [
@@ -1113,7 +1123,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'hot-honey-chicken-slider-platter-spec',
     dishId: 'hot-honey-chicken-slider-platter',
-    station: 'Fry',
+    station: 'fryers',
     portion: '7 sliders',
     summary: 'Seven hot-honey chicken sliders assembled as one party platter.',
     assembly: [
@@ -1138,7 +1148,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'cauliflower-slider-platter-spec',
     dishId: 'cauliflower-slider-platter',
-    station: 'Fry',
+    station: 'fryers',
     portion: '7 sliders',
     summary: 'Seven crispy cauliflower sliders assembled as one party platter.',
     assembly: [
@@ -1173,7 +1183,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'party-fries-tray-spec',
     dishId: 'party-fries-tray',
-    station: 'Fry',
+    station: 'fryers',
     portion: 'Serves 8',
     summary: 'A sharing tray of crisp skin-on fries.',
     assembly: [
@@ -1189,7 +1199,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'party-onion-ring-platter-spec',
     dishId: 'party-onion-ring-platter',
-    station: 'Fry',
+    station: 'fryers',
     portion: 'Serves 8',
     summary: 'A sharing platter of freshly battered onion rings.',
     assembly: [
@@ -1211,7 +1221,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'party-lemonade-spec',
     dishId: 'party-lemonade',
-    station: 'Drinks',
+    station: 'drinks',
     portion: 'Serves 8',
     summary: 'House lemonade built in a chilled party dispenser.',
     assembly: [
@@ -1240,7 +1250,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'party-strawberry-lime-cooler-spec',
     dishId: 'party-strawberry-lime-cooler',
-    station: 'Drinks',
+    station: 'drinks',
     portion: 'Serves 8',
     summary: 'Sparkling strawberry and lime cooler built for the buffet table.',
     assembly: [
@@ -1268,7 +1278,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'party-cucumber-mint-cooler-spec',
     dishId: 'party-cucumber-mint-cooler',
-    station: 'Drinks',
+    station: 'drinks',
     portion: 'Serves 8',
     summary: 'Cucumber, mint and lime cooler built for the buffet table.',
     assembly: [
@@ -1302,7 +1312,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'deanos-christmas-stack-spec',
     dishId: 'deanos-christmas-stack',
-    station: 'Grill',
+    station: 'grill',
     summary:
       'Double smash burger with bacon, fried Camembert and festive garnish.',
     assembly: [
@@ -1343,7 +1353,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'turkey-dinner-burger-spec',
     dishId: 'turkey-dinner-burger',
-    station: 'Grill',
+    station: 'grill',
     summary: 'Roast turkey burger carrying the full Christmas dinner garnish.',
     assembly: [
       'Toast the bun and warm the turkey and stuffing.',
@@ -1368,7 +1378,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'pigs-in-blankets-waffle-fries-spec',
     dishId: 'pigs-in-blankets-waffle-fries',
-    station: 'Fry',
+    station: 'fryers',
     summary: 'Waffle fries loaded with festive meat, sauces and crisp garnish.',
     assembly: [
       'Fry and season the waffle fries.',
@@ -1398,7 +1408,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'fried-brie-bites-spec',
     dishId: 'fried-brie-bites',
-    station: 'Fry',
+    station: 'fryers',
     portion: '6 bites',
     summary: 'Golden crumbed Brie with cranberry and chilli dip.',
     assembly: [
@@ -1414,7 +1424,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'stuffed-mini-yorkshires-spec',
     dishId: 'stuffed-mini-yorkshires',
-    station: 'Fry',
+    station: 'fryers',
     portion: '3 each',
     summary:
       'Mini Yorkshire puddings filled with turkey and Christmas trimmings.',
@@ -1449,7 +1459,7 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   {
     id: 'gingerbread-caramel-shake-spec',
     dishId: 'gingerbread-caramel-shake',
-    station: 'Drinks',
+    station: 'drinks',
     summary: 'Vanilla shake blended with salted caramel and gingerbread.',
     assembly: [
       'Measure the shake base, caramel and spice.',
@@ -1486,8 +1496,33 @@ export const deanosKitchenDemoSpecs: KitchenDemoDishSpec[] = [
   },
 ]
 
+const deanosPartyMenuItemComponentMultipliers:
+  KitchenDemoMenuItemComponentDelta[] =
+  deanosPartyDemoMenu.menuSections.flatMap(({ section, items }) =>
+    items.flatMap((item) => {
+      const baseOption = item.price_options[0]
+      if (!baseOption || baseOption.quantity <= 0) return []
+      return item.price_options.slice(1).map(option => ({
+        id: `${item.id}-${option.label
+          .toLowerCase()
+          .replaceAll(/[^a-z0-9]+/g, '-')}`,
+        menuId: deanosPartyDemoMenu.kitchenMenu.id,
+        sectionId: section.id,
+        menuItemId: item.id,
+        choice: {
+          kind: 'price_option' as const,
+          id: option.label.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-'),
+          label: option.label,
+        },
+        components: [],
+        componentMultiplier: option.quantity / baseOption.quantity,
+      }))
+    })
+  )
+
 export const deanosKitchenDemoMenuItemComponentDeltas: KitchenDemoMenuItemComponentDelta[] =
   [
+    ...deanosPartyMenuItemComponentMultipliers,
     {
       id: 'deanos-classic-double',
       menuId: 'deanos-menu',
@@ -1596,13 +1631,28 @@ export const deanosKitchenDemoMenuItemComponentDeltas: KitchenDemoMenuItemCompon
     },
   ]
 
-const drinksRecipeIds = new Set([
-  'salted-caramel-sauce',
-  'cherry-vanilla-syrup',
-  'house-lemonade-cordial',
-  'strawberry-lime-cooler-base',
-  'cucumber-mint-cooler-base',
-])
+const recipeStationId = (
+  recipeId: string
+): KitchenDemoStationId => {
+  if ([
+    'salted-caramel-sauce',
+    'cherry-vanilla-syrup',
+    'house-lemonade-cordial',
+    'strawberry-lime-cooler-base',
+    'cucumber-mint-cooler-base',
+  ].includes(recipeId)) {
+    return 'drinks'
+  }
+  if ([
+    'deanos-crispy-batter',
+    'fried-camembert',
+    'fried-brie-bites',
+  ].includes(recipeId)) {
+    return 'fryers'
+  }
+  if (recipeId === 'caramelised-onions') return 'grill'
+  return 'prep'
+}
 
 export const deanosKitchenDemoMise: KitchenDemoMiseRequirement[] = [
   ...deanosKitchenDemoPrepItems.map(
@@ -1621,7 +1671,7 @@ export const deanosKitchenDemoMise: KitchenDemoMiseRequirement[] = [
     (recipe): KitchenDemoMiseRequirement => ({
       id: `make-${recipe.id}`,
       title: `Make ${recipe.name}`,
-      station: drinksRecipeIds.has(recipe.id) ? 'Drinks' : 'Prep',
+      station: recipeStationId(recipe.id),
       amount: { ...recipe.yield },
       source: {
         kind: 'recipe',

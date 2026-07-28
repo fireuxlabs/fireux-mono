@@ -2,7 +2,7 @@
 
 <!-- Concurrent edit — 2026-07-23 15:48 CEST — Map app-scoped presentation overrides for inherited navigation. -->
 
-Updated: 2026-07-23
+Updated: 2026-07-28
 Ref: 796952bf0
 Role: map, not canon
 
@@ -23,6 +23,7 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 ## Core files
 
 - `packages/core/fireux-core/src/config/app/fireux.config.ts`
+- `packages/core/fireux-core/src/config/app/design-packs.ts`
 - `packages/core/fireux-core/src/config/app/nuxt-baseline.ts`
 - `packages/core/fireux-core/src/config/app/nuxt-overrides.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts`
@@ -67,6 +68,10 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - `selfJoinEnabled`: bootstrap and UX intent for self-joining. A new canonical
   App receives this value; its stored `self_join_enabled` field is the server
   enforcement authority.
+- `designPack`: optional typed app-wide presentation preset. Omit it for the
+  Nuxt UI baseline; `{ preset: 'sci-fire' }` conditionally bundles the
+  Core-owned Sci-Fire layer. This is an explicit main-App choice and is not
+  inferred from `role` or `ecosystem`.
 - `navHiddenKeys`
 - `navOverrides`: app-scoped presentation deltas for inherited route
   navigation, keyed by the route's canonical `nav.key`. Overrides may change
@@ -82,6 +87,11 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 
 ## Working rule
 Do not duplicate app mode logic in domain code. Read it through `useFireUXConfig` and `useConsole`.
+
+App-wide design packs are selected at build/config time through
+`defineFireuxConfig`; components do not branch on them at runtime. The plural
+`designPacks` field remains for named, surface-specific runtime configuration
+such as `publicMenu` and is not an alternate app-chrome loader.
 
 Use `withFireuxNuxtConfig` with `app.pageTransition: false` for a genuine
 app-wide transition opt-out, or provide a custom native Nuxt transition there.
@@ -108,6 +118,9 @@ CSS and does not reuse Core's `fx-page` selector namespace.
 | Tenant apps pin console target IDs | `accepted` | A tenant normally has bounded target scope; global apps derive user-authorized targets |
 | Apps present inherited public navigation differently | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority |
 | App-specific Nuxt overrides exist | `accepted` | External integration or deployment requirements may differ; repeated FireUX defaults belong in `withFireuxNuxtConfig` |
+| A main App explicitly selects the Core Sci-Fire design pack | `accepted` | Nuxt UI remains the universal default while a reviewed ecosystem App may add shared atmosphere without copying CSS |
+| Tenant or white-label styling inferred from ecosystem or role | `drift` | Design-pack adoption is explicit; product role and visual theme are separate contracts |
+| A project copies Sci-Fire selectors or styles | `drift` | The conditional stylesheet and Nuxt UI variant configuration belong to Core |
 | An app disables or replaces the Core page transition through native Nuxt app config | `accepted` | The shared default remains Core-owned while a deliberate product delta stays explicit |
 | A project app shell or stylesheet copies the shared page transition | `drift` | App-wide overrides belong in config and route-specific exceptions belong in page meta |
 | Repeating a shared default in many project `nuxt.config.ts` files | `drift` | Move the stable value to the Core config spine and leave only genuine app values locally |

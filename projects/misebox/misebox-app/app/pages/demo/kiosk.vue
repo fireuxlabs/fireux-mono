@@ -70,7 +70,7 @@ definePageMeta({
 useSeoMeta({
   title: 'Restaurant Kiosk Demo · Misebox',
   description:
-    'Compare the Misebox Restaurant and Deanos Smash Burger themes in one touch-first, local-only Kiosk demo.',
+    'Compare three Kitchen themes in one touch-first, local-only Kiosk demo.',
 })
 </script>
 

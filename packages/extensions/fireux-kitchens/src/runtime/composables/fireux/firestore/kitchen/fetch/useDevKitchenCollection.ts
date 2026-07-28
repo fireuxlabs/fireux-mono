@@ -12,6 +12,7 @@ import {
 } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { PlaceStorage, type Place } from 'fireux-places/runtime/models/place.model'
 import { targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
@@ -207,6 +208,46 @@ export function useDevKitchenCollection(
           ? exactRootSource.docs.value ?? []
           : rootSource.value ?? []
   )
+  const testPlaceIds = computed(() =>
+    sourceRef.value === 'test'
+      ? rootDocs.value
+        .map(kitchen => normalize(kitchen.place_id))
+        .filter(Boolean)
+      : []
+  )
+  const exactTestPlaceSource = simulationRead.firestoreLoadDocsByIds<Place>({
+    collectionPath: computed(() =>
+      sourceRef.value === 'test' && simulationDatabaseId.value
+        ? PlaceStorage.collection
+        : ''
+    ),
+    ids: testPlaceIds,
+  })
+  const testPlacesById = computed(() =>
+    new Map(
+      (exactTestPlaceSource.docs.value ?? [])
+        .map(place => [normalize(place.id), place] as const)
+        .filter(([id]) => Boolean(id))
+    )
+  )
+  const testPairError = computed<Error | undefined>(() => {
+    if (
+      sourceRef.value !== 'test' ||
+      exactTestPlaceSource.pending.value ||
+      exactTestPlaceSource.error.value
+    ) {
+      return undefined
+    }
+    const invalid = rootDocs.value.find(kitchen => {
+      const placeId = normalize(kitchen.place_id)
+      return !placeId || !testPlacesById.value.has(placeId)
+    })
+    return invalid
+      ? new Error(
+          `Test Kitchen ${normalize(invalid.id) || '(unknown)'} is missing its canonical Place.`
+        )
+      : undefined
+  })
   const kitchens = computed<KitchenCollectionDoc[]>(() =>
     rootDocs.value
       .map((kitchen) => {
@@ -217,8 +258,13 @@ export function useDevKitchenCollection(
           if (!filterOperatorId.value) return null
           if (!targetHasConsoleAccess(kitchen, filterOperatorId.value)) return null
         }
+        const testPlace = sourceRef.value === 'test'
+          ? testPlacesById.value.get(normalize(kitchen.place_id)) ?? null
+          : null
+        if (sourceRef.value === 'test' && !testPlace) return null
 
         return surface({
+          place: testPlace,
           kitchen: {
             ...kitchen,
             id,
@@ -249,13 +295,15 @@ export function useDevKitchenCollection(
       )
     }
 
-    return hasIdFilter.value
+    const rootPending = hasIdFilter.value
       ? sourceRef.value === 'test'
         ? exactTestSource.pending.value
         : exactRootSource.pending.value
       : sourceRef.value === 'test'
         ? testSource.pending.value
         : rootSource.pending.value
+    return rootPending ||
+      (sourceRef.value === 'test' && exactTestPlaceSource.pending.value)
   })
   const error = computed<unknown | undefined>(() => {
     if (sourceRef.value === 'demo') return undefined
@@ -271,11 +319,15 @@ export function useDevKitchenCollection(
     }
     if (hasIdFilter.value) {
       return sourceRef.value === 'test'
-        ? exactTestSource.error.value
+        ? exactTestSource.error.value ??
+          exactTestPlaceSource.error.value ??
+          testPairError.value
         : exactRootSource.error.value
     }
     return sourceRef.value === 'test'
-      ? testSource.error.value
+      ? testSource.error.value ??
+        exactTestPlaceSource.error.value ??
+        testPairError.value
       : rootSource.error.value
   })
   const { outcome } = useFirestoreCollectionState({

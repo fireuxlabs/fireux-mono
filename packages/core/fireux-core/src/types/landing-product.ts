@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-23 02:43 CEST — Central landing product family: define the shared content contract.
+// Shared product-landing presentation contracts. Product truth stays with each App.
 export type LandingProductAction = {
   label: string
   to: string
@@ -17,82 +17,34 @@ export type LandingProductHero = {
   trustItems: readonly string[]
 }
 
-export type LandingProductLoopStep = {
-  title: string
-  copy: string
-  icon: string
-  to: string
-}
-
-export type LandingProductArea = {
+export type LandingProductProofCopy = {
   eyebrow: string
   title: string
-  copy: string
-  items: readonly string[]
-  icon: string
-  to: string
-  action: string
-  accent?: string
+  description?: string
+  supporting?: string
+  items?: readonly string[]
+  action?: LandingProductAction
 }
 
-export type LandingProductExperience = {
-  eyebrow: string
-  title: string
-  copy: string
-  icon: string
-  to: string
-}
-
-export type LandingProductOperation = {
+export type LandingProductCatalogueItem = {
   id: string
   title: string
   description: string
   icon?: string
   to: string
+  action?: string
 }
 
-export type LandingProductAudience = {
+export type LandingProductCatalogueContent = {
+  sectionId: string
+  eyebrow: string
   title: string
-  copy: string
-  action: string
-  to: string
-  icon: string
+  description?: string
+  action?: LandingProductAction
+  items: readonly LandingProductCatalogueItem[]
 }
 
 export type LandingProductIndexContent = {
   hero: LandingProductHero
-  operatingLoop: readonly LandingProductLoopStep[]
-  system: {
-    eyebrow: string
-    title: string
-    description: string
-    areas: readonly LandingProductArea[]
-  }
-  showcase: {
-    badge: string
-    eyebrow: string
-    title: string
-    description: string
-    action: LandingProductAction
-    experiences: readonly LandingProductExperience[]
-  }
-  operations: {
-    eyebrow: string
-    title: string
-    description: string
-    action: LandingProductAction
-    items: readonly LandingProductOperation[]
-  }
-  audiences: {
-    eyebrow: string
-    title: string
-    items: readonly LandingProductAudience[]
-  }
-  finalCta: {
-    eyebrow: string
-    title: string
-    description: string
-    primaryAction: LandingProductAction
-    secondaryAction: LandingProductAction
-  }
+  onboardingLabel?: string
 }

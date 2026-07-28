@@ -3,19 +3,22 @@
     :to="surfaceTo"
     :action="action && !surfaceTo"
     class="public-profile-directory-card group"
-    :class="`public-profile-directory-card--${variant}`"
+    :class="[
+      `public-profile-directory-card--${variant}`,
+      variantSurfaceClass,
+    ]"
     :data-profile-tone="tone"
     @activate="emit('action')"
   >
     <div class="public-profile-directory-card__avatar">
       <UAvatarGroup
         v-if="proxiedSecondaryAvatarUrl"
-        :size="variant === 'compact' ? 'lg' : '2xl'"
+        :size="variant === 'preview' ? '2xl' : 'lg'"
       >
         <UAvatar
           :src="proxiedAvatarUrl || undefined"
           :alt="displayName"
-          :size="variant === 'compact' ? 'lg' : '2xl'"
+          :size="variant === 'preview' ? '2xl' : 'lg'"
           loading="lazy"
           decoding="async"
         />
@@ -32,27 +35,27 @@
         :src="proxiedAvatarUrl || undefined"
         :alt="displayName"
         :icon="icon"
-        :size="variant === 'compact' ? 'lg' : '2xl'"
+        :size="variant === 'preview' ? '2xl' : 'lg'"
         loading="lazy"
         decoding="async"
       />
     </div>
 
-    <div class="min-w-0 flex-1">
-      <div class="flex items-start justify-between gap-3">
+    <div class="public-profile-directory-card__content">
+      <div class="public-profile-directory-card__header">
         <div class="min-w-0">
-          <p class="truncate font-semibold text-highlighted">
+          <p class="public-profile-directory-card__name">
             {{ displayName }}
           </p>
           <p
             v-if="formattedHandle"
-            class="mt-0.5 truncate text-xs font-medium text-primary"
+            class="public-profile-directory-card__handle"
           >
             {{ formattedHandle }}
           </p>
         </div>
         <UBadge
-          v-if="variant === 'card'"
+          v-if="variant !== 'compact'"
           :label="kindLabel"
           :icon="icon"
           :color="tone"
@@ -62,19 +65,19 @@
         />
       </div>
 
-      <p v-if="headline" class="mt-2 text-sm font-medium text-toned">
+      <p v-if="headline" class="public-profile-directory-card__headline">
         {{ headline }}
       </p>
       <p
-        v-if="variant === 'card' && summary"
-        class="public-profile-directory-card__summary mt-2 text-xs leading-5 text-muted"
+        v-if="variant === 'preview' && summary"
+        class="public-profile-directory-card__summary"
       >
         {{ summary }}
       </p>
 
       <div
-        v-if="variant === 'card' && cleanBadges.length"
-        class="mt-4 flex flex-wrap gap-1.5"
+        v-if="variant === 'preview' && cleanBadges.length"
+        class="public-profile-directory-card__badges"
       >
         <UBadge
           v-for="badge in cleanBadges"
@@ -128,7 +131,7 @@ const props = withDefaults(
     summary?: string
     to?: string
     tone?: PublicProfileTone
-    variant?: 'compact' | 'card'
+    variant?: 'compact' | 'cell' | 'preview'
   }>(),
   {
     action: false,
@@ -141,13 +144,18 @@ const props = withDefaults(
     summary: '',
     to: '',
     tone: 'primary',
-    variant: 'card',
+    variant: 'preview',
   }
 )
 
 const surfaceTo = computed(() =>
   !props.action && props.link && props.to ? props.to : undefined
 )
+const variantSurfaceClass = computed(() => {
+  if (props.variant === 'compact') return 'pill'
+  if (props.variant === 'cell') return 'card card--cell'
+  return 'preview'
+})
 const formattedHandle = computed(() => {
   const handle = String(props.handle || '')
     .trim()
@@ -174,41 +182,28 @@ const proxiedSecondaryAvatarUrl = useProxiedAvatar(() => {
 
 <style scoped>
 .public-profile-directory-card {
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      color-mix(
-        in srgb,
-        var(--fx-profile-accent, var(--ui-primary)) 10%,
-        transparent
-      ),
-      transparent 38%
-    ),
-    var(--ui-bg);
-  border: 1px solid var(--ui-border);
+  --fx-card-accent: var(--fx-profile-accent, var(--ui-primary));
+
   color: inherit;
   display: flex;
   font: inherit;
   min-width: 0;
   text-decoration: none;
-  transition:
-    border-color 160ms ease,
-    box-shadow 160ms ease,
-    transform 160ms ease;
   width: 100%;
 }
 
 .public-profile-directory-card--compact {
   align-items: center;
-  border-radius: calc(var(--ui-radius) * 3);
-  gap: calc(var(--spacing) * 3);
-  min-height: calc(var(--spacing) * 17);
-  padding: calc(var(--spacing) * 3);
+  max-width: 18rem;
 }
 
-.public-profile-directory-card--card {
+.public-profile-directory-card--cell {
+  align-items: center;
+  min-height: calc(var(--spacing) * 20);
+}
+
+.public-profile-directory-card--preview {
   align-items: flex-start;
-  border-radius: calc(var(--ui-radius) * 3);
   gap: calc(var(--spacing) * 4);
   min-height: calc(var(--spacing) * 36);
   padding: calc(var(--spacing) * 5);
@@ -218,31 +213,79 @@ const proxiedSecondaryAvatarUrl = useProxiedAvatar(() => {
   flex: none;
 }
 
+.public-profile-directory-card__avatar > :where(span) {
+  box-shadow:
+    0 0 0 2px var(--ui-bg-elevated),
+    0 0 0 3px color-mix(in srgb, var(--fx-card-accent) 34%, var(--ui-border)),
+    var(--fx-elevation-low);
+}
+
+.public-profile-directory-card__content {
+  min-width: 0;
+  flex: 1;
+}
+
+.public-profile-directory-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+}
+
+.public-profile-directory-card__name {
+  overflow: hidden;
+  margin: 0;
+  color: var(--ui-text-highlighted);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.public-profile-directory-card__handle {
+  overflow: hidden;
+  margin: var(--spacing) 0 0;
+  color: var(--fx-card-accent);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.public-profile-directory-card__headline {
+  margin: calc(var(--spacing) * 2) 0 0;
+  color: var(--ui-text-toned);
+  font-size: var(--text-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--leading-snug);
+}
+
 .public-profile-directory-card__summary {
   display: -webkit-box;
   overflow: hidden;
+  margin: calc(var(--spacing) * 2) 0 0;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-relaxed);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
 
-.public-profile-directory-card:not([data-action-surface='static']) {
-  cursor: pointer;
+.public-profile-directory-card__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 1.5);
+  margin-top: calc(var(--spacing) * 4);
 }
 
-.public-profile-directory-card:not([data-action-surface='static']):hover,
-.public-profile-directory-card:not([data-action-surface='static']):focus-visible {
-  border-color: color-mix(
-    in srgb,
-    var(--fx-profile-accent, var(--ui-primary)) 42%,
-    var(--ui-border)
-  );
-  box-shadow: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 9)
-    color-mix(
-      in srgb,
-      var(--fx-profile-accent, var(--ui-primary)) 9%,
-      transparent
-    );
-  transform: translateY(-2px);
+.public-profile-directory-card--preview .public-profile-directory-card__name {
+  font-size: var(--text-lg);
+}
+
+.public-profile-directory-card:not([data-action-surface='static']) {
+  cursor: pointer;
 }
 
 .public-profile-directory-card:not([data-action-surface='static']):hover
@@ -252,14 +295,4 @@ const proxiedSecondaryAvatarUrl = useProxiedAvatar(() => {
   color: var(--fx-profile-accent, var(--ui-primary));
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .public-profile-directory-card {
-    transition: none;
-  }
-
-  .public-profile-directory-card:not([data-action-surface='static']):hover,
-  .public-profile-directory-card:not([data-action-surface='static']):focus-visible {
-    transform: none;
-  }
-}
 </style>

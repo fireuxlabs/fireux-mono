@@ -1,11 +1,12 @@
 // @fireux-script
-// last_used: 2026-07-25
+// last_used: 2026-07-28
 // usage_note: enforces owner-local, deferred, typed, read-only Demo World consumers.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: lock fixture ownership and lazy console consumption.
 // Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: admit one named project adapter and the public route namespace.
 // Concurrent edit — 2026-07-22 13:03 CEST — Product Demo dependency pass: enforce pure adapters and project-declared package Demo owners.
 // FILE: scripts/guards/demo-data.mjs
 
+import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
@@ -434,22 +435,39 @@ export async function run(ctx) {
 
     const owner = ownerRoot(relativeFile)
     if (!owner) continue
+    const source = readFileSync(file, 'utf8')
+    const surface = source.match(
+      /\bconst productDemoSurface = ['"]([a-z0-9-]+)['"] as const\b/
+    )?.[1]
+    const dataSource = source.match(
+      /\bconst productDemoDataSource = ['"]([^'"]+)['"] as const\b/
+    )?.[1]
+    if (!surface || dataSource !== 'demo') {
+      violations.push({
+        code: 'product-demo-adapter',
+        file: relativeFile,
+        message:
+          'Every Product Demo adapter must declare one stable productDemoSurface and the demo data source.',
+      })
+      continue
+    }
     if (!productDemoDependencies.has(owner)) {
       productDemoDependencies.set(
         owner,
         readDeclaredDependencies(path.join(repoRoot, owner, 'package.json'))
       )
     }
-    const existing = productDemoAdapters.get(owner)
+    const adapterKey = `${owner}:${surface}`
+    const existing = productDemoAdapters.get(adapterKey)
     if (existing) {
       violations.push({
         code: 'product-demo-adapter',
         file: relativeFile,
-        message: `Product Demo must use one named project adapter; ${existing} already owns this project boundary.`,
+        message: `Product Demo surface ${surface} already belongs to ${existing}.`,
       })
       continue
     }
-    productDemoAdapters.set(owner, relativeFile)
+    productDemoAdapters.set(adapterKey, relativeFile)
   }
 
   for (const directory of demoDirectories) {
@@ -652,7 +670,9 @@ export async function run(ctx) {
     'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/types.ts',
     'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Ingredients/index.ts',
     'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Menus/index.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Orders/history.ts',
     'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/presentation/index.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/team.ts',
   ]
   for (const requiredFile of kitchenDemoStructure) {
     if (!existsSync(path.join(repoRoot, requiredFile))) {
@@ -673,17 +693,251 @@ export async function run(ctx) {
       'maturity:',
       'operationCoverage:',
       'presentation:',
+      'deanosKitchenDemoTarget.kitchen',
+      'deanosKitchenDemoTarget.place',
+      'input.appSupport.team_ids',
+      "order.status === 'completed'",
+      'seenFinanceOrderIds',
+      'transaction.closedByTeamMemberId',
+      "transaction.source.kind !== 'completed_order'",
+      'transaction.source.id !== sourceOrder.id',
+      'transaction.occurredAt !== sourceOrder.completedAt',
+      'transaction.signedAmountMinor !== sourceOrder.pricing.totalMinor',
+      'order.pricing.total.amount_minor !== transaction.grossSalesMinor',
       'Every Kitchen Demo scenario requires one maturity descriptor.',
     ]) {
       if (!source.includes(required)) {
         violations.push({
-          code: 'kitchen-scenario-maturity',
+          code: 'kitchen-scenario-integrity',
           file: kitchenScenariosFile,
           message:
-            'Every Kitchen Demo scenario must be explicitly classified as operational or presentation-only.',
+            'Kitchen Demo scenarios must retain maturity, canonical target identity, and reconciled Order/Team/Finance relationships.',
         })
         break
       }
+    }
+
+    const jitiExecutable = path.join(
+      repoRoot,
+      'node_modules',
+      '.bin',
+      process.platform === 'win32' ? 'jiti.CMD' : 'jiti'
+    )
+    if (!existsSync(jitiExecutable)) {
+      violations.push({
+        code: 'kitchen-scenario-execution',
+        file: kitchenScenariosFile,
+        message:
+          'Kitchen Demo scenario validation requires the workspace jiti executable.',
+      })
+    } else {
+      const execution = spawnSync(jitiExecutable, [kitchenScenariosPath], {
+        cwd: repoRoot,
+        encoding: 'utf8',
+      })
+      if (execution.error || execution.status !== 0) {
+        const detail = String(
+          execution.stderr || execution.stdout || execution.error || ''
+        ).trim().split('\n').slice(0, 8).join('\n')
+        violations.push({
+          code: 'kitchen-scenario-execution',
+          file: kitchenScenariosFile,
+          message: [
+            'Kitchen Demo scenarios must execute their relationship and arithmetic validators successfully.',
+            detail,
+          ].filter(Boolean).join('\n'),
+        })
+      }
+    }
+  }
+
+  const familyScenarioContracts = [
+    {
+      code: 'company-demo-place-pair',
+      file:
+        'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts',
+      markers: [
+        'place: PlaceStored',
+        'companyId !== placeId',
+        'Object.keys(item.company).sort()',
+        'companyDemoTargets',
+      ],
+      message:
+        'Company Demo must retain stamps-only Company roots paired with same-id sparse Place roots.',
+    },
+    {
+      code: 'supplier-demo-target-pair',
+      file:
+        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts',
+      markers: [
+        'appSupport: AppSupplier',
+        "app_scope_state: 'parent_app'",
+        'app_scope_app_id: appId',
+        'company_id: input.companyId',
+        "'place_id' in scenario.supplier",
+        'scenario.appSupport.id !== supplierId',
+        'Object.keys(scenario.appSupport)',
+        'const companyIds = supplierDemoScenarios.map',
+      ],
+      message:
+        'Supplier Demo must retain same-App Supplier/AppSupplier pairs, independent Company links, no direct Place edge, and owner-shaped child records.',
+    },
+    {
+      code: 'properties-demo-target-pair',
+      file:
+        'packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts',
+      markers: [
+        'portfolio: PortfolioDemoTarget | null',
+        'place: PlaceStored',
+        'appSupport: AppProperty',
+        'target.place.id !== target.property.place_id',
+        "'entity_families' in target.place",
+        'validateSupport(scenario, target.property, target.appSupport)',
+        "const buenohostAppId = 'buenohost'",
+      ],
+      message:
+        'Portfolio Demo must retain its same-App support pair without a direct Place; Property Demo must retain its support pair and linked sparse residential Place.',
+    },
+    {
+      code: 'reservation-demo-relationship',
+      file:
+        'packages/extensions/fireux-reservations/src/runtime/demo/reservations.ts',
+      markers: [
+        "const demoAppId = 'buenohost'",
+        "const demoPropertyId = 'alpine-stay'",
+        "status: 'checked_in'",
+        'reservation.created.app_id !== demoAppId',
+        'previous.departure_date > reservation.arrival_date',
+      ],
+      message:
+        'Reservation Demo must retain one current, non-overlapping Property/App lifecycle.',
+    },
+    {
+      code: 'blank-demo-target-pair',
+      file: 'projects/fireux/fireux-blank/app/demo/blank/scenarios.ts',
+      markers: [
+        'blank: Blank',
+        'appSupport: AppBlank',
+        'scenario.appSupport.blank_id !== scenario.blank.id',
+        'Object.keys(scenario.appSupport).sort()',
+      ],
+      message:
+        'Blank Demo must retain one same-App Blank/AppBlank pair rather than fixture a flattened surface.',
+    },
+    {
+      code: 'project-demo-relationships',
+      file:
+        'packages/core/fireux-core/src/runtime/demo/project/scenarios.ts',
+      markers: [
+        'app.project_id !== projectId',
+        '!ecosystemIds.has(app.ecosystem_id)',
+        "'operator_ids' in app",
+      ],
+      message:
+        'Project Demo must retain model-shaped Project/App/Ecosystem relationships without App support.',
+    },
+  ]
+  const familyScenarioJitiExecutable = path.join(
+    repoRoot,
+    'node_modules',
+    '.bin',
+    process.platform === 'win32' ? 'jiti.CMD' : 'jiti'
+  )
+  for (const contract of familyScenarioContracts) {
+    const scenarioPath = path.join(repoRoot, contract.file)
+    if (!existsSync(scenarioPath)) {
+      violations.push({
+        code: contract.code,
+        file: contract.file,
+        message: contract.message,
+      })
+      continue
+    }
+
+    const source = readFileSync(scenarioPath, 'utf8')
+    if (!contract.markers.every(marker => source.includes(marker))) {
+      violations.push({
+        code: contract.code,
+        file: contract.file,
+        message: contract.message,
+      })
+      continue
+    }
+
+    if (!existsSync(familyScenarioJitiExecutable)) {
+      violations.push({
+        code: `${contract.code}-execution`,
+        file: contract.file,
+        message: `${contract.message} The workspace jiti executable is required.`,
+      })
+      continue
+    }
+
+    const execution = spawnSync(familyScenarioJitiExecutable, [scenarioPath], {
+      cwd: repoRoot,
+      encoding: 'utf8',
+    })
+    if (execution.error || execution.status !== 0) {
+      const detail = String(
+        execution.stderr || execution.stdout || execution.error || ''
+      ).trim().split('\n').slice(0, 8).join('\n')
+      violations.push({
+        code: `${contract.code}-execution`,
+        file: contract.file,
+        message: [contract.message, detail].filter(Boolean).join('\n'),
+      })
+    }
+  }
+
+  for (const contract of [
+    {
+      code: 'supplier-demo-app-filter',
+      file:
+        'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsoleDemoData.ts',
+      markers: [
+        "scenario.appId !== String(appId || '').trim()",
+        'appSupport: scenario.appSupport',
+      ],
+      message:
+        'Supplier Console Demo must filter by runtime App and compose AppSupplier support.',
+    },
+    {
+      code: 'properties-demo-app-filter',
+      file:
+        'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/shared/usePropertiesConsoleDemoData.ts',
+      markers: [
+        '.filter((scenario) => scenario.appId === currentAppId)',
+        'appSupport: scenario.portfolio.appSupport',
+        'appSupport: target.appSupport',
+        'target.place.id',
+        'places,',
+      ],
+      message:
+        'Property and Portfolio Console Demo must filter by runtime App and compose root/support/Place sources.',
+    },
+    {
+      code: 'blank-demo-app-filter',
+      file:
+        'projects/fireux/fireux-blank/app/composables/fireux/console/blank/core/useBlankConsoleDemoData.ts',
+      markers: [
+        'scenario.appId !== currentAppId',
+        'composeBlankSurface({',
+        'appSupport: scenario.appSupport',
+      ],
+      message:
+        'Blank Console Demo must filter by runtime App and project the canonical root/support pair.',
+    },
+  ]) {
+    const contractPath = path.join(repoRoot, contract.file)
+    const source = existsSync(contractPath)
+      ? readFileSync(contractPath, 'utf8')
+      : ''
+    if (!contract.markers.every(marker => source.includes(marker))) {
+      violations.push({
+        code: contract.code,
+        file: contract.file,
+        message: contract.message,
+      })
     }
   }
 
@@ -693,6 +947,7 @@ export async function run(ctx) {
   if (existsSync(miseboxProductDemoPath)) {
     const source = readFileSync(miseboxProductDemoPath, 'utf8')
     for (const required of [
+      "import('fireux-companies/runtime/demo/company/scenarios')",
       "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
       "import('fireux-kitchens/runtime/utils/kitchen/demo-dishes')",
       "import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers')",
@@ -701,7 +956,11 @@ export async function run(ctx) {
       'buildKitchenDemoDishesOperation',
       'buildKitchenDemoSuppliersOperation',
       'projectKitchenDemoFinanceSummary',
+      'companyModule.companyDemoTargets',
       'supplierModule.supplierDemoScenarios',
+      'unresolvedSupplierCompanies',
+      'scenario.supplier.company_id',
+      'target.place.id === companyId',
       'loadIngredientRoots',
       'ingredientRoots: consoleIngredientRoots',
       'consoleScenario.kitchenIngredients',
@@ -769,6 +1028,92 @@ export async function run(ctx) {
         })
         break
       }
+    }
+  }
+
+  const miseboxPowerCardsFile =
+    'projects/misebox/misebox-app/app/components/Misebox/PowerCards.vue'
+  const miseboxPowerCardsPath = path.join(repoRoot, miseboxPowerCardsFile)
+  const miseboxPowerCardsDemoFile =
+    'projects/misebox/misebox-app/app/composables/product-demo/useMiseboxPowerCardsProductDemo.ts'
+  const miseboxPowerCardsDemoPath = path.join(
+    repoRoot,
+    miseboxPowerCardsDemoFile
+  )
+  const miseboxPowerCardNames = [
+    'One',
+    'Three',
+    'Four',
+    'Five',
+    'Six',
+    'Seven',
+    'Eight',
+    'Ten',
+  ]
+  const miseboxPowerCardChildren = miseboxPowerCardNames.map(number =>
+    `projects/misebox/misebox-app/app/components/Misebox/PowerCard${number}.vue`
+  )
+  if (
+    !existsSync(miseboxPowerCardsPath)
+    || ![
+      'useMiseboxPowerCardsProductDemo()',
+      'data: orbit',
+      ':data-source="orbit.dataSource"',
+    ].every(marker =>
+      readFileSync(miseboxPowerCardsPath, 'utf8').includes(marker)
+    )
+  ) {
+    violations.push({
+      code: 'product-demo-power-cards',
+      file: miseboxPowerCardsFile,
+      message:
+        'Misebox PowerCards must consume the named Demo-only orbit projection.',
+    })
+  }
+  const miseboxPowerCardsDemoSource = existsSync(miseboxPowerCardsDemoPath)
+    ? readFileSync(miseboxPowerCardsDemoPath, 'utf8')
+    : ''
+  if (
+    ![
+      "dataSource: 'demo'",
+      "import('fireux-kitchens/runtime/demo/kitchen/scenarios')",
+      "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
+      'projectKitchenCell(projectKitchenSurface({',
+      'manifest.presentation.currencyCode',
+    ].every(marker => miseboxPowerCardsDemoSource.includes(marker))
+    || [
+      'useRequestFetch(',
+      'useFetch(',
+      '$fetch(',
+      '/api/',
+      'firebase',
+    ].some(marker => miseboxPowerCardsDemoSource.includes(marker))
+  ) {
+    violations.push({
+      code: 'product-demo-power-cards-source',
+      file: miseboxPowerCardsDemoFile,
+      message:
+        'The Misebox Demo orbit must be network-free, fixture-backed, and fail closed without a Live fallback.',
+    })
+  }
+  for (const file of miseboxPowerCardChildren) {
+    const filePath = path.join(repoRoot, file)
+    const source = existsSync(filePath) ? readFileSync(filePath, 'utf8') : ''
+    if (
+      !source.includes("MiseboxPowerCardsProductDemo['cards']")
+      || !source.includes('defineProps<')
+      || [
+        'deanos-kitchen',
+        'deanos-main-menu',
+        'Alpine Foods',
+      ].some(value => source.includes(value))
+    ) {
+      violations.push({
+        code: 'product-demo-power-cards',
+        file,
+        message:
+          'Orbit PowerCard children must receive typed Demo-only props and must not own shadow fixtures.',
+      })
     }
   }
 

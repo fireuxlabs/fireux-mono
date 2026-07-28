@@ -34,6 +34,11 @@ import {
   pizzaTheActionKitchenDemoIdentity,
 } from './core/fixtures'
 import type { KitchenDemoIdentity } from './core/types'
+import {
+  DEANOS_KITCHEN_DEMO_AS_OF_DATE,
+  deanosKitchenDemoOrderNumber,
+  deanosKitchenDemoCurrentService,
+} from './operations/Orders/history'
 
 type DemoOrderItemInput = {
   id: string
@@ -51,6 +56,9 @@ type DemoOrderItemInput = {
 
 type DemoOrderInput = {
   identity: KitchenDemoIdentity
+  id?: string
+  orderNumber?: string
+  serviceId?: string
   serviceNumber: number
   status: KitchenOrderStatus
   orderType: KitchenOrderType
@@ -67,6 +75,7 @@ type DemoOrderInput = {
   customerPhone?: string
   handoff?: 'tray' | 'bag'
   kitchenNote?: string
+  totalMinor?: number
 }
 
 const paymentMethods = (orderType: KitchenOrderType) =>
@@ -93,7 +102,7 @@ const makeOrder = (input: DemoOrderInput): KitchenOrder => {
     (sum, item) => sum + Number(item.unit_price || 0) * item.quantity,
     0
   )
-  const reference = String(input.serviceNumber)
+  const reference = input.orderNumber ?? String(input.serviceNumber)
   const handoffInstructions = input.handoff === 'tray'
     ? 'Watch the screen for your tray number.'
     : input.handoff === 'bag'
@@ -102,11 +111,11 @@ const makeOrder = (input: DemoOrderInput): KitchenOrder => {
 
   return {
     ...KitchenOrderModel,
-    id: `${input.identity.kitchenId}-demo-order-${reference}`,
+    id: input.id ?? `${input.identity.kitchenId}-demo-order-${reference}`,
     kitchen_id: input.identity.kitchenId,
     menu_id: input.identity.menuId,
     order_number: reference,
-    service_id: input.identity.serviceId,
+    service_id: input.serviceId ?? input.identity.serviceId,
     service_number: input.serviceNumber,
     status: input.status,
     order_type: input.orderType,
@@ -119,7 +128,7 @@ const makeOrder = (input: DemoOrderInput): KitchenOrder => {
     pricing: {
       minor_unit_digits: 2,
       subtotal: {
-        amount_minor: Math.round(subtotal * 100),
+        amount_minor: input.totalMinor ?? Math.round(subtotal * 100),
         currency_code: 'CHF',
       },
       delivery_fee: {
@@ -127,7 +136,7 @@ const makeOrder = (input: DemoOrderInput): KitchenOrder => {
         currency_code: 'CHF',
       },
       total: {
-        amount_minor: Math.round(subtotal * 100),
+        amount_minor: input.totalMinor ?? Math.round(subtotal * 100),
         currency_code: 'CHF',
       },
     },
@@ -171,16 +180,25 @@ const makeOrder = (input: DemoOrderInput): KitchenOrder => {
   }
 }
 
-export const deanosKitchenDemoOrders: KitchenOrder[] = [
+const deanosKitchenDemoNextServiceNumber =
+  deanosKitchenDemoCurrentService.completedOrders.length + 1
+const deanosCurrentOrderNumber = (serviceNumber: number) =>
+  deanosKitchenDemoOrderNumber(
+    DEANOS_KITCHEN_DEMO_AS_OF_DATE,
+    serviceNumber
+  )
+
+const deanosKitchenDemoActiveOrders: KitchenOrder[] = [
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 1,
+    serviceNumber: deanosKitchenDemoNextServiceNumber,
+    orderNumber: deanosCurrentOrderNumber(deanosKitchenDemoNextServiceNumber),
     status: 'pending_payment',
     orderType: 'collection',
     channel: 'menu',
-    createdAt: '2026-07-22T09:55:00.000Z',
+    createdAt: '2026-07-26T18:55:00.000Z',
     customerName: 'Noah',
-    customerPhone: '+1 202-555-0101',
+    customerPhone: '+41 79 555 01 01',
     items: [
       {
         id: 'item-1',
@@ -188,7 +206,9 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
         dishId: 'deanos-classic',
         itemKind: 'food',
         label: 'Deanos Classic',
-        unitPrice: 21,
+        unitPrice: 18,
+        variantId: 'single',
+        variantLabel: 'Single',
         addOns: [{ id: 'extra-cheddar', label: 'Extra cheddar', price: 2 }],
       },
     ],
@@ -196,19 +216,22 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
       required: true,
       status: 'requires_payment',
       method: 'online_card',
-      amount_chf: 21,
+      amount_chf: 18,
       currency_code: 'CHF',
     },
   }),
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 2,
+    serviceNumber: deanosKitchenDemoNextServiceNumber + 1,
+    orderNumber: deanosCurrentOrderNumber(
+      deanosKitchenDemoNextServiceNumber + 1
+    ),
     status: 'pending_acceptance',
     orderType: 'collection',
     channel: 'menu',
-    createdAt: '2026-07-22T09:58:00.000Z',
+    createdAt: '2026-07-26T18:58:00.000Z',
     customerName: 'Mina',
-    customerPhone: '+1 202-555-0102',
+    customerPhone: '+41 79 555 01 02',
     items: [
       {
         id: 'item-1',
@@ -230,15 +253,18 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
   }),
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 3,
+    serviceNumber: deanosKitchenDemoNextServiceNumber + 2,
+    orderNumber: deanosCurrentOrderNumber(
+      deanosKitchenDemoNextServiceNumber + 2
+    ),
     status: 'accepted',
     orderType: 'eat_in',
     channel: 'kiosk',
-    createdAt: '2026-07-22T10:01:00.000Z',
-    updatedAt: '2026-07-22T10:02:00.000Z',
-    updatedBy: 'demo-operator',
+    createdAt: '2026-07-26T19:01:00.000Z',
+    updatedAt: '2026-07-26T19:02:00.000Z',
+    updatedBy: 'deanos-alex',
     estimatedMinutes: 15,
-    estimatedAt: '2026-07-22T10:17:00.000Z',
+    estimatedAt: '2026-07-26T19:17:00.000Z',
     customerName: 'Amina',
     handoff: 'tray',
     items: [
@@ -248,21 +274,26 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
         dishId: 'deanos-classic',
         itemKind: 'food',
         label: 'Deanos Classic',
-        unitPrice: 19,
+        unitPrice: 16,
+        variantId: 'single',
+        variantLabel: 'Single',
       },
     ],
   }),
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 4,
+    serviceNumber: deanosKitchenDemoNextServiceNumber + 3,
+    orderNumber: deanosCurrentOrderNumber(
+      deanosKitchenDemoNextServiceNumber + 3
+    ),
     status: 'ready',
     orderType: 'takeaway',
     channel: 'kiosk',
-    createdAt: '2026-07-22T10:04:00.000Z',
-    updatedAt: '2026-07-22T10:12:00.000Z',
-    updatedBy: 'demo-operator',
+    createdAt: '2026-07-26T19:04:00.000Z',
+    updatedAt: '2026-07-26T19:12:00.000Z',
+    updatedBy: 'deanos-sam',
     estimatedMinutes: 10,
-    estimatedAt: '2026-07-22T10:15:00.000Z',
+    estimatedAt: '2026-07-26T19:15:00.000Z',
     customerName: 'Luca',
     handoff: 'bag',
     items: [
@@ -288,14 +319,17 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
   }),
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 5,
+    serviceNumber: deanosKitchenDemoNextServiceNumber + 4,
+    orderNumber: deanosCurrentOrderNumber(
+      deanosKitchenDemoNextServiceNumber + 4
+    ),
     status: 'cancelled',
     orderType: 'collection',
     channel: 'menu',
-    createdAt: '2026-07-22T10:06:00.000Z',
-    updatedAt: '2026-07-22T10:07:00.000Z',
+    createdAt: '2026-07-26T19:06:00.000Z',
+    updatedAt: '2026-07-26T19:07:00.000Z',
     customerName: 'Sofia',
-    customerPhone: '+1 202-555-0105',
+    customerPhone: '+41 79 555 01 05',
     kitchenNote: 'Guest cancelled before acceptance.',
     items: [
       {
@@ -310,11 +344,14 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
   }),
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 6,
+    serviceNumber: deanosKitchenDemoNextServiceNumber + 5,
+    orderNumber: deanosCurrentOrderNumber(
+      deanosKitchenDemoNextServiceNumber + 5
+    ),
     status: 'pending_acceptance',
     orderType: 'collection',
     channel: 'menu',
-    createdAt: '2026-07-22T10:08:00.000Z',
+    createdAt: '2026-07-26T19:08:00.000Z',
     customerName: 'Lea',
     customerPhone: '+41 79 555 01 06',
     items: [
@@ -338,15 +375,18 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
   }),
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 7,
+    serviceNumber: deanosKitchenDemoNextServiceNumber + 6,
+    orderNumber: deanosCurrentOrderNumber(
+      deanosKitchenDemoNextServiceNumber + 6
+    ),
     status: 'accepted',
     orderType: 'takeaway',
     channel: 'kiosk',
-    createdAt: '2026-07-22T10:09:00.000Z',
-    updatedAt: '2026-07-22T10:10:00.000Z',
-    updatedBy: 'demo-operator',
+    createdAt: '2026-07-26T19:09:00.000Z',
+    updatedAt: '2026-07-26T19:10:00.000Z',
+    updatedBy: 'deanos-jo',
     estimatedMinutes: 12,
-    estimatedAt: '2026-07-22T10:22:00.000Z',
+    estimatedAt: '2026-07-26T19:22:00.000Z',
     customerName: 'Mateo',
     handoff: 'bag',
     items: [
@@ -371,15 +411,18 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
   }),
   makeOrder({
     identity: deanosKitchenDemoIdentity,
-    serviceNumber: 8,
+    serviceNumber: deanosKitchenDemoNextServiceNumber + 7,
+    orderNumber: deanosCurrentOrderNumber(
+      deanosKitchenDemoNextServiceNumber + 7
+    ),
     status: 'ready',
     orderType: 'eat_in',
     channel: 'kiosk',
-    createdAt: '2026-07-22T10:10:00.000Z',
-    updatedAt: '2026-07-22T10:18:00.000Z',
-    updatedBy: 'demo-operator',
+    createdAt: '2026-07-26T19:10:00.000Z',
+    updatedAt: '2026-07-26T19:18:00.000Z',
+    updatedBy: 'deanos-alex',
     estimatedMinutes: 10,
-    estimatedAt: '2026-07-22T10:20:00.000Z',
+    estimatedAt: '2026-07-26T19:20:00.000Z',
     customerName: 'Nora',
     handoff: 'tray',
     items: [
@@ -403,6 +446,43 @@ export const deanosKitchenDemoOrders: KitchenOrder[] = [
       },
     ],
   }),
+]
+
+const deanosKitchenDemoRecentCompletedOrders: KitchenOrder[] =
+  deanosKitchenDemoCurrentService.completedOrders
+    .slice(-3)
+    .map(transaction =>
+      makeOrder({
+        identity: deanosKitchenDemoIdentity,
+        id: transaction.id,
+        orderNumber: transaction.orderNumber,
+        serviceId: transaction.serviceId,
+        serviceNumber: transaction.serviceNumber,
+        status: 'completed',
+        orderType: transaction.orderType,
+        channel: transaction.channel,
+        createdAt: transaction.placedAt,
+        updatedAt: transaction.completedAt,
+        updatedBy: transaction.closedByTeamMemberId,
+        totalMinor: transaction.pricing.totalMinor,
+        items: transaction.items.map((item, itemIndex) => ({
+          id: `item-${itemIndex + 1}`,
+          itemId: item.sourceItemId,
+          dishId: item.dishId,
+          itemKind: item.itemKind,
+          label: item.label,
+          unitPrice: item.unitPriceMinor / 100,
+          quantity: item.quantity,
+          checked: true,
+          ...(item.variantId ? { variantId: item.variantId } : {}),
+          ...(item.variantLabel ? { variantLabel: item.variantLabel } : {}),
+        })),
+      })
+    )
+
+export const deanosKitchenDemoOrders: KitchenOrder[] = [
+  ...deanosKitchenDemoActiveOrders,
+  ...deanosKitchenDemoRecentCompletedOrders,
 ]
 
 const station = (
@@ -453,7 +533,17 @@ const miseTask = (
     recipeId?: string
     workflowStage?: KitchenMiseTask['workflow_stage']
   } = {}
-): KitchenMiseTask => ({
+): KitchenMiseTask => {
+  const serviceDate =
+    identity.kitchenId === deanosKitchenDemoIdentity.kitchenId
+      ? DEANOS_KITCHEN_DEMO_AS_OF_DATE
+      : '2026-07-22'
+  const resolvedStatus =
+    identity.menuId === deanosKitchenDemoIdentity.menuId
+      ? 'done'
+      : status
+
+  return {
   ...KitchenMiseTaskModel,
   id,
   kitchen_id: identity.kitchenId,
@@ -461,8 +551,8 @@ const miseTask = (
   description: production.description ?? '',
   station: stationId,
   workflow_stage: production.workflowStage ?? '',
-  service_date: '2026-07-22',
-  status,
+  service_date: serviceDate,
+  status: resolvedStatus,
   priority,
   estimated_minutes: estimatedMinutes,
   ingredient_ids: [...(production.ingredientIds ?? [])],
@@ -472,14 +562,17 @@ const miseTask = (
   checklist: (production.checklist ?? []).map((item, index) => ({
     id: `${id}-step-${index + 1}`,
     label: typeof item === 'string' ? item : item.label,
-    done: typeof item === 'string' ? false : item.done === true,
+    done:
+      resolvedStatus === 'done'
+      || (typeof item !== 'string' && item.done === true),
   })),
   created: kitchenDemoCreated(
     identity,
-    '2026-07-22T07:00:00.000Z'
+    `${serviceDate}T07:00:00.000Z`
   ),
-  updated: kitchenDemoUpdated('2026-07-22T08:00:00.000Z'),
-})
+  updated: kitchenDemoUpdated(`${serviceDate}T08:00:00.000Z`),
+  }
+}
 
 type DemoRecipeMiseTaskInput = {
   identity: KitchenDemoIdentity
@@ -1233,6 +1326,8 @@ export const pizzaTheActionKitchenDemoOrders: KitchenOrder[] = [
         itemKind: 'food',
         label: 'Action Margherita',
         unitPrice: 18,
+        variantId: '28-cm',
+        variantLabel: '28 cm',
       },
     ],
   }),

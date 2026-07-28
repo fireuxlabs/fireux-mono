@@ -2,7 +2,7 @@
   <component
     :is="rootComponent"
     v-bind="rootAttrs"
-    class="group flex min-w-0 flex-col overflow-hidden rounded-xl border border-default bg-default text-left shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:bg-elevated hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+    class="card card--cell operation-image-cell group flex min-w-0 flex-col text-left"
     @click="onClick"
   >
     <div class="aspect-[4/3] overflow-hidden bg-elevated">
@@ -95,3 +95,11 @@ const onClick = () => {
   if (props.action) emit('action')
 }
 </script>
+
+<style scoped>
+.operation-image-cell {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+</style>

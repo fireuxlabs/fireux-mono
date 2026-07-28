@@ -21,6 +21,39 @@ const FIREUX_CONFIG_PATH =
   'packages/core/fireux-core/src/config/app/fireux.config.ts'
 const NUXT_OVERRIDES_PATH =
   'packages/core/fireux-core/src/config/app/nuxt-overrides.ts'
+const CORE_DESIGN_PACK_CONFIG_PATH =
+  'packages/core/fireux-core/src/config/app/design-packs.ts'
+const SCI_FIRE_STYLE_PATH =
+  'packages/core/fireux-core/src/runtime/assets/styles/design-packs/sci-fire.css'
+const CORE_CARD_ORBIT_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/CardOrbit.vue'
+const CORE_CARD_SURFACE_PATH =
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/molecules/card-surfaces.scss'
+const CORE_AMBIENT_EFFECT_PATH =
+  'packages/core/fireux-core/src/runtime/components/effects/Ambient.vue'
+const CORE_AMBIENT_FIELD_PATH =
+  'packages/core/fireux-core/src/runtime/utils/ambient-field.ts'
+const AMBIENT_EFFECT_CONSUMERS = [
+  {
+    page: 'projects/fireux/fireux-app/app/pages/index.vue',
+    visual: 'projects/fireux/fireux-app/app/components/effects/Stars.vue',
+    deterministic: true,
+  },
+  {
+    page: 'projects/misebox/misebox-app/app/pages/index.vue',
+    visual: 'projects/misebox/misebox-app/app/components/effects/Steam.vue',
+    deterministic: false,
+  },
+]
+const RETIRED_AMBIENT_INITIALIZER_PATHS = [
+  'projects/fireux/fireux-app/app/composables/useStarfield.ts',
+  'packages/ecosystem/fireux-fireux/src/runtime/composables/fireux/app/utils/effects/useLandingEffect.ts',
+  'packages/ecosystem/fireux-misebox/src/runtime/composables/fireux/app/utils/effects/useLandingEffect.ts',
+]
+const SCI_FIRE_PROOF_APP_PATHS = [
+  'projects/fireux/fireux-app/nuxt.config.ts',
+  'projects/misebox/misebox-app/nuxt.config.ts',
+]
 const CORE_STYLE_CASCADE = [
   './scss/atoms/tokens',
   './scss/atoms/typography',
@@ -28,6 +61,7 @@ const CORE_STYLE_CASCADE = [
   './scss/molecules/form-section-copy',
   './scss/molecules/forms',
   './scss/molecules/inset-panel',
+  './scss/molecules/card-surfaces',
   './scss/molecules/pill',
   './scss/organisms/collection-grid',
   './scss/organisms/public-action-card',
@@ -102,6 +136,8 @@ const LOCAL_NUXT_PAGE_TRANSITION_PROP_RE =
   /<NuxtPage\b[^>]*\s+:?transition\s*=/g
 const COPIED_CORE_PAGE_TRANSITION_RE =
   /\.fx-page-(?:enter|leave)-(?:active|from|to)\b/g
+const COPIED_DESIGN_PACK_RE =
+  /\b(?:fx-sci-fire-[A-Za-z0-9_-]+|fireux-utility-[A-Za-z0-9_-]+)\b/g
 const DERIVED_RADIUS_DECLARATION_RE =
   /--radius-(?:xs|sm|md|lg|xl|2xl|3xl|4xl)\s*:/g
 const DERIVED_RADIUS_REFERENCE_RE =
@@ -465,6 +501,8 @@ export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   assertCoreStyleArchitecture(repoRoot)
   assertCorePageTransitionArchitecture(repoRoot)
+  assertCoreDesignPackArchitecture(repoRoot)
+  assertAmbientEffectArchitecture(repoRoot)
 
   const violations = {
     obsoleteVariables: [],
@@ -499,6 +537,7 @@ export async function run(ctx) {
     directMenuDetailCssImports: [],
     localNuxtPageTransitions: [],
     copiedCorePageTransitions: [],
+    copiedDesignPackSelectors: [],
     legacySemanticColors: [],
     legacyGenericSurfaces: [],
   }
@@ -705,6 +744,203 @@ function assertCorePageTransitionArchitecture(repoRoot) {
   }
 }
 
+function assertCoreDesignPackArchitecture(repoRoot) {
+  const violations = []
+  const readRequiredSource = (relativePath) => {
+    const filePath = path.join(repoRoot, relativePath)
+    if (!existsSync(filePath)) {
+      violations.push(`missing design-pack authority: ${relativePath}`)
+      return ''
+    }
+    return readFileSync(filePath, 'utf8')
+  }
+
+  const entrySource = readRequiredSource(CORE_STYLE_ENTRY_PATH)
+  const configSource = readRequiredSource(CORE_DESIGN_PACK_CONFIG_PATH)
+  const fireuxConfigSource = readRequiredSource(FIREUX_CONFIG_PATH)
+  const sciFireSource = readRequiredSource(SCI_FIRE_STYLE_PATH)
+  const cardOrbitSource = readRequiredSource(CORE_CARD_ORBIT_PATH)
+  const cardSurfaceSource = readRequiredSource(CORE_CARD_SURFACE_PATH)
+
+  if (entrySource.includes('sci-fire')) {
+    violations.push(
+      `${CORE_STYLE_ENTRY_PATH} must not load the optional Sci-Fire design pack`
+    )
+  }
+
+  for (const required of [
+    "preset: FireuxDesignPackPreset",
+    "fireux-core/runtime/assets/styles/design-packs/sci-fire.css",
+    'configureAppDesignPack',
+    'fx-sci-fire-surface',
+    'fx-sci-fire-interactive',
+  ]) {
+    if (!configSource.includes(required)) {
+      violations.push(
+        `${CORE_DESIGN_PACK_CONFIG_PATH} is missing ${required}`
+      )
+    }
+  }
+
+  if (
+    !fireuxConfigSource.includes('configureAppDesignPack') ||
+    !fireuxConfigSource.includes(
+      'configureAppDesignPack(nuxt, app.designPack)'
+    )
+  ) {
+    violations.push(
+      `${FIREUX_CONFIG_PATH} must apply the optional app design pack after Core CSS`
+    )
+  }
+
+  for (const required of [
+    '.fx-sci-fire-surface',
+    '.fx-sci-fire-interactive',
+    '.fx-sci-fire-header',
+    '--fx-sci-fire-accent: var(--ui-primary)',
+    ':where(.card.card--cell, .fx-card--cell, .pill, .preview)',
+    '@media (prefers-reduced-motion: reduce)',
+  ]) {
+    if (!sciFireSource.includes(required)) {
+      violations.push(`${SCI_FIRE_STYLE_PATH} is missing ${required}`)
+    }
+  }
+
+  for (const [relativePath, source] of [
+    [CORE_DESIGN_PACK_CONFIG_PATH, configSource],
+    [SCI_FIRE_STYLE_PATH, sciFireSource],
+    [CORE_CARD_ORBIT_PATH, cardOrbitSource],
+  ]) {
+    for (const forbidden of ['--ui-info', 'cyan']) {
+      if (source.includes(forbidden)) {
+        violations.push(
+          `${relativePath} must derive Sci-Fire atmosphere from the App primary colour, not ${forbidden}`
+        )
+      }
+    }
+  }
+
+  for (const forbidden of ['var(--ui-info)', 'radial-gradient']) {
+    if (cardSurfaceSource.includes(forbidden)) {
+      violations.push(
+        `${CORE_CARD_SURFACE_PATH} leaks optional Sci-Fire presentation into the Nuxt UI baseline (${forbidden})`
+      )
+    }
+  }
+
+  for (const appPath of SCI_FIRE_PROOF_APP_PATHS) {
+    const source = readRequiredSource(appPath)
+    if (!/designPack:\s*\{\s*preset:\s*['"]sci-fire['"]\s*\}/.test(source)) {
+      violations.push(`${appPath} must opt into the shared Sci-Fire design pack`)
+    }
+  }
+
+  if (violations.length) {
+    throw new Error(
+      [
+        '[guard] Core design-pack drift detected:',
+        ...violations.map((violation) => `  - ${violation}`),
+        '',
+        '[guard] Keep Nuxt UI as the universal baseline and load Sci-Fire only through the typed Core app design-pack seam.',
+      ].join('\n')
+    )
+  }
+}
+
+function assertAmbientEffectArchitecture(repoRoot) {
+  const violations = []
+  const readRequiredSource = (relativePath) => {
+    const filePath = path.join(repoRoot, relativePath)
+    if (!existsSync(filePath)) {
+      violations.push(`missing ambient-effect authority: ${relativePath}`)
+      return ''
+    }
+    return readFileSync(filePath, 'utf8')
+  }
+
+  const ambientSource = readRequiredSource(CORE_AMBIENT_EFFECT_PATH)
+  const fieldSource = readRequiredSource(CORE_AMBIENT_FIELD_PATH)
+
+  for (const required of [
+    'class="fx-ambient__effect"',
+    'class="fx-ambient__content"',
+    'position: fixed',
+    'isolation: isolate',
+    'contain: strict',
+    '@media print',
+  ]) {
+    if (!ambientSource.includes(required)) {
+      violations.push(`${CORE_AMBIENT_EFFECT_PATH} is missing ${required}`)
+    }
+  }
+
+  for (const required of ['ambientUnit', 'ambientRange']) {
+    if (!fieldSource.includes(required)) {
+      violations.push(`${CORE_AMBIENT_FIELD_PATH} is missing ${required}`)
+    }
+  }
+  if (fieldSource.includes('Math.random')) {
+    violations.push(
+      `${CORE_AMBIENT_FIELD_PATH} must remain deterministic during SSR`
+    )
+  }
+
+  for (const { page, visual, deterministic } of AMBIENT_EFFECT_CONSUMERS) {
+    const pageSource = readRequiredSource(page)
+    const visualSource = readRequiredSource(visual)
+
+    for (const required of ['<EffectsAmbient', '<template #effect>']) {
+      if (!pageSource.includes(required)) {
+        violations.push(`${page} must compose the Core ${required} seam`)
+      }
+    }
+
+    if (!visualSource.includes('@media (prefers-reduced-motion: reduce)')) {
+      violations.push(`${visual} is missing its reduced-motion state`)
+    }
+
+    if (deterministic) {
+      for (const forbidden of [
+        'position: fixed',
+        'z-index:',
+        'Math.random',
+        'onMounted',
+      ]) {
+        if (visualSource.includes(forbidden)) {
+          violations.push(
+            `${visual} must not repeat ambient lifecycle/layering (${forbidden})`
+          )
+        }
+      }
+
+      for (const required of ['ambientRange', 'var(--ui-primary)']) {
+        if (!visualSource.includes(required)) {
+          violations.push(`${visual} is missing ${required}`)
+        }
+      }
+    }
+  }
+
+  for (const relativePath of RETIRED_AMBIENT_INITIALIZER_PATHS) {
+    if (existsSync(path.join(repoRoot, relativePath))) {
+      violations.push(
+        `${relativePath} reintroduces a retired client-mounted ambient initializer`
+      )
+    }
+  }
+
+  if (violations.length) {
+    throw new Error(
+      [
+        '[guard] Ambient-effect architecture drift detected:',
+        ...violations.map((violation) => `  - ${violation}`),
+        '',
+        '[guard] Core owns the shared page layer; projects own their reduced-motion visual character and may opt into deterministic Core geometry.',
+      ].join('\n')
+    )
+  }
+}
+
 function scan(dir, repoRoot, violations) {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     if (entry.isDirectory()) {
@@ -758,6 +994,13 @@ function scan(dir, repoRoot, violations) {
         source,
         pattern: COPIED_CORE_PAGE_TRANSITION_RE,
         target: violations.copiedCorePageTransitions,
+        relativePath,
+        label: (match) => match[0],
+      })
+      collectMatches({
+        source,
+        pattern: COPIED_DESIGN_PACK_RE,
+        target: violations.copiedDesignPackSelectors,
         relativePath,
         label: (match) => match[0],
       })
@@ -1659,6 +1902,11 @@ function formatViolations(violations) {
     lines,
     'Project styles copying the Core page-transition selector namespace:',
     violations.copiedCorePageTransitions
+  )
+  appendGroup(
+    lines,
+    'Project files copying the Core design-pack selector namespace:',
+    violations.copiedDesignPackSelectors
   )
   appendGroup(
     lines,

@@ -59,6 +59,10 @@ export function useKitchenConsoleDish() {
       normalizeString(ingredientId)
     ] ||
     normalizeString(ingredientId)
+  const getStationName = (stationId: string) =>
+    demoDishOperation.value?.stationNameById[
+      normalizeString(stationId)
+    ] || normalizeString(stationId)
   const componentViews = computed(() => demoDishItem.value?.componentViews ?? [])
   const prepItems = computed(() => demoDishItem.value?.prepItems ?? [])
   const recipes = computed(() => demoDishItem.value?.recipes ?? [])
@@ -105,6 +109,7 @@ export function useKitchenConsoleDish() {
     recipes,
     formatProductionAmount,
     getIngredientName,
+    getStationName,
     miseRequirements,
     menuUsage,
     finance,

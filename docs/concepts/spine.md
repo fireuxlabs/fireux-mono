@@ -93,7 +93,8 @@ contract.
   split.
 - Resolve route identity per public-detail entity instead of changing all
   `[id]` and `[slug]` routes mechanically.
-- Remove Kitchen compatibility identity only through a reviewed migration.
+- Keep Kitchen root, required Place, and access-only AppKitchen composition
+  strict; do not reintroduce pre-release compatibility identity.
 - Reconcile descriptive entities with the executable matrix before adding more
   root or scoped ceremony.
 - Consolidate the duplicate Go QR wrappers and dogfood payloads behind the

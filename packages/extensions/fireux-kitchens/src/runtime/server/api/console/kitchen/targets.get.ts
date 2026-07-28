@@ -12,6 +12,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine.ts'
 import {
   type KitchenConsoleTargetItem,
   type KitchenConsoleTargetsResponse,
@@ -82,16 +83,14 @@ function projectKitchenTarget(input: {
   id: string
   canWrite: boolean
   root: StoredRecord
-  support: StoredRecord
   place: StoredRecord
   scope: CanonicalKitchenScope
 }): KitchenConsoleTargetItem {
   const rootIdentity = readKitchenIdentity(input.root)
-  const supportIdentity = readKitchenIdentity(input.support)
-  const placeIdentity = readKitchenIdentity(input.place)
+  const place = readPlacePresentation(input.place)
   const resolvedIdentity = menuKitchenIdentity(
     input.root,
-    input.support,
+    {},
     input.place
   )
   const displayName = text(resolvedIdentity.name)
@@ -102,25 +101,20 @@ function projectKitchenTarget(input: {
   const visibility = readKitchenVisibility(input.root)
   const menus = readKitchenMenusConfig(input.root)
   const resolvedMenuStyle = record(resolvedIdentity.page_style)
-  const gallery = placeIdentity.gallery.length
-    ? placeIdentity.gallery
-    : supportIdentity.gallery.length
-      ? supportIdentity.gallery
-      : rootIdentity.gallery
+  const gallery = place.gallery
   const tagline =
-    supportIdentity.tagline ||
     rootIdentity.tagline ||
-    readRecordString(input.place, 'brand_tagline')
+    place.brandTagline
   const orders = record(input.root.orders)
   const tables = record(input.root.tables)
-  const shortName = readRecordString(input.place, 'short_name')
-  const brandTagline = readRecordString(input.place, 'brand_tagline')
-  const formattedAddress = readRecordString(input.place, 'formatted_address')
-  const shortAddress = readRecordString(input.place, 'short_address')
+  const shortName = place.shortName
+  const brandTagline = place.brandTagline
+  const formattedAddress = place.formattedAddress
+  const shortAddress = place.shortAddress
   const claimedBy = readRecordString(input.root, 'claimed_by')
-  const about = readRecordString(input.place, 'about')
-  const website = readRecordString(input.place, 'website')
-  const phone = readRecordString(input.place, 'phone')
+  const about = place.about
+  const website = place.website
+  const phone = place.phone
   const latitude = optionalNumber(input.place.lat)
   const longitude = optionalNumber(input.place.lng)
 
@@ -139,7 +133,10 @@ function projectKitchenTarget(input: {
       display_name: displayName,
       tagline,
       image_url: resolvedIdentity.imageUrl,
-      image_shade: resolvedIdentity.imageShade,
+      ...(rootIdentity.logoImageUrl
+        ? { logo_image_url: rootIdentity.logoImageUrl }
+        : {}),
+      image_shade: rootIdentity.imageShade,
       ...(resolvedIdentity.wordmarkImageUrl
         ? { wordmark_image_url: resolvedIdentity.wordmarkImageUrl }
         : {}),
@@ -306,7 +303,6 @@ export default defineEventHandler(
         canWrite:
           scopedRole === 'admin' || authority.operatorIds.includes(uid),
         root,
-        support,
         place: placeSnapshot.data() || {},
         scope,
       })

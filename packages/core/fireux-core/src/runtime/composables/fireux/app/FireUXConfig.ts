@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: expose explicit App self-join policy.
 import { useRuntimeConfig } from '#imports'
+import type { FireuxDesignPackConfig } from '../../../../config/app/design-packs'
 
 export type FireUXRole = 'global' | 'tenant' | 'standalone'
 
@@ -36,7 +37,7 @@ export interface FireUXConfig {
   navOverrides: Record<string, unknown>
 
   contactEmail?: string
-  designPack?: Record<string, unknown>
+  designPack?: FireuxDesignPackConfig
   designPacks?: Record<string, Record<string, unknown>>
   developerId?: string
 
@@ -145,7 +146,9 @@ function buildConfig(): Readonly<FireUXConfig> {
     navOverrides: optRecord(fireux, 'navOverrides') || {},
 
     contactEmail: optString(fireux, 'contactEmail'),
-    designPack: optRecord(fireux, 'designPack'),
+    designPack: optRecord(fireux, 'designPack') as
+      | FireuxDesignPackConfig
+      | undefined,
     designPacks: optRecord(fireux, 'designPacks') as
       | Record<string, Record<string, unknown>>
       | undefined,

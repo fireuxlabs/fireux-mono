@@ -3,7 +3,6 @@ import {
   defineEventHandler,
   getRouterParam,
 } from 'h3'
-import { useRuntimeConfig } from '#imports'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
 import {
   menuKitchenFulfilment,
@@ -13,11 +12,6 @@ import {
 } from '../../../menu/ownership/kitchen-scope.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
-
-const currentAppId = () => {
-  const fireux = (useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>
-  return text(fireux.id)
-}
 
 export default defineEventHandler(async (event) => {
   setCorsHeaders(event, {
@@ -40,7 +34,7 @@ export default defineEventHandler(async (event) => {
     })
   }
 
-  const kitchenAppId = resolveSourceAppId(kitchen.data, currentAppId())
+  const kitchenAppId = resolveSourceAppId(kitchen.data)
   const appKitchenData = await readAppMenuKitchenData(kitchenAppId, kitchen.id)
 
   return menuKitchenFulfilment(kitchen.data, appKitchenData)

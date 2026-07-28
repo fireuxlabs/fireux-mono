@@ -2,7 +2,7 @@
   <MoleculesActionSurface
     :to="to"
     :data-ingredient-id="id"
-    class="ingredient-card group flex min-w-0 flex-col overflow-hidden rounded-xl border border-default bg-default shadow-sm transition hover:-translate-y-0.5 hover:border-primary/40 hover:bg-elevated hover:shadow-md"
+    class="card card--cell ingredient-card group flex min-w-0 flex-col"
   >
     <div class="aspect-square overflow-hidden bg-elevated">
       <img
@@ -56,6 +56,9 @@ withDefaults(
 
 <style scoped>
 .ingredient-card {
+  display: flex;
+  flex-direction: column;
   width: calc(var(--spacing) * 36);
+  padding: 0;
 }
 </style>

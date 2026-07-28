@@ -2,7 +2,7 @@
   <NuxtLink
   v-if="link && to"
   :to="to"
-  class="block w-full"
+  class="block min-w-0 w-full"
 >
     <div
       class="fx-card--cell"
@@ -41,7 +41,7 @@
 
 <div
   v-else
-  class="block w-full"
+  class="block min-w-0 w-full"
   @click="onClick"
 >
     <div

@@ -118,9 +118,10 @@ Example Firestore stack names, not automatic entity proof:
 - The App document owns bounded access and only its declared non-secret delta.
   Collection adapters type it as the named `App<Entity>` record, require the
   root, and project allowlisted fields instead of spreading it over identity.
-  Supplier, Portfolio, and Property enforce that join now. Kitchen's access-only
-  App model is current, but its legacy composer and stored duplicate identity
-  remain migration input and are not a reference implementation.
+  Supplier, Portfolio, Property, and Kitchen enforce that join. Kitchen also
+  requires its linked Place: Place owns physical identity and location media,
+  Kitchen owns operational identity/configuration, and AppKitchen owns access
+  only.
 - Property manual credentials live separately at
   `apps/{appId}/properties/{propertyId}/private/manual`; collection access
   queries never download that private support record.
@@ -162,7 +163,6 @@ Example Firestore stack names, not automatic entity proof:
 
 | Difference | State | Required direction |
 | --- | --- | --- |
-| Kitchen still composes legacy duplicate AppKitchen identity | `migration` | Move all identity to the canonical Kitchen root and leave AppKitchen access-only after verified data migration |
 | Supplier and Portfolio do not exact-validate every root field | `migration` | Reconcile live data first, then add validators without relabelling read errors as missing |
 | Root profile models and grouped `firestore/profiles/<Profile>` composables use different organizational spines | `to-confirm` | Realign only after a package-wide profile storage decision; current path difference does not alter identity |
 | Some folders exist because a thing is stored, not because entity-ness was confirmed | `drift` | Check `entities.md` and the executable entity matrix before adding root entity ceremony |
@@ -190,7 +190,8 @@ Example Firestore stack names, not automatic entity proof:
 
 ### Next
 
-- Complete Kitchen identity migration.
+- Keep Kitchen, required Place, and access-only AppKitchen exact-pair reads
+  aligned across Live, Demo, and Test sources.
 - Reconcile Supplier and Portfolio roots before introducing strict validators.
 - Audit stored folders against confirmed entity/record declarations.
 

@@ -9,6 +9,7 @@ export default defineFireuxConfig({
   name: 'FireUX',
   shortName: 'FireUX',
   role: 'global',
+  designPack: { preset: 'sci-fire' },
   consoles: ['project'],
   modules: [
     [

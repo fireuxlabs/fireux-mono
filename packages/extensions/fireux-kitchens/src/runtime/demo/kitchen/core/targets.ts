@@ -1,7 +1,13 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 import { PlaceModel, type Place } from 'fireux-places/runtime/models/place.model.ts'
+import type { PublicPlaceProjection } from 'fireux-places/runtime/models/place-public.model.ts'
+import {
+  hasExactPublicPlaceProjectionShape,
+  normalizePublicPlaceProjection,
+} from 'fireux-places/runtime/utils/public-place-projection.ts'
 import {
   KitchenModel,
+  type AppKitchen,
   type Kitchen,
   type KitchenFulfilmentPaymentPolicy,
   type KitchenOrdersConfig,
@@ -11,6 +17,7 @@ import {
   kitchenDemoAssetBase,
   kitchenDemoCreated,
   kitchenDemoUpdated,
+  deanosKitchenDemoTeamMemberIds,
   miseboxRestaurantKitchenDemoIdentity,
   pizzaTheActionKitchenDemoIdentity,
 } from './fixtures'
@@ -18,15 +25,18 @@ import type { KitchenDemoIdentity } from './types'
 
 export type KitchenDemoTarget = {
   appId: string
+  appSupport: AppKitchen
   identity: KitchenDemoIdentity
   kitchen: Kitchen
   place: Place
+  publicPlace: PublicPlaceProjection
 }
 
 type DemoKitchenInput = {
   identity: KitchenDemoIdentity
   name: string
   tagline: string
+  logoImageUrl?: string
   menuStyle: NonNullable<Kitchen['menus']['style']>
   palette: SparseBrandPalette
   paymentMethods: KitchenFulfilmentPaymentPolicy[]
@@ -50,6 +60,7 @@ type DemoPlaceInput = {
   coverImage?: string
   galleryImages?: string[]
   imageShade?: Place['image_shade']
+  businessHours?: Place['business_hours']
 }
 
 const kitchen = (input: DemoKitchenInput): Kitchen => ({
@@ -58,8 +69,8 @@ const kitchen = (input: DemoKitchenInput): Kitchen => ({
   place_id: input.identity.placeId,
   slug: input.identity.kitchenSlug,
   app_scope: {
-    state: 'root_only',
-    app_id: '',
+    state: 'parent_app',
+    app_id: input.identity.appId,
   },
   visibility: {
     show: true,
@@ -69,8 +80,7 @@ const kitchen = (input: DemoKitchenInput): Kitchen => ({
   identity: {
     display_name: input.name,
     tagline: input.tagline,
-    image_url: '',
-    gallery: [],
+    logo_image_url: input.logoImageUrl ?? '',
     image_shade: 'none',
     wordmark_no_logo_image_url: '',
     wordmark_image_url: '',
@@ -130,7 +140,7 @@ const place = (input: DemoPlaceInput): Place => ({
   tags: ['demo', 'restaurant'],
   price_level: '2',
   default_currency_code: 'CHF',
-  business_hours: {
+  business_hours: input.businessHours ?? {
     windows: [
       {
         days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
@@ -162,13 +172,35 @@ const place = (input: DemoPlaceInput): Place => ({
 const target = (
   identity: KitchenDemoIdentity,
   targetKitchen: Kitchen,
-  targetPlace: Place
-): KitchenDemoTarget => ({
-  appId: identity.appId,
-  identity,
-  kitchen: targetKitchen,
-  place: targetPlace,
-})
+  targetPlace: Place,
+  access: {
+    teamIds?: readonly string[]
+    operatorIds?: readonly string[]
+  } = {}
+): KitchenDemoTarget => {
+  const publicPlace = normalizePublicPlaceProjection(
+    targetPlace as unknown as Record<string, unknown>
+  )
+  if (!publicPlace) {
+    throw new Error('Kitchen Demo Place public projection is invalid.')
+  }
+
+  return {
+    appId: identity.appId,
+    appSupport: {
+      id: identity.kitchenId,
+      team_ids: [...(access.teamIds ?? [])],
+      operator_ids: [...(access.operatorIds ?? [])],
+      join_requests: [],
+      created: kitchenDemoCreated(identity),
+      updated: kitchenDemoUpdated(),
+    },
+    identity,
+    kitchen: targetKitchen,
+    place: targetPlace,
+    publicPlace,
+  }
+}
 
 const deanosPalette = {
   primary_color: '#ff4f2e',
@@ -206,6 +238,7 @@ export const deanosKitchenDemoTarget = target(
     identity: deanosKitchenDemoIdentity,
     name: 'Deanos Smash Burger',
     tagline: 'Smashed to order. Served fast.',
+    logoImageUrl: `${deanosMediaBase}/logo.png`,
     menuStyle: deanosMenuStyle,
     palette: deanosPalette,
     paymentMethods: [
@@ -255,13 +288,36 @@ export const deanosKitchenDemoTarget = target(
     coverImage: deanosCoverImage,
     galleryImages: deanosGalleryImages,
     imageShade: 'none',
-  })
+    businessHours: {
+      windows: [
+        {
+          days: [
+            'monday',
+            'tuesday',
+            'wednesday',
+            'thursday',
+            'friday',
+            'saturday',
+            'sunday',
+          ],
+          open: '11:30',
+          close: '22:00',
+        },
+      ],
+    },
+  }),
+  {
+    teamIds: deanosKitchenDemoTeamMemberIds,
+    operatorIds: deanosKitchenDemoTeamMemberIds,
+  }
 )
 
 const pizzaTheActionPalette = {
   primary_color: '#1f6b45',
   secondary_color: '#f2c94c',
 } satisfies SparseBrandPalette
+
+const pizzaTheActionMediaBase = `${kitchenDemoAssetBase}/pizza-the-action`
 
 const pizzaTheActionMenuStyle = {
   background_color_light: '#fff7d6',
@@ -283,6 +339,7 @@ export const pizzaTheActionKitchenDemoTarget = target(
     identity: pizzaTheActionKitchenDemoIdentity,
     name: 'Pizza the Action',
     tagline: 'Big flavour. Zero drama.',
+    logoImageUrl: `${pizzaTheActionMediaBase}/logo.png`,
     menuStyle: pizzaTheActionMenuStyle,
     palette: pizzaTheActionPalette,
     paymentMethods: [
@@ -317,6 +374,9 @@ const miseboxRestaurantPalette = {
   secondary_color: '#61715c',
 } satisfies SparseBrandPalette
 
+const miseboxRestaurantMediaBase =
+  `${kitchenDemoAssetBase}/misebox-restaurant`
+
 const miseboxRestaurantMenuStyle = {
   background_color_light: '#eee7da',
   background_color_dark: '#11251d',
@@ -337,6 +397,7 @@ export const miseboxRestaurantKitchenDemoTarget = target(
     identity: miseboxRestaurantKitchenDemoIdentity,
     name: 'Misebox Restaurant',
     tagline: 'A polished seasonal Menu and Kiosk',
+    logoImageUrl: `${miseboxRestaurantMediaBase}/logo.png`,
     menuStyle: miseboxRestaurantMenuStyle,
     palette: miseboxRestaurantPalette,
     paymentMethods: [
@@ -372,6 +433,8 @@ const targetIds = new Set<string>()
 for (const item of kitchenDemoTargets) {
   const kitchenId = String(item.kitchen.id ?? '').trim()
   const placeId = String(item.place.id ?? '').trim()
+  const teamIds = item.appSupport.team_ids
+  const operatorIds = item.appSupport.operator_ids
   if (
     !kitchenId ||
     !placeId ||
@@ -379,7 +442,17 @@ for (const item of kitchenDemoTargets) {
     kitchenId !== item.identity.kitchenId ||
     placeId !== item.identity.placeId ||
     item.kitchen.place_id !== placeId ||
-    item.appId !== item.identity.appId
+    !item.place.entity_families.includes('kitchen') ||
+    String(item.place.name ?? '').trim() !==
+      String(item.kitchen.identity.display_name ?? '').trim() ||
+    item.appId !== item.identity.appId ||
+    item.appSupport.id !== kitchenId ||
+    item.publicPlace.id !== placeId ||
+    !hasExactPublicPlaceProjectionShape(item.publicPlace) ||
+    item.appSupport.join_requests.length !== 0 ||
+    new Set(teamIds).size !== teamIds.length ||
+    new Set(operatorIds).size !== operatorIds.length ||
+    operatorIds.some(id => !teamIds.includes(id))
   ) {
     throw new Error('Kitchen Demo target identities are invalid.')
   }

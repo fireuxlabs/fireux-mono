@@ -2,10 +2,12 @@
 // Concurrent edit — 2026-07-25 — Deanos supply pass: provide deterministic SupplierIngredient coverage and priced foodservice offers.
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import {
+  AppSupplierModel,
   SupplierCatalogueModel,
   SupplierIngredientModel,
   SupplierItemModel,
   SupplierModel,
+  type AppSupplier,
   type Supplier,
   type SupplierCatalogue,
   type SupplierIngredient,
@@ -31,6 +33,7 @@ const updated = {
 export type SupplierDemoScenario = {
   appId: string
   supplier: Supplier
+  appSupport: AppSupplier
   ingredients: SupplierIngredient[]
   items: SupplierItem[]
   catalogues: SupplierCatalogue[]
@@ -57,6 +60,7 @@ type SupplierDemoCatalogueSectionSeed = {
 
 type SupplierDemoScenarioSeed = {
   id: string
+  companyId: string
   name: string
   headline: string
   categories: string[]
@@ -113,13 +117,14 @@ const supplierIngredient = (
 
 const supplierRoot = (
   input: SupplierDemoScenarioSeed,
-  ingredients: SupplierIngredient[]
+  ingredients: SupplierIngredient[],
+  appId: string
 ): Supplier => ({
   ...SupplierModel,
   id: input.id,
-  app_scope_state: 'root_only',
-  app_scope_app_id: '',
-  company_id: '',
+  app_scope_state: 'parent_app',
+  app_scope_app_id: appId,
+  company_id: input.companyId,
   slug: input.id,
   supplier_organization_name: input.name,
   tagline: input.headline,
@@ -135,6 +140,22 @@ const supplierRoot = (
   ),
   hello: `Welcome to ${input.name}.`,
   created,
+  updated,
+})
+
+const supplierAppSupport = (
+  supplierId: string,
+  appId: string
+): AppSupplier => ({
+  ...AppSupplierModel,
+  id: supplierId,
+  operator_ids: [],
+  team_ids: [],
+  join_requests: [],
+  created: {
+    ...created,
+    app_id: appId,
+  },
   updated,
 })
 
@@ -195,6 +216,33 @@ const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
   const ingredientIds = scenario.ingredients.map(
     (ingredient) => ingredient.ingredient_id
   )
+  const appSupportKeys = [
+    'created',
+    'id',
+    'join_requests',
+    'operator_ids',
+    'team_ids',
+    'updated',
+  ]
+
+  if (
+    !scenario.appId ||
+    !scenario.supplier.company_id ||
+    'place_id' in scenario.supplier ||
+    scenario.supplier.app_scope_state !== 'parent_app' ||
+    scenario.supplier.app_scope_app_id !== scenario.appId ||
+    scenario.supplier.created.app_id !== scenario.appId ||
+    scenario.appSupport.id !== supplierId ||
+    scenario.appSupport.created.app_id !== scenario.appId ||
+    !sameStringSet(Object.keys(scenario.appSupport), appSupportKeys) ||
+    !Array.isArray(scenario.appSupport.operator_ids) ||
+    !Array.isArray(scenario.appSupport.team_ids) ||
+    !Array.isArray(scenario.appSupport.join_requests)
+  ) {
+    throw new Error(
+      `Supplier Demo ${supplierId} requires one same-App root and access-only AppSupplier pair.`
+    )
+  }
 
   if (!sameStringSet(scenario.supplier.linked_ingredient_ids, ingredientIds)) {
     throw new Error(
@@ -273,11 +321,13 @@ const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
 const buildSupplierDemoScenario = (
   input: SupplierDemoScenarioSeed
 ): SupplierDemoScenario => {
+  const appId = 'misebox-app'
   const items = input.offers.map((offer) => supplierItem(input.id, offer))
   const ingredients = items.map((item) => supplierIngredient(input.id, item))
   const scenario: SupplierDemoScenario = {
-    appId: 'misebox-app',
-    supplier: supplierRoot(input, ingredients),
+    appId,
+    supplier: supplierRoot(input, ingredients, appId),
+    appSupport: supplierAppSupport(input.id, appId),
     ingredients,
     items,
     catalogues: input.catalogue
@@ -291,6 +341,7 @@ const buildSupplierDemoScenario = (
 
 const alpineFoodservice = buildSupplierDemoScenario({
   id: 'alpine-foodservice',
+  companyId: 'alpine-foodservice-hq',
   name: 'Alpine Foodservice',
   headline: 'Fresh meat, dairy, bakery and frozen kitchen essentials',
   categories: ['Meat', 'Poultry', 'Dairy', 'Bakery', 'Frozen'],
@@ -542,6 +593,7 @@ const alpineFoodservice = buildSupplierDemoScenario({
 
 const pantryHouse = buildSupplierDemoScenario({
   id: 'pantry-house',
+  companyId: 'pantry-house-hq',
   name: 'Pantry House',
   headline: 'Dry goods, condiments and drinks for busy kitchens',
   categories: ['Dry goods', 'Condiments', 'Drinks'],
@@ -865,6 +917,7 @@ const pantryHouse = buildSupplierDemoScenario({
 
 const bernMarketGarden = buildSupplierDemoScenario({
   id: 'bern-market-garden',
+  companyId: 'bern-market-garden-hq',
   name: 'Bern Market Garden',
   headline: 'Fresh produce, fruit and herbs from the region',
   categories: ['Produce', 'Fruit', 'Herbs'],
@@ -1102,6 +1155,18 @@ const coveredIngredientIds = supplierDemoScenarios
 if (new Set(coveredIngredientIds).size !== coveredIngredientIds.length) {
   throw new Error(
     'Supplier Demo ingredients must resolve through one supplier only.'
+  )
+}
+
+const companyIds = supplierDemoScenarios.map(
+  (scenario) => scenario.supplier.company_id
+)
+if (
+  companyIds.some((companyId) => !companyId) ||
+  new Set(companyIds).size !== companyIds.length
+) {
+  throw new Error(
+    'Every Supplier Demo root requires one independent Company relationship.'
   )
 }
 

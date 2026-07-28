@@ -64,6 +64,11 @@ const CARD_DATA_AUTHORITY_RE =
   /\b(?:useAsyncData|useFetch|\$fetch|useFirestore|useCollection|useDocument|onSnapshot|getDoc|getDocs|use[A-Z][A-Za-z0-9]*(?:Collection|Fetch))\s*\(/
 const CARD_STORAGE_IMPORT_RE =
   /from\s+["'](?:firebase\/firestore|vuefire)["']/
+const CARD_ANATOMY_RE = new Map([
+  ['Cell.vue', /\b(?:card--cell|fx-card--cell)\b/],
+  ['Pill.vue', /class\s*=\s*["'][^"']*\bpill\b/],
+  ['Preview.vue', /class\s*=\s*["'][^"']*\bpreview\b/],
+])
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -170,6 +175,17 @@ function validateCardFamily(filePath, source, violations, repoRoot) {
   if (!classified) {
     violations.push(
       `${relative} (unclassified Cards component; use Cell/Pill/Preview or move it to its owning Profile/Detail/operational family)`
+    )
+  }
+
+  const anatomyPattern = CARD_ANATOMY_RE.get(fileName)
+  if (
+    anatomyPattern &&
+    !anatomyPattern.test(source) &&
+    !source.includes('PublicProfileDirectoryCard')
+  ) {
+    violations.push(
+      `${relative} (${fileName.replace('.vue', '')} must consume its shared Core card anatomy)`
     )
   }
 

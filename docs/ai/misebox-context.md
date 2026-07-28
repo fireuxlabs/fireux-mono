@@ -4,7 +4,7 @@
 <!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
 <!-- Concurrent edit — 2026-07-25 — Keep Main App hero copy in Core while Misebox proves it with the real Orders board. -->
 
-Updated: 2026-07-27
+Updated: 2026-07-28
 Ref: e98ffb195
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -61,13 +61,27 @@ Before each task:
   Place onboarding may establish sparse primary/secondary brand colours. New
   Kitchens inherit them and persist only differing colours on the canonical
   Kitchen root; Misebox app chrome and AppKitchen access records own neither.
-  The Kitchen theme editor mutates that root through a target-bound trusted
-  transaction and removes legacy AppKitchen style input after a successful save.
+  A Kitchen logo is owned only by
+  `Kitchen.identity.logo_image_url`; Kitchen cards and logo editors do not use
+  the linked Place image as a second logo source. `Place.image_url` remains
+  Place-owned location imagery.
+  Place name, address, location media, gallery, contact details, currency,
+  timezone, and business hours remain Place-owned. Kitchen owns only its
+  operational override, logo, Menu, service, fulfilment, and other Kitchen
+  configuration. AppKitchen is an access-only record and never supplies
+  identity, media, style, fulfilment, or operating configuration.
+  Every Live, Demo, or writable Test Kitchen must have a valid linked Place;
+  Demo and Test sources provide their corresponding Demo/Test Place rather
+  than fabricating Place-like fields on the Kitchen. Demo Kitchen roots also
+  name their current parent App and pair with same-id access-only Demo support;
+  Demo is read-only, not root-only.
+  The Kitchen theme editor mutates the canonical Kitchen root through a
+  target-bound trusted transaction.
   AppKitchen access records require bounded `operator_ids`, `team_ids`, and
   `join_requests` arrays. The authenticated Kitchen target endpoint validates
   that exact support shape and remains the sole live Console target outcome.
-  Trusted onboarding may repair absent authority arrays for an App admin while
-  malformed stored values remain errors; ordinary target reads never repair.
+  Missing, malformed, or payload-bearing AppKitchen records fail closed;
+  pre-release code does not carry legacy repair or fallback paths.
   `operator_ids` grants Kitchen mutation authority; `team_ids` grants Kitchen
   target/read membership only and must never authorize a write. Current App
   admins remain the explicit administrative override. Supplier and any other
@@ -77,31 +91,42 @@ Before each task:
   `fireux-finance`. Kitchen retains Order and KitchenSale lifecycle ownership;
   a trusted `ready -> completed` transaction creates the same-id Sale and its
   deterministic App-level `gross_sale` fact atomically.
+- Deanos Demo team members are Kitchen-shaped scenario records shared by the
+  selected Kitchen's Team, Orders, and Finance projections. Operator audit
+  stamps and transaction closers use stable team-member IDs; presentation
+  resolves names from that same scenario. Demo access ids live on a separate
+  read-only `AppKitchen`-shaped support fixture composed into the target
+  surface; they do not alter the Kitchen root or create Live membership.
 - `gross_sale` records the current authoritative total without claiming a VAT
-  split, net revenue, or cash settlement. Reporting and P&L are derived views,
-  not Misebox Console Operations or separately editable truth.
+  split, net revenue, or cash settlement. Reporting is derived; P&L remains
+  absent until its required producing domains and accounting contract exist.
 - The first visible report is the Kitchen-owned `/console/kitchen/finance`
-  sheet. Its authenticated, aggregate-only server projection reads a bounded
+  sheet. Its authenticated, bounded server projection reads a
   7, 30, or 90 complete owner-local-day period of immutable Sales for the
   selected Kitchen. The server resolves a valid custom Kitchen timezone or the
   exact linked Place timezone, keeps currencies separate, and exposes
   reconciled period/daily gross sales, completed-Sale count, average Sale,
-  item quantities, item sales, delivery fees, and stable item rollups. It does
-  not expose raw Sales, Orders, customers, or FinancialFacts in the browser or
-  invent Live/Test and pre-producer history. Demo may use the explicit
-  aggregate-only owner-local fixture; it never becomes Sale or FinancialFact
-  history. Its
+  item quantities, item sales, delivery fees, stable item rollups, and a
+  bounded PII-free transaction summary with inspectable source identity. It
+  does not expose actor ids, customers, raw Orders, document paths, or
+  FinancialFacts in the browser or invent Live/Test and pre-producer history.
+  Demo projects the same report contract from Kitchen-owned completed Orders;
+  it never becomes Sale or FinancialFact history. Its
   `KitchenFinanceSummary` and `KitchenFinanceTrend` adapters supply Kitchen
   labels and values to dumb product-neutral Finance presentation used by
   Console and Product Demo. Kitchen-owned calendar, selected-day item, and
   roundup components retain daily sales semantics. Deanos derives
   current/prior 7, 30, and 90-day totals, grouped trend points, calendar days,
-  best/quietest days, weekday averages, top items, and daily averages from one
-  deterministic 180-day aggregate series with reconciled item rollups; it does
-  not add expense or accounting truth.
-- Supplier catalogue costs, parked purchase orders, Property/Portfolio values,
-  and FireUX Project identity are not Finance producers until their own dated
-  operational lifecycles exist.
+  best/quietest days, weekday averages, top items, daily averages, and
+  transaction rows from one deterministic 180-day dated Service/Order history.
+  Stable Menu, Team, service, item, pricing, and closer identities reconcile
+  before composition; it does not add expense or accounting truth.
+- Supplier catalogue offers are not deliveries, purchases, receipts, or
+  invoices. Team membership is not rota/payroll. Property/Portfolio values are
+  not dated rent events, and FireUX Project identity is not a finance
+  lifecycle. Refunds, supplier invoice states, staff pay, recurring rent,
+  expenses, wages, VAT, labour, cashflow, profit, and P&L stay absent until
+  their owning domains expose authoritative dated producers.
 - Misebox Jobs use the same Agent-owned, Company/Place-linked root and trusted
   author/public APIs as Werkbox. Hospitality is only a configured category and
   presentation delta; Kitchen is never Job identity and Job creation never
@@ -127,6 +152,14 @@ Before each task:
 - `defineFireuxConfig` loads `fireux-misebox` automatically from
   `ecosystem: 'misebox'`. Misebox apps declare extension modules as explicit
   capabilities; the ecosystem package is not an umbrella dependency bundle.
+- The Misebox Main App explicitly opts into Core's app-wide `sci-fire` design
+  pack while retaining its own semantic primary palette. Tenant Misebox Apps
+  remain on Nuxt UI unless their own App config deliberately selects a pack;
+  ecosystem membership never applies app chrome implicitly.
+- The Main App's steam remains project-owned atmosphere, composed through Core
+  `EffectsAmbient`. Core owns fixed viewport layering and content isolation;
+  Misebox owns the original client-initialized puff treatment and its
+  reduced-motion state.
 - The ecosystem package must not own tenant-id branches, Kitchen/Menu source
   defaults, or a competing public Menu renderer. Public Menu routes, layout,
   resolution, and ordering projections belong to `fireux-kitchens`.
@@ -152,27 +185,41 @@ Before each task:
   only as explicitly labelled candidates, such as `Kiosk · Item`; they do not
   become members of the generic Card family.
 - Shared product-led landing presentation belongs to Core
-  `LandingProductIndex`: page rhythm, hero/action hierarchy, operating loop,
-  capability, operation and audience grids, proof-panel placement, closing CTA,
-  reveal behavior, and responsive breakpoints. Misebox keeps its product copy,
-  routes, Kitchen Operations catalogue, and product proof in its project
-  adapter. Its buyer-facing definition is “The Control Centre For Kitchen
+  `LandingProductIndex`. Its fixed order is `hero-preview`, plain `onboarding`
+  text, `console`, `specifics`, optional `ecosystems`, `apps`, `tools`,
+  `solutions`, then `operations`. Core places the hero copy on the left and
+  the PowerCards orbit on the right, owns the responsive/reveal behavior, and
+  uses flat semantic surfaces without decorative gradients or flares.
+  `LandingProductProofSection` owns the repeated proof-and-copy split and
+  `LandingProductCatalogue` owns the Tools, Solutions, and Operations grid;
+  Misebox keeps their truthful data, copy, routes, and proof in its project
+  adapter. Misebox fills `console` with the Kitchen Console, `specifics` with
+  Menu surfaces and Kitchen Finance, `apps` with its bounded published-App
+  projection, and `tools` with the real Ordering tool. It has no separate
+  Ecosystems section and omits that unavailable slot. Its buyer-facing
+  definition is “The Control Centre For Kitchen
   Operations”; the Kitchen Console is the concrete workspace that runs menus,
   preparation, service, supply, and finance. The Main App hero uses the shared
-  typed hero text once and fills its
-  named proof slot with the real read-only Kitchen Orders board, projected from
-  the named Product Demo adapter as a compact three-ticket Pass snapshot
-  without an additional project-owned preview frame; it does not add a second
-  explanatory hero or expose live state and controls. The existing Core hero
+  typed hero text once and fills its named proof slot with the read-only
+  PowerCards orbit. Core `LandingCardOrbit` owns the deterministic geometry,
+  pointer/keyboard behavior, visibility-aware desktop autoplay, static mobile
+  default, and reduced-motion fallback. Misebox keeps only typed labels and
+  slotted PowerCards; it does not couple page scrolling to orbit rotation. The
+  orbit consumes the discriminated, network-free `demo` envelope from
+  `useMiseboxPowerCardsProductDemo`; it never falls through to the live public
+  directory or canonical Ingredient hydration. Kitchen, Menu, Dish, Mise,
+  Recipe, Supplier item, Kiosk item, and Supplier Cards derive from package
+  Demo records and pure projectors. Ingredient-dependent Cards remain outside
+  this Demo-only orbit because Ingredient identity is Live canon. PowerCard
+  components do not own local Deanos fixtures. The hero does not add a second
+  explanatory block or expose live state and controls. The existing Core hero
   action system keeps the Get started and Go to console buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
-  adding a detached CTA section. Its `proof-wide` layout breaks the Main hero
-  out of the landing container to the full viewport with mobile-first gutters
-  and breakpoint-only column enhancement. The later landing sections retain
-  the relevant product doorways. Section 2 uses Core's post-hero slot for a
-  mobile-first Kitchen Console introduction: the read-only component comes
-  first and projects the canonical Kitchen Operations catalogue without live
-  counts or customer data. Its thin frame owns the single Product Demo load,
+  adding a detached CTA section. The later landing sections retain the
+  relevant product doorways. The Console proof is mobile-first: the read-only
+  component comes first and projects the canonical Kitchen Operations
+  catalogue without live counts or customer data. Its thin frame owns the
+  single Product Demo load,
   local operation/page selection, and navigation; named operation children
   receive typed read-only projections. Menus, Dishes, Ingredients, Recipes,
   Mise, Orders, Stations, Suppliers, and Tables own truthful projected bodies;
@@ -225,9 +272,9 @@ Before each task:
   only the canonical Deanos `Kitchen.tables.count`, so the eight configured
   tables are available and no active Table Tab is invented. The separate
   Reports navigation exposes the Kitchen Finance sheet without adding Finance
-  to `kitchenOperations` or `KitchenDemoOperation`; it receives the explicit
-  aggregate-only Deanos daily series through the same Kitchen-owned reconciled
-  period/trend projector as Console Demo.
+  to `kitchenOperations` or `KitchenDemoOperation`; it receives the Deanos
+  completed-Order projection through the same Kitchen-owned reconciled
+  transaction/period projector as Console Demo.
   The root
   retains local Dish page
   state while the Dishes coordinator owns its clickable breadcrumb and
@@ -239,10 +286,11 @@ Before each task:
   loads Demo data, reads or writes a selected Kitchen, or acquires live
   Console/Firebase authority. The Dish Finance child receives the additive
   presentation DTO from the Kitchen-owned Demo Dishes operation adapter, which
-  composes the shared Dish estimate, package-owned quantities, and derived
-  total sales once for both Console Demo and Product Demo. Neither the project
-  adapter nor the child recalculates Supplier costs, Menu profitability, Dish
-  relationships, or sales totals, and neither reads Orders or KitchenSales.
+  composes the shared Dish estimate, completed-Order-derived quantities, and
+  derived total sales once for both Console Demo and Product Demo. Neither the
+  project adapter nor the child recalculates Supplier costs, Menu
+  profitability, Dish relationships, or sales totals, creates a second sales
+  fixture, or reads Live Orders or KitchenSales.
   The Console or
   preview source selection carries Demo/Live context; Finance field labels stay
   source-agnostic. Wider

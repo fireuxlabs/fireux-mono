@@ -58,6 +58,9 @@ export default defineEventHandler(async (event: H3Event) => {
       appId,
       kitchenId,
       period: query.period,
+      preset: query.preset,
+      fromDate: query.from_date,
+      toDate: query.to_date,
       timezone: effectiveHours.timezone,
     })
   } catch (error) {

@@ -1,5 +1,5 @@
 <template>
-  <UCard variant="subtle" class="overflow-hidden">
+  <UCard class="preview">
     <div class="space-y-5">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
         <UAvatar

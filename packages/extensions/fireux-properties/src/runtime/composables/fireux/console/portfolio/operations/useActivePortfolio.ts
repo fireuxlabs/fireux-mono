@@ -75,7 +75,7 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
   const scenario = computed<PropertiesConsoleDemoScenario | null>(() => {
     if (!isDemo.value) return null
     return (
-      demoData.data.value?.find((item) => item.portfolio.id === id.value) ??
+      demoData.data.value?.find((item) => item.portfolio?.id === id.value) ??
       null
     )
   })

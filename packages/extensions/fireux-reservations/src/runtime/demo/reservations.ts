@@ -1,14 +1,16 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { Reservation } from '../models/reservation.model'
 
-const stamp: FirebaseTimestamp = { seconds: 1_720_000_000, nanoseconds: 0 }
-const created = { at: stamp, by: 'demo', app_id: 'buenohost' }
+const demoAppId = 'buenohost'
+const demoPropertyId = 'alpine-stay'
+const stamp: FirebaseTimestamp = { seconds: 1_784_534_400, nanoseconds: 0 }
+const created = { at: stamp, by: 'demo', app_id: demoAppId }
 const updated = { at: stamp, by: 'demo' }
 
 export const reservationDemoRecords: Reservation[] = [
   {
     id: 'demo-airbnb-ada',
-    property_id: 'alpine-residence',
+    property_id: demoPropertyId,
     guest: {
       display_name: 'Ada M.',
       email: 'ada@example.test',
@@ -16,7 +18,7 @@ export const reservationDemoRecords: Reservation[] = [
     },
     source: 'airbnb',
     external_reference: 'HM-DEMO-481',
-    status: 'confirmed',
+    status: 'checked_in',
     arrival_date: '2026-07-27',
     departure_date: '2026-07-31',
     adults: 2,
@@ -29,7 +31,7 @@ export const reservationDemoRecords: Reservation[] = [
   },
   {
     id: 'demo-booking-luca',
-    property_id: 'alpine-residence',
+    property_id: demoPropertyId,
     guest: {
       display_name: 'Luca R.',
       email: 'luca@example.test',
@@ -50,7 +52,7 @@ export const reservationDemoRecords: Reservation[] = [
   },
   {
     id: 'demo-direct-samira',
-    property_id: 'alpine-residence',
+    property_id: demoPropertyId,
     guest: {
       display_name: 'Samira K.',
       email: 'samira@example.test',
@@ -70,3 +72,35 @@ export const reservationDemoRecords: Reservation[] = [
     updated,
   },
 ]
+
+const activeReservations = reservationDemoRecords
+  .filter((reservation) => reservation.status !== 'cancelled')
+  .slice()
+  .sort((left, right) => left.arrival_date.localeCompare(right.arrival_date))
+const reservationIds = new Set<string>()
+
+for (const [index, reservation] of activeReservations.entries()) {
+  if (
+    !reservation.id ||
+    reservationIds.has(reservation.id) ||
+    reservation.property_id !== demoPropertyId ||
+    reservation.created.app_id !== demoAppId ||
+    reservation.arrival_date >= reservation.departure_date ||
+    !reservation.total ||
+    !Number.isSafeInteger(reservation.total.amount_minor) ||
+    reservation.total.amount_minor < 0 ||
+    reservation.total.currency_code !== 'CHF'
+  ) {
+    throw new Error(
+      `Reservation Demo ${reservation.id || '(missing-id)'} has invalid parent, lifecycle, or money authority.`
+    )
+  }
+
+  const previous = activeReservations[index - 1]
+  if (previous && previous.departure_date > reservation.arrival_date) {
+    throw new Error(
+      `Reservation Demo ${previous.id} overlaps ${reservation.id} for ${demoPropertyId}.`
+    )
+  }
+  reservationIds.add(reservation.id)
+}

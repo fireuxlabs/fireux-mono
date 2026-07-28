@@ -63,12 +63,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
   )
   const targetProperties = computed<PropertySurface[]>(() =>
     consoleRoot.source.value === 'demo'
-      ? demoData.properties.value.map(property => ({
-          ...property,
-          operator_ids: [],
-          team_ids: [],
-          join_requests: [],
-        }))
+      ? demoData.properties.value
       : liveCollection.properties.value
   )
   const targetData = computed(() => {

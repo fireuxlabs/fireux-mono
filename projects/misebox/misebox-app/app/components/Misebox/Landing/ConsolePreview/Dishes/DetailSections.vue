@@ -7,7 +7,7 @@
       :src="dish.imageUrl"
       alt=""
       class="absolute inset-0 size-full object-cover"
-    >
+    />
     <div
       v-else
       class="absolute inset-0 flex items-center justify-center text-muted"
@@ -15,10 +15,7 @@
     >
       <UIcon name="i-lucide-utensils" class="size-9" />
     </div>
-    <div
-      class="absolute inset-0 bg-gradient-to-r from-transparent via-default/25 to-default/65"
-      aria-hidden="true"
-    />
+    <div class="absolute inset-0 bg-default/40" aria-hidden="true" />
 
     <nav
       class="relative flex min-h-28 flex-wrap items-end gap-1.5 p-3"
@@ -28,10 +25,12 @@
         v-for="section in sectionItems"
         :key="section.id"
         type="button"
-        class="flex size-9 shrink-0 items-center justify-center rounded-md border text-toned shadow-sm backdrop-blur-sm transition-colors hover:bg-default/90 hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-        :class="section.id === selected
-          ? 'border-primary bg-default/90 text-primary ring-1 ring-primary/20'
-          : 'border-default/80 bg-default/70'"
+        class="flex size-9 shrink-0 items-center justify-center rounded-md border text-toned shadow-sm transition-colors hover:bg-default/90 hover:text-highlighted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        :class="
+          section.id === selected
+            ? 'border-primary bg-default/90 text-primary ring-1 ring-primary/20'
+            : 'border-default/80 bg-default/70'
+        "
         :aria-label="section.label"
         :aria-current="section.id === selected ? 'page' : undefined"
         :title="`${section.label}: ${section.summary}`"

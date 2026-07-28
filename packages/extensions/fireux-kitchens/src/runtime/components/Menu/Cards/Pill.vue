@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     :to="browseTo"
-    class="menu-card-pill"
+    class="pill menu-card-pill"
     data-menu-card-pill
   >
     <UAvatar
@@ -58,22 +58,7 @@ const {
 
 <style scoped>
 .menu-card-pill {
-  display: flex;
   min-width: 0;
-  align-items: center;
-  gap: calc(var(--spacing) * 2.5);
-  padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 3);
-  border: 1px solid var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 4);
-  background: var(--ui-bg-elevated);
-  color: inherit;
-  text-decoration: none;
-  transition: border-color 160ms ease, background 160ms ease;
-}
-
-.menu-card-pill:hover {
-  border-color: color-mix(in srgb, var(--ui-primary) 36%, var(--ui-border));
-  background: color-mix(in srgb, var(--ui-primary) 4%, var(--ui-bg-elevated));
 }
 
 .menu-card-pill__avatar {

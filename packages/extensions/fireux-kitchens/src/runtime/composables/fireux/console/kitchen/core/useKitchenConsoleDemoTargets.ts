@@ -35,6 +35,7 @@ export function useKitchenConsoleDemoTargets(
           const kitchen = surface({
             kitchen: target.kitchen,
             place: target.place,
+            scope: target.appSupport,
             routeScope: 'demo',
           })
           return kitchen

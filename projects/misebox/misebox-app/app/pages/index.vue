@@ -1,7 +1,12 @@
 <template>
   <div class="min-h-full">
-    <EffectsSteam />
-    <MiseboxLandingIndex />
+    <EffectsAmbient class="min-h-full">
+      <template #effect>
+        <EffectsSteam />
+      </template>
+
+      <MiseboxLandingIndex />
+    </EffectsAmbient>
   </div>
 </template>
 

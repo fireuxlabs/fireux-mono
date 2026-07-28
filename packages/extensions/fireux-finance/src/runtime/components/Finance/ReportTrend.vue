@@ -449,13 +449,13 @@ function smoothPath(
   stroke: var(--ui-primary);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 3;
+  stroke-width: 1.5;
 }
 
 .finance-report-trend__line--comparison {
   stroke: var(--ui-text-muted);
   stroke-dasharray: 7 9;
-  stroke-width: 2;
+  stroke-width: 1;
   opacity: 0.72;
 }
 

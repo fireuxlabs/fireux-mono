@@ -1,13 +1,24 @@
 <template>
-  <article class="menu-card-cell" data-menu-card-cell>
+  <article class="card card--cell menu-card-cell" data-menu-card-cell>
     <NuxtLink :to="browseTo" class="menu-card-cell__identity">
-      <UAvatar
-        class="menu-card-cell__avatar"
+      <span
+        class="menu-card-cell__media"
         :class="avatarClass"
-        :src="kitchenImageUrl || undefined"
-        :alt="kitchenName || menuName"
-        size="md"
-      />
+      >
+        <img
+          v-if="kitchenImageUrl"
+          :src="kitchenImageUrl"
+          :alt="kitchenName || menuName"
+          class="menu-card-cell__image"
+          loading="lazy"
+        >
+        <UIcon
+          v-else
+          name="i-lucide-book-open"
+          class="menu-card-cell__fallback"
+          aria-hidden="true"
+        />
+      </span>
 
       <span class="menu-card-cell__copy">
         <span class="menu-card-cell__heading">
@@ -28,6 +39,7 @@
         <span v-if="kitchenName" class="menu-card-cell__kitchen">
           {{ kitchenName }}
         </span>
+
         <span
           v-if="menuDescription && menuDescription !== kitchenName"
           class="menu-card-cell__description"
@@ -37,13 +49,15 @@
       </span>
     </NuxtLink>
 
-    <MenuDoorways
-      display="icons"
-      :contexts="menuContexts"
-      :menu-id="menu.id"
-      :menu-name="menuName"
-      :route-scope="routeScope"
-    />
+    <footer class="menu-card-cell__footer">
+      <MenuDoorways
+        display="icons"
+        :contexts="menuContexts"
+        :menu-id="menu.id"
+        :menu-name="menuName"
+        :route-scope="routeScope"
+      />
+    </footer>
   </article>
 </template>
 
@@ -75,39 +89,55 @@ const {
 
 <style scoped>
 .menu-card-cell {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
   min-width: 0;
   align-items: center;
-  gap: calc(var(--spacing) * 3);
-  padding: calc(var(--spacing) * 3);
-  border: 1px solid var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 4);
-  background: var(--ui-bg-elevated);
-  transition: border-color 160ms ease, background 160ms ease;
-}
-
-.menu-card-cell:hover {
-  border-color: color-mix(in srgb, var(--ui-primary) 36%, var(--ui-border));
-  background: color-mix(in srgb, var(--ui-primary) 4%, var(--ui-bg-elevated));
+  gap: calc(var(--spacing) * 2);
 }
 
 .menu-card-cell__identity {
-  display: flex;
+  display: grid;
+  grid-template-columns: calc(var(--spacing) * 16) minmax(0, 1fr);
   min-width: 0;
-  flex: 1 1 auto;
   align-items: center;
-  gap: calc(var(--spacing) * 3);
+  gap: calc(var(--spacing) * 2.5);
   color: inherit;
   text-decoration: none;
 }
 
-.menu-card-cell__avatar {
-  flex: 0 0 auto;
+.menu-card-cell__media {
+  display: grid;
+  width: calc(var(--spacing) * 16);
+  height: calc(var(--spacing) * 16);
+  overflow: hidden;
+  place-items: center;
+  border-radius: calc(var(--ui-radius) * 3);
+  background: var(--ui-bg-muted);
+}
+
+.menu-card-cell__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 240ms ease;
+}
+
+.menu-card-cell:hover .menu-card-cell__image {
+  transform: scale(1.025);
+}
+
+.menu-card-cell__fallback {
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--ui-text-muted);
 }
 
 .menu-card-cell__copy {
   display: grid;
   min-width: 0;
+  align-content: center;
+  gap: calc(var(--spacing) * 0.75);
 }
 
 .menu-card-cell__heading {
@@ -118,9 +148,7 @@ const {
   gap: calc(var(--spacing) * 2);
 }
 
-.menu-card-cell__title,
-.menu-card-cell__kitchen,
-.menu-card-cell__description {
+.menu-card-cell__title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -128,20 +156,55 @@ const {
 
 .menu-card-cell__title {
   color: var(--ui-text-highlighted);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-semibold);
+  font-size: var(--text-base);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.15;
 }
 
-.menu-card-cell__kitchen,
-.menu-card-cell__description {
+.menu-card-cell__kitchen {
+  overflow: hidden;
   color: var(--ui-text-muted);
   font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-@media (max-width: 44rem) {
+.menu-card-cell__description {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--ui-text-toned);
+  font-size: var(--text-xs);
+  line-height: 1.3;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.menu-card-cell__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-top: calc(var(--spacing) * 2);
+  padding-left: calc(var(--spacing) * 1);
+  border-top: 1px solid var(--ui-border);
+}
+
+@media (min-width: 34rem) {
   .menu-card-cell {
-    align-items: stretch;
-    flex-direction: column;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .menu-card-cell__footer {
+    justify-content: flex-end;
+    padding-top: 0;
+    border-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-card-cell__image {
+    transition: none;
   }
 }
 </style>

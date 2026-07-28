@@ -2,10 +2,12 @@
   <article
     ref="specimen"
     class="misebox-card-specimen"
+    :data-card-variant="label.toLocaleLowerCase()"
     :class="{
       'misebox-card-specimen--wide': wide,
       'misebox-card-specimen--compact': compact,
       'misebox-card-specimen--completed': completed,
+      'misebox-card-specimen--candidate': candidate,
     }"
   >
     <div class="misebox-card-specimen__stage">
@@ -35,10 +37,12 @@ const props = withDefaults(defineProps<{
   wide?: boolean
   compact?: boolean
   completed?: boolean
+  candidate?: boolean
 }>(), {
   wide: false,
   compact: false,
   completed: false,
+  candidate: false,
 })
 
 const specimen = useTemplateRef<HTMLElement>('specimen')
@@ -177,4 +181,22 @@ const copyReference = async () => {
     var(--ui-border)
   );
 }
+
+.misebox-card-specimen--candidate {
+  border-color: color-mix(in srgb, var(--ui-warning) 38%, var(--ui-border));
+  background: color-mix(in srgb, var(--ui-warning) 5%, var(--ui-bg-elevated));
+}
+
+.misebox-card-specimen--candidate .misebox-card-specimen__stage {
+  background: color-mix(in srgb, var(--ui-warning) 8%, var(--ui-bg-muted));
+}
+
+.misebox-card-specimen--candidate .misebox-card-specimen__footer {
+  border-top-color: color-mix(
+    in srgb,
+    var(--ui-warning) 28%,
+    var(--ui-border)
+  );
+}
+
 </style>

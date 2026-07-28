@@ -212,6 +212,15 @@ const surfaceResolutions = [
   },
 ] as const
 
+const { data: productDemo } = await useMiseboxProductDemo()
+const deanosTakeawayTicket = productDemo.value?.console.orders.find(
+  (order: KitchenOrder) =>
+    order.order_type === 'takeaway' && order.status === 'ready'
+)
+if (!deanosTakeawayTicket) {
+  throw new Error('The Deanos Demo takeaway ticket is unavailable.')
+}
+
 const automaticTickets = [
   {
     surface: 'Table QR',
@@ -328,56 +337,7 @@ const automaticTickets = [
       'The customer orders for collection at the counter, with a bag as the handoff.',
     handoff: 'bag',
     origins: ['kiosk', 'staff_pos'],
-    order: {
-      ...KitchenOrderModel,
-      id: 'ticket-kiosk-takeaway',
-      kitchen_id: 'deanos',
-      menu_id: 'deanos-main',
-      order_number: 'B106',
-      status: 'completed',
-      order_type: 'takeaway',
-      channel: 'kiosk',
-      fulfilment_match: {
-        type: 'counter',
-        reference: 'B106',
-        handoff: 'bag',
-      },
-      customer: {
-        name: 'Luca',
-      },
-      items: [
-        {
-          id: 'takeaway-deanos-classic',
-          dish_id: 'deanos-classic',
-          label: 'Deanos Classic',
-          variant_id: 'no-pickles',
-          variant_label: 'No pickles',
-          quantity: 1,
-          checked: false,
-        },
-        {
-          id: 'takeaway-skin-on-fries',
-          dish_id: 'skin-on-fries',
-          label: 'Skin-On Fries',
-          quantity: 1,
-          checked: false,
-        },
-        {
-          id: 'takeaway-garlic-herb-dip',
-          dish_id: 'garlic-herb-dip',
-          label: 'Garlic & Herb Dip',
-          quantity: 1,
-          checked: false,
-        },
-      ],
-      payment: {
-        required: true,
-        status: 'paid',
-        method: 'online_card',
-        amount_chf: 29,
-        currency_code: 'CHF',
-      },
-    },
+    order: deanosTakeawayTicket,
   },
 ] satisfies AutomaticTicket[]
 

@@ -1,5 +1,5 @@
 <template>
-  <article class="menu-card-preview" data-menu-card-preview>
+  <article class="preview menu-card-preview" data-menu-card-preview>
     <div class="menu-card-preview__identity">
       <UAvatar
         class="menu-card-preview__avatar"
@@ -76,26 +76,10 @@ const {
 <style scoped>
 .menu-card-preview {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   gap: calc(var(--spacing) * 5);
   padding: clamp(calc(var(--spacing) * 5), 3vw, calc(var(--spacing) * 7));
-  border: 1px solid var(--ui-border);
-  border-radius: calc(var(--ui-radius) * 6);
-  background:
-    radial-gradient(
-      circle at 100% 0%,
-      color-mix(in srgb, var(--ui-primary) 10%, transparent),
-      transparent 42%
-    ),
-    var(--ui-bg-elevated);
-  box-shadow: 0 0.75rem 2rem rgb(0 0 0 / 6%);
-  transition: border-color 160ms ease, box-shadow 160ms ease;
-}
-
-.menu-card-preview:hover {
-  border-color: color-mix(in srgb, var(--ui-primary) 36%, var(--ui-border));
-  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 9%);
 }
 
 .menu-card-preview__identity {
@@ -148,16 +132,18 @@ const {
 
 .menu-card-preview__doorways {
   align-self: center;
+  padding-top: calc(var(--spacing) * 4);
+  border-top: 1px solid var(--ui-border);
 }
 
-@media (max-width: 52rem) {
+@media (min-width: 52rem) {
   .menu-card-preview {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .menu-card-preview__doorways {
-    padding-top: calc(var(--spacing) * 4);
-    border-top: 1px solid var(--ui-border);
+    padding-top: 0;
+    border-top: 0;
   }
 }
 </style>

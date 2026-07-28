@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazily adapt owner-local Supplier fixtures for console use.
 import type { MaybeRefOrGetter } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   useConsoleDemoData,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDemoData'
@@ -29,6 +30,7 @@ export type SupplierConsoleDemoData = {
 export function useSupplierConsoleDemoData(
   active: MaybeRefOrGetter<boolean>
 ) {
+  const { appId } = useFireUXConfig()
   const { surface } = useSupplierInterface()
 
   return useConsoleDemoData<SupplierConsoleDemoData>({
@@ -39,7 +41,12 @@ export function useSupplierConsoleDemoData(
       )
       const scenarios = supplierDemoScenarios.reduce<SupplierConsoleDemoScenario[]>(
         (items, scenario) => {
-          const supplier = surface({ supplier: scenario.supplier })
+          if (scenario.appId !== String(appId || '').trim()) return items
+
+          const supplier = surface({
+            supplier: scenario.supplier,
+            appSupport: scenario.appSupport,
+          })
           if (!supplier) return items
 
           items.push({

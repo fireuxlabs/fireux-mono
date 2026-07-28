@@ -1,22 +1,7 @@
 /* Concurrent edit — 2026-07-21 13:08 CEST — CSS architecture pass: own shared entity-card root and content anatomy. */
 :where(.card.card--cell, .fx-card--cell) {
-	position: relative;
-	isolation: isolate;
-	overflow: hidden;
-	border-radius: calc(var(--ui-radius) * 4);
+	min-height: calc(var(--spacing) * 16);
 	padding: calc(var(--spacing) * 3.5);
-	border: 1px solid color-mix(in srgb, var(--ui-border) 82%, transparent);
-	background:
-		linear-gradient(
-			145deg,
-			color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary) 4%),
-			var(--ui-bg) 72%
-		);
-	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 6%, transparent) inset,
-		0 0.45rem 1.4rem color-mix(in srgb, var(--ui-bg-inverted) 7%, transparent);
-	transition: background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease,
-		transform 180ms ease;
 }
 
 :where(.card.card--cell) {
@@ -38,11 +23,18 @@
 	[role='button'].card.card--cell:not([aria-disabled='true']):hover,
 	[role='button'].fx-card--cell:not([aria-disabled='true']):hover
 ) {
-	border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
-	box-shadow:
-		0 1px 0 color-mix(in srgb, var(--ui-text-highlighted) 9%, transparent) inset,
-		0 0.9rem 2rem color-mix(in srgb, var(--ui-bg-inverted) 12%, transparent);
-	transform: translateY(-2px);
+	border-color: var(--ui-border-accented);
+	background: var(--ui-bg-elevated);
+}
+
+:where(
+	.card.card--cell[data-selected='true'],
+	.fx-card--cell[data-selected='true'],
+	.card.card--cell[aria-current='true'],
+	.fx-card--cell[aria-current='true']
+) {
+	border-color: var(--ui-border-accented);
+	background: var(--ui-bg-accented);
 }
 
 :where(.fx-action-surface[data-disabled='true'] .fx-card--cell:hover) {
@@ -72,8 +64,8 @@
 	[role='button'].card.card--cell,
 	[role='button'].fx-card--cell
 ):focus-visible {
-	outline: 2px solid color-mix(in srgb, var(--ui-primary) 78%, white);
-	outline-offset: 3px;
+	outline: 2px solid var(--fx-card-surface-accent);
+	outline-offset: var(--spacing);
 }
 
 :where(.card__media, .fx-card__media) {
@@ -108,7 +100,8 @@
 :where(.card__title, .fx-card__title) {
 	font-size: var(--text-sm);
 	font-weight: var(--font-weight-bold);
-	letter-spacing: -0.012em;
+	line-height: var(--leading-tight);
+	letter-spacing: var(--tracking-tight);
 	color: var(--ui-text-highlighted);
 	white-space: nowrap;
 	overflow: hidden;
@@ -117,6 +110,7 @@
 
 :where(.card__subtitle, .card__tagline, .fx-card__subtitle) {
 	font-size: var(--text-xs);
+	line-height: var(--leading-snug);
 	color: var(--ui-text-muted, var(--ui-text));
 	white-space: nowrap;
 	overflow: hidden;
@@ -131,10 +125,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-	:where(.card.card--cell, .fx-card--cell) {
-		transition: none;
-	}
-
 	:where(
 		a.card.card--cell:hover,
 		a .fx-card--cell:hover,

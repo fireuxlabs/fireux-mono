@@ -1,6 +1,6 @@
 <template>
   <PublicProfileDirectoryCard
-    variant="card"
+    variant="cell"
     kind-label="Driver"
     icon="i-lucide-truck"
     tone="success"

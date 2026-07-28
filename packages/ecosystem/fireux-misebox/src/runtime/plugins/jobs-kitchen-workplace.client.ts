@@ -30,7 +30,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
     return
   }
 
-  const { createKitchen } = useKitchenCreate()
+  const { createKitchenConsole } = useKitchenCreate()
 
   nuxtApp.hook(
     'fireux:jobs:workplace:materialize' as any,
@@ -43,7 +43,7 @@ export default defineNuxtPlugin((nuxtApp: NuxtApp) => {
       }
 
       await context.materialize('fireux-misebox:fireux-kitchens', async () => {
-        const result = await createKitchen({
+        const result = await createKitchenConsole({
           id: context.workplaceId,
           place_id: context.workplaceId,
           place: {

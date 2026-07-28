@@ -1,6 +1,6 @@
 # Finance map
 
-Updated: 2026-07-27
+Updated: 2026-07-28
 Ref: 1e55eece7
 Role: map, not canon
 
@@ -90,8 +90,9 @@ reports into one generic Finance console.
   explicit.
 - The first projection is the Kitchen-owned `/console/kitchen/finance` sheet.
   Its authenticated `/api/console/kitchen/reports/gross-sales` endpoint queries
-  only the selected Kitchen's immutable Sales for the selected 7, 30, or
-  90-day period. The trusted server resolves the Kitchen's effective timezone
+  only the selected Kitchen's immutable Sales for Today, the previous
+  Monday-to-Sunday week, or an explicit inclusive owner-local date range. The
+  trusted server resolves the Kitchen's effective timezone
   from its valid custom operation-hours override or its exact linked Place,
   then derives a from-inclusive, to-exclusive range of complete owner-local
   calendar days.
@@ -100,32 +101,60 @@ reports into one generic Finance console.
   than returning partial, oversized, or malformed totals. It returns
   reconciled period and owner-local daily aggregates grouped by currency:
   gross sales, completed-Sale count, average Sale, item quantity, item sales,
-  delivery fees, and stable item rollups. It exposes no raw Sale or Order ids,
-  customer data, actors, add-on detail, or raw FinancialFacts.
-- The current UI offers 7, 30, and 90-day periods with a currency-safe metric
-  summary, current-period trend, owner-local calendar, selected-day item
-  detail, and a bounded period roundup. Live mode uses only the authenticated
-  server projection; a missing daily bucket inside its complete range is zero
-  completed sales, not invented history. Demo mode may use clearly labelled,
-  deterministic, aggregate-only owner-local fixtures that never become
-  KitchenSales, FinancialFacts, Firestore records, or Test data. Test remains
-  the simulation database and does not fall back to Demo values. The UI never
-  combines currencies.
+  delivery fees, and stable item rollups. It also returns a bounded
+  transaction-summary row for each completed Sale: stable `kitchen_sale`
+  source identity, occurrence time, operator order number, status, order
+  type/channel, PII-free item labels/quantities/line amounts, item quantity,
+  signed/gross amount, counterparty/summary, and the server-resolved public
+  display name of the team member who closed the Sale. Raw actor ids, customer
+  data, add-on detail, document paths, Orders, and FinancialFacts are not
+  returned. Those rows reconcile to the same period totals.
+- The current Console page is an operator-first transaction ledger.
+  Its thin Dashboard route owns a secondary `UDashboardToolbar`: Today, This
+  week, This month and Last 90 days update one authoritative range, while a
+  compact `UPopover` trigger opens `UCalendar` for a custom range of at most 93
+  days. When the selected source is Demo, a success marker identifies the
+  simulation date and all presets anchor to that deterministic date; Live
+  remains anchored to the actual Kitchen-local reporting date. The
+  `.console-surface` body loads the bounded gross-sales projection and lists
+  one row per completed Sale in a source-neutral activity ledger. One signed
+  amount column uses `+` for incoming and reserves red `−` presentation for
+  future outgoing entries; In, Out, and All controls filter direction without
+  duplicating debit/credit columns. Each row can open a detail modal containing
+  the bounded transaction-summary fields. Money out remains explicitly unavailable until
+  a producing domain owns real outgoing transactions; the ledger does not
+  invent costs or present missing data as zero.
 - `KitchenFinanceSummary` is the Kitchen adapter over the shared Finance metric
   summary. It retains gross-sale semantics and completed-service labels while
   both Console and Product Demo reuse the same product-neutral layout and money
   formatter.
-- Live current-period trend, calendar, day detail, and roundup are derived only
-  from the same bounded daily projection. Deanos Demo owns one deterministic
-  180-day daily aggregate series with reconciled item rollups, from which its
+- Live period totals, calendar and day detail are derived only from the same
+  bounded daily projection. Deanos Demo owns a deterministic Team fixture and
+  a Kitchen-owned 180-day Service history. Each dated Service contains
+  completed Orders with canonical Menu items/prices, contiguous service-local
+  numbers, placed/completed Zurich timestamps, and stable closer ids.
+  Finance derives one incoming transaction per Order with the same source id,
+  service identity, dates, status, signed minor-unit CHF amount,
+  counterparty/summary, closer, and line detail. From those transactions the
   Kitchen projector derives current/prior 7, 30, and 90-day totals, grouped
   trend points, best and quietest days, weekday averages, top items, and daily
   averages.
+- The Deanos Orders operation reuses the latest three completed rows from that
+  same series. Scenario composition fails closed unless their order identity,
+  service, channel, item identity and quantities, total, and Team closer
+  reconcile exactly with Finance.
+- Completed sales are the only current Deanos Finance row family. Refunds have
+  no Order-owned refund producer. Supplier catalogue offers are not deliveries,
+  purchases, receipts, or invoices. Team membership is not rota/payroll. No
+  dated rent producer exists. Finance therefore does not manufacture supplier
+  invoice states, staff pay, recurring rent, expenses, wages, VAT, labour,
+  cashflow, profit, or P&L rows.
 - That ordered Demo series justifies the product-neutral
   `FinancialReportTrendView` presentation contract. The shared component uses
   native Vue/SVG and adds no React/Recharts or chart-library dependency.
-- P&L, cashflow, cost, and period views are derived reports. They are not
-  Console Operations and are not separately editable stored truth.
+- P&L, cashflow, and accounting-cost views are absent until the required
+  producing domains exist. If introduced later they would be derived reports,
+  not Console Operations or separately editable stored truth.
 - A Demo Dish detail may show a read-only cost-of-sales planning estimate by
   expanding its current Spec through represented prep/recipe yields and the
   preferred Supplier offer terms. It must identify incomplete price coverage,
@@ -133,17 +162,17 @@ reports into one generic Finance console.
   estimate rather than a KitchenSale, expense, or FinancialFact. The pure
   Kitchen estimator is shared by the real Console adapter and presentation-only
   Demo projections so those surfaces cannot drift into competing arithmetic.
-- A Product Demo may pair that estimate with explicitly fictional owner-local
-  Dish quantity fixtures. Any displayed total sales must be derived exactly
-  from the fixture quantity and resolved selling price and must not be
-  presented as Orders, KitchenSales, FinancialFacts, or real customer
-  performance. The surrounding source selection distinguishes Demo from Live;
-  reusable Finance field labels remain source-agnostic.
+- A Product Demo may pair that estimate with sold quantities derived from the
+  same completed Deanos Orders. Any displayed total sales must reconcile to
+  those quantities and the resolved selling price and must not be presented as
+  KitchenSales, FinancialFacts, or real customer performance. The surrounding
+  source selection distinguishes Demo from Live; reusable Finance field labels
+  remain source-agnostic.
 - A Product Demo may also expose the separate Kitchen Finance report from the
-  explicit aggregate-only Demo fixture. Console Demo and Product Demo share
-  the Kitchen-owned average/minor-unit projector, and the landing keeps the
-  report under a distinct Reports affordance rather than adding Finance to the
-  Kitchen operation catalogue.
+  completed-Order-derived Demo projection. Console Demo and Product Demo share
+  the Kitchen-owned transaction/average/minor-unit projectors, and the landing
+  keeps the report under a distinct Reports affordance rather than adding
+  Finance to the Kitchen operation catalogue.
 - There is no generic Finance Console Operation in this pass. Kitchens keep
   Kitchen operations; Suppliers, Projects, and Portfolios keep their own future
   producer operations.
@@ -169,6 +198,8 @@ reports into one generic Finance console.
 - `packages/extensions/fireux-kitchens/src/config/module/server-config.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/overview/useKitchenConsoleFinance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/finance.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Orders/history.ts`
+- `packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/team.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/dish-finance.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-dishes.ts`

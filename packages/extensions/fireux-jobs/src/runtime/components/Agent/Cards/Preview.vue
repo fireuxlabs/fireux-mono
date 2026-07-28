@@ -1,6 +1,6 @@
 <template>
   <PublicProfileDirectoryCard
-    variant="card"
+    variant="preview"
     kind-label="Agent"
     icon="i-lucide-handshake"
     :to="to"

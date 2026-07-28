@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-07-27
+Updated: 2026-07-28
 Ref: 796952bf0
 Role: living context
 Scope: repo-wide
@@ -73,7 +73,10 @@ Before each task:
 - Prefer user-owned IDE or toolbar servers. Start one from an agent task only
   when none exists and live verification needs it. Replace it with the explicit
   `pnpm kill:<app>` command only when the user asks or a concrete runtime change
-  requires a restart; never replace a listener from another checkout.
+  requires a restart; never replace a listener from another checkout. Explicit
+  `--host` requests normal terminal ownership: the dev wrapper replaces any
+  same-checkout listener and starts a fresh network-visible server rather than
+  silently reusing it.
 
 ## Shared page navigation
 
@@ -102,6 +105,58 @@ Before each task:
 - Existing guarded `Cards/Profile` paths are migration debt, not precedent for
   new Cards. See `docs/concepts/card-family.md` and
   `scripts/guards/components.mjs`.
+
+## Entity canon
+
+- A canonical Live model owns each root or parent-scoped entity contract.
+  Demo and Test roots use that same model contract; fixture wrappers and public
+  DTOs never become alternate entity authority.
+- App-support records contain only their declared access, membership, profile,
+  or operational delta. They do not copy root identity or payload.
+- Public projections are bounded transport shapes derived from valid canonical
+  roots. Classify one owning family at a time through
+  `scripts/_lib/entity-matrix.mjs`, `scripts/guards/entity-matrix.mjs`, and
+  `docs/concepts/entities.md`; do not infer Entity status from folders,
+  collections, routes, or UI symmetry.
+
+## Shared UI baseline and design packs
+
+- Nuxt UI is the universal App baseline. Core `main.scss` may own shared
+  anatomy, rhythm, accessibility, and semantic browser contracts, but it does
+  not impose an ecosystem aesthetic.
+- Core `LandingProductIndex` owns the fixed Main App product-landing order:
+  `hero-preview`, plain `onboarding` text, `console`, `specifics`,
+  `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
+  places product copy on the left and the app's card orbit on the right.
+  `LandingProductProofSection` owns the repeated proof-and-copy composition,
+  while `LandingProductCatalogue` owns the shared catalogue grid. These
+  surfaces use flat semantic Nuxt UI treatments without decorative gradients
+  or flares. Product Apps retain truthful data, copy, routes, and proof and may
+  omit any unavailable slot; FireUX places its Ecosystems section before Apps
+  and does not fabricate a Tools catalogue. Every `LandingCardOrbit` declares
+  exactly one `demo` or `live` data source. Its owning adapter supplies the
+  complete slotted Card envelope from that source; local orbit ids, labels, and
+  coordinates remain presentation metadata, but static entity fixtures,
+  cross-source hydration, and fallback records do not enter the orbit.
+- A main App may explicitly select the typed Core `sci-fire` design pack
+  through `app.designPack`. The config helper conditionally bundles its
+  stylesheet and Nuxt UI variants; tenant and white-label Apps do not inherit
+  it from `role` or `ecosystem`.
+- Sci-Fire may add restrained atmosphere, app-primary edges, and interaction
+  depth while preserving Nuxt UI typography, spacing, radius, colour mode, and
+  status semantics. Its ambient accent derives from `--ui-primary`;
+  `--ui-info` remains reserved for genuinely informational state. Projects
+  keep brand primary colours and content, and must not copy the pack's
+  selectors or CSS.
+- Core `EffectsAmbient` owns the viewport layer, isolation, content stacking,
+  and print suppression for the Main Apps' project-owned landing artwork.
+  FireUX Stars and Misebox Steam stay with their App and provide a
+  reduced-motion state. Stars uses Core's deterministic SSR-safe field helper;
+  Steam retains Misebox's client-initialized puff treatment behind the shared
+  page layer.
+- Start at `config/app/design-packs.ts`,
+  `runtime/assets/styles/design-packs/sci-fire.css`, and
+  `scripts/guards/css-system.mjs` when this contract changes.
 
 ## Shared PWA manifest authority
 
@@ -168,11 +223,22 @@ Before each task:
 - Package and project owners may provide deterministic read-only Demo World
   modules under their guarded Demo roots.
 - Consoles load their owner's fixtures lazily through `useConsoleDemoData`. A
-  project Product Demo may instead compose its project and package-owned worlds
-  through one named `app/composables/product-demo/use*ProductDemo.ts` adapter.
+  project Product Demo surface may instead compose its project and
+  package-owned worlds through one named
+  `app/composables/product-demo/use*ProductDemo.ts` adapter. Each independently
+  loaded surface declares a unique `productDemoSurface` and the literal
+  `productDemoDataSource = 'demo'`; duplicate surface adapters are forbidden.
 - Every Console family that accepts the shared Demo source must carry its own
   lazy owner-local adapter and preserve the Live-relative target, selection,
   and selected-parent operation shape.
+- Demo scenarios name their owning App and Console adapters filter by that App
+  before projection. Fixtures use each family's current model declaration:
+  root/App-support families provide exact same-id access support, required
+  linked roots such as Place remain separate model-shaped records, and
+  no-support families such as Project do not invent support for symmetry.
+- Test is not a generic fallback collection. When a family has no atomic
+  canonical simulation producer, its Test source fails closed instead of
+  reading or writing a default-database `test-*` alias.
 - Public Product Demo pages use the reserved project `/demo` route family and
   consume that adapter. Direct fixture imports elsewhere remain forbidden.
 - Demo World never becomes live public-content authority or a test, simulation,

@@ -1,5 +1,5 @@
 # Nuxt UI concept map
-Updated: 2026-07-23
+Updated: 2026-07-28
 Ref: 796952bf0
 Role: map, not canon
 
@@ -42,6 +42,13 @@ Explain the UI library context for agents.
   one-component layout delta stays with that component; other global CSS
   requires repeated cross-tree evidence or a narrow browser/accessibility
   behavior.
+- Nuxt UI is the universal visual baseline. A main App may explicitly opt into
+  the Core-owned `sci-fire` design pack through `app.designPack`; tenant and
+  white-label Apps inherit no ecosystem aesthetic automatically. The pack is
+  conditionally bundled at config time, uses semantic Nuxt UI variables and
+  component variants, and does not enter Core `main.scss`, change the radius or
+  type scale, or override solid/status semantics. Sci-Fire derives its ambient
+  accent from the App's `--ui-primary`; `--ui-info` remains a status colour.
 - Nuxt UI owns the ordinary `--ui-radius` default. FireUX may calculate from
   that live variable but must not copy its installed value into a second token
   declaration.

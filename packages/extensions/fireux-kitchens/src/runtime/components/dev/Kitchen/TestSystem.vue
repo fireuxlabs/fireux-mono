@@ -80,12 +80,12 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { getDefaultTestKitchen } from '../../../test/kitchen/scenario'
 import { DishStorage } from '../../../models/kitchen/dish.model'
-import { KitchenStorage, type Kitchen } from '../../../models/kitchen.model'
-import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
+import { KitchenStorage } from '../../../models/kitchen.model'
+import { KitchenMenuStorage } from '../../../models/kitchen/menu/kitchen-menu.model'
 import { RecipeStorage } from '../../../models/kitchen/recipe.model'
+import { useKitchenTestCreate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenTestCreate'
 
 defineOptions({ name: 'DevTestKitchenSystem' })
 
@@ -93,7 +93,7 @@ type KitchenCollectionName =
   | 'mise'
   | typeof RecipeStorage.collection
   | typeof DishStorage.collection
-  | typeof MenuStorage.scopeCollection
+  | typeof KitchenMenuStorage.scopeCollection
   | 'stations'
   | 'team'
   | 'suppliers'
@@ -110,7 +110,7 @@ const collectionOrder: KitchenCollectionName[] = [
   'mise',
   RecipeStorage.collection,
   DishStorage.collection,
-  MenuStorage.scopeCollection,
+  KitchenMenuStorage.scopeCollection,
   'stations',
   'team',
   'suppliers',
@@ -134,6 +134,7 @@ const requireSimulationDatabaseId = () => {
 const simulationDatabaseId = computed(() => requireSimulationDatabaseId())
 const db = useFirestore(simulationDatabaseId)
 const { setDocument } = useFirestoreCreate({ databaseId: simulationDatabaseId })
+const { createTestKitchen } = useKitchenTestCreate()
 const defaultTargetKitchenId = computed(() => String(uid.value || '').trim())
 const sourceRows = computed(() => [
   { label: 'Mise', count: testKitchenScenario.menuStack.miseTasks.length },
@@ -188,32 +189,6 @@ const withKitchenId = (
 const resolveCollectionPath = (kitchenId: string, name: KitchenCollectionName) =>
   `${KitchenStorage.rootCollection}/${kitchenId}/${name}`
 
-const resolveTestKitchenName = (displayName: unknown, kitchenId: string) => {
-  const name = String(displayName || '').trim()
-  const firstName = name.split(/\s+/).find(Boolean)
-  return `${firstName || `User ${kitchenId.slice(0, 6)}`}'s Test Kitchen`
-}
-
-const buildTestKitchenDoc = (kitchenId: string): Kitchen => {
-  const displayName = resolveTestKitchenName(
-    currentUser.value?.displayName,
-    kitchenId
-  )
-
-  return {
-    id: kitchenId,
-    place_id: kitchenId,
-    slug: normalizeSlug(displayName) || 'user-test-kitchen',
-    display_name: displayName,
-    display_image_url: String(currentUser.value?.photoURL || '').trim() || undefined,
-    is_test_kitchen: true,
-    simulation_kind: 'test',
-    can_write: true,
-    created: { at: {} },
-    updated: { at: {} },
-  } as unknown as Kitchen
-}
-
 const buildCollections = (kitchenId: string) => ({
   mise: withKitchenId(asDocs(testKitchenScenario.menuStack.miseTasks), kitchenId),
   [RecipeStorage.collection]: withKitchenId(
@@ -224,7 +199,7 @@ const buildCollections = (kitchenId: string) => ({
     asDocs(testKitchenScenario.menuStack.dishes),
     kitchenId
   ),
-  [MenuStorage.scopeCollection]: withKitchenId(
+  [KitchenMenuStorage.scopeCollection]: withKitchenId(
     asDocs(testKitchenScenario.menuStack.menus),
     kitchenId
   ),
@@ -291,12 +266,10 @@ const syncTestFixtureToTestKitchen = async () => {
   syncError.value = ''
 
   try {
-    await setDocument<Kitchen>(
-      KitchenStorage.rootCollection,
-      kitchenId,
-      buildTestKitchenDoc(kitchenId),
-      { app: true, creator: true }
-    )
+    await createTestKitchen({
+      id: kitchenId,
+      displayName: currentUser.value?.displayName || undefined,
+    })
 
     const collections = buildCollections(kitchenId)
     let totalWritten = 0
@@ -306,7 +279,7 @@ const syncTestFixtureToTestKitchen = async () => {
       const { collectionPath, keepIds, written } = await upsertCollection(
         kitchenId,
         name,
-        collections[name]
+        collections[name] ?? []
       )
       totalWritten += written
 

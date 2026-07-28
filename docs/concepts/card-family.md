@@ -1,6 +1,6 @@
 # Card family
 
-Updated: 2026-07-27
+Updated: 2026-07-28
 Role: family map, not implementation authority
 
 ## Purpose
@@ -28,10 +28,24 @@ contract above.
 
 Core owns the shared visual foundation for those variants:
 
+- The universal baseline follows Nuxt UI directly: semantic outline/elevated
+  surfaces, typography, spacing, colour, radius, focus, and state behavior.
+  Decorative rails, terminal typography, glow, and hard neon stripes are not
+  part of the default Card language.
 - Cells are compact collection records with a clear identity hierarchy.
 - Pills are touch-safe inline selectors or tokens, not miniature detail cards.
 - Previews carry the strongest elevation and enough bounded context to stand
   alone in a product proof.
+- `app.designPack.preset = 'sci-fire'` explicitly opts a main App into the
+  Core-owned Sci-Fire presentation layer. That pack may add a restrained
+  app-primary edge, ambient depth, and fast interaction, but it cannot replace
+  Nuxt UI typography, spacing, radius, semantics, or Card anatomy. Ambient
+  styling derives from `--ui-primary`; information colour remains state-only.
+- Elevation must not derive shadow colour from theme-inverted surfaces, which
+  become pale halos in dark mode.
+- Domain personality may set the shared `--fx-card-accent` bridge for a narrow
+  edge, focus, selected state, or media treatment. It must not fork the shared
+  variant geometry or rebuild the entire surface.
 - Static cards must not advertise interaction. Linked/action cards receive
   hover and keyboard-focus affordances, and all motion respects reduced-motion
   preferences.
@@ -108,4 +122,11 @@ dropdown support components.
 `scripts/guards/components.mjs` requires prop input for Cards, rejects
 fetching/storage APIs inside the tree, freezes legacy Profile/support paths,
 rejects unclassified new `Cards/*` names, and keeps the Misebox `/cards`
-specimen limited to `Cell`, `Pill`, and `Preview`.
+specimen limited to `Cell`, `Pill`, and `Preview`. Canonical Card components
+must consume Core's matching `.card--cell`, `.pill`, or `.preview` anatomy;
+profile adapters may delegate that contract to `PublicProfileDirectoryCard`.
+Core's `molecules/card-surfaces.scss` is the single shared surface authority;
+the three variant molecules own only their distinct geometry, state, and
+content anatomy. Optional ecosystem atmosphere belongs only in the Core
+`design-packs/sci-fire.css` bundle and is never imported by the universal
+`main.scss` cascade.

@@ -4,9 +4,11 @@
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine.ts'
 import {
-  hasKitchenOperationHours,
+  readPlaceCurrencyCode,
+  readPlacePresentation,
+} from 'fireux-places/runtime/utils/place-spine.ts'
+import {
   readKitchenAppScope,
   readKitchenFulfilmentConfig,
   readKitchenIdentity,
@@ -50,23 +52,12 @@ const record = (value: unknown): Record<string, unknown> =>
     ? value as Record<string, unknown>
     : {}
 
-const hasKitchenMenuDisplayConfig = (value: Record<string, unknown>) => {
-  const menus = record(value.menus)
-
-  return Object.hasOwn(menus, 'currency_format') ||
-    Object.hasOwn(menus, 'show_currency') ||
-    Object.hasOwn(value, 'menu_currency_format') ||
-    Object.hasOwn(value, 'menu_show_currency')
-}
-
 const explicitKitchenDisplayName = (value: Record<string, unknown>) =>
-  readRecordString(record(value.identity), 'display_name') ||
-  readRecordString(value, 'display_name')
+  readRecordString(record(value.identity), 'display_name')
 
 export const resolveSourceAppId = (
-  kitchenData: Record<string, unknown>,
-  fallbackAppId: string
-) => readKitchenAppScope(kitchenData, fallbackAppId).appId
+  kitchenData: Record<string, unknown>
+) => readKitchenAppScope(kitchenData).appId
 
 export async function readAppMenuKitchenData(
   appId: string,
@@ -98,45 +89,27 @@ export async function readMenuKitchenPlaceData(
 
 export function menuKitchenIdentity(
   rootData: Record<string, unknown>,
-  appData: Record<string, unknown> = {},
+  _appData: Record<string, unknown> = {},
   placeData: Record<string, unknown> = {}
 ) {
-  const isTenantOwned = readKitchenAppScope(rootData).hasTenantApp
   const rootIdentity = readKitchenIdentity(rootData)
-  const appIdentity = readKitchenIdentity(appData)
-  const placeIdentity = readKitchenIdentity(placeData)
+  const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
-  const appMenuConfig = readKitchenMenusConfig(appData)
-  const rootMenuConfig = readKitchenMenusConfig(rootData)
-  const menuDisplay = isTenantOwned || hasKitchenMenuDisplayConfig(appData)
-    ? appMenuConfig
-    : rootMenuConfig
+  const menuDisplay = readKitchenMenusConfig(rootData)
   const pageStyle = resolveMenuPageStyle(
     { source: 'place', style: placeData.brand_palette },
-    { source: 'app-kitchen', style: readKitchenMenuStyle(appData) },
     { source: 'root-kitchen', style: readKitchenMenuStyle(rootData) }
   )
-  const imageUrl =
-    placeIdentity.imageUrl || appIdentity.imageUrl || rootIdentity.imageUrl
-  const imageShade = placeIdentity.imageUrl
-    ? placeIdentity.imageShade
-    : appIdentity.imageUrl
-      ? appIdentity.imageShade
-      : rootIdentity.imageShade
 
-  // AppKitchen style remains read-only migration input; new and edited truth belongs on the root Kitchen.
   return {
     name:
-      explicitKitchenDisplayName(appData) ||
       explicitKitchenDisplayName(rootData) ||
-      placeIdentity.displayName,
-    imageUrl,
-    imageShade,
-    logoImageUrl: appIdentity.logoImageUrl || rootIdentity.logoImageUrl,
+      place.name,
+    imageUrl: place.imageUrl,
+    imageShade: place.imageShade,
+    logoImageUrl: rootIdentity.logoImageUrl,
     wordmarkImageUrl:
-      appIdentity.wordmarkNoLogoImageUrl ||
       rootIdentity.wordmarkNoLogoImageUrl ||
-      appIdentity.wordmarkImageUrl ||
       rootIdentity.wordmarkImageUrl,
     currencyCode,
     currencyFormat: menuDisplay.currencyFormat,
@@ -147,35 +120,17 @@ export function menuKitchenIdentity(
 
 export function menuKitchenFulfilment(
   rootData: Record<string, unknown>,
-  appData: Record<string, unknown> = {}
+  _appData: Record<string, unknown> = {}
 ) {
-  const isTenantOwned = readKitchenAppScope(rootData).hasTenantApp
-  const appFulfilment = readKitchenFulfilmentConfig(appData)
-  if (isTenantOwned) return appFulfilment
-
-  if (
-    appFulfilment.delivery_zones.length ||
-    appFulfilment.payment_methods.length
-  ) {
-    return appFulfilment
-  }
-
   return readKitchenFulfilmentConfig(rootData)
 }
 
 export function menuKitchenOperationHours(
   rootData: Record<string, unknown>,
-  appData: Record<string, unknown> = {},
+  _appData: Record<string, unknown> = {},
   placeData: Record<string, unknown> = {}
 ) {
-  let kitchenData = rootData
-  if (readKitchenAppScope(rootData).hasTenantApp) {
-    kitchenData = appData
-  } else if (hasKitchenOperationHours(appData)) {
-    kitchenData = appData
-  }
-
-  return resolveKitchenOperationHours(kitchenData, placeData)
+  return resolveKitchenOperationHours(rootData, placeData)
 }
 
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
@@ -217,7 +172,7 @@ export async function readRootMenuKitchenScope(
   const resolvedKitchenSlug = readRecordString(kitchenData, 'slug') || kitchenSlug
   const kitchenAppId =
     source.app_id ||
-    resolveSourceAppId(kitchenData, currentAppId)
+    resolveSourceAppId(kitchenData)
   const [appKitchenData, placeData] = await Promise.all([
     readAppMenuKitchenData(kitchenAppId, resolvedKitchenId),
     readMenuKitchenPlaceData(kitchenData),
