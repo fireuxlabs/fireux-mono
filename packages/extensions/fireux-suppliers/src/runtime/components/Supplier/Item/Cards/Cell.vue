@@ -11,6 +11,7 @@
       <UAvatar
         :src="record.imageUrl || undefined"
         :alt="record.title"
+        icon="i-lucide-package-open"
         size="md"
         class="shrink-0"
       />

@@ -1309,12 +1309,36 @@ export async function run(ctx) {
     'window.matchMedia(REDUCED_MOTION_QUERY)',
     'new IntersectionObserver',
     'document.visibilityState',
+    'const INTRO_DURATION = 2200',
+    'const INTRO_YAW_TURNS = 1',
+    'const IDLE_SPEED = TAU / 20000',
+    'const INTRO_START_SPEED =',
+    'const decelerationTravel =',
+    '2.5 * progress ** 4',
+    'let orbitDirection: -1 | 1 = 1',
+    'Math.random() < 0.5 ? -1 : 1',
+    'opacity: 1',
+    'const MAX_DEPTH_BLUR = 1.6',
+    "'--landing-orbit-depth-blur'",
+    'filter: blur(var(--landing-orbit-depth-blur, 0))',
+    "type IntroState = 'pending' | 'running' | 'complete'",
+    'const startIntro = () =>',
+    'const settleIntro = (settleToMainAxis = true) =>',
+    'Math.sin(introTravel)',
     'touch-action: pan-y',
     '@media (prefers-reduced-motion: reduce)',
   ]) {
     if (!cardOrbit.includes(required)) {
       violations.push(
         `${CORE_CARD_ORBIT_PATH}: missing shared orbit contract (${required})`
+      )
+    }
+  }
+
+  for (const forbidden of ['onBeforeMount']) {
+    if (cardOrbit.includes(forbidden)) {
+      violations.push(
+        `${CORE_CARD_ORBIT_PATH}: desktop orbit intro must remain hydration-safe (${forbidden})`
       )
     }
   }

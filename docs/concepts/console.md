@@ -54,7 +54,15 @@ Map the shared console system and domain adapters.
   `flex min-h-full min-w-0 flex-1`; a bare block wrapper can stop
   `UDashboardPanel` from filling the remaining Console width.
 - The page owns high-level width and spacing. Family indexes may stay full width; simple forms may use `panels-narrow`; named domain components own their internal presentation.
-- Back navigation and page actions stay in the navbar right slot.
+- Back navigation and page-level actions stay in the navbar right slot.
+- An operation browse page may place one proven primary operation action, such
+  as a dedicated create-route doorway, in the secondary
+  `UDashboardToolbar` right slot. Scope, filters, views, and board-wide
+  controls belong on the toolbar left. Record actions remain with their
+  collection row, card, or detail surface.
+- Do not render bespoke body cards, generic tool menus, or disabled future
+  actions for a single operation doorway. Omit the action until its producer
+  and authority contract exist.
 - Create and edit share form behavior. Small primitives such as `ConsoleFormActions` may standardize Save, Cancel, pending, disabled, and status treatment without owning the page.
 - New and adopted route access visibility and selection requirements live at top-level page meta; navigation metadata only describes navigation presentation.
 - Authentication and role requirements also live at top-level page meta; `nav` must not become a second access contract.

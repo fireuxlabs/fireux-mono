@@ -34,7 +34,6 @@ export type MiseboxPowerCardsProductDemo = {
       imageUrl: string
       meta: string
       priceLabel: string
-      action: true
     }
     mise: {
       imageUrl: string
@@ -177,6 +176,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
 
   if (
     !menu
+    || menu.rootMenu.status !== 'published'
     || !orderItem
     || !miseTask
     || !recipe
@@ -217,7 +217,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         kind: menu.rootMenu.kind,
         name: menu.rootMenu.name,
         description: menu.rootMenu.description,
-        status: 'published',
+        status: menu.rootMenu.status,
         kitchen: {
           name: kitchenName,
           logo_image_url: consoleKitchenCard.imageUrl,
@@ -237,7 +237,6 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         imageUrl: orderItem.imageUrl,
         meta: menu.kitchenMenu.name,
         priceLabel: orderItem.priceLabel,
-        action: true,
       },
       mise: {
         imageUrl: '',

@@ -4,6 +4,19 @@
     <UDashboardPanel id="console-kitchen-ingredients">
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Ingredients" />
+
+        <UDashboardToolbar>
+          <template #right>
+            <UButton
+              v-if="canWrite"
+              to="/console/kitchen/ingredients/add"
+              icon="i-lucide-plus"
+              size="sm"
+            >
+              Add ingredient
+            </UButton>
+          </template>
+        </UDashboardToolbar>
       </template>
 
       <template #body>
@@ -16,6 +29,10 @@
 </template>
 
 <script setup lang="ts">
+import { provideKitchenIngredientsWorkspace } from '../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenIngredientsWorkspace'
+
+const { canWrite } = provideKitchenIngredientsWorkspace()
+
 definePageMeta({
   layout: 'console',
   consoleSurface: 'browse',

@@ -202,9 +202,13 @@ Before each task:
   preparation, service, supply, and finance. The Main App hero uses the shared
   typed hero text once and fills its named proof slot with the read-only
   PowerCards orbit. Core `LandingCardOrbit` owns the deterministic geometry,
-  pointer/keyboard behavior, visibility-aware desktop autoplay, static mobile
-  default, and reduced-motion fallback. Misebox keeps only typed labels and
-  slotted PowerCards; it does not couple page scrolling to orbit rotation. The
+  pointer/keyboard behavior, one-shot visibility-gated desktop launch with a
+  stable per-mount vector and full closed orbit, continuous visibility-aware
+  autoplay in the same direction, fully opaque orbital elements with bounded
+  rear-content blur and crisp foreground content, static mobile default, and
+  reduced-motion fallback. Misebox keeps only typed labels and slotted
+  PowerCards; it does not couple page scrolling to orbit rotation.
+  The
   orbit consumes the discriminated, network-free `demo` envelope from
   `useMiseboxPowerCardsProductDemo`; it never falls through to the live public
   directory or canonical Ingredient hydration. Kitchen, Menu, Dish, Mise,

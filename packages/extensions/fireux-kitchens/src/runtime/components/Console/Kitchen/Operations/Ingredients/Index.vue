@@ -2,7 +2,6 @@
   <section class="console-surface">
     <div v-if="kitchenId" class="space-y-6">
       <ConsoleKitchenOperationsIngredientsRead />
-      <ConsoleKitchenOperationsIngredientsTools />
     </div>
 
     <UAlert
@@ -16,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenIngredientsWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenIngredientsWorkspace'
+import { useKitchenIngredientsWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenIngredientsWorkspace'
 
-const { kitchenId } = provideKitchenIngredientsWorkspace()
+const { kitchenId } = useKitchenIngredientsWorkspace()
 </script>

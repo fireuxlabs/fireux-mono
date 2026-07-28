@@ -61,6 +61,7 @@ import type {
 
 type ResolvedOrbitItem = Required<LandingCardOrbitItem>
 type DragMode = 'pending' | 'orbit' | 'scroll' | null
+type IntroState = 'pending' | 'running' | 'complete'
 
 const props = withDefaults(
   defineProps<{
@@ -78,7 +79,17 @@ const props = withDefaults(
 )
 
 const TAU = Math.PI * 2
-const IDLE_SPEED = TAU / 24000
+const DEFAULT_YAW = 0.72
+const DEFAULT_PITCH = -0.12
+const IDLE_SPEED = TAU / 20000
+const INTRO_DURATION = 2200
+const INTRO_YAW_TURNS = 1
+const INTRO_START_SPEED =
+  (2 * TAU * INTRO_YAW_TURNS) / INTRO_DURATION - IDLE_SPEED
+const INTRO_PITCH_SWEEP_MIN = 0.18
+const INTRO_PITCH_SWEEP_MAX = 0.28
+const MAX_DEPTH_BLUR = 1.6
+const DEPTH_BLUR_CUTOFF = 0.72
 const MOBILE_QUERY = '(width < 48rem)'
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 const DEFAULT_LATITUDES = [
@@ -87,8 +98,8 @@ const DEFAULT_LATITUDES = [
 
 const root = ref<HTMLElement | null>(null)
 const rootWidth = ref(1200)
-const yaw = ref(0.72)
-const pitch = ref(-0.12)
+const yaw = ref(DEFAULT_YAW)
+const pitch = ref(DEFAULT_PITCH)
 const selectedId = ref<string | null>(null)
 const isDragging = ref(false)
 const isPointerInside = ref(false)
@@ -107,6 +118,13 @@ let resizeObserver: ResizeObserver | undefined
 let intersectionObserver: IntersectionObserver | undefined
 let animationFrame: number | undefined
 let lastFrameTime = 0
+let introState: IntroState = 'pending'
+let introAllowed = false
+let mediaReady = false
+let introElapsed = 0
+let introStartYaw = DEFAULT_YAW
+let orbitDirection: -1 | 1 = 1
+let introPitchSweep = INTRO_PITCH_SWEEP_MIN
 let reducedMotionMedia: MediaQueryList | undefined
 let mobileMedia: MediaQueryList | undefined
 
@@ -138,6 +156,18 @@ const shouldAnimate = () =>
   isVisible.value &&
   document.visibilityState === 'visible'
 
+const shouldRunIntro = () =>
+  introState === 'running' &&
+  !isMobile.value &&
+  !isReducedMotion.value &&
+  !isPointerInside.value &&
+  !isDragging.value &&
+  selectedId.value === null &&
+  isVisible.value &&
+  document.visibilityState === 'visible'
+
+const shouldRunFrame = () => shouldRunIntro() || shouldAnimate()
+
 const stopAnimation = () => {
   if (animationFrame !== undefined) {
     cancelAnimationFrame(animationFrame)
@@ -145,20 +175,76 @@ const stopAnimation = () => {
   }
 }
 
+const settleIntro = (settleToMainAxis = true) => {
+  if (introState === 'complete') return
+
+  introState = 'complete'
+  introElapsed = 0
+  if (settleToMainAxis) pitch.value = DEFAULT_PITCH
+}
+
+const startIntro = () => {
+  if (
+    introState !== 'pending' ||
+    !introAllowed ||
+    !props.autoplay ||
+    isMobile.value ||
+    isReducedMotion.value ||
+    isPointerInside.value ||
+    isDragging.value ||
+    selectedId.value !== null ||
+    !isVisible.value ||
+    document.visibilityState !== 'visible'
+  ) {
+    return
+  }
+
+  introState = 'running'
+  introElapsed = 0
+  introStartYaw = yaw.value
+  pitch.value = DEFAULT_PITCH
+}
+
 const animate = (now: number) => {
-  if (!shouldAnimate()) {
+  if (!shouldRunFrame()) {
     stopAnimation()
     return
   }
 
   const elapsed = Math.min(48, Math.max(0, now - lastFrameTime))
   lastFrameTime = now
-  yaw.value = (yaw.value + elapsed * IDLE_SPEED + TAU) % TAU
+
+  if (introState === 'running') {
+    introElapsed = Math.min(INTRO_DURATION, introElapsed + elapsed)
+    const progress = introElapsed / INTRO_DURATION
+    const decelerationTravel =
+      progress -
+      2.5 * progress ** 4 +
+      3 * progress ** 5 -
+      progress ** 6
+    const introTravel =
+      INTRO_DURATION *
+      (IDLE_SPEED * progress +
+        (INTRO_START_SPEED - IDLE_SPEED) * decelerationTravel)
+
+    yaw.value =
+      (introStartYaw + introTravel * orbitDirection + TAU) % TAU
+    pitch.value =
+      DEFAULT_PITCH +
+      Math.sin(introTravel) * introPitchSweep
+
+    if (progress >= 1) settleIntro()
+  } else {
+    yaw.value =
+      (yaw.value + elapsed * IDLE_SPEED * orbitDirection + TAU) % TAU
+  }
+
   animationFrame = requestAnimationFrame(animate)
 }
 
 const startAnimation = () => {
-  if (!shouldAnimate() || animationFrame !== undefined) return
+  startIntro()
+  if (!shouldRunFrame() || animationFrame !== undefined) return
   lastFrameTime = performance.now()
   animationFrame = requestAnimationFrame(animate)
 }
@@ -193,13 +279,18 @@ const itemStyle = (item: ResolvedOrbitItem): CSSProperties => {
     : 304
   const radiusY = compact ? 142 : 178
   const scale =
-    (compact ? 0.46 : 0.58) +
-    depth * (compact ? 0.22 : 0.28) +
+    (compact ? 0.42 : 0.52) +
+    depth * (compact ? 0.28 : 0.34) +
     (selectedId.value === item.id ? 0.03 : 0)
+  const depthBlur =
+    depth < DEPTH_BLUR_CUTOFF
+      ? ((DEPTH_BLUR_CUTOFF - depth) / DEPTH_BLUR_CUTOFF) * MAX_DEPTH_BLUR
+      : 0
 
   return {
+    '--landing-orbit-depth-blur': `${stableStyleNumber(depthBlur)}px`,
     zIndex: selectedId.value === item.id ? 1000 : Math.round(depth * 800),
-    opacity: stableStyleNumber(0.38 + depth * 0.62),
+    opacity: 1,
     pointerEvents:
       depth < 0.3 && selectedId.value !== item.id ? 'none' : 'auto',
     transform: `translate(calc(-50% + ${stableStyleNumber(rotatedX * radiusX)}px), calc(-50% + ${stableStyleNumber(rotatedY * radiusY)}px)) scale(${stableStyleNumber(scale)})`,
@@ -229,6 +320,7 @@ const onPointerDown = (event: PointerEvent) => {
   if (event.button !== 0) return
 
   stopAnimation()
+  settleIntro(false)
   selectedId.value = null
   isDragging.value = true
   dragMode.value = event.pointerType === 'touch' ? 'pending' : 'orbit'
@@ -297,6 +389,7 @@ const select = (item: ResolvedOrbitItem) => {
   if (dragMoved.value) return
 
   stopAnimation()
+  settleIntro(false)
   selectedId.value = item.id
   yaw.value = -item.longitude
   pitch.value = item.latitude
@@ -309,6 +402,7 @@ const clearSelection = () => {
 
 const rotateBy = (direction: -1 | 1) => {
   stopAnimation()
+  settleIntro(false)
   selectedId.value = null
   const step = TAU / Math.max(1, resolvedItems.value.length)
   yaw.value += step * direction
@@ -319,7 +413,29 @@ const syncMedia = () => {
   isReducedMotion.value = reducedMotionMedia?.matches ?? false
   isMobile.value = mobileMedia?.matches ?? false
 
-  if (shouldAnimate()) startAnimation()
+  if (!mediaReady) {
+    mediaReady = true
+    introAllowed =
+      props.autoplay && !isMobile.value && !isReducedMotion.value
+
+    if (introAllowed) {
+      orbitDirection = Math.random() < 0.5 ? -1 : 1
+      introPitchSweep =
+        (Math.random() < 0.5 ? -1 : 1) *
+        (INTRO_PITCH_SWEEP_MIN +
+          Math.random() *
+            (INTRO_PITCH_SWEEP_MAX - INTRO_PITCH_SWEEP_MIN))
+    } else {
+      settleIntro()
+    }
+  } else if (
+    introState !== 'complete' &&
+    (isMobile.value || isReducedMotion.value)
+  ) {
+    settleIntro()
+  }
+
+  if (shouldRunFrame() || introState === 'pending') startAnimation()
   else stopAnimation()
 }
 
@@ -498,6 +614,7 @@ onBeforeUnmount(() => {
 }
 
 .landing-card-orbit__content {
+  filter: blur(var(--landing-orbit-depth-blur, 0));
   pointer-events: none;
   user-select: none;
 }

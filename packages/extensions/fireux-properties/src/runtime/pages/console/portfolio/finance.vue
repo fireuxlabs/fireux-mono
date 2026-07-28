@@ -23,6 +23,7 @@
 <script setup lang="ts">
 definePageMeta({
   layout: 'console',
+  consoleSurface: 'browse',
   visibility: { modules: ['fireux-properties'] },
   nav: {
     key: 'console-portfolio-finance',

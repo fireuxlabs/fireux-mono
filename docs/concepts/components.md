@@ -119,9 +119,14 @@ Map component folder and naming conventions.
   chrome, mode controls, panel transition, footer action, and reduced-motion
   behavior; project proof truth never moves into Core. Core
   `LandingCardOrbit` owns deterministic sphere geometry, drag/keyboard
-  interaction, visibility-aware desktop autoplay, static mobile defaults, and
-  reduced-motion behavior for card showcases. It receives typed items and one
-  dumb item slot; FireUX projects its bounded public App/Ecosystem directory
+  interaction, a one-shot visibility-gated desktop launch with one stable
+  per-mount vector, a full closed orbit that settles exactly onto the main
+  pitch, continuous visibility-aware autoplay in the same direction, fully
+  opaque orbital elements with scale and bounded rear-content blur for depth,
+  crisp foreground content, static mobile defaults, and reduced-motion behavior
+  for card showcases. It receives typed items and one dumb item slot; FireUX
+  projects its bounded public
+  App/Ecosystem directory
   into canonical Cards from the explicit `live` source, while Misebox projects
   network-free PowerCards from the explicit `demo` source. The shared source
   discriminant is closed to `demo | live`; one orbit cannot mix, hydrate, or

@@ -1,11 +1,7 @@
 <template>
   <section class="console-surface">
     <div v-if="kitchenId" class="space-y-4">
-      <div class="grid items-start gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(20rem,0.48fr)]">
-        <ConsoleKitchenOperationsMenusList />
-
-        <ConsoleKitchenOperationsMenusTools />
-      </div>
+      <ConsoleKitchenOperationsMenusList />
 
       <ConsoleKitchenOperationsMenusDebug />
     </div>
@@ -21,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenMenusWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
+import { useKitchenMenusWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
 
 const {
   kitchenId,
-} = provideKitchenMenusWorkspace()
+} = useKitchenMenusWorkspace()
 </script>

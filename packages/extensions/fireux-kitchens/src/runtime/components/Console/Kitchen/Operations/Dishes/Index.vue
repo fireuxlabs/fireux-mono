@@ -2,7 +2,6 @@
   <section class="console-surface">
     <div v-if="kitchenId" class="space-y-4">
       <ConsoleKitchenOperationsDishesRead />
-      <ConsoleKitchenOperationsDishesTools />
     </div>
 
     <UAlert
@@ -16,11 +15,10 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenDishesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
+import { useKitchenDishesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
 import ConsoleKitchenOperationsDishesRead from './Read.vue'
-import ConsoleKitchenOperationsDishesTools from './Tools.vue'
 
 const {
   kitchenId,
-} = provideKitchenDishesWorkspace()
+} = useKitchenDishesWorkspace()
 </script>

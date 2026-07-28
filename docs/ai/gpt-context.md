@@ -138,6 +138,12 @@ Before each task:
   complete slotted Card envelope from that source; local orbit ids, labels, and
   coordinates remain presentation metadata, but static entity fixtures,
   cross-source hydration, and fallback records do not enter the orbit.
+  Core owns one visibility-gated desktop intro with a stable per-mount launch
+  vector. It completes one fast closed orbit, returns exactly to the shared
+  main pitch, and hands off without stopping to slow autoplay in the same
+  direction. Orbital elements remain fully opaque while scale and a bounded
+  rear-content blur communicate depth; foreground content is always crisp.
+  Mobile and reduced-motion presentations skip that intro.
 - A main App may explicitly select the typed Core `sci-fire` design pack
   through `app.designPack`. The config helper conditionally bundles its
   stylesheet and Nuxt UI variants; tenant and white-label Apps do not inherit
