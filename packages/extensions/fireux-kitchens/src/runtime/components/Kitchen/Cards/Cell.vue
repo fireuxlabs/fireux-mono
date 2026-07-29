@@ -3,14 +3,84 @@
     :to="link && to ? to : undefined"
     :action="action"
     :disabled="disabled"
+    :data-selected="selected || undefined"
     class="card card--cell kitchen-card-cell"
     :class="cardClass"
     @activate="emit('action')"
   >
-    <div class="card__media">
+    <template v-if="directory">
+      <div class="kitchen-card-cell__directory-media">
+        <img
+          v-if="resolvedImageUrl"
+          :src="resolvedImageUrl"
+          :alt="`${displayName} kitchen`"
+          loading="lazy"
+          decoding="async"
+          draggable="false"
+        >
+
+        <div
+          v-else
+          class="kitchen-card-cell__placeholder"
+          aria-label="Venue photo not published"
+          role="img"
+        >
+          <UIcon name="i-lucide-image-off" aria-hidden="true" />
+          <span>Venue photo not published</span>
+        </div>
+
+        <div
+          v-if="visibleBadges.length"
+          class="kitchen-card-cell__directory-badges"
+        >
+          <UBadge
+            v-for="badge in visibleBadges"
+            :key="badge"
+            variant="solid"
+            color="neutral"
+            size="xs"
+          >
+            {{ badge }}
+          </UBadge>
+        </div>
+      </div>
+
+      <div class="kitchen-card-cell__directory-body">
+        <div class="kitchen-card-cell__directory-copy">
+          <h3 class="card__title">{{ displayName }}</h3>
+
+          <p
+            class="card__subtitle kitchen-card-cell__address"
+            :class="{ 'kitchen-card-cell__address--empty': !resolvedAddress }"
+          >
+            <UIcon name="i-lucide-map-pin" aria-hidden="true" />
+            <span>
+              {{ resolvedAddress || 'Location not published' }}
+            </span>
+          </p>
+
+          <p v-if="showTagline && prop" class="card__tagline">
+            {{ prop }}
+          </p>
+        </div>
+
+        <div
+          v-if="isInteractive"
+          class="kitchen-card-cell__directory-action"
+          aria-hidden="true"
+        >
+          <span>{{ actionLabel }}</span>
+          <span class="kitchen-card-cell__arrow">
+            <UIcon name="i-lucide-arrow-up-right" />
+          </span>
+        </div>
+      </div>
+    </template>
+
+    <div v-else class="card__media">
       <UAvatar
         :src="resolvedImageUrl || undefined"
-        :alt="name"
+        :alt="displayName"
         size="md"
         icon="i-lucide-image"
         class="kitchen-card-cell__avatar"
@@ -20,7 +90,7 @@
       <div class="card__content card__stack">
         <div class="card__header">
           <div class="min-w-0">
-            <div class="card__title">{{ name }}</div>
+            <div class="card__title">{{ displayName }}</div>
 
             <div
               v-if="showSubtitle && resolvedAddress"
@@ -51,10 +121,6 @@
         <div v-if="showTagline && prop" class="card__tagline">
           {{ prop }}
         </div>
-      </div>
-
-      <div v-if="directory" class="kitchen-card-cell__arrow" aria-hidden="true">
-        <UIcon name="i-lucide-arrow-up-right" />
       </div>
     </div>
   </MoleculesActionSurface>
@@ -102,6 +168,13 @@ const props = withDefaults(defineProps<Props>(), {
 const resolvedAddress = computed(() => props.shortAddress || '')
 
 const resolvedImageUrl = computed(() => props.imageUrl || '')
+const displayName = computed(() => props.name || 'Kitchen')
+const isInteractive = computed(() =>
+  !props.disabled && Boolean(props.action || (props.link && props.to))
+)
+const actionLabel = computed(() =>
+  props.action && !(props.link && props.to) ? 'Select kitchen' : 'View kitchen'
+)
 
 const avatarShadeClass = computed(() => {
   const shade = props.imageShade
@@ -120,7 +193,6 @@ const visibleBadges = computed(() =>
 )
 const cardClass = computed(() => ({
   'cursor-pointer': !props.disabled && (props.action || (props.link && props.to)),
-  'kitchen-card-cell--selected': props.selected,
   'kitchen-card-cell--directory': props.directory,
 }))
 </script>
@@ -168,9 +240,8 @@ const cardClass = computed(() => ({
   display: -webkit-box;
   color: var(--ui-text-highlighted);
   font-size: var(--text-xs);
-  font-style: italic;
   white-space: normal;
-  line-height: 1.45;
+  line-height: var(--leading-relaxed);
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
 }
@@ -180,57 +251,118 @@ const cardClass = computed(() => ({
 }
 
 .kitchen-card-cell--directory {
-  min-height: 9.5rem;
-  padding: calc(var(--spacing) * 5);
-  border-color: color-mix(in srgb, var(--ui-primary) 13%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 6);
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--ui-primary) 5%, var(--ui-bg)),
-      var(--ui-bg) 58%
-    );
-}
-
-.kitchen-card-cell--directory:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover {
-  border-color: color-mix(in srgb, var(--ui-primary) 35%, var(--ui-border));
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--ui-primary) 9%, var(--ui-bg)),
-      var(--ui-bg) 68%
-    );
-  box-shadow: var(--fx-elevation-medium);
-  transform: translateY(-2px);
-}
-
-.kitchen-card-cell--directory .card__media {
-  align-items: flex-start;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   height: 100%;
-  gap: calc(var(--spacing) * 4);
+  min-height: calc(var(--spacing) * 88);
+  padding: 0;
+  border-radius: calc(var(--ui-radius) * 3);
 }
 
-.kitchen-card-cell--directory .kitchen-card-cell__avatar {
-  width: 5.25rem;
-  height: 5.25rem;
+.kitchen-card-cell__directory-media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 10;
+  border-bottom: 1px solid var(--ui-border);
+  background: var(--ui-bg-elevated);
 }
 
-.kitchen-card-cell--directory .card__stack {
-  gap: calc(var(--spacing) * 2);
+.kitchen-card-cell__directory-media > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.kitchen-card-cell__placeholder {
+  display: grid;
+  height: 100%;
+  place-content: center;
+  justify-items: center;
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 6);
+  color: var(--ui-text-muted);
+  text-align: center;
+}
+
+.kitchen-card-cell__placeholder :deep(svg) {
+  width: calc(var(--spacing) * 8);
+  height: calc(var(--spacing) * 8);
+  color: var(--ui-text-dimmed);
+}
+
+.kitchen-card-cell__placeholder span {
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-medium);
+}
+
+.kitchen-card-cell__directory-badges {
+  position: absolute;
+  top: calc(var(--spacing) * 3);
+  right: calc(var(--spacing) * 3);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--spacing);
+}
+
+.kitchen-card-cell__directory-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 5);
+  padding: calc(var(--spacing) * 5);
+}
+
+.kitchen-card-cell__directory-copy {
+  display: grid;
+  gap: calc(var(--spacing) * 3);
 }
 
 .kitchen-card-cell--directory .card__title {
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   white-space: normal;
   overflow-wrap: anywhere;
   line-height: var(--leading-snug);
 }
 
-.kitchen-card-cell--directory .card__subtitle,
+.kitchen-card-cell__address {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(var(--spacing) * 2);
+  margin: 0;
+}
+
+.kitchen-card-cell__address :deep(svg) {
+  width: calc(var(--spacing) * 4);
+  height: calc(var(--spacing) * 4);
+  flex: 0 0 auto;
+  margin-top: calc(var(--spacing) * 0.5);
+  color: var(--ui-primary);
+}
+
+.kitchen-card-cell__address--empty {
+  color: var(--ui-text-dimmed);
+}
+
 .kitchen-card-cell--directory .card__tagline {
-  font-size: var(--text-xs);
+  margin: 0;
+  color: var(--ui-text-toned);
+  font-size: var(--text-sm);
   white-space: normal;
-  line-height: var(--leading-snug);
+  line-height: var(--leading-relaxed);
+}
+
+.kitchen-card-cell__directory-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 3);
+  padding-top: calc(var(--spacing) * 4);
+  border-top: 1px solid var(--ui-border);
+  color: var(--ui-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
 }
 
 .kitchen-card-cell__arrow {
@@ -241,33 +373,27 @@ const cardClass = computed(() => ({
   place-items: center;
   border: 1px solid var(--ui-border);
   border-radius: 9999px;
-  color: var(--ui-text-muted);
-  transition: border-color 160ms ease, background-color 160ms ease,
-    color 160ms ease, transform 160ms ease;
+  background: var(--ui-bg-elevated);
+  color: var(--ui-primary);
+  transition:
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
 }
 
 .kitchen-card-cell--directory:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover .kitchen-card-cell__arrow {
   border-color: var(--ui-primary);
-  background: var(--ui-primary);
-  color: var(--ui-bg);
-  transform: rotate(8deg);
+  color: var(--ui-text-highlighted);
+  transform: translate(calc(var(--spacing) * 0.5), calc(var(--spacing) * -0.5));
 }
 
-.kitchen-card-cell--selected {
-  border-color: color-mix(in srgb, var(--ui-primary) 52%, var(--ui-border));
-  background:
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--ui-primary) 14%, transparent),
-      color-mix(in srgb, var(--ui-primary) 4%, transparent)
-    ),
-    var(--ui-bg);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--ui-primary) 20%, transparent),
-    var(--fx-elevation-medium);
-}
+@media (prefers-reduced-motion: reduce) {
+  .kitchen-card-cell__arrow {
+    transition: none;
+  }
 
-.kitchen-card-cell--selected:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover {
-  border-color: color-mix(in srgb, var(--ui-primary) 66%, var(--ui-border));
+  .kitchen-card-cell--directory:not([data-disabled='true']):not([aria-disabled='true']):not(:disabled):hover .kitchen-card-cell__arrow {
+    transform: none;
+  }
 }
 </style>

@@ -19,11 +19,11 @@
 </template>
 
 <script setup lang="ts">
-import { useKitchenMenusWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
+import { provideKitchenMenusWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
 
 const {
   kitchenId,
-} = useKitchenMenusWorkspace()
+} = provideKitchenMenusWorkspace()
 
 const showCollectionExperiment = false
 </script>

@@ -195,7 +195,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 .kitchen-menus__grid :deep(.menu-card-preview) {
   min-height: 9rem;
   border-color: color-mix(in srgb, var(--ui-primary) 20%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 5);
+  border-radius: calc(var(--ui-radius) * 4);
   background: color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary));
   box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 8%);
   transition:

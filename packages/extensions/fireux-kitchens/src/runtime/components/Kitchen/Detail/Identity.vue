@@ -339,7 +339,7 @@ const hasSurface = computed(() =>
 @media (max-width: 40rem) {
   .kitchen-identity__cover {
     height: 13rem;
-    border-radius: calc(var(--ui-radius) * 5);
+    border-radius: calc(var(--ui-radius) * 4);
   }
 
   .kitchen-identity--with-cover .kitchen-identity__panel {

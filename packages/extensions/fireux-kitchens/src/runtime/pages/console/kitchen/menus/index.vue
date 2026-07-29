@@ -16,10 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import { provideKitchenMenusWorkspace } from '../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
-
-provideKitchenMenusWorkspace()
-
 definePageMeta({
   layout: 'console',
   consoleSurface: 'browse',

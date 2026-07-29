@@ -45,6 +45,27 @@
       <FinanceReportTrend :trend="salesTrend" size="lg" />
     </UCard>
 
+    <UCard>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h2 class="text-sm font-semibold text-highlighted">
+            Transaction direction
+          </h2>
+          <p class="mt-1 text-xs text-muted">
+            Completed Kitchen sales are the current money-in source.
+          </p>
+        </div>
+
+        <UFieldGroup size="sm" aria-label="Transaction direction">
+          <UButton label="Money in" color="success" variant="solid" />
+          <UButton label="Money out" color="neutral" variant="ghost" disabled />
+        </UFieldGroup>
+      </div>
+      <p class="mt-3 text-xs text-muted">
+        No Kitchen-owned outgoing source is connected for this view.
+      </p>
+    </UCard>
+
     <div
       v-if="currencySummary"
       class="grid gap-4 lg:grid-cols-2"

@@ -207,12 +207,7 @@ export function projectPublicKitchenIndexItem(
     'formatted_address'
   )
   const shortAddress = readRecordString(parts.placeData, 'short_address')
-  const placeCoverImageUrl = text(parts.place.coverImage)
-  const imageUrl = text(
-    parts.rootIdentity.cardImageUrl ||
-    placeCoverImageUrl ||
-    parts.identity.imageUrl
-  )
+  const imageUrl = text(parts.rootIdentity.cardImageUrl || parts.identity.imageUrl)
   const mediaBackdropColor =
     parts.rootIdentity.mediaBackdropColor ||
     parts.place.mediaBackdropColor

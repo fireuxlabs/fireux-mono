@@ -202,7 +202,7 @@ cleanup_git_refs() {
 usage() {
   echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
-  echo "Defaults: lightweight preflight clean, post-save git cleanup, --no-guard --no-clean --no-strict-scope" >&2
+  echo "Defaults: lightweight preflight clean, blocking pre-commit guard, post-save git cleanup, --no-clean --no-strict-scope" >&2
   echo "Dev server default: push committed tree without local artifact cleanup/guard so live Nuxt artifacts stay untouched." >&2
   echo "Safety defaults: block behind-state pushes and guard failures. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
 }
@@ -315,7 +315,7 @@ warn_simple_scope() {
 }
 
 commit_message=""
-run_guard=false
+run_guard=true
 run_clean=false
 allow_mixed=false
 allow_large=false
@@ -386,8 +386,7 @@ if $run_clean; then
   fi
 fi
 
-# Optional guard
-# Optional guard (advisory, not blocking)
+# Guard before staging/commit so a failed save never creates an unpushable commit.
 if $run_guard; then
   if ! run_pnpm -s guard; then
     echo "\n[gitsave] Guard failed." >&2

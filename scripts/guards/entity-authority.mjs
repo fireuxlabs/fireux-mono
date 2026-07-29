@@ -370,7 +370,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(coreAppsPage, /useEcosystemAppCollection/)
   assert.match(fireuxAppsPage, /usePlatformAppDirectory/)
-  assert.match(fireuxEcosystemsPage, /usePlatformEcosystemDirectory/)
+  assert.match(
+    fireuxEcosystemsPage,
+    /usePublishedPlatformEcosystemDirectory/
+  )
 
   const ownerAppDetailApi = read(
     repoRoot,
@@ -588,23 +591,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   assert.match(
-    placeMutation,
+    placeMediaMutation,
     /Object\.hasOwn\(kitchen,\s*['"]app_scope_state['"]\)/
   )
   assert.match(
-    placeMutation,
+    placeMediaMutation,
     /Object\.hasOwn\(kitchen,\s*['"]app_scope_app_id['"]\)/
   )
   assert.match(
-    placeMutation,
+    placeMediaMutation,
     /rootKitchenScope\?\.appId\s*===\s*kitchenAuthority\.appId/
   )
   assert.match(
-    placeMutation,
+    placeMediaMutation,
     /kitchenAuthority\.appId\s*!==\s*runtimeAppId/
   )
   assert.doesNotMatch(
-    placeMutation,
+    placeMediaMutation,
     /appScope\.app_id\s*\|\|\s*kitchen\.app_scope_app_id/
   )
 
@@ -807,10 +810,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/components/Place/Edit/PublicStory.vue'
   )
-  const placeMutation = read(
-    repoRoot,
-    'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
-  )
   assert.match(placePublicStoryEditor, /\buseImageStorage\b/)
   assert.match(placePublicStoryEditor, /places\/\$\{placeId\.value\}\/cover/)
   assert.match(placePublicStoryEditor, /places\/\$\{placeId\.value\}\/gallery\//)
@@ -827,6 +826,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'id',
     'image_shade',
     'image_url',
+    'media_backdrop_color',
     'name',
     'place_type',
     'short_address',

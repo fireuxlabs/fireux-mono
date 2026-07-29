@@ -53,9 +53,19 @@
       role="alert"
       aria-live="assertive"
       aria-atomic="true"
-    />
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="refreshCollection"
+        />
+      </template>
+    </CollectionDirectoryState>
 
-    <div v-else-if="cardsFiltered.length">
+    <div v-else-if="cardsFiltered.length" class="kitchen-directory__results">
       <KitchenCollectionList
         :cards="cardsFiltered"
         :variant="variant"
@@ -77,7 +87,16 @@
         </template>
       </KitchenCollectionList>
 
-      <div v-if="hasMore">
+      <UAlert
+        v-if="loadMoreError"
+        color="error"
+        variant="soft"
+        icon="i-lucide-circle-alert"
+        title="More kitchens could not be loaded"
+        description="The kitchens already shown are still available."
+      />
+
+      <div v-if="hasMore" class="kitchen-directory__more">
         <UButton
           label="Load more kitchens"
           color="neutral"
@@ -97,7 +116,7 @@
           : 'Published kitchens will appear here when they are ready.'"
       />
 
-      <div v-if="hasMore && !query">
+      <div v-if="hasMore && !query" class="kitchen-directory__more">
         <UButton
           label="Check more kitchens"
           color="neutral"
@@ -175,8 +194,12 @@ const outcome = computed(() => fetched.outcome.value)
 const privilegedPreview = computed(() => fetched.privilegedPreview.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
+const loadMoreError = computed(() => fetched.loadMoreError.value)
 const loadMore = async () => {
   await fetched.loadMore()
+}
+const refreshCollection = async () => {
+  await fetched.refresh()
 }
 const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
@@ -247,3 +270,15 @@ const countLabel = computed(() =>
     : `${totalCount.value} kitchen${totalCount.value === 1 ? '' : 's'}`
 )
 </script>
+
+<style scoped>
+.kitchen-directory__results {
+  display: grid;
+  gap: calc(var(--spacing) * 6);
+}
+
+.kitchen-directory__more {
+  display: flex;
+  justify-content: center;
+}
+</style>
