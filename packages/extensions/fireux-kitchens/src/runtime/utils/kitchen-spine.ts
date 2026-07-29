@@ -175,6 +175,7 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
   return {
     displayName: text(identity.display_name),
     tagline: text(identity.tagline),
+    cardImageUrl: text(identity.card_image_url),
     logoImageUrl: text(identity.logo_image_url),
     wordmarkNoLogoImageUrl: text(identity.wordmark_no_logo_image_url),
     wordmarkImageUrl: text(identity.wordmark_image_url),

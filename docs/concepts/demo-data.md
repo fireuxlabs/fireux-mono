@@ -1,5 +1,6 @@
 # Demo World and Demo Data spine map
-Updated: 2026-07-28
+
+Updated: 2026-07-29
 Ref: 796952bf0
 Role: map, not canon
 
@@ -48,7 +49,11 @@ remain real data even when a Demo record links to them.
   `AppSupplier` support, link an independently identified Company through
   `company_id`, and keep Ingredients, Items, and Catalogues Supplier-owned.
   Each linked Company is a stamps-only role root paired with its same-id sparse
-  Place; Supplier never gains a duplicate `place_id`. SupplierItem-to-Product
+  Place; Supplier never gains a duplicate `place_id`. The Supplier owns its
+  logo, while the linked Place owns address and location imagery. Demo
+  consumers compose the bounded same-id Company/Place projection at read time:
+  a location card prefers the Place image and an avatar prefers the Supplier
+  logo, without copying either field across roots. SupplierItem-to-Product
   roots remain unresolved and are not manufactured by Demo.
 - Portfolio Demo targets pair a Portfolio root with same-id access-only
   `AppPortfolio` support. Property Demo targets pair the Property root with
@@ -61,7 +66,8 @@ remain real data even when a Demo record links to them.
 - Blank Demo is the minimal same-id `Blank` + access-only `AppBlank` pair. It
   has no Place, operations, or Test producer. Project Demo is the control-plane
   exception: `Project`, `App`, and `Ecosystem` are model-shaped roots linked by
-  ids, and Project has no App-support entity.
+  ids, each scenario explicitly names its owning `appId`, and Project has no
+  App-support entity.
 - Reservation Demo records are Property-scoped and must reconcile their parent
   Property id, App stamp, dates, status, currency, and non-overlapping stay
   lifecycle. They do not turn Property estimated values into rent or Finance
@@ -76,6 +82,23 @@ remain real data even when a Demo record links to them.
   lifecycle, parents, and images hydrate from the real canonical
   `/ingredients/{ingredientId}` authority through the bounded public
   projection. A Demo fixture must not copy or locally decorate those roots.
+- Demo-owned presentation media is an immutable public delivery seam, not
+  canonical data authority. The Misebox Demo World stores those objects in
+  `misebox-78f9c.appspot.com` under owner-relative
+  `demo/misebox-app/{kitchens|suppliers|places}/...` paths. Kitchen and Supplier
+  logos stay under their own ids; Place imagery stays under the Place id.
+  Fixtures hold fixed HTTPS values and import no Firebase or Storage SDK.
+  Canonical Ingredient images and shared App/brand media never move into this
+  Demo prefix merely because a Demo surface displays them.
+- The reviewed Misebox media inventory has 68 unique source images and 73
+  owner-relative objects: 62 Kitchen-owned images, three Supplier logos, three
+  Supplier-company Place photos, and five Place-owned aliases for Deanos
+  presentation fields that reuse reviewed source bytes. Source bytes and the
+  exact manifest live under `scripts/data/misebox-demo-media/`. The manual
+  `scripts/publish-misebox-demo-media.mjs` publisher is Storage-only,
+  create-only, replay-safe, and rejects any existing object whose bytes, MIME,
+  cache policy, checksum metadata, or token differ. It never writes Firestore,
+  overwrites, or deletes.
 - A Kitchen Demo scenario owns Kitchen-shaped team records with stable member
   IDs. Operator audit stamps and Finance transaction closers reference those
   IDs; Console Team and Finance resolve presentation names from the same
@@ -121,6 +144,10 @@ remain real data even when a Demo record links to them.
   folders merely to make unrelated owners or scenarios look symmetrical.
 - An owning Console composable adapter loads fixtures with a dynamic import and
   `useConsoleDemoData`; inactive Consoles do not import or evaluate them.
+  Cross-owner fixture loading remains forbidden except for an exact guarded
+  relationship already declared by the entity family. Supplier Console Demo
+  has that narrow exception for its required Company and same-id Place target;
+  the shared Supplier projector validates the link before returning a surface.
 - Every Console core that accepts the shared Demo source owns a matching lazy
   Demo adapter. Demo targets use the same selected-target and outcome spine as
   Live targets, and operation records remain scoped to their selected Demo
@@ -198,17 +225,20 @@ remain real data even when a Demo record links to them.
   a second local sales fixture or read Live Orders or Sales.
 - Product Demo proof such as Misebox PowerCards receives one typed,
   discriminated projection from its named surface adapter. A Demo orbit is
-  network-free and may include only owner-local Demo records and pure
-  projections; it cannot hydrate canonical Live roots or fall back to Live
-  records. Misebox therefore keeps canonical Ingredient hydration in its
-  Console/showroom Product Demo and excludes Ingredient-dependent Cards from
-  the Demo-only orbit. Presentation components must not carry their own Deanos
-  Kitchen, Menu, Dish, Recipe, Mise, Supplier, or item fixtures.
+  network-free for data and may include only owner-local Demo records and pure
+  projections; declared immutable HTTPS image requests are presentation
+  delivery, not data hydration. It cannot hydrate canonical Live roots or fall
+  back to Live records. Misebox therefore keeps canonical Ingredient hydration
+  in its Console/showroom Product Demo and excludes Ingredient-dependent Cards
+  from the Demo-only orbit. Presentation components must not carry their own
+  Deanos Kitchen, Menu, Dish, Recipe, Mise, Supplier, or item fixtures.
 - Public Product Demo pages occupy the reserved `app/pages/demo` route family.
   They remain thin route compositions and consume the named adapter; they do
   not import fixture modules directly or become a second data authority.
-- Demo World is read-only. Fixture modules do not depend on Firestore, Storage,
-  Firebase Admin, server code, public adapters, or mutation code. Consumer
+- Demo World is read-only. Fixture modules do not depend on Firestore, Firebase
+  Admin, Storage SDK/API code, server code, public adapters, or mutation code.
+  A guarded fixed public HTTPS Demo media URL may be a normal model field
+  value; it does not grant fixtures runtime Storage authority. Consumer
   adapters may hydrate explicitly linked shared roots through their bounded
   public read projection; arbitrary runtime imports remain forbidden.
 - Test and simulation sources remain separate because they are allowed to
@@ -237,12 +267,19 @@ remain real data even when a Demo record links to them.
   Portfolio/Property, Reservation, Blank, and Project scenario composition so
   relationship and arithmetic validators fail closed. Misebox Product Demo
   additionally proves every Supplier Company id resolves to a same-id Company
-  and Place pair.
+  and Place projection. The same offline guard executes all image-bearing
+  Kitchen, Dish, Supplier, and Place fixtures and requires 75 field occurrences
+  to resolve to the exact 73 owner-relative Misebox Demo media objects declared
+  by the 68-source manifest. It does not contact Storage during normal guards.
 - Refresh fixtures in the same change when a real shape used by Demo changes.
 
 ## Verification
 
 - Run the Demo Data guard through `pnpm guard`.
+- For a remote media audit, run
+  `node scripts/publish-misebox-demo-media.mjs --project misebox-78f9c
+--database misebox --bucket misebox-78f9c.appspot.com` without `--apply`;
+  every reviewed object must plan as exact reuse with no create or blocker.
 - Typecheck every owning package or app whose fixtures or adapters changed.
 - Verify an inactive console reports `idle` and does not invoke its loader.
 - Verify a Product Demo's fictional records remain deterministic and perform

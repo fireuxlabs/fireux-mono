@@ -20,8 +20,8 @@
           <ConsoleKitchenOperationsSuppliersCardsCell
             :id="supplier.id"
             :title="supplier.name"
-            :subtitle="supplier.headline"
-            :avatar-url="supplier.imageUrl"
+            :subtitle="supplier.headquartersLabel || supplier.headline"
+            :avatar-url="supplier.logoImageUrl || supplier.imageUrl"
             :badges="supplier.categories"
             :prop="supplierSummary(supplier)"
             :link="false"
@@ -67,6 +67,10 @@ const supplierSummary = (supplier: ProductDemoSupplier) => {
   const catalogues = `${supplier.catalogueCount} catalogue${
     supplier.catalogueCount === 1 ? '' : 's'
   }`
-  return `${ingredients} · ${catalogues}`
+  return [
+    ingredients,
+    catalogues,
+    supplier.headquartersLabel,
+  ].filter(Boolean).join(' · ')
 }
 </script>

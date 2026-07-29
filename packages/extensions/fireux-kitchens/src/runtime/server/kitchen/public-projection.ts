@@ -203,8 +203,11 @@ export function projectPublicKitchenIndexItem(
   )
   const shortAddress = readRecordString(parts.placeData, 'short_address')
   const imageUrl = text(
-    parts.identity.imageUrl
+    parts.rootIdentity.cardImageUrl || parts.identity.imageUrl
   )
+  const imageShade = parts.rootIdentity.cardImageUrl
+    ? parts.rootIdentity.imageShade
+    : parts.identity.imageShade
   const logoImageUrl = text(parts.rootIdentity.logoImageUrl)
 
   return {
@@ -219,8 +222,8 @@ export function projectPublicKitchenIndexItem(
     ...(shortAddress ? { short_address: shortAddress } : {}),
     ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
     ...(imageUrl ? { image_url: imageUrl } : {}),
-    ...(logoImageUrl && parts.rootIdentity.imageShade !== 'none'
-      ? { image_shade: parts.rootIdentity.imageShade }
+    ...(imageUrl && imageShade !== 'none'
+      ? { image_shade: imageShade }
       : {}),
   }
 }

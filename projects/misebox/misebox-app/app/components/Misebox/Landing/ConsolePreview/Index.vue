@@ -1,165 +1,98 @@
 <template>
-  <UCard
-    as="section"
-    aria-label="Interactive Kitchen Console preview"
-    class="overflow-hidden"
-    :ui="{ body: 'p-0 sm:p-0' }"
+  <LandingConsolePreviewFrame
+    :model-value="selectedSurfaceId"
+    :items="operations"
+    :secondary-items="[financeSurface]"
+    label="Interactive Kitchen Console preview"
+    navigation-label="Kitchen Operations"
+    secondary-label="Reports"
+    secondary-navigation-label="Kitchen reports"
+    console-to="/console/kitchen"
+    :open-console-aria-label="`Open the full ${consoleKitchenPill.title} Kitchen Console`"
+    @update:model-value="selectSurface"
+    @open-console="openFullKitchenConsole"
   >
-    <div
-      class="grid min-h-[32rem] grid-cols-[4.5rem_minmax(0,1fr)] sm:grid-cols-[12rem_minmax(0,1fr)]"
-    >
-      <aside class="border-r border-default bg-elevated/70 p-3">
-        <div class="py-2">
-          <KitchenCardsPill
-            v-bind="consoleKitchenPill"
-            :link="false"
-            :show-badges="false"
-            class="console-preview-kitchen-pill"
-          />
-        </div>
+    <template #target>
+      <KitchenCardsPill
+        v-bind="consoleKitchenPill"
+        :link="false"
+        :show-badges="false"
+      />
+    </template>
 
-        <nav class="mt-3 grid gap-1" aria-label="Kitchen Operations">
-          <button
-            v-for="operation in operations"
-            :key="operation.id"
-            type="button"
-            class="flex min-h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-sm text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            :class="operation.id === selectedSurfaceId
-              ? 'bg-primary/10 text-primary'
-              : ''"
-            :aria-label="operation.title"
-            :aria-current="operation.id === selectedSurfaceId ? 'page' : undefined"
-            :title="operation.title"
-            @click="selectSurface(operation.id)"
-          >
-            <UIcon :name="operation.icon" class="size-4 shrink-0" />
-            <span class="hidden truncate sm:block">{{ operation.title }}</span>
-          </button>
-        </nav>
-
-        <nav
-          class="mt-3 border-t border-default pt-3"
-          aria-label="Kitchen reports"
-        >
-          <p class="mb-1 hidden px-2 text-xs font-semibold text-muted sm:block">
-            Reports
-          </p>
-          <button
-            type="button"
-            class="flex min-h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-sm text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
-            :class="financeSurface.id === selectedSurfaceId
-              ? 'bg-primary/10 text-primary'
-              : ''"
-            :aria-label="financeSurface.title"
-            :aria-current="financeSurface.id === selectedSurfaceId ? 'page' : undefined"
-            :title="financeSurface.title"
-            @click="selectSurface(financeSurface.id)"
-          >
-            <UIcon :name="financeSurface.icon" class="size-4 shrink-0" />
-            <span class="hidden truncate sm:block">
-              {{ financeSurface.title }}
-            </span>
-          </button>
-        </nav>
-      </aside>
-
-      <div v-if="selectedSurface" class="min-w-0 bg-default p-4 sm:p-5">
-        <header
-          class="flex min-h-9 items-center gap-2 border-b border-default pb-4"
-        >
-          <p class="min-w-0 flex-1 truncate font-semibold text-highlighted">
-            {{ selectedSurface.title }}
-          </p>
-          <UButton
-            to="/console/kitchen"
-            color="neutral"
-            variant="soft"
-            size="xs"
-            trailing-icon="i-lucide-arrow-up-right"
-            class="shrink-0"
-            :aria-label="`Open the full ${consoleKitchenPill.title} Kitchen Console`"
-            @click="openFullKitchenConsole"
-          >
-            <span class="hidden sm:inline">Open full Console</span>
-            <span class="sm:hidden">Full Console</span>
-          </UButton>
-        </header>
-
-        <MiseboxLandingConsolePreviewMenus
-          v-if="selectedSurface.id === 'kitchen.menus'"
-          :key="selectedSurface.id"
-          :menus="productDemo?.console.menus || []"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewDishes
-          v-else-if="selectedSurface.id === 'kitchen.dishes'"
-          :key="selectedSurface.id"
-          :dishes="previewDishes"
-          :dish="selectedDish"
-          :page="selectedDishPage"
-          :error="Boolean(productDemoError)"
-          @select="selectDish"
-          @select-page="selectedDishPage = $event"
-          @show-collection="clearSelectedDish"
-          @show-detail="selectedDishPage = 'detail'"
-        />
-        <MiseboxLandingConsolePreviewIngredients
-          v-else-if="selectedSurface.id === 'kitchen.ingredients'"
-          :key="selectedSurface.id"
-          :ingredients="productDemo?.console.ingredients || []"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewRecipes
-          v-else-if="selectedSurface.id === 'kitchen.recipes'"
-          :key="selectedSurface.id"
-          :recipes="productDemo?.console.recipes || []"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewMise
-          v-else-if="selectedSurface.id === 'kitchen.mise'"
-          :key="selectedSurface.id"
-          :kitchen-name="productDemo?.console.kitchenName || ''"
-          :tasks="consoleMiseTasks"
-        />
-        <MiseboxLandingConsolePreviewOrders
-          v-else-if="selectedSurface.id === 'kitchen.orders'"
-          :key="selectedSurface.id"
-          :kitchen-name="productDemo?.console.kitchenName || ''"
-          :orders="productDemo?.console.orders || []"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewStations
-          v-else-if="selectedSurface.id === 'kitchen.stations'"
-          :key="selectedSurface.id"
-          :stations="productDemo?.console.stations || []"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewSuppliers
-          v-else-if="selectedSurface.id === 'kitchen.suppliers'"
-          :key="selectedSurface.id"
-          :suppliers="productDemo?.console.suppliers || []"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewTables
-          v-else-if="selectedSurface.id === 'kitchen.tables'"
-          :key="selectedSurface.id"
-          :tables="productDemo?.console.tables || emptyTables"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewFinance
-          v-else-if="selectedSurface.id === financeSurface.id"
-          :key="selectedSurface.id"
-          :finance="productDemo?.console.finance || emptyFinance"
-          :error="Boolean(productDemoError)"
-        />
-        <MiseboxLandingConsolePreviewEmptyCanvas
-          v-else
-          :key="selectedSurface.id"
-          :title="selectedSurface.title"
-        />
-      </div>
-    </div>
-  </UCard>
+    <MiseboxLandingConsolePreviewMenus
+      v-if="selectedSurface?.id === 'kitchen.menus'"
+      :key="selectedSurface.id"
+      :menus="productDemo?.console.menus || []"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewDishes
+      v-else-if="selectedSurface?.id === 'kitchen.dishes'"
+      :key="selectedSurface.id"
+      :dishes="previewDishes"
+      :dish="selectedDish"
+      :page="selectedDishPage"
+      :error="Boolean(productDemoError)"
+      @select="selectDish"
+      @select-page="selectedDishPage = $event"
+      @show-collection="clearSelectedDish"
+      @show-detail="selectedDishPage = 'detail'"
+    />
+    <MiseboxLandingConsolePreviewIngredients
+      v-else-if="selectedSurface?.id === 'kitchen.ingredients'"
+      :key="selectedSurface.id"
+      :ingredients="productDemo?.console.ingredients || []"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewRecipes
+      v-else-if="selectedSurface?.id === 'kitchen.recipes'"
+      :key="selectedSurface.id"
+      :recipes="productDemo?.console.recipes || []"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewMise
+      v-else-if="selectedSurface?.id === 'kitchen.mise'"
+      :key="selectedSurface.id"
+      :kitchen-name="productDemo?.console.kitchenName || ''"
+      :tasks="consoleMiseTasks"
+    />
+    <MiseboxLandingConsolePreviewOrders
+      v-else-if="selectedSurface?.id === 'kitchen.orders'"
+      :key="selectedSurface.id"
+      :kitchen-name="productDemo?.console.kitchenName || ''"
+      :orders="productDemo?.console.orders || []"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewStations
+      v-else-if="selectedSurface?.id === 'kitchen.stations'"
+      :key="selectedSurface.id"
+      :stations="productDemo?.console.stations || []"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewSuppliers
+      v-else-if="selectedSurface?.id === 'kitchen.suppliers'"
+      :key="selectedSurface.id"
+      :suppliers="productDemo?.console.suppliers || []"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewTables
+      v-else-if="selectedSurface?.id === 'kitchen.tables'"
+      :key="selectedSurface.id"
+      :tables="productDemo?.console.tables || emptyTables"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewFinance
+      v-else-if="selectedSurface?.id === financeSurface.id"
+      :key="selectedSurface.id"
+      :finance="productDemo?.console.finance || emptyFinance"
+      :error="Boolean(productDemoError)"
+    />
+    <MiseboxLandingConsolePreviewEmptyCanvas
+      v-else-if="selectedSurface"
+      :key="selectedSurface.id"
+      :title="selectedSurface.title"
+    />
+  </LandingConsolePreviewFrame>
 </template>
 
 <script setup lang="ts">
@@ -272,11 +205,3 @@ const openFullKitchenConsole = async (event: MouseEvent) => {
   await navigateTo('/console/kitchen')
 }
 </script>
-
-<style scoped>
-.console-preview-kitchen-pill.pill {
-  min-width: 0;
-  max-width: 100%;
-  overflow: hidden;
-}
-</style>

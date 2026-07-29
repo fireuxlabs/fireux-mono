@@ -5,7 +5,7 @@
         <UBadge color="primary" variant="subtle" size="lg">
           Misebox card system
         </UBadge>
-        <h1>One language.<br>Every card.</h1>
+        <h1>One language.<br />Every card.</h1>
         <p>
           Cells scan quickly, pills select compactly, and previews carry richer
           context. The content changes; the shared visual grammar does not.
@@ -159,7 +159,10 @@
           <ChefCardsPill v-bind="chefCard" />
         </MiseboxCardSpecimen>
         <MiseboxCardSpecimen label="Preview">
-          <ChefCardsPreview v-bind="chefCard" specialties-csv="Grill, Mise en place" />
+          <ChefCardsPreview
+            v-bind="chefCard"
+            specialties-csv="Grill, Mise en place"
+          />
         </MiseboxCardSpecimen>
       </MiseboxCardFamilySection>
 
@@ -243,7 +246,9 @@
         :variants="['cell']"
       >
         <MiseboxCardSpecimen label="Cell" candidate>
-          <ConsoleKitchenOperationsSuppliersCardsCell v-bind="kitchenSupplierCell" />
+          <ConsoleKitchenOperationsSuppliersCardsCell
+            v-bind="kitchenSupplierCell"
+          />
         </MiseboxCardSpecimen>
       </MiseboxCardFamilySection>
 
@@ -364,6 +369,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from '#imports'
+import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
 import type { PublicMenuIndexItem } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-index.model'
 import MiseboxCardFamilySection from './CardFamilySection.vue'
 
@@ -375,15 +381,16 @@ type CardFamilyCatalogItem = readonly [
   variants: readonly CardVariantName[],
 ]
 
-const dishImage = '/img/showcase/menu/deanos/deanos-classic.jpg'
+const dishImage = miseboxDemoMediaUrl('kitchens/deanos/menu/deanos-classic.jpg')
 const ingredientImage = '/img/showcase/ingredients/beef-mince.jpg'
 const routeScope = { kind: 'root' } as const
 const searchQuery = ref('')
 const activeVariant = ref<CardVariant>('all')
-const normalizeCardSearch = (value: string) => value
-  .toLocaleLowerCase()
-  .replace(/[^\p{L}\p{N}]+/gu, ' ')
-  .trim()
+const normalizeCardSearch = (value: string) =>
+  value
+    .toLocaleLowerCase()
+    .replace(/[^\p{L}\p{N}]+/gu, ' ')
+    .trim()
 
 const variantOptions: {
   value: CardVariant
@@ -421,10 +428,11 @@ const specimenCount = familyCatalog.reduce(
 const visibleFamilyCount = computed(() => {
   const query = normalizeCardSearch(searchQuery.value)
   return familyCatalog.filter(([title, source, variants]) => {
-    const matchesQuery = !query
-      || normalizeCardSearch(`${title} ${source}`).includes(query)
-    const matchesVariant = activeVariant.value === 'all'
-      || variants.includes(activeVariant.value as CardVariantName)
+    const matchesQuery =
+      !query || normalizeCardSearch(`${title} ${source}`).includes(query)
+    const matchesVariant =
+      activeVariant.value === 'all' ||
+      variants.includes(activeVariant.value as CardVariantName)
     return matchesQuery && matchesVariant
   }).length
 })
@@ -636,7 +644,6 @@ const professionalCard = {
   badges: ['Grill', 'Prep'],
   summary: 'Kitchen professional focused on organised, fast service.',
 }
-
 </script>
 
 <style scoped>
@@ -797,16 +804,16 @@ const professionalCard = {
 
 @media (max-width: 47.999rem) {
   .misebox-card-library__search,
-  .misebox-card-library__toolbar :deep([role="group"]) {
+  .misebox-card-library__toolbar :deep([role='group']) {
     width: 100%;
   }
 
-  .misebox-card-library__toolbar :deep([role="group"] > *) {
+  .misebox-card-library__toolbar :deep([role='group'] > *) {
     min-width: 0;
     flex: 1;
   }
 
-  .misebox-card-library__toolbar :deep([role="group"] span) {
+  .misebox-card-library__toolbar :deep([role='group'] span) {
     display: none;
   }
 

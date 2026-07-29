@@ -343,16 +343,22 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/kitchen-index.model.ts',
   kitchenTargetCollection:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts',
+  kitchenInterface:
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/utils/view/useKitchenInterface.ts',
   kitchenConsoleIndex:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleIndex.ts',
   kitchenConsole:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/core/useKitchenConsole.ts',
   kitchenTargetApi:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
+  kitchenPublicProjection:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/public-projection.ts',
   kitchenTargetResolver:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/console-targets.ts',
   kitchenCreate:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts',
+  kitchenUpdate:
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts',
   kitchenOnboardingHandler:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
@@ -769,6 +775,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.kitchenModel,
     /Omit<[\s\S]*FireuxConsoleEntityIdentity,[\s\S]*'image_url' \| 'gallery'[\s\S]*>/,
     'Kitchen identity must exclude Place-owned media.'
+  )
+  assert.match(
+    source.kitchenModel,
+    /card_image_url\?: string[\s\S]*card_image_url: ''/,
+    'Kitchen identity must declare one sparse card-image override without copying Place media.'
+  )
+  assert.match(
+    source.kitchenInterface,
+    /cardImageUrl = safeString\(identity\.cardImageUrl\)[\s\S]*cardImageUrl \|\|[\s\S]*placeImageUrl \|\|[\s\S]*identity\.logoImageUrl/,
+    'Kitchen cards must prefer the explicit Kitchen card image, then inherit Place media, then fall back to the Kitchen logo.'
+  )
+  assert.match(
+    source.kitchenPublicProjection,
+    /parts\.rootIdentity\.cardImageUrl \|\| parts\.identity\.imageUrl/,
+    'The public Kitchen directory must resolve the same Kitchen override over inherited Place media.'
+  )
+  assert.match(
+    source.kitchenUpdate,
+    /moveString\('identity\.card_image_url', 'identity\.card_image_url'\)/,
+    'An empty Kitchen card-image override must delete itself so the card inherits Place again.'
   )
   assert.doesNotMatch(
     source.kitchenSpine,

@@ -4,7 +4,8 @@ import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 export const ecosystemConfig = {
   id: 'fireux-fireux',
   name: 'fireux',
-  description: 'Core FireUX ecosystem and Firebase project.',
+  description:
+    'The parent FireUX ecosystem for launching Apps and reviewing their Projects, Ecosystems, and users.',
   firebase: {
     apiKey: 'AIzaSyBXQzbWwcOCMyBEVn1plDVJAofmalenLM4',
     authDomain: 'fireux-2005.firebaseapp.com',

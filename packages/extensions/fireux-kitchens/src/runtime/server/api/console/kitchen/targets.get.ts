@@ -117,6 +117,10 @@ function projectKitchenTarget(input: {
   const phone = place.phone
   const latitude = optionalNumber(input.place.lat)
   const longitude = optionalNumber(input.place.lng)
+  const cardImageUrl = rootIdentity.cardImageUrl || resolvedIdentity.imageUrl
+  const cardImageShade = rootIdentity.cardImageUrl
+    ? rootIdentity.imageShade
+    : resolvedIdentity.imageShade
 
   return {
     id: input.id,
@@ -132,7 +136,10 @@ function projectKitchenTarget(input: {
     identity: {
       display_name: displayName,
       tagline,
-      image_url: resolvedIdentity.imageUrl,
+      image_url: cardImageUrl,
+      ...(rootIdentity.cardImageUrl
+        ? { card_image_url: rootIdentity.cardImageUrl }
+        : {}),
       ...(rootIdentity.logoImageUrl
         ? { logo_image_url: rootIdentity.logoImageUrl }
         : {}),
@@ -168,11 +175,11 @@ function projectKitchenTarget(input: {
     ...(brandTagline ? { brand_tagline: brandTagline } : {}),
     ...(formattedAddress ? { formatted_address: formattedAddress } : {}),
     ...(shortAddress ? { short_address: shortAddress } : {}),
-    ...(resolvedIdentity.imageUrl
-      ? { image_url: resolvedIdentity.imageUrl }
+    ...(cardImageUrl
+      ? { image_url: cardImageUrl }
       : {}),
-    ...(resolvedIdentity.imageUrl
-      ? { image_shade: resolvedIdentity.imageShade }
+    ...(cardImageUrl
+      ? { image_shade: cardImageShade }
       : {}),
     ...(gallery.length ? { food_gallery: gallery } : {}),
     ...(resolvedIdentity.currencyCode

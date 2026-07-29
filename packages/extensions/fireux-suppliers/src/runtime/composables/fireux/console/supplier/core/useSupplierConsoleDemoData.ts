@@ -5,9 +5,14 @@ import {
   useConsoleDemoData,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDemoData'
 import {
-  useSupplierInterface,
   type SupplierSurface,
 } from '../../../firestore/supplier/utils/view/useSupplierInterface'
+import {
+  projectSupplierDemoWorld,
+} from '../../../../../utils/supplier-demo-world'
+import type {
+  PublicCompanyProjection,
+} from 'fireux-companies/runtime/models/company-public.model'
 import type {
   SupplierCatalogue,
   SupplierIngredient,
@@ -17,6 +22,7 @@ import type {
 export type SupplierConsoleDemoScenario = {
   appId: string
   supplier: SupplierSurface
+  companyPlace: PublicCompanyProjection
   ingredients: SupplierIngredient[]
   items: SupplierItem[]
   catalogues: SupplierCatalogue[]
@@ -31,27 +37,26 @@ export function useSupplierConsoleDemoData(
   active: MaybeRefOrGetter<boolean>
 ) {
   const { appId } = useFireUXConfig()
-  const { surface } = useSupplierInterface()
 
   return useConsoleDemoData<SupplierConsoleDemoData>({
     active,
     loader: async () => {
-      const { supplierDemoScenarios } = await import(
-        '../../../../../demo/supplier/scenarios'
-      )
-      const scenarios = supplierDemoScenarios.reduce<SupplierConsoleDemoScenario[]>(
+      const [supplierModule, companyModule] = await Promise.all([
+        import('../../../../../demo/supplier/scenarios'),
+        import('fireux-companies/runtime/demo/company/scenarios'),
+      ])
+      const supplierDemoWorld = projectSupplierDemoWorld({
+        scenarios: supplierModule.supplierDemoScenarios,
+        companyTargets: companyModule.companyDemoTargets,
+      })
+      const scenarios = supplierDemoWorld.reduce<SupplierConsoleDemoScenario[]>(
         (items, scenario) => {
           if (scenario.appId !== String(appId || '').trim()) return items
 
-          const supplier = surface({
-            supplier: scenario.supplier,
-            appSupport: scenario.appSupport,
-          })
-          if (!supplier) return items
-
           items.push({
             appId: scenario.appId,
-            supplier,
+            supplier: scenario.supplier,
+            companyPlace: scenario.companyPlace,
             ingredients: scenario.ingredients.map(ingredient => ({
               ...ingredient,
             })),

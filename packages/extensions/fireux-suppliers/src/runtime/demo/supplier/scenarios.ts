@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-22 15:10 CEST — Demo Console shape pass: model Supplier roots and child Operations as coherent per-target scenarios.
 // Concurrent edit — 2026-07-25 — Deanos supply pass: provide deterministic SupplierIngredient coverage and priced foodservice offers.
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
 import {
   AppSupplierModel,
   SupplierCatalogueModel,
@@ -14,19 +15,24 @@ import {
   type SupplierItem,
 } from '../../models/supplier/Supplier.model'
 
-const timestamp: FirebaseTimestamp = {
-  seconds: 1_720_000_000,
+const createdTimestamp: FirebaseTimestamp = {
+  seconds: 1_784_620_800,
+  nanoseconds: 0,
+}
+
+const updatedTimestamp: FirebaseTimestamp = {
+  seconds: 1_784_966_400,
   nanoseconds: 0,
 }
 
 const created = {
-  at: timestamp,
+  at: createdTimestamp,
   by: 'demo',
   app_id: 'misebox-app',
 }
 
 const updated = {
-  at: timestamp,
+  at: updatedTimestamp,
   by: 'demo',
 }
 
@@ -63,6 +69,7 @@ type SupplierDemoScenarioSeed = {
   companyId: string
   name: string
   headline: string
+  logoImageUrl: string
   categories: string[]
   state: Supplier['state']
   catalogueState: Supplier['catalogue_state']
@@ -129,6 +136,7 @@ const supplierRoot = (
   supplier_organization_name: input.name,
   tagline: input.headline,
   supplier_headline: input.headline,
+  supplier_image: input.logoImageUrl,
   summary: `${input.name} is a deterministic read-only Supplier Console example.`,
   supplier_bio: `${input.name} supplies connected Demo Kitchens through one shared read-only Misebox world.`,
   supplier_item_categories: [...input.categories],
@@ -228,6 +236,7 @@ const validateSupplierDemoScenario = (scenario: SupplierDemoScenario) => {
   if (
     !scenario.appId ||
     !scenario.supplier.company_id ||
+    !scenario.supplier.supplier_image ||
     'place_id' in scenario.supplier ||
     scenario.supplier.app_scope_state !== 'parent_app' ||
     scenario.supplier.app_scope_app_id !== scenario.appId ||
@@ -344,6 +353,7 @@ const alpineFoodservice = buildSupplierDemoScenario({
   companyId: 'alpine-foodservice-hq',
   name: 'Alpine Foodservice',
   headline: 'Fresh meat, dairy, bakery and frozen kitchen essentials',
+  logoImageUrl: miseboxDemoMediaUrl('suppliers/alpine-foodservice/logo.png'),
   categories: ['Meat', 'Poultry', 'Dairy', 'Bakery', 'Frozen'],
   state: 'official',
   catalogueState: 'integrated',
@@ -596,6 +606,7 @@ const pantryHouse = buildSupplierDemoScenario({
   companyId: 'pantry-house-hq',
   name: 'Pantry House',
   headline: 'Dry goods, condiments and drinks for busy kitchens',
+  logoImageUrl: miseboxDemoMediaUrl('suppliers/pantry-house/logo.png'),
   categories: ['Dry goods', 'Condiments', 'Drinks'],
   state: 'official',
   catalogueState: 'integrated',
@@ -920,6 +931,7 @@ const bernMarketGarden = buildSupplierDemoScenario({
   companyId: 'bern-market-garden-hq',
   name: 'Bern Market Garden',
   headline: 'Fresh produce, fruit and herbs from the region',
+  logoImageUrl: miseboxDemoMediaUrl('suppliers/bern-market-garden/logo.png'),
   categories: ['Produce', 'Fruit', 'Herbs'],
   state: 'official',
   catalogueState: 'integrated',

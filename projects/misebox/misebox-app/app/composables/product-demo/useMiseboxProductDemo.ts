@@ -21,6 +21,9 @@ import {
   projectKitchenMiseTasks,
   type KitchenMiseTaskSummary,
 } from 'fireux-kitchens/runtime/models/kitchen/mise-presentation'
+import {
+  projectSupplierDemoWorld,
+} from 'fireux-suppliers/runtime/utils/supplier-demo-world'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
@@ -152,6 +155,9 @@ export type MiseboxProductDemo = {
       name: string
       headline: string
       imageUrl: string
+      logoImageUrl: string
+      placeImageUrl: string
+      headquartersLabel: string
       categories: string[]
       deliveryAreas: string[]
       linkedIngredientCount: number
@@ -249,33 +255,13 @@ async function loadMiseboxProductDemo(
     import('fireux-kitchens/runtime/utils/kitchen-spine'),
     import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'),
   ])
-  const companyTargetById = new Map(
-    companyModule.companyDemoTargets.map(target => [
-      target.company.id,
-      target,
-    ])
-  )
-  const unresolvedSupplierCompanies =
-    supplierModule.supplierDemoScenarios.flatMap((scenario) => {
-      const companyId = String(scenario.supplier.company_id || '').trim()
-      const target = companyTargetById.get(companyId)
-      return (
-        companyId &&
-        target?.company.id === companyId &&
-        target.place.id === companyId &&
-        !('place_id' in scenario.supplier)
-      )
-        ? []
-        : [scenario.supplier.id]
-    })
-  if (unresolvedSupplierCompanies.length) {
-    throw new Error(
-      `Supplier Demo Company/Place relationships are unresolved: ${unresolvedSupplierCompanies.join(', ')}`
-    )
-  }
+  const supplierDemoWorld = projectSupplierDemoWorld({
+    scenarios: supplierModule.supplierDemoScenarios,
+    companyTargets: companyModule.companyDemoTargets,
+  })
 
   const supplierIngredients = new Set(
-    supplierModule.supplierDemoScenarios.flatMap(scenario =>
+    supplierDemoWorld.flatMap(scenario =>
       scenario.ingredients.map(ingredient =>
         `${scenario.supplier.id}:${ingredient.ingredient_id}`
       )
@@ -335,7 +321,7 @@ async function loadMiseboxProductDemo(
   const consoleSupplierOperation =
     suppliersModule.buildKitchenDemoSuppliersOperation({
       links: consoleScenario.supplierIngredientLinks,
-      supplierScenarios: supplierModule.supplierDemoScenarios,
+      supplierScenarios: supplierDemoWorld,
     })
   const consoleTableCount = kitchenSpineModule.readKitchenTableCount(
     consoleScenario.kitchen
@@ -456,7 +442,7 @@ async function loadMiseboxProductDemo(
     )
   const consoleDishOperation = dishesModule.buildKitchenDemoDishesOperation({
     scenario: consoleScenario,
-    supplierScenarios: supplierModule.supplierDemoScenarios,
+    supplierScenarios: supplierDemoWorld,
     ingredientRoots: consoleIngredientRoots,
   })
   const menuManifest = presentationModule.featuredMenuDemoManifest

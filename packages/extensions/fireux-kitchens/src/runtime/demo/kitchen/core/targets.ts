@@ -1,5 +1,8 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
-import { PlaceModel, type Place } from 'fireux-places/runtime/models/place.model.ts'
+import {
+  PlaceModel,
+  type Place,
+} from 'fireux-places/runtime/models/place.model.ts'
 import type { PublicPlaceProjection } from 'fireux-places/runtime/models/place-public.model.ts'
 import {
   hasExactPublicPlaceProjectionShape,
@@ -14,11 +17,12 @@ import {
 } from '../../../models/kitchen.model'
 import {
   deanosKitchenDemoIdentity,
-  kitchenDemoAssetBase,
   kitchenDemoCreated,
+  kitchenDemoMediaUrl,
   kitchenDemoUpdated,
   deanosKitchenDemoTeamMemberIds,
   miseboxRestaurantKitchenDemoIdentity,
+  placeDemoMediaUrl,
   pizzaTheActionKitchenDemoIdentity,
 } from './fixtures'
 import type { KitchenDemoIdentity } from './types'
@@ -92,9 +96,7 @@ const kitchen = (input: DemoKitchenInput): Kitchen => ({
     style: input.menuStyle,
   },
   orders: {
-    ...(input.operationHours
-      ? { operation_hours: input.operationHours }
-      : {}),
+    ...(input.operationHours ? { operation_hours: input.operationHours } : {}),
     printing: {
       ticket_device_id: '',
     },
@@ -118,8 +120,7 @@ const place = (input: DemoPlaceInput): Place => ({
   brand_tagline: input.tagline,
   about:
     'A deterministic read-only venue used to explore Misebox without changing Live or Test data.',
-  formatted_address:
-    `${input.street}, ${input.postalCode} ${input.city}, Switzerland`,
+  formatted_address: `${input.street}, ${input.postalCode} ${input.city}, Switzerland`,
   short_address: `${input.city}, Switzerland`,
   address: {
     street: input.street,
@@ -207,15 +208,18 @@ const deanosPalette = {
   secondary_color: '#181817',
 } satisfies SparseBrandPalette
 
-const deanosMediaBase = `${kitchenDemoAssetBase}/deanos`
-const deanosProfileImage = `${deanosMediaBase}/deanos-classic.jpg`
-const deanosCoverImage = `${deanosMediaBase}/double-trouble.jpg`
+const deanosKitchenMedia = (relativePath: string) =>
+  kitchenDemoMediaUrl(deanosKitchenDemoIdentity.kitchenId, relativePath)
+const deanosPlaceMedia = (filename: string) =>
+  placeDemoMediaUrl(deanosKitchenDemoIdentity.placeId, `images/${filename}`)
+const deanosProfileImage = deanosPlaceMedia('deanos-classic.jpg')
+const deanosCoverImage = deanosPlaceMedia('double-trouble.jpg')
 const deanosGalleryImages = [
   deanosProfileImage,
   deanosCoverImage,
-  `${deanosMediaBase}/hot-honey-chicken.jpg`,
-  `${deanosMediaBase}/dirty-deanos-fries.jpg`,
-  `${deanosMediaBase}/salted-caramel-shake.jpg`,
+  deanosPlaceMedia('hot-honey-chicken.jpg'),
+  deanosPlaceMedia('dirty-deanos-fries.jpg'),
+  deanosPlaceMedia('salted-caramel-shake.jpg'),
 ]
 
 const deanosMenuStyle = {
@@ -238,7 +242,7 @@ export const deanosKitchenDemoTarget = target(
     identity: deanosKitchenDemoIdentity,
     name: 'Deanos Smash Burger',
     tagline: 'Smashed to order. Served fast.',
-    logoImageUrl: `${deanosMediaBase}/logo.png`,
+    logoImageUrl: deanosKitchenMedia('logo.png'),
     menuStyle: deanosMenuStyle,
     palette: deanosPalette,
     paymentMethods: [
@@ -317,8 +321,6 @@ const pizzaTheActionPalette = {
   secondary_color: '#f2c94c',
 } satisfies SparseBrandPalette
 
-const pizzaTheActionMediaBase = `${kitchenDemoAssetBase}/pizza-the-action`
-
 const pizzaTheActionMenuStyle = {
   background_color_light: '#fff7d6',
   background_color_dark: '#102d20',
@@ -339,7 +341,10 @@ export const pizzaTheActionKitchenDemoTarget = target(
     identity: pizzaTheActionKitchenDemoIdentity,
     name: 'Pizza the Action',
     tagline: 'Big flavour. Zero drama.',
-    logoImageUrl: `${pizzaTheActionMediaBase}/logo.png`,
+    logoImageUrl: kitchenDemoMediaUrl(
+      pizzaTheActionKitchenDemoIdentity.kitchenId,
+      'logo.png'
+    ),
     menuStyle: pizzaTheActionMenuStyle,
     palette: pizzaTheActionPalette,
     paymentMethods: [
@@ -374,9 +379,6 @@ const miseboxRestaurantPalette = {
   secondary_color: '#61715c',
 } satisfies SparseBrandPalette
 
-const miseboxRestaurantMediaBase =
-  `${kitchenDemoAssetBase}/misebox-restaurant`
-
 const miseboxRestaurantMenuStyle = {
   background_color_light: '#eee7da',
   background_color_dark: '#11251d',
@@ -397,7 +399,10 @@ export const miseboxRestaurantKitchenDemoTarget = target(
     identity: miseboxRestaurantKitchenDemoIdentity,
     name: 'Misebox Restaurant',
     tagline: 'A polished seasonal Menu and Kiosk',
-    logoImageUrl: `${miseboxRestaurantMediaBase}/logo.png`,
+    logoImageUrl: kitchenDemoMediaUrl(
+      miseboxRestaurantKitchenDemoIdentity.kitchenId,
+      'logo.png'
+    ),
     menuStyle: miseboxRestaurantMenuStyle,
     palette: miseboxRestaurantPalette,
     paymentMethods: [
@@ -452,7 +457,7 @@ for (const item of kitchenDemoTargets) {
     item.appSupport.join_requests.length !== 0 ||
     new Set(teamIds).size !== teamIds.length ||
     new Set(operatorIds).size !== operatorIds.length ||
-    operatorIds.some(id => !teamIds.includes(id))
+    operatorIds.some((id) => !teamIds.includes(id))
   ) {
     throw new Error('Kitchen Demo target identities are invalid.')
   }

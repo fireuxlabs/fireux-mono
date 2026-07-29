@@ -1,25 +1,25 @@
 <template>
   <div class="technologies-page">
-    <h1 class="fx-type-page-title">Technologies Used</h1>
+    <h1 class="fx-type-page-title">FireUX technologies</h1>
     <p class="fx-type-description">
-      This project is built with a carefully selected set of modern technologies
-      to deliver a robust, scalable, and maintainable application. Below are the
-      core technologies currently in use.
+      FireUX Apps use one shared Nuxt runtime and explicit Firebase bindings.
+      Extension Modules add capability at build time.
     </p>
     <ul class="fx-type-description tech-list text-default">
       <li>
         <Icon name="skill-icons:nuxtjs-dark" class="list-icon" />
-        <strong>Nuxt 4</strong>: The latest version of the Nuxt framework,
-        providing SSR, routing, and modular development for Vue applications.
+        <strong>Nuxt 4</strong>: App routing, server rendering, and Module
+        composition.
       </li>
       <li>
         <Icon name="vscode-icons:file-type-firebase" class="list-icon" />
-        <strong>Firebase</strong>: Authentication, Firestore database, and
-        serverless functions for backend and real-time features.
+        <strong>Firebase</strong>: Authentication, named Firestore databases,
+        Hosting, and server-side infrastructure.
       </li>
       <li>
         <Icon name="logos:stripe" class="list-icon" />
-        <strong>Stripe</strong>: Payment processing and subscription management.
+        <strong>Stripe</strong>: Checkout support for configured product
+        Modules.
       </li>
     </ul>
   </div>

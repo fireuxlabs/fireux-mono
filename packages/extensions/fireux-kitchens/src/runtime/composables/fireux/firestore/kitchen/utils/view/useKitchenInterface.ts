@@ -318,8 +318,15 @@ export function useKitchenInterface() {
     const shortAddress = toShortAddress(
       safeString(kitchen.short_address) || formattedAddress
     )
+    const placeImageUrl = safeString(
+      kitchen.display_image_url || kitchen.image_url
+    )
+    const cardImageUrl = safeString(identity.cardImageUrl)
     const imageUrl = safeString(
-      identity.logoImageUrl || kitchen.logo_image_url
+      cardImageUrl ||
+        placeImageUrl ||
+        identity.logoImageUrl ||
+        kitchen.logo_image_url
     )
 
     const isPubliclyVisible = kitchen.publicly_visible !== false
@@ -345,7 +352,11 @@ export function useKitchenInterface() {
 
       imageUrl,
 
-      imageShade: identity.imageShade || kitchen.image_shade,
+      imageShade: cardImageUrl
+        ? identity.imageShade
+        : placeImageUrl
+          ? kitchen.image_shade
+          : identity.imageShade || kitchen.image_shade,
 
       claimedBy: safeString(kitchen.claimed_by),
     }
@@ -377,8 +388,15 @@ export function useKitchenInterface() {
     const identity = readKitchenIdentity(target)
     const displayName = safeString(identity.displayName || target.name).trim()
     const tagline = safeString(identity.tagline).trim()
+    const placeImageUrl = safeString(
+      target.display_image_url || target.image_url
+    ).trim()
+    const cardImageUrl = safeString(identity.cardImageUrl).trim()
     const imageUrl = safeString(
-      identity.logoImageUrl || target.logo_image_url
+      cardImageUrl ||
+        placeImageUrl ||
+        identity.logoImageUrl ||
+        target.logo_image_url
     ).trim()
     const foodGallery = Array.isArray(target.food_gallery)
       ? target.food_gallery
@@ -407,7 +425,11 @@ export function useKitchenInterface() {
       formattedAddress: '',
       shortAddress: '',
       imageUrl,
-      imageShade: undefined,
+      imageShade: cardImageUrl
+        ? identity.imageShade
+        : placeImageUrl
+          ? target.image_shade
+          : identity.imageShade || target.image_shade,
       claimedBy: '',
     }
 

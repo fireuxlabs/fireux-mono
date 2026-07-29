@@ -10,6 +10,9 @@ import {
   type AppSupplier,
   type Supplier,
 } from '../../../../../../models/supplier/Supplier.model'
+import type {
+  PublicCompanyProjection,
+} from 'fireux-companies/runtime/models/company-public.model'
 import type { Ref } from 'vue'
 
 const supplierCollection = SupplierStorage.rootCollection
@@ -25,6 +28,9 @@ export namespace SupplierCard {
     to: string
     imageUrl: string
     avatarUrl: string
+    logoImageUrl: string
+    placeImageUrl: string
+    imageShade: PublicCompanyProjection['image_shade']
     title: string
     subtitle: string
     badges: string[]
@@ -33,6 +39,7 @@ export namespace SupplierCard {
     shortName: string
     ownerLabel: string
     locationLabel: string
+    headquartersLabel: string
     organizationName: string
     locationsLabel: string
     categoriesCsv?: string
@@ -43,10 +50,13 @@ type SupplierAccessSurface = Partial<
   Pick<AppSupplier, 'operator_ids' | 'team_ids' | 'join_requests'>
 >
 
-export type SupplierSurface = Partial<Supplier> & SupplierAccessSurface
+export type SupplierSurface = Partial<Supplier> & SupplierAccessSurface & {
+  company_place?: PublicCompanyProjection
+}
 export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> = {
   supplier?: TSupplier | null | undefined
   appSupport?: Partial<AppSupplier> | null | undefined
+  companyPlace?: PublicCompanyProjection | null | undefined
 }
 
 export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null) {
@@ -66,9 +76,16 @@ export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null
       operator_ids: _rootOperatorIds,
       team_ids: _rootTeamIds,
       join_requests: _rootJoinRequests,
+      company_place: _rootCompanyPlace,
       ...root
     } = source as Record<string, unknown>
     const appSupport = parts.appSupport ?? null
+    const companyPlace = parts.companyPlace ?? null
+    if (companyPlace) {
+      const companyId = safeString(root.company_id).trim()
+      const placeId = safeString(companyPlace.id).trim()
+      if (!companyId || companyId !== placeId) return null
+    }
     const merged = {
       ...root,
       ...(appSupport
@@ -76,6 +93,11 @@ export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null
             operator_ids: safeStringArray(appSupport.operator_ids),
             team_ids: safeStringArray(appSupport.team_ids),
             join_requests: safeStringArray(appSupport.join_requests),
+          }
+        : {}),
+      ...(companyPlace
+        ? {
+            company_place: { ...companyPlace },
           }
         : {}),
     } as TSupplier & SupplierSurface
@@ -96,7 +118,12 @@ export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null
     const deliveryAreas = safeStringArray(target.supplier_delivery_areas)
     const headline = safeString(target.supplier_headline)
     const summary = safeString(target.summary)
-    const imageUrl = safeString(target.supplier_image)
+    const logoImageUrl = safeString(target.supplier_image)
+    const placeImageUrl = safeString(target.company_place?.image_url)
+    const imageUrl = placeImageUrl || logoImageUrl
+    const headquartersLabel =
+      safeString(target.company_place?.short_address)
+      || safeString(target.company_place?.name)
     const categoriesCsv = csv(badges)
     const locationsLabel = deliveryAreas.join(', ')
 
@@ -104,7 +131,10 @@ export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null
       id,
       to: slug ? `/${supplierCollection}/${encodeURIComponent(slug)}` : '',
       imageUrl,
-      avatarUrl: imageUrl,
+      avatarUrl: logoImageUrl || imageUrl,
+      logoImageUrl,
+      placeImageUrl,
+      imageShade: target.company_place?.image_shade || 'none',
       title: organizationName,
       subtitle: headline,
       badges,
@@ -114,7 +144,8 @@ export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null
       status: safeString(target.state),
       shortName: slug,
       ownerLabel: organizationName,
-      locationLabel: locationsLabel,
+      locationLabel: headquartersLabel,
+      headquartersLabel,
       categoriesCsv: categoriesCsv || undefined,
     }
   }

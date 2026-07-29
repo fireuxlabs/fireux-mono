@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: name the polished default world Misebox Restaurant.
 // Concurrent edit — 2026-07-22 18:12 CEST — Pizza Demo pass: add one stable fictional pizzeria identity without changing existing Demo ownership.
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
 import type { KitchenDemoIdentity } from './types'
 
 export const deanosKitchenDemoIdentity = {
@@ -48,10 +49,13 @@ export const pizzaTheActionKitchenDemoIdentity = {
   serviceId: 'pizza-the-action-demo-evening-service',
 } as const satisfies KitchenDemoIdentity
 
-export const kitchenDemoAssetBase = '/img/showcase/menu'
+export const kitchenDemoMediaUrl = (kitchenId: string, relativePath: string) =>
+  miseboxDemoMediaUrl(`kitchens/${kitchenId}/${relativePath}`)
 
-export const DEANOS_KITCHEN_DEMO_ORIGIN_ISO =
-  '2025-11-03T09:00:00.000Z'
+export const placeDemoMediaUrl = (placeId: string, relativePath: string) =>
+  miseboxDemoMediaUrl(`places/${placeId}/${relativePath}`)
+
+export const DEANOS_KITCHEN_DEMO_ORIGIN_ISO = '2025-11-03T09:00:00.000Z'
 
 export const kitchenDemoTimestamp = (iso: string): FirebaseTimestamp => ({
   seconds: Math.floor(Date.parse(iso) / 1000),
@@ -64,12 +68,10 @@ export const kitchenDemoCreated = (
   by = 'demo'
 ) => ({
   at: kitchenDemoTimestamp(
-    iso
-    ?? (
-      identity.kitchenId === deanosKitchenDemoIdentity.kitchenId
+    iso ??
+      (identity.kitchenId === deanosKitchenDemoIdentity.kitchenId
         ? DEANOS_KITCHEN_DEMO_ORIGIN_ISO
-        : '2026-07-22T09:00:00.000Z'
-    )
+        : '2026-07-22T09:00:00.000Z')
   ),
   by,
   app_id: identity.appId,

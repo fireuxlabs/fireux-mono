@@ -1,0 +1,37 @@
+{
+  "format": "fireux-misebox-demo-media/1",
+  "asset_directory": "scripts/data/misebox-demo-media/assets",
+  "policy": "immutable public Demo delivery only; create or reuse exact objects; never overwrite, delete, or write Firestore",
+  "target": {
+    "app_id": "misebox-app",
+    "project_id": "misebox-78f9c",
+    "database_id": "misebox",
+    "storage_bucket": "misebox-78f9c.appspot.com",
+    "object_prefix": "demo/misebox-app",
+    "download_token": "f71ae1d8-4b0e-4d0c-8b65-cc99580a6c60"
+  },
+  "expected_source_count": 68,
+  "expected_object_count": 73,
+  "aliases": [
+    {
+      "source": "kitchens/deanos/menu/deanos-classic.jpg",
+      "object": "places/demo-deanos-place/images/deanos-classic.jpg"
+    },
+    {
+      "source": "kitchens/deanos/menu/dirty-deanos-fries.jpg",
+      "object": "places/demo-deanos-place/images/dirty-deanos-fries.jpg"
+    },
+    {
+      "source": "kitchens/deanos/menu/double-trouble.jpg",
+      "object": "places/demo-deanos-place/images/double-trouble.jpg"
+    },
+    {
+      "source": "kitchens/deanos/menu/hot-honey-chicken.jpg",
+      "object": "places/demo-deanos-place/images/hot-honey-chicken.jpg"
+    },
+    {
+      "source": "kitchens/deanos/menu/salted-caramel-shake.jpg",
+      "object": "places/demo-deanos-place/images/salted-caramel-shake.jpg"
+    }
+  ]
+}

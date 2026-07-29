@@ -32,52 +32,52 @@ const sourceMeta = {
     brand: {
       appName: 'fireux',
       bigPersonality: 'Ignite With',
-      headline: 'Powerful Applications',
+      headline: 'FireUX',
     },
     heroPrimaryLine:
-      'We configure and launch a <strong>branded web app</strong> around one useful job, with an installable PWA, accounts, an operator console, hosting, updates, and maintenance.',
+      'Onboard your <strong>Project</strong> through Ignition, manage its Apps, Ecosystem, and users in the Project Console, then add Modules or join an existing Ecosystem when required.',
     primaryCtaLabel: 'Get started',
     secondaryCtaLabel: 'Browse apps',
     secondaryCtaTo: '/apps',
     consoleBridgeLine:
-      'One FireUX project keeps the app, ecosystem, users, and future operations connected.',
+      'The Project Console brings Ignition, Apps, the selected Ecosystem, and new users together for each FireUX Project.',
     heroBullets: [
-      'One job for the app to do',
-      'Your branding and pages',
-      'User accounts and operator console',
-      'Hosting, updates, and maintenance',
+      'Start App requests with Ignition',
+      'Review Project Apps and Ecosystems',
+      'Monitor new App users',
+      'Browse public Apps, Solutions, Operations, and Modules',
     ],
     rightPanelItems: [
       {
-        title: 'Choose',
-        description: 'Use an existing app or start a focused new one.',
-        icon: 'i-lucide-layout-grid',
-      },
-      {
-        title: 'Launch',
-        description: 'We configure the brand, users, workflow, and hosting.',
+        title: 'Ignition',
+        description: 'Capture an App request and work through its launch checklist.',
         icon: 'i-lucide-rocket',
       },
       {
-        title: 'Run',
-        description: 'Manage the app, team access, and future changes.',
-        icon: 'i-lucide-gauge',
+        title: 'Apps',
+        description: 'Review the Apps connected to the selected Project.',
+        icon: 'i-lucide-app-window',
+      },
+      {
+        title: 'Ecosystem',
+        description: 'Review the Project Ecosystem and the Apps inside it.',
+        icon: 'i-lucide-orbit',
       },
     ],
     seo: {
-      title: 'FireUX — Your Business. Your App.',
+      title: 'FireUX — Projects, Apps, and Ecosystems',
       description:
-        'Launch a branded web app with an installable PWA, accounts, operator console, hosting, updates, and maintenance from $150 setup and $15 per month.',
+        'Start Apps through Ignition and review their Projects, Ecosystems, and new users in the FireUX Project Console.',
     },
   },
   about: {
     hero: {
       label: 'About FireUX',
       supportingCopy:
-        'We run ecosystem apps from one platform surface, so teams can ship faster, keep architecture aligned, and scale modules without fragmenting the system.',
+        'FireUX also publishes the Apps, Ecosystems, Modules, Solutions, and Operations that make up the wider platform.',
       primaryAction: {
-        label: 'Open apps',
-        to: '/apps',
+        label: 'Open Project Console',
+        to: '/console/project',
       },
       secondaryAction: {
         label: 'Browse modules',
@@ -88,135 +88,132 @@ const sourceMeta = {
       title: 'What this page covers',
       subtitle: '',
       ticks: [
-        'How platform modules fit together across apps',
-        'The key platform records and their relationships',
-        'Small realistic sample objects for context',
-        'Direct links to public and console surfaces',
+        'How Projects connect Apps and Ecosystems',
+        'What the Project Console operates',
+        'How Modules add reusable capability',
+        'Where public platform records are published',
       ],
     },
     sections: {
-      keyConceptsTitle: 'FireUX - Key Concepts (Priority Order)',
+      keyConceptsTitle: 'How FireUX is organised',
       modulesEyebrow: 'Modules',
-      modulesTitle: 'How we organize the app',
+      modulesTitle: 'What FireUX is built from',
       modulesDescription:
-        'Each module owns a clear platform responsibility and together they run one operating core.',
+        'Core owns the shared runtime. Project surfaces and extension Modules add explicit capability.',
       entitiesEyebrow: 'Entities',
-      entitiesTitle: 'The records we work with every day',
+      entitiesTitle: 'The records FireUX connects',
       structureEyebrow: 'Structure',
       structureTitle: 'Relationship map',
       routesTitle: 'Key routes',
     },
     keyConcepts: [
       {
+        title: 'Project',
+        description: 'A Project is the control-plane record that connects its Apps and Ecosystem.',
+      },
+      {
+        title: 'App',
+        description: 'An App is a branded product surface connected to a Project and Ecosystem.',
+      },
+      {
         title: 'Ecosystem',
-        description: 'FireUX is the platform ecosystem that hosts domain apps and shared contracts.',
+        description: 'An Ecosystem groups Apps around one product or domain and owns their shared configuration.',
       },
       {
-        title: 'Apps',
-        description: 'Apps are product surfaces built from shared modules and runtime contracts.',
+        title: 'Module',
+        description: 'A Module is reusable, source-controlled capability explicitly composed into an App.',
       },
       {
-        title: 'Modules',
-        description: 'Modules package domain capability so apps can compose features without rewrites.',
+        title: 'User',
+        description: 'A User has an identity and App-specific membership.',
       },
       {
-        title: 'Users',
-        description: 'One user identity can move across multiple apps inside the ecosystem.',
+        title: 'Console',
+        description: 'A Console is the authenticated workspace for a selected Project, App, or Ecosystem.',
       },
       {
-        title: 'Runtime Modes',
-        description: 'Live, test, and demo modes keep operations predictable across environments.',
+        title: 'Operation',
+        description: 'An Operation names work performed inside a Console and links to its working route.',
       },
       {
-        title: 'Console Pattern',
-        description: 'Console entry follows one consistent runtime-driven pattern across apps.',
+        title: 'Solution',
+        description: 'A Solution explains a proven FireUX capability in the language someone searches for.',
       },
       {
-        title: 'Directory + Package Metadata',
-        description: 'Public entity projections and tracked package manifests have separate authority.',
-      },
-      {
-        title: 'Public Surfaces',
-        description: 'Public routes describe what is available today without exposing private operations.',
-      },
-      {
-        title: 'Service Surfaces',
-        description: 'Service apps like Stitch run on the same platform contracts and identity model.',
-      },
-      {
-        title: 'Extensibility',
-        description: 'New ecosystems can launch quickly without rebuilding platform fundamentals.',
+        title: 'Public directory',
+        description: 'Public Apps and Ecosystems are safe projections of their canonical records.',
       },
     ],
     appSpec: {
       name: 'FireUX',
-      tagline: 'Platform Operating System for Ecosystem Apps',
+      tagline: 'The parent App for FireUX Projects and Ecosystems',
       description:
-        'FireUX is the operating system for builders and operators. We run app discovery, module composition, and ecosystem operations from one structured platform.',
+        'FireUX runs the Project Console and public catalogues used to start Apps, review their Project and Ecosystem relationships, and monitor new users.',
       modules: [
         {
-          name: 'fireux-core',
-          summary: 'Runtime contracts, identity surfaces, and shared cross-app behaviors.',
-          entities: ['App', 'User'],
+          name: 'FireUX Core',
+          summary: 'Shared App shell, accounts, public directory components, and Console contracts.',
+          entities: ['App', 'Ecosystem', 'User'],
         },
         {
-          name: 'Directory and package metadata surfaces',
-          summary: 'Public entity projections stay separate from source-controlled package manifests.',
+          name: 'Project Console',
+          summary: 'The Project workspace for Ignition, Apps, Ecosystem, and Users.',
+          entities: ['Project', 'Ignition request', 'App', 'Ecosystem', 'User'],
+        },
+        {
+          name: 'Public catalogues',
+          summary: 'Public routes for Apps, Ecosystems, Modules, Solutions, and Operations.',
           entities: ['App directory entry', 'Ecosystem directory entry', 'Module package manifest'],
         },
         {
-          name: 'Catalog surfaces',
-          summary: 'Public-facing catalog content used by platform pages.',
-          entities: ['Product', 'BlogPost'],
-        },
-        {
-          name: 'Stitch app surface',
-          summary: 'Provider and request records for service matching flows.',
-          entities: ['StitchProvider', 'StitchRequest'],
+          name: 'Extension Modules',
+          summary: 'Reusable domain capability explicitly composed into FireUX Apps.',
+          entities: ['Module package manifest'],
         },
       ],
       entities: [
         {
-          name: 'App directory entry',
-          purpose: 'Safe directory projection of canonical owning App identity.',
-          keyFields: ['id', 'app_name', 'ecosystem_id', 'slug', 'status'],
-          linksTo: ['User', 'Ecosystem directory entry'],
+          name: 'Project',
+          purpose: 'Control-plane record for a FireUX Project.',
+          keyFields: ['id', 'name', 'description', 'image'],
+          linksTo: ['App', 'Ecosystem'],
+        },
+        {
+          name: 'App',
+          purpose: 'Canonical App identity connected to a Project and Ecosystem.',
+          keyFields: ['id', 'name', 'project_id', 'ecosystem_id', 'role', 'status'],
+          linksTo: ['Project', 'Ecosystem', 'User'],
+        },
+        {
+          name: 'Ecosystem',
+          purpose: 'Canonical Ecosystem identity grouping related Apps.',
+          keyFields: ['id', 'name', 'project_id', 'slug', 'status'],
+          linksTo: ['Project', 'App'],
         },
         {
           name: 'User',
-          purpose: 'Public root identity with app and profile relationship indexes.',
-          keyFields: ['id', 'display_name', 'handle', 'app_ids', 'profiles'],
-          linksTo: ['App', 'StitchProvider', 'StitchRequest'],
+          purpose: 'User identity with App-specific membership.',
+          keyFields: ['id', 'display_name', 'handle', 'profiles'],
+          linksTo: ['App'],
         },
         {
-          name: 'Ecosystem directory entry',
-          purpose: 'Safe public projection of an owning Ecosystem record.',
-          keyFields: ['id', 'name', 'slug', 'status', 'app_count'],
-          linksTo: ['App directory entry'],
+          name: 'Ignition request',
+          purpose: 'A request to configure and launch an App.',
+          keyFields: ['status', 'business', 'app_job', 'access', 'delivery'],
+          linksTo: ['Project'],
         },
         {
           name: 'Module package manifest',
-          purpose: 'Source-controlled package metadata; not an entity or public directory row.',
+          purpose: 'Source-controlled package metadata used to compose App capability.',
           keyFields: ['type', 'id', 'name', 'team'],
-          linksTo: [],
-        },
-        {
-          name: 'StitchProvider',
-          purpose: 'Service provider profile record for capabilities and availability.',
-          keyFields: ['id', 'display_name', 'type', 'availability', 'tags'],
-          linksTo: ['User', 'StitchRequest'],
-        },
-        {
-          name: 'StitchRequest',
-          purpose: 'Service request record posted for matching and delivery planning.',
-          keyFields: ['id', 'title', 'status', 'budget_type', 'tags'],
-          linksTo: ['User', 'StitchProvider'],
+          linksTo: ['App'],
         },
       ],
       routes: [
         { label: 'Home', path: '/', kind: 'public' },
         { label: 'Get Started', path: '/get-started', kind: 'public' },
         { label: 'Operations', path: '/operations', kind: 'public' },
+        { label: 'Solutions', path: '/solutions', kind: 'public' },
         { label: 'Apps', path: '/apps', kind: 'public' },
         { label: 'Modules', path: '/modules', kind: 'public' },
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
@@ -225,35 +222,37 @@ const sourceMeta = {
         { label: 'Project Ignition', path: '/console/project/ignitions', kind: 'console' },
         { label: 'Project Ecosystem', path: '/console/project/ecosystem', kind: 'console' },
         { label: 'Project Apps', path: '/console/project/apps', kind: 'console' },
+        { label: 'Project Users', path: '/console/project/users', kind: 'console' },
       ],
     },
     relationshipMap: `
-Project (FireUX control plane)
+Project
   <- Ecosystem.project_id
   <- App.project_id
 
 Ecosystem
   <- App.ecosystem_id
-Module package manifest
-  -> package/runtime wiring only
 
 User
-  -> App (membership/admin)
-  -> StitchRequest
+  -> App membership
 
-StitchRequest
-  <-> StitchProvider
+Ignition request
+  -> Project launch pipeline
+
+Module package manifest
+  -> App build and runtime composition
 `,
     seo: {
       title: 'About FireUX',
       description:
-        'How FireUX separates entity directories, package metadata, and service surfaces in one platform core.',
+        'How FireUX connects Projects, Apps, Ecosystems, Modules, Operations, Solutions, and users.',
     },
   },
   getStarted: {
     eyebrow: 'FireUX App',
     title: 'Ignition',
-    description: 'We configure and launch a FireUX app for your business.',
+    description:
+      'Tell us what the App needs to do. Ignition turns the request into a reviewed launch checklist.',
     setupPrice: '$150',
     monthlyPrice: '$15/month',
     included: [
@@ -262,7 +261,7 @@ StitchRequest
       'User accounts',
       'Operator console',
       'Hosting and deployment',
-      'One job for the app to do',
+      'Pages and App features agreed before launch',
     ],
     requirements: [
       'Business name, logo, and colours',
@@ -281,7 +280,7 @@ StitchRequest
   roadmap: {
     title: 'FireUX Road Map',
     summary:
-      'FireUX is evolving from platform baseline into deeper cross-ecosystem operations, directory publication, and service marketplaces.',
+      'Build out the Project Console one proven Operation at a time, then publish the matching Solutions and public records.',
   },
 } as const
 
@@ -349,10 +348,10 @@ export const metaContent = defineFireuxMeta({
     big_personality: appMeta.brand.bigPersonality,
     headline: appMeta.brand.headline,
     highlight_terms: [
-      'focused business apps',
-      'Misebox',
-      'Werkbox',
-      'connected FireUX account',
+      'FireUX Projects',
+      'FireUX Apps',
+      'FireUX Ecosystems',
+      'Project Console',
     ],
     positioning_html: appMeta.heroPrimaryHtml,
     promise_html: appMeta.aboutSupportingCopy,
@@ -364,20 +363,20 @@ export const metaContent = defineFireuxMeta({
     title: appMeta.seoHome.title,
     description: appMeta.seoHome.description,
     keywords: [
-      'FireUX business app',
-      'branded business app',
-      'managed web app',
-      'hospitality app',
-      'cleaning business app',
-      'small business software',
+      'FireUX Project',
+      'FireUX App',
+      'FireUX Ecosystem',
+      'Project Console',
+      'app ignition',
+      'modular web apps',
     ],
-    audience: ['small businesses', 'operators', 'founders', 'partners'],
+    audience: ['project owners', 'app operators', 'founders', 'partners'],
     categories: [
-      'business apps',
-      'managed software',
-      'industry platforms',
+      'project operations',
+      'app platforms',
+      'ecosystem software',
     ],
-    primary_topic: 'managed business applications',
+    primary_topic: 'FireUX Projects and Apps',
   },
   cta: {
     primary: {
@@ -406,7 +405,7 @@ export const metaContent = defineFireuxMeta({
       id: 'project.ignition',
       slug: 'ignition',
       title: 'Ignition',
-      description: 'Manage new app requests from intake to launch.',
+      description: 'Manage App requests from intake through the launch checklist.',
       to: '/console/project/ignitions',
       console: {
         id: 'project',
@@ -419,7 +418,7 @@ export const metaContent = defineFireuxMeta({
       id: 'project.apps',
       slug: 'apps',
       title: 'Apps',
-      description: "Manage your project's apps.",
+      description: 'Review the Apps connected to the selected Project.',
       to: '/console/project/apps',
       console: {
         id: 'project',
@@ -432,7 +431,7 @@ export const metaContent = defineFireuxMeta({
       id: 'project.ecosystem',
       slug: 'ecosystem',
       title: 'Ecosystem',
-      description: "Manage your project's ecosystem.",
+      description: 'Review the selected Project Ecosystem and the Apps inside it.',
       to: '/console/project/ecosystem',
       console: {
         id: 'project',
@@ -488,11 +487,11 @@ export const metaContent = defineFireuxMeta({
       status: 'live',
       owner: fireuxOwner,
       featured: true,
-      body: 'Put your public website, customer entry points, team access, and day-to-day tools in one branded app. Start with the work your business needs now and add more only when it earns its place.',
+      body: 'Put your public website, customer entry points, team access, and day-to-day tools in one branded App. FireUX configures the App, hosts it, and maintains it.',
       steps: [
-        'Tell us what the business does and what the app must handle first.',
-        'We configure the brand, pages, accounts, console, and hosting.',
-        'Launch the first useful version and improve it from real use.',
+        'Tell us what people need to do in the App.',
+        'Agree the pages, features, access, and launch scope.',
+        'We configure, launch, host, and maintain the App.',
       ],
       cta: {
         label: 'Start an app',

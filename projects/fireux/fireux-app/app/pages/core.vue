@@ -2,21 +2,21 @@
   <UPage>
     <UPageHeader
       title="Core"
-      description="The platform layer that ecosystems and apps run on."
+      description="The shared runtime used by FireUX Apps and Ecosystems."
     />
 
     <UPageBody class="pagebody">
       <UCard class="space-y-3">
         <p class="text-sm text-toned">
-          FireUX Core is the shared substrate: identity, roles, registry,
-          conventions, and the runtime pieces that keep apps interoperable.
+          FireUX Core owns the App shell, accounts, shared Console contracts,
+          public directory components, and runtime conventions.
         </p>
 
         <div class="space-y-2 text-sm text-toned">
-          <p>This is intentionally a stub route for now.</p>
+          <p>This page is a public pointer, not the source of Core documentation.</p>
           <p>
-            Next: link to the dev registry tools and any core docs you want to
-            expose publicly.
+            Browse Modules to see the reusable capabilities Apps compose on top
+            of Core.
           </p>
         </div>
       </UCard>
@@ -31,6 +31,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Core · FireUX',
-  description: 'The FireUX platform layer.',
+  description: 'The shared runtime used by FireUX Apps and Ecosystems.',
 })
 </script>

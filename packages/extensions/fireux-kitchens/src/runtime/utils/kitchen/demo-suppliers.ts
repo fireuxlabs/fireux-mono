@@ -7,9 +7,16 @@ const cleanList = (value: unknown) =>
 export type KitchenDemoSupplierScenarioLike = {
   supplier: {
     id?: string | null
+    company_id?: string | null
     supplier_organization_name?: string | null
     supplier_headline?: string | null
     supplier_image?: string | null
+    company_place?: {
+      id?: string | null
+      name?: string | null
+      short_address?: string | null
+      image_url?: string | null
+    } | null
     supplier_item_categories?: readonly string[] | null
     supplier_delivery_areas?: readonly string[] | null
   }
@@ -28,6 +35,9 @@ export type KitchenDemoSupplierSummary = {
   name: string
   headline: string
   imageUrl: string
+  logoImageUrl: string
+  placeImageUrl: string
+  headquartersLabel: string
   categories: string[]
   deliveryAreas: string[]
   linkedIngredientCount: number
@@ -133,15 +143,33 @@ export function buildKitchenDemoSuppliersOperation(
     }
 
     const name = clean(scenario.supplier.supplier_organization_name)
-    if (!name) {
-      throw new Error(`Kitchen Demo Supplier has no name: ${supplierId}`)
+    const companyPlaceId = clean(scenario.supplier.company_place?.id)
+    const logoImageUrl = clean(scenario.supplier.supplier_image)
+    const placeImageUrl = clean(scenario.supplier.company_place?.image_url)
+    const headquartersLabel =
+      clean(scenario.supplier.company_place?.short_address)
+      || clean(scenario.supplier.company_place?.name)
+    if (
+      !name
+      || !companyPlaceId
+      || companyPlaceId !== clean(scenario.supplier.company_id)
+      || !placeImageUrl
+      || !logoImageUrl
+      || !headquartersLabel
+    ) {
+      throw new Error(
+        `Kitchen Demo Supplier presentation is incomplete: ${supplierId}`
+      )
     }
 
     return {
       id: supplierId,
       name,
       headline: clean(scenario.supplier.supplier_headline),
-      imageUrl: clean(scenario.supplier.supplier_image),
+      imageUrl: placeImageUrl || logoImageUrl,
+      logoImageUrl,
+      placeImageUrl,
+      headquartersLabel,
       categories: cleanList(scenario.supplier.supplier_item_categories),
       deliveryAreas: cleanList(
         scenario.supplier.supplier_delivery_areas

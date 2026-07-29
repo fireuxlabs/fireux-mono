@@ -1,6 +1,6 @@
 import {
   deanosPartyMenuDemoIdentity,
-  kitchenDemoAssetBase,
+  kitchenDemoMediaUrl,
 } from '../../core/fixtures'
 import type { KitchenDemoMenu } from '../../core/types'
 import {
@@ -11,7 +11,8 @@ import {
   rootMenu,
 } from './builders'
 
-const deanosAssetBase = `${kitchenDemoAssetBase}/deanos`
+const deanosAsset = (filename: string) =>
+  kitchenDemoMediaUrl(deanosPartyMenuDemoIdentity.kitchenId, `menu/${filename}`)
 
 const deanosPartyRootMenu = rootMenu(
   deanosPartyMenuDemoIdentity,
@@ -46,7 +47,7 @@ export const deanosPartyDemoMenu: KitchenDemoMenu = {
       description:
         'Seven mini Deanos smash burgers arranged on one party platter.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/party-classic-smash-slider-platter-7.jpg`,
+      image: deanosAsset('party-classic-smash-slider-platter-7.jpg'),
     },
     {
       id: 'hot-honey-chicken-slider-platter',
@@ -54,7 +55,7 @@ export const deanosPartyDemoMenu: KitchenDemoMenu = {
       description:
         'Seven mini hot honey chicken burgers arranged on one party platter.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/party-hot-honey-slider-platter-7.jpg`,
+      image: deanosAsset('party-hot-honey-slider-platter-7.jpg'),
     },
     {
       id: 'cauliflower-slider-platter',
@@ -62,21 +63,21 @@ export const deanosPartyDemoMenu: KitchenDemoMenu = {
       description:
         'Seven mini crispy cauliflower burgers arranged on one party platter.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/party-cauliflower-slider-platter-7.jpg`,
+      image: deanosAsset('party-cauliflower-slider-platter-7.jpg'),
     },
     {
       id: 'party-fries-tray',
       name: 'Skin-on fries sharing tray',
       description: 'A buffet tray of golden skin-on fries with flaky sea salt.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/party-fries-sharing-platter.jpg`,
+      image: deanosAsset('party-fries-sharing-platter.jpg'),
     },
     {
       id: 'party-onion-ring-platter',
       name: 'Crispy onion ring platter',
       description: 'A buffet platter of onion rings in Deanos crispy batter.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/party-onion-ring-sharing-platter.jpg`,
+      image: deanosAsset('party-onion-ring-sharing-platter.jpg'),
     },
     {
       id: 'party-lemonade',
@@ -84,7 +85,7 @@ export const deanosPartyDemoMenu: KitchenDemoMenu = {
       description:
         'Fresh lemon, mint and sparkling water for the buffet table.',
       item_kind: 'drink',
-      image: `${deanosAssetBase}/party-house-lemonade-dispenser.jpg`,
+      image: deanosAsset('party-house-lemonade-dispenser.jpg'),
     },
     {
       id: 'party-strawberry-lime-cooler',
@@ -92,7 +93,7 @@ export const deanosPartyDemoMenu: KitchenDemoMenu = {
       description:
         'Sparkling strawberry, lime and basil cooler for the buffet table.',
       item_kind: 'drink',
-      image: `${deanosAssetBase}/party-strawberry-lime-dispenser.jpg`,
+      image: deanosAsset('party-strawberry-lime-dispenser.jpg'),
     },
     {
       id: 'party-cucumber-mint-cooler',
@@ -100,7 +101,7 @@ export const deanosPartyDemoMenu: KitchenDemoMenu = {
       description:
         'A crisp cucumber, mint and lime cooler for the buffet table.',
       item_kind: 'drink',
-      image: `${deanosAssetBase}/party-cucumber-mint-dispenser.jpg`,
+      image: deanosAsset('party-cucumber-mint-dispenser.jpg'),
     },
   ]),
   menuSections: [

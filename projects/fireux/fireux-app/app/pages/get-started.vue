@@ -167,7 +167,7 @@
         </UFormField>
 
         <UFormField
-          label="What is the one job this app must do?"
+          label="What does the App need to do?"
           required
           :error="errors.app_job"
         >
@@ -383,7 +383,7 @@ function validate() {
   if (!form.branding) errors.branding = 'Choose a branding option.'
   if (!form.pages.length) errors.pages = 'Choose at least one page.'
   if (form.app_job.trim().length < 10) {
-    errors.app_job = 'Describe the one job in a little more detail.'
+    errors.app_job = 'Describe what the App needs to do in a little more detail.'
   }
   if (form.access.trim().length < 3) errors.access = 'Tell us who needs access.'
   if (!form.privacy_acknowledged) {

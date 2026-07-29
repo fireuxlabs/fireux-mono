@@ -26,24 +26,27 @@ export default defineNuxtModule({
       ctx.addHub('/suppliers')
       ctx.addStaticPath('/suppliers/learn-more')
     })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'suppliers',
-        canonicalCollectionPath: 'suppliers',
-        routePrefix: '/suppliers',
-        slugField: 'id',
-        publicField: 'state',
-        publicValue: 'public',
-      })
-      ctx.addEntity({
-        entityKey: 'suppliers-official',
-        canonicalCollectionPath: 'suppliers',
-        routePrefix: '/suppliers',
-        slugField: 'id',
-        publicField: 'state',
-        publicValue: 'official',
-      })
-    })
+    nuxt.hook(
+      'fireux:seo:sitemaps:extend' as any,
+      (ctx: FireuxSeoSitemapsExtendContext) => {
+        ctx.addEntity({
+          entityKey: 'suppliers',
+          canonicalCollectionPath: 'suppliers',
+          routePrefix: '/suppliers',
+          slugField: 'id',
+          publicField: 'state',
+          publicValue: 'public',
+        })
+        ctx.addEntity({
+          entityKey: 'suppliers-official',
+          canonicalCollectionPath: 'suppliers',
+          routePrefix: '/suppliers',
+          slugField: 'id',
+          publicField: 'state',
+          publicValue: 'official',
+        })
+      }
+    )
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) => configureRuntime(nuxt, 'drop'),

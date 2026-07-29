@@ -13,8 +13,8 @@ const CORE_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue'
 const CORE_APP_COLLECTION_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/AppCollection.vue'
-const CORE_PREVIEW_FRAME_PATH =
-  'packages/core/fireux-core/src/runtime/components/landing/ProductPreviewFrame.vue'
+const CORE_CONSOLE_PREVIEW_FRAME_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/ConsolePreviewFrame.vue'
 const CORE_CARD_ORBIT_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/CardOrbit.vue'
 const CORE_CARD_ORBIT_TYPE_PATH =
@@ -95,8 +95,18 @@ const MISEBOX_JOBS_LAYOUT_PATH =
 const FIREUX_ADAPTER_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/Index.vue'
 const FIREUX_PAGE_PATH = 'projects/fireux/fireux-app/app/pages/index.vue'
-const FIREUX_PREVIEW_PATH =
-  'projects/fireux/fireux-app/app/components/FireUX/Landing/Preview.vue'
+const FIREUX_CONSOLE_PREVIEW_PATH =
+  'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Index.vue'
+const FIREUX_PRODUCT_DEMO_PATH =
+  'projects/fireux/fireux-app/app/composables/product-demo/useFireuxProductDemo.ts'
+const FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
+  apps:
+    'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Apps.vue',
+  ecosystems:
+    'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Ecosystems.vue',
+  privateState:
+    'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/PrivateState.vue',
+}
 const FIREUX_CARD_ORBIT_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/CardOrbit.vue'
 const FIREUX_ECOSYSTEMS_PATH =
@@ -443,7 +453,7 @@ export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const core = read(repoRoot, CORE_PATH)
   const appCollection = read(repoRoot, CORE_APP_COLLECTION_PATH)
-  const previewFrame = read(repoRoot, CORE_PREVIEW_FRAME_PATH)
+  const consolePreviewFrame = read(repoRoot, CORE_CONSOLE_PREVIEW_FRAME_PATH)
   const cardOrbit = read(repoRoot, CORE_CARD_ORBIT_PATH)
   const cardOrbitType = read(repoRoot, CORE_CARD_ORBIT_TYPE_PATH)
   const productProof = read(repoRoot, CORE_PRODUCT_PROOF_PATH)
@@ -471,7 +481,13 @@ export async function run(ctx) {
   const miseboxJobsLayout = read(repoRoot, MISEBOX_JOBS_LAYOUT_PATH)
   const fireuxAdapter = read(repoRoot, FIREUX_ADAPTER_PATH)
   const fireuxPage = read(repoRoot, FIREUX_PAGE_PATH)
-  const fireuxPreview = read(repoRoot, FIREUX_PREVIEW_PATH)
+  const fireuxConsolePreview = read(repoRoot, FIREUX_CONSOLE_PREVIEW_PATH)
+  const fireuxProductDemo = read(repoRoot, FIREUX_PRODUCT_DEMO_PATH)
+  const fireuxConsolePreviewComponents = Object.fromEntries(
+    Object.entries(FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
+      ([key, filePath]) => [key, read(repoRoot, filePath)]
+    )
+  )
   const fireuxCardOrbit = read(repoRoot, FIREUX_CARD_ORBIT_PATH)
   const fireuxEcosystems = read(repoRoot, FIREUX_ECOSYSTEMS_PATH)
   const violations = []
@@ -502,14 +518,9 @@ export async function run(ctx) {
   })
 
   checkMobileFirst({
-    filePath: CORE_PREVIEW_FRAME_PATH,
-    source: previewFrame,
-    selectors: [
-      '.landing-product-preview-frame',
-      '.landing-product-preview-frame__controls',
-      '.landing-product-preview-frame__content',
-      '.landing-product-preview-frame__footer',
-    ],
+    filePath: CORE_CONSOLE_PREVIEW_FRAME_PATH,
+    source: consolePreviewFrame,
+    selectors: ['.landing-console-preview__layout'],
     breakpoints: ['640px'],
     violations,
   })
@@ -561,18 +572,6 @@ export async function run(ctx) {
       '.landing-product-catalogue__card',
     ],
     breakpoints: ['640px', '768px', '1024px'],
-    violations,
-  })
-
-  checkMobileFirst({
-    filePath: FIREUX_PREVIEW_PATH,
-    source: fireuxPreview,
-    selectors: [
-      '.fireux-home__preview',
-      '.fireux-home__request-facts',
-      '.fireux-home__app-grid',
-    ],
-    breakpoints: ['640px'],
     violations,
   })
 
@@ -646,7 +645,7 @@ export async function run(ctx) {
   const flatLandingSources = [
     [CORE_PATH, core],
     [CORE_APP_COLLECTION_PATH, appCollection],
-    [CORE_PREVIEW_FRAME_PATH, previewFrame],
+    [CORE_CONSOLE_PREVIEW_FRAME_PATH, consolePreviewFrame],
     [CORE_CARD_ORBIT_PATH, cardOrbit],
     [CORE_PRODUCT_PROOF_PATH, productProof],
     [CORE_PRODUCT_CATALOGUE_PATH, productCatalogue],
@@ -660,7 +659,11 @@ export async function run(ctx) {
       ([key, filePath]) => [filePath, miseboxConsolePreviewComponents[key]]
     ),
     [FIREUX_ADAPTER_PATH, fireuxAdapter],
-    [FIREUX_PREVIEW_PATH, fireuxPreview],
+    [FIREUX_CONSOLE_PREVIEW_PATH, fireuxConsolePreview],
+    [FIREUX_PRODUCT_DEMO_PATH, fireuxProductDemo],
+    ...Object.entries(FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
+      ([key, filePath]) => [filePath, fireuxConsolePreviewComponents[key]]
+    ),
     [FIREUX_CARD_ORBIT_PATH, fireuxCardOrbit],
     [FIREUX_ECOSYSTEMS_PATH, fireuxEcosystems],
   ]
@@ -739,21 +742,21 @@ export async function run(ctx) {
 
   for (const required of [
     "from 'fireux-kitchens/runtime/content/operations'",
-    'aria-label="Interactive Kitchen Console preview"',
+    '<LandingConsolePreviewFrame',
+    'label="Interactive Kitchen Console preview"',
+    ':items="operations"',
+    ':secondary-items="[financeSurface]"',
+    'navigation-label="Kitchen Operations"',
+    'secondary-navigation-label="Kitchen reports"',
+    'console-to="/console/kitchen"',
+    '@update:model-value="selectSurface"',
+    '@open-console="openFullKitchenConsole"',
     '<KitchenCardsPill',
     'v-bind="consoleKitchenPill"',
     "MiseboxProductDemo['console']['kitchenPill']",
     'productDemo.value?.console.kitchenPill',
     ':show-badges="false"',
-    'aria-label="Kitchen Operations"',
-    ':aria-current="operation.id === selectedSurfaceId',
-    '@click="selectSurface(operation.id)"',
-    'aria-label="Kitchen reports"',
     "id: 'kitchen.finance'",
-    '@click="selectSurface(financeSurface.id)"',
-    'Open full Console',
-    'to="/console/kitchen"',
-    '@click="openFullKitchenConsole"',
     'useKitchenConsoleSelection',
     "type: 'demo'",
     "await navigateTo('/console/kitchen')",
@@ -1105,35 +1108,207 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    '<slot name="mark"',
-    '<slot name="title"',
-    '<slot name="subtitle"',
-    '<slot name="status"',
-    'landing-product-preview-frame__topbar',
-    'landing-product-preview-frame__controls',
-    'landing-product-preview-frame__content',
-    'landing-product-preview-frame__footer',
+    '<UCard',
+    'class="landing-console-preview__layout"',
+    '<slot name="target"',
+    'v-for="item in items"',
+    'v-for="item in secondaryItems"',
+    ":aria-current=\"item.id === modelValue ? 'page' : undefined\"",
     "emit('update:modelValue'",
+    "emit('openConsole'",
+    '<slot :selected-item="selectedItem"',
+    'LandingConsolePreviewItem',
+    "openConsoleAriaLabel: 'Open full Console'",
+    'grid-template-columns: calc(var(--spacing) * 18) minmax(0, 1fr)',
+    'grid-template-columns: calc(var(--spacing) * 48) minmax(0, 1fr)',
   ]) {
-    if (!previewFrame.includes(required)) {
+    if (!consolePreviewFrame.includes(required)) {
       violations.push(
-        `${CORE_PREVIEW_FRAME_PATH}: missing shared frame contract (${required})`
+        `${CORE_CONSOLE_PREVIEW_FRAME_PATH}: missing shared Console frame contract (${required})`
       )
     }
   }
 
   for (const forbidden of [
+    'Misebox',
+    'FireUX',
+    'KitchenCards',
+    'ProjectCards',
+    'useMiseboxProductDemo',
+    'useFireuxProductDemo',
     'glow?:',
     'markHalo?:',
     'strongShadow?:',
-    'preview-frame--glow',
-    'preview-frame--mark-halo',
-    'preview-frame--strong-shadow',
+    'gradient',
+    'backdrop-blur',
   ]) {
-    if (previewFrame.includes(forbidden)) {
+    if (consolePreviewFrame.includes(forbidden)) {
       violations.push(
-        `${CORE_PREVIEW_FRAME_PATH}: reintroduced decorative preview chrome (${forbidden})`
+        `${CORE_CONSOLE_PREVIEW_FRAME_PATH}: acquired project truth or decorative Console chrome (${forbidden})`
       )
+    }
+  }
+
+  for (const consumer of [
+    [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxConsolePreview],
+    [FIREUX_CONSOLE_PREVIEW_PATH, fireuxConsolePreview],
+  ]) {
+    const [filePath, source] = consumer
+    if (
+      count(source, /<LandingConsolePreviewFrame\b/g) !== 1
+      || count(source, /<\/LandingConsolePreviewFrame>/g) !== 1
+    ) {
+      violations.push(
+        `${filePath}: must consume exactly one shared LandingConsolePreviewFrame`
+      )
+    }
+
+    for (const forbidden of [
+      '<UCard',
+      '<aside',
+      'landing-console-preview__',
+      'min-h-[32rem]',
+      'grid-cols-[4.5rem',
+      'sm:grid-cols-[12rem',
+      ':aria-current=',
+    ]) {
+      if (source.includes(forbidden)) {
+        violations.push(
+          `${filePath}: reintroduced shared Console frame presentation (${forbidden})`
+        )
+      }
+    }
+  }
+
+  for (const required of [
+    '<LandingConsolePreviewFrame',
+    'label="Interactive Project Console preview"',
+    ':items="operations"',
+    'navigation-label="Project Operations"',
+    'console-to="/console/project"',
+    'open-console-aria-label="Open the full Project Console"',
+    '<ProjectCardsPill',
+    'v-if="projectPill"',
+    '<FireUXLandingConsolePreviewApps',
+    '<FireUXLandingConsolePreviewEcosystems',
+    '<FireUXLandingConsolePreviewPrivateState',
+    'useFireuxProductDemo',
+    'useProjectConsoleSelection',
+    "type: 'demo'",
+    'if (projectId)',
+    "await navigateTo('/console/project')",
+  ]) {
+    if (!fireuxConsolePreview.includes(required)) {
+      violations.push(
+        `${FIREUX_CONSOLE_PREVIEW_PATH}: missing FireUX Project Console proof contract (${required})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    "'fireux-demo-project'",
+    "'FireUX Demo Project'",
+    'useFirestore',
+    'firebase',
+    'getFirestore',
+    'collection(',
+    'getDocs(',
+    'useFetch(',
+    'useRequestFetch(',
+    '$fetch(',
+    '/api/',
+    'usePlatformDirectory',
+  ]) {
+    if (fireuxConsolePreview.includes(forbidden)) {
+      violations.push(
+        `${FIREUX_CONSOLE_PREVIEW_PATH}: acquired shadow Demo identity or live authority (${forbidden})`
+      )
+    }
+  }
+
+  if (count(fireuxConsolePreview, /useFireuxProductDemo\(\)/g) !== 1) {
+    violations.push(
+      `${FIREUX_CONSOLE_PREVIEW_PATH}: root must own exactly one Product Demo load`
+    )
+  }
+
+  for (const required of [
+    "const productDemoSurface = 'project-console' as const",
+    "const productDemoDataSource = 'demo' as const",
+    "import(\n        'fireux-core/runtime/demo/project/scenarios'",
+    "scenario => scenario.appId === 'fireux-app'",
+    'fireuxScenarios.length !== 1',
+    'useProjectInterface',
+    'useAppInterface',
+    'useEcosystemInterface',
+    'projectPill(project)',
+    'appCell(app)',
+    'ecosystemCell({',
+  ]) {
+    if (!fireuxProductDemo.includes(required)) {
+      violations.push(
+        `${FIREUX_PRODUCT_DEMO_PATH}: missing deterministic Project Product Demo projection (${required})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    'useFirestore',
+    'firebase',
+    'getFirestore',
+    'collection(',
+    'getDocs(',
+    'useFetch(',
+    'useRequestFetch(',
+    '$fetch(',
+    '/api/',
+    'usePlatformDirectory',
+    "dataSource: 'live'",
+  ]) {
+    if (fireuxProductDemo.includes(forbidden)) {
+      violations.push(
+        `${FIREUX_PRODUCT_DEMO_PATH}: Product Demo adapter acquired live authority (${forbidden})`
+      )
+    }
+  }
+
+  const fireuxPreviewComponentContracts = {
+    apps: ['<AppCardsCell', "FireuxProductDemo['console']['apps']"],
+    ecosystems: [
+      '<EcosystemCardsCell',
+      "FireuxProductDemo['console']['ecosystems']",
+    ],
+    privateState: ['<UAlert', ':title="title"', ':description="description"'],
+  }
+  for (const [key, markers] of Object.entries(
+    fireuxPreviewComponentContracts
+  )) {
+    const componentSource = fireuxConsolePreviewComponents[key]
+    for (const marker of markers) {
+      if (!componentSource.includes(marker)) {
+        violations.push(
+          `${FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]}: missing FireUX-owned Console body contract (${marker})`
+        )
+      }
+    }
+
+    for (const forbidden of [
+      'useFireuxProductDemo(',
+      'useAsyncData',
+      'useFetch(',
+      'useRequestFetch(',
+      '$fetch(',
+      '/api/',
+      'useProjectConsoleSelection',
+      'useConsoleSelection',
+      'useFirestore',
+      'firebase',
+    ]) {
+      if (componentSource.includes(forbidden)) {
+        violations.push(
+          `${FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS[key]}: prop-only Console body acquired loading, selection, or live authority (${forbidden})`
+        )
+      }
     }
   }
 
@@ -1197,7 +1372,7 @@ export async function run(ctx) {
         '#operations',
         '<FireUXLandingCardOrbit',
         '<LandingProductProofSection',
-        '<FireUXLandingPreview',
+        '<FireUXLandingConsolePreview',
         '<LandingEcosystems',
         '<LandingAppCollection',
         '<LandingProductCatalogue',
@@ -1206,6 +1381,10 @@ export async function run(ctx) {
         'metaContent.solutions',
         'solutionsCatalogue',
         'operationsCatalogue',
+        "label: 'Get started'",
+        "label: 'Go to console'",
+        "to: '/get-started'",
+        "to: '/console/project'",
       ],
       forbidden: ['#specifics', '#tools', 'toolsCatalogue', "to: '/tools"],
     },
@@ -1304,13 +1483,17 @@ export async function run(ctx) {
     ':data-orbit-source="dataSource"',
     'name="item"',
     'inert',
+    '@pointerenter="selectOnHover(item, $event)"',
+    "type SelectionSource = 'click' | 'hover' | null",
+    "event.pointerType !== 'mouse'",
+    "selectionSource.value === 'hover'",
     '@keydown.left.prevent',
     '@keydown.right.prevent',
     'window.matchMedia(REDUCED_MOTION_QUERY)',
     'new IntersectionObserver',
     'document.visibilityState',
-    'const INTRO_DURATION = 2200',
-    'const INTRO_YAW_TURNS = 1',
+    'const INTRO_DURATION = 7200',
+    'const INTRO_YAW_TURNS = 2',
     'const IDLE_SPEED = TAU / 20000',
     'const INTRO_START_SPEED =',
     'const decelerationTravel =',
@@ -1318,9 +1501,10 @@ export async function run(ctx) {
     'let orbitDirection: -1 | 1 = 1',
     'Math.random() < 0.5 ? -1 : 1',
     'opacity: 1',
-    'const MAX_DEPTH_BLUR = 1.6',
-    "'--landing-orbit-depth-blur'",
-    'filter: blur(var(--landing-orbit-depth-blur, 0))',
+    'const REAR_CARD_SCALE = 0.42',
+    'const FRONT_CARD_SCALE = 0.9',
+    'const SELECTED_CARD_SCALE = 1',
+    'REAR_CARD_SCALE + depth * (FRONT_CARD_SCALE - REAR_CARD_SCALE)',
     "type IntroState = 'pending' | 'running' | 'complete'",
     'const startIntro = () =>',
     'const settleIntro = (settleToMainAxis = true) =>',
@@ -1339,6 +1523,28 @@ export async function run(ctx) {
     if (cardOrbit.includes(forbidden)) {
       violations.push(
         `${CORE_CARD_ORBIT_PATH}: desktop orbit intro must remain hydration-safe (${forbidden})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    '--landing-orbit-depth-blur',
+    'filter: blur(',
+  ]) {
+    if (cardOrbit.includes(forbidden)) {
+      violations.push(
+        `${CORE_CARD_ORBIT_PATH}: orbit cards must remain crisp at every depth (${forbidden})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    'yaw.value = -item.longitude',
+    'pitch.value = item.latitude',
+  ]) {
+    if (cardOrbit.includes(forbidden)) {
+      violations.push(
+        `${CORE_CARD_ORBIT_PATH}: selecting one card must not snap the shared orbit axes (${forbidden})`
       )
     }
   }
@@ -1587,82 +1793,6 @@ export async function run(ctx) {
           `${filePath}: card orbit must not couple ordinary page scrolling to animation (${forbidden})`
         )
       }
-    }
-  }
-
-  const previewConsumers = [
-    {
-      filePath: FIREUX_PREVIEW_PATH,
-      source: fireuxPreview,
-      required: [
-        'class="fireux-home__preview"',
-        'content-inset',
-        'content-stable',
-        'fireux-home__request',
-        'fireux-home__app-grid',
-        'fireux-home__operation-grid',
-        '--fireux-preview-ink',
-      ],
-      forbidden: [
-        'fireux-home__delivery-preview',
-        'fireux-home__preview-topbar',
-        'fireux-home__preview-mark',
-        'fireux-home__managed-status',
-        'fireux-home__preview-flow',
-        'fireux-home__preview-content',
-        'fireux-home__preview-footer',
-      ],
-    },
-  ]
-
-  for (const preview of previewConsumers) {
-    for (const required of [
-      '<LandingProductPreviewFrame',
-      '</LandingProductPreviewFrame>',
-      '#mark',
-      '#title',
-      '#subtitle',
-      '#status',
-      '@update:model-value',
-      ...preview.required,
-    ]) {
-      if (!preview.source.includes(required)) {
-        violations.push(
-          `${preview.filePath}: missing shared preview-frame use (${required})`
-        )
-      }
-    }
-
-    for (const [label, pattern] of [
-      [
-        'LandingProductPreviewFrame opening tag',
-        /<LandingProductPreviewFrame\b/g,
-      ],
-      [
-        'LandingProductPreviewFrame closing tag',
-        /<\/LandingProductPreviewFrame>/g,
-      ],
-    ]) {
-      const matches = count(preview.source, pattern)
-      if (matches !== 1) {
-        violations.push(
-          `${preview.filePath}: expected exactly one ${label}, found ${matches}`
-        )
-      }
-    }
-
-    for (const forbidden of preview.forbidden) {
-      if (preview.source.includes(forbidden)) {
-        violations.push(
-          `${preview.filePath}: reintroduced project-owned preview chrome (${forbidden})`
-        )
-      }
-    }
-
-    if (/landing-product-preview-frame__/.test(preview.source)) {
-      violations.push(
-        `${preview.filePath}: copied Core preview-frame presentation into the project`
-      )
     }
   }
 

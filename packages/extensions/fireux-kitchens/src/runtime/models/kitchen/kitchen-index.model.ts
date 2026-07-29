@@ -75,6 +75,7 @@ export type KitchenConsoleTargetItem = {
     display_name: string
     tagline: string
     image_url: string
+    card_image_url?: string
     logo_image_url?: string
     image_shade: KitchenImageShade
     wordmark_no_logo_image_url?: string

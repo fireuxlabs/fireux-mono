@@ -43,11 +43,7 @@
         <span>Cell</span>
         <UCard :class="surfaceClass('cell')">
           <div class="flex min-w-0 items-center gap-3">
-            <UAvatar
-              src="/img/showcase/menu/deanos/deanos-classic.jpg"
-              alt="Deanos Classic"
-              size="lg"
-            />
+            <UAvatar :src="deanosClassicImage" alt="Deanos Classic" size="lg" />
             <div class="min-w-0 flex-1">
               <p class="truncate font-semibold text-highlighted">
                 Deanos Classic
@@ -56,9 +52,7 @@
                 Main Menu · 18 CHF
               </p>
             </div>
-            <UBadge color="success" variant="subtle" size="xs">
-              Live
-            </UBadge>
+            <UBadge color="success" variant="subtle" size="xs"> Live </UBadge>
           </div>
         </UCard>
       </article>
@@ -73,14 +67,16 @@
           :class="surfaceClass('pill')"
         >
           <UAvatar
-            src="/img/showcase/menu/deanos/deanos-classic.jpg"
+            :src="deanosClassicImage"
             alt=""
             size="sm"
             class="card-style-lab__pill-avatar"
           />
           <span class="card-style-lab__pill-copy min-w-0 flex-1 text-left">
             <span class="block truncate font-semibold">Main Menu</span>
-            <span class="card-style-lab__data block truncate text-xs opacity-70">
+            <span
+              class="card-style-lab__data block truncate text-xs opacity-70"
+            >
               Deanos Kitchen
             </span>
           </span>
@@ -91,7 +87,9 @@
         </UButton>
       </article>
 
-      <article class="card-style-lab__specimen card-style-lab__specimen--preview">
+      <article
+        class="card-style-lab__specimen card-style-lab__specimen--preview"
+      >
         <span>Preview</span>
         <UCard :class="surfaceClass('preview')">
           <template #header>
@@ -107,11 +105,11 @@
           </template>
 
           <img
-            src="/img/showcase/menu/deanos/deanos-classic.jpg"
+            :src="deanosClassicImage"
             alt="Deanos Classic smash burger"
             class="card-style-lab__hero-image"
             loading="lazy"
-          >
+          />
 
           <p class="mt-4 text-sm leading-relaxed text-muted">
             Double smash patties, cheddar, pickles, lettuce and house sauce.
@@ -129,8 +127,12 @@
           <template #footer>
             <div class="flex items-center justify-between gap-3">
               <div class="flex gap-1">
-                <UBadge color="neutral" variant="outline" size="xs">Popular</UBadge>
-                <UBadge color="neutral" variant="outline" size="xs">Burger</UBadge>
+                <UBadge color="neutral" variant="outline" size="xs"
+                  >Popular</UBadge
+                >
+                <UBadge color="neutral" variant="outline" size="xs"
+                  >Burger</UBadge
+                >
               </div>
               <UButton
                 color="primary"
@@ -150,6 +152,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from '#imports'
+import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
 
 type CardLabStyle =
   | 'baseline'
@@ -161,6 +164,10 @@ type CardLabStyle =
   | 'utility'
   | 'kds'
 type CardLabVariant = 'cell' | 'pill' | 'preview'
+
+const deanosClassicImage = miseboxDemoMediaUrl(
+  'kitchens/deanos/menu/deanos-classic.jpg'
+)
 
 const styleOptions: Array<{
   value: CardLabStyle
@@ -178,50 +185,58 @@ const styleOptions: Array<{
     value: 'swiss',
     label: 'Swiss grid',
     icon: 'i-lucide-grid-2x2',
-    description: 'Precise alignment, flat planes and typographic structure with one decisive rule.',
+    description:
+      'Precise alignment, flat planes and typographic structure with one decisive rule.',
   },
   {
     value: 'gallery',
     label: 'Gallery',
     icon: 'i-lucide-image',
-    description: 'Image-first cards with quiet framing and the product treated as the artwork.',
+    description:
+      'Image-first cards with quiet framing and the product treated as the artwork.',
   },
   {
     value: 'tonal',
     label: 'Colour field',
     icon: 'i-lucide-palette',
-    description: 'Confident tonal surfaces where status colour becomes the composition.',
+    description:
+      'Confident tonal surfaces where status colour becomes the composition.',
   },
   {
     value: 'noir',
     label: 'Noir line',
     icon: 'i-lucide-minus',
-    description: 'High-fashion restraint: dark ink, hairline framing and deliberate emptiness.',
+    description:
+      'High-fashion restraint: dark ink, hairline framing and deliberate emptiness.',
   },
   {
     value: 'modular',
     label: 'Modular',
     icon: 'i-lucide-panels-top-left',
-    description: 'Segmented information blocks inspired by menus, tickets and kitchen equipment.',
+    description:
+      'Segmented information blocks inspired by menus, tickets and kitchen equipment.',
   },
   {
     value: 'utility',
     label: 'Nuxt utility',
     icon: 'i-lucide-scan-line',
-    description: 'Nuxt UI typography and rhythm with restrained sci-fi depth, precision edges and functional telemetry.',
+    description:
+      'Nuxt UI typography and rhythm with restrained sci-fi depth, precision edges and functional telemetry.',
   },
   {
     value: 'kds',
     label: 'Live KDS',
     icon: 'i-lucide-radio-tower',
-    description: 'Real-time kitchen hardware blocks with functional amber, lime and alert states.',
+    description:
+      'Real-time kitchen hardware blocks with functional amber, lime and alert states.',
   },
 ]
 
 const activeStyle = ref<CardLabStyle>('utility')
 const activeOption = computed(
-  () => styleOptions.find(option => option.value === activeStyle.value)
-    || styleOptions[0]
+  () =>
+    styleOptions.find((option) => option.value === activeStyle.value) ||
+    styleOptions[0]
 )
 
 const surfaceClass = (variant: CardLabVariant) => {
@@ -393,9 +408,7 @@ const surfaceClass = (variant: CardLabVariant) => {
   border-radius: 0;
 }
 
-.card-style-lab__surface--swiss
-  .card-style-lab__pill-copy
-  > span:first-child {
+.card-style-lab__surface--swiss .card-style-lab__pill-copy > span:first-child {
   font-size: var(--text-base);
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tight);
@@ -473,12 +486,11 @@ const surfaceClass = (variant: CardLabVariant) => {
 .card-style-lab__surface--tonal {
   border-color: transparent;
   border-radius: calc(var(--ui-radius) * 4);
-  background:
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--card-style-lab-accent) 28%, var(--ui-bg-elevated)),
-      color-mix(in srgb, var(--card-style-lab-accent) 12%, var(--ui-bg))
-    );
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--card-style-lab-accent) 28%, var(--ui-bg-elevated)),
+    color-mix(in srgb, var(--card-style-lab-accent) 12%, var(--ui-bg))
+  );
   box-shadow: none;
 }
 
@@ -489,7 +501,7 @@ const surfaceClass = (variant: CardLabVariant) => {
   width: calc(var(--spacing) * 2);
   height: calc(var(--spacing) * 2);
   border-radius: 9999px;
-  content: "";
+  content: '';
   background: var(--card-style-lab-accent);
 }
 
@@ -528,7 +540,8 @@ const surfaceClass = (variant: CardLabVariant) => {
 }
 
 .card-style-lab__surface--noir {
-  border: 1px solid color-mix(in srgb, var(--ui-text-highlighted) 18%, transparent);
+  border: 1px solid
+    color-mix(in srgb, var(--ui-text-highlighted) 18%, transparent);
   border-radius: 0;
   background: var(--ui-bg);
   box-shadow: none;
@@ -540,7 +553,7 @@ const surfaceClass = (variant: CardLabVariant) => {
   bottom: 0;
   left: 0;
   height: 1px;
-  content: "";
+  content: '';
   background: linear-gradient(
     90deg,
     transparent,
@@ -563,9 +576,7 @@ const surfaceClass = (variant: CardLabVariant) => {
   filter: grayscale(0.7);
 }
 
-.card-style-lab__surface--noir
-  .card-style-lab__pill-copy
-  > span:first-child {
+.card-style-lab__surface--noir .card-style-lab__pill-copy > span:first-child {
   font-size: var(--text-base);
   font-weight: var(--font-weight-medium);
   letter-spacing: var(--tracking-wide);
@@ -587,12 +598,11 @@ const surfaceClass = (variant: CardLabVariant) => {
 .card-style-lab__surface--modular {
   border: 1px solid var(--ui-border);
   border-radius: calc(var(--ui-radius) * 2);
-  background:
-    linear-gradient(
-      90deg,
-      var(--ui-bg-elevated) 0 72%,
-      color-mix(in srgb, var(--card-style-lab-accent) 16%, var(--ui-bg)) 72%
-    );
+  background: linear-gradient(
+    90deg,
+    var(--ui-bg-elevated) 0 72%,
+    color-mix(in srgb, var(--card-style-lab-accent) 16%, var(--ui-bg)) 72%
+  );
   box-shadow: none;
 }
 
@@ -602,7 +612,7 @@ const surfaceClass = (variant: CardLabVariant) => {
   bottom: 0;
   left: 72%;
   width: 1px;
-  content: "";
+  content: '';
   background: var(--ui-border);
 }
 
@@ -625,11 +635,7 @@ const surfaceClass = (variant: CardLabVariant) => {
   height: 100%;
   align-self: stretch;
   padding: calc(var(--spacing) * 4);
-  background: color-mix(
-    in srgb,
-    var(--card-style-lab-accent) 15%,
-    transparent
-  );
+  background: color-mix(in srgb, var(--card-style-lab-accent) 15%, transparent);
 }
 
 .card-style-lab__surface--modular:hover {
@@ -659,7 +665,8 @@ const surfaceClass = (variant: CardLabVariant) => {
     ),
     color-mix(in srgb, var(--ui-bg-elevated) 94%, transparent);
   box-shadow:
-    0 0 calc(var(--spacing) * 5) color-mix(in srgb, var(--ui-primary) 5%, transparent),
+    0 0 calc(var(--spacing) * 5)
+      color-mix(in srgb, var(--ui-primary) 5%, transparent),
     0 1px 0 color-mix(in srgb, var(--ui-primary) 12%, transparent) inset;
   backdrop-filter: blur(calc(var(--spacing) * 2));
 }
@@ -717,12 +724,11 @@ const surfaceClass = (variant: CardLabVariant) => {
 
   border: 1px solid color-mix(in srgb, var(--ui-warning) 38%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 2);
-  background:
-    linear-gradient(
-      90deg,
-      var(--ui-color-neutral-950) 0 76%,
-      color-mix(in srgb, var(--ui-warning) 14%, var(--ui-color-neutral-950)) 76%
-    );
+  background: linear-gradient(
+    90deg,
+    var(--ui-color-neutral-950) 0 76%,
+    color-mix(in srgb, var(--ui-warning) 14%, var(--ui-color-neutral-950)) 76%
+  );
   color: var(--ui-color-neutral-100);
   box-shadow:
     0 0 calc(var(--spacing) * 4)
@@ -736,7 +742,7 @@ const surfaceClass = (variant: CardLabVariant) => {
   bottom: 0;
   left: 0;
   width: calc(var(--spacing) * 1);
-  content: "";
+  content: '';
   background: var(--ui-warning);
   box-shadow: 0 0 calc(var(--spacing) * 3)
     color-mix(in srgb, var(--ui-warning) 36%, transparent);

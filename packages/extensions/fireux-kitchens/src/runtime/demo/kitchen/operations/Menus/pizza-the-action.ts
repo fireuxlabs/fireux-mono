@@ -1,6 +1,6 @@
 import {
   pizzaTheActionKitchenDemoIdentity,
-  kitchenDemoAssetBase,
+  kitchenDemoMediaUrl,
 } from '../../core/fixtures'
 import type { KitchenDemoMenu } from '../../core/types'
 import {
@@ -17,7 +17,11 @@ const pizzaTheActionRootMenu = rootMenu(
   'Big-flavour pizzas, crispy sides and bright Italian drinks, made for sharing.'
 )
 
-const pizzaTheActionAssetBase = `${kitchenDemoAssetBase}/pizza-the-action`
+const pizzaTheActionAsset = (filename: string) =>
+  kitchenDemoMediaUrl(
+    pizzaTheActionKitchenDemoIdentity.kitchenId,
+    `menu/${filename}`
+  )
 
 export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: pizzaTheActionRootMenu,
@@ -57,7 +61,7 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'San Marzano tomato, fior di latte, basil and extra-virgin olive oil.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/action-margherita.jpg`,
+      image: pizzaTheActionAsset('action-margherita.jpg'),
     },
     {
       id: 'pepperoni-punch',
@@ -65,7 +69,7 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Cup-and-char pepperoni, mozzarella, chilli honey and oregano.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/pepperoni-punch.jpg`,
+      image: pizzaTheActionAsset('pepperoni-punch.jpg'),
     },
     {
       id: 'prosciutto-rocket',
@@ -73,7 +77,7 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Prosciutto crudo, fior di latte, wild rocket, parmesan and lemon oil.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/prosciutto-rocket.jpg`,
+      image: pizzaTheActionAsset('prosciutto-rocket.jpg'),
     },
     {
       id: 'green-machine',
@@ -81,7 +85,7 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Courgette, spinach pesto, fior di latte, peas, basil and pecorino.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/green-machine.jpg`,
+      image: pizzaTheActionAsset('green-machine.jpg'),
     },
     {
       id: 'truffle-shroom',
@@ -89,14 +93,14 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Roasted mushrooms, taleggio, mozzarella, thyme and black truffle cream.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/truffle-shroom.jpg`,
+      image: pizzaTheActionAsset('truffle-shroom.jpg'),
     },
     {
       id: 'nduja-burrata',
       name: 'Nduja & Burrata',
       description: 'Spicy nduja, tomato, torn burrata, basil and chilli oil.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/nduja-burrata.jpg`,
+      image: pizzaTheActionAsset('nduja-burrata.jpg'),
     },
     {
       id: 'garlic-knots',
@@ -104,7 +108,7 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Wood-fired dough knots with roast garlic butter, parsley and parmesan.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/garlic-knots.jpg`,
+      image: pizzaTheActionAsset('garlic-knots.jpg'),
     },
     {
       id: 'courgette-fritti',
@@ -112,7 +116,7 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Crispy courgette ribbons with lemon, sea salt and basil mayo.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/courgette-fritti.jpg`,
+      image: pizzaTheActionAsset('courgette-fritti.jpg'),
     },
     {
       id: 'chopped-italian-salad',
@@ -120,28 +124,28 @@ export const pizzaTheActionKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Little gem, tomato, cucumber, olives, peppers, parmesan and oregano dressing.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/chopped-italian-salad.jpg`,
+      image: pizzaTheActionAsset('chopped-italian-salad.jpg'),
     },
     {
       id: 'pistachio-tiramisu',
       name: 'Pistachio tiramisu',
       description: 'Espresso-soaked sponge, mascarpone and roasted pistachio.',
       item_kind: 'food',
-      image: `${pizzaTheActionAssetBase}/pistachio-tiramisu.jpg`,
+      image: pizzaTheActionAsset('pistachio-tiramisu.jpg'),
     },
     {
       id: 'amalfi-lemon-soda',
       name: 'Amalfi lemon soda',
       description: 'Sparkling lemon soda with fresh citrus and mint.',
       item_kind: 'drink',
-      image: `${pizzaTheActionAssetBase}/amalfi-lemon-soda.jpg`,
+      image: pizzaTheActionAsset('amalfi-lemon-soda.jpg'),
     },
     {
       id: 'blood-orange-spritz',
       name: 'Blood orange spritz',
       description: 'Blood orange, bitter botanicals and sparkling water.',
       item_kind: 'drink',
-      image: `${pizzaTheActionAssetBase}/blood-orange-spritz.jpg`,
+      image: pizzaTheActionAsset('blood-orange-spritz.jpg'),
     },
   ]),
   menuSections: [

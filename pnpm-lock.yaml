@@ -602,6 +602,9 @@ importers:
 
   packages/extensions/fireux-suppliers:
     dependencies:
+      fireux-companies:
+        specifier: workspace:*
+        version: link:../fireux-companies
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core

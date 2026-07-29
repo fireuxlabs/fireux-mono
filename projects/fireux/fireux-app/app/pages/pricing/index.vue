@@ -43,7 +43,7 @@ const hubPlans = [
   {
     id: 'apps',
     title: 'Apps',
-    description: 'Launch one focused workflow.',
+    description: 'Launch a branded FireUX App.',
     price: 'From $150',
     billingPeriod: 'setup',
     features: ['Maintenance from $15/month', 'Branding and hosting included'],

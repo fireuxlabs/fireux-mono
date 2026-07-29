@@ -10,6 +10,9 @@ import type {
   PublicMenuIndexItem,
 } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-index.model'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import {
+  projectSupplierDemoWorld,
+} from 'fireux-suppliers/runtime/utils/supplier-demo-world'
 
 const productDemoSurface = 'power-cards' as const
 const productDemoDataSource = 'demo' as const
@@ -104,14 +107,20 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
   const [
     scenarioModule,
     presentationModule,
+    companyModule,
     supplierModule,
     suppliersModule,
   ] = await Promise.all([
     import('fireux-kitchens/runtime/demo/kitchen/scenarios'),
     import('fireux-kitchens/runtime/demo/kitchen/presentation/index'),
+    import('fireux-companies/runtime/demo/company/scenarios'),
     import('fireux-suppliers/runtime/demo/supplier/scenarios'),
     import('fireux-kitchens/runtime/utils/kitchen/demo-suppliers'),
   ])
+  const supplierDemoWorld = projectSupplierDemoWorld({
+    scenarios: supplierModule.supplierDemoScenarios,
+    companyTargets: companyModule.companyDemoTargets,
+  })
 
   const consoleScenario = scenarioModule.deanosKitchenDemoScenario
   const kitchenScenarios = [
@@ -156,13 +165,13 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
   const recipe = consoleScenario.recipes.find(
     item => item.id === 'deanos-burger-sauce'
   )
-  const supplierScenario = supplierModule.supplierDemoScenarios.find(
+  const supplierScenario = supplierDemoWorld.find(
     scenario => scenario.supplier.id === 'alpine-foodservice'
   )
   const supplierOperation =
     suppliersModule.buildKitchenDemoSuppliersOperation({
       links: consoleScenario.supplierIngredientLinks,
-      supplierScenarios: supplierModule.supplierDemoScenarios,
+      supplierScenarios: supplierDemoWorld,
     })
   const supplier = supplierOperation.items.find(
     item => item.id === 'alpine-foodservice'
@@ -287,8 +296,10 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         id: supplier.id,
         to: '',
         title: supplier.name,
-        subtitle: supplier.deliveryAreas.join(', '),
-        avatarUrl: supplier.imageUrl,
+        subtitle:
+          supplier.headquartersLabel
+          || supplier.deliveryAreas.join(', '),
+        avatarUrl: supplier.logoImageUrl || supplier.imageUrl,
         badges: supplier.categories.slice(0, 2),
         summary: supplier.headline,
       },

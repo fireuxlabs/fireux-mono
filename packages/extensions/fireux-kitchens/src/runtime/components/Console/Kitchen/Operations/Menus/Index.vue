@@ -3,6 +3,8 @@
     <div v-if="kitchenId" class="space-y-4">
       <ConsoleKitchenOperationsMenusList />
 
+      <ConsoleKitchenOperationsMenusTools />
+
       <ConsoleKitchenOperationsMenusDebug />
     </div>
 

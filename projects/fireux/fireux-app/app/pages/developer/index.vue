@@ -1,46 +1,45 @@
 <template>
   <div class="developer-landing">
-    <h1 class="fx-type-page-title">Developer Technologies & Skills</h1>
+    <h1 class="fx-type-page-title">How FireUX Apps are built</h1>
     <p class="fx-type-description">
-      This project is powered by a focused set of core technologies, providing
-      the foundation for all features and capabilities. Supporting these are a
-      range of skills and tools that enable rapid development, maintainability,
-      and a great user experience.
+      FireUX Core owns the shared runtime. Ecosystem packages bind product
+      authority, and Apps explicitly compose the Modules they need.
     </p>
-    <h2 class="fx-type-section-title text-2xl">Core Technologies</h2>
+    <h2 class="fx-type-section-title text-2xl">Runtime</h2>
     <ul class="fx-type-description skills-list text-default">
       <li>
         <Icon name="skill-icons:nuxtjs-dark" class="list-icon" />
         <NuxtLink to="/developer/technologies#nuxt-4">Nuxt 4</NuxtLink> – The
-        backbone of the app, enabling SSR, routing, and modular Vue development.
+        shared App runtime for SSR, routing, and Vue components.
       </li>
       <li>
         <Icon name="vscode-icons:file-type-firebase" class="list-icon" />
         <NuxtLink to="/developer/technologies#firebase">Firebase</NuxtLink> –
-        Authentication, database, and serverless backend for real-time features.
+        Authentication, named Firestore databases, Hosting, and server
+        infrastructure.
       </li>
       <li>
         <Icon name="logos:stripe" class="list-icon" />
         <NuxtLink to="/developer/technologies#stripe">Stripe</NuxtLink> – Secure
-        payment processing and subscription management.
+        checkout support where a product Module configures it.
       </li>
     </ul>
-    <h2 class="fx-type-section-title text-2xl">Supporting Skills</h2>
+    <h2 class="fx-type-section-title text-2xl">Implementation</h2>
     <ul class="fx-type-description skills-list text-default">
       <li>
         <Icon name="skill-icons:tailwindcss-dark" class="list-icon" />
         <NuxtLink to="/developer/skills#tailwind-css">Tailwind CSS</NuxtLink> –
-        Utility-first styling for rapid UI development
+        semantic utility styling
       </li>
       <li>
         <Icon name="skill-icons:sass" class="list-icon" />
-        <NuxtLink to="/developer/skills#scss">SCSS</NuxtLink> – Advanced styling
-        and design system
+        <NuxtLink to="/developer/skills#scss">SCSS</NuxtLink> – scoped styling
+        where a component needs it
       </li>
       <li>
         <Icon name="logos:pwa" class="list-icon" />
-        <NuxtLink to="/developer/skills#pwa">PWA</NuxtLink> – Offline support,
-        installability
+        <NuxtLink to="/developer/skills#pwa">PWA</NuxtLink> – installable App
+        manifests and service-worker support
       </li>
       <li>
         <Icon name="skill-icons:javascript" class="list-icon" />

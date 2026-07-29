@@ -8,17 +8,21 @@
     <template #console>
       <LandingProductProofSection
         section-id="fireux-console"
-        eyebrow="Project Console"
-        title="Run every app from one project."
-        description="Review Ignitions, Apps, the selected Ecosystem, and new Users through the Project Console."
-        :items="projectConsoleItems"
+        :eyebrow="selectedConsoleCopy.eyebrow"
+        :title="selectedConsoleCopy.title"
+        :description="selectedConsoleCopy.description"
+        :supporting="selectedConsoleCopy.supporting"
+        :items="selectedConsoleCopy.items"
         :action="{
-          label: 'Open Project Console',
-          to: '/console/project',
+          label: selectedConsoleCopy.action,
+          to: selectedConsoleCopy.to,
           icon: 'i-lucide-arrow-right',
         }"
       >
-        <FireUXLandingPreview :operations="operations" initial-mode="project" />
+        <FireUXLandingConsolePreview
+          v-model:surface-id="selectedConsoleSurfaceId"
+          :operations="consoleOperations"
+        />
       </LandingProductProofSection>
     </template>
 
@@ -49,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref } from 'vue'
 import type {
   LandingProductCatalogueContent,
   LandingProductIndexContent,
@@ -59,21 +64,93 @@ import type {
 } from 'fireux-core/runtime/models/system/meta-content.model'
 import { metaContent } from '../../../meta'
 import { usePlatformAppDirectory } from '../../../composables/usePlatformDirectory'
-import FireUXLandingPreview from './Preview.vue'
+import FireUXLandingConsolePreview from './ConsolePreview/Index.vue'
+
+type ConsoleSurfaceCopy = {
+  action: string
+  description: string
+  eyebrow: string
+  items: readonly string[]
+  supporting?: string
+  title: string
+}
+type SelectedConsoleSurfaceCopy = ConsoleSurfaceCopy & {
+  to: string
+}
 
 const appsController = usePlatformAppDirectory()
+const selectedConsoleSurfaceId = ref('project.apps')
 const landingOperations: readonly FireuxMetaOperation[] =
   metaContent.operations ?? []
 const landingSolutions: readonly FireuxMetaSolution[] =
   metaContent.solutions ?? []
 
-const operations = landingOperations.map((operation) => ({
+const consoleOperations = landingOperations.map((operation) => ({
   id: operation.id,
   title: operation.title,
   description: operation.description,
-  icon: operation.icon,
+  icon: operation.icon || 'i-lucide-circle-dot',
+  to: operation.to,
+}))
+const catalogueOperations = landingOperations.map((operation) => ({
+  id: operation.id,
+  title: operation.title,
+  description: operation.description,
+  icon: operation.icon || 'i-lucide-circle-dot',
   to: operation.slug ? `/operations/${operation.slug}` : operation.to,
 }))
+
+const consoleSurfaceCopy = {
+  'project.ignition': {
+    eyebrow: 'Project Console · Ignition',
+    title: 'Manage Ignition requests.',
+    description:
+      'Review each request, update its status, and work through the launch checklist.',
+    items: ['Business and contact', 'App requirements', 'Access', 'Launch checklist'],
+    action: 'Open Ignition',
+  },
+  'project.apps': {
+    eyebrow: 'Project Console · Apps',
+    title: 'Review the Apps in a Project.',
+    description:
+      'See the App records connected to the selected Project and the Ecosystem each App belongs to.',
+    items: ['App identity', 'Ecosystem relationship', 'Runtime role', 'Project scope'],
+    action: 'Open Project Apps',
+  },
+  'project.ecosystem': {
+    eyebrow: 'Project Console · Ecosystem',
+    title: 'Review the Project Ecosystem.',
+    description:
+      'See the Ecosystem connected to the selected Project and the Apps grouped inside it.',
+    items: ['Ecosystem identity', 'Project relationship', 'Connected Apps', 'Current status'],
+    action: 'Open Project Ecosystem',
+  },
+  'project.users': {
+    eyebrow: 'Project Console · Users',
+    title: 'Monitor new App users.',
+    description:
+      'Review the bounded signup feed published by Apps connected to FireUX.',
+    items: ['Recent joins', 'Source App', 'Project', 'Membership role'],
+    supporting: 'Returning sign-ins are excluded from the feed.',
+    action: 'Open Project Users',
+  },
+} as const satisfies Record<string, ConsoleSurfaceCopy>
+
+const selectedConsoleCopy = computed<SelectedConsoleSurfaceCopy>(() => {
+  const copy: ConsoleSurfaceCopy =
+    consoleSurfaceCopy[
+      selectedConsoleSurfaceId.value as keyof typeof consoleSurfaceCopy
+    ] || consoleSurfaceCopy['project.apps']
+  const operation =
+    consoleOperations.find(
+      candidate => candidate.id === selectedConsoleSurfaceId.value
+    ) || consoleOperations[0]
+
+  return {
+    ...copy,
+    to: operation?.to || '/console/project',
+  }
+})
 
 const solutions = landingSolutions
   .filter(
@@ -89,19 +166,12 @@ const solutions = landingSolutions
     action: solution.cta?.label || 'View solution',
   }))
 
-const projectConsoleItems = [
-  'Ignition requests',
-  'Project Apps',
-  'Selected Ecosystem',
-  'New Users',
-] as const
-
 const solutionsCatalogue = {
   sectionId: 'fireux-solutions',
   eyebrow: 'Solutions',
-  title: 'Start with a proven app shape.',
+  title: 'What can FireUX launch?',
   description:
-    'These authored solutions describe current FireUX App, portal, directory, and internal-workflow paths.',
+    'Each Solution starts with a specific job for an App to do.',
   action: {
     label: 'Explore all solutions',
     to: '/solutions',
@@ -121,35 +191,35 @@ const operationsCatalogue = {
     to: '/operations',
     icon: 'i-lucide-arrow-right',
   },
-  items: operations,
+  items: catalogueOperations,
 } satisfies LandingProductCatalogueContent
 
 const content = {
   hero: {
-    badge: '$150 setup · $15/month',
-    kicker: 'Ignite your idea.',
-    title: 'Your business.',
-    accent: 'Your app.',
+    badge: 'Projects · Apps · Ecosystems',
+    kicker: 'FireUX App',
+    title: 'Ignite Your Project',
+    accent: 'With FireUX',
     description:
-      'We configure and launch a branded web app around one useful job. You get an installable PWA, accounts, an operator console, hosting, updates, and maintenance.',
+      'Onboard your Project through Ignition, manage its Apps, Ecosystem, and users in the Project Console, then add Modules or join an existing Ecosystem when required.',
     primaryAction: {
-      label: 'Request Ignition',
-      to: '/get-started#ignition-request',
+      label: 'Get started',
+      to: '/get-started',
       icon: 'i-lucide-rocket',
     },
     secondaryAction: {
-      label: 'See price and scope',
-      to: '/get-started',
-      icon: 'i-lucide-receipt-text',
+      label: 'Go to console',
+      to: '/console/project',
+      icon: 'i-lucide-layout-dashboard',
     },
     quietAction: {
-      label: 'Browse FireUX apps',
-      to: '/apps',
+      label: 'Browse ecosystems',
+      to: '/ecosystems',
     },
     trustItems: [
-      'One job for the app to do',
-      'Your brand, accounts, and console',
-      'Hosting and maintenance included',
+      'Start App requests with Ignition',
+      'Review Project Apps and Ecosystems',
+      'Monitor new App users',
     ],
   },
   onboardingLabel: 'onboarding',

@@ -54,6 +54,7 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     'tagline',
     'display_image_url',
     'image_url',
+    'card_image_url',
     'logo_image_url',
     'wordmark_no_logo_image_url',
     'wordmark_image_url',
@@ -141,6 +142,9 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
       source['identity.display_name'] = identity.display_name
     }
     if (hasOwn(identity, 'tagline')) source['identity.tagline'] = identity.tagline
+    if (hasOwn(identity, 'card_image_url')) {
+      source['identity.card_image_url'] = identity.card_image_url
+    }
     if (hasOwn(identity, 'logo_image_url')) {
       source['identity.logo_image_url'] = identity.logo_image_url
     }
@@ -180,6 +184,7 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
 
   moveString('identity.display_name', 'identity.display_name')
   moveString('identity.tagline', 'identity.tagline')
+  moveString('identity.card_image_url', 'identity.card_image_url')
   moveString('identity.logo_image_url', 'identity.logo_image_url')
   moveString(
     'identity.wordmark_no_logo_image_url',

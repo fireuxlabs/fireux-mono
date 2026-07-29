@@ -74,13 +74,17 @@ Map component folder and naming conventions.
   before Solutions and Operations. FireUX and Misebox are the current sibling
   consumers. Slotted content opts into Core's single IntersectionObserver
   reveal system with `data-landing-reveal`; projects do not create a second
-  scroll-animation observer or stylesheet. Misebox's Console proof pairs a
-  read-only canonical Kitchen Operations launcher with project-owned Console
-  copy. Its thin root owns frame/navigation, local page
-  state, and one Product Demo load. Named Menus, Dishes, Ingredients, Recipes,
-  Mise, and empty-canvas children own their projected bodies; Dishes further
-  separates Collection, Overview, and named Finance/Spec/Prep/Recipes/Mise
-  child pages beneath one persistent image-backed Dish context. Ingredients
+  scroll-animation observer or stylesheet. Core
+  `LandingConsolePreviewFrame` owns the shared Nuxt UI Console shell: target
+  rail, primary and optional secondary navigation, selected heading,
+  responsive composition, and persistent full-Console doorway. Misebox's
+  Console proof pairs that shell with a read-only canonical Kitchen Operations
+  launcher and project-owned Console copy. Its thin root owns local operation
+  and page state plus one Product Demo load. Named Menus, Dishes, Ingredients,
+  Recipes, Mise, and empty-canvas children own their projected bodies; Dishes
+  further separates Collection, Overview, and named
+  Finance/Spec/Prep/Recipes/Mise child pages beneath one persistent
+  image-backed Dish context. Ingredients
   receives the selected Demo Kitchen's usage links already hydrated through
   canonical root Ingredients; it does not copy name or image truth. Its compact
   collapsible groups use the same ordered food-group resolver as the real
@@ -112,18 +116,20 @@ Map component folder and naming conventions.
   Demo loading, live reads, Firebase, or write authority. The project source
   begins at
   `projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue`.
-  Mobile keeps the component before the text and desktop places it to the left.
-  Core
-  `LandingProductPreviewFrame` owns the
-  narrated-preview frame when a project genuinely needs identity/status
-  chrome, mode controls, panel transition, footer action, and reduced-motion
-  behavior; project proof truth never moves into Core. Core
+  FireUX consumes the same shell for its Project Operations, projects Apps and
+  Ecosystems from the explicitly FireUX-owned Core Project Demo scenario, and
+  keeps authenticated Ignition and User activity as truthful private-operation
+  states. Its doorway selects the real Demo Project only when that projection
+  succeeds. Mobile keeps each component before the text and desktop places it
+  to the left. Project proof truth never moves into Core. Core
   `LandingCardOrbit` owns deterministic sphere geometry, drag/keyboard
   interaction, a one-shot visibility-gated desktop launch with one stable
-  per-mount vector, a full closed orbit that settles exactly onto the main
-  pitch, continuous visibility-aware autoplay in the same direction, fully
-  opaque orbital elements with scale and bounded rear-content blur for depth,
-  crisp foreground content, static mobile defaults, and reduced-motion behavior
+  per-mount vector, two closed turns through one long deceleration that settles
+  exactly onto the main pitch, continuous visibility-aware autoplay in the same
+  direction, desktop hover selection that elevates one card in place without
+  snapping the pack or changing touch/root keyboard behavior, fully opaque and
+  crisp orbital elements whose scale and stacking carry depth, static mobile
+  defaults, and reduced-motion behavior
   for card showcases. It receives typed items and one dumb item slot; FireUX
   projects its bounded public
   App/Ecosystem directory

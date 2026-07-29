@@ -4,19 +4,6 @@
     <UDashboardPanel id="console-kitchen-dishes">
       <template #header>
         <LayoutsConsoleNavbar title="Kitchen Dishes" />
-
-        <UDashboardToolbar>
-          <template #right>
-            <UButton
-              v-if="canWrite"
-              to="/console/kitchen/dishes/create"
-              icon="i-lucide-plus"
-              size="sm"
-            >
-              Create dish
-            </UButton>
-          </template>
-        </UDashboardToolbar>
       </template>
 
       <template #body>
@@ -31,7 +18,7 @@
 <script setup lang="ts">
 import { provideKitchenDishesWorkspace } from '../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenDishesWorkspace'
 
-const { canWrite } = provideKitchenDishesWorkspace()
+provideKitchenDishesWorkspace()
 
 definePageMeta({
   layout: 'console',

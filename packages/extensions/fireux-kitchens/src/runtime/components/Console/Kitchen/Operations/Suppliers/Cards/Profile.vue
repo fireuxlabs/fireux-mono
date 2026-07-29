@@ -52,6 +52,10 @@
             Delivery areas:
             <span class="console-summary-value">{{ deliveryAreas.length }}</span>
           </div>
+          <div v-if="headquartersLabel" class="console-summary-field">
+            Headquarters:
+            <span class="console-summary-value">{{ headquartersLabel }}</span>
+          </div>
         </div>
 
         <div v-if="categories.length" class="flex flex-wrap items-center gap-1">
@@ -95,7 +99,22 @@ const headline = computed(() => normalizeString(props.supplier?.supplier_headlin
 const summary = computed(() =>
   normalizeString((props.supplier as { summary?: unknown } | null)?.summary)
 )
-const imageUrl = computed(() => normalizeString(props.supplier?.supplier_image))
+const companyPlace = computed(() => {
+  const value = props.supplier?.company_place
+  return value && typeof value === 'object'
+    ? value as Record<string, unknown>
+    : null
+})
+const imageUrl = computed(
+  () =>
+    normalizeString(companyPlace.value?.image_url)
+    || normalizeString(props.supplier?.supplier_image)
+)
+const headquartersLabel = computed(
+  () =>
+    normalizeString(companyPlace.value?.short_address)
+    || normalizeString(companyPlace.value?.name)
+)
 const status = computed(() =>
   normalizeString((props.supplier as { state?: unknown } | null)?.state)
 )

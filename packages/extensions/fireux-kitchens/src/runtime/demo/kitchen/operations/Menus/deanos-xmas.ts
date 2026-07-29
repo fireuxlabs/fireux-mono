@@ -1,6 +1,6 @@
 import {
   deanosXmasMenuDemoIdentity,
-  kitchenDemoAssetBase,
+  kitchenDemoMediaUrl,
 } from '../../core/fixtures'
 import type { KitchenDemoMenu } from '../../core/types'
 import {
@@ -11,7 +11,8 @@ import {
   rootMenu,
 } from './builders'
 
-const deanosAssetBase = `${kitchenDemoAssetBase}/deanos`
+const deanosAsset = (filename: string) =>
+  kitchenDemoMediaUrl(deanosXmasMenuDemoIdentity.kitchenId, `menu/${filename}`)
 
 const deanosXmasRootMenu = rootMenu(
   deanosXmasMenuDemoIdentity,
@@ -46,7 +47,7 @@ export const deanosXmasDemoMenu: KitchenDemoMenu = {
       description:
         'Double smashed beef, smoked bacon, fried Camembert, cranberry relish, rocket and mustard mayo.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/xmas-christmas-stack-santa.jpg`,
+      image: deanosAsset('xmas-christmas-stack-santa.jpg'),
     },
     {
       id: 'turkey-dinner-burger',
@@ -54,7 +55,7 @@ export const deanosXmasDemoMenu: KitchenDemoMenu = {
       description:
         'Roast turkey, sage and onion stuffing, melted Brie, cranberry relish, gravy mayo and a pig in blanket.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/xmas-turkey-dinner-burger-reindeer.jpg`,
+      image: deanosAsset('xmas-turkey-dinner-burger-reindeer.jpg'),
     },
     {
       id: 'pigs-in-blankets-waffle-fries',
@@ -62,7 +63,7 @@ export const deanosXmasDemoMenu: KitchenDemoMenu = {
       description:
         'Crispy waffle fries loaded with chopped pigs in blankets, cheese sauce, rich gravy, cranberry relish and crispy onions.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/xmas-pigs-in-blankets-waffle-fries-elf.jpg`,
+      image: deanosAsset('xmas-pigs-in-blankets-waffle-fries-elf.jpg'),
     },
     {
       id: 'fried-brie-bites',
@@ -70,7 +71,7 @@ export const deanosXmasDemoMenu: KitchenDemoMenu = {
       description:
         'Golden crumbed Brie bites served with cranberry and chilli dip.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/xmas-fried-brie-bites-snowman.jpg`,
+      image: deanosAsset('xmas-fried-brie-bites-snowman.jpg'),
     },
     {
       id: 'stuffed-mini-yorkshires',
@@ -78,7 +79,7 @@ export const deanosXmasDemoMenu: KitchenDemoMenu = {
       description:
         'Mini Yorkshire puddings filled with pulled turkey, sage stuffing, cranberry relish and gravy.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/xmas-stuffed-mini-yorkshires-gingerbread.jpg`,
+      image: deanosAsset('xmas-stuffed-mini-yorkshires-gingerbread.jpg'),
     },
     {
       id: 'gingerbread-caramel-shake',
@@ -86,7 +87,7 @@ export const deanosXmasDemoMenu: KitchenDemoMenu = {
       description:
         'Vanilla soft serve, salted caramel, gingerbread spice and biscuit crumb.',
       item_kind: 'drink',
-      image: `${deanosAssetBase}/xmas-gingerbread-caramel-shake-subtle.jpg`,
+      image: deanosAsset('xmas-gingerbread-caramel-shake-subtle.jpg'),
     },
   ]),
   menuSections: [

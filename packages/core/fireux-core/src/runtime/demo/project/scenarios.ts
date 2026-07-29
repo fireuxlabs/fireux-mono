@@ -11,6 +11,7 @@ import {
 } from './targets'
 
 export type ProjectDemoScenario = {
+  appId: string
   project: Project
   apps: App[]
   ecosystems: Ecosystem[]
@@ -18,6 +19,7 @@ export type ProjectDemoScenario = {
 
 export const projectDemoScenarios: ProjectDemoScenario[] = [
   {
+    appId: 'fireux-app',
     project: fireuxDemoProject,
     apps: [
       {
@@ -50,13 +52,19 @@ export const projectDemoScenarios: ProjectDemoScenario[] = [
 ]
 
 for (const scenario of projectDemoScenarios) {
+  const appId = String(scenario.appId || '').trim()
   const projectId = String(scenario.project.id || '').trim()
   const appIds = new Set<string>()
   const ecosystemIds = new Set(
     scenario.ecosystems.map((ecosystem) => String(ecosystem.id || '').trim())
   )
 
-  if (!projectId || ecosystemIds.has('')) {
+  if (
+    !appId
+    || !projectId
+    || ecosystemIds.has('')
+    || scenario.project.created.app_id !== appId
+  ) {
     throw new Error('Every Project Demo scenario requires stable root identities.')
   }
 
@@ -69,21 +77,23 @@ for (const scenario of projectDemoScenarios) {
   }
 
   for (const app of scenario.apps) {
-    const appId = String(app.id || '').trim()
+    const childAppId = String(app.id || '').trim()
+    const childEcosystemId = String(app.ecosystem_id || '').trim()
     if (
-      !appId ||
-      appIds.has(appId) ||
+      !childAppId ||
+      appIds.has(childAppId) ||
       app.project_id !== projectId ||
-      !ecosystemIds.has(app.ecosystem_id) ||
+      !childEcosystemId ||
+      !ecosystemIds.has(childEcosystemId) ||
       'operator_ids' in app ||
       'team_ids' in app ||
       'join_requests' in app
     ) {
       throw new Error(
-        `Project Demo ${projectId}/${appId || '(missing-app)'} has an invalid control-plane relationship.`
+        `Project Demo ${projectId}/${childAppId || '(missing-app)'} has an invalid control-plane relationship.`
       )
     }
-    appIds.add(appId)
+    appIds.add(childAppId)
   }
 }
 

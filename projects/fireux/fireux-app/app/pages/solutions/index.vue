@@ -15,7 +15,7 @@
             FireUX solutions
           </h1>
           <p class="m-0 text-base leading-7 text-muted">
-            Apps and portals built, hosted, and maintained by FireUX.
+            Search-led pages for specific jobs a FireUX App or Ecosystem can support.
           </p>
         </header>
 
@@ -25,7 +25,7 @@
               Start here
             </h2>
             <p class="m-0 text-sm leading-6 text-muted">
-              Choose what you need.
+              Choose the job closest to the App you need.
             </p>
           </div>
           <PublicSolutionsGrid :solutions="featuredSolutions" />
@@ -68,10 +68,10 @@
         >
           <div class="grid gap-1">
             <h2 class="m-0 text-lg font-semibold text-highlighted">
-              FireUX products
+              FireUX launch paths
             </h2>
             <p class="m-0 text-sm leading-6 text-muted">
-              Larger and self-managed builds.
+              Start an App, tenant App, or Ecosystem through Ignition.
             </p>
           </div>
           <div class="flex flex-wrap gap-x-5 gap-y-3">
@@ -158,7 +158,8 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Business app solutions - FireUX',
-  description: 'Explore apps, customer portals, employee portals, internal tools, directories, and marketplaces built by FireUX.',
+  title: 'FireUX Solutions',
+  description:
+    'Find a specific job for a FireUX App, then carry that Solution into Ignition.',
 })
 </script>

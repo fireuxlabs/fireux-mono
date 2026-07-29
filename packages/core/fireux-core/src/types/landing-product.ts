@@ -48,3 +48,9 @@ export type LandingProductIndexContent = {
   hero: LandingProductHero
   onboardingLabel?: string
 }
+
+export type LandingConsolePreviewItem = {
+  id: string
+  title: string
+  icon: string
+}

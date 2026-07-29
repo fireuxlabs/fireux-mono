@@ -83,6 +83,8 @@ export type KitchenIdentity = Omit<
   'image_url' | 'gallery'
 > & {
   image_shade?: KitchenImageShade
+  /** Optional Kitchen-owned card image. Empty means inherit Place.image_url. */
+  card_image_url?: string
   logo_image_url?: string
   wordmark_no_logo_image_url?: string
   wordmark_image_url?: string
@@ -177,6 +179,7 @@ export const KitchenModel = {
     display_name: '',
     tagline: '',
     image_shade: 'none',
+    card_image_url: '',
     logo_image_url: '',
     wordmark_no_logo_image_url: '',
     wordmark_image_url: '',

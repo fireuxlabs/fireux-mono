@@ -8,9 +8,9 @@
   >
     <div class="flex min-w-0 items-start gap-2">
       <UAvatar
-        v-if="imageUrl"
         :src="imageUrl || undefined"
         :alt="title || ''"
+        icon="i-lucide-folders"
         size="sm"
       />
 

@@ -1,0 +1,123 @@
+<template>
+  <LandingConsolePreviewFrame
+    :model-value="selectedSurfaceId"
+    :items="operations"
+    label="Interactive Project Console preview"
+    navigation-label="Project Operations"
+    console-to="/console/project"
+    open-console-aria-label="Open the full Project Console"
+    @update:model-value="selectedSurfaceId = $event"
+    @open-console="openFullProjectConsole"
+  >
+    <template #target>
+      <ProjectCardsPill
+        v-if="projectPill"
+        v-bind="projectPill"
+        :link="false"
+        :show-badges="false"
+      />
+      <div
+        v-else
+        class="flex min-w-0 items-center gap-2"
+        :aria-label="productDemoError ? 'Demo Project unavailable' : 'Loading Demo Project'"
+      >
+        <UAvatar icon="i-lucide-folders" size="sm" />
+        <span class="hidden truncate text-sm text-muted sm:block">
+          {{ productDemoError ? 'Project unavailable' : 'Loading Project' }}
+        </span>
+      </div>
+    </template>
+
+    <FireUXLandingConsolePreviewApps
+      v-if="selectedSurface?.id === 'project.apps'"
+      :key="selectedSurface.id"
+      :apps="productDemo?.console.apps || []"
+      :error="Boolean(productDemoError)"
+    />
+    <FireUXLandingConsolePreviewEcosystems
+      v-else-if="selectedSurface?.id === 'project.ecosystem'"
+      :key="selectedSurface.id"
+      :ecosystems="productDemo?.console.ecosystems || []"
+      :error="Boolean(productDemoError)"
+    />
+    <FireUXLandingConsolePreviewPrivateState
+      v-else-if="selectedSurface && privateState"
+      :key="selectedSurface.id"
+      v-bind="privateState"
+    />
+  </LandingConsolePreviewFrame>
+</template>
+
+<script setup lang="ts">
+import { navigateTo } from '#imports'
+import { computed } from 'vue'
+import { useProjectConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/project/core/useProjectConsoleSelection'
+import type { ProjectInterfaceCard } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import type { LandingConsolePreviewItem } from 'fireux-core/types/landing-product'
+import { useFireuxProductDemo } from '~/composables/product-demo/useFireuxProductDemo'
+
+type PreviewOperation = LandingConsolePreviewItem & {
+  description: string
+  to: string
+}
+
+const props = defineProps<{
+  operations: readonly PreviewOperation[]
+}>()
+
+const selectedSurfaceId = defineModel<string>('surfaceId', {
+  default: 'project.apps',
+})
+const {
+  data: productDemo,
+  error: productDemoError,
+} = await useFireuxProductDemo()
+const { setProjectConsoleSelection } = useProjectConsoleSelection()
+
+const selectedSurface = computed(
+  () =>
+    props.operations.find(
+      operation => operation.id === selectedSurfaceId.value
+    )
+    ?? props.operations[0]
+    ?? null
+)
+
+const projectPill = computed<ProjectInterfaceCard | null>(
+  () => productDemo.value?.console.projectPill ?? null
+)
+
+const privateState = computed(() => {
+  if (selectedSurface.value?.id === 'project.ignition') {
+    return {
+      title: 'Ignition requests stay private',
+      description:
+        'Open the authenticated Project Console to review requests and their launch checklists.',
+      icon: 'i-lucide-shield-check',
+    }
+  }
+
+  if (selectedSurface.value?.id === 'project.users') {
+    return {
+      title: 'User activity stays private',
+      description:
+        'Open the authenticated Project Console to review the bounded cross-App signup feed.',
+      icon: 'i-lucide-shield-check',
+    }
+  }
+
+  return null
+})
+
+const openFullProjectConsole = async (event: MouseEvent) => {
+  event.preventDefault()
+  const projectId = productDemo.value?.console.projectId
+  if (projectId) {
+    setProjectConsoleSelection({
+      projectId,
+      type: 'demo',
+    })
+  }
+  await navigateTo('/console/project')
+}
+</script>

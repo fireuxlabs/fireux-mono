@@ -64,7 +64,11 @@ Before each task:
   A Kitchen logo is owned only by
   `Kitchen.identity.logo_image_url`; Kitchen cards and logo editors do not use
   the linked Place image as a second logo source. `Place.image_url` remains
-  Place-owned location imagery.
+  Place-owned location imagery and is the default Kitchen card image. A Kitchen
+  may set the sparse `Kitchen.identity.card_image_url` override when its public
+  Kitchen presentation must differ from the wider Place, such as a restaurant
+  inside a hotel. An absent override inherits Place at read time; the Place
+  image is never copied into the Kitchen root.
   Place name, address, location media, gallery, contact details, currency,
   timezone, and business hours remain Place-owned. Kitchen owns only its
   operational override, logo, Menu, service, fulfilment, and other Kitchen
@@ -75,6 +79,14 @@ Before each task:
   than fabricating Place-like fields on the Kitchen. Demo Kitchen roots also
   name their current parent App and pair with same-id access-only Demo support;
   Demo is read-only, not root-only.
+  Supplier location follows a different owner contract:
+  `Supplier.company_id -> Company`, with Company as a same-id role over Place.
+  The shared Supplier surface projector keeps the Supplier-owned logo separate
+  from the bounded Company/Place location projection. Current Demo scenarios
+  prove that chain and resolve Place imagery at read time; they never add
+  `Supplier.place_id` or copy Place presentation onto the Supplier root.
+  Live Supplier consumers must provide the same bounded Company projection
+  before claiming equivalent location enrichment.
   The Kitchen theme editor mutates the canonical Kitchen root through a
   target-bound trusted transaction.
   AppKitchen access records require bounded `operator_ids`, `team_ids`, and
@@ -179,6 +191,17 @@ Before each task:
   those roots are not Demo records. Demo records remain owned by their domain
   package; the project owns only route selection, marketing copy, and local
   interaction.
+  Demo-owned presentation images use fixed public HTTPS values for immutable
+  objects in `misebox-78f9c.appspot.com` under the owner-relative
+  `demo/misebox-app/` prefix. The guarded 68-source manifest produces 73
+  objects because five Deanos source photos also receive Place-owned object
+  identities for Place fields. Kitchen/Supplier logos and Place imagery never
+  cross owner paths. Fixture and Product Demo modules import no Firebase or
+  Storage SDK/API; browser image GETs do not turn the data envelope into a
+  remote provider. Canonical Ingredient and App media stay outside Demo.
+  Publication is the explicit create-only
+  `scripts/publish-misebox-demo-media.mjs` workflow, never a Console or runtime
+  mutation.
 - Misebox `/cards` is a searchable project-owned PowerCards candidate gallery.
   Its main collection consumes package-owned `Cell`, `Pill`, and `Preview`
   components with local fixture props. Named specialist presentations may join
@@ -203,30 +226,36 @@ Before each task:
   typed hero text once and fills its named proof slot with the read-only
   PowerCards orbit. Core `LandingCardOrbit` owns the deterministic geometry,
   pointer/keyboard behavior, one-shot visibility-gated desktop launch with a
-  stable per-mount vector and full closed orbit, continuous visibility-aware
-  autoplay in the same direction, fully opaque orbital elements with bounded
-  rear-content blur and crisp foreground content, static mobile default, and
-  reduced-motion fallback. Misebox keeps only typed labels and slotted
+  stable per-mount vector and two closed turns through one long deceleration,
+  continuous visibility-aware autoplay in the same direction, desktop
+  hover selection that elevates one card without snapping the pack, fully opaque
+  and crisp orbital elements whose scale and stacking communicate depth, static
+  mobile default, and reduced-motion fallback. Misebox keeps only typed labels
+  and slotted
   PowerCards; it does not couple page scrolling to orbit rotation.
   The
-  orbit consumes the discriminated, network-free `demo` envelope from
+  orbit consumes the discriminated, network-free data `demo` envelope from
   `useMiseboxPowerCardsProductDemo`; it never falls through to the live public
-  directory or canonical Ingredient hydration. Kitchen, Menu, Dish, Mise,
-  Recipe, Supplier item, Kiosk item, and Supplier Cards derive from package
-  Demo records and pure projectors. Ingredient-dependent Cards remain outside
-  this Demo-only orbit because Ingredient identity is Live canon. PowerCard
-  components do not own local Deanos fixtures. The hero does not add a second
-  explanatory block or expose live state and controls. The existing Core hero
+  directory or canonical Ingredient hydration. Declared immutable Demo image
+  GETs are presentation delivery, not data hydration. Kitchen, Menu, Dish,
+  Mise, Recipe, Supplier item, Kiosk item, and Supplier Cards derive from
+  package Demo records and pure projectors. Ingredient-dependent Cards remain
+  outside this Demo-only orbit because Ingredient identity is Live canon.
+  PowerCard components do not own local Deanos fixtures. The hero does not add
+  a second explanatory block or expose live state and controls. The existing
+  Core hero
   action system keeps the Get started and Go to console buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
   adding a detached CTA section. The later landing sections retain the
   relevant product doorways. The Console proof is mobile-first: the read-only
   component comes first and projects the canonical Kitchen Operations
-  catalogue without live counts or customer data. Its thin frame owns the
-  single Product Demo load,
-  local operation/page selection, and navigation; named operation children
-  receive typed read-only projections. Menus, Dishes, Ingredients, Recipes,
-  Mise, Orders, Stations, Suppliers, and Tables own truthful projected bodies;
+  catalogue without live counts or customer data. Core
+  `LandingConsolePreviewFrame` owns the shared target rail, navigation,
+  selected heading, responsive shell, and full-Console doorway. Misebox's thin
+  root owns the single Product Demo load and local operation/page selection;
+  named operation children receive typed read-only projections. Menus, Dishes,
+  Ingredients, Recipes, Mise, Orders, Stations, Suppliers, and Tables own
+  truthful projected bodies;
   future unsupported operations use one named empty canvas. Dishes separates
   Collection, Overview, and five named Finance/Spec/Prep/Recipes/Mise child
   pages beneath one persistent image-backed Dish context. Ingredients presents
@@ -271,8 +300,10 @@ Before each task:
   mutation controls.
   Stations projects the same ordered `KitchenStation` records used by Console
   Demo. Suppliers resolves Kitchen-owned usage links through a Kitchen-owned
-  pure adapter into Supplier-owned identity and coverage; no Supplier truth is
-  copied into the Kitchen fixture or rebuilt by the project. Tables projects
+  pure adapter into Supplier-owned identity and coverage. It receives the
+  Supplier-owned logo and the linked Company/Place image from the shared
+  Supplier Demo projector; no Supplier or Place truth is copied into the
+  Kitchen fixture or rebuilt by the project. Tables projects
   only the canonical Deanos `Kitchen.tables.count`, so the eight configured
   tables are available and no active Table Tab is invented. The separate
   Reports navigation exposes the Kitchen Finance sheet without adding Finance
@@ -300,10 +331,7 @@ Before each task:
   source-agnostic. Wider
   screens place that component left of the buyer-facing Console text. The
   source family begins at
-  `app/components/Misebox/Landing/ConsolePreview/Index.vue`. Core
-  `LandingProductPreviewFrame` remains the shared
-  narrated-preview frame when identity/status chrome, mode controls, panel
-  transition, footer action, and reduced-motion behavior are genuinely needed.
+  `app/components/Misebox/Landing/ConsolePreview/Index.vue`.
   The composition is mobile-first: phone flow, touch targets, and compact
   product proof are unconditioned defaults, while wider layouts enhance them
   only through `min-width` breakpoints. The executable contract lives in

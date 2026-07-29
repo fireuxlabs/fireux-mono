@@ -48,6 +48,12 @@
             </dt>
             <dd class="text-default">{{ vm.locationsLabel }}</dd>
           </div>
+          <div v-if="vm.headquartersLabel" class="space-y-1">
+            <dt class="fx-type-label">
+              Headquarters
+            </dt>
+            <dd class="text-default">{{ vm.headquartersLabel }}</dd>
+          </div>
           <div v-if="vm.categoriesCsv" class="space-y-1">
             <dt class="fx-type-label">
               Categories
@@ -93,6 +99,7 @@ const vm = computed(() => {
   const summary = String(card?.summary ?? '').trim()
   const organizationName = String(card?.organizationName ?? '').trim()
   const locationsLabel = String(card?.locationsLabel ?? '').trim()
+  const headquartersLabel = String(card?.headquartersLabel ?? '').trim()
   const categoriesCsv = String(card?.categoriesCsv ?? '').trim()
 
   return {
@@ -104,6 +111,7 @@ const vm = computed(() => {
     summary,
     organizationName,
     locationsLabel,
+    headquartersLabel,
     categoriesCsv,
   }
 })

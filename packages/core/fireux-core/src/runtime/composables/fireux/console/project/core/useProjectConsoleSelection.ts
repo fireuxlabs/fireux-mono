@@ -1,9 +1,11 @@
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
+import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 
 type ProjectConsoleSelectionInput = {
   selectedId?: string
   projectId?: string
+  type?: ConsoleSource
 }
 
 export function useProjectConsoleSelection() {
@@ -18,7 +20,7 @@ export function useProjectConsoleSelection() {
       ? normalizeString(selectionPatch.selectedId ?? selectionPatch.projectId)
       : selectedId.value
 
-    selectTarget(nextId, 'live')
+    selectTarget(nextId, selectionPatch.type ?? 'live')
   }
 
   return {

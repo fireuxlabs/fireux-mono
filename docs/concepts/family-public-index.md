@@ -72,7 +72,7 @@ The detailed manager matrix lives in `collection-manager.md`.
 | Delta                                                                | State      | Why it exists                                                                                          |
 | -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------ |
 | Public profile indexes join canonical User identity server-side      | `accepted` | Raw profile and User roots are not the public list transport                                           |
-| Kitchen directory joins Place and App scope through `/api/kitchens`  | `accepted` | Kitchen cards need bounded shared Place truth without copied identity or browser N+1 reads             |
+| Kitchen directory joins Place and App scope through `/api/kitchens`  | `accepted` | Kitchen cards inherit bounded Place presentation without copied identity; an explicit sparse Kitchen card-image override may replace only that presentation field |
 | Kitchen supports an explicit authenticated admin/developer preview   | `accepted` | Operators need to inspect canonical unpublished targets without weakening the default public directory |
 | Job directory applies category, publication, and tenant source scope | `accepted` | One Job entity serves multiple products while each App exposes only its configured public catalogue    |
 | Menu index may include upload/tool behavior                          | `accepted` | A root quick Menu can begin without a Kitchen; KitchenMenu remains a different scoped entity           |

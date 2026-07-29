@@ -129,20 +129,31 @@ Before each task:
   `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
   places product copy on the left and the app's card orbit on the right.
   `LandingProductProofSection` owns the repeated proof-and-copy composition,
-  while `LandingProductCatalogue` owns the shared catalogue grid. These
-  surfaces use flat semantic Nuxt UI treatments without decorative gradients
-  or flares. Product Apps retain truthful data, copy, routes, and proof and may
-  omit any unavailable slot; FireUX places its Ecosystems section before Apps
-  and does not fabricate a Tools catalogue. Every `LandingCardOrbit` declares
+  `LandingProductCatalogue` owns the shared catalogue grid, and
+  `LandingConsolePreviewFrame` owns the responsive target rail, operation
+  navigation, selected heading, and persistent full-Console doorway shared by
+  the FireUX Project and Misebox Kitchen proofs. Each project retains its
+  operation catalogue, target Card, Demo adapter, selection, and typed body
+  children; unsupported or private operations remain truthful neutral states.
+  These surfaces use flat semantic Nuxt UI treatments without decorative
+  gradients or flares. Product Apps retain truthful data, copy, routes, and
+  proof and may omit any unavailable slot; FireUX places its Ecosystems section
+  before Apps and does not fabricate a Tools catalogue. Both Main App heroes
+  use `Get started` and `Go to console` as their primary action pair while each
+  project retains its own destination routes. Every
+  `LandingCardOrbit` declares
   exactly one `demo` or `live` data source. Its owning adapter supplies the
   complete slotted Card envelope from that source; local orbit ids, labels, and
   coordinates remain presentation metadata, but static entity fixtures,
   cross-source hydration, and fallback records do not enter the orbit.
   Core owns one visibility-gated desktop intro with a stable per-mount launch
-  vector. It completes one fast closed orbit, returns exactly to the shared
-  main pitch, and hands off without stopping to slow autoplay in the same
-  direction. Orbital elements remain fully opaque while scale and a bounded
-  rear-content blur communicate depth; foreground content is always crisp.
+  vector. It completes two closed turns through one long deceleration, returns
+  exactly to the shared main pitch, and hands off without stopping to slow
+  autoplay in the same direction. Desktop pointer hover pauses the pack and
+  elevates only the selected card in place; it never snaps the shared yaw or
+  pitch. Touch tap and root keyboard behavior remain intact. Orbital elements
+  remain fully opaque and crisp at every depth; scale and stacking communicate
+  distance without blurring card content.
   Mobile and reduced-motion presentations skip that intro.
 - A main App may explicitly select the typed Core `sci-fire` design pack
   through `app.designPack`. The config helper conditionally bundles its
@@ -248,7 +259,11 @@ Before each task:
 - Public Product Demo pages use the reserved project `/demo` route family and
   consume that adapter. Direct fixture imports elsewhere remain forbidden.
 - Demo World never becomes live public-content authority or a test, simulation,
-  Firestore, Storage, server, admin, or mutation seam.
+  Firestore, Storage SDK/API, server, admin, or mutation seam. A fixture may
+  hold a fixed public HTTPS URL for immutable presentation media under an
+  app-specific guarded `demo/` Storage prefix; that inert field value grants no
+  runtime Storage authority, and canonical Live media never moves into Demo
+  merely because a Demo consumer displays it.
 
 ## Semantic catalogue boundaries
 

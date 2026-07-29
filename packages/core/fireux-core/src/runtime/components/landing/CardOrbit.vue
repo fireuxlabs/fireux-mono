@@ -36,7 +36,8 @@
       :class="{ 'landing-card-orbit__item--selected': selectedId === item.id }"
       :style="itemStyle(item)"
       :aria-hidden="isItemBehind(item)"
-      @click.stop="select(item)"
+      @pointerenter="selectOnHover(item, $event)"
+      @click.stop="select(item, 'click')"
     >
       <span class="landing-card-orbit__reference">{{ item.label }}</span>
       <div class="landing-card-orbit__content" inert>
@@ -62,6 +63,7 @@ import type {
 type ResolvedOrbitItem = Required<LandingCardOrbitItem>
 type DragMode = 'pending' | 'orbit' | 'scroll' | null
 type IntroState = 'pending' | 'running' | 'complete'
+type SelectionSource = 'click' | 'hover' | null
 
 const props = withDefaults(
   defineProps<{
@@ -82,14 +84,15 @@ const TAU = Math.PI * 2
 const DEFAULT_YAW = 0.72
 const DEFAULT_PITCH = -0.12
 const IDLE_SPEED = TAU / 20000
-const INTRO_DURATION = 2200
-const INTRO_YAW_TURNS = 1
+const INTRO_DURATION = 7200
+const INTRO_YAW_TURNS = 2
 const INTRO_START_SPEED =
   (2 * TAU * INTRO_YAW_TURNS) / INTRO_DURATION - IDLE_SPEED
 const INTRO_PITCH_SWEEP_MIN = 0.18
 const INTRO_PITCH_SWEEP_MAX = 0.28
-const MAX_DEPTH_BLUR = 1.6
-const DEPTH_BLUR_CUTOFF = 0.72
+const REAR_CARD_SCALE = 0.42
+const FRONT_CARD_SCALE = 0.9
+const SELECTED_CARD_SCALE = 1
 const MOBILE_QUERY = '(width < 48rem)'
 const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'
 const DEFAULT_LATITUDES = [
@@ -101,6 +104,7 @@ const rootWidth = ref(1200)
 const yaw = ref(DEFAULT_YAW)
 const pitch = ref(DEFAULT_PITCH)
 const selectedId = ref<string | null>(null)
+const selectionSource = ref<SelectionSource>(null)
 const isDragging = ref(false)
 const isPointerInside = ref(false)
 const isVisible = ref(false)
@@ -279,16 +283,10 @@ const itemStyle = (item: ResolvedOrbitItem): CSSProperties => {
     : 304
   const radiusY = compact ? 142 : 178
   const scale =
-    (compact ? 0.42 : 0.52) +
-    depth * (compact ? 0.28 : 0.34) +
-    (selectedId.value === item.id ? 0.03 : 0)
-  const depthBlur =
-    depth < DEPTH_BLUR_CUTOFF
-      ? ((DEPTH_BLUR_CUTOFF - depth) / DEPTH_BLUR_CUTOFF) * MAX_DEPTH_BLUR
-      : 0
-
+    selectedId.value === item.id
+      ? SELECTED_CARD_SCALE
+      : REAR_CARD_SCALE + depth * (FRONT_CARD_SCALE - REAR_CARD_SCALE)
   return {
-    '--landing-orbit-depth-blur': `${stableStyleNumber(depthBlur)}px`,
     zIndex: selectedId.value === item.id ? 1000 : Math.round(depth * 800),
     opacity: 1,
     pointerEvents:
@@ -313,7 +311,8 @@ const onPointerEnter = (event: PointerEvent) => {
 const onPointerLeave = (event: PointerEvent) => {
   if (event.pointerType === 'touch') return
   isPointerInside.value = false
-  if (!isDragging.value) startAnimation()
+  if (selectionSource.value === 'hover') clearSelection()
+  else if (!isDragging.value) startAnimation()
 }
 
 const onPointerDown = (event: PointerEvent) => {
@@ -322,6 +321,7 @@ const onPointerDown = (event: PointerEvent) => {
   stopAnimation()
   settleIntro(false)
   selectedId.value = null
+  selectionSource.value = null
   isDragging.value = true
   dragMode.value = event.pointerType === 'touch' ? 'pending' : 'orbit'
   dragMoved.value = false
@@ -385,18 +385,35 @@ const onPointerUp = (event: PointerEvent) => {
   }
 }
 
-const select = (item: ResolvedOrbitItem) => {
+const select = (
+  item: ResolvedOrbitItem,
+  source: Exclude<SelectionSource, null>
+) => {
   if (dragMoved.value) return
 
   stopAnimation()
-  settleIntro(false)
   selectedId.value = item.id
-  yaw.value = -item.longitude
-  pitch.value = item.latitude
+  selectionSource.value = source
+}
+
+const selectOnHover = (
+  item: ResolvedOrbitItem,
+  event: PointerEvent
+) => {
+  if (
+    event.pointerType !== 'mouse' ||
+    isDragging.value ||
+    selectedId.value === item.id
+  ) {
+    return
+  }
+
+  select(item, 'hover')
 }
 
 const clearSelection = () => {
   selectedId.value = null
+  selectionSource.value = null
   startAnimation()
 }
 
@@ -404,6 +421,7 @@ const rotateBy = (direction: -1 | 1) => {
   stopAnimation()
   settleIntro(false)
   selectedId.value = null
+  selectionSource.value = null
   const step = TAU / Math.max(1, resolvedItems.value.length)
   yaw.value += step * direction
   startAnimation()
@@ -614,7 +632,6 @@ onBeforeUnmount(() => {
 }
 
 .landing-card-orbit__content {
-  filter: blur(var(--landing-orbit-depth-blur, 0));
   pointer-events: none;
   user-select: none;
 }

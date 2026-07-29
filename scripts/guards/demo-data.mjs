@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-28
+// last_used: 2026-07-29
 // usage_note: enforces owner-local, deferred, typed, read-only Demo World consumers.
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: lock fixture ownership and lazy console consumption.
 // Concurrent edit — 2026-07-22 12:38 CEST — Product Demo contract pass: admit one named project adapter and the public route namespace.
@@ -7,7 +7,15 @@
 // FILE: scripts/guards/demo-data.mjs
 
 import { spawnSync } from 'node:child_process'
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
+import { tmpdir } from 'node:os'
 import path from 'node:path'
 import ts from 'typescript'
 import {
@@ -358,6 +366,15 @@ function isConsoleAdapter(relativePath) {
   )
 }
 
+function consoleDemoRelationshipMayLoad(importer, resolved) {
+  return (
+    importer ===
+      'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsoleDemoData.ts' &&
+    resolved?.relativePath ===
+      'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios'
+  )
+}
+
 function consoleCoreFamily(relativePath, source) {
   const match = relativePath.match(
     /\/(?:src\/runtime|app)\/composables\/fireux\/console\/([^/]+)\/core\/use([A-Z][A-Za-z0-9]*)Console\.(?:js|ts)$/
@@ -493,18 +510,15 @@ export async function run(ctx) {
     const source = readFileSync(file, 'utf8')
     const imports = importsForFile(file, source)
     const consoleCore = consoleCoreFamily(relativeFile, source)
-    const kitchenDemo =
-      relativeFile.startsWith(
-        'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/'
-      )
+    const kitchenDemo = relativeFile.startsWith(
+      'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/'
+    )
 
     if (
       kitchenDemo &&
-      (
-        relativeFile.endsWith('/catalogue.ts') ||
+      (relativeFile.endsWith('/catalogue.ts') ||
         /\bKitchenDemoCatalogue\b/.test(source) ||
-        /\.catalogues\b/.test(source)
-      )
+        /\.catalogues\b/.test(source))
     ) {
       violations.push({
         code: 'kitchen-operation-vocabulary',
@@ -649,15 +663,16 @@ export async function run(ctx) {
       }
 
       if (
-        !resolved ||
-        !canonicalDemoRoot(resolved.relativePath) ||
-        resolved.owner !== ownerRoot(relativeFile)
+        (!resolved ||
+          !canonicalDemoRoot(resolved.relativePath) ||
+          resolved.owner !== ownerRoot(relativeFile)) &&
+        !consoleDemoRelationshipMayLoad(relativeFile, resolved)
       ) {
         violations.push({
           code: 'cross-owner',
           file: relativeFile,
           line: imported.line,
-          message: `Console adapters may load only their owner's Demo modules (${imported.specifier}).`,
+          message: `Console adapters may load only their owner's Demo modules or an exact guarded relationship owner (${imported.specifier}).`,
         })
       }
     }
@@ -738,14 +753,20 @@ export async function run(ctx) {
       if (execution.error || execution.status !== 0) {
         const detail = String(
           execution.stderr || execution.stdout || execution.error || ''
-        ).trim().split('\n').slice(0, 8).join('\n')
+        )
+          .trim()
+          .split('\n')
+          .slice(0, 8)
+          .join('\n')
         violations.push({
           code: 'kitchen-scenario-execution',
           file: kitchenScenariosFile,
           message: [
             'Kitchen Demo scenarios must execute their relationship and arithmetic validators successfully.',
             detail,
-          ].filter(Boolean).join('\n'),
+          ]
+            .filter(Boolean)
+            .join('\n'),
         })
       }
     }
@@ -754,12 +775,16 @@ export async function run(ctx) {
   const familyScenarioContracts = [
     {
       code: 'company-demo-place-pair',
-      file:
-        'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts',
+      file: 'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts',
       markers: [
         'place: PlaceStored',
+        'publicCompany: PublicCompanyProjection',
+        'normalizePublicPlaceProjection',
+        'hasExactPublicPlaceProjectionShape',
+        'item.publicCompany.id !== placeId',
+        '!item.place.image_url',
         'companyId !== placeId',
-        'Object.keys(item.company).sort()',
+        'Object.keys(item.company)',
         'companyDemoTargets',
       ],
       message:
@@ -767,13 +792,14 @@ export async function run(ctx) {
     },
     {
       code: 'supplier-demo-target-pair',
-      file:
-        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts',
+      file: 'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts',
       markers: [
         'appSupport: AppSupplier',
         "app_scope_state: 'parent_app'",
         'app_scope_app_id: appId',
         'company_id: input.companyId',
+        'supplier_image: input.logoImageUrl',
+        '!scenario.supplier.supplier_image',
         "'place_id' in scenario.supplier",
         'scenario.appSupport.id !== supplierId',
         'Object.keys(scenario.appSupport)',
@@ -784,8 +810,7 @@ export async function run(ctx) {
     },
     {
       code: 'properties-demo-target-pair',
-      file:
-        'packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts',
+      file: 'packages/extensions/fireux-properties/src/runtime/demo/properties/scenarios.ts',
       markers: [
         'portfolio: PortfolioDemoTarget | null',
         'place: PlaceStored',
@@ -800,8 +825,7 @@ export async function run(ctx) {
     },
     {
       code: 'reservation-demo-relationship',
-      file:
-        'packages/extensions/fireux-reservations/src/runtime/demo/reservations.ts',
+      file: 'packages/extensions/fireux-reservations/src/runtime/demo/reservations.ts',
       markers: [
         "const demoAppId = 'buenohost'",
         "const demoPropertyId = 'alpine-stay'",
@@ -826,11 +850,13 @@ export async function run(ctx) {
     },
     {
       code: 'project-demo-relationships',
-      file:
-        'packages/core/fireux-core/src/runtime/demo/project/scenarios.ts',
+      file: 'packages/core/fireux-core/src/runtime/demo/project/scenarios.ts',
       markers: [
+        'appId: string',
+        "appId: 'fireux-app'",
+        'scenario.project.created.app_id !== appId',
         'app.project_id !== projectId',
-        '!ecosystemIds.has(app.ecosystem_id)',
+        '!ecosystemIds.has(childEcosystemId)',
         "'operator_ids' in app",
       ],
       message:
@@ -855,7 +881,7 @@ export async function run(ctx) {
     }
 
     const source = readFileSync(scenarioPath, 'utf8')
-    if (!contract.markers.every(marker => source.includes(marker))) {
+    if (!contract.markers.every((marker) => source.includes(marker))) {
       violations.push({
         code: contract.code,
         file: contract.file,
@@ -880,7 +906,11 @@ export async function run(ctx) {
     if (execution.error || execution.status !== 0) {
       const detail = String(
         execution.stderr || execution.stdout || execution.error || ''
-      ).trim().split('\n').slice(0, 8).join('\n')
+      )
+        .trim()
+        .split('\n')
+        .slice(0, 8)
+        .join('\n')
       violations.push({
         code: `${contract.code}-execution`,
         file: contract.file,
@@ -889,22 +919,347 @@ export async function run(ctx) {
     }
   }
 
+  const supplierDemoWorldFile =
+    'packages/extensions/fireux-suppliers/src/runtime/utils/supplier-demo-world.ts'
+  const supplierDemoWorldPath = path.join(repoRoot, supplierDemoWorldFile)
+  const supplierDemoWorldSource = existsSync(supplierDemoWorldPath)
+    ? readFileSync(supplierDemoWorldPath, 'utf8')
+    : ''
+  if (
+    ![
+      'projectSupplierDemoWorld',
+      'companyTarget.publicCompany',
+      'clean(target.place.id) !== companyId',
+      'clean(target.publicCompany.id) !== companyId',
+      "'place_id' in scenario.supplier",
+      'companyPlace: companyTarget.publicCompany',
+    ].every((marker) => supplierDemoWorldSource.includes(marker))
+  ) {
+    violations.push({
+      code: 'supplier-demo-world-projection',
+      file: supplierDemoWorldFile,
+      message:
+        'Supplier Demo must compose Supplier/AppSupplier with a same-id Company/Place public projection without copying a direct Place edge.',
+    })
+  }
+  if (existsSync(familyScenarioJitiExecutable)) {
+    const checkDirectory = mkdtempSync(
+      path.join(tmpdir(), 'fireux-supplier-demo-world-')
+    )
+    const checkFile = path.join(checkDirectory, 'check.ts')
+    const sourcePath = (relativePath) =>
+      JSON.stringify(path.join(repoRoot, relativePath))
+    writeFileSync(
+      checkFile,
+      [
+        `import { companyDemoTargets } from ${sourcePath(
+          'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts'
+        )}`,
+        `import { supplierDemoScenarios } from ${sourcePath(
+          'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts'
+        )}`,
+        `import { projectSupplierDemoWorld } from ${sourcePath(
+          'packages/extensions/fireux-suppliers/src/runtime/utils/supplier-demo-world.ts'
+        )}`,
+        `import { deanosKitchenDemoScenario } from ${sourcePath(
+          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts'
+        )}`,
+        `import { buildKitchenDemoSuppliersOperation } from ${sourcePath(
+          'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-suppliers.ts'
+        )}`,
+        'const world = projectSupplierDemoWorld({ scenarios: supplierDemoScenarios, companyTargets: companyDemoTargets })',
+        'const operation = buildKitchenDemoSuppliersOperation({ links: deanosKitchenDemoScenario.supplierIngredientLinks, supplierScenarios: world })',
+        'const linkedIngredientCount = operation.items.reduce((total, item) => total + item.linkedIngredientCount, 0)',
+        'if (world.length !== 3 || operation.items.length !== 3 || linkedIngredientCount !== 68) throw new Error("Deanos Supplier Demo coverage is incomplete.")',
+      ].join('\n'),
+      'utf8'
+    )
+    try {
+      const execution = spawnSync(familyScenarioJitiExecutable, [checkFile], {
+        cwd: repoRoot,
+        encoding: 'utf8',
+      })
+      if (execution.error || execution.status !== 0) {
+        const detail = String(
+          execution.stderr || execution.stdout || execution.error || ''
+        )
+          .trim()
+          .split('\n')
+          .slice(0, 8)
+          .join('\n')
+        violations.push({
+          code: 'supplier-demo-world-execution',
+          file: supplierDemoWorldFile,
+          message: [
+            'Supplier Demo must resolve three linked Company/Place targets and all 68 Deanos ingredient links.',
+            detail,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+        })
+      }
+    } finally {
+      rmSync(checkDirectory, { recursive: true, force: true })
+    }
+  }
+
+  const demoMediaManifestFile = 'scripts/data/misebox-demo-media/manifest.json'
+  const demoMediaManifestPath = path.join(repoRoot, demoMediaManifestFile)
+  const demoMediaContractFile =
+    'packages/core/fireux-core/src/runtime/utils/misebox-demo-media.ts'
+  const demoMediaPublisherFile = 'scripts/publish-misebox-demo-media.mjs'
+  const expectedDemoMediaObjects = []
+  let demoMediaManifest = null
+  try {
+    demoMediaManifest = JSON.parse(readFileSync(demoMediaManifestPath, 'utf8'))
+    const target = demoMediaManifest.target ?? {}
+    if (
+      demoMediaManifest.format !== 'fireux-misebox-demo-media/1' ||
+      demoMediaManifest.expected_source_count !== 68 ||
+      demoMediaManifest.expected_object_count !== 73 ||
+      target.app_id !== 'misebox-app' ||
+      target.project_id !== 'misebox-78f9c' ||
+      target.database_id !== 'misebox' ||
+      target.storage_bucket !== 'misebox-78f9c.appspot.com' ||
+      target.object_prefix !== 'demo/misebox-app' ||
+      typeof target.download_token !== 'string' ||
+      !target.download_token ||
+      !Array.isArray(demoMediaManifest.aliases) ||
+      demoMediaManifest.aliases.length !== 5
+    ) {
+      throw new Error('The fixed target or inventory counts are invalid.')
+    }
+
+    const assetDirectory = path.join(
+      repoRoot,
+      demoMediaManifest.asset_directory
+    )
+    const pending = [assetDirectory]
+    const sourcePaths = []
+    while (pending.length) {
+      const current = pending.pop()
+      for (const entry of readdirSync(current, { withFileTypes: true })) {
+        if (entry.isSymbolicLink()) {
+          throw new Error(
+            `Demo media source cannot be a symlink: ${entry.name}`
+          )
+        }
+        const absolutePath = path.join(current, entry.name)
+        if (entry.isDirectory()) {
+          pending.push(absolutePath)
+          continue
+        }
+        if (!entry.isFile()) {
+          throw new Error(`Unsupported Demo media source: ${entry.name}`)
+        }
+        const relativePath = toPosix(
+          path.relative(assetDirectory, absolutePath)
+        )
+        if (!/^[a-z0-9][a-z0-9./-]*\.(?:jpg|png)$/.test(relativePath)) {
+          throw new Error(`Invalid Demo media source path: ${relativePath}`)
+        }
+        sourcePaths.push(relativePath)
+      }
+    }
+    sourcePaths.sort()
+    if (
+      sourcePaths.length !== demoMediaManifest.expected_source_count ||
+      new Set(sourcePaths).size !== sourcePaths.length
+    ) {
+      throw new Error('The Demo media source inventory is incomplete.')
+    }
+    expectedDemoMediaObjects.push(...sourcePaths)
+    for (const alias of demoMediaManifest.aliases) {
+      if (
+        !sourcePaths.includes(alias.source) ||
+        !/^[a-z0-9][a-z0-9./-]*\.(?:jpg|png)$/.test(alias.object)
+      ) {
+        throw new Error('A Demo media owner alias is invalid.')
+      }
+      expectedDemoMediaObjects.push(alias.object)
+    }
+    expectedDemoMediaObjects.sort()
+    if (
+      expectedDemoMediaObjects.length !==
+        demoMediaManifest.expected_object_count ||
+      new Set(expectedDemoMediaObjects).size !== expectedDemoMediaObjects.length
+    ) {
+      throw new Error('The Demo media object inventory is incomplete.')
+    }
+
+    const contractSource = readFileSync(
+      path.join(repoRoot, demoMediaContractFile),
+      'utf8'
+    )
+    const publisherSource = readFileSync(
+      path.join(repoRoot, demoMediaPublisherFile),
+      'utf8'
+    )
+    if (
+      ![
+        target.project_id,
+        target.storage_bucket,
+        target.object_prefix,
+        target.download_token,
+        'miseboxDemoMediaUrl',
+      ].every((marker) => contractSource.includes(marker)) ||
+      ![
+        'preconditionOpts: { ifGenerationMatch: 0 }',
+        'fireuxDemoMediaSha256',
+        'Post-upload remote inventory is incomplete.',
+        'Storage creates only; no Firestore writes',
+      ].every((marker) => publisherSource.includes(marker)) ||
+      publisherSource.includes('firebase-admin/firestore') ||
+      publisherSource.includes('getFirestore(')
+    ) {
+      throw new Error(
+        'The pure URL contract or create-only Storage publisher is incomplete.'
+      )
+    }
+  } catch (error) {
+    violations.push({
+      code: 'demo-media-manifest',
+      file: demoMediaManifestFile,
+      message: `Demo media requires one exact 68-source/73-object Misebox manifest and create-only publisher. ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    })
+  }
+
+  const legacyDemoMediaPrefixes = [
+    `/${'img'}/showcase/menu`,
+    `/${'img'}/showcase/suppliers`,
+    `/${'img'}/showcase/places`,
+  ]
+  for (const file of files) {
+    const relativeFile = repoRelative(repoRoot, file)
+    if (relativeFile === 'scripts/guards/demo-data.mjs') continue
+    const source = readFileSync(file, 'utf8')
+    const legacyPrefix = legacyDemoMediaPrefixes.find((prefix) =>
+      source.includes(prefix)
+    )
+    if (legacyPrefix) {
+      violations.push({
+        code: 'demo-media-local-url',
+        file: relativeFile,
+        message: `Demo-owned media must use the immutable Misebox Storage contract, not ${legacyPrefix}.`,
+      })
+    }
+  }
+
+  if (
+    expectedDemoMediaObjects.length === 73 &&
+    existsSync(familyScenarioJitiExecutable)
+  ) {
+    const checkDirectory = mkdtempSync(
+      path.join(tmpdir(), 'fireux-demo-media-')
+    )
+    const checkFile = path.join(checkDirectory, 'check.ts')
+    const absoluteSource = (relativePath) =>
+      JSON.stringify(path.join(repoRoot, relativePath))
+    writeFileSync(
+      checkFile,
+      [
+        `import { miseboxDemoMediaContract } from ${absoluteSource(
+          demoMediaContractFile
+        )}`,
+        `import { kitchenDemoScenarios } from ${absoluteSource(
+          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts'
+        )}`,
+        `import { companyDemoTargets } from ${absoluteSource(
+          'packages/extensions/fireux-companies/src/runtime/demo/company/scenarios.ts'
+        )}`,
+        `import { supplierDemoScenarios } from ${absoluteSource(
+          'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts'
+        )}`,
+        `const expected = new Set(${JSON.stringify(expectedDemoMediaObjects)})`,
+        'const found: string[] = []',
+        'const objectPath = (value: unknown, owner: string) => {',
+        '  const url = new URL(String(value || ""))',
+        '  const prefix = `/v0/b/${miseboxDemoMediaContract.storageBucket}/o/`',
+        '  if (url.protocol !== "https:" || url.hostname !== "firebasestorage.googleapis.com" || url.username || url.password || url.hash || !url.pathname.startsWith(prefix)) throw new Error(`Invalid Demo media URL: ${value}`)',
+        '  if ([...url.searchParams.keys()].sort().join(",") !== "alt,token" || url.searchParams.get("alt") !== "media" || url.searchParams.get("token") !== miseboxDemoMediaContract.downloadToken) throw new Error(`Invalid Demo media query: ${value}`)',
+        '  const fullPath = decodeURIComponent(url.pathname.slice(prefix.length))',
+        '  const root = `${miseboxDemoMediaContract.objectPrefix}/`',
+        '  if (!fullPath.startsWith(root)) throw new Error(`Invalid Demo media object root: ${fullPath}`)',
+        '  const relative = fullPath.slice(root.length)',
+        '  if (!relative.startsWith(owner)) throw new Error(`Demo media owner mismatch: ${relative} != ${owner}`)',
+        '  found.push(relative)',
+        '  return relative',
+        '}',
+        'for (const scenario of kitchenDemoScenarios) {',
+        '  const kitchenId = String(scenario.kitchen.id || "")',
+        '  const placeId = String(scenario.place.id || "")',
+        '  objectPath(scenario.kitchen.identity.logo_image_url, `kitchens/${kitchenId}/`)',
+        '  for (const dish of scenario.dishes) objectPath(dish.image, `kitchens/${kitchenId}/`)',
+        '  for (const value of [scenario.place.image_url, scenario.place.cover_image, ...(scenario.place.gallery_images || [])].filter(Boolean)) objectPath(value, `places/${placeId}/`)',
+        '}',
+        'for (const scenario of supplierDemoScenarios) objectPath(scenario.supplier.supplier_image, `suppliers/${scenario.supplier.id}/`)',
+        'for (const target of companyDemoTargets) objectPath(target.place.image_url, `places/${target.place.id}/`)',
+        'const actual = new Set(found)',
+        'if (found.length !== 75 || actual.size !== 73 || actual.size !== expected.size || [...actual].some(value => !expected.has(value))) throw new Error(`Demo media fixture inventory mismatch: ${found.length}/${actual.size}/${expected.size}`)',
+      ].join('\n'),
+      'utf8'
+    )
+    try {
+      const execution = spawnSync(familyScenarioJitiExecutable, [checkFile], {
+        cwd: repoRoot,
+        encoding: 'utf8',
+      })
+      if (execution.error || execution.status !== 0) {
+        const detail = String(
+          execution.stderr || execution.stdout || execution.error || ''
+        )
+          .trim()
+          .split('\n')
+          .slice(0, 8)
+          .join('\n')
+        violations.push({
+          code: 'demo-media-fixtures',
+          file: demoMediaContractFile,
+          message: [
+            'Every Kitchen, Dish, Supplier, and Place Demo image must resolve to one owner-relative immutable Misebox Storage object.',
+            detail,
+          ]
+            .filter(Boolean)
+            .join('\n'),
+        })
+      }
+    } finally {
+      rmSync(checkDirectory, { recursive: true, force: true })
+    }
+  }
+
+  const supplierPackagePath = path.join(
+    repoRoot,
+    'packages/extensions/fireux-suppliers/package.json'
+  )
+  if (!readDeclaredDependencies(supplierPackagePath).has('fireux-companies')) {
+    violations.push({
+      code: 'supplier-demo-company-dependency',
+      file: 'packages/extensions/fireux-suppliers/package.json',
+      message:
+        'Supplier must declare the Company owner used for its guarded Company/Place Demo relationship.',
+    })
+  }
+
   for (const contract of [
     {
       code: 'supplier-demo-app-filter',
-      file:
-        'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsoleDemoData.ts',
+      file: 'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/core/useSupplierConsoleDemoData.ts',
       markers: [
         "scenario.appId !== String(appId || '').trim()",
-        'appSupport: scenario.appSupport',
+        "import('fireux-companies/runtime/demo/company/scenarios')",
+        'projectSupplierDemoWorld({',
+        'companyTargets: companyModule.companyDemoTargets',
+        'companyPlace: scenario.companyPlace',
       ],
       message:
-        'Supplier Console Demo must filter by runtime App and compose AppSupplier support.',
+        'Supplier Console Demo must filter by runtime App and compose Supplier/AppSupplier with the exact linked Company/Place projection.',
     },
     {
       code: 'properties-demo-app-filter',
-      file:
-        'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/shared/usePropertiesConsoleDemoData.ts',
+      file: 'packages/extensions/fireux-properties/src/runtime/composables/fireux/console/shared/usePropertiesConsoleDemoData.ts',
       markers: [
         '.filter((scenario) => scenario.appId === currentAppId)',
         'appSupport: scenario.portfolio.appSupport',
@@ -917,8 +1272,7 @@ export async function run(ctx) {
     },
     {
       code: 'blank-demo-app-filter',
-      file:
-        'projects/fireux/fireux-blank/app/composables/fireux/console/blank/core/useBlankConsoleDemoData.ts',
+      file: 'projects/fireux/fireux-blank/app/composables/fireux/console/blank/core/useBlankConsoleDemoData.ts',
       markers: [
         'scenario.appId !== currentAppId',
         'composeBlankSurface({',
@@ -932,7 +1286,7 @@ export async function run(ctx) {
     const source = existsSync(contractPath)
       ? readFileSync(contractPath, 'utf8')
       : ''
-    if (!contract.markers.every(marker => source.includes(marker))) {
+    if (!contract.markers.every((marker) => source.includes(marker))) {
       violations.push({
         code: contract.code,
         file: contract.file,
@@ -955,12 +1309,12 @@ export async function run(ctx) {
       "import('fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade')",
       'buildKitchenDemoDishesOperation',
       'buildKitchenDemoSuppliersOperation',
+      'projectSupplierDemoWorld',
       'projectKitchenDemoFinanceSummary',
       'companyModule.companyDemoTargets',
       'supplierModule.supplierDemoScenarios',
-      'unresolvedSupplierCompanies',
-      'scenario.supplier.company_id',
-      'target.place.id === companyId',
+      'const supplierDemoWorld = projectSupplierDemoWorld({',
+      'supplierScenarios: supplierDemoWorld',
       'loadIngredientRoots',
       'ingredientRoots: consoleIngredientRoots',
       'consoleScenario.kitchenIngredients',
@@ -999,8 +1353,8 @@ export async function run(ctx) {
       }
     }
     if (
-      source.includes('mise: consoleScenario.miseRequirements')
-      || source.includes(
+      source.includes('mise: consoleScenario.miseRequirements') ||
+      source.includes(
         'miseTasks: projectKitchenMiseTasks(consoleScenario.miseRequirements'
       )
     ) {
@@ -1050,16 +1404,17 @@ export async function run(ctx) {
     'Eight',
     'Ten',
   ]
-  const miseboxPowerCardChildren = miseboxPowerCardNames.map(number =>
-    `projects/misebox/misebox-app/app/components/Misebox/PowerCard${number}.vue`
+  const miseboxPowerCardChildren = miseboxPowerCardNames.map(
+    (number) =>
+      `projects/misebox/misebox-app/app/components/Misebox/PowerCard${number}.vue`
   )
   if (
-    !existsSync(miseboxPowerCardsPath)
-    || ![
+    !existsSync(miseboxPowerCardsPath) ||
+    ![
       'useMiseboxPowerCardsProductDemo()',
       'data: orbit',
       ':data-source="orbit.dataSource"',
-    ].every(marker =>
+    ].every((marker) =>
       readFileSync(miseboxPowerCardsPath, 'utf8').includes(marker)
     )
   ) {
@@ -1077,36 +1432,33 @@ export async function run(ctx) {
     ![
       "dataSource: 'demo'",
       "import('fireux-kitchens/runtime/demo/kitchen/scenarios')",
+      "import('fireux-companies/runtime/demo/company/scenarios')",
       "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
+      'projectSupplierDemoWorld({',
+      'companyTargets: companyModule.companyDemoTargets',
       'projectKitchenCell(projectKitchenSurface({',
       'manifest.presentation.currencyCode',
-    ].every(marker => miseboxPowerCardsDemoSource.includes(marker))
-    || [
-      'useRequestFetch(',
-      'useFetch(',
-      '$fetch(',
-      '/api/',
-      'firebase',
-    ].some(marker => miseboxPowerCardsDemoSource.includes(marker))
+    ].every((marker) => miseboxPowerCardsDemoSource.includes(marker)) ||
+    ['useRequestFetch(', 'useFetch(', '$fetch(', '/api/', 'firebase'].some(
+      (marker) => miseboxPowerCardsDemoSource.includes(marker)
+    )
   ) {
     violations.push({
       code: 'product-demo-power-cards-source',
       file: miseboxPowerCardsDemoFile,
       message:
-        'The Misebox Demo orbit must be network-free, fixture-backed, and fail closed without a Live fallback.',
+        'The Misebox Demo orbit must use a network-free data envelope, permit only declared immutable Demo image GETs, remain fixture-backed, and fail closed without a Live fallback.',
     })
   }
   for (const file of miseboxPowerCardChildren) {
     const filePath = path.join(repoRoot, file)
     const source = existsSync(filePath) ? readFileSync(filePath, 'utf8') : ''
     if (
-      !source.includes("MiseboxPowerCardsProductDemo['cards']")
-      || !source.includes('defineProps<')
-      || [
-        'deanos-kitchen',
-        'deanos-main-menu',
-        'Alpine Foods',
-      ].some(value => source.includes(value))
+      !source.includes("MiseboxPowerCardsProductDemo['cards']") ||
+      !source.includes('defineProps<') ||
+      ['deanos-kitchen', 'deanos-main-menu', 'Alpine Foods'].some((value) =>
+        source.includes(value)
+      )
     ) {
       violations.push({
         code: 'product-demo-power-cards',
@@ -1161,12 +1513,12 @@ export async function run(ctx) {
     kitchenDemoMenuAvailabilityFile
   )
   if (
-    !existsSync(kitchenDemoMenuAvailabilityPath)
-    || ![
+    !existsSync(kitchenDemoMenuAvailabilityPath) ||
+    ![
       "[deanosKitchenDemoIdentity.menuId]: 'on'",
       "[deanosPartyMenuDemoIdentity.menuId]: 'order_led'",
       "[deanosXmasMenuDemoIdentity.menuId]: 'off'",
-    ].every(marker =>
+    ].every((marker) =>
       readFileSync(kitchenDemoMenuAvailabilityPath, 'utf8').includes(marker)
     )
   ) {
@@ -1186,7 +1538,7 @@ export async function run(ctx) {
     [
       kitchenDemoMenuServiceFile,
       [
-        "useState<Record<string, Record<string, boolean>>>",
+        'useState<Record<string, Record<string, boolean>>>',
         'useKitchenMenuServiceSelection',
         'defaultInService',
         'setMenuInService',
@@ -1204,10 +1556,8 @@ export async function run(ctx) {
     ],
   ]) {
     const filePath = path.join(repoRoot, file)
-    const source = existsSync(filePath)
-      ? readFileSync(filePath, 'utf8')
-      : ''
-    if (!markers.every(marker => source.includes(marker))) {
+    const source = existsSync(filePath) ? readFileSync(filePath, 'utf8') : ''
+    if (!markers.every((marker) => source.includes(marker))) {
       violations.push({
         code: 'kitchen-demo-menu-service-state',
         file,
@@ -1275,7 +1625,7 @@ export async function run(ctx) {
     ],
   ]) {
     const source = readFileSync(path.join(repoRoot, file), 'utf8')
-    if (!markers.every(marker => source.includes(marker))) {
+    if (!markers.every((marker) => source.includes(marker))) {
       violations.push({
         code: 'kitchen-mise-workflow',
         file,
@@ -1365,8 +1715,8 @@ export async function run(ctx) {
     kitchenConsoleSupplyWorkspaceFile
   )
   if (
-    !existsSync(kitchenConsoleSupplyWorkspacePath)
-    || !readFileSync(kitchenConsoleSupplyWorkspacePath, 'utf8').includes(
+    !existsSync(kitchenConsoleSupplyWorkspacePath) ||
+    !readFileSync(kitchenConsoleSupplyWorkspacePath, 'utf8').includes(
       'selectKitchenDemoSupplierScenarios'
     )
   ) {
@@ -1428,8 +1778,8 @@ export async function run(ctx) {
     kitchenConsoleDishesOperationFile
   )
   if (
-    !existsSync(kitchenConsoleDishesOperationPath)
-    || !readFileSync(kitchenConsoleDishesOperationPath, 'utf8').includes(
+    !existsSync(kitchenConsoleDishesOperationPath) ||
+    !readFileSync(kitchenConsoleDishesOperationPath, 'utf8').includes(
       'buildKitchenDemoDishesOperation'
     )
   ) {
@@ -1443,7 +1793,10 @@ export async function run(ctx) {
 
   const kitchenDishCollectionFile =
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/dish/fetch/useKitchenDishCollection.ts'
-  const kitchenDishCollectionPath = path.join(repoRoot, kitchenDishCollectionFile)
+  const kitchenDishCollectionPath = path.join(
+    repoRoot,
+    kitchenDishCollectionFile
+  )
   const kitchenConsoleDishesFile =
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes.ts'
   const kitchenConsoleDishesPath = path.join(repoRoot, kitchenConsoleDishesFile)
@@ -1451,9 +1804,9 @@ export async function run(ctx) {
     'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/Dishes/index.ts'
   const kitchenDishRecordsPath = path.join(repoRoot, kitchenDishRecordsFile)
   if (
-    !existsSync(kitchenDishRecordsPath)
-    || !existsSync(kitchenDishCollectionPath)
-    || !existsSync(kitchenConsoleDishesPath)
+    !existsSync(kitchenDishRecordsPath) ||
+    !existsSync(kitchenDishCollectionPath) ||
+    !existsSync(kitchenConsoleDishesPath)
   ) {
     violations.push({
       code: 'kitchen-dish-record-provider',
@@ -1464,17 +1817,14 @@ export async function run(ctx) {
   } else {
     const collectionSource = readFileSync(kitchenDishCollectionPath, 'utf8')
     const consoleSource = readFileSync(kitchenConsoleDishesPath, 'utf8')
-    const recordsSource = readFileSync(
-      kitchenDishRecordsPath,
-      'utf8'
-    )
+    const recordsSource = readFileSync(kitchenDishRecordsPath, 'utf8')
     if (
-      !collectionSource.includes('recordProvider')
-      || !collectionSource.includes('normalizeDish(entry)')
-      || !consoleSource.includes('records: demoDishRecords')
-      || consoleSource.includes('dishOperation.dishes')
-      || !recordsSource.includes('kitchenDemoDishRecordsByKitchenId')
-      || !recordsSource.includes('readonly Dish[]')
+      !collectionSource.includes('recordProvider') ||
+      !collectionSource.includes('normalizeDish(entry)') ||
+      !consoleSource.includes('records: demoDishRecords') ||
+      consoleSource.includes('dishOperation.dishes') ||
+      !recordsSource.includes('kitchenDemoDishRecordsByKitchenId') ||
+      !recordsSource.includes('readonly Dish[]')
     ) {
       violations.push({
         code: 'kitchen-dish-record-provider',
@@ -1500,13 +1850,13 @@ export async function run(ctx) {
   if (
     !/enabled:\s*computed\(\s*\(\)\s*=>\s*kitchenSource\.value === ['"]live['"]\s*\|\|\s*options\.keepLiveTargetsAvailable === true\s*,?\s*\)/.test(
       kitchenConsoleCoreSource
-    )
-    || !kitchenConsoleCoreSource.includes("consoleData('live', kitchen)")
-    || !kitchenConsoleCoreSource.includes("consoleData('demo', kitchen)")
-    || !kitchenConsoleTargetSource.includes(
+    ) ||
+    !kitchenConsoleCoreSource.includes("consoleData('live', kitchen)") ||
+    !kitchenConsoleCoreSource.includes("consoleData('demo', kitchen)") ||
+    !kitchenConsoleTargetSource.includes(
       'enabled?: MaybeRefOrGetter<boolean>'
-    )
-    || !kitchenConsoleTargetSource.includes('!enabled.value ||')
+    ) ||
+    !kitchenConsoleTargetSource.includes('!enabled.value ||')
   ) {
     violations.push({
       code: 'kitchen-demo-live-target',

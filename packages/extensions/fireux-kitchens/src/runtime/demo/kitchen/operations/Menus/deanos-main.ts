@@ -1,6 +1,6 @@
 import {
   deanosKitchenDemoIdentity,
-  kitchenDemoAssetBase,
+  kitchenDemoMediaUrl,
 } from '../../core/fixtures'
 import type { KitchenDemoMenu } from '../../core/types'
 import {
@@ -17,7 +17,8 @@ const deanosRootMenu = rootMenu(
   'Lace-edged smash burgers, crispy chicken, loaded sides and hand-spun shakes.'
 )
 
-const deanosAssetBase = `${kitchenDemoAssetBase}/deanos`
+const deanosAsset = (filename: string) =>
+  kitchenDemoMediaUrl(deanosKitchenDemoIdentity.kitchenId, `menu/${filename}`)
 
 export const deanosKitchenDemoMenu: KitchenDemoMenu = {
   rootMenu: deanosRootMenu,
@@ -52,7 +53,7 @@ export const deanosKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Smashed beef, American cheese, shredded lettuce, pickles and Deanos sauce.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/deanos-classic.jpg`,
+      image: deanosAsset('deanos-classic.jpg'),
     },
     {
       id: 'double-trouble',
@@ -60,7 +61,7 @@ export const deanosKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Two smashed patties, American cheese, caramelised onions, pickles and smoky sauce.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/double-trouble.jpg`,
+      image: deanosAsset('double-trouble.jpg'),
     },
     {
       id: 'swiss-melt',
@@ -68,7 +69,7 @@ export const deanosKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Double smashed beef, Swiss cheese, brown mushrooms, onions and peppercorn mayo.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/swiss-melt.jpg`,
+      image: deanosAsset('swiss-melt.jpg'),
     },
     {
       id: 'hot-honey-chicken',
@@ -76,14 +77,14 @@ export const deanosKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Buttermilk fried chicken, crunchy slaw, pickles, hot honey and chilli mayo.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/hot-honey-chicken.jpg`,
+      image: deanosAsset('hot-honey-chicken.jpg'),
     },
     {
       id: 'ranch-chicken',
       name: 'Crispy Ranch Chicken',
       description: 'Fried chicken, lettuce, tomato, pickles and herbed ranch.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/ranch-chicken.jpg`,
+      image: deanosAsset('ranch-chicken.jpg'),
     },
     {
       id: 'crispy-cauliflower',
@@ -91,14 +92,14 @@ export const deanosKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Crispy cauliflower, red cabbage slaw, pickles and smoky vegan mayo.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/crispy-cauliflower.jpg`,
+      image: deanosAsset('crispy-cauliflower.jpg'),
     },
     {
       id: 'skin-on-fries',
       name: 'Skin-on fries',
       description: 'Golden skin-on fries with flaky sea salt.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/skin-on-fries.jpg`,
+      image: deanosAsset('skin-on-fries.jpg'),
     },
     {
       id: 'dirty-deanos-fries',
@@ -106,35 +107,35 @@ export const deanosKitchenDemoMenu: KitchenDemoMenu = {
       description:
         'Fries loaded with chopped smash beef, cheddar, pickles, spring onion and Deanos sauce.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/dirty-deanos-fries.jpg`,
+      image: deanosAsset('dirty-deanos-fries.jpg'),
     },
     {
       id: 'onion-rings',
       name: 'Crispy onion rings',
       description: 'A tall stack of onion rings in Deanos crispy batter.',
       item_kind: 'food',
-      image: `${deanosAssetBase}/onion-rings.jpg`,
+      image: deanosAsset('onion-rings.jpg'),
     },
     {
       id: 'salted-caramel-shake',
       name: 'Salted caramel shake',
       description: 'Vanilla soft serve, caramel and flaky sea salt.',
       item_kind: 'drink',
-      image: `${deanosAssetBase}/salted-caramel-shake.jpg`,
+      image: deanosAsset('salted-caramel-shake.jpg'),
     },
     {
       id: 'cherry-vanilla-shake',
       name: 'Cherry vanilla shake',
       description: 'Vanilla soft serve blended with dark cherry.',
       item_kind: 'drink',
-      image: `${deanosAssetBase}/cherry-vanilla-shake.jpg`,
+      image: deanosAsset('cherry-vanilla-shake.jpg'),
     },
     {
       id: 'house-lemonade',
       name: 'House lemonade',
       description: 'Fresh lemon, mint and sparkling water.',
       item_kind: 'drink',
-      image: `${deanosAssetBase}/house-lemonade.jpg`,
+      image: deanosAsset('house-lemonade.jpg'),
     },
   ]),
   menuSections: [
