@@ -44,6 +44,11 @@ must not copy the whole scoped menu into the root doorway.
   failure state, and relative Menu/index/QR paths.
 - URL scope and Firestore ownership are separate. The server resolves
   ownership; a route slug cannot select a different App or Kitchen.
+- A structured Menu with a valid Kitchen source is canonical at its
+  Kitchen-directory doorway. Its global root doorway remains a public discovery
+  alias over the same bounded Browse projection. Root document Menus without a
+  Kitchen remain canonical at their global root doorway; tenant Menus remain
+  canonical on their tenant doorway.
 - Root Menu stores no copied Kitchen name, image, route, currency, hours, or
   ordering policy. Public projections join bounded presentation truth.
 - Missing, unpublished, wrong-scope, malformed, or configuration-invalid
@@ -169,7 +174,7 @@ map.
 | --- | --- | --- |
 | Older flat `doc_*` and `kitchen_*` root Menu fields | `migration` | Read during migration, emit the clean `kind`/`file`/`source` public contract, and stop writing flat compatibility fields |
 | Exact quick Menu → KitchenMenu migration behavior | `to-confirm` | Preserve the root public/QR doorway while defining ownership transfer, source pointer update, rollback, and id collisions |
-| Canonical/SEO choice when global, directory, and tenant routes expose one KitchenMenu | `to-confirm` | Choose canonical policy without deleting valid additive doorways |
+| Global and Kitchen-directory routes expose one KitchenMenu | `accepted` | The Kitchen-directory doorway is canonical; the global route remains an additive discovery alias |
 | Alternate unshipped ordering funnels still have direct consumers | `migration` | Move consumers atomically to `MenuOrder`, then delete the alternate implementation |
 | Diagnostic contexts use generic JSON rendering | `migration` | Replace only when each context has a proven dedicated surface and privacy contract |
 | AI candidate images do not enter the canonical Dish media flow | `drift` | Add explicit operator review and Kitchen-owned ingestion before persisting `Dish.image` |
@@ -207,7 +212,6 @@ Start with:
 
 ### Later
 
-- Decide canonical/SEO policy across additive doorways.
 - Promote diagnostic contexts only when their product and privacy contracts
   are real.
 - Decide premium global-id reservation separately from ordinary Menu identity.

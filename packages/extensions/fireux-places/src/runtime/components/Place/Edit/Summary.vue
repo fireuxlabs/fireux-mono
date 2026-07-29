@@ -63,41 +63,19 @@
 						<div class="flex items-center justify-between gap-3">
 							<div>
 								<p class="text-xs font-medium uppercase tracking-wide text-dimmed">
-									Image shade
+									Transparent-media backdrop
 								</p>
 								<p class="text-sm text-dimmed">
-									For logos with transparent backgrounds.
+									Base colour inherited by Place children for their transparent brand media.
 								</p>
 							</div>
 						</div>
 
-						<div class="flex flex-wrap gap-2">
-							<UButton
-								size="xs"
-								:variant="imageShade === 'none' ? 'solid' : 'soft'"
-								color="neutral"
-								:disabled="isUpdatingShade"
-								@click="updateImageShade('none')"
-							>
-								None
-							</UButton>
-							<UButton
-								size="xs"
-								:variant="imageShade === 'light' ? 'solid' : 'soft'"
-								color="neutral"
-								:disabled="isUpdatingShade"
-								@click="updateImageShade('light')"
-							>
-								Light
-							</UButton>
-							<UButton
-								size="xs"
-								:variant="imageShade === 'dark' ? 'solid' : 'soft'"
-								color="neutral"
-								:disabled="isUpdatingShade"
-								@click="updateImageShade('dark')"
-							>
-								Dark
+						<div class="flex flex-wrap items-center gap-2">
+							<input v-model="backdropDraft" type="color" class="h-9 w-12 rounded border border-default bg-transparent p-1">
+							<UInput v-model="backdropDraft" class="w-36" placeholder="#ffffff" @blur="updateBackdrop" @keyup.enter="updateBackdrop" />
+							<UButton size="xs" color="neutral" variant="ghost" :disabled="isUpdatingBackdrop || !mediaBackdropColor" @click="clearBackdrop">
+								Clear
 							</UButton>
 						</div>
 					</div>
@@ -110,7 +88,7 @@
 						:src="imageUrl"
 						:alt="place?.name || 'Place'"
 						:initials="avatarInitials"
-						:avatar-class="imageShadeClass"
+						avatar-class="!rounded-xl"
 						:update-function="canEditImage ? handleAvatarUpload : undefined"
 					/>
 				</div>
@@ -118,11 +96,12 @@
 				<p v-if="avatarUploading" class="text-xs text-dimmed">
 					Uploading image…
 				</p>
+				<p v-else-if="canEditImage" class="text-xs text-dimmed">
+					{{ hasImage ? 'Current Place image.' : 'No Place image yet.' }}
+					Recommended: 1024 × 1024 px, transparent PNG for logos.
+				</p>
 				<p v-else-if="!canEditImage" class="text-xs text-warning">
 					Only admins or the claimant can change this image.
-				</p>
-				<p v-else-if="!hasImage" class="text-xs text-dimmed">
-					No image yet. Add one when the place is ready.
 				</p>
 
 				<div v-if="placePill" class="space-y-2">
@@ -153,7 +132,8 @@ import {
 	usePlaceUpdate,
 } from '../../../composables/fireux/firestore/place/mutations/usePlaceUpdate'
 import { usePlaceInterface } from '../../../composables/fireux/firestore/place/utils/view/usePlaceInterface'
-import type { Place, PlaceImageShade } from '../../../models/place.model'
+import type { Place } from '../../../models/place.model'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
 const props = defineProps<{
 	place: Place | null
@@ -169,12 +149,8 @@ const { user: claimedUser } = usePublicUserIdentity(claimedUserId)
 const { pill: userCard } = useUserInterface(claimedUser)
 const claimedUserPill = computed(() => userCard(claimedUser.value))
 const imageUrl = computed(() => place.value?.image_url || (place.value as any)?.place_image || '')
-const imageShade = computed(() => (place.value?.image_shade || 'none') as PlaceImageShade)
-const imageShadeClass = computed(() => {
-	if (imageShade.value === 'light') return 'fx-avatar-shade--light'
-	if (imageShade.value === 'dark') return 'fx-avatar-shade--dark'
-	return ''
-})
+const mediaBackdropColor = computed(() => place.value?.media_backdrop_color || '')
+const backdropDraft = ref(mediaBackdropColor.value)
 const hasImage = computed(() => !!imageUrl.value)
 const isClaimedByUser = computed(() => {
 	const claimedBy = place.value?.claimed_by
@@ -199,13 +175,13 @@ const avatarInitials = computed(() => {
 })
 
 const avatarUploading = ref(false)
-const isUpdatingShade = ref(false)
+const isUpdatingBackdrop = ref(false)
 const isClaiming = ref(false)
 const isDropping = ref(false)
 const { uploadImage } = useImageStorage()
 const {
 	updateClaimedBy,
-	updateImageShade: updatePlaceImageShade,
+	updateMediaBackdropColor,
 	updatePlaceImage,
 } = usePlaceUpdate({ authority: () => props.mutationAuthority })
 const toast = useToastify()
@@ -227,19 +203,29 @@ async function handleAvatarUpload(file: File) {
 	}
 }
 
-async function updateImageShade(shade: PlaceImageShade) {
-	if (!placeId.value || !canEditImage.value || isUpdatingShade.value) return
-	isUpdatingShade.value = true
+async function updateBackdrop() {
+	if (!placeId.value || !canEditImage.value || isUpdatingBackdrop.value) return
+	const color = normalizeHexColor(backdropDraft.value)
+	if (color === null) {
+		toast.error('Use a 6-digit hex colour.')
+		return
+	}
+	isUpdatingBackdrop.value = true
 	try {
-		await updatePlaceImageShade(shade, { id: placeId.value })
-		toast.success('Image shade updated')
+		await updateMediaBackdropColor(color || '', { id: placeId.value })
+		toast.success('Media backdrop updated')
 	} catch (error) {
 		const msg = error instanceof Error ? error.message : 'Please try again.'
-		toast.error(`Failed to update image shade: ${msg}`)
+		toast.error(`Failed to update media backdrop: ${msg}`)
 		throw error
 	} finally {
-		isUpdatingShade.value = false
+		isUpdatingBackdrop.value = false
 	}
+}
+
+async function clearBackdrop() {
+	backdropDraft.value = ''
+	await updateBackdrop()
 }
 
 async function onClaim() {

@@ -336,9 +336,9 @@ export function useKitchenInterface() {
 
     return {
       id,
-      to: isPubliclyVisible
-        ? resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope })
-        : '',
+      to: kitchen.is_test_kitchen
+        ? ''
+        : resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope }),
 
       title: name,
       subtitle: shortAddress,

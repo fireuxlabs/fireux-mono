@@ -83,9 +83,7 @@
       </div>
     </section>
 
-    <p v-reveal class="landing-product__onboarding">
-      {{ content.onboardingLabel || 'onboarding' }}
-    </p>
+    <slot name="onboarding" />
 
     <div
       v-if="$slots.console"
@@ -144,7 +142,6 @@ import {
   onBeforeUnmount,
   onMounted,
   useTemplateRef,
-  type ObjectDirective,
 } from 'vue'
 import type { LandingProductIndexContent } from '../../../types/landing-product'
 
@@ -162,7 +159,6 @@ withDefaults(
   }
 )
 
-const revealObservers = new WeakMap<HTMLElement, IntersectionObserver>()
 const activeRevealObservers = new Set<IntersectionObserver>()
 const landingRoot = useTemplateRef<HTMLElement>('landingRoot')
 
@@ -186,35 +182,17 @@ function observeReveal(
       if (!entries.some((entry) => entry.isIntersecting)) return
       element.classList.add('is-reveal-visible')
       observer.disconnect()
-      revealObservers.delete(element)
       activeRevealObservers.delete(observer)
     },
     { rootMargin: '0px 0px -10% 0px', threshold: 0.12 }
   )
 
-  revealObservers.set(element, observer)
   activeRevealObservers.add(observer)
   requestAnimationFrame(() => {
     if (!element.isConnected) return
     element.classList.add('is-reveal-armed')
     observer.observe(element)
   })
-}
-
-function disconnectReveal(element: HTMLElement) {
-  const observer = revealObservers.get(element)
-  observer?.disconnect()
-  if (observer) activeRevealObservers.delete(observer)
-  revealObservers.delete(element)
-}
-
-const vReveal: ObjectDirective<HTMLElement, RevealDirection> = {
-  mounted(element, binding) {
-    observeReveal(element, binding.value || 'up')
-  },
-  unmounted(element) {
-    disconnectReveal(element)
-  },
 }
 
 onMounted(async () => {
@@ -421,15 +399,6 @@ onBeforeUnmount(() => {
   min-width: 0;
 }
 
-.landing-product__onboarding {
-  justify-self: center;
-  padding-block: calc(var(--spacing) * 8);
-  color: var(--ui-text-muted);
-  font-size: var(--text-sm);
-  font-weight: var(--font-weight-medium);
-  letter-spacing: var(--tracking-wide);
-}
-
 .landing-product__apps {
   padding-block: calc(var(--spacing) * 10);
 }
@@ -489,10 +458,6 @@ onBeforeUnmount(() => {
     gap: calc(var(--spacing) * 5);
     padding-top: calc(var(--spacing) * 2);
     font-size: var(--text-sm);
-  }
-
-  .landing-product__onboarding {
-    padding-block: calc(var(--spacing) * 12);
   }
 
   .landing-product__apps {

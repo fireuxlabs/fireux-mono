@@ -12,7 +12,14 @@ import {
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
+import {
+  requireFirebaseStorageDownloadUrl,
+  runtimeStorageBucketName,
+} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+import {
+  normalizeHexColor,
+  parseBrandPalette,
+} from 'fireux-core/runtime/utils/brand-palette.ts'
 import { PlaceStorage } from '../../models/place.model'
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
 
@@ -56,7 +63,7 @@ const allowedPatchKeys = new Set([
   ...optionalTextFields.keys(),
   'lat',
   'lng',
-  'image_shade',
+  'media_backdrop_color',
   'gallery_images',
   'social_links',
   'default_currency_code',
@@ -106,7 +113,10 @@ function normalizedSocialLinks(value: unknown) {
   return Object.keys(links).length ? links : FieldValue.delete()
 }
 
-function normalizedGallery(value: unknown) {
+function normalizedGallery(
+  value: unknown,
+  target: { bucketName: string; placeId: string }
+) {
   if (value === null || value === undefined) return FieldValue.delete()
   if (!Array.isArray(value)) badRequest('Gallery images must be a list.')
 
@@ -115,7 +125,15 @@ function normalizedGallery(value: unknown) {
   if (images.some(image => image.length > 2_048)) {
     badRequest('A gallery image URL is too long.')
   }
-  return images.length ? images : FieldValue.delete()
+  return images.length
+    ? images.map(image =>
+        requireFirebaseStorageDownloadUrl(image, {
+          bucketName: target.bucketName,
+          objectPrefix: `places/${target.placeId}/gallery/`,
+          label: 'Place gallery image',
+        })
+      )
+    : FieldValue.delete()
 }
 
 function normalizedNumber(key: 'lat' | 'lng', value: unknown) {
@@ -131,7 +149,10 @@ function normalizedNumber(key: 'lat' | 'lng', value: unknown) {
   return number
 }
 
-function normalizePatch(raw: unknown) {
+function normalizePatch(
+  raw: unknown,
+  target: { bucketName: string; placeId: string }
+) {
   const source = record(raw)
   const keys = Object.keys(source)
   if (!keys.length) badRequest('Place patch is required.')
@@ -150,22 +171,38 @@ function normalizePatch(raw: unknown) {
       continue
     }
     if (optionalTextFields.has(key)) {
-      patch[key] = deleteOrText(value, optionalTextFields.get(key) || 240)
+      const normalized = deleteOrText(value, optionalTextFields.get(key) || 240)
+      if (
+        (key === 'image_url' || key === 'cover_image') &&
+        typeof normalized === 'string'
+      ) {
+        patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
+          bucketName: target.bucketName,
+          objectPath:
+            key === 'image_url'
+              ? `places/${target.placeId}/avatar`
+              : `places/${target.placeId}/cover`,
+          label: key === 'image_url' ? 'Place image' : 'Place cover',
+        })
+      } else {
+        patch[key] = normalized
+      }
       continue
     }
     if (key === 'lat' || key === 'lng') {
       patch[key] = normalizedNumber(key, value)
       continue
     }
-    if (key === 'image_shade') {
-      const shade = text(value).toLowerCase()
-      patch.image_shade = shade === 'light' || shade === 'dark'
-        ? shade
-        : FieldValue.delete()
+    if (key === 'media_backdrop_color') {
+      const color = normalizeHexColor(value)
+      if (color === null) {
+        badRequest('Media backdrop must be a 6-digit hex colour.')
+      }
+      patch.media_backdrop_color = color || FieldValue.delete()
       continue
     }
     if (key === 'gallery_images') {
-      patch.gallery_images = normalizedGallery(value)
+      patch.gallery_images = normalizedGallery(value, target)
       continue
     }
     if (key === 'social_links') {
@@ -250,6 +287,7 @@ export async function mutatePlace(
       }
     : null
   const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
+  const storageBucket = runtimeStorageBucketName()
   if (
     kitchenAuthority &&
     (
@@ -310,7 +348,10 @@ export async function mutatePlace(
       })
     }
 
-    const patch = normalizePatch(requestedPatch)
+    const patch = normalizePatch(requestedPatch, {
+      bucketName: storageBucket,
+      placeId: id,
+    })
     const requestedBusinessHours = normalizePlaceBusinessHours(
       requestedPatch.business_hours
     )

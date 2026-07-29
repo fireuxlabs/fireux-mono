@@ -12,8 +12,7 @@ export default defineAppConfig({
         label: 'Default',
         description:
           'The Sproochli default mark appears when a page has mixed source languages.',
-        src: '/img/app/language-default.svg',
-        surface: 'light',
+        src: '/img/app/language-default.webp',
       },
     ],
   },

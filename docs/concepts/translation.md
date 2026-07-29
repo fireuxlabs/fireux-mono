@@ -53,13 +53,13 @@ human-reviewed public copy.
   and source hash. Records preserve bounded source text and provider provenance;
   successful misses are created server-side with first-writer-wins semantics.
 - The shared language trigger is one circular control. A mixed-source page
-  presents Sproochli's abstract Dialogue Loom mark as `Default`: violet and
-  coral voice ribbons orbit one shared cream ellipsis. It is the sole static
-  language-state asset. When a language is active, including English, the
-  trigger uses that language option's emoji. Its picker leads with the linked
-  Sproochli wordmark rather than explanatory language copy. Ready and
-  session-cached choices appear above one divider; uncached provider choices
-  remain below it.
+  presents Sproochli's purple translation mark as `Default`: two language
+  tiles and exchange arrows inside the product's circular mark. It is the sole
+  static language-state asset and the same artwork as the Sproochli product
+  logo. When a language is active, including English, the trigger uses that
+  language option's emoji. Its picker leads with the linked Sproochli wordmark
+  rather than explanatory language copy. Ready and session-cached choices
+  appear above one divider; uncached provider choices remain below it.
 
 ## First proof
 
@@ -92,7 +92,10 @@ Luna Piccante is the first canonical Kitchen-to-Menu attachment proof. Its
 mixed-source Menu displays the Default mark and complete language catalogue
 immediately. A selected provider language produces an unreviewed translated
 view backed by reusable Sproochli translation memory; only separately reviewed
-content can become published copy.
+content can become published copy. The bounded public Kitchen detail also
+projects its sparse Sproochli attachment and provides the shared language
+trigger; the selected language is carried into published Menu doorways without
+copying Menu translation state onto Kitchen.
 
 ## Source and verification
 

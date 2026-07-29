@@ -86,7 +86,6 @@ export type RuntimeFirebaseEcosystem = {
 export type RuntimeFirebaseApp = {
   apiKey?: string
   appId: string
-  measurementId?: string
 }
 
 export type RuntimePrivate = {

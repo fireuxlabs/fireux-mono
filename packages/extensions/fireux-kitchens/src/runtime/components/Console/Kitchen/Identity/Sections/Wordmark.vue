@@ -12,14 +12,18 @@
                 Kiosk wordmark
               </p>
               <p class="text-xs text-dimmed">
-                Kiosk uses the no-logo wordmark first, then the standard wordmark.
+                Current Kitchen wordmark. Recommended: 1600 × 400 px,
+                transparent PNG. Kiosk uses the no-logo wordmark first.
               </p>
             </div>
 
-            <div class="rounded-lg border border-default bg-muted p-3">
+            <div
+              class="mx-auto flex aspect-[4/1] w-full max-w-xl items-center justify-center rounded-lg border border-default p-3"
+              :style="{ backgroundColor: mediaBackdropColor || undefined }"
+            >
               <img
                 v-if="kioskWordmarkImageUrl"
-                class="mx-auto max-h-16 w-full max-w-sm object-contain"
+                class="size-full object-contain"
                 :src="kioskWordmarkImageUrl"
                 :alt="`${name || 'Kitchen'} wordmark`"
               >
@@ -27,7 +31,7 @@
                 v-else
                 class="text-center text-xs text-dimmed"
               >
-                No kiosk wordmark yet.
+                1600 × 400
               </p>
             </div>
 
@@ -98,6 +102,10 @@ const identity = computed(() => readKitchenIdentity(props.kitchen))
 const name = computed(() => identity.value.displayName)
 const kioskWordmarkImageUrl = computed(() =>
   identity.value.wordmarkNoLogoImageUrl || identity.value.wordmarkImageUrl
+)
+const mediaBackdropColor = computed(() =>
+  identity.value.mediaBackdropColor ||
+  String((props.kitchen as any)?.media_backdrop_color || '').trim()
 )
 
 const openWordmarkUpload = (kind: KitchenWordmarkKind) => {

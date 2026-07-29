@@ -41,12 +41,12 @@
             View catalogue
           </UButton>
           <UButton
-            :to="procurementPath"
+            :to="supplyOptionsPath"
             color="neutral"
             variant="soft"
             icon="i-lucide-list-checks"
           >
-            View procurement
+            View supply options
           </UButton>
         </div>
       </div>
@@ -83,7 +83,7 @@ const {
   hasIntegratedCatalogue,
   isEcosystemSupplier,
   cataloguePath,
-  procurementPath,
+  supplyOptionsPath,
   debug,
 } = useKitchenConsoleSupplier()
 const statusTitle = computed(() =>
@@ -93,7 +93,7 @@ const statusTitle = computed(() =>
 )
 const statusDescription = computed(() =>
   isEcosystemSupplier.value
-    ? 'Use the supplier catalogue for official product options, or build a kitchen procurement list from it.'
-    : 'This supplier is only a public reference right now. Make a temporary procurement list here until the supplier joins the ecosystem.'
+    ? 'Use the supplier catalogue to review official product options connected to this kitchen.'
+    : 'This supplier is currently a public reference without an integrated catalogue.'
 )
 </script>

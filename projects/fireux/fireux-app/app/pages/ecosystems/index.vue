@@ -3,24 +3,22 @@
   <UPage>
     <UPageHeader
       title="Ecosystems"
-      description="Explore published Ecosystem projections across the FireUX platform."
+      description="Browse published Ecosystems and see which Apps each one groups."
     />
 
     <UPageBody>
-      <EcosystemCTA />
-
       <EcosystemCollectionManager
         :controller="ecosystemsController"
-        description="Published Ecosystem projections from their owning databases."
+        description="Published Ecosystems and their App relationships."
       />
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { usePlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
+import { usePublishedPlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
 
-const ecosystemsController = usePlatformEcosystemDirectory()
+const ecosystemsController = usePublishedPlatformEcosystemDirectory()
 
 definePageMeta({
   tag: 'ecosystems',
@@ -34,15 +32,14 @@ definePageMeta({
     layouts: ['default', 'landing'],
   },
   title: 'Ecosystems',
-  description: 'Explore active FireUX ecosystems.',
+  description: 'Browse published FireUX ecosystems.',
   layout: 'default',
   name: 'EcosystemsIndexPage',
 })
 
 useSeoMeta({
   title: 'FireUX Ecosystems',
-  description:
-    'Browse published FireUX ecosystems including Misebox, Werkbox, Bringli, Granite, and the FireUX platform ecosystem.',
+  description: 'Browse published FireUX ecosystems and their connected Apps.',
 })
 
 </script>

@@ -82,15 +82,21 @@ export default defineEventHandler(async (event): Promise<PublicKitchenIndexPage>
     role: fireux.role,
   }
   const query = getQuery(event)
-  const includeAll = text(query.visibility) === 'all'
-  if (text(query.visibility) && !includeAll) {
+  const requestedAll = text(query.visibility) === 'all'
+  const includeAll = import.meta.dev || requestedAll
+  if (text(query.visibility) && !requestedAll) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Kitchen visibility mode is invalid.',
     })
   }
-  if (includeAll) {
+  if (requestedAll) {
     await requirePrivateKitchenIndex(event, db)
+  } else if (includeAll) {
+    setResponseHeaders(event, {
+      'Content-Type': 'application/json; charset=utf-8',
+      'Cache-Control': 'private, no-store',
+    })
   } else {
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',

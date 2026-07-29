@@ -7,10 +7,10 @@ import { toValue, type MaybeRefOrGetter } from 'vue'
 import type {
   Place,
   PlaceBusinessHours,
-  PlaceImageShade,
   PlaceSocialLinks,
 } from 'fireux-places/runtime/models/place.model'
 import { normalizePlaceBusinessHours } from '../../../../../utils/place-spine'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
 type UpdateCtx = { id: string | null | undefined }
 type PlaceBrowserPatch = Partial<
@@ -53,12 +53,6 @@ function toOptionalNumber(value: unknown): number | null {
     : Number(String(value ?? '').trim())
   if (!Number.isFinite(number)) throw new Error('Value must be a number')
   return number
-}
-
-function toShade(value: unknown): PlaceImageShade {
-  const shade = String(value ?? 'none').toLowerCase().trim()
-  if (shade === 'light' || shade === 'dark' || shade === 'none') return shade
-  return 'none'
 }
 
 function resolvedAuthority(options: UsePlaceUpdateOptions) {
@@ -134,9 +128,10 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     await update(reqId(ctx), { image_url: optionalString(value) })
   }
 
-  async function updateImageShade(value: PlaceImageShade | string, ctx: UpdateCtx) {
-    const shade = toShade(value)
-    await update(reqId(ctx), { image_shade: shade === 'none' ? null : shade })
+  async function updateMediaBackdropColor(value: string, ctx: UpdateCtx) {
+    const color = normalizeHexColor(value)
+    if (color === null) throw new Error('Use a 6-digit hex colour.')
+    await update(reqId(ctx), { media_backdrop_color: color || null })
   }
 
   async function updatePhone(value: string, ctx: UpdateCtx) {
@@ -222,7 +217,7 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     updateLat,
     updateLng,
     updatePlaceImage,
-    updateImageShade,
+    updateMediaBackdropColor,
     updatePhone,
     updateEmail,
     updateWebsite,

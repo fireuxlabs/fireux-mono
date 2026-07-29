@@ -20,6 +20,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from '#imports'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import type { MenuRouteContext } from '../../models/kitchen/menu/menu-context.model'
 import {
   guestDiscoverableMenuSurfaceProfiles,
@@ -42,6 +44,21 @@ const props = withDefaults(defineProps<{
 })
 
 const display = computed(() => props.display)
+const route = useRoute()
+const selectedSproochliLanguage = computed(() =>
+  normalizeSproochliLanguage(route.query.sproochli)
+)
+const preserveSproochliLanguage = (to: string) => {
+  if (!to || !selectedSproochliLanguage.value) return to
+
+  const [pathAndQuery, hash = ''] = to.split('#', 2)
+  const [path, query = ''] = pathAndQuery.split('?', 2)
+  const params = new URLSearchParams(query)
+  params.set('sproochli', selectedSproochliLanguage.value)
+  const nextQuery = params.toString()
+
+  return `${path}${nextQuery ? `?${nextQuery}` : ''}${hash ? `#${hash}` : ''}`
+}
 
 const doorways = computed(() => {
   const availableContexts = new Set(props.contexts)
@@ -51,10 +68,10 @@ const doorways = computed(() => {
       context: 'generic' as const,
       label: 'View menu',
       icon: 'i-lucide-book-open',
-      to: menuRoutePath({
+      to: preserveSproochliLanguage(menuRoutePath({
         scope: props.routeScope,
         menuId: props.menuId,
-      }),
+      })),
     },
     ...guestDiscoverableMenuSurfaceProfiles
       .filter(({ context }) => availableContexts.has(context))
@@ -62,11 +79,11 @@ const doorways = computed(() => {
         context,
         icon,
         label,
-        to: menuRoutePath({
+        to: preserveSproochliLanguage(menuRoutePath({
           scope: props.routeScope,
           menuId: props.menuId,
           context,
-        }),
+        })),
       })),
   ].filter(({ to }) => Boolean(to))
 })

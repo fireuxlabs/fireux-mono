@@ -3,8 +3,8 @@
 <!-- Concurrent edit — 2026-07-23 12:13 CEST — Record FireUX as the second shared product-landing consumer. -->
 <!-- Concurrent edit — 2026-07-23 — Extract the two-consumer product-preview frame without moving product proof into Core. -->
 <!-- Concurrent edit — 2026-07-25 — Map Misebox's real Orders proof inside the shared Main App hero. -->
-Updated: 2026-07-28
-Ref: e98ffb195
+Updated: 2026-07-29
+Ref: 33603376f
 Role: map, not canon
 
 ## Purpose
@@ -60,17 +60,24 @@ Map component folder and naming conventions.
   its content; profile editors use Nuxt UI cards and named `Edit/*` form
   composition; and page organisms to genuinely shared layout and route
   regions. Core `LandingProductIndex` owns the fixed product-led landing order:
-  `hero-preview`, plain `onboarding` text, `console`, `specifics`,
+  `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
   `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
   places shared product copy on the left and the app-owned orbit projection on
-  the right. `LandingProductProofSection` owns the recurring proof-and-copy
+  the right. `LandingProductEntryPaths` owns the ordered `start` and `join`
+  choice, optional subordinate Tool doorway, icons, card anatomy, responsive
+  layout, and reveal behavior. The slot is a public entry decision rather than
+  account onboarding, so App adapters contribute only copy and routes.
+  `scripts/guards/product-landing.mjs` discovers every adapter using
+  `LandingProductIndex` and requires exactly one entry component there.
+  `LandingProductProofSection` owns the recurring proof-and-copy
   split, and `LandingProductCatalogue` owns the shared Tools, Solutions, and
   Operations grid. Core keeps their responsive/reveal behavior and flat
   semantic presentation free of decorative gradients and flares. App projects
   supply truthful data, copy, routes, and proof through named slots and may
   omit a slot when no public capability exists. FireUX places Ecosystems before
   Apps and does not fabricate Tools; Misebox supplies Menu surfaces and Finance
-  under `specifics`, its bounded Apps projection, and the real Ordering tool
+  under `specifics`, its bounded Apps projection, and an Ordering entry that
+  lists published Menus and exposes only their enabled guest order paths
   before Solutions and Operations. FireUX and Misebox are the current sibling
   consumers. Slotted content opts into Core's single IntersectionObserver
   reveal system with `data-landing-reveal`; projects do not create a second

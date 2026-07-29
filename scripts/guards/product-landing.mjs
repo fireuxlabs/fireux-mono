@@ -1,12 +1,13 @@
 // @fireux-script
-// last_used: 2026-07-28
+// last_used: 2026-07-29
 // usage_note: keeps the shared product landing mobile-first and product truth at each project edge.
 // Concurrent edit — 2026-07-23 02:43 CEST — Guard the central landing surface and its Misebox adapter.
 // Concurrent edit — 2026-07-23 12:13 CEST — Extend the shared landing contract to the FireUX sibling consumer.
 // Concurrent edit — 2026-07-25 — Guard Misebox's real read-only Orders proof inside the shared hero.
 // Concurrent edit — 2026-07-28 — Guard the shared hero-to-catalogue section spine.
+// Concurrent edit — 2026-07-29 — Guard the shared Main App start-or-join entry contract.
 
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const CORE_PATH =
@@ -23,6 +24,11 @@ const CORE_PRODUCT_PROOF_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductProofSection.vue'
 const CORE_PRODUCT_CATALOGUE_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductCatalogue.vue'
+const CORE_PRODUCT_ENTRY_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/ProductEntryPaths.vue'
+const CORE_PRODUCT_LANDING_TYPE_PATH =
+  'packages/core/fireux-core/src/types/landing-product.ts'
+const PROJECTS_PATH = 'projects'
 const MISEBOX_ADAPTER_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue'
 const MISEBOX_PAGE_PATH = 'projects/misebox/misebox-app/app/pages/index.vue'
@@ -36,6 +42,10 @@ const MISEBOX_POWER_CARD_EIGHT_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/PowerCardEight.vue'
 const MISEBOX_ORDERING_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/OrderingPreview.vue'
+const MISEBOX_ORDERING_TOOL_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Provider/Tools/Ordering.vue'
+const MISEBOX_ORDERING_TOOL_CONTRACT_PATH =
+  'projects/misebox/misebox-app/server/utils/tools/ordering.ts'
 const MISEBOX_FINANCE_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/FinancePreview.vue'
 const MISEBOX_CONSOLE_PREVIEW_PATH =
@@ -116,6 +126,52 @@ const MOBILE_FIRST_MARKER =
 
 function read(repoRoot, filePath) {
   return readFileSync(path.join(repoRoot, filePath), 'utf8')
+}
+
+function discoverProductLandingAdapters(repoRoot) {
+  const adapters = []
+  const ignoredDirectories = new Set(['.nuxt', '.output', 'node_modules'])
+
+  function visit(directoryPath) {
+    for (const entry of readdirSync(directoryPath, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        if (!ignoredDirectories.has(entry.name)) {
+          visit(path.join(directoryPath, entry.name))
+        }
+        continue
+      }
+
+      if (!entry.isFile() || entry.name !== 'Index.vue') continue
+
+      const absolutePath = path.join(directoryPath, entry.name)
+      const filePath = path.relative(repoRoot, absolutePath)
+      const parts = filePath.split(path.sep)
+      if (
+        !parts.includes('app') ||
+        !parts.includes('components') ||
+        !parts.includes('Landing')
+      ) {
+        continue
+      }
+
+      const source = readFileSync(absolutePath, 'utf8')
+      if (source.includes('<LandingProductIndex')) {
+        adapters.push({ filePath, source })
+      }
+    }
+  }
+
+  visit(path.join(repoRoot, PROJECTS_PATH))
+  return adapters.sort((left, right) =>
+    left.filePath.localeCompare(right.filePath)
+  )
+}
+
+function entryPathsBlock(source) {
+  const start = source.indexOf('const entryPaths =')
+  const end = source.indexOf('satisfies LandingProductEntryContent', start)
+  if (start === -1 || end === -1) return ''
+  return source.slice(start, end)
 }
 
 function count(source, pattern) {
@@ -458,6 +514,10 @@ export async function run(ctx) {
   const cardOrbitType = read(repoRoot, CORE_CARD_ORBIT_TYPE_PATH)
   const productProof = read(repoRoot, CORE_PRODUCT_PROOF_PATH)
   const productCatalogue = read(repoRoot, CORE_PRODUCT_CATALOGUE_PATH)
+  const productEntryPaths = read(repoRoot, CORE_PRODUCT_ENTRY_PATH)
+  const productLandingTypes = read(repoRoot, CORE_PRODUCT_LANDING_TYPE_PATH)
+  const discoveredProductLandingAdapters =
+    discoverProductLandingAdapters(repoRoot)
   const miseboxAdapter = read(repoRoot, MISEBOX_ADAPTER_PATH)
   const miseboxPage = read(repoRoot, MISEBOX_PAGE_PATH)
   const miseboxCardOrbit = read(repoRoot, MISEBOX_CARD_ORBIT_PATH)
@@ -465,6 +525,11 @@ export async function run(ctx) {
   const miseboxPowerCardsDemo = read(repoRoot, MISEBOX_POWER_CARDS_DEMO_PATH)
   const miseboxPowerCardEight = read(repoRoot, MISEBOX_POWER_CARD_EIGHT_PATH)
   const miseboxOrderingPreview = read(repoRoot, MISEBOX_ORDERING_PREVIEW_PATH)
+  const miseboxOrderingTool = read(repoRoot, MISEBOX_ORDERING_TOOL_PATH)
+  const miseboxOrderingToolContract = read(
+    repoRoot,
+    MISEBOX_ORDERING_TOOL_CONTRACT_PATH
+  )
   const miseboxFinancePreview = read(repoRoot, MISEBOX_FINANCE_PREVIEW_PATH)
   const miseboxConsolePreview = read(repoRoot, MISEBOX_CONSOLE_PREVIEW_PATH)
   const kitchenMiseBoard = read(repoRoot, KITCHEN_MISE_BOARD_PATH)
@@ -510,7 +575,6 @@ export async function run(ctx) {
       '.landing-product',
       '.landing-product__hero',
       '.landing-product__hero-actions',
-      '.landing-product__onboarding',
       '.landing-product__region',
     ],
     breakpoints: ['640px', '768px', '1024px'],
@@ -521,7 +585,7 @@ export async function run(ctx) {
     filePath: CORE_CONSOLE_PREVIEW_FRAME_PATH,
     source: consolePreviewFrame,
     selectors: ['.landing-console-preview__layout'],
-    breakpoints: ['640px'],
+    breakpoints: [],
     violations,
   })
 
@@ -575,8 +639,22 @@ export async function run(ctx) {
     violations,
   })
 
+  checkMobileFirst({
+    filePath: CORE_PRODUCT_ENTRY_PATH,
+    source: productEntryPaths,
+    selectors: [
+      '.landing-product-entry-paths',
+      '.landing-product-entry-paths__heading',
+      '.landing-product-entry-paths__grid',
+      '.landing-product-entry-paths__tool',
+    ],
+    breakpoints: ['640px'],
+    violations,
+  })
+
   const landingSlotOrder = [
     'hero-preview',
+    'onboarding',
     'console',
     'specifics',
     'ecosystems',
@@ -607,12 +685,18 @@ export async function run(ctx) {
     if (slotIndex !== -1) previousSlotIndex = slotIndex
   }
 
+  if (!core.includes('<slot name="onboarding" />')) {
+    violations.push(
+      `${CORE_PATH}: must expose the shared Main App onboarding entry slot`
+    )
+  }
+
   if (
-    !/<p\b[^>]*class="landing-product__onboarding"[^>]*>/s.test(core) ||
-    !core.includes("content.onboardingLabel || 'onboarding'")
+    core.includes('onboardingLabel') ||
+    productLandingTypes.includes('onboardingLabel')
   ) {
     violations.push(
-      `${CORE_PATH}: onboarding must remain one plain text paragraph`
+      `${CORE_PATH}: stale onboarding-label fallback remains after the shared entry contract migration`
     )
   }
 
@@ -649,6 +733,7 @@ export async function run(ctx) {
     [CORE_CARD_ORBIT_PATH, cardOrbit],
     [CORE_PRODUCT_PROOF_PATH, productProof],
     [CORE_PRODUCT_CATALOGUE_PATH, productCatalogue],
+    [CORE_PRODUCT_ENTRY_PATH, productEntryPaths],
     [MISEBOX_ADAPTER_PATH, miseboxAdapter],
     [MISEBOX_CARD_ORBIT_PATH, miseboxCardOrbit],
     [MISEBOX_POWER_CARDS_PATH, miseboxPowerCards],
@@ -713,6 +798,39 @@ export async function run(ctx) {
   }
 
   for (const required of [
+    'class="landing-product-entry-paths"',
+    ':aria-labelledby="content.sectionId"',
+    'data-landing-reveal="up"',
+    'v-for="path in content.paths"',
+    "path.kind === 'start'",
+    ':data-entry-path="path.kind"',
+    '<UPageCard',
+    'v-if="content.tool"',
+    '<UButton',
+    'LandingProductEntryContent',
+  ]) {
+    if (!productEntryPaths.includes(required)) {
+      violations.push(
+        `${CORE_PRODUCT_ENTRY_PATH}: missing shared start-or-join entry contract (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    "export type LandingProductEntryPathKind = 'start' | 'join'",
+    "LandingProductEntryPath<'start'>",
+    "LandingProductEntryPath<'join'>",
+    'paths: readonly [',
+    'tool?: LandingProductEntryDoorway',
+  ]) {
+    if (!productLandingTypes.includes(required)) {
+      violations.push(
+        `${CORE_PRODUCT_LANDING_TYPE_PATH}: missing typed start-or-join entry contract (${required})`
+      )
+    }
+  }
+
+  for (const required of [
     'AppDirectoryController',
     '<UPageCard',
     'app.detail_url',
@@ -751,11 +869,12 @@ export async function run(ctx) {
     'console-to="/console/kitchen"',
     '@update:model-value="selectSurface"',
     '@open-console="openFullKitchenConsole"',
-    '<KitchenCardsPill',
-    'v-bind="consoleKitchenPill"',
+    '<UAvatar',
+    ':src="consoleKitchenPill.imageUrl || undefined"',
+    ':alt="consoleKitchenPill.title"',
     "MiseboxProductDemo['console']['kitchenPill']",
     'productDemo.value?.console.kitchenPill',
-    ':show-badges="false"',
+    'size="md"',
     "id: 'kitchen.finance'",
     'useKitchenConsoleSelection',
     "type: 'demo'",
@@ -1119,8 +1238,7 @@ export async function run(ctx) {
     '<slot :selected-item="selectedItem"',
     'LandingConsolePreviewItem',
     "openConsoleAriaLabel: 'Open full Console'",
-    'grid-template-columns: calc(var(--spacing) * 18) minmax(0, 1fr)',
-    'grid-template-columns: calc(var(--spacing) * 48) minmax(0, 1fr)',
+    'grid-template-columns: calc(var(--spacing) * 14) minmax(0, 1fr)',
   ]) {
     if (!consolePreviewFrame.includes(required)) {
       violations.push(
@@ -1187,7 +1305,7 @@ export async function run(ctx) {
     'navigation-label="Project Operations"',
     'console-to="/console/project"',
     'open-console-aria-label="Open the full Project Console"',
-    '<ProjectCardsPill',
+    '<UAvatar',
     'v-if="projectPill"',
     '<FireUXLandingConsolePreviewApps',
     '<FireUXLandingConsolePreviewEcosystems',
@@ -1312,6 +1430,71 @@ export async function run(ctx) {
     }
   }
 
+  if (discoveredProductLandingAdapters.length === 0) {
+    violations.push(
+      `${PROJECTS_PATH}: no Main App LandingProductIndex adapter was discovered`
+    )
+  }
+
+  for (const filePath of [MISEBOX_ADAPTER_PATH, FIREUX_ADAPTER_PATH]) {
+    if (
+      !discoveredProductLandingAdapters.some(
+        (adapter) => adapter.filePath === filePath
+      )
+    ) {
+      violations.push(
+        `${filePath}: expected the current Main App adapter to use LandingProductIndex`
+      )
+    }
+  }
+
+  for (const adapter of discoveredProductLandingAdapters) {
+    for (const [label, pattern] of [
+      ['LandingProductIndex', /<LandingProductIndex\b/g],
+      ['onboarding slot', /#onboarding\b/g],
+      ['LandingProductEntryPaths', /<LandingProductEntryPaths\b/g],
+    ]) {
+      const matches = count(adapter.source, pattern)
+      if (matches !== 1) {
+        violations.push(
+          `${adapter.filePath}: expected exactly one ${label}, found ${matches}`
+        )
+      }
+    }
+
+    if (!slotContains(adapter.source, 'onboarding', '<LandingProductEntryPaths')) {
+      violations.push(
+        `${adapter.filePath}: onboarding slot must own LandingProductEntryPaths`
+      )
+    }
+
+    const entryPaths = entryPathsBlock(adapter.source)
+    for (const required of ["kind: 'start'", "kind: 'join'"]) {
+      if (!entryPaths.includes(required)) {
+        violations.push(
+          `${adapter.filePath}: missing typed entry-path requirement (${required})`
+        )
+      }
+    }
+
+    for (const required of [
+      'LandingProductEntryContent',
+      'satisfies LandingProductEntryContent',
+    ]) {
+      if (!adapter.source.includes(required)) {
+        violations.push(
+          `${adapter.filePath}: missing typed entry-path requirement (${required})`
+        )
+      }
+    }
+
+    if (/\bicon\s*:/.test(entryPaths)) {
+      violations.push(
+        `${adapter.filePath}: entry-path icons are Core-owned and must not be supplied by the App`
+      )
+    }
+  }
+
   const consumers = [
     {
       filePath: MISEBOX_ADAPTER_PATH,
@@ -1322,6 +1505,7 @@ export async function run(ctx) {
       required: [
         '<LandingProductIndex',
         '#hero-preview',
+        '#onboarding',
         '#console',
         '#specifics',
         '#apps',
@@ -1329,6 +1513,7 @@ export async function run(ctx) {
         '#solutions',
         '#operations',
         '<MiseboxPowerCards',
+        '<LandingProductEntryPaths',
         '<LandingProductProofSection',
         '<MiseboxLandingConsolePreview',
         '<MiseboxLandingOrderingPreview',
@@ -1345,9 +1530,14 @@ export async function run(ctx) {
         'toolsCatalogue',
         'solutionsCatalogue',
         'operationsCatalogue',
+        "sectionId: 'misebox-entry'",
+        "title: 'Need a Kitchen App?'",
+        "kind: 'start'",
+        "kind: 'join'",
         "to: '/tools/ordering'",
         ':limit="3"',
         "to: '/get-started'",
+        "to: '/apps'",
         "to: '/console/kitchen'",
         "to: '/operations'",
         'Get started',
@@ -1365,26 +1555,33 @@ export async function run(ctx) {
       required: [
         '<LandingProductIndex',
         '#hero-preview',
+        '#onboarding',
         '#console',
         '#ecosystems',
         '#apps',
         '#solutions',
         '#operations',
         '<FireUXLandingCardOrbit',
+        '<LandingProductEntryPaths',
         '<LandingProductProofSection',
         '<FireUXLandingConsolePreview',
         '<LandingEcosystems',
         '<LandingAppCollection',
         '<LandingProductCatalogue',
-        "import { metaContent } from '../../../meta'",
+        "import { fireuxOffer, metaContent } from '../../../meta'",
         'metaContent.operations',
         'metaContent.solutions',
         'solutionsCatalogue',
         'operationsCatalogue',
+        "sectionId: 'fireux-entry'",
+        "title: 'Need an App?'",
+        "kind: 'start'",
+        "kind: 'join'",
         "label: 'Get started'",
         "label: 'Go to console'",
         "to: '/get-started'",
         "to: '/console/project'",
+        "to: '/ecosystems'",
       ],
       forbidden: ['#specifics', '#tools', 'toolsCatalogue', "to: '/tools"],
     },
@@ -1433,6 +1630,7 @@ export async function run(ctx) {
 
     for (const [slotName, marker] of [
       ['hero-preview', `<${consumer.heroOrbitTag}`],
+      ['onboarding', '<LandingProductEntryPaths'],
       ['console', '<LandingProductProofSection'],
       ['apps', '<LandingAppCollection'],
       ['solutions', '<LandingProductCatalogue'],
@@ -1451,7 +1649,11 @@ export async function run(ctx) {
       )
     }
 
-    if (/landing-product(?:__|-proof__|-catalogue__)/.test(consumer.source)) {
+    if (
+      /landing-product(?:__|-proof__|-catalogue__|-entry-paths__)/.test(
+        consumer.source
+      )
+    ) {
       violations.push(
         `${consumer.filePath}: copied shared landing presentation into the project`
       )
@@ -1819,6 +2021,36 @@ export async function run(ctx) {
     if (miseboxAdapter.includes(forbidden)) {
       violations.push(
         `${MISEBOX_ADAPTER_PATH}: main Kitchen landing contains a competing product doorway (${forbidden})`
+      )
+    }
+  }
+
+  for (const required of [
+    '<MenuCollectionManager',
+    ':index="menuIndex"',
+    "import { usePublicMenuIndex }",
+    'const menuIndex = usePublicMenuIndex()',
+  ]) {
+    if (!miseboxOrderingTool.includes(required)) {
+      violations.push(
+        `${MISEBOX_ORDERING_TOOL_PATH}: must select published Menus through the shared public Menu index (${required})`
+      )
+    }
+  }
+
+  if (miseboxOrderingTool.includes('/img/app/logo.png')) {
+    violations.push(
+      `${MISEBOX_ORDERING_TOOL_PATH}: must not regress to a logo-only Ordering placeholder`
+    )
+  }
+
+  for (const required of [
+    "title: 'Order from a published Menu'",
+    'Collection, delivery, and pre-order',
+  ]) {
+    if (!miseboxOrderingToolContract.includes(required)) {
+      violations.push(
+        `${MISEBOX_ORDERING_TOOL_CONTRACT_PATH}: missing truthful published-Menu ordering contract (${required})`
       )
     }
   }

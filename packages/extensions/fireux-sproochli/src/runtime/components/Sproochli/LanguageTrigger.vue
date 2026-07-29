@@ -4,12 +4,8 @@
     v-model:open="open"
     :content="popoverContent"
   >
-    <UButton
+    <button
       type="button"
-      :color="triggerUsesDefaultMark ? 'primary' : 'neutral'"
-      :variant="triggerUsesDefaultMark ? 'soft' : 'ghost'"
-      size="lg"
-      square
       :class="[
         'sproochli-language-trigger h-11 w-11 rounded-full',
         triggerUsesDefaultMark
@@ -21,7 +17,7 @@
     >
       <SproochliDefaultLanguageMark
         v-if="triggerUsesDefaultMark"
-        class="size-6 shrink-0"
+        class="size-8 shrink-0"
       />
       <span
         v-else
@@ -30,7 +26,7 @@
       >
         {{ triggerSymbol }}
       </span>
-    </UButton>
+    </button>
 
     <template #content>
       <UCard class="sproochli-language-card">
@@ -303,11 +299,33 @@ const optionName = (option: SproochliLanguageOption) =>
 </script>
 
 <style scoped>
+.sproochli-language-trigger--default,
 .sproochli-language-trigger--emoji {
+  display: inline-flex;
+  width: 2.75rem;
+  height: 2.75rem;
+  appearance: none;
+  align-items: center;
+  justify-content: center;
   border-color: transparent !important;
   background: transparent !important;
   box-shadow: none !important;
   padding: 0 !important;
+  backdrop-filter: none !important;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sproochli-language-trigger--default:hover,
+.sproochli-language-trigger--emoji:hover {
+  border-color: transparent !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sproochli-language-trigger:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 3px;
 }
 
 .sproochli-language-card {

@@ -56,7 +56,9 @@ export type PlaceSource = 'google' | 'fireux' | 'manual'
  */
 export type PlaceType = 'physical' | 'non_physical'
 
-/** For logo legibility on UI backgrounds. */
+/** Explicit backdrop behind transparent entity-owned brand media. */
+export type MediaBackdropColor = `#${string}`
+/** @deprecated Read-only compatibility for unmigrated records and consumers. */
 export type PlaceImageShade = 'light' | 'dark' | 'none'
 
 export type PlaceSocialLinks = {
@@ -123,6 +125,8 @@ export const PlaceModel = {
   image_url: '' as string,
   cover_image: '' as string,
   gallery_images: [] as string[],
+  media_backdrop_color: '' as MediaBackdropColor | '',
+  /** @deprecated Never write; migrate to media_backdrop_color. */
   image_shade: 'none' as PlaceImageShade,
 
   // Portable brand colours inherited by Place-backed roles.

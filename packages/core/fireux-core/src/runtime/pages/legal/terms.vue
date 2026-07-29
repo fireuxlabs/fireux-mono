@@ -102,9 +102,11 @@
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">7. Third-Party Integrations</h2>
         <p>
-          FireUX uses third-party providers (e.g., Firebase, Google Cloud) for
-          hosting, authentication, and analytics. By using FireUX, you agree to
-          their respective terms as required.
+          FireUX uses third-party providers (e.g., Firebase and Google Cloud)
+          for hosting, authentication, storage, and security. FireUX does not
+          install third-party behavioural analytics or advertising trackers.
+          By using FireUX, you agree to provider terms where required for the
+          service you use.
         </p>
       </section>
 

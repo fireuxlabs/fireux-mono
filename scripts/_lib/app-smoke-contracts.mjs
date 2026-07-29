@@ -202,6 +202,9 @@ const menuBrowseContract = (route, options = {}) => {
           ]
         : []),
       ...(options.itemIncludes || []),
+      ...(options.canonicalPath
+        ? ['rel="canonical"', options.canonicalPath]
+        : []),
     ],
     excludes: [
       MENU_ORDER_MARKER,

@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
 import type {
   KitchenFulfilmentConfig,
-  KitchenImageShade,
+  KitchenMediaBackdropColor,
   KitchenMenusConfig,
   KitchenOrdersConfig,
   KitchenTablesConfig,
@@ -26,7 +26,7 @@ export type PublicKitchenIndexItem = {
   short_address?: string
   logo_image_url?: string
   image_url?: string
-  image_shade?: KitchenImageShade
+  media_backdrop_color?: KitchenMediaBackdropColor
 }
 
 export type PublicKitchenIndexPage = {
@@ -38,8 +38,13 @@ export type PublicKitchenDetail = PublicKitchenIndexItem & {
   app_scope_app_id: string
   route_scope: 'live'
   display_name: string
+  sproochli?: Pick<
+    SproochliAttachmentConfig,
+    'enabled' | 'default_language' | 'requested_languages'
+  >
   tagline?: string
   display_image_url?: string
+  place_image_url?: string
   cover_image?: string
   food_gallery?: string[]
   about?: string
@@ -53,6 +58,19 @@ export type PublicKitchenDetail = PublicKitchenIndexItem & {
 
 export type PublicKitchenDetailResponse = {
   item: PublicKitchenDetail
+}
+
+export type KitchenPublicIdentityEdit = {
+  display_name: string
+  tagline: string
+  card_image_url: string
+  logo_image_url: string
+}
+
+export type KitchenPublicIdentityEditResponse = {
+  ok: true
+  kitchen_id: string
+  identity: KitchenPublicIdentityEdit
 }
 
 export const KITCHEN_CONSOLE_TARGET_LIMIT = 50
@@ -77,7 +95,7 @@ export type KitchenConsoleTargetItem = {
     image_url: string
     card_image_url?: string
     logo_image_url?: string
-    image_shade: KitchenImageShade
+    media_backdrop_color?: KitchenMediaBackdropColor
     wordmark_no_logo_image_url?: string
     wordmark_image_url?: string
     gallery: string[]
@@ -98,7 +116,7 @@ export type KitchenConsoleTargetItem = {
   formatted_address?: string
   short_address?: string
   image_url?: string
-  image_shade?: KitchenImageShade
+  media_backdrop_color?: KitchenMediaBackdropColor
   food_gallery?: string[]
   currency_code?: string
   claimed_by?: string

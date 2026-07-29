@@ -4,10 +4,7 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: project only validated sparse brand colours.
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
-import type {
-  PlaceImageShade,
-  PlaceType,
-} from '../../models/place.model'
+import type { PlaceType } from '../../models/place.model'
 import type {
   PublicPlaceDetailProjection,
   PublicPlaceProjection,
@@ -15,6 +12,7 @@ import type {
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
+  readMediaBackdropColor,
 } from '../../utils/place-spine'
 import { normalizePublicPlaceProjection } from '../../utils/public-place-projection'
 
@@ -74,7 +72,15 @@ export function projectPublicPlace(
     brand_tagline: text(value.brand_tagline, 240),
     short_address: coarseAddress(value.address),
     image_url: httpsUrl(value.image_url),
-    image_shade: text(value.image_shade, 10) as PlaceImageShade,
+    media_backdrop_color: readMediaBackdropColor(
+      value.media_backdrop_color,
+      value.image_shade
+    ),
+    image_shade: text(value.image_shade, 10) === 'light'
+      ? 'light'
+      : text(value.image_shade, 10) === 'dark'
+        ? 'dark'
+        : 'none',
     verified: value.verified === true,
     slug: (() => {
       const slug = text(value.slug, 240).toLowerCase()
@@ -95,6 +101,17 @@ export function projectPublicPlaceDetail(
   const currency = normalizePlaceCurrencyCode(value.default_currency_code)
   const timezone = normalizePlaceTimezone(value.timezone)
   const brandPalette = readBrandPalette(value.brand_palette)
+  const about = text(value.about, 10_000)
+  const coverImage = httpsUrl(value.cover_image)
+  const galleryImages = Array.isArray(value.gallery_images)
+    ? Array.from(new Set(
+        value.gallery_images
+          .map(httpsUrl)
+          .filter(Boolean)
+      )).slice(0, 24)
+    : []
+  const website = httpsUrl(value.website)
+  const googleMapsUrl = httpsUrl(value.google_maps_url)
   return {
     ...place,
     ...(currency ? { default_currency_code: currency } : {}),
@@ -102,5 +119,10 @@ export function projectPublicPlaceDetail(
     ...(Object.keys(brandPalette).length
       ? { brand_palette: brandPalette }
       : {}),
+    ...(about ? { about } : {}),
+    ...(coverImage ? { cover_image: coverImage } : {}),
+    ...(galleryImages.length ? { gallery_images: galleryImages } : {}),
+    ...(website ? { website } : {}),
+    ...(googleMapsUrl ? { google_maps_url: googleMapsUrl } : {}),
   }
 }

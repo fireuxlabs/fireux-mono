@@ -64,14 +64,14 @@
           <KitchenCardsPill
             v-bind="card"
             :link="linkEnabled"
-            :show-badges="showBadges"
+            :show-badges="showBadges || privilegedPreview"
           />
         </template>
         <template #cell="{ card }">
           <KitchenCardsCell
             v-bind="card"
             :link="linkEnabled"
-            :show-badges="showBadges"
+            :show-badges="showBadges || privilegedPreview"
             directory
           />
         </template>
@@ -172,6 +172,7 @@ const collectionSurface = computed<KitchenCollectionItem[]>(
   () => fetched.kitchens.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
+const privilegedPreview = computed(() => fetched.privilegedPreview.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMore = async () => {

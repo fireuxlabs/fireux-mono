@@ -68,10 +68,11 @@
         >
           <div class="grid gap-1">
             <h2 class="m-0 text-lg font-semibold text-highlighted">
-              FireUX launch paths
+              FireUX App options
             </h2>
             <p class="m-0 text-sm leading-6 text-muted">
-              Start an App, tenant App, or Ecosystem through Ignition.
+              Use Ignition to request a FireUX App, or explore published
+              Ecosystems and their Apps.
             </p>
           </div>
           <div class="flex flex-wrap gap-x-5 gap-y-3">
@@ -160,6 +161,6 @@ definePageMeta({
 useSeoMeta({
   title: 'FireUX Solutions',
   description:
-    'Find a specific job for a FireUX App, then carry that Solution into Ignition.',
+    'Find a specific job for a FireUX App, then use it to brief an Ignition request.',
 })
 </script>

@@ -10,22 +10,20 @@
     @open-console="openFullProjectConsole"
   >
     <template #target>
-      <ProjectCardsPill
+      <UAvatar
         v-if="projectPill"
-        v-bind="projectPill"
-        :link="false"
-        :show-badges="false"
+        :src="projectPill.imageUrl || undefined"
+        :alt="projectPill.title"
+        icon="i-lucide-folders"
+        size="md"
+        :title="projectPill.title"
       />
-      <div
+      <UAvatar
         v-else
-        class="flex min-w-0 items-center gap-2"
+        icon="i-lucide-folders"
+        size="md"
         :aria-label="productDemoError ? 'Demo Project unavailable' : 'Loading Demo Project'"
-      >
-        <UAvatar icon="i-lucide-folders" size="sm" />
-        <span class="hidden truncate text-sm text-muted sm:block">
-          {{ productDemoError ? 'Project unavailable' : 'Loading Project' }}
-        </span>
-      </div>
+      />
     </template>
 
     <FireUXLandingConsolePreviewApps

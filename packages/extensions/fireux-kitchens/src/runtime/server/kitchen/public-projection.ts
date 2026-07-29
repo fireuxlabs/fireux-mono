@@ -10,6 +10,7 @@ import type {
 } from '../../models/kitchen/kitchen-index.model.ts'
 import {
   readKitchenIdentity,
+  readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../utils/kitchen-spine.ts'
 import { readKitchenOnboardingSupport } from './onboarding-policy.ts'
@@ -85,6 +86,10 @@ function canonicalKitchenAppScope(
 export function isPublishedKitchen(data: Record<string, unknown>) {
   const visibility = readKitchenVisibility(data)
   return visibility.show === true && visibility.isTest !== true
+}
+
+export function isRoutableKitchen(data: Record<string, unknown>) {
+  return readKitchenVisibility(data).isTest !== true
 }
 
 export async function hydrateKitchenPublicDocuments(
@@ -202,12 +207,15 @@ export function projectPublicKitchenIndexItem(
     'formatted_address'
   )
   const shortAddress = readRecordString(parts.placeData, 'short_address')
+  const placeCoverImageUrl = text(parts.place.coverImage)
   const imageUrl = text(
-    parts.rootIdentity.cardImageUrl || parts.identity.imageUrl
+    parts.rootIdentity.cardImageUrl ||
+    placeCoverImageUrl ||
+    parts.identity.imageUrl
   )
-  const imageShade = parts.rootIdentity.cardImageUrl
-    ? parts.rootIdentity.imageShade
-    : parts.identity.imageShade
+  const mediaBackdropColor =
+    parts.rootIdentity.mediaBackdropColor ||
+    parts.place.mediaBackdropColor
   const logoImageUrl = text(parts.rootIdentity.logoImageUrl)
 
   return {
@@ -222,8 +230,8 @@ export function projectPublicKitchenIndexItem(
     ...(shortAddress ? { short_address: shortAddress } : {}),
     ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
     ...(imageUrl ? { image_url: imageUrl } : {}),
-    ...(imageUrl && imageShade !== 'none'
-      ? { image_shade: imageShade }
+    ...(parts.rootIdentity.cardImageUrl && mediaBackdropColor
+      ? { media_backdrop_color: mediaBackdropColor }
       : {}),
   }
 }
@@ -243,7 +251,7 @@ export function projectPublicKitchenDetail(
     dataByPath,
     directoryScope
   )
-  if (!item || !parts || !parts.publiclyVisible) return null
+  if (!item || !parts || parts.isTestKitchen) return null
 
   const place = parts.placeData
   const placeSocialLinks = record(place.social_links)
@@ -259,14 +267,28 @@ export function projectPublicKitchenDetail(
   const longitude = number(place.lng)
   const tagline = item.brand_tagline || ''
   const imageUrl = item.image_url || ''
+  const placeImageUrl = text(parts.place.imageUrl)
+  const sproochli = readKitchenSproochliConfig(parts.document.data)
 
   return {
     ...item,
     app_scope_app_id: parts.appScope.appId,
     route_scope: 'live',
     display_name: item.name,
+    ...(sproochli.enabled
+      ? {
+          sproochli: {
+            enabled: true,
+            ...(sproochli.default_language
+              ? { default_language: sproochli.default_language }
+              : {}),
+            requested_languages: sproochli.requested_languages,
+          },
+        }
+      : {}),
     ...(tagline ? { tagline } : {}),
     ...(imageUrl ? { display_image_url: imageUrl } : {}),
+    ...(placeImageUrl ? { place_image_url: placeImageUrl } : {}),
     ...(coverImage ? { cover_image: coverImage } : {}),
     ...(gallery.length ? { food_gallery: gallery } : {}),
     ...(about ? { about } : {}),

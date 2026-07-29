@@ -12,7 +12,7 @@ export function useKitchenConsoleSupplierCatalogue() {
     supplier,
     supplierScenario,
     hasIntegratedCatalogue,
-    procurementPath,
+    supplyOptionsPath,
   } = supplierState
 
   const catalogues = computed(() =>
@@ -46,6 +46,6 @@ export function useKitchenConsoleSupplierCatalogue() {
     pending,
     title,
     description,
-    procurementPath,
+    supplyOptionsPath,
   }
 }

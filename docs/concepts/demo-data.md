@@ -82,23 +82,30 @@ remain real data even when a Demo record links to them.
   lifecycle, parents, and images hydrate from the real canonical
   `/ingredients/{ingredientId}` authority through the bounded public
   projection. A Demo fixture must not copy or locally decorate those roots.
-- Demo-owned presentation media is an immutable public delivery seam, not
-  canonical data authority. The Misebox Demo World stores those objects in
+- Firebase Storage is the binary authority for Demo-owned presentation media;
+  the media is an immutable public delivery seam, not domain-record authority.
+  The Misebox Demo World stores those objects in
   `misebox-78f9c.appspot.com` under owner-relative
   `demo/misebox-app/{kitchens|suppliers|places}/...` paths. Kitchen and Supplier
   logos stay under their own ids; Place imagery stays under the Place id.
   Fixtures hold fixed HTTPS values and import no Firebase or Storage SDK.
   Canonical Ingredient images and shared App/brand media never move into this
-  Demo prefix merely because a Demo surface displays them.
-- The reviewed Misebox media inventory has 68 unique source images and 73
+  Demo prefix merely because a Demo surface displays them. Live-owned media
+  stays in its owning Live publication or storage path, never in `demo/`.
+- The reviewed Misebox media inventory has 68 unique payload hashes and 73
   owner-relative objects: 62 Kitchen-owned images, three Supplier logos, three
-  Supplier-company Place photos, and five Place-owned aliases for Deanos
-  presentation fields that reuse reviewed source bytes. Source bytes and the
-  exact manifest live under `scripts/data/misebox-demo-media/`. The manual
-  `scripts/publish-misebox-demo-media.mjs` publisher is Storage-only,
-  create-only, replay-safe, and rejects any existing object whose bytes, MIME,
-  cache policy, checksum metadata, or token differ. It never writes Firestore,
-  overwrites, or deletes.
+  Supplier-company Place photos, and five Place-owned object identities for
+  Deanos presentation fields that reuse reviewed bytes. The repository keeps
+  only the exact metadata manifest under `scripts/data/misebox-demo-media/`:
+  68 source descriptors record path, hash, byte count, and MIME type, while 73
+  object-to-source mappings preserve each owner identity. It does not mirror
+  Demo image binaries. The manual
+  `scripts/publish-misebox-demo-media.mjs` workflow audits Storage directly.
+  If a reviewed object is absent, its create-only apply reads matching bytes
+  from an explicit external directory outside the repository. It is
+  replay-safe and rejects any existing object whose bytes, MIME, cache policy,
+  checksum metadata, or token differ. It never writes Firestore, overwrites, or
+  deletes.
 - A Kitchen Demo scenario owns Kitchen-shaped team records with stable member
   IDs. Operator audit stamps and Finance transaction closers reference those
   IDs; Console Team and Finance resolve presentation names from the same
@@ -270,7 +277,9 @@ remain real data even when a Demo record links to them.
   and Place projection. The same offline guard executes all image-bearing
   Kitchen, Dish, Supplier, and Place fixtures and requires 75 field occurrences
   to resolve to the exact 73 owner-relative Misebox Demo media objects declared
-  by the 68-source manifest. It does not contact Storage during normal guards.
+  by the Storage-authoritative manifest with 68 unique payload hashes. It also
+  rejects repository-local Demo image binaries and does not contact Storage
+  during normal guards.
 - Refresh fixtures in the same change when a real shape used by Demo changes.
 
 ## Verification
@@ -279,7 +288,10 @@ remain real data even when a Demo record links to them.
 - For a remote media audit, run
   `node scripts/publish-misebox-demo-media.mjs --project misebox-78f9c
 --database misebox --bucket misebox-78f9c.appspot.com` without `--apply`;
-  every reviewed object must plan as exact reuse with no create or blocker.
+  every reviewed object must plan as exact reuse with no create, blocker, or
+  unexpected prefix object. If creates are planned, rerun the read-only audit
+  with an absolute external `--source-directory` to validate all required
+  source bytes before reviewing any apply hashes.
 - Typecheck every owning package or app whose fixtures or adapters changed.
 - Verify an inactive console reports `idle` and does not invoke its loader.
 - Verify a Product Demo's fictional records remain deterministic and perform

@@ -76,7 +76,7 @@ export const kitchenOperations = [
     id: 'kitchen.suppliers',
     slug: 'suppliers',
     title: 'Suppliers',
-    description: 'Connect kitchen suppliers, catalogues, and procurement details.',
+    description: 'Connect kitchen suppliers, catalogues, and supply options.',
     to: '/console/kitchen/suppliers',
     console: kitchenConsole,
     icon: 'i-lucide-truck',

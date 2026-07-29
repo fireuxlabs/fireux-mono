@@ -90,15 +90,65 @@
         </p>
       </div>
 
-      <MoleculesFormsFirestoreSimpleField
-        label="Food gallery image URLs"
-        type="textarea"
-        :rows="4"
-        :firebase-value="foodGalleryText"
-        placeholder="One image URL per line"
-        :maxlength="1600"
-        :update-function="handleFoodGallery"
-      />
+      <div class="rounded-lg border border-default bg-default p-3">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="space-y-1">
+            <p class="text-sm font-medium text-highlighted">Gallery</p>
+            <p class="text-xs text-dimmed">
+              Current Place gallery. Recommended: 1200 × 1200 px.
+            </p>
+          </div>
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-images"
+            :disabled="!canWrite || galleryUploading || foodGallery.length >= 24"
+            :loading="galleryUploading"
+            @click="galleryInputRef?.click()"
+          >
+            Add images
+          </UButton>
+          <input
+            ref="galleryInputRef"
+            type="file"
+            accept="image/*"
+            multiple
+            class="hidden"
+            @change="handleGalleryFiles"
+          >
+        </div>
+
+        <div
+          v-if="foodGallery.length"
+          class="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3"
+        >
+          <div
+            v-for="image in foodGallery"
+            :key="image"
+            class="relative aspect-square overflow-hidden rounded-lg bg-elevated"
+          >
+            <img :src="image" alt="" class="size-full object-cover">
+            <UButton
+              icon="i-lucide-x"
+              aria-label="Remove gallery image"
+              color="neutral"
+              variant="solid"
+              size="xs"
+              square
+              class="absolute right-2 top-2"
+              :disabled="!canWrite || galleryUploading"
+              @click="removeGalleryImage(image)"
+            />
+          </div>
+        </div>
+        <div
+          v-else
+          class="mt-3 flex aspect-square w-full max-w-44 items-center justify-center rounded-lg bg-elevated text-xs text-dimmed"
+        >
+          1200 × 1200
+        </div>
+      </div>
     </div>
   </UCard>
 </template>
@@ -148,25 +198,23 @@ const identityImage = computed(() =>
 )
 const foodGallery = computed(() =>
   Array.isArray(
-    (props.kitchen as any)?.identity?.gallery || (props.kitchen as any)?.food_gallery
+    (props.kitchen as any)?.gallery_images ||
+      (props.kitchen as any)?.identity?.gallery ||
+      (props.kitchen as any)?.food_gallery
   )
     ? (
-        ((props.kitchen as any)?.identity?.gallery ||
+        ((props.kitchen as any)?.gallery_images ||
+          (props.kitchen as any)?.identity?.gallery ||
           (props.kitchen as any).food_gallery) as unknown[]
       ).map(clean).filter(Boolean)
     : []
 )
-const foodGalleryText = computed(() => foodGallery.value.join('\n'))
-
-const normalizeStringArray = (value: string) =>
-  value
-    .split(/\n|,/)
-    .map(clean)
-    .filter(Boolean)
 
 const { uploadImage } = useImageStorage()
 const coverInputRef = ref<HTMLInputElement | null>(null)
+const galleryInputRef = ref<HTMLInputElement | null>(null)
 const coverUploading = ref(false)
+const galleryUploading = ref(false)
 
 async function updateKitchenIdentity(
   patch: KitchenUpdateInput,
@@ -224,18 +272,18 @@ async function handleCoverFile(event: Event) {
 
   coverUploading.value = true
   try {
+    const placeId = clean((props.kitchen as any)?.place_id)
+    if (!placeId) throw new Error('The linked Place is required.')
     let url = ''
     try {
       const coverBlob = await resizeImageToCover(file)
-      url = await uploadImage(`kitchens/${kitchenId.value}/cover`, coverBlob)
+      url = await uploadImage(`places/${placeId}/cover`, coverBlob)
     } catch (error) {
       const msg = error instanceof Error ? error.message : 'Please try again.'
       toast.error(`Failed to prepare cover image: ${msg}`)
       throw error
     }
 
-    const placeId = clean((props.kitchen as any)?.place_id)
-    if (!placeId) throw new Error('The linked Place is required.')
     await updateCoverImage(url, { id: placeId })
     toast.success('Cover image updated')
   } finally {
@@ -244,11 +292,53 @@ async function handleCoverFile(event: Event) {
   }
 }
 
-async function handleFoodGallery(value: string) {
+async function handleGalleryFiles(event: Event) {
+  const input = event.target as HTMLInputElement | null
+  const files = Array.from(input?.files || [])
+  if (input) input.value = ''
+  if (!props.canWrite || !files.length || galleryUploading.value) return
   const placeId = clean((props.kitchen as any)?.place_id)
   if (!placeId) throw new Error('The linked Place is required.')
-  await updateGalleryImages(normalizeStringArray(value), { id: placeId })
-  toast.success('Food gallery updated')
+  if (files.some(file => !file.type.startsWith('image/'))) {
+    throw new Error('Choose image files only.')
+  }
+  if (files.some(file => file.size > 10 * 1024 * 1024)) {
+    throw new Error('Each image must be 10 MB or smaller.')
+  }
+
+  galleryUploading.value = true
+  try {
+    const additions = []
+    const available = Math.max(0, 24 - foodGallery.value.length)
+    for (const [index, file] of files.slice(0, available).entries()) {
+      const objectId =
+        typeof crypto !== 'undefined' && 'randomUUID' in crypto
+          ? crypto.randomUUID()
+          : `${Date.now()}-${index}`
+      additions.push(await uploadImage(
+        `places/${placeId}/gallery/${objectId}`,
+        file
+      ))
+    }
+    await updateGalleryImages(
+      [...foodGallery.value, ...additions],
+      { id: placeId }
+    )
+    toast.success('Gallery updated')
+  } finally {
+    galleryUploading.value = false
+  }
+}
+
+async function removeGalleryImage(image: string) {
+  if (!props.canWrite || galleryUploading.value) return
+  const placeId = clean((props.kitchen as any)?.place_id)
+  if (!placeId) throw new Error('The linked Place is required.')
+  await updateGalleryImages(
+    foodGallery.value.filter(candidate => candidate !== image),
+    { id: placeId }
+  )
+  toast.success('Gallery updated')
 }
 
 function loadImage(file: File): Promise<HTMLImageElement> {

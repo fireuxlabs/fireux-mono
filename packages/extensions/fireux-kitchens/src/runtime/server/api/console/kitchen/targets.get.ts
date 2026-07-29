@@ -118,9 +118,9 @@ function projectKitchenTarget(input: {
   const latitude = optionalNumber(input.place.lat)
   const longitude = optionalNumber(input.place.lng)
   const cardImageUrl = rootIdentity.cardImageUrl || resolvedIdentity.imageUrl
-  const cardImageShade = rootIdentity.cardImageUrl
-    ? rootIdentity.imageShade
-    : resolvedIdentity.imageShade
+  const mediaBackdropColor =
+    rootIdentity.mediaBackdropColor ||
+    place.mediaBackdropColor
 
   return {
     id: input.id,
@@ -143,7 +143,9 @@ function projectKitchenTarget(input: {
       ...(rootIdentity.logoImageUrl
         ? { logo_image_url: rootIdentity.logoImageUrl }
         : {}),
-      image_shade: rootIdentity.imageShade,
+      ...(mediaBackdropColor
+        ? { media_backdrop_color: mediaBackdropColor }
+        : {}),
       ...(resolvedIdentity.wordmarkImageUrl
         ? { wordmark_image_url: resolvedIdentity.wordmarkImageUrl }
         : {}),
@@ -178,8 +180,8 @@ function projectKitchenTarget(input: {
     ...(cardImageUrl
       ? { image_url: cardImageUrl }
       : {}),
-    ...(cardImageUrl
-      ? { image_shade: cardImageShade }
+    ...(rootIdentity.cardImageUrl && mediaBackdropColor
+      ? { media_backdrop_color: mediaBackdropColor }
       : {}),
     ...(gallery.length ? { food_gallery: gallery } : {}),
     ...(resolvedIdentity.currencyCode

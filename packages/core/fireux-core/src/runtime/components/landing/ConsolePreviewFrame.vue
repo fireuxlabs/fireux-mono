@@ -6,17 +6,17 @@
     :ui="{ body: 'p-0 sm:p-0' }"
   >
     <div class="landing-console-preview__layout">
-      <aside class="border-r border-default bg-elevated/70 p-3">
-        <div class="min-w-0 overflow-hidden py-2">
+      <aside class="border-r border-default bg-elevated/70 p-2">
+        <div class="flex min-w-0 justify-center overflow-hidden py-2">
           <slot name="target" />
         </div>
 
-        <nav class="mt-3 grid gap-1" :aria-label="navigationLabel">
+        <nav class="mt-2 grid gap-1" :aria-label="navigationLabel">
           <button
             v-for="item in items"
             :key="item.id"
             type="button"
-            class="flex min-h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-sm text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            class="flex min-h-9 w-full items-center justify-center rounded-lg text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             :class="item.id === modelValue ? 'bg-primary/10 text-primary' : ''"
             :aria-label="item.title"
             :aria-current="item.id === modelValue ? 'page' : undefined"
@@ -24,7 +24,6 @@
             @click="emit('update:modelValue', item.id)"
           >
             <UIcon :name="item.icon" class="size-4 shrink-0" />
-            <span class="hidden truncate sm:block">{{ item.title }}</span>
           </button>
         </nav>
 
@@ -40,7 +39,7 @@
             v-for="item in secondaryItems"
             :key="item.id"
             type="button"
-            class="flex min-h-9 w-full items-center gap-2 rounded-lg px-2 text-left text-sm text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+            class="flex min-h-9 w-full items-center justify-center rounded-lg text-toned transition-colors hover:bg-elevated focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
             :class="item.id === modelValue ? 'bg-primary/10 text-primary' : ''"
             :aria-label="item.title"
             :aria-current="item.id === modelValue ? 'page' : undefined"
@@ -48,7 +47,6 @@
             @click="emit('update:modelValue', item.id)"
           >
             <UIcon :name="item.icon" class="size-4 shrink-0" />
-            <span class="hidden truncate sm:block">{{ item.title }}</span>
           </button>
         </nav>
       </aside>
@@ -131,12 +129,6 @@ const selectedItem = computed(
 .landing-console-preview__layout {
   display: grid;
   min-height: calc(var(--spacing) * 128);
-  grid-template-columns: calc(var(--spacing) * 18) minmax(0, 1fr);
-}
-
-@media (min-width: 640px) {
-  .landing-console-preview__layout {
-    grid-template-columns: calc(var(--spacing) * 48) minmax(0, 1fr);
-  }
+  grid-template-columns: calc(var(--spacing) * 14) minmax(0, 1fr);
 }
 </style>

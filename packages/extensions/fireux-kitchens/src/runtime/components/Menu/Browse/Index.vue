@@ -136,8 +136,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { setResponseStatus, useRoute, useSeoMeta } from '#imports'
+import { setResponseStatus, useRoute } from '#imports'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import {
   normalizeSproochliLanguage,
 } from 'fireux-sproochli/runtime/sproochli'
@@ -146,6 +147,7 @@ import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useSproochliMenuTranslation } from '../../../composables/fireux/menu/useSproochliMenuTranslation'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 import {
+  menuCanonicalPath,
   rootMenuRouteScope,
   type MenuRouteScope,
 } from '../../../utils/kitchen-menu-route'
@@ -236,6 +238,14 @@ const kitchenWordmarkImageUrl = computed(() =>
 const pageStyle = computed(() =>
   menuPresentation.value?.pageStyle || null
 )
+const canonicalPath = computed(() =>
+  menuCanonicalPath({
+    scope: menuRouteScope.value,
+    menuId: menuId.value,
+    sourceKitchenSlug: detailMenu.value?.source.kitchenSlug,
+    sourceMenuId: detailMenu.value?.source.menuId,
+  })
+)
 const sproochli = computed(() => {
   const state = detailMenu.value?.sproochli
   if (!state) return null
@@ -287,13 +297,11 @@ const {
   pageCanvas: computed(() => props.pageCanvas),
 })
 
-useSeoMeta({
+useSeo({
   title: () => failure.value?.title || menuName.value,
   description: () => failure.value?.description ||
     menuDescription.value || `Browse ${menuName.value}.`,
-  ogTitle: () => failure.value?.title || menuName.value,
-  ogDescription: () => failure.value?.description ||
-    menuDescription.value || `Browse ${menuName.value}.`,
+  path: canonicalPath,
   robots: () => failure.value ? 'noindex, nofollow' : undefined,
 })
 

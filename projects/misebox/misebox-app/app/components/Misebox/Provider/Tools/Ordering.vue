@@ -2,19 +2,20 @@
   <MiseboxProviderFrame
     :title="toolTitle"
     :description="toolDescription"
-    endpoint="/api/tools/ordering"
   >
-    <div class="flex justify-center">
-      <img
-        src="/img/app/logo.png"
-        alt="Misebox"
-        class="h-24 w-24 object-contain"
-      >
-    </div>
+    <MenuCollectionManager
+      id="misebox-ordering-menus"
+      :index="menuIndex"
+      title="Published menus"
+      description="Choose a Menu, then open one of its available guest order paths."
+      :show-variant-toggle="false"
+    />
   </MiseboxProviderFrame>
 </template>
 
 <script setup lang="ts">
+import { usePublicMenuIndex } from 'fireux-kitchens/runtime/composables/fireux/menu/usePublicMenuIndex'
+
 type ToolResponse = {
   tool: {
     title: string
@@ -31,6 +32,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { data } = await useFetch<ToolResponse>('/api/tools/ordering')
+const menuIndex = usePublicMenuIndex()
 
 const toolTitle = computed(() =>
   props.title || data.value?.tool.title || 'Misebox ordering'

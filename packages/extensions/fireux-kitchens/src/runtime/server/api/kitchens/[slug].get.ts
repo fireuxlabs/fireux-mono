@@ -12,7 +12,7 @@ import type {
 } from '../../../models/kitchen/kitchen-index.model.ts'
 import {
   hydrateKitchenPublicDocuments,
-  isPublishedKitchen,
+  isRoutableKitchen,
   projectPublicKitchenDetail,
   type KitchenPublicDirectoryScope,
 } from '../../kitchen/public-projection.ts'
@@ -62,7 +62,7 @@ export default defineEventHandler(
 
     const kitchenSnapshot = snapshot.docs[0]
     const data = kitchenSnapshot?.data() || {}
-    if (!kitchenSnapshot || !isPublishedKitchen(data)) {
+    if (!kitchenSnapshot || !isRoutableKitchen(data)) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Kitchen not found.',
@@ -94,7 +94,7 @@ export default defineEventHandler(
     if (!item) {
       throw createError({
         statusCode: 503,
-        statusMessage: 'The published Kitchen is not canonical.',
+        statusMessage: 'The Kitchen is not canonical.',
       })
     }
 

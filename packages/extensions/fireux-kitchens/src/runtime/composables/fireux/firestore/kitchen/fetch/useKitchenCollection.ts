@@ -114,7 +114,9 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
   }
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
-  const privilegedPreview = computed(() => Boolean(previewPage.value))
+  const privilegedPreview = computed(() =>
+    import.meta.dev || Boolean(previewPage.value)
+  )
   const page = computed(() => previewPage.value || state.data.value)
   const kitchens = computed<PublicKitchenIndexItem[]>(
     () => page.value?.items ?? []

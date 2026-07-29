@@ -67,6 +67,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from '#imports'
+import { normalizeSproochliLanguage } from 'fireux-sproochli/runtime/sproochli'
 import { usePublicMenuIndex } from '../../../composables/fireux/menu/usePublicMenuIndex'
 import {
   orderSessionContextForOrderType,
@@ -84,6 +86,7 @@ const props = defineProps<{
   kitchen: KitchenSurface
 }>()
 
+const route = useRoute()
 const kitchenSlug = computed(() => String((props.kitchen as any)?.slug ?? '').trim())
 const defaultChromeLabels = {
   menus: 'Menus',
@@ -106,9 +109,22 @@ const menusUnavailable = computed(() =>
 const hasMoreMenus = computed(() => menuIndex.hasMore.value)
 const sortedMenus = computed(() => menuIndex.menus.value)
 
-const menusIndexLink = computed(() => {
-  return menuRouteIndexPath(menuRouteScope.value)
-})
+const preserveSproochliLanguage = (to: string) => {
+  const language = normalizeSproochliLanguage(route.query.sproochli)
+  if (!to || !language) return to
+
+  const [pathAndQuery, hash = ''] = to.split('#', 2)
+  const [path, query = ''] = pathAndQuery.split('?', 2)
+  const params = new URLSearchParams(query)
+  params.set('sproochli', language)
+  const nextQuery = params.toString()
+
+  return `${path}${nextQuery ? `?${nextQuery}` : ''}${hash ? `#${hash}` : ''}`
+}
+
+const menusIndexLink = computed(() =>
+  preserveSproochliLanguage(menuRouteIndexPath(menuRouteScope.value))
+)
 
 const sessionLink = (session: MenuOrderSessionSummary) => {
   const context = orderSessionContextForOrderType(session.orderType)
@@ -116,11 +132,11 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
     menu.contexts?.includes(context)
   )?.id
 
-  return menuRoutePath({
+  return preserveSproochliLanguage(menuRoutePath({
     scope: menuRouteScope.value,
     menuId,
     context,
-  })
+  }))
 }
 </script>
 
@@ -140,7 +156,7 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 
 .kitchen-menus__eyebrow {
   margin: 0 0 var(--spacing);
-  color: var(--ui-text-muted);
+  color: var(--ui-primary);
   font-size: 0.7rem;
   font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.16em;
@@ -176,6 +192,24 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
   gap: calc(var(--spacing) * 4);
 }
 
+.kitchen-menus__grid :deep(.menu-card-preview) {
+  min-height: 9rem;
+  border-color: color-mix(in srgb, var(--ui-primary) 20%, var(--ui-border));
+  border-radius: calc(var(--ui-radius) * 5);
+  background: color-mix(in srgb, var(--ui-bg-elevated) 96%, var(--ui-primary));
+  box-shadow: 0 1rem 2.5rem rgb(0 0 0 / 8%);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.kitchen-menus__grid :deep(.menu-card-preview:hover) {
+  border-color: color-mix(in srgb, var(--ui-primary) 42%, var(--ui-border));
+  box-shadow: 0 1.25rem 3rem rgb(0 0 0 / 12%);
+  transform: translateY(-2px);
+}
+
 .kitchen-menus__state {
   display: flex;
   min-height: 8rem;
@@ -191,5 +225,15 @@ const sessionLink = (session: MenuOrderSessionSummary) => {
 .kitchen-menus__state :deep(svg) {
   width: 1rem;
   height: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kitchen-menus__grid :deep(.menu-card-preview) {
+    transition: none;
+  }
+
+  .kitchen-menus__grid :deep(.menu-card-preview:hover) {
+    transform: none;
+  }
 }
 </style>

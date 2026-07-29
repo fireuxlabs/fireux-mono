@@ -5,7 +5,7 @@
 // usage_note: plan, create, and verify immutable public media for the read-only Misebox Demo World.
 
 import { createHash } from 'node:crypto'
-import { readFile, readdir } from 'node:fs/promises'
+import { lstat, readFile, realpath } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -27,12 +27,14 @@ const DATABASE_ID = 'misebox'
 const PROJECT_ID = miseboxDemoMediaContract.projectId
 const STORAGE_BUCKET = miseboxDemoMediaContract.storageBucket
 const TARGET_CONFIRMATION = `${PROJECT_ID}/${DATABASE_ID}`
-const FORMAT = 'fireux-misebox-demo-media/1'
+const MANIFEST_FORMAT = 'fireux-misebox-demo-media-manifest/2'
+const OBJECT_CONTRACT = 'fireux-misebox-demo-media/1'
 const CACHE_CONTROL = 'public,max-age=31536000,immutable'
 const MANIFEST_REPO_PATH = 'scripts/data/misebox-demo-media/manifest.json'
 const MANIFEST_PATH = fileURLToPath(
   new URL('./data/misebox-demo-media/manifest.json', import.meta.url)
 )
+const REPO_ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url)))
 const VALUE_OPTIONS = new Set([
   'bucket',
   'confirm',
@@ -42,6 +44,7 @@ const VALUE_OPTIONS = new Set([
   'database',
   'project',
   'service-account',
+  'source-directory',
 ])
 const FLAG_OPTIONS = new Set(['apply', 'help'])
 
@@ -113,18 +116,24 @@ function optionsFor(args) {
   const applyOnly = [
     'confirm',
     'confirm-manifest',
-    'confirm-source',
     'confirm-plan',
+    'confirm-source',
   ].filter((key) => args[key] !== undefined)
   if (apply) {
     assert(
       text(args.confirm) === TARGET_CONFIRMATION,
       `Apply requires --confirm ${TARGET_CONFIRMATION}.`
     )
-    for (const key of ['confirm-manifest', 'confirm-source', 'confirm-plan']) {
+    for (const key of ['confirm-manifest', 'confirm-plan']) {
       assert(
         /^[a-f0-9]{64}$/.test(text(args[key])),
         `Apply requires --${key} <reviewed-sha256>.`
+      )
+    }
+    if (args['confirm-source'] !== undefined) {
+      assert(
+        /^[a-f0-9]{64}$/.test(text(args['confirm-source'])),
+        'Apply --confirm-source requires a reviewed SHA-256 hash.'
       )
     }
   } else {
@@ -139,6 +148,7 @@ function optionsFor(args) {
     confirmPlan: text(args['confirm-plan']),
     confirmSource: text(args['confirm-source']),
     serviceAccount: text(args['service-account']),
+    sourceDirectory: text(args['source-directory']),
   }
 }
 
@@ -169,37 +179,22 @@ function relativeMediaPath(value, label) {
 function validateManifest(value) {
   exactKeys(
     value,
-    [
-      'format',
-      'asset_directory',
-      'policy',
-      'target',
-      'expected_source_count',
-      'expected_object_count',
-      'aliases',
-    ],
-    [
-      'format',
-      'asset_directory',
-      'policy',
-      'target',
-      'expected_source_count',
-      'expected_object_count',
-      'aliases',
-    ],
+    ['format', 'object_contract', 'policy', 'target', 'sources', 'objects'],
+    ['format', 'object_contract', 'policy', 'target', 'sources', 'objects'],
     'Manifest'
   )
-  assert(value.format === FORMAT, 'Demo media manifest format is invalid.')
   assert(
-    value.policy ===
-      'immutable public Demo delivery only; create or reuse exact objects; never overwrite, delete, or write Firestore',
-    'Demo media manifest policy is invalid.'
+    value.format === MANIFEST_FORMAT,
+    'Demo media manifest format is invalid.'
   )
   assert(
-    typeof value.asset_directory === 'string' &&
-      value.asset_directory &&
-      !path.isAbsolute(value.asset_directory),
-    'Manifest asset_directory must be repository-relative.'
+    value.object_contract === OBJECT_CONTRACT,
+    'Demo media object contract is invalid.'
+  )
+  assert(
+    value.policy ===
+      'Firebase Storage is authoritative; repository stores metadata only; create or reuse exact immutable objects; never overwrite, delete, or write Firestore',
+    'Demo media manifest policy is invalid.'
   )
   exactKeys(
     value.target,
@@ -230,35 +225,97 @@ function validateManifest(value) {
       value.target.download_token === miseboxDemoMediaContract.downloadToken,
     'Manifest target does not match the fixed Misebox Demo media contract.'
   )
-  assert(
-    Number.isInteger(value.expected_source_count) &&
-      value.expected_source_count > 0,
-    'Manifest expected_source_count is invalid.'
+  assert(isPlainObject(value.sources), 'Manifest sources must be an object.')
+  const sources = new Map(
+    Object.entries(value.sources)
+      .map(([relativePath, descriptor], index) => {
+        const sourceRelativePath = relativeMediaPath(
+          relativePath,
+          `Manifest source ${index}`
+        )
+        exactKeys(
+          descriptor,
+          ['bytes', 'content_type', 'sha256'],
+          ['bytes', 'content_type', 'sha256'],
+          `Manifest source ${sourceRelativePath}`
+        )
+        const expectedContentType = sourceRelativePath.endsWith('.png')
+          ? 'image/png'
+          : 'image/jpeg'
+        assert(
+          Number.isInteger(descriptor.bytes) && descriptor.bytes > 0,
+          `Manifest source ${sourceRelativePath} requires a positive byte count.`
+        )
+        assert(
+          descriptor.content_type === expectedContentType,
+          `Manifest source ${sourceRelativePath} has the wrong content type.`
+        )
+        assert(
+          /^[a-f0-9]{64}$/.test(text(descriptor.sha256)),
+          `Manifest source ${sourceRelativePath} requires a SHA-256 hash.`
+        )
+        return [
+          sourceRelativePath,
+          {
+            bytes: descriptor.bytes,
+            contentType: expectedContentType,
+            sourceRelativePath,
+            sha256: descriptor.sha256,
+          },
+        ]
+      })
+      .sort(([left], [right]) => left.localeCompare(right))
   )
+  assert(sources.size > 0, 'Manifest requires at least one source.')
   assert(
-    Number.isInteger(value.expected_object_count) &&
-      value.expected_object_count >= value.expected_source_count,
-    'Manifest expected_object_count is invalid.'
+    new Set([...sources.values()].map((source) => source.sha256)).size ===
+      sources.size,
+    'Manifest source payload hashes must be unique.'
   )
-  assert(Array.isArray(value.aliases), 'Manifest aliases must be an array.')
-  const aliases = value.aliases.map((alias, index) => {
-    exactKeys(
-      alias,
-      ['source', 'object'],
-      ['source', 'object'],
-      `Manifest alias ${index}`
+  assert(isPlainObject(value.objects), 'Manifest objects must be an object.')
+  const objects = Object.entries(value.objects)
+    .map(([relativePath, sourcePath]) => {
+      const objectRelativePath = relativeMediaPath(
+        relativePath,
+        'Manifest object path'
+      )
+      const sourceRelativePath = relativeMediaPath(
+        sourcePath,
+        `Manifest object ${objectRelativePath} source`
+      )
+      const source = sources.get(sourceRelativePath)
+      assert(
+        source,
+        `Manifest object ${objectRelativePath} references missing source ${sourceRelativePath}.`
+      )
+      assert(
+        (objectRelativePath.endsWith('.png') ? 'image/png' : 'image/jpeg') ===
+          source.contentType,
+        `Manifest object ${objectRelativePath} and source ${sourceRelativePath} require the same media type.`
+      )
+      return {
+        ...source,
+        objectRelativePath,
+      }
+    })
+    .sort((left, right) =>
+      left.objectRelativePath.localeCompare(right.objectRelativePath)
     )
-    return {
-      source: relativeMediaPath(alias.source, `Manifest alias ${index}.source`),
-      object: relativeMediaPath(alias.object, `Manifest alias ${index}.object`),
-    }
-  })
-  const aliasObjects = aliases.map((alias) => alias.object)
   assert(
-    new Set(aliasObjects).size === aliasObjects.length,
-    'Manifest alias object paths must be unique.'
+    objects.length >= sources.size,
+    'Manifest requires at least one object per source.'
   )
-  return { ...value, aliases }
+  assert(
+    new Set(objects.map((object) => object.objectRelativePath)).size ===
+      objects.length,
+    'Manifest object paths must be unique.'
+  )
+  assert(
+    new Set(objects.map((object) => object.sourceRelativePath)).size ===
+      sources.size,
+    'Every manifest source must be referenced by an object.'
+  )
+  return { ...value, objects, sources: [...sources.values()] }
 }
 
 async function loadManifest() {
@@ -270,30 +327,6 @@ async function loadManifest() {
     throw new Error(`${MANIFEST_REPO_PATH} is not valid JSON.`)
   }
   return { manifest: validateManifest(value), sha256: sha256(source) }
-}
-
-async function walkFiles(directory, root = directory) {
-  const entries = await readdir(directory, { withFileTypes: true })
-  const files = []
-  for (const entry of entries.sort((left, right) =>
-    left.name.localeCompare(right.name)
-  )) {
-    const absolutePath = path.join(directory, entry.name)
-    assert(
-      !entry.isSymbolicLink(),
-      `Demo media sources cannot be symlinks: ${absolutePath}`
-    )
-    if (entry.isDirectory()) {
-      files.push(...(await walkFiles(absolutePath, root)))
-      continue
-    }
-    assert(entry.isFile(), `Unsupported Demo media source: ${absolutePath}`)
-    files.push({
-      absolutePath,
-      relativePath: path.relative(root, absolutePath).split(path.sep).join('/'),
-    })
-  }
-  return files
 }
 
 function mediaType(relativePath, buffer) {
@@ -311,55 +344,73 @@ function mediaType(relativePath, buffer) {
   return 'image/jpeg'
 }
 
-async function loadSources(manifest) {
-  const directory = path.resolve(process.cwd(), manifest.asset_directory)
-  const files = await walkFiles(directory)
+async function preflightExternalSources(sourceDirectory, requiredSources) {
+  const buffers = new Map()
+  if (!requiredSources.length) return { buffers, sha256: '' }
   assert(
-    files.length === manifest.expected_source_count,
-    `Expected ${manifest.expected_source_count} Demo media sources; found ${files.length}.`
+    sourceDirectory,
+    'Creating Demo media requires --source-directory <absolute-path>.'
   )
-  const sources = new Map()
-  for (const file of files) {
-    const relativePath = relativeMediaPath(
-      file.relativePath,
-      'Demo media source'
+  assert(
+    path.isAbsolute(sourceDirectory),
+    '--source-directory must be an absolute path outside the repository.'
+  )
+  const [canonicalRepository, canonicalSourceDirectory] = await Promise.all([
+    realpath(REPO_ROOT),
+    realpath(sourceDirectory),
+  ])
+  const repositoryRelative = path.relative(
+    canonicalRepository,
+    canonicalSourceDirectory
+  )
+  assert(
+    repositoryRelative.startsWith('..') || path.isAbsolute(repositoryRelative),
+    '--source-directory must stay outside the repository; Storage is the media authority.'
+  )
+  const aggregate = createHash('sha256')
+  for (const source of [...requiredSources].sort((left, right) =>
+    left.sourceRelativePath.localeCompare(right.sourceRelativePath)
+  )) {
+    const requestedPath = path.join(
+      canonicalSourceDirectory,
+      source.sourceRelativePath
     )
-    const buffer = await readFile(file.absolutePath)
-    assert(buffer.length > 0, `${relativePath} is empty.`)
-    sources.set(relativePath, {
-      buffer,
-      bytes: buffer.length,
-      contentType: mediaType(relativePath, buffer),
-      relativePath,
-      sha256: sha256(buffer),
-    })
-  }
-  const objects = [...sources.values()].map((source) => ({
-    ...source,
-    objectRelativePath: source.relativePath,
-  }))
-  for (const alias of manifest.aliases) {
-    const source = sources.get(alias.source)
-    assert(source, `Alias source is missing: ${alias.source}`)
+    const requestedStat = await lstat(requestedPath)
     assert(
-      !sources.has(alias.object),
-      `Alias object collides with a source path: ${alias.object}`
+      requestedStat.isFile() && !requestedStat.isSymbolicLink(),
+      `Demo media source must be a regular non-symlink file: ${requestedPath}`
     )
-    objects.push({ ...source, objectRelativePath: alias.object })
+    const canonicalPath = await realpath(requestedPath)
+    const sourceRelative = path.relative(
+      canonicalSourceDirectory,
+      canonicalPath
+    )
+    assert(
+      sourceRelative &&
+        !sourceRelative.startsWith('..') &&
+        !path.isAbsolute(sourceRelative),
+      `Demo media source escapes --source-directory: ${requestedPath}`
+    )
+    const buffer = await readFile(canonicalPath)
+    assert(
+      buffer.length === source.bytes,
+      `${requestedPath} has ${buffer.length} bytes; expected ${source.bytes}.`
+    )
+    assert(
+      mediaType(source.sourceRelativePath, buffer) === source.contentType,
+      `${requestedPath} has the wrong media type.`
+    )
+    const actualSha256 = sha256(buffer)
+    assert(
+      actualSha256 === source.sha256,
+      `${requestedPath} SHA-256 ${actualSha256} does not match the reviewed manifest.`
+    )
+    buffers.set(source.sourceRelativePath, buffer)
+    aggregate.update(source.sourceRelativePath)
+    aggregate.update('\0')
+    aggregate.update(buffer)
   }
-  objects.sort((left, right) =>
-    left.objectRelativePath.localeCompare(right.objectRelativePath)
-  )
-  assert(
-    objects.length === manifest.expected_object_count,
-    `Expected ${manifest.expected_object_count} Demo media objects; found ${objects.length}.`
-  )
-  assert(
-    new Set(objects.map((item) => item.objectRelativePath)).size ===
-      objects.length,
-    'Demo media object paths must be unique.'
-  )
-  return { objects, sources }
+  return { buffers, sha256: aggregate.digest('hex') }
 }
 
 function metadataToken(metadata) {
@@ -389,6 +440,8 @@ async function readRemoteObject(bucket, object) {
   const [buffer] = await file.download()
   const remoteSha256 = sha256(buffer)
   const blockers = []
+  if (buffer.length !== object.bytes)
+    blockers.push(`bytes ${buffer.length}; expected ${object.bytes}`)
   if (remoteSha256 !== object.sha256) blockers.push(`sha256 ${remoteSha256}`)
   if (text(metadata.contentType) !== object.contentType)
     blockers.push(`contentType ${text(metadata.contentType) || '(empty)'}`)
@@ -396,9 +449,19 @@ async function readRemoteObject(bucket, object) {
     blockers.push(`cacheControl ${text(metadata.cacheControl) || '(empty)'}`)
   if (text(metadata?.metadata?.fireuxDemoMediaSha256) !== object.sha256)
     blockers.push('fireuxDemoMediaSha256 metadata')
+  if (text(metadata?.metadata?.fireuxDemoMediaContract) !== OBJECT_CONTRACT) {
+    blockers.push('fireuxDemoMediaContract metadata')
+  }
+  if (
+    text(metadata?.metadata?.fireuxDemoMediaSource) !==
+    object.sourceRelativePath
+  ) {
+    blockers.push('fireuxDemoMediaSource metadata')
+  }
   if (!metadataToken(metadata).includes(miseboxDemoMediaContract.downloadToken))
     blockers.push('download token')
   return {
+    bytes: buffer.length,
     exists: true,
     blockers,
     file,
@@ -423,7 +486,7 @@ async function mapLimit(values, limit, callback) {
   return result
 }
 
-function sourceHash(objects) {
+function inventoryHash(objects) {
   return sha256(
     JSON.stringify(
       objects.map((object) => ({
@@ -431,36 +494,47 @@ function sourceHash(objects) {
         content_type: object.contentType,
         object: object.objectRelativePath,
         sha256: object.sha256,
-        source: object.relativePath,
+        source: object.sourceRelativePath,
       }))
     )
   )
 }
 
 async function buildPlan(bucket, manifestSha256, objects) {
-  const remote = await mapLimit(objects, 8, (object) =>
-    readRemoteObject(bucket, object)
+  const objectPrefix = `${miseboxDemoMediaContract.objectPrefix}/`
+  const [remote, listed] = await Promise.all([
+    mapLimit(objects, 8, (object) => readRemoteObject(bucket, object)),
+    bucket.getFiles({ prefix: objectPrefix }),
+  ])
+  const expectedObjectPaths = new Set(
+    objects.map((object) =>
+      miseboxDemoMediaObjectPath(object.objectRelativePath)
+    )
   )
+  const unexpectedObjects = listed[0]
+    .map((file) => file.name)
+    .filter((objectPath) => !expectedObjectPaths.has(objectPath))
+    .sort()
   const rows = objects.map((object, index) => ({
     action: remote[index].exists
       ? remote[index].blockers.length
         ? 'block'
         : 'reuse'
       : 'create',
-    bytes: object.bytes,
+    bytes: remote[index].bytes || 0,
     content_type: object.contentType,
     generation: remote[index].generation || '',
     object: remote[index].objectPath,
     relative_object: object.objectRelativePath,
     sha256: object.sha256,
-    source: object.relativePath,
+    source: object.sourceRelativePath,
     blockers: remote[index].blockers || [],
   }))
-  const currentSourceHash = sourceHash(objects)
+  const currentInventoryHash = inventoryHash(objects)
   const planValue = {
-    format: FORMAT,
+    format: MANIFEST_FORMAT,
     manifest_sha256: manifestSha256,
-    source_sha256: currentSourceHash,
+    inventory_sha256: currentInventoryHash,
     target: {
       project_id: PROJECT_ID,
       database_id: DATABASE_ID,
@@ -468,20 +542,25 @@ async function buildPlan(bucket, manifestSha256, objects) {
       object_prefix: miseboxDemoMediaContract.objectPrefix,
     },
     rows,
+    unexpected_objects: unexpectedObjects,
   }
   return {
     rows,
-    sourceSha256: currentSourceHash,
+    unexpectedObjects,
+    inventorySha256: currentInventoryHash,
     sha256: sha256(JSON.stringify(planValue)),
     operations: {
       create: rows.filter((row) => row.action === 'create').length,
       reuse: rows.filter((row) => row.action === 'reuse').length,
-      block: rows.filter((row) => row.action === 'block').length,
+      block:
+        rows.filter((row) => row.action === 'block').length +
+        unexpectedObjects.length,
+      unexpected: unexpectedObjects.length,
     },
   }
 }
 
-async function publishObject(bucket, object) {
+async function publishObject(bucket, object, sourceBuffers) {
   const current = await readRemoteObject(bucket, object)
   if (current.exists) {
     assert(
@@ -494,7 +573,12 @@ async function publishObject(bucket, object) {
       objectPath: current.objectPath,
     }
   }
-  await current.file.save(object.buffer, {
+  const buffer = sourceBuffers.get(object.sourceRelativePath)
+  assert(
+    buffer,
+    `Preflight source is missing for ${object.objectRelativePath}: ${object.sourceRelativePath}`
+  )
+  await current.file.save(buffer, {
     resumable: false,
     validation: 'md5',
     preconditionOpts: { ifGenerationMatch: 0 },
@@ -503,9 +587,9 @@ async function publishObject(bucket, object) {
       cacheControl: CACHE_CONTROL,
       metadata: {
         firebaseStorageDownloadTokens: miseboxDemoMediaContract.downloadToken,
-        fireuxDemoMediaContract: FORMAT,
+        fireuxDemoMediaContract: OBJECT_CONTRACT,
         fireuxDemoMediaSha256: object.sha256,
-        fireuxDemoMediaSource: object.relativePath,
+        fireuxDemoMediaSource: object.sourceRelativePath,
       },
     },
   })
@@ -537,23 +621,32 @@ async function verifyPublicUrl(object) {
 
 function usage() {
   console.log(`
-Publish exactly 73 immutable public Misebox Demo media objects from 68 reviewed source images.
+Audit exactly 73 immutable public Misebox Demo media objects representing 68
+reviewed payloads. Firebase Storage is authoritative; image binaries do not
+live in this repository.
 
-Dry-run (read-only):
+Remote audit (read-only):
   node scripts/publish-misebox-demo-media.mjs \\
     --project ${PROJECT_ID} --database ${DATABASE_ID} --bucket ${STORAGE_BUCKET}
 
-Apply (Storage creates only; no Firestore writes):
+Apply (Storage creates only; no Firestore writes or repository source mirror):
   node scripts/publish-misebox-demo-media.mjs \\
     --project ${PROJECT_ID} --database ${DATABASE_ID} --bucket ${STORAGE_BUCKET} \\
     --apply --confirm ${TARGET_CONFIRMATION} \\
     --confirm-manifest <reviewed-manifest-sha256> \\
-    --confirm-source <reviewed-source-sha256> \\
-    --confirm-plan <reviewed-plan-sha256>
+    --confirm-plan <reviewed-plan-sha256> \\
+    --confirm-source <reviewed-external-source-sha256> \\
+    --source-directory /absolute/external/reviewed-media
+
+The external directory is needed only when the reviewed plan contains creates.
+Its 68-file layout mirrors the manifest source paths. Rerun the read-only
+audit with --source-directory first to preflight all planned source bytes and
+obtain the source hash required by apply.
 
 The publisher never overwrites or deletes. Existing objects are reused only
-when bytes, MIME type, immutable cache policy, checksum metadata, and download
-token all match. A partial apply is replay-safe.
+when the exact prefix inventory, bytes, MIME type, immutable cache policy,
+checksum/contract/source metadata, and download token all match. A partial
+apply is replay-safe.
 
 Credential sources:
 ${firebaseAdminCredentialHelp()
@@ -571,7 +664,7 @@ async function main() {
     !options.apply || options.confirmManifest === manifestSha256,
     `Reviewed manifest hash mismatch. Current hash: ${manifestSha256}`
   )
-  const { objects, sources } = await loadSources(manifest)
+  const objects = manifest.objects
   let app
   try {
     const credential = await resolveFirebaseAdminCredential({
@@ -595,6 +688,21 @@ async function main() {
     )
     const bucket = getStorage(app).bucket(STORAGE_BUCKET)
     const plan = await buildPlan(bucket, manifestSha256, objects)
+    const createSourcePaths = new Set(
+      plan.rows
+        .filter((row) => row.action === 'create')
+        .map((row) => row.source)
+    )
+    const requiredSources = manifest.sources.filter((source) =>
+      createSourcePaths.has(source.sourceRelativePath)
+    )
+    const sourcePreflight =
+      requiredSources.length && (options.apply || options.sourceDirectory)
+        ? await preflightExternalSources(
+            options.sourceDirectory,
+            requiredSources
+          )
+        : { buffers: new Map(), sha256: '' }
     if (!options.apply) {
       console.log(
         JSON.stringify(
@@ -612,16 +720,24 @@ async function main() {
             manifest: {
               path: MANIFEST_REPO_PATH,
               sha256: manifestSha256,
-              source_count: sources.size,
+              source_count: manifest.sources.length,
               object_count: objects.length,
             },
-            source_sha256: plan.sourceSha256,
+            inventory_sha256: plan.inventorySha256,
+            source_preflight: {
+              required_count: requiredSources.length,
+              reviewed: requiredSources.length
+                ? Boolean(sourcePreflight.sha256)
+                : true,
+              sha256: sourcePreflight.sha256,
+            },
             plan: {
               sha256: plan.sha256,
               operations: plan.operations,
               rows: plan.rows,
+              unexpected_objects: plan.unexpectedObjects,
             },
-            next_gate: `Apply additionally requires --apply, --confirm ${TARGET_CONFIRMATION}, and the exact manifest, source, and plan hashes above.`,
+            next_gate: `Apply additionally requires --apply, --confirm ${TARGET_CONFIRMATION}, the exact manifest and plan hashes above, and the preflighted external source directory/hash when creates are planned.`,
           },
           null,
           2
@@ -630,10 +746,6 @@ async function main() {
       return
     }
     assert(
-      options.confirmSource === plan.sourceSha256,
-      `Reviewed source hash mismatch. Review a fresh dry-run: ${plan.sourceSha256}`
-    )
-    assert(
       options.confirmPlan === plan.sha256,
       `Reviewed plan hash mismatch. Review a fresh dry-run: ${plan.sha256}`
     )
@@ -641,8 +753,19 @@ async function main() {
       plan.operations.block === 0,
       `Refusing to apply with ${plan.operations.block} conflicting object(s).`
     )
+    if (requiredSources.length) {
+      assert(
+        options.confirmSource === sourcePreflight.sha256,
+        `Reviewed external source hash mismatch. Rerun the read-only audit with --source-directory: ${sourcePreflight.sha256}`
+      )
+    } else {
+      assert(
+        !options.confirmSource,
+        '--confirm-source is only valid when the reviewed plan contains creates.'
+      )
+    }
     const published = await mapLimit(objects, 4, (object) =>
-      publishObject(bucket, object)
+      publishObject(bucket, object, sourcePreflight.buffers)
     )
     const verifiedPlan = await buildPlan(bucket, manifestSha256, objects)
     assert(
@@ -664,8 +787,9 @@ async function main() {
             object_prefix: miseboxDemoMediaContract.objectPrefix,
           },
           manifest_sha256: manifestSha256,
-          source_sha256: plan.sourceSha256,
+          inventory_sha256: plan.inventorySha256,
           plan_sha256: plan.sha256,
+          source_sha256: sourcePreflight.sha256,
           credential_source: credential.source,
           operations: {
             created: published.filter((item) => item.action === 'create')

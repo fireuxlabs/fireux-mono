@@ -7,6 +7,10 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import {
+  requireFirebaseStorageDownloadUrl,
+  runtimeStorageBucketName,
+} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
 import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
 import type {
   PlaceOnboardingCompleteResult,
@@ -163,24 +167,11 @@ function httpsImage(value: unknown, placeId: string) {
   const candidate = text(value)
   if (!candidate) return ''
   if (candidate.length > 2_048) badRequest('Place logo URL is too long.')
-  try {
-    const url = new URL(candidate)
-    const decodedPath = decodeURIComponent(url.pathname)
-    const expectedSuffix = `/o/places/${placeId}/avatar`
-    if (
-      url.protocol !== 'https:' ||
-      url.username ||
-      url.password ||
-      url.hostname !== 'firebasestorage.googleapis.com' ||
-      !decodedPath.endsWith(expectedSuffix)
-    ) {
-      badRequest('Place logo must use its canonical FireUX Storage path.')
-    }
-    return url.toString()
-  } catch (error) {
-    if (error && typeof error === 'object' && 'statusCode' in error) throw error
-    badRequest('Place logo URL is invalid.')
-  }
+  return requireFirebaseStorageDownloadUrl(candidate, {
+    bucketName: runtimeStorageBucketName(),
+    objectPath: `places/${placeId}/avatar`,
+    label: 'Place logo',
+  })
 }
 
 function storedHttpsImage(value: unknown) {

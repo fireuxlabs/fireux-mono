@@ -5,6 +5,10 @@
       <MiseboxPowerCards />
     </template>
 
+    <template #onboarding>
+      <LandingProductEntryPaths :content="entryPaths" />
+    </template>
+
     <template #console>
       <LandingProductProofSection
         section-id="misebox-console"
@@ -91,6 +95,7 @@
 import { computed, ref } from 'vue'
 import type {
   LandingProductCatalogueContent,
+  LandingProductEntryContent,
   LandingProductIndexContent,
 } from 'fireux-core/types/landing-product'
 import type {
@@ -295,15 +300,15 @@ const operationItems = landingOperations.map((operation) => ({
 const toolsCatalogue = {
   sectionId: 'misebox-tools',
   eyebrow: 'Tools',
-  title: 'Open a working ordering surface.',
+  title: 'Order from a published Menu.',
   description:
-    'The Ordering tool exposes the current provider-owned ordering interface without creating a second Menu source.',
+    'Choose a published Menu. Collection, delivery, and pre-order appear only when the Menu and Kitchen enable them.',
   items: [
     {
       id: 'ordering',
       title: 'Ordering',
       description:
-        'Open the Misebox ordering tool for a configured Menu and Kitchen.',
+        'Choose a published Menu and start an available customer order.',
       icon: 'i-lucide-shopping-basket',
       to: '/tools/ordering',
       action: 'Open tool',
@@ -339,6 +344,38 @@ const operationsCatalogue = {
   items: operationItems,
 } satisfies LandingProductCatalogueContent
 
+const entryPaths = {
+  sectionId: 'misebox-entry',
+  eyebrow: 'Start with Misebox',
+  title: 'Need a Kitchen App?',
+  description:
+    'Set up Kitchen operations or explore a Misebox App already running.',
+  paths: [
+    {
+      id: 'kitchen',
+      kind: 'start',
+      title: 'Set up a Kitchen',
+      description:
+        'Create a Kitchen workspace for menus, prep, orders, and service.',
+      action: {
+        label: 'Get started',
+        to: '/get-started',
+      },
+    },
+    {
+      id: 'apps',
+      kind: 'join',
+      title: 'Explore Misebox Apps',
+      description:
+        'See existing hospitality Apps and their menus, guest surfaces, and Kitchen operations.',
+      action: {
+        label: 'Explore Apps',
+        to: '/apps',
+      },
+    },
+  ],
+} satisfies LandingProductEntryContent
+
 const content = {
   hero: {
     badge: 'Misebox',
@@ -366,6 +403,5 @@ const content = {
       'Suppliers and finance',
     ],
   },
-  onboardingLabel: 'onboarding',
 } as const satisfies LandingProductIndexContent
 </script>

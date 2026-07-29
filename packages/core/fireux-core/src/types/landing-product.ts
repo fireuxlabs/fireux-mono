@@ -44,9 +44,40 @@ export type LandingProductCatalogueContent = {
   items: readonly LandingProductCatalogueItem[]
 }
 
+export type LandingProductEntryAction = Pick<
+  LandingProductAction,
+  'label' | 'to'
+>
+
+export type LandingProductEntryDoorway = {
+  id: string
+  title: string
+  description: string
+  action: LandingProductEntryAction
+}
+
+export type LandingProductEntryPathKind = 'start' | 'join'
+
+export type LandingProductEntryPath<
+  TKind extends LandingProductEntryPathKind = LandingProductEntryPathKind,
+> = LandingProductEntryDoorway & {
+  kind: TKind
+}
+
+export type LandingProductEntryContent = {
+  sectionId: string
+  eyebrow: string
+  title: string
+  description?: string
+  paths: readonly [
+    LandingProductEntryPath<'start'>,
+    LandingProductEntryPath<'join'>,
+  ]
+  tool?: LandingProductEntryDoorway
+}
+
 export type LandingProductIndexContent = {
   hero: LandingProductHero
-  onboardingLabel?: string
 }
 
 export type LandingConsolePreviewItem = {

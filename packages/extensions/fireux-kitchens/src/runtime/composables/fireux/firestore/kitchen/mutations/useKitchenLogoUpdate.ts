@@ -2,7 +2,7 @@ import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, ref, unref, type Ref } from 'vue'
-import type { KitchenImageShade } from '../../../../../models/kitchen.model'
+import type { KitchenMediaBackdropColor } from '../../../../../models/kitchen.model'
 import { useKitchenUpdate } from './useKitchenUpdate'
 
 type MaybeRef<T> = T | Ref<T>
@@ -52,19 +52,19 @@ export function useKitchenLogoUpdate(
     }
   }
 
-  const updateKitchenLogoShade = async (
+  const updateKitchenMediaBackdropColor = async (
     kitchenId: string,
-    imageShade: KitchenImageShade
+    color: KitchenMediaBackdropColor | ''
   ) => {
     const id = requireSelectedKitchen(kitchenId)
     await updateKitchen(id, {
-      'identity.image_shade': imageShade,
+      'identity.media_backdrop_color': color,
     })
   }
 
   return {
     pending,
     uploadKitchenLogo,
-    updateKitchenLogoShade,
+    updateKitchenMediaBackdropColor,
   }
 }

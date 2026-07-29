@@ -129,7 +129,7 @@
     </section>
 
     <section class="sproochli-closing">
-      <img src="/img/app/logo.svg" alt="" aria-hidden="true">
+      <img src="/img/app/logo.png" alt="" aria-hidden="true">
       <div>
         <span>Small pages. Many languages.</span>
         <h2>Make the next thing people scan worth understanding.</h2>

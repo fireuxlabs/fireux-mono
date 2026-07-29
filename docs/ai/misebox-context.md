@@ -4,8 +4,8 @@
 <!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
 <!-- Concurrent edit — 2026-07-25 — Keep Main App hero copy in Core while Misebox proves it with the real Orders board. -->
 
-Updated: 2026-07-28
-Ref: e98ffb195
+Updated: 2026-07-29
+Ref: 33603376f
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -47,11 +47,21 @@ Before each task:
   admin or, in local development, the configured developer. Global Misebox is
   bounded to Apps with the current `ecosystem_id`; tenant runtimes remain
   bounded to their current App. The derived access badge grants no authority,
-  unpublished/test preview rows never become public detail links, and legacy
+  Test preview rows never become public detail links, and legacy
   root-only, missing-support, cross-ecosystem, or malformed rows fail closed.
-  Kitchen detail exact-loads the same server-owned public projection and
+  Hidden is a directory-discovery state, not route access: hidden Live Kitchens
+  retain exact public detail links, while Test Kitchens have no public route.
+  Local development shows the strict all-Kitchen projection by default;
+  deployed Apps require the authenticated admin/developer preview to discover
+  hidden rows. Kitchen detail exact-loads the same server-owned projection and
   allowlist by slug during SSR; it does not read the Kitchen root or AppKitchen
   support record directly from the browser.
+  The same public Kitchen detail remains read-only for ordinary visitors but
+  exposes a compact Kitchen-identity editor to an exact current-App admin or
+  the configured local developer. That editor mutates only Kitchen-owned name,
+  tagline, logo, and card-image overrides through a trusted server endpoint.
+  Place-owned facts/media and Menu operations remain in their owning Console
+  surfaces; public detail never restores a raw browser Kitchen-root write.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It composes the
   Place package's canonical onboarding, then atomically creates or connects the
   sparse Kitchen root, Misebox App access, and UserApp console target. Misebox
@@ -63,12 +73,25 @@ Before each task:
   Kitchen root; Misebox app chrome and AppKitchen access records own neither.
   A Kitchen logo is owned only by
   `Kitchen.identity.logo_image_url`; Kitchen cards and logo editors do not use
-  the linked Place image as a second logo source. `Place.image_url` remains
-  Place-owned location imagery and is the default Kitchen card image. A Kitchen
-  may set the sparse `Kitchen.identity.card_image_url` override when its public
-  Kitchen presentation must differ from the wider Place, such as a restaurant
-  inside a hotel. An absent override inherits Place at read time; the Place
-  image is never copied into the Kitchen root.
+  the linked Place image as a second logo source. Kitchen cards resolve the
+  sparse `Kitchen.identity.card_image_url` override first, then the linked
+  `Place.cover_image`, with `Place.image_url` only as the final fallback when
+  no cover exists. This lets a restaurant inside a hotel provide its own square
+  Kitchen crop while ordinary Kitchens reuse their Place cover at read time;
+  no Place media is copied into the Kitchen root.
+  Place optionally owns the validated six-digit `media_backdrop_color` base
+  inherited by Place-backed children. Kitchen persists the sparse
+  `identity.media_backdrop_color` override only when its transparent logo,
+  either wordmark (including `wordmark_no_logo_image_url`), or transparent
+  Kitchen card override needs a different background. The colour never tints
+  Place cover, image, or gallery photography. See
+  `docs/concepts/place-kitchen-media.md`.
+  Media editors accept image files, not arbitrary URL text. The upload writer
+  owns the exact Firebase Storage target: Kitchen logo/card overrides live at
+  `kitchens/{kitchenId}/identity/{logo|card}/current`, while Place avatar,
+  cover, and gallery media live below `places/{placeId}/`. Firestore stores
+  only the generated download URL for that exact target, and trusted mutation
+  boundaries reject another bucket, external host, or wrong entity path.
   Place name, address, location media, gallery, contact details, currency,
   timezone, and business hours remain Place-owned. Kitchen owns only its
   operational override, logo, Menu, service, fulfilment, and other Kitchen
@@ -193,14 +216,18 @@ Before each task:
   interaction.
   Demo-owned presentation images use fixed public HTTPS values for immutable
   objects in `misebox-78f9c.appspot.com` under the owner-relative
-  `demo/misebox-app/` prefix. The guarded 68-source manifest produces 73
-  objects because five Deanos source photos also receive Place-owned object
-  identities for Place fields. Kitchen/Supplier logos and Place imagery never
-  cross owner paths. Fixture and Product Demo modules import no Firebase or
-  Storage SDK/API; browser image GETs do not turn the data envelope into a
-  remote provider. Canonical Ingredient and App media stay outside Demo.
-  Publication is the explicit create-only
-  `scripts/publish-misebox-demo-media.mjs` workflow, never a Console or runtime
+  `demo/misebox-app/` prefix. Storage is the binary authority: the repository
+  retains only a guarded metadata manifest with 68 source descriptors and 73
+  object-to-source mappings, and no Demo image mirror. Five Deanos payloads
+  have both Kitchen-owned and Place-owned object identities because the model
+  fields have different owners. Kitchen/Supplier logos and Place imagery never
+  cross owner paths.
+  Fixture and Product Demo modules import no Firebase or Storage SDK/API;
+  browser image GETs do not turn the data envelope into a remote provider.
+  Canonical Ingredient and App media stay outside Demo, and Live media stays
+  in its owning Live path. Remote audit and any create-only upload from an
+  explicit external source directory use
+  `scripts/publish-misebox-demo-media.mjs`, never a Console or runtime
   mutation.
 - Misebox `/cards` is a searchable project-owned PowerCards candidate gallery.
   Its main collection consumes package-owned `Cell`, `Pill`, and `Preview`
@@ -208,8 +235,8 @@ Before each task:
   only as explicitly labelled candidates, such as `Kiosk · Item`; they do not
   become members of the generic Card family.
 - Shared product-led landing presentation belongs to Core
-  `LandingProductIndex`. Its fixed order is `hero-preview`, plain `onboarding`
-  text, `console`, `specifics`, optional `ecosystems`, `apps`, `tools`,
+  `LandingProductIndex`. Its fixed order is `hero-preview`, the `onboarding`
+  entry slot, `console`, `specifics`, optional `ecosystems`, `apps`, `tools`,
   `solutions`, then `operations`. Core places the hero copy on the left and
   the PowerCards orbit on the right, owns the responsive/reveal behavior, and
   uses flat semantic surfaces without decorative gradients or flares.
@@ -218,7 +245,9 @@ Before each task:
   Misebox keeps their truthful data, copy, routes, and proof in its project
   adapter. Misebox fills `console` with the Kitchen Console, `specifics` with
   Menu surfaces and Kitchen Finance, `apps` with its bounded published-App
-  projection, and `tools` with the real Ordering tool. It has no separate
+  projection, and `tools` with an Ordering entry that lists published Menus
+  and routes only to their currently enabled guest order paths. It has no
+  separate
   Ecosystems section and omits that unavailable slot. Its buyer-facing
   definition is “The Control Centre For Kitchen
   Operations”; the Kitchen Console is the concrete workspace that runs menus,
@@ -409,8 +438,9 @@ Before each task:
   generation.
 - Kitchen Sproochli participation is configured only on the canonical root
   Kitchen through the trusted Kitchen Console endpoint. Shared Menu projections
-  show its Default/language trigger without requiring a public Kitchen route;
-  AppKitchen remains access-only. Structured Menu choices use Sproochli's
+  and the bounded public Kitchen detail show its Default/language trigger;
+  a language selected on the Kitchen route follows the visitor into its
+  published Menu doorways. AppKitchen remains access-only. Structured Menu choices use Sproochli's
   server-side provider path and source-aware translation memory. The selected
   view remains client-session state; saved provider output stays explicitly
   unreviewed and does not become published copy. Luna Piccante is the first
@@ -460,6 +490,18 @@ maps provide navigation and working context. Deleted docs, previous chat
 context, cached repository snapshots, and remembered implementations are not
 authority. If current files cannot be read, say the Misebox context could not
 be refreshed.
+
+## Privacy-first measurement
+
+- Misebox Apps show no cookie-consent popup because they install no analytics
+  or advertising tracking storage. They may use strictly necessary
+  authentication/security state, language selection, and anonymous-order
+  recovery only for those named features.
+- Interlaken Essen is the first intended proof of the shared Core aggregate
+  measurement family. It must not add local trackers or an app-specific event
+  store. No measurement is active until the shared server aggregation and
+  private App-admin projection described in
+  `docs/concepts/privacy-measurement.md` exist.
 
 ## Living context
 

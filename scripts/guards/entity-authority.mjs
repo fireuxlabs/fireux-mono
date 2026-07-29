@@ -53,6 +53,22 @@ const PROFILE_PROVISIONING_MODEL =
   'packages/core/fireux-core/src/runtime/models/core/supporting/profile-provisioning.ts'
 
 export async function run({ repoRoot = process.cwd() } = {}) {
+  const placeModel = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/models/place.model.ts'
+  )
+  const kitchenModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts'
+  )
+  const kitchenLogoEditor = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Logo.vue'
+  )
+  assert.match(placeModel, /media_backdrop_color/)
+  assert.match(kitchenModel, /media_backdrop_color/)
+  assert.match(kitchenLogoEditor, /type="color"/)
+  assert.doesNotMatch(kitchenLogoEditor, /Logo tone|imageShadeOptions/)
   const appModel = read(repoRoot, APP_MODEL)
   const ecosystemModel = read(repoRoot, ECOSYSTEM_MODEL)
   const projectModel = read(repoRoot, PROJECT_MODEL)
@@ -566,7 +582,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const jobPermissions = read(repoRoot, jobPermissionsPath)
   const jobPublishSurface = read(repoRoot, jobPublishSurfacePath)
   const agentProvisionSurface = read(repoRoot, agentProvisionSurfacePath)
-  const placeMutation = read(
+  const placeMediaMutation = read(
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
   )
@@ -787,6 +803,25 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/server/place/public-projection.ts'
   )
+  const placePublicStoryEditor = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/components/Place/Edit/PublicStory.vue'
+  )
+  const placeMutation = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
+  )
+  assert.match(placePublicStoryEditor, /\buseImageStorage\b/)
+  assert.match(placePublicStoryEditor, /places\/\$\{placeId\.value\}\/cover/)
+  assert.match(placePublicStoryEditor, /places\/\$\{placeId\.value\}\/gallery\//)
+  assert.doesNotMatch(
+    placePublicStoryEditor,
+    /Cover image URL|Gallery image URL|type="url"/
+  )
+  assert.match(placeMediaMutation, /requireFirebaseStorageDownloadUrl/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/avatar/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/cover/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/gallery\//)
   assert.deepEqual(typeFields(publicPlaceModel, 'PublicPlaceProjection'), [
     'brand_tagline',
     'id',

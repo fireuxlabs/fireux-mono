@@ -10,10 +10,14 @@ import type {
   KitchenFulfilmentConfig,
   KitchenFulfilmentPaymentMethod,
   KitchenFulfilmentPaymentPolicy,
+  KitchenMediaBackdropColor,
   KitchenImageShade,
   KitchenPaymentRequirement,
 } from '../models/kitchen.model'
-import { readPlaceBusinessHours } from 'fireux-places/runtime/utils/place-spine.ts'
+import {
+  readMediaBackdropColor,
+  readPlaceBusinessHours,
+} from 'fireux-places/runtime/utils/place-spine.ts'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import {
   kitchenOrderTypes,
@@ -110,12 +114,6 @@ export const kitchenPaymentMethodsForOrderType = (
 ) => (fulfilment?.payment_methods || [])
   .filter(policy => policy.order_types.includes(orderType))
   .map(policy => policy.method)
-const imageShade = (value: unknown): KitchenImageShade => {
-  const shade = text(value).toLowerCase()
-  return shade === 'light' || shade === 'dark' || shade === 'none'
-    ? shade
-    : 'none'
-}
 export const composeKitchenScopedSurface = (
   publicKitchen: KitchenSpineRecord,
   scopedKitchen: KitchenSpineRecord
@@ -175,11 +173,21 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
   return {
     displayName: text(identity.display_name),
     tagline: text(identity.tagline),
+    imageUrl: text(identity.image_url),
     cardImageUrl: text(identity.card_image_url),
     logoImageUrl: text(identity.logo_image_url),
     wordmarkNoLogoImageUrl: text(identity.wordmark_no_logo_image_url),
     wordmarkImageUrl: text(identity.wordmark_image_url),
-    imageShade: imageShade(identity.image_shade),
+    mediaBackdropColor: readMediaBackdropColor(
+      identity.media_backdrop_color,
+      identity.image_shade
+    ) as KitchenMediaBackdropColor | '',
+    /** @deprecated Compatibility projection only. */
+    imageShade: (text(identity.image_shade).toLowerCase() === 'light'
+      ? 'light'
+      : text(identity.image_shade).toLowerCase() === 'dark'
+        ? 'dark'
+        : 'none') as KitchenImageShade,
   }
 }
 

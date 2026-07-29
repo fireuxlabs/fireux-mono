@@ -11,6 +11,7 @@ import path from 'node:path'
 import { MenuRouteContexts } from '../../packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-context.model.ts'
 import {
   directoryMenuRouteScope,
+  menuCanonicalPath,
   menuContextualMenuId,
   menuRouteIndexPath,
   menuRoutePath,
@@ -117,6 +118,40 @@ export async function run() {
     `/${MENU_ID}`)
   assert.equal(menuRoutePath({ scope: directoryScope, menuId: MENU_ID }),
     `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}`)
+  assert.equal(
+    menuCanonicalPath({
+      scope: rootScope,
+      menuId: 'global-evening-menu',
+      sourceKitchenSlug: KITCHEN_SLUG,
+      sourceMenuId: MENU_ID,
+    }),
+    `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}`
+  )
+  assert.equal(
+    menuCanonicalPath({
+      scope: directoryScope,
+      menuId: MENU_ID,
+      sourceKitchenSlug: KITCHEN_SLUG,
+      sourceMenuId: MENU_ID,
+    }),
+    `/kitchens/${KITCHEN_SLUG}/menus/${MENU_ID}`
+  )
+  assert.equal(
+    menuCanonicalPath({
+      scope: rootScope,
+      menuId: 'document-menu',
+    }),
+    '/menus/document-menu'
+  )
+  assert.equal(
+    menuCanonicalPath({
+      scope: tenantScope,
+      menuId: MENU_ID,
+      sourceKitchenSlug: KITCHEN_SLUG,
+      sourceMenuId: MENU_ID,
+    }),
+    `/${MENU_ID}`
+  )
   assert.equal(
     menuRouteQrPath({ scope: rootScope, menuId: MENU_ID }),
     `/menus/${MENU_ID}/qr`

@@ -5,6 +5,10 @@
       <FireUXLandingCardOrbit presentation="hero" />
     </template>
 
+    <template #onboarding>
+      <LandingProductEntryPaths :content="entryPaths" />
+    </template>
+
     <template #console>
       <LandingProductProofSection
         section-id="fireux-console"
@@ -56,13 +60,14 @@
 import { computed, ref } from 'vue'
 import type {
   LandingProductCatalogueContent,
+  LandingProductEntryContent,
   LandingProductIndexContent,
 } from 'fireux-core/types/landing-product'
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
 } from 'fireux-core/runtime/models/system/meta-content.model'
-import { metaContent } from '../../../meta'
+import { fireuxOffer, metaContent } from '../../../meta'
 import { usePlatformAppDirectory } from '../../../composables/usePlatformDirectory'
 import FireUXLandingConsolePreview from './ConsolePreview/Index.vue'
 
@@ -194,14 +199,42 @@ const operationsCatalogue = {
   items: catalogueOperations,
 } satisfies LandingProductCatalogueContent
 
+const entryPaths = {
+  sectionId: 'fireux-entry',
+  eyebrow: 'Start with FireUX',
+  title: 'Need an App?',
+  description: fireuxOffer.entry.description,
+  paths: [
+    {
+      id: 'project',
+      kind: 'start',
+      title: fireuxOffer.entry.request.title,
+      description: fireuxOffer.entry.request.description,
+      action: {
+        label: fireuxOffer.entry.request.actionLabel,
+        to: '/get-started',
+      },
+    },
+    {
+      id: 'ecosystem',
+      kind: 'join',
+      title: fireuxOffer.entry.ecosystems.title,
+      description: fireuxOffer.entry.ecosystems.description,
+      action: {
+        label: fireuxOffer.entry.ecosystems.actionLabel,
+        to: '/ecosystems',
+      },
+    },
+  ],
+} satisfies LandingProductEntryContent
+
 const content = {
   hero: {
     badge: 'Projects · Apps · Ecosystems',
     kicker: 'FireUX App',
     title: 'Ignite Your Project',
     accent: 'With FireUX',
-    description:
-      'Onboard your Project through Ignition, manage its Apps, Ecosystem, and users in the Project Console, then add Modules or join an existing Ecosystem when required.',
+    description: fireuxOffer.heroDescription,
     primaryAction: {
       label: 'Get started',
       to: '/get-started',
@@ -216,12 +249,7 @@ const content = {
       label: 'Browse ecosystems',
       to: '/ecosystems',
     },
-    trustItems: [
-      'Start App requests with Ignition',
-      'Review Project Apps and Ecosystems',
-      'Monitor new App users',
-    ],
+    trustItems: fireuxOffer.heroBullets.slice(0, 3),
   },
-  onboardingLabel: 'onboarding',
 } as const satisfies LandingProductIndexContent
 </script>

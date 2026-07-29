@@ -54,8 +54,6 @@ const fireuxConfig = defineFireuxConfig({
     staticPaths: [
       '/get-started',
       '/programme',
-      '/luna-piccante',
-      '/luna-piccante/menu',
       '/demo',
       '/demo/menu',
       '/demo/kiosk',

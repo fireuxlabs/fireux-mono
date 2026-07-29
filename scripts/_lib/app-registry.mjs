@@ -204,7 +204,12 @@ export const APP_REGISTRY = {
         '/kitchens/indian-gourmet-restaurant-pizzeria',
         'Indian Gourmet Restaurant &amp; Pizzeria'
       ),
-      menuBrowseContract('/menus/luna-piccante-main-menu'),
+      menuBrowseContract('/menus/luna-piccante-main-menu', {
+        canonicalPath: '/kitchens/luna-piccante/menus/main-menu',
+      }),
+      menuBrowseContract('/kitchens/luna-piccante/menus/main-menu', {
+        canonicalPath: '/kitchens/luna-piccante/menus/main-menu',
+      }),
       menuBrowseContract('/menus/pizza-menu'),
       menuBrowseContract('/menus/pizza-snacks-drinks', {
         itemIncludes: [

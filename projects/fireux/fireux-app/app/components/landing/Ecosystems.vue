@@ -104,19 +104,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { usePlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
+import { usePublishedPlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
 
-const ecosystemsController = usePlatformEcosystemDirectory()
-const outcome = computed(() => ecosystemsController.outcome.value)
-const retiredEcosystemSlugs = new Set(['cleanbox'])
-const ecosystems = computed(() =>
-  ecosystemsController.ecosystems.value.filter(
-    (ecosystem) =>
-      ecosystem.status === 'active' &&
-      !retiredEcosystemSlugs.has(ecosystem.slug)
-  )
-)
+const ecosystemsController = usePublishedPlatformEcosystemDirectory()
+const { ecosystems, outcome } = ecosystemsController
 
 async function refreshEcosystems(): Promise<void> {
   await ecosystemsController.refresh?.()

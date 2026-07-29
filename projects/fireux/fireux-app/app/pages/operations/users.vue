@@ -2,7 +2,7 @@
 <template>
   <OperationRoadmapPage
     title="Users"
-    description="Manage your users."
+    description="Monitor new App users."
     :items="roadmap"
     :action="action"
   />
@@ -11,8 +11,8 @@
 <script setup lang="ts">
 const roadmap = [
   { label: 'Shared FireUX user identity', done: true },
-  { label: "See users across all of your project's apps", done: false },
-  { label: 'See which app each user joined through', done: false },
+  { label: 'Review new App users across FireUX', done: true },
+  { label: 'See the source App and Project for each new user', done: true },
   {
     label: 'Receive a notification when a new user signs up to one of your apps',
     done: false,
@@ -25,13 +25,14 @@ const roadmap = [
 ] as const
 
 const action = {
-  label: 'View users',
-  to: '/users',
+  label: 'Open Project Users',
+  to: '/console/project/users',
   icon: 'i-lucide-users',
 } as const
 
 useSeoMeta({
-  title: 'Manage your users - FireUX',
-  description: 'Manage users across a FireUX project and its connected apps.',
+  title: 'Project users - FireUX',
+  description:
+    'Monitor new App users across FireUX and see their source App and Project.',
 })
 </script>

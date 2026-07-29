@@ -76,12 +76,17 @@ export type KitchenAppScope = FireuxConsoleEntityAppScope
 
 export type KitchenVisibility = FireuxConsoleEntityVisibility
 
+export type KitchenMediaBackdropColor = `#${string}`
+/** @deprecated Read-only compatibility for unmigrated records and consumers. */
 export type KitchenImageShade = 'light' | 'dark' | 'none'
 
 export type KitchenIdentity = Omit<
   FireuxConsoleEntityIdentity,
   'image_url' | 'gallery'
 > & {
+  /** Sparse override; empty means inherit Place.media_backdrop_color. */
+  media_backdrop_color?: KitchenMediaBackdropColor | ''
+  /** @deprecated Read-only compatibility. */
   image_shade?: KitchenImageShade
   /** Optional Kitchen-owned card image. Empty means inherit Place.image_url. */
   card_image_url?: string
@@ -178,7 +183,9 @@ export const KitchenModel = {
   identity: {
     display_name: '',
     tagline: '',
-    image_shade: 'none',
+    media_backdrop_color: '',
+    /** @deprecated Never write; migrate to media_backdrop_color. */
+    image_shade: 'none' as KitchenImageShade,
     card_image_url: '',
     logo_image_url: '',
     wordmark_no_logo_image_url: '',

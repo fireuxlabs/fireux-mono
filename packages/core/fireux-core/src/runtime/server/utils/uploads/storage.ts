@@ -26,9 +26,68 @@ export type DownloadStorageFileOptions = {
 
 export type DeleteStorageFileOptions = DownloadStorageFileOptions
 
+export type FirebaseStorageDownloadTarget = {
+  bucketName: string
+  objectPath?: string
+  objectPrefix?: string
+  label?: string
+}
+
 export function normalizeStorageBucketName(bucket?: string | null) {
   const trimmed = String(bucket || '').trim()
   return trimmed.startsWith('gs://') ? trimmed.slice(5) : trimmed
+}
+
+export function parseFirebaseStorageDownloadUrl(value: unknown) {
+  const raw = String(value ?? '').trim()
+  if (!raw) return null
+
+  try {
+    const url = new URL(raw)
+    const match = url.pathname.match(/^\/v0\/b\/([^/]+)\/o\/(.+)$/)
+    if (
+      url.protocol !== 'https:' ||
+      url.username ||
+      url.password ||
+      url.hash ||
+      url.hostname !== 'firebasestorage.googleapis.com' ||
+      !match ||
+      url.searchParams.get('alt') !== 'media'
+    ) {
+      return null
+    }
+    return {
+      url: url.toString(),
+      bucketName: decodeURIComponent(match[1] || ''),
+      objectPath: decodeURIComponent(match[2] || ''),
+    }
+  } catch {
+    return null
+  }
+}
+
+export function requireFirebaseStorageDownloadUrl(
+  value: unknown,
+  target: FirebaseStorageDownloadTarget
+) {
+  const label = String(target.label || 'Image').trim()
+  const parsed = parseFirebaseStorageDownloadUrl(value)
+  const bucketName = normalizeStorageBucketName(target.bucketName)
+  const objectPath = String(target.objectPath || '').trim()
+  const objectPrefix = String(target.objectPrefix || '').trim()
+
+  if (
+    !parsed ||
+    parsed.bucketName !== bucketName ||
+    (objectPath && parsed.objectPath !== objectPath) ||
+    (objectPrefix && !parsed.objectPath.startsWith(objectPrefix))
+  ) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: `${label} must use its canonical Firebase Storage target.`,
+    })
+  }
+  return parsed.url
 }
 
 export function runtimeStorageBucketName(

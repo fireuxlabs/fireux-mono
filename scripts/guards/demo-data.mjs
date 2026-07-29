@@ -501,6 +501,29 @@ export async function run(ctx) {
           'Demo is outside an owning package src/runtime/demo, project app/demo, or project app/pages/demo route namespace.',
       })
     }
+    const pending = [directory]
+    while (pending.length) {
+      const current = pending.pop()
+      for (const entry of readdirSync(current, { withFileTypes: true })) {
+        if (entry.isSymbolicLink()) continue
+        const absolutePath = path.join(current, entry.name)
+        if (entry.isDirectory()) {
+          pending.push(absolutePath)
+          continue
+        }
+        if (
+          entry.isFile() &&
+          /\.(?:jpe?g|png|webp|gif|avif)$/i.test(entry.name)
+        ) {
+          violations.push({
+            code: 'demo-media-local-binary',
+            file: repoRelative(repoRoot, absolutePath),
+            message:
+              'Demo-owned image binaries live in the owning App Demo prefix in Firebase Storage, not beside fixture source.',
+          })
+        }
+      }
+    }
   }
 
   for (const file of files) {
@@ -1013,10 +1036,22 @@ export async function run(ctx) {
   try {
     demoMediaManifest = JSON.parse(readFileSync(demoMediaManifestPath, 'utf8'))
     const target = demoMediaManifest.target ?? {}
+    const manifestKeys = Object.keys(demoMediaManifest).sort()
+    const expectedManifestKeys = [
+      'format',
+      'object_contract',
+      'objects',
+      'policy',
+      'sources',
+      'target',
+    ]
     if (
-      demoMediaManifest.format !== 'fireux-misebox-demo-media/1' ||
-      demoMediaManifest.expected_source_count !== 68 ||
-      demoMediaManifest.expected_object_count !== 73 ||
+      manifestKeys.length !== expectedManifestKeys.length ||
+      manifestKeys.some((key, index) => key !== expectedManifestKeys[index]) ||
+      demoMediaManifest.format !== 'fireux-misebox-demo-media-manifest/2' ||
+      demoMediaManifest.object_contract !== 'fireux-misebox-demo-media/1' ||
+      demoMediaManifest.policy !==
+        'Firebase Storage is authoritative; repository stores metadata only; create or reuse exact immutable objects; never overwrite, delete, or write Firestore' ||
       target.app_id !== 'misebox-app' ||
       target.project_id !== 'misebox-78f9c' ||
       target.database_id !== 'misebox' ||
@@ -1024,65 +1059,64 @@ export async function run(ctx) {
       target.object_prefix !== 'demo/misebox-app' ||
       typeof target.download_token !== 'string' ||
       !target.download_token ||
-      !Array.isArray(demoMediaManifest.aliases) ||
-      demoMediaManifest.aliases.length !== 5
+      !demoMediaManifest.sources ||
+      typeof demoMediaManifest.sources !== 'object' ||
+      Array.isArray(demoMediaManifest.sources) ||
+      !demoMediaManifest.objects ||
+      typeof demoMediaManifest.objects !== 'object' ||
+      Array.isArray(demoMediaManifest.objects)
     ) {
       throw new Error('The fixed target or inventory counts are invalid.')
     }
 
-    const assetDirectory = path.join(
-      repoRoot,
-      demoMediaManifest.asset_directory
+    const sourceEntries = Object.entries(demoMediaManifest.sources).sort(
+      ([left], [right]) => left.localeCompare(right)
     )
-    const pending = [assetDirectory]
-    const sourcePaths = []
-    while (pending.length) {
-      const current = pending.pop()
-      for (const entry of readdirSync(current, { withFileTypes: true })) {
-        if (entry.isSymbolicLink()) {
-          throw new Error(
-            `Demo media source cannot be a symlink: ${entry.name}`
-          )
-        }
-        const absolutePath = path.join(current, entry.name)
-        if (entry.isDirectory()) {
-          pending.push(absolutePath)
-          continue
-        }
-        if (!entry.isFile()) {
-          throw new Error(`Unsupported Demo media source: ${entry.name}`)
-        }
-        const relativePath = toPosix(
-          path.relative(assetDirectory, absolutePath)
+    const objectEntries = Object.entries(demoMediaManifest.objects).sort(
+      ([left], [right]) => left.localeCompare(right)
+    )
+    if (
+      sourceEntries.length !== 68 ||
+      objectEntries.length !== 73 ||
+      sourceEntries.some(([relativePath, descriptor]) => {
+        const expectedContentType = relativePath.endsWith('.png')
+          ? 'image/png'
+          : 'image/jpeg'
+        return (
+          !/^[a-z0-9][a-z0-9./-]*\.(?:jpg|png)$/.test(relativePath) ||
+          !descriptor ||
+          typeof descriptor !== 'object' ||
+          Array.isArray(descriptor) ||
+          Object.keys(descriptor).sort().join(',') !==
+            'bytes,content_type,sha256' ||
+          !Number.isInteger(descriptor.bytes) ||
+          descriptor.bytes <= 0 ||
+          descriptor.content_type !== expectedContentType ||
+          !/^[a-f0-9]{64}$/.test(String(descriptor.sha256))
         )
-        if (!/^[a-z0-9][a-z0-9./-]*\.(?:jpg|png)$/.test(relativePath)) {
-          throw new Error(`Invalid Demo media source path: ${relativePath}`)
-        }
-        sourcePaths.push(relativePath)
-      }
-    }
-    sourcePaths.sort()
-    if (
-      sourcePaths.length !== demoMediaManifest.expected_source_count ||
-      new Set(sourcePaths).size !== sourcePaths.length
+      }) ||
+      objectEntries.some(
+        ([relativePath, sourcePath]) =>
+          !/^[a-z0-9][a-z0-9./-]*\.(?:jpg|png)$/.test(relativePath) ||
+          !/^[a-z0-9][a-z0-9./-]*\.(?:jpg|png)$/.test(String(sourcePath)) ||
+          !Object.hasOwn(demoMediaManifest.sources, sourcePath) ||
+          (relativePath.endsWith('.png') ? 'image/png' : 'image/jpeg') !==
+            demoMediaManifest.sources[sourcePath].content_type
+      )
     ) {
-      throw new Error('The Demo media source inventory is incomplete.')
+      throw new Error('The Demo media source/object inventory is invalid.')
     }
-    expectedDemoMediaObjects.push(...sourcePaths)
-    for (const alias of demoMediaManifest.aliases) {
-      if (
-        !sourcePaths.includes(alias.source) ||
-        !/^[a-z0-9][a-z0-9./-]*\.(?:jpg|png)$/.test(alias.object)
-      ) {
-        throw new Error('A Demo media owner alias is invalid.')
-      }
-      expectedDemoMediaObjects.push(alias.object)
-    }
-    expectedDemoMediaObjects.sort()
+    expectedDemoMediaObjects.push(
+      ...objectEntries.map(([relativePath]) => relativePath)
+    )
     if (
-      expectedDemoMediaObjects.length !==
-        demoMediaManifest.expected_object_count ||
-      new Set(expectedDemoMediaObjects).size !== expectedDemoMediaObjects.length
+      expectedDemoMediaObjects.length !== 73 ||
+      new Set(expectedDemoMediaObjects).size !==
+        expectedDemoMediaObjects.length ||
+      new Set(sourceEntries.map(([, descriptor]) => descriptor.sha256)).size !==
+        68 ||
+      new Set(objectEntries.map(([, sourcePath]) => sourcePath)).size !==
+        sourceEntries.length
     ) {
       throw new Error('The Demo media object inventory is incomplete.')
     }
@@ -1106,9 +1140,18 @@ export async function run(ctx) {
       ![
         'preconditionOpts: { ifGenerationMatch: 0 }',
         'fireuxDemoMediaSha256',
+        'fireuxDemoMediaContract',
+        'fireuxDemoMediaSource',
+        'preflightExternalSources',
+        'realpath',
+        'bucket.getFiles({ prefix: objectPrefix })',
+        'unexpected_objects',
+        '--confirm-source',
+        '--source-directory must stay outside the repository',
         'Post-upload remote inventory is incomplete.',
-        'Storage creates only; no Firestore writes',
+        'Firebase Storage is authoritative',
       ].every((marker) => publisherSource.includes(marker)) ||
+      publisherSource.includes('asset_directory') ||
       publisherSource.includes('firebase-admin/firestore') ||
       publisherSource.includes('getFirestore(')
     ) {
@@ -1120,10 +1163,59 @@ export async function run(ctx) {
     violations.push({
       code: 'demo-media-manifest',
       file: demoMediaManifestFile,
-      message: `Demo media requires one exact 68-source/73-object Misebox manifest and create-only publisher. ${
+      message: `Demo media requires one exact Storage-authoritative 73-object/68-payload Misebox manifest and create-only external-source publisher. ${
         error instanceof Error ? error.message : String(error)
       }`,
     })
+  }
+
+  const demoMediaDataDirectory = path.dirname(demoMediaManifestPath)
+  for (const entry of readdirSync(demoMediaDataDirectory, {
+    withFileTypes: true,
+  })) {
+    if (entry.name !== 'manifest.json' || !entry.isFile()) {
+      violations.push({
+        code: 'demo-media-local-mirror',
+        file: repoRelative(
+          repoRoot,
+          path.join(demoMediaDataDirectory, entry.name)
+        ),
+        message:
+          'The Demo media data directory keeps manifest metadata only; Firebase Storage owns the image binaries.',
+      })
+    }
+  }
+
+  const forbiddenDemoMediaBinaryRoots = [
+    'packages/extensions/fireux-kitchens/src/runtime/public/img/showcase/menu',
+    'packages/extensions/fireux-suppliers/src/runtime/public/img/showcase/suppliers',
+    'packages/extensions/fireux-companies/src/runtime/public/img/showcase/places',
+  ]
+  for (const relativeRoot of forbiddenDemoMediaBinaryRoots) {
+    const absoluteRoot = path.join(repoRoot, relativeRoot)
+    if (!existsSync(absoluteRoot)) continue
+    const pending = [absoluteRoot]
+    while (pending.length) {
+      const current = pending.pop()
+      for (const entry of readdirSync(current, { withFileTypes: true })) {
+        const absolutePath = path.join(current, entry.name)
+        if (entry.isDirectory()) {
+          pending.push(absolutePath)
+          continue
+        }
+        if (
+          entry.isFile() &&
+          /\.(?:jpe?g|png|webp|gif|avif)$/i.test(entry.name)
+        ) {
+          violations.push({
+            code: 'demo-media-local-binary',
+            file: repoRelative(repoRoot, absolutePath),
+            message:
+              'Demo-owned image binaries live in Firebase Storage under the guarded Demo prefix; the repository keeps metadata only.',
+          })
+        }
+      }
+    }
   }
 
   const legacyDemoMediaPrefixes = [

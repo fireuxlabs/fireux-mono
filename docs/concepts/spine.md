@@ -13,6 +13,9 @@ Prefer the word `spine`. A spine is a shared shape proved by current source,
 guards, and working siblings. Domain deltas are allowed only after the shared
 shape is visible.
 
+The Place/Kitchen media ownership and transparent-brand backdrop spine is
+mapped in `docs/concepts/place-kitchen-media.md`.
+
 ## Before editing
 
 1. Name the family.
@@ -65,6 +68,7 @@ contract.
 | Project user monitor | `project-user-monitor.md` | App join events, OIDC receiver, and FireUX admin feed | Bounded signup projection is shared; production source scopes require deployment |
 | Layout | `layouts.md` | `AppShell` and current runtime layouts | Ownership is clear; slot versus direct route rendering is `to-confirm` |
 | Debug | `debug.md` | `DevJson` and `DevFireuxDebugPanel` | Two distinct surfaces are accepted; a third generic panel is drift |
+| Privacy-first measurement | `privacy-measurement.md` | Shared legal surface plus `scripts/guards/privacy-measurement.mjs` | No tracking is active; the bounded aggregate server/admin family must land before collection begins |
 
 ## Stop signals
 

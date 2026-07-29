@@ -59,8 +59,8 @@ export function useKitchenConsoleSupplier() {
   const cataloguePath = computed(() =>
     supplierBasePath.value ? `${supplierBasePath.value}/catalogue` : ''
   )
-  const procurementPath = computed(() =>
-    supplierBasePath.value ? `${supplierBasePath.value}/procurement` : ''
+  const supplyOptionsPath = computed(() =>
+    supplierBasePath.value ? `${supplierBasePath.value}/supply-options` : ''
   )
 
   const debug = computed(() => ({
@@ -98,7 +98,7 @@ export function useKitchenConsoleSupplier() {
     isEcosystemSupplier,
     supplierBasePath,
     cataloguePath,
-    procurementPath,
+    supplyOptionsPath,
     debug,
   }
 }

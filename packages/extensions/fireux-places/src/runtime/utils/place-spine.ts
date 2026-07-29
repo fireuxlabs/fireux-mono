@@ -4,8 +4,9 @@ import type {
   PlaceBusinessHours,
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
-  PlaceImageShade,
+  MediaBackdropColor,
 } from '../models/place.model'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette.ts'
 
 const days = [
   'monday',
@@ -60,11 +61,17 @@ const stringArray = (value: unknown) =>
     ? value.map(text).filter(Boolean)
     : []
 
-const imageShade = (value: unknown): PlaceImageShade => {
-  const shade = text(value).toLowerCase()
-  return shade === 'light' || shade === 'dark' || shade === 'none'
-    ? shade
-    : 'none'
+export const readMediaBackdropColor = (
+  value: unknown,
+  legacyShade?: unknown
+): MediaBackdropColor | '' => {
+  const color = normalizeHexColor(value)
+  if (color) return color as MediaBackdropColor
+  // Read-only compatibility until the bounded audit/migration is approved.
+  const shade = text(legacyShade).toLowerCase()
+  if (shade === 'light') return '#111827'
+  if (shade === 'dark') return '#ffffff'
+  return ''
 }
 
 const time = (value: unknown) => {
@@ -160,7 +167,16 @@ export const readPlacePresentation = (value: unknown) => {
     imageUrl: text(source.image_url),
     coverImage: text(source.cover_image),
     gallery: stringArray(source.gallery_images),
-    imageShade: imageShade(source.image_shade),
+    mediaBackdropColor: readMediaBackdropColor(
+      source.media_backdrop_color,
+      source.image_shade
+    ),
+    /** @deprecated Compatibility projection only. */
+    imageShade: text(source.image_shade).toLowerCase() === 'light'
+      ? 'light'
+      : text(source.image_shade).toLowerCase() === 'dark'
+        ? 'dark'
+        : 'none',
     phone: text(source.phone),
     website: text(source.website),
     googleMapsUrl: text(source.google_maps_url),

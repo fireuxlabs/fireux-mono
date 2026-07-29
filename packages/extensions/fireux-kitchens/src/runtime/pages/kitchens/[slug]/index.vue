@@ -8,6 +8,7 @@
       v-else
       :kitchen="kitchen"
       :outcome="outcome"
+      @refresh="refresh"
     />
   </div>
 </template>
@@ -43,6 +44,7 @@ const recoveryDescription =
 const {
   kitchen,
   ready,
+  refresh,
   outcome,
   missing,
   failed,

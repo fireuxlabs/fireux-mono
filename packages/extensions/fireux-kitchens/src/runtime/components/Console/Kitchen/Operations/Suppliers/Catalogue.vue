@@ -53,12 +53,12 @@
     >
       <template #actions>
         <UButton
-          :to="procurementPath"
+          :to="supplyOptionsPath"
           color="neutral"
           variant="soft"
           icon="i-lucide-list-checks"
         >
-          Make procurement list
+          View supply options
         </UButton>
       </template>
     </UAlert>
@@ -78,7 +78,7 @@ const {
   pending,
   title,
   description,
-  procurementPath,
+  supplyOptionsPath,
 } = useKitchenConsoleSupplierCatalogue()
 const { pill } = useSupplierCatalogueInterface()
 

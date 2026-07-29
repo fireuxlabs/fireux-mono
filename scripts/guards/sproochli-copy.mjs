@@ -142,9 +142,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/fireux/sproochli/app/app.config.ts'
   )
-  const defaultAsset = read(
-    repoRoot,
-    'projects/fireux/sproochli/public/img/app/language-default.svg'
+  const sharedDefaultAsset = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-sproochli/src/runtime/assets/sproochli/default-language-mark.webp'
+    )
+  )
+  const defaultAsset = readFileSync(
+    path.join(
+      repoRoot,
+      'projects/fireux/sproochli/public/img/app/language-default.webp'
+    )
   )
   const kitchenSproochliEndpoint = read(
     repoRoot,
@@ -440,6 +448,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /Choose how to read this content/
   )
   assert.match(languageTrigger, /sproochli-language-trigger--emoji/)
+  assert.match(languageTrigger, /<button\s+type="button"/)
+  assert.doesNotMatch(
+    languageTrigger,
+    /<UButton[\s\S]{0,300}sproochli-language-trigger/
+  )
+  assert.match(
+    languageTrigger,
+    /\.sproochli-language-trigger--default,\s*\n\.sproochli-language-trigger--emoji/
+  )
   assert.match(languageTrigger, /background: transparent !important/)
   assert.doesNotMatch(languageTrigger, /transform:\s*scale/)
   assert.doesNotMatch(languageTrigger, /i-lucide-languages/)
@@ -458,25 +475,35 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(languageTrigger, /:disabled=/)
   assert.doesNotMatch(languageTrigger, /Not published/)
   assert.match(assetsPage, /fireuxAssets/)
-  assert.match(appConfig, /language-default\.svg/)
+  assert.match(appConfig, /language-default\.webp/)
   assert.doesNotMatch(appConfig, /language-default-english/)
-  assert.match(defaultAsset, /Default language indicator/)
-  for (const signature of [
-    'M25 38C39 24 58 21 73 29',
-    'M103 90C89 104 70 107 55 99',
-    'circle cx="53" cy="64" r="4"',
-    'circle cx="75" cy="64" r="4"',
-    '#A78BFA',
-    '#FF947E',
-    '#FFF4DE',
-  ]) {
-    assert.ok(defaultLanguageMark.includes(signature))
-    assert.ok(defaultAsset.includes(signature))
-  }
+  assert.match(defaultLanguageMark, /default-language-mark\.webp/)
+  assert.match(defaultLanguageMark, /sproochli-default-language-mark/)
+  assert.equal(defaultAsset.equals(sharedDefaultAsset), true)
+  assert.equal(defaultAsset.subarray(0, 4).toString('ascii'), 'RIFF')
+  assert.equal(defaultAsset.subarray(8, 12).toString('ascii'), 'WEBP')
   for (const signature of ['#7C3AED', '#FFF4DE', '#F05F52']) {
     assert.ok(sproochliWordmark.includes(signature))
   }
   assert.match(sproochliWordmark, />\s*sproochli\s*</)
+  assert.equal(
+    existsSync(
+      path.join(
+        repoRoot,
+        'projects/fireux/sproochli/public/img/app/language-default.svg'
+      )
+    ),
+    false
+  )
+  assert.equal(
+    existsSync(
+      path.join(
+        repoRoot,
+        'projects/fireux/sproochli/public/img/app/logo.svg'
+      )
+    ),
+    false
+  )
   assert.equal(
     existsSync(
       path.join(

@@ -73,6 +73,13 @@ reports into one generic Finance console.
 
 - Supplier catalogue `pack_cost_minor` is an offer term, not a purchase,
   receipt, invoice, inventory-consumption, or expense fact.
+- Kitchen owns the future Purchasing operation and its purchase orders,
+  deliveries, supplier invoices, and supplier payments. Its canonical Console
+  route is `/console/kitchen/purchasing`. Supplier remains the referenced
+  counterparty and may expose filtered supply options or links to Kitchen-owned
+  purchasing records; `/console/kitchen/suppliers/*` does not own purchasing
+  transactions. The Purchasing route remains hidden until those authoritative
+  producers exist.
 - Job compensation reuses `FinancialMoney` plus an explicit hour/shift/day
   unit, but remains a mutable offer term. Publishing or closing a Job does not
   emit a FinancialFact.

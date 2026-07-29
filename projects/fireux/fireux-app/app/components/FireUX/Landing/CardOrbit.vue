@@ -137,7 +137,10 @@ import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
 } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
-import { usePlatformDirectory } from '../../../composables/usePlatformDirectory'
+import {
+  usePlatformDirectory,
+  usePublishedPlatformEcosystemDirectory,
+} from '../../../composables/usePlatformDirectory'
 
 withDefaults(
   defineProps<{
@@ -149,6 +152,8 @@ withDefaults(
 )
 
 const { data, pending, error } = usePlatformDirectory()
+const { ecosystems: publishedEcosystems } =
+  usePublishedPlatformEcosystemDirectory()
 const orbitDataSource = 'live' satisfies LandingCardOrbitDataSource
 const {
   cell: toAppCell,
@@ -166,7 +171,7 @@ const directoryApps = computed<readonly AppDirectoryEntry[]>(
   () => data.value?.apps ?? []
 )
 const directoryEcosystems = computed<readonly EcosystemDirectoryEntry[]>(
-  () => data.value?.ecosystems ?? []
+  () => publishedEcosystems.value
 )
 
 const appCards = computed<AppCard.Card[]>(() =>

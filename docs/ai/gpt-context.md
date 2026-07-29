@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-07-28
-Ref: 796952bf0
+Updated: 2026-07-29
+Ref: 33603376f
 Role: living context
 Scope: repo-wide
 
@@ -125,10 +125,16 @@ Before each task:
   anatomy, rhythm, accessibility, and semantic browser contracts, but it does
   not impose an ecosystem aesthetic.
 - Core `LandingProductIndex` owns the fixed Main App product-landing order:
-  `hero-preview`, plain `onboarding` text, `console`, `specifics`,
+  `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
   `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
   places product copy on the left and the app's card orbit on the right.
-  `LandingProductProofSection` owns the repeated proof-and-copy composition,
+  `LandingProductEntryPaths` owns the ordered `start` and `join` choice plus
+  an optional subordinate Tool doorway, including its icons, card anatomy,
+  mobile-first layout, and reveal behavior. That slot is the public entry
+  decision, not account onboarding; Apps supply only truthful copy and routes.
+  `scripts/guards/product-landing.mjs` discovers every project adapter that
+  consumes `LandingProductIndex` and requires exactly one entry component in
+  that slot. `LandingProductProofSection` owns the repeated proof-and-copy composition,
   `LandingProductCatalogue` owns the shared catalogue grid, and
   `LandingConsolePreviewFrame` owns the responsive target rail, operation
   navigation, selected heading, and persistent full-Console doorway shared by
@@ -262,8 +268,11 @@ Before each task:
   Firestore, Storage SDK/API, server, admin, or mutation seam. A fixture may
   hold a fixed public HTTPS URL for immutable presentation media under an
   app-specific guarded `demo/` Storage prefix; that inert field value grants no
-  runtime Storage authority, and canonical Live media never moves into Demo
-  merely because a Demo consumer displays it.
+  runtime Storage authority. Storage is authoritative for Demo-owned image
+  binaries, so repositories retain only guarded object metadata rather than a
+  second Demo binary mirror. Canonical Live media never moves into Demo merely
+  because a Demo consumer displays it; it remains in the owning family's Live
+  publication or storage path.
 
 ## Semantic catalogue boundaries
 
@@ -452,6 +461,22 @@ Before any remote Firebase operation:
    authorization and the relevant backup or verification gate.
 
 Do not add per-app MCP configuration files merely to expose Firebase to Codex.
+
+## Privacy-first measurement
+
+- FireUX and Misebox Apps do not use analytics or advertising cookies,
+  local-storage tracking identifiers, device fingerprints, third-party
+  behavioural trackers, or cross-site/cross-App measurement identities.
+- Authentication/security state, language selection, and anonymous-order
+  recovery are strictly necessary feature storage. Measurement code must never
+  read them or join them into behavioural profiles.
+- No analytics collection is active until Core owns one server-side,
+  aggregate-only family with bounded events, bot filtering, tenant isolation,
+  private App-admin projection, and verified expiry at no more than 13 months.
+- Interlaken Essen is the first intended proof, not an app-local exception.
+  Start at `docs/concepts/privacy-measurement.md`,
+  `runtime/pages/legal/privacy.vue`, and
+  `scripts/guards/privacy-measurement.mjs`.
 
 ## Firestore Rules source ownership
 

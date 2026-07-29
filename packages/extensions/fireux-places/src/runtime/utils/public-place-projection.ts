@@ -2,10 +2,8 @@ import {
   PUBLIC_PLACE_PROJECTION_KEYS,
   type PublicPlaceProjection,
 } from '../models/place-public.model'
-import type {
-  PlaceImageShade,
-  PlaceType,
-} from '../models/place.model'
+import type { PlaceType } from '../models/place.model'
+import { readMediaBackdropColor } from './place-spine'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -14,13 +12,6 @@ const placeType = (value: unknown): PlaceType | '' => {
   return candidate === 'physical' || candidate === 'non_physical'
     ? candidate
     : ''
-}
-
-const imageShade = (value: unknown): PlaceImageShade => {
-  const candidate = text(value)
-  return candidate === 'light' || candidate === 'dark'
-    ? candidate
-    : 'none'
 }
 
 export function normalizePublicPlaceProjection(
@@ -39,7 +30,15 @@ export function normalizePublicPlaceProjection(
     brand_tagline: text(value.brand_tagline),
     short_address: text(value.short_address),
     image_url: text(value.image_url),
-    image_shade: imageShade(value.image_shade),
+    media_backdrop_color: readMediaBackdropColor(
+      value.media_backdrop_color,
+      value.image_shade
+    ),
+    image_shade: text(value.image_shade) === 'light'
+      ? 'light'
+      : text(value.image_shade) === 'dark'
+        ? 'dark'
+        : 'none',
     verified: value.verified === true,
     slug: text(value.slug),
   }

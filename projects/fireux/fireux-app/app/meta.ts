@@ -26,6 +26,49 @@ const werkboxOwner = {
 const ignitionFromSolution = (slug: string) =>
   `/get-started?solution=${slug}`
 
+export const fireuxOffer = {
+  heroDescription:
+    'Request a FireUX App through Ignition or explore an existing Ecosystem. The Project Console reviews Apps, Ecosystems, and new App users.',
+  heroBullets: [
+    'Send an App request through Ignition',
+    'Review Project Apps and Ecosystems',
+    'Monitor new App users',
+    'Browse public Apps, Solutions, Operations, and Modules',
+  ],
+  entry: {
+    description:
+      'Request a FireUX App through Ignition, or explore an Ecosystem that already covers your work.',
+    request: {
+      title: 'Request a FireUX App',
+      description: 'Send an Ignition request. We review the scope before work starts.',
+      actionLabel: 'Request an App',
+    },
+    ecosystems: {
+      title: 'Explore Ecosystems',
+      description: 'Browse published Ecosystems and see which Apps they group.',
+      actionLabel: 'Explore Ecosystems',
+    },
+  },
+  ignition: {
+    description:
+      'Tell us what the App needs to do. Ignition records your request for review and scope.',
+    requestTitle: 'Request a FireUX App',
+    requestDescription:
+      'Tell us what the App needs to do. No payment is taken here.',
+    confirmationSteps: [
+      { title: 'Review', description: 'We check your request.' },
+      {
+        title: 'Scope',
+        description: 'We agree the App, pages, access, and price.',
+      },
+      {
+        title: 'Configure',
+        description: 'We configure the agreed App.',
+      },
+    ],
+  },
+} as const
+
 const sourceMeta = {
   name: 'FireUX',
   landing: {
@@ -34,19 +77,13 @@ const sourceMeta = {
       bigPersonality: 'Ignite With',
       headline: 'FireUX',
     },
-    heroPrimaryLine:
-      'Onboard your <strong>Project</strong> through Ignition, manage its Apps, Ecosystem, and users in the Project Console, then add Modules or join an existing Ecosystem when required.',
+    heroPrimaryLine: fireuxOffer.heroDescription,
     primaryCtaLabel: 'Get started',
     secondaryCtaLabel: 'Browse apps',
     secondaryCtaTo: '/apps',
     consoleBridgeLine:
       'The Project Console brings Ignition, Apps, the selected Ecosystem, and new users together for each FireUX Project.',
-    heroBullets: [
-      'Start App requests with Ignition',
-      'Review Project Apps and Ecosystems',
-      'Monitor new App users',
-      'Browse public Apps, Solutions, Operations, and Modules',
-    ],
+    heroBullets: fireuxOffer.heroBullets,
     rightPanelItems: [
       {
         title: 'Ignition',
@@ -66,8 +103,7 @@ const sourceMeta = {
     ],
     seo: {
       title: 'FireUX — Projects, Apps, and Ecosystems',
-      description:
-        'Start Apps through Ignition and review their Projects, Ecosystems, and new users in the FireUX Project Console.',
+      description: fireuxOffer.heroDescription,
     },
   },
   about: {
@@ -148,7 +184,7 @@ const sourceMeta = {
       name: 'FireUX',
       tagline: 'The parent App for FireUX Projects and Ecosystems',
       description:
-        'FireUX runs the Project Console and public catalogues used to start Apps, review their Project and Ecosystem relationships, and monitor new users.',
+        'FireUX runs the Project Console and public catalogues used to request Apps through Ignition, review Project and Ecosystem relationships, and monitor new App users.',
       modules: [
         {
           name: 'FireUX Core',
@@ -251,8 +287,7 @@ Module package manifest
   getStarted: {
     eyebrow: 'FireUX App',
     title: 'Ignition',
-    description:
-      'Tell us what the App needs to do. Ignition turns the request into a reviewed launch checklist.',
+    description: fireuxOffer.ignition.description,
     setupPrice: '$150',
     monthlyPrice: '$15/month',
     included: [
@@ -274,7 +309,8 @@ Module package manifest
     },
     seo: {
       title: 'FireUX App Ignition',
-      description: 'FireUX App Ignition costs $150 setup and $15 per month.',
+      description:
+        'Request a FireUX App through Ignition. Setup is $150 and maintenance is $15 per month.',
     },
   },
   roadmap: {

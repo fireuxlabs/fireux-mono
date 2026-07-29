@@ -3,6 +3,7 @@ import { collection, deleteField, getDocs, query, where } from 'firebase/firesto
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, unref, type Ref } from 'vue'
 import { KitchenStorage, type Kitchen, type KitchenUpdateInput } from '../../../../../models/kitchen.model'
 
@@ -125,11 +126,14 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     next[to] = Object.keys(style).length ? style : deleteField()
   }
 
-  const normalizeImageShade = (from: string, to: string) => {
+  const normalizeBackdropColor = (from: string, to: string) => {
     if (!hasOwn(source, from)) return
-    const shade = clean(source[from])
+    const color = normalizeHexColor(source[from])
+    if (color === null) {
+      throw new Error('Media backdrop must be a 6-digit hex colour.')
+    }
     if (from !== to) next[from] = deleteField()
-    next[to] = shade === 'light' || shade === 'dark' ? shade : deleteField()
+    next[to] = color || deleteField()
   }
 
   if (isRecord(source.identity)) {
@@ -155,8 +159,8 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     if (hasOwn(identity, 'wordmark_image_url')) {
       source['identity.wordmark_image_url'] = identity.wordmark_image_url
     }
-    if (hasOwn(identity, 'image_shade')) {
-      source['identity.image_shade'] = identity.image_shade
+    if (hasOwn(identity, 'media_backdrop_color')) {
+      source['identity.media_backdrop_color'] = identity.media_backdrop_color
     }
   }
 
@@ -191,7 +195,10 @@ function normalizeKitchenUpdatePatch(patch: KitchenUpdateInput) {
     'identity.wordmark_no_logo_image_url'
   )
   moveString('identity.wordmark_image_url', 'identity.wordmark_image_url')
-  normalizeImageShade('identity.image_shade', 'identity.image_shade')
+  normalizeBackdropColor(
+    'identity.media_backdrop_color',
+    'identity.media_backdrop_color'
+  )
 
   moveDefaultString('menus.currency_format', 'menus.currency_format', 'dash')
   moveBoolean('menus.show_currency', 'menus.show_currency', true)

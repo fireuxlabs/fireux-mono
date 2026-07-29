@@ -80,9 +80,12 @@ The detailed manager matrix lives in `collection-manager.md`.
 | Some indexes are hidden from navigation                              | `accepted` | Route availability and navigation prominence are separate concerns                                     |
 
 Kitchen private preview remains fail-closed: it is non-cacheable, labels
-hidden/test rows, withholds public detail links, and only returns strict
-Kitchen/App-support pairs in the current ecosystem or tenant App. It grants no
-new authority.
+hidden/test rows, and only returns strict Kitchen/App-support pairs in the
+current ecosystem or tenant App. Hidden is a discovery state rather than route
+access: hidden Live rows retain their exact detail links, while Test rows have
+no public route. Local development consumes this all-Kitchen projection by
+default; deployed Apps require the authenticated admin/developer preview. The
+preview grants no mutation authority.
 
 ## Drift and decisions
 

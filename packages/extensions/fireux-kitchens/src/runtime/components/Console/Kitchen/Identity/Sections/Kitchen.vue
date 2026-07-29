@@ -218,18 +218,18 @@ async function handleCoverFile(event: Event) {
   coverUploading.value = true
   try {
     const kitchenId = props.kitchenId
+    const placeId = String(props.kitchen?.place_id ?? '').trim()
+    if (!placeId) throw new Error('The linked Place is required.')
     const coverBlob = await resizeImageToCover(file)
     requireWritableData()
     if (!props.canWrite || props.kitchenId !== kitchenId) {
       throw new Error('The selected Kitchen changed before the cover upload.')
     }
-    const url = await uploadImage(`kitchens/${kitchenId}/cover`, coverBlob)
+    const url = await uploadImage(`places/${placeId}/cover`, coverBlob)
     requireWritableData()
     if (!props.canWrite || props.kitchenId !== kitchenId) {
       throw new Error('The selected Kitchen changed before the cover could be saved.')
     }
-    const placeId = String(props.kitchen?.place_id ?? '').trim()
-    if (!placeId) throw new Error('The linked Place is required.')
     await updateCoverImage(url, { id: placeId })
     toast.add({ title: 'Cover image updated', icon: 'i-heroicons-check-circle' })
   } catch (error) {

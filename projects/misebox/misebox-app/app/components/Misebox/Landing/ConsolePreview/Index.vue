@@ -13,10 +13,12 @@
     @open-console="openFullKitchenConsole"
   >
     <template #target>
-      <KitchenCardsPill
-        v-bind="consoleKitchenPill"
-        :link="false"
-        :show-badges="false"
+      <UAvatar
+        :src="consoleKitchenPill.imageUrl || undefined"
+        :alt="consoleKitchenPill.title"
+        icon="i-lucide-cooking-pot"
+        size="md"
+        :title="consoleKitchenPill.title"
       />
     </template>
 

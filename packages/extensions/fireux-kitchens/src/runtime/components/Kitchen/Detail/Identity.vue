@@ -32,6 +32,9 @@
           <p v-if="subtitle" class="kitchen-identity__subtitle">
             {{ subtitle }}
           </p>
+          <p v-if="about" class="kitchen-identity__about">
+            {{ about }}
+          </p>
           <p v-if="address" class="kitchen-identity__address">
             <UIcon name="i-lucide-map-pin" aria-hidden="true" />
             <span>{{ address }}</span>
@@ -93,8 +96,13 @@ const address = computed(() =>
 const subtitle = computed(() =>
   clean(raw.value.tagline || raw.value.brand_tagline) || shortAddress.value
 )
+const about = computed(() => clean(raw.value.about))
 const heroImage = computed(() =>
-  clean(raw.value.cover_image)
+  clean(
+    raw.value.cover_image ||
+      raw.value.display_image_url ||
+      raw.value.image_url
+  )
 )
 const logoImage = computed(() =>
   clean(identityRecord.value.logo_image_url) ||
@@ -170,6 +178,7 @@ const hasSurface = computed(() =>
   Boolean(
     titleRaw.value ||
       heroImage.value ||
+      about.value ||
       address.value ||
       phone.value ||
       website.value ||
@@ -189,9 +198,10 @@ const hasSurface = computed(() =>
 .kitchen-identity__cover {
   height: clamp(15rem, 34vw, 26rem);
   overflow: hidden;
-  border: 1px solid var(--ui-border);
+  border: 1px solid color-mix(in srgb, var(--ui-primary) 20%, var(--ui-border));
   border-radius: calc(var(--ui-radius) * 6);
   background: var(--ui-bg-elevated);
+  box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 16%);
 }
 
 .kitchen-identity__cover img {
@@ -215,6 +225,7 @@ const hasSurface = computed(() =>
   z-index: 1;
   width: calc(100% - clamp(1.5rem, 8vw, 7rem));
   margin: clamp(calc(var(--spacing) * -18), -7vw, calc(var(--spacing) * -12)) auto 0;
+  border-color: color-mix(in srgb, var(--ui-primary) 20%, var(--ui-border));
   backdrop-filter: blur(18px);
 }
 
@@ -238,7 +249,7 @@ const hasSurface = computed(() =>
 
 .kitchen-identity__eyebrow {
   margin: 0 0 calc(var(--spacing) * 2);
-  color: var(--ui-text-muted);
+  color: var(--ui-primary);
   font-size: 0.7rem;
   font-weight: var(--font-weight-extrabold);
   letter-spacing: 0.16em;
@@ -262,6 +273,14 @@ const hasSurface = computed(() =>
   color: var(--ui-text-toned);
   font-size: clamp(0.95rem, 1.5vw, 1.08rem);
   line-height: 1.55;
+}
+
+.kitchen-identity__about {
+  max-width: 64ch;
+  margin: calc(var(--spacing) * 3) 0 0;
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.65;
 }
 
 .kitchen-identity__address {
@@ -320,6 +339,7 @@ const hasSurface = computed(() =>
 @media (max-width: 40rem) {
   .kitchen-identity__cover {
     height: 13rem;
+    border-radius: calc(var(--ui-radius) * 5);
   }
 
   .kitchen-identity--with-cover .kitchen-identity__panel {

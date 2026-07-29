@@ -62,6 +62,35 @@ export function menuRoutePath(options: {
   return indexPath ? `${indexPath}/${menuId}` : ''
 }
 
+export function menuCanonicalPath(options: {
+  scope: MenuRouteScope
+  menuId: unknown
+  context?: MenuRouteContext
+  sourceKitchenSlug?: unknown
+  sourceMenuId?: unknown
+}) {
+  const sourceKitchenSlug = text(options.sourceKitchenSlug)
+  const sourceMenuId = text(options.sourceMenuId)
+
+  if (
+    options.scope.kind !== 'tenant' &&
+    sourceKitchenSlug &&
+    sourceMenuId
+  ) {
+    return menuRoutePath({
+      scope: directoryMenuRouteScope(sourceKitchenSlug),
+      menuId: sourceMenuId,
+      context: options.context,
+    })
+  }
+
+  return menuRoutePath({
+    scope: options.scope,
+    menuId: options.menuId,
+    context: options.context,
+  })
+}
+
 export function menuRouteQrPath(options: {
   scope: MenuRouteScope
   menuId: unknown

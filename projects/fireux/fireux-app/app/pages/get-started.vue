@@ -49,13 +49,17 @@
             {{ originLabel }}
           </UBadge>
           <h2 class="text-xl font-semibold text-highlighted">
-            {{ submittedReference ? 'Request received' : 'Request Ignition' }}
+            {{
+              submittedReference
+                ? 'Request received'
+                : fireuxOffer.ignition.requestTitle
+            }}
           </h2>
           <p class="text-sm text-muted">
             {{
               submittedReference
                 ? `We will reply to ${form.contact_email}.`
-                : 'Tell us what to configure. No payment is taken here.'
+                : fireuxOffer.ignition.requestDescription
             }}
           </p>
         </div>
@@ -255,7 +259,7 @@
 <script setup lang="ts">
 import { computed, reactive, ref } from 'vue'
 import { useRoute } from '#imports'
-import { appMeta } from '../meta'
+import { appMeta, fireuxOffer } from '../meta'
 
 type IgnitionResponse = {
   ok: true
@@ -285,14 +289,7 @@ const brandingOptions = [
   { label: 'I need help with branding', value: 'help' },
 ]
 
-const confirmationSteps = [
-  { title: 'Review', description: 'We check the request and reply.' },
-  { title: 'Build', description: 'We agree the scope and configure the app.' },
-  {
-    title: 'Launch',
-    description: 'You approve it. We deploy and invite users.',
-  },
-]
+const confirmationSteps = fireuxOffer.ignition.confirmationSteps
 
 const initialForm = () => ({
   contact_name: '',

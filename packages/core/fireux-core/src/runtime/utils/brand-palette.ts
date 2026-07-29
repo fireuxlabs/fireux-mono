@@ -18,7 +18,7 @@ const record = (value: unknown): Record<string, unknown> | null =>
     ? value as Record<string, unknown>
     : null
 
-const normalizeHex = (value: unknown) => {
+export const normalizeHexColor = (value: unknown) => {
   const candidate = String(value ?? '').trim()
   if (!candidate) return ''
   return /^#[0-9a-f]{6}$/i.test(candidate) ? candidate.toLowerCase() : null
@@ -45,7 +45,7 @@ export function parseBrandPalette(value: unknown): BrandPaletteParseResult {
 
   const palette: SparseBrandPalette = {}
   for (const key of BRAND_PALETTE_KEYS) {
-    const color = normalizeHex(source[key])
+    const color = normalizeHexColor(source[key])
     if (color === null) {
       return {
         ok: false,
@@ -66,7 +66,7 @@ export function readBrandPalette(value: unknown): SparseBrandPalette {
 
   const palette: SparseBrandPalette = {}
   for (const key of BRAND_PALETTE_KEYS) {
-    const color = normalizeHex(source[key])
+    const color = normalizeHexColor(source[key])
     if (color) palette[key] = color
   }
   return palette

@@ -71,7 +71,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     optEnv('NUXT_PUBLIC_DEVELOPER_ID')
   const envFirebaseApiKey = optEnv('NUXT_FIREBASE_API_KEY')
   const envFirebaseAppId = reqEnv('NUXT_FIREBASE_APP_ID')
-  const envFirebaseMeasurementId = optEnv('NUXT_FIREBASE_MEASUREMENT_ID')
   const moduleNames = (nuxt.modules || [])
     .map(moduleName)
     .filter(Boolean) as string[]
@@ -113,7 +112,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     firebaseApp: {
       ...(envFirebaseApiKey ? { apiKey: envFirebaseApiKey } : {}),
       appId: envFirebaseAppId,
-      ...(envFirebaseMeasurementId ? { measurementId: envFirebaseMeasurementId } : {}),
     },
 
     private: {
