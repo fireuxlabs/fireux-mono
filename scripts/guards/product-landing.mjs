@@ -12,12 +12,20 @@ import path from 'node:path'
 
 const CORE_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue'
+const CORE_STYLE_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/ProductIndex.css'
 const CORE_APP_COLLECTION_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/AppCollection.vue'
 const CORE_CONSOLE_PREVIEW_FRAME_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ConsolePreviewFrame.vue'
 const CORE_CARD_ORBIT_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/CardOrbit.vue'
+const CORE_CARD_ORBIT_GEOMETRY_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/card-orbit-geometry.ts'
+const CORE_CARD_ORBIT_POINTER_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/use-card-orbit-pointer.ts'
+const CORE_CARD_ORBIT_STYLE_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/CardOrbit.css'
 const CORE_CARD_ORBIT_TYPE_PATH =
   'packages/core/fireux-core/src/types/landing-card-orbit.ts'
 const CORE_PRODUCT_PROOF_PATH =
@@ -31,6 +39,8 @@ const CORE_PRODUCT_LANDING_TYPE_PATH =
 const PROJECTS_PATH = 'projects'
 const MISEBOX_ADAPTER_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue'
+const MISEBOX_LANDING_CONTENT_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/landing-content.ts'
 const MISEBOX_PAGE_PATH = 'projects/misebox/misebox-app/app/pages/index.vue'
 const MISEBOX_CARD_WINDOW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/ElementWindow.vue'
@@ -40,6 +50,14 @@ const MISEBOX_POWER_CARDS_DEMO_PATH =
   'projects/misebox/misebox-app/app/composables/product-demo/useMiseboxPowerCardsProductDemo.ts'
 const MISEBOX_POWER_CARD_EIGHT_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/PowerCardEight.vue'
+const MISEBOX_HANDOFF_PREVIEW_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/HandoffPreview.vue'
+const MISEBOX_HANDOFF_PREVIEW_STYLE_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/handoff-preview.css'
+const MISEBOX_HANDOFF_STAGE_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/HandoffStage.vue'
+const MISEBOX_HANDOFF_STAGE_STYLE_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/handoff-stage.css'
 const MISEBOX_ORDERING_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/OrderingPreview.vue'
 const MISEBOX_ORDERING_TOOL_PATH =
@@ -98,6 +116,8 @@ const MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
     'projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/EmptyCanvas.vue',
 }
 const MISEBOX_META_PATH = 'projects/misebox/misebox-app/app/meta.ts'
+const MISEBOX_META_SOURCE_PATH =
+  'projects/misebox/misebox-app/app/content/meta/source.ts'
 const MISEBOX_JOBS_MIDDLEWARE_PATH =
   'projects/misebox/misebox-app/app/middleware/misebox-jobs-surface.global.ts'
 const MISEBOX_JOBS_LAYOUT_PATH =
@@ -110,8 +130,7 @@ const FIREUX_CONSOLE_PREVIEW_PATH =
 const FIREUX_PRODUCT_DEMO_PATH =
   'projects/fireux/fireux-app/app/composables/product-demo/useFireuxProductDemo.ts'
 const FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
-  apps:
-    'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Apps.vue',
+  apps: 'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Apps.vue',
   ecosystems:
     'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Ecosystems.vue',
   privateState:
@@ -188,7 +207,7 @@ function slotContains(source, slotName, marker) {
   return end !== -1 && source.slice(start, end).includes(marker)
 }
 
-function extractScopedStyle({ filePath, source, violations }) {
+function extractScopedStyle({ repoRoot, filePath, source, violations }) {
   const allOpeningTags = [...source.matchAll(/<style\b[^>]*>/g)]
   const openingTags = [...source.matchAll(/<style\b(?=[^>]*\bscoped\b)[^>]*>/g)]
 
@@ -200,6 +219,11 @@ function extractScopedStyle({ filePath, source, violations }) {
   }
 
   const openingTag = openingTags[0]
+  const externalSource = openingTag[0].match(/\bsrc=["']([^"']+)["']/)
+  if (externalSource) {
+    const stylesheetPath = path.join(path.dirname(filePath), externalSource[1])
+    return read(repoRoot, stylesheetPath)
+  }
   const start = openingTag.index + openingTag[0].length
   const end = source.indexOf('</style>', start)
 
@@ -393,13 +417,14 @@ function normalizeSelector(selector) {
 }
 
 function checkMobileFirst({
+  repoRoot,
   filePath,
   source,
   selectors,
   breakpoints,
   violations,
 }) {
-  const style = extractScopedStyle({ filePath, source, violations })
+  const style = extractScopedStyle({ repoRoot, filePath, source, violations })
   if (style === null) return
 
   const markerCount = count(
@@ -507,23 +532,48 @@ function checkMobileFirst({
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
-  const core = read(repoRoot, CORE_PATH)
+  const core = [
+    read(repoRoot, CORE_PATH),
+    read(repoRoot, CORE_STYLE_PATH),
+  ].join('\n')
   const appCollection = read(repoRoot, CORE_APP_COLLECTION_PATH)
   const consolePreviewFrame = read(repoRoot, CORE_CONSOLE_PREVIEW_FRAME_PATH)
-  const cardOrbit = read(repoRoot, CORE_CARD_ORBIT_PATH)
+  const cardOrbit = [
+    read(repoRoot, CORE_CARD_ORBIT_PATH),
+    read(repoRoot, CORE_CARD_ORBIT_GEOMETRY_PATH),
+    read(repoRoot, CORE_CARD_ORBIT_POINTER_PATH),
+    read(repoRoot, CORE_CARD_ORBIT_STYLE_PATH),
+  ].join('\n')
   const cardOrbitType = read(repoRoot, CORE_CARD_ORBIT_TYPE_PATH)
   const productProof = read(repoRoot, CORE_PRODUCT_PROOF_PATH)
   const productCatalogue = read(repoRoot, CORE_PRODUCT_CATALOGUE_PATH)
   const productEntryPaths = read(repoRoot, CORE_PRODUCT_ENTRY_PATH)
   const productLandingTypes = read(repoRoot, CORE_PRODUCT_LANDING_TYPE_PATH)
-  const discoveredProductLandingAdapters =
-    discoverProductLandingAdapters(repoRoot)
-  const miseboxAdapter = read(repoRoot, MISEBOX_ADAPTER_PATH)
+  const discoveredProductLandingAdapters = discoverProductLandingAdapters(
+    repoRoot
+  ).map((adapter) =>
+    adapter.filePath === MISEBOX_ADAPTER_PATH
+      ? {
+          ...adapter,
+          source: `${adapter.source}\n${read(repoRoot, MISEBOX_LANDING_CONTENT_PATH)}`,
+        }
+      : adapter
+  )
+  const miseboxAdapter = [
+    read(repoRoot, MISEBOX_ADAPTER_PATH),
+    read(repoRoot, MISEBOX_LANDING_CONTENT_PATH),
+  ].join('\n')
   const miseboxPage = read(repoRoot, MISEBOX_PAGE_PATH)
   const miseboxCardWindow = read(repoRoot, MISEBOX_CARD_WINDOW_PATH)
   const miseboxPowerCards = read(repoRoot, MISEBOX_POWER_CARDS_PATH)
   const miseboxPowerCardsDemo = read(repoRoot, MISEBOX_POWER_CARDS_DEMO_PATH)
   const miseboxPowerCardEight = read(repoRoot, MISEBOX_POWER_CARD_EIGHT_PATH)
+  const miseboxHandoffPreview = [
+    read(repoRoot, MISEBOX_HANDOFF_PREVIEW_PATH),
+    read(repoRoot, MISEBOX_HANDOFF_PREVIEW_STYLE_PATH),
+    read(repoRoot, MISEBOX_HANDOFF_STAGE_PATH),
+    read(repoRoot, MISEBOX_HANDOFF_STAGE_STYLE_PATH),
+  ].join('\n')
   const miseboxOrderingPreview = read(repoRoot, MISEBOX_ORDERING_PREVIEW_PATH)
   const miseboxOrderingTool = read(repoRoot, MISEBOX_ORDERING_TOOL_PATH)
   const miseboxOrderingToolContract = read(
@@ -541,7 +591,10 @@ export async function run(ctx) {
       ([key, filePath]) => [key, read(repoRoot, filePath)]
     )
   )
-  const miseboxMeta = read(repoRoot, MISEBOX_META_PATH)
+  const miseboxMeta = [
+    read(repoRoot, MISEBOX_META_PATH),
+    read(repoRoot, MISEBOX_META_SOURCE_PATH),
+  ].join('\n')
   const miseboxJobsMiddleware = read(repoRoot, MISEBOX_JOBS_MIDDLEWARE_PATH)
   const miseboxJobsLayout = read(repoRoot, MISEBOX_JOBS_LAYOUT_PATH)
   const fireuxAdapter = read(repoRoot, FIREUX_ADAPTER_PATH)
@@ -569,6 +622,7 @@ export async function run(ctx) {
   }
 
   checkMobileFirst({
+    repoRoot,
     filePath: CORE_PATH,
     source: core,
     selectors: [
@@ -582,6 +636,7 @@ export async function run(ctx) {
   })
 
   checkMobileFirst({
+    repoRoot,
     filePath: CORE_CONSOLE_PREVIEW_FRAME_PATH,
     source: consolePreviewFrame,
     selectors: ['.landing-console-preview__layout'],
@@ -590,6 +645,7 @@ export async function run(ctx) {
   })
 
   checkMobileFirst({
+    repoRoot,
     filePath: CORE_APP_COLLECTION_PATH,
     source: appCollection,
     selectors: [
@@ -602,6 +658,7 @@ export async function run(ctx) {
   })
 
   checkMobileFirst({
+    repoRoot,
     filePath: CORE_CARD_ORBIT_PATH,
     source: cardOrbit,
     selectors: [
@@ -614,6 +671,7 @@ export async function run(ctx) {
   })
 
   checkMobileFirst({
+    repoRoot,
     filePath: CORE_PRODUCT_PROOF_PATH,
     source: productProof,
     selectors: [
@@ -627,6 +685,7 @@ export async function run(ctx) {
   })
 
   checkMobileFirst({
+    repoRoot,
     filePath: CORE_PRODUCT_CATALOGUE_PATH,
     source: productCatalogue,
     selectors: [
@@ -640,6 +699,7 @@ export async function run(ctx) {
   })
 
   checkMobileFirst({
+    repoRoot,
     filePath: CORE_PRODUCT_ENTRY_PATH,
     source: productEntryPaths,
     selectors: [
@@ -649,6 +709,15 @@ export async function run(ctx) {
       '.landing-product-entry-paths__tool',
     ],
     breakpoints: ['640px'],
+    violations,
+  })
+
+  checkMobileFirst({
+    repoRoot,
+    filePath: MISEBOX_HANDOFF_STAGE_PATH,
+    source: read(repoRoot, MISEBOX_HANDOFF_STAGE_PATH),
+    selectors: ['.misebox-handoff__stage', '.misebox-handoff__connection'],
+    breakpoints: ['48rem'],
     violations,
   })
 
@@ -737,6 +806,7 @@ export async function run(ctx) {
     [MISEBOX_ADAPTER_PATH, miseboxAdapter],
     [MISEBOX_CARD_WINDOW_PATH, miseboxCardWindow],
     [MISEBOX_POWER_CARDS_PATH, miseboxPowerCards],
+    [MISEBOX_HANDOFF_PREVIEW_PATH, miseboxHandoffPreview],
     [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxConsolePreview],
     [MISEBOX_ORDERING_PREVIEW_PATH, miseboxOrderingPreview],
     [MISEBOX_FINANCE_PREVIEW_PATH, miseboxFinancePreview],
@@ -1232,7 +1302,7 @@ export async function run(ctx) {
     '<slot name="target"',
     'v-for="item in items"',
     'v-for="item in secondaryItems"',
-    ":aria-current=\"item.id === modelValue ? 'page' : undefined\"",
+    ':aria-current="item.id === modelValue ? \'page\' : undefined"',
     "emit('update:modelValue'",
     "emit('openConsole'",
     '<slot :selected-item="selectedItem"',
@@ -1273,8 +1343,8 @@ export async function run(ctx) {
   ]) {
     const [filePath, source] = consumer
     if (
-      count(source, /<LandingConsolePreviewFrame\b/g) !== 1
-      || count(source, /<\/LandingConsolePreviewFrame>/g) !== 1
+      count(source, /<LandingConsolePreviewFrame\b/g) !== 1 ||
+      count(source, /<\/LandingConsolePreviewFrame>/g) !== 1
     ) {
       violations.push(
         `${filePath}: must consume exactly one shared LandingConsolePreviewFrame`
@@ -1462,7 +1532,9 @@ export async function run(ctx) {
       }
     }
 
-    if (!slotContains(adapter.source, 'onboarding', '<LandingProductEntryPaths')) {
+    if (
+      !slotContains(adapter.source, 'onboarding', '<LandingProductEntryPaths')
+    ) {
       violations.push(
         `${adapter.filePath}: onboarding slot must own LandingProductEntryPaths`
       )
@@ -1499,11 +1571,12 @@ export async function run(ctx) {
     {
       filePath: MISEBOX_ADAPTER_PATH,
       source: miseboxAdapter,
-      heroOrbitTag: 'MiseboxPowerCards',
+      heroPreviewTag: 'MiseboxLandingHandoffPreview',
       proofSectionCount: 3,
       catalogueCount: 3,
       required: [
         '<LandingProductIndex',
+        'hero-layout="proof-wide"',
         '#hero-preview',
         '#onboarding',
         '#console',
@@ -1512,7 +1585,7 @@ export async function run(ctx) {
         '#tools',
         '#solutions',
         '#operations',
-        '<MiseboxPowerCards',
+        '<MiseboxLandingHandoffPreview',
         '<LandingProductEntryPaths',
         '<LandingProductProofSection',
         '<MiseboxLandingConsolePreview',
@@ -1549,7 +1622,7 @@ export async function run(ctx) {
     {
       filePath: FIREUX_ADAPTER_PATH,
       source: fireuxAdapter,
-      heroOrbitTag: 'FireUXLandingCardOrbit',
+      heroPreviewTag: 'FireUXLandingCardOrbit',
       proofSectionCount: 1,
       catalogueCount: 2,
       required: [
@@ -1607,8 +1680,8 @@ export async function run(ctx) {
       ['LandingProductIndex closing tag', /<\/LandingProductIndex>/g],
       ['hero-preview slot', /#hero-preview\b/g],
       [
-        `${consumer.heroOrbitTag} hero orbit`,
-        new RegExp(`<${consumer.heroOrbitTag}\\b`, 'g'),
+        `${consumer.heroPreviewTag} hero preview`,
+        new RegExp(`<${consumer.heroPreviewTag}\\b`, 'g'),
       ],
       ['LandingProductProofSection consumer', /<LandingProductProofSection\b/g],
       ['LandingAppCollection consumer', /<LandingAppCollection\b/g],
@@ -1629,7 +1702,7 @@ export async function run(ctx) {
     }
 
     for (const [slotName, marker] of [
-      ['hero-preview', `<${consumer.heroOrbitTag}`],
+      ['hero-preview', `<${consumer.heroPreviewTag}`],
       ['onboarding', '<LandingProductEntryPaths'],
       ['console', '<LandingProductProofSection'],
       ['apps', '<LandingAppCollection'],
@@ -1686,7 +1759,7 @@ export async function run(ctx) {
     'name="item"',
     'inert',
     '@pointerenter="selectOnHover(item, $event)"',
-    "type SelectionSource = 'click' | 'hover' | null",
+    "export type OrbitSelectionSource = 'click' | 'hover' | null",
     "event.pointerType !== 'mouse'",
     "selectionSource.value === 'hover'",
     '@keydown.left.prevent',
@@ -1694,12 +1767,12 @@ export async function run(ctx) {
     'window.matchMedia(REDUCED_MOTION_QUERY)',
     'new IntersectionObserver',
     'document.visibilityState',
-    'const INTRO_DURATION = 7200',
-    'const INTRO_YAW_TURNS = 2',
-    'const IDLE_SPEED = TAU / 20000',
+    'export const ORBIT_INTRO_DURATION = 7200',
+    'export const ORBIT_IDLE_SPEED = ORBIT_TAU / 20000',
+    '(2 * ORBIT_TAU * 2) / ORBIT_INTRO_DURATION',
     'mobileAutoplay: true',
     '(isMobile.value || isVisible.value)',
-    'const INTRO_START_SPEED =',
+    'export const ORBIT_INTRO_START_SPEED =',
     'const decelerationTravel =',
     '2.5 * progress ** 4',
     'let orbitDirection: -1 | 1 = 1',
@@ -1731,10 +1804,7 @@ export async function run(ctx) {
     }
   }
 
-  for (const forbidden of [
-    '--landing-orbit-depth-blur',
-    'filter: blur(',
-  ]) {
+  for (const forbidden of ['--landing-orbit-depth-blur', 'filter: blur(']) {
     if (cardOrbit.includes(forbidden)) {
       violations.push(
         `${CORE_CARD_ORBIT_PATH}: orbit cards must remain crisp at every depth (${forbidden})`
@@ -1763,7 +1833,9 @@ export async function run(ctx) {
     )
   }
 
-  for (const [filePath, source] of [[FIREUX_CARD_ORBIT_PATH, fireuxCardOrbit]]) {
+  for (const [filePath, source] of [
+    [FIREUX_CARD_ORBIT_PATH, fireuxCardOrbit],
+  ]) {
     if (!source.includes('<LandingCardOrbit')) {
       violations.push(`${filePath}: must consume the shared Core card orbit`)
     }
@@ -1806,6 +1878,43 @@ export async function run(ctx) {
     if (fireuxCardOrbit.includes(forbidden)) {
       violations.push(
         `${FIREUX_CARD_ORBIT_PATH}: live FireUX orbit acquired Demo or fixture data (${forbidden})`
+      )
+    }
+  }
+
+  for (const required of [
+    'useMiseboxProductDemo()',
+    '<MenuOrderCatalogue',
+    '<MiseboxLandingConsolePreviewMenus',
+    '<MiseboxLandingConsolePreviewMise',
+    '<MiseboxLandingConsolePreviewOrders',
+    "id: 'publish'",
+    "id: 'prepare'",
+    "id: 'serve'",
+    ':aria-pressed="selectedChapter === chapter.id"',
+    ':data-handoff-chapter="selectedChapter"',
+    'inert',
+    '@media (prefers-reduced-motion: reduce)',
+  ]) {
+    if (!miseboxHandoffPreview.includes(required)) {
+      violations.push(
+        `${MISEBOX_HANDOFF_PREVIEW_PATH}: missing connected Menu-to-Console hero contract (${required})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    'setInterval(',
+    'setTimeout(',
+    'requestAnimationFrame',
+    "addEventListener('scroll'",
+    'useFetch(',
+    '$fetch(',
+    'firebase',
+  ]) {
+    if (miseboxHandoffPreview.includes(forbidden)) {
+      violations.push(
+        `${MISEBOX_HANDOFF_PREVIEW_PATH}: hero handoff acquired autoplay, page-scroll, or data authority (${forbidden})`
       )
     }
   }
@@ -1888,7 +1997,7 @@ export async function run(ctx) {
     "dataSource: 'demo'",
     "import('fireux-kitchens/runtime/demo/kitchen/scenarios')",
     "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
-    'const kitchens: MiseboxPowerCardsProductDemo[\'cards\'][\'kitchens\']',
+    "const kitchens: MiseboxPowerCardsProductDemo['cards']['kitchens']",
     'manifest.presentation.currencyCode',
   ]) {
     if (!miseboxPowerCardsDemo.includes(required)) {
@@ -1992,10 +2101,11 @@ export async function run(ctx) {
       [MISEBOX_ADAPTER_PATH, miseboxAdapter],
       [MISEBOX_CARD_WINDOW_PATH, miseboxCardWindow],
       [MISEBOX_POWER_CARDS_PATH, miseboxPowerCards],
+      [MISEBOX_HANDOFF_PREVIEW_PATH, miseboxHandoffPreview],
     ]) {
       if (source.includes(forbidden)) {
         violations.push(
-          `${filePath}: PowerCards must not couple ordinary page scrolling to animation (${forbidden})`
+          `${filePath}: Misebox landing presentation must not couple ordinary page scrolling to animation (${forbidden})`
         )
       }
     }
@@ -2031,7 +2141,7 @@ export async function run(ctx) {
   for (const required of [
     '<MenuCollectionManager',
     ':index="menuIndex"',
-    "import { usePublicMenuIndex }",
+    'import { usePublicMenuIndex }',
     'const menuIndex = usePublicMenuIndex()',
   ]) {
     if (!miseboxOrderingTool.includes(required)) {

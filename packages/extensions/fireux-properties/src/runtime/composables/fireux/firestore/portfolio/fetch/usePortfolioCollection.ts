@@ -1,17 +1,5 @@
-// Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Portfolio consoles.
-// Concurrent edit — 2026-07-20 22:57 CEST — Both-Entity Authority — Portfolio: expose only complete, current-App root/support target pairs.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name exact App access-record joins directly.
-// Concurrent edit — 2026-07-21 23:18 CEST — Console family alignment: fail closed on malformed AppPortfolio authority.
-import {
-  collection,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
-import { computed, isRef, type Ref } from 'vue'
+import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -19,93 +7,46 @@ import {
   readConsoleTargetAuthority,
   targetHasConsoleAccess,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   PortfolioStorage,
   type AppPortfolio,
-  type Portfolio,
 } from '../../../../../models/portfolio.model'
+import { usePortfolioInterface } from '../utils/view/usePortfolioInterface'
+import { useAppSupportAccessQueries } from '../../app-support-collection'
+import { useTargetCollectionSelection } from '../../collection-selection'
+import { composePortfolioCollectionTargets } from './portfolio-collection-projection'
 import {
-  usePortfolioInterface,
-  type PortfolioSurface,
-} from '../utils/view/usePortfolioInterface'
-
-type PortfolioCollectionDoc = Partial<Portfolio> & {
-  id?: string
-}
-type PortfolioCollectionItem = PortfolioSurface & { id?: string }
-
-const DEFAULT_COLLECTION_PATH = PortfolioStorage.rootCollection
-const UNSUPPORTED_TEST_SOURCE_MESSAGE =
-  '[fireux-properties] Portfolio Test source is unsupported: no canonical simulation producer exists.'
-
-export type PortfolioCollectionFilterValue = string | number | null | undefined
-export type PortfolioCollectionFilter = {
-  ids?: PortfolioCollectionFilterValue[] | null | undefined
-  operatorId?: PortfolioCollectionFilterValue
-  teamId?: PortfolioCollectionFilterValue
-}
-export type PortfolioCollectionSource = ConsoleSource
-
-type UsePortfolioCollectionOptions = {
-  source?:
-    | PortfolioCollectionSource
-    | Ref<PortfolioCollectionSource | null | undefined>
-    | null
-  filter?:
-    | PortfolioCollectionFilter
-    | Ref<PortfolioCollectionFilter | null | undefined>
-    | null
-}
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
-function resolvePortfolioId(portfolio: { id?: unknown } | null | undefined) {
-  return normalizeString(portfolio?.id)
-}
-
-function portfolioRootBelongsToApp(
-  portfolio: PortfolioCollectionDoc,
-  appId: string
-) {
-  const state = normalizeFireuxAppScopeState(portfolio.app_scope_state)
-  return (
-    (state === 'parent_app' || state === 'tenant_app') &&
-    normalizeString(portfolio.app_scope_app_id) === appId
-  )
-}
+  DEFAULT_COLLECTION_PATH,
+  UNSUPPORTED_TEST_SOURCE_MESSAGE,
+  normalizeString,
+  portfolioRootBelongsToApp,
+  resolvePortfolioId,
+  type PortfolioCollectionDoc,
+  type PortfolioCollectionItem,
+  type UsePortfolioCollectionOptions,
+} from './portfolio-collection-contract'
+export type {
+  PortfolioCollectionFilter,
+  PortfolioCollectionFilterValue,
+  PortfolioCollectionSource,
+} from './portfolio-collection-contract'
 
 export function usePortfolioCollection(
   options: UsePortfolioCollectionOptions = {}
 ) {
   const db = useFirestore()
-  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
+  const {
+    sourceMode,
+    hasFilter,
+    filterOperatorId,
+    hasOperatorFilter,
+    filterIdSet,
+  } = useTargetCollectionSelection(options, 'live')
+  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
+    useFirestoreRead()
   const { appId } = useFireUXConfig()
   const { surface } = usePortfolioInterface()
-  const sourceMode = computed<PortfolioCollectionSource>(() => {
-    if (isRef(options.source)) return options.source.value ?? 'live'
-    return options.source ?? 'live'
-  })
-  const resolvedFilter = computed<PortfolioCollectionFilter | undefined>(() => {
-    if (isRef(options.filter)) return options.filter.value ?? undefined
-    return options.filter ?? undefined
-  })
-  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterOperatorId = computed(() =>
-    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
-  )
-  const filterIdSet = computed(
-    () =>
-      new Set(
-        (resolvedFilter.value?.ids ?? [])
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      )
-  )
+
   const usesTargetedRootRead = computed(
     () => hasFilter.value || hasOperatorFilter.value
   )
@@ -120,11 +61,37 @@ export function usePortfolioCollection(
       : ''
   )
   const resolvedAppId = computed(() => normalizeString(appId))
-  const appSupportCollectionPath = computed(() =>
-    resolvedAppId.value
-      ? `${AppStorage.collection}/${resolvedAppId.value}/${PortfolioStorage.appSupportCollection}`
-      : ''
+  const acceptsAppSupport = (
+    root: PortfolioCollectionDoc,
+    appSupport: AppPortfolio | undefined
+  ) => {
+    if (
+      !appSupport ||
+      !readConsoleTargetAuthority(appSupport) ||
+      !resolvedAppId.value ||
+      !portfolioRootBelongsToApp(root, resolvedAppId.value)
+    ) {
+      return false
+    }
+    return true
+  }
+  const appSupportAccessEnabled = computed(
+    () =>
+      sourceMode.value === 'live' &&
+      hasOperatorFilter.value &&
+      Boolean(filterOperatorId.value)
   )
+  const {
+    collectionPath: appSupportCollectionPath,
+    operatorQuery: appSupportOperatorQuery,
+    teamQuery: appSupportTeamQuery,
+  } = useAppSupportAccessQueries<AppPortfolio>({
+    db,
+    appId: resolvedAppId,
+    collectionName: PortfolioStorage.appSupportCollection,
+    accessId: filterOperatorId,
+    enabled: appSupportAccessEnabled,
+  })
   const targetedAppSupportCollectionPath = computed(() =>
     sourceMode.value === 'live' && hasFilter.value && !hasOperatorFilter.value
       ? appSupportCollectionPath.value
@@ -133,26 +100,6 @@ export function usePortfolioCollection(
   const targetedAppSupportSource = firestoreLoadDocsByIds<AppPortfolio>({
     collectionPath: targetedAppSupportCollectionPath,
     ids: computed(() => [...filterIdSet.value]),
-  })
-  const appSupportOperatorQuery = computed<Query<AppPortfolio> | null>(() => {
-    if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
-
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
-
-    return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.appSupportCollection),
-      where('operator_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<AppPortfolio>
-  })
-  const appSupportTeamQuery = computed<Query<AppPortfolio> | null>(() => {
-    if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
-
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
-
-    return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, PortfolioStorage.appSupportCollection),
-      where('team_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<AppPortfolio>
   })
   const appSupportOperatorSource = firestoreQuery<AppPortfolio>(
     appSupportOperatorQuery,
@@ -188,9 +135,7 @@ export function usePortfolioCollection(
       ? allowedPortfolioIds.value
       : [...filterIdSet.value]
 
-    return hasFilter.value
-      ? ids.filter((id) => filterIdSet.value.has(id))
-      : ids
+    return hasFilter.value ? ids.filter((id) => filterIdSet.value.has(id)) : ids
   })
   const liveRootSource = firestoreFetchCollection<PortfolioCollectionDoc>(
     liveRootCollectionPath
@@ -200,91 +145,40 @@ export function usePortfolioCollection(
     ids: targetedPortfolioIds,
   })
 
-  const liveItems = computed<PortfolioCollectionItem[]>(() => {
-    const rootById = new Map<string, PortfolioCollectionDoc>()
-    const appSupportById = new Map<string, AppPortfolio>()
-
-    for (const portfolio of liveRootDocs.docs.value ?? []) {
-      const id = resolvePortfolioId(portfolio)
-      if (!id) continue
-      rootById.set(id, {
-        ...portfolio,
-        id,
-      })
-    }
-
-    for (const appSupport of appSupportSource.value ?? []) {
-      const id = resolvePortfolioId(appSupport)
-      if (!id) continue
-      appSupportById.set(id, {
-        ...appSupport,
-        id,
-      })
-    }
-
-    const merged: PortfolioCollectionItem[] = []
-    const seen = new Set<string>()
-
-    for (const portfolio of liveRootDocs.docs.value ?? []) {
-      const id = resolvePortfolioId(portfolio)
-      if (!id || seen.has(id)) continue
-      seen.add(id)
-
-      const root = {
-        ...(rootById.get(id) ?? {}),
-        id,
-      }
-      const appSupport = appSupportById.get(id)
-      if (
-        !appSupport ||
-        !readConsoleTargetAuthority(appSupport) ||
-        !resolvedAppId.value ||
-        !portfolioRootBelongsToApp(root, resolvedAppId.value)
-      ) continue
-
-      const item = surface({
-        portfolio: root,
-        appSupport,
-      })
-      if (item) merged.push(item)
-    }
-
-    return merged
-  })
-
-  const normalizeRootItems = (items: PortfolioCollectionDoc[]) =>
-    items.reduce<PortfolioCollectionItem[]>((normalized, portfolio) => {
-      const item = surface({ portfolio })
-      if (item) normalized.push(item)
-      return normalized
-    }, [])
-
-  const collectionItems = computed<PortfolioCollectionItem[]>(() => {
-    if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') return []
-    if (!usesTargetedRootRead.value) {
-      return normalizeRootItems(liveRootSource.value ?? [])
-    }
-    return liveItems.value
-  })
+  const collectionItems = computed<PortfolioCollectionItem[]>(() =>
+    composePortfolioCollectionTargets({
+      source: sourceMode.value,
+      usesTargetedRead: usesTargetedRootRead.value,
+      roots: usesTargetedRootRead.value
+        ? (liveRootDocs.docs.value ?? [])
+        : (liveRootSource.value ?? []),
+      appSupport: appSupportSource.value ?? [],
+      surface,
+      acceptAppSupport: acceptsAppSupport,
+    })
+  )
 
   const portfolios = computed<PortfolioCollectionItem[]>(() =>
-    collectionItems.value.reduce<PortfolioCollectionItem[]>((acc, portfolio) => {
-      const id = resolvePortfolioId(portfolio)
-      if (!id) return acc
-      if (hasFilter.value && !filterIdSet.value.has(id)) return acc
-      if (hasOperatorFilter.value) {
-        if (!filterOperatorId.value) return acc
-        if (!targetHasConsoleAccess(portfolio, filterOperatorId.value)) return acc
-      }
+    collectionItems.value.reduce<PortfolioCollectionItem[]>(
+      (acc, portfolio) => {
+        const id = resolvePortfolioId(portfolio)
+        if (!id) return acc
+        if (hasFilter.value && !filterIdSet.value.has(id)) return acc
+        if (hasOperatorFilter.value) {
+          if (!filterOperatorId.value) return acc
+          if (!targetHasConsoleAccess(portfolio, filterOperatorId.value))
+            return acc
+        }
 
-      acc.push({
-        ...portfolio,
-        id,
-      })
+        acc.push({
+          ...portfolio,
+          id,
+        })
 
-      return acc
-    }, [])
+        return acc
+      },
+      []
+    )
   )
 
   const count = computed(() => portfolios.value.length)
@@ -296,7 +190,8 @@ export function usePortfolioCollection(
     return (
       liveRootDocs.pending.value ||
       (hasOperatorFilter.value
-        ? appSupportOperatorSource.pending.value || appSupportTeamSource.pending.value
+        ? appSupportOperatorSource.pending.value ||
+          appSupportTeamSource.pending.value
         : targetedAppSupportSource.pending.value)
     )
   })
@@ -347,16 +242,15 @@ export function usePortfolioCollection(
       appSupportOperatorSource.error.value ||
       appSupportTeamSource.error.value ||
       targetedAppSupportSource.error.value
-    ) return undefined
+    )
+      return undefined
 
     const ids = appSupportSource.value
-      .filter(appSupport => !readConsoleTargetAuthority(appSupport))
-      .map(appSupport => resolvePortfolioId(appSupport))
+      .filter((appSupport) => !readConsoleTargetAuthority(appSupport))
+      .map((appSupport) => resolvePortfolioId(appSupport))
       .filter(Boolean)
     if (!ids.length) return undefined
-    return new Error(
-      `Malformed AppPortfolio authority: ${ids.join(', ')}`
-    )
+    return new Error(`Malformed AppPortfolio authority: ${ids.join(', ')}`)
   })
   const requestedTargetPairError = computed<Error | undefined>(() => {
     if (
@@ -416,7 +310,8 @@ export function usePortfolioCollection(
     const mismatches = (liveRootDocs.docs.value ?? [])
       .filter((portfolio) => appSupportIds.has(resolvePortfolioId(portfolio)))
       .filter(
-        (portfolio) => !portfolioRootBelongsToApp(portfolio, resolvedAppId.value)
+        (portfolio) =>
+          !portfolioRootBelongsToApp(portfolio, resolvedAppId.value)
       )
       .map((portfolio) => resolvePortfolioId(portfolio))
       .filter(Boolean)
@@ -433,14 +328,17 @@ export function usePortfolioCollection(
     }
     if (!usesTargetedRootRead.value) return liveRootSource.error.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
-    return (hasOperatorFilter.value
-      ? appSupportOperatorSource.error.value ?? appSupportTeamSource.error.value
-      : targetedAppSupportSource.error.value) ??
+    return (
+      (hasOperatorFilter.value
+        ? (appSupportOperatorSource.error.value ??
+          appSupportTeamSource.error.value)
+        : targetedAppSupportSource.error.value) ??
       liveRootDocs.error.value ??
       malformedAppSupportError.value ??
       requestedTargetPairError.value ??
       rootScopeError.value ??
       danglingAppSupportError.value
+    )
   })
   const { outcome } = useFirestoreCollectionState({
     count,

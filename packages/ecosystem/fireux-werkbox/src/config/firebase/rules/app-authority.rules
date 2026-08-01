@@ -1,0 +1,218 @@
+// @fireux-ecosystem-rules-fragment werkbox/app-authority
+    // Ecosystem records are Admin-owned; no raw client read or write is a
+    // supported API. The migration planner owns exact stored-shape validation.
+    match /ecosystems/{ecosystemId} {
+      allow get, list, create, update, delete: if false;
+    }
+
+    function isValidAppSocialLinks(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'website', 'twitter', 'github', 'linkedin', 'instagram', 'facebook',
+          'youtube', 'email'
+        ]) &&
+        (!('website' in value) || isValidHttpsUrl(value.website, 2048)) &&
+        (!('twitter' in value) || isValidHttpsUrl(value.twitter, 2048)) &&
+        (!('github' in value) || isValidHttpsUrl(value.github, 2048)) &&
+        (!('linkedin' in value) || isValidHttpsUrl(value.linkedin, 2048)) &&
+        (!('instagram' in value) || isValidHttpsUrl(value.instagram, 2048)) &&
+        (!('facebook' in value) || isValidHttpsUrl(value.facebook, 2048)) &&
+        (!('youtube' in value) || isValidHttpsUrl(value.youtube, 2048)) &&
+        (!('email' in value) || isValidEmail(value.email, 320));
+    }
+
+    function isValidAppMedia(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'thumbnail_url', 'logo_url', 'wordmark_light_url',
+          'wordmark_dark_url', 'cover_url'
+        ]) &&
+        (!('thumbnail_url' in value) ||
+          isValidHttpsUrl(value.thumbnail_url, 2048)) &&
+        (!('logo_url' in value) || isValidHttpsUrl(value.logo_url, 2048)) &&
+        (!('wordmark_light_url' in value) ||
+          isValidHttpsUrl(value.wordmark_light_url, 2048)) &&
+        (!('wordmark_dark_url' in value) ||
+          isValidHttpsUrl(value.wordmark_dark_url, 2048)) &&
+        (!('cover_url' in value) || isValidHttpsUrl(value.cover_url, 2048));
+    }
+
+    function isValidFireuxRepo(value) {
+      return value is map &&
+        value.keys().hasAll([
+          'key', 'workspace', 'launch_order', 'console_families', 'database_id'
+        ]) &&
+        value.keys().hasOnly([
+          'key', 'workspace', 'launch_order', 'console_families', 'database_id'
+        ]) &&
+        validRequiredText(value, 'key', 1, 120) &&
+        validRequiredText(value, 'workspace', 1, 500) &&
+        value.launch_order is int &&
+        value.launch_order >= 0 && value.launch_order <= 100000 &&
+        value.console_families is list &&
+        value.console_families.size() <= 20 &&
+        value.console_families.hasOnly([
+          'blank', 'kitchen', 'portfolio', 'project', 'property', 'supplier'
+        ]) &&
+        validRequiredText(value, 'database_id', 1, 120);
+    }
+
+    function isExpectedAppAuthority(data, appId) {
+      return data.project_id == 'cleanbox' &&
+        data.ecosystem_id == 'cleanbox' &&
+        data.database_id == 'cleanbox' &&
+        data.slug == appId &&
+        ((appId == 'cleanbox-app' &&
+            data.role == 'global' && data.self_join_enabled == true) ||
+          (appId == 'richies-reinigung' &&
+            data.role == 'tenant' && data.self_join_enabled == false));
+    }
+
+    function isValidApp(data, appId) {
+      return isKnownApp(appId) &&
+        data.keys().hasAll([
+          'project_id', 'ecosystem_id', 'database_id', 'slug', 'status',
+          'app_name', 'app_short_name', 'role', 'self_join_enabled',
+          'derived', 'created', 'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'project_id', 'ecosystem_id', 'database_id', 'slug', 'status',
+          'app_name', 'app_short_name', 'role', 'tagline', 'description',
+          'short_bio', 'long_bio', 'social_links', 'derived', 'media',
+          'fireux_native', 'fireux_size', 'fireux_repo', 'self_join_enabled',
+          'moderation_state', 'ban_reasons', 'created', 'updated'
+        ]) &&
+        isExpectedAppAuthority(data, appId) &&
+        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        validRequiredText(data, 'app_name', 1, 60) &&
+        validRequiredText(data, 'app_short_name', 1, 40) &&
+        validOptionalText(data, 'tagline', 120) &&
+        validOptionalText(data, 'description', 500) &&
+        validOptionalText(data, 'short_bio', 240) &&
+        validOptionalText(data, 'long_bio', 4000) &&
+        (!('social_links' in data) || isValidAppSocialLinks(data.social_links)) &&
+        data.derived is map &&
+        data.derived.keys().hasAll(['user_count']) &&
+        data.derived.keys().hasOnly(['user_count']) &&
+        data.derived.user_count is int &&
+        data.derived.user_count >= 0 && data.derived.user_count <= 10000000 &&
+        (!('media' in data) || isValidAppMedia(data.media)) &&
+        (!('fireux_native' in data) || data.fireux_native is bool) &&
+        (!('fireux_size' in data) || data.fireux_size in ['big', 'small']) &&
+        (!('fireux_repo' in data) || isValidFireuxRepo(data.fireux_repo)) &&
+        (!('moderation_state' in data) || data.moderation_state == '') &&
+        (!('ban_reasons' in data) ||
+          (data.ban_reasons is list && data.ban_reasons.size() == 0)) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /apps/{appId} {
+      allow get: if isAppMember(appId) && isValidApp(resource.data, appId);
+      allow list, create, delete: if false;
+      allow update: if isAppAdmin(appId) &&
+        isValidApp(request.resource.data, appId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'tagline', 'description', 'short_bio', 'long_bio', 'social_links',
+          'media', 'updated'
+        ]) &&
+        request.resource.data.created == resource.data.created &&
+        validOwnerUpdateStamp(request.resource.data, request.auth.uid);
+
+      match /join-requests/{userId} {
+        // @fireux-core-rules join-validator
+        allow get: if isKnownApp(appId) &&
+          (isOwner(userId) ||
+            (isAppAdmin(appId) && isValidJoinRequest(resource.data)));
+        allow list: if isAppAdmin(appId) &&
+          request.query.limit <= 100 &&
+          isValidJoinRequest(resource.data);
+        allow create, update, delete: if false;
+      }
+
+      // @fireux-core-rules membership-block
+      match /users/{userId} {
+        function isValidConsoleTargets(value) {
+          return value is map &&
+            value.keys().hasOnly([
+              'kitchen_ids', 'supplier_ids', 'property_ids',
+              'portfolio_ids', 'blank_ids'
+            ]) &&
+            (!('kitchen_ids' in value) ||
+              (value.kitchen_ids is list &&
+                value.kitchen_ids.size() <= 50)) &&
+            (!('supplier_ids' in value) ||
+              (value.supplier_ids is list &&
+                value.supplier_ids.size() <= 50)) &&
+            (!('property_ids' in value) ||
+              (value.property_ids is list &&
+                value.property_ids.size() <= 50)) &&
+            (!('portfolio_ids' in value) ||
+              (value.portfolio_ids is list &&
+                value.portfolio_ids.size() <= 50)) &&
+            (!('blank_ids' in value) ||
+              (value.blank_ids is list &&
+                value.blank_ids.size() <= 50));
+        }
+
+        function isValidUserApp(data) {
+          return data.keys().hasAll([
+              'role', 'is_premium', 'console_enabled', 'created', 'updated'
+            ]) &&
+            data.keys().hasOnly([
+              'role', 'is_premium', 'console_enabled', 'onboarding_status',
+              'profiles', 'console_targets', 'created', 'updated'
+            ]) &&
+            data.role in ['admin', 'user'] &&
+            data.is_premium is bool &&
+            data.console_enabled is bool &&
+            (!('onboarding_status' in data) ||
+              data.onboarding_status in [
+                'pending', 'completed', 'skipped'
+              ]) &&
+            (!('profiles' in data) ||
+              (data.profiles is list &&
+                data.profiles.size() <= 2 &&
+                data.profiles.hasOnly(['agent', 'professional']))) &&
+            (!('console_targets' in data) ||
+              isValidConsoleTargets(data.console_targets)) &&
+            validCreatedStamp(data.created) &&
+            data.created.app_id == appId &&
+            validUpdatedStamp(data.updated);
+        }
+
+        allow get: if isKnownApp(appId) &&
+          (isOwner(userId) ||
+            (isAppAdmin(appId) && isValidUserApp(resource.data)));
+        allow list: if isAppAdmin(appId) &&
+          request.query.limit <= 100 &&
+          isValidUserApp(resource.data);
+        allow create, update, delete: if false;
+      }
+
+      match /{profileCollection}/{userId} {
+        function isIdentityProfileOverlay() {
+          return profileCollection in ['agents', 'professionals'];
+        }
+
+        // @fireux-core-rules overlay-validator
+        allow get: if isIdentityProfileOverlay() &&
+          ((isOwner(userId) && isAppMember(appId)) ||
+            (isAppAdmin(appId) && isValidProfileOverlay(resource.data)));
+        allow list: if isIdentityProfileOverlay() &&
+          isAppAdmin(appId) &&
+          request.query.limit <= 100 &&
+          isValidProfileOverlay(resource.data);
+        allow create, delete: if false;
+        allow update: if isIdentityProfileOverlay() &&
+          isOwner(userId) &&
+          isAppMember(appId) &&
+          isValidProfileOverlay(request.resource.data) &&
+          request.resource.data.created == resource.data.created &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'updated'
+          ]) &&
+          validOwnerUpdateStamp(request.resource.data, userId);
+      }
+    }
+

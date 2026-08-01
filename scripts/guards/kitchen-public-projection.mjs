@@ -9,6 +9,8 @@ const file = (repoRoot, relativePath) =>
   path.join(repoRoot, relativePath)
 const read = (repoRoot, relativePath) =>
   readFileSync(file(repoRoot, relativePath), 'utf8')
+const readFamily = (repoRoot, relativePaths) =>
+  relativePaths.map((relativePath) => read(repoRoot, relativePath)).join('\n')
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const base =
@@ -50,10 +52,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${base}components/Kitchen/Place/PublicOperations.vue`
   )
-  const placeDetail = read(
-    repoRoot,
-    'packages/extensions/fireux-places/src/runtime/components/Place/PublicDetail.vue'
-  )
+  const placeDetail = readFamily(repoRoot, [
+    'packages/extensions/fireux-places/src/runtime/components/Place/PublicDetail.vue',
+    'packages/extensions/fireux-places/src/runtime/components/Place/usePublicPlaceDetail.ts',
+  ])
 
   assert.equal(
     existsSync(file(repoRoot, legacyPublicCollectionPath)),

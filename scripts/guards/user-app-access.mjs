@@ -6,6 +6,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { resolveUserAppAccess } from '../../packages/core/fireux-core/src/runtime/models/core/supporting/user-app-access.ts'
+import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
@@ -25,7 +26,7 @@ function assertAccess(input, expected) {
   )
 }
 
-export function run({ repoRoot }) {
+export async function run({ repoRoot }) {
   const cases = [
     {
       label: 'missing membership',
@@ -99,9 +100,9 @@ export function run({ repoRoot }) {
 
   const mutation = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/server/utils/app-membership/mutate.ts'
+    'packages/core/fireux-core/src/runtime/server/utils/app-membership/mutation-contract.ts'
   )
-  const initialStart = mutation.indexOf('function initialMembership(')
+  const initialStart = mutation.indexOf('export function initialMembership(')
   const initialEnd = mutation.indexOf(
     '\nfunction membershipRepairPatch(',
     initialStart
@@ -185,7 +186,7 @@ export function run({ repoRoot }) {
     'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules',
     'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules',
   ]) {
-    const rules = read(repoRoot, relativePath)
+    const rules = await expandFirestoreRulesTemplate(read(repoRoot, relativePath))
     assert.match(rules, /!\('profiles' in data\)/)
     assert.match(rules, /!\('console_targets' in data\)/)
     assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)

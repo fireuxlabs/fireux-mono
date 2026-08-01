@@ -1,0 +1,177 @@
+.showcase-kiosk--counter .showcase-kiosk__canvas {
+  --menu-radius: calc(var(--ui-radius) * 6);
+  --menu-radius-control: calc(var(--ui-radius) * 4);
+}
+
+.showcase-kiosk--counter .showcase-kiosk__kitchen-options :deep(button[aria-pressed='true']) {
+  background: #ff4f2e;
+  color: white;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk::before) {
+  background:
+    radial-gradient(circle at 92% 8%, color-mix(in srgb, var(--menu-primary) 15%, transparent) 0 11rem, transparent 27rem),
+    radial-gradient(circle at 62% 100%, color-mix(in srgb, var(--menu-primary) 8%, transparent) 0 8rem, transparent 24rem),
+    radial-gradient(circle, color-mix(in srgb, var(--menu-secondary) 9%, transparent) 1px, transparent 1.2px);
+  background-size: auto, auto, 1.15rem 1.15rem;
+  opacity: 0.8;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start) {
+  width: min(100%, 64rem);
+  gap: clamp(calc(var(--spacing) * 10), 6vh, calc(var(--spacing) * 18));
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__identity h1) {
+  font-size: clamp(2.75rem, 5vw, 4.75rem);
+  font-weight: 750;
+  letter-spacing: -0.065em;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__identity p) {
+  color: var(--menu-primary);
+  font-family: var(--menu-font);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.08em;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__prompt h2) {
+  font-size: clamp(3.5rem, 7vw, 6.5rem);
+  font-weight: 750;
+  line-height: 0.94;
+  letter-spacing: -0.075em;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__options) {
+  gap: clamp(calc(var(--spacing) * 7), 3vw, calc(var(--spacing) * 11));
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__option) {
+  min-height: clamp(10rem, 18vh, 13rem);
+  border: 1px solid color-mix(in srgb, var(--menu-secondary) 12%, transparent);
+  border-radius: calc(var(--ui-radius) * 6);
+  background: color-mix(in srgb, var(--menu-bg) 84%, white);
+  box-shadow: 0 1.75rem 4.5rem color-mix(in srgb, var(--menu-secondary) 10%, transparent);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__option:hover),
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__option:focus-visible) {
+  border-color: color-mix(in srgb, var(--menu-primary) 48%, transparent);
+  background: white;
+  box-shadow: 0 2rem 5rem color-mix(in srgb, var(--menu-secondary) 14%, transparent);
+  transform: translateY(-0.2rem);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__option-icon) {
+  border: 0;
+  border-radius: calc(var(--ui-radius) * 4);
+  background: var(--menu-primary);
+  color: white;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-start__option-copy strong) {
+  font-family: var(--menu-title-font);
+  font-size: clamp(1.75rem, 3vw, 2.6rem);
+  letter-spacing: -0.045em;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk__toolbar) {
+  border-bottom: 0;
+  background: var(--menu-secondary);
+  box-shadow: 0 0.75rem 2.5rem color-mix(in srgb, var(--menu-secondary) 24%, transparent);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk__change),
+.showcase-kiosk--counter :deep(.menu-order-kiosk__identity strong),
+.showcase-kiosk--counter :deep(.menu-order-kiosk__identity small),
+.showcase-kiosk--counter :deep(.menu-order-kiosk__mode) {
+  color: var(--menu-bg);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk__mode) {
+  border-color: color-mix(in srgb, var(--menu-bg) 24%, transparent);
+  background: color-mix(in srgb, var(--menu-bg) 10%, transparent);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-catalogue__rail) {
+  border-right: 0;
+  background: var(--menu-secondary);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-catalogue__section) {
+  font-family: var(--menu-title-font);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-tight);
+  color: color-mix(in srgb, var(--menu-bg) 68%, transparent);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-catalogue__section--active) {
+  border-radius: calc(var(--ui-radius) * 4);
+  background: var(--menu-primary);
+  box-shadow: none;
+  color: white;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-catalogue__header h2) {
+  font-size: clamp(2.6rem, 4.8vw, 4.25rem);
+  font-weight: 750;
+  letter-spacing: -0.07em;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-item) {
+  border: 1px solid color-mix(in srgb, var(--menu-secondary) 9%, transparent);
+  border-radius: calc(var(--ui-radius) * 6);
+  background: color-mix(in srgb, var(--menu-bg) 72%, white);
+  box-shadow: 0 1.25rem 3.5rem color-mix(in srgb, var(--menu-secondary) 9%, transparent);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-item__media) {
+  border-bottom: 0;
+  background: #f4eee3;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-item__media img) {
+  padding: 0;
+  object-fit: cover;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-item h3) {
+  font-weight: 750;
+  letter-spacing: -0.045em;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-item__variants button) {
+  border: 1px solid color-mix(in srgb, var(--menu-secondary) 16%, transparent);
+  border-radius: 9999px;
+  background: transparent;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-item__add) {
+  padding: 0.8rem calc(var(--spacing) * 4);
+  border: 0;
+  border-radius: 9999px;
+  background: var(--menu-primary);
+  color: white;
+  font-family: var(--menu-title-font);
+  letter-spacing: -0.02em;
+}
+
+.showcase-kiosk--counter :deep(.menu-order-kiosk-item--without-media) {
+  background:
+    radial-gradient(circle at 85% 12%, color-mix(in srgb, var(--menu-primary) 13%, transparent) 0 5rem, transparent 12rem),
+    color-mix(in srgb, var(--menu-bg) 72%, white);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-basket-summary) {
+  border: 0;
+  border-radius: calc(var(--ui-radius) * 6);
+  background: var(--menu-secondary);
+  box-shadow: 0 1.5rem 4rem color-mix(in srgb, var(--menu-secondary) 24%, transparent);
+  color: var(--menu-bg);
+}
+
+.showcase-kiosk--counter :deep(.menu-order-basket-summary__checkout) {
+  border-radius: 9999px;
+  background: var(--menu-primary);
+  color: white;
+}

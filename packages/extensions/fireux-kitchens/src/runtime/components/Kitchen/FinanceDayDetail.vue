@@ -16,7 +16,9 @@
             />
           </span>
           <div class="min-w-0">
-            <p class="text-xs font-semibold tracking-wider text-primary uppercase">
+            <p
+              class="text-xs font-semibold tracking-wider text-primary uppercase"
+            >
               Daily roundup
             </p>
             <h2 class="mt-1 text-lg font-semibold text-highlighted">
@@ -37,11 +39,7 @@
         <span
           class="flex size-10 shrink-0 items-center justify-center rounded-xl bg-elevated text-muted"
         >
-          <UIcon
-            name="i-lucide-list-tree"
-            class="size-5"
-            aria-hidden="true"
-          />
+          <UIcon name="i-lucide-list-tree" class="size-5" aria-hidden="true" />
         </span>
         <div>
           <h2 class="text-base font-semibold text-highlighted">
@@ -120,9 +118,7 @@
         class="grid gap-3 rounded-xl border border-default bg-elevated/40 p-4 sm:grid-cols-[1fr_auto_1fr_auto_1fr] sm:items-center"
       >
         <div>
-          <p class="text-xs font-medium text-muted">
-            Item sales
-          </p>
+          <p class="text-xs font-medium text-muted">Item sales</p>
           <p class="mt-1 text-sm font-semibold text-highlighted tabular-nums">
             {{ formattedItemSales }}
           </p>
@@ -133,9 +129,7 @@
           aria-hidden="true"
         />
         <div>
-          <p class="text-xs font-medium text-muted">
-            Delivery fees
-          </p>
+          <p class="text-xs font-medium text-muted">Delivery fees</p>
           <p class="mt-1 text-sm font-semibold text-highlighted tabular-nums">
             {{ formattedDeliveryFees }}
           </p>
@@ -146,9 +140,7 @@
           aria-hidden="true"
         />
         <div>
-          <p class="text-xs font-medium text-muted">
-            Gross sales
-          </p>
+          <p class="text-xs font-medium text-muted">Gross sales</p>
           <p class="mt-1 text-sm font-semibold text-highlighted tabular-nums">
             {{ formattedGrossSales }}
           </p>
@@ -197,13 +189,14 @@
           <div class="hidden overflow-x-auto sm:block">
             <table class="w-full border-separate border-spacing-0 text-left">
               <caption class="sr-only">
-                Item sales for {{ formattedDate }}
+                Item sales for
+                {{
+                  formattedDate
+                }}
               </caption>
               <thead>
                 <tr class="text-xs text-dimmed">
-                  <th scope="col" class="py-3 pr-4 font-medium">
-                    Item
-                  </th>
+                  <th scope="col" class="py-3 pr-4 font-medium">Item</th>
                   <th scope="col" class="px-3 py-3 text-right font-medium">
                     Quantity
                   </th>
@@ -300,25 +293,19 @@
 
               <dl class="mt-3 grid grid-cols-3 gap-3 text-xs">
                 <div>
-                  <dt class="text-dimmed">
-                    Quantity
-                  </dt>
+                  <dt class="text-dimmed">Quantity</dt>
                   <dd class="mt-1 font-semibold text-highlighted tabular-nums">
                     {{ item.quantityLabel }}
                   </dd>
                 </div>
                 <div>
-                  <dt class="text-dimmed">
-                    Sales
-                  </dt>
+                  <dt class="text-dimmed">Sales</dt>
                   <dd class="mt-1 font-semibold text-highlighted tabular-nums">
                     {{ item.saleCountLabel }}
                   </dd>
                 </div>
                 <div class="text-right">
-                  <dt class="text-dimmed">
-                    Share
-                  </dt>
+                  <dt class="text-dimmed">Share</dt>
                   <dd class="mt-1 font-semibold text-highlighted tabular-nums">
                     {{ item.shareLabel }}
                   </dd>
@@ -333,167 +320,26 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type {
-  KitchenFinanceDailySummary,
-  KitchenFinanceItemSummary,
-} from '../../models/kitchen/finance-report.model'
-import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money.ts'
+import type { KitchenFinanceDailySummary } from '../../models/kitchen/finance-report.model'
+import { useKitchenFinanceDayDetail } from './useKitchenFinanceDayDetail'
 
-type ItemView = {
-  key: string
-  label: string
-  variantLabel?: string
-  quantityLabel: string
-  saleCountLabel: string
-  grossLabel: string
-  sharePercent: number
-  shareLabel: string
-}
-
-const props = withDefaults(defineProps<{
-  currencyCode: string
-  day: KitchenFinanceDailySummary | null
-  locale?: string
-  timezone: string
-}>(), {
-  locale: 'en-GB',
-})
-
-const currencySummary = computed(() =>
-  props.day?.currencies.find(
-    currency => currency.currency_code === props.currencyCode
-  ) || null
+const props = withDefaults(
+  defineProps<{
+    currencyCode: string
+    day: KitchenFinanceDailySummary | null
+    locale?: string
+    timezone: string
+  }>(),
+  { locale: 'en-GB' }
 )
-
-const formattedDate = computed(() => {
-  if (!props.day) return ''
-  const parts = parseDateKey(props.day.date)
-  if (!parts) return props.day.date
-
-  return new Intl.DateTimeFormat(props.locale, {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-    timeZone: 'UTC',
-  }).format(new Date(Date.UTC(parts.year, parts.month - 1, parts.day)))
-})
-
-const formattedGrossSales = computed(() =>
-  formatMoney(currencySummary.value?.gross_sales.amount_minor || 0)
-)
-const formattedItemSales = computed(() =>
-  formatMoney(currencySummary.value?.item_sales.amount_minor || 0)
-)
-const formattedDeliveryFees = computed(() =>
-  formatMoney(currencySummary.value?.delivery_fees.amount_minor || 0)
-)
-
-const headlineMetrics = computed(() => {
-  const summary = currencySummary.value
-  if (!summary) return []
-
-  return [
-    {
-      label: 'Gross sales',
-      value: formattedGrossSales.value,
-      icon: 'i-lucide-banknote',
-      description: 'Completed service total.',
-    },
-    {
-      label: 'Completed sales',
-      value: formatCount(summary.sale_count),
-      icon: 'i-lucide-receipt-text',
-      description: 'Completed, recorded sales.',
-    },
-    {
-      label: 'Items sold',
-      value: formatCount(summary.item_quantity),
-      icon: 'i-lucide-utensils',
-      description: 'Across completed sales.',
-    },
-    {
-      label: 'Average sale',
-      value: formatMoney(summary.average_sale.amount_minor),
-      icon: 'i-lucide-chart-column',
-      description: 'Gross sales per completed sale.',
-    },
-  ]
-})
-
-const sortedItems = computed<ItemView[]>(() => {
-  const summary = currencySummary.value
-  if (!summary) return []
-
-  return [...summary.items]
-    .sort((left, right) =>
-      right.line_gross.amount_minor - left.line_gross.amount_minor
-      || right.quantity - left.quantity
-      || left.label.localeCompare(right.label, props.locale)
-    )
-    .map(item => toItemView(item, summary.item_sales.amount_minor))
-})
-
-function toItemView(
-  item: KitchenFinanceItemSummary,
-  itemSalesMinor: number
-): ItemView {
-  const sharePercent = itemSalesMinor > 0
-    ? Math.min(
-        100,
-        Math.max(0, (item.line_gross.amount_minor / itemSalesMinor) * 100)
-      )
-    : 0
-
-  return {
-    key: [
-      item.menu_id,
-      item.source_item_id,
-      item.dish_id,
-      item.item_kind || '',
-      item.variant_id || '',
-    ].join(':'),
-    label: item.label,
-    ...(item.variant_label ? { variantLabel: item.variant_label } : {}),
-    quantityLabel: formatCount(item.quantity),
-    saleCountLabel: formatCount(item.sale_count),
-    grossLabel: formatMoney(item.line_gross.amount_minor),
-    sharePercent,
-    shareLabel: `${sharePercent.toLocaleString(props.locale, {
-      maximumFractionDigits: 1,
-      minimumFractionDigits: sharePercent > 0 && sharePercent < 1 ? 1 : 0,
-    })}%`,
-  }
-}
-
-function formatMoney(amountMinor: number) {
-  return formatFinancialMinorAmount(amountMinor, props.currencyCode, {
-    locales: props.locale,
-  })
-}
-
-function formatCount(value: number) {
-  return value.toLocaleString(props.locale)
-}
-
-function parseDateKey(value: string) {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
-  if (!match) return null
-
-  const parts = {
-    year: Number(match[1]),
-    month: Number(match[2]),
-    day: Number(match[3]),
-  }
-  const date = new Date(Date.UTC(parts.year, parts.month - 1, parts.day))
-  if (
-    date.getUTCFullYear() !== parts.year
-    || date.getUTCMonth() !== parts.month - 1
-    || date.getUTCDate() !== parts.day
-  ) {
-    return null
-  }
-  return parts
-}
+const {
+  currencySummary,
+  formattedDate,
+  formattedGrossSales,
+  formattedItemSales,
+  formattedDeliveryFees,
+  headlineMetrics,
+  sortedItems,
+  formatCount,
+} = useKitchenFinanceDayDetail(props)
 </script>

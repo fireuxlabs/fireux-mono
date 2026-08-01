@@ -1,0 +1,361 @@
+// @fireux-ecosystem-rules-fragment misebox/identity-validation
+    // @fireux-core-rules bounded
+    function isValidIdentityProfileStringList0To4(value, maxItemSize) {
+      return value.size() == 0 ||
+        (value[0] is string &&
+          value[0].size() <= maxItemSize &&
+          (value.size() == 1 ||
+            (value[1] is string &&
+              value[1].size() <= maxItemSize &&
+              (value.size() == 2 ||
+                (value[2] is string &&
+                  value[2].size() <= maxItemSize &&
+                  (value.size() == 3 ||
+                    (value[3] is string &&
+                      value[3].size() <= maxItemSize &&
+                      (value.size() == 4 ||
+                        (value[4] is string &&
+                          value[4].size() <= maxItemSize)))))))));
+    }
+
+    function isValidIdentityProfileStringList5To9(value, maxItemSize) {
+      return value[5] is string &&
+        value[5].size() <= maxItemSize &&
+        (value.size() == 6 ||
+          (value[6] is string &&
+            value[6].size() <= maxItemSize &&
+            (value.size() == 7 ||
+              (value[7] is string &&
+                value[7].size() <= maxItemSize &&
+                (value.size() == 8 ||
+                  (value[8] is string &&
+                    value[8].size() <= maxItemSize &&
+                    (value.size() == 9 ||
+                      (value[9] is string &&
+                        value[9].size() <= maxItemSize))))))));
+    }
+
+    function isValidIdentityProfileStringList10To14(value, maxItemSize) {
+      return value[10] is string &&
+        value[10].size() <= maxItemSize &&
+        (value.size() == 11 ||
+          (value[11] is string &&
+            value[11].size() <= maxItemSize &&
+            (value.size() == 12 ||
+              (value[12] is string &&
+                value[12].size() <= maxItemSize &&
+                (value.size() == 13 ||
+                  (value[13] is string &&
+                    value[13].size() <= maxItemSize &&
+                    (value.size() == 14 ||
+                      (value[14] is string &&
+                        value[14].size() <= maxItemSize))))))));
+    }
+
+    function isValidIdentityProfileStringList15To19(value, maxItemSize) {
+      return value[15] is string &&
+        value[15].size() <= maxItemSize &&
+        (value.size() == 16 ||
+          (value[16] is string &&
+            value[16].size() <= maxItemSize &&
+            (value.size() == 17 ||
+              (value[17] is string &&
+                value[17].size() <= maxItemSize &&
+                (value.size() == 18 ||
+                  (value[18] is string &&
+                    value[18].size() <= maxItemSize &&
+                    (value.size() == 19 ||
+                      (value[19] is string &&
+                        value[19].size() <= maxItemSize))))))));
+    }
+
+    // Agent and Chef evaluate several required lists in one request. Five-item
+    // chunks stop at the actual length; a 20-item list still validates every
+    // item against the same type and per-item length contract.
+    function isValidIdentityProfileStringList(value, maxItemSize) {
+      return value is list &&
+        value.size() <= 20 &&
+        isValidIdentityProfileStringList0To4(value, maxItemSize) &&
+        (value.size() <= 5 ||
+          (isValidIdentityProfileStringList5To9(value, maxItemSize) &&
+            (value.size() <= 10 ||
+              (isValidIdentityProfileStringList10To14(value, maxItemSize) &&
+                (value.size() <= 15 ||
+                  isValidIdentityProfileStringList15To19(
+                    value,
+                    maxItemSize
+                  ))))));
+    }
+
+    function isValidYearValue(value) {
+      return value == null ||
+        (value is string && value.matches('^[1-9][0-9]{3}$'));
+    }
+
+    function isValidExperienceMonth(value) {
+      return value in [
+        '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      ];
+    }
+
+    function isValidExperienceYear(value) {
+      return value is string &&
+        (value == '' || value.matches('^[1-9][0-9]{3}$'));
+    }
+
+    function isValidExperienceItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'role',
+          'from_month',
+          'from_year',
+          'to_month',
+          'to_year',
+          'ongoing',
+          'responsibilities',
+          'place_id',
+          'place_collection'
+        ]) &&
+        isValidBoundedString(value.role, 160) &&
+        isValidExperienceMonth(value.from_month) &&
+        isValidExperienceYear(value.from_year) &&
+        isValidExperienceMonth(value.to_month) &&
+        isValidExperienceYear(value.to_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.responsibilities, 4000) &&
+        isValidFirestoreDocumentId(value.place_id) &&
+        value.place_collection in ['', 'kitchens', 'companies'];
+    }
+
+    function isValidLanguageItem(value) {
+      return value is map &&
+        value.keys().hasOnly(['language', 'proficiency']) &&
+        value.language is string &&
+        value.language.size() >= 1 &&
+        value.language.size() <= 120 &&
+        isValidBoundedString(value.proficiency, 120);
+    }
+
+    function isValidCertificationItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'name',
+          'year',
+          'place_name',
+          'formatted_address',
+          'document_url',
+          'image_url'
+        ]) &&
+        isValidBoundedString(value.name, 240) &&
+        isValidYearValue(value.year) &&
+        isValidBoundedString(value.place_name, 240) &&
+        isValidBoundedString(value.formatted_address, 500) &&
+        isValidHttpsUrl(value.document_url, 2048) &&
+        isValidHttpsUrl(value.image_url, 2048);
+    }
+
+    function isValidEducationItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'institution',
+          'degree',
+          'start_year',
+          'end_year',
+          'ongoing',
+          'formatted_address',
+          'document_url',
+          'image_url'
+        ]) &&
+        isValidBoundedString(value.institution, 240) &&
+        isValidBoundedString(value.degree, 240) &&
+        isValidYearValue(value.start_year) &&
+        isValidYearValue(value.end_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.formatted_address, 500) &&
+        isValidHttpsUrl(value.document_url, 2048) &&
+        isValidHttpsUrl(value.image_url, 2048);
+    }
+
+    function isValidVolunteeringItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'organization',
+          'role',
+          'from_year',
+          'to_year',
+          'ongoing',
+          'responsibilities'
+        ]) &&
+        isValidBoundedString(value.organization, 240) &&
+        isValidBoundedString(value.role, 160) &&
+        isValidYearValue(value.from_year) &&
+        isValidYearValue(value.to_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.responsibilities, 4000);
+    }
+
+    function isValidProjectItem(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'name',
+          'role',
+          'from_year',
+          'to_year',
+          'ongoing',
+          'responsibilities'
+        ]) &&
+        isValidBoundedString(value.name, 240) &&
+        isValidBoundedString(value.role, 160) &&
+        isValidYearValue(value.from_year) &&
+        isValidYearValue(value.to_year) &&
+        value.ongoing is bool &&
+        isValidBoundedString(value.responsibilities, 4000);
+    }
+
+    // Evaluate only populated Professional slots. Besides avoiding impossible
+    // type branches, this makes the 24-item aggregate cap the expression-cost
+    // boundary instead of paying for every slot in every independently capped
+    // list. Each branch still validates every present item in order.
+    function isValidProfessionalStringList(value) {
+      return isValidIdentityProfileStringList(value, 240);
+    }
+
+    function isValidProfessionalExperienceChunk(value, start) {
+      return value.size() <= start ||
+        (isValidExperienceItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidExperienceItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidExperienceItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidExperienceItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalExperienceList(value) {
+      return value is list &&
+        value.size() <= 12 &&
+        isValidProfessionalExperienceChunk(value, 0) &&
+        (value.size() <= 4 ||
+          (isValidProfessionalExperienceChunk(value, 4) &&
+            (value.size() <= 8 ||
+              isValidProfessionalExperienceChunk(value, 8))));
+    }
+
+    function isValidProfessionalLanguageChunk(value, start) {
+      return value.size() <= start ||
+        (isValidLanguageItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidLanguageItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidLanguageItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidLanguageItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalLanguageList(value) {
+      return value is list &&
+        value.size() <= 12 &&
+        isValidProfessionalLanguageChunk(value, 0) &&
+        (value.size() <= 4 ||
+          (isValidProfessionalLanguageChunk(value, 4) &&
+            (value.size() <= 8 ||
+              isValidProfessionalLanguageChunk(value, 8))));
+    }
+
+    function isValidProfessionalCertificationChunk(value, start) {
+      return value.size() <= start ||
+        (isValidCertificationItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidCertificationItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidCertificationItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidCertificationItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalCertificationList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalCertificationChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalCertificationChunk(value, 4));
+    }
+
+    function isValidProfessionalEducationChunk(value, start) {
+      return value.size() <= start ||
+        (isValidEducationItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidEducationItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidEducationItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidEducationItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalEducationList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalEducationChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalEducationChunk(value, 4));
+    }
+
+    function isValidProfessionalVolunteeringChunk(value, start) {
+      return value.size() <= start ||
+        (isValidVolunteeringItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidVolunteeringItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidVolunteeringItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidVolunteeringItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalVolunteeringList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalVolunteeringChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalVolunteeringChunk(value, 4));
+    }
+
+    function isValidProfessionalProjectChunk(value, start) {
+      return value.size() <= start ||
+        (isValidProjectItem(value[start]) &&
+          (value.size() <= start + 1 ||
+            (isValidProjectItem(value[start + 1]) &&
+              (value.size() <= start + 2 ||
+                (isValidProjectItem(value[start + 2]) &&
+                  (value.size() <= start + 3 ||
+                    isValidProjectItem(value[start + 3])))))));
+    }
+
+    function isValidProfessionalProjectList(value) {
+      return value is list &&
+        value.size() <= 8 &&
+        isValidProfessionalProjectChunk(value, 0) &&
+        (value.size() <= 4 ||
+          isValidProfessionalProjectChunk(value, 4));
+    }
+
+    function validCreatedStamp(value) {
+      return value is map &&
+        value.keys().hasAll(['at']) &&
+        value.keys().hasOnly(['at', 'by', 'app_id']) &&
+        value.at is timestamp &&
+        (!('by' in value) ||
+          (value.by is string && value.by.size() <= 1500)) &&
+        (!('app_id' in value) ||
+          (value.app_id is string && value.app_id.size() <= 1500));
+    }
+
+    function validUpdatedStamp(value) {
+      return value is map &&
+        value.keys().hasAll(['at']) &&
+        value.keys().hasOnly(['at', 'by']) &&
+        value.at is timestamp &&
+        (!('by' in value) ||
+          (value.by is string && value.by.size() <= 1500));
+    }
+

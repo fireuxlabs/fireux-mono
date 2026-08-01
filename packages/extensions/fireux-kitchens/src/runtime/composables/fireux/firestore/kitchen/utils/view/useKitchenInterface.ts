@@ -1,24 +1,9 @@
-// Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: compose Place baselines with only meaningful Kitchen surface deltas.
-// Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: preserve bounded server write capability on the live surface.
-// Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: label and unlink Kitchens that are not publicly visible.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type {
-  Place,
-  PlaceImageShade,
-} from 'fireux-places/runtime/models/place.model'
+import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type {
-  Kitchen,
-  KitchenMenusConfig,
-} from '../../../../../../models/kitchen.model'
-import type {
-  PublicKitchenImageKind,
-} from '../../../../../../models/kitchen/kitchen-index.model'
+import type { Kitchen } from '../../../../../../models/kitchen.model'
 import {
   readKitchenAppScope,
   readKitchenIdentity,
@@ -26,183 +11,22 @@ import {
   readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../../../../../utils/kitchen-spine'
+import {
+  meaningfulSurfaceDelta,
+  placeBaselineKeys,
+  resolveKitchenPath,
+} from './kitchen-interface-projection'
+import type {
+  KitchenCard,
+  KitchenSurface,
+  KitchenSurfaceParts,
+} from './kitchen-interface.types'
 
-export namespace KitchenCard {
-  export type Card = {
-    id: string
-    to: string
-
-    // Primary display fields
-    title: string
-    subtitle: string
-
-    // Status/label chips
-    badges: string[]
-
-    name: string
-    shortName: string
-    formattedAddress: string
-    shortAddress: string
-
-    // Media (empty string means unset)
-    imageUrl: string
-
-    // Image tone metadata
-    imageShade?: PlaceImageShade
-    imageKind?: PublicKitchenImageKind
-
-    // Search collection (optional)
-    collection?: string
-
-    // Ownership
-    claimedBy?: string
-  }
-
-  export type Profile = Card & {
-    card: Card
-    tagline: string
-    foodGallery: string[]
-  }
-}
-
-export type KitchenSurface = {
-  // View surface only: Place-like fields are a resolved read projection of the
-  // linked Place plus meaningful Kitchen/scoped deltas, never Kitchen authority.
-  id?: string
-  can_write?: boolean
-  app_scope_state?: FireuxAppScopeState
-  app_scope_app_id?: string
-  slug?: string
-  show?: boolean
-  publicly_visible?: boolean
-  active?: boolean
-  route_scope?: 'live' | 'demo' | 'test'
-  is_test_kitchen?: boolean
-  place_id?: string
-  created?: unknown
-  updated?: unknown
-  name?: string
-  display_name?: string
-  tagline?: string
-  short_name?: string
-  food_gallery?: string[]
-  currency_code?: string
-  menu_currency_format?: CurrencyDisplayFormat
-  menu_show_currency?: boolean
-  menu_available?: boolean
-  menus?: KitchenMenusConfig
-  sproochli?: SproochliAttachmentConfig
-  menu_style?: Partial<PageStyle>
-  formatted_address?: string
-  short_address?: string
-  lat?: number
-  lng?: number
-  image_url?: string
-  display_image_url?: string
-  logo_image_url?: string
-  image_shade?: PlaceImageShade
-  image_kind?: PublicKitchenImageKind
-  media_backdrop_color?: string
-  claimed_by?: string
-  brand_tagline?: string
-  website?: string
-  phone?: string
-  social_links?: unknown
-  cover_image?: string
-  gallery_images?: string[]
-  about?: string
-  verified?: boolean
-  operator_ids?: string[]
-  team_ids?: string[]
-}
-
-export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
-  kitchen?: TKitchen | null | undefined
-  place?: Partial<Pick<
-    Place,
-    | 'name'
-    | 'short_name'
-    | 'brand_tagline'
-    | 'about'
-    | 'short_address'
-    | 'formatted_address'
-    | 'address'
-    | 'lat'
-    | 'lng'
-    | 'timezone'
-    | 'image_url'
-    | 'cover_image'
-    | 'gallery_images'
-    | 'image_shade'
-    | 'phone'
-    | 'email'
-    | 'website'
-    | 'google_maps_url'
-    | 'social_links'
-    | 'place_type'
-    | 'types'
-    | 'tags'
-    | 'price_level'
-    | 'default_currency_code'
-    | 'business_hours'
-    | 'claimed_by'
-    | 'verified'
-    | 'slug'
-    | 'search_term'
-  >> | null | undefined
-  scope?: Record<string, unknown> | null | undefined
-  routeScope?: KitchenSurface['route_scope']
-}
-
-const resolveKitchenPath = (target: {
-  id?: string
-  slug?: string
-  route_scope?: 'live' | 'demo' | 'test'
-}) => {
-  const slug = safeString(target.slug)
-  if (!slug) return ''
-
-  if (target.route_scope === 'demo' || target.route_scope === 'test') {
-    return ''
-  }
-
-  return `/kitchens/${encodeURIComponent(slug)}`
-}
-
-const meaningfulSurfaceDelta = (value: unknown) => {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return {}
-
-  return Object.fromEntries(
-    Object.entries(value as Record<string, unknown>).filter(([, item]) => {
-      if (typeof item === 'string') return Boolean(item.trim())
-      if (Array.isArray(item)) return item.length > 0
-      if (typeof item === 'object' && item) return Object.keys(item).length > 0
-      return item !== null && item !== undefined
-    })
-  )
-}
-
-const placeBaselineKeys = [
-  'name',
-  'short_name',
-  'brand_tagline',
-  'about',
-  'formatted_address',
-  'short_address',
-  'address',
-  'lat',
-  'lng',
-  'timezone',
-  'image_url',
-  'cover_image',
-  'gallery_images',
-  'image_shade',
-  'phone',
-  'email',
-  'website',
-  'google_maps_url',
-  'social_links',
-] as const
+export type {
+  KitchenCard,
+  KitchenSurface,
+  KitchenSurfaceParts,
+} from './kitchen-interface.types'
 
 export function useKitchenInterface() {
   type KitchenIdentity = KitchenCard.Card

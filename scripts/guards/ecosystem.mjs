@@ -31,7 +31,7 @@ const REQUIRED_FIREBASE_FILES = [
   'ecosystem.config.ts',
   'service-account.example.json',
 ]
-const OPTIONAL_FIREBASE_FILES = ['firestore.template.rules']
+const OPTIONAL_FIREBASE_FILES = ['firestore.template.rules', 'rules']
 const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
 
 // Ecosystem runtime contract
@@ -270,8 +270,9 @@ function checkFirebaseShape(pkgPath) {
       !OPTIONAL_FIREBASE_FILES.includes(e) &&
       !FIREBASE_ALLOWED_NOISE.includes(e)
   )
+  const rulesViolation = checkFirebaseRulesFragments(firebaseDir, pkgPath)
 
-  if (!missing.length && !unexpected.length) return null
+  if (!missing.length && !unexpected.length && !rulesViolation) return null
 
   const lines = [
     '  Firebase shape violation:',
@@ -292,6 +293,66 @@ function checkFirebaseShape(pkgPath) {
       .sort((a, b) => a.localeCompare(b))
       .forEach((u) => lines.push(`      - ${u}`))
   }
+  if (rulesViolation) lines.push(...rulesViolation)
 
   return lines.join('\n')
+}
+
+function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
+  const templatePath = path.join(firebaseDir, 'firestore.template.rules')
+  const fragmentsDir = path.join(firebaseDir, 'rules')
+  const hasTemplate = existsSync(templatePath)
+  const hasFragments = existsSync(fragmentsDir)
+
+  if (!hasTemplate && !hasFragments) return null
+  if (hasTemplate !== hasFragments) {
+    return [
+      '    Firestore Rules manifest and rules/ fragments must exist together.',
+    ]
+  }
+
+  const template = readFileSync(templatePath, 'utf8')
+  const declared = [...template.matchAll(
+    /^\/\/ @fireux-ecosystem-rules ([a-z][a-z0-9-]*)$/gm
+  )].map((match) => match[1])
+  const entries = readdirSync(fragmentsDir, { withFileTypes: true })
+  const invalidEntries = entries.filter(
+    (entry) => !entry.isFile() || !/^[a-z][a-z0-9-]*\.rules$/.test(entry.name)
+  )
+  const actual = entries
+    .filter((entry) => entry.isFile() && entry.name.endsWith('.rules'))
+    .map((entry) => entry.name.slice(0, -'.rules'.length))
+    .sort()
+  const expected = [...new Set(declared)].sort()
+  const ecosystem = path.basename(pkgPath).replace(/^fireux-/, '')
+  const invalidHeaders = actual.filter((name) => {
+    const source = readFileSync(path.join(fragmentsDir, `${name}.rules`), 'utf8')
+    return !source.startsWith(
+      `// @fireux-ecosystem-rules-fragment ${ecosystem}/${name}\n`
+    )
+  })
+
+  if (
+    declared.length &&
+    declared.length === expected.length &&
+    actual.join(',') === expected.join(',') &&
+    !invalidEntries.length &&
+    !invalidHeaders.length
+  ) return null
+
+  return [
+    '    Firestore Rules fragment contract is invalid:',
+    ...(declared.length ? [] : ['      - manifest declares no fragments']),
+    ...(declared.length === expected.length ? [] : ['      - manifest repeats a fragment']),
+    ...invalidEntries.map((entry) => `      - invalid entry: rules/${entry.name}`),
+    ...expected.filter((name) => !actual.includes(name)).map(
+      (name) => `      - missing declared fragment: rules/${name}.rules`
+    ),
+    ...actual.filter((name) => !expected.includes(name)).map(
+      (name) => `      - undeclared fragment: rules/${name}.rules`
+    ),
+    ...invalidHeaders.map(
+      (name) => `      - invalid source header: rules/${name}.rules`
+    ),
+  ]
 }

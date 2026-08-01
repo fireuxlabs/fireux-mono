@@ -39,14 +39,14 @@
       </UCard>
     </div>
 
-    <UCard
-      v-if="currencySummary && salesTrend.points.length > 1"
-    >
+    <UCard v-if="currencySummary && salesTrend.points.length > 1">
       <FinanceReportTrend :trend="salesTrend" size="lg" />
     </UCard>
 
     <UCard>
-      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div
+        class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+      >
         <div>
           <h2 class="text-sm font-semibold text-highlighted">
             Transaction direction
@@ -66,10 +66,7 @@
       </p>
     </UCard>
 
-    <div
-      v-if="currencySummary"
-      class="grid gap-4 lg:grid-cols-2"
-    >
+    <div v-if="currencySummary" class="grid gap-4 lg:grid-cols-2">
       <UCard>
         <template #header>
           <h2 class="text-sm font-semibold text-highlighted">
@@ -90,7 +87,9 @@
                 {{ formatCount(service.checks) }} checks
               </p>
             </div>
-            <p class="shrink-0 text-sm font-semibold tabular-nums text-highlighted">
+            <p
+              class="shrink-0 text-sm font-semibold tabular-nums text-highlighted"
+            >
               {{ formatMoney(service.amountMinor) }}
             </p>
           </li>
@@ -99,9 +98,7 @@
 
       <UCard>
         <template #header>
-          <h2 class="text-sm font-semibold text-highlighted">
-            Best sellers
-          </h2>
+          <h2 class="text-sm font-semibold text-highlighted">Best sellers</h2>
         </template>
         <ul class="divide-y divide-default">
           <li
@@ -117,7 +114,9 @@
                 {{ formatCount(item.quantity) }} sold
               </p>
             </div>
-            <p class="shrink-0 text-sm font-semibold tabular-nums text-highlighted">
+            <p
+              class="shrink-0 text-sm font-semibold tabular-nums text-highlighted"
+            >
               {{ formatMoney(item.line_gross.amount_minor) }}
             </p>
           </li>
@@ -127,27 +126,31 @@
 
     <UCard>
       <template #header>
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h2 class="text-sm font-semibold text-highlighted">
-            {{ isSingleDay ? 'Today’s completed checks' : 'Completed checks' }}
-          </h2>
-          <p class="mt-1 text-xs text-muted">
-            {{ periodLabel }}
-          </p>
-        </div>
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        >
+          <div>
+            <h2 class="text-sm font-semibold text-highlighted">
+              {{
+                isSingleDay ? 'Today’s completed checks' : 'Completed checks'
+              }}
+            </h2>
+            <p class="mt-1 text-xs text-muted">
+              {{ periodLabel }}
+            </p>
+          </div>
 
-        <UFieldGroup size="sm" aria-label="Service type">
-          <UButton
-            v-for="option in serviceOptions"
-            :key="option.value"
-            :label="option.label"
-            color="neutral"
-            :variant="selectedService === option.value ? 'solid' : 'ghost'"
-            :aria-pressed="selectedService === option.value"
-            @click="selectedService = option.value"
-          />
-        </UFieldGroup>
+          <UFieldGroup size="sm" aria-label="Service type">
+            <UButton
+              v-for="option in serviceOptions"
+              :key="option.value"
+              :label="option.label"
+              color="neutral"
+              :variant="selectedService === option.value ? 'solid' : 'ghost'"
+              :aria-pressed="selectedService === option.value"
+              @click="selectedService = option.value"
+            />
+          </UFieldGroup>
         </div>
       </template>
 
@@ -226,9 +229,9 @@
               </div>
               <p class="mt-0.5 truncate text-xs text-muted">
                 {{ formatTransactionTime(transaction.occurred_at) }}
-                · {{ formatTransactionType(transaction.order_type) }}
-                · {{ transaction.closed_by }}
-                · {{ formatCount(transaction.item_quantity) }} items
+                · {{ formatTransactionType(transaction.order_type) }} ·
+                {{ transaction.closed_by }} ·
+                {{ formatCount(transaction.item_quantity) }} items
               </p>
             </div>
             <p class="shrink-0 text-sm font-semibold tabular-nums text-success">
@@ -246,11 +249,10 @@
         </ul>
       </div>
 
-      <template
-        v-if="currencySummary && filteredTransactions.length"
-        #footer
-      >
-        <div class="flex items-center justify-between gap-4 text-sm font-semibold">
+      <template v-if="currencySummary && filteredTransactions.length" #footer>
+        <div
+          class="flex items-center justify-between gap-4 text-sm font-semibold"
+        >
           <span class="text-highlighted">
             {{ formatCount(filteredTransactions.length) }} completed checks
           </span>
@@ -263,9 +265,11 @@
 
     <UModal
       v-model:open="transactionOpen"
-      :title="selectedTransaction
-        ? `Order #${selectedTransaction.order_number}`
-        : 'Transaction details'"
+      :title="
+        selectedTransaction
+          ? `Order #${selectedTransaction.order_number}`
+          : 'Transaction details'
+      "
       description="Completed sale"
       :ui="{ content: 'sm:max-w-md' }"
       @after:leave="selectedTransaction = null"
@@ -276,11 +280,13 @@
             class="flex items-center justify-between gap-4 rounded-xl bg-elevated/50 p-4"
           >
             <div>
-              <p class="text-xs font-medium text-muted">
-                Money in
-              </p>
+              <p class="text-xs font-medium text-muted">Money in</p>
               <p class="mt-1 text-2xl font-semibold tabular-nums text-success">
-                {{ formatSignedMoney(selectedTransaction.signed_amount.amount_minor) }}
+                {{
+                  formatSignedMoney(
+                    selectedTransaction.signed_amount.amount_minor
+                  )
+                }}
               </p>
             </div>
             <span
@@ -329,19 +335,22 @@
                 :key="`${item.label}:${index}`"
                 class="flex min-w-0 items-center gap-2 px-4 py-3"
               >
-                <span class="shrink-0 whitespace-nowrap text-sm tabular-nums text-muted">
+                <span
+                  class="shrink-0 whitespace-nowrap text-sm tabular-nums text-muted"
+                >
                   {{ item.quantity }}×
                 </span>
                 <span class="min-w-0 flex-1 truncate text-sm text-highlighted">
                   {{ item.label }}
                 </span>
-                <span class="shrink-0 whitespace-nowrap text-sm tabular-nums text-muted">
+                <span
+                  class="shrink-0 whitespace-nowrap text-sm tabular-nums text-muted"
+                >
                   {{ formatMoney(item.line_gross.amount_minor) }}
                 </span>
               </li>
             </ul>
           </section>
-
         </div>
       </template>
 
@@ -361,257 +370,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
 import FinanceReportTrend from 'fireux-finance/runtime/components/Finance/ReportTrend.vue'
-import type {
-  FinancialReportTrendView,
-} from 'fireux-finance/runtime/models/report-presentation.model.ts'
-import { useKitchenConsoleFinance } from '../../../../composables/fireux/console/kitchen/overview/useKitchenConsoleFinance'
-import type { KitchenFinanceTransactionSummary } from '../../../../models/kitchen/finance-report.model'
+import { useKitchenFinanceOverview } from './useKitchenFinanceOverview'
 
-const props = defineProps<{
-  fromDate: string
-  toDate: string
-}>()
-
-const {
-  chooseRange,
-  customFrom,
-  customTo,
-  report,
-  pending,
-  error,
-} = useKitchenConsoleFinance()
-
-watch(
-  () => [props.fromDate, props.toDate] as const,
-  ([fromDate, toDate]: readonly [string, string]) => {
-    customFrom.value = fromDate
-    customTo.value = toDate
-    chooseRange('custom')
-  },
-  { immediate: true }
-)
-
-const isSingleDay = computed(() => props.fromDate === props.toDate)
-const periodLabel = computed(() =>
-  isSingleDay.value
-    ? formatDate(props.fromDate)
-    : `${formatDate(props.fromDate)} – ${formatDate(props.toDate)}`
-)
-const currencySummary = computed(() => report.value?.currencies[0] ?? null)
-const transactions = computed(() => report.value?.transactions ?? [])
-const grossSalesMinor = computed(() =>
-  currencySummary.value?.gross_sales.amount_minor ?? 0
-)
-const completedChecks = computed(() => currencySummary.value?.sale_count ?? 0)
-const averageCheckMinor = computed(() =>
-  currencySummary.value?.average_sale.amount_minor ?? 0
-)
-const itemsSold = computed(() => currencySummary.value?.item_quantity ?? 0)
-const salesTrend = computed<FinancialReportTrendView>(() => ({
-  title: 'Gross sales',
-  series: { primaryLabel: 'Completed checks' },
-  points: isSingleDay.value
-    ? hourlyTrendPoints()
-    : dailyTrendPoints(),
-}))
-const serviceBreakdown = computed(() => {
-  const services = new Map<string, { checks: number; amountMinor: number }>()
-  for (const transaction of transactions.value) {
-    const service = services.get(transaction.order_type) ?? {
-      checks: 0,
-      amountMinor: 0,
-    }
-    service.checks += 1
-    service.amountMinor += transaction.gross_sale.amount_minor
-    services.set(transaction.order_type, service)
-  }
-  return [...services.entries()]
-    .map(([type, values]) => ({ type, ...values }))
-    .sort((left, right) => right.amountMinor - left.amountMinor)
-})
-const bestSellers = computed(() =>
-  [...(currencySummary.value?.items ?? [])]
-    .sort((left, right) => right.line_gross.amount_minor - left.line_gross.amount_minor)
-    .slice(0, 5)
-)
-type ServiceFilter = 'all' | KitchenFinanceTransactionSummary['order_type']
-const serviceOptions: {
-  value: ServiceFilter
-  label: string
-}[] = [
-  { value: 'all', label: 'All' },
-  { value: 'eat_in', label: 'Eat in' },
-  { value: 'takeaway', label: 'Takeaway' },
-  { value: 'collection', label: 'Collection' },
-]
-const selectedService = ref<ServiceFilter>('all')
-const filteredTransactions = computed(() =>
-  selectedService.value === 'all'
-    ? transactions.value
-    : transactions.value.filter(
-        transaction => transaction.order_type === selectedService.value
-      )
-)
-const filteredTotalMinor = computed(() =>
-  filteredTransactions.value.reduce(
-    (total, transaction) => total + transaction.signed_amount.amount_minor,
-    0
-  )
-)
-const transactionOpen = ref(false)
-const selectedTransaction = ref<KitchenFinanceTransactionSummary | null>(null)
-const selectedTransactionDetails = computed(() => {
-  const transaction = selectedTransaction.value
-  if (!transaction) return []
-  return [
-    { label: 'Time', value: formatTransactionDateTime(transaction.occurred_at) },
-    ...(transaction.placed_at
-      ? [{
-          label: 'Placed',
-          value: formatTransactionDateTime(transaction.placed_at),
-        }]
-      : []),
-    { label: 'Order', value: `#${transaction.order_number}` },
-    { label: 'Status', value: formatTransactionType(transaction.status) },
-    { label: 'Type', value: formatTransactionType(transaction.order_type) },
-    { label: 'Channel', value: formatTransactionType(transaction.channel) },
-    { label: 'Closed by', value: transaction.closed_by },
-    { label: 'Counterparty', value: transaction.counterparty },
-    { label: 'Summary', value: transaction.summary },
-    {
-      label: 'Source',
-      value: `${
-        transaction.source.kind === 'completed_order'
-          ? 'Completed Order'
-          : 'Kitchen Sale'
-      } · ${transaction.source.id}`,
-    },
-    ...(transaction.source.service_id
-      ? [{
-          label: 'Service',
-          value: transaction.source.service_number
-            ? `#${transaction.source.service_number} · ${transaction.source.service_id}`
-            : transaction.source.service_id,
-        }]
-      : []),
-    {
-      label: 'Items',
-      value: formatCount(transaction.item_quantity),
-    },
-  ]
-})
-const currencyCode = computed(() =>
-  currencySummary.value?.currency_code ?? 'CHF'
-)
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat('en-GB', { dateStyle: 'long' }).format(
-    new Date(`${value}T12:00:00`)
-  )
-}
-
-function formatMoney(amountMinor: number) {
-  return new Intl.NumberFormat('en-GB', {
-    style: 'currency',
-    currency: currencyCode.value,
-  }).format(amountMinor / 100)
-}
-
-function formatSignedMoney(amountMinor: number) {
-  const sign = amountMinor > 0 ? '+' : amountMinor < 0 ? '−' : ''
-  return `${sign}${formatMoney(Math.abs(amountMinor))}`
-}
-
-function formatCount(value: number) {
-  return new Intl.NumberFormat('en-GB').format(value)
-}
-
-function hourlyTrendPoints(): FinancialReportTrendView['points'] {
-  if (!transactions.value.length) return []
-  const hourFormatter = new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    hour12: false,
-    timeZone: report.value?.timezone ?? 'UTC',
-  })
-  const buckets = new Map<number, {
-    amountMinor: number
-    checks: number
-    label: string
-  }>()
-  for (const transaction of transactions.value) {
-    const hour = Number(hourFormatter.format(new Date(transaction.occurred_at)))
-    const bucket = buckets.get(hour) ?? {
-      amountMinor: 0,
-      checks: 0,
-      label: `${String(hour).padStart(2, '0')}:00`,
-    }
-    bucket.amountMinor += transaction.signed_amount.amount_minor
-    bucket.checks += 1
-    buckets.set(hour, bucket)
-  }
-  const hours = [...buckets.keys()]
-  const firstHour = Math.min(...hours)
-  const lastHour = Math.max(...hours)
-  return Array.from({ length: lastHour - firstHour + 1 }, (_, index) => {
-    const hour = firstHour + index
-    const bucket = buckets.get(hour) ?? {
-      amountMinor: 0,
-      checks: 0,
-      label: `${String(hour).padStart(2, '0')}:00`,
-    }
-    return {
-      id: `${props.fromDate}-${hour}`,
-      label: bucket.label,
-      value: bucket.amountMinor,
-      valueLabel: formatMoney(bucket.amountMinor),
-      secondaryLabel: `${formatCount(bucket.checks)} completed checks`,
-    }
-  })
-}
-
-function dailyTrendPoints(): FinancialReportTrendView['points'] {
-  return (report.value?.daily ?? []).map(day => {
-    const summary = day.currencies[0]
-    const amountMinor = summary?.gross_sales.amount_minor ?? 0
-    return {
-      id: day.date,
-      label: new Intl.DateTimeFormat('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        timeZone: 'UTC',
-      }).format(new Date(`${day.date}T00:00:00.000Z`)),
-      value: amountMinor,
-      valueLabel: formatMoney(amountMinor),
-      secondaryLabel: `${formatCount(day.sale_count)} completed checks`,
-    }
-  })
-}
-
-function formatTransactionTime(value: string) {
-  return new Intl.DateTimeFormat('en-GB', {
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value))
-}
-
-function formatTransactionDateTime(value: string) {
-  return new Intl.DateTimeFormat('en-GB', {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-  }).format(new Date(value))
-}
-
-function formatTransactionType(value: string) {
-  return value
-    .split('_')
-    .map(part => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
-    .join(' ')
-}
-
-function inspectTransaction(transaction: KitchenFinanceTransactionSummary) {
-  selectedTransaction.value = transaction
-  transactionOpen.value = true
-}
+const props = defineProps<{ fromDate: string; toDate: string }>()
+const { chooseRange, customFrom, customTo, report, pending, error, isSingleDay, periodLabel, currencySummary, transactions, grossSalesMinor, completedChecks, averageCheckMinor, itemsSold, salesTrend, serviceBreakdown, bestSellers, serviceOptions, selectedService, filteredTransactions, filteredTotalMinor, transactionOpen, selectedTransaction, selectedTransactionDetails, currencyCode, formatDate, formatMoney, formatSignedMoney, formatCount, hourlyTrendPoints, dailyTrendPoints, formatTransactionTime, formatTransactionDateTime, formatTransactionType, inspectTransaction } = useKitchenFinanceOverview(props)
 </script>

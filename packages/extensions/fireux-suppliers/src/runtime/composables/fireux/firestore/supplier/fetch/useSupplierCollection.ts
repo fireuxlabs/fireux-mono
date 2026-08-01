@@ -1,18 +1,7 @@
-// Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Supplier consoles.
-// Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: remove console fixtures from the Firestore collection seam.
-// Concurrent edit — 2026-07-20 22:57 CEST — Both-Entity Authority — Supplier: expose only complete, current-App root/support target pairs.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name exact App access-record joins directly.
-// Concurrent edit — 2026-07-21 23:18 CEST — Console family alignment: fail closed on malformed AppSupplier authority.
-import {
-  collection,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
-import { computed, isRef, type Ref } from 'vue'
+import { collection, query as fsq, where, type Query } from 'firebase/firestore'
+import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -20,101 +9,48 @@ import {
   readConsoleTargetAuthority,
   targetHasConsoleAccess,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import { SupplierStorage } from '../../../../../models/supplier/Supplier.model'
+import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 import {
-  SupplierStorage,
-  type AppSupplier,
-  type Supplier,
-} from '../../../../../models/supplier/Supplier.model'
+  DEFAULT_COLLECTION_PATH,
+  UNSUPPORTED_TEST_SOURCE_MESSAGE,
+  normalizeString,
+  resolveSupplierId,
+  supplierRootBelongsToApp,
+  type AppSupplierRecord,
+  type SupplierCollectionDoc,
+  type SupplierRootDoc,
+  type UseSupplierCollectionOptions,
+} from './supplier-collection-contract'
 import {
-  useSupplierInterface,
-  type SupplierSurface,
-} from '../utils/view/useSupplierInterface'
+  findDanglingAppSupportError,
+  findMalformedAppSupportError,
+  findRequestedTargetPairError,
+  findRootScopeError,
+} from './supplier-collection-diagnostics'
+import { useSupplierCollectionSelection } from './supplier-collection-selection'
 
-type SupplierRootDoc = Partial<Supplier> & {
-  id?: string
-}
-
-type SupplierCollectionDoc = SupplierRootDoc & SupplierSurface
-
-type AppSupplierRecord = Partial<AppSupplier> & {
-  id?: string
-}
-
-const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
-const UNSUPPORTED_TEST_SOURCE_MESSAGE =
-  '[fireux-suppliers] Supplier Test source is unsupported: no canonical simulation producer exists.'
-
-export type SupplierCollectionFilterValue = string | number | null | undefined
-export type SupplierCollectionFilter = {
-  ids?: SupplierCollectionFilterValue[] | null | undefined
-  operatorId?: SupplierCollectionFilterValue
-  teamId?: SupplierCollectionFilterValue
-}
-export type SupplierCollectionSource = ConsoleSource
-
-type UseSupplierCollectionOptions = {
-  source?:
-    | SupplierCollectionSource
-    | Ref<SupplierCollectionSource | null | undefined>
-    | null
-  filter?:
-    | SupplierCollectionFilter
-    | Ref<SupplierCollectionFilter | null | undefined>
-    | null
-}
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
-function resolveSupplierId(supplier: { id?: unknown } | null | undefined) {
-  return normalizeString(supplier?.id)
-}
-
-function supplierRootBelongsToApp(
-  supplier: SupplierRootDoc,
-  appId: string
-) {
-  const state = normalizeFireuxAppScopeState(supplier.app_scope_state)
-  return (
-    (state === 'parent_app' || state === 'tenant_app') &&
-    normalizeString(supplier.app_scope_app_id) === appId
-  )
-}
-
+export type {
+  SupplierCollectionFilter,
+  SupplierCollectionFilterValue,
+  SupplierCollectionSource,
+} from './supplier-collection-contract'
 export function useSupplierCollection(
   options: UseSupplierCollectionOptions = {}
 ) {
   const db = useFirestore()
-  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } = useFirestoreRead()
+  const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
+    useFirestoreRead()
   const { appId } = useFireUXConfig()
   const { surface } = useSupplierInterface()
-  const sourceMode = computed<SupplierCollectionSource>(() => {
-    if (isRef(options.source)) return options.source.value ?? 'live'
-    return options.source ?? 'live'
-  })
-  const resolvedFilter = computed<SupplierCollectionFilter | undefined>(() => {
-    if (isRef(options.filter)) return options.filter.value ?? undefined
-    return options.filter ?? undefined
-  })
-  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterOperatorId = computed(() =>
-    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
-  )
-  const filterIdSet = computed(
-    () =>
-      new Set(
-        (resolvedFilter.value?.ids ?? [])
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      )
-  )
-  const usesTargetedRootRead = computed(
-    () => hasFilter.value || hasOperatorFilter.value
-  )
+  const {
+    sourceMode,
+    hasFilter,
+    filterOperatorId,
+    hasOperatorFilter,
+    filterIdSet,
+    usesTargetedRootRead,
+  } = useSupplierCollectionSelection(options)
   const liveRootCollectionPath = computed(() =>
     sourceMode.value === 'live' && !usesTargetedRootRead.value
       ? DEFAULT_COLLECTION_PATH
@@ -140,23 +76,35 @@ export function useSupplierCollection(
     collectionPath: targetedAppSupportCollectionPath,
     ids: computed(() => [...filterIdSet.value]),
   })
-  const appSupportOperatorQuery = computed<Query<AppSupplierRecord> | null>(() => {
-    if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
+  const appSupportOperatorQuery = computed<Query<AppSupplierRecord> | null>(
+    () => {
+      if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
 
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
+      if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
-    return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, SupplierStorage.appSupportCollection),
-      where('operator_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<AppSupplierRecord>
-  })
+      return fsq(
+        collection(
+          db,
+          AppStorage.collection,
+          resolvedAppId.value,
+          SupplierStorage.appSupportCollection
+        ),
+        where('operator_ids', 'array-contains', filterOperatorId.value)
+      ) as Query<AppSupplierRecord>
+    }
+  )
   const appSupportTeamQuery = computed<Query<AppSupplierRecord> | null>(() => {
     if (sourceMode.value !== 'live' || !resolvedAppId.value) return null
 
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
     return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, SupplierStorage.appSupportCollection),
+      collection(
+        db,
+        AppStorage.collection,
+        resolvedAppId.value,
+        SupplierStorage.appSupportCollection
+      ),
       where('team_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppSupplierRecord>
   })
@@ -197,9 +145,7 @@ export function useSupplierCollection(
       ? allowedSupplierIds.value
       : [...filterIdSet.value]
 
-    return hasFilter.value
-      ? ids.filter((id) => filterIdSet.value.has(id))
-      : ids
+    return hasFilter.value ? ids.filter((id) => filterIdSet.value.has(id)) : ids
   })
   const liveRootDocs = firestoreLoadDocsByIds<SupplierRootDoc>({
     collectionPath: liveDocumentCollectionPath,
@@ -243,7 +189,8 @@ export function useSupplierCollection(
         !readConsoleTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
         !supplierRootBelongsToApp(root, resolvedAppId.value)
-      ) continue
+      )
+        continue
 
       const item = surface({
         supplier: root,
@@ -288,22 +235,9 @@ export function useSupplierCollection(
       return undefined
     }
 
-    const rootIds = new Set(
-      (liveRootDocs.docs.value ?? [])
-        .map((supplier) => resolveSupplierId(supplier))
-        .filter(Boolean)
-    )
-    const danglingCount = appSupportSource.value
-      .map((appSupport) => resolveSupplierId(appSupport))
-      .filter(Boolean)
-      .filter(
-      (id) => !rootIds.has(id)
-      ).length
-
-    if (!danglingCount) return undefined
-
-    return new Error(
-      `[useSupplierCollection] ${danglingCount} AppSupplier support record(s) have no canonical root Supplier`
+    return findDanglingAppSupportError(
+      liveRootDocs.docs.value ?? [],
+      appSupportSource.value
     )
   })
   const malformedAppSupportError = computed<Error | undefined>(() => {
@@ -316,16 +250,10 @@ export function useSupplierCollection(
       appSupportOperatorSource.error.value ||
       appSupportTeamSource.error.value ||
       targetedAppSupportSource.error.value
-    ) return undefined
-
-    const ids = appSupportSource.value
-      .filter(appSupport => !readConsoleTargetAuthority(appSupport))
-      .map(appSupport => resolveSupplierId(appSupport))
-      .filter(Boolean)
-    if (!ids.length) return undefined
-    return new Error(
-      `[useSupplierCollection] malformed AppSupplier authority: ${ids.join(', ')}`
     )
+      return undefined
+
+    return findMalformedAppSupportError(appSupportSource.value)
   })
   const requestedTargetPairError = computed<Error | undefined>(() => {
     if (
@@ -341,24 +269,10 @@ export function useSupplierCollection(
       return undefined
     }
 
-    const rootIds = new Set(
-      (liveRootDocs.docs.value ?? [])
-        .map((supplier) => resolveSupplierId(supplier))
-        .filter(Boolean)
-    )
-    const appSupportIds = new Set(
-      (targetedAppSupportSource.docs.value ?? [])
-        .map((appSupport) => resolveSupplierId(appSupport))
-        .filter(Boolean)
-    )
-    const missingRoots = [...filterIdSet.value].filter((id) => !rootIds.has(id))
-    const missingAppRecords = [...filterIdSet.value].filter(
-      (id) => !appSupportIds.has(id)
-    )
-    if (!missingRoots.length && !missingAppRecords.length) return undefined
-
-    return new Error(
-      `[useSupplierCollection] incomplete requested Supplier target pair; missing root: ${missingRoots.join(', ') || 'none'}; missing AppSupplier: ${missingAppRecords.join(', ') || 'none'}`
+    return findRequestedTargetPairError(
+      filterIdSet.value,
+      liveRootDocs.docs.value ?? [],
+      targetedAppSupportSource.docs.value ?? []
     )
   })
   const rootScopeError = computed<Error | undefined>(() => {
@@ -377,22 +291,10 @@ export function useSupplierCollection(
       return undefined
     }
 
-    const appSupportIds = new Set(
-      appSupportSource.value
-        .map((appSupport) => resolveSupplierId(appSupport))
-        .filter(Boolean)
-    )
-    const mismatches = (liveRootDocs.docs.value ?? [])
-      .filter((supplier) => appSupportIds.has(resolveSupplierId(supplier)))
-      .filter(
-        (supplier) => !supplierRootBelongsToApp(supplier, resolvedAppId.value)
-      )
-      .map((supplier) => resolveSupplierId(supplier))
-      .filter(Boolean)
-    if (!mismatches.length) return undefined
-
-    return new Error(
-      `[useSupplierCollection] Supplier root/AppSupplier scope mismatch: ${mismatches.join(', ')}`
+    return findRootScopeError(
+      liveRootDocs.docs.value ?? [],
+      appSupportSource.value,
+      resolvedAppId.value
     )
   })
 
@@ -403,7 +305,8 @@ export function useSupplierCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        if (!targetHasConsoleAccess(supplier, filterOperatorId.value)) return acc
+        if (!targetHasConsoleAccess(supplier, filterOperatorId.value))
+          return acc
       }
 
       acc.push({
@@ -424,7 +327,8 @@ export function useSupplierCollection(
     return (
       liveRootDocs.pending.value ||
       (hasOperatorFilter.value
-        ? appSupportOperatorSource.pending.value || appSupportTeamSource.pending.value
+        ? appSupportOperatorSource.pending.value ||
+          appSupportTeamSource.pending.value
         : targetedAppSupportSource.pending.value)
     )
   })
@@ -435,14 +339,17 @@ export function useSupplierCollection(
     }
     if (!usesTargetedRootRead.value) return liveRootSource.error.value
     if (hasOperatorFilter.value && !filterOperatorId.value) return undefined
-    return (hasOperatorFilter.value
-      ? appSupportOperatorSource.error.value ?? appSupportTeamSource.error.value
-      : targetedAppSupportSource.error.value) ??
+    return (
+      (hasOperatorFilter.value
+        ? (appSupportOperatorSource.error.value ??
+          appSupportTeamSource.error.value)
+        : targetedAppSupportSource.error.value) ??
       liveRootDocs.error.value ??
       malformedAppSupportError.value ??
       requestedTargetPairError.value ??
       rootScopeError.value ??
       danglingAppSupportError.value
+    )
   })
   const { outcome } = useFirestoreCollectionState({
     active: computed(() => sourceMode.value !== 'demo'),

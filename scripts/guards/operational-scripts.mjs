@@ -14,7 +14,10 @@ import { access, mkdtemp, readFile, rm, stat } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import process from 'node:process'
-import { composeFirestoreRules } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
+import {
+  composeFirestoreRules,
+  expandFirestoreRulesTemplate,
+} from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 import { assertAllFirestoreRulesArtifactsCurrent } from '../_lib/firestore-rules-source.mjs'
 import { writeProtectedJsonArtifact } from '../_lib/protected-json-artifact.mjs'
 import { buildWerkboxServerSourceEvidence } from '../_lib/werkbox-security-contract.mjs'
@@ -215,13 +218,14 @@ export async function assertFirebaseAuthDomainSync(repoRoot) {
 }
 
 async function assertRulesFragmentScope(repoRoot) {
-  const template = await readFile(
+  const templateSource = await readFile(
     path.join(
       repoRoot,
       'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules'
     ),
     'utf8'
   )
+  const template = await expandFirestoreRulesTemplate(templateSource)
   const ownerMarker = '    // @fireux-core-rules owner'
   const tabIndented = template.replace(
     ownerMarker,

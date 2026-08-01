@@ -1,207 +1,20 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
-import {
-  PlaceModel,
-  type Place,
-} from 'fireux-places/runtime/models/place.model.ts'
-import type { PublicPlaceProjection } from 'fireux-places/runtime/models/place-public.model.ts'
-import {
-  hasExactPublicPlaceProjectionShape,
-  normalizePublicPlaceProjection,
-} from 'fireux-places/runtime/utils/public-place-projection.ts'
-import {
-  KitchenModel,
-  type AppKitchen,
-  type Kitchen,
-  type KitchenFulfilmentPaymentPolicy,
-  type KitchenOrdersConfig,
-} from '../../../models/kitchen.model'
+import { hasExactPublicPlaceProjectionShape } from 'fireux-places/runtime/utils/public-place-projection.ts'
+import type { Kitchen } from '../../../models/kitchen.model'
 import {
   deanosKitchenDemoIdentity,
-  kitchenDemoCreated,
-  kitchenDemoMediaUrl,
-  kitchenDemoUpdated,
   deanosKitchenDemoTeamMemberIds,
+  kitchenDemoMediaUrl,
   miseboxRestaurantKitchenDemoIdentity,
   placeDemoMediaUrl,
   pizzaTheActionKitchenDemoIdentity,
 } from './fixtures'
-import type { KitchenDemoIdentity } from './types'
-
-export type KitchenDemoTarget = {
-  appId: string
-  appSupport: AppKitchen
-  identity: KitchenDemoIdentity
-  kitchen: Kitchen
-  place: Place
-  publicPlace: PublicPlaceProjection
-}
-
-type DemoKitchenInput = {
-  identity: KitchenDemoIdentity
-  name: string
-  tagline: string
-  logoImageUrl: string
-  menuStyle: NonNullable<Kitchen['menus']['style']>
-  palette: SparseBrandPalette
-  paymentMethods: KitchenFulfilmentPaymentPolicy[]
-  tableCount: number
-  operationHours?: KitchenOrdersConfig['operation_hours']
-}
-
-type DemoPlaceInput = {
-  identity: KitchenDemoIdentity
-  name: string
-  shortName: string
-  tagline: string
-  city: string
-  postalCode: string
-  region: string
-  street: string
-  lat: number
-  lng: number
-  palette: SparseBrandPalette
-  imageUrl?: string
-  coverImage?: string
-  galleryImages?: string[]
-  imageShade?: Place['image_shade']
-  businessHours?: Place['business_hours']
-}
-
-const kitchen = (input: DemoKitchenInput): Kitchen => ({
-  ...KitchenModel,
-  id: input.identity.kitchenId,
-  place_id: input.identity.placeId,
-  slug: input.identity.kitchenSlug,
-  app_scope: {
-    state: 'parent_app',
-    app_id: input.identity.appId,
-  },
-  visibility: {
-    show: true,
-    active: true,
-    is_test: false,
-  },
-  identity: {
-    display_name: input.name,
-    tagline: input.tagline,
-    logo_image_url: input.logoImageUrl,
-    image_shade: 'none',
-    wordmark_no_logo_image_url: '',
-    wordmark_image_url: '',
-  },
-  menus: {
-    currency_format: 'dash',
-    show_currency: true,
-    available: true,
-    style: input.menuStyle,
-  },
-  orders: {
-    ...(input.operationHours ? { operation_hours: input.operationHours } : {}),
-    printing: {
-      ticket_device_id: '',
-    },
-  },
-  tables: {
-    count: input.tableCount,
-  },
-  fulfilment: {
-    delivery_zones: [],
-    payment_methods: input.paymentMethods,
-  },
-  created: kitchenDemoCreated(input.identity),
-  updated: kitchenDemoUpdated(),
-})
-
-const place = (input: DemoPlaceInput): Place => ({
-  ...PlaceModel,
-  id: input.identity.placeId,
-  name: input.name,
-  short_name: input.shortName,
-  brand_tagline: input.tagline,
-  about:
-    'A deterministic read-only venue used to explore Misebox without changing Live or Test data.',
-  formatted_address: `${input.street}, ${input.postalCode} ${input.city}, Switzerland`,
-  short_address: `${input.city}, Switzerland`,
-  address: {
-    street: input.street,
-    city: input.city,
-    region: input.region,
-    postal_code: input.postalCode,
-    country_code: 'CH',
-  },
-  lat: input.lat,
-  lng: input.lng,
-  timezone: 'Europe/Zurich',
-  image_url: input.imageUrl ?? '',
-  cover_image: input.coverImage ?? '',
-  gallery_images: input.galleryImages ?? [],
-  image_shade: input.imageShade ?? 'none',
-  brand_palette: input.palette,
-  types: ['restaurant'],
-  tags: ['demo', 'restaurant'],
-  price_level: '2',
-  default_currency_code: 'CHF',
-  business_hours: input.businessHours ?? {
-    windows: [
-      {
-        days: ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'],
-        open: '11:30',
-        close: '22:00',
-      },
-      {
-        days: ['saturday', 'sunday'],
-        open: '10:00',
-        close: '22:00',
-      },
-    ],
-  },
-  verified: false,
-  slug: input.identity.kitchenSlug,
-  entity_families: ['kitchen'],
-  source: 'manual',
-  search_term: `${input.name} ${input.city}`,
-  created: {
-    at: kitchenDemoCreated(input.identity).at,
-    by: 'demo',
-  },
-  updated: {
-    at: kitchenDemoUpdated().at,
-    by: 'demo',
-  },
-})
-
-const target = (
-  identity: KitchenDemoIdentity,
-  targetKitchen: Kitchen,
-  targetPlace: Place,
-  access: {
-    teamIds?: readonly string[]
-    operatorIds?: readonly string[]
-  } = {}
-): KitchenDemoTarget => {
-  const publicPlace = normalizePublicPlaceProjection(
-    targetPlace as unknown as Record<string, unknown>
-  )
-  if (!publicPlace) {
-    throw new Error('Kitchen Demo Place public projection is invalid.')
-  }
-
-  return {
-    appId: identity.appId,
-    appSupport: {
-      id: identity.kitchenId,
-      team_ids: [...(access.teamIds ?? [])],
-      operator_ids: [...(access.operatorIds ?? [])],
-      join_requests: [],
-      created: kitchenDemoCreated(identity),
-      updated: kitchenDemoUpdated(),
-    },
-    identity,
-    kitchen: targetKitchen,
-    place: targetPlace,
-    publicPlace,
-  }
-}
+import {
+  kitchen,
+  place,
+  target,
+  type KitchenDemoTarget,
+} from './target-builders'
 
 const deanosPalette = {
   primary_color: '#ff4f2e',
@@ -210,10 +23,14 @@ const deanosPalette = {
 
 const deanosKitchenMedia = (relativePath: string) =>
   kitchenDemoMediaUrl(deanosKitchenDemoIdentity.kitchenId, relativePath)
+
 const deanosPlaceMedia = (filename: string) =>
   placeDemoMediaUrl(deanosKitchenDemoIdentity.placeId, `images/${filename}`)
+
 const deanosProfileImage = deanosPlaceMedia('deanos-classic.jpg')
+
 const deanosCoverImage = deanosPlaceMedia('double-trouble.jpg')
+
 const deanosGalleryImages = [
   deanosProfileImage,
   deanosCoverImage,
@@ -435,6 +252,7 @@ export const kitchenDemoTargets = [
 ] as const satisfies readonly KitchenDemoTarget[]
 
 const targetIds = new Set<string>()
+
 for (const item of kitchenDemoTargets) {
   const kitchenId = String(item.kitchen.id ?? '').trim()
   const placeId = String(item.place.id ?? '').trim()

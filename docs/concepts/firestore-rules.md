@@ -27,7 +27,9 @@ Map how FireUX authors and releases main-database Firestore Security Rules.
 - The Core contract validates fragment order, declaration boundaries,
   contracted lexical frames, wildcard-equivalent literal paths, and helper
   signatures in their owning database frame before it emits an artifact.
-- Each opted-in ecosystem owns one `firestore.template.rules` file beside its
+- Each opted-in ecosystem owns one `firestore.template.rules` manifest beside its
+  named ecosystem policy fragments under `rules/`. The manifest declares their
+  order; Core expands them before inserting and validating shared fragments.
   Firebase binding. Its header pins the project, database targets, artifact,
   and ordered Core fragments; its body owns every ecosystem policy delta.
 - `scripts/firebase/<ecosystem>/firestore.rules` is the deterministic complete

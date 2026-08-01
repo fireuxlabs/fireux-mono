@@ -1,0 +1,104 @@
+.market-onboarding__offer-fields {
+  display: grid;
+  gap: 0.7rem;
+  border-top: 1px solid rgba(23, 53, 43, 0.14);
+  padding-top: 0.8rem;
+  animation: market-onboarding-reveal 180ms ease both;
+}
+
+.market-onboarding__success {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+  margin-top: calc(var(--spacing) * 4);
+  border: 1px solid rgba(47, 106, 80, 0.28);
+  border-radius: calc(var(--ui-radius) * 4);
+  padding: calc(var(--spacing) * 4);
+  background: rgba(47, 106, 80, 0.1);
+  color: #17352b;
+}
+
+.market-onboarding__success > svg {
+  flex: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: #2f6a50;
+}
+
+.market-onboarding__success > div {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.market-onboarding__success strong {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-black);
+}
+
+.market-onboarding__success span {
+  color: rgba(23, 53, 43, 0.72);
+  font-size: 0.8rem;
+  font-weight: 650;
+}
+
+.market-onboarding__actions {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.1rem;
+}
+
+:deep(.market-onboarding__submit) {
+  min-height: 2.85rem;
+  border-radius: calc(var(--ui-radius) * 3);
+  background: #cf4438;
+  color: #fff8e8;
+  font-weight: var(--font-weight-black);
+  box-shadow: 0 0.55rem 1.2rem rgba(128, 43, 34, 0.2);
+}
+
+:deep(.market-onboarding__submit:hover:not(:disabled)) {
+  background: #b83b31;
+}
+
+:deep(.market-onboarding__submit:disabled) {
+  background: rgba(23, 53, 43, 0.2);
+  color: rgba(23, 53, 43, 0.48);
+  box-shadow: none;
+}
+
+:deep(.market-onboarding__skip) {
+  color: rgba(23, 53, 43, 0.7);
+  font-weight: var(--font-weight-extrabold);
+}
+
+@keyframes market-onboarding-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-0.35rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 40rem) {
+  .market-onboarding__scene {
+    min-height: 10.5rem;
+  }
+
+  .market-onboarding__badge {
+    width: 3.65rem;
+    height: 3.65rem;
+  }
+
+  .market-onboarding h2 {
+    font-size: clamp(2.65rem, 15vw, 4rem);
+  }
+
+  .market-onboarding__paper {
+    padding-right: 1.15rem;
+    padding-left: 1.15rem;
+  }
+}

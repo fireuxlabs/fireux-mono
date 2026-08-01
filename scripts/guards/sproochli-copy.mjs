@@ -97,27 +97,52 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'projects/misebox/interlaken-essen/app/components/marketplace/Shared.vue'
   )
-  const interlakenStyles = read(
+  const interlakenStyleFacade = read(
     repoRoot,
     'projects/misebox/interlaken-essen/app/assets/styles/main.css'
   )
-  const interlakenOwnedCopyConsumers = [
-    'projects/misebox/interlaken-essen/app/layouts/marketplace.vue',
-    'projects/misebox/interlaken-essen/app/pages/index.vue',
-    'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
-    'projects/misebox/interlaken-essen/app/pages/marktplatz/[sellerId].vue',
-    'projects/misebox/interlaken-essen/app/pages/choufe/index.vue',
-    'projects/misebox/interlaken-essen/app/pages/choufe/[sectionId].vue',
-    'projects/misebox/interlaken-essen/app/pages/verchoufe.vue',
+  const interlakenStyles = [
+    interlakenStyleFacade,
+    read(
+      repoRoot,
+      'projects/misebox/interlaken-essen/app/assets/styles/market-shell.css'
+    ),
+    read(
+      repoRoot,
+      'projects/misebox/interlaken-essen/app/assets/styles/market-discovery.css'
+    ),
+  ].join('\n')
+  const interlakenPersonalMarketplace = [
     'projects/misebox/interlaken-essen/app/pages/mis.vue',
+    'projects/misebox/interlaken-essen/app/composables/usePersonalMarketplace.ts',
+  ]
+    .map(relativePath => read(repoRoot, relativePath))
+    .join('\n')
+  const interlakenMarketplaceOnboarding = [
     'projects/misebox/interlaken-essen/app/components/Market/OnboardingModal.vue',
-    'projects/misebox/interlaken-essen/app/components/MarketLaunchNotice.vue',
-    'projects/misebox/interlaken-essen/app/components/choufe/Main.vue',
-    'projects/misebox/interlaken-essen/app/components/verchoufe/Main.vue',
-    'projects/misebox/interlaken-essen/app/components/marketplace/Shared.vue',
-    'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalSellerCard.vue',
-    'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalStorefront.vue',
-  ].map(relativePath => read(repoRoot, relativePath))
+    'projects/misebox/interlaken-essen/app/composables/useMarketplaceOnboarding.ts',
+  ]
+    .map(relativePath => read(repoRoot, relativePath))
+    .join('\n')
+  const interlakenOwnedCopyConsumers = [
+    ...[
+      'projects/misebox/interlaken-essen/app/layouts/marketplace.vue',
+      'projects/misebox/interlaken-essen/app/pages/index.vue',
+      'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
+      'projects/misebox/interlaken-essen/app/pages/marktplatz/[sellerId].vue',
+      'projects/misebox/interlaken-essen/app/pages/choufe/index.vue',
+      'projects/misebox/interlaken-essen/app/pages/choufe/[sectionId].vue',
+      'projects/misebox/interlaken-essen/app/pages/verchoufe.vue',
+      'projects/misebox/interlaken-essen/app/components/MarketLaunchNotice.vue',
+      'projects/misebox/interlaken-essen/app/components/choufe/Main.vue',
+      'projects/misebox/interlaken-essen/app/components/verchoufe/Main.vue',
+      'projects/misebox/interlaken-essen/app/components/marketplace/Shared.vue',
+      'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalSellerCard.vue',
+      'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalStorefront.vue',
+    ].map(relativePath => read(repoRoot, relativePath)),
+    interlakenPersonalMarketplace,
+    interlakenMarketplaceOnboarding,
+  ]
   const interlakenMarketplacePublicSurfaces = [
     'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
     'projects/misebox/interlaken-essen/app/pages/marktplatz/[sellerId].vue',
@@ -131,10 +156,17 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-sproochli/README.md'
   )
-  const languageTrigger = read(
+  const languageTriggerFacade = read(
     repoRoot,
     'packages/extensions/fireux-sproochli/src/runtime/components/Sproochli/LanguageTrigger.vue'
   )
+  const languageTrigger = [
+    languageTriggerFacade,
+    read(
+      repoRoot,
+      'packages/extensions/fireux-sproochli/src/runtime/components/Sproochli/language-trigger.css'
+    ),
+  ].join('\n')
   const defaultLanguageMark = read(
     repoRoot,
     'packages/extensions/fireux-sproochli/src/runtime/components/Sproochli/DefaultLanguageMark.vue'
@@ -501,6 +533,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(interlakenApp, /htmlAttrs/)
   assert.match(interlakenApp, /lang: locale\.value/)
   assert.doesNotMatch(interlakenMarketplaceLayout, /htmlAttrs/)
+  assert.match(
+    interlakenPersonalMarketplace,
+    /usePersonalMarketplace[\s\S]*useInterlakenCopy/
+  )
+  assert.match(
+    interlakenMarketplaceOnboarding,
+    /useMarketplaceOnboarding[\s\S]*useInterlakenCopy/
+  )
   assert.ok(
     interlakenOwnedCopyConsumers.every(
       consumer => consumer.includes('useInterlakenCopy')
@@ -543,6 +583,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     interlakenMarketplacePublicSurfaces,
     /marketplace-preview|marketplacePreviewSellers|MarketplaceSellerCard|MarketplaceStorefront/
   )
+  assert.match(interlakenStyleFacade, /@import '\.\/market-shell\.css';/)
+  assert.match(
+    interlakenStyleFacade,
+    /@import '\.\/market-discovery\.css';/
+  )
   assert.match(
     interlakenStyles,
     /button\.market-language\.sproochli-language-trigger--emoji/
@@ -583,6 +628,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     true
   )
   assert.match(translationReadme, /does not own reviewed authored copy/)
+  assert.match(
+    languageTriggerFacade,
+    /<style scoped src="\.\/language-trigger\.css"><\/style>/
+  )
   assert.match(languageTrigger, /pageHasMixedSource/)
   assert.match(languageTrigger, /SproochliDefaultLanguageMark/)
   assert.match(languageTrigger, /SproochliWordmark/)
@@ -617,10 +666,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(languageTrigger, /showWhenSingleOption/)
   assert.match(languageTrigger, /onlyOriginalOption/)
-  assert.match(languageTrigger, /option => option\.source === 'original'/)
+  assert.match(languageTrigger, /\(option\) => option\.source === 'original'/)
   assert.match(languageTrigger, /option\.source === 'attached'/)
   assert.match(languageTrigger, /option\.source === 'public'/)
-  assert.match(languageTrigger, /option => option\.source === 'cache'/)
+  assert.match(languageTrigger, /\(option\) => option\.source === 'cache'/)
   assert.doesNotMatch(languageTrigger, /option\.source !== 'on_demand'/)
   assert.doesNotMatch(languageTrigger, />\s*Cached\s*</)
   assert.doesNotMatch(languageTrigger, />\s*On demand\s*</)

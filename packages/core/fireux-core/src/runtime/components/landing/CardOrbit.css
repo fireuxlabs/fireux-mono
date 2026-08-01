@@ -1,0 +1,160 @@
+/* Mobile-first baseline. Width queries below may only enhance this layout. */
+.landing-card-orbit {
+  position: relative;
+  min-width: 0;
+  min-height: 42rem;
+  overflow: clip;
+  isolation: isolate;
+  border-radius: calc(var(--ui-radius) * 4);
+  outline: none;
+  cursor: grab;
+  touch-action: pan-y;
+}
+
+.landing-card-orbit:active {
+  cursor: grabbing;
+}
+
+.landing-card-orbit:focus-visible {
+  outline: 2px solid
+    color-mix(
+      in srgb,
+      var(--landing-card-orbit-accent, var(--ui-primary)) 68%,
+      transparent
+    );
+  outline-offset: var(--spacing);
+}
+
+.landing-card-orbit__sphere {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(128vw, 32rem);
+  aspect-ratio: 1;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--landing-card-orbit-accent, var(--ui-primary)) 16%,
+      transparent
+    );
+  border-radius: 50%;
+  opacity: 0.62;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+  transition: opacity 180ms ease;
+}
+
+.landing-card-orbit--active .landing-card-orbit__sphere {
+  opacity: 0.9;
+}
+
+.landing-card-orbit__ring {
+  position: absolute;
+  inset: 10%;
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--landing-card-orbit-accent, var(--ui-primary)) 17%,
+      transparent
+    );
+  border-radius: 50%;
+}
+
+.landing-card-orbit__ring--one {
+  transform: scaleY(0.34) rotate(8deg);
+}
+
+.landing-card-orbit__ring--two {
+  transform: scaleX(0.38) rotate(18deg);
+}
+
+.landing-card-orbit__ring--three {
+  opacity: 0.65;
+  transform: scaleY(0.5) rotate(58deg);
+}
+
+.landing-card-orbit__dot {
+  --landing-orbit-dot-angle: calc(var(--landing-orbit-dot-index) * 45deg);
+
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: calc(var(--spacing) * 1.25);
+  height: calc(var(--spacing) * 1.25);
+  border-radius: 50%;
+  background: color-mix(
+    in srgb,
+    var(--landing-card-orbit-accent, var(--ui-primary)) 68%,
+    var(--ui-text-highlighted)
+  );
+  opacity: 0.58;
+  transform: rotate(var(--landing-orbit-dot-angle)) translateX(min(64vw, 16rem))
+    rotate(calc(var(--landing-orbit-dot-angle) * -1));
+}
+
+.landing-card-orbit__item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: max-content;
+  max-width: calc(100% - var(--spacing) * 4);
+  gap: var(--spacing);
+  cursor: pointer;
+  will-change: transform;
+}
+
+.landing-card-orbit__reference {
+  width: max-content;
+  max-width: 100%;
+  padding: var(--spacing) calc(var(--spacing) * 2);
+  border: 1px solid
+    color-mix(
+      in srgb,
+      var(--landing-card-orbit-accent, var(--ui-primary)) 32%,
+      var(--ui-border)
+    );
+  border-radius: calc(var(--ui-radius) * 4);
+  background: color-mix(in srgb, var(--ui-bg) 90%, transparent);
+  color: color-mix(
+    in srgb,
+    var(--ui-text) 80%,
+    var(--landing-card-orbit-accent, var(--ui-primary))
+  );
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  letter-spacing: var(--tracking-wide);
+  pointer-events: none;
+}
+
+.landing-card-orbit__content {
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (min-width: 48rem) {
+  .landing-card-orbit {
+    min-height: 48rem;
+  }
+
+  .landing-card-orbit__sphere {
+    width: min(72vw, 38rem);
+  }
+
+  .landing-card-orbit__dot {
+    transform: rotate(var(--landing-orbit-dot-angle))
+      translateX(min(36vw, 19rem))
+      rotate(calc(var(--landing-orbit-dot-angle) * -1));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing-card-orbit__sphere {
+    transition: none;
+  }
+
+  .landing-card-orbit__item {
+    will-change: auto;
+  }
+}

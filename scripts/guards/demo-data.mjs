@@ -393,6 +393,38 @@ function isProductDemoAdapter(relativePath) {
   )
 }
 
+function isProductDemoLoader(relativePath) {
+  return /^projects\/[^/]+\/[^/]+\/app\/composables\/product-demo\/load(?:[A-Z][A-Za-z0-9]*)?ProductDemo\.(?:js|ts)$/.test(
+    relativePath
+  )
+}
+
+function productDemoAdapterForLoader(relativePath) {
+  const fileName = path.posix.basename(relativePath)
+  if (!fileName.startsWith('load')) return ''
+  return path.posix.join(
+    path.posix.dirname(relativePath),
+    fileName.replace(/^load/, 'use')
+  )
+}
+
+function productDemoAdapterSourceFiles(relativePath) {
+  const fileName = path.posix.basename(relativePath)
+  const loaderName = fileName.replace(/^use/, 'load')
+  return [
+    relativePath,
+    path.posix.join(path.posix.dirname(relativePath), loaderName),
+  ]
+}
+
+function readSourceFamily(repoRoot, relativePaths) {
+  return [...new Set(relativePaths)]
+    .map((relativePath) => path.join(repoRoot, relativePath))
+    .filter((absolutePath) => existsSync(absolutePath))
+    .map((absolutePath) => readFileSync(absolutePath, 'utf8'))
+    .join('\n')
+}
+
 function productDemoMayLoad(importer, resolved, declaredDependencies) {
   if (!resolved || !canonicalDemoRoot(resolved.relativePath)) return false
 
@@ -452,7 +484,10 @@ export async function run(ctx) {
 
     const owner = ownerRoot(relativeFile)
     if (!owner) continue
-    const source = readFileSync(file, 'utf8')
+    const source = readSourceFamily(
+      repoRoot,
+      productDemoAdapterSourceFiles(relativeFile)
+    )
     const surface = source.match(
       /\bconst productDemoSurface = ['"]([a-z0-9-]+)['"] as const\b/
     )?.[1]
@@ -530,6 +565,11 @@ export async function run(ctx) {
     const relativeFile = repoRelative(repoRoot, file)
     const demoRoot = canonicalDemoRoot(relativeFile)
     const productDemoAdapter = isProductDemoAdapter(relativeFile)
+    const productDemoLoader =
+      isProductDemoLoader(relativeFile) &&
+      existsSync(
+        path.join(repoRoot, productDemoAdapterForLoader(relativeFile))
+      )
     const source = readFileSync(file, 'utf8')
     const imports = importsForFile(file, source)
     const consoleCore = consoleCoreFamily(relativeFile, source)
@@ -622,7 +662,7 @@ export async function run(ctx) {
       if (imported.typeOnly) continue
 
       const resolved = resolveImport(relativeFile, imported.specifier, owners)
-      if (productDemoAdapter) {
+      if (productDemoAdapter || productDemoLoader) {
         const importedBoundary = forbiddenBoundary(
           resolved?.relativePath ?? imported.specifier
         )
@@ -659,7 +699,7 @@ export async function run(ctx) {
 
       const boundary = forbiddenBoundary(relativeFile)
       const consoleAdapter = isConsoleAdapter(relativeFile)
-      if (boundary || (!consoleAdapter && !productDemoAdapter)) {
+      if (boundary || (!consoleAdapter && !productDemoAdapter && !productDemoLoader)) {
         violations.push({
           code: 'consumer-boundary',
           file: relativeFile,
@@ -671,7 +711,7 @@ export async function run(ctx) {
         continue
       }
 
-      if (productDemoAdapter) {
+      if (productDemoAdapter || productDemoLoader) {
         const declaredDependencies =
           productDemoDependencies.get(ownerRoot(relativeFile)) ?? new Set()
         if (!productDemoMayLoad(relativeFile, resolved, declaredDependencies)) {
@@ -725,7 +765,11 @@ export async function run(ctx) {
 
   const kitchenScenariosPath = path.join(repoRoot, kitchenScenariosFile)
   if (existsSync(kitchenScenariosPath)) {
-    const source = readFileSync(kitchenScenariosPath, 'utf8')
+    const source = readSourceFamily(repoRoot, [
+      kitchenScenariosFile,
+      'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenario/operation-validation.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenario/service-validation.ts',
+    ])
     for (const required of [
       'kitchenDemoScenarioDescriptors',
       'maturity:',
@@ -816,6 +860,12 @@ export async function run(ctx) {
     {
       code: 'supplier-demo-target-pair',
       file: 'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts',
+      sourceFiles: [
+        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenarios.ts',
+        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenario-types.ts',
+        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenario-builders.ts',
+        'packages/extensions/fireux-suppliers/src/runtime/demo/supplier/scenario-validation.ts',
+      ],
       markers: [
         'appSupport: AppSupplier',
         "app_scope_state: 'parent_app'",
@@ -903,7 +953,10 @@ export async function run(ctx) {
       continue
     }
 
-    const source = readFileSync(scenarioPath, 'utf8')
+    const source = readSourceFamily(
+      repoRoot,
+      contract.sourceFiles ?? [contract.file]
+    )
     if (!contract.markers.every((marker) => source.includes(marker))) {
       violations.push({
         code: contract.code,
@@ -1391,7 +1444,11 @@ export async function run(ctx) {
     'projects/misebox/misebox-app/app/composables/product-demo/useMiseboxProductDemo.ts'
   const miseboxProductDemoPath = path.join(repoRoot, miseboxProductDemoFile)
   if (existsSync(miseboxProductDemoPath)) {
-    const source = readFileSync(miseboxProductDemoPath, 'utf8')
+    const source = readSourceFamily(repoRoot, [
+      miseboxProductDemoFile,
+      'projects/misebox/misebox-app/app/composables/product-demo/loadMiseboxProductDemo.ts',
+      'projects/misebox/misebox-app/app/composables/product-demo/projectMiseboxProductDemoConsoleFoundations.ts',
+    ])
     for (const required of [
       "import('fireux-companies/runtime/demo/company/scenarios')",
       "import('fireux-suppliers/runtime/demo/supplier/scenarios')",
@@ -1716,7 +1773,13 @@ export async function run(ctx) {
       ],
     ],
   ]) {
-    const source = readFileSync(path.join(repoRoot, file), 'utf8')
+    const source = file === kitchenDemoOperationsFile
+      ? readSourceFamily(repoRoot, [
+          file,
+          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/mise/deanos-preparation.ts',
+          'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/operations/mise/deanos-service.ts',
+        ])
+      : readFileSync(path.join(repoRoot, file), 'utf8')
     if (!markers.every((marker) => source.includes(marker))) {
       violations.push({
         code: 'kitchen-mise-workflow',
@@ -1734,7 +1797,10 @@ export async function run(ctx) {
     kitchenDishOperationAdapterFile
   )
   if (existsSync(kitchenDishOperationAdapterPath)) {
-    const source = readFileSync(kitchenDishOperationAdapterPath, 'utf8')
+    const source = readSourceFamily(repoRoot, [
+      kitchenDishOperationAdapterFile,
+      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-dishes-supply.ts',
+    ])
     for (const required of [
       'buildKitchenDemoDishesOperation',
       'estimateKitchenDishFinance',
@@ -1827,7 +1893,12 @@ export async function run(ctx) {
     kitchenFinanceProjectionFile
   )
   if (existsSync(kitchenFinanceProjectionPath)) {
-    const source = readFileSync(kitchenFinanceProjectionPath, 'utf8')
+    const source = readSourceFamily(repoRoot, [
+      kitchenFinanceProjectionFile,
+      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance-items.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance-rollups.ts',
+      'packages/extensions/fireux-kitchens/src/runtime/utils/kitchen/demo-finance-validation.ts',
+    ])
     for (const required of [
       'projectKitchenDemoFinanceReport',
       'dailyGrossSales',

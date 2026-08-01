@@ -239,7 +239,13 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, useSlots } from 'vue';
+import { computed, ref, useSlots } from 'vue'
+import {
+  defaultObjectArrayDateSortFields,
+  objectArrayHasDateFields,
+  sortObjectArrayByDate,
+  type ObjectArrayDateSortFields,
+} from './object-array-date-sort'
 
 // Concurrent edit — 2026-07-20 19:22 CEST — Repo Efficiency Pass 2 of 6: bound reusable object-array creation.
 
@@ -249,26 +255,6 @@ type ObjectArrayField = {
   label?: string
   placeholder?: string
   rows?: number
-}
-
-type DateSortFields = {
-  ongoingKey?: string
-  fromYearKey?: string
-  fromMonthKey?: string
-  toYearKey?: string
-  toMonthKey?: string
-  startYearKey?: string
-  endYearKey?: string
-}
-
-const defaultDateFields: Required<DateSortFields> = {
-  ongoingKey: 'ongoing',
-  fromYearKey: 'from_year',
-  fromMonthKey: 'from_month',
-  toYearKey: 'to_year',
-  toMonthKey: 'to_month',
-  startYearKey: 'start_year',
-  endYearKey: 'end_year',
 }
 
 const props = defineProps<{
@@ -282,7 +268,7 @@ const props = defineProps<{
   showActions?: boolean
   fields?: ObjectArrayField[]
   sortByDate?: boolean
-  dateFields?: DateSortFields
+  dateFields?: ObjectArrayDateSortFields
   maxItems?: number
 }>()
 
@@ -299,7 +285,7 @@ const fields = computed(() => props.fields ?? [])
 const hasSchema = computed(() => fields.value.length > 0)
 const sortByDate = computed(() => props.sortByDate ?? true)
 const dateFields = computed(() => ({
-  ...defaultDateFields,
+  ...defaultObjectArrayDateSortFields,
   ...(props.dateFields ?? {}),
 }))
 
@@ -308,8 +294,8 @@ const items = computed(() => {
   if (!src.length) return src
   if (editingIndex.value !== null) return src
   if (!sortByDate.value) return src
-  if (!shouldSortByDate(src, dateFields.value)) return src
-  return sortItemsByDate(src, dateFields.value)
+  if (!objectArrayHasDateFields(src, dateFields.value)) return src
+  return sortObjectArrayByDate(src, dateFields.value)
 })
 
 const maxItems = computed<number | undefined>(() => {
@@ -336,73 +322,6 @@ function shallowClone<T>(v: T): T {
   if (Array.isArray(v)) return v.slice() as unknown as T
   if (v && typeof v === 'object') return { ...(v as any) } as T
   return v
-}
-
-function shouldSortByDate(list: any[], fields: Required<DateSortFields>) {
-  return list.some((item) =>
-    item && (
-      fields.ongoingKey in item ||
-      fields.fromYearKey in item ||
-      fields.fromMonthKey in item ||
-      fields.toYearKey in item ||
-      fields.toMonthKey in item ||
-      fields.startYearKey in item ||
-      fields.endYearKey in item
-    )
-  )
-}
-
-function monthToNumber(value: unknown): number | null {
-  if (value == null) return null
-  const raw = String(value).trim().toLowerCase()
-  if (!raw) return null
-  const numeric = Number(raw)
-  if (Number.isFinite(numeric) && numeric >= 1 && numeric <= 12) return numeric
-  const short = raw.slice(0, 3)
-  const months = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
-  const idx = months.indexOf(short)
-  return idx >= 0 ? idx + 1 : null
-}
-
-function toNumber(value: unknown): number | null {
-  const raw = typeof value === 'number' ? value : Number(String(value ?? '').trim())
-  return Number.isFinite(raw) ? raw : null
-}
-
-function resolveDateParts(item: any, fields: Required<DateSortFields>) {
-  const ongoing = Boolean(item?.[fields.ongoingKey])
-  const fromYear = toNumber(item?.[fields.fromYearKey] ?? item?.[fields.startYearKey])
-  const fromMonth = monthToNumber(item?.[fields.fromMonthKey])
-  const toYear = toNumber(item?.[fields.toYearKey] ?? item?.[fields.endYearKey])
-  const toMonth = monthToNumber(item?.[fields.toMonthKey])
-
-  const startValue = fromYear ? (fromYear * 12 + (fromMonth ?? 1)) : null
-  const endValue = ongoing
-    ? Number.POSITIVE_INFINITY
-    : toYear
-      ? (toYear * 12 + (toMonth ?? 1))
-      : null
-
-  return { ongoing, startValue, endValue }
-}
-
-function sortItemsByDate(list: any[], fields: Required<DateSortFields>) {
-  return list
-    .map((item, index) => ({ item, index, ...resolveDateParts(item, fields) }))
-    .sort((a, b) => {
-      if (a.ongoing !== b.ongoing) return a.ongoing ? -1 : 1
-
-      const endA = a.endValue ?? -Infinity
-      const endB = b.endValue ?? -Infinity
-      if (endA !== endB) return endB - endA
-
-      const startA = a.startValue ?? -Infinity
-      const startB = b.startValue ?? -Infinity
-      if (startA !== startB) return startB - startA
-
-      return a.index - b.index
-    })
-    .map((row) => row.item)
 }
 
 function startItemEditing(index: number) {
@@ -465,50 +384,4 @@ defineExpose({
 })
 </script>
 
-<style scoped>
-.object-array {
-  display: grid;
-  gap: calc(var(--spacing) * 3);
-}
-
-.object-array__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 3);
-}
-
-.object-array__item-body {
-  position: relative;
-}
-
-.object-array__item-body :deep(.pill) {
-  margin-top: calc(var(--spacing) * 2);
-  max-width: 100%;
-}
-
-.object-array__item-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 3);
-}
-
-.object-array__item-title {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  min-width: 0;
-}
-
-.object-array__item-title h3 {
-  margin: 0;
-}
-
-.object-array__item-actions {
-  display: flex;
-  align-items: center;
-  gap: calc(var(--spacing) * 2);
-  flex-shrink: 0;
-}
-</style>
+<style scoped src="./ObjectArray.css"></style>

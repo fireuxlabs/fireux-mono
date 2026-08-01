@@ -1,0 +1,235 @@
+// @fireux-ecosystem-rules-fragment misebox/app-authority
+    match /kitchens/{kitchenId} {
+      function isCanonicalAttachedKitchen(data) {
+        return data is map &&
+          data.keys().hasAll(['app_scope']) &&
+          !data.keys().hasAny([
+            'app_scope_state',
+            'app_scope_app_id',
+            'app_id'
+          ]) &&
+          data.app_scope is map &&
+          data.app_scope.keys().hasAll(['state', 'app_id']) &&
+          data.app_scope.keys().hasOnly(['state', 'app_id']) &&
+          data.app_scope.state in ['parent_app', 'tenant_app'] &&
+          isValidFirestoreDocumentId(data.app_scope.app_id);
+      }
+
+      function hasSameIdAppKitchenSupport(appId) {
+        return exists(
+          /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
+        );
+      }
+
+      // Public Kitchen cards/details use bounded server projections. The raw
+      // root is exact-readable only when its canonical App scope and same-id
+      // support record prove current Console authority. UserApp target ids are
+      // navigation indexes and never grant access by themselves.
+      allow get: if isAuthenticated() &&
+        isCanonicalAttachedKitchen(resource.data) &&
+        hasSameIdAppKitchenSupport(resource.data.app_scope.app_id) &&
+        (
+          isAppAdmin(resource.data.app_scope.app_id) ||
+          isTargetMember(
+            resource.data.app_scope.app_id,
+            'kitchens',
+            kitchenId
+          )
+        );
+      allow list, create, update, delete: if false;
+    }
+
+    // ===============================================================
+    // Canonical App identity; public reads use server DTOs
+    // ===============================================================
+    function isValidAppSocialLinks(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'website',
+          'twitter',
+          'github',
+          'linkedin',
+          'instagram',
+          'facebook',
+          'youtube',
+          'email'
+        ]) &&
+        validOptionalText(value, 'website', 2048) &&
+        validOptionalText(value, 'twitter', 2048) &&
+        validOptionalText(value, 'github', 2048) &&
+        validOptionalText(value, 'linkedin', 2048) &&
+        validOptionalText(value, 'instagram', 2048) &&
+        validOptionalText(value, 'facebook', 2048) &&
+        validOptionalText(value, 'youtube', 2048) &&
+        validOptionalText(value, 'email', 320);
+    }
+
+    function isValidAppMedia(value) {
+      return value is map &&
+        value.keys().hasOnly([
+          'thumbnail_url',
+          'logo_url',
+          'wordmark_light_url',
+          'wordmark_dark_url',
+          'cover_url'
+        ]) &&
+        validOptionalText(value, 'thumbnail_url', 2048) &&
+        validOptionalText(value, 'logo_url', 2048) &&
+        validOptionalText(value, 'wordmark_light_url', 2048) &&
+        validOptionalText(value, 'wordmark_dark_url', 2048) &&
+        validOptionalText(value, 'cover_url', 2048);
+    }
+
+    function isValidFireuxRepo(value) {
+      return value is map &&
+        value.keys().hasAll([
+          'key',
+          'workspace',
+          'launch_order',
+          'console_families',
+          'database_id'
+        ]) &&
+        value.keys().hasOnly([
+          'key',
+          'workspace',
+          'launch_order',
+          'console_families',
+          'database_id'
+        ]) &&
+        validRequiredText(value, 'key', 1, 120) &&
+        validRequiredText(value, 'workspace', 1, 500) &&
+        value.launch_order is int &&
+        value.launch_order >= 0 &&
+        value.launch_order <= 100000 &&
+        value.console_families is list &&
+        value.console_families.size() <= 20 &&
+        value.console_families.hasOnly([
+          'blank',
+          'kitchen',
+          'portfolio',
+          'project',
+          'property',
+          'supplier'
+        ]) &&
+        validRequiredText(value, 'database_id', 1, 120);
+    }
+
+    function isValidApp(data) {
+      return data.keys().hasAll([
+          'project_id',
+          'database_id',
+          'slug',
+          'status',
+          'app_name',
+          'app_short_name',
+          'role',
+          'self_join_enabled',
+          'derived',
+          'created',
+          'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'project_id',
+          'ecosystem_id',
+          'database_id',
+          'slug',
+          'status',
+          'app_name',
+          'app_short_name',
+          'role',
+          'tagline',
+          'description',
+          'short_bio',
+          'long_bio',
+          'social_links',
+          'derived',
+          'media',
+          'fireux_native',
+          'fireux_size',
+          'fireux_repo',
+          'self_join_enabled',
+          'moderation_state',
+          'ban_reasons',
+          'created',
+          'updated'
+        ]) &&
+        validRequiredText(data, 'project_id', 1, 120) &&
+        validOptionalText(data, 'ecosystem_id', 120) &&
+        validRequiredText(data, 'database_id', 1, 120) &&
+        validRequiredText(data, 'slug', 3, 80) &&
+        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        validRequiredText(data, 'app_name', 1, 60) &&
+        validRequiredText(data, 'app_short_name', 1, 40) &&
+        data.role in ['global', 'tenant', 'standalone', 'ecosystem', 'system'] &&
+        validOptionalText(data, 'tagline', 120) &&
+        validOptionalText(data, 'description', 500) &&
+        validOptionalText(data, 'short_bio', 240) &&
+        validOptionalText(data, 'long_bio', 4000) &&
+        (!('social_links' in data) || isValidAppSocialLinks(data.social_links)) &&
+        data.derived is map &&
+        data.derived.keys().hasAll(['user_count']) &&
+        data.derived.keys().hasOnly(['user_count']) &&
+        data.derived.user_count is int &&
+        data.derived.user_count >= 0 &&
+        data.derived.user_count <= 10000000 &&
+        (!('media' in data) || isValidAppMedia(data.media)) &&
+        (!('fireux_native' in data) || data.fireux_native is bool) &&
+        (!('fireux_size' in data) || data.fireux_size in ['big', 'small']) &&
+        (!('fireux_repo' in data) || isValidFireuxRepo(data.fireux_repo)) &&
+        data.self_join_enabled is bool &&
+        (!('moderation_state' in data) || data.moderation_state == '') &&
+        (!('ban_reasons' in data) ||
+          (data.ban_reasons is list && data.ban_reasons.size() == 0)) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    function isValidAppAdminUpdate(data) {
+      return validRequiredText(data, 'app_name', 1, 60) &&
+        validRequiredText(data, 'app_short_name', 1, 40) &&
+        validOptionalText(data, 'tagline', 120) &&
+        validOptionalText(data, 'description', 500) &&
+        validOptionalText(data, 'short_bio', 240) &&
+        validOptionalText(data, 'long_bio', 4000) &&
+        (!('social_links' in data) || isValidAppSocialLinks(data.social_links)) &&
+        (!('media' in data) || isValidAppMedia(data.media));
+    }
+
+    match /apps/{appId} {
+      // Guests use /api/public/apps and /api/public/apps/:id. Raw canonical
+      // data is available inside the App; bootstrap access is exact, not broad.
+      allow get: if isAppMember(appId) ||
+        (appId == 'misebox-app' && isBootstrapDeveloper());
+      allow list: if false;
+      allow create: if isBootstrapDeveloper() &&
+        appId == 'misebox-app' &&
+        isValidApp(request.resource.data) &&
+        request.resource.data.project_id == 'misebox' &&
+        request.resource.data.ecosystem_id == 'misebox' &&
+        request.resource.data.database_id == 'misebox' &&
+        request.resource.data.slug == appId &&
+        request.resource.data.status == 'active' &&
+        request.resource.data.role == 'global' &&
+        request.resource.data.self_join_enabled == true &&
+        request.resource.data.derived.user_count == 0 &&
+        request.resource.data.created.by == request.auth.uid &&
+        request.resource.data.created.at == request.time &&
+        request.resource.data.updated.by == request.auth.uid &&
+        request.resource.data.updated.at == request.time;
+      allow update: if isAppAdmin(appId) &&
+        isValidAppAdminUpdate(request.resource.data) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'app_name',
+          'app_short_name',
+          'tagline',
+          'description',
+          'short_bio',
+          'long_bio',
+          'social_links',
+          'media',
+          'updated'
+        ]) &&
+        request.resource.data.created == resource.data.created &&
+        validOwnerUpdateStamp(request.resource.data, request.auth.uid);
+      allow delete: if false;
+

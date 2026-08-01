@@ -1,0 +1,333 @@
+// @fireux-ecosystem-rules-fragment misebox/membership-directory
+    // @fireux-core-rules owner-stamp
+    // @fireux-core-rules membership-path
+    function isAppMember(appId) {
+      return isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role in ['admin', 'user'];
+    }
+
+    function isAppAdmin(appId) {
+      return isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role == 'admin';
+    }
+
+    function isTargetMember(appId, collectionName, targetId) {
+      return isAppMember(appId) &&
+        (
+          (get(
+            /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+          ).data.operator_ids is list &&
+            get(
+              /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+            ).data.operator_ids.hasAny([request.auth.uid])) ||
+          (get(
+            /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+          ).data.team_ids is list &&
+            get(
+              /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+            ).data.team_ids.hasAny([request.auth.uid]))
+        );
+    }
+
+    function isTargetOperator(appId, collectionName, targetId) {
+      return isAppMember(appId) &&
+        get(
+          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+        ).data.operator_ids is list &&
+        get(
+          /databases/$(database)/documents/apps/$(appId)/$(collectionName)/$(targetId)
+        ).data.operator_ids.hasAny([request.auth.uid]);
+    }
+
+    function isResourceTargetMember(appId) {
+      return isAppMember(appId) &&
+        (
+          (resource.data.operator_ids is list &&
+            resource.data.operator_ids.hasAny([request.auth.uid])) ||
+          (resource.data.team_ids is list &&
+            resource.data.team_ids.hasAny([request.auth.uid]))
+        );
+    }
+
+    // ===============================================================
+    // Public User and owner-only private account
+    // ===============================================================
+    match /user-handles/{handle} {
+      // Reservations are server-owned uniqueness locks, never a client API.
+      allow read, write: if false;
+    }
+
+    match /user-handle-state/{document} {
+      // Provisioning readiness is server-owned and not a client capability.
+      allow read, write: if false;
+    }
+
+    match /security-migrations/{document} {
+      // Release prerequisites are Admin SDK evidence, never client state.
+      allow read, write: if false;
+    }
+
+    match /ingredients/{ingredientId} {
+      // The shared Ingredient library is curated and projected by trusted
+      // server APIs. Browsers never read or mutate canonical root documents.
+      allow get, list, create, update, delete: if false;
+
+      match /{nested=**} {
+        allow get, list, create, update, delete: if false;
+      }
+    }
+
+    function isValidUser(data) {
+      return data.keys().hasAll([
+          'display_name',
+          'avatar',
+          'handle',
+          'app_ids',
+          'profiles',
+          'created',
+          'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'display_name',
+          'bio',
+          'avatar',
+          'handle',
+          'app_ids',
+          'profiles',
+          'created',
+          'updated'
+        ]) &&
+        validRequiredText(data, 'display_name', 1, 120) &&
+        validOptionalText(data, 'bio', 280) &&
+        isValidUserAvatar(data.avatar) &&
+        data.handle is string &&
+        data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
+        data.app_ids is list &&
+        data.app_ids.size() <= 50 &&
+        data.profiles is list &&
+        data.profiles.size() <= 20 &&
+        data.profiles.hasOnly([
+          'agent',
+          'chef',
+          'driver',
+          'professional'
+        ]) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    function hasValidCanonicalUser(userId) {
+      return exists(/databases/$(database)/documents/users/$(userId)) &&
+        isValidUser(
+          get(/databases/$(database)/documents/users/$(userId)).data
+        );
+    }
+
+    function hasValidCanonicalUserProfile(userId, profileId) {
+      return hasValidCanonicalUser(userId) &&
+        get(/databases/$(database)/documents/users/$(userId))
+          .data.profiles.hasAny([profileId]);
+    }
+
+    match /users/{userId} {
+      allow get: if isOwner(userId) || isValidUser(resource.data);
+      // Public directory listing is projected by /api/public/users.
+      allow list: if false;
+      // The trusted handle endpoint owns consent validation, uniqueness, and
+      // atomic User creation through the Admin SDK.
+      allow create: if false;
+      allow update: if isOwner(userId) &&
+        uidNotModified() &&
+        isValidUser(request.resource.data) &&
+        request.resource.data.app_ids == resource.data.app_ids &&
+        request.resource.data.handle == resource.data.handle &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'display_name',
+          'bio',
+          'avatar',
+          'updated'
+        ]) &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+      allow delete: if false;
+
+      match /private/account {
+        function isValidPreferences(value) {
+          return value is map &&
+            value.keys().hasAll([
+              'language',
+              'theme',
+              'email_security_alerts',
+              'share_usage_analytics'
+            ]) &&
+            value.keys().hasOnly([
+              'language',
+              'theme',
+              'email_security_alerts',
+              'share_usage_analytics'
+            ]) &&
+            value.language is string &&
+            value.language.size() >= 2 &&
+            value.language.size() <= 16 &&
+            value.theme in ['system', 'light', 'dark'] &&
+            value.email_security_alerts is bool &&
+            value.share_usage_analytics is bool;
+        }
+
+        function isValidTerms(value) {
+          return value is map &&
+            value.keys().hasAll(['version', 'accepted_at']) &&
+            value.keys().hasOnly(['version', 'accepted_at']) &&
+            value.version is string &&
+            value.version.size() <= 64 &&
+            (
+              (value.version.size() >= 1 && value.accepted_at is timestamp) ||
+              (value.version == '' && value.accepted_at == null)
+            );
+        }
+
+        function isValidUserPrivate(data) {
+          return data.keys().hasAll([
+              'email',
+              'preferences',
+              'terms',
+              'created',
+              'updated'
+            ]) &&
+            data.keys().hasOnly([
+              'email',
+              'preferences',
+              'terms',
+              'created',
+              'updated'
+            ]) &&
+            data.email is string &&
+            data.email.size() <= 320 &&
+            isValidPreferences(data.preferences) &&
+            isValidTerms(data.terms) &&
+            validCreatedStamp(data.created) &&
+            validUpdatedStamp(data.updated);
+        }
+
+        allow get: if isOwner(userId);
+        allow list, create, delete: if false;
+        allow update: if isOwner(userId) &&
+          isValidUserPrivate(request.resource.data) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'preferences',
+            'updated'
+          ]) &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.terms == resource.data.terms &&
+          request.resource.data.created == resource.data.created &&
+          validOwnerUpdateStamp(request.resource.data, userId);
+      }
+
+      match /notifications/{notificationId} {
+        function isValidNotification(data) {
+          return data.keys().hasAll(['message', 'scope', 'created', 'read']) &&
+            data.keys().hasOnly(['message', 'scope', 'created', 'read']) &&
+            validRequiredText(data, 'message', 1, 1000) &&
+            data.scope in ['ecosystem', 'app'] &&
+            data.created is map &&
+            data.created.keys().hasAll(['at', 'app_id']) &&
+            data.created.keys().hasOnly(['at', 'app_id']) &&
+            data.created.at is timestamp &&
+            data.created.app_id is string &&
+            data.created.app_id.size() <= 1500 &&
+            data.read is bool;
+        }
+
+        allow get: if isOwner(userId) &&
+          isValidNotification(resource.data);
+        allow list: if isOwner(userId) &&
+          request.query.limit <= 50;
+        // Producers publish through trusted server pipelines; a browser may
+        // acknowledge or dismiss its own notification, but never mint one.
+        allow create: if false;
+        allow update: if isOwner(userId) &&
+          isValidNotification(request.resource.data) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']);
+        allow delete: if isOwner(userId);
+      }
+    }
+
+    // ===============================================================
+    // Canonical Ecosystem bootstrap; public reads use server DTOs
+    // ===============================================================
+    function isValidEcosystem(data) {
+      return data.keys().hasAll([
+          'id',
+          'project_id',
+          'name',
+          'slug',
+          'description',
+          'image_url',
+          'website_url',
+          'status',
+          'created',
+          'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'id',
+          'project_id',
+          'name',
+          'slug',
+          'description',
+          'image_url',
+          'website_url',
+          'status',
+          'created',
+          'updated'
+        ]) &&
+        validRequiredText(data, 'id', 3, 80) &&
+        validRequiredText(data, 'project_id', 1, 120) &&
+        validRequiredText(data, 'name', 1, 120) &&
+        validRequiredText(data, 'slug', 3, 80) &&
+        validOptionalText(data, 'description', 1000) &&
+        validOptionalText(data, 'image_url', 2048) &&
+        validOptionalText(data, 'website_url', 2048) &&
+        data.status in ['draft', 'active', 'paused', 'archived'] &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /ecosystems/{ecosystemId} {
+      allow get: if ecosystemId == 'misebox' && isBootstrapDeveloper();
+      allow list: if false;
+      allow create: if ecosystemId == 'misebox' &&
+        isBootstrapDeveloper() &&
+        isValidEcosystem(request.resource.data) &&
+        request.resource.data.id == ecosystemId &&
+        request.resource.data.project_id == 'misebox' &&
+        request.resource.data.slug == ecosystemId &&
+        request.resource.data.created.by == 'misebox-app' &&
+        request.resource.data.created.app_id == 'misebox-app' &&
+        request.resource.data.created.at == request.time &&
+        request.resource.data.updated.by == 'misebox-app' &&
+        request.resource.data.updated.at == request.time;
+      allow update: if ecosystemId == 'misebox' &&
+        isBootstrapDeveloper() &&
+        isValidEcosystem(request.resource.data) &&
+        request.resource.data.id == resource.data.id &&
+        request.resource.data.project_id == resource.data.project_id &&
+        request.resource.data.slug == resource.data.slug &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name',
+          'description',
+          'image_url',
+          'website_url',
+          'status',
+          'updated'
+        ]) &&
+        request.resource.data.updated.by == 'misebox-app' &&
+        request.resource.data.updated.at == request.time;
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // Exact Kitchen identity for trusted Console targets
+    // ===============================================================

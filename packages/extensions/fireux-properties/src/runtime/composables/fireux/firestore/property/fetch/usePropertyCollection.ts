@@ -1,16 +1,5 @@
-// Concurrent edit — 2026-07-20 16:34 CEST — Console Spine pass: avoid eager full-root reads for targeted Property consoles.
-// Concurrent edit — 2026-07-20 22:57 CEST — Both-Entity Authority — Property: expose only canonical, current-App pairs without private manual data.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name App access-record joins and read shape directly.
-// Concurrent edit — 2026-07-21 23:18 CEST — Console family alignment: fail closed on malformed AppProperty authority.
-import {
-  collection,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
-import { computed, isRef, type Ref } from 'vue'
+import { computed } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
@@ -18,97 +7,55 @@ import {
   readConsoleTargetAuthority,
   targetHasConsoleAccess,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
 import {
   PropertyStorage,
-  type AppProperty,
   type Property,
 } from '../../../../../models/property.model'
 import {
   canonicalPropertyRoot,
-  composePropertySurface,
   type PropertySurface,
 } from '../utils/view/usePropertyInterface'
-
-type PropertyCollectionDoc = Partial<Property> & {
-  id?: string
-}
-
-type AppPropertyRecord = Partial<AppProperty> & {
-  id?: string
-}
-
-const DEFAULT_COLLECTION_PATH = PropertyStorage.rootCollection
-const UNSUPPORTED_TEST_SOURCE_MESSAGE =
-  '[fireux-properties] Property Test source is unsupported: no canonical simulation producer exists.'
-
-export type PropertyCollectionFilterValue = string | number | null | undefined
-export type PropertyCollectionFilter = {
-  ids?: PropertyCollectionFilterValue[] | null | undefined
-  operatorId?: PropertyCollectionFilterValue
-  teamId?: PropertyCollectionFilterValue
-}
-export type PropertyCollectionShape = 'root' | 'root-with-app-support'
-export type PropertyCollectionSource = ConsoleSource
-
-type UsePropertyCollectionOptions = {
-  source?:
-    | PropertyCollectionSource
-    | Ref<PropertyCollectionSource | null | undefined>
-    | null
-  shape?:
-    | PropertyCollectionShape
-    | Ref<PropertyCollectionShape | null | undefined>
-    | null
-  filter?:
-    | PropertyCollectionFilter
-    | Ref<PropertyCollectionFilter | null | undefined>
-    | null
-}
-
-const normalizeString = (value: unknown) => String(value ?? '').trim()
-
-function resolvePropertyId(property: Partial<PropertyCollectionDoc> | null | undefined) {
-  return normalizeString(property?.id)
-}
+import { composePropertyCollectionTargets } from './property-collection-projection'
+import { useAppSupportAccessQueries } from '../../app-support-collection'
+import { useTargetCollectionSelection } from '../../collection-selection'
+import {
+  DEFAULT_COLLECTION_PATH,
+  UNSUPPORTED_TEST_SOURCE_MESSAGE,
+  normalizeString,
+  resolvePropertyCollectionShape,
+  resolvePropertyId,
+  type AppPropertyRecord,
+  type PropertyCollectionDoc,
+  type PropertyCollectionShape,
+  type UsePropertyCollectionOptions,
+} from './property-collection-contract'
+export type {
+  PropertyCollectionFilter,
+  PropertyCollectionFilterValue,
+  PropertyCollectionShape,
+  PropertyCollectionSource,
+} from './property-collection-contract'
 
 export function usePropertyCollection(
   options: UsePropertyCollectionOptions = {}
 ) {
   const db = useFirestore()
+  const {
+    sourceMode,
+    hasFilter,
+    filterOperatorId,
+    hasOperatorFilter,
+    filterIdSet,
+  } = useTargetCollectionSelection(options, 'live')
   const { appId } = useFireUXConfig()
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
     useFirestoreRead()
-  const sourceMode = computed<PropertyCollectionSource>(() => {
-    if (isRef(options.source)) return options.source.value ?? 'live'
-    return options.source ?? 'live'
-  })
-  const resolvedFilter = computed<PropertyCollectionFilter | undefined>(() => {
-    if (isRef(options.filter)) return options.filter.value ?? undefined
-    return options.filter ?? undefined
-  })
-  const hasFilter = computed(() => Array.isArray(resolvedFilter.value?.ids))
-  const filterOperatorId = computed(() =>
-    normalizeString(resolvedFilter.value?.operatorId ?? resolvedFilter.value?.teamId)
-  )
-  const hasOperatorFilter = computed(() =>
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'operatorId') ||
-    Object.prototype.hasOwnProperty.call(resolvedFilter.value ?? {}, 'teamId')
-  )
-  const filterIdSet = computed(
-    () =>
-      new Set(
-        (resolvedFilter.value?.ids ?? [])
-          .map((value) => normalizeString(value))
-          .filter(Boolean)
-      )
-  )
+
   const resolvedShape = computed<PropertyCollectionShape>(() => {
-    const explicitShape = isRef(options.shape)
-      ? options.shape.value
-      : options.shape
-    if (explicitShape) return explicitShape
-    return hasOperatorFilter.value ? 'root-with-app-support' : 'root'
+    return resolvePropertyCollectionShape(
+      options.shape,
+      hasOperatorFilter.value
+    )
   })
   const usesTargetedRootRead = computed(
     () => hasFilter.value || resolvedShape.value === 'root-with-app-support'
@@ -125,11 +72,41 @@ export function usePropertyCollection(
       : ''
   )
   const resolvedAppId = computed(() => normalizeString(appId))
-  const appSupportCollectionPath = computed(() =>
-    resolvedAppId.value
-      ? `${AppStorage.collection}/${resolvedAppId.value}/${PropertyStorage.appSupportCollection}`
-      : ''
+  const acceptsAppSupport = (
+    root: Property,
+    appSupport: AppPropertyRecord | undefined
+  ) => {
+    if (
+      resolvedShape.value === 'root-with-app-support' &&
+      (!appSupport ||
+        !readConsoleTargetAuthority(appSupport) ||
+        !resolvedAppId.value ||
+        (root.app_scope_state !== 'parent_app' &&
+          root.app_scope_state !== 'tenant_app') ||
+        root.app_scope_app_id !== resolvedAppId.value)
+    ) {
+      return false
+    }
+    return true
+  }
+  const appSupportAccessEnabled = computed(
+    () =>
+      sourceMode.value === 'live' &&
+      resolvedShape.value !== 'root' &&
+      hasOperatorFilter.value &&
+      Boolean(filterOperatorId.value)
   )
+  const {
+    collectionPath: appSupportCollectionPath,
+    operatorQuery: appSupportOperatorQuery,
+    teamQuery: appSupportTeamQuery,
+  } = useAppSupportAccessQueries<AppPropertyRecord>({
+    db,
+    appId: resolvedAppId,
+    collectionName: PropertyStorage.appSupportCollection,
+    accessId: filterOperatorId,
+    enabled: appSupportAccessEnabled,
+  })
   const targetedAppSupportCollectionPath = computed(() =>
     sourceMode.value === 'live' &&
     resolvedShape.value === 'root-with-app-support' &&
@@ -139,45 +116,11 @@ export function usePropertyCollection(
       : ''
   )
 
-  const rootSource = firestoreFetchCollection<PropertyCollectionDoc>(
-    rootCollectionPath
-  )
+  const rootSource =
+    firestoreFetchCollection<PropertyCollectionDoc>(rootCollectionPath)
   const targetedAppSupportSource = firestoreLoadDocsByIds<AppPropertyRecord>({
     collectionPath: targetedAppSupportCollectionPath,
     ids: computed(() => [...filterIdSet.value]),
-  })
-  const appSupportOperatorQuery = computed<Query<AppPropertyRecord> | null>(() => {
-    if (sourceMode.value !== 'live') return null
-    if (!resolvedAppId.value) return null
-    if (resolvedShape.value === 'root') return null
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
-
-    const baseCollection = collection(
-      db,
-      AppStorage.collection,
-      resolvedAppId.value,
-      PropertyStorage.appSupportCollection
-    )
-    return fsq(
-      baseCollection,
-      where('operator_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<AppPropertyRecord>
-  })
-  const appSupportTeamQuery = computed<Query<AppPropertyRecord> | null>(() => {
-    if (sourceMode.value !== 'live') return null
-    if (!resolvedAppId.value) return null
-    if (resolvedShape.value === 'root') return null
-    if (!hasOperatorFilter.value || !filterOperatorId.value) return null
-
-    return fsq(
-      collection(
-        db,
-        AppStorage.collection,
-        resolvedAppId.value,
-        PropertyStorage.appSupportCollection
-      ),
-      where('team_ids', 'array-contains', filterOperatorId.value)
-    ) as Query<AppPropertyRecord>
   })
   const appSupportOperatorSource = firestoreQuery<AppPropertyRecord>(
     appSupportOperatorQuery,
@@ -213,82 +156,23 @@ export function usePropertyCollection(
       ? allowedPropertyIds.value
       : [...filterIdSet.value]
 
-    return hasFilter.value
-      ? ids.filter((id) => filterIdSet.value.has(id))
-      : ids
+    return hasFilter.value ? ids.filter((id) => filterIdSet.value.has(id)) : ids
   })
   const liveRootDocs = firestoreLoadDocsByIds<PropertyCollectionDoc>({
     collectionPath: liveDocumentCollectionPath,
     ids: targetedPropertyIds,
   })
-  const targetItems = computed<PropertySurface[]>(() => {
-    if (sourceMode.value === 'demo') return []
-    if (sourceMode.value === 'test') return []
-    if (!usesTargetedRootRead.value) {
-      return (rootSource.value ?? []).reduce<PropertySurface[]>((items, property) => {
-        const surface = composePropertySurface({ source: property as Property })
-        if (surface) items.push(surface)
-        return items
-      }, [])
-    }
-
-    const rootById = new Map<string, PropertyCollectionDoc>()
-    const appSupportById = new Map<string, AppPropertyRecord>()
-
-    for (const property of liveRootDocs.docs.value ?? []) {
-      const id = resolvePropertyId(property)
-      if (!id) continue
-      rootById.set(id, {
-        ...property,
-        id,
-      })
-    }
-
-    for (const appSupport of appSupportSource.value ?? []) {
-      const id = resolvePropertyId(appSupport)
-      if (!id) continue
-      appSupportById.set(id, {
-        ...appSupport,
-        id,
-      })
-    }
-
-    const merged: PropertySurface[] = []
-    const seen = new Set<string>()
-
-    for (const property of liveRootDocs.docs.value ?? []) {
-      const id = resolvePropertyId(property)
-      if (!id || seen.has(id)) continue
-      seen.add(id)
-
-      const root = canonicalPropertyRoot({
-        ...(rootById.get(id) ?? {}),
-        id,
-      } as Property)
-      if (!root) continue
-
-      const appSupport = appSupportById.get(id)
-      if (
-        resolvedShape.value === 'root-with-app-support' &&
-        (
-          !appSupport ||
-          !readConsoleTargetAuthority(appSupport) ||
-          !resolvedAppId.value ||
-          (root.app_scope_state !== 'parent_app' &&
-            root.app_scope_state !== 'tenant_app') ||
-          root.app_scope_app_id !== resolvedAppId.value
-        )
-      ) continue
-
-      const surface = composePropertySurface({
-        source: root,
-        appSupport,
-      })
-      if (surface) merged.push(surface)
-    }
-
-    return merged
-  })
+  const targetItems = computed<PropertySurface[]>(() =>
+    composePropertyCollectionTargets({
+      source: sourceMode.value,
+      usesTargetedRead: usesTargetedRootRead.value,
+      roots: usesTargetedRootRead.value
+        ? (liveRootDocs.docs.value ?? [])
+        : (rootSource.value ?? []),
+      appSupport: appSupportSource.value ?? [],
+      acceptAppSupport: acceptsAppSupport,
+    })
+  )
 
   const collectionItems = computed<PropertySurface[]>(() => targetItems.value)
 
@@ -299,7 +183,8 @@ export function usePropertyCollection(
       if (hasFilter.value && !filterIdSet.value.has(id)) return acc
       if (hasOperatorFilter.value) {
         if (!filterOperatorId.value) return acc
-        if (!targetHasConsoleAccess(property, filterOperatorId.value)) return acc
+        if (!targetHasConsoleAccess(property, filterOperatorId.value))
+          return acc
       }
 
       acc.push({ ...property, id })
@@ -312,7 +197,8 @@ export function usePropertyCollection(
     if (
       sourceMode.value !== 'live' ||
       resolvedShape.value !== 'root-with-app-support'
-    ) return []
+    )
+      return []
     if (
       appSupportOperatorSource.pending.value ||
       appSupportTeamSource.pending.value ||
@@ -322,7 +208,8 @@ export function usePropertyCollection(
       appSupportTeamSource.error.value ||
       targetedAppSupportSource.error.value ||
       liveRootDocs.error.value
-    ) return []
+    )
+      return []
 
     const rootIds = new Set(
       (liveRootDocs.docs.value ?? [])
@@ -347,18 +234,19 @@ export function usePropertyCollection(
       appSupportOperatorSource.error.value ||
       appSupportTeamSource.error.value ||
       targetedAppSupportSource.error.value
-    ) return []
+    )
+      return []
 
     return appSupportSource.value
-      .filter(appSupport => !readConsoleTargetAuthority(appSupport))
-      .map(appSupport => resolvePropertyId(appSupport))
+      .filter((appSupport) => !readConsoleTargetAuthority(appSupport))
+      .map((appSupport) => resolvePropertyId(appSupport))
       .filter(Boolean)
   })
   const invalidRootIds = computed(() => {
     if (sourceMode.value !== 'live') return []
     const roots = usesTargetedRootRead.value
-      ? liveRootDocs.docs.value ?? []
-      : rootSource.value ?? []
+      ? (liveRootDocs.docs.value ?? [])
+      : (rootSource.value ?? [])
 
     return roots.reduce<string[]>((ids, property) => {
       if (canonicalPropertyRoot(property as Property)) return ids
@@ -447,11 +335,11 @@ export function usePropertyCollection(
     if (hasOperatorFilter.value && !filterOperatorId.value) return false
     return (
       liveRootDocs.pending.value ||
-      (resolvedShape.value === 'root-with-app-support' && (
-        hasOperatorFilter.value
-          ? appSupportOperatorSource.pending.value || appSupportTeamSource.pending.value
-          : targetedAppSupportSource.pending.value
-      ))
+      (resolvedShape.value === 'root-with-app-support' &&
+        (hasOperatorFilter.value
+          ? appSupportOperatorSource.pending.value ||
+            appSupportTeamSource.pending.value
+          : targetedAppSupportSource.pending.value))
     )
   })
   const error = computed<unknown | undefined>(() => {
@@ -463,13 +351,14 @@ export function usePropertyCollection(
     if (!usesTargetedRootRead.value && rootSource.error.value) {
       return rootSource.error.value
     }
-    const sourceError = (resolvedShape.value === 'root-with-app-support'
-      ? hasOperatorFilter.value
-        ? appSupportOperatorSource.error.value ?? appSupportTeamSource.error.value
-        : targetedAppSupportSource.error.value
-      : undefined) ?? (usesTargetedRootRead.value
-      ? liveRootDocs.error.value
-      : undefined)
+    const sourceError =
+      (resolvedShape.value === 'root-with-app-support'
+        ? hasOperatorFilter.value
+          ? (appSupportOperatorSource.error.value ??
+            appSupportTeamSource.error.value)
+          : targetedAppSupportSource.error.value
+        : undefined) ??
+      (usesTargetedRootRead.value ? liveRootDocs.error.value : undefined)
 
     if (sourceError) return sourceError
     if (malformedAppSupportIds.value.length) {

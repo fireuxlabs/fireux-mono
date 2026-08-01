@@ -1,0 +1,139 @@
+// @fireux-ecosystem-rules-fragment werkbox/public-profiles
+    function isValidAgent(data) {
+      return data.keys().size() == 14 &&
+        data.keys().hasAll([
+          'title', 'summary', 'agent_bio', 'agent_image',
+          'agent_placement_types', 'agent_coverage_areas',
+          'agent_contact_email', 'agent_contact_phone', 'agent_website_url',
+          'subtitle', 'tagline', 'tags', 'created', 'updated'
+        ]) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.agent_bio, 4000) &&
+        isValidHttpsUrl(data.agent_image, 2048) &&
+        isValidStringList(data.agent_placement_types, 240) &&
+        isValidStringList(data.agent_coverage_areas, 240) &&
+        isValidEmail(data.agent_contact_email, 320) &&
+        isValidBoundedString(data.agent_contact_phone, 40) &&
+        isValidHttpsUrl(data.agent_website_url, 2048) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidStringList(data.tags, 240) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /agents/{userId} {
+      allow get: if isOwner(userId);
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isValidAgent(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'title', 'summary', 'agent_bio', 'agent_image',
+          'agent_placement_types', 'agent_coverage_areas',
+          'agent_contact_email', 'agent_contact_phone', 'agent_website_url',
+          'subtitle', 'tagline', 'tags', 'updated'
+        ]) &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+    }
+
+    function isValidProfessional(data) {
+      return data.keys().size() == 17 &&
+        data.keys().hasAll([
+          'title', 'subtitle', 'tagline', 'summary', 'bio', 'image',
+          'positions', 'tags', 'relevant_experience', 'other_experience',
+          'languages', 'certifications', 'education', 'volunteering',
+          'projects', 'created', 'updated'
+        ]) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.bio, 4000) &&
+        isValidHttpsUrl(data.image, 2048) &&
+        isValidStringList(data.positions, 240) &&
+        isValidStringList(data.tags, 240) &&
+        data.relevant_experience is list &&
+        data.relevant_experience.size() <= 12 &&
+        data.other_experience is list && data.other_experience.size() <= 12 &&
+        data.languages is list && data.languages.size() <= 12 &&
+        data.certifications is list && data.certifications.size() <= 8 &&
+        data.education is list && data.education.size() <= 8 &&
+        data.volunteering is list && data.volunteering.size() <= 8 &&
+        data.projects is list && data.projects.size() <= 8 &&
+        data.relevant_experience.size() +
+          data.other_experience.size() +
+          data.languages.size() +
+          data.certifications.size() +
+          data.education.size() +
+          data.volunteering.size() +
+          data.projects.size() <= 24 &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    function isValidProfessionalOwnerUpdate(data, userId) {
+      let changed = data.diff(resource.data).affectedKeys();
+      return isValidProfessional(data) &&
+        data.created == resource.data.created &&
+        data.relevant_experience == resource.data.relevant_experience &&
+        data.other_experience == resource.data.other_experience &&
+        data.languages == resource.data.languages &&
+        data.certifications == resource.data.certifications &&
+        data.education == resource.data.education &&
+        data.volunteering == resource.data.volunteering &&
+        data.projects == resource.data.projects &&
+        changed.hasOnly([
+          'title', 'subtitle', 'tagline', 'summary', 'bio', 'image',
+          'positions', 'tags', 'updated'
+        ]) &&
+        (!changed.hasAny(['positions']) ||
+          isValidStringList(data.positions, 240)) &&
+        (!changed.hasAny(['tags']) || isValidStringList(data.tags, 240)) &&
+        validOwnerUpdateStamp(data, userId);
+    }
+
+    match /professionals/{userId} {
+      allow get: if isOwner(userId);
+      allow list, create, delete: if false;
+      // Structured experience writes remain server-owned until the trusted
+      // reference verifier is live; owners may edit only safe scalar/list data.
+      allow update: if isOwner(userId) &&
+        isValidProfessionalOwnerUpdate(request.resource.data, userId);
+    }
+
+    // Server APIs/Admin SDK own domain reads and mutations. Explicit denial
+    // makes that ownership visible; the final wildcard closes every unknown
+    // or newly introduced path unless it receives a reviewed positive rule.
+    match /jobs/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /places/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /companies/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /products/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /blogs/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /blog/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /security-migrations/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /user-handles/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /user-handle-state/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+    match /{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+// @fireux-core-rules close

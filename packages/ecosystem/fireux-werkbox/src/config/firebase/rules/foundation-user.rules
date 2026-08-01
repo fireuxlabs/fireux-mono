@@ -1,0 +1,273 @@
+// @fireux-ecosystem-rules-fragment werkbox/foundation-user
+// Concurrent edit — 2026-07-21 15:14 CEST — Cleanbox-to-Werkbox migration: keep the default-deny boundary and reject credential-bearing HTTPS values.
+
+// @fireux-core-rules open
+    // Assumed stored authority for this source:
+    // - Firebase project: cleanbox-f15bc (pinned by the release harness)
+    // - canonical database: cleanbox
+    // - Ecosystem id: cleanbox
+    // - App ids: cleanbox-app (Werkbox hub), richies-reinigung (tenant)
+    // The simulation database name is accepted only so the same immutable
+    // ruleset can be tested before promotion. This source does not provision it.
+    function isSupportedDatabase() {
+      return database in ['cleanbox', 'cleanbox-simulation'];
+    }
+
+    function isAuthenticated() {
+      return isSupportedDatabase() &&
+        request.auth != null &&
+        (
+          !('firebase' in request.auth.token) ||
+          !('sign_in_provider' in request.auth.token.firebase) ||
+          request.auth.token.firebase.sign_in_provider != 'anonymous'
+        );
+    }
+
+    // @fireux-core-rules owner
+    function isKnownApp(appId) {
+      return appId in ['cleanbox-app', 'richies-reinigung'];
+    }
+
+    // @fireux-core-rules membership-path
+    function isAppMember(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role in ['admin', 'user'];
+    }
+
+    function isAppAdmin(appId) {
+      return isKnownApp(appId) &&
+        isAuthenticated() &&
+        exists(appMembershipPath(appId, request.auth.uid)) &&
+        get(appMembershipPath(appId, request.auth.uid)).data.role == 'admin';
+    }
+
+    // @fireux-core-rules text
+    // @fireux-core-rules bounded
+    function isValidHttpsUrl(value, maxSize) {
+      return value is string &&
+        value.size() <= maxSize &&
+        (value == '' ||
+          (value.matches('^https://.+$') &&
+            !value.matches('^https://[^/?#]*@.*$')));
+    }
+
+    function isValidEmail(value, maxSize) {
+      return value is string &&
+        value.size() <= maxSize &&
+        (value == '' || value.matches('^[^@ ]+@[^@ ]+[.][^@ ]+$'));
+    }
+
+    // @fireux-core-rules avatar
+    function validCreatedStamp(value) {
+      return value is map &&
+        value.keys().hasAll(['at']) &&
+        value.keys().hasOnly(['at', 'by', 'app_id']) &&
+        value.at is timestamp &&
+        (!('by' in value) ||
+          (value.by is string &&
+            value.by.size() >= 1 && value.by.size() <= 1500)) &&
+        (!('app_id' in value) ||
+          (value.app_id is string &&
+            value.app_id.size() >= 1 && value.app_id.size() <= 1500));
+    }
+
+    function validUpdatedStamp(value) {
+      return value is map &&
+        value.keys().hasAll(['at']) &&
+        value.keys().hasOnly(['at', 'by']) &&
+        value.at is timestamp &&
+        (!('by' in value) ||
+          (value.by is string &&
+            value.by.size() >= 1 && value.by.size() <= 1500));
+    }
+
+    // @fireux-core-rules owner-stamp
+    function isValidStringList0To4(value, maxItemSize) {
+      return value.size() == 0 ||
+        (value[0] is string && value[0].size() <= maxItemSize &&
+          (value.size() == 1 ||
+            (value[1] is string && value[1].size() <= maxItemSize &&
+              (value.size() == 2 ||
+                (value[2] is string && value[2].size() <= maxItemSize &&
+                  (value.size() == 3 ||
+                    (value[3] is string && value[3].size() <= maxItemSize &&
+                      (value.size() == 4 ||
+                        (value[4] is string &&
+                          value[4].size() <= maxItemSize)))))))));
+    }
+
+    function isValidStringList5To9(value, maxItemSize) {
+      return value[5] is string && value[5].size() <= maxItemSize &&
+        (value.size() == 6 ||
+          (value[6] is string && value[6].size() <= maxItemSize &&
+            (value.size() == 7 ||
+              (value[7] is string && value[7].size() <= maxItemSize &&
+                (value.size() == 8 ||
+                  (value[8] is string && value[8].size() <= maxItemSize &&
+                    (value.size() == 9 ||
+                      (value[9] is string &&
+                        value[9].size() <= maxItemSize))))))));
+    }
+
+    function isValidStringList10To14(value, maxItemSize) {
+      return value[10] is string && value[10].size() <= maxItemSize &&
+        (value.size() == 11 ||
+          (value[11] is string && value[11].size() <= maxItemSize &&
+            (value.size() == 12 ||
+              (value[12] is string && value[12].size() <= maxItemSize &&
+                (value.size() == 13 ||
+                  (value[13] is string && value[13].size() <= maxItemSize &&
+                    (value.size() == 14 ||
+                      (value[14] is string &&
+                        value[14].size() <= maxItemSize))))))));
+    }
+
+    function isValidStringList15To19(value, maxItemSize) {
+      return value[15] is string && value[15].size() <= maxItemSize &&
+        (value.size() == 16 ||
+          (value[16] is string && value[16].size() <= maxItemSize &&
+            (value.size() == 17 ||
+              (value[17] is string && value[17].size() <= maxItemSize &&
+                (value.size() == 18 ||
+                  (value[18] is string && value[18].size() <= maxItemSize &&
+                    (value.size() == 19 ||
+                      (value[19] is string &&
+                        value[19].size() <= maxItemSize))))))));
+    }
+
+    function isValidStringList(value, maxItemSize) {
+      return value is list &&
+        value.size() <= 20 &&
+        isValidStringList0To4(value, maxItemSize) &&
+        (value.size() <= 5 ||
+          (isValidStringList5To9(value, maxItemSize) &&
+            (value.size() <= 10 ||
+              (isValidStringList10To14(value, maxItemSize) &&
+                (value.size() <= 15 ||
+                  isValidStringList15To19(value, maxItemSize))))));
+    }
+
+    // Canonical User identity. Membership/profile indices are server-owned.
+    function isValidUser(data) {
+      return data.keys().hasAll([
+          'display_name', 'avatar', 'handle', 'app_ids', 'profiles',
+          'created', 'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'display_name', 'bio', 'avatar', 'handle', 'app_ids', 'profiles',
+          'created', 'updated'
+        ]) &&
+        validRequiredText(data, 'display_name', 1, 120) &&
+        validOptionalText(data, 'bio', 280) &&
+        isValidUserAvatar(data.avatar) &&
+        data.handle is string &&
+        data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
+        data.app_ids is list &&
+        data.app_ids.size() <= 2 &&
+        data.app_ids.hasOnly(['cleanbox-app', 'richies-reinigung']) &&
+        data.profiles is list &&
+        data.profiles.size() <= 2 &&
+        data.profiles.hasOnly(['agent', 'professional']) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /users/{userId} {
+      // Public identity reads use a bounded API projection.
+      allow get: if isOwner(userId);
+      allow list, create, delete: if false;
+      allow update: if isOwner(userId) &&
+        isValidUser(request.resource.data) &&
+        request.resource.data.app_ids == resource.data.app_ids &&
+        request.resource.data.profiles == resource.data.profiles &&
+        request.resource.data.handle == resource.data.handle &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'display_name', 'bio', 'avatar', 'updated'
+        ]) &&
+        validOwnerUpdateStamp(request.resource.data, userId);
+
+      match /private/account {
+        function isValidPreferences(value) {
+          return value is map &&
+            value.keys().hasAll([
+              'language', 'theme', 'email_security_alerts',
+              'share_usage_analytics'
+            ]) &&
+            value.keys().hasOnly([
+              'language', 'theme', 'email_security_alerts',
+              'share_usage_analytics'
+            ]) &&
+            value.language is string &&
+            value.language.size() >= 2 && value.language.size() <= 16 &&
+            value.theme in ['system', 'light', 'dark'] &&
+            value.email_security_alerts is bool &&
+            value.share_usage_analytics is bool;
+        }
+
+        function isValidTerms(value) {
+          return value is map &&
+            value.keys().hasAll(['version', 'accepted_at']) &&
+            value.keys().hasOnly(['version', 'accepted_at']) &&
+            value.version is string && value.version.size() <= 64 &&
+            ((value.version.size() >= 1 && value.accepted_at is timestamp) ||
+              (value.version == '' && value.accepted_at == null));
+        }
+
+        function isValidUserPrivate(data) {
+          return data.keys().hasAll([
+              'email', 'preferences', 'terms', 'created', 'updated'
+            ]) &&
+            data.keys().hasOnly([
+              'email', 'preferences', 'terms', 'created', 'updated'
+            ]) &&
+            data.email is string && data.email.size() <= 320 &&
+            isValidPreferences(data.preferences) &&
+            isValidTerms(data.terms) &&
+            validCreatedStamp(data.created) &&
+            validUpdatedStamp(data.updated);
+        }
+
+        allow get: if isOwner(userId) && isValidUserPrivate(resource.data);
+        allow list, create, delete: if false;
+        allow update: if isOwner(userId) &&
+          isValidUserPrivate(request.resource.data) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'preferences', 'updated'
+          ]) &&
+          request.resource.data.email == resource.data.email &&
+          request.resource.data.terms == resource.data.terms &&
+          request.resource.data.created == resource.data.created &&
+          validOwnerUpdateStamp(request.resource.data, userId);
+      }
+
+      match /notifications/{notificationId} {
+        function isValidNotification(data) {
+          return data.keys().hasAll(['message', 'scope', 'created', 'read']) &&
+            data.keys().hasOnly(['message', 'scope', 'created', 'read']) &&
+            validRequiredText(data, 'message', 1, 1000) &&
+            data.scope in ['ecosystem', 'app'] &&
+            data.created is map &&
+            data.created.keys().hasAll(['at', 'app_id']) &&
+            data.created.keys().hasOnly(['at', 'app_id']) &&
+            data.created.at is timestamp &&
+            ((data.scope == 'ecosystem' && data.created.app_id == '') ||
+              (data.scope == 'app' &&
+                data.created.app_id in ['cleanbox-app', 'richies-reinigung'])) &&
+            data.read is bool;
+        }
+
+        allow get: if isOwner(userId) && isValidNotification(resource.data);
+        allow list: if isOwner(userId) && request.query.limit <= 50;
+        allow create: if false;
+        allow update: if isOwner(userId) &&
+          isValidNotification(request.resource.data) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+            'read'
+          ]);
+        allow delete: if false;
+      }
+    }
+

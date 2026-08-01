@@ -48,7 +48,7 @@ import { run as runLikeMenuFamily } from './guards/like-menu-family.mjs'
 import { run as runCore } from './guards/core.mjs'
 import { run as runEcosystem } from './guards/ecosystem.mjs'
 import { run as runExtensions } from './guards/extensions.mjs'
-import { run as runKitchenMenuSize } from './guards/kitchen-menu-size.mjs'
+import { run as runAuthoredSourceSize } from './guards/authored-source-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
 import { run as runProductLanding } from './guards/product-landing.mjs'
 import { run as runFinance } from './guards/finance.mjs'
@@ -96,7 +96,7 @@ const guards = [
   { key: 'core', run: runCore },
   { key: 'ecosystem', run: runEcosystem },
   { key: 'extensions', run: runExtensions },
-  { key: 'kitchen-menu-size', run: runKitchenMenuSize },
+  { key: 'authored-source-size', run: runAuthoredSourceSize },
   { key: 'menu-route-contract', run: runMenuRouteContract },
   { key: 'product-landing', run: runProductLanding },
   { key: 'finance', run: runFinance },

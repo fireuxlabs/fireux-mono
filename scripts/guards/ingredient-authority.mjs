@@ -6,6 +6,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
+import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
@@ -53,9 +54,11 @@ const arrayDeclaration = (source, name) => {
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const kitchenBase = 'packages/extensions/fireux-kitchens/src/runtime/'
-  const rules = read(
-    repoRoot,
-    'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules'
+  const rules = await expandFirestoreRulesTemplate(
+    read(
+      repoRoot,
+      'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules'
+    )
   )
   const deploy = read(repoRoot, 'scripts/deploy-misebox-firestore-rules.mjs')
   const model = read(repoRoot, `${kitchenBase}models/ingredient.model.ts`)
@@ -67,7 +70,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${kitchenBase}server/ingredient/public-projection.ts`
   )
-  const curation = read(repoRoot, `${kitchenBase}server/ingredient/curation.ts`)
+  const curation = [
+    'curation.ts',
+    'curation-authority.ts',
+    'curation-input.ts',
+    'curation-storage.ts',
+  ]
+    .map((fileName) =>
+      read(repoRoot, `${kitchenBase}server/ingredient/${fileName}`)
+    )
+    .join('\n')
   const createSystem = read(
     repoRoot,
     `${kitchenBase}components/Ingredient/Create/System.vue`
@@ -124,10 +136,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-suppliers/src/runtime/composables/fireux/console/supplier/operations/Ingredients/useSupplierConsoleIngredients.ts'
   )
-  const productDemo = read(
-    repoRoot,
-    'projects/misebox/misebox-app/app/composables/product-demo/useMiseboxProductDemo.ts'
-  )
+  const productDemoBase =
+    'projects/misebox/misebox-app/app/composables/product-demo/'
+  const productDemo = [
+    'useMiseboxProductDemo.ts',
+    'loadMiseboxProductDemo.ts',
+    'projectMiseboxProductDemoConsoleFoundations.ts',
+  ]
+    .map((fileName) => read(repoRoot, `${productDemoBase}${fileName}`))
+    .join('\n')
   const promotionManifest = JSON.parse(
     read(repoRoot, 'scripts/data/misebox-kitchen-ingredient-promotion.json')
   )

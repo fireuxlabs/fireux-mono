@@ -41,6 +41,36 @@ const FILES = {
     'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenarios.ts',
 }
 
+const KITCHEN_FINANCE_SEAMS = {
+  calendar: [
+    FILES.kitchenCalendar,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/useKitchenFinanceCalendar.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/finance-calendar-date.ts',
+  ],
+  console: [
+    FILES.kitchenConsole,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/useKitchenFinanceOverview.ts',
+  ],
+  dayDetail: [
+    FILES.kitchenDayDetail,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/useKitchenFinanceDayDetail.ts',
+  ],
+  demoScenarios: [
+    FILES.kitchenDemoScenarios,
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/scenario/service-validation.ts',
+  ],
+  reportProjection: [
+    FILES.kitchenReportProjection,
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-common.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-range.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-sale.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-accumulator.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-reconcile.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-aggregate.ts',
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sales/gross-sales-report-read.ts',
+  ],
+}
+
 function read(repoRoot, file, violations) {
   const filePath = path.join(repoRoot, file)
   if (!existsSync(filePath)) {
@@ -48,6 +78,10 @@ function read(repoRoot, file, violations) {
     return ''
   }
   return readFileSync(filePath, 'utf8')
+}
+
+function readSeams(repoRoot, files, violations) {
+  return files.map(file => read(repoRoot, file, violations)).join('\n')
 }
 
 export async function run(ctx) {
@@ -70,10 +104,22 @@ export async function run(ctx) {
     FILES.kitchenTrendAdapter,
     violations
   )
-  const kitchenCalendar = read(repoRoot, FILES.kitchenCalendar, violations)
-  const kitchenDayDetail = read(repoRoot, FILES.kitchenDayDetail, violations)
+  const kitchenCalendar = readSeams(
+    repoRoot,
+    KITCHEN_FINANCE_SEAMS.calendar,
+    violations
+  )
+  const kitchenDayDetail = readSeams(
+    repoRoot,
+    KITCHEN_FINANCE_SEAMS.dayDetail,
+    violations
+  )
   const kitchenRoundup = read(repoRoot, FILES.kitchenRoundup, violations)
-  const kitchenConsole = read(repoRoot, FILES.kitchenConsole, violations)
+  const kitchenConsole = readSeams(
+    repoRoot,
+    KITCHEN_FINANCE_SEAMS.console,
+    violations
+  )
   const kitchenConsolePage = read(
     repoRoot,
     FILES.kitchenConsolePage,
@@ -85,9 +131,9 @@ export async function run(ctx) {
     FILES.kitchenReportModel,
     violations
   )
-  const kitchenReportProjection = read(
+  const kitchenReportProjection = readSeams(
     repoRoot,
-    FILES.kitchenReportProjection,
+    KITCHEN_FINANCE_SEAMS.reportProjection,
     violations
   )
   const kitchenDemoFinance = read(
@@ -100,9 +146,9 @@ export async function run(ctx) {
     FILES.kitchenDemoOrderHistory,
     violations
   )
-  const kitchenDemoScenarios = read(
+  const kitchenDemoScenarios = readSeams(
     repoRoot,
-    FILES.kitchenDemoScenarios,
+    KITCHEN_FINANCE_SEAMS.demoScenarios,
     violations
   )
   const packageSource = read(repoRoot, FILES.package, violations)

@@ -1,0 +1,115 @@
+// @fireux-ecosystem-rules-fragment misebox/foundation
+// Concurrent edit — 2026-07-20 12:55 CEST — Security spine: default-deny raw public roots and constrain Driver order access to open deliveries.
+// Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: make trusted server provisioning the sole public User create path.
+// Concurrent edit — 2026-07-20 13:12 CEST — Driver dispatch privacy: keep full Kitchen Orders operator-only.
+// Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: require server-owned canonical handle reservations.
+// Concurrent edit — 2026-07-20 13:51 CEST — User handle contract: align public identity validation with the trusted 30-character canonical slug.
+// Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: remove embedded User snapshots and preserve owner missing-document gets.
+// Concurrent edit — 2026-07-20 13:42 CEST — Security rollout gate: keep migration evidence server-only.
+// Concurrent edit — 2026-07-20 15:59 CEST — Repo Efficiency Pass 1 of 6: close raw App access, pin bootstrap identity, and repair executable security contracts.
+// Concurrent edit — 2026-07-20 19:58 CEST — Repo Efficiency Pass 2 of 6: preserve strict Professional validation within the Rules expression budget.
+// Concurrent edit — 2026-07-20 19:51 CEST — Repo Efficiency Pass 2 of 6: preserve strict Agent/Chef validation within the Rules expression budget.
+// Concurrent edit — 2026-07-20 20:02 CEST — Repo Efficiency Pass 2 of 6 rules cutover: make raw public-profile roots owner-only and validate one changed Professional list family.
+
+// @fireux-core-rules open
+    // ===============================================================
+    // Assumed data model
+    // ===============================================================
+    // users/{uid}: public identity only (display_name, bio, avatar, handle,
+    //   app_ids, profiles, created, updated). No email or private settings.
+    // users/{uid}/private/account: owner-only email, preferences, terms.
+    // users/{uid}/notifications/{id}: owner-only notification records.
+    // apps/{appId}: canonical App truth. Guests use allowlisted server DTOs;
+    //   raw reads require App membership or the fixed bootstrap developer.
+    // apps/{appId}/join-requests/{uid}: owner-visible/admin-listable request.
+    // apps/{appId}/users/{uid}: private membership and capability authority.
+    // apps/{appId}/customers/{uid}: app-private ordering identity and PII.
+    // drivers/{uid}: public Driver presentation/capability.
+    // agents/{uid}, chefs/{uid}, professionals/{uid}: owner-readable raw
+    //   profiles; guests consume allowlisted domain API projections.
+    // apps/{appId}/drivers/{uid}: private contact, preferences, and
+    //   server-owned kitchen grants.
+    // apps/{appId}/kitchens/{kitchenId}/orders/{orderId}: private order PII;
+    //   client reads are restricted to Kitchen operators. Granted Drivers use
+    //   authenticated server-projected dispatch beacons instead.
+    // apps/{appId}/kitchens/{kitchenId}/sales/{saleId}: immutable, PII-free
+    //   completed-Order facts readable by App admins and Kitchen operators.
+    // apps/{appId}/financial-facts/{factId}: immutable normalized finance
+    //   facts; raw records remain server-only until bounded reports exist.
+
+    // ===============================================================
+    // Shared helpers
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null &&
+        (
+          !('firebase' in request.auth.token) ||
+          !('sign_in_provider' in request.auth.token.firebase) ||
+          request.auth.token.firebase.sign_in_provider != 'anonymous'
+        );
+    }
+
+    // @fireux-core-rules owner
+    function isBootstrapDeveloper() {
+      return isAuthenticated() &&
+        request.auth.uid == 'jMK33p5XlhYS8rBCEf8qUiogfMg2';
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) ||
+        request.resource.data.uid == resource.data.uid;
+    }
+
+    // @fireux-core-rules text
+    function validOptionalList(data, field, maxSize) {
+      return !(field in data) ||
+        (data[field] is list && data[field].size() <= maxSize);
+    }
+
+    function isValidHttpsUrl(value, maxSize) {
+      return value is string &&
+        value.size() <= maxSize &&
+        (value == '' || value.matches('^https://.+$'));
+    }
+
+    // @fireux-core-rules avatar
+    function isValidFirestoreDocumentId(value) {
+      return value is string &&
+        value.size() >= 1 &&
+        value.size() <= 1500 &&
+        value != '.' &&
+        value != '..' &&
+        !value.matches('.*[/].*') &&
+        !value.matches('^__.*__$');
+    }
+
+    function isValidChefGalleryItem(value) {
+      return value is map &&
+        value.keys().size() == 2 &&
+        value.keys().hasAll(['name', 'image_url']) &&
+        value.name is string &&
+        value.name.size() <= 240 &&
+        value.image_url != '' &&
+        isValidHttpsUrl(value.image_url, 2048);
+    }
+
+    // Firestore Rules has no list iteration, so the bounded gallery contract
+    // is deliberately unrolled through the product maximum. Six keeps deep
+    // item validation comfortably inside the Rules expression budget.
+    function isValidChefGallery(value) {
+      return value is list &&
+        value.size() <= 6 &&
+        (value.size() == 0 ||
+          (isValidChefGalleryItem(value[0]) &&
+            (value.size() == 1 ||
+              (isValidChefGalleryItem(value[1]) &&
+                (value.size() == 2 ||
+                  (isValidChefGalleryItem(value[2]) &&
+                    (value.size() == 3 ||
+                      (isValidChefGalleryItem(value[3]) &&
+                        (value.size() == 4 ||
+                          (isValidChefGalleryItem(value[4]) &&
+                            (value.size() == 5 ||
+                              isValidChefGalleryItem(value[5]))))))))))));
+    }
+

@@ -7,7 +7,6 @@ import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firesto
 import { useProfileRootUpdateBase } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileUpdateBase'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
 import { normalizeHttpsUrlInput } from 'fireux-core/runtime/utils/httpsUrl'
 import {
   ProfessionalConstraints,
@@ -17,13 +16,19 @@ import {
 import type {
   CertificationItem,
   EducationItem,
-  ExperienceItem,
   LanguageProficiency,
   OtherExperienceItem,
   ProjectItem,
   RelevantExperienceItem,
   VolunteeringItem,
 } from '../../../../../../models/profiles/Professional/supporting'
+import {
+  assertProfessionalListLimit as assertListLimit,
+  cleanProfessionalText as cleanText,
+  cleanProfessionalYear as cleanYear,
+  sanitizeProfessionalExperienceItems as sanitizeExperienceItems,
+  sortProfessionalItemsByDate as sortItemsByDate,
+} from './professionalUpdateValidation'
 
 type UpdateOptions = { id?: string | null }
 
@@ -46,24 +51,6 @@ const STRUCTURED_FIELDS: StructuredField[] = [
   'projects',
 ]
 
-type DateSortFields = {
-  ongoingKey?: string
-  fromYearKey?: string
-  fromMonthKey?: string
-  toYearKey?: string
-  toMonthKey?: string
-  startYearKey?: string
-  endYearKey?: string
-}
-
-const normalizePlaceId = (value?: unknown) => {
-  const raw = typeof value === 'string' ? value.trim() : ''
-  if (!isFirestoreDocumentId(raw)) {
-    throw new Error('Experience must reference a valid Place.')
-  }
-  return raw
-}
-
 export function useProfessionalUpdate(
   profile?: ProfileRefs<Professional> | null
 ) {
@@ -78,24 +65,6 @@ export function useProfessionalUpdate(
     options: UpdateOptions = {}
   ) => {
     await base.updateCoreProfile(patch, options)
-  }
-
-  const cleanText = (value: unknown, maxSize: number, label = 'Value') => {
-    const normalized = typeof value === 'string' ? value.trim() : ''
-    if (normalized.length > maxSize) {
-      throw new Error(`${label} must be ${maxSize} characters or less.`)
-    }
-    return normalized
-  }
-
-  const assertListLimit = (
-    items: unknown[],
-    maxItems: number,
-    label: string
-  ) => {
-    if (items.length > maxItems) {
-      throw new Error(`${label} supports at most ${maxItems} items.`)
-    }
   }
 
   const assertStructuredTotal = (field: StructuredField, nextCount: number) => {
@@ -172,163 +141,6 @@ export function useProfessionalUpdate(
       headers: { Authorization: `Bearer ${token}` },
       body: { field: key, items: items ?? [] },
     })
-  }
-
-  const defaultDateFields: Required<DateSortFields> = {
-    ongoingKey: 'ongoing',
-    fromYearKey: 'from_year',
-    fromMonthKey: 'from_month',
-    toYearKey: 'to_year',
-    toMonthKey: 'to_month',
-    startYearKey: 'start_year',
-    endYearKey: 'end_year',
-  }
-
-  const monthToNumber = (value: unknown): number | null => {
-    if (value == null) return null
-    const raw = String(value).trim()
-    if (raw.length !== 3) return null
-    const short = raw.toLowerCase()
-    const months = [
-      'jan',
-      'feb',
-      'mar',
-      'apr',
-      'may',
-      'jun',
-      'jul',
-      'aug',
-      'sep',
-      'oct',
-      'nov',
-      'dec',
-    ]
-    const idx = months.indexOf(short)
-    return idx >= 0 ? idx + 1 : null
-  }
-
-  const toNumber = (value: unknown): number | null => {
-    const raw =
-      typeof value === 'number' ? value : Number(String(value ?? '').trim())
-    return Number.isFinite(raw) ? raw : null
-  }
-
-  const resolveDateParts = (item: any, fields: Required<DateSortFields>) => {
-    const ongoing = Boolean(item?.[fields.ongoingKey])
-    const fromYear = toNumber(
-      item?.[fields.fromYearKey] ?? item?.[fields.startYearKey]
-    )
-    const fromMonth = monthToNumber(item?.[fields.fromMonthKey])
-    const toYear = toNumber(
-      item?.[fields.toYearKey] ?? item?.[fields.endYearKey]
-    )
-    const toMonth = monthToNumber(item?.[fields.toMonthKey])
-
-    const startValue = fromYear ? fromYear * 12 + (fromMonth ?? 1) : null
-    const endValue = ongoing
-      ? Number.POSITIVE_INFINITY
-      : toYear
-        ? toYear * 12 + (toMonth ?? 1)
-        : null
-
-    return { ongoing, startValue, endValue }
-  }
-
-  const sortItemsByDate = <T>(list: T[], fields?: DateSortFields): T[] => {
-    const merged = { ...defaultDateFields, ...(fields ?? {}) }
-    return list
-      .map((item, index) => ({
-        item,
-        index,
-        ...resolveDateParts(item, merged),
-      }))
-      .sort((a, b) => {
-        if (a.ongoing !== b.ongoing) return a.ongoing ? -1 : 1
-
-        const endA = a.endValue ?? -Infinity
-        const endB = b.endValue ?? -Infinity
-        if (endA !== endB) return endB - endA
-
-        const startA = a.startValue ?? -Infinity
-        const startB = b.startValue ?? -Infinity
-        if (startA !== startB) return startB - startA
-
-        return a.index - b.index
-      })
-      .map((row) => row.item)
-  }
-
-  const cleanYear = (value: unknown): string | null => {
-    const normalized =
-      typeof value === 'number' && Number.isInteger(value)
-        ? String(value)
-        : typeof value === 'string'
-          ? value.trim()
-          : ''
-    if (!normalized) return null
-    if (!/^\d{4}$/.test(normalized)) {
-      throw new Error('Year must contain exactly four digits.')
-    }
-    const year = Number(normalized)
-    if (
-      year < ProfessionalConstraints.yearMin ||
-      year > ProfessionalConstraints.yearMax
-    ) {
-      throw new Error('Year is outside the supported range.')
-    }
-    return normalized
-  }
-
-  const cleanExperienceMonth = (value: unknown): string => {
-    const normalized = cleanText(value, 16, 'Experience month')
-    if (
-      ![
-        '',
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
-      ].includes(normalized)
-    ) {
-      throw new Error('Experience month must use a three-letter month.')
-    }
-    return normalized
-  }
-
-  const cleanExperienceYear = (value: unknown): string => cleanYear(value) ?? ''
-
-  // Canon: experience stores ONLY place_id (+ experience fields). No place snapshot fields.
-  const sanitizeExperienceItems = (items: ExperienceItem[]) => {
-    const sanitized: ExperienceItem[] = []
-    assertListLimit(
-      items ?? [],
-      ProfessionalConstraints.relevantExperience,
-      'Experience'
-    )
-    for (const item of items ?? []) {
-      const placeId = normalizePlaceId(item?.place_id)
-
-      sanitized.push({
-        place_id: placeId,
-        place_collection: cleanText(item?.place_collection, 120),
-        role: cleanText(item?.role, 160),
-        from_month: cleanExperienceMonth(item?.from_month),
-        from_year: cleanExperienceYear(item?.from_year),
-        to_month: cleanExperienceMonth(item?.to_month),
-        to_year: cleanExperienceYear(item?.to_year),
-        ongoing: item?.ongoing === true,
-        responsibilities: cleanText(item?.responsibilities, 4_000),
-      })
-    }
-    return sanitized
   }
 
   const setRelevantExperience = async (

@@ -13,20 +13,16 @@ import {
   join,
   isAbsolute,
   relative,
-  resolve as pathResolve,
   dirname,
 } from 'node:path'
-import { existsSync, readFileSync, statSync } from 'node:fs'
-import imageSize from 'image-size'
+import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import {
-  APP_PUBLIC_ASSET_REQUIREMENTS,
-  validateAppAssetDimensions,
-  type AppAssetDimensionConstraints,
-} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
 import { requireDevDeveloper } from '../../../utils/auth/developer'
-
-type ISizeCalculationResult = ReturnType<typeof imageSize>
+import {
+  checkCurrentAppBrandAssets,
+  findRepoRoot,
+  type BrandAssetCheck,
+} from './env-check-assets'
 
 function firstString(...values: unknown[]): string {
   for (const value of values) {
@@ -103,125 +99,8 @@ interface AdminAuthStatus {
   /** Explicit credential env detected; standard ADC is not probed here. */
   configured: boolean
 }
-interface BrandAssetCheck {
-  name: string
-  path: string
-  ok: boolean
-  source?: string
-  reason?: string
-  width?: number
-  height?: number
-}
-
-function findRepoRoot(start: string): string {
-  let current = start
-
-  for (let i = 0; i < 10; i += 1) {
-    if (
-      existsSync(join(current, 'pnpm-workspace.yaml')) ||
-      existsSync(join(current, '.git'))
-    ) {
-      return current
-    }
-
-    const parent = pathResolve(current, '..')
-    if (parent === current) break
-    current = parent
-  }
-
-  return current
-}
-
-function validateBrandDimensions(
-  name: string,
-  dim: ISizeCalculationResult,
-  constraints: AppAssetDimensionConstraints
-): string | null {
-  return validateAppAssetDimensions(
-    name,
-    {
-      width: dim.width,
-      height: dim.height,
-      type: dim.type,
-    },
-    constraints
-  )
-}
-
 const hasText = (value: unknown): boolean =>
   typeof value === 'string' && value.trim().length > 0
-
-/**
- * Utility: check if brand image exists and meets expected dimensions.
- */
-function checkBrandImage(
-  name: string,
-  relativePath: string,
-  resolveAssetPath: (relative: string) => string | null,
-  constraints: AppAssetDimensionConstraints
-): BrandAssetCheck {
-  const absPath = resolveAssetPath(relativePath)
-  const result: BrandAssetCheck = { name, path: relativePath, ok: false }
-
-  if (!absPath || !existsSync(absPath)) {
-    result.reason = `Missing file: /public/${relativePath}`
-    return result
-  }
-
-  result.source = relative(process.cwd(), absPath) || absPath
-
-  const stat = statSync(absPath)
-  if (!stat.isFile()) {
-    result.reason = `Invalid asset path: /public/${relativePath} is not a file`
-    return result
-  }
-
-  if (stat.size <= 0) {
-    result.reason = `Empty file: /public/${relativePath}`
-    return result
-  }
-
-  let dim: ISizeCalculationResult
-  try {
-    const buf = readFileSync(absPath)
-    dim = imageSize(buf)
-  } catch (error) {
-    const message =
-      error instanceof Error && error.message.trim()
-        ? error.message.trim()
-        : 'Unable to read image metadata'
-    result.reason = `Invalid image file: ${message}`
-    return result
-  }
-
-  result.width = dim.width
-  result.height = dim.height
-
-  const validationError = validateBrandDimensions(name, dim, constraints)
-
-  if (validationError) {
-    result.reason = validationError
-  } else {
-    result.ok = true
-  }
-
-  return result
-}
-
-function appAssetCheckName(relativePath: string): string {
-  return relativePath
-    .replace(/^img\/app\//, '')
-    .replace(/\.(?:ico|png)$/i, '')
-    .replace(/\//g, '-')
-}
-
-function createCurrentAppAssetResolver() {
-  const appPublicPath = join(process.cwd(), 'public')
-  return (relativePath: string) => {
-    const fullPath = join(appPublicPath, relativePath)
-    return existsSync(fullPath) ? fullPath : null
-  }
-}
 
 /**
  * NOTE:
@@ -379,27 +258,7 @@ export default defineEventHandler(async (event: H3Event): Promise<EnvCheckRespon
     .map((entry) => entry.key)
   const presentOptionalClient = optionalClient.filter((entry) => entry.present)
 
-  // Brand asset checks
-  const resolveBrandAsset = createCurrentAppAssetResolver()
-  const brandRequirements: Array<{
-    name: string
-    path: string
-    dimensions: AppAssetDimensionConstraints
-  }> = APP_PUBLIC_ASSET_REQUIREMENTS.map((asset) => ({
-    name: appAssetCheckName(asset.localRelativePath),
-    path: asset.localRelativePath,
-    dimensions: asset.dimensions,
-  }))
-
-  // Check brand assets at the app-level paths only (public/img/app/*) to match figma-export guidance.
-  const brandAssets: BrandAssetCheck[] = brandRequirements.map((asset) =>
-    checkBrandImage(
-      asset.name,
-      asset.path,
-      resolveBrandAsset,
-      asset.dimensions
-    )
-  )
+  const brandAssets = checkCurrentAppBrandAssets()
 
   const passedBrandCount = brandAssets.filter((b) => b.ok).length
 

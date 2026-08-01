@@ -17,20 +17,16 @@ import type {
   AuthorJobListResponse,
   AuthorJobResponse,
   CreateAuthorJobResponse,
-  JobPatchIntent,
-  PatchAuthorJobResponse,
   PublishAuthorJobResponse,
 } from '../../models/job-author.model.ts'
 import { JobStorage, type Job } from '../../models/job.model.ts'
 import { AgentStorage, AppAgentStorage } from '../../models/profiles/Agent/Agent.model.ts'
 import { readJobServerScope } from './runtime.ts'
+import { canonicalJobRoot } from './validation.ts'
 import {
-  canonicalJobRoot,
-  JOB_PATCH_FIELDS,
   jobCreateFields,
   jobReferences,
   normalizeJobCreateIntent,
-  normalizeJobPatchIntent,
 } from './validation.ts'
 
 const AUTHOR_JOB_LIMIT = 100
@@ -61,7 +57,7 @@ function canonicalJob(snapshot: DocumentSnapshot): Job {
   }
 }
 
-function assertAuthorJob(
+export function assertAuthorJob(
   snapshot: DocumentSnapshot,
   uid: string,
   appId: string
@@ -79,12 +75,14 @@ function assertAuthorJob(
 }
 
 function stampMillis(value: unknown): number {
-  const at = record(value).at as { toMillis?: () => number; seconds?: number } | undefined
+  const at = record(value).at as
+    | { toMillis?: () => number; seconds?: number }
+    | undefined
   if (at && typeof at.toMillis === 'function') return at.toMillis()
   return typeof at?.seconds === 'number' ? at.seconds * 1_000 : 0
 }
 
-function referenceDocuments(
+export function referenceDocuments(
   db: FirebaseFirestore.Firestore,
   job: ReturnType<typeof normalizeJobCreateIntent>
 ) {
@@ -94,7 +92,7 @@ function referenceDocuments(
   }))
 }
 
-function assertCanonicalReferences(
+export function assertCanonicalReferences(
   job: ReturnType<typeof normalizeJobCreateIntent>,
   references: ReturnType<typeof referenceDocuments>,
   snapshots: DocumentSnapshot[]
@@ -142,7 +140,7 @@ function hasProfile(snapshot: DocumentSnapshot, profileId: string): boolean {
   return Array.isArray(profiles) && profiles.map(text).includes(profileId)
 }
 
-function membershipRef(
+export function membershipRef(
   db: FirebaseFirestore.Firestore,
   appId: string,
   uid: string
@@ -150,11 +148,11 @@ function membershipRef(
   return db.doc(`apps/${appId}/users/${uid}`)
 }
 
-function appRef(db: FirebaseFirestore.Firestore, appId: string) {
+export function appRef(db: FirebaseFirestore.Firestore, appId: string) {
   return db.doc(`apps/${appId}`)
 }
 
-function appAgentRef(
+export function appAgentRef(
   db: FirebaseFirestore.Firestore,
   appId: string,
   uid: string
@@ -171,7 +169,7 @@ function assertCurrentMembership(snapshot: DocumentSnapshot): void {
   }
 }
 
-function assertCurrentAppMembership(
+export function assertCurrentAppMembership(
   appSnapshot: DocumentSnapshot,
   membershipSnapshot: DocumentSnapshot
 ): void {
@@ -184,7 +182,7 @@ function assertCurrentAppMembership(
   assertCurrentMembership(membershipSnapshot)
 }
 
-function assertActiveAgent(
+export function assertActiveAgent(
   membershipSnapshot: DocumentSnapshot,
   appAgentSnapshot: DocumentSnapshot
 ): void {
@@ -199,7 +197,7 @@ function assertActiveAgent(
   }
 }
 
-async function requireAgentRoot(
+export async function requireAgentRoot(
   databaseId: string,
   uid: string
 ): Promise<void> {
@@ -215,7 +213,7 @@ async function requireAgentRoot(
   }
 }
 
-function assertAgentEnabled(profiles: ReadonlySet<string>): void {
+export function assertAgentEnabled(profiles: ReadonlySet<string>): void {
   if (!profiles.has('agent')) {
     throw createError({
       statusCode: 403,
@@ -224,7 +222,9 @@ function assertAgentEnabled(profiles: ReadonlySet<string>): void {
   }
 }
 
-export async function listAuthorJobs(event: H3Event): Promise<AuthorJobListResponse> {
+export async function listAuthorJobs(
+  event: H3Event
+): Promise<AuthorJobListResponse> {
   markPrivateRead(event)
   const { uid } = await requireFirebaseBearerUser(event)
   const scope = readJobServerScope(event)
@@ -243,12 +243,14 @@ export async function listAuthorJobs(event: H3Event): Promise<AuthorJobListRespo
   const matching = snapshot.docs
     .slice(0, AUTHOR_JOB_LIMIT)
     .sort((left, right) => {
-      const difference = stampMillis(right.data().updated) - stampMillis(left.data().updated)
+      const difference =
+        stampMillis(right.data().updated) - stampMillis(left.data().updated)
       return difference || left.id.localeCompare(right.id)
     })
-
   return {
-    items: matching.map(document => assertAuthorJob(document, uid, scope.appId)),
+    items: matching.map((document) =>
+      assertAuthorJob(document, uid, scope.appId)
+    ),
     limit: AUTHOR_JOB_LIMIT,
     truncated: snapshot.size > AUTHOR_JOB_LIMIT,
   }
@@ -268,12 +270,8 @@ export async function getAuthorJob(
     membershipRef(db, scope.appId, uid)
   )
   assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-  const snapshot = await db
-    .collection(JobStorage.collection)
-    .doc(id)
-    .get()
-  const data = assertAuthorJob(snapshot, uid, scope.appId)
-  return { job: data }
+  const snapshot = await db.collection(JobStorage.collection).doc(id).get()
+  return { job: assertAuthorJob(snapshot, uid, scope.appId) }
 }
 
 export async function createAuthorJob(
@@ -326,67 +324,6 @@ export async function createAuthorJob(
     created: true,
     job: savedData,
   }
-}
-
-export async function patchAuthorJob(
-  event: H3Event,
-  rawId: unknown,
-  input: unknown
-): Promise<PatchAuthorJobResponse> {
-  const { uid } = await requireFirebaseBearerUser(event)
-  const scope = readJobServerScope(event)
-  assertAgentEnabled(scope.profiles)
-  await requireAgentRoot(scope.identityDatabaseId, uid)
-  const id = requireFirestoreDocumentId(rawId, 'Job id')
-  const requestedPatch = normalizeJobPatchIntent(input, scope)
-  const db = getRuntimeFirestore(scope.databaseId)
-  const jobRef = db.collection(JobStorage.collection).doc(id)
-  const currentAppRef = appRef(db, scope.appId)
-  const currentMembershipRef = membershipRef(db, scope.appId, uid)
-  const currentAppAgentRef = appAgentRef(db, scope.appId, uid)
-
-  await db.runTransaction(async transaction => {
-    const snapshot = await transaction.get(jobRef)
-    const current = assertAuthorJob(snapshot, uid, scope.appId)
-    const proposed = normalizeJobCreateIntent(
-      {
-        ...jobCreateFields(current as unknown as Record<string, unknown>),
-        ...requestedPatch,
-      },
-      scope
-    )
-    const references = referenceDocuments(db, proposed)
-    const [appSnapshot, membershipSnapshot, appAgentSnapshot, ...referenceSnapshots] =
-      await transaction.getAll(
-        currentAppRef,
-        currentMembershipRef,
-        currentAppAgentRef,
-        ...references.map(reference => reference.ref)
-      )
-    assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-    assertActiveAgent(
-      membershipSnapshot,
-      appAgentSnapshot
-    )
-    assertCanonicalReferences(proposed, references, referenceSnapshots)
-
-    const patch = Object.fromEntries(
-      JOB_PATCH_FIELDS
-        .filter(key => Object.prototype.hasOwnProperty.call(requestedPatch, key))
-        .map(key => [
-          key,
-          key === 'status' ? requestedPatch.status : proposed[key],
-        ])
-    ) as JobPatchIntent
-    transaction.update(jobRef, {
-      ...patch,
-      updated: serverAuditStamp({ by: uid }),
-    })
-  })
-
-  const saved = await jobRef.get()
-  const savedData = assertAuthorJob(saved, uid, scope.appId)
-  return { id, updated: true, job: savedData }
 }
 
 export async function publishAuthorJob(

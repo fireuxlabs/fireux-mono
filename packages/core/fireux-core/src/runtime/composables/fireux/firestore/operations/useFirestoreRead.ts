@@ -17,7 +17,6 @@ import {
   computed,
   ref,
   unref,
-  watch,
   type ComputedRef,
   type Ref,
 } from 'vue'
@@ -28,12 +27,15 @@ import {
   useFirestoreResolver,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import {
+  createFirestoreExactDocLoader,
+  type FirestoreLoadDocsByIdsOptions,
+} from './firestore-exact-doc-loader'
+import { guardFirestorePromise } from './firestore-read-errors'
 
 type UseFirestoreReadOptions = {
   databaseId?: string | Ref<string | null | undefined> | null | undefined
 }
-
-type MaybeRef<T> = T | Ref<T>
 
 export type FirestoreDocSource =
   | string
@@ -60,55 +62,6 @@ export type FirestoreReadRef<T> = Ref<T | undefined> & {
   readonly promise: Ref<Promise<unknown> | undefined>
   readonly outcome: ComputedRef<FirestoreReadOutcome>
   readonly stop: (reset?: boolean | (() => unknown)) => void
-}
-
-type FirestoreLoadDocsByIdsOptions = {
-  collectionPath: string | Ref<string | null | undefined>
-  ids: MaybeRef<(string | number | null | undefined)[] | null | undefined>
-}
-
-function isOfflineFirestoreError(error: unknown): boolean {
-  const code = typeof (error as any)?.code === 'string' ? (error as any).code : ''
-  const message = String((error as any)?.message ?? '').toLowerCase()
-  return code === 'unavailable' || message.includes('client is offline')
-}
-
-function guardFirestorePromise(
-  binding: {
-    error?: Ref<unknown | undefined>
-    promise?: Ref<Promise<unknown> | undefined>
-  },
-  context: MaybeRef<string>
-) {
-  const resolvedContext = () => String(unref(context) || 'read')
-  const handled = new WeakSet<Promise<unknown>>()
-  const guard = (promise: Promise<unknown> | undefined) => {
-    if (!promise || typeof promise.catch !== 'function') return
-    if (handled.has(promise)) return
-    handled.add(promise)
-    if (binding.error) binding.error.value = undefined
-    const promiseContext = resolvedContext()
-
-    promise.catch((error) => {
-      if (import.meta.dev) {
-        if (isOfflineFirestoreError(error)) {
-          console.warn(
-            `[useFirestoreRead] read unavailable while offline (${promiseContext})`,
-            error
-          )
-          return
-        }
-        console.error(
-          `[useFirestoreRead] read failed (${promiseContext})`,
-          error
-        )
-      }
-    })
-  }
-
-  if (!binding.promise) return
-
-  watch(binding.promise, guard, { immediate: true, flush: 'sync' })
 }
 
 function enhanceFirestoreRead<T>(
@@ -310,132 +263,15 @@ export function useFirestoreRead(options: UseFirestoreReadOptions = {}) {
     return attachDevCollectionMeta(value, collectionPath, docSnap.id) as T
   }
 
-  /**
-   * Load exact documents by id without reading the whole collection.
-   * Reloads when collectionPath/ids change, but does not live-listen to doc updates.
-   */
-  const firestoreLoadDocsByIds = <T>({
-    collectionPath,
-    ids,
-  }: FirestoreLoadDocsByIdsOptions): {
-    docs: Ref<T[] | undefined>
-    pending: Ref<boolean>
-    error: Ref<unknown | undefined>
-    outcome: ComputedRef<FirestoreReadOutcome>
-  } => {
-    const docs = ref<T[] | undefined>(undefined) as Ref<T[] | undefined>
-    const pending = ref(false)
-    const error = ref<unknown>()
-    let requestId = 0
-
-    const normalizedCollectionPath = computed(() =>
-      String(unref(collectionPath) || '').trim()
-    )
-    const normalizedDatabaseId = computed(() =>
-      String(unref(options.databaseId) || '').trim()
-    )
-    const normalizedIds = computed(() => {
-      const values = unref(ids) ?? []
-      return Array.from(
-        new Set(
-          values
-            .map((value) => String(value ?? '').trim())
-            .filter(Boolean)
-        )
-      )
+  /** Load exact documents by id without listing the whole collection. */
+  const firestoreLoadDocsByIds = <T>(
+    loadOptions: FirestoreLoadDocsByIdsOptions
+  ) =>
+    createFirestoreExactDocLoader<T>({
+      resolveDb,
+      databaseId: options.databaseId,
+      options: loadOptions,
     })
-    const active = computed(() =>
-      Boolean(normalizedCollectionPath.value && normalizedIds.value.length)
-    )
-    const outcome = computed<FirestoreReadOutcome>(() => {
-      if (!active.value) return 'idle'
-      if (pending.value) return 'pending'
-      if (error.value) return 'error'
-      return docs.value?.length ? 'ready' : 'empty'
-    })
-
-    watch(
-      () => ({
-        collectionPath: normalizedCollectionPath.value,
-        databaseId: normalizedDatabaseId.value,
-        ids: normalizedIds.value,
-      }),
-      async ({ collectionPath, ids }: {
-        collectionPath: string
-        databaseId: string
-        ids: string[]
-      }) => {
-        const currentRequestId = ++requestId
-
-        if (!collectionPath || !ids.length) {
-          docs.value = []
-          pending.value = false
-          error.value = undefined
-          return
-        }
-
-        if (import.meta.server) {
-          docs.value = undefined
-          pending.value = true
-          error.value = undefined
-          return
-        }
-
-        docs.value = undefined
-        pending.value = true
-        error.value = undefined
-
-        try {
-          const snapshots = await Promise.all(
-            ids.map((id: string) => getDoc(doc(resolveDb(), collectionPath, id)))
-          )
-
-          if (currentRequestId !== requestId) return
-
-          docs.value = snapshots.reduce<T[]>((acc, docSnap) => {
-            const raw = docSnap.data()
-            if (!raw) return acc
-
-            const value = {
-              ...(raw as Record<string, unknown>),
-              id: docSnap.id,
-            } as unknown as T & Record<string, unknown>
-
-            acc.push(attachDevCollectionMeta(value, collectionPath, docSnap.id) as T)
-            return acc
-          }, [])
-        } catch (failure) {
-          if (import.meta.dev) {
-            if (isOfflineFirestoreError(failure)) {
-              console.warn(
-                `[useFirestoreRead] exact-doc read unavailable while offline (${collectionPath})`,
-                failure
-              )
-            } else {
-              console.error(
-                `[useFirestoreRead] exact-doc read failed (${collectionPath})`,
-                failure
-              )
-            }
-          }
-          if (currentRequestId === requestId) {
-            docs.value = undefined
-            error.value = failure
-          }
-        } finally {
-          if (currentRequestId === requestId) pending.value = false
-        }
-      },
-      { immediate: true, deep: true }
-    )
-
-    return {
-      docs,
-      pending,
-      error,
-      outcome,
-    }
-  }
 
   /**
    * Convenience prefix search for “starts with” text fields.

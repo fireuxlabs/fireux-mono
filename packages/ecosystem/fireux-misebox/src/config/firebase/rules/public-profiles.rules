@@ -1,0 +1,332 @@
+// @fireux-ecosystem-rules-fragment misebox/public-profiles
+    // ===============================================================
+    // Public Driver capability
+    // ===============================================================
+    function isValidPublicDriver(data) {
+      return data.keys().hasAll([
+          'title',
+          'subtitle',
+          'tagline',
+          'tags',
+          'coverage',
+          'created',
+          'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'title',
+          'subtitle',
+          'tagline',
+          'tags',
+          'coverage',
+          'created',
+          'updated'
+        ]) &&
+        data.title is string && data.title.size() <= 120 &&
+        data.subtitle is string && data.subtitle.size() <= 240 &&
+        data.tagline is string && data.tagline.size() <= 240 &&
+        data.tags is list &&
+        data.tags.size() <= 20 &&
+        data.tags.hasOnly([
+          'available',
+          'courier',
+          'delivery',
+          'driver',
+          'exclusive',
+          'preferred'
+        ]) &&
+        data.coverage is map &&
+        data.coverage.keys().hasAll(['radius_m']) &&
+        data.coverage.keys().hasOnly(['radius_m']) &&
+        data.coverage.radius_m is int &&
+        data.coverage.radius_m >= 0 &&
+        data.coverage.radius_m <= 200000 &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    match /drivers/{userId} {
+      allow get: if isOwner(userId) ||
+        (isValidPublicDriver(resource.data) &&
+          hasValidCanonicalUserProfile(userId, 'driver'));
+      // Public Driver listing is projected by /api/public/drivers.
+      allow list: if false;
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
+      allow update: if isOwner(userId) &&
+        isValidPublicDriver(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'title',
+          'subtitle',
+          'tagline',
+          'tags',
+          'coverage',
+          'updated'
+        ]) &&
+        request.resource.data.updated.at == request.time &&
+        request.resource.data.updated.by == userId;
+      allow delete: if false;
+    }
+
+    // Root Customer records and their order-link children are server-only.
+    match /customers/{document=**} {
+      allow get, list, create, update, delete: if false;
+    }
+
+    // ===============================================================
+    // Other public identity profiles
+    // ===============================================================
+    function validPublicProfileStamp(data) {
+      return validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    function validProfileOwnerWrite(data, userId) {
+      // The family validator already validates the full stamp shape. Keep this
+      // helper to the request-time owner transition so the schema is not
+      // evaluated repeatedly in the same Rules request.
+      return data.updated.at == request.time &&
+        data.updated.by == userId;
+    }
+
+    function isValidChef(data) {
+      return data.keys().size() == 10 &&
+        data.keys().hasAll([
+          'title',
+          'summary',
+          'chef_bio',
+          'chef_image',
+          'chef_signature_dishes',
+          'chef_gallery',
+          'kitchen_ids',
+          'chef_organization_name',
+          'created',
+          'updated'
+        ]) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.chef_bio, 4000) &&
+        isValidHttpsUrl(data.chef_image, 2048) &&
+        isValidBoundedString(data.chef_organization_name, 160) &&
+        isValidIdentityProfileStringList(data.chef_signature_dishes, 240) &&
+        isValidChefGallery(data.chef_gallery) &&
+        isValidIdentityProfileStringList(data.kitchen_ids, 1500) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    function isValidAgent(data) {
+      return data.keys().size() == 14 &&
+        data.keys().hasAll([
+          'title',
+          'summary',
+          'agent_bio',
+          'agent_image',
+          'agent_placement_types',
+          'agent_coverage_areas',
+          'agent_contact_email',
+          'agent_contact_phone',
+          'agent_website_url',
+          'subtitle',
+          'tagline',
+          'tags',
+          'created',
+          'updated'
+        ]) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.agent_bio, 4000) &&
+        isValidHttpsUrl(data.agent_image, 2048) &&
+        isValidBoundedString(data.agent_contact_email, 320) &&
+        isValidBoundedString(data.agent_contact_phone, 40) &&
+        isValidHttpsUrl(data.agent_website_url, 2048) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidIdentityProfileStringList(data.agent_placement_types, 240) &&
+        isValidIdentityProfileStringList(data.agent_coverage_areas, 240) &&
+        isValidIdentityProfileStringList(data.tags, 240) &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }
+
+    function isValidProfessional(data) {
+      return data.keys().size() == 17 &&
+        data.keys().hasOnly([
+          'title',
+          'subtitle',
+          'tagline',
+          'summary',
+          'bio',
+          'image',
+          'positions',
+          'tags',
+          'relevant_experience',
+          'other_experience',
+          'languages',
+          'certifications',
+          'education',
+          'volunteering',
+          'projects',
+          'created',
+          'updated'
+        ]) &&
+        isValidBoundedString(data.title, 120) &&
+        isValidBoundedString(data.subtitle, 240) &&
+        isValidBoundedString(data.tagline, 240) &&
+        isValidBoundedString(data.summary, 1000) &&
+        isValidBoundedString(data.bio, 4000) &&
+        isValidHttpsUrl(data.image, 2048) &&
+        data.positions is list &&
+        data.positions.size() <= 20 &&
+        data.tags is list &&
+        data.tags.size() <= 20 &&
+        data.relevant_experience is list &&
+        data.relevant_experience.size() <= 12 &&
+        data.other_experience is list &&
+        data.other_experience.size() <= 12 &&
+        data.languages is list &&
+        data.languages.size() <= 12 &&
+        data.certifications is list &&
+        data.certifications.size() <= 8 &&
+        data.education is list &&
+        data.education.size() <= 8 &&
+        data.volunteering is list &&
+        data.volunteering.size() <= 8 &&
+        data.projects is list &&
+        data.projects.size() <= 8 &&
+        data.relevant_experience.size() +
+          data.other_experience.size() +
+          data.languages.size() +
+          data.certifications.size() +
+          data.education.size() +
+          data.volunteering.size() +
+          data.projects.size() <= 24 &&
+        validPublicProfileStamp(data);
+    }
+
+    function changesAtMostOneProfessionalStructuredFamily(changed) {
+      return (!changed.hasAny(['relevant_experience']) ||
+          !changed.hasAny([
+            'other_experience',
+            'languages',
+            'certifications',
+            'education',
+            'volunteering',
+            'projects'
+          ])) &&
+        (!changed.hasAny(['other_experience']) ||
+          !changed.hasAny([
+            'languages',
+            'certifications',
+            'education',
+            'volunteering',
+            'projects'
+          ])) &&
+        (!changed.hasAny(['languages']) ||
+          !changed.hasAny([
+            'certifications',
+            'education',
+            'volunteering',
+            'projects'
+          ])) &&
+        (!changed.hasAny(['certifications']) ||
+          !changed.hasAny(['education', 'volunteering', 'projects'])) &&
+        (!changed.hasAny(['education']) ||
+          !changed.hasAny(['volunteering', 'projects'])) &&
+        (!changed.hasAny(['volunteering']) ||
+          !changed.hasAny(['projects']));
+    }
+
+    function isValidChangedProfessionalLists(data, changed) {
+      return (!changed.hasAny(['positions']) ||
+          isValidProfessionalStringList(data.positions)) &&
+        (!changed.hasAny(['tags']) ||
+          isValidProfessionalStringList(data.tags)) &&
+        (!changed.hasAny(['relevant_experience']) ||
+          isValidProfessionalExperienceList(data.relevant_experience)) &&
+        (!changed.hasAny(['other_experience']) ||
+          isValidProfessionalExperienceList(data.other_experience)) &&
+        (!changed.hasAny(['languages']) ||
+          isValidProfessionalLanguageList(data.languages)) &&
+        (!changed.hasAny(['certifications']) ||
+          isValidProfessionalCertificationList(data.certifications)) &&
+        (!changed.hasAny(['education']) ||
+          isValidProfessionalEducationList(data.education)) &&
+        (!changed.hasAny(['volunteering']) ||
+          isValidProfessionalVolunteeringList(data.volunteering)) &&
+        (!changed.hasAny(['projects']) ||
+          isValidProfessionalProjectList(data.projects));
+    }
+
+    function isValidProfessionalOwnerUpdate(data, userId) {
+      let changed = data.diff(resource.data).affectedKeys();
+      return isValidProfessional(data) &&
+        data.created == resource.data.created &&
+        changed.hasOnly([
+          'title',
+          'subtitle',
+          'tagline',
+          'summary',
+          'bio',
+          'image',
+          'positions',
+          'tags',
+          'relevant_experience',
+          'other_experience',
+          'languages',
+          'certifications',
+          'education',
+          'volunteering',
+          'projects',
+          'updated'
+        ]) &&
+        changesAtMostOneProfessionalStructuredFamily(changed) &&
+        isValidChangedProfessionalLists(data, changed) &&
+        validProfileOwnerWrite(data, userId);
+    }
+
+    match /chefs/{userId} {
+      // Public Chef list/detail reads use /api/public/chefs projections.
+      allow get: if isOwner(userId);
+      allow list: if false;
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
+      allow update: if isOwner(userId) &&
+        isValidChef(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        validProfileOwnerWrite(request.resource.data, userId);
+      allow delete: if false;
+    }
+
+    match /agents/{userId} {
+      // Public Agent list/detail reads use /api/public/agents projections.
+      allow get: if isOwner(userId);
+      allow list: if false;
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
+      allow update: if isOwner(userId) &&
+        isValidAgent(request.resource.data) &&
+        request.resource.data.created == resource.data.created &&
+        validProfileOwnerWrite(request.resource.data, userId);
+      allow delete: if false;
+    }
+
+    match /professionals/{userId} {
+      // Public Professional list/detail reads use API projections.
+      allow get: if isOwner(userId);
+      allow list: if false;
+      // Trusted profile provisioning creates the root and updates
+      // User.profiles in one server transaction.
+      allow create: if false;
+      allow update: if isOwner(userId) &&
+        isValidProfessionalOwnerUpdate(request.resource.data, userId);
+      allow delete: if false;
+    }
+
+    // ===============================================================
+    // All remaining collections are denied by default. Public domain reads
+    // must use a domain-specific projection or an explicit validated rule.
+// @fireux-core-rules close

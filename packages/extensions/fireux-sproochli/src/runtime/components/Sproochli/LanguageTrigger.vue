@@ -1,6 +1,9 @@
 <template>
   <UPopover
-    v-if="visibleLanguageOptions.length > 1 || (props.showWhenSingleOption && onlyOriginalOption)"
+    v-if="
+      visibleLanguageOptions.length > 1 ||
+      (props.showWhenSingleOption && onlyOriginalOption)
+    "
     v-model:open="open"
     :content="popoverContent"
   >
@@ -41,23 +44,17 @@
             @click="open = false"
           >
             <SproochliWordmark class="sproochli-language-brand__wordmark" />
-            <span
-              class="sproochli-language-brand__segue"
-              aria-hidden="true"
-            >
+            <span class="sproochli-language-brand__segue" aria-hidden="true">
               <UIcon name="i-lucide-arrow-up-right" />
             </span>
           </a>
         </template>
 
-        <div class="max-h-[min(32rem,calc(100dvh-8rem))] space-y-2 overflow-y-auto pr-1">
-          <template
-            v-for="group in languageGroups"
-            :key="group.key"
-          >
-            <USeparator
-              v-if="group.showSeparator"
-            />
+        <div
+          class="max-h-[min(32rem,calc(100dvh-8rem))] space-y-2 overflow-y-auto pr-1"
+        >
+          <template v-for="group in languageGroups" :key="group.key">
+            <USeparator v-if="group.showSeparator" />
 
             <div
               v-if="
@@ -78,9 +75,13 @@
                 v-for="option in group.options"
                 :key="`${group.key}:${option.code || 'original'}`"
                 type="button"
-                :aria-current="languageOptionActive(option.code) ? 'page' : undefined"
+                :aria-current="
+                  languageOptionActive(option.code) ? 'page' : undefined
+                "
                 block
-                :color="languageOptionActive(option.code) ? 'primary' : 'neutral'"
+                :color="
+                  languageOptionActive(option.code) ? 'primary' : 'neutral'
+                "
                 :variant="languageOptionActive(option.code) ? 'soft' : 'ghost'"
                 class="sproochli-language-option min-h-11 justify-start"
                 @click="selectLanguage(option.code)"
@@ -125,9 +126,7 @@ import {
   type SproochliLanguageCode,
   type SproochliLanguageOption,
 } from '../../composables/fireux/sproochli/publicLanguage'
-import {
-  sproochliProviderBaseUrl,
-} from '../../composables/fireux/sproochli/provider'
+import { sproochliProviderBaseUrl } from '../../composables/fireux/sproochli/provider'
 
 type LanguageGroupKey = 'original' | 'available' | 'cached' | 'onDemand'
 
@@ -169,13 +168,14 @@ const triggerCopy = computed<SproochliLanguageTriggerCopy>(() => ({
   visitSproochli: 'Visit Sproochli',
   ...props.copy,
 }))
-const sproochliSiteHref = computed(
-  () => String(props.brandHref || sproochliProviderBaseUrl()).trim()
+const sproochliSiteHref = computed(() =>
+  String(props.brandHref || sproochliProviderBaseUrl()).trim()
 )
 const visibleLanguageOptions = computed(() => props.languageOptions ?? [])
-const onlyOriginalOption = computed(() =>
-  visibleLanguageOptions.value.length === 1 &&
-  !visibleLanguageOptions.value[0]?.code
+const onlyOriginalOption = computed(
+  () =>
+    visibleLanguageOptions.value.length === 1 &&
+    !visibleLanguageOptions.value[0]?.code
 )
 const showGroupLabels = computed(() => props.showGroupLabels === true)
 const popoverContent = {
@@ -187,19 +187,19 @@ const popoverContent = {
 
 const languageGroups = computed<LanguageGroup[]>(() => {
   const original = visibleLanguageOptions.value.filter(
-    option => option.source === 'original'
+    (option) => option.source === 'original'
   )
   const available = visibleLanguageOptions.value.filter(
-    option =>
+    (option) =>
       !option.source ||
       option.source === 'attached' ||
       option.source === 'public'
   )
   const cached = visibleLanguageOptions.value.filter(
-    option => option.source === 'cache'
+    (option) => option.source === 'cache'
   )
   const onDemand = visibleLanguageOptions.value.filter(
-    option => option.source === 'on_demand'
+    (option) => option.source === 'on_demand'
   )
 
   return [
@@ -228,14 +228,11 @@ const languageGroups = computed<LanguageGroup[]>(() => {
       ? {
           key: 'onDemand' as const,
           showSeparator:
-            original.length > 0 ||
-            available.length > 0 ||
-            cached.length > 0,
+            original.length > 0 || available.length > 0 || cached.length > 0,
           options: onDemand,
         }
       : null,
-  ]
-    .filter((group): group is LanguageGroup => Boolean(group))
+  ].filter((group): group is LanguageGroup => Boolean(group))
 })
 
 const selectedOption = computed(
@@ -252,21 +249,23 @@ const selectedOption = computed(
 const normalizedDefaultLanguage = computed(() =>
   normalizeSproochliLanguage(props.defaultLanguage)
 )
-const pageHasMixedSource = computed(() =>
-  String(props.defaultLanguage ?? '').trim().toLowerCase() === 'mixed'
+const pageHasMixedSource = computed(
+  () =>
+    String(props.defaultLanguage ?? '')
+      .trim()
+      .toLowerCase() === 'mixed'
 )
 const defaultOption = computed(() =>
   visibleLanguageOptions.value.find(
     (option) => option.code === normalizedDefaultLanguage.value
   )
 )
-const triggerUsesDefaultMark = computed(() =>
-  !props.selectedLanguage &&
-  (
-    pageHasMixedSource.value ||
-    !normalizedDefaultLanguage.value ||
-    (props.showWhenSingleOption && onlyOriginalOption.value)
-  )
+const triggerUsesDefaultMark = computed(
+  () =>
+    !props.selectedLanguage &&
+    (pageHasMixedSource.value ||
+      !normalizedDefaultLanguage.value ||
+      (props.showWhenSingleOption && onlyOriginalOption.value))
 )
 const triggerSymbol = computed(() =>
   props.selectedLanguage
@@ -326,100 +325,7 @@ const selectLanguage = async (language: SproochliLanguageCode) => {
 const languageDirection = (language: SproochliLanguageCode) =>
   isSproochliRtlLanguage(language) ? 'rtl' : 'ltr'
 const optionName = (option: SproochliLanguageOption) =>
-  String(
-    option.name ||
-    option.code ||
-    triggerCopy.value.originalSelection
-  )
+  String(option.name || option.code || triggerCopy.value.originalSelection)
 </script>
 
-<style scoped>
-.sproochli-language-trigger--default,
-.sproochli-language-trigger--emoji {
-  display: inline-flex;
-  width: 2.75rem;
-  height: 2.75rem;
-  appearance: none;
-  align-items: center;
-  justify-content: center;
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  backdrop-filter: none !important;
-  color: inherit;
-  cursor: pointer;
-}
-
-.sproochli-language-trigger--default:hover,
-.sproochli-language-trigger--emoji:hover {
-  border-color: transparent !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-.sproochli-language-trigger:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 3px;
-}
-
-.sproochli-language-card {
-  width: min(20rem, calc(100vw - 1rem));
-}
-
-.sproochli-language-brand {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: calc(var(--spacing) * 4);
-  margin: calc(var(--spacing) * -1);
-  padding: var(--spacing);
-  border-radius: calc(var(--ui-radius) * 3);
-  color: var(--ui-text-highlighted);
-  text-decoration: none;
-  transition:
-    color 160ms ease,
-    transform 160ms ease;
-}
-
-.sproochli-language-brand:hover {
-  color: var(--ui-primary);
-}
-
-.sproochli-language-brand:focus-visible {
-  outline: 2px solid var(--ui-primary);
-  outline-offset: 3px;
-}
-
-.sproochli-language-brand__wordmark {
-  width: 9rem;
-  height: auto;
-}
-
-.sproochli-language-brand__segue {
-  display: inline-flex;
-  width: 2rem;
-  height: 2rem;
-  flex: 0 0 auto;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
-  border-radius: 9999px;
-  background: color-mix(in srgb, currentColor 6%, transparent);
-  transition:
-    background 160ms ease,
-    transform 160ms ease;
-}
-
-.sproochli-language-brand:hover .sproochli-language-brand__segue {
-  background: color-mix(in srgb, currentColor 12%, transparent);
-  transform: translate(0.1rem, -0.1rem);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .sproochli-language-brand,
-  .sproochli-language-brand__segue {
-    transition: none;
-  }
-}
-</style>
+<style scoped src="./language-trigger.css"></style>

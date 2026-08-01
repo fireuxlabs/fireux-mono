@@ -16,6 +16,8 @@ import path from 'node:path'
 
 const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
+const readFamily = (repoRoot, relativePaths) =>
+  relativePaths.map((relativePath) => read(repoRoot, relativePath)).join('\n')
 
 const constBlock = (source, name) => {
   const marker = `export const ${name} = {`
@@ -383,11 +385,29 @@ const files = {
     'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules',
 }
 
+const sourceFamilies = {
+  propertyCollection: [
+    files.propertyCollection,
+    'packages/extensions/fireux-properties/src/runtime/composables/fireux/firestore/property/fetch/property-collection-contract.ts',
+  ],
+  kitchenDemoTargets: [
+    'packages/extensions/fireux-kitchens/src/runtime/demo/kitchen/core/target-builders.ts',
+    files.kitchenDemoTargets,
+  ],
+  miseboxRules: [
+    files.miseboxRules,
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules',
+  ],
+}
+
 export async function run({ repoRoot = process.cwd() } = {}) {
   const source = Object.fromEntries(
     Object.entries(files)
       .filter(([key]) => !key.startsWith('retired'))
-      .map(([key, relativePath]) => [key, read(repoRoot, relativePath)])
+      .map(([key, relativePath]) => [
+        key,
+        readFamily(repoRoot, sourceFamilies[key] ?? [relativePath]),
+      ])
   )
 
   for (const [name, modelSource, modelName] of [

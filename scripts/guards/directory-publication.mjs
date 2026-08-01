@@ -37,6 +37,8 @@ const read = (repoRoot, relativePath) =>
 
 const VALIDATE_PATH =
   'packages/core/fireux-core/src/runtime/server/utils/directory-publication/validate.ts'
+const VALIDATION_PRIMITIVES_PATH =
+  'packages/core/fireux-core/src/runtime/server/utils/directory-publication/validation-primitives.ts'
 const MODEL_PATH =
   'packages/core/fireux-core/src/runtime/models/core/supporting/directory-publication.ts'
 const REDUCE_PATH =
@@ -103,6 +105,7 @@ function namedFilesBelow(rootPath, names) {
 export async function run({ repoRoot = process.cwd() } = {}) {
   const modelSource = read(repoRoot, MODEL_PATH)
   const validatorSource = read(repoRoot, VALIDATE_PATH)
+  const validationPrimitivesSource = read(repoRoot, VALIDATION_PRIMITIVES_PATH)
   const reducerSource = read(repoRoot, REDUCE_PATH)
   const firestoreSource = read(repoRoot, FIRESTORE_PATH)
   const oidcSource = [
@@ -165,7 +168,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     remediationExecutorScriptSource,
     remediationExecutorLibSource,
   })
-  assertTransactionBoundary({ validatorSource, reducerSource, firestoreSource })
+  assertTransactionBoundary({
+    validationPrimitivesSource,
+    reducerSource,
+    firestoreSource,
+  })
 
   const requireFromCore = createRequire(
     path.join(repoRoot, 'packages/core/fireux-core/package.json')
@@ -807,12 +814,12 @@ function assertRemediationExecutorIsFailClosed({
 }
 
 function assertTransactionBoundary({
-  validatorSource,
+  validationPrimitivesSource,
   reducerSource,
   firestoreSource,
 }) {
   assert.match(
-    validatorSource,
+    validationPrimitivesSource,
     /MAX_FUTURE_SKEW_MS\s*=\s*5\s*\*\s*60\s*\*\s*1000/
   )
   assert.match(reducerSource, /compareDirectoryPublicationOrderV1/)

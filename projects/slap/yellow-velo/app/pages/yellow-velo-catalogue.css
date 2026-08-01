@@ -1,0 +1,213 @@
+.yv-featured {
+  padding: 0 clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 18)) clamp(calc(var(--spacing) * 24), 10vw, calc(var(--spacing) * 40));
+}
+
+.yv-featured > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 8);
+  margin-bottom: calc(var(--spacing) * 12);
+}
+
+.yv-featured header h2 {
+  margin-top: calc(var(--spacing) * 4);
+  font-size: clamp(2.8rem, 5vw, 5.8rem);
+}
+
+.yv-featured__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: calc(var(--spacing) * 4);
+}
+
+.yv-feature {
+  color: inherit;
+  text-decoration: none;
+}
+
+.yv-feature__image {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #d8d4c8;
+}
+
+.yv-feature--hero .yv-feature__image {
+  aspect-ratio: 6 / 5;
+}
+
+.yv-feature__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+
+.yv-feature:hover img {
+  transform: scale(1.035);
+}
+
+.yv-feature__image > span {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  background: var(--yellow);
+  font-size: .65rem;
+  font-weight: var(--font-weight-black);
+}
+
+.yv-feature__meta {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 5) calc(var(--spacing) * 0.4) 0;
+}
+
+.yv-feature__meta p {
+  margin: 0 0 calc(var(--spacing) * 1.8);
+  font-size: .62rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.yv-feature__meta h3 {
+  max-width: 31rem;
+  margin: 0;
+  font-size: clamp(var(--text-base), 1.7vw, var(--text-2xl));
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.yv-feature__meta strong {
+  flex: none;
+  font-size: .8rem;
+}
+
+.yv-featured__loading {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: calc(var(--spacing) * 4);
+}
+
+.yv-featured__loading div {
+  min-height: 32rem;
+  background: linear-gradient(110deg, #dedbd1 35%, #ebe8de 50%, #dedbd1 65%);
+  background-size: 220% 100%;
+  animation: yv-shimmer 1.6s infinite linear;
+}
+
+.yv-categories {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
+}
+
+.yv-category {
+  display: flex;
+  min-height: 26rem;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: calc(var(--spacing) * 8);
+  border-right: 1px solid var(--ink);
+  background: #d8d4c8;
+  color: inherit;
+  text-decoration: none;
+  transition: background .25s ease, color .25s ease;
+}
+
+.yv-category:last-child {
+  border-right: 0;
+}
+
+.yv-category--bikes {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.yv-category--yellow {
+  background: var(--yellow);
+}
+
+.yv-category:hover {
+  background: #ffef12;
+  color: var(--ink);
+}
+
+.yv-category > span,
+.yv-category p {
+  margin: 0;
+  font-size: .65rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.yv-category h2 {
+  margin: calc(var(--spacing) * 2.4) 0 0;
+  font-size: clamp(var(--text-5xl), 5.8vw, 6.5rem);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -.07em;
+  line-height: .86;
+  text-transform: uppercase;
+}
+
+.yv-category svg {
+  align-self: end;
+  width: 2rem;
+  height: 2rem;
+}
+
+.yv-manifesto {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 48rem;
+  background: var(--yellow);
+}
+
+.yv-manifesto > img {
+  width: 100%;
+  height: 100%;
+  min-height: 48rem;
+  object-fit: cover;
+  object-position: 78% center;
+  filter: grayscale(1) contrast(1.08);
+}
+
+.yv-manifesto > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(calc(var(--spacing) * 12), 8vw, calc(var(--spacing) * 32));
+}
+
+.yv-manifesto blockquote {
+  margin: calc(var(--spacing) * 12) 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 4.4vw, 5rem);
+  font-style: italic;
+  line-height: 1.05;
+}
+
+.yv-manifesto > div > p:not(.yv-section-number) {
+  max-width: 32rem;
+  margin: 0 0 calc(var(--spacing) * 10);
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.7;
+}
+
+.yv-manifesto .yv-cta {
+  width: fit-content;
+}
+
+@keyframes yv-shimmer {
+  to { background-position-x: -220%; }
+}

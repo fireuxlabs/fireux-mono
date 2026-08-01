@@ -259,21 +259,14 @@ Before each task:
   definition is “The Control Centre For Kitchen
   Operations”; the Kitchen Console is the concrete workspace that runs menus,
   preparation, service, supply, and finance. The Main App hero uses the shared
-  typed hero text once and fills its named proof slot with a read-only,
-  keyboard-focusable left-to-right scroll window and responsive bento grid of
-  PowerCards.
-  Misebox owns this simpler presentation; it has no orbit motion, geometry, or
-  page-scroll coupling. The window consumes the discriminated, network-free
-  data `demo` envelope from
-  `useMiseboxPowerCardsProductDemo`; it never falls through to the live public
-  directory or canonical Ingredient hydration. Declared immutable Demo image
-  GETs are presentation delivery, not data hydration. Kitchen, Menu, Dish,
-  Mise, Recipe, Supplier item, Kiosk item, and Supplier Cards derive from
-  package Demo records and pure projectors. Ingredient-dependent Cards remain
-  outside this Demo-only orbit because Ingredient identity is Live canon.
-  PowerCard components do not own local Deanos fixtures. The hero does not add
-  a second explanatory block or expose live state and controls. The existing
-  Core hero
+  typed hero text once and fills its named proof slot with a mobile-first
+  guest-Menu-to-Kitchen-Console handoff. Publish, Prepare, and Serve are
+  explicit user-selected chapters over the existing Product Demo projection;
+  no chapter autoplays or couples to page scrolling. The Menu and Console
+  children remain canonical read-only presentation, and changing chapters
+  performs no Demo, Live, Test, Firebase, Storage, or order mutation. Misebox
+  owns this composition and does not inherit Core orbit motion or geometry.
+  The existing Core hero
   action system keeps the Get started and Go to console buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
   adding a detached CTA section. The later landing sections retain the
@@ -399,8 +392,11 @@ Before each task:
   the same Firebase Auth, database, App membership, App Agent support, and
   `source_app_id` author boundary. Creating an independent Jobs App requires a
   separately verified membership, Rules, and existing-Job migration.
-- Misebox owns its complete main Firestore Rules template and target manifest
-  at `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`.
+- Misebox owns its complete main Firestore Rules manifest at
+  `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`
+  and its named policy fragments in the adjacent `rules/` directory. Core
+  composition expands those ecosystem-owned concerns before inserting and
+  validating shared security fragments.
   Shared byte-identical policy primitives come from FireUX Core; the tracked
   `scripts/firebase/misebox/firestore.rules` file is the verified complete
   release artifact, not a second policy source.

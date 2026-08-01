@@ -1,0 +1,211 @@
+// @fireux-ecosystem-rules-fragment misebox/kitchen-operations
+      match /kitchens/{kitchenId} {
+        function hasBoundedKitchenAuthority() {
+          return request.resource.data.operator_ids is list &&
+            request.resource.data.operator_ids.size() <= 50 &&
+            request.resource.data.team_ids is list &&
+            request.resource.data.team_ids.size() <= 100 &&
+            request.resource.data.join_requests is list &&
+            request.resource.data.join_requests.size() <= 100;
+        }
+
+        function kitchenAuthorityUnchanged() {
+          return request.resource.data.operator_ids == resource.data.operator_ids &&
+            request.resource.data.team_ids == resource.data.team_ids &&
+            request.resource.data.join_requests == resource.data.join_requests;
+        }
+
+        allow get: if isAppAdmin(appId) ||
+          isTargetMember(appId, 'kitchens', kitchenId);
+        allow list: if isAppAdmin(appId) || isResourceTargetMember(appId);
+        allow create: if isAppAdmin(appId) &&
+          request.resource.data.keys().size() <= 100 &&
+          hasBoundedKitchenAuthority();
+        allow update: if request.resource.data.keys().size() <= 100 &&
+          hasBoundedKitchenAuthority() &&
+          (isAppAdmin(appId) ||
+            (isTargetOperator(appId, 'kitchens', kitchenId) &&
+              kitchenAuthorityUnchanged()));
+        allow delete: if false;
+
+        match /ingredients/{ingredientId} {
+          function isValidKitchenIngredient(data) {
+            return data is map &&
+              data.keys().hasAll([
+                'ingredient_id',
+                'created',
+                'updated'
+              ]) &&
+              data.keys().hasOnly([
+                'ingredient_id',
+                'created',
+                'updated'
+              ]) &&
+              isValidFirestoreDocumentId(data.ingredient_id) &&
+              data.ingredient_id == ingredientId &&
+              validCreatedStamp(data.created) &&
+              data.created.keys().hasAll(['at', 'by', 'app_id']) &&
+              data.created.keys().hasOnly(['at', 'by', 'app_id']) &&
+              data.created.app_id == appId &&
+              validUpdatedStamp(data.updated) &&
+              data.updated.keys().hasAll(['at', 'by']) &&
+              data.updated.keys().hasOnly(['at', 'by']);
+          }
+
+          function hasActiveCanonicalIngredient() {
+            return exists(
+                /databases/$(database)/documents/ingredients/$(ingredientId)
+              ) &&
+              get(
+                /databases/$(database)/documents/ingredients/$(ingredientId)
+              ).data.status == 'active';
+          }
+
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetMember(appId, 'kitchens', kitchenId);
+          allow create: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenIngredient(request.resource.data) &&
+            hasActiveCanonicalIngredient() &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenIngredient(request.resource.data) &&
+            hasActiveCanonicalIngredient() &&
+            request.resource.data.ingredient_id == resource.data.ingredient_id &&
+            request.resource.data.created == resource.data.created &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'updated'
+            ]) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          // Removing a stale selection remains possible after its canonical
+          // root is deprecated or merged.
+          allow delete: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
+        }
+
+        match /orders/{orderId} {
+          allow get, list: if isTargetOperator(appId, 'kitchens', kitchenId);
+          allow create, update, delete: if false;
+        }
+
+        match /sales/{saleId} {
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+          allow create, update, delete: if false;
+        }
+
+        match /{childCollection}/{childId} {
+          function isGenericKitchenChildCollection() {
+            return !(childCollection in [
+              'ingredients',
+              'orders',
+              'sales'
+            ]);
+          }
+
+          allow get, list: if isGenericKitchenChildCollection() &&
+            (isAppAdmin(appId) ||
+              isTargetMember(appId, 'kitchens', kitchenId));
+          allow create, update: if isGenericKitchenChildCollection() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            request.resource.data.keys().size() <= 100;
+          allow delete: if isGenericKitchenChildCollection() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId));
+
+          match /{nested=**} {
+            allow get, list: if isGenericKitchenChildCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetMember(appId, 'kitchens', kitchenId));
+            allow create, update: if isGenericKitchenChildCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              request.resource.data.keys().size() <= 100;
+            allow delete: if isGenericKitchenChildCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, 'kitchens', kitchenId));
+          }
+        }
+      }
+
+      // Console targets outside Kitchen use the same operator-owned shape.
+      match /{targetCollection}/{targetId} {
+        function isConsoleTargetCollection() {
+          return targetCollection in [
+            'suppliers'
+          ];
+        }
+
+        function hasBoundedTargetAuthority() {
+          return request.resource.data.operator_ids is list &&
+            request.resource.data.operator_ids.size() <= 50 &&
+            request.resource.data.team_ids is list &&
+            request.resource.data.team_ids.size() <= 100 &&
+            request.resource.data.join_requests is list &&
+            request.resource.data.join_requests.size() <= 100;
+        }
+
+        function targetAuthorityUnchanged() {
+          return request.resource.data.operator_ids == resource.data.operator_ids &&
+            request.resource.data.team_ids == resource.data.team_ids &&
+            request.resource.data.join_requests == resource.data.join_requests;
+        }
+
+        allow get: if isConsoleTargetCollection() &&
+          (isAppAdmin(appId) ||
+            isTargetMember(appId, targetCollection, targetId));
+        allow list: if isConsoleTargetCollection() &&
+          (isAppAdmin(appId) || isResourceTargetMember(appId));
+        allow create: if isConsoleTargetCollection() &&
+          isAppAdmin(appId) &&
+          request.resource.data.keys().size() <= 100 &&
+          hasBoundedTargetAuthority();
+        allow update: if isConsoleTargetCollection() &&
+          request.resource.data.keys().size() <= 100 &&
+          hasBoundedTargetAuthority() &&
+          (isAppAdmin(appId) ||
+            (isTargetOperator(appId, targetCollection, targetId) &&
+              targetAuthorityUnchanged()));
+        allow delete: if false;
+
+        // Use an explicit collection/document pair before the recursive tail.
+        // In rules_version 2 a recursive wildcard matches zero segments, so a
+        // direct /{nested=**} here would also bypass the support validator.
+        match /{childCollection}/{childId} {
+          allow get, list: if isConsoleTargetCollection() &&
+            (isAppAdmin(appId) ||
+              isTargetMember(appId, targetCollection, targetId));
+          allow create, update: if isConsoleTargetCollection() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, targetCollection, targetId)) &&
+            request.resource.data.keys().size() <= 100;
+          allow delete: if isConsoleTargetCollection() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, targetCollection, targetId));
+
+          match /{nested=**} {
+            allow get, list: if isConsoleTargetCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetMember(appId, targetCollection, targetId));
+            allow create, update: if isConsoleTargetCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, targetCollection, targetId)) &&
+              request.resource.data.keys().size() <= 100;
+            allow delete: if isConsoleTargetCollection() &&
+              (isAppAdmin(appId) ||
+                isTargetOperator(appId, targetCollection, targetId));
+          }
+        }
+      }
+    }
+

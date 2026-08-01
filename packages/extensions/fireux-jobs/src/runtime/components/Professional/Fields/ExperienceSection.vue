@@ -114,7 +114,8 @@
                   class="p-2"
                   :model-value="getStartDate(item)"
                   @update:model-value="
-                    (value) => onStartDateChange(item, value)
+                    (value: ExperienceCalendarUpdateValue) =>
+                      onStartDateChange(item, value)
                   "
                 />
               </template>
@@ -126,7 +127,10 @@
             <UCheckbox
               :model-value="Boolean(item.ongoing)"
               label=""
-              @update:model-value="(value) => onToggleOngoing(item, value)"
+              @update:model-value="
+                (value: boolean | 'indeterminate') =>
+                  onToggleOngoing(item, value)
+              "
             />
           </div>
 
@@ -148,7 +152,8 @@
                   :model-value="getRangeValue(item)"
                   range
                   @update:model-value="
-                    (value) => onRangeDateChange(item, value)
+                    (value: ExperienceCalendarUpdateValue) =>
+                      onRangeDateChange(item, value)
                   "
                 />
               </template>
@@ -197,12 +202,6 @@
 </template>
 
 <script setup lang="ts">
-import {
-  CalendarDate,
-  DateFormatter,
-  getLocalTimeZone,
-  type DateValue,
-} from '@internationalized/date'
 import { canonicalPlaceId } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/google/usePlacesGoogle'
 import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { mapPlaceToBasePlace } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/mapPlaceToBasePlace'
@@ -219,15 +218,23 @@ import {
 import { computed, ref, shallowRef, watch, type Ref } from 'vue'
 import type { ExperienceItem } from '../../../models/profiles/Professional/Professional.model'
 import { materializeJobWorkplace } from '../../../composables/workplace/materializeWorkplace'
+import {
+  experienceItemDate as itemDate,
+  experienceItemTitle as itemTitle,
+  formatExperienceCollectionLabel as formatCollectionLabel,
+  formatExperienceDateLabel as formatDateLabel,
+  getExperienceEndDate as getEndDate,
+  getExperienceRange as getRangeValue,
+  getExperienceStartDate as getStartDate,
+  newExperienceItem,
+  showExperienceDraftCard as showDraftCard,
+  toggleExperienceOngoing as onToggleOngoing,
+  updateExperienceRange as onRangeDateChange,
+  updateExperienceStart as onStartDateChange,
+  type ExperienceCalendarUpdateValue,
+} from './experienceEditor'
 
 type PlaceSelectedPayload = { placeId: string; place: PlaceUpsertInput }
-type CalendarUpdateValue =
-  | DateValue
-  | DateValue[]
-  | { start?: DateValue | null; end?: DateValue | null }
-  | null
-  | undefined
-
 const props = defineProps<{
   label: string
   items: ExperienceItem[]
@@ -316,21 +323,6 @@ const getPlaceCard = (placeId?: string | null) => {
   return placeCardLookup.value.get(normalized) ?? null
 }
 
-const itemTitle = (item: ExperienceItem) => item.role || 'Experience'
-
-const itemDate = (item: ExperienceItem) => {
-  if (!item.from_year && !item.to_year && !item.ongoing) return ''
-  const start = item.from_year || 'Start'
-  const end = item.ongoing ? 'Present' : item.to_year || 'End'
-  return `${start}–${end}`
-}
-
-function formatCollectionLabel(value: string) {
-  return String(value ?? '')
-    .replace(/[-_]+/g, ' ')
-    .replace(/\b\w/g, (char) => char.toUpperCase())
-}
-
 function persistedPlaceCollection(value: string) {
   const normalized = String(value ?? '').trim()
   return normalized === PlaceStorage.collection ? '' : normalized
@@ -383,133 +375,4 @@ async function ensureCollectionRecord(
   })
 }
 
-function showDraftCard(item: ExperienceItem) {
-  const draft = (item as any)?.place_draft as
-    | Partial<PlaceUpsertInput>
-    | undefined
-  if (!draft) return false
-  return Boolean(
-    draft.name ||
-      draft.formatted_address ||
-      draft.short_address ||
-      draft.image_url
-  )
-}
-
-/** Dates */
-const dateFormatter = new DateFormatter('en-US', { dateStyle: 'medium' })
-
-function monthToNumber(value: string | undefined) {
-  if (!value) return null
-  const raw = String(value).trim()
-  if (raw.length !== 3) return null
-  const short = raw.toLowerCase()
-  const months = [
-    'jan',
-    'feb',
-    'mar',
-    'apr',
-    'may',
-    'jun',
-    'jul',
-    'aug',
-    'sep',
-    'oct',
-    'nov',
-    'dec',
-  ]
-  const idx = months.indexOf(short)
-  return idx >= 0 ? idx + 1 : null
-}
-
-function toCalendarDate(month?: string, year?: string): CalendarDate | null {
-  const monthNum = monthToNumber(month)
-  const yearNum = Number(String(year ?? '').trim())
-  if (!monthNum || !Number.isFinite(yearNum)) return null
-  return new CalendarDate(yearNum, monthNum, 1)
-}
-
-function formatDateLabel(value: DateValue | null | undefined) {
-  if (!value) return ''
-  return dateFormatter.format(value.toDate(getLocalTimeZone()))
-}
-
-function updateFromDate(item: ExperienceItem, value: DateValue) {
-  const date = value.toDate(getLocalTimeZone())
-  item.from_month = new DateFormatter('en-US', { month: 'short' }).format(date)
-  item.from_year = String(value.year)
-}
-
-function updateToDate(item: ExperienceItem, value: DateValue) {
-  const date = value.toDate(getLocalTimeZone())
-  item.to_month = new DateFormatter('en-US', { month: 'short' }).format(date)
-  item.to_year = String(value.year)
-}
-
-function getStartDate(item: ExperienceItem) {
-  return toCalendarDate(item.from_month, item.from_year)
-}
-
-function getEndDate(item: ExperienceItem) {
-  return toCalendarDate(item.to_month, item.to_year)
-}
-
-function getRangeValue(item: ExperienceItem) {
-  return {
-    start: getStartDate(item) ?? undefined,
-    end: getEndDate(item) ?? undefined,
-  }
-}
-
-function isRangeValue(
-  value: CalendarUpdateValue
-): value is { start?: DateValue | null; end?: DateValue | null } {
-  return Boolean(value && !Array.isArray(value) && 'start' in value)
-}
-
-function isSingleDateValue(value: CalendarUpdateValue): value is DateValue {
-  return Boolean(value && !Array.isArray(value) && !isRangeValue(value))
-}
-
-function onStartDateChange(item: ExperienceItem, value: CalendarUpdateValue) {
-  if (!isSingleDateValue(value)) return
-  updateFromDate(item, value)
-}
-
-function onRangeDateChange(item: ExperienceItem, value: CalendarUpdateValue) {
-  if (!isRangeValue(value)) return
-  if (value.start) updateFromDate(item, value.start)
-  if (value.end) {
-    updateToDate(item, value.end)
-  } else {
-    item.to_month = ''
-    item.to_year = ''
-  }
-}
-
-function onToggleOngoing(
-  item: ExperienceItem,
-  value: boolean | 'indeterminate'
-) {
-  const isOngoing = value === true
-  item.ongoing = isOngoing
-  if (isOngoing) {
-    item.to_month = ''
-    item.to_year = ''
-  }
-}
-
-function newExperienceItem(): ExperienceItem {
-  return {
-    place_id: '',
-    place_collection: '',
-    role: '',
-    responsibilities: '',
-    from_month: '',
-    from_year: '',
-    to_month: '',
-    to_year: '',
-    ongoing: false,
-  }
-}
 </script>

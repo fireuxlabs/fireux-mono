@@ -60,6 +60,11 @@ Before each task:
   context in the handoff. Reconfirm only when the task's scope changes.
 - Repository saves require the complete guard suite and Git hooks to pass from
   a current upstream base. `pnpm gitsave` provides no bypass for those rules.
+- Permanent product source under `packages/`, `projects/`, and `tools/` must
+  remain at or below 400 lines per authored code, style, or Rules file. Split
+  responsibilities into named owned seams; there is no allowlist or scope
+  switch. Operational `scripts/` are outside this product-source boundary and
+  remain governed by script safety, usage, and lifecycle guards.
 
 ## Authority
 
@@ -220,10 +225,10 @@ Before each task:
   scrolling past the orbit never freezes its yaw; reduced motion remains
   static.
   FireUX currently consumes that shared orbit with its bounded Live directory.
-  Misebox instead owns a simple, keyboard-focusable left-to-right scroll
-  window with a responsive bento grid for its network-free Demo PowerCards; it
-  retains the same explicit Demo envelope but does not inherit orbit motion or
-  geometry.
+  Misebox instead owns a mobile-first guest-Menu-to-Kitchen-Console handoff
+  stage backed by its existing Product Demo projection. Publish, Prepare, and
+  Serve are explicit user-selected chapters; the presentation never autoplays,
+  couples to page scrolling, or inherits orbit motion and geometry.
 - A main App may explicitly select the typed Core `sci-fire` design pack
   through `app.designPack`. The config helper conditionally bundles its
   stylesheet and Nuxt UI variants; tenant and white-label Apps do not inherit

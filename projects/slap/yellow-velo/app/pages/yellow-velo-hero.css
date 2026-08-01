@@ -1,0 +1,194 @@
+.yv-home {
+  --ink: #11110f;
+  --paper: #f2f0e8;
+  --yellow: #e7d90b;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: clip;
+}
+
+.yv-home-hero {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.12fr .88fr;
+  min-height: calc(100svh - 5.75rem);
+  border-bottom: 1px solid var(--ink);
+}
+
+.yv-home-hero__media {
+  min-height: 44rem;
+  overflow: hidden;
+  background: #c9c3b0;
+}
+
+.yv-home-hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(.72) contrast(1.08);
+  transition: transform 1.2s cubic-bezier(.2,.8,.2,1);
+}
+
+.yv-home-hero:hover .yv-home-hero__media img {
+  transform: scale(1.025);
+}
+
+.yv-home-hero__copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 30)) clamp(calc(var(--spacing) * 6), 5vw, calc(var(--spacing) * 22));
+  background: var(--yellow);
+}
+
+.yv-kicker,
+.yv-section-number {
+  margin: 0;
+  font-size: .68rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .18em;
+  text-transform: uppercase;
+}
+
+.yv-home-hero h1 {
+  margin: clamp(calc(var(--spacing) * 8), 5vh, calc(var(--spacing) * 18)) 0 calc(var(--spacing) * 10);
+  font-size: clamp(4rem, 6vw, var(--text-9xl));
+  font-weight: var(--font-weight-black);
+  letter-spacing: -.075em;
+  line-height: .75;
+  text-transform: uppercase;
+}
+
+.yv-home-hero h1 em {
+  font-family: var(--font-serif);
+  font-size: .78em;
+  font-weight: var(--font-weight-normal);
+  letter-spacing: -.055em;
+  text-transform: none;
+}
+
+.yv-home-hero__intro {
+  max-width: 33rem;
+  margin: 0;
+  font-size: clamp(var(--text-base), 1.5vw, 1.3rem);
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+.yv-home-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 6);
+  margin-top: calc(var(--spacing) * 12);
+}
+
+.yv-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 13rem;
+  gap: calc(var(--spacing) * 8);
+  padding: calc(var(--spacing) * 4) calc(var(--spacing) * 4.6);
+  border: 1px solid currentColor;
+  font-size: .72rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.yv-cta:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 5px 5px 0 currentColor;
+}
+
+.yv-cta--dark {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.yv-cta--light {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.yv-text-link {
+  color: inherit;
+  font-size: .74rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .1em;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: .4rem;
+  text-transform: uppercase;
+}
+
+.yv-home-hero__side {
+  position: absolute;
+  right: 1rem;
+  bottom: 1.5rem;
+  margin: 0;
+  font-size: .58rem;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: .15em;
+  writing-mode: vertical-rl;
+}
+
+.yv-ticker {
+  overflow: hidden;
+  padding: calc(var(--spacing) * 4.4) 0;
+  border-bottom: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.yv-ticker > div {
+  display: flex;
+  justify-content: space-around;
+  min-width: 70rem;
+  gap: calc(var(--spacing) * 8);
+}
+
+.yv-ticker span {
+  font-size: .72rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.yv-ticker i {
+  color: var(--yellow);
+  font-style: normal;
+}
+
+.yv-intro {
+  display: grid;
+  grid-template-columns: .35fr 1fr;
+  gap: clamp(calc(var(--spacing) * 8), 8vw, calc(var(--spacing) * 36));
+  padding: clamp(calc(var(--spacing) * 20), 11vw, calc(var(--spacing) * 44)) clamp(calc(var(--spacing) * 6), 6vw, calc(var(--spacing) * 28));
+}
+
+.yv-intro > div {
+  max-width: 70rem;
+}
+
+.yv-intro h2,
+.yv-featured h2 {
+  margin: 0;
+  font-size: clamp(3.1rem, 6.8vw, 7.8rem);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -.07em;
+  line-height: .91;
+}
+
+.yv-intro > div > p {
+  max-width: 40rem;
+  margin: calc(var(--spacing) * 12) 0 0 auto;
+  font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.65;
+}

@@ -6,13 +6,17 @@ import {
   FIRESTORE_RULE_FRAGMENTS,
   FIRESTORE_RULE_SEMANTIC_UNIQUE_BLOCKS,
 } from './fragment-contract.mjs'
+import {
+  collectLexicalContext,
+  formatBlockStack,
+} from './lexical-context.mjs'
 
 const TEMPLATE_HEADER =
   /^\/\/ @fireux-rules-template ([a-z][a-z0-9-]*)\n\/\/ @fireux-rules-project ([a-z0-9-]+)\n\/\/ @fireux-rules-databases ([a-z0-9,-]+)\n\/\/ @fireux-rules-artifact (scripts\/firebase\/[a-z0-9-]+\/firestore\.rules)\n\/\/ @fireux-rules-fragments ([a-z0-9,-]+)\n(?:\/\/ Concurrent edit — [^\n]+\n)+\/\/ @fireux-rules-template-source\n/
 const FRAGMENT_MARKER =
   /^([ \t]*)\/\/ @fireux-core-rules ([a-z][a-z0-9-]*)\n/gm
-const SERVICE_HEADER = /^service\s+([A-Za-z][A-Za-z0-9.]*)$/
-const MATCH_HEADER = /^match\s+(.+)$/
+const ECOSYSTEM_FRAGMENT_MARKER =
+  /^\/\/ @fireux-ecosystem-rules ([a-z][a-z0-9-]*)\n/gm
 const FUNCTION_HEADER = /^function\s+([A-Za-z_][A-Za-z0-9_]*)\s*\([^)]*\)$/
 
 export function parseFirestoreRulesTemplateHeader(template) {
@@ -49,7 +53,8 @@ export function parseFirestoreRulesTemplateHeader(template) {
 
 export async function composeFirestoreRules(template) {
   const manifest = parseFirestoreRulesTemplateHeader(template)
-  const markers = [...manifest.source.matchAll(FRAGMENT_MARKER)]
+  const source = await expandFirestoreRulesTemplateSource(manifest)
+  const markers = [...source.matchAll(FRAGMENT_MARKER)]
   const markerNames = markers.map((match) => match[2])
 
   if (markerNames.join(',') !== manifest.fragments.join(',')) {
@@ -70,7 +75,7 @@ export async function composeFirestoreRules(template) {
   let coreWrapperFrames = null
   const contractFrameAnchors = new Map()
   for (const marker of markers) {
-    output += manifest.source.slice(cursor, marker.index)
+    output += source.slice(cursor, marker.index)
     const name = marker[2]
     assertFragmentMarkerScope(
       manifest,
@@ -89,7 +94,7 @@ export async function composeFirestoreRules(template) {
     }
     cursor = marker.index + marker[0].length
   }
-  output += manifest.source.slice(cursor)
+  output += source.slice(cursor)
 
   assertComposedRules(
     output,
@@ -98,6 +103,32 @@ export async function composeFirestoreRules(template) {
     contractFrameAnchors
   )
   return Object.freeze({ manifest, content: output })
+}
+
+export async function expandFirestoreRulesTemplate(template) {
+  const manifest = parseFirestoreRulesTemplateHeader(template)
+  const source = await expandFirestoreRulesTemplateSource(manifest)
+  return template.slice(0, template.length - manifest.source.length) + source
+}
+
+async function expandFirestoreRulesTemplateSource(manifest) {
+  const markers = [...manifest.source.matchAll(ECOSYSTEM_FRAGMENT_MARKER)]
+  if (!markers.length) return manifest.source
+
+  const names = markers.map((marker) => marker[1])
+  if (new Set(names).size !== names.length) {
+    throw new Error(`${manifest.key} Rules must include each ecosystem fragment once.`)
+  }
+
+  let cursor = 0
+  let source = ''
+  for (const marker of markers) {
+    source += manifest.source.slice(cursor, marker.index)
+    source += await readEcosystemFragment(manifest.key, marker[1])
+    cursor = marker.index + marker[0].length
+  }
+  source += manifest.source.slice(cursor)
+  return source
 }
 
 function assertFragmentMarkerScope(
@@ -230,217 +261,31 @@ function assertRequiredFunction(
   }
 }
 
-function collectLexicalContext(source) {
-  const stack = []
-  const openedFrames = []
-  let statement = ''
-  let mode = 'code'
-  let quote = ''
-  let escaped = false
-  let pathWildcardDepth = 0
 
-  for (let index = 0; index < source.length; index += 1) {
-    const character = source[index]
-    const next = source[index + 1]
-
-    if (mode === 'line-comment') {
-      if (character === '\n') {
-        mode = 'code'
-        statement += ' '
-      }
-      continue
-    }
-
-    if (mode === 'block-comment') {
-      if (character === '*' && next === '/') {
-        mode = 'code'
-        statement += ' '
-        index += 1
-      }
-      continue
-    }
-
-    if (mode === 'string') {
-      if (escaped) {
-        escaped = false
-      } else if (character === '\\') {
-        escaped = true
-      } else if (character === quote) {
-        mode = 'code'
-      }
-      continue
-    }
-
-    if (pathWildcardDepth) {
-      statement += character
-      if (character === '{') pathWildcardDepth += 1
-      else if (character === '}') pathWildcardDepth -= 1
-      continue
-    }
-
-    if (character === '/' && next === '/') {
-      mode = 'line-comment'
-      index += 1
-      continue
-    }
-    if (character === '/' && next === '*') {
-      mode = 'block-comment'
-      index += 1
-      continue
-    }
-    if (character === "'" || character === '"') {
-      mode = 'string'
-      quote = character
-      escaped = false
-      statement += ' string '
-      continue
-    }
-    if (character === '\n' || character === '\r') {
-      statement += ' '
-      continue
-    }
-    if (character === '{' && isMatchPathWildcard(statement)) {
-      pathWildcardDepth = 1
-      statement += character
-      continue
-    }
-    if (character === '{') {
-      const block = classifyBlock(statement)
-      if (!stack.length && block.descriptor !== 'service cloud.firestore') {
-        throw new Error(
-          'Firestore Rules root block must be service cloud.firestore.'
-        )
-      }
-      if (stack.length && block.descriptor.startsWith('service ')) {
-        throw new Error('Firestore Rules service block must be at the root.')
-      }
-      const parent = stack.at(-1)
-      if (block.functionName && parent) {
-        parent.functions.push(
-          Object.freeze({
-            name: block.functionName,
-            signature: block.functionSignature,
-            scopeFrameKey: parent.key,
-            openOffset: index,
-          })
-        )
-      }
-      const frame = {
-        ...block,
-        key: `${index}:${block.descriptor}`,
-        openOffset: index,
-        semanticKey: buildSemanticFrameKey(block, stack),
-        functions: [],
-      }
-      stack.push(frame)
-      openedFrames.push(frame)
-      statement = ''
-      continue
-    }
-    if (character === '}') {
-      if (!stack.length) {
-        throw new Error('Firestore Rules contain an unmatched closing brace.')
-      }
-      stack.pop()
-      statement = ''
-      continue
-    }
-    if (character === ';') {
-      statement = ''
-      continue
-    }
-
-    statement += character
-  }
-
-  if (mode === 'block-comment' || mode === 'string' || pathWildcardDepth) {
-    throw new Error('Firestore Rules contain an unterminated lexical token.')
-  }
-
-  const accessibleFunctions = []
-  for (const block of stack) {
-    accessibleFunctions.push(...block.functions)
-  }
-
-  return Object.freeze({
-    blockStack: Object.freeze(stack.map(({ descriptor }) => descriptor)),
-    blockFrames: freezeFrameProjection(stack),
-    openedFrames: freezeFrameProjection(openedFrames),
-    accessibleFunctions: Object.freeze(accessibleFunctions),
-    pendingStatement: statement.trim(),
-  })
-}
-
-function freezeFrameProjection(frames) {
-  return Object.freeze(
-    frames.map(({ descriptor, key, openOffset, semanticKey }) =>
-      Object.freeze({ descriptor, key, openOffset, semanticKey })
+async function readEcosystemFragment(ecosystem, name) {
+  const source = await readFile(
+    new URL(
+      `../../../../../../ecosystem/fireux-${ecosystem}/src/config/firebase/rules/${name}.rules`,
+      import.meta.url
+    ),
+    'utf8'
+  )
+  const header = `// @fireux-ecosystem-rules-fragment ${ecosystem}/${name}\n`
+  if (!source.startsWith(header)) {
+    throw new Error(
+      `${ecosystem}/${name} Rules fragment is missing its source header.`
     )
-  )
-}
-
-function buildSemanticFrameKey(block, stack) {
-  if (!block.matchPath) return block.descriptor
-  const parentMatch = stack.findLast((frame) => frame.matchPath)
-  const parentPath = parentMatch?.semanticKey.slice('match '.length) ?? ''
-  return `match ${parentPath}${canonicalizeMatchPath(block.matchPath)}`
-}
-
-function canonicalizeMatchPath(path) {
-  return path
-    .replace(/\{[A-Za-z_][A-Za-z0-9_]*\s*=\s*\*\*\}/g, '{**}')
-    .replace(/\{[A-Za-z_][A-Za-z0-9_]*\}/g, '{*}')
-}
-
-function isMatchPathWildcard(statement) {
-  return (
-    /^\s*match\s+/.test(statement) &&
-    statement.trimEnd().endsWith('/')
-  )
-}
-
-function classifyBlock(statement) {
-  const header = statement.trim().replace(/\s+/g, ' ')
-  const service = header.match(SERVICE_HEADER)
-  if (service) {
-    return {
-      descriptor: `service ${service[1]}`,
-      functionName: '',
-      functionSignature: '',
-      matchPath: '',
-    }
   }
-
-  const match = header.match(MATCH_HEADER)
-  if (match) {
-    return {
-      descriptor: `match ${match[1]}`,
-      functionName: '',
-      functionSignature: '',
-      matchPath: match[1],
-    }
+  const body = source.slice(header.length)
+  if (!body || !body.endsWith('\n')) {
+    throw new Error(
+      `${ecosystem}/${name} Rules fragment must be non-empty and newline-terminated.`
+    )
   }
-
-  const functionDeclaration = header.match(FUNCTION_HEADER)
-  if (functionDeclaration) {
-    return {
-      descriptor: `function ${functionDeclaration[1]}`,
-      functionName: functionDeclaration[1],
-      functionSignature: header,
-      matchPath: '',
-    }
+  if (body.includes('@fireux-ecosystem-rules')) {
+    throw new Error(`${ecosystem}/${name} Rules fragment cannot include fragments.`)
   }
-
-  return {
-    descriptor: 'block',
-    functionName: '',
-    functionSignature: '',
-    matchPath: '',
-  }
-}
-
-function formatBlockStack(stack) {
-  return stack.length ? stack.join(' > ') : '(ruleset root)'
+  return body
 }
 
 async function readFragment(name) {

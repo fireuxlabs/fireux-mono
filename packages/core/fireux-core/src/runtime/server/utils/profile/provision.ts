@@ -2,9 +2,7 @@
 
 import { useRuntimeConfig } from '#imports'
 import {
-  type DocumentData,
   type DocumentReference,
-  type DocumentSnapshot,
   type Firestore,
 } from 'firebase-admin/firestore'
 import { createError, defineEventHandler } from 'h3'
@@ -22,158 +20,26 @@ import {
 } from '../getRuntimeFirestore'
 import { serverAuditStamp } from '../records/stamps'
 
-export type ProfileProvisionSeed = Readonly<Record<string, unknown>>
+import {
+  PROFILE_PROVISION_APP_ORDER as APP_PROFILE_ORDER,
+  PROFILE_PROVISION_ROOT_ORDER as ROOT_PROFILE_ORDER,
+  buildAppProfileProvisionData as appProfileData,
+  assertProfileProvisionDefinition as assertDefinition,
+  assertProfileProvisionSeed as assertSeed,
+  requireProfileProvisionSegment as configuredSegment,
+  failProfileProvision as fail,
+  requireProfileProvisionAppMembership as requireAppMembership,
+  requireProfileProvisionCanonicalUser as requireCanonicalUser,
+  buildRootProfileProvisionData as rootProfileData,
+  type ProfileProvisionContractDefinition as ProfileProvisionDefinition,
+  type ProfileProvisionContractSeed as ProfileProvisionSeed,
+  type ProfileProvisionTransactionOutcome as ProfileTransactionOutcome,
+} from './profile-provision-contract'
 
-export type ProfileProvisionDefinition = {
-  id: string
-  label: string
-  root?: {
-    collection: string
-    seed: () => ProfileProvisionSeed
-  }
-  app: {
-    collection: string
-    seed: () => ProfileProvisionSeed
-  }
-}
-
-type ProfileTransactionOutcome = {
-  createdCore: boolean
-  createdApp: boolean
-}
-
-const ROOT_PROFILE_ORDER = ['agent', 'chef', 'driver', 'professional'] as const
-const APP_PROFILE_ORDER = [
-  'agent',
-  'chef',
-  'customer',
-  'driver',
-  'professional',
-] as const
-const ROOT_PROFILE_IDS: ReadonlySet<string> = new Set(ROOT_PROFILE_ORDER)
-const APP_PROFILE_IDS: ReadonlySet<string> = new Set(APP_PROFILE_ORDER)
-const RESERVED_SEED_KEYS = new Set([
-  'id',
-  'user',
-  'created',
-  'updated',
-  'created_at',
-  'updated_at',
-])
-
-function fail(statusCode: number, statusMessage: string): never {
-  throw createError({ statusCode, statusMessage })
-}
-
-function configuredSegment(value: unknown, label: string) {
-  const segment = String(value ?? '').trim()
-  if (!segment || segment.includes('/')) {
-    fail(500, `${label} is not configured correctly.`)
-  }
-  return segment
-}
-
-function assertDefinition(definition: ProfileProvisionDefinition) {
-  const id = configuredSegment(definition.id, 'Profile id')
-  configuredSegment(definition.label, 'Profile label')
-  configuredSegment(definition.app.collection, 'App profile collection')
-
-  if (!APP_PROFILE_IDS.has(id)) {
-    fail(500, `The ${definition.label} App profile is not supported.`)
-  }
-  if (definition.root) {
-    configuredSegment(definition.root.collection, 'Root profile collection')
-    if (!ROOT_PROFILE_IDS.has(id)) {
-      fail(500, `The ${definition.label} root profile is not supported.`)
-    }
-  }
-}
-
-function assertSeed(
-  seed: ProfileProvisionSeed,
-  label: string
-): ProfileProvisionSeed {
-  if (!seed || typeof seed !== 'object' || Array.isArray(seed)) {
-    fail(500, `${label} did not return an object.`)
-  }
-
-  for (const key of Object.keys(seed)) {
-    if (RESERVED_SEED_KEYS.has(key)) {
-      fail(500, `${label} must not supply ${key}.`)
-    }
-  }
-
-  return seed
-}
-
-function assertProfileList(
-  value: unknown,
-  order: readonly string[],
-  label: string
-): string[] {
-  const allowed = new Set(order)
-  if (
-    !Array.isArray(value) ||
-    value.length > 20 ||
-    value.some((entry) => typeof entry !== 'string' || !allowed.has(entry)) ||
-    new Set(value).size !== value.length
-  ) {
-    fail(409, `${label} has an invalid profile index.`)
-  }
-  const canonical = canonicalProfileIndex(value, order)
-  if (canonical.some((profileId, index) => value[index] !== profileId)) {
-    fail(409, `${label} profile index is not in canonical order.`)
-  }
-  return value
-}
-
-function requireCanonicalUser(snapshot: DocumentSnapshot) {
-  if (!snapshot.exists) {
-    fail(409, 'Create the canonical User before creating a profile.')
-  }
-  return assertProfileList(
-    snapshot.data()?.profiles,
-    ROOT_PROFILE_ORDER,
-    'The canonical User'
-  )
-}
-
-function requireAppMembership(snapshot: DocumentSnapshot) {
-  if (!snapshot.exists) {
-    fail(403, 'Join this App before creating an App profile.')
-  }
-
-  const data = snapshot.data() as DocumentData
-  if (data.role !== 'user' && data.role !== 'admin') {
-    fail(409, 'The App membership is invalid.')
-  }
-
-  return assertProfileList(
-    data.profiles ?? [],
-    APP_PROFILE_ORDER,
-    'The App membership'
-  )
-}
-
-function rootProfileData(seed: ProfileProvisionSeed, uid: string) {
-  return {
-    ...seed,
-    created: serverAuditStamp({ by: uid }),
-    updated: serverAuditStamp({ by: uid }),
-  }
-}
-
-function appProfileData(
-  seed: ProfileProvisionSeed,
-  uid: string,
-  appId: string
-) {
-  return {
-    ...seed,
-    created: serverAuditStamp({ by: uid, appId }),
-    updated: serverAuditStamp({ by: uid }),
-  }
-}
+export type {
+  ProfileProvisionContractDefinition as ProfileProvisionDefinition,
+  ProfileProvisionContractSeed as ProfileProvisionSeed,
+} from './profile-provision-contract'
 
 function runtimeDatabaseContext(definition: ProfileProvisionDefinition) {
   const runtime = useRuntimeConfig()

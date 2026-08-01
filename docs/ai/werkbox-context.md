@@ -72,8 +72,9 @@ remembered implementations are not authority.
   scoped to the current App. Jobs, Places, Companies, public identities, App
   people hydration, and structured Professional experience use bounded trusted
   package server APIs rather than raw browser collection access.
-- Werkbox owns its strict client Rules template and target manifest at
-  `packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules`;
+- Werkbox owns its strict client Rules manifest at
+  `packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules`
+  and its named policy fragments in the adjacent `rules/` directory;
   shared byte-identical policy primitives come from FireUX Core. The complete
   locked candidate and temporary deny-all cutover source live under
   `scripts/firebase/werkbox`. The guarded root commands own deterministic

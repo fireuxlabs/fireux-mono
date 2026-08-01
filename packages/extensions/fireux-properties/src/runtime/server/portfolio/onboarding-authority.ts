@@ -1,0 +1,175 @@
+import { useRuntimeConfig } from '#imports'
+import type { H3Event } from 'h3'
+import {
+  normalizeFireuxAppScopeState,
+  resolveFireuxAppScopeStateForRole,
+} from 'fireux-core/runtime/models/core/meta.model.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import {
+  boundedIds,
+  fail,
+  isRecord,
+  record,
+  text,
+  type MemberRole,
+} from './onboarding-input'
+
+export type Firestore = ReturnType<typeof getRuntimeFirestore>
+
+export type RuntimePolicy = {
+  appId: string
+  appRole: string
+  developerId: string
+  appScopeState: 'parent_app' | 'tenant_app'
+  canCreate: boolean
+  targetIds: string[]
+}
+
+export type Actor = RuntimePolicy & {
+  uid: string
+  db: Firestore
+  membershipRef: ReturnType<Firestore['doc']>
+}
+
+export function runtimePolicy(event: H3Event): RuntimePolicy {
+  const fireux = record(useRuntimeConfig(event).public?.fireux)
+  const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
+  const appRole = text(fireux.role)
+  const developerId = text(fireux.developerId)
+  const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
+  if (!appScopeState) fail(403, 'This App cannot own a Portfolio console.')
+
+  const portfolioConfig = record(record(fireux.consoleConfig).portfolio)
+  const canCreate =
+    typeof portfolioConfig.canCreate === 'boolean'
+      ? portfolioConfig.canCreate
+      : appRole !== 'tenant'
+  const targetIds = Array.isArray(portfolioConfig.targetIds)
+    ? Array.from(new Set(portfolioConfig.targetIds.map(text).filter(Boolean)))
+    : []
+
+  return {
+    appId,
+    appRole,
+    developerId,
+    appScopeState,
+    canCreate,
+    targetIds,
+  }
+}
+
+export function requireMemberRole(exists: boolean, value: unknown): MemberRole {
+  const role = text(value)
+  if (!exists || (role !== 'admin' && role !== 'user')) {
+    fail(403, 'Current App membership is required to onboard a Portfolio.')
+  }
+  return role
+}
+
+export function assertRuntimeTarget(
+  current: RuntimePolicy,
+  portfolioId: string
+) {
+  if (current.appRole !== 'tenant') return
+  if (!current.targetIds.includes(portfolioId)) {
+    fail(403, 'This Portfolio is not a configured target for the tenant App.')
+  }
+}
+
+export function readSupport(value: Record<string, unknown> | null) {
+  if (!value) return null
+  return {
+    operatorIds: boundedIds(value.operator_ids, 50, 'Portfolio operators'),
+    teamIds: boundedIds(value.team_ids, 100, 'Portfolio team'),
+    joinRequests: boundedIds(
+      value.join_requests,
+      100,
+      'Portfolio join requests'
+    ),
+  }
+}
+
+export function assertMembershipCapacity(
+  membership: Record<string, unknown>,
+  portfolioId: string
+) {
+  if (
+    membership.console_targets !== undefined &&
+    !isRecord(membership.console_targets)
+  ) {
+    fail(409, 'UserApp Console targets have an invalid stored shape.')
+  }
+  const targets = record(membership.console_targets)
+  if (targets.portfolio_ids === undefined) return
+
+  const ids = boundedIds(
+    targets.portfolio_ids,
+    50,
+    'UserApp Portfolio console targets'
+  )
+  if (!ids.includes(portfolioId) && ids.length >= 50) {
+    fail(409, 'The UserApp Portfolio console target list is full.')
+  }
+}
+
+export function readScope(root: Record<string, unknown>) {
+  if (Object.prototype.hasOwnProperty.call(root, 'app_scope')) {
+    fail(409, 'Portfolio App scope uses a non-canonical stored shape.')
+  }
+  const flatState = text(root.app_scope_state)
+  const flatAppId = text(root.app_scope_app_id)
+  const state = normalizeFireuxAppScopeState(flatState)
+
+  if (!state) fail(409, 'Portfolio App scope is missing or invalid.')
+  if (state === 'root_only' && flatAppId) {
+    fail(409, 'An unattached Portfolio cannot name an App.')
+  }
+  if (state !== 'root_only' && !flatAppId) {
+    fail(409, 'An attached Portfolio must name its App.')
+  }
+
+  return { state, appId: flatAppId }
+}
+
+export function assertScope(root: Record<string, unknown>, appId: string) {
+  const scope = readScope(root)
+  if (scope.state !== 'root_only' && scope.appId !== appId) {
+    fail(409, 'This Portfolio is already attached to another App.')
+  }
+  return scope
+}
+
+export function assertSupportCapacity(
+  support: NonNullable<ReturnType<typeof readSupport>>,
+  uid: string
+) {
+  if (!support.operatorIds.includes(uid) && support.operatorIds.length >= 50) {
+    fail(409, 'The Portfolio operator list is full.')
+  }
+  if (!support.teamIds.includes(uid) && support.teamIds.length >= 100) {
+    fail(409, 'The Portfolio team list is full.')
+  }
+}
+
+export function assertOnboardingAuthority(input: {
+  rootExists: boolean
+  support: ReturnType<typeof readSupport>
+  uid: string
+  role: MemberRole
+  canCreate: boolean
+}) {
+  if (!input.rootExists) {
+    if (!input.canCreate) {
+      fail(403, 'Portfolio creation is disabled for this App.')
+    }
+    if (input.role !== 'admin') {
+      fail(403, 'An App admin must create the Portfolio.')
+    }
+    return
+  }
+
+  if (input.role === 'admin') return
+  if (input.support?.operatorIds.includes(input.uid)) return
+  fail(403, 'An App admin or existing Portfolio operator must grant access.')
+}

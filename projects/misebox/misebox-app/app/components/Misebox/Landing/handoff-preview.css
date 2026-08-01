@@ -1,0 +1,43 @@
+.misebox-handoff {
+  display: grid;
+  min-width: 0;
+  gap: calc(var(--spacing) * 3);
+}
+
+.misebox-handoff__chapters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing);
+  padding: var(--spacing);
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 2);
+  background: var(--ui-bg);
+}
+
+.misebox-handoff__chapters button {
+  display: inline-flex;
+  min-width: 0;
+  min-height: calc(var(--spacing) * 10);
+  gap: var(--spacing);
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--spacing) * 2);
+  border: 0;
+  border-radius: calc(var(--ui-radius) * 1.5);
+  background: transparent;
+  color: var(--ui-text-muted);
+  font: inherit;
+  font-size: var(--text-xs);
+  font-weight: var(--font-weight-bold);
+  cursor: pointer;
+}
+
+.misebox-handoff__chapters button[aria-pressed='true'] {
+  background: var(--ui-primary);
+  color: var(--ui-bg);
+}
+
+.misebox-handoff__chapters button:focus-visible {
+  outline: 2px solid var(--ui-primary);
+  outline-offset: 2px;
+}

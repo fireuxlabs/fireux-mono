@@ -1,94 +1,23 @@
-import type {
-  SupplierIngredient,
-  SupplierItem,
-} from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
-import type { Dish } from '../../models/kitchen/dish.model'
 import type { PublicIngredient } from '../../models/ingredient-public.model'
-import type { KitchenDemoScenario } from '../../demo/kitchen/core/types'
+import { estimateKitchenDishFinance } from './dish-finance'
+import { clean, resolveSupplyLines } from './demo-dishes-supply'
 import type {
-  KitchenDemoDishSpec,
-  KitchenDemoMiseRequirement,
-  KitchenDemoPrepItem,
-  KitchenDemoProductionRecipe,
-} from '../../demo/kitchen/production'
-import {
-  estimateKitchenDishFinance,
-  type KitchenDishFinanceEstimate,
-  type KitchenDishFinanceSupplyLine,
-} from './dish-finance'
+  KitchenDemoDishMenuUsage,
+  KitchenDemoDishOperationItem,
+  KitchenDemoDishesOperation,
+  KitchenDemoDishesScenario,
+  KitchenDemoDishesSupplierScenario,
+} from './demo-dishes.types'
 
-const clean = (value: unknown) => String(value ?? '').trim()
-
-export type KitchenDemoDishMenuUsage = {
-  dishId: string
-  menuId: string
-  sectionId: string
-  itemId: string
-  price?: number
-  currencyCode?: string
-  menuName?: string
-  sectionLabel?: string
-  active?: boolean
-}
-
-export type KitchenDemoDishSection = {
-  id: string
-  label: string
-  dishIds: string[]
-  count: number
-}
-
-export type KitchenDemoDishComponentView = {
-  id: string
-  name: string
-  amount: string
-  sourceLabel: 'Ingredient' | 'Prep item' | 'Recipe'
-}
-
-export type KitchenDemoDishOperationItem = {
-  dish: Dish
-  spec: KitchenDemoDishSpec | null
-  componentViews: KitchenDemoDishComponentView[]
-  menuUsage: KitchenDemoDishMenuUsage[]
-  prepItems: KitchenDemoPrepItem[]
-  recipes: KitchenDemoProductionRecipe[]
-  miseRequirements: KitchenDemoMiseRequirement[]
-  finance: KitchenDishFinanceEstimate | null
-  quantitySold: number | null
-  totalSalesMinor: number | null
-}
-
-export type KitchenDemoDishesOperation = {
-  dishes: Dish[]
-  ingredientNameById: Record<string, string>
-  stationNameById: Record<string, string>
-  items: KitchenDemoDishOperationItem[]
-  sections: KitchenDemoDishSection[]
-}
-
-export type KitchenDemoDishesSupplierScenario = {
-  supplier: {
-    id?: string | null
-    supplier_organization_name?: string | null
-  }
-  ingredients: readonly SupplierIngredient[]
-  items: readonly SupplierItem[]
-}
-
-type KitchenDemoDishesScenario = Pick<
-  KitchenDemoScenario,
-  | 'dishFinance'
-  | 'dishes'
-  | 'dishSpecs'
-  | 'kitchenIngredients'
-  | 'menus'
-  | 'miseRequirements'
-  | 'place'
-  | 'prepItems'
-  | 'recipes'
-  | 'stations'
-  | 'supplierIngredientLinks'
->
+export type {
+  KitchenDemoDishComponentView,
+  KitchenDemoDishMenuUsage,
+  KitchenDemoDishOperationItem,
+  KitchenDemoDishSection,
+  KitchenDemoDishesOperation,
+  KitchenDemoDishesScenario,
+  KitchenDemoDishesSupplierScenario,
+} from './demo-dishes.types'
 
 const formatProductionAmount = (amount: {
   quantity: number
@@ -103,54 +32,6 @@ const formatProductionAmount = (amount: {
   return `${quantityLabel} ${
     unit === 'portion' && quantity !== 1 ? 'portions' : unit
   }`
-}
-
-const resolveSupplyLines = (
-  scenario: KitchenDemoDishesScenario,
-  supplierScenarios: readonly KitchenDemoDishesSupplierScenario[],
-  ingredientRoots: readonly PublicIngredient[]
-) => {
-  const supplierScenarioById = new Map(
-    supplierScenarios.map(item => [clean(item.supplier.id), item])
-  )
-  const ingredientById = new Map(
-    ingredientRoots.map(ingredient => [clean(ingredient.id), ingredient])
-  )
-  const entries = scenario.supplierIngredientLinks.flatMap((link) => {
-    const ingredientId = clean(link.ingredient_id)
-    const supplierId = clean(link.supplier_id)
-    const ingredient = ingredientById.get(ingredientId)
-    const supplierScenario = supplierScenarioById.get(supplierId)
-    const supplierIngredients = supplierScenario?.ingredients.filter(item =>
-      item.active !== false
-      && clean(item.ingredient_id) === ingredientId
-      && clean(item.supplier_id) === supplierId
-    ) ?? []
-    const supplierIngredient = supplierIngredients.length === 1
-      ? supplierIngredients[0]
-      : undefined
-    const preferredProductId = clean(supplierIngredient?.preferred_product_id)
-    const offers = supplierScenario?.items.filter(item =>
-      item.active !== false
-      && item.availability_state !== 'unavailable'
-      && clean(item.ingredient_id) === ingredientId
-      && clean(item.product_id) === preferredProductId
-      && clean(item.supplier_id) === supplierId
-      && Number(item.quantity_per_pack) > 0
-      && Number(item.pack_cost_minor) > 0
-      && /^[A-Z]{3}$/.test(clean(item.currency_code))
-    ) ?? []
-    const supplierItem = offers.length === 1 ? offers[0] : undefined
-
-    return ingredient && supplierScenario && supplierItem
-      ? [[
-          ingredientId,
-          { ingredient, supplierScenario, supplierItem },
-        ] as const]
-      : []
-  })
-
-  return new Map<string, KitchenDishFinanceSupplyLine>(entries)
 }
 
 export function buildKitchenDemoDishesOperation(input: {
