@@ -7,19 +7,18 @@ export const menuTool = {
   description: 'Translate menu copy for a consuming app.',
   messageSource: 'sproochli',
   endpoints: {
-    translate: '/api/tools/menu/translate',
+    resolve: '/api/tools/menu',
   },
   inputs: [
-    'sourceUrl',
-    'sourceSlug',
-    'documentId',
-    'sourceLanguage',
-    'targetLanguages',
+    'host',
+    'source',
     'fields',
+    'language',
   ],
   outputs: [
+    'host',
+    'language',
+    'provider',
     'translations',
-    'cache ids',
-    'source hashes',
   ],
 } satisfies SproochliToolContract

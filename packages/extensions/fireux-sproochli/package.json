@@ -27,7 +27,8 @@
     "pnpm": "11.9.0"
   },
   "dependencies": {
-    "fireux-core": "workspace:*"
+    "fireux-core": "workspace:*",
+    "google-auth-library": "^9.15.1"
   },
   "peerDependencies": {
     "nuxt": "^4.4.0",

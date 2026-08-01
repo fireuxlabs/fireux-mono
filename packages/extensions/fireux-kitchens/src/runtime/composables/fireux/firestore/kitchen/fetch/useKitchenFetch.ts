@@ -79,17 +79,6 @@ export function useKitchenFetch(
       limit(1)
     ) as Query<KitchenFetchDoc>
   })
-  const liveSlugQuery = computed<Query<KitchenFetchDoc> | null>(() => {
-    const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
-    const slug = String(idRef.value || '').trim().toLowerCase()
-    if (sourceRef.value !== 'live' || !slug) return null
-
-    return fsq(
-      collection(resolveLiveDb(), collectionPath),
-      where('slug', '==', slug),
-      limit(1)
-    ) as Query<KitchenFetchDoc>
-  })
   const testDocQuery = computed<Query<KitchenFetchDoc> | null>(() => {
     const collectionPath = String(pathRef.value || '').trim() || DEFAULT_COLLECTION_PATH
     const docId = String(idRef.value || '').trim()
@@ -106,11 +95,6 @@ export function useKitchenFetch(
     'kitchen-fetch-live',
     pathRef
   )
-  const liveSlugSource = liveRead.firestoreQuery<KitchenFetchDoc>(
-    liveSlugQuery,
-    'kitchen-fetch-live-slug',
-    pathRef
-  )
   const testSource = simulationRead.firestoreQuery<KitchenFetchDoc>(
     testDocQuery,
     'kitchen-fetch-test',
@@ -120,7 +104,7 @@ export function useKitchenFetch(
     if (sourceRef.value === 'demo') return undefined
 
     if (sourceRef.value === 'test') return testSource.value?.[0]
-    return liveSource.value?.[0] ?? liveSlugSource.value?.[0]
+    return liveSource.value?.[0]
   })
 
   const placeId = computed(() => {
@@ -197,7 +181,7 @@ export function useKitchenFetch(
         (shouldHydrate && Boolean(placeId.value) &&
           testPlaceSource.value === undefined)
     }
-    return liveSource.value === undefined || liveSlugSource.value === undefined
+    return liveSource.value === undefined
   })
 
   return {

@@ -1,0 +1,17 @@
+{
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "holzworm-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "holzworm"
+    }
+  ],
+  "hosting": {
+    "site": "holzworm-slap-45389",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{ "source": "**", "function": { "functionId": "holzworm", "codebase": "holzworm-ssr", "region": "europe-west1" } }]
+  }
+}

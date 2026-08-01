@@ -386,11 +386,67 @@
       }
     },
     {
+      "label": "pnpm dev:holzworm",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:holzworm"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* ready$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
       "label": "pnpm dev:granite",
       "type": "shell",
       "command": "pnpm",
       "args": [
         "dev:granite"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "fireux-dev",
+        "pattern": {
+          "regexp": "^(?!)",
+          "message": 0
+        },
+        "background": {
+          "activeOnStart": true,
+          "endsPattern": "^\\[dev\\] .* ready$"
+        }
+      },
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "dedicated"
+      }
+    },
+    {
+      "label": "pnpm dev:lifeguard-community",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "dev:lifeguard-community"
       ],
       "options": {
         "cwd": "${workspaceFolder}"
@@ -814,11 +870,45 @@
       }
     },
     {
+      "label": "pnpm kill:holzworm",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:holzworm"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
       "label": "pnpm kill:granite",
       "type": "shell",
       "command": "pnpm",
       "args": [
         "kill:granite"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "pnpm kill:lifeguard-community",
+      "type": "shell",
+      "command": "pnpm",
+      "args": [
+        "kill:lifeguard-community"
       ],
       "options": {
         "cwd": "${workspaceFolder}"

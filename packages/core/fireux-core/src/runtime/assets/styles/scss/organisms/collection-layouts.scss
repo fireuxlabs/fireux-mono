@@ -29,6 +29,8 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 
 :where(.collection-directory__count) {
 	min-width: max-content;
+	margin-left: auto;
+	align-self: center;
 	padding-left: var(--spacing);
 	color: var(--ui-text-muted);
 	font-size: var(--text-xs);
@@ -43,10 +45,10 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 	gap: calc(var(--spacing) * 4);
 }
 
-@media (max-width: 40rem) {
+@media (min-width: 40rem) {
 	:where(.collection-directory__count) {
-		margin-left: auto;
-		align-self: center;
+		margin-left: 0;
+		align-self: auto;
 	}
 }
 
@@ -77,12 +79,13 @@ Folder taxonomy describes CSS composition depth; Vue components remain domain-na
 	gap: calc(var(--spacing) * 2);
 	flex-wrap: wrap;
 	flex: 1 1 auto;
+	flex-basis: 100%;
 	justify-content: flex-end;
 	min-width: 0;
 }
 
-@media (max-width: 640px) {
+@media (min-width: 40rem) {
 	:where(.collection-manager__controls) {
-		flex-basis: 100%;
+		flex-basis: auto;
 	}
 }

@@ -1,5 +1,8 @@
 <template>
-  <header class="collection-directory-header">
+  <header
+    class="collection-directory-header"
+    :class="{ 'collection-directory-header--compact': compact }"
+  >
     <div class="collection-directory-header__title">
       <p>{{ eyebrow }}</p>
       <h2>{{ title }}</h2>
@@ -16,10 +19,12 @@
 defineOptions({ name: 'CollectionDirectoryHeader' })
 
 withDefaults(defineProps<{
+  compact?: boolean
   description?: string
   eyebrow?: string
   title: string
 }>(), {
+  compact: false,
   description: '',
   eyebrow: 'Browse',
 })
@@ -27,9 +32,9 @@ withDefaults(defineProps<{
 
 <style scoped>
 .collection-directory-header {
-  align-items: end;
   display: flex;
   flex-wrap: wrap;
+  align-items: flex-start;
   gap: calc(var(--spacing) * 6) calc(var(--spacing) * 12);
   justify-content: space-between;
 }
@@ -65,20 +70,25 @@ withDefaults(defineProps<{
 }
 
 .collection-directory-header__controls {
-  align-items: center;
   display: flex;
+  width: 100%;
+  align-items: flex-start;
   gap: calc(var(--spacing) * 2);
   min-height: calc(var(--spacing) * 10);
 }
 
-@media (max-width: 40rem) {
-  .collection-directory-header,
-  .collection-directory-header__controls {
-    align-items: flex-start;
+.collection-directory-header--compact .collection-directory-header__title h2 {
+  font-size: clamp(var(--text-2xl), 4vw, var(--text-4xl));
+}
+
+@media (min-width: 40rem) {
+  .collection-directory-header {
+    align-items: end;
   }
 
   .collection-directory-header__controls {
-    width: 100%;
+    width: auto;
+    align-items: center;
   }
 }
 </style>

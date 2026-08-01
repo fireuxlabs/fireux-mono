@@ -10,14 +10,16 @@
 // Called by scripts/guard.mjs.
 // MUST NOT be run directly.
 
-import { readdirSync, existsSync, readFileSync } from 'node:fs'
+import { readdirSync, existsSync, readFileSync, statSync } from 'node:fs'
 import assert from 'node:assert/strict'
+import { createHash } from 'node:crypto'
 import path from 'node:path'
 import { withBuildVersion } from '../../packages/core/fireux-core/src/runtime/utils/buildVersionUrl.ts'
 import {
   inspectLevelOne,
   LOCAL_GENERATED_NOISE_NAMES,
 } from './_lib/filesystem-policy.mjs'
+import { APP_REGISTRY } from '../_lib/app-registry.mjs'
 
 const REQUIRED_L1 = [
   'app',
@@ -106,6 +108,20 @@ const REQUIRED_PUBLIC_ASSETS = [
   'img/app/pwa/icon-512.png',
 ]
 
+const BRAND_SOURCE_BY_RUNTIME_ASSET = Object.freeze({
+  'img/app/cover.png': 'cover.png',
+  'img/app/thumbnail.png': 'thumbnail.png',
+  'img/app/logo.png': 'logo.png',
+  'img/app/favicon.ico': 'favicon.ico',
+  'img/app/wordmark.png': 'wordmark-light.png',
+  'img/app/wordmark.svg': 'wordmark-light.svg',
+  'img/app/wordmark-light.png': 'wordmark-light.png',
+  'img/app/wordmark-light.svg': 'wordmark-light.svg',
+  'img/app/wordmark-dark.png': 'wordmark-dark.png',
+  'img/app/pwa/icon-192.png': 'pwa/icon-192.png',
+  'img/app/pwa/icon-512.png': 'pwa/icon-512.png',
+})
+
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
   const projectsRoot = path.join(repoRoot, 'projects')
@@ -143,13 +159,17 @@ export async function run(ctx) {
       }
 
       const shapeViolation = checkProjectApp(appPath)
-      if (shapeViolation) {
-        violations.push(shapeViolation)
-        continue
-      }
+      if (shapeViolation) violations.push(shapeViolation)
 
       const publicViolation = checkProjectPublicImageLibrary(appPath)
       if (publicViolation) violations.push(publicViolation)
+
+      const brandViolation = checkProjectBrandOwnership(
+        appPath,
+        eco,
+        repoRoot
+      )
+      if (brandViolation) violations.push(brandViolation)
 
       const authViolation = checkProjectAuthSpine(appPath)
       if (authViolation) violations.push(authViolation)
@@ -159,11 +179,54 @@ export async function run(ctx) {
     }
   }
 
+  violations.push(...checkDuplicateAppOwnedBrandFamilies(projectsRoot))
+  violations.push(...checkProjectRegistryCompleteness(projectsRoot))
+
   if (violations.length) {
     throw new Error(violations.join('\n\n'))
   }
 
   console.log('[guard] ✅ project apps valid')
+}
+
+function checkProjectRegistryCompleteness(projectsRoot) {
+  const templatePath = 'projects/templates/fireux-template'
+  const appPaths = []
+
+  for (const ecosystem of readdirSync(projectsRoot, { withFileTypes: true })) {
+    if (!ecosystem.isDirectory() || ecosystem.name.startsWith('.')) continue
+    const ecosystemPath = path.join(projectsRoot, ecosystem.name)
+    for (const app of readdirSync(ecosystemPath, { withFileTypes: true })) {
+      if (!app.isDirectory() || app.name.startsWith('.')) continue
+      const absolute = path.join(ecosystemPath, app.name)
+      if (!existsSync(path.join(absolute, 'package.json'))) continue
+      appPaths.push(`projects/${ecosystem.name}/${app.name}`)
+    }
+  }
+
+  const registeredPaths = Object.values(APP_REGISTRY).map((entry) =>
+    String(entry.workspace || '').replace(/^\.\//, '')
+  )
+  const registered = new Set(registeredPaths)
+  const actual = new Set(appPaths)
+  const missing = appPaths.filter((entry) =>
+    entry !== templatePath && !registered.has(entry)
+  )
+  const stale = registeredPaths.filter((entry) => !actual.has(entry))
+
+  if (!missing.length && !stale.length) return []
+
+  const lines = [
+    '[guard] ❌ project App registry drift:',
+    ...missing.map((entry) => `  Unregistered App: ${entry}`),
+    ...stale.map((entry) => `  Registry target missing: ${entry}`),
+    '',
+    '[guard] Fix:',
+    '- Do not copy project folders without completing the canonical App workflow.',
+    '- Every real App must have one exact workspace entry in scripts/_lib/app-registry.mjs.',
+    '- The canonical template is the only project package excluded from registration.',
+  ]
+  return [lines.join('\n')]
 }
 
 export function assertCorePwaCacheVersioning(repoRoot) {
@@ -531,4 +594,104 @@ function checkProjectPublicImageLibrary(appPath) {
   )
 
   return lines.join('\n')
+}
+
+function checkProjectBrandOwnership(appPath, ecosystem, repoRoot) {
+  const configPath = path.join(appPath, 'nuxt.config.ts')
+  if (!existsSync(configPath)) return null
+  const source = readFileSync(configPath, 'utf8')
+  const declaration = source.match(
+    /brand:\s*\{\s*owner:\s*'(core|ecosystem|app)'(?:\s*,\s*status:\s*'(approved|provisional)')?\s*\}/
+  )
+  if (!declaration) {
+    return `${configPath} (must declare brand.owner as core, ecosystem, or app)`
+  }
+
+  const [, owner, status] = declaration
+  if (owner === 'app' && !status) {
+    return `${configPath} (App-owned brand must declare approved or provisional status)`
+  }
+  if (owner !== 'app' && status) {
+    return `${configPath} (inherited brands must not declare App-owned status)`
+  }
+
+  const emptyAssets = REQUIRED_PUBLIC_ASSETS.filter((relative) => {
+    const absolute = path.join(appPath, 'public', relative)
+    return existsSync(absolute) && statSync(absolute).size === 0
+  })
+  if (emptyAssets.length) {
+    return `${configPath} (${owner} brand has empty runtime assets: ${emptyAssets.join(', ')})`
+  }
+
+  if (owner === 'app') return null
+
+  const canonicalRoot = owner === 'core'
+    ? path.join(
+        repoRoot,
+        'packages/core/fireux-core/src/runtime/public/img/core/brand'
+      )
+    : path.join(
+        repoRoot,
+        `packages/ecosystem/fireux-${ecosystem}/src/runtime/public/img/ecosystem/brand`
+      )
+  const drift = []
+  for (const runtimeRelative of REQUIRED_PUBLIC_ASSETS) {
+    const sourceRelative = BRAND_SOURCE_BY_RUNTIME_ASSET[runtimeRelative]
+    const canonicalPath = path.join(canonicalRoot, sourceRelative)
+    const runtimePath = path.join(appPath, 'public', runtimeRelative)
+    if (!existsSync(canonicalPath)) {
+      drift.push(`missing owner source ${path.relative(repoRoot, canonicalPath)}`)
+      continue
+    }
+    if (
+      existsSync(runtimePath) &&
+      !readFileSync(canonicalPath).equals(readFileSync(runtimePath))
+    ) {
+      drift.push(`drifted projection ${path.relative(repoRoot, runtimePath)}`)
+    }
+  }
+  if (!drift.length) return null
+  return [
+    `${configPath} (${owner} brand ownership violation)`,
+    ...drift.map((entry) => `  - ${entry}`),
+  ].join('\n')
+}
+
+function checkDuplicateAppOwnedBrandFamilies(projectsRoot) {
+  const ownersByHash = new Map()
+  for (const ecosystem of readdirSync(projectsRoot, { withFileTypes: true })) {
+    if (!ecosystem.isDirectory() || ecosystem.name.startsWith('.')) continue
+    const ecosystemPath = path.join(projectsRoot, ecosystem.name)
+    for (const app of readdirSync(ecosystemPath, { withFileTypes: true })) {
+      if (!app.isDirectory() || app.name.startsWith('.')) continue
+      const appPath = path.join(ecosystemPath, app.name)
+      const configPath = path.join(appPath, 'nuxt.config.ts')
+      if (!existsSync(configPath)) continue
+      const config = readFileSync(configPath, 'utf8')
+      if (!/brand:\s*\{\s*owner:\s*'app'/.test(config)) continue
+
+      const assets = REQUIRED_PUBLIC_ASSETS.map((relative) =>
+        path.join(appPath, 'public', relative)
+      )
+      if (assets.some((asset) => !existsSync(asset) || statSync(asset).size === 0)) {
+        continue
+      }
+      const hash = createHash('sha256')
+      for (const asset of assets) hash.update(readFileSync(asset))
+      const digest = hash.digest('hex')
+      const owners = ownersByHash.get(digest) ?? []
+      owners.push(`${ecosystem.name}/${app.name}`)
+      ownersByHash.set(digest, owners)
+    }
+  }
+
+  return [...ownersByHash.entries()].flatMap(([digest, owners]) =>
+    owners.length > 1
+      ? [
+          `[guard] ❌ App-owned brand family is duplicated across Apps (${digest.slice(0, 12)}):\n` +
+            owners.map((owner) => `  - ${owner}`).join('\n') +
+            '\nDeclare the real shared Core/ecosystem owner or provide genuinely App-owned identity.',
+        ]
+      : []
+  )
 }

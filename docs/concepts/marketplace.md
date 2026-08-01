@@ -34,6 +34,9 @@ Firestore Rules remain authority.
 - Public browsers consume bounded published Store/Offer projections. All
   authoring, moderation and Order reads/writes use trusted fixed-runtime
   endpoints.
+- Public marketplace routes never merge source-authored preview sellers,
+  fixtures, or seed records into those projections. Draft previews remain
+  authenticated management views over canonical Store and Offer records.
 - Marketplace Orders are requests for offline collection or local delivery.
   They do not reuse KitchenOrder and do not create payment or FinancialFact
   truth.

@@ -154,11 +154,11 @@
           </div>
         </div>
         <p class="text-sm text-muted">
-          Copy the exported app assets from
-          <code>figma-export/apps/&lt;app-id&gt;/</code> into
-          <code>/public/img/app</code> before onboarding. For temporary local
-          console work, you may loan another app's export if the target app
-          export folder is still empty.
+          Declare the App's brand owner in <code>defineFireuxConfig</code>
+          before onboarding. Materialize Core or ecosystem projections from
+          that canonical source. An App-owned family belongs in
+          <code>/public/img/app</code> and must be declared approved or
+          provisional; never loan another App's export.
         </p>
       </UCard>
 

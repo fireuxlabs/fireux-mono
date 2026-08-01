@@ -235,7 +235,14 @@ function isCanonicalDocPublic(
   if (entity.entityKey === 'users') return Boolean(slug)
 
   if (entity.publicField) {
-    const explicit = data[entity.publicField]
+    const explicit = entity.publicField
+      .split('.')
+      .reduce<unknown>((value, segment) => {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) {
+          return undefined
+        }
+        return (value as Record<string, unknown>)[segment]
+      }, data)
     return explicit === entity.publicValue
   }
 

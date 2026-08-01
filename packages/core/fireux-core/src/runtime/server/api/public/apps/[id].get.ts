@@ -29,11 +29,7 @@ export default defineEventHandler(async (event: H3Event) => {
   )
 
   const collection = getRuntimeFirestore().collection(AppStorage.collection)
-  const directDoc = await collection.doc(appId).get()
-  const slugMatch = directDoc.exists
-    ? null
-    : await collection.where('slug', '==', appId).limit(1).get()
-  const doc = directDoc.exists ? directDoc : slugMatch?.docs[0]
+  const doc = await collection.doc(appId).get()
 
   const raw = doc?.exists
     ? ((doc.data() || {}) as Record<string, unknown>)

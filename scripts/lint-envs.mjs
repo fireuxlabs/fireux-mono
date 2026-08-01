@@ -4,17 +4,13 @@
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/lint-envs.mjs
 //
-// Minimal env presence check.
-//
-// Local dev expects per-app `.env` files (gitignored). CI should be permissive.
-// In CI, workflows set `ALLOW_INCOMPLETE_ENVS=1`.
+// Strict local env presence check. Per-app `.env` files are intentionally
+// gitignored, so this diagnostic is not run against a clean CI checkout.
 
 import { existsSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
 const repoRoot = process.cwd()
-const allowIncomplete = process.env.ALLOW_INCOMPLETE_ENVS === '1'
-
 const projectsRoot = path.join(repoRoot, 'projects')
 
 if (!existsSync(projectsRoot)) {
@@ -54,16 +50,9 @@ if (!missing.length) {
   process.exit(0)
 }
 
-if (allowIncomplete) {
-  console.log('[envs] ⚠️  Missing .env files (allowed in CI):')
-  missing.forEach((p) => console.log(`  - ${p}`))
-  process.exit(0)
-}
-
 console.error('[envs] ❌ Missing required .env files:')
 missing.forEach((p) => console.error(`  - ${p}`))
 console.error('')
 console.error('[envs] Fix:')
 console.error('- Create .env files for each app under projects/*/*/.env')
-console.error("- Or run with ALLOW_INCOMPLETE_ENVS=1 to skip (CI mode)")
 process.exit(1)

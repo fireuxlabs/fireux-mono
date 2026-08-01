@@ -71,17 +71,13 @@
         :context-label="contextProfile.label"
         :currency-code="currencyCode"
         :description="menuDescription"
-        :image-shade="kitchenImageShade"
-        :image-url="kitchenImageUrl"
         :kitchen-name="kitchenName"
-        :logo-image-url="kitchenLogoImageUrl"
         :menu-name="menuName"
         :message="contextMessage"
         :show-currency="showCurrency"
         :surface-options="surfaceOptions"
         :status-color="contextStatusColor"
         :status-label="contextStatusLabel"
-        :wordmark-image-url="kitchenWordmarkImageUrl"
       />
 
       <MenuOrderPaused
@@ -226,12 +222,6 @@ const currencyCode = computed(() =>
 const showCurrency = computed(() =>
   menuPresentation.value?.showCurrency !== false
 )
-const kitchenImageShade = computed(() =>
-  menuPresentation.value?.kitchenImageShade || 'none'
-)
-const kitchenImageUrl = computed(() =>
-  String(menuPresentation.value?.kitchenImageUrl || '').trim()
-)
 const kitchenLogoImageUrl = computed(() =>
   String(menuPresentation.value?.kitchenLogoImageUrl || '').trim()
 )
@@ -279,7 +269,7 @@ const surfaceOptions = computed(() => menuContext.value === 'kiosk'
       menuId: menuId.value,
       routeScope: menuRouteScope.value,
       activeContext: menuContext.value,
-    })
+    }).filter(option => option.value !== 'generic')
 )
 const contextOrderNoun = computed(() => menuContext.value === 'pre_order'
   ? 'pre-orders'

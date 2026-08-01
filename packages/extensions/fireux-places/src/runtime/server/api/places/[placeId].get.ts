@@ -24,19 +24,7 @@ export default defineEventHandler(async (event): Promise<PublicPlaceDetailRespon
     throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
   }
 
-  const bySlug = await db
-    .collection(PlaceStorage.collection)
-    .where('slug', '==', locator.toLowerCase())
-    .limit(2)
-    .get()
-    .catch(() => {
-      throw createError({ statusCode: 503, statusMessage: 'Place could not be read.' })
-    })
-  const item = bySlug.size === 1
-    ? projectPublicPlaceDetail(bySlug.docs[0].id, bySlug.docs[0].data() || {})
-    : null
-  if (!item) throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
-  return success(event, item)
+  throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
 })
 
 function success(

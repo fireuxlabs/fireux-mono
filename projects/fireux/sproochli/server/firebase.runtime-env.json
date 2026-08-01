@@ -1,0 +1,7 @@
+{
+  "projectId": "fireux-2005",
+  "environment": {
+    "SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE": "https://sproochli.web.app/api/tools/menu",
+    "SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES": "[{\"service_account_email\":\"misebox-ssr@misebox-78f9c.iam.gserviceaccount.com\",\"firebase_project_id\":\"misebox-78f9c\",\"database_id\":\"sproochli\",\"app_ids\":[\"misebox-app\"]}]"
+  }
+}

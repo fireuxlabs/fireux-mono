@@ -18,6 +18,7 @@ export type InterlakenSiteLanguage =
 
 const languageCodeSet = new Set<string>(INTERLAKEN_SITE_LANGUAGE_CODES)
 const standardGermanRoutePrefixes = [
+  '/blog',
   '/choufe',
   '/admin',
   '/marktplatz',

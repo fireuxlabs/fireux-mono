@@ -1,134 +1,163 @@
 <template>
-  <main class="yellow-velo-home">
-    <section class="yv-hero">
-      <img
-        src="/img/yellow-velo/hero.png"
-        alt="Yellow Velo bicycle showroom with cycling merchandise"
-        class="yv-hero__image"
-      >
-      <div class="yv-hero__wash" />
+  <main class="yv-home">
+    <section class="yv-home-hero">
+      <div class="yv-home-hero__media">
+        <img
+          src="/img/yellow-velo/hero.png"
+          alt="Yellow Velo bicycle showroom in Interlaken"
+        >
+      </div>
 
-      <UContainer class="yv-hero__inner">
-        <div class="yv-hero__copy">
-          <div>
-            <UBadge color="neutral" variant="solid" class="yv-badge">
-              Bikes, goods, and ride culture
-            </UBadge>
-            <h1>
-              Yellow Velo
-            </h1>
-            <p class="yv-hero__lead">
-              {{ instagramProfile.description }}
-            </p>
-          </div>
-
-          <div class="yv-actions">
-            <UButton to="/bikes" size="xl" color="neutral" icon="i-lucide-bike" class="yv-button yv-button--black">
-              Explore bikes
-            </UButton>
-            <UButton to="/merch" size="xl" color="neutral" variant="outline" icon="i-lucide-shirt" class="yv-button yv-button--outline">
-              Shop merch
-            </UButton>
-          </div>
-
-          <dl class="yv-stats">
-            <div
-              v-for="stat in heroStats"
-              :key="stat.label"
-              class="yv-stat"
-            >
-              <dt>
-                {{ stat.label }}
-              </dt>
-              <dd>
-                {{ stat.value }}
-              </dd>
-            </div>
-          </dl>
+      <div class="yv-home-hero__copy">
+        <p class="yv-kicker">Independent bike shop · Interlaken</p>
+        <h1 aria-label="Ride something different.">
+          Ride<br>
+          something<br>
+          <em>different.</em>
+        </h1>
+        <p class="yv-home-hero__intro">
+          Vintage steel, modern adventure bikes, rare components and excellent
+          things to wear on and off the bike.
+        </p>
+        <div class="yv-home-hero__actions">
+          <NuxtLink to="/products" class="yv-cta yv-cta--dark">
+            Enter the shop
+            <UIcon name="i-lucide-arrow-right" />
+          </NuxtLink>
+          <NuxtLink to="/products?category=Bicycles" class="yv-text-link">
+            See the bicycles
+          </NuxtLink>
         </div>
-      </UContainer>
+      </div>
+
+      <p class="yv-home-hero__side">
+        46.6863° N · 7.8632° E
+      </p>
     </section>
 
-    <UContainer class="yv-sections">
-      <section class="yv-categories" aria-label="Yellow Velo categories">
-        <NuxtLink
-          v-for="category in categories"
-          :key="category.title"
-          :to="category.href"
-          class="yv-category-link"
-        >
-          <article class="yv-card">
-            <div>
-              <UIcon :name="category.icon" class="yv-card__icon" />
-              <div>
-                <h2>
-                  {{ category.title }}
-                </h2>
-                <p>
-                  {{ category.description }}
-                </p>
-              </div>
-            </div>
-          </article>
-        </NuxtLink>
-      </section>
+    <div class="yv-ticker" aria-hidden="true">
+      <div>
+        <span>Vintage bikes</span><i>✦</i>
+        <span>Fresh builds</span><i>✦</i>
+        <span>Rare parts</span><i>✦</i>
+        <span>Good apparel</span><i>✦</i>
+        <span>Interlaken rides</span><i>✦</i>
+      </div>
+    </div>
 
-      <section class="yv-range">
-        <div class="yv-range__intro">
-          <UBadge color="neutral" variant="solid" class="yv-badge">
-            The range
-          </UBadge>
-          <h2>
-            Built around the way people actually ride.
-          </h2>
-          <p>
-            Yellow Velo starts with dependable bicycle families and surrounds
-            them with the accessories, care items, and apparel riders come back
-            for between bigger purchases.
-          </p>
-        </div>
+    <section class="yv-intro">
+      <p class="yv-section-number">01 / The shop</p>
+      <div>
+        <h2>A bike shop for people who actually like bikes.</h2>
+        <p>
+          Not endless aisles of sameness. Yellow Velo brings together soulful
+          bicycles, workshop-worthy components and riding goods chosen with a
+          point of view.
+        </p>
+      </div>
+    </section>
 
-        <div class="yv-range__grid">
-          <div
-            v-for="item in range"
-            :key="item.title"
-            class="yv-range-item"
-          >
-            <div>
-              <UIcon :name="item.icon" />
-              <div>
-                <h3>
-                  {{ item.title }}
-                </h3>
-                <p>
-                  {{ item.description }}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section class="yv-drop">
+    <section class="yv-featured">
+      <header>
         <div>
-          <div>
-            <h2>
-              Drop-ready storefront scaffold
-            </h2>
-            <p>
-              Products and stories are ready for bikes, kit, routes, and seasonal Yellow Velo drops.
-            </p>
-          </div>
-          <UButton to="/products" color="neutral" size="xl" icon="i-lucide-shopping-bag" class="yv-button yv-button--black">
-            Open products
-          </UButton>
+          <p class="yv-section-number">02 / Fresh in</p>
+          <h2>Worth a closer look.</h2>
         </div>
-      </section>
-    </UContainer>
+        <NuxtLink to="/products" class="yv-text-link">
+          Shop all {{ products.length || 94 }} pieces
+        </NuxtLink>
+      </header>
+
+      <div v-if="featuredProducts.length" class="yv-featured__grid">
+        <NuxtLink
+          v-for="(product, index) in featuredProducts"
+          :key="product.id"
+          :to="`/products/${product.slug}`"
+          class="yv-feature"
+          :class="{ 'yv-feature--hero': index === 0 }"
+        >
+          <div class="yv-feature__image">
+            <img :src="product.main_image" :alt="product.name">
+            <span>{{ String(index + 1).padStart(2, '0') }}</span>
+          </div>
+          <div class="yv-feature__meta">
+            <div>
+              <p>{{ primaryCategory(product) }}</p>
+              <h3>{{ product.name }}</h3>
+            </div>
+            <strong>{{ formatPrice(product) }}</strong>
+          </div>
+        </NuxtLink>
+      </div>
+
+      <div v-else class="yv-featured__loading" aria-label="Loading featured products">
+        <div v-for="index in 3" :key="index" />
+      </div>
+    </section>
+
+    <section class="yv-categories">
+      <NuxtLink to="/products?category=Bicycles" class="yv-category yv-category--bikes">
+        <span>01</span>
+        <div>
+          <p>Built, restored, ready</p>
+          <h2>Bicycles</h2>
+        </div>
+        <UIcon name="i-lucide-arrow-up-right" />
+      </NuxtLink>
+      <NuxtLink to="/products?category=Components" class="yv-category">
+        <span>02</span>
+        <div>
+          <p>Old stock, new favourites</p>
+          <h2>Parts</h2>
+        </div>
+        <UIcon name="i-lucide-arrow-up-right" />
+      </NuxtLink>
+      <NuxtLink to="/products?category=Apparel" class="yv-category yv-category--yellow">
+        <span>03</span>
+        <div>
+          <p>On the bike, off the bike</p>
+          <h2>Apparel</h2>
+        </div>
+        <UIcon name="i-lucide-arrow-up-right" />
+      </NuxtLink>
+    </section>
+
+    <section class="yv-manifesto">
+      <img
+        src="/img/yellow-velo/hero.png"
+        alt="Inside the Yellow Velo workshop"
+      >
+      <div>
+        <p class="yv-section-number">03 / Interlaken</p>
+        <blockquote>
+          “The best bike is the one that makes you take the long way home.”
+        </blockquote>
+        <p>
+          We rent, tour, restore, build and ride. Drop in before the pass,
+          after the trail, or whenever a beautiful old frame catches your eye.
+        </p>
+        <a
+          href="https://www.instagram.com/yellow.velo.interlaken/"
+          target="_blank"
+          rel="noreferrer"
+          class="yv-cta yv-cta--light"
+        >
+          Follow the ride
+          <UIcon name="i-lucide-instagram" />
+        </a>
+      </div>
+    </section>
   </main>
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
+import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
+
+const description =
+  'Independent bike shop in Interlaken for vintage bicycles, adventure builds, rare components and considered cycling goods.'
+
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -143,400 +172,544 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Yellow Velo - Bicycles and cycling merchandise',
-  ogTitle: 'Yellow Velo - Bicycles and cycling merchandise',
-  twitterTitle: 'Yellow Velo - Bicycles and cycling merchandise',
-  description: () => instagramProfile.description,
-  ogDescription: () => instagramProfile.description,
-  twitterDescription: () => instagramProfile.description,
+  title: 'Yellow Velo · Independent bike shop in Interlaken',
+  ogTitle: 'Yellow Velo · Independent bike shop in Interlaken',
+  twitterTitle: 'Yellow Velo · Independent bike shop in Interlaken',
+  description,
+  ogDescription: description,
+  twitterDescription: description,
 })
 
-const instagramProfile = {
-  handle: '@yellow.velo.interlaken',
-  url: 'https://www.instagram.com/yellow.velo.interlaken/',
-  description:
-    'Independent bike shop in Interlaken. Rentals & tours. Slingers of @sumocycleworks @erstwhile.brand @ultradynamico @swiftindustries @bombtrackbicycleco.',
+const fetched = useProductCollection()
+const products = computed(() => fetched.products.value ?? [])
+const featuredProducts = computed(() => {
+  const bikes = products.value.filter(product =>
+    productCategories(product).includes('Bicycles')
+  )
+  const apparel = products.value.find(product =>
+    productCategories(product).includes('Apparel')
+  )
+  return [...bikes.slice(0, 2), ...(apparel ? [apparel] : [])].slice(0, 3)
+})
+
+const productCategories = (product: FirebaseProduct) => {
+  const metadata = product.metadata as { categories?: unknown } | undefined
+  return Array.isArray(metadata?.categories)
+    ? metadata.categories.map(value => String(value))
+    : []
 }
 
-const heroStats = [
-  { label: 'Shop', value: 'Independent Interlaken' },
-  { label: 'Ride', value: 'Rentals and tours' },
-  { label: 'Goods', value: 'Selected brands' },
-]
+const primaryCategory = (product: FirebaseProduct) =>
+  productCategories(product)[0] || 'Yellow Velo'
 
-const categories = [
-  {
-    title: 'Bicycles',
-    description: 'Balanced city builds, capable gravel rigs, and efficient road bikes.',
-    icon: 'i-lucide-bike',
-    href: '/bikes',
-  },
-  {
-    title: 'Merchandise',
-    description: 'Caps, shirts, bottles, bags, and simple ride-day goods.',
-    icon: 'i-lucide-shirt',
-    href: '/merch',
-  },
-  {
-    title: 'Stories',
-    description: 'Route notes, maintenance guides, launch drops, and rider features.',
-    icon: 'i-lucide-newspaper',
-    href: '/blog',
-  },
-]
-
-const range = [
-  {
-    title: 'Commuter bikes',
-    description: 'Durable frames, confident handling, and practical fixtures for daily use.',
-    icon: 'i-lucide-building-2',
-  },
-  {
-    title: 'Gravel bikes',
-    description: 'Comfortable geometry and wide tire clearance for mixed-surface weekends.',
-    icon: 'i-lucide-mountain',
-  },
-  {
-    title: 'Road bikes',
-    description: 'Light, fast builds for group rides, climbs, and long summer mornings.',
-    icon: 'i-lucide-gauge',
-  },
-  {
-    title: 'Merch drops',
-    description: 'Small-batch apparel and accessories built around the Yellow Velo palette.',
-    icon: 'i-lucide-sparkles',
-  },
-]
+const formatPrice = (product: FirebaseProduct) => {
+  const amount = Number(product.default_price?.unit_amount ?? 0)
+  return new Intl.NumberFormat('de-CH', {
+    style: 'currency',
+    currency: String(product.prices?.[0]?.currency || 'CHF').toUpperCase(),
+    maximumFractionDigits: amount % 100 === 0 ? 0 : 2,
+  }).format(amount / 100)
+}
 </script>
 
 <style scoped>
-.yellow-velo-home {
-  overflow: clip;
-  background: #eddb08;
-  color: #050504;
+.yv-home {
+  --ink: #11110f;
+  --paper: #f2f0e8;
+  --yellow: #e7d90b;
+  background: var(--paper);
+  color: var(--ink);
+  overflow-x: clip;
 }
 
-.yv-hero {
+.yv-home-hero {
   position: relative;
-  min-height: 92svh;
-  overflow: hidden;
-  border-bottom: 5px solid #050504;
-  background: #eddb08;
-  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1.12fr .88fr;
+  min-height: calc(100svh - 5.75rem);
+  border-bottom: 1px solid var(--ink);
 }
 
-.yv-hero__image {
-  position: absolute;
-  inset: 0;
-  z-index: -3;
+.yv-home-hero__media {
+  min-height: 44rem;
+  overflow: hidden;
+  background: #c9c3b0;
+}
+
+.yv-home-hero__media img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center;
-  mix-blend-mode: multiply;
-  opacity: 0.58;
-  filter: saturate(1.25) contrast(1.05);
+  filter: saturate(.72) contrast(1.08);
+  transition: transform 1.2s cubic-bezier(.2,.8,.2,1);
 }
 
-.yv-hero__wash {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  background:
-    linear-gradient(90deg, #eddb08 0%, rgb(237 219 8 / 0.94) 42%, rgb(237 219 8 / 0.28) 72%, rgb(237 219 8 / 0.08) 100%),
-    repeating-linear-gradient(-12deg, rgb(5 5 4 / 0.08) 0 2px, transparent 2px 18px);
+.yv-home-hero:hover .yv-home-hero__media img {
+  transform: scale(1.025);
 }
 
-.yv-hero__inner {
-  min-height: 92svh;
+.yv-home-hero__copy {
   display: flex;
-  align-items: center;
-  padding-block: calc(var(--spacing) * 16);
+  min-width: 0;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
+  padding: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 30)) clamp(calc(var(--spacing) * 6), 5vw, calc(var(--spacing) * 22));
+  background: var(--yellow);
 }
 
-.yv-hero__copy {
-  max-width: 43rem;
-}
-
-.yv-hero__copy > div:first-child {
-  display: grid;
-  gap: calc(var(--spacing) * 5);
-}
-
-.yv-badge {
-  width: fit-content;
-  border: 2px solid #050504;
-  background: #050504;
-  color: #eddb08;
+.yv-kicker,
+.yv-section-number {
+  margin: 0;
+  font-size: .68rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .18em;
   text-transform: uppercase;
 }
 
-.yv-hero h1 {
-  margin: 0;
-  max-width: 9ch;
-  color: #050504;
-  font-size: 6.5rem;
-  line-height: 0.84;
-  font-weight: 950;
+.yv-home-hero h1 {
+  margin: clamp(calc(var(--spacing) * 8), 5vh, calc(var(--spacing) * 18)) 0 calc(var(--spacing) * 10);
+  font-size: clamp(4rem, 6vw, 8rem);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -.075em;
+  line-height: .75;
+  text-transform: uppercase;
 }
 
-.yv-hero__lead {
-  max-width: 37rem;
-  margin: 0;
-  color: #15140b;
-  font-size: 1.22rem;
-  line-height: 1.62;
-  font-weight: 700;
+.yv-home-hero h1 em {
+  font-family: var(--font-serif);
+  font-size: .78em;
+  font-weight: 400;
+  letter-spacing: -.055em;
+  text-transform: none;
 }
 
-.yv-actions {
+.yv-home-hero__intro {
+  max-width: 33rem;
+  margin: 0;
+  font-size: clamp(1rem, 1.5vw, 1.3rem);
+  font-weight: 650;
+  line-height: 1.6;
+}
+
+.yv-home-hero__actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.8rem;
-  margin-top: calc(var(--spacing) * 8);
+  align-items: center;
+  gap: calc(var(--spacing) * 6);
+  margin-top: calc(var(--spacing) * 12);
 }
 
-.yv-button {
-  border: 2px solid #050504;
-  box-shadow: 5px 5px 0 #050504;
-  font-weight: 900;
+.yv-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 13rem;
+  gap: calc(var(--spacing) * 8);
+  padding: calc(var(--spacing) * 4) calc(var(--spacing) * 4.6);
+  border: 1px solid currentColor;
+  font-size: .72rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .12em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: transform .2s ease, box-shadow .2s ease;
 }
 
-.yv-button--black {
-  background: #050504;
-  color: #eddb08;
+.yv-cta:hover {
+  transform: translate(-3px, -3px);
+  box-shadow: 5px 5px 0 currentColor;
 }
 
-.yv-button--outline {
-  background: #eddb08;
-  color: #050504;
+.yv-cta--dark {
+  background: var(--ink);
+  color: var(--paper);
 }
 
-.yv-stats {
-  display: grid;
-  max-width: 42rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.8rem;
-  margin-top: calc(var(--spacing) * 8);
+.yv-cta--light {
+  background: var(--paper);
+  color: var(--ink);
 }
 
-.yv-stat {
-  min-height: 6.5rem;
-  padding: calc(var(--spacing) * 4);
-  border: 3px solid #050504;
-  border-radius: calc(var(--ui-radius) * 2);
-  background: #f6f2e6;
-  box-shadow: 5px 5px 0 #050504;
-}
-
-.yv-stat dt {
-  color: #4f4a10;
-  font-size: 0.72rem;
-  font-weight: 900;
+.yv-text-link {
+  color: inherit;
+  font-size: .74rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .1em;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: .4rem;
   text-transform: uppercase;
 }
 
-.yv-stat dd {
-  margin: 0.35rem 0 0;
-  color: #050504;
-  font-size: 1rem;
-  line-height: 1.15;
-  font-weight: 950;
+.yv-home-hero__side {
+  position: absolute;
+  right: 1rem;
+  bottom: 1.5rem;
+  margin: 0;
+  font-size: .58rem;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: .15em;
+  writing-mode: vertical-rl;
 }
 
-.yv-sections {
+.yv-ticker {
+  overflow: hidden;
+  padding: calc(var(--spacing) * 4.4) 0;
+  border-bottom: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.yv-ticker > div {
+  display: flex;
+  justify-content: space-around;
+  min-width: 70rem;
+  gap: calc(var(--spacing) * 8);
+}
+
+.yv-ticker span {
+  font-size: .72rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .15em;
+  text-transform: uppercase;
+}
+
+.yv-ticker i {
+  color: var(--yellow);
+  font-style: normal;
+}
+
+.yv-intro {
   display: grid;
-  gap: calc(var(--spacing) * 16);
-  padding-block: calc(var(--spacing) * 16);
+  grid-template-columns: .35fr 1fr;
+  gap: clamp(calc(var(--spacing) * 8), 8vw, calc(var(--spacing) * 36));
+  padding: clamp(calc(var(--spacing) * 20), 11vw, calc(var(--spacing) * 44)) clamp(calc(var(--spacing) * 6), 6vw, calc(var(--spacing) * 28));
+}
+
+.yv-intro > div {
+  max-width: 70rem;
+}
+
+.yv-intro h2,
+.yv-featured h2 {
+  margin: 0;
+  font-size: clamp(3.1rem, 6.8vw, 7.8rem);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -.07em;
+  line-height: .91;
+}
+
+.yv-intro > div > p {
+  max-width: 40rem;
+  margin: calc(var(--spacing) * 12) 0 0 auto;
+  font-size: clamp(1.05rem, 1.8vw, 1.45rem);
+  font-weight: 600;
+  line-height: 1.65;
+}
+
+.yv-featured {
+  padding: 0 clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 18)) clamp(calc(var(--spacing) * 24), 10vw, calc(var(--spacing) * 40));
+}
+
+.yv-featured > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 8);
+  margin-bottom: calc(var(--spacing) * 12);
+}
+
+.yv-featured header h2 {
+  margin-top: calc(var(--spacing) * 4);
+  font-size: clamp(2.8rem, 5vw, 5.8rem);
+}
+
+.yv-featured__grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: calc(var(--spacing) * 4);
+}
+
+.yv-feature {
+  color: inherit;
+  text-decoration: none;
+}
+
+.yv-feature__image {
+  position: relative;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: #d8d4c8;
+}
+
+.yv-feature--hero .yv-feature__image {
+  aspect-ratio: 6 / 5;
+}
+
+.yv-feature__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+
+.yv-feature:hover img {
+  transform: scale(1.035);
+}
+
+.yv-feature__image > span {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  background: var(--yellow);
+  font-size: .65rem;
+  font-weight: var(--font-weight-black);
+}
+
+.yv-feature__meta {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 5) calc(var(--spacing) * 0.4) 0;
+}
+
+.yv-feature__meta p {
+  margin: 0 0 calc(var(--spacing) * 1.8);
+  font-size: .62rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.yv-feature__meta h3 {
+  max-width: 31rem;
+  margin: 0;
+  font-size: clamp(1rem, 1.7vw, 1.5rem);
+  font-weight: 850;
+  line-height: 1.15;
+}
+
+.yv-feature__meta strong {
+  flex: none;
+  font-size: .8rem;
+}
+
+.yv-featured__loading {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: calc(var(--spacing) * 4);
+}
+
+.yv-featured__loading div {
+  min-height: 32rem;
+  background: linear-gradient(110deg, #dedbd1 35%, #ebe8de 50%, #dedbd1 65%);
+  background-size: 220% 100%;
+  animation: yv-shimmer 1.6s infinite linear;
 }
 
 .yv-categories {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: calc(var(--spacing) * 4);
+  grid-template-columns: 1.2fr 1fr 1fr;
+  border-top: 1px solid var(--ink);
+  border-bottom: 1px solid var(--ink);
 }
 
-.yv-category-link {
-  display: block;
-  height: 100%;
-}
-
-.yv-card,
-.yv-range-item,
-.yv-drop {
-  border: 3px solid #050504;
-  border-radius: calc(var(--ui-radius) * 2);
-  background: #f6f2e6;
-  box-shadow: 7px 7px 0 #050504;
-}
-
-.yv-card {
-  height: 100%;
-  min-height: 15rem;
-  padding: 1.35rem;
-  transition: transform 160ms ease, box-shadow 160ms ease;
-}
-
-.yv-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 10px 10px 0 #050504;
-}
-
-.yv-card > div {
-  display: grid;
-  gap: calc(var(--spacing) * 9);
-}
-
-.yv-card__icon {
-  width: 2.25rem;
-  height: 2.25rem;
-  color: #050504;
-}
-
-.yv-card h2,
-.yv-range h2,
-.yv-drop h2 {
-  margin: 0;
-  color: #050504;
-  font-weight: 950;
-  line-height: 1;
-}
-
-.yv-card h2 {
-  font-size: 1.55rem;
-}
-
-.yv-card p,
-.yv-range p,
-.yv-drop p {
-  color: #26210a;
-  line-height: 1.58;
-  font-weight: 650;
-}
-
-.yv-card p {
-  margin: 0.85rem 0 0;
-  font-size: 0.98rem;
-}
-
-.yv-range {
-  display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: calc(var(--spacing) * 8);
-  align-items: start;
-}
-
-.yv-range__intro {
-  display: grid;
-  gap: calc(var(--spacing) * 4);
-}
-
-.yv-range h2 {
-  max-width: 11ch;
-  font-size: 3.1rem;
-}
-
-.yv-range__intro p {
-  max-width: 34rem;
-  margin: 0;
-}
-
-.yv-range__grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: calc(var(--spacing) * 4);
-}
-
-.yv-range-item {
-  padding: 1.15rem;
-}
-
-.yv-range-item > div {
+.yv-category {
   display: flex;
-  gap: 0.9rem;
-}
-
-.yv-range-item :deep(svg) {
-  width: 1.4rem;
-  height: 1.4rem;
-  flex: 0 0 auto;
-  color: #050504;
-}
-
-.yv-range-item h3 {
-  margin: 0;
-  color: #050504;
-  font-weight: 950;
-}
-
-.yv-range-item p {
-  margin: 0.4rem 0 0;
-  font-size: 0.92rem;
-}
-
-.yv-drop {
-  padding: calc(var(--spacing) * 6);
-}
-
-.yv-drop > div {
-  display: flex;
-  align-items: center;
+  min-height: 26rem;
+  flex-direction: column;
   justify-content: space-between;
-  gap: calc(var(--spacing) * 6);
+  padding: calc(var(--spacing) * 8);
+  border-right: 1px solid var(--ink);
+  background: #d8d4c8;
+  color: inherit;
+  text-decoration: none;
+  transition: background .25s ease, color .25s ease;
 }
 
-.yv-drop h2 {
-  font-size: 2rem;
+.yv-category:last-child {
+  border-right: 0;
 }
 
-.yv-drop p {
-  max-width: 42rem;
-  margin: 0.7rem 0 0;
+.yv-category--bikes {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.yv-category--yellow {
+  background: var(--yellow);
+}
+
+.yv-category:hover {
+  background: #ffef12;
+  color: var(--ink);
+}
+
+.yv-category > span,
+.yv-category p {
+  margin: 0;
+  font-size: .65rem;
+  font-weight: var(--font-weight-black);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.yv-category h2 {
+  margin: calc(var(--spacing) * 2.4) 0 0;
+  font-size: clamp(3rem, 5.8vw, 6.5rem);
+  font-weight: var(--font-weight-black);
+  letter-spacing: -.07em;
+  line-height: .86;
+  text-transform: uppercase;
+}
+
+.yv-category svg {
+  align-self: end;
+  width: 2rem;
+  height: 2rem;
+}
+
+.yv-manifesto {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 48rem;
+  background: var(--yellow);
+}
+
+.yv-manifesto > img {
+  width: 100%;
+  height: 100%;
+  min-height: 48rem;
+  object-fit: cover;
+  object-position: 78% center;
+  filter: grayscale(1) contrast(1.08);
+}
+
+.yv-manifesto > div {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(calc(var(--spacing) * 12), 8vw, calc(var(--spacing) * 32));
+}
+
+.yv-manifesto blockquote {
+  margin: calc(var(--spacing) * 12) 0;
+  font-family: var(--font-serif);
+  font-size: clamp(2.4rem, 4.4vw, 5rem);
+  font-style: italic;
+  line-height: 1.05;
+}
+
+.yv-manifesto > div > p:not(.yv-section-number) {
+  max-width: 32rem;
+  margin: 0 0 calc(var(--spacing) * 10);
+  font-size: 1.05rem;
+  font-weight: 650;
+  line-height: 1.7;
+}
+
+.yv-manifesto .yv-cta {
+  width: fit-content;
+}
+
+@keyframes yv-shimmer {
+  to { background-position-x: -220%; }
 }
 
 @media (max-width: 900px) {
-  .yv-hero__wash {
-    background:
-      linear-gradient(180deg, rgb(237 219 8 / 0.62) 0%, #eddb08 61%),
-      repeating-linear-gradient(-12deg, rgb(5 5 4 / 0.08) 0 2px, transparent 2px 18px);
-  }
-
-  .yv-hero__inner {
-    align-items: end;
-  }
-
-  .yv-hero h1 {
-    font-size: 4.6rem;
-  }
-
-  .yv-categories,
-  .yv-range,
-  .yv-range__grid {
+  .yv-home-hero {
     grid-template-columns: 1fr;
+  }
+
+  .yv-home-hero__media {
+    min-height: 52svh;
+  }
+
+  .yv-home-hero__copy {
+    min-height: 48svh;
+  }
+
+  .yv-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .yv-featured__grid,
+  .yv-featured__loading {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .yv-feature:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .yv-categories {
+    grid-template-columns: 1fr;
+  }
+
+  .yv-category {
+    min-height: 18rem;
+    border-right: 0;
+    border-bottom: 1px solid var(--ink);
+  }
+
+  .yv-manifesto {
+    grid-template-columns: 1fr;
+  }
+
+  .yv-manifesto > img {
+    min-height: 60svh;
   }
 }
 
 @media (max-width: 560px) {
-  .yv-hero {
-    min-height: auto;
+  .yv-home-hero__media {
+    min-height: 45svh;
   }
 
-  .yv-hero__inner {
-    min-height: 44rem;
+  .yv-home-hero h1 {
+    font-size: clamp(3.1rem, 15vw, 4.4rem);
   }
 
-  .yv-hero h1 {
-    font-size: 3.8rem;
+  .yv-home-hero__side {
+    display: none;
   }
 
-  .yv-actions,
-  .yv-drop > div {
+  .yv-featured > header {
+    align-items: start;
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .yv-stats {
+  .yv-featured__grid,
+  .yv-featured__loading {
     grid-template-columns: 1fr;
+  }
+
+  .yv-feature:first-child {
+    grid-column: auto;
+  }
+
+  .yv-feature__image,
+  .yv-feature--hero .yv-feature__image {
+    aspect-ratio: 4 / 5;
+  }
+
+  .yv-manifesto > img {
+    min-height: 48svh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .yv-home-hero__media img,
+  .yv-feature__image img,
+  .yv-featured__loading div {
+    animation: none;
+    transition: none;
   }
 }
 </style>

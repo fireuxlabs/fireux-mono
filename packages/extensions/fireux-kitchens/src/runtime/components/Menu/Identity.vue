@@ -2,6 +2,7 @@
 <template>
   <header
     class="menu-identity"
+    :class="`menu-identity--${presentation}`"
     :data-menu-identity="identityKind"
   >
     <div class="menu-identity__copy">
@@ -16,25 +17,10 @@
       <MenuClose
         v-if="showExit && !isKioskMenu"
         class="menu-identity__close"
-        :aria-label="exitLabel"
+        :aria-label="resolvedExitLabel"
         :kind="exitKind"
         :to="exitPath"
       />
-
-      <div
-        v-if="activeAsset"
-        class="menu-identity__asset"
-        :class="assetClassName"
-        :data-menu-identity-asset="activeAsset.kind"
-      >
-        <img
-          :key="activeAsset.url"
-          :src="activeAsset.url"
-          alt=""
-          decoding="async"
-          @error="useNextAsset"
-        >
-      </div>
 
       <p v-if="kitchenName" class="menu-identity__kitchen">
         <UIcon name="i-lucide-map-pin" aria-hidden="true" />
@@ -54,7 +40,7 @@
         class="menu-identity__currency"
         aria-label="`Prices in ${currencyCode}`"
       >
-        <span>Prices</span>
+        <span>{{ pricesLabel }}</span>
         <strong>{{ currencyCode }}</strong>
       </div>
     </div>
@@ -62,85 +48,47 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import { useMenuExit } from '../../composables/fireux/menu/useMenuExit'
-
-type IdentityAssetKind = 'wordmark' | 'logo' | 'image'
-
-type IdentityAsset = {
-  kind: IdentityAssetKind
-  url: string
-}
 
 const props = withDefaults(defineProps<{
   identityKind?: 'menu' | 'kitchen-menu'
+  backToMenusLabel?: string
+  closeMenuLabel?: string
   headingId?: string
   kitchenName?: string
   menuName: string
   description?: string
   currencyCode?: string
   showCurrency?: boolean
-  imageShade?: 'light' | 'dark' | 'none'
-  imageUrl?: string
-  logoImageUrl?: string
+  presentation?: 'framed' | 'open'
+  pricesLabel?: string
   showExit?: boolean
-  wordmarkImageUrl?: string
 }>(), {
   identityKind: 'kitchen-menu',
+  backToMenusLabel: 'Back to menus',
+  closeMenuLabel: 'Close menu',
   headingId: 'menu-title',
   kitchenName: '',
   description: '',
   currencyCode: '',
   showCurrency: true,
-  imageShade: 'none',
-  imageUrl: '',
-  logoImageUrl: '',
+  presentation: 'framed',
+  pricesLabel: 'Prices',
   showExit: true,
-  wordmarkImageUrl: '',
 })
 const {
   exitKind,
-  exitLabel,
+  exitLabel: defaultExitLabel,
   exitPath,
   isKioskMenu,
 } = useMenuExit()
-
-const assetIndex = ref(0)
-const assets = computed<IdentityAsset[]>(() => {
-  const seen = new Set<string>()
-
-  return [
-    { kind: 'wordmark' as const, url: props.wordmarkImageUrl.trim() },
-    { kind: 'logo' as const, url: props.logoImageUrl.trim() },
-    { kind: 'image' as const, url: props.imageUrl.trim() },
-  ].filter((asset) => {
-    if (!asset.url || seen.has(asset.url)) return false
-    seen.add(asset.url)
-    return true
-  })
-})
-const activeAsset = computed(() => assets.value[assetIndex.value] || null)
-const assetClassName = computed(() => {
-  if (!activeAsset.value) return ''
-
-  const classes = [`menu-identity__asset--${activeAsset.value.kind}`]
-  if (activeAsset.value.kind === 'image' && props.imageShade !== 'none') {
-    classes.push(`menu-identity__asset--shade-${props.imageShade}`)
-  }
-
-  return classes
-})
-
-watch(
-  () => [props.wordmarkImageUrl, props.logoImageUrl, props.imageUrl],
-  () => {
-    assetIndex.value = 0
-  }
+const resolvedExitLabel = computed(() =>
+  exitKind.value === 'close'
+    ? props.closeMenuLabel || defaultExitLabel.value
+    : props.backToMenusLabel || defaultExitLabel.value
 )
 
-function useNextAsset() {
-  assetIndex.value += 1
-}
 </script>
 
 <style scoped>
@@ -154,67 +102,6 @@ function useNextAsset() {
   text-align: center;
 }
 
-.menu-identity__asset {
-  display: grid;
-  place-items: center;
-  max-width: 100%;
-  margin-bottom: 0.65rem;
-  overflow: hidden;
-}
-
-.menu-identity__asset img {
-  display: block;
-  max-width: 100%;
-}
-
-.menu-identity__asset--wordmark {
-  width: min(100%, 24rem);
-  min-height: 3rem;
-}
-
-.menu-identity__asset--wordmark img {
-  width: auto;
-  max-height: 4.5rem;
-  object-fit: contain;
-}
-
-.menu-identity__asset--logo,
-.menu-identity__asset--image {
-  width: 4.5rem;
-  height: 4.5rem;
-  border: 1px solid color-mix(in srgb, var(--menu-text) 14%, transparent);
-  background: color-mix(in srgb, var(--menu-text) 5%, var(--menu-bg));
-}
-
-.menu-identity__asset--logo {
-  padding: 0.4rem;
-  border-radius: var(--menu-radius);
-}
-
-.menu-identity__asset--logo img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.menu-identity__asset--image {
-  border-radius: 50%;
-}
-
-.menu-identity__asset--shade-light {
-  background: #111827;
-}
-
-.menu-identity__asset--shade-dark {
-  background: #fff;
-}
-
-.menu-identity__asset--image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
 .menu-identity__copy {
   position: relative;
   display: grid;
@@ -225,6 +112,12 @@ function useNextAsset() {
   border: 1px solid color-mix(in srgb, var(--menu-text) 13%, transparent);
   border-radius: var(--menu-radius);
   background: color-mix(in srgb, var(--menu-secondary) 4%, var(--menu-bg));
+}
+
+.menu-identity--open .menu-identity__copy {
+  padding: calc(var(--spacing) * 3) 0;
+  border: 0;
+  background: transparent;
 }
 
 .menu-identity__close {
@@ -250,9 +143,6 @@ function useNextAsset() {
   align-items: center;
   max-width: 100%;
   margin: 0;
-  padding: 0.3rem 0.55rem;
-  border: 1px solid color-mix(in srgb, var(--menu-secondary) 24%, transparent);
-  border-radius: 9999px;
   color: var(--menu-secondary);
   font-size: 0.72rem;
   font-weight: var(--font-weight-extrabold);
@@ -265,10 +155,10 @@ function useNextAsset() {
 
 .menu-identity h1 {
   max-width: 14ch;
-  margin: 0.6rem 0 0;
+  margin: calc(var(--spacing) * 2) 0 0;
   color: var(--menu-title);
   font-family: var(--menu-title-font);
-  font-size: clamp(2rem, 6vw, var(--text-6xl));
+  font-size: clamp(var(--text-3xl), 7vw, var(--text-5xl));
   font-weight: var(--font-weight-extrabold);
   letter-spacing: -0.04em;
   line-height: 1;
@@ -305,18 +195,24 @@ function useNextAsset() {
 }
 
 @media (max-width: 35rem) {
-  .menu-identity__asset--wordmark {
-    width: min(calc(100% - 5rem), 14rem);
-  }
-
-  .menu-identity__asset--logo,
-  .menu-identity__asset--image {
-    width: 4rem;
-    height: 4rem;
-  }
-
   .menu-identity__copy {
     padding: calc(var(--spacing) * 5) calc(var(--spacing) * 4);
+    border-radius: var(--menu-radius);
+  }
+
+  .menu-identity h1 {
+    margin-top: 0.4rem;
+    font-size: clamp(var(--text-3xl), 9vw, var(--text-4xl));
+  }
+
+  .menu-identity__description {
+    margin-top: calc(var(--spacing) * 2);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+
+  .menu-identity__currency {
+    margin-top: 0.65rem;
   }
 }
 </style>

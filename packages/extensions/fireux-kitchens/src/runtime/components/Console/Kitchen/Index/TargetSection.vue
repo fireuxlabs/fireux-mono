@@ -4,23 +4,17 @@
     :outcome="props.outcome"
     :count="cards.length"
     :entity="stateCopy.entity"
+    :title="title"
+    :description="description"
     :error-description="stateCopy.errorDescription"
     :empty-title="stateCopy.emptyTitle"
     :empty-description="stateCopy.emptyDescription"
   >
-    <template #header>
-      <h2>{{ title }}</h2>
-      <p>{{ description }}</p>
-    </template>
-
-    <KitchenCardsCell
+    <ConsoleTargetCard
       v-for="card in cards"
       :key="card.id"
-      v-bind="card"
-      :link="false"
+      :card="card"
       action
-      :show-source="false"
-      :show-badges="false"
       :selected="isSelected(card.id)"
       @action="selectKitchen(card.id)"
     />
@@ -30,6 +24,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import type { ConsoleTargetCard as ConsoleTargetCardType } from 'fireux-core/runtime/components/Console/types'
 import type { KitchenFetchSource } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -56,13 +51,28 @@ const emit = defineEmits<{
   (event: 'select', id: string, source: KitchenFetchSource): void
 }>()
 
-const { cell } = useKitchenInterface()
+const { consoleTarget } = useKitchenInterface()
 const cards = computed(() =>
   props.collection
-    .map((kitchen) => cell(kitchen))
-    .filter((card): card is NonNullable<ReturnType<typeof cell>> =>
-      Boolean(card)
-    )
+    .map((kitchen): ConsoleTargetCardType | null => {
+      const card = consoleTarget(kitchen)
+      if (!card) return null
+
+      return {
+        id: card.id,
+        title: card.name,
+        subtitle: card.shortAddress,
+        imageUrl: card.imageUrl,
+        imageAlt: `${card.name} logo`,
+        imageFit: 'contain',
+        imageBackground: card.mediaBackdropColor,
+        icon: 'i-lucide-chef-hat',
+        badges: [
+          props.source === 'demo' ? 'Demo · Read-only' : 'Live',
+        ],
+      }
+    })
+    .filter((card): card is ConsoleTargetCardType => Boolean(card))
 )
 const cardIdSet = computed(() =>
   new Set(cards.value.map((card) => card.id).filter(Boolean))

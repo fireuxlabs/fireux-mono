@@ -46,6 +46,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     `${base}components/Kitchen/Detail/Sproochli.vue`
   )
+  const placeOperations = read(
+    repoRoot,
+    `${base}components/Kitchen/Place/PublicOperations.vue`
+  )
+  const placeDetail = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/components/Place/PublicDetail.vue'
+  )
 
   assert.equal(
     existsSync(file(repoRoot, legacyPublicCollectionPath)),
@@ -62,9 +70,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(collection, /generation === previewGeneration/)
   assert.doesNotMatch(
     collection,
+    /shouldRequestPreview|previewPending|previewError/
+  )
+  assert.match(
+    collection,
+    /await state\.refresh\(\)[\s\S]*?void requestPreview\(\)/
+  )
+  assert.doesNotMatch(
+    collection,
     /firebase\/firestore|useFirestoreRead|useDevKitchenCollection/
   )
   assert.match(indexApi, /projectPublicKitchenIndexItem/)
+  assert.match(indexApi, /where\('place_id', '==', requestedPlaceId\)/)
   assert.match(detailApi, /projectPublicKitchenDetail/)
   assert.match(indexApi, /public-projection\.ts/)
   assert.match(detailApi, /public-projection\.ts/)
@@ -74,9 +91,19 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(detail, /\bisAdmin\.value\s*\|\|\s*isDeveloper\.value/)
   assert.match(publicProjection, /readKitchenSproochliConfig/)
   assert.match(publicProjection, /requested_languages/)
+  assert.match(
+    publicProjection,
+    /cardImageUrl\s*\|\|\s*parts\.place\.coverImage\s*\|\|\s*parts\.place\.imageUrl/
+  )
+  assert.match(publicProjection, /image_kind:\s*imageKind/)
   assert.doesNotMatch(publicProjection, /profile_id/)
   assert.match(sproochli, /SproochliLanguageTrigger/)
   assert.match(sproochli, /resolveSproochliLanguageOptions/)
+  assert.match(placeDetail, /KitchenPlacePublicOperations/)
+  assert.match(placeOperations, /visibility:\s*'published'/)
+  assert.match(placeOperations, /kitchenSlug:\s*kitchen\.slug/)
+  assert.match(placeOperations, /\bmenuRoutePath\s*\(/)
+  assert.doesNotMatch(placeOperations, /firebase\/firestore|collection\s*\(/)
   assert.match(identityEditor, /\/api\/kitchens\/\$\{encodeURIComponent\(props\.kitchen\.slug\)\}\/identity/)
   assert.doesNotMatch(identityEditor, /firebase\/firestore|useKitchenUpdate/)
   assert.match(identityEditor, /\buseImageStorage\b/)

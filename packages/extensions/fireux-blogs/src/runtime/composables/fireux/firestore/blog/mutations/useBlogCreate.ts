@@ -39,6 +39,7 @@ export const BlogPayload = {
   cta_text: '',
   type: '',
   product_id: '',
+  sproochli: undefined,
 } satisfies BlogPostCreateInput
 
 export const BlogStampOptions = {

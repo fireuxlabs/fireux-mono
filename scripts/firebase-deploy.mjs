@@ -5,7 +5,7 @@
 // FILE: scripts/firebase-deploy.mjs
 
 import { spawnSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
@@ -31,6 +31,14 @@ const only = typeof args.only === 'string' && args.only.trim() ? args.only.trim(
 const authDomains =
   typeof args['auth-domains'] === 'string' && args['auth-domains'].trim()
     ? args['auth-domains'].trim()
+    : ''
+const appDomain =
+  typeof args['app-domain'] === 'string' && args['app-domain'].trim()
+    ? args['app-domain'].trim()
+    : ''
+const verifyText =
+  typeof args['verify-text'] === 'string' && args['verify-text'].trim()
+    ? args['verify-text'].trim()
     : ''
 
 if (args.help || args.h) {
@@ -62,6 +70,7 @@ const childEnv = {
 }
 const buildEnv = {
   ...childEnv,
+  ...(appDomain ? { APP_DOMAIN: appDomain } : {}),
   NODE_OPTIONS: [
     process.env.NODE_OPTIONS
       ?.split(/\s+/)
@@ -106,6 +115,7 @@ const deployArgs = [
 if (only) deployArgs.push('--only', only)
 
 run('deploy', 'pnpm', deployArgs)
+await verifyHostingRelease({ appDomain, config: readJson(configPath), verifyText })
 
 console.log('[firebase-deploy] Deploy completed.')
 
@@ -113,9 +123,9 @@ function usage(exitCode) {
   const stream = exitCode === 0 ? process.stdout : process.stderr
   stream.write(
     [
-      'Usage: node scripts/firebase-deploy.mjs --project <firebase-project> [--config firebase.json] [--only hosting,functions] [--auth-domains hostname[,hostname]] [--cwd <app-root>]',
+      'Usage: node scripts/firebase-deploy.mjs --project <firebase-project> [--config firebase.json] [--only hosting,functions] [--auth-domains hostname[,hostname]] [--app-domain https://example.com] [--verify-text "expected public text"] [--cwd <app-root>]',
       '',
-      'Runs preflight, optional additive Auth-domain sync, build, Firebase output preparation, then Firebase CLI deploy with ignored stdin and --non-interactive.',
+      'Runs preflight, optional additive Auth-domain sync, a production-domain-aware build, Firebase output preparation, Firebase CLI deploy, then verifies the configured Hosting URL does not serve Firebase’s default missing-site page.',
       '',
     ].join('\n')
   )
@@ -138,4 +148,59 @@ function run(label, command, commandArgs, { env = childEnv } = {}) {
 
   console.error(`[firebase-deploy] ${label} failed with exit code ${status}.`)
   process.exit(status)
+}
+
+function readJson(filePath) {
+  try {
+    return JSON.parse(readFileSync(filePath, 'utf8'))
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    console.error(`[firebase-deploy] Failed to parse ${filePath}: ${message}`)
+    process.exit(2)
+  }
+}
+
+async function verifyHostingRelease({ appDomain, config, verifyText }) {
+  const hostingEntries = Array.isArray(config?.hosting) ? config.hosting : [config?.hosting]
+  const configuredSite = hostingEntries
+    .map((entry) => typeof entry?.site === 'string' ? entry.site.trim() : '')
+    .find(Boolean)
+  const target = appDomain || (configuredSite ? `https://${configuredSite}.web.app` : '')
+
+  if (!target) {
+    console.warn('[firebase-deploy] No Hosting site or app domain to verify after deploy.')
+    return
+  }
+
+  console.log(`\n[firebase-deploy] verify public release: ${target}`)
+
+  let response
+  let body = ''
+  let lastError = ''
+  for (let attempt = 1; attempt <= 5; attempt += 1) {
+    try {
+      response = await fetch(target, { redirect: 'follow' })
+      body = await response.text()
+      if (response.ok && !isFirebaseMissingSitePage(body) && (!verifyText || body.includes(verifyText))) {
+        console.log('[firebase-deploy] Public release verified.')
+        return
+      }
+      lastError = response.ok
+        ? verifyText && !body.includes(verifyText)
+          ? `expected text not found: ${verifyText}`
+          : 'Firebase Site Not Found page received'
+        : `HTTP ${response.status}`
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error)
+    }
+
+    if (attempt < 5) await new Promise((resolve) => setTimeout(resolve, 3000))
+  }
+
+  console.error(`[firebase-deploy] Public release verification failed for ${target}: ${lastError}`)
+  process.exit(1)
+}
+
+function isFirebaseMissingSitePage(body) {
+  return /<title>\s*Site Not Found\s*<\/title>|Firebase\s*Site Not Found|You haven't deployed an app yet/i.test(body)
 }

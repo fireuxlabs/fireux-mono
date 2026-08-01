@@ -1,6 +1,10 @@
 <template>
   <section class="collection-directory kitchen-directory">
-    <CollectionDirectoryHeader :title="title" :description="description">
+    <CollectionDirectoryHeader
+      :title="title"
+      :description="description"
+      compact
+    >
       <template #controls>
         <UInput
           v-if="showSearchInput"
@@ -172,11 +176,11 @@ const props = withDefaults(
     devJsonContext?: string
   }>(),
   {
-    title: 'Kitchens',
+    title: 'Kitchen directory',
     description: '',
     searchPlaceholder: 'Search kitchens…',
     showSearch: true,
-    showVariantToggle: true,
+    showVariantToggle: false,
     showCount: true,
     initialVariant: 'cell',
     link: true,
@@ -205,7 +209,7 @@ const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collectionSurface)
-const title = computed(() => String(props.title || 'Kitchens'))
+const title = computed(() => String(props.title || 'Kitchen directory'))
 const description = computed(() =>
   String(
     props.description || (fetched.privilegedPreview.value

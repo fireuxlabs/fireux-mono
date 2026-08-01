@@ -11,9 +11,7 @@ import {
   normalizeMenuRouteContext,
 } from '../../../../../../utils/menu-context'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
-import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import type { MenuChoice } from '../../../../../../models/kitchen/menu/menu.model'
-import type { MenuRouteScope } from '../../../../../../utils/kitchen-menu-route'
 import { text } from './order-input'
 import type {
   MenuChoiceOption,

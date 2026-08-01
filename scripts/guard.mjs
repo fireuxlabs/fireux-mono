@@ -39,6 +39,7 @@ import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
 import { run as runDemoData } from './guards/demo-data.mjs'
 import { run as runCanon } from './guards/canon.mjs'
+import { run as runSlugCanon } from './guards/slug-canon.mjs'
 import { run as runComponents } from './guards/components.mjs'
 import { run as runCssSystem } from './guards/css-system.mjs'
 import { run as runConsolePages } from './guards/console-pages.mjs'
@@ -86,6 +87,7 @@ const guards = [
   { key: 'runtime-registration', run: runRuntimeRegistration },
   { key: 'demo-data', run: runDemoData },
   { key: 'canon', run: runCanon },
+  { key: 'slug-canon', run: runSlugCanon },
   { key: 'components', run: runComponents },
   { key: 'css-system', run: runCssSystem },
   { key: 'console-pages', run: runConsolePages },

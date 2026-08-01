@@ -5,6 +5,7 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
 import type {
   MediaBackdropColor,
+  PlaceBusinessHours,
   PlaceImageShade,
   PlaceType,
 } from './place.model'
@@ -31,9 +32,10 @@ export const PUBLIC_PLACE_PROJECTION_KEYS = [
 
 /**
  * Browser-safe Place card. Exact coordinates, street/postal address, contact
- * details, ownership ids, provider metadata, and operational fields remain on
- * the canonical server-side root. Every collection row serializes this exact
- * key set so Live and Demo surfaces demonstrate the same public contract.
+ * details, ownership ids, provider metadata, and unlisted operational fields
+ * remain on the canonical server-side root. Every collection row serializes
+ * this exact key set so Live and Demo surfaces demonstrate the same public
+ * contract; detail-only fields are allowlisted separately below.
  */
 export type PublicPlaceProjection = {
   id: string
@@ -62,6 +64,7 @@ export type PublicPlaceDetailProjection = PublicPlaceProjection & {
   about?: string
   cover_image?: string
   gallery_images?: string[]
+  business_hours?: PlaceBusinessHours
   website?: string
   google_maps_url?: string
 }

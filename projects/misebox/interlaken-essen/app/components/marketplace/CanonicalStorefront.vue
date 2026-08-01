@@ -1,13 +1,24 @@
 <template>
   <article class="market-storefront__content">
-    <NuxtLink to="/marktplatz" class="market-storefront__back">
+    <NuxtLink :to="backTo" class="market-storefront__back">
       <UIcon name="i-lucide-arrow-left" aria-hidden="true" />
-      {{ copy('storefront_back_to_marketplace') }}
+      {{
+        copy(preview
+          ? 'market_admin_back'
+          : 'storefront_back_to_marketplace')
+      }}
     </NuxtLink>
+
+    <p v-if="preview" class="market-storefront__prototype-note">
+      <UIcon name="i-lucide-eye" aria-hidden="true" />
+      {{ copy('market_draft_preview_notice') }}
+    </p>
 
     <section class="market-storefront__hero market-storefront__hero--canonical">
       <div class="market-storefront__intro">
-        <p class="market-eyebrow">{{ copy('market_live_store') }}</p>
+        <p class="market-eyebrow">
+          {{ copy(preview ? 'market_draft_preview' : 'market_live_store') }}
+        </p>
         <h1 id="storefront-title">{{ store.name }}</h1>
         <div class="market-storefront__facts">
           <span>
@@ -66,7 +77,7 @@
           <strong class="market-canonical-store__price">
             {{ formatMoney(offer.price) }}
           </strong>
-          <button type="button" @click="selectOffer(offer.id)">
+          <button v-if="!preview" type="button" @click="selectOffer(offer.id)">
             <UIcon name="i-lucide-shopping-basket" aria-hidden="true" />
             {{ copy('storefront_choose_size') }}
           </button>
@@ -78,7 +89,7 @@
     </section>
 
     <section
-      v-if="selectedOffer"
+      v-if="!preview && selectedOffer"
       class="market-storefront__interest market-canonical-order"
       aria-live="polite"
     >
@@ -184,7 +195,14 @@ import type {
   MarketplaceFulfilmentMethod,
 } from 'fireux-marketplace/runtime/models/marketplace.model'
 
-const props = defineProps<{ store: PublicMarketplaceStore }>()
+const props = withDefaults(defineProps<{
+  store: PublicMarketplaceStore
+  preview?: boolean
+  backTo?: string
+}>(), {
+  preview: false,
+  backTo: '/marktplatz',
+})
 const { copy, locale } = useInterlakenCopy()
 const { currentUser: authUser } = useAuth()
 const marketplace = useMarketplaceClient()

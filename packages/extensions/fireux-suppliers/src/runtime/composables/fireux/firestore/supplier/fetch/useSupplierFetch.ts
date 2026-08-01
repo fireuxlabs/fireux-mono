@@ -1,16 +1,8 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: keep demo payloads outside the Firestore document seam.
 // Concurrent edit — 2026-07-20 22:40 CEST — Supplier/Portfolio Authority Hardening: pin single Supplier reads to allowlisted root and App paths.
-import {
-  collection,
-  limit,
-  query as fsq,
-  where,
-  type Query,
-} from 'firebase/firestore'
 import { computed, isRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   AppSupplierStorage,
@@ -46,27 +38,19 @@ export function useSupplierFetch(
   id: string | Ref<string>,
   options: UseSupplierFetchOptions = {}
 ) {
-  const db = useFirestore()
-  const { firestoreFetchDoc, firestoreQuery } = useFirestoreRead()
+  const { firestoreFetchDoc } = useFirestoreRead()
   const { surface } = useSupplierInterface()
   const idRef = isRef(id) ? id : computed(() => String(id || '').trim())
-  const keyRef = isRef(options.key)
-    ? options.key
-    : computed<SupplierFetchKey>(() =>
-        typeof options.key === 'string' ? options.key : 'id'
-      )
   const sourceRef = isRef(options.source)
     ? options.source
     : computed<SupplierFetchSource>(() =>
         typeof options.source === 'string' ? options.source : 'live'
       )
   const documentPath = computed(() =>
-    sourceRef.value !== 'live' || keyRef.value === 'slug'
-      ? ''
-      : DEFAULT_COLLECTION_PATH
+    sourceRef.value === 'live' ? DEFAULT_COLLECTION_PATH : ''
   )
   const documentId = computed(() =>
-    sourceRef.value !== 'live' || keyRef.value === 'slug'
+    sourceRef.value !== 'live'
       ? ''
       : String(idRef.value || '').trim()
   )
@@ -74,32 +58,9 @@ export function useSupplierFetch(
     documentPath,
     documentId
   )
-  const slugQuery = computed<Query<SupplierFetchDoc> | null>(() => {
-    const slug = String(idRef.value || '').trim()
-    if (sourceRef.value !== 'live' || keyRef.value !== 'slug' || !slug) return null
-
-    return fsq(
-      collection(db, DEFAULT_COLLECTION_PATH),
-      where('slug', '==', slug),
-      limit(1)
-    ) as Query<SupplierFetchDoc>
-  })
-  const slugSource = firestoreQuery<SupplierFetchDoc>(
-    slugQuery,
-    undefined,
-    DEFAULT_COLLECTION_PATH
-  )
-
   const supplier = computed<SupplierFetchDoc | null>(() => {
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value !== 'live') return null
-
-    if (keyRef.value === 'slug') {
-      const entry = slugSource.value?.[0]
-      if (!docId || !entry || String(entry.slug || '').trim() !== docId) return null
-
-      return surface({ supplier: entry }) as SupplierFetchDoc | null
-    }
 
     const entry = source.value
     if (!docId || !entry) return null
@@ -115,7 +76,6 @@ export function useSupplierFetch(
     const docId = String(idRef.value || '').trim()
     if (sourceRef.value !== 'live') return false
     if (!docId) return false
-    if (keyRef.value === 'slug') return slugSource.pending.value
     return source.pending.value
   })
   const error = computed(() => {
@@ -123,9 +83,7 @@ export function useSupplierFetch(
     if (sourceRef.value === 'test') {
       return new Error(UNSUPPORTED_TEST_SOURCE_MESSAGE)
     }
-    return keyRef.value === 'slug'
-      ? slugSource.error.value
-      : source.error.value
+    return source.error.value
   })
 
   return {

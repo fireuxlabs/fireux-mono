@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: expose explicit App self-join policy.
 import { useRuntimeConfig } from '#imports'
 import type { FireuxDesignPackConfig } from '../../../../config/app/design-packs'
+import type { FireuxAppBrandConfig } from '../../../../config/app/types'
 
 export type FireUXRole = 'global' | 'tenant' | 'standalone'
 
@@ -14,6 +15,7 @@ export interface FireUXConfig {
   appId: string
   appName: string
   appShortName: string
+  brand: FireuxAppBrandConfig
   siteUrl?: string
   modules: string[]
   domains: string[]
@@ -102,6 +104,23 @@ function reqRole(src: AnyRecord): FireUXRole {
   return raw
 }
 
+function reqBrand(src: AnyRecord): FireuxAppBrandConfig {
+  const value = src.brand
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('[fireux] runtimeConfig.public.fireux.brand must declare an owner.')
+  }
+  const brand = value as Record<string, unknown>
+  const owner = brand.owner
+  if (owner === 'core' || owner === 'ecosystem') return { owner }
+  if (
+    owner === 'app' &&
+    (brand.status === 'approved' || brand.status === 'provisional')
+  ) {
+    return { owner, status: brand.status }
+  }
+  throw new Error('[fireux] runtime brand ownership is invalid.')
+}
+
 function buildConfig(): Readonly<FireUXConfig> {
   const pub = (useRuntimeConfig().public ?? {}) as AnyRecord
   const fireux = (pub.fireux ?? {}) as AnyRecord
@@ -126,6 +145,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
+    brand: reqBrand(fireux),
     siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),

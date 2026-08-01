@@ -1,4 +1,4 @@
-import { createError, type H3Event } from 'h3'
+import { createError } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
@@ -15,7 +15,6 @@ import {
   checkpointedMenuExtraction,
   extractMenuSourceWithAi,
   menuAiExtractionCacheKey,
-  type MenuAiExtractionResult,
 } from './extraction'
 import { normalizeMenuExtractionWithAi } from './normalization'
 import { writeKitchenMenuAiUsage } from './usage'
@@ -24,39 +23,27 @@ import {
   compareKitchenMenuDraftToCurrent,
   type KitchenMenuProcessFlag,
 } from '../draft/comparison'
-import {
-  countKitchenMenuDraftItems,
-  normalizeKitchenMenuDraftSections,
-} from '../draft/sections'
+import { normalizeKitchenMenuDraftSections } from '../draft/sections'
 import { readKitchenMenuCurrentShape } from '../draft/current'
 import { sourceRows } from '../source/rows'
 import {
   kitchenMenuUploadKitchenPath,
   kitchenMenuUploadPath,
 } from '../source/uploads'
-export type ProcessKitchenMenuAiReviewInput = {
-  event: H3Event
-  appId: string
-  kitchenId: string
-  menuId: string
-  uploadId: string
-  uid: string
-  currencyCode: string
-  quality?: string
-  limit?: number
-  force?: boolean
-}
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
-    : {}
-const countExtractedItems = (
-  sections: ReturnType<typeof normalizeKitchenMenuDraftSections>
-) => countKitchenMenuDraftItems(sections)
-const errorMessage = (value: unknown) =>
-  value instanceof Error ? value.message : 'Menu AI processing failed.'
-const checkpointValue = (value: MenuAiExtractionResult) =>
-  JSON.parse(JSON.stringify(value)) as MenuAiExtractionResult
+import type { ProcessKitchenMenuAiReviewInput } from './review-types'
+import {
+  countExtractedMenuItems,
+  menuAiCheckpointValue,
+  menuAiReviewErrorMessage,
+  menuAiReviewRecord,
+} from './review-utils'
+
+export type { ProcessKitchenMenuAiReviewInput } from './review-types'
+
+const record = menuAiReviewRecord
+const countExtractedItems = countExtractedMenuItems
+const errorMessage = menuAiReviewErrorMessage
+const checkpointValue = menuAiCheckpointValue
 export async function processKitchenMenuAiReview(
   input: ProcessKitchenMenuAiReviewInput
 ) {
@@ -341,6 +328,16 @@ export async function processKitchenMenuAiReview(
         status: extractedStatus,
         source: normalizedSections.length ? 'normalized' : 'extracted',
         sections: draftSections,
+        provenance: {
+          provider:
+            extraction.normalized?.provider ||
+            extraction.provider ||
+            'fireux-ai-menu-extraction',
+          model:
+            extraction.normalized?.model ||
+            extraction.model ||
+            model,
+        },
         report: {
           flags,
           counts: comparisonCounts,

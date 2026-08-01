@@ -9,8 +9,17 @@ import {
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
-import type { normalizeKitchenMenuDraftSections } from './sections'
+import type {
+  KitchenMenuDraftTranslation,
+  normalizeKitchenMenuDraftSections,
+} from './sections'
 import { ensureKitchenMenuRootEntry } from './root-entry'
+import {
+  appendKitchenMenuCacheUnits,
+} from '../sproochli/cache-import'
+import type {
+  SproochliMenuCacheImportUnit,
+} from 'fireux-sproochli/runtime/menu-cache.ts'
 
 type DraftSections = ReturnType<typeof normalizeKitchenMenuDraftSections>
 
@@ -25,6 +34,8 @@ const titleFromId = (value: string) =>
     .map((part) => part ? `${part[0]?.toUpperCase()}${part.slice(1)}` : '')
     .filter(Boolean)
     .join(' ')
+const fieldSegment = (value: unknown) =>
+  text(value).replace(/[^A-Za-z0-9_-]+/g, '-') || 'unknown'
 const uniqueSlug = (used: Set<string>, fallback: string, seed: unknown) => {
   const base = normalizeSlug(seed) || fallback
   let id = base
@@ -73,6 +84,7 @@ export async function writeKitchenMenuDraft(input: {
   const status = text(input.status) || text(existing.status) || 'draft'
   const sectionIds = new Set<string>()
   const dishIds = new Set<string>()
+  const sproochliCacheUnits: SproochliMenuCacheImportUnit[] = []
   let itemCount = 0
 
   const description = text(existing.description)
@@ -98,6 +110,11 @@ export async function writeKitchenMenuDraft(input: {
       section.label
     )
     const sectionRef = menuRef.collection('sections').doc(sectionId)
+    appendKitchenMenuCacheUnits(sproochliCacheUnits, {
+      fieldId: `section:${sectionId}:label`,
+      sourceText: section.label,
+      translations: section.label_translations,
+    })
 
     writeBatch.set(sectionRef, {
       id: sectionId,
@@ -118,8 +135,46 @@ export async function writeKitchenMenuDraft(input: {
       )
       const dishRef = db.doc(`${input.kitchenPath}/${DishStorage.collection}/${dishId}`)
       const itemId = `${dishId}-${itemIndex + 1}`
+      const itemKey =
+        `dish:${fieldSegment(sectionId)}__${fieldSegment(itemId)}`
       const addOns = normalizeMenuItemAddOns(item.add_ons)
       const priceOptions = normalizeMenuItemPriceOptions(item.price_options)
+      appendKitchenMenuCacheUnits(sproochliCacheUnits, {
+        fieldId: `${itemKey}:name`,
+        sourceText: item.name,
+        translations: item.name_translations,
+      })
+      appendKitchenMenuCacheUnits(sproochliCacheUnits, {
+        fieldId: `${itemKey}:description`,
+        sourceText: item.description,
+        translations: item.description_translations,
+      })
+      item.price_options.forEach((option, optionIndex) => {
+        const source = record(option)
+        const normalized = priceOptions[optionIndex]
+        if (!normalized) return
+        const optionId =
+          normalizeSlug(normalized.label) || `option-${optionIndex + 1}`
+        appendKitchenMenuCacheUnits(sproochliCacheUnits, {
+          fieldId: `${itemKey}:price-option:${optionId}:label`,
+          sourceText: normalized.label,
+          translations: Array.isArray(source.label_translations)
+            ? source.label_translations as KitchenMenuDraftTranslation[]
+            : [],
+        })
+      })
+      item.add_ons.forEach((option, optionIndex) => {
+        const source = record(option)
+        const normalized = addOns[optionIndex]
+        if (!normalized) return
+        appendKitchenMenuCacheUnits(sproochliCacheUnits, {
+          fieldId: `${itemKey}:add-on:${normalized.id}:label`,
+          sourceText: normalized.label,
+          translations: Array.isArray(source.label_translations)
+            ? source.label_translations as KitchenMenuDraftTranslation[]
+            : [],
+        })
+      })
       const optionPrices = priceOptions
         .map((option) => option.price)
         .filter((price) => price > 0)
@@ -185,5 +240,6 @@ export async function writeKitchenMenuDraft(input: {
     status,
     sections_count: input.sections.length,
     items_count: itemCount,
+    sproochliCacheUnits,
   }
 }

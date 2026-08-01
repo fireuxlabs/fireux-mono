@@ -7,7 +7,7 @@ import { execFileSync } from 'node:child_process'
 import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs'
 import path from 'node:path'
 
-const MAX_TEXT_FILE_BYTES = 2_000_000
+const MAX_STAGED_FILE_BYTES = 64_000_000
 const SAFE_SERVICE_ACCOUNT_EXAMPLE = /(^|\/)service-account\.example\.json$/i
 const PRIVATE_KEY_MARKER = /-{5}BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-{5}/
 const NON_EMPTY_JSON_PRIVATE_KEY = /"private_key"\s*:\s*"(?!")/
@@ -104,7 +104,7 @@ function stagedChangedFiles(repoRoot) {
 }
 
 function inspectTextBuffer(buffer) {
-  if (buffer.length > MAX_TEXT_FILE_BYTES || buffer.includes(0)) return []
+  if (buffer.includes(0)) return []
 
   const source = buffer.toString('utf8')
   const findings = []
@@ -129,7 +129,7 @@ function inspectCommitVisibleTextFile(repoRoot, relativePath) {
     return []
   }
 
-  if (!stat.isFile() || stat.size > MAX_TEXT_FILE_BYTES) return []
+  if (!stat.isFile()) return []
 
   return inspectTextBuffer(readFileSync(absolutePath))
 }
@@ -139,12 +139,16 @@ function inspectStagedTextFile(repoRoot, relativePath) {
     const buffer = execFileSync('git', ['show', `:${relativePath}`], {
       cwd: repoRoot,
       encoding: null,
-      maxBuffer: MAX_TEXT_FILE_BYTES + 1,
+      maxBuffer: MAX_STAGED_FILE_BYTES + 1,
       stdio: ['ignore', 'pipe', 'pipe'],
     })
     return inspectTextBuffer(buffer)
   } catch (error) {
-    if (error?.code === 'ENOBUFS') return []
+    if (error?.code === 'ENOBUFS') {
+      throw new Error(
+        `[guard] Staged file is too large for credential inspection: ${relativePath}`
+      )
+    }
     throw new Error(`[guard] Unable to inspect staged file: ${relativePath}`)
   }
 }

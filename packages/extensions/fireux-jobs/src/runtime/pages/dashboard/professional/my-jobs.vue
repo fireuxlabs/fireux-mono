@@ -73,7 +73,7 @@
             color="primary"
             variant="soft"
             title="The employer has made an offer"
-            description="Before accepting, review the job terms. The named employer—not Misebox or Werkbox—will employ and pay you directly."
+            description="Before accepting, review the job terms. The named employer—not the platform—will employ and pay you directly."
           />
 
           <div
@@ -106,10 +106,7 @@
             </div>
           </div>
 
-          <div
-            v-else-if="item.application.status === 'submitted'"
-            class="mt-4"
-          >
+          <div v-else-if="item.application.status === 'submitted'" class="mt-4">
             <UButton
               size="sm"
               color="neutral"
@@ -153,7 +150,7 @@ const acceptedTerms = reactive<Record<string, boolean>>({})
 function label(value: string): string {
   return value
     .replace(/_/g, ' ')
-    .replace(/\b\w/g, character => character.toUpperCase())
+    .replace(/\b\w/g, (character) => character.toUpperCase())
 }
 
 const statusLabel = label

@@ -9,8 +9,8 @@
       },
     ]"
     :style="themeStyleVars"
-    :dir="translation.direction.value"
-    :lang="translation.selectedLanguage.value || undefined"
+    :dir="menuDirection"
+    :lang="menuLanguage || undefined"
   >
     <p v-if="pending" class="menu-detail__state">
       Loading menu...
@@ -30,19 +30,17 @@
     <template v-else-if="detailMenu">
       <ClientOnly>
         <div
-          v-if="translation.enabled.value"
+          v-if="detailMenu.sproochli"
           class="menu-detail__translation"
         >
           <SproochliLanguageTrigger
-            :language-options="translation.languageOptions.value"
-            :selected-language="translation.selectedLanguage.value"
-            :default-language="translation.defaultLanguage.value"
+            :language-options="sproochliLanguageOptions"
+            :selected-language="detailMenu.sproochli.language"
+            default-language="mixed"
+            :show-group-labels="true"
           />
-          <span v-if="translation.translating.value" class="menu-detail__translation-state">
-            Translating menu…
-          </span>
           <span
-            v-else-if="translation.translationError.value"
+            v-if="detailMenu.sproochli.state === 'unavailable'"
             class="menu-detail__translation-state menu-detail__translation-state--error"
           >
             Translation unavailable. Showing original.
@@ -51,8 +49,7 @@
       </ClientOnly>
 
       <MenuDetailFood
-        v-if="translation.menu.value"
-        :menu="translation.menu.value"
+        :menu="detailMenu"
         :menu-id="menuId"
         :menu-context="menuContext"
         :menu-route-scope="props.menuRouteScope"
@@ -67,9 +64,14 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useRoute } from '#imports'
+import {
+  isSproochliRtlLanguage,
+  normalizeSproochliLanguage,
+  resolveSproochliLanguageState,
+} from 'fireux-sproochli/runtime/sproochli'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
-import { useSproochliMenuTranslation } from '../../../composables/fireux/menu/useSproochliMenuTranslation'
 import type { MenuRouteContext } from '../../../models/kitchen/menu/menu-context.model'
 import {
   rootMenuRouteScope,
@@ -89,6 +91,10 @@ const props = withDefaults(
 )
 
 const menuId = computed(() => props.menuId)
+const route = useRoute()
+const sproochliLanguage = computed(() =>
+  normalizeSproochliLanguage(route.query.sproochli)
+)
 const menuContext = computed(() => props.menuContext)
 const menuRouteScope = computed(() => props.menuRouteScope)
 const kitchenSlug = computed(() =>
@@ -105,8 +111,25 @@ const {
 } = useMenu(menuId, {
   menuContext,
   routeScope: menuRouteScope,
+  sproochliLanguage,
 })
-const translation = useSproochliMenuTranslation({ menu: detailMenu })
+const sproochliLanguageOptions = computed(() =>
+  resolveSproochliLanguageState({
+    enabled: true,
+    cachedLanguages: detailMenu.value?.sproochli?.readyLanguages ?? [],
+  }).options
+)
+const menuLanguage = computed(() =>
+  detailMenu.value?.sproochli?.state === 'translated'
+    ? detailMenu.value.sproochli.language
+    : ''
+)
+const menuDirection = computed(() =>
+  detailMenu.value?.sproochli?.state === 'translated' &&
+  isSproochliRtlLanguage(detailMenu.value.sproochli.language)
+    ? 'rtl'
+    : 'ltr'
+)
 const documentKitchenName = computed(() =>
   documentMenu.value?.kitchenName || ''
 )

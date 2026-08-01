@@ -20,6 +20,7 @@ import type {
   MarketplaceStoreCreateIntent,
   MarketplaceStorePatchIntent,
 } from '../../models/marketplace-api.model'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 
 export class MarketplaceValidationError extends Error {}
 
@@ -28,7 +29,7 @@ const record = (value: unknown): Record<string, unknown> =>
     ? value as Record<string, unknown>
     : {}
 
-const fail = (message: string): never => {
+function fail(message: string): never {
   throw new MarketplaceValidationError(message)
 }
 
@@ -204,7 +205,7 @@ export function normalizeMarketplaceStorePatch(
   }
 }
 
-const price = (value: unknown) => {
+const price = (value: unknown): FinancialMoney | null => {
   if (value === null || value === undefined) return null
   try {
     const money = requireFinancialMoney(value, {

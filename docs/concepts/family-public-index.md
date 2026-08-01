@@ -1,6 +1,6 @@
 # Public index family
 
-Updated: 2026-07-23
+Updated: 2026-07-29
 Ref: e98ffb195
 Role: map, not canon
 
@@ -25,7 +25,9 @@ Every public entity index should:
 - Keep the route page thin: metadata, route shell, major domain components.
 - Delegate collection state, filtering, card mapping, and debug to the owning
   domain collection surface.
-- Use a root `XCollectionManager` only for a root/public collection doorway.
+- Use an unqualified `XCollectionManager` only for the default collection
+  doorway. The route consumes only fields its access policy or bounded
+  projection exposes; the canonical root may also contain protected data.
   Scoped children use named scoped surfaces.
 - Let the manager own its default source. Pages do not pass raw collections or
   source-mode toggles into root managers.
@@ -41,17 +43,22 @@ Every public entity index should:
   Agent, Chef, Driver, and Professional cells and pills render through the
   shared Core `PublicProfileDirectoryCard`. Semantic profile tones are a
   presentation delta only; they do not classify or authorize records.
+- Image-led public entity directories use Core `PublicEntityDirectoryCard`
+  through their named domain Cell adapters. Kitchen and Place are the proving
+  siblings: they share whole-card interaction, media failure, hierarchy,
+  focus, and responsive composition while retaining domain-owned data,
+  badges, facts, and copy.
 
 ## Current presentation classes
 
 | Class                            | Current members                                                 | Reason and status                                                                                                                                            |
 | -------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Discovery index                  | User, Kitchen, Job, Chef, Driver, Agent, Professional           | `accepted`: these are primary public discovery surfaces and use `PublicIndexSurface` with browse content first and an optional secondary domain doorway      |
+| Discovery index                  | User, Kitchen, Place, Job, Chef, Driver, Agent, Professional    | `accepted`: these are primary public discovery surfaces and use `PublicIndexSurface` with browse content first and an optional secondary domain doorway      |
 | Editorial index                  | Blog                                                            | `accepted`: an editorial masthead and story hierarchy serve media discovery while the Blogs extension retains one endpoint-first composition for every app  |
 | Controller-owned authority index | App, Ecosystem                                                  | `accepted`: the page chooses an explicit ecosystem/platform controller; the manager must not infer authority                                                 |
 | Route-policy index               | Menu                                                            | `accepted`: `MenuIndex` owns root, kitchen-directory, and tenant outcomes including bounded redirect policy; the route page stays a thin controller consumer |
 | Utility directory                | Ingredient                                                      | `accepted`: browse-only vocabulary surface with no proven public creation CTA                                                                                |
-| Basic root directory             | Company, Place, Product, Supplier, Portfolio and Property       | `to-confirm`: current pages use the smaller `UPage` shell; keep that shape until product intent says whether each is a primary discovery surface             |
+| Basic root directory             | Company, Product, Supplier, Portfolio and Property              | `to-confirm`: current pages use the smaller `UPage` shell; keep that shape until product intent says whether each is a primary discovery surface             |
 
 `PublicIndexSurface` versus `UPage` is a product-presentation decision, not a
 data-source decision. Do not switch shells merely to make files textually
@@ -72,7 +79,7 @@ The detailed manager matrix lives in `collection-manager.md`.
 | Delta                                                                | State      | Why it exists                                                                                          |
 | -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------ |
 | Public profile indexes join canonical User identity server-side      | `accepted` | Raw profile and User roots are not the public list transport                                           |
-| Kitchen directory joins Place and App scope through `/api/kitchens`  | `accepted` | Kitchen cards inherit bounded Place presentation without copied identity; an explicit sparse Kitchen card-image override may replace only that presentation field |
+| Kitchen directory joins Place and App scope through `/api/kitchens`  | `accepted` | Kitchen cards inherit bounded Place photography without copied identity in the order Kitchen card override, Place cover, then Place image; the projection declares whether the chosen asset is photographic or brand media |
 | Kitchen supports an explicit authenticated admin/developer preview   | `accepted` | Operators need to inspect canonical unpublished targets without weakening the default public directory |
 | Job directory applies category, publication, and tenant source scope | `accepted` | One Job entity serves multiple products while each App exposes only its configured public catalogue    |
 | Menu index may include upload/tool behavior                          | `accepted` | A root quick Menu can begin without a Kitchen; KitchenMenu remains a different scoped entity           |

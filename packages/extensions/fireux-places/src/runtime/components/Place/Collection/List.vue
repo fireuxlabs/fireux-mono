@@ -1,15 +1,21 @@
 <template>
-  <div v-if="variant === 'pill'" class="collection-grid">
-    <template v-for="card in cards" :key="card.to || card.id">
+  <ul
+    v-if="variant === 'pill'"
+    class="collection-grid place-collection-list place-collection-list--pill"
+  >
+    <li v-for="card in cards" :key="card.to || card.id">
       <slot name="pill" :card="card" />
-    </template>
-  </div>
+    </li>
+  </ul>
 
-  <div v-else class="collection-stack">
-    <template v-for="card in cards" :key="card.to || card.id">
+  <ul
+    v-else
+    class="collection-stack place-collection-list place-collection-list--cell"
+  >
+    <li v-for="card in cards" :key="card.to || card.id">
       <slot name="cell" :card="card" />
-    </template>
-  </div>
+    </li>
+  </ul>
 </template>
 
 <script setup lang="ts">
@@ -25,3 +31,19 @@ withDefaults(
   }
 )
 </script>
+
+<style scoped>
+.place-collection-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.place-collection-list > li {
+  min-width: 0;
+}
+
+.place-collection-list--cell > li {
+  height: 100%;
+}
+</style>

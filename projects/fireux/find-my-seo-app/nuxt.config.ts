@@ -9,6 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'find-my-seo-app',
   name: 'Find My SEO',
   shortName: 'FindMySEO',
+  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'find-my-seo',
   role: 'standalone',
   domains: ['professionals'],

@@ -19,12 +19,12 @@ export {
 } from './attachment.ts'
 
 export {
-  requestSproochliMenuTranslations,
   sproochliProviderBaseUrl,
   sproochliProviderUrl,
   SPROOCHLI_PROVIDER_PROD_URL,
-  type SproochliMenuTranslateRequest,
-  type SproochliMenuTranslateResponse,
+  type SproochliMenuResolveRequest,
+  type SproochliMenuResolveResponse,
+  type SproochliMenuSource,
   type SproochliMenuTranslationField,
 } from './composables/fireux/sproochli/provider.ts'
 

@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-26
+// last_used: 2026-07-30
 // usage_note: run through pnpm guard; protects reviewed Sproochli copy authority, language-state assets, and the Interlaken pilot.
 
 import assert from 'node:assert/strict'
@@ -29,9 +29,9 @@ import {
   TranslationMemoryStorage,
 } from '../../packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts'
 import {
-  makeSproochliMenuCacheKey,
+  makeSproochliMenuMemoryKey,
   makeSproochliSourceHash,
-} from '../../projects/fireux/sproochli/server/utils/sproochliTranslationKey.ts'
+} from '../../packages/extensions/fireux-sproochli/src/runtime/server/menu/key.ts'
 import {
   INTERLAKEN_SITE_DEFAULT_LANGUAGE,
   INTERLAKEN_SITE_LANGUAGE_CODES,
@@ -115,12 +115,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'projects/misebox/interlaken-essen/app/components/choufe/Main.vue',
     'projects/misebox/interlaken-essen/app/components/verchoufe/Main.vue',
     'projects/misebox/interlaken-essen/app/components/marketplace/Shared.vue',
-    'projects/misebox/interlaken-essen/app/components/marketplace/SellerCard.vue',
-    'projects/misebox/interlaken-essen/app/components/marketplace/Storefront.vue',
+    'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalSellerCard.vue',
+    'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalStorefront.vue',
   ].map(relativePath => read(repoRoot, relativePath))
+  const interlakenMarketplacePublicSurfaces = [
+    'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
+    'projects/misebox/interlaken-essen/app/pages/marktplatz/[sellerId].vue',
+    'projects/misebox/interlaken-essen/app/pages/choufe/[sectionId].vue',
+  ].map(relativePath => read(repoRoot, relativePath)).join('\n')
   const translationReadme = read(
     repoRoot,
     'packages/extensions/fireux-translation/README.md'
+  )
+  const sproochliReadme = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/README.md'
   )
   const languageTrigger = read(
     repoRoot,
@@ -166,9 +175,49 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/menu/useMenu.ts'
   )
-  const menuTranslator = read(
+  const menuResolver = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/menu/useSproochliMenuTranslation.ts'
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/resolve.ts'
+  )
+  const menuManifestModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-detail.model.ts'
+  )
+  const menuProvider = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/composables/fireux/sproochli/provider.ts'
+  )
+  const menuProviderClient = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/server/menu/provider-client.ts'
+  )
+  const coreAppConfigTypes = read(
+    repoRoot,
+    'packages/core/fireux-core/src/config/app/types.ts'
+  )
+  const coreNitroConfig = read(
+    repoRoot,
+    'packages/core/fireux-core/src/config/app/nitro.ts'
+  )
+  const coreFireuxConfig = read(
+    repoRoot,
+    'packages/core/fireux-core/src/config/app/fireux.config.ts'
+  )
+  const miseboxNuxtConfig = read(
+    repoRoot,
+    'projects/misebox/misebox-app/nuxt.config.ts'
+  )
+  const firebaseOutputPreparation = read(
+    repoRoot,
+    'scripts/prepare-firebase-output.mjs'
+  )
+  const sproochliRuntimeEnvironment = read(
+    repoRoot,
+    'projects/fireux/sproochli/server/firebase.runtime-env.json'
+  )
+  const miseboxRuntimeEnvironment = read(
+    repoRoot,
+    'projects/misebox/misebox-app/server/firebase.runtime-env.json'
   )
   const menuEndpoint = read(
     repoRoot,
@@ -178,13 +227,105 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/server/menu/payload/build.ts'
   )
+  const kitchenMenuModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/kitchen-menu.model.ts'
+  )
+  const rootMenuModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu.model.ts'
+  )
+  const menuRootEntry = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/utils/root-entry.ts'
+  )
+  const menuPayloadTypes = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/payload/types.ts'
+  )
   const menuTranslationEndpoint = read(
     repoRoot,
-    'projects/fireux/sproochli/server/api/tools/menu/translate.post.ts'
+    'projects/fireux/sproochli/server/api/tools/menu/index.post.ts'
+  )
+  const menuTranslationOptions = read(
+    repoRoot,
+    'projects/fireux/sproochli/server/api/tools/menu/index.options.ts'
+  )
+  const menuProviderAuth = read(
+    repoRoot,
+    'projects/fireux/sproochli/server/utils/sproochliMenuProviderAuth.ts'
+  )
+  const sproochliTools = read(
+    repoRoot,
+    'projects/fireux/sproochli/server/utils/sproochliTools.ts'
+  )
+  const sproochliHostTarget = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/host.ts'
+  )
+  const sproochliHostStorage = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/server/menu/storage.ts'
+  )
+  const menuCompleteCache = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/server/menu/translation-cache.ts'
   )
   const translationMemory = read(
     repoRoot,
-    'projects/fireux/sproochli/server/utils/sproochliTranslationMemory.ts'
+    'packages/extensions/fireux-sproochli/src/runtime/server/menu/translation-memory.ts'
+  )
+  const menuMemoryRecipe = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/server/menu/translation-recipe.ts'
+  )
+  const translationModel = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts'
+  )
+  const menuCacheContract = read(
+    repoRoot,
+    'packages/extensions/fireux-sproochli/src/runtime/menu-cache.ts'
+  )
+  const menuAiSchema = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/schema.ts'
+  )
+  const menuAiExtraction = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/extraction.ts'
+  )
+  const menuAiNormalization = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/normalization.ts'
+  )
+  const menuDraftSections = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/draft/sections.ts'
+  )
+  const menuDraftWrite = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/draft/write.ts'
+  )
+  const kitchenMenuCacheImport = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/cache-import.ts'
+  )
+  const menuConfirmEndpoint = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/menus/confirm.post.ts'
+  )
+  const sproochliHostRules = read(
+    repoRoot,
+    'scripts/firebase/sproochli/server-only.rules'
+  )
+  const sproochliHostFirebaseConfig = read(
+    repoRoot,
+    'scripts/firebase/sproochli/misebox.firebase.json'
+  )
+  const sproochliHostMigration = read(
+    repoRoot,
+    'scripts/migrate-sproochli-host-storage.mjs'
   )
   const kitchenMenuScope = read(
     repoRoot,
@@ -239,13 +380,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.equal(
     isInterlakenSiteLanguageAvailableOnPath(
       'de',
-      '/marktplatz/anja-honig'
+      '/marktplatz/example-store'
     ),
     true
   )
   assert.equal(
     isInterlakenSiteLanguageAvailableOnPath('de', '/blog'),
-    false
+    true
   )
   assert.equal(
     isInterlakenSiteLanguageAvailableOnPath('de', '/auth'),
@@ -395,6 +536,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(interlakenFeed, /blogPost\.available_languages\.includes/)
   assert.match(interlakenFeed, /v-if="resolvedFutterPosts\.length"/)
   assert.match(
+    interlakenMarketplacePublicSurfaces,
+    /\/api\/public\/marketplace\/stores/
+  )
+  assert.doesNotMatch(
+    interlakenMarketplacePublicSurfaces,
+    /marketplace-preview|marketplacePreviewSellers|MarketplaceSellerCard|MarketplaceStorefront/
+  )
+  assert.match(
     interlakenStyles,
     /button\.market-language\.sproochli-language-trigger--emoji/
   )
@@ -440,6 +589,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(languageTrigger, /sproochliProviderBaseUrl/)
   assert.match(languageTrigger, /copy\?: Partial<SproochliLanguageTriggerCopy>/)
   assert.match(languageTrigger, /triggerCopy\.cached/)
+  assert.match(languageTrigger, /triggerCopy\.onDemand/)
   assert.match(languageTrigger, /triggerCopy\.visitSproochli/)
   assert.match(languageTrigger, /target="_blank"/)
   assert.match(languageTrigger, /rel="noopener noreferrer"/)
@@ -467,10 +617,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(languageTrigger, /showWhenSingleOption/)
   assert.match(languageTrigger, /onlyOriginalOption/)
+  assert.match(languageTrigger, /option => option\.source === 'original'/)
+  assert.match(languageTrigger, /option\.source === 'attached'/)
+  assert.match(languageTrigger, /option\.source === 'public'/)
+  assert.match(languageTrigger, /option => option\.source === 'cache'/)
+  assert.doesNotMatch(languageTrigger, /option\.source !== 'on_demand'/)
   assert.doesNotMatch(languageTrigger, />\s*Cached\s*</)
+  assert.doesNotMatch(languageTrigger, />\s*On demand\s*</)
   assert.match(languageTrigger, /key: 'cached'/)
-  assert.match(languageTrigger, /showSeparator: cached\.length > 0/)
-  assert.match(languageTrigger, /option\.source !== 'on_demand'/)
+  assert.match(languageTrigger, /key: 'onDemand'/)
+  assert.match(languageTrigger, /showGroupLabels/)
+  assert.match(
+    languageTrigger,
+    /showSeparator: original\.length > 0 \|\| available\.length > 0/
+  )
   assert.match(languageTrigger, /option\.source === 'on_demand'/)
   assert.doesNotMatch(languageTrigger, /:disabled=/)
   assert.doesNotMatch(languageTrigger, /Not published/)
@@ -526,47 +686,480 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(kitchenSproochliEndpoint, /FieldValue\.delete\(\)/)
   assert.match(kitchenSproochliEndpoint, /serverAuditStamp/)
   assert.match(menuBrowse, /SproochliLanguageTrigger/)
-  assert.match(menuBrowse, /show-group-labels/)
   assert.match(menuBrowse, /show-when-single-option/)
-  assert.match(menuBrowse, /useSproochliMenuTranslation/)
-  assert.match(menuBrowse, /browseSurfaceCopy\.browseLabel/)
+  assert.match(menuBrowse, /resolveSproochliLanguageState/)
+  assert.match(menuBrowse, /sproochli\.value\?\.state/)
+  assert.doesNotMatch(menuBrowse, /useSproochliMenuTranslation/)
+  assert.match(menuBrowse, /:show-group-labels="true"/)
+  assert.match(menuBrowse, /ready_languages/)
+  assert.match(
+    menuBrowse,
+    /cachedLanguages: sproochli\.value\?\.readyLanguages \?\? \[\]/
+  )
+  assert.match(menuBrowse, /MenuSurfaceRail/)
   assert.match(menuBrowse, /browseSurfaceCopy\.allergyTitle/)
-  assert.doesNotMatch(menuBrowse, /label="Browse"/)
+  assert.doesNotMatch(menuBrowse, /MenuSurfaceSwitcher/)
   assert.doesNotMatch(menuBrowse, />Allergies or intolerances\?<\/strong>/)
-  assert.match(menuTranslator, /requestSproochliMenuTranslations/)
-  assert.match(menuTranslator, /source: 'cache' as const/)
-  assert.match(menuTranslator, /cachedLanguages/)
-  assert.match(menuTranslator, /MENU_BROWSE_SURFACE_COPY_FIELDS/)
-  assert.match(menuTranslator, /surfaceCopyCacheKey/)
-  assert.match(menuTranslator, /resolveMenuBrowseSurfaceCopy/)
-  assert.doesNotMatch(menuTranslator, /\$fetch<[^>]*>\([^)]*method:\s*'POST'/s)
+  assert.equal(
+    existsSync(
+      path.join(
+        repoRoot,
+        'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/menu/useSproochliMenuTranslation.ts'
+      )
+    ),
+    false
+  )
   assert.match(menuReader, /query\.set\('sproochli'/)
   assert.match(menuEndpoint, /normalizeSproochliLanguage\(query\.sproochli\)/)
-  assert.match(menuPayload, /publicLanguages: \[\]/)
-  assert.doesNotMatch(menuPayload, /onDemandLanguages:\s*\[\]/)
-  assert.doesNotMatch(menuPayload, /catalogueLanguages/)
+  assert.match(menuPayload, /await resolveMenuSproochli\(/)
+  assert.match(menuResolver, /const storage = resolveSproochliHostStorage\(\)/)
+  assert.match(
+    menuResolver,
+    /await readCanonicalCacheLanguages\(cacheScope\)/
+  )
+  assert.match(menuResolver, /\.map\(normalizeSproochliLanguage\)/)
+  assert.match(menuResolver, /if \(!requestedLanguage\)/)
+  assert.ok(
+    menuResolver.indexOf('if (!requestedLanguage)') <
+      menuResolver.indexOf('await resolveSproochliMenu({')
+  )
+  assert.ok(
+    menuResolver.indexOf(
+      'let translations = await readSproochliMenuTranslationCache'
+    ) <
+      menuResolver.indexOf('if (!translations)')
+  )
+  assert.ok(
+    menuResolver.indexOf('if (!translations)') <
+      menuResolver.indexOf('await resolveSproochliMenu({')
+  )
+  assert.equal(
+    (menuResolver.match(/resolveSproochliMenu\(/g) || []).length,
+    1
+  )
+  assert.match(menuResolver, /\.\.\.menuFields\(menu\)/)
+  assert.match(menuResolver, /MENU_BROWSE_SURFACE_COPY_FIELDS/)
+  assert.match(menuResolver, /translations\.size !== fields\.length/)
+  assert.match(menuResolver, /state: 'default'/)
+  assert.match(menuResolver, /state: 'translated'/)
+  assert.match(
+    menuResolver,
+    /state: requestedLanguage \? 'unavailable' : 'default'/
+  )
+  assert.match(menuResolver, /if \(missingFields\.length\)/)
+  assert.match(menuResolver, /fields: missingFields/)
+  assert.match(menuResolver, /host: storage\.target/)
+  assert.match(menuResolver, /resolution\.host\.appId === storage\.target\.appId/)
+  assert.match(
+    menuResolver,
+    /resolution\.host\.firebaseProjectId ===\s*storage\.target\.firebaseProjectId/
+  )
+  assert.match(
+    menuResolver,
+    /resolution\.host\.databaseId === storage\.target\.databaseId/
+  )
+  assert.match(
+    menuResolver,
+    /writeSproochliTranslationMemory\(\s*storage,\s*candidates/s
+  )
+  assert.match(
+    menuResolver,
+    /await writeSproochliMenuTranslationCache\(\{/
+  )
+  assert.match(
+    menuResolver,
+    /readyLanguages =\s*await readCanonicalCacheLanguages\(cacheScope\)/
+  )
+  assert.match(
+    menuResolver,
+    /let readyLanguages: SproochliLanguageCode\[\] \| null = null/
+  )
+  assert.doesNotMatch(menuResolver, /resolution\.readyLanguages/)
+  assert.doesNotMatch(menuResolver, /cachedLanguages|languageOptions/)
+  assert.match(
+    menuManifestModel,
+    /state: 'default' \| 'translated' \| 'unavailable'/
+  )
+  assert.match(menuManifestModel, /language: SproochliLanguageCode/)
+  assert.match(
+    menuManifestModel,
+    /readyLanguages: SproochliLanguageCode\[\] \| null/
+  )
+  assert.doesNotMatch(
+    menuManifestModel,
+    /activeLanguage|languageOptions|enabled: true/
+  )
+  assert.match(menuProvider, /host: SproochliHostTarget/)
+  assert.match(menuProvider, /language: string/)
+  assert.match(menuProvider, /translations: Record<string, string>/)
+  assert.doesNotMatch(
+    menuProvider,
+    /GoogleAuth|\bfetch\s*\(|readyLanguages|cachedLanguages|targetLanguages|includeTranslations|menuCache/
+  )
+  assert.match(menuProviderClient, /new GoogleAuth\(\)\.getIdTokenClient/)
+  assert.match(
+    menuProviderClient,
+    /SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE/
+  )
+  assert.match(menuProviderClient, /headers\.authorization = `Bearer \$\{token\}`/)
+  assert.match(menuProviderClient, /AbortSignal\.timeout\(PROVIDER_TIMEOUT_MS\)/)
+  assert.match(menuProviderClient, /const PROVIDER_TIMEOUT_MS = 8_000/)
+  assert.match(menuProviderClient, /localDevelopment/)
+  assert.match(
+    sproochliReadme,
+    /one installation, one scoped host identity,\s*host-owned storage, centrally provided translation intelligence/
+  )
+  assert.match(
+    sproochliReadme,
+    /Adding `fireux-sproochli` to `app\.modules` enables the package\. It does not\s*complete production registration\./
+  )
+  assert.match(sproochliReadme, /app\.serverFunctionServiceAccount/)
+  assert.match(sproochliReadme, /SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES/)
+  assert.match(sproochliReadme, /service-account keys, default compute identities/)
+  assert.match(sproochliReadme, /future WordPress or non-Google adapter/)
+  assert.match(coreAppConfigTypes, /serverFunctionServiceAccount\?: string/)
+  assert.match(coreNitroConfig, /serviceAccount\?: string/)
+  assert.match(
+    coreNitroConfig,
+    /\.\.\.\(c\.serviceAccount \? \{ serviceAccount: c\.serviceAccount \} : \{\}\)/
+  )
+  assert.match(
+    coreFireuxConfig,
+    /serviceAccount: app\.serverFunctionServiceAccount/
+  )
+  assert.match(
+    miseboxNuxtConfig,
+    /serverFunctionServiceAccount:\s*\n?\s*'misebox-ssr@misebox-78f9c\.iam\.gserviceaccount\.com'/
+  )
+  assert.ok(
+    firebaseOutputPreparation.includes('server/firebase.runtime-env.json')
+  )
+  assert.ok(
+    firebaseOutputPreparation.includes(
+      'SECRET|TOKEN|PASSWORD|PRIVATE_KEY|CREDENTIAL|API_KEY'
+    )
+  )
+  assert.ok(
+    firebaseOutputPreparation.includes(
+      'join(outputServerDir, `.env.${projectId}`)'
+    )
+  )
+  const sproochliRuntime = JSON.parse(sproochliRuntimeEnvironment)
+  const miseboxRuntime = JSON.parse(miseboxRuntimeEnvironment)
+  assert.equal(sproochliRuntime.projectId, 'fireux-2005')
+  assert.equal(miseboxRuntime.projectId, 'misebox-78f9c')
+  assert.equal(
+    sproochliRuntime.environment.SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE,
+    'https://sproochli.web.app/api/tools/menu'
+  )
+  assert.equal(
+    miseboxRuntime.environment.SPROOCHLI_MENU_PROVIDER_ENDPOINT,
+    sproochliRuntime.environment.SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE
+  )
+  assert.equal(
+    miseboxRuntime.environment.SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE,
+    sproochliRuntime.environment.SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE
+  )
+  assert.deepEqual(
+    JSON.parse(
+      sproochliRuntime.environment.SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES
+    ),
+    [
+      {
+        service_account_email:
+          'misebox-ssr@misebox-78f9c.iam.gserviceaccount.com',
+        firebase_project_id: 'misebox-78f9c',
+        database_id: 'sproochli',
+        app_ids: ['misebox-app'],
+      },
+    ]
+  )
+  assert.match(
+    menuResolver,
+    /fireux-sproochli\/runtime\/server\/menu\/provider-client\.ts/
+  )
+  assert.doesNotMatch(kitchenMenuModel, /source_language/)
+  assert.doesNotMatch(rootMenuModel, /source_language/)
+  assert.doesNotMatch(menuRootEntry, /source_language/)
+  assert.doesNotMatch(menuPayloadTypes, /sourceLanguage/)
+  assert.doesNotMatch(menuEndpoint, /source_language|sourceLanguage/)
   assert.match(kitchenMenuScope, /readKitchenSproochliConfig\(kitchenData\)/)
   assert.equal(TranslationMemoryStorage.collection, 'translation_memory')
   assert.equal(TranslationMemoryStorage.access, 'server-only')
-  assert.match(menuTranslationEndpoint, /readSproochliTranslationMemory/)
-  assert.match(menuTranslationEndpoint, /writeSproochliTranslationMemory/)
-  assert.match(menuTranslationEndpoint, /memory_hit = true/)
-  assert.match(menuTranslationEndpoint, /MAX_TOTAL_SOURCE_TEXT_LENGTH/)
-  assert.match(menuTranslationEndpoint, /MAX_TARGET_LANGUAGES/)
-  assert.match(menuTranslationEndpoint, /MAX_TRANSLATION_UNITS/)
-  assert.match(menuTranslationEndpoint, /SUPPORTED_LANGUAGES/)
-  assert.match(menuTranslationEndpoint, /google-cloud-translation/)
+  assert.match(
+    sproochliHostTarget,
+    /SPROOCHLI_HOST_DATABASE_ID = 'sproochli' as const/
+  )
+  assert.match(sproochliHostTarget, /appId: string/)
+  assert.match(sproochliHostTarget, /firebaseProjectId: string/)
+  assert.match(
+    sproochliHostTarget,
+    /databaseId: typeof SPROOCHLI_HOST_DATABASE_ID/
+  )
+  assert.match(
+    sproochliHostStorage,
+    /runtime\.public\?\.fireux\?\.id/
+  )
+  assert.match(
+    sproochliHostStorage,
+    /runtime\.public\?\.firebaseEcosystem\?\.firebase\?\.projectId/
+  )
+  assert.match(
+    sproochliHostStorage,
+    /db: getRuntimeFirestore\(SPROOCHLI_HOST_DATABASE_ID\)/
+  )
+  assert.match(sproochliHostStorage, /host_app_id:/)
+  assert.match(sproochliHostStorage, /firebase_project_id:/)
+  assert.match(sproochliHostStorage, /database_id:/)
+  assert.match(sproochliHostStorage, /matchesSproochliStorageMetadata/)
+  assert.match(sproochliHostStorage, /const hostAppId = text\(data\.host_app_id\)/)
+  assert.match(sproochliHostStorage, /Boolean\(hostAppId\)/)
+  assert.doesNotMatch(
+    sproochliHostStorage,
+    /text\(data\.host_app_id\) === expected\.host_app_id/
+  )
+  assert.doesNotMatch(
+    sproochliHostStorage,
+    /fireux-2005|misebox-78f9c/
+  )
+  assert.match(menuTranslationEndpoint, /host\?: unknown/)
+  assert.match(menuTranslationEndpoint, /function parseHost\(/)
+  assert.match(
+    menuTranslationEndpoint,
+    /databaseId !== SPROOCHLI_HOST_DATABASE_ID/
+  )
+  assert.match(
+    menuTranslationEndpoint,
+    /const host = parseHost\(body\?\.host\)/
+  )
+  assert.match(
+    menuTranslationEndpoint,
+    /await assertSproochliMenuProviderAccess\(event, host\)/
+  )
   assert.ok(
     menuTranslationEndpoint.indexOf(
-      'memoryHits = await readSproochliTranslationMemory'
+      'await assertSproochliMenuProviderAccess(event, host)'
     ) <
-      menuTranslationEndpoint.indexOf('translateSproochliMenuFieldWithAi(event')
+      menuTranslationEndpoint.indexOf(
+        'await translateSproochliTextBatch(account, {'
+      ),
+    'Sproochli Menu provider authorization must run before the translation call.'
   )
-  assert.match(translationMemory, /getRuntimeFirestore\('sproochli'\)/)
+  assert.match(menuTranslationEndpoint, /return \{\s*host,/s)
+  assert.match(menuTranslationEndpoint, /const MAX_FIELDS = 200/)
+  assert.match(menuTranslationEndpoint, /MAX_TOTAL_SOURCE_TEXT_LENGTH/)
+  assert.match(menuTranslationEndpoint, /SUPPORTED_LANGUAGES/)
+  assert.match(menuTranslationEndpoint, /translateSproochliTextBatch/)
+  assert.match(menuTranslationEndpoint, /google-cloud-translation/)
+  assert.doesNotMatch(
+    menuTranslationEndpoint,
+    /firebase-admin|getRuntimeFirestore|runtime\/server\/menu\/(?:storage|translation-cache|translation-memory|translation-recipe)|readSproochliMenuTranslationCache|readSproochliTranslationMemory|writeSproochliTranslationMemory|writeSproochliMenuTranslationCache|readyLanguages|cachedLanguages|menuCache/
+  )
+  assert.match(
+    menuTranslationEndpoint,
+    /setSproochliPrivateToolHeaders\(event\)/
+  )
+  assert.match(menuProviderAuth, /requireBearerToken/)
+  assert.match(menuProviderAuth, /verifyServiceAccountOidc/)
+  assert.match(menuProviderAuth, /SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE/)
+  assert.match(menuProviderAuth, /SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES/)
+  assert.match(menuProviderAuth, /scope\.serviceAccountEmail === principal\.service_account_email/)
+  assert.match(menuProviderAuth, /scope\.firebaseProjectId === host\.firebaseProjectId/)
+  assert.match(menuProviderAuth, /scope\.databaseId === host\.databaseId/)
+  assert.match(menuProviderAuth, /scope\.appIds\.includes\(host\.appId\)/)
+  assert.match(menuProviderAuth, /isLoopbackDevelopmentRequest/)
+  assert.match(sproochliTools, /setSproochliPrivateToolHeaders/)
+  assert.match(sproochliTools, /'Cache-Control': 'private, no-store'/)
+  assert.match(menuTranslationOptions, /setSproochliPrivateToolHeaders/)
+  assert.match(menuTranslationOptions, /setResponseStatus\(event, 204\)/)
+  for (const removedEndpoint of [
+    'projects/fireux/sproochli/server/api/tools/menu/translate.post.ts',
+    'projects/fireux/sproochli/server/api/tools/menu/translate.options.ts',
+    'projects/fireux/sproochli/server/api/tools/menu/cache.post.ts',
+    'projects/fireux/sproochli/server/api/tools/menu/cache.options.ts',
+  ]) {
+    assert.equal(existsSync(path.join(repoRoot, removedEndpoint)), false)
+  }
+  assert.match(translationMemory, /SproochliHostStorage/)
+  assert.match(translationMemory, /storage\.db\.getAll\(/)
+  assert.match(translationMemory, /storage\.db\.runTransaction\(/)
+  assert.match(
+    translationMemory,
+    /matchesSproochliStorageMetadata\(value\?\.storage, storage\.target\)/
+  )
+  assert.match(
+    translationMemory,
+    /storage: sproochliStorageMetadata\(storage\.target\)/
+  )
   assert.match(translationMemory, /review_status:\s*'unreviewed'/)
   assert.match(translationMemory, /transaction\.getAll\(\.\.\.refs\)/)
   assert.match(translationMemory, /transaction\.create\(snapshot\.ref/)
-  assert.doesNotMatch(translationMemory, /batch\.set|transaction\.set/)
+  assert.doesNotMatch(
+    translationMemory,
+    /getRuntimeFirestore|batch\.set|transaction\.set/
+  )
+  assert.match(menuCompleteCache, /menu_translation_caches/)
+  assert.match(menuCompleteCache, /complete: true/)
+  assert.match(menuCompleteCache, /fingerprint/)
+  assert.match(menuCompleteCache, /SproochliHostStorage/)
+  assert.match(menuCompleteCache, /input\.storage\.db/)
+  assert.match(
+    menuCompleteCache,
+    /matchesSproochliStorageMetadata\(data\.storage, input\.storage\.target\)/
+  )
+  assert.match(
+    menuCompleteCache,
+    /storage: sproochliStorageMetadata\(input\.cache\.storage\.target\)/
+  )
+  assert.doesNotMatch(menuCompleteCache, /getRuntimeFirestore/)
+  assert.match(
+    menuCompleteCache,
+    /readSproochliMenuTranslationCacheLanguages/
+  )
+  assert.match(
+    menuCompleteCache,
+    /\.where\('fingerprint', '==', scope\.fingerprint\)/
+  )
+  assert.match(
+    menuMemoryRecipe,
+    /SPROOCHLI_MENU_MEMORY_CACHE_VERSION\s*=\s*\n?\s*'menu_translation_memory_v1'/
+  )
+  assert.match(menuMemoryRecipe, /SPROOCHLI_MENU_MEMORY_DOMAIN = 'restaurant_menu'/)
+  for (const removedCentralStateFile of [
+    'projects/fireux/sproochli/server/utils/sproochliMenuTranslationCache.ts',
+    'projects/fireux/sproochli/server/utils/sproochliTranslationMemory.ts',
+    'projects/fireux/sproochli/server/utils/sproochliMenuTranslationMemory.ts',
+    'projects/fireux/sproochli/server/api/internal/menu/cache/import.post.ts',
+    'projects/fireux/sproochli/server/utils/sproochliMenuCacheImport.ts',
+  ]) {
+    assert.equal(
+      existsSync(path.join(repoRoot, removedCentralStateFile)),
+      false
+    )
+  }
+  assert.match(translationModel, /\|\s*'source_document_extraction'/)
+  assert.match(translationModel, /\|\s*'sproochli-menu-cache-import'/)
+  assert.match(menuCacheContract, /SproochliMenuCacheImportUnit/)
+  assert.match(menuCacheContract, /fieldId: string/)
+  assert.match(menuCacheContract, /sourceText: string/)
+  assert.match(menuCacheContract, /targetLanguage: string/)
+  assert.match(menuCacheContract, /translatedText: string/)
+  assert.doesNotMatch(
+    menuCacheContract,
+    /SproochliMenuCacheImportRequest|sourceDocumentId|\bfetch\s*\(|\$fetch|useFetch/
+  )
+  assert.match(menuAiSchema, /LOCALIZED_TEXT_SCHEMA/)
+  assert.match(menuAiSchema, /label_translations:\s*LOCALIZED_TEXT_SCHEMA/)
+  assert.match(menuAiSchema, /name_translations:\s*LOCALIZED_TEXT_SCHEMA/)
+  assert.match(menuAiSchema, /description_translations:\s*LOCALIZED_TEXT_SCHEMA/)
+  assert.match(
+    menuAiExtraction,
+    /MENU_SOURCE_EXTRACTION_PROMPT_VERSION = 'menu-source-v9'/
+  )
+  assert.match(menuAiExtraction, /canonical Default text/)
+  assert.doesNotMatch(menuAiExtraction, /Drop translated duplicate text/)
+  assert.match(menuAiNormalization, /preserve extracted aligned language copies/)
+  assert.doesNotMatch(menuAiNormalization, /Drop translated duplicate text/)
+  assert.match(menuDraftSections, /normalizeSproochliLanguage/)
+  assert.match(menuDraftSections, /cleanTranslations/)
+  assert.match(menuDraftWrite, /sproochliCacheUnits/)
+  assert.match(menuDraftWrite, /appendKitchenMenuCacheUnits/)
+  assert.match(kitchenMenuCacheImport, /resolveSproochliHostStorage\(\)/)
+  assert.match(
+    kitchenMenuCacheImport,
+    /text\(input\.appId\) !== storage\.target\.appId/
+  )
+  assert.match(kitchenMenuCacheImport, /sourceLanguage: 'auto'/)
+  assert.match(kitchenMenuCacheImport, /kind: 'source_document_extraction'/)
+  assert.match(
+    kitchenMenuCacheImport,
+    /generatedBy: 'sproochli-menu-cache-import'/
+  )
+  assert.match(
+    kitchenMenuCacheImport,
+    /provider: 'source-document-extraction'/
+  )
+  assert.match(kitchenMenuCacheImport, /valuesByIdentity\.get\(identity\)/)
+  assert.match(
+    kitchenMenuCacheImport,
+    /writeSproochliTranslationMemory\(storage, values\)/
+  )
+  assert.doesNotMatch(
+    kitchenMenuCacheImport,
+    /GoogleAuth|SPROOCHLI_MENU_CACHE_IMPORT_(?:ENDPOINT|OIDC_AUDIENCE)|getIdTokenClient|\bfetch\s*\(|\$fetch|useFetch/
+  )
+  assert.match(
+    sproochliHostRules,
+    /match \/menu_translation_caches\/\{document=\*\*\}/
+  )
+  assert.match(
+    sproochliHostRules,
+    /match \/translation_memory\/\{document=\*\*\}/
+  )
+  assert.equal(
+    (sproochliHostRules.match(/allow read, write: if false;/g) || []).length,
+    3
+  )
+  assert.doesNotMatch(sproochliHostRules, /if true|request\.auth/)
+  assert.match(
+    sproochliHostFirebaseConfig,
+    /"database": "sproochli"/
+  )
+  assert.match(
+    sproochliHostFirebaseConfig,
+    /"rules": "server-only\.rules"/
+  )
+  assert.match(
+    sproochliHostMigration,
+    /const SOURCE_PROJECT_ID = 'fireux-2005'/
+  )
+  assert.match(
+    sproochliHostMigration,
+    /const TARGET_PROJECT_ID = 'misebox-78f9c'/
+  )
+  assert.match(sproochliHostMigration, /const DATABASE_ID = 'sproochli'/)
+  assert.match(sproochliHostMigration, /const LOCATION = 'eur3'/)
+  assert.match(sproochliHostMigration, /const EDITION = 'standard'/)
+  assert.match(
+    sproochliHostMigration,
+    /const CLI_READ_TIMEOUT_MS = 30_000/
+  )
+  assert.match(
+    sproochliHostMigration,
+    /const CLI_WRITE_TIMEOUT_MS = 120_000/
+  )
+  assert.match(
+    sproochliHostMigration,
+    /timeout: CLI_WRITE_TIMEOUT_MS/
+  )
+  assert.match(
+    sproochliHostMigration,
+    /service-account options authorize Admin SDK document access only/
+  )
+  assert.match(
+    sproochliHostMigration,
+    /const HOST_APP_ID = 'misebox-app'/
+  )
+  assert.match(
+    sproochliHostMigration,
+    /writeProtectedJsonArtifact\(\{/
+  )
+  assert.match(sproochliHostMigration, /transaction\.create\(/)
+  assert.match(sproochliHostMigration, /--delete-protection/)
+  assert.match(
+    sproochliHostMigration,
+    /source_delete_authorized: false/
+  )
+  assert.doesNotMatch(
+    sproochliHostMigration,
+    /transaction\.(?:delete|set|update)\(/
+  )
+  assert.match(menuConfirmEndpoint, /cache_import:/)
+  assert.match(menuConfirmEndpoint, /status: 'failed'/)
+  assert.ok(
+    menuConfirmEndpoint.indexOf('await writeKitchenMenuDraft') <
+      menuConfirmEndpoint.indexOf('await importKitchenMenuCacheUnits')
+  )
 
   const memoryKeyInput = {
     cacheVersion: 'menu_translation_memory_v1',
@@ -577,7 +1170,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     targetLanguage: 'fr',
     glossaryVersion: 'restaurant_menu_v1',
   }
-  const memoryKey = makeSproochliMenuCacheKey(memoryKeyInput)
+  const memoryKey = makeSproochliMenuMemoryKey(memoryKeyInput)
   assert.match(memoryKey, /^fr__[a-f0-9]{40}$/)
   for (const patch of [
     { cacheVersion: 'menu_translation_memory_v2' },
@@ -589,7 +1182,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     { glossaryVersion: 'restaurant_menu_v2' },
   ]) {
     assert.notEqual(
-      makeSproochliMenuCacheKey({ ...memoryKeyInput, ...patch }),
+      makeSproochliMenuMemoryKey({ ...memoryKeyInput, ...patch }),
       memoryKey
     )
   }
@@ -627,38 +1220,66 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       .filter(option => option.code)
       .every(option => option.source === 'on_demand')
   )
+  const groupedState = resolveSproochliLanguageState({
+    enabled: true,
+    cachedLanguages: ['ar', 'en'],
+  })
+  assert.deepEqual(
+    groupedState.options
+      .filter(option => option.source === 'cache')
+      .map(option => option.code),
+    ['ar', 'en']
+  )
+  assert.equal(
+    groupedState.options.find(option => option.code === 'es')?.source,
+    'on_demand'
+  )
   assert.equal(isSproochliRtlLanguage('fa'), true)
   assert.equal(isSproochliRtlLanguage('ur'), true)
-  assert.equal(MENU_SURFACE_COPY_VERSION, 'v1')
-  assert.equal(MENU_BROWSE_SURFACE_COPY_FIELDS.length, 5)
+  assert.equal(MENU_SURFACE_COPY_VERSION, 'v3')
+  assert.equal(MENU_BROWSE_SURFACE_COPY_FIELDS.length, 12)
   assert.equal(
     new Set(MENU_BROWSE_SURFACE_COPY_FIELDS.map(field => field.id)).size,
     MENU_BROWSE_SURFACE_COPY_FIELDS.length
   )
   assert.ok(
     MENU_BROWSE_SURFACE_COPY_FIELDS.every(
-      field => field.id.startsWith('menu-surface:v1:') && field.sourceText
+      field => field.id.startsWith('menu-surface:v3:') && field.sourceText
     )
   )
   assert.deepEqual(resolveMenuBrowseSurfaceCopy(), {
-    browseLabel: 'Browse',
-    browseDescription: 'View the menu or choose how you would like to order.',
     allergyAriaLabel: 'Allergy information',
     allergyTitle: 'Allergies or intolerances?',
     allergyBody:
       'Please ask the kitchen about allergies or dietary requirements.',
+    menuSectionsAriaLabel: 'Menu sections',
+    chooseMenuSectionAriaLabel: 'Choose menu section',
+    sectionsLabel: 'Sections',
+    availableOptionsLabel: 'Available options',
+    optionalExtrasLabel: 'Optional extras',
+    emptyCatalogueLabel: 'No menu items are published yet.',
+    backToMenusLabel: 'Back to menus',
+    closeMenuLabel: 'Close menu',
+    pricesLabel: 'Prices',
   })
   assert.deepEqual(
     resolveMenuBrowseSurfaceCopy(new Map([
-      ['menu-surface:v1:browse:label', 'Parcourir'],
+      ['menu-surface:v3:browse:allergy-title', 'Allergies ou intolérances ?'],
     ])),
     {
-      browseLabel: 'Parcourir',
-      browseDescription: 'View the menu or choose how you would like to order.',
       allergyAriaLabel: 'Allergy information',
-      allergyTitle: 'Allergies or intolerances?',
+      allergyTitle: 'Allergies ou intolérances ?',
       allergyBody:
         'Please ask the kitchen about allergies or dietary requirements.',
+      menuSectionsAriaLabel: 'Menu sections',
+      chooseMenuSectionAriaLabel: 'Choose menu section',
+      sectionsLabel: 'Sections',
+      availableOptionsLabel: 'Available options',
+      optionalExtrasLabel: 'Optional extras',
+      emptyCatalogueLabel: 'No menu items are published yet.',
+      backToMenusLabel: 'Back to menus',
+      closeMenuLabel: 'Close menu',
+      pricesLabel: 'Prices',
     }
   )
 

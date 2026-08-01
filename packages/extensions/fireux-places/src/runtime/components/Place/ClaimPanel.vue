@@ -76,10 +76,8 @@ const { claimPlace } = usePlaceClaim()
 const publicLocator = computed(() => {
   const current = String(props.locator ?? '').trim()
   const id = String(props.id ?? '').trim()
-  const slug = String(props.place?.slug ?? '').trim()
-
   if (current && current !== id) return current
-  return slug || id
+  return id
 })
 const claimedBy = computed(() => String(props.place?.claimed_by ?? '').trim())
 const editTo = computed(() =>

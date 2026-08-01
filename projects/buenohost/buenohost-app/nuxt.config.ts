@@ -8,6 +8,7 @@ export default defineFireuxConfig({
   id: 'buenohost',
   name: 'BuenoHost',
   shortName: 'BuenoHost',
+  brand: { owner: 'ecosystem' },
   databaseId: 'buenohost',
   role: 'global',
   seo: {

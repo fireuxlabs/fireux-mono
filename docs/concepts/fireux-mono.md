@@ -66,6 +66,15 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 
 ## New project app completion
 
+- A project directory is not an App until it passes the same project guard as
+  every existing App. Direct folder copies do not create an exception: the
+  canonical Level-1 shape, complete public image library, explicit brand
+  ownership, Core-owned auth/PWA seams, and exact App registry workspace are
+  mandatory from the first save.
+- Every real `projects/<ecosystem>/<app>` package must have exactly one current
+  workspace entry in `scripts/_lib/app-registry.mjs`. Missing Apps and stale
+  registry targets are blocking repository drift; the guarded template is the
+  only project package excluded from registration.
 - When the App has a public/custom hostname, pass it as hostname-only to the
   canonical creation workflow. Confirm both that hostname and the derived
   Firebase Hosting `<site-id>.web.app` hostname in the single Firebase
@@ -75,6 +84,9 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - Add the app to `scripts/_lib/app-registry.mjs` with its unique port, workspace, identity, role, consoles, and focused smoke routes.
 - Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root dev/kill scripts, `.vscode/tasks.json`, or `.vscode/launch.json`.
 - Add the app to the app list in `tools/vscode-fireux-toolbar/extension.js` so VS Code exposes the standard start control and running spinner.
+- Declare one `brand.owner` before adding artwork. Materialize Core/ecosystem
+  projections from their canonical source; an App-owned family must declare
+  `approved` or `provisional` and may never borrow another App's export.
 - A new app is not complete until its root dev command, kill command, VS Code task/launch entry, toolbar spinner, and focused smoke route exist.
 - Run `pnpm guard` after the workspace sync.
 

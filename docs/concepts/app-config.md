@@ -59,6 +59,9 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - `id`
 - `name`
 - `shortName`
+- `brand`: required single asset authority. Use `{ owner: 'core' }`,
+  `{ owner: 'ecosystem' }`, or
+  `{ owner: 'app', status: 'approved' | 'provisional' }`.
 - `role`
 - `modules`
 - `consoles`
@@ -124,6 +127,7 @@ CSS and does not reuse Core's `fx-page` selector namespace.
 | An app disables or replaces the Core page transition through native Nuxt app config | `accepted` | The shared default remains Core-owned while a deliberate product delta stays explicit |
 | A project app shell or stylesheet copies the shared page transition | `drift` | App-wide overrides belong in config and route-specific exceptions belong in page meta |
 | Repeating a shared default in many project `nuxt.config.ts` files | `drift` | Move the stable value to the Core config spine and leave only genuine app values locally |
+| App brand structure differs by project | `drift` | Keep one ownership declaration and one `/img/app` runtime family; only artwork differs |
 
 ## Alignment roadmap
 

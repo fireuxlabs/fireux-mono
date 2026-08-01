@@ -4,42 +4,17 @@
     label="Kitchen"
     :selected-id="kitchenId"
     :description="kitchenName"
+    :target="targetCard"
+    :outcome="outcome"
+    icon="i-lucide-chef-hat"
     @clear="emit('clear')"
-  >
-    <template #selected="{ title }">
-      <div class="space-y-2">
-        <div class="flex items-center justify-between gap-3">
-          <p class="text-sm font-medium text-toned">
-            {{ title }}
-          </p>
-
-          <UBadge
-            color="neutral"
-            :variant="source === 'demo' ? 'soft' : 'subtle'"
-            size="sm"
-          >
-            {{ source === 'demo' ? 'Demo · Read-only' : 'Live' }}
-          </UBadge>
-        </div>
-
-        <KitchenCardsCell
-          v-if="kitchenCard"
-          v-bind="kitchenCard"
-          :link="false"
-          :show-badges="false"
-          selected
-        />
-
-        <p v-else class="text-sm text-highlighted">
-          {{ kitchenName || kitchenId }}
-        </p>
-      </div>
-    </template>
-  </ConsoleSelectedTarget>
+  />
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue'
+import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
 import type { KitchenFetchSource } from '../../../../composables/fireux/firestore/kitchen/fetch/useKitchenFetch'
 import type { KitchenSurface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -49,11 +24,13 @@ const props = withDefaults(
     kitchen?: KitchenSurface | null
     kitchenId?: string
     source?: KitchenFetchSource
+    outcome?: ConsoleTargetOutcome
   }>(),
   {
     kitchen: null,
     kitchenId: '',
     source: 'live',
+    outcome: 'ready',
   }
 )
 
@@ -64,6 +41,24 @@ const emit = defineEmits<{
 const kitchenName = computed(() =>
   String(props.kitchen?.name || props.kitchen?.slug || '').trim()
 )
-const { cell } = useKitchenInterface()
-const kitchenCard = computed(() => cell(props.kitchen))
+const { consoleTarget } = useKitchenInterface()
+const kitchenCard = computed(() => consoleTarget(props.kitchen))
+const targetCard = computed<ConsoleTargetCard | null>(() => {
+  const card = kitchenCard.value
+  if (!card) return null
+
+  return {
+    id: card.id,
+    title: card.name,
+    subtitle: card.shortAddress,
+    imageUrl: card.imageUrl,
+    imageAlt: `${card.name} logo`,
+    imageFit: 'contain',
+    imageBackground: card.mediaBackdropColor,
+    icon: 'i-lucide-chef-hat',
+    badges: [
+      props.source === 'demo' ? 'Demo · Read-only' : 'Live',
+    ],
+  }
+})
 </script>

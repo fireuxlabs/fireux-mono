@@ -21,25 +21,46 @@ export const FIREUX_BRAND_PROJECTIONS = Object.freeze([
     targets: [
       'packages/ecosystem/fireux-fireux/src/runtime/public/img/ecosystem/logo.svg',
       'projects/fireux/fireux-app/public/img/app/logo.svg',
+      'projects/fireux/tenant/public/img/app/logo.svg',
+      'projects/slap/holzworm/public/img/app/logo.svg',
+      'projects/templates/fireux-template/public/img/app/logo.svg',
     ],
   },
   {
     source: 'logo.png',
-    targets: ['projects/fireux/fireux-app/public/img/app/logo.png'],
+    targets: [
+      'projects/fireux/fireux-app/public/img/app/logo.png',
+      'projects/fireux/tenant/public/img/app/logo.png',
+      'projects/slap/holzworm/public/img/app/logo.png',
+      'projects/templates/fireux-template/public/img/app/logo.png',
+    ],
   },
   {
     source: 'thumbnail.png',
-    targets: ['projects/fireux/fireux-app/public/img/app/thumbnail.png'],
+    targets: [
+      'projects/fireux/fireux-app/public/img/app/thumbnail.png',
+      'projects/fireux/tenant/public/img/app/thumbnail.png',
+      'projects/slap/holzworm/public/img/app/thumbnail.png',
+      'projects/templates/fireux-template/public/img/app/thumbnail.png',
+    ],
   },
   {
     source: 'cover.png',
-    targets: ['projects/fireux/fireux-app/public/img/app/cover.png'],
+    targets: [
+      'projects/fireux/fireux-app/public/img/app/cover.png',
+      'projects/fireux/tenant/public/img/app/cover.png',
+      'projects/slap/holzworm/public/img/app/cover.png',
+      'projects/templates/fireux-template/public/img/app/cover.png',
+    ],
   },
   {
     source: 'favicon.ico',
     targets: [
       'projects/fireux/fireux-app/public/favicon.ico',
       'projects/fireux/fireux-app/public/img/app/favicon.ico',
+      'projects/fireux/tenant/public/img/app/favicon.ico',
+      'projects/slap/holzworm/public/img/app/favicon.ico',
+      'projects/templates/fireux-template/public/img/app/favicon.ico',
     ],
   },
   {
@@ -48,6 +69,12 @@ export const FIREUX_BRAND_PROJECTIONS = Object.freeze([
       'packages/ecosystem/fireux-fireux/src/runtime/public/img/ecosystem/wordmark-light.svg',
       'projects/fireux/fireux-app/public/img/app/wordmark.svg',
       'projects/fireux/fireux-app/public/img/app/wordmark-light.svg',
+      'projects/fireux/tenant/public/img/app/wordmark.svg',
+      'projects/fireux/tenant/public/img/app/wordmark-light.svg',
+      'projects/slap/holzworm/public/img/app/wordmark.svg',
+      'projects/slap/holzworm/public/img/app/wordmark-light.svg',
+      'projects/templates/fireux-template/public/img/app/wordmark.svg',
+      'projects/templates/fireux-template/public/img/app/wordmark-light.svg',
     ],
   },
   {
@@ -56,6 +83,12 @@ export const FIREUX_BRAND_PROJECTIONS = Object.freeze([
       'packages/ecosystem/fireux-fireux/src/runtime/public/img/ecosystem/wordmark-light.png',
       'projects/fireux/fireux-app/public/img/app/wordmark.png',
       'projects/fireux/fireux-app/public/img/app/wordmark-light.png',
+      'projects/fireux/tenant/public/img/app/wordmark.png',
+      'projects/fireux/tenant/public/img/app/wordmark-light.png',
+      'projects/slap/holzworm/public/img/app/wordmark.png',
+      'projects/slap/holzworm/public/img/app/wordmark-light.png',
+      'projects/templates/fireux-template/public/img/app/wordmark.png',
+      'projects/templates/fireux-template/public/img/app/wordmark-light.png',
     ],
   },
   {
@@ -63,6 +96,9 @@ export const FIREUX_BRAND_PROJECTIONS = Object.freeze([
     targets: [
       'packages/ecosystem/fireux-fireux/src/runtime/public/img/ecosystem/wordmark-dark.svg',
       'projects/fireux/fireux-app/public/img/app/wordmark-dark.svg',
+      'projects/fireux/tenant/public/img/app/wordmark-dark.svg',
+      'projects/slap/holzworm/public/img/app/wordmark-dark.svg',
+      'projects/templates/fireux-template/public/img/app/wordmark-dark.svg',
     ],
   },
   {
@@ -70,15 +106,28 @@ export const FIREUX_BRAND_PROJECTIONS = Object.freeze([
     targets: [
       'packages/ecosystem/fireux-fireux/src/runtime/public/img/ecosystem/wordmark-dark.png',
       'projects/fireux/fireux-app/public/img/app/wordmark-dark.png',
+      'projects/fireux/tenant/public/img/app/wordmark-dark.png',
+      'projects/slap/holzworm/public/img/app/wordmark-dark.png',
+      'projects/templates/fireux-template/public/img/app/wordmark-dark.png',
     ],
   },
   {
     source: 'pwa/icon-192.png',
-    targets: ['projects/fireux/fireux-app/public/img/app/pwa/icon-192.png'],
+    targets: [
+      'projects/fireux/fireux-app/public/img/app/pwa/icon-192.png',
+      'projects/fireux/tenant/public/img/app/pwa/icon-192.png',
+      'projects/slap/holzworm/public/img/app/pwa/icon-192.png',
+      'projects/templates/fireux-template/public/img/app/pwa/icon-192.png',
+    ],
   },
   {
     source: 'pwa/icon-512.png',
-    targets: ['projects/fireux/fireux-app/public/img/app/pwa/icon-512.png'],
+    targets: [
+      'projects/fireux/fireux-app/public/img/app/pwa/icon-512.png',
+      'projects/fireux/tenant/public/img/app/pwa/icon-512.png',
+      'projects/slap/holzworm/public/img/app/pwa/icon-512.png',
+      'projects/templates/fireux-template/public/img/app/pwa/icon-512.png',
+    ],
   },
 ])
 

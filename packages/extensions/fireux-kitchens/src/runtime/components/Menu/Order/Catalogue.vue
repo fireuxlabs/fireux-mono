@@ -6,12 +6,18 @@
   >
     <MenuSectionNav
       v-if="catalogueSections.length > 1"
+      :aria-label="copy.menuSectionsAriaLabel"
+      :choose-label="copy.chooseMenuSectionAriaLabel"
+      :sections-label="copy.sectionsLabel"
       :sections="catalogueSections"
     />
 
     <div
       v-if="catalogueSections.length"
       class="menu-order-catalogue__sections menu-catalogue-sections"
+      :class="{
+        'menu-catalogue-sections--dense': catalogueSections.length >= 12,
+      }"
     >
       <section
         v-for="section in catalogueSections"
@@ -64,6 +70,10 @@ import type {
   MenuManifestSection,
 } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuOrderBasketInput } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
+import {
+  resolveMenuBrowseSurfaceCopy,
+  type MenuBrowseSurfaceCopy,
+} from '../../../content/menu-surface-copy'
 import { menuSectionLinks } from '../../../utils/menu-section-links'
 
 type MenuOrderItemSelection = {
@@ -71,10 +81,13 @@ type MenuOrderItemSelection = {
   variantId?: string
 }
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
+  copy?: MenuBrowseSurfaceCopy
   currencyCode: string
   sections: MenuManifestSection[]
-}>()
+}>(), {
+  copy: () => resolveMenuBrowseSurfaceCopy(),
+})
 
 const emit = defineEmits<{
   (event: 'add', input: MenuOrderBasketInput): void

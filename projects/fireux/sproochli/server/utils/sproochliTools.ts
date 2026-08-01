@@ -1,4 +1,4 @@
-import type { H3Event } from 'h3'
+import { setResponseHeaders, type H3Event } from 'h3'
 import {
   defineToolProviderRegistry,
   setToolProviderResponseHeaders,
@@ -25,4 +25,11 @@ export function sproochliToolResponse(event: H3Event, id: SproochliToolId) {
 
 export function setSproochliToolHeaders(event: H3Event) {
   setToolProviderResponseHeaders(event)
+}
+
+export function setSproochliPrivateToolHeaders(event: H3Event) {
+  setResponseHeaders(event, {
+    'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'private, no-store',
+  })
 }

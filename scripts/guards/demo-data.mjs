@@ -1505,7 +1505,7 @@ export async function run(ctx) {
     ![
       'useMiseboxPowerCardsProductDemo()',
       'data: orbit',
-      ':data-source="orbit.dataSource"',
+      '<MiseboxElementWindow',
     ].every((marker) =>
       readFileSync(miseboxPowerCardsPath, 'utf8').includes(marker)
     )
@@ -1514,7 +1514,7 @@ export async function run(ctx) {
       code: 'product-demo-power-cards',
       file: miseboxPowerCardsFile,
       message:
-        'Misebox PowerCards must consume the named Demo-only orbit projection.',
+        'Misebox PowerCards must consume the named Demo-only card-window projection.',
     })
   }
   const miseboxPowerCardsDemoSource = existsSync(miseboxPowerCardsDemoPath)
@@ -1539,7 +1539,7 @@ export async function run(ctx) {
       code: 'product-demo-power-cards-source',
       file: miseboxPowerCardsDemoFile,
       message:
-        'The Misebox Demo orbit must use a network-free data envelope, permit only declared immutable Demo image GETs, remain fixture-backed, and fail closed without a Live fallback.',
+        'The Misebox Demo card window must use a network-free data envelope, permit only declared immutable Demo image GETs, remain fixture-backed, and fail closed without a Live fallback.',
     })
   }
   for (const file of miseboxPowerCardChildren) {
@@ -1556,7 +1556,7 @@ export async function run(ctx) {
         code: 'product-demo-power-cards',
         file,
         message:
-          'Orbit PowerCard children must receive typed Demo-only props and must not own shadow fixtures.',
+          'PowerCard children must receive typed Demo-only props and must not own shadow fixtures.',
       })
     }
   }

@@ -6,7 +6,7 @@ import {
   watch,
   type ComputedRef,
 } from 'vue'
-import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
+import type { KitchenSurface } from '../../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { readWeekdayTimeOpenState } from '../../../../../../utils/weekday-time'
 
 type UseKitchenOrderServiceStateOptions = {
@@ -47,7 +47,7 @@ export function useKitchenOrderServiceState(
 ) {
   const now = ref(new Date())
   const sessionOpen = ref(false)
-  let minuteClock: ReturnType<typeof setInterval> | undefined
+  let minuteClock: number | undefined
 
   const scheduledState = computed(() =>
     readWeekdayTimeOpenState(

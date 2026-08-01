@@ -1,0 +1,16 @@
+import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+
+export const metaContent = defineFireuxMeta({
+  app: { id: 'holzworm', name: 'Holzworm', ecosystem: 'slap' },
+  copy: {
+    big_personality: 'Lasergravur aus Holz',
+    headline: 'Lasergravur auf Holz.',
+    positioning_html: 'Holzworm zeigt 20 Produktentwürfe für Anhänger, Schilder, Geschenke, Restaurant-QR und Holz-Visitenkarten.',
+    promise_html: 'Material, Mass, Preis, Bestand und Produktionszeit werden vor einer Bestellung individuell bestätigt.',
+    console_bridge_html: 'Restaurant-QR-Produkte werden mit einem bereitgestellten QR-Code und Ziel abgestimmt.',
+  },
+  seo: {
+    title: 'Holzworm | Lasergravur aus Holz in Bern',
+    description: 'Lasergravur aus Holz in Bern: Anhänger, Schilder, Geschenke, Restaurant-QR und Holz-Visitenkarten.',
+  },
+})

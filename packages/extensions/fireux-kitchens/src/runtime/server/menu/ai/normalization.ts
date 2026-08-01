@@ -57,7 +57,7 @@ function buildMenuNormalizationRequest(
     input: {
       sections: input.sections,
       instruction:
-        `Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Keep or correct item_kind as "food" or "drink" for every item, and keep or correct is_deal as true only for bundled deals, meal deals, set menus, or offers. Flag storefront/filter section labels prefixed with "All " (for example "All Chicken", "All Dessert", or "All BBQ/Grill") in notes and changes for operator review before publishing. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, and source_file_ids. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Every price_options.price must remain an absolute full item price greater than zero, never an increment or surcharge. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. Preserve optional extras, toppings, sides, and add-ons in add_ons. An add_ons.price is an incremental surcharge and may remain 0 for a labelled optional free add-on. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, or ingredients. If names, section labels, variants, add-ons, or descriptions include translated duplicate text in multiple languages, keep only the default menu language text and remove secondary-language copies instead of joining them with slashes.`,
+        `Clean this raw restaurant menu extraction before dish creation. Correct obvious OCR and spelling mistakes, casing, accents, punctuation, and section labels. Keep or correct item_kind as "food" or "drink" for every item, and keep or correct is_deal as true only for bundled deals, meal deals, set menus, or offers. Flag storefront/filter section labels prefixed with "All " (for example "All Chicken", "All Dessert", or "All BBQ/Grill") in notes and changes for operator review before publishing. Split only items that were clearly merged by OCR. Keep all real dishes, prices, price_options, add_ons, descriptions, image_url values, source_file_ids, and their aligned *_translations arrays. Preserve required sizes, pieces, grams, and named mutually exclusive choices in price_options. Every price_options.price must remain an absolute full item price greater than zero, never an increment or surcharge. ${MENU_CHOICE_EXTRACTION_INSTRUCTION} Keep the lowest displayed variant price in price. Preserve optional extras, toppings, sides, and add-ons in add_ons. An add_ons.price is an incremental surcharge and may remain 0 for a labelled optional free add-on. Preserve existing image_url values, but do not invent new images. Do not invent dishes, prices, ingredients, languages, or translations. Keep canonical authored values as Default and retain only translations already aligned by extraction; never join them with slashes.`,
     },
     context: {
       domain: 'restaurant_menu',
@@ -65,17 +65,20 @@ function buildMenuNormalizationRequest(
       sourceKind: 'raw_menu_photo_extraction',
       currency: input.currencyCode,
       languagePolicy:
-        'Keep the default menu language only. Drop translated duplicate text such as Arabic, Chinese, or other secondary-language copies from names and labels.',
+        'Keep canonical authored values as Default and preserve extracted aligned language copies without generating new ones.',
     },
     outputJsonSchema: MENU_NORMALIZATION_JSON_SCHEMA,
     outputSchema: {
       sections: [
         {
           label: 'Clean section label',
+          label_translations: [],
           items: [
             {
               name: 'Clean dish name',
+              name_translations: [],
               description: 'Clean description or empty string',
+              description_translations: [],
               item_kind: 'food',
               is_deal: false,
               image_url: 'Existing image URL or empty string',
@@ -83,16 +86,19 @@ function buildMenuNormalizationRequest(
               price_options: [
                 {
                   label: 'Pommes Frites',
+                  label_translations: [],
                   price: 30,
                 },
                 {
                   label: 'Rice',
+                  label_translations: [],
                   price: 30,
                 },
               ],
               add_ons: [
                 {
                   label: 'No onions',
+                  label_translations: [],
                   price: 0,
                 },
               ],

@@ -13,6 +13,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'baeren-ringgenberg',
   name: 'Hotel Bären Ringgenberg',
   shortName: 'Bären Ringgenberg',
+  brand: { owner: 'app', status: 'provisional' },
   role: 'tenant',
   seo: {
     siteUrl: 'https://baeren-ringgenberg.web.app',

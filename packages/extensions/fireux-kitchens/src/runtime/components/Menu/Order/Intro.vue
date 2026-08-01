@@ -4,13 +4,9 @@
       :currency-code="currencyCode"
       :description="description"
       heading-id="menu-order-title"
-      :image-shade="imageShade"
-      :image-url="imageUrl"
       :kitchen-name="kitchenName"
-      :logo-image-url="logoImageUrl"
       :menu-name="menuName"
       :show-currency="showCurrency"
-      :wordmark-image-url="wordmarkImageUrl"
     />
 
     <MenuSurfaceSwitcher
@@ -28,16 +24,12 @@
 <script setup lang="ts">
 import type { GuestMenuSurfaceOption } from '../../../utils/menu-context'
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
   menuName: string
   description?: string
   kitchenName?: string
   currencyCode?: string
   showCurrency?: boolean
-  imageShade?: 'light' | 'dark' | 'none'
-  imageUrl?: string
-  logoImageUrl?: string
-  wordmarkImageUrl?: string
   contextLabel: string
   contextIcon: string
   message: string
@@ -49,10 +41,6 @@ const props = withDefaults(defineProps<{
   kitchenName: '',
   currencyCode: '',
   showCurrency: true,
-  imageShade: 'none',
-  imageUrl: '',
-  logoImageUrl: '',
-  wordmarkImageUrl: '',
   surfaceOptions: () => [],
   statusColor: 'neutral',
   statusLabel: '',

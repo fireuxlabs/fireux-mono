@@ -41,7 +41,7 @@ const text = (value: unknown) => String(value ?? '').trim()
 export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
   const address = ref('')
   const selectedAddress = ref<CustomerDeliveryAddressPrediction | null>(null)
-  const result = ref<DeliveryAddressCheckResult | null>(null)
+  const result = ref<MenuDeliveryAddressCheckResult | null>(null)
   const checkPending = ref(false)
   const checkError = ref('')
   const autofillApplied = ref(false)

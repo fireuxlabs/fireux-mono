@@ -1,0 +1,22 @@
+{
+  "functions": [{
+    "source": ".output/server",
+    "codebase": "lifeguard-community-ssr",
+    "runtime": "nodejs22",
+    "entryPoint": "lifeguardCommunity"
+  }],
+  "hosting": {
+    "site": "lifeguard-community",
+    "public": ".output/public",
+    "cleanUrls": true,
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [{
+      "source": "**",
+      "function": {
+        "functionId": "lifeguardCommunity",
+        "codebase": "lifeguard-community-ssr",
+        "region": "europe-west1"
+      }
+    }]
+  }
+}

@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "nuxi dev --port 3026",
     "build": "nuxi build",
+    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
     "generate": "nuxi generate",
     "preview": "nuxi preview",
     "deploy": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json --auth-domains interlaken-essen.misebox.app,interlaken-essen.web.app",

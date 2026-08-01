@@ -1,8 +1,5 @@
 import { createHash } from 'node:crypto'
-import {
-  Timestamp,
-  type DocumentSnapshot,
-} from 'firebase-admin/firestore'
+import { Timestamp, type DocumentSnapshot } from 'firebase-admin/firestore'
 import { createError, setHeader, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import {
@@ -49,6 +46,7 @@ import {
 import {
   nextApplicationStatus,
   nextEngagementStatus,
+  sameFirestoreTimestamp,
   temporaryCapacityAllowsAcceptance,
 } from '../../utils/job-hiring-policy.ts'
 import { canonicalJobRoot } from './validation.ts'
@@ -64,15 +62,12 @@ const managementModes = new Set<string>(JOB_MANAGEMENT_MODES)
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const text = (value: unknown): string => String(value ?? '').trim()
 
-function fail(
-  statusCode: number,
-  statusMessage: string
-): never {
+function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
 }
 
@@ -82,8 +77,9 @@ function exactKeys(
   label: string
 ): void {
   const allowlist = new Set(allowed)
-  const unsupported = Object.keys(value).find(key => !allowlist.has(key))
-  if (unsupported) fail(400, `${label} contains unsupported field ${unsupported}.`)
+  const unsupported = Object.keys(value).find((key) => !allowlist.has(key))
+  if (unsupported)
+    fail(400, `${label} contains unsupported field ${unsupported}.`)
 }
 
 function markPrivateRead(event: H3Event): void {
@@ -151,10 +147,12 @@ function capacityDocumentId(appId: string, employerUid: string): string {
 }
 
 function stampMillis(value: unknown): number {
-  const at = record(value).at as {
-    toMillis?: () => number
-    seconds?: number
-  } | undefined
+  const at = record(value).at as
+    | {
+        toMillis?: () => number
+        seconds?: number
+      }
+    | undefined
   if (at && typeof at.toMillis === 'function') return at.toMillis()
   return typeof at?.seconds === 'number' ? at.seconds * 1_000 : 0
 }
@@ -187,7 +185,8 @@ function canonicalApplication(snapshot: DocumentSnapshot): JobApplication {
   if (!applicationStatuses.has(status)) {
     fail(503, 'The stored Application is not canonical.')
   }
-  const message = typeof source.message === 'string' ? source.message.trim() : ''
+  const message =
+    typeof source.message === 'string' ? source.message.trim() : ''
   if (message.length > APPLICATION_MESSAGE_LIMIT) {
     fail(503, 'The stored Application is not canonical.')
   }
@@ -202,7 +201,8 @@ function canonicalApplication(snapshot: DocumentSnapshot): JobApplication {
   if (
     (termsVersion !== null && !termsVersion) ||
     (termsAcceptedAt !== null &&
-      typeof (termsAcceptedAt as { toMillis?: unknown }).toMillis !== 'function') ||
+      typeof (termsAcceptedAt as { toMillis?: unknown }).toMillis !==
+        'function') ||
     (termsVersion === null) !== (termsAcceptedAt === null)
   ) {
     fail(503, 'The stored Application is not canonical.')
@@ -236,9 +236,7 @@ function optionalTimestamp(value: unknown) {
   return value as JobEngagement['start_at']
 }
 
-function canonicalEngagement(
-  snapshot: DocumentSnapshot
-): JobEngagement {
+function canonicalEngagement(snapshot: DocumentSnapshot): JobEngagement {
   if (!snapshot.exists) fail(404, 'Engagement not found.')
   const source = record(snapshot.data())
   const status = text(source.status)
@@ -282,9 +280,13 @@ function canonicalEngagement(
 function normalizeMessage(input: unknown): string {
   const source = record(input)
   exactKeys(source, ['message'], 'Application')
-  const message = typeof source.message === 'string' ? source.message.trim() : ''
+  const message =
+    typeof source.message === 'string' ? source.message.trim() : ''
   if (message.length > APPLICATION_MESSAGE_LIMIT) {
-    fail(400, `Application message must be ${APPLICATION_MESSAGE_LIMIT} characters or less.`)
+    fail(
+      400,
+      `Application message must be ${APPLICATION_MESSAGE_LIMIT} characters or less.`
+    )
   }
   return message
 }
@@ -333,7 +335,11 @@ function publicCandidate(
   if (imageValue) {
     try {
       const parsed = new URL(imageValue)
-      if (parsed.protocol === 'https:' && !parsed.username && !parsed.password) {
+      if (
+        parsed.protocol === 'https:' &&
+        !parsed.username &&
+        !parsed.password
+      ) {
         image = parsed.toString()
       }
     } catch {
@@ -351,39 +357,43 @@ async function hydrateViews(
   if (!applications.length) return []
   const db = getRuntimeFirestore(scope.databaseId)
   const identityDb = getRuntimeIdentityFirestore(scope.identityDatabaseId)
-  const jobIds = Array.from(new Set(applications.map(item => item.job_id)))
+  const jobIds = Array.from(new Set(applications.map((item) => item.job_id)))
   const candidateIds = includeCandidates
-    ? Array.from(new Set(applications.map(item => item.candidate_user_id)))
+    ? Array.from(new Set(applications.map((item) => item.candidate_user_id)))
     : []
   const [jobSnapshots, engagementSnapshots, candidateSnapshots] =
     await Promise.all([
-      db.getAll(...jobIds.map(id => db.collection(JobStorage.collection).doc(id))),
       db.getAll(
-        ...applications.map(item =>
+        ...jobIds.map((id) => db.collection(JobStorage.collection).doc(id))
+      ),
+      db.getAll(
+        ...applications.map((item) =>
           db.collection(JobEngagementStorage.collection).doc(item.id)
         )
       ),
       candidateIds.length
         ? identityDb.getAll(
-            ...candidateIds.map(id =>
+            ...candidateIds.map((id) =>
               identityDb.collection(ProfessionalStorage.rootCollection).doc(id)
             )
           )
         : Promise.resolve([] as DocumentSnapshot[]),
     ])
-  const jobs = new Map(jobSnapshots.map(snapshot => [snapshot.id, canonicalJob(snapshot)]))
+  const jobs = new Map(
+    jobSnapshots.map((snapshot) => [snapshot.id, canonicalJob(snapshot)])
+  )
   const engagements = new Map(
     engagementSnapshots
-      .filter(snapshot => snapshot.exists)
-      .map(snapshot => [snapshot.id, canonicalEngagement(snapshot)])
+      .filter((snapshot) => snapshot.exists)
+      .map((snapshot) => [snapshot.id, canonicalEngagement(snapshot)])
   )
   const candidates = new Map(
-    candidateSnapshots.map(snapshot => [
+    candidateSnapshots.map((snapshot) => [
       snapshot.id,
       publicCandidate(snapshot.id, snapshot),
     ])
   )
-  return applications.map(application => {
+  return applications.map((application) => {
     const job = jobs.get(application.job_id)
     if (!job || job.source_app_id !== scope.appId) {
       fail(503, 'An Application references an unavailable Job.')
@@ -399,7 +409,7 @@ async function hydrateViews(
         place_id: job.place_id,
       },
       candidate: includeCandidates
-        ? candidates.get(application.candidate_user_id) ?? null
+        ? (candidates.get(application.candidate_user_id) ?? null)
         : null,
       engagement: engagements.get(application.id) ?? null,
     }
@@ -438,15 +448,13 @@ export async function createJobApplication(
     fail(403, 'Complete your Professional profile before applying.')
   }
   const id = applicationDocumentId(jobId, uid)
-  const applicationRef = db
-    .collection(JobApplicationStorage.collection)
-    .doc(id)
+  const applicationRef = db.collection(JobApplicationStorage.collection).doc(id)
   const jobRef = db.collection(JobStorage.collection).doc(jobId)
   const currentAppRef = appRef(db, scope.appId)
   const currentMembershipRef = membershipRef(db, scope.appId, uid)
   const currentProfessionalRef = appProfessionalRef(db, scope.appId, uid)
 
-  await db.runTransaction(async transaction => {
+  await db.runTransaction(async (transaction) => {
     const [
       appSnapshot,
       membershipSnapshot,
@@ -521,10 +529,7 @@ export async function listJobApplications(
     membershipRef(db, scope.appId, uid)
   )
   assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-  if (
-    listScope === 'employer' &&
-    !hasProfile(membershipSnapshot, 'agent')
-  ) {
+  if (listScope === 'employer' && !hasProfile(membershipSnapshot, 'agent')) {
     fail(403, 'An active Agent profile is required.')
   }
   if (
@@ -575,7 +580,7 @@ export async function mutateJobApplication(
     .collection(JobEngagementStorage.collection)
     .doc(applicationId)
 
-  await db.runTransaction(async transaction => {
+  await db.runTransaction(async (transaction) => {
     const applicationSnapshot = await transaction.get(applicationRef)
     const application = canonicalApplication(applicationSnapshot)
     if (application.source_app_id !== scope.appId) {
@@ -587,12 +592,15 @@ export async function mutateJobApplication(
 
     if (requested.action === 'offer' || requested.action === 'reject') {
       if (!isEmployer) fail(403, 'Only the employer can perform this action.')
-      const jobRef = db.collection(JobStorage.collection).doc(application.job_id)
-      const [appSnapshot, membershipSnapshot, jobSnapshot] = await transaction.getAll(
-        appRef(db, scope.appId),
-        membershipRef(db, scope.appId, uid),
-        jobRef
-      )
+      const jobRef = db
+        .collection(JobStorage.collection)
+        .doc(application.job_id)
+      const [appSnapshot, membershipSnapshot, jobSnapshot] =
+        await transaction.getAll(
+          appRef(db, scope.appId),
+          membershipRef(db, scope.appId, uid),
+          jobRef
+        )
       assertCurrentAppMembership(appSnapshot, membershipSnapshot)
       if (!hasProfile(membershipSnapshot, 'agent')) {
         fail(403, 'An active Agent profile is required.')
@@ -645,7 +653,7 @@ export async function mutateJobApplication(
     if (!requested.acceptsDirectEmploymentTerms) {
       fail(
         400,
-        'Confirm that the employer—not Misebox or Werkbox—will employ and pay you directly.'
+        'Confirm that the employer—not the platform—will employ and pay you directly.'
       )
     }
     if (
@@ -696,8 +704,7 @@ export async function mutateJobApplication(
     }
     if (
       !application.offer_job_updated_at ||
-      application.offer_job_updated_at.toMillis() !==
-        (job.updated.at as { toMillis: () => number }).toMillis()
+      !sameFirestoreTimestamp(application.offer_job_updated_at, job.updated.at)
     ) {
       fail(
         409,
@@ -720,17 +727,19 @@ export async function mutateJobApplication(
       fail(503, 'The employer temporary-work capacity record is invalid.')
     }
     const occupiesTemporaryCapacity = job.contract_type === 'temporary'
-    if (!temporaryCapacityAllowsAcceptance({
-      contractType: job.contract_type,
-      hasPremiumCapacity: hasPremiumCapacity(employerMembershipSnapshot),
-      activeTemporaryEngagementCount: activeIds.length,
-      premiumLimit: PREMIUM_TEMPORARY_CAPACITY_LIMIT,
-    })) {
+    if (
+      !temporaryCapacityAllowsAcceptance({
+        contractType: job.contract_type,
+        hasPremiumCapacity: hasPremiumCapacity(employerMembershipSnapshot),
+        activeTemporaryEngagementCount: activeIds.length,
+        premiumLimit: PREMIUM_TEMPORARY_CAPACITY_LIMIT,
+      })
+    ) {
       fail(
         409,
         hasPremiumCapacity(employerMembershipSnapshot)
           ? 'The employer has reached the supported temporary Engagement limit.'
-          : 'The employer must finish the current temporary Engagement before accepting another, or activate Misebox Premium.'
+          : 'The employer must finish the current temporary Engagement before accepting another or activate Premium access in this App.'
       )
     }
     const now = Timestamp.now()
@@ -798,7 +807,7 @@ export async function mutateJobEngagement(
     .collection(JobApplicationStorage.collection)
     .doc(engagementId)
 
-  await db.runTransaction(async transaction => {
+  await db.runTransaction(async (transaction) => {
     const engagementSnapshot = await transaction.get(engagementRef)
     const engagement = canonicalEngagement(engagementSnapshot)
     if (
@@ -845,18 +854,16 @@ export async function mutateJobEngagement(
       updated: serverAuditStamp({ by: uid }),
     })
     if (capacityRef && capacitySnapshot?.exists) {
-        const source = record(capacitySnapshot.data())
-        const activeIds = Array.isArray(
-          source.active_temporary_engagement_ids
-        )
-          ? source.active_temporary_engagement_ids
-              .map(text)
-              .filter(id => id && id !== engagement.id)
-          : []
-        transaction.update(capacityRef, {
-          active_temporary_engagement_ids: Array.from(new Set(activeIds)),
-          updated_at: now,
-        })
+      const source = record(capacitySnapshot.data())
+      const activeIds = Array.isArray(source.active_temporary_engagement_ids)
+        ? source.active_temporary_engagement_ids
+            .map(text)
+            .filter((id) => id && id !== engagement.id)
+        : []
+      transaction.update(capacityRef, {
+        active_temporary_engagement_ids: Array.from(new Set(activeIds)),
+        updated_at: now,
+      })
     }
   })
 

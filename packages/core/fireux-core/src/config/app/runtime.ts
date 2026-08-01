@@ -4,6 +4,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
+import type { FireuxAppBrandConfig } from './types'
 
 export type RuntimeAppRole = 'global' | 'tenant' | 'standalone'
 
@@ -11,6 +12,7 @@ export type RuntimeApp = {
   id: string
   name: string
   shortName: string
+  brand: FireuxAppBrandConfig
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */

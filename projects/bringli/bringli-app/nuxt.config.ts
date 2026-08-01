@@ -8,6 +8,7 @@ export default defineFireuxConfig({
   id: 'bringli-app',
   name: 'Bringli',
   shortName: 'Bringli',
+  brand: { owner: 'app', status: 'provisional' },
   role: 'global',
   consoles: ['supplier'],
   domains: ['suppliers'],

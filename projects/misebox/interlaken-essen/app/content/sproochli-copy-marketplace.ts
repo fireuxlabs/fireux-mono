@@ -237,6 +237,26 @@ export const interlakenMarketplaceCopyEntries =
       de: 'Marktplatzverwaltung',
       gsw: 'Marktplatz verwalte',
     },
+    market_admin_preview: {
+      en: 'Preview store',
+      de: 'Shopvorschau',
+      gsw: 'Lade aaluege',
+    },
+    market_admin_back: {
+      en: 'Back to administration',
+      de: 'Zurück zur Verwaltung',
+      gsw: 'Zrügg zur Verwaltig',
+    },
+    market_draft_preview: {
+      en: 'Unpublished preview',
+      de: 'Unveröffentlichte Vorschau',
+      gsw: 'Unveröffentlichti Vorschau',
+    },
+    market_draft_preview_notice: {
+      en: 'This is an administration preview. Customers cannot see or order from this store yet.',
+      de: 'Dies ist eine Verwaltungsvorschau. Kunden können diesen Shop noch nicht sehen oder dort bestellen.',
+      gsw: 'Das isch e Vorschau für d Verwaltig. Chunde gseh dä Lade no nid und chöi no nüt bstelle.',
+    },
     market_admin_assign_user: {
       en: 'Assign an existing App user',
       de: 'Bestehenden App-Benutzer zuweisen',

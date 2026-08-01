@@ -23,6 +23,14 @@ export type FutterPost = FutterEvent | FutterBlogPost
 
 export const futterPosts: FutterPost[] = [
   {
+    id: '1-august-dorfmaert-ringgenberg',
+    labelKey: 'from_region',
+    blogPost: {
+      kind: 'blog-post',
+      slug: '1-august-dorfmaert-ringgenberg',
+    },
+  },
+  {
     id: 'wo-sind-die-chuehlschraenke',
     labelKey: 'from_region',
     blogPost: {

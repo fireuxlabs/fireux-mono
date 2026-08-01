@@ -8,10 +8,21 @@ import {
   normalizeDishItemKind,
 } from '../../../models/kitchen/dish.model'
 import { defaultMenuLanguageText } from '../language/default-text'
+import {
+  normalizeSproochliLanguage,
+  type SproochliLanguageCode,
+} from 'fireux-sproochli/runtime/sproochli.ts'
+
+export type KitchenMenuDraftTranslation = {
+  language: Exclude<SproochliLanguageCode, ''>
+  text: string
+}
 
 export type KitchenMenuDraftItem = {
   name: string
+  name_translations: KitchenMenuDraftTranslation[]
   description: string
+  description_translations: KitchenMenuDraftTranslation[]
   item_kind: ReturnType<typeof normalizeDishItemKind>
   is_deal: boolean
   /** Untrusted source candidate for the Dish image review/ingestion flow. */
@@ -24,6 +35,7 @@ export type KitchenMenuDraftItem = {
 
 export type KitchenMenuDraftSection = {
   label: string
+  label_translations: KitchenMenuDraftTranslation[]
   items: KitchenMenuDraftItem[]
 }
 
@@ -47,20 +59,54 @@ const money = (value: unknown) => {
   return normalized ? numberValue(normalized[0]) : 0
 }
 
+const cleanTranslations = (value: unknown): KitchenMenuDraftTranslation[] => {
+  if (!Array.isArray(value)) return []
+
+  const byLanguage = new Map<Exclude<SproochliLanguageCode, ''>, string>()
+  value.forEach((entry) => {
+    const data = asRecord(entry)
+    const language = normalizeSproochliLanguage(data.language)
+    const translatedText = readString(data.text)
+    if (!language || !translatedText) return
+    byLanguage.set(language, translatedText)
+  })
+
+  return [...byLanguage].map(([language, translatedText]) => ({
+    language,
+    text: translatedText,
+  }))
+}
+
 const cleanAddOns = (value: unknown) =>
-  normalizeMenuItemAddOns(value)
-    .map((option) => ({
-      ...option,
-      label: defaultMenuLanguageText(option.label),
-    }))
+  (Array.isArray(value) ? value : [])
+    .map((entry) => {
+      const source = asRecord(entry)
+      const option = normalizeMenuItemAddOns([source])[0]
+      return option
+        ? {
+            ...option,
+            label: defaultMenuLanguageText(option.label),
+            label_translations: cleanTranslations(source.label_translations),
+          }
+        : null
+    })
+    .filter((option): option is NonNullable<typeof option> => Boolean(option))
     .filter((option) => option.label)
 
 const cleanPriceOptions = (value: unknown) =>
-  normalizeMenuItemPriceOptions(value)
-    .map((option) => ({
-      ...option,
-      label: defaultMenuLanguageText(option.label),
-    }))
+  (Array.isArray(value) ? value : [])
+    .map((entry) => {
+      const source = asRecord(entry)
+      const option = normalizeMenuItemPriceOptions([source])[0]
+      return option
+        ? {
+            ...option,
+            label: defaultMenuLanguageText(option.label),
+            label_translations: cleanTranslations(source.label_translations),
+          }
+        : null
+    })
+    .filter((option): option is NonNullable<typeof option> => Boolean(option))
     .filter((option) => option.label)
 
 export function normalizeKitchenMenuDraftSections(
@@ -76,12 +122,17 @@ export function normalizeKitchenMenuDraftSections(
 
       return {
         label: defaultMenuLanguageText(data.label),
+        label_translations: cleanTranslations(data.label_translations),
         items: items
           .map((item) => {
             const row = asRecord(item)
             return {
               name: defaultMenuLanguageText(row.name),
+              name_translations: cleanTranslations(row.name_translations),
               description: defaultMenuLanguageText(row.description),
+              description_translations: cleanTranslations(
+                row.description_translations
+              ),
               item_kind: normalizeDishItemKind(row.item_kind),
               is_deal: normalizeDishDealFlag(row.is_deal),
               image_url: readString(row.image_url),

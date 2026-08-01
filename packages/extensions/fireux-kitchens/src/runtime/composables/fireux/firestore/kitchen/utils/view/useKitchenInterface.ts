@@ -16,6 +16,9 @@ import type {
   Kitchen,
   KitchenMenusConfig,
 } from '../../../../../../models/kitchen.model'
+import type {
+  PublicKitchenImageKind,
+} from '../../../../../../models/kitchen/kitchen-index.model'
 import {
   readKitchenAppScope,
   readKitchenIdentity,
@@ -46,6 +49,7 @@ export namespace KitchenCard {
 
     // Image tone metadata
     imageShade?: PlaceImageShade
+    imageKind?: PublicKitchenImageKind
 
     // Search collection (optional)
     collection?: string
@@ -97,6 +101,8 @@ export type KitchenSurface = {
   display_image_url?: string
   logo_image_url?: string
   image_shade?: PlaceImageShade
+  image_kind?: PublicKitchenImageKind
+  media_backdrop_color?: string
   claimed_by?: string
   brand_tagline?: string
   website?: string
@@ -205,9 +211,16 @@ export function useKitchenInterface() {
 
   type KitchenCell = Pick<
     KitchenCard.Card,
-    'id' | 'to' | 'name' | 'shortAddress' | 'imageUrl' | 'imageShade'
+    | 'id'
+    | 'to'
+    | 'name'
+    | 'shortAddress'
+    | 'imageUrl'
+    | 'imageShade'
+    | 'imageKind'
   > & {
     prop?: string
+    mediaBackdropColor?: string
   }
 
   type KitchenPreview = {
@@ -287,8 +300,10 @@ export function useKitchenInterface() {
     return {
       ...merged,
       id,
-      app_scope_state: appScope.state || merged.app_scope_state,
-      app_scope_app_id: appScope.appId || merged.app_scope_app_id,
+      app_scope_state: (appScope.state || undefined) as
+        | FireuxAppScopeState
+        | undefined,
+      app_scope_app_id: appScope.appId || undefined,
       show: visibility.show,
       active: visibility.active,
       is_test_kitchen: visibility.isTest,
@@ -357,6 +372,10 @@ export function useKitchenInterface() {
         : placeImageUrl
           ? kitchen.image_shade
           : identity.imageShade || kitchen.image_shade,
+      imageKind: kitchen.image_kind ||
+        (cardImageUrl || (!placeImageUrl && identity.logoImageUrl)
+          ? 'brand'
+          : 'photograph'),
 
       claimedBy: safeString(kitchen.claimed_by),
     }
@@ -465,6 +484,30 @@ export function useKitchenInterface() {
       shortAddress: base.shortAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
+      imageKind: base.imageKind,
+      mediaBackdropColor: safeString(target.media_backdrop_color),
+      prop: (target as any)?.brand_tagline,
+    }
+  }
+
+  function consoleTarget(
+    target?: KitchenSurface | null | undefined
+  ): KitchenCell | null {
+    const base = buildInterface(target)
+    if (!base || !target) return null
+    const kitchenIdentity = readKitchenIdentity(target)
+
+    return {
+      id: base.id,
+      to: base.to,
+      name: base.name,
+      shortAddress: base.shortAddress,
+      imageUrl: safeString(
+        kitchenIdentity.logoImageUrl || target.logo_image_url
+      ).trim(),
+      imageShade: kitchenIdentity.imageShade,
+      imageKind: 'brand',
+      mediaBackdropColor: kitchenIdentity.mediaBackdropColor,
       prop: (target as any)?.brand_tagline,
     }
   }
@@ -520,6 +563,7 @@ export function useKitchenInterface() {
     identity,
     pill,
     cell,
+    consoleTarget,
     preview,
     profile,
   }

@@ -140,7 +140,7 @@ export function projectPublicApp(
 }
 
 export function toAppDirectoryEntry(app: PublicAppDto): AppDirectoryEntry {
-  const slug = app.slug || app.id
+  const slug = app.id
 
   return {
     id: app.id,

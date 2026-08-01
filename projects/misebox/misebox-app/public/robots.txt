@@ -1,0 +1,8 @@
+User-agent: *
+Disallow: /console
+Disallow: /account
+Disallow: /admin
+Disallow: /auth
+Disallow: /developer
+
+Sitemap: https://misebox.app/sitemap.xml

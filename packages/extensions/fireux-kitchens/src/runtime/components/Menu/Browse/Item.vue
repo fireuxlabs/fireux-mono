@@ -46,7 +46,7 @@
           :data-menu-item-option-count="item.priceOptions.length"
         >
           <p :id="priceOptionsLabelId" class="menu-browse-item__options-label">
-            Available options
+            {{ availableOptionsLabel }}
           </p>
           <ul :aria-labelledby="`${itemNameId} ${priceOptionsLabelId}`">
             <li v-for="option in item.priceOptions" :key="option.id">
@@ -63,7 +63,7 @@
           :data-menu-item-option-count="item.addOns.length"
         >
           <p :id="addOnsLabelId" class="menu-browse-item__options-label">
-            Optional extras
+            {{ optionalExtrasLabel }}
           </p>
           <ul :aria-labelledby="`${itemNameId} ${addOnsLabelId}`">
             <li v-for="addOn in item.addOns" :key="addOn.id">
@@ -85,10 +85,12 @@ import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.
 
 const props = defineProps<{
   accessibilityId: string
+  availableOptionsLabel: string
   currencyCode: string
   currencyFormat: CurrencyDisplayFormat
   showCurrency: boolean
   item: MenuManifestItem
+  optionalExtrasLabel: string
 }>()
 
 const itemNameId = computed(() => `${props.accessibilityId}-name`)

@@ -32,6 +32,7 @@ const defaultBlogPost: BlogPostCreateInput = {
   cta_text: '',
   type: 'article',
   product_id: '',
+  sproochli: undefined,
 }
 
 /**
@@ -92,6 +93,7 @@ export function useBlogDraftState() {
       cta_text: '',
       type: 'article',
       product_id: '',
+      sproochli: undefined,
       source_app_id: tenantId,
       source_ecosystem_id: useFireUXConfig().ecosystemId || '',
       owner_type: 'app',

@@ -1,7 +1,7 @@
 <template>
   <section class="console-surface">
     <div v-if="kitchenId" class="space-y-4">
-      <ConsoleKitchenOperationsDishesRead v-if="showCollectionExperiment" />
+      <ConsoleKitchenOperationsDishesRead />
 
       <ConsoleKitchenOperationsDishesTools />
     </div>
@@ -24,6 +24,4 @@ import ConsoleKitchenOperationsDishesTools from './Tools.vue'
 const {
   kitchenId,
 } = useKitchenDishesWorkspace()
-
-const showCollectionExperiment = false
 </script>

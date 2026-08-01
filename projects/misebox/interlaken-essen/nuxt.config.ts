@@ -8,6 +8,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'interlaken-essen',
   name: 'Interlaken Essen',
   shortName: 'Interlaken Essen',
+  brand: { owner: 'app', status: 'provisional' },
   role: 'tenant',
   selfJoinEnabled: true,
   domains: ['jobs'],
@@ -48,7 +49,7 @@ const fireuxConfig = defineFireuxConfig({
 export default withFireuxNuxtConfig(fireuxConfig, {
   css: ['@/assets/styles/main.css'],
   fireuxBlogs: {
-    languages: ['gsw', 'en'],
+    languages: ['gsw', 'de', 'en'],
     defaultLanguage: 'gsw',
     selectionCookie: 'interlaken-essen.sproochli',
     queryParameter: 'sproochli',

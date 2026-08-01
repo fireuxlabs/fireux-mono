@@ -32,8 +32,8 @@ const PROJECTS_PATH = 'projects'
 const MISEBOX_ADAPTER_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue'
 const MISEBOX_PAGE_PATH = 'projects/misebox/misebox-app/app/pages/index.vue'
-const MISEBOX_CARD_ORBIT_PATH =
-  'projects/misebox/misebox-app/app/components/Misebox/ElementOrbit.vue'
+const MISEBOX_CARD_WINDOW_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/ElementWindow.vue'
 const MISEBOX_POWER_CARDS_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/PowerCards.vue'
 const MISEBOX_POWER_CARDS_DEMO_PATH =
@@ -520,7 +520,7 @@ export async function run(ctx) {
     discoverProductLandingAdapters(repoRoot)
   const miseboxAdapter = read(repoRoot, MISEBOX_ADAPTER_PATH)
   const miseboxPage = read(repoRoot, MISEBOX_PAGE_PATH)
-  const miseboxCardOrbit = read(repoRoot, MISEBOX_CARD_ORBIT_PATH)
+  const miseboxCardWindow = read(repoRoot, MISEBOX_CARD_WINDOW_PATH)
   const miseboxPowerCards = read(repoRoot, MISEBOX_POWER_CARDS_PATH)
   const miseboxPowerCardsDemo = read(repoRoot, MISEBOX_POWER_CARDS_DEMO_PATH)
   const miseboxPowerCardEight = read(repoRoot, MISEBOX_POWER_CARD_EIGHT_PATH)
@@ -735,7 +735,7 @@ export async function run(ctx) {
     [CORE_PRODUCT_CATALOGUE_PATH, productCatalogue],
     [CORE_PRODUCT_ENTRY_PATH, productEntryPaths],
     [MISEBOX_ADAPTER_PATH, miseboxAdapter],
-    [MISEBOX_CARD_ORBIT_PATH, miseboxCardOrbit],
+    [MISEBOX_CARD_WINDOW_PATH, miseboxCardWindow],
     [MISEBOX_POWER_CARDS_PATH, miseboxPowerCards],
     [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxConsolePreview],
     [MISEBOX_ORDERING_PREVIEW_PATH, miseboxOrderingPreview],
@@ -1697,6 +1697,8 @@ export async function run(ctx) {
     'const INTRO_DURATION = 7200',
     'const INTRO_YAW_TURNS = 2',
     'const IDLE_SPEED = TAU / 20000',
+    'mobileAutoplay: true',
+    '(isMobile.value || isVisible.value)',
     'const INTRO_START_SPEED =',
     'const decelerationTravel =',
     '2.5 * progress ** 4',
@@ -1761,10 +1763,7 @@ export async function run(ctx) {
     )
   }
 
-  for (const [filePath, source] of [
-    [MISEBOX_CARD_ORBIT_PATH, miseboxCardOrbit],
-    [FIREUX_CARD_ORBIT_PATH, fireuxCardOrbit],
-  ]) {
+  for (const [filePath, source] of [[FIREUX_CARD_ORBIT_PATH, fireuxCardOrbit]]) {
     if (!source.includes('<LandingCardOrbit')) {
       violations.push(`${filePath}: must consume the shared Core card orbit`)
     }
@@ -1812,12 +1811,17 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    'dataSource: LandingCardOrbitDataSource',
-    ':data-source="dataSource"',
+    'misebox-element-window__viewport',
+    'overflow-x: auto',
+    'tabindex="0"',
+    'aria-label="Scroll through Misebox product cards from left to right"',
+    'scroll-snap-type: x proximity',
+    'grid-auto-flow: column',
+    'grid-auto-columns: minmax(18rem, 20rem)',
   ]) {
-    if (!miseboxCardOrbit.includes(required)) {
+    if (!miseboxCardWindow.includes(required)) {
       violations.push(
-        `${MISEBOX_CARD_ORBIT_PATH}: Misebox orbit must pass through its declared data source (${required})`
+        `${MISEBOX_CARD_WINDOW_PATH}: Misebox card window must remain a keyboard-focusable, horizontal bento presentation (${required})`
       )
     }
   }
@@ -1864,8 +1868,7 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    '<MiseboxElementOrbit',
-    ':data-source="orbit.dataSource"',
+    '<MiseboxElementWindow',
     'useMiseboxPowerCardsProductDemo()',
     'v-else-if="pending"',
     'v-else-if="error"',
@@ -1908,7 +1911,7 @@ export async function run(ctx) {
       miseboxPowerCardsDemo.includes(forbidden)
     ) {
       violations.push(
-        `${MISEBOX_POWER_CARDS_DEMO_PATH}: Demo orbit acquired a second live data authority (${forbidden})`
+        `${MISEBOX_POWER_CARDS_DEMO_PATH}: Demo card window acquired a second live data authority (${forbidden})`
       )
     }
   }
@@ -1959,7 +1962,7 @@ export async function run(ctx) {
   ]) {
     if (miseboxPowerCards.includes(forbidden)) {
       violations.push(
-        `${MISEBOX_POWER_CARDS_PATH}: Demo-only orbit reintroduced a live Ingredient-dependent card (${forbidden})`
+        `${MISEBOX_POWER_CARDS_PATH}: Demo-only card window reintroduced a live Ingredient-dependent card (${forbidden})`
       )
     }
   }
@@ -1975,7 +1978,7 @@ export async function run(ctx) {
       miseboxPowerCardEight.includes(forbidden)
     ) {
       violations.push(
-        `${MISEBOX_POWER_CARDS_DEMO_PATH}: Demo orbit contains manufactured domain presentation (${forbidden})`
+        `${MISEBOX_POWER_CARDS_DEMO_PATH}: Demo card window contains manufactured domain presentation (${forbidden})`
       )
     }
   }
@@ -1987,12 +1990,12 @@ export async function run(ctx) {
   ]) {
     for (const [filePath, source] of [
       [MISEBOX_ADAPTER_PATH, miseboxAdapter],
-      [MISEBOX_CARD_ORBIT_PATH, miseboxCardOrbit],
+      [MISEBOX_CARD_WINDOW_PATH, miseboxCardWindow],
       [MISEBOX_POWER_CARDS_PATH, miseboxPowerCards],
     ]) {
       if (source.includes(forbidden)) {
         violations.push(
-          `${filePath}: card orbit must not couple ordinary page scrolling to animation (${forbidden})`
+          `${filePath}: PowerCards must not couple ordinary page scrolling to animation (${forbidden})`
         )
       }
     }

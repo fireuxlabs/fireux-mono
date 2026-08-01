@@ -4,6 +4,7 @@ import type { NuxtConfig } from '@nuxt/schema'
 export type FireUXNitroConfig = {
   serverFunctionName: string
   region: string
+  serviceAccount?: string
 }
 
 export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
@@ -29,6 +30,7 @@ export function configNitroFirebase(nuxt: NuxtConfig, c: FireUXNitroConfig) {
       // The Firebase preset reads deployment region from httpsOptions at runtime.
       httpsOptions: {
         region: c.region,
+        ...(c.serviceAccount ? { serviceAccount: c.serviceAccount } : {}),
       },
     }
   }

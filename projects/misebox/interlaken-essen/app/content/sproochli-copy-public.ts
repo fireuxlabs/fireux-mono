@@ -201,11 +201,6 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     de: 'Entdecken Sie lokale Produzentinnen und Produzenten, Hofläden, Käsereien, Imkerinnen und Imker sowie Köchinnen und Köche rund um Interlaken.',
     gsw: 'Lokali Produzänte, Hofläde, Chäsereie, Imker und Chöch rund um Interlake entdecke.',
   },
-  storefront_preview_label: {
-    en: 'Storefront prototype',
-    de: 'Shop-Prototyp',
-    gsw: 'Lade-Vorschau',
-  },
   storefront_open_shop: {
     en: 'Open the shop',
     de: 'Shop öffnen',
@@ -215,11 +210,6 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     en: 'Back to the marketplace',
     de: 'Zurück zum Marktplatz',
     gsw: 'Zrügg zum Marktplatz',
-  },
-  storefront_back_to_honey: {
-    en: 'Back to local honey',
-    de: 'Zurück zum lokalen Honig',
-    gsw: 'Zrügg zum lokale Honig',
   },
   storefront_not_found: {
     en: 'This storefront does not exist.',
@@ -231,115 +221,10 @@ export const interlakenPublicCopyEntries = defineInterlakenCopyEntries({
     de: 'Anbieterinnen und Anbieter in dieser Kategorie',
     gsw: 'Aabieter i dere Kategorie',
   },
-  storefront_honey_name: {
-    en: 'Anja’s Honey',
-    de: 'Anja’s Honey',
-    gsw: 'Anja’s Honey',
-  },
-  storefront_honey_description: {
-    en: 'Local Goldsiegel honey from Zweilütschinen, filled into 250 g and 500 g jars.',
-    de: 'Lokaler Goldsiegel-Honig aus Zweilütschinen, abgefüllt in 250-g- und 500-g-Gläser.',
-    gsw: 'Lokale Honig mit Goldsiegel us Zweilütschine, abgfüllt i 250-g- und 500-g-Gläser.',
-  },
-  storefront_honey_art_alt: {
-    en: 'Illustrated 250 g and 500 g jars of local honey.',
-    de: 'Illustrierte 250-g- und 500-g-Gläser mit lokalem Honig.',
-    gsw: 'Illustriereti 250-g- und 500-g-Gläser mit lokalem Honig.',
-  },
-  storefront_goldseal: {
-    en: 'Goldsiegel honey',
-    de: 'Goldsiegel-Honig',
-    gsw: 'Honig mit Goldsiegel',
-  },
-  storefront_prototype_note: {
-    en: 'This free storefront is a preview. Prices, availability and handover details still need to be confirmed.',
-    de: 'Dieser kostenlose Shop ist eine Vorschau. Preise, Verfügbarkeit und Übergabedetails müssen noch bestätigt werden.',
-    gsw: 'Dä gratis Lade isch e Vorschau. Priise, Verfügbarkeit und d Übergab müesse no bestätigt wärde.',
-  },
-  storefront_offer_eyebrow: {
-    en: 'The honey',
-    de: 'Der Honig',
-    gsw: 'Dr Honig',
-  },
-  storefront_offer_title: {
-    en: 'Choose a jar',
-    de: 'Wählen Sie ein Glas',
-    gsw: 'Wähl es Glas',
-  },
-  storefront_offer_intro: {
-    en: 'Two useful sizes, offered directly by the producers.',
-    de: 'Zwei praktische Grössen, direkt von den Produzentinnen angeboten.',
-    gsw: 'Zwei praktischi Grössen, direkt vo de Produzäntinne.',
-  },
-  storefront_honey_250_label: {
-    en: 'Small jar',
-    de: 'Kleines Glas',
-    gsw: 'Chliises Glas',
-  },
-  storefront_honey_500_label: {
-    en: 'Large jar',
-    de: 'Grosses Glas',
-    gsw: 'Grosses Glas',
-  },
-  storefront_price_label: {
-    en: 'Price',
-    de: 'Preis',
-    gsw: 'Priis',
-  },
-  storefront_price_pending: {
-    en: 'To be confirmed',
-    de: 'Noch zu bestätigen',
-    gsw: 'Wird no bestätigt',
-  },
-  storefront_availability_label: {
-    en: 'Availability',
-    de: 'Verfügbarkeit',
-    gsw: 'Verfügbarkeit',
-  },
-  storefront_availability_pending: {
-    en: 'Ask the producers',
-    de: 'Bei den Produzentinnen nachfragen',
-    gsw: 'Bi de Produzäntinne nachefrage',
-  },
   storefront_choose_size: {
     en: 'Choose this size',
     de: 'Diese Grösse wählen',
     gsw: 'Die Grössi wähle',
-  },
-  storefront_interest_eyebrow: {
-    en: 'Order journey preview',
-    de: 'Vorschau des Bestellvorgangs',
-    gsw: 'Vorschau vo dr Bstellig',
-  },
-  storefront_interest_title: {
-    en: 'Interested in the {weight} jar?',
-    de: 'Interessieren Sie sich für das {weight}-Glas?',
-    gsw: 'Interesse am {weight}-Glas?',
-  },
-  storefront_interest_body: {
-    en: 'Once the details are confirmed, your enquiry can go directly to the producers here.',
-    de: 'Sobald die Angaben bestätigt sind, können Sie Ihre Anfrage hier direkt an die Produzentinnen senden.',
-    gsw: 'Sobald d Angabe bestätigt si, chasch dini Aafrag hie direkt a d Produzäntinne schicke.',
-  },
-  storefront_preview_interest: {
-    en: 'Preview the enquiry step',
-    de: 'Anfrageschritt ansehen',
-    gsw: 'Aafrag-Schritt aaluege',
-  },
-  storefront_interest_complete_title: {
-    en: 'That is the complete local journey.',
-    de: 'So sieht der vollständige lokale Ablauf aus.',
-    gsw: 'So eifach wird dr lokali Wäg.',
-  },
-  storefront_interest_complete_body: {
-    en: 'Choose a jar, contact the producers directly, and confirm the remaining details together.',
-    de: 'Wählen Sie ein Glas, kontaktieren Sie die Produzentinnen direkt und bestätigen Sie die restlichen Angaben gemeinsam.',
-    gsw: 'Glas wähle, d Produzäntinne direkt kontaktiere und d restliche Angabe mitenand bestätige.',
-  },
-  storefront_no_order_note: {
-    en: 'Prototype only – no order or message is sent.',
-    de: 'Nur ein Prototyp – es wird keine Bestellung oder Nachricht gesendet.',
-    gsw: 'Nur e Vorschau – es wird kei Bstellig und kei Nachricht gschickt.',
   },
   buy_prompt: {
     en: 'What are you looking for?',

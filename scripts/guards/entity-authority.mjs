@@ -849,6 +849,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /normalizePublicPlaceProjection\(\{[\s\S]*return result/,
     'The Live Place API must use the shared exact public collection-row normalizer.'
   )
+  assert.match(
+    publicPlaceModel,
+    /PublicPlaceDetailProjection[\s\S]*business_hours\?:\s*PlaceBusinessHours/,
+    'The bounded Place detail must expose canonical normalized business hours.'
+  )
+  assert.match(
+    publicPlaceServerProjection,
+    /normalizePlaceBusinessHours\(value\.business_hours\)[\s\S]*business_hours:\s*businessHours/,
+    'The Live Place detail must project normalized Place-owned business hours.'
+  )
 
   const companyModel = read(
     repoRoot,

@@ -1,103 +1,135 @@
 <!-- Concurrent edit — 2026-07-21 14:38 CEST — Place public projection: expose explicit bounded directory pagination. -->
 <template>
-  <UCard>
-    <template #header>
-      <div class="collection-manager__header">
-        <div class="collection-manager__title">
-          <h2>{{ title }}</h2>
-          <p>{{ description }}</p>
-        </div>
-
-        <div
-          class="collection-manager__controls"
-        >
-          <div class="ml-auto flex flex-wrap items-center gap-2">
-            <UFieldGroup
-              v-if="showFilters"
-              size="xs"
-            >
-              <UButton
-                color="neutral"
-                :variant="activeEntityFamily === 'all' ? 'solid' : 'ghost'"
-                @click="setActiveEntityFamily('all')"
-              >
-                All
-              </UButton>
-              <UButton
-                v-for="family in entityFamilyFilters"
-                :key="family.id"
-                color="neutral"
-                :variant="activeEntityFamily === family.id ? 'solid' : 'ghost'"
-                @click="setActiveEntityFamily(family.id)"
-              >
-                {{ filterButtonLabel(family.label, family.count) }}
-              </UButton>
-            </UFieldGroup>
-
-            <UInput
-              v-if="showSearchInput"
-              v-model="query"
-              size="xs"
-              :placeholder="searchPlaceholder"
-              :aria-label="searchPlaceholder"
-            />
-
-            <UButton
-              v-if="showVariantToggle"
-              size="xs"
-              variant="ghost"
-              :icon="
-                variant === 'pill' ? 'i-lucide-list' : 'i-lucide-layout-grid'
-              "
-              :aria-label="
-                variant === 'pill'
-                  ? 'Switch to list view'
-                  : 'Switch to grid view'
-              "
-              @click="toggleVariant"
-            />
-            <UBadge
-              v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
-              variant="soft"
-              >{{ countLabel }}</UBadge
-            >
-          </div>
-        </div>
-      </div>
-    </template>
-
-    <MoleculesStateCard
-      v-if="outcome === 'pending'"
-      entity="places"
-      state="loading"
-      surface="bare"
-    />
-
-    <MoleculesStateCard
-      v-else-if="outcome === 'error'"
-      entity="places"
-      state="error"
-      surface="bare"
-    />
-
-    <PlaceCollectionList
-      v-else-if="cardsFiltered.length"
-      :cards="cardsFiltered"
-      :variant="variant"
+  <section class="collection-directory place-directory">
+    <CollectionDirectoryHeader
+      :title="title"
+      :description="description"
+      compact
     >
-      <template #pill="{ card }">
-        <PlaceCardsPill v-bind="card" :link="linkEnabled" />
-      </template>
-      <template #cell="{ card }">
-        <PlaceCardsCell v-bind="card" :link="linkEnabled" />
-      </template>
-    </PlaceCollectionList>
+      <template #controls>
+        <UFieldGroup
+          v-if="showFilters"
+          size="sm"
+        >
+          <UButton
+            color="neutral"
+            :variant="activeEntityFamily === 'all' ? 'solid' : 'ghost'"
+            @click="setActiveEntityFamily('all')"
+          >
+            All
+          </UButton>
+          <UButton
+            v-for="family in entityFamilyFilters"
+            :key="family.id"
+            color="neutral"
+            :variant="activeEntityFamily === family.id ? 'solid' : 'ghost'"
+            @click="setActiveEntityFamily(family.id)"
+          >
+            {{ filterButtonLabel(family.label, family.count) }}
+          </UButton>
+        </UFieldGroup>
 
-    <MoleculesStateCard
+        <UInput
+          v-if="showSearchInput"
+          v-model="query"
+          :placeholder="searchPlaceholder"
+          :aria-label="searchPlaceholder"
+          icon="i-lucide-search"
+          class="collection-directory__search"
+        />
+
+        <UButton
+          v-if="showVariantToggle"
+          size="sm"
+          color="neutral"
+          variant="ghost"
+          :icon="
+            variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'
+          "
+          :aria-label="
+            variant === 'pill'
+              ? 'Switch to card view'
+              : 'Switch to compact view'
+          "
+          @click="toggleVariant"
+        />
+
+        <span
+          v-if="showCount && outcome !== 'pending' && outcome !== 'error'"
+          class="collection-directory__count"
+        >
+          {{ countLabel }}
+        </span>
+      </template>
+    </CollectionDirectoryHeader>
+
+    <CollectionDirectoryState
+      v-if="outcome === 'pending'"
+      title="Loading places"
+      description="Finding places…"
+      icon="i-lucide-loader-circle"
+      loading
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    />
+
+    <CollectionDirectoryState
+      v-else-if="outcome === 'error'"
+      title="Places unavailable"
+      description="Places could not be loaded. Please try again."
+      icon="i-lucide-triangle-alert"
+      role="alert"
+      aria-live="assertive"
+    >
+      <template #actions>
+        <UButton
+          label="Try again"
+          color="neutral"
+          variant="soft"
+          icon="i-lucide-refresh-cw"
+          @click="fetched.refresh"
+        />
+      </template>
+    </CollectionDirectoryState>
+
+    <div v-else-if="cardsFiltered.length" class="place-directory__results">
+      <PlaceCollectionList
+        :cards="cardsFiltered"
+        :variant="variant"
+      >
+        <template #pill="{ card }">
+          <PlaceCardsPill v-bind="card" :link="linkEnabled" />
+        </template>
+        <template #cell="{ card }">
+          <PlaceCardsCell v-bind="card" :link="linkEnabled" directory />
+        </template>
+      </PlaceCollectionList>
+
+      <UAlert
+        v-if="loadMoreError"
+        color="error"
+        variant="soft"
+        icon="i-lucide-circle-alert"
+        title="More places could not be loaded"
+        description="The places already shown are still available."
+      />
+
+      <div v-if="hasMore" class="place-directory__more">
+        <UButton
+          label="Load more places"
+          variant="soft"
+          color="neutral"
+          :loading="loadingMore"
+          :disabled="loadingMore"
+          @click="loadMore"
+        />
+      </div>
+    </div>
+
+    <CollectionDirectoryState
       v-else
-      entity="places"
-      state="empty"
-      surface="bare"
+      icon="i-lucide-map-pin"
       :title="
         query || activeEntityFamily !== 'all'
           ? 'No places match your filters'
@@ -106,26 +138,9 @@
       :description="
         query || activeEntityFamily !== 'all'
           ? 'Try changing the search or entity-family filter.'
-          : 'Once place records are added, they will display here.'
+          : 'Published places will appear here when they are ready.'
       "
     />
-
-    <div v-if="hasMore" class="mt-4 flex justify-center">
-      <UButton
-        size="xs"
-        variant="soft"
-        color="neutral"
-        :loading="loadingMore"
-        :disabled="loadingMore"
-        @click="loadMore"
-      >
-        Load more places
-      </UButton>
-    </div>
-
-    <p v-if="loadMoreError" class="mt-2 text-center text-sm text-error">
-      More places could not be loaded.
-    </p>
 
     <div>
       <DevJson
@@ -137,7 +152,7 @@
         @closed="unloadDevJson"
       />
     </div>
-  </UCard>
+  </section>
 </template>
 
 <script setup lang="ts">
@@ -165,15 +180,15 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
   }>(),
   {
-    title: 'Places',
-    description: 'Browse place records available to this runtime.',
+    title: 'Place directory',
+    description: 'Explore venues and the physical places behind local services.',
     link: true,
     searchPlaceholder: 'Search places…',
     showSearch: true,
     showFilterToggle: true,
-    showVariantToggle: true,
+    showVariantToggle: false,
     showCount: true,
-    initialVariant: 'pill',
+    initialVariant: 'cell',
   }
 )
 
@@ -185,9 +200,12 @@ const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
 const loadMore = () => fetched.loadMore()
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
-const title = computed(() => String(props.title || 'Places'))
+const title = computed(() => String(props.title || 'Place directory'))
 const description = computed(() =>
-  String(props.description || 'Browse place records available to this runtime.')
+  String(
+    props.description ||
+    'Explore venues and the physical places behind local services.'
+  )
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
@@ -291,3 +309,15 @@ function setActiveEntityFamily(family: string) {
   activeEntityFamily.value = String(family || 'all').trim() || 'all'
 }
 </script>
+
+<style scoped>
+.place-directory__results {
+  display: grid;
+  gap: calc(var(--spacing) * 6);
+}
+
+.place-directory__more {
+  display: flex;
+  justify-content: center;
+}
+</style>

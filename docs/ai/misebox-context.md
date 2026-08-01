@@ -4,7 +4,7 @@
 <!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
 <!-- Concurrent edit — 2026-07-25 — Keep Main App hero copy in Core while Misebox proves it with the real Orders board. -->
 
-Updated: 2026-07-29
+Updated: 2026-07-30
 Ref: 33603376f
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -53,7 +53,10 @@ Before each task:
   retain exact public detail links, while Test Kitchens have no public route.
   Local development shows the strict all-Kitchen projection by default;
   deployed Apps require the authenticated admin/developer preview to discover
-  hidden rows. Kitchen detail exact-loads the same server-owned projection and
+  hidden rows. That private preview is progressive enhancement: the bounded
+  public Kitchen collection renders as soon as it is ready and is never hidden
+  or failed by a delayed token refresh or unavailable private projection.
+  Kitchen detail exact-loads the same server-owned projection and
   allowlist by slug during SSR; it does not read the Kitchen root or AppKitchen
   support record directly from the browser.
   The same public Kitchen detail remains read-only for ordinary visitors but
@@ -78,7 +81,11 @@ Before each task:
   `Place.cover_image`, with `Place.image_url` only as the final fallback when
   no cover exists. This lets a restaurant inside a hotel provide its own square
   Kitchen crop while ordinary Kitchens reuse their Place cover at read time;
-  no Place media is copied into the Kitchen root.
+  no Place media is copied into the Kitchen root. Console target selection is
+  an identity surface, not a public card: it uses only the Kitchen-owned logo
+  and shows the neutral Kitchen fallback when that logo is absent. Demo
+  Kitchens obey the same split and cannot reuse their Place photograph as
+  their Kitchen logo.
   Place optionally owns the validated six-digit `media_backdrop_color` base
   inherited by Place-backed children. Kitchen persists the sparse
   `identity.media_backdrop_color` override only when its transparent logo,
@@ -238,7 +245,7 @@ Before each task:
   `LandingProductIndex`. Its fixed order is `hero-preview`, the `onboarding`
   entry slot, `console`, `specifics`, optional `ecosystems`, `apps`, `tools`,
   `solutions`, then `operations`. Core places the hero copy on the left and
-  the PowerCards orbit on the right, owns the responsive/reveal behavior, and
+  an app-owned product-card presentation on the right, owns the responsive/reveal behavior, and
   uses flat semantic surfaces without decorative gradients or flares.
   `LandingProductProofSection` owns the repeated proof-and-copy split and
   `LandingProductCatalogue` owns the Tools, Solutions, and Operations grid;
@@ -252,18 +259,12 @@ Before each task:
   definition is “The Control Centre For Kitchen
   Operations”; the Kitchen Console is the concrete workspace that runs menus,
   preparation, service, supply, and finance. The Main App hero uses the shared
-  typed hero text once and fills its named proof slot with the read-only
-  PowerCards orbit. Core `LandingCardOrbit` owns the deterministic geometry,
-  pointer/keyboard behavior, one-shot visibility-gated desktop launch with a
-  stable per-mount vector and two closed turns through one long deceleration,
-  continuous visibility-aware autoplay in the same direction, desktop
-  hover selection that elevates one card without snapping the pack, fully opaque
-  and crisp orbital elements whose scale and stacking communicate depth, static
-  mobile default, and reduced-motion fallback. Misebox keeps only typed labels
-  and slotted
-  PowerCards; it does not couple page scrolling to orbit rotation.
-  The
-  orbit consumes the discriminated, network-free data `demo` envelope from
+  typed hero text once and fills its named proof slot with a read-only,
+  keyboard-focusable left-to-right scroll window and responsive bento grid of
+  PowerCards.
+  Misebox owns this simpler presentation; it has no orbit motion, geometry, or
+  page-scroll coupling. The window consumes the discriminated, network-free
+  data `demo` envelope from
   `useMiseboxPowerCardsProductDemo`; it never falls through to the live public
   directory or canonical Ingredient hydration. Declared immutable Demo image
   GETs are presentation delivery, not data hydration. Kitchen, Menu, Dish,
@@ -440,11 +441,36 @@ Before each task:
   Kitchen through the trusted Kitchen Console endpoint. Shared Menu projections
   and the bounded public Kitchen detail show its Default/language trigger;
   a language selected on the Kitchen route follows the visitor into its
-  published Menu doorways. AppKitchen remains access-only. Structured Menu choices use Sproochli's
-  server-side provider path and source-aware translation memory. The selected
-  view remains client-session state; saved provider output stays explicitly
+  published Menu doorways. AppKitchen remains access-only. Structured Menus
+  use the query selection as their sole input and the Menu server returns one
+  final `default`, `translated`, or `unavailable` projection. Default never
+  translates or contacts the provider. Misebox SSR reads readiness, complete
+  caches, and translation memory from `misebox-78f9c/sproochli`; only a missing
+  field calls the FireUX-hosted Sproochli generator, and Misebox persists the
+  complete result locally. The provider never receives database authority and
+  has no Firestore access in Misebox. Production provider calls use
+  fixed-audience Google OIDC from an exact allowlisted Misebox SSR service
+  account; the browser cannot invoke the billable translation operation. The
+  Misebox server's `SPROOCHLI_MENU_PROVIDER_ENDPOINT` and
+  `SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE` must be the same exact HTTPS URL.
+  Sproochli's matching audience and `SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES`
+  grant must name the source-controlled dedicated function identity
+  `misebox-ssr@misebox-78f9c.iam.gserviceaccount.com`, `misebox-78f9c`,
+  database `sproochli`, and the permitted Misebox App ids. The Firebase Nitro
+  function option binds that identity during every guarded deployment; no key,
+  impersonation seam, default compute account, or Firebase CLI alias
+  participates in runtime resolution or authorization. The two Apps'
+  source-controlled `firebase.runtime-env.json` manifests carry only the
+  non-secret exact endpoint, audience, and source allowlist into their
+  generated function environments; credentials never enter those manifests.
+  `misebox-78f9c/sproochli` is the shared storage authority for Misebox Apps,
+  while each stored host App id remains provenance. The nullable readiness list groups the
+  picker into Cached and On demand; it never treats an unreachable database as
+  zero cached languages. Partial output falls back to the canonical Menu with
+  an unavailable state. The named database is server-only and client Rules
+  deny every read and write. Saved provider output remains explicitly
   unreviewed and does not become published copy. Luna Piccante is the first
-  Menu attachment proof.
+  Menu attachment and host-storage proof.
 - Ingredient is one shared culinary world rooted at `/ingredients/{id}` and
   currently owned by `fireux-kitchens`. `Ingredient.name` is simply the
   popular canonical name used across Kitchen and Supplier Consoles, including

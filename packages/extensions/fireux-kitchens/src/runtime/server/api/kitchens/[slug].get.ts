@@ -36,10 +36,9 @@ export default defineEventHandler(
     }
 
     const db = getRuntimeFirestore()
-    const snapshot = await db
+    const kitchenSnapshot = await db
       .collection('kitchens')
-      .where('slug', '==', slug)
-      .limit(2)
+      .doc(slug)
       .get()
       .catch(() => {
         throw createError({
@@ -47,22 +46,8 @@ export default defineEventHandler(
           statusMessage: 'Kitchen could not be read.',
         })
       })
-    if (!snapshot.docs.length) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Kitchen not found.',
-      })
-    }
-    if (snapshot.docs.length > 1) {
-      throw createError({
-        statusCode: 503,
-        statusMessage: 'Kitchen slug is not canonical.',
-      })
-    }
-
-    const kitchenSnapshot = snapshot.docs[0]
-    const data = kitchenSnapshot?.data() || {}
-    if (!kitchenSnapshot || !isRoutableKitchen(data)) {
+    const data = kitchenSnapshot.data() || {}
+    if (!kitchenSnapshot.exists || !isRoutableKitchen(data)) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Kitchen not found.',

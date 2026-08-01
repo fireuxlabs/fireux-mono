@@ -1,0 +1,29 @@
+{
+  "name": "holzworm-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "nuxi dev --port 3030",
+    "build": "nuxi build",
+    "generate": "nuxi generate",
+    "preview": "nuxi preview",
+    "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
+    "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project slap-45389 --config firebase.json",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project slap-45389 --config firebase.json --auth-domains holzworm-slap-45389.web.app --app-domain https://holzworm-slap-45389.web.app --verify-text \"Lasergravur auf Holz.\"",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project slap-45389 --config firebase.json --only hosting --auth-domains holzworm-slap-45389.web.app --app-domain https://holzworm-slap-45389.web.app --verify-text \"Lasergravur auf Holz.\"",
+    "check:env": "node ../../../scripts/check-env.mjs"
+  },
+  "dependencies": {
+    "@nuxt/icon": "2.x",
+    "@nuxt/ui": "^4.0.0-alpha.2",
+    "fireux-core": "workspace:*",
+    "fireux-slap": "workspace:*",
+    "nuxt": "4.4.6",
+    "vue": "3.5.20",
+    "vue-router": "4.5.1"
+  },
+  "devDependencies": {
+    "@vite-pwa/nuxt": "^1.0.4",
+    "rimraf": "^6.0.1"
+  }
+}

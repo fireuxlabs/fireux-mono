@@ -207,10 +207,18 @@ export function projectPublicKitchenIndexItem(
     'formatted_address'
   )
   const shortAddress = readRecordString(parts.placeData, 'short_address')
-  const imageUrl = text(parts.rootIdentity.cardImageUrl || parts.identity.imageUrl)
+  const cardImageUrl = text(parts.rootIdentity.cardImageUrl)
+  const imageUrl = text(
+    cardImageUrl ||
+    parts.place.coverImage ||
+    parts.place.imageUrl
+  )
   const mediaBackdropColor =
     parts.rootIdentity.mediaBackdropColor ||
     parts.place.mediaBackdropColor
+  const imageKind = cardImageUrl && mediaBackdropColor
+    ? 'brand'
+    : 'photograph'
   const logoImageUrl = text(parts.rootIdentity.logoImageUrl)
 
   return {
@@ -225,7 +233,8 @@ export function projectPublicKitchenIndexItem(
     ...(shortAddress ? { short_address: shortAddress } : {}),
     ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
     ...(imageUrl ? { image_url: imageUrl } : {}),
-    ...(parts.rootIdentity.cardImageUrl && mediaBackdropColor
+    ...(imageUrl ? { image_kind: imageKind } : {}),
+    ...(mediaBackdropColor
       ? { media_backdrop_color: mediaBackdropColor }
       : {}),
   }

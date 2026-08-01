@@ -1,6 +1,7 @@
 import {
   computed,
   ref,
+  shallowRef,
   toValue,
   type MaybeRefOrGetter,
   type Ref,
@@ -62,7 +63,7 @@ export function useMenuOrderTrackingSession<
 ): MenuOrderTrackingSession<TStatus> {
   const sentOrder = ref<CreatedMenuOrder | null>(null)
   const capabilityToken = ref('')
-  const status = ref<TStatus | null>(null)
+  const status = shallowRef<TStatus | null>(null) as Ref<TStatus | null>
   const fulfilmentLabel = ref('')
   const paymentLabel = ref('')
   const receiptItems = ref<CreatedMenuOrderReceiptLine[]>([])

@@ -1,5 +1,5 @@
 # AI document processing map
-Updated: 2026-07-22
+Updated: 2026-07-30
 Ref: 796952bf0
 Role: map, not canon
 
@@ -58,6 +58,19 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
 - Menu extraction distinguishes required variants from optional extras:
   `price_options` are mutually exclusive sizes/choices, while `add_ons`
   are optional extras/toppings/sides that can be combined.
+- The canonical KitchenMenu keeps one authored `Default` value per field and
+  declares no source language. When an uploaded document prints aligned copies
+  in other languages, the review draft preserves those copies beside their
+  matching field rather than flattening or discarding them.
+- Confirmation commits canonical Default content first. It then writes the
+  extracted language copies through Sproochli's host-local server seam using
+  the same content-addressed Menu translation recipe as visitor-time
+  generation. The consuming host owns the named `sproochli` database; Kitchen
+  owns no parallel translation cache and no remote cache-import endpoint.
+- A document with no aligned language copies creates only Default. The first
+  visitor request for another language follows Sproochli's ordinary
+  generate-on-miss/write-once path, so imported and visitor-populated Menus
+  converge on the same cached reading experience.
 - Included alternatives expressed with words such as `or`, `oder`, or
   `choice of` are required `price_options` with the full item price repeated
   for each choice. Explicitly optional, separately priced supplements remain
@@ -92,6 +105,10 @@ Domain packages own domain meaning. `fireux-ai` owns the provider loop.
   `packages/extensions/fireux-kitchens/src/runtime/server/menu/ai/review.ts`
 - Menu confirmation boundary:
   `packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/menus/confirm.post.ts`
+- Menu host-local cache import:
+  `packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/cache-import.ts`
+- Sproochli translation-memory persistence:
+  `packages/extensions/fireux-sproochli/src/runtime/server/menu/translation-memory.ts`
 
 ## Delta register
 

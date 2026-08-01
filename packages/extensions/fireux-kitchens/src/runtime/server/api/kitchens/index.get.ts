@@ -82,9 +82,18 @@ export default defineEventHandler(async (event): Promise<PublicKitchenIndexPage>
     role: fireux.role,
   }
   const query = getQuery(event)
-  const requestedAll = text(query.visibility) === 'all'
-  const includeAll = import.meta.dev || requestedAll
-  if (text(query.visibility) && !requestedAll) {
+  const requestedVisibility = text(query.visibility)
+  const requestedPlaceId = text(query.placeId)
+  if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Place id is invalid.',
+    })
+  }
+  const requestedAll = requestedVisibility === 'all'
+  const requestedPublished = requestedVisibility === 'published'
+  const includeAll = (import.meta.dev && !requestedPublished) || requestedAll
+  if (requestedVisibility && !requestedAll && !requestedPublished) {
     throw createError({
       statusCode: 400,
       statusMessage: 'Kitchen visibility mode is invalid.',
@@ -116,7 +125,12 @@ export default defineEventHandler(async (event): Promise<PublicKitchenIndexPage>
   }
 
   const collection = db.collection('kitchens')
-  let kitchenQuery = includeAll
+  let kitchenQuery = requestedPlaceId
+    ? collection
+        .where('place_id', '==', requestedPlaceId)
+        .orderBy(FieldPath.documentId())
+        .limit(limit + 1)
+    : includeAll
     ? collection.orderBy(FieldPath.documentId()).limit(limit + 1)
     : collection
         .where(Filter.or(

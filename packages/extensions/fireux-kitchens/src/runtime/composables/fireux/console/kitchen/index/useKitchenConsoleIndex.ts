@@ -22,10 +22,19 @@ export function useKitchenConsoleIndex() {
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
   const targetOutcome = targetCollection.outcome
+  const selectedOutcome = computed(() =>
+    consoleSelection.hasSelection.value
+      ? 'ready'
+      : consoleSelection.kitchenSource.value === 'demo'
+        ? demoCollection.outcome.value
+        : targetOutcome.value
+  )
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
     kitchenId: consoleSelection.kitchenId.value,
     kitchenSource: consoleSelection.kitchenSource.value,
+    hasSelection: consoleSelection.hasSelection.value,
+    outcome: selectedOutcome.value,
   }))
   const isLiveSelection = computed(
     () => consoleSelection.kitchenSource.value === 'live'
@@ -45,6 +54,9 @@ export function useKitchenConsoleIndex() {
     targetKitchens.value.length === 1
       ? String(targetKitchens.value[0]?.id ?? '').trim()
       : ''
+  )
+  const showTargetChooser = computed(
+    () => !isTenantSingleTarget.value
   )
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
@@ -83,7 +95,7 @@ export function useKitchenConsoleIndex() {
     targets: targetKitchens,
     outcome: targetOutcome,
     getTargetId: (target) => String(target?.id ?? '').trim(),
-    showTargets: computed(() => !isTenantSingleTarget.value),
+    showTargets: showTargetChooser,
     selectTarget: (id: string) => {
       consoleActions.selectKitchen(String(id ?? '').trim(), 'live')
     },
@@ -93,7 +105,7 @@ export function useKitchenConsoleIndex() {
   const sections = computed(() => ({
     ...index.sections.value,
     demoTargets: {
-      show: !isTenantSingleTarget.value,
+      show: index.sections.value.targets.show,
       collection: demoKitchens.value,
       outcome: demoCollection.outcome.value,
     },

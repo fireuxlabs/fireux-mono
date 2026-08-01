@@ -1,0 +1,17 @@
+Lifeguard Community provisional asset pack.
+
+The final identity is pending Nick's brand details. The source hero belongs to
+this app. The LC mark and typographic wordmarks are deliberately provisional
+and must be replaced together when the approved identity arrives.
+
+Source files:
+- lifeguard-community/community-crew-hero.png
+- logo.svg
+- wordmark.svg
+- wordmark-light.svg
+
+Derived files:
+- cover.png and thumbnail.png: crops of the app-owned community hero
+- logo.png, favicon.ico, and PWA icons: sizes derived from logo.svg
+- wordmark.png and wordmark-dark.png: raster forms of wordmark.svg
+- wordmark-light.png: raster form of wordmark-light.svg

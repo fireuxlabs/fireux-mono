@@ -282,7 +282,9 @@ function safeMenuOrderTrackingStatus(
   }
 }
 
-function safeCollection(value: unknown) {
+function safeCollection(
+  value: unknown
+): NonNullable<CreatedMenuOrder['collection']> | null {
   const collection = record(value)
   if (collection.mode !== 'queue' && collection.mode !== 'scheduled') return null
 

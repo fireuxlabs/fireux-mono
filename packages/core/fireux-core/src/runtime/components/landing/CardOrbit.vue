@@ -76,7 +76,7 @@ const props = withDefaults(
   {
     ariaLabel: 'Interactive card orbit',
     autoplay: true,
-    mobileAutoplay: false,
+    mobileAutoplay: true,
   }
 )
 
@@ -157,7 +157,7 @@ const shouldAnimate = () =>
   !isPointerInside.value &&
   !isDragging.value &&
   selectedId.value === null &&
-  isVisible.value &&
+  (isMobile.value || isVisible.value) &&
   document.visibilityState === 'visible'
 
 const shouldRunIntro = () =>
@@ -481,7 +481,7 @@ onMounted(() => {
     ([entry]) => {
       isVisible.value = Boolean(entry?.isIntersecting)
       if (isVisible.value) startAnimation()
-      else stopAnimation()
+      else if (!isMobile.value) stopAnimation()
     },
     { threshold: 0.08 }
   )

@@ -14,7 +14,10 @@ const fireuxConfig = defineFireuxConfig({
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',
+  brand: { owner: 'app', status: 'provisional' },
   contactEmail: 'misebox@misebox.app',
+  serverFunctionServiceAccount:
+    'misebox-ssr@misebox-78f9c.iam.gserviceaccount.com',
   role: 'global',
   designPack: { preset: 'sci-fire' },
   consoles: ['kitchen', 'supplier'],

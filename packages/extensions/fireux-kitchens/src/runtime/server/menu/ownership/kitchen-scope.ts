@@ -91,7 +91,17 @@ export function menuKitchenIdentity(
   rootData: Record<string, unknown>,
   _appData: Record<string, unknown> = {},
   placeData: Record<string, unknown> = {}
-) {
+): {
+  name: string
+  imageUrl: string
+  imageShade: KitchenImageShade
+  logoImageUrl: string
+  wordmarkImageUrl: string
+  currencyCode: string
+  currencyFormat: CurrencyDisplayFormat
+  showCurrency: boolean
+  page_style?: Record<string, unknown>
+} {
   const rootIdentity = readKitchenIdentity(rootData)
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
@@ -106,7 +116,7 @@ export function menuKitchenIdentity(
       explicitKitchenDisplayName(rootData) ||
       place.name,
     imageUrl: place.imageUrl,
-    imageShade: place.imageShade,
+    imageShade: place.imageShade as KitchenImageShade,
     logoImageUrl: rootIdentity.logoImageUrl,
     wordmarkImageUrl:
       rootIdentity.wordmarkNoLogoImageUrl ||
@@ -136,22 +146,19 @@ export function menuKitchenOperationHours(
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
   const snap = await getRuntimeFirestore()
     .collection('kitchens')
-    .where('slug', '==', kitchenSlug.toLowerCase())
-    .limit(1)
+    .doc(kitchenSlug.toLowerCase())
     .get()
-  const doc = snap.docs[0]
-
-  if (!doc) return null
+  if (!snap.exists) return null
 
   return {
-    id: doc.id,
-    data: doc.data() || {},
+    id: snap.id,
+    data: snap.data() || {},
   }
 }
 
 export async function readRootMenuKitchenScope(
   data: Record<string, unknown>,
-  currentAppId: string
+  _currentAppId: string
 ): Promise<MenuKitchenScope> {
   const source = menuSourceFromData(data)
   const kitchenId = source.kitchen_id || ''
@@ -161,11 +168,7 @@ export async function readRootMenuKitchenScope(
   const db = getRuntimeFirestore()
   const snap = kitchenId
     ? await db.collection('kitchens').doc(kitchenId).get()
-    : (await db
-        .collection('kitchens')
-        .where('slug', '==', kitchenSlug.toLowerCase())
-        .limit(1)
-        .get()).docs[0]
+    : await db.collection('kitchens').doc(kitchenSlug.toLowerCase()).get()
 
   const kitchenData = snap?.exists ? snap.data() || {} : {}
   const resolvedKitchenId = snap?.exists ? snap.id : kitchenId

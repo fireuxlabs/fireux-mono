@@ -13,6 +13,18 @@ Place and owns `identity.logo_image_url`, `identity.wordmark_image_url`,
 Kitchen cards resolve the Kitchen card override, then Place cover, then Place
 image. They never copy Place media into Kitchen.
 
+Console Kitchen targets are identity controls rather than public cards. They
+use only the Kitchen-owned logo, with a neutral Kitchen fallback when no logo
+exists; Place photography is never substituted as Console identity. Demo
+fixtures enforce the same ownership split.
+
+The bounded Kitchen directory projection declares the selected asset as
+`image_kind: photograph | brand`. Place cover and Place image remain
+photographic and render with cover treatment. A Kitchen card override is brand
+media only when it carries the resolved transparent-media backdrop; otherwise
+it is a photographic crop. Card components consume that typed role and do not
+guess from file names, aspect ratios, colours, or individual records.
+
 ## Transparent-media backdrop
 
 `Place.media_backdrop_color` is an optional validated six-digit hex base for

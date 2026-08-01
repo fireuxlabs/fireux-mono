@@ -48,6 +48,20 @@ and the boundary that lets genuinely branded Apps own a different identity.
 
 ## Authority contract
 
+Every App declares exactly one owner in `defineFireuxConfig`:
+
+- `brand: { owner: 'core' }`: Core is canonical and `/img/app` is a
+  byte-identical projection.
+- `brand: { owner: 'ecosystem' }`: the selected ecosystem package is canonical
+  and `/img/app` is a byte-identical projection.
+- `brand: { owner: 'app', status: 'approved' | 'provisional' }`: the App owns
+  the complete family. `provisional` records unresolved identity work and must
+  not be normalized as approval.
+
+Brand artwork may differ. Ownership vocabulary, required assets, runtime
+paths, surface semantics, and verification do not differ. Never loan another
+App's export to pass a check.
+
 FireUX Core owns the default FireUX platform mark, light and dark wordmarks,
 app icon, PWA icons, favicon, thumbnail, and social cover. The
 `fireux-fireux` ecosystem and the FireUX parent App consume byte-identical
@@ -86,8 +100,9 @@ are current and a projection alone needs restoring.
 
 Project `/img/app` remains the public asset contract for every App. A
 genuinely branded child App may own its own complete asset family and is not a
-FireUX projection target. Core fallback assets still provide the FireUX
-platform identity when an App-specific value is unavailable.
+FireUX projection target. Missing App-owned assets are a failed authoring
+contract; Core fallback behavior is runtime resilience, not a verification
+path.
 
 The shared `/assets` catalogue always presents the conventional family above.
 An App may append a small, source-controlled product asset family through
@@ -125,6 +140,8 @@ their own complete identity.
 | FireUX parent App paths mirror Core assets           | `accepted` | The App media contract requires `/img/app`; the projection is guarded                      |
 | An unguarded duplicate of FireUX platform identity   | `drift`    | Add a projection target or consume the Core fallback directly                              |
 | Light and dark wordmarks carry the same text colour  | `drift`    | Surface semantics must remain visible and distinct                                         |
+| App identity is borrowed from an unrelated App       | `drift`    | Declare the real owner and materialize from that source                                     |
+| App-owned identity is awaiting approval              | `migration`| Declare `provisional`; replace the whole family when approved                               |
 
 ## Verification and maintenance
 

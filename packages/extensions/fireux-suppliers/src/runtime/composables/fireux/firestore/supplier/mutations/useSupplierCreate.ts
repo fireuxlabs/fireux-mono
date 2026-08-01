@@ -67,7 +67,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   ): Promise<ConsoleRootCreateResult> {
     requireCanonicalWriteSource()
     await createUser()
-    const { uid } = await requireUid()
+    await requireUid()
     const requestedRootId = normalizeString(options.existingRootId)
     const rootId = requestedRootId || doc(collection(db, supplierCollection)).id
     const coreRef = doc(db, supplierCollection, rootId)

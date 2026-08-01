@@ -1,16 +1,17 @@
 <template>
-  <UPage>
-    <UPageHeader
-      :title="pageTitle"
-      description="Browse saved venues and locations."
-    />
+  <PublicIndexSurface
+    eyebrow="Discover"
+    :title="pageTitle"
+    description="Explore venues, locations, and the physical places behind local services."
+    icon="i-lucide-map-pin"
+    secondary-label="For place operators"
+  >
+    <PlaceCollectionManager />
 
-    <UPageBody>
+    <template #secondary>
       <PlaceCTA />
-
-      <PlaceCollectionManager />
-    </UPageBody>
-  </UPage>
+    </template>
+  </PublicIndexSurface>
 </template>
 
 <script setup lang="ts">

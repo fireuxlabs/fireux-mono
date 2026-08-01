@@ -45,8 +45,8 @@
             <strong class="font-medium text-highlighted"
               >Applications and engagements</strong
             >
-            &nbsp;— professionals can apply, employers can make an offer, and
-            an accepted offer becomes a private engagement.
+            &nbsp;— professionals can apply, employers can make an offer, and an
+            accepted offer becomes a private engagement.
           </li>
         </ul>
       </section>
@@ -54,9 +54,9 @@
       <section class="space-y-3">
         <h3 class="text-base font-semibold">Direct employment</h3>
         <p class="text-sm text-toned">
-          The named employer—not Misebox, Werkbox, or FireUX—employs and pays
-          each person directly. The platform records applications, offers, and
-          engagement progress without becoming the employer or moving wages.
+          The named employer—not the platform—employs and pays each person
+          directly. The platform records applications, offers, and engagement
+          progress without becoming the employer or moving wages.
         </p>
       </section>
 

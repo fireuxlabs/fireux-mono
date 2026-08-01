@@ -11,6 +11,9 @@
     :data-kitchen-slug="kitchenSlug || undefined"
     :aria-labelledby="headingId"
   >
+    <div class="menu-qr__glow menu-qr__glow--one" aria-hidden="true" />
+    <div class="menu-qr__glow menu-qr__glow--two" aria-hidden="true" />
+
     <div v-if="pending" class="menu-qr__failure" role="status">
       <p class="menu-qr__eyebrow">Menu</p>
       <h1 id="menu-qr-loading-title" class="menu-qr__failure-title">
@@ -37,38 +40,66 @@
 
     <div v-else class="menu-qr__content">
       <header class="menu-qr__header">
-        <p class="menu-qr__eyebrow">
-          {{ kitchenName || 'Menu' }}
-        </p>
+        <div
+          v-if="kitchenLogoImageUrl"
+          class="menu-qr__brand"
+        >
+          <img
+            :src="kitchenLogoImageUrl"
+            :alt="kitchenName ? `${kitchenName} logo` : 'Kitchen logo'"
+          >
+        </div>
+        <p class="menu-qr__eyebrow">{{ kitchenName || 'Menu' }}</p>
         <h1 id="menu-qr-title" class="menu-qr__title">
           {{ menuName }}
         </h1>
+        <p class="menu-qr__instruction">
+          Scan to explore the menu
+        </p>
       </header>
 
-      <div
-        class="menu-qr__code"
-        :aria-busy="!qrDataUrl && !qrError"
-      >
-        <img
-          v-if="qrDataUrl"
-          :src="qrDataUrl"
-          :alt="`QR code linking to ${menuName}`"
-          class="menu-qr__image"
-          data-menu-qr-image
+      <div class="menu-qr__frame">
+        <div
+          class="menu-qr__code"
+          :aria-busy="!qrReady && !qrError"
         >
+          <div
+            v-show="qrReady"
+            ref="qrContainer"
+            class="menu-qr__canvas"
+            :aria-label="`QR code linking to ${menuName}`"
+            data-menu-qr-image
+            role="img"
+          />
+          <div
+            v-if="qrReady && kitchenLogoImageUrl"
+            class="menu-qr__code-brand"
+            aria-hidden="true"
+          >
+            <img :src="kitchenLogoImageUrl" alt="">
+          </div>
 
-        <p v-else-if="qrError" class="menu-qr__code-state" role="alert">
-          QR code unavailable. Use the menu link below.
-        </p>
+          <p v-if="qrError" class="menu-qr__code-state" role="alert">
+            QR code unavailable. Use the menu link below.
+          </p>
 
-        <p v-else class="menu-qr__code-state" role="status">
-          Creating QR code...
-        </p>
+          <p v-else-if="!qrReady" class="menu-qr__code-state" role="status">
+            Creating QR code...
+          </p>
+        </div>
+
+        <div class="menu-qr__scan-label" aria-hidden="true">
+          <span class="menu-qr__scan-icon" />
+          Point your camera here
+        </div>
       </div>
 
-      <p class="menu-qr__destination">
+      <a
+        class="menu-qr__destination"
+        :href="menuUrl"
+      >
         {{ menuUrl }}
-      </p>
+      </a>
 
       <div class="menu-qr__actions">
         <NuxtLink
@@ -88,7 +119,7 @@
         <button
           class="menu-qr__action"
           type="button"
-          :disabled="!qrDataUrl"
+          :disabled="!qrReady"
           data-menu-action="print"
           @click="printQr"
         >
@@ -101,8 +132,16 @@
 
 <script setup lang="ts">
 import { setResponseStatus, useRequestURL, useSeoMeta } from '#imports'
-import { toDataURL } from 'qrcode'
-import { computed, onMounted, ref, watch } from 'vue'
+import type QRCodeStyling from 'qr-code-styling'
+import type { Options as QRCodeStylingOptions } from 'qr-code-styling'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from 'vue'
 import { useMenu, type MenuLoadFailure } from '../../composables/fireux/menu/useMenu'
 import type { MenuRouteContext } from '../../models/kitchen/menu/menu-context.model'
 import type { MenuRouteScope } from '../../utils/kitchen-menu-route'
@@ -119,9 +158,11 @@ const props = withDefaults(defineProps<{
 })
 
 const requestUrl = useRequestURL()
-const qrDataUrl = ref('')
+const qrContainer = ref<HTMLElement | null>(null)
+const qrReady = ref(false)
 const qrError = ref(false)
 let qrGeneration = 0
+let currentQr: Pick<QRCodeStyling, 'append' | 'update'> | null = null
 
 const menuId = computed(() => String(props.menuId || '').trim())
 const menuContext = computed(() => props.menuContext)
@@ -154,6 +195,14 @@ const kitchenName = computed(() =>
   manifestMenu.value?.presentation.kitchenName ||
   documentMenu.value?.kitchenName ||
   ''
+)
+const kitchenLogoImageUrl = computed(() =>
+  String(
+    manifestMenu.value?.presentation.kitchenLogoImageUrl ||
+    (documentMenu.value as Record<string, unknown> | null)?.kitchenLogoImageUrl ||
+    (documentMenu.value as Record<string, unknown> | null)?.logo_image_url ||
+    ''
+  ).trim()
 )
 const contextAvailable = computed(() => {
   if (renderKind.value === 'document') return menuContext.value === 'generic'
@@ -193,12 +242,15 @@ const headingId = computed(() => {
 })
 
 onMounted(() => generateQr(menuUrl.value))
+onBeforeUnmount(() => {
+  currentQr = null
+})
 watch(
   () => [menuUrl.value, qrFailure.value, pending.value] as const,
   ([url, menuFailure, isPending]: QrWatchState) => {
     if (isPending || menuFailure) {
       qrGeneration += 1
-      qrDataUrl.value = ''
+      qrReady.value = false
       qrError.value = false
       return
     }
@@ -209,25 +261,58 @@ watch(
 
 async function generateQr(url: string) {
   const generation = ++qrGeneration
-  qrDataUrl.value = ''
+  qrReady.value = false
   qrError.value = false
 
   if (!url || qrFailure.value) return
 
   try {
-    const dataUrl = await toDataURL(url, {
-      errorCorrectionLevel: 'H',
-      width: 1024,
-      margin: 4,
-      color: {
-        dark: '#24134f',
-        light: '#ffffff',
-      },
-    })
+    await nextTick()
+    if (!qrContainer.value || generation !== qrGeneration) return
 
-    if (generation === qrGeneration) qrDataUrl.value = dataUrl
+    const options = qrOptions(url)
+    if (currentQr) {
+      currentQr.update(options)
+    } else {
+      const QRCodeStyling = (await import('qr-code-styling')).default
+      if (generation !== qrGeneration || !qrContainer.value) return
+      currentQr = new QRCodeStyling(options)
+      qrContainer.value.replaceChildren()
+      currentQr.append(qrContainer.value)
+    }
+
+    if (generation === qrGeneration) qrReady.value = true
   } catch {
     if (generation === qrGeneration) qrError.value = true
+  }
+}
+
+function qrOptions(data: string): Partial<QRCodeStylingOptions> {
+  return {
+    width: 1024,
+    height: 1024,
+    type: 'svg',
+    data,
+    margin: 28,
+    qrOptions: {
+      errorCorrectionLevel: 'H',
+    },
+    dotsOptions: {
+      color: '#111827',
+      type: 'rounded',
+      roundSize: true,
+    },
+    cornersSquareOptions: {
+      color: '#111827',
+      type: 'extra-rounded',
+    },
+    cornersDotOptions: {
+      color: '#111827',
+      type: 'dot',
+    },
+    backgroundOptions: {
+      color: '#ffffff',
+    },
   }
 }
 

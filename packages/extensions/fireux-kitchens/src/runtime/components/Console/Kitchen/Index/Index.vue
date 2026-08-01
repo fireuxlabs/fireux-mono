@@ -6,6 +6,7 @@
       :kitchen="selection.kitchen"
       :kitchen-id="selection.kitchenId"
       :source="selection.kitchenSource"
+      :outcome="selection.outcome"
       @clear="actions.clear"
     />
 

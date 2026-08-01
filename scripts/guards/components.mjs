@@ -81,6 +81,7 @@ export async function run(ctx) {
   }
 
   validateMiseboxCardSpecimen(repoRoot, violations)
+  validatePublicEntityPresentation(repoRoot, violations)
 
   if (violations.length) {
     throw new Error(
@@ -121,6 +122,57 @@ function validateMiseboxCardSpecimen(repoRoot, violations) {
     violations.push(
       `${path.relative(repoRoot, specimenPath)} (${componentName} is not a canonical dumb Card specimen)`
     )
+  }
+}
+
+function validatePublicEntityPresentation(repoRoot, violations) {
+  const coreDirectoryCardPath =
+    'packages/core/fireux-core/src/runtime/components/public/EntityDirectoryCard.vue'
+  const coreHeroPath =
+    'packages/core/fireux-core/src/runtime/components/public/EntityHero.vue'
+  const consumers = new Map([
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Cards/Cell.vue',
+      'PublicEntityDirectoryCard',
+    ],
+    [
+      'packages/extensions/fireux-places/src/runtime/components/Place/Cards/Cell.vue',
+      'PublicEntityDirectoryCard',
+    ],
+    [
+      'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Detail/Identity.vue',
+      'PublicEntityHero',
+    ],
+    [
+      'packages/extensions/fireux-places/src/runtime/components/Place/PublicDetail.vue',
+      'PublicEntityHero',
+    ],
+  ])
+
+  for (const componentPath of [coreDirectoryCardPath, coreHeroPath]) {
+    const absolutePath = path.join(repoRoot, componentPath)
+    if (!existsSync(absolutePath)) {
+      violations.push(`${componentPath} (missing shared public-entity presentation seam)`)
+      continue
+    }
+
+    const source = readFileSync(absolutePath, 'utf8')
+    if (/gradient\s*\(|backdrop-filter\s*:/.test(source)) {
+      violations.push(
+        `${componentPath} (shared public-entity presentation must stay flat and semantic)`
+      )
+    }
+  }
+
+  for (const [consumerPath, componentName] of consumers) {
+    const absolutePath = path.join(repoRoot, consumerPath)
+    if (!existsSync(absolutePath)) continue
+    const source = readFileSync(absolutePath, 'utf8')
+    if (!source.includes(`<${componentName}`)) {
+      violations.push(
+        `${consumerPath} (must consume Core ${componentName})`
+      )
+    }
   }
 }
 
@@ -182,7 +234,8 @@ function validateCardFamily(filePath, source, violations, repoRoot) {
   if (
     anatomyPattern &&
     !anatomyPattern.test(source) &&
-    !source.includes('PublicProfileDirectoryCard')
+    !source.includes('PublicProfileDirectoryCard') &&
+    !source.includes('PublicEntityDirectoryCard')
   ) {
     violations.push(
       `${relative} (${fileName.replace('.vue', '')} must consume its shared Core card anatomy)`

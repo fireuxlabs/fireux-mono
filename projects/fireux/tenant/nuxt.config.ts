@@ -6,7 +6,9 @@ export default defineFireuxConfig({
   projectId: 'fireux',
   ecosystemId: 'fireux',
   id: 'fireux-tenant',
-  name: 'FireUX Tenant',
-  shortName: 'Tenant',
+  name: 'Michel AG Metallbau',
+  shortName: 'Michel AG',
+  brand: { owner: 'core' },
   role: 'tenant',
+  contactEmail: 'info@michelmetallbau.ch',
 })

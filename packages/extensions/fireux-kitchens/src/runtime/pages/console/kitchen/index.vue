@@ -22,7 +22,7 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'console-kitchen',
-    label: 'Kitchen',
+    label: 'Kitchens',
     icon: 'i-lucide-chef-hat',
     position: 'bottom',
     order: 900,

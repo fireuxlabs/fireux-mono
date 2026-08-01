@@ -55,16 +55,23 @@
             v-for="group in languageGroups"
             :key="group.key"
           >
-            <div
-              v-if="showAdminGroupLabels && group.key === 'cached'"
-              class="px-3 text-xs font-semibold uppercase tracking-wide text-dimmed"
-            >
-              {{ triggerCopy.cached }}
-            </div>
-
             <USeparator
               v-if="group.showSeparator"
             />
+
+            <div
+              v-if="
+                showGroupLabels &&
+                (group.key === 'cached' || group.key === 'onDemand')
+              "
+              class="px-3 text-xs font-semibold uppercase tracking-wide text-dimmed"
+            >
+              {{
+                group.key === 'cached'
+                  ? triggerCopy.cached
+                  : triggerCopy.onDemand
+              }}
+            </div>
 
             <div class="space-y-1">
               <UButton
@@ -122,7 +129,7 @@ import {
   sproochliProviderBaseUrl,
 } from '../../composables/fireux/sproochli/provider'
 
-type LanguageGroupKey = 'cached' | 'languages'
+type LanguageGroupKey = 'original' | 'available' | 'cached' | 'onDemand'
 
 type SproochliLanguageTriggerCopy = {
   chooseLanguage: string
@@ -130,6 +137,7 @@ type SproochliLanguageTriggerCopy = {
   defaultSelection: string
   originalSelection: string
   cached: string
+  onDemand: string
   visitSproochli: string
 }
 
@@ -157,6 +165,7 @@ const triggerCopy = computed<SproochliLanguageTriggerCopy>(() => ({
   defaultSelection: 'Default',
   originalSelection: 'Original',
   cached: 'Cached',
+  onDemand: 'On demand',
   visitSproochli: 'Visit Sproochli',
   ...props.copy,
 }))
@@ -168,7 +177,7 @@ const onlyOriginalOption = computed(() =>
   visibleLanguageOptions.value.length === 1 &&
   !visibleLanguageOptions.value[0]?.code
 )
-const showAdminGroupLabels = computed(() => props.showGroupLabels === true)
+const showGroupLabels = computed(() => props.showGroupLabels === true)
 const popoverContent = {
   align: 'center' as const,
   side: 'bottom' as const,
@@ -177,26 +186,52 @@ const popoverContent = {
 }
 
 const languageGroups = computed<LanguageGroup[]>(() => {
-  const cached = visibleLanguageOptions.value.filter(
-    option => option.source !== 'on_demand'
+  const original = visibleLanguageOptions.value.filter(
+    option => option.source === 'original'
   )
-  const languages = visibleLanguageOptions.value.filter(
+  const available = visibleLanguageOptions.value.filter(
+    option =>
+      !option.source ||
+      option.source === 'attached' ||
+      option.source === 'public'
+  )
+  const cached = visibleLanguageOptions.value.filter(
+    option => option.source === 'cache'
+  )
+  const onDemand = visibleLanguageOptions.value.filter(
     option => option.source === 'on_demand'
   )
 
   return [
+    original.length
+      ? {
+          key: 'original' as const,
+          showSeparator: false,
+          options: original,
+        }
+      : null,
+    available.length
+      ? {
+          key: 'available' as const,
+          showSeparator: original.length > 0,
+          options: available,
+        }
+      : null,
     cached.length
       ? {
           key: 'cached' as const,
-          showSeparator: false,
+          showSeparator: original.length > 0 || available.length > 0,
           options: cached,
         }
       : null,
-    languages.length
+    onDemand.length
       ? {
-          key: 'languages' as const,
-          showSeparator: cached.length > 0,
-          options: languages,
+          key: 'onDemand' as const,
+          showSeparator:
+            original.length > 0 ||
+            available.length > 0 ||
+            cached.length > 0,
+          options: onDemand,
         }
       : null,
   ]

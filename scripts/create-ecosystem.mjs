@@ -469,8 +469,8 @@ definePageMeta({
 const cfg = useFireUXConfig()
 </script>
 `],
-    ['src/runtime/public/img/ecosystem/.gitkeep', '# Add ecosystem images (logo/avatar/wordmarks).\n'],
-    ['src/runtime/public/img/brand/.gitkeep', '# Add app brand images for ecosystem defaults.\n'],
+    ['src/runtime/public/img/ecosystem/.gitkeep', '# Ecosystem runtime projections live here.\n'],
+    ['src/runtime/public/img/ecosystem/brand/.gitkeep', '# Canonical complete ecosystem brand source. Remove this placeholder only when the guarded family is complete.\n'],
   ]
 }
 
@@ -627,7 +627,8 @@ async function main() {
   console.log('Next steps:')
   console.log(`  1. Fill Firebase values in packages/ecosystem/${pkgName}/src/config/firebase/ecosystem.config.ts`)
   console.log(`  2. Keep service-account.example.json inert; supply real Admin credentials through environment/application-default credentials`)
-  console.log('  3. In Firebase Auth, enable Email/Password, Google, and Anonymous sign-in providers')
+  console.log('  3. Complete the canonical ecosystem brand source before any App declares brand.owner = ecosystem')
+  console.log('  4. In Firebase Auth, enable Email/Password, Google, and Anonymous sign-in providers')
   console.log(
     authDomain
       ? shouldSyncAuthDomain

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # @fireux-script
 # last_used: 2026-07-20
-# usage_note: commit-and-push helper with explicit clean and guard gates.
+# usage_note: commit-and-push helper with mandatory repository guards.
 # Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: remove the destructive legacy repository-cleanup hook.
 set -euo pipefail
 
@@ -87,9 +87,9 @@ dev_server_running() {
 
 push_current_branch() {
   if dev_server_running; then
-    echo "[gitsave] Dev server is running; pushing committed tree without local artifact cleanup/guard." >&2
-    echo "[gitsave] Live dev artifacts stay untouched and local pre-push guard is skipped for this save." >&2
-    git push --no-verify origin "$current_branch"
+    echo "[gitsave] Dev server is running; pushing the already guarded commit without artifact cleanup." >&2
+    echo "[gitsave] Live dev artifacts stay untouched." >&2
+    git push origin "$current_branch"
     return 0
   fi
 
@@ -200,11 +200,11 @@ cleanup_git_refs() {
 }
 
 usage() {
-  echo "Usage: gitsave [\"commit message\"] [--guard|--no-guard] [--clean|--no-clean] [--strict-scope|--no-strict-scope] [--allow-mixed] [--allow-large] [--allow-behind] [--allow-guard-failure]" >&2
+  echo "Usage: gitsave [\"commit message\"] [--clean|--no-clean]" >&2
   echo "Example: gitsave \"fix: wire places quick add\"" >&2
-  echo "Defaults: lightweight preflight clean, blocking pre-commit guard, post-save git cleanup, --no-clean --no-strict-scope" >&2
-  echo "Dev server default: push committed tree without local artifact cleanup/guard so live Nuxt artifacts stay untouched." >&2
-  echo "Safety defaults: block behind-state pushes and guard failures. Mixed-layer and large-batch checks are advisory unless --strict-scope is set." >&2
+  echo "Defaults: lightweight preflight clean, blocking pre-commit guard, post-save git cleanup, --no-clean" >&2
+  echo "Dev server default: preserve live Nuxt artifacts after the mandatory pre-commit guard passes." >&2
+  echo "Safety rules: block behind-state pushes and guard failures. Mixed layers are reported for review." >&2
 }
 
 classify_path() {
@@ -250,12 +250,8 @@ print_staged_summary() {
   echo "[gitsave] staged ${count} file(s) | categories: ${categories[*]}"
 }
 
-ensure_simple_scope() {
-  local allow_mixed="$1"
-  local allow_large="$2"
-  shift 2
+report_mixed_scope() {
   local files=("$@")
-  local count="${#files[@]}"
   local category
   local seen=""
   local categories=()
@@ -268,75 +264,21 @@ ensure_simple_scope() {
     fi
   done
 
-  if ! $allow_large && (( count > 20 )); then
-    echo "[gitsave] Refusing to save ${count} files in one go." >&2
-    echo "[gitsave] Keep saves phase-sized. Re-run with --allow-large if this is intentional." >&2
-    return 1
-  fi
-
-  if ! $allow_mixed && (( ${#categories[@]} > 1 )); then
-    echo "[gitsave] Refusing mixed-layer save across categories: ${categories[*]}" >&2
-    echo "[gitsave] Keep one phase per save. Re-run with --allow-mixed if this is intentional." >&2
-    printf '%s\n' "[gitsave] Staged files:" >&2
-    printf '  - %s\n' "${files[@]}" >&2
-    return 1
-  fi
-
-  return 0
-}
-
-warn_simple_scope() {
-  local allow_mixed="$1"
-  local allow_large="$2"
-  shift 2
-  local files=("$@")
-  local count="${#files[@]}"
-  local category
-  local seen=""
-  local categories=()
-
-  for file in "${files[@]}"; do
-    category="$(classify_path "$file")"
-    if [[ ",$seen," != *",$category,"* ]]; then
-      categories+=("$category")
-      seen+="${seen:+,}$category"
-    fi
-  done
-
-  if ! $allow_large && (( count > 20 )); then
-    echo "[gitsave] Warning: saving ${count} files in one go." >&2
-    echo "[gitsave] Consider smaller phase-sized saves when practical." >&2
-  fi
-
-  if ! $allow_mixed && (( ${#categories[@]} > 1 )); then
-    echo "[gitsave] Warning: mixed-layer save across categories: ${categories[*]}" >&2
-    echo "[gitsave] Use --strict-scope when you want this to block instead of warn." >&2
+  if (( ${#categories[@]} > 1 )); then
+    echo "[gitsave] Mixed-layer save across categories: ${categories[*]}" >&2
+    echo "[gitsave] Confirm every category belongs to the same complete phase." >&2
   fi
 }
 
 commit_message=""
-run_guard=true
 run_clean=false
-allow_mixed=false
-allow_large=false
-allow_behind=false
-allow_guard_failure=false
-strict_scope=false
 
 # Parse args
 args=()
 for a in "$@"; do
   case "$a" in
-    --guard) run_guard=true ;;
-    --no-guard) run_guard=false ;;
     --clean) run_clean=true ;;
     --no-clean) run_clean=false ;;
-    --strict-scope) strict_scope=true ;;
-    --no-strict-scope) strict_scope=false ;;
-    --allow-mixed) allow_mixed=true ;;
-    --allow-large) allow_large=true ;;
-    --allow-behind) allow_behind=true ;;
-    --allow-guard-failure) allow_guard_failure=true ;;
     -h|--help) usage; exit 0 ;;
     --*) echo "Unknown option: $a" >&2; usage; exit 1 ;;
     *) args+=("$a") ;;
@@ -363,13 +305,25 @@ fi
 
 print_repo_state "start"
 
+# Report the complete unstaged scope before expensive guards or staging.
+scope_changes=()
+while IFS= read -r line; do
+  [[ -n "$line" ]] && scope_changes+=("$line")
+done < <(
+  {
+    git diff --name-only HEAD
+    git ls-files --others --exclude-standard
+  } | sort -u
+)
+report_mixed_scope "${scope_changes[@]}"
+
 if has_upstream; then
   counts="$(ahead_behind_counts)"
   ahead_count="$(echo "$counts" | awk '{print $1}')"
   behind_count="$(echo "$counts" | awk '{print $2}')"
-  if ! $allow_behind && [[ "$behind_count" != "0" ]]; then
+  if [[ "$behind_count" != "0" ]]; then
     echo "[gitsave] Refusing save because branch is behind upstream by ${behind_count}." >&2
-    echo "[gitsave] Pull/rebase first, or re-run with --allow-behind if you really want to continue." >&2
+    echo "[gitsave] Pull or rebase before saving." >&2
     exit 1
   fi
 fi
@@ -387,16 +341,10 @@ if $run_clean; then
 fi
 
 # Guard before staging/commit so a failed save never creates an unpushable commit.
-if $run_guard; then
-  if ! run_pnpm -s guard; then
-    echo "\n[gitsave] Guard failed." >&2
-    if $allow_guard_failure; then
-      echo "[gitsave] Proceeding because --allow-guard-failure was provided." >&2
-    else
-      echo "[gitsave] Fix the issues above, or re-run with --allow-guard-failure if this save must proceed." >&2
-      exit 1
-    fi
-  fi
+if ! run_pnpm -s guard; then
+  echo "\n[gitsave] Guard failed." >&2
+  echo "[gitsave] Fix the issues above. Guard failures cannot be bypassed." >&2
+  exit 1
 fi
 
 # Stage everything, including deletions.
@@ -438,11 +386,7 @@ if [[ -z "$commit_message" ]]; then
   fi
 
   print_staged_summary "${staged_changes[@]}"
-  if $strict_scope; then
-    ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
-  else
-    warn_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}"
-  fi
+  report_mixed_scope "${staged_changes[@]}"
 
   primary_file="${staged_changes[0]}"
   extra_count=$(( ${#staged_changes[@]} - 1 ))
@@ -464,11 +408,7 @@ else
   fi
 
   print_staged_summary "${staged_changes[@]}"
-  if $strict_scope; then
-    ensure_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}" || exit 1
-  else
-    warn_simple_scope "$allow_mixed" "$allow_large" "${staged_changes[@]}"
-  fi
+  report_mixed_scope "${staged_changes[@]}"
 fi
 
 # Create the commit.

@@ -86,6 +86,7 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       id: app.id,
       name: app.name,
       shortName: app.shortName,
+      brand: app.brand,
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       ...(app.designPack ? { designPack: app.designPack } : {}),
       ...(app.designPacks ? { designPacks: app.designPacks } : {}),
@@ -132,6 +133,9 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   configNitroFirebase(nuxt, {
     serverFunctionName: toValidJsIdentifier(app.id),
     region: process.env.NITRO_FIREBASE_REGION || defaultNitroFirebaseRegion(app.ecosystem),
+    ...(app.serverFunctionServiceAccount
+      ? { serviceAccount: app.serverFunctionServiceAccount }
+      : {}),
   })
 
   configViteWorkspace(nuxt)

@@ -7,6 +7,7 @@ export default defineFireuxConfig({
   id: 'fireux-blank',
   name: 'FireUX Blank',
   shortName: 'Blank',
+  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'fireux',
   role: 'standalone',
   consoles: ['blank'],

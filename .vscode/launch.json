@@ -164,6 +164,17 @@
       }
     },
     {
+      "name": "Holzworm dev (3030)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:holzworm",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 13
+      }
+    },
+    {
       "name": "Granite dev (3007)",
       "type": "node-terminal",
       "request": "launch",
@@ -172,6 +183,17 @@
       "presentation": {
         "group": "Dev Servers",
         "order": 13
+      }
+    },
+    {
+      "name": "Lifeguard Community dev (3031)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:lifeguard-community",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 14
       }
     },
     {
@@ -384,6 +406,17 @@
       }
     },
     {
+      "name": "Kill Holzworm dev (3030)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:holzworm",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 113
+      }
+    },
+    {
       "name": "Kill Granite dev (3007)",
       "type": "node-terminal",
       "request": "launch",
@@ -392,6 +425,17 @@
       "presentation": {
         "group": "Dev Servers",
         "order": 113
+      }
+    },
+    {
+      "name": "Kill Lifeguard Community dev (3031)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:lifeguard-community",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 114
       }
     },
     {
@@ -506,6 +550,7 @@
         "Go QR dev (3013)",
         "Slap dev (3009)",
         "Yellow Velo dev (3014)",
+        "Holzworm dev (3030)",
         "Granite dev (3007)",
         "La Tap Berne dev (3008)",
         "FireUX Blank dev (3015)",

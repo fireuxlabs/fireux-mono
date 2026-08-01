@@ -55,7 +55,7 @@ definePageMeta({
   visibility: { modules: ['fireux-kitchens'] },
   nav: {
     key: 'console-kitchen-create',
-    label: 'Create',
+    label: 'Add Kitchen',
     icon: 'i-lucide-plus',
     position: 'bottom',
     order: 5,

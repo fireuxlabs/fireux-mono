@@ -1,4 +1,5 @@
 <!-- Concurrent edit — 2026-07-19 17:33 CEST — Kiosk pass: allow counter ordering to omit unused customer fields. -->
+<!-- Concurrent edit — 2026-07-29 12:44 CEST — Menu Order funnel pass: require one shared transient allergy acknowledgement before submission. -->
 <template>
   <div
     class="menu-order-checkout__host"
@@ -29,6 +30,12 @@
             icon="i-lucide-map-pin"
             :title="handoffTitle || `${orderTypeLabel} details`"
             :description="handoffInstructions"
+          />
+
+          <MenuOrderAllergyAcknowledgement
+            v-model="allergyAcknowledged"
+            :disabled="pending"
+            :invalid="validationError === allergyValidationMessage"
           />
 
           <UFormField v-if="showContactFields" :label="fieldLabel('Name', nameRequired)" :required="nameRequired">
@@ -152,7 +159,10 @@ const name = ref('')
 const phone = ref('')
 const email = ref('')
 const paymentMethod = ref<MenuOrderPaymentSelection | undefined>()
+const allergyAcknowledged = ref(false)
 const validationError = ref('')
+const allergyValidationMessage =
+  'Confirm the allergy check before sending the order.'
 const openModel = computed({
   get: () => props.open,
   set: (open: boolean) => emit('update:open', open),
@@ -184,6 +194,19 @@ watch(
   { immediate: true, deep: true }
 )
 
+watch(() => props.open, (open, wasOpen) => {
+  if (open && !wasOpen) allergyAcknowledged.value = false
+})
+
+watch(allergyAcknowledged, (acknowledged) => {
+  if (
+    acknowledged &&
+    validationError.value === allergyValidationMessage
+  ) {
+    validationError.value = ''
+  }
+})
+
 function submit() {
   validationError.value = ''
   const customerName = name.value.trim()
@@ -196,6 +219,10 @@ function submit() {
   ].filter(Boolean)
   if (missing.length) {
     validationError.value = `Add your ${missing.join(', ')} before sending the order.`
+    return
+  }
+  if (!allergyAcknowledged.value) {
+    validationError.value = allergyValidationMessage
     return
   }
   if (!paymentMethod.value) {

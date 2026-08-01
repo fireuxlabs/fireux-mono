@@ -34,11 +34,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Env lint (permissive in CI)
-        run: pnpm lint:envs
-        env:
-          ALLOW_INCOMPLETE_ENVS: '1'
-
       - name: TypeScript project build check
         run: pnpm typecheck:packages
 

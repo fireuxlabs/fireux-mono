@@ -54,6 +54,17 @@ summarises the proven tree. Use the present tense for a source-defined release
 capability. Do not invent slogans, benefits, or promises that the child source
 cannot explain.
 
+## App Brand Rule
+
+Every App belongs to one brand-asset system. Its `defineFireuxConfig` must
+declare exactly one `brand.owner`: `core`, `ecosystem`, or `app`. Core and
+ecosystem ownership means deterministic projection from that owner's canonical
+source; App ownership means a complete App-owned family with `approved` or
+explicitly temporary `provisional` status. Never loan, copy, invent, or ignore
+assets merely to satisfy the public-image guard. Keep the shared runtime
+contract at `public/img/app/*`; change ownership through source, config,
+materialization, and guards together.
+
 ## Authority Order
 
 1. Current source code.
@@ -67,6 +78,8 @@ When context disagrees with source or guards, follow source/guards and update th
 ## Performance Hygiene
 
 - Default to one agent and targeted searches.
+- `pnpm gitsave` enforces a current upstream base, Git hooks, and all repository
+  guards without bypass switches.
 - Avoid repeated checks of unchanged state.
 - Reuse healthy existing dev servers; do not restart or kill them without a concrete reason.
 - Use focused checks while iterating; broaden verification only when shared seams move.

@@ -3,12 +3,44 @@ import test from 'node:test'
 import {
   nextApplicationStatus,
   nextEngagementStatus,
+  sameFirestoreTimestamp,
   temporaryCapacityAllowsAcceptance,
 } from '../runtime/utils/job-hiring-policy.ts'
 
+test('offer versions compare exact Firestore timestamp parts', () => {
+  assert.equal(
+    sameFirestoreTimestamp(
+      { seconds: 10, nanoseconds: 25 },
+      { _seconds: 10, _nanoseconds: 25 }
+    ),
+    true
+  )
+  assert.equal(
+    sameFirestoreTimestamp(
+      { seconds: 10, nanoseconds: 25 },
+      { seconds: 10, nanoseconds: 26 }
+    ),
+    false
+  )
+  assert.equal(sameFirestoreTimestamp(null, null), false)
+  assert.equal(
+    sameFirestoreTimestamp(
+      { seconds: 10, nanoseconds: 1_000_000_000 },
+      { seconds: 10, nanoseconds: 1_000_000_000 }
+    ),
+    false
+  )
+})
+
 test('employer and candidate application transitions stay separate', () => {
-  assert.equal(nextApplicationStatus('submitted', 'offer', 'employer'), 'offered')
-  assert.equal(nextApplicationStatus('offered', 'accept', 'candidate'), 'engaged')
+  assert.equal(
+    nextApplicationStatus('submitted', 'offer', 'employer'),
+    'offered'
+  )
+  assert.equal(
+    nextApplicationStatus('offered', 'accept', 'candidate'),
+    'engaged'
+  )
   assert.equal(nextApplicationStatus('submitted', 'accept', 'candidate'), null)
   assert.equal(nextApplicationStatus('offered', 'offer', 'employer'), 'offered')
   assert.equal(nextApplicationStatus('engaged', 'withdraw', 'candidate'), null)

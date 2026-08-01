@@ -20,6 +20,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'ausfinn-apartments',
   name: 'AUSFinn Apartments',
   shortName: 'AUSFinn',
+  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'buenohost',
   role: 'tenant',
   seo: {

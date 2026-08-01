@@ -23,9 +23,14 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 ## Working language
 
 - Collection manager: visual/list/search/card manager for a collection family.
-- Root index manager: collection manager for a public/root entity index route.
-- Default source: collection manager fetches its own root/public collection.
-- Self-contained row: a collection row has every public list/card field needed by `useXInterface()`.
+- Default collection: the unqualified canonical entity collection. Its
+  identity says nothing about which root fields are publicly readable.
+- Default collection manager: collection manager for that unqualified entity
+  collection and its index route.
+- Scoped collection: a collection bounded by a named parent or context, such
+  as Kitchen Menus, Supplier Items, App Users, or Portfolio Properties.
+- Default source: collection manager fetches its own default collection.
+- Self-contained row: a collection row has every exposed list/card field needed by `useXInterface()`.
 - Synced snapshot: denormalized public fields copied onto the row from source truth by a migration/sync seam.
 - Hydration: extra live reads or API enrichment that add linked truth to a record. This is not the default collection-manager shape.
 - Interface: `useXInterface()` maps fetched collection rows into cards.
@@ -33,20 +38,20 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 ## Important split
 
 - Snapshot class answers: does this collection row already carry the list/card truth it needs?
-- Source mode answers: is this a root index manager, a scoped surface, or a custom-derived surface?
+- Source mode answers: is this a default collection manager, a scoped surface, or a custom-derived surface?
 - These are different axes. A root index manager can carry authored fields, synced snapshot fields, or a server-safe projection.
 
 ## Source modes
 
-- Root index manager: fetches its own public/root entity collection.
+- Default collection manager: fetches its own unqualified entity collection.
 - Scoped surface: parent/context-specific surface fetches scoped rows; do not reuse root collection manager as the scoped renderer.
 - Custom-derived: renders a shaped collection rather than a boring root entity list.
 
 ## Root index manager classes
 
-- Root Simple Collection Manager: fetch root/public collection and render through `useXInterface()` with authored row fields.
-- Root Synced Snapshot Collection Manager: fetch a root/public collection whose list/card fields are deliberately copied from source truth by an explicit sync seam.
-- Root Projected Collection Manager: fetch a safe server projection because the raw root collection contains fields that should not power public browse UI.
+- Root Simple Collection Manager: fetch the default collection and render through `useXInterface()` with authored row fields.
+- Root Synced Snapshot Collection Manager: fetch a default collection whose list/card fields are deliberately copied from source truth by an explicit sync seam.
+- Root Projected Collection Manager: fetch a safe server projection because raw roots contain fields that should not power the default browse UI.
 - Scoped Surface: not a collection manager class; it owns parent-scoped fetching and may reuse cards/lists underneath.
 
 ## Root Simple Collection Manager members
@@ -103,10 +108,10 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 ## Source contract
 
-- `XCollectionManager` belongs to `/xs` root/public browse surfaces.
+- `XCollectionManager` belongs to the unqualified `/xs` collection surface.
 - Boring self-owned managers mount directly. Authority-sensitive App and
   Ecosystem pages pass one named controller, never a raw collection prop.
-- The manager fetches its own public/root collection and should not hydrate internally.
+- The manager fetches its own default collection and should not hydrate internally.
 - A route-policy controller is a narrow accepted delta when the route must use
   the same bounded request to choose an HTTP outcome before rendering. The
   Menu index passes `usePublicMenuIndex` explicitly for tenant redirect versus
@@ -182,9 +187,11 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 ## Working rule
 
-- Root/public entity collection managers fetch a default public/root collection.
+- Unqualified entity collection managers fetch the default collection or its
+  bounded collection projection. Public visibility is a projection/access
+  policy, not a collection classification.
 - Scoped operation surfaces should not blindly fetch; they need parent scope and a named scoped surface.
-- Root/public collection managers consume self-contained rows or bounded server
+- Default collection managers consume self-contained rows or bounded server
   projections; they do not batch-load linked identities in the browser.
 - Deliberately stored downstream snapshots must be propagated by an explicit
   sync seam. The current `scripts/sync-self-contained-collection-rows.mjs`

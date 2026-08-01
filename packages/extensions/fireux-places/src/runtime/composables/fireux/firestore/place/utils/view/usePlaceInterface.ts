@@ -88,7 +88,6 @@ const formatPlaceTypeList = (values?: string[]) =>
 export function usePlaceInterface() {
   function map(place: BasePlace): PlaceCard.Card {
     const id = safeString(place.id).trim()
-    const slug = safeString((place as any)?.slug).trim()
     const name = safeString(place.name)
     const shortName = safeString((place as any)?.short_name)
     const address = safeString((place as any)?.formatted_address)
@@ -102,8 +101,8 @@ export function usePlaceInterface() {
 
     return {
       id,
-      to: slug || id
-        ? `/${PlaceStorage.collection}/${encodeURIComponent(slug || id)}`
+      to: id
+        ? `/${PlaceStorage.collection}/${encodeURIComponent(id)}`
         : '',
       title: name,
       subtitle: shortAddress || address,
@@ -150,7 +149,7 @@ export function usePlaceInterface() {
       id: base.id,
       to: base.to,
       name: base.name,
-      formattedAddress: base.formattedAddress,
+      formattedAddress: base.formattedAddress || base.shortAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
       source: (target as any)?.source,
@@ -167,7 +166,7 @@ export function usePlaceInterface() {
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
       name: base.name,
-      formattedAddress: base.formattedAddress,
+      formattedAddress: base.formattedAddress || base.shortAddress,
       source: (target as any)?.source as PlaceSource | undefined,
       prop: (target as any)?.brand_tagline,
     }

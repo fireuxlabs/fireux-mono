@@ -787,9 +787,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Kitchen cards must prefer the explicit Kitchen card image, then inherit Place media, then fall back to the Kitchen logo.'
   )
   assert.match(
+    source.kitchenInterface,
+    /function consoleTarget\([\s\S]*kitchenIdentity\.logoImageUrl \|\| target\.logo_image_url[\s\S]*imageKind:\s*'brand'/,
+    'Kitchen Console targets must use the Kitchen-owned logo as brand identity without substituting Place photography.'
+  )
+  assert.match(
     source.kitchenPublicProjection,
-    /parts\.rootIdentity\.cardImageUrl \|\| parts\.identity\.imageUrl/,
-    'The public Kitchen directory must resolve the same Kitchen override over inherited Place media.'
+    /cardImageUrl\s*\|\|\s*parts\.place\.coverImage\s*\|\|\s*parts\.place\.imageUrl/,
+    'The public Kitchen directory must resolve the Kitchen card override, then Place cover, then Place image.'
   )
   assert.match(
     source.kitchenUpdate,
@@ -810,6 +815,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.kitchenDemoTargets,
     /publicPlace:\s*PublicPlaceProjection[\s\S]*normalizePublicPlaceProjection[\s\S]*hasExactPublicPlaceProjectionShape\(item\.publicPlace\)/,
     'Every Demo Kitchen target must expose its Place through the exact shared public collection-row projection.'
+  )
+  assert.match(
+    source.kitchenDemoTargets,
+    /logoImageUrl:\s*string[\s\S]*!logoImageUrl[\s\S]*placeMedia\.includes\(logoImageUrl\)/,
+    'Every Demo Kitchen must provide Kitchen-owned logo media distinct from its Place photography.'
   )
 
   assert.match(source.kitchenTargetModel, /KITCHEN_CONSOLE_TARGET_LIMIT = 50/)

@@ -19,6 +19,7 @@
     "dev:go-qr": "node scripts/dev-app-with-smoke.mjs --app go-qr",
     "dev:fireux-blank": "node scripts/dev-app-with-smoke.mjs --app fireux-blank",
     "dev:yellow-velo": "node scripts/dev-app-with-smoke.mjs --app yellow-velo",
+    "dev:holzworm": "node scripts/dev-app-with-smoke.mjs --app holzworm",
     "dev:embed-harness": "node scripts/serve-static-harness.mjs",
     "dev:embed-tools": "node scripts/dev-embed-tools.mjs",
     "dev:all": "node scripts/dev-app-group.mjs --group all",
@@ -83,6 +84,7 @@
     "kill:embed-harness": "node scripts/free-port.mjs 3025",
     "kill:fireux-blank": "node scripts/free-port.mjs 3015",
     "kill:yellow-velo": "node scripts/free-port.mjs 3014",
+    "kill:holzworm": "node scripts/free-port.mjs 3030",
     "kill:granite": "node scripts/free-port.mjs 3007",
     "kill:slap": "node scripts/free-port.mjs 3009",
     "kill:la-tap-berne": "node scripts/free-port.mjs 3008",
@@ -93,7 +95,9 @@
     "dev:book-with-nats": "node scripts/dev-app-with-smoke.mjs --app book-with-nats",
     "kill:book-with-nats": "node scripts/free-port.mjs 3028",
     "dev:ausfinn-apartments": "node scripts/dev-app-with-smoke.mjs --app ausfinn-apartments",
-    "kill:ausfinn-apartments": "node scripts/free-port.mjs 3029"
+    "kill:ausfinn-apartments": "node scripts/free-port.mjs 3029",
+    "dev:lifeguard-community": "node scripts/dev-app-with-smoke.mjs --app lifeguard-community",
+    "kill:lifeguard-community": "node scripts/free-port.mjs 3031"
   },
   "engines": {
     "node": ">=22.23 <23",

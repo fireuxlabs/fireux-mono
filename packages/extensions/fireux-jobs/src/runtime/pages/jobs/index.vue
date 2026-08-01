@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use the public-index shell with discovery before author actions. -->
 <template>
   <PublicIndexSurface
-    eyebrow="Hospitality jobs"
+    eyebrow="Work and hiring"
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-briefcase-business"
@@ -52,8 +52,7 @@ const pageDescription =
 definePageMeta({
   layout: 'default',
   title: 'Jobs',
-  description:
-    'Find hospitality jobs and hire professionals directly, without a hiring commission.',
+  description: pageDescription,
   tag: 'jobs',
   nav: {
     key: 'jobs',

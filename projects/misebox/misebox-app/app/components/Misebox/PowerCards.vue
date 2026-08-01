@@ -1,9 +1,6 @@
 <template>
   <section class="misebox-power-cards" aria-label="PowerCards">
-    <MiseboxElementOrbit
-      v-if="orbit"
-      :data-source="orbit.dataSource"
-    >
+    <MiseboxElementWindow v-if="orbit">
       <template #kitchens>
         <MiseboxPowerCardOne :kitchens="orbit.cards.kitchens" />
       </template>
@@ -31,7 +28,7 @@
       <template #supplier>
         <MiseboxPowerCardTen :supplier="orbit.cards.supplier" />
       </template>
-    </MiseboxElementOrbit>
+    </MiseboxElementWindow>
 
     <div
       v-else-if="pending"
@@ -74,7 +71,7 @@
 <script setup lang="ts">
 import { useMiseboxPowerCardsProductDemo } from '../../composables/product-demo/useMiseboxPowerCardsProductDemo'
 import MiseboxPowerCardOne from './PowerCardOne.vue'
-import MiseboxElementOrbit from './ElementOrbit.vue'
+import MiseboxElementWindow from './ElementWindow.vue'
 import MiseboxPowerCardThree from './PowerCardThree.vue'
 import MiseboxPowerCardFour from './PowerCardFour.vue'
 import MiseboxPowerCardFive from './PowerCardFive.vue'

@@ -20,6 +20,7 @@ import { writeProtectedJsonArtifact } from '../_lib/protected-json-artifact.mjs'
 import { buildWerkboxServerSourceEvidence } from '../_lib/werkbox-security-contract.mjs'
 
 export async function run({ repoRoot = process.cwd() } = {}) {
+  await assertGitSavePolicy(repoRoot)
   await assertAllFirestoreRulesArtifactsCurrent()
   await assertRulesFragmentScope(repoRoot)
   await assertRulesSourceConsumers(repoRoot)
@@ -31,6 +32,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   await assertUserIdentityPlannerReadOnly(repoRoot)
   await assertFirebaseAuthDomainSync(repoRoot)
   console.log('[guard] ✅ operational script safety valid')
+}
+
+export async function assertGitSavePolicy(repoRoot) {
+  const source = await readFile(path.join(repoRoot, 'scripts/gitsave.sh'), 'utf8')
+  const envLint = await readFile(path.join(repoRoot, 'scripts/lint-envs.mjs'), 'utf8')
+  const ciWorkflow = await readFile(path.join(repoRoot, '.github/workflows/ci.yml'), 'utf8')
+
+  assert.match(source, /Guard failures cannot be bypassed\./)
+  assert.doesNotMatch(
+    source,
+    /--strict-scope|--no-strict-scope|--allow-large|--allow-behind|--allow-guard-failure|--no-guard|--no-verify|strict_scope|allow_large|allow_behind|allow_guard_failure|run_guard/,
+    'gitsave must not expose switches that weaken scope or guard policy.'
+  )
+  assert.doesNotMatch(
+    `${envLint}\n${ciWorkflow}`,
+    /ALLOW_INCOMPLETE_ENVS|Env lint \(permissive in CI\)/,
+    'Environment validation must not advertise or use a permissive bypass.'
+  )
 }
 
 export async function assertFirebaseAuthDomainSync(repoRoot) {
@@ -79,6 +98,14 @@ export async function assertFirebaseAuthDomainSync(repoRoot) {
   assert.match(createEcosystem, /Please answer yes or no/)
   assert.match(createEcosystem, /!process\.stdin\.isTTY/)
   assert.match(createEcosystem, /sync-firebase-auth-domains\.mjs/)
+  assert.match(
+    createEcosystem,
+    /src\/runtime\/public\/img\/ecosystem\/brand\/\.gitkeep/
+  )
+  assert.match(
+    createEcosystem,
+    /before any App declares brand\.owner = ecosystem/
+  )
 
   const createScript = path.join(repoRoot, 'scripts/create-ecosystem.mjs')
   const fixtureArgs = [

@@ -1,6 +1,13 @@
 import { computed } from 'vue'
+import {
+  collection,
+  query,
+  where,
+  type Query,
+} from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
   ProductStorage,
   type FirebaseProduct,
@@ -10,14 +17,27 @@ import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/fire
 /** Fetches the products collection for the current runtime scope. */
 export function useProductCollection() {
   const fireux = useFireUXConfig()
-  const { firestoreFetchCollection } = useFirestoreManager()
-  const source = firestoreFetchCollection<FirebaseProduct>(ProductStorage.collection)
+  const db = useFirestore()
+  const { firestoreQuery } = useFirestoreManager()
+  const scopedQuery = computed<Query<FirebaseProduct> | null>(() => {
+    const root = collection(db, ProductStorage.collection)
+    if (!fireux.isTenant) return query(root) as Query<FirebaseProduct>
+    if (!fireux.appId) return null
+    return query(
+      root,
+      where('source_app_id', '==', fireux.appId)
+    ) as Query<FirebaseProduct>
+  })
+  const source = firestoreQuery<FirebaseProduct>(
+    scopedQuery,
+    `products:${fireux.role}:${fireux.appId || 'unscoped'}`,
+    ProductStorage.collection
+  )
   const products = computed(() => {
     const records = source.value ?? []
-    if (!fireux.isTenant) return records
-    if (!fireux.appId) return []
-
-    return records.filter((product) => product.source_app_id === fireux.appId)
+    return records.filter((product) =>
+      !fireux.isTenant || product.source_app_id === fireux.appId
+    )
   })
   const count = computed(() => products.value.length)
   const pending = computed(() => source.pending.value)

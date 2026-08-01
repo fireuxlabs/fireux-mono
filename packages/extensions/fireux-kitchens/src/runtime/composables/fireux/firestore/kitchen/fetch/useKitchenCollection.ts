@@ -46,9 +46,6 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
   const fireux = useFireUXConfig()
   const { currentUser, hasAuthState } = useAuth()
   const uid = computed(() => normalize(currentUser.value?.uid))
-  const shouldRequestPreview = computed(() =>
-    Boolean(import.meta.client && hasAuthState.value && uid.value)
-  )
   const endpoint = `/api/kitchens?limit=${PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE}`
   const state = useAsyncData<PublicKitchenIndexPage>(
     [
@@ -59,8 +56,6 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
     () => $fetch<PublicKitchenIndexPage>(endpoint)
   )
   const previewPage = ref<PublicKitchenIndexPage | null>(null)
-  const previewPending = ref(false)
-  const previewError = ref<unknown>(null)
   let previewGeneration = 0
 
   async function requestPreview() {
@@ -68,7 +63,6 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
     const user = currentUser.value
     const requestUid = uid.value
     previewPage.value = null
-    previewError.value = null
 
     if (
       !import.meta.client ||
@@ -76,11 +70,9 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
       !user ||
       user.uid !== requestUid
     ) {
-      previewPending.value = false
       return
     }
 
-    previewPending.value = true
     try {
       const token = await user.getIdToken()
       const page = await $fetch<PublicKitchenIndexPage>(
@@ -90,16 +82,9 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
       if (generation === previewGeneration && uid.value === requestUid) {
         previewPage.value = page
       }
-    } catch (error) {
-      if (generation !== previewGeneration || uid.value !== requestUid) return
-      const statusCode = requestStatusCode(error)
-      if (statusCode !== 401 && statusCode !== 403) {
-        previewError.value = error
-      }
-    } finally {
-      if (generation === previewGeneration) {
-        previewPending.value = false
-      }
+    } catch {
+      // The authorized preview is progressive enhancement. Public Kitchens
+      // remain usable when auth refresh or the private projection is unavailable.
     }
   }
 
@@ -125,15 +110,8 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
   const nextCursor = computed(() => page.value?.nextCursor || '')
   const hasMore = computed(() => Boolean(nextCursor.value))
   const outcome = computed<'pending' | 'error' | 'empty' | 'ready'>(() => {
-    if (
-      state.pending.value ||
-      (shouldRequestPreview.value && previewPending.value)
-    ) return 'pending'
-    if (
-      state.error.value ||
-      !state.data.value ||
-      (shouldRequestPreview.value && previewError.value)
-    ) return 'error'
+    if (state.pending.value) return 'pending'
+    if (state.error.value || !state.data.value) return 'error'
     return kitchens.value.length ? 'ready' : 'empty'
   })
 
@@ -176,16 +154,11 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
     }
   }
 
-  const pending = computed(() =>
-    state.pending.value ||
-    (shouldRequestPreview.value && previewPending.value)
-  )
-  const error = computed<unknown>(() =>
-    state.error.value ?? previewError.value
-  )
+  const pending = computed(() => state.pending.value)
+  const error = computed<unknown>(() => state.error.value)
   const refresh = async () => {
     await state.refresh()
-    await requestPreview()
+    void requestPreview()
   }
 
   return {
@@ -202,23 +175,4 @@ export function useKitchenCollection(): UseKitchenCollectionReturn {
     loadMoreError,
     loadMore,
   }
-}
-
-function requestStatusCode(value: unknown) {
-  if (!value || typeof value !== 'object') return 0
-
-  const error = value as {
-    status?: unknown
-    statusCode?: unknown
-    data?: { status?: unknown, statusCode?: unknown }
-    response?: { status?: unknown }
-  }
-  return Number(
-    error.statusCode ??
-    error.status ??
-    error.data?.statusCode ??
-    error.data?.status ??
-    error.response?.status ??
-    0
-  )
 }

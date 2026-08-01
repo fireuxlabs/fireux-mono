@@ -1,13 +1,14 @@
 // @fireux-script
 // last_used: 2026-07-23
 // usage_note: prepare isolated Firebase SSR dependencies with pnpm 11 build approvals.
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 const outputServerDir = join(process.cwd(), '.output/server')
 const outputPackageJson = join(outputServerDir, 'package.json')
 const outputWorkspaceYaml = join(outputServerDir, 'pnpm-workspace.yaml')
 const outputNpmrc = join(outputServerDir, '.npmrc')
+const runtimeEnvManifest = join(process.cwd(), 'server/firebase.runtime-env.json')
 const packageJson = JSON.parse(readFileSync(outputPackageJson, 'utf8'))
 const allowedBuildDependencies = ['@firebase/util', 'protobufjs', 'vue-demi', 'better-sqlite3']
 
@@ -37,3 +38,46 @@ writeFileSync(
     '',
   ].join('\n')
 )
+
+if (existsSync(runtimeEnvManifest)) {
+  const manifest = JSON.parse(readFileSync(runtimeEnvManifest, 'utf8'))
+  const projectId = String(manifest?.projectId || '').trim()
+  const environment = manifest?.environment
+  if (
+    !/^[a-z][a-z0-9-]{4,28}[a-z0-9]$/.test(projectId) ||
+    !environment ||
+    typeof environment !== 'object' ||
+    Array.isArray(environment)
+  ) {
+    throw new Error(
+      'server/firebase.runtime-env.json must contain a valid projectId and environment object.'
+    )
+  }
+
+  const lines = Object.entries(environment)
+    .sort(([left], [right]) => left.localeCompare(right))
+    .map(([key, rawValue]) => {
+      const value = typeof rawValue === 'string' ? rawValue.trim() : ''
+      if (
+        !/^[A-Z][A-Z0-9_]+$/.test(key) ||
+        /(?:SECRET|TOKEN|PASSWORD|PRIVATE_KEY|CREDENTIAL|API_KEY)/.test(key) ||
+        !value ||
+        value.includes('\n') ||
+        value.includes('\r') ||
+        value.includes("'")
+      ) {
+        throw new Error(
+          `server/firebase.runtime-env.json contains an unsafe source-controlled entry: ${key}`
+        )
+      }
+      return `${key}='${value}'`
+    })
+
+  writeFileSync(
+    join(outputServerDir, `.env.${projectId}`),
+    `${lines.join('\n')}\n`
+  )
+  console.log(
+    `[firebase-output] wrote ${lines.length} non-secret runtime environment entries for ${projectId}`
+  )
+}

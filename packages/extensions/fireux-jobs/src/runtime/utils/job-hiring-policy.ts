@@ -10,6 +10,38 @@ import type { JobContractType } from '../models/job.model.ts'
 
 export type HiringActor = 'candidate' | 'employer'
 
+function firestoreTimestampParts(value: unknown): {
+  seconds: number
+  nanoseconds: number
+} | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const source = value as Record<string, unknown>
+  const seconds = source.seconds ?? source._seconds
+  const nanoseconds = source.nanoseconds ?? source._nanoseconds ?? 0
+  if (
+    typeof seconds !== 'number' ||
+    !Number.isInteger(seconds) ||
+    typeof nanoseconds !== 'number' ||
+    !Number.isInteger(nanoseconds) ||
+    nanoseconds < 0 ||
+    nanoseconds >= 1_000_000_000
+  ) {
+    return null
+  }
+  return { seconds, nanoseconds }
+}
+
+export function sameFirestoreTimestamp(left: unknown, right: unknown): boolean {
+  const leftParts = firestoreTimestampParts(left)
+  const rightParts = firestoreTimestampParts(right)
+  return Boolean(
+    leftParts &&
+      rightParts &&
+      leftParts.seconds === rightParts.seconds &&
+      leftParts.nanoseconds === rightParts.nanoseconds
+  )
+}
+
 export function nextApplicationStatus(
   current: JobApplicationStatus,
   action: JobApplicationAction,
@@ -53,10 +85,7 @@ export function nextEngagementStatus(
   ) {
     return 'completed'
   }
-  if (
-    action === 'cancel' &&
-    (current === 'accepted' || current === 'active')
-  ) {
+  if (action === 'cancel' && (current === 'accepted' || current === 'active')) {
     return 'cancelled'
   }
   return null
@@ -69,9 +98,7 @@ export function temporaryCapacityAllowsAcceptance(input: {
   premiumLimit?: number
 }): boolean {
   if (input.contractType !== 'temporary') return true
-  const limit = input.hasPremiumCapacity
-    ? input.premiumLimit ?? 100
-    : 1
+  const limit = input.hasPremiumCapacity ? (input.premiumLimit ?? 100) : 1
   return (
     Number.isInteger(input.activeTemporaryEngagementCount) &&
     input.activeTemporaryEngagementCount >= 0 &&

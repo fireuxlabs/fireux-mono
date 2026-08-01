@@ -116,20 +116,13 @@ async function kitchenBySlug(db: RuntimeFirestore, slug: string) {
   if (!normalized) invalid('Kitchen slug is required.')
   const snapshot = await db
     .collection(KitchenStorage.rootCollection)
-    .where('slug', '==', normalized)
-    .limit(2)
+    .doc(normalized)
     .get()
-  if (!snapshot.docs.length) {
+  if (!snapshot.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
-  if (snapshot.docs.length !== 1) {
-    throw createError({
-      statusCode: 409,
-      statusMessage: 'Kitchen slug is not canonical.',
-    })
-  }
   return {
-    id: snapshot.docs[0]!.id,
+    id: snapshot.id,
     slug: normalized,
   }
 }

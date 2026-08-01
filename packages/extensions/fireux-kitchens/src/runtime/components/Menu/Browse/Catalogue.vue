@@ -3,12 +3,18 @@
   <div class="menu-browse-catalogue">
     <MenuSectionNav
       v-if="browseSections.length > 1"
+      :aria-label="copy.menuSectionsAriaLabel"
+      :choose-label="copy.chooseMenuSectionAriaLabel"
+      :sections-label="copy.sectionsLabel"
       :sections="browseSections"
     />
 
     <div
       v-if="browseSections.length"
       class="menu-browse-catalogue__sections menu-catalogue-sections"
+      :class="{
+        'menu-catalogue-sections--dense': browseSections.length >= 12,
+      }"
     >
       <section
         v-for="section in browseSections"
@@ -32,7 +38,9 @@
             :accessibility-id="`${section.anchor}-item-${itemIndex + 1}`"
             :currency-code="currencyCode"
             :currency-format="currencyFormat"
+            :available-options-label="copy.availableOptionsLabel"
             :item="item"
+            :optional-extras-label="copy.optionalExtrasLabel"
             :show-currency="showCurrency"
           />
         </div>
@@ -40,7 +48,7 @@
     </div>
 
     <p v-else class="menu-browse-catalogue__state" role="status">
-      No menu items are published yet.
+      {{ copy.emptyCatalogueLabel }}
     </p>
   </div>
 </template>
@@ -49,11 +57,13 @@
 import { computed } from 'vue'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
+import type { MenuBrowseSurfaceCopy } from '../../../content/menu-surface-copy'
 import { menuSectionLinks } from '../../../utils/menu-section-links'
 
 const props = withDefaults(defineProps<{
   currencyCode: string
   currencyFormat?: CurrencyDisplayFormat
+  copy: MenuBrowseSurfaceCopy
   sections: MenuManifestSection[]
   showCurrency?: boolean
 }>(), {
@@ -84,5 +94,11 @@ const browseSections = computed(() => menuSectionLinks(props.sections))
   font-size: 0.95rem;
   font-weight: var(--font-weight-bold);
   text-align: center;
+}
+
+@media (max-width: 35rem) {
+  .menu-browse-catalogue {
+    gap: calc(var(--spacing) * 5);
+  }
 }
 </style>

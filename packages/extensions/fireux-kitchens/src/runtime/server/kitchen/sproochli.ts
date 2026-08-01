@@ -21,6 +21,10 @@ const allowedDefaultLanguages = [
   'en',
   'de',
 ] as const satisfies readonly SproochliDefaultLanguage[]
+const allowedDefaultLanguageSet = new Set<SproochliDefaultLanguage>(
+  allowedDefaultLanguages
+)
+type AllowedDefaultLanguage = typeof allowedDefaultLanguages[number]
 
 function badRequest(statusMessage: string): never {
   throw createError({ statusCode: 400, statusMessage })
@@ -45,7 +49,7 @@ function request(value: unknown) {
     .toLowerCase() as SproochliDefaultLanguage
   if (
     source.enabled &&
-    !allowedDefaultLanguages.includes(defaultLanguage)
+    !allowedDefaultLanguageSet.has(defaultLanguage)
   ) {
     badRequest('Kitchen Sproochli default language must be mixed, en, or de.')
   }
@@ -53,7 +57,9 @@ function request(value: unknown) {
   return {
     kitchenId: requireFirestoreDocumentId(source.kitchen_id, 'Kitchen id'),
     enabled: source.enabled,
-    defaultLanguage: source.enabled ? defaultLanguage : undefined,
+    defaultLanguage: source.enabled
+      ? defaultLanguage as AllowedDefaultLanguage
+      : undefined,
   }
 }
 

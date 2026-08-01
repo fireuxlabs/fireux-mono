@@ -9,8 +9,8 @@
     :data-menu-path="hasMenu ? menuPath : undefined"
     :class="themeClassName"
     :style="themeStyleVars"
-    :dir="translation.direction.value"
-    :lang="translation.selectedLanguage.value || undefined"
+    :dir="menuDirection"
+    :lang="menuLanguage || undefined"
     :aria-labelledby="hasMenu
       ? 'menu-browse-title'
       : failure
@@ -29,73 +29,58 @@
     <template v-else-if="hasMenu">
       <MenuIdentity
         :currency-code="currencyCode"
+        :back-to-menus-label="browseSurfaceCopy.backToMenusLabel"
+        :close-menu-label="browseSurfaceCopy.closeMenuLabel"
         :show-currency="showCurrency"
         :description="menuDescription"
         heading-id="menu-browse-title"
         :identity-kind="documentMenu ? 'menu' : 'kitchen-menu'"
-        :image-shade="kitchenImageShade"
-        :image-url="kitchenImageUrl"
         :kitchen-name="kitchenName"
-        :logo-image-url="kitchenLogoImageUrl"
         :menu-name="menuName"
-        :wordmark-image-url="kitchenWordmarkImageUrl"
+        presentation="open"
+        :prices-label="browseSurfaceCopy.pricesLabel"
       >
         <template
           v-if="sproochli"
           #utility
         >
-          <div class="menu-browse__translation">
-            <SproochliLanguageTrigger
-              :language-options="sproochli.languageOptions"
-              :selected-language="sproochli.selectedLanguage"
-              :default-language="sproochli.defaultLanguage"
-              :show-group-labels="true"
-              :show-when-single-option="true"
-            />
-
-            <span
-              v-if="translation.translating.value"
-              class="menu-browse__translation-badge"
-              role="status"
-              title="Translating menu"
-            >
-              <UIcon
-                name="i-lucide-loader-circle"
-                class="size-3 animate-spin"
-                aria-hidden="true"
+          <ClientOnly>
+            <div class="menu-browse__translation">
+              <SproochliLanguageTrigger
+                :language-options="sproochliLanguageOptions"
+                :selected-language="sproochli.language"
+                default-language="mixed"
+                :show-group-labels="true"
+                :show-when-single-option="true"
               />
-              <span class="sr-only">Translating menu…</span>
-            </span>
 
-            <span
-              v-else-if="translation.translationError.value"
-              class="menu-browse__translation-badge menu-browse__translation-badge--error"
-              role="alert"
-              title="Translation unavailable. Showing the original menu."
-            >
-              <UIcon
-                name="i-lucide-triangle-alert"
-                class="size-3"
-                aria-hidden="true"
-              />
-              <span class="sr-only">
-                Translation unavailable. Showing the original menu.
+              <span
+                v-if="sproochli.state === 'unavailable'"
+                class="menu-browse__translation-badge menu-browse__translation-badge--error"
+                role="alert"
+                title="Translation unavailable. Showing the original menu."
+              >
+                <UIcon
+                  name="i-lucide-triangle-alert"
+                  class="size-3"
+                  aria-hidden="true"
+                />
+                <span class="sr-only">
+                  Translation unavailable. Showing the original menu.
+                </span>
               </span>
-            </span>
-          </div>
+            </div>
+          </ClientOnly>
         </template>
       </MenuIdentity>
 
-      <MenuSurfaceSwitcher
-        v-if="surfaceOptions.length"
-        icon="i-lucide-book-open"
-        :label="browseSurfaceCopy.browseLabel"
-        :message="browseSurfaceCopy.browseDescription"
-        open-by-default
-        :options="surfaceOptions"
+      <MenuSurfaceRail
+        v-if="orderingSurfaceOptions.length"
+        :options="orderingSurfaceOptions"
       />
 
       <aside
+        v-else
         class="menu-browse__notice"
         :aria-label="browseSurfaceCopy.allergyAriaLabel"
       >
@@ -123,8 +108,16 @@
         v-else-if="renderKind === 'structured' && activeDetailMenu"
         :currency-code="currencyCode"
         :currency-format="currencyFormat"
+        :copy="browseSurfaceCopy"
         :sections="activeDetailMenu.content.sections"
         :show-currency="showCurrency"
+      />
+
+      <DevFireuxDebugPanel
+        title="Menu Sproochli"
+        scope="runtime"
+        :data="translationDebug"
+        :default-open="true"
       />
     </template>
 
@@ -140,12 +133,14 @@ import { setResponseStatus, useRoute } from '#imports'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import {
+  isSproochliRtlLanguage,
   normalizeSproochliLanguage,
+  resolveSproochliLanguageState,
 } from 'fireux-sproochli/runtime/sproochli'
 import SproochliLanguageTrigger from 'fireux-sproochli/runtime/components/Sproochli/LanguageTrigger.vue'
 import { useMenu } from '../../../composables/fireux/menu/useMenu'
-import { useSproochliMenuTranslation } from '../../../composables/fireux/menu/useSproochliMenuTranslation'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
+import { resolveMenuBrowseSurfaceCopy } from '../../../content/menu-surface-copy'
 import {
   menuCanonicalPath,
   rootMenuRouteScope,
@@ -184,8 +179,10 @@ const {
   routeScope: menuRouteScope,
   sproochliLanguage: requestedSproochliLanguage,
 })
-const translation = useSproochliMenuTranslation({ menu: detailMenu })
-const browseSurfaceCopy = translation.surfaceCopy
+const browseSurfaceCopy = computed(() =>
+  detailMenu.value?.sproochli?.surfaceCopy ??
+  resolveMenuBrowseSurfaceCopy()
+)
 
 if (props.propagateResponseStatus) {
   await ready
@@ -195,9 +192,7 @@ if (props.propagateResponseStatus) {
 }
 
 const hasMenu = computed(() => renderKind.value !== 'unavailable')
-const activeDetailMenu = computed(() =>
-  translation.menu.value || detailMenu.value
-)
+const activeDetailMenu = computed(() => detailMenu.value)
 const menuName = computed(() =>
   activeDetailMenu.value?.content.name || documentMenu.value?.name || 'Menu'
 )
@@ -223,18 +218,6 @@ const currencyFormat = computed<CurrencyDisplayFormat>(() => {
 const showCurrency = computed(() =>
   menuPresentation.value?.showCurrency !== false
 )
-const kitchenImageShade = computed(() =>
-  menuPresentation.value?.kitchenImageShade || 'none'
-)
-const kitchenImageUrl = computed(() =>
-  String(menuPresentation.value?.kitchenImageUrl || '').trim()
-)
-const kitchenLogoImageUrl = computed(() =>
-  String(menuPresentation.value?.kitchenLogoImageUrl || '').trim()
-)
-const kitchenWordmarkImageUrl = computed(() =>
-  String(menuPresentation.value?.kitchenWordmarkImageUrl || '').trim()
-)
 const pageStyle = computed(() =>
   menuPresentation.value?.pageStyle || null
 )
@@ -247,17 +230,32 @@ const canonicalPath = computed(() =>
   })
 )
 const sproochli = computed(() => {
-  const state = detailMenu.value?.sproochli
-  if (!state) return null
-
-  return {
-    ...state,
-    selectedLanguage: translation.selectedLanguage.value,
-    languageOptions: translation.languageOptions.value,
-  }
+  return detailMenu.value?.sproochli ?? null
 })
+const sproochliLanguageOptions = computed(() =>
+  resolveSproochliLanguageState({
+    enabled: true,
+    cachedLanguages: sproochli.value?.readyLanguages ?? [],
+  }).options
+)
+const menuLanguage = computed(() =>
+  sproochli.value?.state === 'translated'
+    ? sproochli.value.language
+    : ''
+)
+const menuDirection = computed(() =>
+  sproochli.value?.state === 'translated' &&
+  isSproochliRtlLanguage(sproochli.value.language)
+    ? 'rtl'
+    : 'ltr'
+)
+const translationDebug = computed(() => ({
+  state: sproochli.value?.state ?? 'off',
+  language: sproochli.value?.language || 'Default',
+  ready_languages: sproochli.value?.readyLanguages ?? null,
+}))
 const preserveSproochliQuery = (to: string) => {
-  const language = sproochli.value?.selectedLanguage
+  const language = sproochli.value?.language
   if (!language) return to
 
   const [pathAndQuery, hash = ''] = String(to || '').split('#', 2)
@@ -268,16 +266,18 @@ const preserveSproochliQuery = (to: string) => {
 
   return `${path}${nextQuery ? `?${nextQuery}` : ''}${hash ? `#${hash}` : ''}`
 }
-const surfaceOptions = computed(() =>
+const orderingSurfaceOptions = computed(() =>
   guestMenuSurfaceOptions({
     behaviour: detailMenu.value?.behaviour,
     menuId: menuId.value,
     routeScope: menuRouteScope.value,
     activeContext: 'generic',
-  }).map((option) => ({
-    ...option,
-    to: preserveSproochliQuery(option.to),
-  }))
+  })
+    .filter(option => option.value !== 'generic')
+    .map((option) => ({
+      ...option,
+      to: preserveSproochliQuery(option.to),
+    }))
 )
 const documentUrl = computed(() => {
   const file = documentMenu.value?.file
@@ -347,7 +347,7 @@ useSeo({
   display: grid;
   width: min(100%, 48rem);
   margin: 0 auto;
-  padding: 0.9rem calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 4);
   border: 1px solid color-mix(in srgb, var(--menu-secondary) 30%, transparent);
   border-radius: var(--menu-radius-control);
   background: color-mix(in srgb, var(--menu-secondary) 7%, transparent);
@@ -359,6 +359,14 @@ useSeo({
 
 .menu-browse__notice strong {
   color: var(--menu-text);
+}
+
+@media (max-width: 35rem) {
+  .menu-browse {
+    gap: calc(var(--spacing) * 4);
+    padding-right: max(calc(var(--spacing) * 4), env(safe-area-inset-right));
+    padding-left: max(calc(var(--spacing) * 4), env(safe-area-inset-left));
+  }
 }
 
 </style>

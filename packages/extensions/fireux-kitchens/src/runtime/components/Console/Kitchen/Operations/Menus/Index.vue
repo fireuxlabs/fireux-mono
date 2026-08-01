@@ -1,11 +1,11 @@
 <template>
   <section class="console-surface">
     <div v-if="kitchenId" class="space-y-4">
-      <ConsoleKitchenOperationsMenusList v-if="showCollectionExperiment" />
+      <ConsoleKitchenOperationsMenusList />
 
       <ConsoleKitchenOperationsMenusTools />
 
-      <ConsoleKitchenOperationsMenusDebug v-if="showCollectionExperiment" />
+      <ConsoleKitchenOperationsMenusDebug />
     </div>
 
     <UAlert
@@ -24,6 +24,4 @@ import { provideKitchenMenusWorkspace } from '../../../../../composables/fireux/
 const {
   kitchenId,
 } = provideKitchenMenusWorkspace()
-
-const showCollectionExperiment = false
 </script>

@@ -7,7 +7,6 @@
       v-if="canonicalStore"
       :store="canonicalStore"
     />
-    <MarketplaceStorefront v-else-if="previewSeller" :seller="previewSeller" />
   </section>
 </template>
 
@@ -15,9 +14,6 @@
 import { computed } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
-import {
-  findMarketplacePreviewSeller,
-} from '@/content/marketplace-preview'
 import type {
   PublicMarketplaceStoreResponse,
 } from 'fireux-marketplace/runtime/models/marketplace-api.model'
@@ -33,11 +29,8 @@ const { data } = await useFetch<PublicMarketplaceStoreResponse>(
   { default: () => null }
 )
 const canonicalStore = computed(() => data.value?.store)
-const previewSeller = computed(() =>
-  findMarketplacePreviewSeller(sellerId.value)
-)
 
-if (!canonicalStore.value && !previewSeller.value) {
+if (!canonicalStore.value) {
   throw createError({
     statusCode: 404,
     statusMessage: copy('storefront_not_found'),
@@ -45,10 +38,7 @@ if (!canonicalStore.value && !previewSeller.value) {
 }
 
 useSeoMeta({
-  title: () =>
-    `${canonicalStore.value?.name || copy(previewSeller.value?.nameKey || 'storefront_honey_name')} – Interlaken Essen`,
-  description: () =>
-    canonicalStore.value?.description ||
-    copy(previewSeller.value?.descriptionKey || 'storefront_honey_description'),
+  title: () => `${canonicalStore.value?.name || ''} – Interlaken Essen`,
+  description: () => canonicalStore.value?.description || '',
 })
 </script>

@@ -43,7 +43,13 @@ export const TranslationMemoryStorage = {
 export type TranslationStatus = 'draft' | 'review' | 'published' | 'archived'
 export type TranslationDirection = 'ltr' | 'rtl'
 export type TranslationMemoryReviewStatus = 'unreviewed'
-export type TranslationMemoryProvenanceKind = 'ai' | 'machine_translation'
+export type TranslationMemoryProvenanceKind =
+  | 'ai'
+  | 'machine_translation'
+  | 'source_document_extraction'
+export type TranslationMemoryRecorder =
+  | 'sproochli-menu-translate'
+  | 'sproochli-menu-cache-import'
 
 export type TranslationMemoryRecord = {
   id: string
@@ -62,7 +68,10 @@ export type TranslationMemoryRecord = {
   provenance: {
     kind: TranslationMemoryProvenanceKind
     provider: string
-    generated_by: 'sproochli-menu-translate'
+    generated_by: TranslationMemoryRecorder
+    source_app_id?: string
+    source_document_id?: string
+    source_model?: string
     generated_at?: unknown
   }
   updated_at?: unknown

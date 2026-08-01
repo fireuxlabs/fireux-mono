@@ -126,3 +126,9 @@
     margin-bottom: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 20));
   }
 }
+
+@media (min-width: 1120px) {
+  .menu-catalogue-sections--dense {
+    column-count: 3;
+  }
+}

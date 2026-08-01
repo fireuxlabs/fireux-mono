@@ -518,7 +518,7 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
   )
 
   validateSelected({ selectedPath, family, repoRoot, violations })
-  validateTargets({ targetsPath, indexDir, files, repoRoot, violations })
+  validateTargets({ targetsPath, indexDir, family, files, repoRoot, violations })
   validateComposable({ family, files, repoRoot, violations })
   validateTargetAuthority({ family, files, repoRoot, violations })
 }
@@ -557,6 +557,7 @@ function validateSelected({ selectedPath, family, repoRoot, violations }) {
 function validateTargets({
   targetsPath,
   indexDir,
+  family,
   files,
   repoRoot,
   violations,
@@ -584,6 +585,20 @@ function validateTargets({
     'target presentation must delegate state chrome to ConsoleTargetCollection',
     violations
   )
+  if (family === 'Kitchen') {
+    assertMatch(
+      combinedSource,
+      /<ConsoleTargetCard\b/,
+      relative,
+      'Kitchen target presentation must use the dedicated Console target card',
+      violations
+    )
+    if (/<KitchenCardsCell\b/.test(combinedSource)) {
+      violations.push(
+        `${relative} (Kitchen Console target selection must not nest the public Kitchen card family)`
+      )
+    }
+  }
   if (/<MoleculesStateCard\b/.test(targetsSource)) {
     violations.push(
       `${relative} (targets wrapper must not replace authoritative outcome state with a local state card)`
@@ -607,6 +622,35 @@ function validateComposable({ family, files, repoRoot, violations }) {
     violations.push(
       `${relativePath(repoRoot, candidate)} (console index adapter must delegate to useConsoleIndex)`
     )
+  }
+
+  if (family === 'Kitchen') {
+    for (const candidate of candidates) {
+      const source = readFileSync(candidate, 'utf8')
+      const relative = relativePath(repoRoot, candidate)
+      if (
+        /kitchenId:\s*consoleSelection\.hasSelection/.test(source) ||
+        /showTargetChooser[\s\S]*consoleSelection\.hasSelection/.test(source)
+      ) {
+        violations.push(
+          `${relative} (persisted Kitchen selection and chooser visibility must not depend on hydrated selected-object state)`
+        )
+      }
+      assertMatch(
+        source,
+        /const showTargetChooser = computed\(\s*\(\) => !isTenantSingleTarget\.value\s*\)/,
+        relative,
+        'Kitchen target choosers must remain available except for the tenant single-target case',
+        violations
+      )
+      assertMatch(
+        source,
+        /demoTargets:\s*\{\s*show:\s*index\.sections\.value\.targets\.show/,
+        relative,
+        'Kitchen Demo chooser visibility must follow the shared Live chooser',
+        violations
+      )
+    }
   }
 }
 

@@ -10,6 +10,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'granite-app',
   name: 'Granite',
   shortName: 'Granite',
+  brand: { owner: 'app', status: 'provisional' },
   role: 'global',
   consoles: ['portfolio'],
   domains: ['properties', 'portfolios'],

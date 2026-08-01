@@ -8,6 +8,7 @@ export default defineFireuxConfig({
   id: 'fireux-app',
   name: 'FireUX',
   shortName: 'FireUX',
+  brand: { owner: 'core' },
   role: 'global',
   designPack: { preset: 'sci-fire' },
   consoles: ['project'],

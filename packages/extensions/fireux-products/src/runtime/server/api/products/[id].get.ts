@@ -4,6 +4,7 @@ import {
   getRouterParam,
   type H3Event,
 } from 'h3'
+import { useRuntimeConfig } from '#imports'
 import { ProductPriceStorage, ProductStorage } from '../../../models/product.model'
 import { getProductsFirestore } from '../../utils/getAdmin'
 
@@ -63,6 +64,24 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
+  const product = productSnap.data() || {}
+  const runtime = useRuntimeConfig(event)
+  const fireux = (runtime.public?.fireux || {}) as Record<string, unknown>
+  const role = String(fireux.role || '').trim()
+  const appId = String(fireux.id || '').trim()
+  const sourceAppId = String(product.source_app_id || '').trim()
+  const isAppScopedRuntime = role === 'tenant' || role === 'standalone'
+  if (
+    product.visibility !== 'public' ||
+    product.active !== true ||
+    (isAppScopedRuntime && (!appId || sourceAppId !== appId))
+  ) {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Product not found',
+    })
+  }
+
   const pricesSnap = await productRef.collection(ProductPriceStorage.collection).get()
   const prices = pricesSnap.docs.map((doc) =>
     serializeFirestoreValue({
@@ -73,7 +92,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   return serializeFirestoreValue({
     id: productSnap.id,
-    ...productSnap.data(),
+    ...product,
     prices,
   })
 })

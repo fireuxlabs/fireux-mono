@@ -40,7 +40,7 @@ type DemoKitchenInput = {
   identity: KitchenDemoIdentity
   name: string
   tagline: string
-  logoImageUrl?: string
+  logoImageUrl: string
   menuStyle: NonNullable<Kitchen['menus']['style']>
   palette: SparseBrandPalette
   paymentMethods: KitchenFulfilmentPaymentPolicy[]
@@ -84,7 +84,7 @@ const kitchen = (input: DemoKitchenInput): Kitchen => ({
   identity: {
     display_name: input.name,
     tagline: input.tagline,
-    logo_image_url: input.logoImageUrl ?? '',
+    logo_image_url: input.logoImageUrl,
     image_shade: 'none',
     wordmark_no_logo_image_url: '',
     wordmark_image_url: '',
@@ -438,6 +438,16 @@ const targetIds = new Set<string>()
 for (const item of kitchenDemoTargets) {
   const kitchenId = String(item.kitchen.id ?? '').trim()
   const placeId = String(item.place.id ?? '').trim()
+  const logoImageUrl = String(
+    item.kitchen.identity.logo_image_url ?? ''
+  ).trim()
+  const placeMedia = [
+    item.place.image_url,
+    item.place.cover_image,
+    ...item.place.gallery_images,
+  ]
+    .map(value => String(value ?? '').trim())
+    .filter(Boolean)
   const teamIds = item.appSupport.team_ids
   const operatorIds = item.appSupport.operator_ids
   if (
@@ -453,6 +463,8 @@ for (const item of kitchenDemoTargets) {
     item.appId !== item.identity.appId ||
     item.appSupport.id !== kitchenId ||
     item.publicPlace.id !== placeId ||
+    !logoImageUrl ||
+    placeMedia.includes(logoImageUrl) ||
     !hasExactPublicPlaceProjectionShape(item.publicPlace) ||
     item.appSupport.join_requests.length !== 0 ||
     new Set(teamIds).size !== teamIds.length ||

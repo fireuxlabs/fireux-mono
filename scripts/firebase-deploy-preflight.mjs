@@ -50,6 +50,8 @@ printArtifactReminder()
 
 const firebaseConfig = readJson(configPath)
 printShipReminders()
+const localHostingSites = readLocalHostingSites(firebaseConfig)
+assertHostingSitesExist(project, localHostingSites, cwd)
 const localFunctions = readLocalFunctions(firebaseConfig)
 
 if (!localFunctions.length) {
@@ -237,6 +239,60 @@ function normalizeHosting(hostingConfig) {
   if (Array.isArray(hostingConfig)) return hostingConfig
   if (hostingConfig && typeof hostingConfig === 'object') return [hostingConfig]
   return []
+}
+
+function readLocalHostingSites(firebaseConfig) {
+  return [...new Set(
+    normalizeHosting(firebaseConfig?.hosting)
+      .map((entry) => (typeof entry?.site === 'string' ? entry.site.trim() : ''))
+      .filter(Boolean)
+  )]
+}
+
+function assertHostingSitesExist(projectId, expectedSites, workingDirectory) {
+  if (!expectedSites.length) return
+
+  const result = spawnSync(
+    'pnpm',
+    [
+      'dlx',
+      `firebase-tools@${FIREBASE_TOOLS_VERSION}`,
+      'hosting:sites:list',
+      '--project',
+      projectId,
+      '--json',
+      '--non-interactive',
+    ],
+    {
+      cwd: workingDirectory,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }
+  )
+
+  if (result.status !== 0) {
+    const output = [result.stderr, result.stdout].filter(Boolean).join('\n').trim()
+    console.error('[firebase-preflight] Could not read remote Firebase Hosting sites.')
+    if (output) console.error(output)
+    process.exit(result.status || 1)
+  }
+
+  const sites = readJsonFromString(result.stdout)?.result?.sites
+  const available = new Set(
+    (Array.isArray(sites) ? sites : [])
+      .map((site) => typeof site?.name === 'string' ? site.name.split('/').at(-1) : '')
+      .filter(Boolean)
+  )
+  const missing = expectedSites.filter((site) => !available.has(site))
+
+  if (!missing.length) return
+
+  console.error('\n[firebase-preflight] Configured Firebase Hosting site is missing.\n')
+  console.error(`- Project: ${projectId}`)
+  console.error(`- Missing: ${missing.join(', ')}`)
+  console.error(`- Available: ${[...available].sort().join(', ') || '(none)'}`)
+  console.error('\nCreate the exact site first, then rerun the deploy. No build or release was attempted.\n')
+  process.exit(1)
 }
 
 function readHostingRegions(hostingConfig) {

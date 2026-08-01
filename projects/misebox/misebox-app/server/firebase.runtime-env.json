@@ -1,0 +1,7 @@
+{
+  "projectId": "misebox-78f9c",
+  "environment": {
+    "SPROOCHLI_MENU_PROVIDER_ENDPOINT": "https://sproochli.web.app/api/tools/menu",
+    "SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE": "https://sproochli.web.app/api/tools/menu"
+  }
+}

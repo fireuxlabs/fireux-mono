@@ -36,9 +36,8 @@
           {{ metaText }}
         </div>
 
-        <div v-if="showTagline" class="truncate text-xs text-dimmed">
-          <span v-if="prop">{{ prop }}</span>
-          <span v-else class="italic">missing</span>
+        <div v-if="showTagline && taglineText" class="truncate text-xs text-dimmed">
+          {{ taglineText }}
         </div>
       </div>
     </div>
@@ -82,6 +81,9 @@ const metaText = computed(() => {
   if (!description) return ''
   return description === subtitle ? '' : description
 })
+const taglineText = computed(() =>
+  String(props.prop || record.value.subtitle || '').trim()
+)
 
 const onClick = (event?: MouseEvent) => {
   if (props.action) {

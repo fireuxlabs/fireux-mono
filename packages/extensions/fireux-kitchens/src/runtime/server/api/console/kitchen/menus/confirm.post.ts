@@ -2,6 +2,7 @@ import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import { writeKitchenMenuDraft } from '../../../../menu/draft/write'
 import { compareKitchenMenuDraftToCurrent } from '../../../../menu/draft/comparison'
@@ -17,6 +18,9 @@ import {
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
 } from '../../../../menu/source/uploads'
+import {
+  importKitchenMenuCacheUnits,
+} from '../../../../menu/sproochli/cache-import'
 
 type ConfirmMenuBody = Partial<Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>> & {
   confirmDishes?: boolean
@@ -111,7 +115,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   // Confirm is the commit point: before this, the upload is only a review source.
-  const write = await writeKitchenMenuDraft({
+  const writeResult = await writeKitchenMenuDraft({
     appId,
     kitchenId,
     kitchenPath,
@@ -119,6 +123,41 @@ export default defineEventHandler(async (event: H3Event) => {
     uid,
     sections,
   })
+  const {
+    sproochliCacheUnits,
+    ...write
+  } = writeResult
+  const provenance = record(aiDraft.provenance)
+  let cacheImport:
+    | Awaited<ReturnType<typeof importKitchenMenuCacheUnits>>
+    | {
+        status: 'failed'
+        units: number
+        writes: 0
+        existing: 0
+        reason: string
+      }
+
+  try {
+    cacheImport = await importKitchenMenuCacheUnits({
+      appId,
+      uploadId,
+      provider:
+        readString(provenance.provider) || 'fireux-ai-menu-extraction',
+      model: readString(provenance.model),
+      units: sproochliCacheUnits,
+    })
+  } catch (cause) {
+    cacheImport = {
+      status: 'failed',
+      units: sproochliCacheUnits.length,
+      writes: 0,
+      existing: 0,
+      reason:
+        (cause instanceof Error ? cause.message : String(cause))
+          .slice(0, 300) || 'Sproochli Menu cache import failed.',
+    }
+  }
   const stamp = serverAuditStamp({ by: uid, appId })
 
   await sourceRef.set(
@@ -132,6 +171,10 @@ export default defineEventHandler(async (event: H3Event) => {
           at: stamp.at,
           by: uid,
         },
+        cache_import: {
+          ...cacheImport,
+          at: stamp.at,
+        },
       },
       updated: stamp,
     },
@@ -143,6 +186,7 @@ export default defineEventHandler(async (event: H3Event) => {
     menuId,
     uploadId,
     write,
+    cacheImport,
     message: 'Menu draft confirmed. Dishes, sections, and menu items were created.',
   }
 })

@@ -1,6 +1,6 @@
 # Public detail family
 
-Updated: 2026-07-22
+Updated: 2026-07-29
 Ref: e98ffb195
 Role: map, not canon
 
@@ -39,6 +39,18 @@ Every public detail route should:
   only and never changes identity, transport, publication, or authority.
 - Canonical User detail reuses the shared profile hero and Nuxt UI page cards
   for specialist doorways instead of maintaining a parallel profile shell.
+- Public venue and operation details compose Core `PublicEntityHero` through
+  their named domain detail surfaces. Place and Kitchen are the proving
+  siblings: cover failure, identity media, title/action geometry, sparse
+  composition, and responsive behavior match; Place retains venue facts,
+  story, gallery, and hours while Kitchen retains brand identity, menus, and
+  operational children.
+- When the Kitchen capability is installed, Place detail composes the
+  Kitchen-owned `KitchenPlacePublicOperations` extension. It exact-filters
+  published Kitchens by canonical `Kitchen.place_id`, then resolves each
+  Kitchen's published Menu doorways through the existing Kitchen-scoped public
+  Menu endpoint. Place owns neither the relationship copy nor a denormalized
+  Kitchen/Menu list, and Apps do not add venue-specific exceptions.
 
 ## Emerging page composition
 
@@ -81,7 +93,8 @@ review.
 | Profile details join canonical User presentation by uid                | `accepted`  | Domain profile roots remain owner/private authority and do not duplicate public User identity; public Agent, Chef, Driver, and Professional routes resolve the User handle at the trusted projection boundary |
 | Legacy profile uid URLs redirect permanently to the User-handle URL    | `migration` | Stored links remain usable during the route cutover while every new card, canonical tag, and share path uses the handle                                                                                       |
 | Job detail exact-loads the same bounded DTO as Job index               | `accepted`  | Category, tenant, publication, Company, and Place joins are server-owned                                                                                                                                      |
-| Kitchen detail can expose public KitchenMenus                          | `accepted`  | Kitchen is a public console entity with scoped published children                                                                                                                                             |
+| Kitchen detail can expose public KitchenMenus                          | `accepted`  | Kitchen is a public console entity with scoped published children; its public identity shares the Core entity hero without moving Kitchen content or authority into Core                                    |
+| Place and Kitchen share one public entity-hero presentation           | `accepted`  | Core owns cover/identity/action composition while each domain keeps its bounded DTO, media ownership, public sections, operator controls, and route behavior                                                   |
 | Menu detail can render a photo/PDF root Menu or structured KitchenMenu | `accepted`  | Root Menu and scoped KitchenMenu are distinct entities sharing public doorway behavior                                                                                                                        |
 | Portfolio is public-light/private-heavy                                | `accepted`  | Financial and operational Portfolio data stays out of the public projection; the exact public DTO remains to-confirm                                                                                          |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |

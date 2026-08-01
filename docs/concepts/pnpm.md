@@ -50,6 +50,8 @@ Explain workspace/package command context.
   (dry-run the guarded Kitchen/Place-to-Menu display snapshot sync; Company
   roots are excluded)
 - `pnpm gitsave`
+  (current upstream base, Git hooks, and repository guards are mandatory and
+  have no bypass flags)
 - `pnpm --dir <package-or-app> exec tsc --noEmit`
 - `pnpm --dir <app> exec nuxi typecheck`
 - `pnpm dev:misebox`

@@ -9,6 +9,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'go-qr',
   name: 'Go QR',
   shortName: 'Go QR',
+  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'go-qr',
   role: 'standalone',
   modules: ['fireux-go-qr'],

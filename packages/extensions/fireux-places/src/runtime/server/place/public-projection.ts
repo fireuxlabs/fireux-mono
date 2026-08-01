@@ -10,6 +10,7 @@ import type {
   PublicPlaceProjection,
 } from '../../models/place-public.model'
 import {
+  normalizePlaceBusinessHours,
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
   readMediaBackdropColor,
@@ -110,6 +111,7 @@ export function projectPublicPlaceDetail(
           .filter(Boolean)
       )).slice(0, 24)
     : []
+  const businessHours = normalizePlaceBusinessHours(value.business_hours)
   const website = httpsUrl(value.website)
   const googleMapsUrl = httpsUrl(value.google_maps_url)
   return {
@@ -122,6 +124,7 @@ export function projectPublicPlaceDetail(
     ...(about ? { about } : {}),
     ...(coverImage ? { cover_image: coverImage } : {}),
     ...(galleryImages.length ? { gallery_images: galleryImages } : {}),
+    ...(businessHours ? { business_hours: businessHours } : {}),
     ...(website ? { website } : {}),
     ...(googleMapsUrl ? { google_maps_url: googleMapsUrl } : {}),
   }

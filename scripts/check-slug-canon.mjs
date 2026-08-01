@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // last_used: 2026-07-20
-// usage_note: non-canonical audit report for unresolved slug/id drift; not part of pnpm guard.
-// Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: classify unresolved slug drift as an audit, not a passing guard.
+// usage_note: blocking source guard for canonical slug/id routing.
 
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
@@ -10,9 +9,7 @@ import { fileURLToPath } from 'node:url'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, '..')
-const reportOnly = process.argv.includes('--report')
-
-const SEARCH_ROOTS = ['packages', 'projects', 'docs', 'scripts']
+const SEARCH_ROOTS = ['packages', 'projects']
 const SELF_PATH = 'scripts/check-slug-canon.mjs'
 const SKIP_DIRS = new Set([
   '.git',
@@ -24,7 +21,7 @@ const SKIP_DIRS = new Set([
   'build',
   'coverage',
 ])
-const SKIP_REL_PREFIXES = ['docs/ai']
+const SKIP_REL_PREFIXES = []
 const EXTENSIONS = new Set(['.js', '.mjs', '.ts', '.tsx', '.vue', '.md'])
 
 const rules = [
@@ -43,10 +40,11 @@ const rules = [
     message:
       'Public route identity must not silently fall back between slug and id.',
     patterns: [
-      /\bslug\s*\|\|\s*id\b/,
-      /\bid\s*\|\|\s*slug\b/,
-      /\b[\w.]+\.slug\s*\|\|\s*[\w.]+\.id\b/,
-      /\b[\w.]+\.id\s*\|\|\s*[\w.]+\.slug\b/,
+      /\bconst\s+slug\s*=\s*[\w.]+\.slug\s*\|\|\s*[\w.]+\.id\b/,
+      /\breturn\s+slug\s*\|\|\s*id\b/,
+      /\bto:\s*slug\s*\|\|\s*id\b/,
+      /encodeURIComponent\(slug\s*\|\|\s*id\)/,
+      /\/products\/\$\{[\w.]+\.slug\s*\|\|\s*[\w.]+\.id\}/,
       /updates\??\.slug\s*\|\|\s*\w+/,
     ],
   },
@@ -74,18 +72,6 @@ const rules = [
   },
 ]
 
-const allowText = [
-  'compatibility',
-  'compatibility-only',
-  'migration',
-  'migrate',
-  'temporary',
-  'temp',
-  'non-canonical',
-  'not canonical',
-  'must not',
-]
-
 function shouldSkipDir(dirPath) {
   const name = path.basename(dirPath)
   if (SKIP_DIRS.has(name)) return true
@@ -104,7 +90,12 @@ function collectFiles(dir, out = []) {
   if (!existsSync(dir)) return out
   for (const entry of readdirSync(dir)) {
     const fullPath = path.join(dir, entry)
-    const stats = statSync(fullPath)
+    let stats
+    try {
+      stats = statSync(fullPath)
+    } catch {
+      continue
+    }
     if (stats.isDirectory()) {
       if (shouldSkipDir(fullPath)) continue
       collectFiles(fullPath, out)
@@ -117,27 +108,10 @@ function collectFiles(dir, out = []) {
   return out
 }
 
-function hasAllowText(line) {
-  const normalized = line.toLowerCase()
-  return allowText.some((token) => normalized.includes(token))
-}
-
-function isAllowedContext(rel, lines, index) {
-  if (rel === SELF_PATH) return true
-
-  const context = lines
-    .slice(Math.max(0, index - 3), Math.min(lines.length, index + 4))
-    .join('\n')
-    .toLowerCase()
-
-  return hasAllowText(context)
-}
-
 const files = SEARCH_ROOTS.flatMap((entry) =>
   collectFiles(path.join(root, entry))
 )
 const findings = []
-const allowedFindings = []
 
 for (const file of files) {
   const rel = path.relative(root, file)
@@ -153,15 +127,7 @@ for (const file of files) {
         line: index + 1,
         text: line.trim(),
       }
-      if (
-        isAllowedContext(rel, lines, index) ||
-        rel.includes('/migrations/') ||
-        rel.includes('scripts/migrate')
-      ) {
-        allowedFindings.push(finding)
-      } else {
-        findings.push(finding)
-      }
+      findings.push(finding)
     }
   })
 }
@@ -180,24 +146,10 @@ if (findings.length) {
   })
 }
 
-if (allowedFindings.length) {
-  if (findings.length) console.log('')
-  console.log(
-    `Slug canon check noted ${allowedFindings.length} compatibility/migration finding(s).`
-  )
-  if (reportOnly) {
-    console.log('')
-    allowedFindings.forEach((finding, index) => {
-      if (index > 0) console.log('')
-      printFinding(finding)
-    })
-  }
-}
-
 if (!findings.length) {
   console.log('Slug canon check passed.')
 }
 
-if (findings.length && !reportOnly) {
+if (findings.length) {
   process.exitCode = 1
 }

@@ -22,7 +22,6 @@ const active = (data: Record<string, unknown>) =>
   readRecordString(data, 'status') !== 'archived'
 const sortOrder = (data: Record<string, unknown>) =>
   numberValue(data.sort_order)
-
 export async function readKitchenMenuSections(
   db: Firestore,
   input: {

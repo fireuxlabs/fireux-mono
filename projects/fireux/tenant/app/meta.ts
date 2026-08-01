@@ -3,22 +3,22 @@ import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content
 export const metaContent = defineFireuxMeta({
   app: {
     id: 'fireux-tenant',
-    name: 'FireUX Tenant',
+    name: 'Michel AG Metallbau',
     ecosystem: 'fireux',
   },
   copy: {
-    big_personality: 'Tenant Runtime',
-    headline: 'Thin FireUX child app.',
+    big_personality: 'Metall- und Stahlbau',
+    headline: 'Metallbau im Berner Oberland.',
     positioning_html:
-      'A minimal FireUX tenant runtime for validating auth, setup, and membership.',
+      'Michel AG Metallbau berät, plant, fertigt, liefert und montiert Metallbauaufträge.',
     promise_html:
-      'Keep tenant apps lean while FireUX owns the shared runtime spine.',
+      'Stahlbau, Metallbau und Tore aus Goldswil.',
     console_bridge_html:
-      'Tenant setup and ownership are managed through FireUX.',
+      'Kontakt und Öffnungszeiten auf einen Blick.',
   },
   seo: {
-    title: 'FireUX Tenant',
+    title: 'Michel AG Metallbau | Goldswil',
     description:
-      'Thin FireUX tenant child app for runtime setup, onboarding, and member access.',
+      'Metall- und Stahlbau, Tore sowie Beratung, Planung und Montage in Goldswil im Berner Oberland.',
   },
 })

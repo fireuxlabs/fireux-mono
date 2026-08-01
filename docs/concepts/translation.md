@@ -1,6 +1,6 @@
 # Translation and reviewed copy
 
-Updated: 2026-07-25
+Updated: 2026-08-01
 Role: map, not canon
 
 ## Purpose
@@ -15,6 +15,23 @@ human-reviewed public copy.
   credentials, reviewed-copy persistence, or approval workflow.
 - `fireux-sproochli` owns multilingual document models, provider transport,
   language selection, and reviewed authored-copy workflow semantics.
+- A consuming host owns its runtime Sproochli cache. The shared server package
+  resolves the host's Firebase runtime and fixed named database `sproochli`;
+  the standalone Sproochli App generates missing translations but never
+  selects or writes the host database. Production generation is a
+  fixed-audience Google OIDC server-to-server call authorized against an exact
+  service-account and host scope; the browser never calls the billable
+  provider.
+- The host server configures `SPROOCHLI_MENU_PROVIDER_ENDPOINT` and
+  `SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE` to the same exact HTTPS provider URL.
+  The Sproochli receiver configures that audience plus
+  `SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES`, a JSON array of exact
+  `service_account_email`, `firebase_project_id`, `database_id`, and `app_ids`
+  grants. Production deployment must bind a dedicated host SSR service account
+  and its matching grant; neither side infers authority from a Firebase CLI
+  alias. These non-secret deployment values live in each App's
+  `firebase.runtime-env.json` manifest and are copied into the generated
+  function source by the shared guarded deployment preparation.
 - Trusted AI drafting runs in the Sproochli server. A draft preserves English
   source intent, target language, profile identity, provider provenance, and
   the `ai_draft` state.
@@ -32,19 +49,19 @@ human-reviewed public copy.
 - A sparse `sproochli` attachment on the canonical root Kitchen owns whether
   its shared public surfaces participate and which source state they present.
   AppKitchen remains access/support only and cannot override this capability.
-- A public Menu manifest exposes only bounded display state: enabled,
-  default/selected language, the shared catalogue, and languages backed by
-  approved public content. A structured Menu requests translation through
-  Sproochli's trusted provider. The Sproochli server reads and writes a
-  source-aware translation memory in its named database, while the browser
-  keeps the selected translated view only for its current session and performs
-  no database write or approval. Translation-memory output is always
-  `unreviewed`; a configured, requested, persisted, or client-cached language
-  is not evidence that reviewed copy exists.
+- A public Menu manifest exposes only its final Sproochli `state`, selected
+  `language`, nullable `readyLanguages`, and resolved shared surface copy.
+  Menu records carry no source language: canonical authored content is always
+  `Default` and may itself be multilingual. `?sproochli=<code>` is the sole
+  selection input. Default never translates or calls the provider. The Menu
+  server reads readiness and complete caches locally and calls the provider
+  only for fields missing from host-local translation memory. The browser
+  writes no translation data and approves nothing.
 - Shared Menu-surface chrome remains one versioned, Kitchens-owned English
-  source catalogue. It travels through the same Sproochli provider request and
-  translation memory, so universal Browse wording is generated once per source
-  version/language context and is never copied into Menu or Kitchen records.
+  source catalogue. A selected language resolves that catalogue and the Menu
+  fields through the same host-side cache path. Universal Browse wording is
+  never copied into Menu or Kitchen records. Default uses the canonical
+  catalogue directly.
   Translated allergy wording remains unreviewed machine output, not reviewed
   safety or legal copy.
 - Provider translation memory is a separate storage family from reviewed
@@ -52,14 +69,70 @@ human-reviewed public copy.
   domain, field kind, normalized source and target languages, glossary version,
   and source hash. Records preserve bounded source text and provider provenance;
   successful misses are created server-side with first-writer-wins semantics.
+- A complete Menu cache is a separate Sproochli database record keyed by the
+  Menu source identity, complete source-field fingerprint, and target
+  language. It stores every translated field required to render that exact
+  Menu projection. Only a complete matching record may place a language in the
+  bounded readiness list or render it as a hit; partial memory or provider
+  output may not. Cache and memory records carry their originating host App as
+  provenance plus their Firebase project and database storage identity.
+  Readers require the provenance to be present and reject another project or
+  database; Apps inside the same host project intentionally share translation
+  memory, while complete-cache fingerprints retain source App identity.
+- Multilingual Menu-source extraction may seed aligned variants into that same
+  memory directly inside the trusted host server. Imported variants retain
+  source-document, extraction-provider, and model provenance but use the same
+  unreviewed read path and cache identity as generated variants. No remote
+  cache writer or browser seam exists. The canonical Kitchen Menu still stores
+  Default only.
+  A visitor request for a missing language generates and saves it once; a
+  changed Default field produces a new complete fingerprint while unchanged
+  fields can still reuse translation memory.
 - The shared language trigger is one circular control. A mixed-source page
   presents Sproochli's purple translation mark as `Default`: two language
   tiles and exchange arrows inside the product's circular mark. It is the sole
   static language-state asset and the same artwork as the Sproochli product
   logo. When a language is active, including English, the trigger uses that
   language option's emoji. Its picker leads with the linked Sproochli wordmark
-  rather than explanatory language copy. Ready and session-cached choices
-  appear above one divider; uncached provider choices remain below it.
+  rather than explanatory language copy. Complete matching languages appear
+  under Cached; remaining supported choices appear under On demand. If
+  readiness is unavailable, the manifest carries `null` rather than claiming
+  that no languages are cached.
+
+## Host registration canon
+
+Enabling `fireux-sproochli` attaches the runtime capability; it does not by
+itself register a production host. A production installation is complete only
+when Sproochli and the host agree on one explicit registration containing:
+
+- one trusted host-server principal;
+- the exact provider endpoint and OIDC audience;
+- the host Firebase project, fixed `sproochli` database, and permitted App ids;
+- server-only host storage and the minimum roles needed by that host server.
+
+The invariant is **one installation, one scoped host identity, host-owned
+storage, centrally provided translation intelligence**. The provider receives
+source text and translation context, not credentials or database authority.
+The host reads and persists its own cache and translation memory. A host cannot
+claim another project, database, App id, or installation merely by changing a
+request payload.
+
+FireUX Firebase SSR hosts currently prove this contract with a dedicated
+Google service account bound to the deployed Gen 2 function. They use no
+downloaded key, default compute identity, browser token, Firebase CLI alias, or
+cross-project database grant. A future non-Google host such as WordPress may
+use a signed installation credential or another server-verifiable principal,
+but it must preserve the same scoped registration and host-storage boundary;
+the credential mechanism is an adapter, not a second authority model.
+
+Misebox is the first production proof. Its exact registration is
+source-controlled and guarded, but provisioning the service account, minimum
+IAM, database, Rules, receiver grant, and deployment values is not yet a
+general Sproochli signup command. Until that onboarding seam exists, adding the
+module alone must never be described as production-ready registration. The
+next reusable seam should make registration idempotent and guarded, emit no
+long-lived credentials, and verify both unauthenticated rejection and an
+authenticated request from the deployed host identity.
 
 ## First proof
 
@@ -89,13 +162,18 @@ the tenant pack and still need owner-level locale-aware copy before those
 inherited routes can expose German.
 
 Luna Piccante is the first canonical Kitchen-to-Menu attachment proof. Its
-mixed-source Menu displays the Default mark and complete language catalogue
-immediately. A selected provider language produces an unreviewed translated
-view backed by reusable Sproochli translation memory; only separately reviewed
-content can become published copy. The bounded public Kitchen detail also
-projects its sparse Sproochli attachment and provides the shared language
-trigger; the selected language is carried into published Menu doorways without
-copying Menu translation state onto Kitchen.
+authored Menu content is Default and carries no source-language declaration,
+even when the source document contains more than one language. Aligned
+secondary-language copies extracted from that source seed Sproochli memory;
+missing selections use the same generate-once path. Default renders the
+canonical Menu directly. English, Arabic, and every other selected language
+use the same single complete server path. Complete English and Arabic caches
+appear in the picker’s Cached group; other supported choices remain On demand
+until their complete projection is stored. Only separately reviewed content
+can become published copy. The bounded Kitchen detail also projects its sparse
+Sproochli attachment and provides the shared language trigger; the selected
+language is carried into published Menu doorways without copying Menu
+translation state onto Kitchen.
 
 ## Source and verification
 
@@ -116,13 +194,24 @@ copying Menu translation state onto Kitchen.
   `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/sproochli.ts`
 - Public Menu projection:
   `packages/extensions/fireux-kitchens/src/runtime/server/menu/payload/build.ts`
+  and
+  `packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/resolve.ts`
 - Shared Menu-surface source copy:
   `packages/extensions/fireux-kitchens/src/runtime/content/menu-surface-copy.ts`
 - Translation-memory model:
   `packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts`
-- Content-addressing and server persistence:
-  `projects/fireux/sproochli/server/utils/sproochliTranslationKey.ts` and
-  `projects/fireux/sproochli/server/utils/sproochliTranslationMemory.ts`
+- Host identity and server persistence:
+  `packages/extensions/fireux-sproochli/src/runtime/host.ts` and
+  `packages/extensions/fireux-sproochli/src/runtime/server/menu/`
+- Trusted host-local extraction import:
+  `packages/extensions/fireux-kitchens/src/runtime/server/menu/sproochli/cache-import.ts`
+- Stateless Menu generation provider:
+  `projects/fireux/sproochli/server/api/tools/menu/index.post.ts`,
+  `projects/fireux/sproochli/server/utils/sproochliMenuProviderAuth.ts`, and
+  `packages/extensions/fireux-sproochli/src/runtime/server/menu/provider-client.ts`
+- Misebox server-only Rules and migration:
+  `scripts/firebase/sproochli/` and
+  `scripts/migrate-sproochli-host-storage.mjs`
 - Executable contract: `scripts/guards/sproochli-copy.mjs`
 
 Reviewed-copy persistence and its reviewer UI remain `to-confirm`.

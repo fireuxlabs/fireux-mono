@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-07-29
+Updated: 2026-07-30
 Ref: 33603376f
 Role: living context
 Scope: repo-wide
@@ -49,6 +49,18 @@ Before each task:
 5. Inspect the current source, nearest working sibling, and relevant
    `scripts/guards/*` files before making claims or proposing changes.
 
+## Task identity
+
+- A task title and its explicit handoff define its working scope. Treat an
+  unqualified product question in that task as referring to that scope before
+  asking the user to disambiguate. For example, a Misebox task answers a
+  question about pricing as Misebox pricing unless the user names another
+  product or the surrounding context makes the reference genuinely ambiguous.
+- At task creation, state the scope, current checkout, and any relevant scoped
+  context in the handoff. Reconfirm only when the task's scope changes.
+- Repository saves require the complete guard suite and Git hooks to pass from
+  a current upstream base. `pnpm gitsave` provides no bypass for those rules.
+
 ## Authority
 
 - Current code, executable guards, and tests are implementation truth.
@@ -92,6 +104,16 @@ Before each task:
 - Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
   `scripts/guards/css-system.mjs` when this contract changes.
 
+## Public route identity
+
+- A public entity slug is its Firestore document ID. Resolve it with a direct
+  document read; do not query a separate `slug` field or fall back between
+  `slug` and `id` in route construction.
+- Presentation may fall back between display labels, but display fallback must
+  never select storage or route identity.
+- `scripts/check-slug-canon.mjs`, registered by `pnpm guard`, enforces this
+  contract without migration-word or report-only exemptions.
+
 ## Shared Card family
 
 - `Cards/Cell`, `Cards/Pill`, and `Cards/Preview` are dumb, reusable
@@ -105,6 +127,30 @@ Before each task:
 - Existing guarded `Cards/Profile` paths are migration debt, not precedent for
   new Cards. See `docs/concepts/card-family.md` and
   `scripts/guards/components.mjs`.
+
+## Collection naming and scope
+
+- An unqualified entity collection is the canonical/default collection. Use
+  `XCollection`, `useXCollection()`, and `XCollectionManager` for that default
+  family.
+- Default does not mean wholly public. A canonical root may contain exposed
+  fields alongside protected structures such as `entity.private {}`. Public
+  access is defined by field policy, Rules, or a bounded projection; it is not
+  part of the collection's identity.
+- Firestore document reads are whole-document reads; Rules do not redact a
+  protected nested object from an otherwise readable document. A guest-facing
+  collection therefore needs a bounded server projection or separately owned
+  storage whenever its canonical roots contain protected fields.
+- A bounded collection must name its scope, for example Kitchen Menus,
+  Supplier Items, App Users, or Portfolio Properties. Scoped collections do
+  not masquerade as the default collection to reuse its manager.
+- API versus direct Firestore is an authority/transport decision, not a
+  collection-family name. A default collection may use a bounded server
+  projection when joins, publication, privacy, or server-only validation make
+  raw client reads unsafe.
+- Do not add `Public` to ordinary collection family names. Reserve `Public`
+  for a DTO, projection, endpoint, access policy, or another boundary where
+  the distinction is technically necessary.
 
 ## Entity canon
 
@@ -124,10 +170,19 @@ Before each task:
 - Nuxt UI is the universal App baseline. Core `main.scss` may own shared
   anatomy, rhythm, accessibility, and semantic browser contracts, but it does
   not impose an ecosystem aesthetic.
+- Core `PublicEntityDirectoryCard` and `PublicEntityHero` are the shared
+  image-led public entity presentation seams. Kitchen and Place are their
+  proving siblings. Core owns whole-card interaction, media failure, opaque
+  surface anatomy, title/action geometry, focus, and mobile-first composition;
+  named domain components retain DTOs, media ownership, content, badges,
+  routes, actions, and publication authority. Keep these seams flat and
+  semantic: no decorative gradients, glass, App selectors, or inferred media
+  ownership.
 - Core `LandingProductIndex` owns the fixed Main App product-landing order:
   `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
   `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
-  places product copy on the left and the app's card orbit on the right.
+  places product copy on the left and an app-owned product-card presentation on
+  the right.
   `LandingProductEntryPaths` owns the ordered `start` and `join` choice plus
   an optional subordinate Tool doorway, including its icons, card anatomy,
   mobile-first layout, and reveal behavior. That slot is the public entry
@@ -160,7 +215,15 @@ Before each task:
   pitch. Touch tap and root keyboard behavior remain intact. Orbital elements
   remain fully opaque and crisp at every depth; scale and stacking communicate
   distance without blurring card content.
-  Mobile and reduced-motion presentations skip that intro.
+  Mobile and reduced-motion presentations skip that intro. Mobile retains the
+  gentle shared autoplay and touch orbit while the document is visible, so
+  scrolling past the orbit never freezes its yaw; reduced motion remains
+  static.
+  FireUX currently consumes that shared orbit with its bounded Live directory.
+  Misebox instead owns a simple, keyboard-focusable left-to-right scroll
+  window with a responsive bento grid for its network-free Demo PowerCards; it
+  retains the same explicit Demo envelope but does not inherit orbit motion or
+  geometry.
 - A main App may explicitly select the typed Core `sci-fire` design pack
   through `app.designPack`. The config helper conditionally bundles its
   stylesheet and Nuxt UI variants; tenant and white-label Apps do not inherit
@@ -327,6 +390,12 @@ Before each task:
 
 ## Firebase Auth App domains
 
+- New Apps have no provisional unguarded state. Before the first save they
+  must satisfy the project App shape, public asset, brand ownership, shared
+  auth/PWA, and App registry contracts enforced by `scripts/guards/projects.mjs`.
+  Do not treat copying an existing project directory as an App creation
+  workflow or defer registration and canonical assets until later cleanup.
+
 - Every deployed App's custom hostname and generated Firebase Hosting
   `*.web.app` hostname must be declared through the shared Firebase deploy
   runner's `--auth-domains` option. The runner additively syncs those hostnames
@@ -341,6 +410,17 @@ Before each task:
   `--no-sync-auth-domain`. A yes decision sends the deduplicated hostname set
   through the same shared additive sync path and never writes a replacement
   domain list.
+
+## Firebase Hosting release proof
+
+- The shared Firebase deploy preflight reads the configured Hosting site ids
+  from `firebase.json` and fails before build or release when any exact site is
+  absent from the target project. Deploy must never silently target a sibling
+  app's Hosting site.
+- The shared deploy runner verifies the configured public URL after Firebase
+  reports success and fails when it receives Firebase's default `Site Not
+  Found` page. An app may pass `--verify-text` for one public source-defined
+  marker when a successful HTTP response alone is insufficient release proof.
 
 ## Shared Job authority
 
@@ -400,6 +480,9 @@ Before each task:
 
 ## Brand asset authority
 
+- Every App declares exactly one brand owner through `brand.owner`: `core`,
+  `ecosystem`, or `app`. This ownership declaration is required architecture,
+  not optional presentation metadata.
 - FireUX Core owns the default FireUX platform asset family under
   `packages/core/fireux-core/src/runtime/public/img/core/brand`.
 - The `fireux-fireux` ecosystem and FireUX parent App retain their required
@@ -410,9 +493,14 @@ Before each task:
   rejects drift.
 - `wordmark-light` means a wordmark for a light surface; `wordmark-dark` means
   one for a dark surface.
-- A genuinely branded child App may own a complete `/img/app` override. Do not
-  overwrite child identities or maintain an unguarded second FireUX logo
-  source. See `docs/concepts/brand-assets.md`.
+- An ecosystem-owned App consumes byte-identical projections from the
+  ecosystem package's canonical `runtime/public/img/ecosystem/brand` family.
+- A genuinely branded child App may own a complete `/img/app` family and must
+  declare whether that identity is `approved` or `provisional`. Provisional is
+  visible migration debt; it is never permission to borrow another App's
+  identity. Do not overwrite child identities, maintain an unguarded second
+  source, or weaken a guard to accommodate an undeclared owner. See
+  `docs/concepts/brand-assets.md`.
 
 ## Translation and reviewed-copy authority
 
@@ -421,17 +509,34 @@ Before each task:
 - `fireux-sproochli` owns provider authority, multilingual documents, and the
   reviewed authored-copy contract. Trusted generation stays server-side, and
   important public copy resolves only from approved content.
+- Runtime cache ownership follows the consuming host. Sproochli package code
+  executes inside that host's server runtime and stores unreviewed cache and
+  translation-memory records in the host Firebase project, named database
+  `sproochli`. The standalone Sproochli App remains a bounded generation
+  provider; it does not select or write another host's Firebase project.
+  Production host-to-provider calls use fixed-audience Google OIDC and an exact
+  service-account/host allowlist. Cache storage authority is the Firebase
+  project plus named database; the originating App id remains required
+  provenance, not a boundary between Apps sharing that host database.
 - Reviewed copy packs preserve one display-ready source intent and exact
   per-language variants with their own profile, status, and provenance.
   Missing or unapproved requested variants fail closed rather than falling
   through to a different language.
 - Reusable domain participation is a sparse attachment on that entity's
   canonical root. Scoped support records cannot override it; public projections
-  expose only bounded language state. Structured Menus request provider
-  translations from Sproochli's trusted server. Sproochli reuses successful
-  results from its source-aware, server-only translation memory; the client
-  keeps the selected view for its session. Translation-memory records are
-  explicitly unreviewed and never become approved or canonical public copy.
+  expose only bounded language state. For Structured Menus,
+  `?sproochli=<code>` is the sole selection input and the Menu endpoint returns
+  one final projection with `default`, `translated`, or `unavailable` state.
+  Default returns canonical content and reads complete-cache readiness locally
+  without contacting the provider. A selected language first resolves a
+  complete host-local cache; only missing fields call the provider, after
+  which the host persists translation memory and one complete Menu cache.
+  Partial output never renders. The server may expose the bounded languages
+  backed by complete matching caches so the picker can split Cached from On
+  demand; `null` means readiness could not be checked, never zero. Translation
+  memory and cache records remain server-owned,
+  explicitly unreviewed, and never become browser state, approved copy, or
+  canonical public content.
 - Reusable domain packages own their shared interface source copy once.
   Sproochli translates that chrome through the same provider request and
   translation memory; do not copy universal wording into every entity.

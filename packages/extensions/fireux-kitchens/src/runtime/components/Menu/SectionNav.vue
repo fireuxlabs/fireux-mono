@@ -2,16 +2,16 @@
   <nav
     ref="navElement"
     class="menu-section-nav"
-    aria-label="Menu sections"
+    :aria-label="ariaLabel"
   >
     <details ref="detailsElement">
-      <summary aria-label="Choose menu section">
+      <summary :aria-label="chooseLabel">
         <span class="menu-section-nav__icon" aria-hidden="true">
           <UIcon name="i-lucide-list-tree" />
         </span>
 
         <span class="menu-section-nav__current">
-          <small>Sections</small>
+          <small>{{ sectionsLabel }}</small>
           <strong>{{ activeSectionLabel }}</strong>
         </span>
 
@@ -69,6 +69,9 @@ type MenuSectionLink = {
 }
 
 const props = defineProps<{
+  ariaLabel: string
+  chooseLabel: string
+  sectionsLabel: string
   sections: MenuSectionLink[]
 }>()
 

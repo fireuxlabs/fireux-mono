@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: let an empty Kitchen display override delete itself and inherit Place identity.
-import { collection, deleteField, getDocs, query, where } from 'firebase/firestore'
+import { deleteField, doc, getDoc } from 'firebase/firestore'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { validatePublicSlug as validateSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
@@ -239,14 +239,11 @@ export function useKitchenUpdate(options: UseKitchenUpdateOptions = {}) {
     }
 
     const slug = validation.slug
-    const slugQuery = query(
-      collection(db, COLLECTION_PATH),
-      where('slug', '==', slug)
-    )
-    const snapshot = await getDocs(slugQuery)
-    const conflict = snapshot.docs.find((docSnap) => docSnap.id !== kitchenId)
+    const conflict = slug === kitchenId
+      ? null
+      : await getDoc(doc(db, COLLECTION_PATH, slug))
 
-    if (conflict) {
+    if (conflict?.exists()) {
       throw new Error(`Kitchen slug "${slug}" is already taken.`)
     }
 

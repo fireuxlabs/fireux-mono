@@ -16,6 +16,9 @@ type PlaceFetchDetailReturn = {
   pending: ComputedRef<boolean>
   error: Ref<unknown>
   outcome: ComputedRef<PublicPlaceReadOutcome>
+  statusCode: ComputedRef<number>
+  missing: ComputedRef<boolean>
+  failed: ComputedRef<boolean>
   refresh: () => Promise<void>
   ready: Promise<void>
   fetchPlace: PlaceFetchFunction
@@ -23,6 +26,20 @@ type PlaceFetchDetailReturn = {
 
 const cleanLocator = (value: unknown) => String(value ?? '').trim()
 const asPlace = (value: PublicPlaceProjection): Place => value as Place
+const readStatusCode = (value: unknown) => {
+  if (!value || typeof value !== 'object') return 0
+  const error = value as {
+    status?: unknown
+    statusCode?: unknown
+    response?: { status?: unknown }
+  }
+  return Number(
+    error.statusCode ??
+    error.status ??
+    error.response?.status ??
+    0
+  )
+}
 
 function createPlaceFetcher(): PlaceFetchFunction {
   const cache = new Map<string, Ref<Place | undefined>>()
@@ -73,11 +90,19 @@ export function usePlaceFetch(
     state.data.value?.item ? asPlace(state.data.value.item) : null
   )
   const pending = computed(() => state.pending.value)
+  const statusCode = computed(() => readStatusCode(state.error.value))
+  const missing = computed(() =>
+    statusCode.value === 404 ||
+    (!state.pending.value && !state.error.value && !place.value)
+  )
+  const failed = computed(() =>
+    Boolean(state.error.value) && statusCode.value !== 404
+  )
   const outcome = computed<PublicPlaceReadOutcome>(() => {
     if (!locator.value) return 'idle'
     if (state.pending.value) return 'pending'
-    if (state.error.value) return 'error'
-    return place.value ? 'ready' : 'missing'
+    if (failed.value) return 'error'
+    return missing.value ? 'missing' : 'ready'
   })
 
   return {
@@ -85,6 +110,9 @@ export function usePlaceFetch(
     pending,
     error: state.error as Ref<unknown>,
     outcome,
+    statusCode,
+    missing,
+    failed,
     refresh: async () => {
       await state.refresh()
     },

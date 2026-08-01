@@ -57,76 +57,42 @@ withDefaults(defineProps<{
 
 <style scoped>
 .public-index__hero {
-  align-items: end;
-  background:
-    radial-gradient(
-      circle at 85% 18%,
-      color-mix(in srgb, var(--ui-primary) 22%, transparent),
-      transparent 34%
-    ),
-    linear-gradient(
-      145deg,
-      color-mix(in srgb, var(--ui-primary) 9%, var(--ui-bg)) 0%,
-      var(--ui-bg) 68%
-    );
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
-  border-radius: calc(var(--ui-radius) * 6);
+  position: relative;
   display: grid;
-  gap: clamp(calc(var(--spacing) * 6), 4vw, calc(var(--spacing) * 16));
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-height: clamp(
-    calc(var(--spacing) * 68),
-    38vw,
-    calc(var(--spacing) * 100)
+  min-height: calc(var(--spacing) * 64);
+  align-items: start;
+  gap: calc(var(--spacing) * 8);
+  padding: clamp(
+    calc(var(--spacing) * 7),
+    7vw,
+    calc(var(--spacing) * 12)
   );
   overflow: hidden;
-  padding: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 20));
-  position: relative;
+  border: 1px solid color-mix(in srgb, var(--ui-primary) 18%, var(--ui-border));
+  border-radius: calc(var(--ui-radius) * 6);
+  background: var(--ui-bg-elevated);
 }
 
 .public-index__hero-background {
-  inset: 0;
-  overflow: hidden;
   position: absolute;
+  inset: 0;
   z-index: 0;
+  overflow: hidden;
 }
 
 .public-index__hero--background::before {
-  background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--ui-bg) 98%, transparent) 0%,
-      color-mix(in srgb, var(--ui-bg) 88%, transparent) 40%,
-      color-mix(in srgb, var(--ui-bg) 34%, transparent) 72%,
-      color-mix(in srgb, var(--ui-bg) 16%, transparent) 100%
-    ),
-    linear-gradient(
-      0deg,
-      color-mix(in srgb, var(--ui-bg) 46%, transparent),
-      transparent 48%
-    );
-  content: '';
+  position: absolute;
   inset: 0;
-  pointer-events: none;
-  position: absolute;
   z-index: 1;
-}
-
-.public-index__hero::after {
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 15%, transparent);
-  border-radius: 9999px;
-  bottom: calc(var(--spacing) * -32);
   content: '';
-  height: calc(var(--spacing) * 88);
-  position: absolute;
-  right: calc(var(--spacing) * -20);
-  width: calc(var(--spacing) * 88);
+  pointer-events: none;
+  background: color-mix(in srgb, var(--ui-bg) 82%, transparent);
 }
 
 .public-index__hero-copy {
-  max-width: calc(var(--spacing) * 172);
   position: relative;
   z-index: 1;
+  max-width: calc(var(--spacing) * 172);
 }
 
 .public-index__eyebrow,
@@ -143,12 +109,13 @@ withDefaults(defineProps<{
 }
 
 .public-index__hero h1 {
+  margin: 0;
   color: var(--ui-text-highlighted);
-  font-size: clamp(var(--text-5xl), 9vw, calc(var(--text-5xl) * 2));
+  font-size: clamp(var(--text-4xl), 11vw, var(--text-6xl));
   font-weight: var(--font-weight-bold);
   letter-spacing: var(--tracking-tighter);
   line-height: 1;
-  margin: 0;
+  text-wrap: balance;
 }
 
 .public-index__hero-copy > p:last-child {
@@ -168,33 +135,32 @@ withDefaults(defineProps<{
 }
 
 .public-index__hero-content {
-  max-width: calc(var(--spacing) * 94);
   position: relative;
-  width: min(32vw, calc(var(--spacing) * 94));
   z-index: 1;
+  width: 100%;
+  max-width: calc(var(--spacing) * 94);
 }
 
 .public-index__hero-mark {
-  align-items: center;
-  backdrop-filter: blur(calc(var(--spacing) * 3));
-  background: color-mix(in srgb, var(--ui-bg) 80%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ui-primary) 22%, var(--ui-border));
-  border-radius: 9999px;
-  color: var(--ui-primary);
-  display: flex;
-  font-size: clamp(var(--text-3xl), 5vw, var(--text-5xl));
-  height: clamp(calc(var(--spacing) * 18), 11vw, calc(var(--spacing) * 28));
-  justify-content: center;
   position: relative;
-  width: clamp(calc(var(--spacing) * 18), 11vw, calc(var(--spacing) * 28));
   z-index: 1;
+  display: grid;
+  width: calc(var(--spacing) * 18);
+  height: calc(var(--spacing) * 18);
+  justify-self: end;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--ui-primary) 24%, var(--ui-border));
+  border-radius: calc(var(--ui-radius) * 4);
+  background: color-mix(in srgb, var(--ui-primary) 8%, var(--ui-bg));
+  color: var(--ui-primary);
+  font-size: var(--text-3xl);
 }
 
 .public-index__body {
   display: grid;
-  gap: clamp(calc(var(--spacing) * 14), 8vw, calc(var(--spacing) * 28));
+  gap: clamp(calc(var(--spacing) * 12), 6vw, calc(var(--spacing) * 20));
   padding-bottom: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 22));
-  padding-top: clamp(calc(var(--spacing) * 12), 7vw, calc(var(--spacing) * 22));
+  padding-top: clamp(calc(var(--spacing) * 8), 4vw, calc(var(--spacing) * 14));
 }
 
 .public-index__secondary {
@@ -208,35 +174,43 @@ withDefaults(defineProps<{
   margin: 0;
 }
 
-@media (max-width: 40rem) {
+@media (min-width: 40rem) {
   .public-index__hero {
-    align-items: start;
-    grid-template-columns: minmax(0, 1fr);
-    min-height: calc(var(--spacing) * 96);
+    min-height: clamp(
+      calc(var(--spacing) * 56),
+      24vw,
+      calc(var(--spacing) * 72)
+    );
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: clamp(calc(var(--spacing) * 8), 5vw, calc(var(--spacing) * 16));
+    padding: clamp(
+      calc(var(--spacing) * 10),
+      6vw,
+      calc(var(--spacing) * 16)
+    );
   }
 
   .public-index__hero-mark {
-    justify-self: end;
+    width: clamp(
+      calc(var(--spacing) * 20),
+      10vw,
+      calc(var(--spacing) * 28)
+    );
+    height: clamp(
+      calc(var(--spacing) * 20),
+      10vw,
+      calc(var(--spacing) * 28)
+    );
+    font-size: clamp(var(--text-3xl), 4vw, var(--text-5xl));
   }
 
   .public-index__hero-content {
-    max-width: none;
-    width: 100%;
+    width: min(32vw, calc(var(--spacing) * 94));
   }
 
-  .public-index__hero--background::before {
-    background:
-      linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--ui-bg) 94%, transparent) 0%,
-        color-mix(in srgb, var(--ui-bg) 74%, transparent) 55%,
-        color-mix(in srgb, var(--ui-bg) 92%, transparent) 100%
-      ),
-      linear-gradient(
-        90deg,
-        color-mix(in srgb, var(--ui-bg) 88%, transparent),
-        color-mix(in srgb, var(--ui-bg) 34%, transparent)
-      );
+  .public-index__hero h1 {
+    font-size: clamp(var(--text-5xl), 7vw, calc(var(--text-5xl) * 1.75));
   }
 }
 </style>

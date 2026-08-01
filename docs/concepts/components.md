@@ -57,12 +57,20 @@ Map component folder and naming conventions.
   Cards; the public specialist-profile
   family composes Core `PublicProfileHero`, `PublicProfileSection`, and
   `PublicProfileDirectoryCard` presentation while each named domain retains
-  its content; profile editors use Nuxt UI cards and named `Edit/*` form
+  its content. The image-led public entity family composes Core
+  `PublicEntityDirectoryCard` and `PublicEntityHero`; Kitchen and Place are
+  the reference siblings for whole-card directory interaction, photographic
+  media, honest fallbacks, opaque identity sheets, title/action geometry,
+  focus, and mobile-first composition. Named domain Cell and Detail components
+  retain view models, content, routes, actions, badges, and publication
+  authority. These two Core components are reusable presentation seams, not a
+  generic data-configured entity framework. Profile editors use Nuxt UI cards
+  and named `Edit/*` form
   composition; and page organisms to genuinely shared layout and route
   regions. Core `LandingProductIndex` owns the fixed product-led landing order:
   `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
   `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
-  places shared product copy on the left and the app-owned orbit projection on
+  places shared product copy on the left and the app-owned product-card presentation on
   the right. `LandingProductEntryPaths` owns the ordered `start` and `join`
   choice, optional subordinate Tool doorway, icons, card anatomy, responsive
   layout, and reveal behavior. The slot is a public entry decision rather than
@@ -135,18 +143,18 @@ Map component folder and naming conventions.
   exactly onto the main pitch, continuous visibility-aware autoplay in the same
   direction, desktop hover selection that elevates one card in place without
   snapping the pack or changing touch/root keyboard behavior, fully opaque and
-  crisp orbital elements whose scale and stacking carry depth, static mobile
-  defaults, and reduced-motion behavior
+  crisp orbital elements whose scale and stacking carry depth, gentle mobile
+  autoplay that continues while the document is visible, and reduced-motion behavior
   for card showcases. It receives typed items and one dumb item slot; FireUX
   projects its bounded public
-  App/Ecosystem directory
-  into canonical Cards from the explicit `live` source, while Misebox projects
-  network-free PowerCards from the explicit `demo` source. The shared source
-  discriminant is closed to `demo | live`; one orbit cannot mix, hydrate, or
-  fall back across those sources. Static ids, labels, and coordinates are
-  geometry metadata only. Project adapters own that metadata and Card content
-  but never copy orbit math, page-scroll coupling, or motion CSS. The orbit is
-  a landing compositor, not a fourth Card variant and not a Sci-Fire-only
+  App/Ecosystem directory into canonical Cards from the explicit `live` source.
+  Misebox instead projects its network-free Demo PowerCards into a local,
+  keyboard-focusable left-to-right scroll window with a responsive bento grid.
+  The shared
+  orbit source discriminant is closed to `demo | live`; an orbit cannot mix,
+  hydrate, or fall back across those sources. The Misebox window preserves its
+  single `demo` envelope without adopting orbit geometry or motion. The orbit
+  is a landing compositor, not a fourth Card variant and not a Sci-Fire-only
   component. Core
   `EffectsAmbient` owns the fixed viewport, isolation, content-stack, and print
   contract for project-owned landing art. FireUX Stars and Misebox Steam are

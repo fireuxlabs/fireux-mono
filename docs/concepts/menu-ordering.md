@@ -1,7 +1,7 @@
 # Menu ordering
 
-Updated: 2026-07-22
-Ref: 796952bf0
+Updated: 2026-07-29
+Ref: b50a23747
 Role: map, not canon
 
 ## Purpose
@@ -42,13 +42,15 @@ Every ordering surface must follow the same pipeline:
 2. Resolve the published Menu through the package-owned Menu seam.
 3. Filter the manifest to the requested context and fail closed when disabled.
 4. Build a transient basket from server-resolved variants and add-ons.
-5. Collect only the customer, timing, destination, and payment input required
+5. Present the allergy or intolerance notice and require a transient customer
+   acknowledgement inside the ordering funnel.
+6. Collect only the customer, timing, destination, and payment input required
    by that context.
-6. Submit to the canonical Menu order endpoint.
-7. Let the server re-resolve price, policy, authority, and availability.
-8. Create one KitchenOrder under the owning Kitchen.
-9. Track customer-safe status without creating a second lifecycle record.
-10. Hand the same KitchenOrder to Kitchen operations.
+7. Submit to the canonical Menu order endpoint.
+8. Let the server re-resolve price, policy, authority, and availability.
+9. Create one KitchenOrder under the owning Kitchen.
+10. Track customer-safe status without creating a second lifecycle record.
+11. Hand the same KitchenOrder to Kitchen operations.
 
 Surface components may differ. Identity resolution, price authority, order
 creation, idempotency, and lifecycle must not.
@@ -161,6 +163,8 @@ parent and infer from a grandparent.
   submission so later configuration changes do not rewrite history.
 - Browser tracking stores only a safe post-submit reference/capability. It is
   not lifecycle authority and does not persist basket or customer form data.
+- The ordering allergy acknowledgement is a transient submission gate. It is
+  not a second public notice and does not become KitchenOrder truth.
 - A signed-in customer may receive a lightweight customer-owned link to the
   KitchenOrder; that link must not duplicate mutable order status.
 - Anonymous orders are not silently attached to an account later.

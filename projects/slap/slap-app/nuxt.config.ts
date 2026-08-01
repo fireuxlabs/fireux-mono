@@ -8,6 +8,7 @@ export default defineFireuxConfig({
   id: 'slap-app',
   name: 'Slap',
   shortName: 'Slap',
+  brand: { owner: 'app', status: 'provisional' },
   role: 'global',
   databaseId: 'slap',
 })

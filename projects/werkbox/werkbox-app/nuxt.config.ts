@@ -12,6 +12,7 @@ export default defineFireuxConfig({
   id: 'cleanbox-app',
   name: 'Werkbox',
   shortName: 'Werkbox',
+  brand: { owner: 'app', status: 'provisional' },
   role: 'global',
   domains: ['jobs'],
   profiles: ['agent', 'professional'],

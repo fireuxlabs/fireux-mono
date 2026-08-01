@@ -8,6 +8,7 @@ const fireuxConfig = defineFireuxConfig({
   id: 'book-with-nats',
   name: 'Book with Nats',
   shortName: 'Nats',
+  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'buenohost',
   role: 'tenant',
   seo: {

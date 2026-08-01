@@ -573,7 +573,6 @@ function findFirestoreEntityStackRoots(repoRoot) {
 
 function checkFirestoreEntityStackShape(repoRoot) {
   const violations = []
-  const warnings = []
 
   for (const entityRoot of findFirestoreEntityStackRoots(repoRoot)) {
     const relRoot = toRepoRelative(repoRoot, entityRoot)
@@ -606,13 +605,13 @@ function checkFirestoreEntityStackShape(repoRoot) {
         continue
       }
 
-      warnings.push(
+      violations.push(
         `- Non-standard Firestore entity stack folder: ${childRel}`
       )
     }
   }
 
-  return { violations, warnings }
+  return violations
 }
 
 function checkProductsFirestoreStackShape(repoRoot) {
@@ -822,14 +821,11 @@ export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
 
   const violations = []
-  const warnings = []
 
   // 1) Structural checks (directories)
   violations.push(...checkObjectFolderCasing(repoRoot))
   violations.push(...checkForbiddenFirestoreStackFolders(repoRoot))
-  const firestoreStackShape = checkFirestoreEntityStackShape(repoRoot)
-  violations.push(...firestoreStackShape.violations)
-  warnings.push(...firestoreStackShape.warnings)
+  violations.push(...checkFirestoreEntityStackShape(repoRoot))
   violations.push(...checkProductsFirestoreStackShape(repoRoot))
   violations.push(...checkForbiddenEntityConsoleAppBuckets(repoRoot))
   violations.push(...checkConsoleOperationStackShape(repoRoot))
@@ -932,11 +928,6 @@ export async function run(ctx) {
     ]
 
     throw new Error(lines.join('\n'))
-  }
-
-  if (warnings.length) {
-    console.log('[guard] ⚠️ Firestore entity stack audit findings (report-only):')
-    for (const warning of warnings) console.log(warning)
   }
 
   console.log('[guard] ✅ canon conventions valid')

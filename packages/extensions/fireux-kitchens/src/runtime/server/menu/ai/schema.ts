@@ -1,3 +1,20 @@
+const LOCALIZED_TEXT_SCHEMA = {
+  type: 'array',
+  description:
+    'Aligned language copies printed in the source document. Omit generated or inferred translations.',
+  items: {
+    type: 'object',
+    properties: {
+      language: {
+        type: 'string',
+        description: 'Detected Sproochli language code such as en, de, fr, it, or gsw.',
+      },
+      text: { type: 'string' },
+    },
+    required: ['language', 'text'],
+  },
+} as const
+
 export const MENU_EXTRACTION_JSON_SCHEMA = {
   type: 'object',
   properties: {
@@ -7,13 +24,16 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
         type: 'object',
         properties: {
           label: { type: 'string' },
+          label_translations: LOCALIZED_TEXT_SCHEMA,
           items: {
             type: 'array',
             items: {
               type: 'object',
               properties: {
                 name: { type: 'string' },
+                name_translations: LOCALIZED_TEXT_SCHEMA,
                 description: { type: 'string' },
+                description_translations: LOCALIZED_TEXT_SCHEMA,
                 item_kind: {
                   type: 'string',
                   enum: ['food', 'drink'],
@@ -27,6 +47,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                     type: 'object',
                     properties: {
                       label: { type: 'string' },
+                      label_translations: LOCALIZED_TEXT_SCHEMA,
                       price: {
                         type: 'number',
                         exclusiveMinimum: 0,
@@ -34,7 +55,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                           'Absolute full item price for this required variant or included OR choice, never a surcharge or delta.',
                       },
                     },
-                    required: ['label', 'price'],
+                    required: ['label', 'label_translations', 'price'],
                   },
                 },
                 add_ons: {
@@ -43,6 +64,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                     type: 'object',
                     properties: {
                       label: { type: 'string' },
+                      label_translations: LOCALIZED_TEXT_SCHEMA,
                       price: {
                         type: 'number',
                         minimum: 0,
@@ -50,7 +72,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
                           'Incremental add-on surcharge. Use zero for a labelled optional free add-on.',
                       },
                     },
-                    required: ['label', 'price'],
+                    required: ['label', 'label_translations', 'price'],
                   },
                 },
                 source_file_ids: {
@@ -60,7 +82,9 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
               },
               required: [
                 'name',
+                'name_translations',
                 'description',
+                'description_translations',
                 'item_kind',
                 'is_deal',
                 'image_url',
@@ -72,7 +96,7 @@ export const MENU_EXTRACTION_JSON_SCHEMA = {
             },
           },
         },
-        required: ['label', 'items'],
+        required: ['label', 'label_translations', 'items'],
       },
     },
     notes: {

@@ -14,6 +14,8 @@ import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sprooch
 export const PUBLIC_KITCHEN_INDEX_PAGE_SIZE = 24
 export const PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE = 48
 
+export type PublicKitchenImageKind = 'photograph' | 'brand'
+
 export type PublicKitchenIndexItem = {
   id: string
   name: string
@@ -26,6 +28,7 @@ export type PublicKitchenIndexItem = {
   short_address?: string
   logo_image_url?: string
   image_url?: string
+  image_kind?: PublicKitchenImageKind
   media_backdrop_color?: KitchenMediaBackdropColor
 }
 
