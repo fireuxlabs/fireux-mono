@@ -1,6 +1,6 @@
 # Werkbox GPT Context
 
-Updated: 2026-07-22
+Updated: 2026-08-02
 Ref: 796952bf0
 Role: living context
 Scope: Werkbox ecosystem and Apps
@@ -46,6 +46,11 @@ remembered implementations are not authority.
   binding, configuration, and genuine cross-app ecosystem behavior.
 - `projects/werkbox/*` owns app-specific composition, branding, content,
   routes, hosting configuration, and tenant presentation.
+- The main Werkbox App follows the shared Main App product-landing spine while
+  retaining its own truthful content and photography. Start at
+  `projects/werkbox/werkbox-app/app/components/Werkbox/Landing`, and verify the
+  composition through `scripts/guards/product-landing.mjs`; do not restore a
+  project-local landing framework or move Werkbox artwork into Core.
 - Reusable work concepts remain in their owning extension packages. Job and
   category identifiers must stay product-neutral so a category can move to a
   different product without rewriting its underlying records.

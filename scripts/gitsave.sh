@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # @fireux-script
-# last_used: 2026-07-20
+# last_used: 2026-08-02
 # usage_note: commit-and-push helper with mandatory repository guards.
 # Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: remove the destructive legacy repository-cleanup hook.
+# Concurrent edit — 2026-08-02 — Refuse saves while another task changes the shared checkout.
 set -euo pipefail
 
 trim() {
@@ -16,6 +17,16 @@ run_pnpm() {
   else
     pnpm "$@"
   fi
+}
+
+worktree_fingerprint() {
+  node scripts/worktree-fingerprint.mjs
+}
+
+abort_unstable_worktree() {
+  echo "[gitsave] Refusing save because the shared worktree changed during verification." >&2
+  echo "[gitsave] Another task is still writing. Wait for every active task to finish, then run pnpm gitsave again." >&2
+  exit 1
 }
 
 has_upstream() {
@@ -341,14 +352,29 @@ if $run_clean; then
 fi
 
 # Guard before staging/commit so a failed save never creates an unpushable commit.
+guarded_worktree_fingerprint="$(worktree_fingerprint)"
 if ! run_pnpm -s guard; then
+  current_worktree_fingerprint="$(worktree_fingerprint)"
+  if [[ "$guarded_worktree_fingerprint" != "$current_worktree_fingerprint" ]]; then
+    abort_unstable_worktree
+  fi
   echo "\n[gitsave] Guard failed." >&2
   echo "[gitsave] Fix the issues above. Guard failures cannot be bypassed." >&2
   exit 1
 fi
 
+current_worktree_fingerprint="$(worktree_fingerprint)"
+if [[ "$guarded_worktree_fingerprint" != "$current_worktree_fingerprint" ]]; then
+  abort_unstable_worktree
+fi
+
 # Stage everything, including deletions.
 git add -A
+
+staged_worktree_fingerprint="$(worktree_fingerprint)"
+if [[ "$guarded_worktree_fingerprint" != "$staged_worktree_fingerprint" ]]; then
+  abort_unstable_worktree
+fi
 
 if git diff --cached --quiet; then
   # If nothing new to commit, still push if we're ahead of upstream.

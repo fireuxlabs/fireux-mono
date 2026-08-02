@@ -213,7 +213,8 @@ async function setStatus(status: ReservationStatus) {
   saving.value = true
   pendingStatus.value = status
   try {
-    await updateReservation(selected.value.id, { status })
+    const updated = await updateReservation(selected.value.id, { status })
+    Object.assign(selected.value, updated)
     toast.add({
       title: 'Reservation updated',
       description: `Status changed to ${statusLabel(status)}.`,

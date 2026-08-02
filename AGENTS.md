@@ -78,8 +78,13 @@ When context disagrees with source or guards, follow source/guards and update th
 ## Performance Hygiene
 
 - Default to one agent and targeted searches.
+- Before handing off any repository edit, run `pnpm guard` against the current
+  shared checkout. Focused checks are iteration feedback; they never replace
+  the complete handoff gate.
 - `pnpm gitsave` enforces a current upstream base, Git hooks, and all repository
-  guards without bypass switches.
+  guards without bypass switches. It also refuses to save when the worktree
+  changes during verification; wait for every active task to finish before the
+  shared save.
 - Avoid repeated checks of unchanged state.
 - Reuse healthy existing dev servers; do not restart or kill them without a concrete reason.
 - Use focused checks while iterating; broaden verification only when shared seams move.

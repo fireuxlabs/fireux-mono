@@ -1,5 +1,5 @@
 # pnpm concept map
-Updated: 2026-07-23
+Updated: 2026-08-02
 Ref: 318378b20
 Role: map, not canon
 
@@ -40,6 +40,8 @@ Explain workspace/package command context.
 ## Common commands
 
 - `pnpm guard`
+- `pnpm guard:product-landing` (fast landing feedback; never replaces the
+  complete guard)
 - `pnpm build:packages`
 - `pnpm build:nuxt-baseline`
 - `pnpm audit:scripts`
@@ -51,7 +53,8 @@ Explain workspace/package command context.
   roots are excluded)
 - `pnpm gitsave`
   (current upstream base, Git hooks, and repository guards are mandatory and
-  have no bypass flags)
+  have no bypass flags; saving also stops if another task changes the shared
+  checkout during verification)
 - `pnpm --dir <package-or-app> exec tsc --noEmit`
 - `pnpm --dir <app> exec nuxi typecheck`
 - `pnpm dev:misebox`
@@ -61,7 +64,7 @@ Explain workspace/package command context.
 ## Working rule
 
 - Use focused checks while iterating.
-- Run broad checks when package shape, guard-covered structure, or shared runtime seams change.
+- Every task that edits the repository runs `pnpm guard` before handoff.
 - Do not repeatedly run expensive checks after every tiny exploratory edit unless the user asks.
 - Root commands are supported entrypoints, not aliases for other root commands.
 - CI and release gates call supported root commands directly. Package builds

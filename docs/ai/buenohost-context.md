@@ -1,6 +1,6 @@
 # BuenoHost GPT Context
 
-Updated: 2026-07-26
+Updated: 2026-08-02
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -25,10 +25,18 @@ select their own bounded property targets.
   provenance, availability presentation, and the Property Console booking
   operations. Reservations are canonical children of Property so the global
   app and branded tenant apps do not create competing stay records.
+- Live Reservation PII is server-only. Authenticated package handlers validate
+  the current App membership and exact Property support; operators and App
+  admins mutate, while Property team members may read. Active stays claim one
+  deterministic Property-scoped night document per occupied date in the same
+  transaction as Reservation creation or lifecycle changes.
 - The BuenoHost global app owns ecosystem-level public product and management
   composition.
 - Tenant apps own their property-specific presentation, copy, target IDs, and
   contact/booking-channel configuration.
+- Apps that expose the Property Reservation Console use the shared SSR
+  Functions deployment shape; static-only hosting cannot provide its trusted
+  authenticated server boundary.
 - Project apps do not own a competing `.firebaserc` or duplicate the ecosystem
   Firebase config.
 
@@ -49,6 +57,13 @@ Use current source and guards above this document:
   `projects/buenohost/ausfinn-apartments/nuxt.config.ts`
 - Property package: `packages/extensions/fireux-properties`
 - Reservation package: `packages/extensions/fireux-reservations`
+- Reservation command boundary:
+  `packages/extensions/fireux-reservations/src/runtime/server/reservation`
+- Reservation authority guard: `scripts/guards/reservation-authority.mjs`
+- BuenoHost Rules source:
+  `packages/ecosystem/fireux-buenohost/src/config/firebase/firestore.template.rules`
+  and `src/config/firebase/rules/reservation-authority.rules`
+- Locked Rules artifact: `scripts/firebase/buenohost/firestore.rules`
 - App registry: `scripts/_lib/app-registry.mjs`
 - Ecosystem and dependency guards:
   `scripts/guards/ecosystem.mjs` and
@@ -59,10 +74,14 @@ Use current source and guards above this document:
 ## Refresh and verification
 
 When the ecosystem binding, Firebase project/database, global/tenant roles,
-shared media, guarded brand projections, or Property ownership changes, refresh
-this file against current source and guards. Verify the ecosystem package
-shape, direct app dependencies, brand render check, Nuxt preparation/build, app
-smoke routes, and the exact Firebase target before deployment.
+shared media, guarded brand projections, Property ownership, Reservation
+authority, or availability locking changes, refresh this file against current
+source and guards. Verify the ecosystem package shape, direct app dependencies,
+brand render check, Reservation authority guard, Rules render check, Nuxt
+preparation/build, app smoke routes, and the exact Firebase target before
+deployment. The current Rules source is a conservative prototype that denies
+all browser access; do not deploy it until the complete BuenoHost Property/Auth
+browser contract and emulator suite are encoded and reviewed.
 
 ## Living-context maintenance
 

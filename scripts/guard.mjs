@@ -66,6 +66,7 @@ import { run as runBlogAuthority } from './guards/blog-authority.mjs'
 import { run as runSproochliCopy } from './guards/sproochli-copy.mjs'
 import { run as runProjects } from './guards/projects.mjs'
 import { run as runPrivacyMeasurement } from './guards/privacy-measurement.mjs'
+import { run as runReservationAuthority } from './guards/reservation-authority.mjs'
 
 const repoRoot = process.cwd()
 
@@ -114,6 +115,7 @@ const guards = [
   { key: 'sproochli-copy', run: runSproochliCopy },
   { key: 'projects', run: runProjects },
   { key: 'privacy-measurement', run: runPrivacyMeasurement },
+  { key: 'reservation-authority', run: runReservationAuthority },
 ]
 
 const errors = []

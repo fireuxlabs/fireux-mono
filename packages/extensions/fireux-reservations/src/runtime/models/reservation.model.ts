@@ -19,6 +19,14 @@ export const ReservationStorage = {
   idParam: 'reservationId',
 } as const
 
+export const ReservationNightStorage = {
+  shape: 'scoped-support',
+  path: 'properties/{propertyId}/reservation-nights/{date}',
+  collection: 'reservation-nights',
+  parent: 'property',
+  idParam: 'date',
+} as const
+
 export type ReservationSource =
   | 'direct'
   | 'airbnb'
@@ -87,3 +95,13 @@ export type ReservationUpdateInput = Partial<
     | 'notes'
   >
 >
+
+export type ReservationListResponse = {
+  items: Reservation[]
+  limit: number
+  truncated: boolean
+}
+
+export type ReservationResponse = {
+  reservation: Reservation
+}

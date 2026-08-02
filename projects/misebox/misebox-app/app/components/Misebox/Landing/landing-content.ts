@@ -214,7 +214,7 @@ export const content = {
     title: 'The Control Centre For',
     accent: 'Kitchen Operations',
     description:
-      'From the first menu update to the final order leaving the pass, keep recipes, prep, teams, suppliers and finances connected—so everyone works from the same clear picture.',
+      'Develop dishes. Create menus. Prepare for service. Process orders. Review Kitchen sales.',
     primaryAction: {
       label: 'Get started',
       to: '/get-started',

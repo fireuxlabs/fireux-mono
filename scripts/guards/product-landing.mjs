@@ -1,13 +1,14 @@
 // @fireux-script
-// last_used: 2026-07-29
+// last_used: 2026-08-02
 // usage_note: keeps the shared product landing mobile-first and product truth at each project edge.
 // Concurrent edit — 2026-07-23 02:43 CEST — Guard the central landing surface and its Misebox adapter.
 // Concurrent edit — 2026-07-23 12:13 CEST — Extend the shared landing contract to the FireUX sibling consumer.
 // Concurrent edit — 2026-07-25 — Guard Misebox's real read-only Orders proof inside the shared hero.
 // Concurrent edit — 2026-07-28 — Guard the shared hero-to-catalogue section spine.
 // Concurrent edit — 2026-07-29 — Guard the shared Main App start-or-join entry contract.
+// Concurrent edit — 2026-08-02 — Follow typed entry content into its imported local owner.
 
-import { readdirSync, readFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
 const CORE_PATH =
@@ -191,6 +192,57 @@ function entryPathsBlock(source) {
   const end = source.indexOf('satisfies LandingProductEntryContent', start)
   if (start === -1 || end === -1) return ''
   return source.slice(start, end)
+}
+
+function resolveLocalImport(repoRoot, importerPath, importSpecifier) {
+  if (!importSpecifier.startsWith('.')) return null
+
+  const unresolvedPath = path.resolve(
+    repoRoot,
+    path.dirname(importerPath),
+    importSpecifier
+  )
+  const candidates = path.extname(unresolvedPath)
+    ? [unresolvedPath]
+    : [
+        unresolvedPath,
+        `${unresolvedPath}.ts`,
+        `${unresolvedPath}.vue`,
+        path.join(unresolvedPath, 'index.ts'),
+      ]
+
+  for (const candidate of candidates) {
+    const relativePath = path.relative(repoRoot, candidate)
+    if (relativePath.startsWith('..') || path.isAbsolute(relativePath)) continue
+    if (existsSync(candidate)) {
+      return {
+        filePath: relativePath,
+        source: readFileSync(candidate, 'utf8'),
+      }
+    }
+  }
+
+  return null
+}
+
+function resolveEntryPathsContract(repoRoot, adapter) {
+  if (entryPathsBlock(adapter.source)) return adapter
+
+  for (const match of adapter.source.matchAll(
+    /import\s*\{([^}]*)\}\s*from\s*['"]([^'"]+)['"]/g
+  )) {
+    const importedNames = match[1]
+      .split(',')
+      .map((name) => name.trim().replace(/^type\s+/, ''))
+      .map((name) => name.split(/\s+as\s+/).at(-1))
+
+    if (!importedNames.includes('entryPaths')) continue
+
+    const contract = resolveLocalImport(repoRoot, adapter.filePath, match[2])
+    if (contract) return contract
+  }
+
+  return adapter
 }
 
 function count(source, pattern) {
@@ -549,16 +601,8 @@ export async function run(ctx) {
   const productCatalogue = read(repoRoot, CORE_PRODUCT_CATALOGUE_PATH)
   const productEntryPaths = read(repoRoot, CORE_PRODUCT_ENTRY_PATH)
   const productLandingTypes = read(repoRoot, CORE_PRODUCT_LANDING_TYPE_PATH)
-  const discoveredProductLandingAdapters = discoverProductLandingAdapters(
-    repoRoot
-  ).map((adapter) =>
-    adapter.filePath === MISEBOX_ADAPTER_PATH
-      ? {
-          ...adapter,
-          source: `${adapter.source}\n${read(repoRoot, MISEBOX_LANDING_CONTENT_PATH)}`,
-        }
-      : adapter
-  )
+  const discoveredProductLandingAdapters =
+    discoverProductLandingAdapters(repoRoot)
   const miseboxAdapter = [
     read(repoRoot, MISEBOX_ADAPTER_PATH),
     read(repoRoot, MISEBOX_LANDING_CONTENT_PATH),
@@ -1540,11 +1584,12 @@ export async function run(ctx) {
       )
     }
 
-    const entryPaths = entryPathsBlock(adapter.source)
+    const entryContract = resolveEntryPathsContract(repoRoot, adapter)
+    const entryPaths = entryPathsBlock(entryContract.source)
     for (const required of ["kind: 'start'", "kind: 'join'"]) {
       if (!entryPaths.includes(required)) {
         violations.push(
-          `${adapter.filePath}: missing typed entry-path requirement (${required})`
+          `${entryContract.filePath}: missing typed entry-path requirement (${required})`
         )
       }
     }
@@ -1553,16 +1598,16 @@ export async function run(ctx) {
       'LandingProductEntryContent',
       'satisfies LandingProductEntryContent',
     ]) {
-      if (!adapter.source.includes(required)) {
+      if (!entryContract.source.includes(required)) {
         violations.push(
-          `${adapter.filePath}: missing typed entry-path requirement (${required})`
+          `${entryContract.filePath}: missing typed entry-path requirement (${required})`
         )
       }
     }
 
     if (/\bicon\s*:/.test(entryPaths)) {
       violations.push(
-        `${adapter.filePath}: entry-path icons are Core-owned and must not be supplied by the App`
+        `${entryContract.filePath}: entry-path icons are Core-owned and must not be supplied by the App`
       )
     }
   }

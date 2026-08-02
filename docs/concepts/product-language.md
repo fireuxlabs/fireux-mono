@@ -1,6 +1,6 @@
 # Product language
 
-Updated: 2026-07-27
+Updated: 2026-08-02
 Ref: 796952bf0
 Role: map, not canon
 
@@ -151,7 +151,8 @@ For literature work:
 - search for duplicated or contradictory parent copy after changing a shared
   noun;
 - verify that every present-tense capability has a source anchor;
-- run the nearest content/landing guard and focused lint where applicable;
+- run `pnpm guard:product-landing` while iterating, then the mandatory
+  `pnpm guard` before handoff;
 - visually check interactive copy when the selected child changes it;
 - update this map only when the derivation method or ownership boundary
   changes.

@@ -10,13 +10,13 @@ export const metaContent = defineFireuxMeta({
   },
   copy: {
     big_personality: 'Practical work, connected',
-    headline: 'A shared hub for the work that keeps places running.',
+    headline: 'Find good work. Build a strong team.',
     positioning_html:
-      'Werkbox connects practical jobs, service organisations, and professional profiles without tying the underlying work to one product category.',
+      'Werkbox connects practical jobs, skilled professionals, and the organisations that keep places running.',
     promise_html:
-      'Start with cleaning, then use the same neutral Jobs, Agents, Professionals, Companies, and Places foundations for other practical work.',
+      'Browse opportunities, publish reusable work profiles, and manage direct applications in one practical-work network.',
     console_bridge_html:
-      'Werkbox currently exposes public work and provider surfaces; operational consoles are added only when their authority and workflows are ready.',
+      'Werkbox currently provides public work, organisation, professional, and hiring surfaces.',
   },
   seo: {
     title: 'Werkbox — Practical work, connected',
@@ -44,13 +44,7 @@ export const metaContent = defineFireuxMeta({
   },
   operations: [],
   routes: {
-    public: [
-      '/',
-      '/categories/cleaning',
-      '/jobs',
-      '/agents',
-      '/professionals',
-    ],
+    public: ['/', '/categories/cleaning', '/jobs', '/agents', '/professionals'],
     console: [],
   },
 })

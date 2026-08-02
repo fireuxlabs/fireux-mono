@@ -1,4 +1,12 @@
 {
+  "functions": [
+    {
+      "source": ".output/server",
+      "codebase": "ausfinn-apartments-ssr",
+      "runtime": "nodejs22",
+      "entryPoint": "ausfinnApartments"
+    }
+  ],
   "hosting": {
     "site": "ausfinn-apartments",
     "public": ".output/public",
@@ -7,7 +15,11 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/200.html"
+        "function": {
+          "functionId": "ausfinnApartments",
+          "codebase": "ausfinn-apartments-ssr",
+          "region": "europe-west6"
+        }
       }
     ]
   }

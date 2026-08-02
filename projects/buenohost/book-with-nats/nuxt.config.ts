@@ -33,12 +33,4 @@ const fireuxConfig = defineFireuxConfig({
 
 export default withFireuxNuxtConfig(fireuxConfig, {
   css: ['@/assets/styles/main.css'],
-  ssr: false,
-  nitro: {
-    preset: 'static',
-    prerender: {
-      crawlLinks: false,
-      routes: ['/', '/stay', '/book', '/contact'],
-    },
-  },
 })

@@ -1,0 +1,8 @@
+// @fireux-rules-template buenohost
+// @fireux-rules-project buenohost-ecosystem
+// @fireux-rules-databases buenohost
+// @fireux-rules-artifact scripts/firebase/buenohost/firestore.rules
+// @fireux-rules-fragments open,close
+// Concurrent edit — 2026-08-02 — BuenoHost Reservation authority: establish a server-only private booking boundary.
+// @fireux-rules-template-source
+// @fireux-ecosystem-rules reservation-authority

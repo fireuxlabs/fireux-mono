@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-07-30
+Updated: 2026-08-02
 Ref: 33603376f
 Role: living context
 Scope: repo-wide
@@ -59,7 +59,10 @@ Before each task:
 - At task creation, state the scope, current checkout, and any relevant scoped
   context in the handoff. Reconfirm only when the task's scope changes.
 - Repository saves require the complete guard suite and Git hooks to pass from
-  a current upstream base. `pnpm gitsave` provides no bypass for those rules.
+  a current upstream base. `pnpm gitsave` provides no bypass for those rules
+  and refuses a save when another task changes the shared worktree during
+  verification. Every task that edits the repository runs `pnpm guard` before
+  handoff; focused guards are iteration feedback, not a completion substitute.
 - Permanent product source under `packages/`, `projects/`, and `tools/` must
   remain at or below 400 lines per authored code, style, or Rules file. Split
   responsibilities into named owned seams; there is no allowlist or scope
