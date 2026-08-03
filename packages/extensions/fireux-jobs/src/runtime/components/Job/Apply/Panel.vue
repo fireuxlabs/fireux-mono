@@ -31,7 +31,7 @@
       variant="soft"
       icon="i-lucide-circle-check"
       title="Application sent"
-      description="You can follow its progress from My Work."
+      description="You can follow its progress from Applications & work."
     />
 
     <form v-else class="space-y-4" @submit.prevent="submit">
@@ -55,11 +55,7 @@
       />
 
       <div class="flex flex-wrap gap-2">
-        <UButton
-          type="submit"
-          icon="i-lucide-send"
-          :loading="submitting"
-        >
+        <UButton type="submit" icon="i-lucide-send" :loading="submitting">
           Apply
         </UButton>
         <UButton

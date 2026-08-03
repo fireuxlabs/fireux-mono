@@ -33,7 +33,7 @@ export default defineNuxtModule({
           entityKey: 'suppliers',
           canonicalCollectionPath: 'suppliers',
           routePrefix: '/suppliers',
-          slugField: 'id',
+          routeIdentity: 'document-id',
           publicField: 'state',
           publicValue: 'public',
         })
@@ -41,7 +41,7 @@ export default defineNuxtModule({
           entityKey: 'suppliers-official',
           canonicalCollectionPath: 'suppliers',
           routePrefix: '/suppliers',
-          slugField: 'id',
+          routeIdentity: 'document-id',
           publicField: 'state',
           publicValue: 'official',
         })

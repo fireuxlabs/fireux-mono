@@ -1,12 +1,12 @@
 <template>
-  <aside class="job-index-promise" aria-label="A fairer way to hire">
+  <aside class="job-index-promise" aria-label="Open, direct hiring">
     <div class="job-index-promise__heading">
       <span class="job-index-promise__mark">
         <UIcon name="i-lucide-handshake" />
       </span>
       <div>
-        <p>A fairer way to hire</p>
-        <h2>People before percentages</h2>
+        <p>Open, direct hiring</p>
+        <h2>See the work before you join</h2>
       </div>
     </div>
 
@@ -22,16 +22,16 @@
 <script setup lang="ts">
 const promises = [
   {
+    title: 'Public job board',
+    value: 'Open',
+  },
+  {
     title: 'Hiring commission',
     value: '0%',
   },
   {
     title: 'Employer to professional',
     value: 'Direct',
-  },
-  {
-    title: 'Permanent hiring',
-    value: 'Free',
   },
 ] as const
 </script>

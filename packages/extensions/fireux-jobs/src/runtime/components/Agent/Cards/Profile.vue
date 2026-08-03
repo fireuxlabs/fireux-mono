@@ -1,11 +1,11 @@
 <template>
   <article class="public-profile-detail" data-profile-tone="agent">
     <PublicProfileHero
-      kind-label="Agent"
+      kind-label="Hiring profile"
       icon="i-lucide-handshake"
       tone="info"
       :avatar-url="card.imageUrl || card.avatarUrl"
-      :display-name="card.displayName || 'Agent profile'"
+      :display-name="card.displayName || 'Hiring profile'"
       :handle="card.handle"
       :subtitle="profile?.subtitle"
       :title="card.title"
@@ -24,10 +24,12 @@
         <PublicProfileSection
           v-if="aboutCopy"
           icon="i-lucide-building-2"
-          eyebrow="Agency"
+          eyebrow="Hiring team"
           title="About"
         >
-          <p class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base">
+          <p
+            class="whitespace-pre-line text-sm leading-7 text-toned sm:text-base"
+          >
             {{ aboutCopy }}
           </p>
         </PublicProfileSection>
@@ -35,7 +37,7 @@
         <PublicProfileSection
           v-if="focusAreas.length"
           icon="i-lucide-briefcase-business"
-          eyebrow="Recruitment"
+          eyebrow="Hiring"
           title="Placement focus"
         >
           <div class="grid gap-3 sm:grid-cols-2">
@@ -161,7 +163,7 @@ const contactLinks = computed(() => {
     links.push({
       external: false,
       icon: 'i-lucide-mail',
-      label: 'Email agent',
+      label: 'Email hiring team',
       to: `mailto:${props.card.contactEmail}`,
     })
   }
@@ -169,7 +171,7 @@ const contactLinks = computed(() => {
     links.push({
       external: false,
       icon: 'i-lucide-phone',
-      label: 'Call agent',
+      label: 'Call hiring team',
       to: `tel:${props.card.contactPhone}`,
     })
   }

@@ -6,6 +6,15 @@
         <template #right>
           <div class="inline-flex items-center gap-1">
             <UButton
+              to="/jobs/manage"
+              icon="i-lucide-briefcase-business"
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              aria-label="Manage job posts"
+            />
+
+            <UButton
               icon="i-lucide-eye"
               size="sm"
               :variant="view === 'profile' ? 'solid' : 'ghost'"

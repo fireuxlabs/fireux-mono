@@ -1,0 +1,20 @@
+{
+  "policy": "essential-after-feature-use",
+  "optionalTracking": false,
+  "mechanisms": [
+    { "key": "nuxt-color-mode", "technology": "localStorage", "owner": "FireUX Core", "purpose": "Remember an explicitly selected light or dark appearance", "trigger": "Theme selection", "lifetime": "Until System is selected or browser data is cleared", "deletion": "Selecting System removes the value" },
+    { "key": "fireux_pending_account_consent", "technology": "sessionStorage", "owner": "FireUX Core", "purpose": "Complete the requested sign-up across an authentication redirect", "trigger": "Terms acceptance followed by sign-up", "lifetime": "At most one hour and the current tab session", "deletion": "Removed after completion, on invalid/expired state, or when the tab session ends" },
+    { "key": "Firebase Auth vendor-managed keys", "technology": "sessionStorage and security cookies", "owner": "Firebase Authentication for the current App", "purpose": "Maintain the requested sign-in and security state", "trigger": "Authentication use", "lifetime": "Current browser session", "deletion": "Sign-out or ending the browser session clears local authentication state" },
+    { "key": "fireux-console-*-source and fireux-console-*", "technology": "session cookie", "owner": "Current FireUX App", "purpose": "Remember the selected Console data source and target", "trigger": "Authenticated Console use", "lifetime": "Browser session", "deletion": "Cleared when the selection is cleared or the browser session ends" },
+    { "key": "fireux.blogs.language and App-specific language keys", "technology": "cookie", "owner": "Current FireUX App", "purpose": "Remember the language selected by the visitor", "trigger": "Language selection", "lifetime": "Up to one year", "deletion": "Browser site-data controls; a shared in-product reset is required before this may be described as user-deletable" },
+    { "key": "fireux:order-session:*", "technology": "localStorage", "owner": "Current ordering App", "purpose": "Retain a cart explicitly created by the visitor", "trigger": "Adding an item", "lifetime": "At most 24 hours", "deletion": "Removed when emptied, explicitly cleared, or found expired" },
+    { "key": "fireux:menu-order:*:submission", "technology": "localStorage", "owner": "Current ordering App", "purpose": "Prevent duplicate submission while retrying a requested order", "trigger": "Order submission", "lifetime": "At most 24 hours", "deletion": "Removed after successful completion or when found expired" },
+    { "key": "fireux:menu-order-tracking:* and fireux:menu-order-acknowledged:*", "technology": "localStorage", "owner": "Current ordering App", "purpose": "Recover and display the visitor's requested anonymous order", "trigger": "Order creation or acknowledgement", "lifetime": "At most 24 hours", "deletion": "Removed when tracking is cleared or when found expired" },
+    { "key": "fireux-chat-*", "technology": "localStorage", "owner": "Current FireUX App", "purpose": "Return to a conversation started by the visitor", "trigger": "Sending the first chat message", "lifetime": "At most 30 days", "deletion": "Removed when found expired or through browser site-data controls" }
+  ],
+  "thirdPartyFeatures": [
+    { "provider": "Google Maps", "trigger": "Load Google Maps action or an authenticated map operation", "storageAuthority": "Google after the visitor requests the map" },
+    { "provider": "Stripe Checkout", "trigger": "Checkout action", "storageAuthority": "Stripe on its hosted checkout origin" },
+    { "provider": "FireUX tool provider App", "trigger": "Opening a provider tool", "storageAuthority": "The named provider origin; cross-App behavioural identity is prohibited" }
+  ]
+}

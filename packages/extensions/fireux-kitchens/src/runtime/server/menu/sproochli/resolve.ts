@@ -1,5 +1,6 @@
 import {
   normalizeSproochliLanguage,
+  type SproochliDefaultLanguage,
   type SproochliLanguageCode,
   type SproochliMenuTranslationField,
 } from 'fireux-sproochli/runtime/sproochli.ts'
@@ -133,9 +134,13 @@ function translatedMenu(
 
 export async function resolveMenuSproochli(
   menu: MenuManifest,
-  requestedLanguage: SproochliLanguageCode
+  requestedLanguage: SproochliLanguageCode,
+  defaultLanguage: SproochliDefaultLanguage = 'mixed'
 ): Promise<MenuManifest> {
-  const defaultSurfaceCopy = resolveMenuBrowseSurfaceCopy()
+  const defaultSurfaceCopy = resolveMenuBrowseSurfaceCopy(
+    null,
+    defaultLanguage === 'mixed' ? '' : defaultLanguage
+  )
   const fields = [
     ...menuFields(menu),
     ...MENU_BROWSE_SURFACE_COPY_FIELDS.map(field => ({
@@ -160,6 +165,7 @@ export async function resolveMenuSproochli(
         sproochli: {
           state: 'default',
           language: '',
+          defaultLanguage,
           readyLanguages,
           surfaceCopy: defaultSurfaceCopy,
         },
@@ -262,6 +268,7 @@ export async function resolveMenuSproochli(
       sproochli: {
         state: 'translated',
         language: requestedLanguage,
+        defaultLanguage,
         readyLanguages,
         surfaceCopy: resolveMenuBrowseSurfaceCopy(translations),
       },
@@ -272,6 +279,7 @@ export async function resolveMenuSproochli(
       sproochli: {
         state: requestedLanguage ? 'unavailable' : 'default',
         language: requestedLanguage,
+        defaultLanguage,
         readyLanguages,
         surfaceCopy: defaultSurfaceCopy,
       },

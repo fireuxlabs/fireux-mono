@@ -8,8 +8,11 @@ import {
 } from '../utils/seo-sitemaps'
 
 export default defineEventHandler(async (event) => {
-  const { siteUrl, entities } = readRuntimeSeoSitemaps()
-  const sitemapEntries = [absoluteUrl(siteUrl, '/sitemaps/static.xml')]
+  const { siteUrl, documents, entities } = readRuntimeSeoSitemaps()
+  const sitemapEntries = [
+    absoluteUrl(siteUrl, '/sitemaps/static.xml'),
+    ...documents.map((path) => absoluteUrl(siteUrl, path)),
+  ]
 
   for (const entity of entities) {
     const count = await countPublicEntitySitemapDocs(entity)
@@ -26,7 +29,9 @@ export default defineEventHandler(async (event) => {
   const xml = [
     '<?xml version="1.0" encoding="UTF-8"?>',
     '<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
-    ...sitemapEntries.map((loc) => `  <sitemap><loc>${escapeXml(loc)}</loc></sitemap>`),
+    ...sitemapEntries.map(
+      (loc) => `  <sitemap><loc>${escapeXml(loc)}</loc></sitemap>`
+    ),
     '</sitemapindex>',
     '',
   ].join('\n')

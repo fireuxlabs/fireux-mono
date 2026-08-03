@@ -44,14 +44,14 @@ export function useAgentSeo(
 
   return useSeo({
     title: computed(
-      () => displayName.value || clean(entry.value?.title) || 'Agent Profile'
+      () => displayName.value || clean(entry.value?.title) || 'Hiring profile'
     ),
     description: computed(() =>
       excerpt(
         entry.value?.summary ||
           entry.value?.agent_bio ||
           entry.value?.tagline ||
-          'Agent profile.'
+          'Hiring profile.'
       )
     ),
     image: computed(() => readHttpsUrl(entry.value?.agent_image)),

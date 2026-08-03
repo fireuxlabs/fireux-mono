@@ -1,10 +1,6 @@
 <!-- Concurrent edit — 2026-07-28 — Align the FireUX and Misebox Main App landing family. -->
 <template>
   <LandingProductIndex :content="content">
-    <template #hero-preview>
-      <FireUXLandingCardOrbit presentation="hero" />
-    </template>
-
     <template #onboarding>
       <LandingProductEntryPaths :content="entryPaths" />
     </template>

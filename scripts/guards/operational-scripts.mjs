@@ -1,11 +1,12 @@
 // @fireux-script
-// last_used: 2026-07-26
+// last_used: 2026-08-03
 // usage_note: guard reusable local script safety mechanics and release-backup ordering.
 // Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: execute protected-artifact checks and lock Rules release backup order.
 // Concurrent edit — 2026-07-20 22:07 CEST — Repo Efficiency Pass 4 of 6: lock read-only App media audit and guarded snapshot mutation contracts.
 // Concurrent edit — 2026-07-20 22:27 CEST — User/Profile data pass: lock the identity reconciliation planner to read-only target-bound inspection.
 // Concurrent edit — 2026-07-21 15:07 CEST — Cleanbox-to-Werkbox migration: lock quarantine, migration-marker finalization, trusted-source evidence, release ordering, and production-promotion exclusivity.
 // Concurrent edit — 2026-07-21 16:11 CEST — Shared Firestore Rules pass: lock lexical and wildcard-normalized frame identity.
+// Concurrent edit — 2026-08-03 — Separate local Werkbox attestation drift from authorised deployment proof.
 
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
@@ -718,11 +719,18 @@ async function assertWerkboxRulesSurface(repoRoot) {
     /WERKBOX_SERVER_SOURCE_SHA256\s*=\s*\n?\s*'([a-f0-9]{64})'/
   )?.[1]
   const expectedContract = await buildWerkboxServerSourceEvidence({ repoRoot })
-  assert.equal(
-    contractSha256,
-    expectedContract.sha256,
-    'Werkbox deployed security-contract hash must match the exact trusted source manifest.'
-  )
+  if (contractSha256 !== expectedContract.sha256) {
+    throw new Error(
+      [
+        'Werkbox local security-contract hash must match the exact trusted source manifest.',
+        `actual:   ${contractSha256 || '(missing)'}`,
+        `expected: ${expectedContract.sha256}`,
+        'Review the manifest changes, then run:',
+        '  pnpm werkbox:security-contract -- --write',
+        'This refreshes local source only; deployment remains a separate authorised action.',
+      ].join('\n')
+    )
+  }
 }
 
 async function assertAppMediaOperationalSurface(repoRoot) {

@@ -1,7 +1,7 @@
 <template>
   <PublicProfileDetailSurface
-    entity-label="Agent"
-    plural-label="Agents"
+    entity-label="Hiring profile"
+    plural-label="Hiring profiles"
     back-to="/agents"
     icon="i-lucide-handshake"
     :pending="pending"

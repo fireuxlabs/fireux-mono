@@ -10,95 +10,100 @@
       variant="outline"
     >
       <div class="space-y-4">
-          <MoleculesFormsFirestoreSimpleField
-            label="Title"
-            :firebase-value="title"
-            placeholder="Ex: Hospitality Agent"
-            :maxlength="60"
-            :update-function="handleTitle"
-            :validation-function="DisplayName.validate"
-            :formatting-function="DisplayName.format"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Title"
+          :firebase-value="title"
+          placeholder="Ex: Hospitality hiring team"
+          :maxlength="60"
+          :update-function="handleTitle"
+          :validation-function="DisplayName.validate"
+          :formatting-function="DisplayName.format"
+        />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Summary"
-            type="textarea"
-            :rows="3"
-            :maxlength="200"
-            :firebase-value="summary"
-            placeholder="One short paragraph for listings"
-            :update-function="handleSummary"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Summary"
+          type="textarea"
+          :rows="3"
+          :maxlength="200"
+          :firebase-value="summary"
+          placeholder="One short paragraph for listings"
+          :update-function="handleSummary"
+        />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Bio"
-            type="textarea"
-            :rows="6"
-            :maxlength="2000"
-            :firebase-value="bio"
-            placeholder="Long-form agent bio"
-            :update-function="handleBio"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Bio"
+          type="textarea"
+          :rows="6"
+          :maxlength="2000"
+          :firebase-value="bio"
+          placeholder="Long-form hiring profile bio"
+          :update-function="handleBio"
+        />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Agent Image URL"
-            :firebase-value="imageUrl"
-            placeholder="Optional: image URL for this agent profile"
-            :maxlength="400"
-            :update-function="handleImage"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Hiring Profile Image URL"
+          :firebase-value="imageUrl"
+          placeholder="Optional: image URL for this hiring profile"
+          :maxlength="400"
+          :update-function="handleImage"
+        />
 
-          <MoleculesFormsFirestoreArrayOfStrings
-            label="Placement Types"
-            :firebase-value="placementTypes"
-            item-placeholder="Placement type"
-            new-item-placeholder="Add placement type"
-            :update-function="handlePlacementTypes"
-          />
+        <MoleculesFormsFirestoreArrayOfStrings
+          label="Placement Types"
+          :firebase-value="placementTypes"
+          item-placeholder="Placement type"
+          new-item-placeholder="Add placement type"
+          :update-function="handlePlacementTypes"
+        />
 
-          <MoleculesFormsFirestoreArrayOfStrings
-            label="Tags"
-            :firebase-value="tags"
-            item-placeholder="Tag"
-            new-item-placeholder="Add tag"
-            :update-function="handleTags"
-          />
+        <MoleculesFormsFirestoreArrayOfStrings
+          label="Tags"
+          :firebase-value="tags"
+          item-placeholder="Tag"
+          new-item-placeholder="Add tag"
+          :update-function="handleTags"
+        />
 
-          <MoleculesFormsFirestoreArrayOfStrings
-            label="Coverage Areas"
-            :firebase-value="coverageAreas"
-            item-placeholder="Coverage area"
-            new-item-placeholder="Add coverage area"
-            :update-function="handleCoverageAreas"
-          />
+        <MoleculesFormsFirestoreArrayOfStrings
+          label="Coverage Areas"
+          :firebase-value="coverageAreas"
+          item-placeholder="Coverage area"
+          new-item-placeholder="Add coverage area"
+          :update-function="handleCoverageAreas"
+        />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Public Business Email"
-            :firebase-value="contactEmail"
-            placeholder="Ex: hello@example.com"
-            :maxlength="120"
-            :update-function="handleContactEmail"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Public Business Email"
+          :firebase-value="contactEmail"
+          placeholder="Ex: hello@example.com"
+          :maxlength="120"
+          :update-function="handleContactEmail"
+        />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Public Business Phone"
-            :firebase-value="contactPhone"
-            placeholder="Optional"
-            :maxlength="40"
-            :update-function="handleContactPhone"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Public Business Phone"
+          :firebase-value="contactPhone"
+          placeholder="Optional"
+          :maxlength="40"
+          :update-function="handleContactPhone"
+        />
 
-          <MoleculesFormsFirestoreSimpleField
-            label="Public Business Website"
-            :firebase-value="websiteUrl"
-            placeholder="Ex: https://example.com"
-            :maxlength="200"
-            :update-function="handleWebsiteUrl"
-          />
+        <MoleculesFormsFirestoreSimpleField
+          label="Public Business Website"
+          :firebase-value="websiteUrl"
+          placeholder="Ex: https://example.com"
+          :maxlength="200"
+          :update-function="handleWebsiteUrl"
+        />
       </div>
     </UPageCard>
 
-    <MoleculesStateCard v-else entity="agent profile" kind="document" loading />
+    <MoleculesStateCard
+      v-else
+      entity="hiring profile"
+      kind="document"
+      loading
+    />
   </ClientOnly>
 </template>
 
@@ -154,13 +159,18 @@ const contactEmail = computed(() => agent.value?.agent_contact_email ?? '')
 const contactPhone = computed(() => agent.value?.agent_contact_phone ?? '')
 const websiteUrl = computed(() => agent.value?.agent_website_url ?? '')
 
-const wrap = async (fn: () => Promise<void>, okTitle: string, failTitle: string) => {
+const wrap = async (
+  fn: () => Promise<void>,
+  okTitle: string,
+  failTitle: string
+) => {
   try {
     await fn()
     toast.add({ title: okTitle, icon: 'i-heroicons-check-circle' })
     return 'success'
   } catch (error) {
-    const description = error instanceof Error ? error.message : 'Please try again.'
+    const description =
+      error instanceof Error ? error.message : 'Please try again.'
     toast.add({
       title: failTitle,
       description,
@@ -175,13 +185,21 @@ const handleTitle = async (value: string) =>
   wrap(() => updateTitle(value), 'Title updated', 'Failed to update title')
 
 const handleSummary = async (value: string) =>
-  wrap(() => updateSummary(value), 'Summary updated', 'Failed to update summary')
+  wrap(
+    () => updateSummary(value),
+    'Summary updated',
+    'Failed to update summary'
+  )
 
 const handleBio = async (value: string) =>
   wrap(() => updateBio(value), 'Bio updated', 'Failed to update bio')
 
 const handleImage = async (value: string) =>
-  wrap(() => updateImage(value), 'Agent image updated', 'Failed to update agent image')
+  wrap(
+    () => updateImage(value),
+    'Hiring profile image updated',
+    'Failed to update hiring profile image'
+  )
 
 const handlePlacementTypes = async (value: string[]) =>
   wrap(
@@ -215,5 +233,9 @@ const handleContactPhone = async (value: string) =>
   )
 
 const handleWebsiteUrl = async (value: string) =>
-  wrap(() => updateWebsiteUrl(value), 'Website updated', 'Failed to update website')
+  wrap(
+    () => updateWebsiteUrl(value),
+    'Website updated',
+    'Failed to update website'
+  )
 </script>

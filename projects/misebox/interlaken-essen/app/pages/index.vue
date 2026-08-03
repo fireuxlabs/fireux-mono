@@ -45,16 +45,21 @@
 </template>
 
 <script setup lang="ts">
+import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 
 definePageMeta({
   layout: 'marketplace',
 })
 
-const { copy } = useInterlakenCopy()
+const { copy, locale } = useInterlakenCopy()
 
-useSeoMeta({
+useAppLandingSeo({
   title: () => copy('home_seo_title'),
   description: () => copy('home_seo_description'),
+  path: '/',
+  image: '/img/app/cover.png',
+  logo: '/img/app/logo.png',
+  language: locale,
 })
 </script>

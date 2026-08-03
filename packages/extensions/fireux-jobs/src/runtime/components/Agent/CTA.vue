@@ -1,7 +1,11 @@
 <template>
   <section data-entity-cta-family="profile-managed" class="space-y-4">
     <div v-if="hasProfile && profileCard" class="space-y-4">
-      <AgentCardsPreview v-if="profileCard" v-bind="profileCard" :link="false" />
+      <AgentCardsPreview
+        v-if="profileCard"
+        v-bind="profileCard"
+        :link="false"
+      />
 
       <div class="flex flex-wrap gap-2">
         <UButton v-if="profileTo" color="primary" :to="profileTo">
@@ -39,15 +43,17 @@ const { pill: agentInterface } = useAgent()
 const profileCard = computed(() => agentInterface())
 const hasProfile = computed(() => Boolean(profileCard.value?.id))
 const profileTo = computed(() => String(profileCard.value?.to || '').trim())
-const userName = computed(() => String(currentUser.value?.display_name || '').trim())
+const userName = computed(() =>
+  String(currentUser.value?.display_name || '').trim()
+)
 const createTitle = computed(() =>
   userName.value
-    ? `Hi ${userName.value}, you are in the right place to create your agent profile`
-    : 'Create your agent profile'
+    ? `Hi ${userName.value}, you are in the right place to create your hiring profile`
+    : 'Create your hiring profile'
 )
 const ctaDescription = computed(() =>
   hasProfile.value
-    ? `Your agent profile is live on ${appName}.`
-    : 'Set up your agent profile so professionals know who to contact.'
+    ? `Your hiring profile is live on ${appName}.`
+    : 'Set up your hiring profile so professionals know who to contact.'
 )
 </script>

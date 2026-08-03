@@ -4,6 +4,7 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: declare Misebox open self-membership policy.
 // Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: prerender the public Misebox demonstration family.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
+// Focused Jobs and Supplier hostnames remain doorways over this single Misebox App authority.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 

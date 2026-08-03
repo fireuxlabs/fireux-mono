@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-22
+// last_used: 2026-08-03
 // usage_note: pure HTTP smoke-contract builders used by the canonical app registry.
 // Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: separate smoke-contract mechanics from app registry data.
 // Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: assert bounded DTO shape and private-field exclusion.
@@ -61,6 +61,14 @@ const jobIndexApiContract = (route) => ({
   ],
 })
 
+const seoPageContract = (route, seo) => ({
+  route,
+  status: 200,
+  contentType: 'text/html',
+  noindex: false,
+  seo,
+})
+
 const kitchenIndexApiContract = (route) => ({
   route,
   status: 200,
@@ -88,7 +96,7 @@ const kitchenDetailApiContract = (route, slug) => ({
   ],
 })
 
-const missingKitchenDetailApiContract = route => ({
+const missingKitchenDetailApiContract = (route) => ({
   route,
   status: 404,
   contentType: 'application/json',
@@ -438,7 +446,7 @@ const menuKioskContract = (route, options = {}) => {
     ...contract,
     includes: [
       ...contract.includes.filter(
-        marker => !deferredUntilModeSelection.has(marker)
+        (marker) => !deferredUntilModeSelection.has(marker)
       ),
       'data-menu-kiosk-presentation="touch"',
       'data-menu-kiosk-stage="mode"',
@@ -461,7 +469,10 @@ const menuKioskContract = (route, options = {}) => {
 }
 
 const menuPreOrderContract = (route, options = {}) => {
-  const contract = menuOrderContract(route, { ...options, context: 'pre_order' })
+  const contract = menuOrderContract(route, {
+    ...options,
+    context: 'pre_order',
+  })
   const deferredUntilTablePlan = new Set([
     'data-menu-order-catalogue="selectable"',
     'data-menu-item="true"',
@@ -479,7 +490,7 @@ const menuPreOrderContract = (route, options = {}) => {
     ...contract,
     includes: [
       ...contract.includes.filter(
-        marker => !deferredUntilTablePlan.has(marker)
+        (marker) => !deferredUntilTablePlan.has(marker)
       ),
       'data-menu-pre-order-plan="advance-table"',
       'data-menu-pre-order-plan-state="incomplete"',
@@ -652,6 +663,7 @@ export {
   missingMenuQrContract,
   profileIndexApiContract,
   privateKitchenIndexAuthContract,
+  seoPageContract,
   tenantMenuBrowseContract,
   tenantMenuIndexRedirectContract,
   tenantMenuOrderContract,

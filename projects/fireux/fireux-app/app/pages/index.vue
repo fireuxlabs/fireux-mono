@@ -12,6 +12,7 @@
 </template>
 
 <script setup lang="ts">
+import { useAppLandingSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { appMeta } from '../meta'
 import FireUXLandingIndex from '../components/FireUX/Landing/Index.vue'
 
@@ -27,8 +28,11 @@ definePageMeta({
   },
 })
 
-useSeoMeta({
+useAppLandingSeo({
   title: appMeta.seoHome.title,
   description: appMeta.seoHome.description,
+  path: '/',
+  image: '/img/app/cover.png',
+  logo: '/img/app/logo.png',
 })
 </script>

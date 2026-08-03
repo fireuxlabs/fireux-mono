@@ -48,7 +48,7 @@
                 Employer workspace
               </p>
               <p class="mt-1 text-sm text-muted">
-                Every posting is owned by this Agent identity and linked to a
+                Every posting is owned by this hiring profile and linked to a
                 Company and Place.
               </p>
             </div>

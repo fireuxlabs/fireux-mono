@@ -6,7 +6,7 @@
 // Concurrent edit — 2026-07-25 — Guard Misebox's real read-only Orders proof inside the shared hero.
 // Concurrent edit — 2026-07-28 — Guard the shared hero-to-catalogue section spine.
 // Concurrent edit — 2026-07-29 — Guard the shared Main App start-or-join entry contract.
-// Concurrent edit — 2026-08-02 — Follow typed entry content into its imported local owner.
+// Concurrent edit — 2026-08-02 — Follow typed entry content into its imported local owner and park active Main App hero previews.
 
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -123,6 +123,10 @@ const MISEBOX_JOBS_MIDDLEWARE_PATH =
   'projects/misebox/misebox-app/app/middleware/misebox-jobs-surface.global.ts'
 const MISEBOX_JOBS_LAYOUT_PATH =
   'projects/misebox/misebox-app/app/layouts/misebox-jobs.vue'
+const MISEBOX_SUPPLIERS_MIDDLEWARE_PATH =
+  'projects/misebox/misebox-app/app/middleware/misebox-suppliers-surface.global.ts'
+const MISEBOX_SUPPLIERS_LAYOUT_PATH =
+  'projects/misebox/misebox-app/app/layouts/misebox-suppliers.vue'
 const FIREUX_ADAPTER_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/Index.vue'
 const FIREUX_PAGE_PATH = 'projects/fireux/fireux-app/app/pages/index.vue'
@@ -641,6 +645,11 @@ export async function run(ctx) {
   ].join('\n')
   const miseboxJobsMiddleware = read(repoRoot, MISEBOX_JOBS_MIDDLEWARE_PATH)
   const miseboxJobsLayout = read(repoRoot, MISEBOX_JOBS_LAYOUT_PATH)
+  const miseboxSuppliersMiddleware = read(
+    repoRoot,
+    MISEBOX_SUPPLIERS_MIDDLEWARE_PATH
+  )
+  const miseboxSuppliersLayout = read(repoRoot, MISEBOX_SUPPLIERS_LAYOUT_PATH)
   const fireuxAdapter = read(repoRoot, FIREUX_ADAPTER_PATH)
   const fireuxPage = read(repoRoot, FIREUX_PAGE_PATH)
   const fireuxConsolePreview = read(repoRoot, FIREUX_CONSOLE_PREVIEW_PATH)
@@ -1563,10 +1572,17 @@ export async function run(ctx) {
   }
 
   for (const adapter of discoveredProductLandingAdapters) {
+    const usesPricingStrip = adapter.source.includes(
+      '<MiseboxLandingPricingStrip'
+    )
+    const entryComponent = usesPricingStrip
+      ? 'MiseboxLandingPricingStrip'
+      : 'LandingProductEntryPaths'
+
     for (const [label, pattern] of [
       ['LandingProductIndex', /<LandingProductIndex\b/g],
       ['onboarding slot', /#onboarding\b/g],
-      ['LandingProductEntryPaths', /<LandingProductEntryPaths\b/g],
+      [entryComponent, new RegExp(`<${entryComponent}\\b`, 'g')],
     ]) {
       const matches = count(adapter.source, pattern)
       if (matches !== 1) {
@@ -1576,13 +1592,13 @@ export async function run(ctx) {
       }
     }
 
-    if (
-      !slotContains(adapter.source, 'onboarding', '<LandingProductEntryPaths')
-    ) {
+    if (!slotContains(adapter.source, 'onboarding', `<${entryComponent}`)) {
       violations.push(
-        `${adapter.filePath}: onboarding slot must own LandingProductEntryPaths`
+        `${adapter.filePath}: onboarding slot must own ${entryComponent}`
       )
     }
+
+    if (usesPricingStrip) continue
 
     const entryContract = resolveEntryPathsContract(repoRoot, adapter)
     const entryPaths = entryPathsBlock(entryContract.source)
@@ -1616,12 +1632,14 @@ export async function run(ctx) {
     {
       filePath: MISEBOX_ADAPTER_PATH,
       source: miseboxAdapter,
-      heroPreviewTag: 'MiseboxLandingHandoffPreview',
+      onboardingMarker: '<MiseboxLandingPricingStrip',
+      heroPreviewTag: 'MiseboxLandingHeroImage',
       proofSectionCount: 3,
       catalogueCount: 3,
       required: [
         '<LandingProductIndex',
         'hero-layout="proof-wide"',
+        'onboarding-placement="hero"',
         '#hero-preview',
         '#onboarding',
         '#console',
@@ -1630,10 +1648,12 @@ export async function run(ctx) {
         '#tools',
         '#solutions',
         '#operations',
-        '<MiseboxLandingHandoffPreview',
-        '<LandingProductEntryPaths',
+        '<MiseboxLandingHeroImage',
+        '<MiseboxLandingPricingStrip',
+        '<MiseboxLandingOperationRail',
         '<LandingProductProofSection',
         '<MiseboxLandingConsolePreview',
+        'copy-emphasis',
         '<MiseboxLandingOrderingPreview',
         '<MiseboxLandingFinancePreview',
         '<LandingAppCollection',
@@ -1642,44 +1662,39 @@ export async function run(ctx) {
         ':media-overrides="featuredAppMedia"',
         'wordmarkUrl:',
         'useEcosystemAppCollection',
+        'MiseboxLandingOperationRail',
+        'MiseboxLandingPricingStrip',
+        "operation.console.id === 'kitchen'",
+        "title: 'Work inside the Kitchen Console.'",
         "import { metaContent } from '../../../meta'",
         'metaContent.operations',
         'metaContent.solutions',
         'toolsCatalogue',
         'solutionsCatalogue',
         'operationsCatalogue',
-        "sectionId: 'misebox-entry'",
-        "title: 'Need a Kitchen App?'",
-        "kind: 'start'",
-        "kind: 'join'",
         "to: '/tools/ordering'",
         ':limit="3"',
-        "to: '/get-started'",
-        "to: '/apps'",
         "to: '/console/kitchen'",
         "to: '/operations'",
         'Get started',
         'Go to console',
-        'Explore Kitchen Operations',
       ],
       forbidden: ['#ecosystems'],
     },
     {
       filePath: FIREUX_ADAPTER_PATH,
       source: fireuxAdapter,
-      heroPreviewTag: 'FireUXLandingCardOrbit',
+      onboardingMarker: '<LandingProductEntryPaths',
       proofSectionCount: 1,
       catalogueCount: 2,
       required: [
         '<LandingProductIndex',
-        '#hero-preview',
         '#onboarding',
         '#console',
         '#ecosystems',
         '#apps',
         '#solutions',
         '#operations',
-        '<FireUXLandingCardOrbit',
         '<LandingProductEntryPaths',
         '<LandingProductProofSection',
         '<FireUXLandingConsolePreview',
@@ -1723,11 +1738,6 @@ export async function run(ctx) {
     for (const [label, pattern] of [
       ['LandingProductIndex opening tag', /<LandingProductIndex\b/g],
       ['LandingProductIndex closing tag', /<\/LandingProductIndex>/g],
-      ['hero-preview slot', /#hero-preview\b/g],
-      [
-        `${consumer.heroPreviewTag} hero preview`,
-        new RegExp(`<${consumer.heroPreviewTag}\\b`, 'g'),
-      ],
       ['LandingProductProofSection consumer', /<LandingProductProofSection\b/g],
       ['LandingAppCollection consumer', /<LandingAppCollection\b/g],
       ['LandingProductCatalogue consumer', /<LandingProductCatalogue\b/g],
@@ -1747,8 +1757,7 @@ export async function run(ctx) {
     }
 
     for (const [slotName, marker] of [
-      ['hero-preview', `<${consumer.heroPreviewTag}`],
-      ['onboarding', '<LandingProductEntryPaths'],
+      ['onboarding', consumer.onboardingMarker],
       ['console', '<LandingProductProofSection'],
       ['apps', '<LandingAppCollection'],
       ['solutions', '<LandingProductCatalogue'],
@@ -1774,6 +1783,17 @@ export async function run(ctx) {
     ) {
       violations.push(
         `${consumer.filePath}: copied shared landing presentation into the project`
+      )
+    }
+  }
+
+  for (const adapter of discoveredProductLandingAdapters) {
+    if (
+      /#hero-preview\b/.test(adapter.source) &&
+      adapter.filePath !== MISEBOX_ADAPTER_PATH
+    ) {
+      violations.push(
+        `${adapter.filePath}: only Misebox currently owns an approved Main App hero preview`
       )
     }
   }
@@ -2262,6 +2282,35 @@ export async function run(ctx) {
     if (!miseboxJobsLayout.includes(required)) {
       violations.push(
         `${MISEBOX_JOBS_LAYOUT_PATH}: missing focused Jobs shell contract (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    "'suppliers.misebox.app'",
+    "'suppliers.localhost'",
+    "to.meta.layout = 'misebox-suppliers'",
+    "navigateTo('/suppliers'",
+  ]) {
+    if (!miseboxSuppliersMiddleware.includes(required)) {
+      violations.push(
+        `${MISEBOX_SUPPLIERS_MIDDLEWARE_PATH}: missing focused Supplier doorway behavior (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    'data-misebox-suppliers-layout',
+    '<LayoutsDefaultHeader',
+    '<LayoutsDefaultFooter',
+    'Misebox Suppliers',
+    'to="/suppliers"',
+    'to="/suppliers/learn-more"',
+    'to="/console/supplier"',
+  ]) {
+    if (!miseboxSuppliersLayout.includes(required)) {
+      violations.push(
+        `${MISEBOX_SUPPLIERS_LAYOUT_PATH}: missing focused Supplier shell contract (${required})`
       )
     }
   }

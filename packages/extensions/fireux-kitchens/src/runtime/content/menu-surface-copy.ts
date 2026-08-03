@@ -78,6 +78,27 @@ export const MENU_BROWSE_SURFACE_COPY_FIELDS = [
   },
 ] as const
 
+const GERMAN_MENU_BROWSE_SURFACE_COPY = new Map<string, string>([
+  ['menu-surface:v3:browse:allergy-aria-label', 'Allergieinformationen'],
+  ['menu-surface:v3:browse:allergy-title', 'Allergien oder Unverträglichkeiten?'],
+  [
+    'menu-surface:v3:browse:allergy-body',
+    'Bitte informieren Sie unser Team über Allergien oder besondere Ernährungsbedürfnisse.',
+  ],
+  ['menu-surface:v3:browse:menu-sections-aria-label', 'Menübereiche'],
+  ['menu-surface:v3:browse:choose-menu-section-aria-label', 'Menübereich auswählen'],
+  ['menu-surface:v3:browse:sections-label', 'Bereiche'],
+  ['menu-surface:v3:browse:available-options-label', 'Verfügbare Optionen'],
+  ['menu-surface:v3:browse:optional-extras-label', 'Optionale Extras'],
+  [
+    'menu-surface:v3:browse:empty-catalogue-label',
+    'Es sind noch keine Menüeinträge veröffentlicht.',
+  ],
+  ['menu-surface:v3:browse:back-to-menus-label', 'Zurück zu den Menüs'],
+  ['menu-surface:v3:browse:close-menu-label', 'Menü schliessen'],
+  ['menu-surface:v3:browse:prices-label', 'Preise'],
+])
+
 const text = (value: unknown) => String(value ?? '').trim()
 
 export function isMenuBrowseSurfaceCopyField(value: unknown): boolean {
@@ -87,12 +108,19 @@ export function isMenuBrowseSurfaceCopyField(value: unknown): boolean {
 }
 
 export function resolveMenuBrowseSurfaceCopy(
-  translations?: ReadonlyMap<string, string> | null
+  translations?: ReadonlyMap<string, string> | null,
+  defaultLanguage?: string
 ): MenuBrowseSurfaceCopy {
   const copy = {} as MenuBrowseSurfaceCopy
+  const defaults = defaultLanguage === 'de'
+    ? GERMAN_MENU_BROWSE_SURFACE_COPY
+    : null
 
   for (const field of MENU_BROWSE_SURFACE_COPY_FIELDS) {
-    copy[field.key] = text(translations?.get(field.id)) || field.sourceText
+    copy[field.key] =
+      text(translations?.get(field.id)) ||
+      text(defaults?.get(field.id)) ||
+      field.sourceText
   }
 
   return copy

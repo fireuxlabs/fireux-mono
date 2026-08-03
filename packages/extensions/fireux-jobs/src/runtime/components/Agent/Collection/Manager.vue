@@ -33,8 +33,8 @@
 
     <CollectionDirectoryState
       v-if="outcome === 'pending'"
-      title="Loading agents"
-      description="Finding agent profiles…"
+      title="Loading hiring profiles"
+      description="Finding hiring profiles…"
       icon="i-lucide-loader-circle"
       loading
       role="status"
@@ -45,8 +45,8 @@
 
     <CollectionDirectoryState
       v-else-if="outcome === 'error'"
-      title="Agents unavailable"
-      description="Agent profiles could not be loaded. Please try again."
+      title="Hiring profiles unavailable"
+      description="Hiring profiles could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
       role="alert"
       aria-live="assertive"
@@ -69,11 +69,11 @@
     <CollectionDirectoryState
       v-else
       icon="i-lucide-handshake"
-      :title="query ? 'No matching agents' : 'No agents yet'"
+      :title="query ? 'No matching hiring profiles' : 'No hiring profiles yet'"
       :description="
         query
           ? 'Try a different search term.'
-          : 'Agent profiles will appear here once they are available.'
+          : 'Hiring profiles will appear here once they are available.'
       "
     />
 
@@ -116,10 +116,11 @@ const props = withDefaults(
     initialVariant?: 'pill' | 'cell'
   }>(),
   {
-    title: 'Agents',
-    description: 'Choose an agent to explore their focus and connections.',
+    title: 'Hiring profiles',
+    description:
+      'Choose a hiring profile to explore its focus and connections.',
     link: true,
-    searchPlaceholder: 'Search agents…',
+    searchPlaceholder: 'Search hiring profiles…',
     showSearch: true,
     showVariantToggle: true,
     showCount: true,
@@ -132,16 +133,16 @@ const { outcome } = fetched
 const collection = fetched.coreAgents
 const { devJsonData, loadDevJson, unloadDevJson } =
   useDevCollectionJson(collection)
-const title = computed(() => String(props.title || 'Agents'))
+const title = computed(() => String(props.title || 'Hiring profiles'))
 const description = computed(() =>
   String(
     props.description ||
-      'Choose an agent to explore their focus and connections.'
+      'Choose a hiring profile to explore its focus and connections.'
   )
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
-  String(props.searchPlaceholder || 'Search agents…')
+  String(props.searchPlaceholder || 'Search hiring profiles…')
 )
 const showSearch = computed(() => props.showSearch !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
@@ -175,7 +176,7 @@ const { cards: cardsFiltered } = useCollectionVariantCards({
 
 const countLabel = computed(() =>
   showSearchInput.value && query.value
-    ? `${visibleCount.value} of ${totalCount.value} agents`
-    : `${totalCount.value} agent${totalCount.value === 1 ? '' : 's'}`
+    ? `${visibleCount.value} of ${totalCount.value} hiring profiles`
+    : `${totalCount.value} hiring profile${totalCount.value === 1 ? '' : 's'}`
 )
 </script>

@@ -1,6 +1,5 @@
 import type {
   LandingProductCatalogueContent,
-  LandingProductEntryContent,
   LandingProductIndexContent,
 } from 'fireux-core/types/landing-product'
 
@@ -175,38 +174,6 @@ export const toolsCatalogue = {
   ],
 } satisfies LandingProductCatalogueContent
 
-export const entryPaths = {
-  sectionId: 'misebox-entry',
-  eyebrow: 'Start with Misebox',
-  title: 'Need a Kitchen App?',
-  description:
-    'Set up Kitchen operations or explore a Misebox App already running.',
-  paths: [
-    {
-      id: 'kitchen',
-      kind: 'start',
-      title: 'Set up a Kitchen',
-      description:
-        'Create a Kitchen workspace for menus, prep, orders, and service.',
-      action: {
-        label: 'Get started',
-        to: '/get-started',
-      },
-    },
-    {
-      id: 'apps',
-      kind: 'join',
-      title: 'Explore Misebox Apps',
-      description:
-        'See existing hospitality Apps and their menus, guest surfaces, and Kitchen operations.',
-      action: {
-        label: 'Explore Apps',
-        to: '/apps',
-      },
-    },
-  ],
-} satisfies LandingProductEntryContent
-
 export const content = {
   hero: {
     badge: 'Misebox',
@@ -214,7 +181,7 @@ export const content = {
     title: 'The Control Centre For',
     accent: 'Kitchen Operations',
     description:
-      'Develop dishes. Create menus. Prepare for service. Process orders. Review Kitchen sales.',
+      'Develop dishes. Create digital menus. Manage recipes and ingredients. Generate kitchen prep lists. Process restaurant orders. Track food costs and sales.',
     primaryAction: {
       label: 'Get started',
       to: '/get-started',
@@ -224,14 +191,6 @@ export const content = {
       to: '/console/kitchen',
       icon: 'i-lucide-layout-dashboard',
     },
-    quietAction: {
-      label: 'Explore Kitchen Operations',
-      to: '/operations',
-    },
-    trustItems: [
-      'Menus through service',
-      'Prep and team coordination',
-      'Suppliers and finance',
-    ],
+    trustItems: [],
   },
 } as const satisfies LandingProductIndexContent

@@ -1,7 +1,7 @@
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: use the public-index shell with discovery before author actions. -->
 <template>
   <PublicIndexSurface
-    eyebrow="Work and hiring"
+    eyebrow="Open jobs, direct hiring"
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-briefcase-business"
@@ -47,7 +47,7 @@ const { appName } = useFireUXConfig()
 
 const pageTitle = 'Jobs'
 const pageDescription =
-  'Find good people and meaningful work—directly, transparently, and without a hiring commission.'
+  'Browse published opportunities before you join, see the named employer and workplace, and apply directly without an agency in between.'
 
 definePageMeta({
   layout: 'default',

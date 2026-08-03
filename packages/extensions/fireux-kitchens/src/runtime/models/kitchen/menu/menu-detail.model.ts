@@ -1,6 +1,7 @@
 import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
 import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
 import type {
+  SproochliDefaultLanguage,
   SproochliLanguageCode,
 } from 'fireux-sproochli/runtime/sproochli'
 import type { MenuBrowseSurfaceCopy } from '../../../content/menu-surface-copy'
@@ -80,6 +81,7 @@ export type MenuManifestSource = {
 export type MenuManifestSproochli = {
   state: 'default' | 'translated' | 'unavailable'
   language: SproochliLanguageCode
+  defaultLanguage: SproochliDefaultLanguage
   readyLanguages: SproochliLanguageCode[] | null
   surfaceCopy: MenuBrowseSurfaceCopy
 }

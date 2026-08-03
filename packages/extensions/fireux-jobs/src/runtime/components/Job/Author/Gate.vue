@@ -57,22 +57,22 @@ const needsAttachment = computed(
 const gateTitle = computed(() =>
   needsAttachment.value
     ? 'Finish your employer access'
-    : 'Create your Agent profile'
+    : 'Create your hiring profile'
 )
 const gateDescription = computed(() =>
   needsAttachment.value
-    ? `Your Agent identity exists. Connect it to ${appName} to create and publish jobs.`
-    : 'Jobs are authored by your professional identity so people always know who is posting.'
+    ? `Your hiring profile exists. Connect it to ${appName} to create and publish jobs.`
+    : 'Jobs are authored through a public hiring profile so people always know who is posting.'
 )
 const profileTitle = computed(() =>
   needsAttachment.value ? 'Connect your profile' : 'Create your profile'
 )
 const profileDescription = computed(() =>
   needsAttachment.value
-    ? `Complete the App-level Agent record required to post jobs on ${appName}.`
-    : 'Set up the employer identity professionals will see beside your job postings.'
+    ? `Complete the App-level hiring profile required to post jobs on ${appName}.`
+    : 'Set up the hiring identity professionals will see beside your job postings.'
 )
 const actionLabel = computed(() =>
-  needsAttachment.value ? 'Finish posting access' : 'Create Agent profile'
+  needsAttachment.value ? 'Finish posting access' : 'Create hiring profile'
 )
 </script>

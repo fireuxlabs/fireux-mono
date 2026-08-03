@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-07-27
-Ref: 796952bf0
+Updated: 2026-08-03
+Ref: 8287d99bb
 Role: map, not canon
 
 ## Purpose
@@ -43,32 +43,33 @@ contract.
 
 ## Family registry
 
-| Family | Map | Strongest current evidence | Current status |
-| --- | --- | --- | --- |
-| Console entity | `family-console-entity.md` | `scripts/guards/console-indexes.mjs` | Index spine is strong; lifecycle sheets still vary |
-| Like-menu operation | `family-like-menu.md` | `scripts/guards/like-menu-family.mjs` | Menus is the guarded records-then-tools reference; new members require deliberate adoption |
-| Public index | `family-public-index.md` | Route pages plus collection-manager contracts | Data authority is strong; page presentation has drift |
-| Public detail | `family-public-detail.md` | Bounded SSR projections and route pages | Transport rule is strong; route identity and actions are incomplete |
-| Tenant/global | `family-tenant-global.md` | App config, `useFireUXConfig`, and `useConsole` | Runtime mode is shared; transfer and second-tenant proof remain incomplete |
-| Menu | `family-menu.md` | Entity declarations and menu route guard | Identity and route contexts are strong; content migration remains active |
-| Menu ordering | `menu-ordering.md` | Menu route grammar, order models, and lifecycle composables | One lifecycle is mapped; the older funnel tree remains migration debt |
-| Marketplace | `marketplace.md` | `fireux-marketplace` models, trusted handlers, and closed raw Rules | App-scoped Store identity and offline Order requests are explicit; Interlaken Essen is the first proof |
-| Collection manager | `collection-manager.md` | Shared directory components, manager siblings, and CSS guards | Ownership roles are clear; presentation classes still need deliberate classification |
-| Card | `card-family.md` | Prop-driven Card variants plus `scripts/guards/components.mjs` | Cell/Pill/Preview are canonical; legacy Cards/Profile paths are frozen migration debt |
-| Product language | `product-language.md` | Atomic source fields, child surfaces, operation catalogues, and parent composition | Bottom-up derivation is defined; existing cross-repo copy still needs progressive review |
-| Create | `create.md` | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts` | Create families are classified; plan metadata and optional-field handling are not aligned |
-| Tool provider | `tool-provider.md` | Core registry, loader, iframe protocol, and provider APIs | Transport is shared; Go QR wrappers and dogfood config contain duplication |
-| AI document processing | `ai-document-processing.md` | `fireux-ai` document loop and Kitchen Menu adapter | Ownership is clear; only one domain adapter has proved the shared contract |
-| Translation and reviewed copy | `translation.md` | Sproochli copy model, Kitchen attachment/Menu projection, trusted draft endpoint, and copy guard | Authority and attachment are shared; reviewed-copy persistence and reviewer UI remain to-confirm |
-| Firestore entity stack | `firestore-entity.md` | `scripts/guards/canon.mjs` and entity authority guards | Folder spine is guarded; family-specific reads differ by authority |
-| Server API | `server-api.md` | Package registration and shared server primitives | Placement is clear; no-op hooks and repeated authority parsing remain |
-| Runtime package | `runtime-package.md` | Module wiring and package guards | Registration spine is shared; package lanes own deliberate deltas |
-| App config | `app-config.md` | `defineFireuxConfig`, Nuxt overrides, and `FireUXConfig` | Runtime role is explicit; repeated project defaults are drift |
-| Brand assets | `brand-assets.md` | Core source family plus `scripts/guards/fireux-brand-assets.mjs` | FireUX identity is Core-owned; parent ecosystem and App projections are guarded |
-| Project user monitor | `project-user-monitor.md` | App join events, OIDC receiver, and FireUX admin feed | Bounded signup projection is shared; production source scopes require deployment |
-| Layout | `layouts.md` | `AppShell` and current runtime layouts | Ownership is clear; slot versus direct route rendering is `to-confirm` |
-| Debug | `debug.md` | `DevJson` and `DevFireuxDebugPanel` | Two distinct surfaces are accepted; a third generic panel is drift |
-| Privacy-first measurement | `privacy-measurement.md` | Shared legal surface plus `scripts/guards/privacy-measurement.mjs` | No tracking is active; the bounded aggregate server/admin family must land before collection begins |
+| Family                        | Map                         | Strongest current evidence                                                                       | Current status                                                                                                                                      |
+| ----------------------------- | --------------------------- | ------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Console entity                | `family-console-entity.md`  | `scripts/guards/console-indexes.mjs`                                                             | Index spine is strong; lifecycle sheets still vary                                                                                                  |
+| Like-menu operation           | `family-like-menu.md`       | `scripts/guards/like-menu-family.mjs`                                                            | Menus is the guarded records-then-tools reference; new members require deliberate adoption                                                          |
+| Public index                  | `family-public-index.md`    | Route pages plus collection-manager contracts                                                    | Data authority is strong; page presentation has drift                                                                                               |
+| Public detail                 | `family-public-detail.md`   | Bounded SSR projections and route pages                                                          | Transport rule is strong; route identity and actions are incomplete                                                                                 |
+| Tenant/global                 | `family-tenant-global.md`   | App config, `useFireUXConfig`, and `useConsole`                                                  | Runtime mode is shared; transfer and second-tenant proof remain incomplete                                                                          |
+| Menu                          | `family-menu.md`            | Entity declarations and menu route guard                                                         | Identity and route contexts are strong; content migration remains active                                                                            |
+| Menu ordering                 | `menu-ordering.md`          | Menu route grammar, order models, and lifecycle composables                                      | One lifecycle is mapped; the older funnel tree remains migration debt                                                                               |
+| Marketplace                   | `marketplace.md`            | `fireux-marketplace` models, trusted handlers, and closed raw Rules                              | App-scoped Store identity and offline Order requests are explicit; Interlaken Essen is the first proof                                              |
+| Collection manager            | `collection-manager.md`     | Shared directory components, manager siblings, and CSS guards                                    | Ownership roles are clear; presentation classes still need deliberate classification                                                                |
+| Card                          | `card-family.md`            | Prop-driven Card variants plus `scripts/guards/components.mjs`                                   | Cell/Pill/Preview are canonical; legacy Cards/Profile paths are frozen migration debt                                                               |
+| Product language              | `product-language.md`       | Atomic source fields, child surfaces, operation catalogues, and parent composition               | Bottom-up derivation is defined; existing cross-repo copy still needs progressive review                                                            |
+| Search visibility             | `search-visibility.md`      | Core SEO runtime plus `scripts/guards/seo-spine.mjs`                                             | Route identity, private indexing, and bounded Jobs discovery are guarded; metadata adoption, entity graphs, and multilingual URLs remain incomplete |
+| Create                        | `create.md`                 | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts`                                | Create families are classified; plan metadata and optional-field handling are not aligned                                                           |
+| Tool provider                 | `tool-provider.md`          | Core registry, loader, iframe protocol, and provider APIs                                        | Transport is shared; Go QR wrappers and dogfood config contain duplication                                                                          |
+| AI document processing        | `ai-document-processing.md` | `fireux-ai` document loop and Kitchen Menu adapter                                               | Ownership is clear; only one domain adapter has proved the shared contract                                                                          |
+| Translation and reviewed copy | `translation.md`            | Sproochli copy model, Kitchen attachment/Menu projection, trusted draft endpoint, and copy guard | Authority and attachment are shared; reviewed-copy persistence and reviewer UI remain to-confirm                                                    |
+| Firestore entity stack        | `firestore-entity.md`       | `scripts/guards/canon.mjs` and entity authority guards                                           | Folder spine is guarded; family-specific reads differ by authority                                                                                  |
+| Server API                    | `server-api.md`             | Package registration and shared server primitives                                                | Placement is clear; no-op hooks and repeated authority parsing remain                                                                               |
+| Runtime package               | `runtime-package.md`        | Module wiring and package guards                                                                 | Registration spine is shared; package lanes own deliberate deltas                                                                                   |
+| App config                    | `app-config.md`             | `defineFireuxConfig`, Nuxt overrides, and `FireUXConfig`                                         | Runtime role is explicit; repeated project defaults are drift                                                                                       |
+| Brand assets                  | `brand-assets.md`           | Core source family plus `scripts/guards/fireux-brand-assets.mjs`                                 | FireUX identity is Core-owned; parent ecosystem and App projections are guarded                                                                     |
+| Project user monitor          | `project-user-monitor.md`   | App join events, OIDC receiver, and FireUX admin feed                                            | Bounded signup projection is shared; production source scopes require deployment                                                                    |
+| Layout                        | `layouts.md`                | `AppShell` and current runtime layouts                                                           | Ownership is clear; slot versus direct route rendering is `to-confirm`                                                                              |
+| Debug                         | `debug.md`                  | `DevJson` and `DevFireuxDebugPanel`                                                              | Two distinct surfaces are accepted; a third generic panel is drift                                                                                  |
+| Privacy-first measurement     | `privacy-measurement.md`    | Shared legal surface plus `scripts/guards/privacy-measurement.mjs`                               | No tracking is active; the bounded aggregate server/admin family must land before collection begins                                                 |
 
 ## Stop signals
 

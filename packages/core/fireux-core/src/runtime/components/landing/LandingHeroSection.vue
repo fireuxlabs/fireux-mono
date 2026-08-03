@@ -64,7 +64,10 @@
             </div>
           </div>
 
-          <ul v-if="heroBulletsResolved.length" class="grid gap-3 pt-2 sm:grid-cols-2">
+          <ul
+            v-if="heroBulletsResolved.length"
+            class="grid gap-3 pt-2 sm:grid-cols-2"
+          >
             <li
               v-for="(text, idx) in heroBulletsResolved"
               :key="`${idx}-${text}`"
@@ -122,14 +125,13 @@
 
             <template #footer>
               <div class="space-y-3">
-                <UButton
-                  :to="longButtonToResolved"
-                  block
-                  color="primary"
-                >
+                <UButton :to="longButtonToResolved" block color="primary">
                   {{ longButtonLabelResolved }}
                 </UButton>
-                <div v-if="rightPanelTagsResolved.length" class="flex flex-wrap gap-2">
+                <div
+                  v-if="rightPanelTagsResolved.length"
+                  class="flex flex-wrap gap-2"
+                >
                   <NuxtLink
                     v-for="tag in rightPanelTagsResolved"
                     :key="`${tag.label}-${tag.to}`"
@@ -225,7 +227,9 @@ const toTagLabel = (key: string) =>
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join(' ')
 
-const tagIndex = computed(() => new Map(keyEntityTags.value.map((item) => [item.key, item])))
+const tagIndex = computed(
+  () => new Map(keyEntityTags.value.map((item) => [item.key, item]))
+)
 
 const rightPanelTagsResolved = computed<RightPanelTagItem[]>(() =>
   props.rightPanelTags?.length
@@ -254,14 +258,14 @@ const { consoleActions: consoleCtas } = useConsoleEntryCta()
 const auth = import.meta.client ? useAuth() : null
 const isMounted = ref(false)
 const isAuthenticated = computed(() => auth?.isAuthenticated?.value ?? false)
-const canPersonalizeAuthCta = computed(() =>
-  isMounted.value && isAuthenticated.value
+const canPersonalizeAuthCta = computed(
+  () => isMounted.value && isAuthenticated.value
 )
 
 const longButtonLabelResolved = computed(
   () =>
     props.rightPanelLongButtonLabel ||
-    (canPersonalizeAuthCta.value ? 'Go to dashboard' : 'Sign up')
+    (canPersonalizeAuthCta.value ? 'Open workspace' : 'Sign up')
 )
 
 const longButtonToResolved = computed(

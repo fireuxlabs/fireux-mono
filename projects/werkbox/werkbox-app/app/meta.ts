@@ -9,19 +9,19 @@ export const metaContent = defineFireuxMeta({
     ecosystem: 'werkbox',
   },
   copy: {
-    big_personality: 'Practical work, connected',
+    big_personality: 'Open work, direct hiring',
     headline: 'Find good work. Build a strong team.',
     positioning_html:
-      'Werkbox connects practical jobs, skilled professionals, and the organisations that keep places running.',
+      'Browse published practical jobs before you join, see who is hiring, and connect directly without an agency in between.',
     promise_html:
-      'Browse opportunities, publish reusable work profiles, and manage direct applications in one practical-work network.',
+      'Professionals reuse one work profile. Employers publish roles and manage direct applications without a hiring commission.',
     console_bridge_html:
       'Werkbox currently provides public work, organisation, professional, and hiring surfaces.',
   },
   seo: {
     title: 'Werkbox — Practical work, connected',
     description:
-      'Browse practical jobs, service organisations, and professional profiles, starting with cleaning work.',
+      'Browse public practical jobs, meet named employers, and hire directly without a hiring commission.',
     keywords: [
       'practical work',
       'cleaning jobs',

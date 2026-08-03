@@ -39,7 +39,7 @@
                 Posting as
               </p>
               <h2 class="mt-1 text-base font-semibold text-highlighted">
-                Your Agent profile owns this draft
+                Your hiring profile owns this draft
               </h2>
             </div>
           </template>

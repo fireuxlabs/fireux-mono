@@ -1,6 +1,6 @@
 <template>
   <div class="auth-authenticated">
-    <UButton block @click="goDashboard">Go to Dashboard</UButton>
+    <UButton block @click="goDashboard">Open workspace</UButton>
     <UButton block variant="ghost" @click="handleSignOut">Sign Out</UButton>
   </div>
 </template>

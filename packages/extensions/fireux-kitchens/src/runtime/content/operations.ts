@@ -10,10 +10,21 @@ const kitchenConsole = {
 
 export const kitchenOperations = [
   {
+    id: 'kitchen.identity',
+    slug: 'identity',
+    title: 'Identity',
+    description:
+      'Manage the selected kitchen identity, place connection, branding, and operating settings.',
+    to: '/console/kitchen/identity',
+    console: kitchenConsole,
+    icon: 'i-lucide-info',
+  },
+  {
     id: 'kitchen.dishes',
     slug: 'dishes',
     title: 'Dishes',
-    description: 'Create and manage dishes used across kitchen menus and recipes.',
+    description:
+      'Create and manage dishes used across kitchen menus and recipes.',
     to: '/console/kitchen/dishes',
     console: kitchenConsole,
     icon: 'i-lucide-utensils',
@@ -73,6 +84,15 @@ export const kitchenOperations = [
     icon: 'i-lucide-layout-grid',
   },
   {
+    id: 'kitchen.team',
+    slug: 'team',
+    title: 'Team',
+    description: 'Manage kitchen team members, roles, and join requests.',
+    to: '/console/kitchen/team',
+    console: kitchenConsole,
+    icon: 'i-lucide-users',
+  },
+  {
     id: 'kitchen.suppliers',
     slug: 'suppliers',
     title: 'Suppliers',
@@ -89,5 +109,15 @@ export const kitchenOperations = [
     to: '/console/kitchen/tables',
     console: kitchenConsole,
     icon: 'i-lucide-grid-2x2',
+  },
+  {
+    id: 'kitchen.finance',
+    slug: 'finance',
+    title: 'Finance',
+    description:
+      'Review gross sales, completed sales, and average sale for a selected period.',
+    to: '/console/kitchen/finance',
+    console: kitchenConsole,
+    icon: 'i-lucide-chart-line',
   },
 ] satisfies FireuxMetaOperation[]

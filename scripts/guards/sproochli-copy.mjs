@@ -1331,6 +1331,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       pricesLabel: 'Prices',
     }
   )
+  assert.deepEqual(resolveMenuBrowseSurfaceCopy(null, 'de'), {
+    allergyAriaLabel: 'Allergieinformationen',
+    allergyTitle: 'Allergien oder Unverträglichkeiten?',
+    allergyBody:
+      'Bitte informieren Sie unser Team über Allergien oder besondere Ernährungsbedürfnisse.',
+    menuSectionsAriaLabel: 'Menübereiche',
+    chooseMenuSectionAriaLabel: 'Menübereich auswählen',
+    sectionsLabel: 'Bereiche',
+    availableOptionsLabel: 'Verfügbare Optionen',
+    optionalExtrasLabel: 'Optionale Extras',
+    emptyCatalogueLabel: 'Es sind noch keine Menüeinträge veröffentlicht.',
+    backToMenusLabel: 'Zurück zu den Menüs',
+    closeMenuLabel: 'Menü schliessen',
+    pricesLabel: 'Preise',
+  })
 
   const profile = defineSproochliDialectProfile({
     id: 'test-profile',

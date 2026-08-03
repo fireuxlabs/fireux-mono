@@ -64,8 +64,8 @@ const props = withDefaults(
   {
     actionLabel: 'Create profile',
     description:
-      'Set up an agent profile with your agency details and experience. You can edit everything right after creating it.',
-    eyebrow: 'Agent profile',
+      'Set up a hiring profile with your organisation details and experience. You can edit everything right after creating it.',
+    eyebrow: 'Hiring profile',
     returnTo: '/dashboard/agent/profile',
     title: 'Create your profile',
   }
@@ -105,7 +105,7 @@ const handleCreate = async () => {
     const message =
       error instanceof Error
         ? error.message
-        : 'Unable to create an agent profile right now.'
+        : 'Unable to create a hiring profile right now.'
     errorMessage.value = message
     emit('error', error)
   } finally {

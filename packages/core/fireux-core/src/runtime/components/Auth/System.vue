@@ -78,7 +78,9 @@
               <UButton
                 block
                 color="primary"
-                :disabled="creatingUser || Boolean(accountProvisionErrorMessage)"
+                :disabled="
+                  creatingUser || Boolean(accountProvisionErrorMessage)
+                "
                 @click="goToCompletion"
               >
                 {{ authenticatedPrimaryLabel }}
@@ -192,7 +194,9 @@ const isTenantApp = computed(() => config.isTenant)
 const ecosystemBrandLabel = computed(() =>
   ecosystemLabel === 'misebox' ? 'Misebox' : ecosystemLabel
 )
-const ecosystemBrandAlt = computed(() => `${ecosystemBrandLabel.value} ecosystem`)
+const ecosystemBrandAlt = computed(
+  () => `${ecosystemBrandLabel.value} ecosystem`
+)
 const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
 const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
@@ -209,7 +213,12 @@ const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
 )
 const authIdentityLabel = computed(() =>
-  String(authUser.value?.displayName || authUser.value?.email || authUser.value?.uid || 'unknown')
+  String(
+    authUser.value?.displayName ||
+      authUser.value?.email ||
+      authUser.value?.uid ||
+      'unknown'
+  )
 )
 
 function sanitizeRedirect(value: unknown): string | null {
@@ -232,7 +241,9 @@ const onboardingStatus = computed(
 const membershipLoading = computed(
   () =>
     Boolean(authOnboarding.value) &&
-    (appPending.value || appOutcome.value === 'pending' || appOutcome.value === 'idle')
+    (appPending.value ||
+      appOutcome.value === 'pending' ||
+      appOutcome.value === 'idle')
 )
 const showOnboarding = computed(
   () =>
@@ -251,11 +262,13 @@ const authCompletionTitle = computed(
   () => authCompletion.value?.title || 'Thanks for registering!'
 )
 const authCompletionDescription = computed(
-  () => authCompletion.value?.description || 'We’re taking you to the next page.'
+  () =>
+    authCompletion.value?.description || 'We’re taking you to the next page.'
 )
-const authenticatedPrimaryLabel = computed(() =>
-  authCompletion.value?.actionLabel ||
-  (authCompletion.value ? 'Continue' : 'Go to dashboard')
+const authenticatedPrimaryLabel = computed(
+  () =>
+    authCompletion.value?.actionLabel ||
+    (authCompletion.value ? 'Continue' : 'Open workspace')
 )
 const completionDelay = computed(() => {
   const delay = authCompletion.value?.delayMs
@@ -274,7 +287,7 @@ async function completeAuthNavigation(target: string, showDelay = true) {
   if (navigationInFlight.value) return
   navigationInFlight.value = true
   if (showDelay && completionDelay.value > 0 && authCompletion.value) {
-    await new Promise(resolve => setTimeout(resolve, completionDelay.value))
+    await new Promise((resolve) => setTimeout(resolve, completionDelay.value))
   }
   await router.replace(target).catch(() => {})
 }
@@ -382,5 +395,4 @@ const handleGoogle = async () => {
     providerLoading.value = false
   }
 }
-
 </script>

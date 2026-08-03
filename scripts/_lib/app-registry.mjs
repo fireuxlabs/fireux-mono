@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-22
+// last_used: 2026-08-03
 // usage_note: canonical app identity, routes, and smoke-contract assignments.
 // Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: point local launch authority at the additive Werkbox apps.
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: require the shared route across registered apps.
@@ -34,6 +34,7 @@ import {
   missingMenuQrContract,
   profileIndexApiContract,
   privateKitchenIndexAuthContract,
+  seoPageContract,
   tenantMenuBrowseContract,
   tenantMenuIndexRedirectContract,
   tenantMenuOrderContract,
@@ -43,7 +44,12 @@ import {
   unavailableMenuOrderContract,
 } from './app-smoke-contracts.mjs'
 
-const SHARED_ROUTES = ['/', '/operations', '/dashboard', '/dashboard/user-profile']
+const SHARED_ROUTES = [
+  '/',
+  '/operations',
+  '/dashboard',
+  '/dashboard/user-profile',
+]
 
 // Registry consoles are smoke-test route segments.
 // Console family keys and route segments are singular:
@@ -89,6 +95,17 @@ export const APP_REGISTRY = {
       '/console/project/ignitions',
       '/console/project/users',
     ],
+    httpContracts: [
+      seoPageContract('/', {
+        title: 'FireUX — Projects, Apps, and Ecosystems',
+        description:
+          'Request a FireUX App through Ignition or explore an existing Ecosystem. The Project Console reviews Apps, Ecosystems, and new App users.',
+        canonical: 'http://localhost:3000/',
+        robots: 'index, follow',
+        image: 'http://localhost:3000/img/app/cover.png',
+        jsonLdTypes: ['Organization', 'WebSite', 'WebPage'],
+      }),
+    ],
     launchOrder: 1,
   },
   misebox: {
@@ -119,12 +136,19 @@ export const APP_REGISTRY = {
       '/jobs',
     ],
     httpContracts: [
+      seoPageContract('/', {
+        title: 'Misebox — Menu and kitchen management',
+        description:
+          'Publish menus, organise kitchen prep and manage restaurant orders with Misebox.',
+        canonical: 'http://localhost:3001/',
+        robots: 'index, follow',
+        image:
+          'http://localhost:3001/img/landing/kitchen-operations-hero-v2.png',
+        jsonLdTypes: ['Organization', 'WebSite', 'WebPage'],
+      }),
       jobIndexApiContract('/api/public/jobs?limit=1'),
       kitchenIndexApiContract('/api/kitchens?limit=48&visibility=published'),
-      kitchenDetailApiContract(
-        '/api/kitchens/la-tapberne',
-        'la-tapberne'
-      ),
+      kitchenDetailApiContract('/api/kitchens/la-tapberne', 'la-tapberne'),
       missingKitchenDetailApiContract(
         '/api/kitchens/fireux-route-contract-missing'
       ),
@@ -188,9 +212,7 @@ export const APP_REGISTRY = {
         ],
         itemExcludes: ['+ 27.-'],
       }),
-      menuKioskContract(
-        '/menus/indian-gourmet-restaurant-pizzeria-main.kiosk'
-      ),
+      menuKioskContract('/menus/indian-gourmet-restaurant-pizzeria-main.kiosk'),
       unavailableMenuOrderContract(
         '/menus/indian-gourmet-restaurant-pizzeria-main.collection',
         'Collection unavailable',
@@ -707,6 +729,18 @@ export const APP_REGISTRY = {
     port: 3026,
     consoles: [],
     smokeRoutes: ['/', '/mis', '/users'],
+    httpContracts: [
+      seoPageContract('/', {
+        title: 'Interlaken Essen',
+        description:
+          'Lokals Futter choufe und verchoufe oder Gastro-Jobs rund um Interlake finde.',
+        canonical: 'https://interlaken-essen.misebox.app/',
+        robots: 'index, follow',
+        image: 'https://interlaken-essen.misebox.app/img/app/cover.png',
+        jsonLdTypes: ['Organization', 'WebSite', 'WebPage'],
+        jsonLdIncludes: ['"inLanguage":"gsw-CH"'],
+      }),
+    ],
     launchOrder: 18,
   },
 }

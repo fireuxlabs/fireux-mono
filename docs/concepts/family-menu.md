@@ -140,6 +140,12 @@ The public manifest combines those layers for rendering. App support records
 remain access-only. The Menu index stays in host App chrome; Menu detail may
 use the resolved Menu canvas and package-owned Menu layout.
 
+When Sproochli is attached, the Kitchen's `default_language` also supplies the
+public Menu interface language for labels such as sections, options, and
+allergy information. A visitor-selected `sproochli` language replaces that
+interface copy together with the translated Menu projection; the unselected
+default route never rewrites the original Menu content.
+
 Dish owns reusable food media. MenuItem may reference Dish but does not own a
 second food-image field. Storage normalization and exact image constraints are
 implementation contracts in the Kitchen server/media source, not this family

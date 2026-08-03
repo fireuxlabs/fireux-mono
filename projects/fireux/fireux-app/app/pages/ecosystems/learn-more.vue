@@ -68,7 +68,6 @@
         <ul class="list-disc fx-list-stack text-sm">
           <li>Put core Firebase fields in <code>ecosystem.config.ts</code>.</li>
           <li>Put <code>NUXT_FIREBASE_APP_ID</code> in the app <code>.env</code>.</li>
-          <li>Put optional <code>NUXT_FIREBASE_MEASUREMENT_ID</code> in the app <code>.env</code>.</li>
           <li>Store service account JSON under the ecosystem config folder.</li>
           <li>Set project binding in ecosystem <code>.firebaserc</code>.</li>
         </ul>

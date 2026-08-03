@@ -16,14 +16,28 @@ No analytics collection is active. FireUX Core does not accept a Firebase
 measurement id, and the guard rejects known behavioural analytics/ad-tech
 packages and browser tracking primitives in analytics-named source.
 
-The shared `/legal/privacy` route accurately discloses essential storage:
+Core splits public authority without duplicating it:
+
+- `/legal/privacy` owns personal-data handling, providers, rights, and the
+  no-tracking boundary;
+- `/legal/storage` owns the exact cookies-and-browser-storage inventory;
+- `packages/core/fireux-core/src/config/privacy/browser-storage.json` is the
+  machine-readable policy checked by the privacy guard.
+
+The current essential feature storage includes:
 
 - authentication and security state;
 - a remembered language choice;
 - a short-lived anonymous-order recovery capability.
+- an explicitly selected colour mode, Console selection, and chat recovery.
 
 These feature values are not analytics identifiers and must never be consumed
 by measurement code.
+
+Public visits do not automatically register the PWA service worker. Public
+Google Maps embeds require an explicit load action. Firebase Auth uses browser
+session persistence, and anonymous-order recovery values expire after no more
+than 24 hours.
 
 ## Required future aggregate seam
 
@@ -53,7 +67,8 @@ family rather than add app-local tracking.
 ## Consent boundary
 
 No cookie popup is shown because analytics and advertising tracking storage is
-absent. If a future change adds non-essential cookies, local-storage
+absent and optional third-party surfaces are not loaded before the visitor
+requests them. If a future change adds non-essential cookies, local-storage
 identifiers, fingerprinting, cross-site/cross-App identifiers, or third-party
 behavioural tracking, this contract no longer applies. That change requires
 privacy and legal review before release, together with the appropriate consent

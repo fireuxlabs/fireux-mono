@@ -1,15 +1,28 @@
 <template>
   <section
     class="landing-product-entry-paths"
+    :class="{
+      'landing-product-entry-paths--hero-strip': variant === 'hero-strip',
+    }"
     :aria-labelledby="content.sectionId"
     data-landing-reveal="up"
   >
     <header class="landing-product-entry-paths__heading">
       <p class="fx-type-headline">{{ content.eyebrow }}</p>
-      <h2 :id="content.sectionId" class="fx-type-section-title">
+      <h2
+        :id="content.sectionId"
+        :class="
+          variant === 'hero-strip'
+            ? 'fx-type-card-title'
+            : 'fx-type-section-title'
+        "
+      >
         {{ content.title }}
       </h2>
-      <p v-if="content.description" class="fx-type-body">
+      <p
+        v-if="content.description && variant !== 'hero-strip'"
+        class="fx-type-body"
+      >
         {{ content.description }}
       </p>
     </header>
@@ -21,13 +34,26 @@
       <li v-for="path in content.paths" :key="path.id">
         <UPageCard
           :title="path.title"
-          :description="path.description"
+          :description="
+            variant === 'hero-strip' ? undefined : path.description
+          "
           :icon="
             path.kind === 'start' ? 'i-lucide-rocket' : 'i-lucide-network'
           "
           :to="path.action.to"
           variant="subtle"
           class="landing-product-entry-paths__card"
+          :ui="
+            variant === 'hero-strip'
+              ? {
+                  container: 'p-3 sm:p-3',
+                  wrapper: 'flex-row items-center gap-x-3 gap-y-0',
+                  leading: 'mb-0',
+                  body: 'min-w-0',
+                  footer: 'pt-0 mt-0 ml-auto',
+                }
+              : undefined
+          "
           :data-entry-path="path.kind"
         >
           <template #footer>
@@ -71,6 +97,7 @@ import type { LandingProductEntryContent } from '../../../types/landing-product'
 
 defineProps<{
   content: LandingProductEntryContent
+  variant?: 'section' | 'hero-strip'
 }>()
 </script>
 
@@ -151,6 +178,20 @@ defineProps<{
   width: 100%;
 }
 
+.landing-product-entry-paths--hero-strip {
+  gap: calc(var(--spacing) * 3);
+  padding: calc(var(--spacing) * 3);
+  border: 1px solid var(--ui-border);
+  border-radius: var(--ui-radius);
+  background: color-mix(in srgb, var(--ui-bg-elevated) 74%, transparent);
+  backdrop-filter: blur(calc(var(--spacing) * 3));
+}
+
+.landing-product-entry-paths--hero-strip
+  .landing-product-entry-paths__heading {
+  gap: var(--spacing);
+}
+
 @media (min-width: 640px) {
   .landing-product-entry-paths {
     gap: calc(var(--spacing) * 8);
@@ -168,6 +209,13 @@ defineProps<{
 
   .landing-product-entry-paths__tool-action {
     width: auto;
+  }
+
+  .landing-product-entry-paths--hero-strip {
+    grid-template-columns: minmax(13rem, 0.6fr) minmax(0, 1.4fr);
+    gap: calc(var(--spacing) * 4);
+    align-items: center;
+    padding: calc(var(--spacing) * 3);
   }
 }
 </style>

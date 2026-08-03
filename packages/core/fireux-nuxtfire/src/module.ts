@@ -12,7 +12,6 @@ type FirebaseEcosystemConfig = {
 type FirebaseAppConfig = {
   apiKey?: string
   appId?: string
-  measurementId?: string
 }
 
 function requireNonEmpty(value: unknown, label: string): string {
@@ -74,7 +73,6 @@ export default defineNuxtModule({
       storageBucket,
       messagingSenderId,
       appId,
-      ...(app.measurementId ? { measurementId: app.measurementId } : {}),
     }
 
     // nuxt-vuefire's SSR plugin reads from runtimeConfig.public.vuefire.config.
@@ -138,6 +136,11 @@ export default defineNuxtModule({
         mode: 'server',
       })
     }
+
+    addPlugin({
+      src: resolver.resolve('./runtime/plugins/firebase-auth-persistence.client.ts'),
+      mode: 'client',
+    })
 
     if (isDev) {
       console.info('[fireux-nuxtfire] vuefire configured: yes, auth enabled: yes')

@@ -5,8 +5,8 @@ export const agentConfig: ProfileConfig = {
   id: 'agent',
   collectionName: 'agents',
   profileType: 'Agent',
-  cta: 'Create your Agent profile to appear in listings.',
-  navLabel: 'Agent',
+  cta: 'Create your hiring profile to appear in listings.',
+  navLabel: 'Hiring profile',
   navIcon: 'i-lucide-shield-user',
   provisionRoute: '/api/internal/profiles/agent',
 } as const

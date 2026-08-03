@@ -45,7 +45,7 @@ export default defineNuxtModule<ModuleOptions>({
           entityKey: 'companies',
           canonicalCollectionPath: 'companies',
           routePrefix: '/companies',
-          slugField: 'id',
+          routeIdentity: 'document-id',
           publicField: 'verified',
           publicValue: true,
         })

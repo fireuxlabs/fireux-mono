@@ -30,6 +30,8 @@ import type {
   MenuOrderItem,
 } from './types'
 
+const DRAFT_MAX_AGE_MS = 24 * 60 * 60 * 1000
+
 export function useOrderDraft(
   menuId: MaybeRefOrGetter<string>,
   options: MenuOrderDraftOptions = {}
@@ -111,7 +113,13 @@ export function useOrderDraft(
     if (!import.meta.client || !nextKey) return
 
     try {
-      const parsed = JSON.parse(window.localStorage.getItem(nextKey) || '{}')
+      const stored = JSON.parse(window.localStorage.getItem(nextKey) || 'null')
+      const expiresAt = Date.parse(String(stored?.expiresAt ?? ''))
+      if (!Number.isFinite(expiresAt) || expiresAt <= Date.now()) {
+        window.localStorage.removeItem(nextKey)
+        return
+      }
+      const parsed = stored?.items
       if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return
 
       draft.value = Object.values(parsed)
@@ -158,7 +166,10 @@ export function useOrderDraft(
       return
     }
 
-    window.localStorage.setItem(key.value, JSON.stringify(nextDraft))
+    window.localStorage.setItem(key.value, JSON.stringify({
+      expiresAt: new Date(Date.now() + DRAFT_MAX_AGE_MS).toISOString(),
+      items: nextDraft,
+    }))
     notifyOrderSessionChanged()
   }, { deep: true })
 

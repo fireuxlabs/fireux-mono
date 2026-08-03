@@ -4,7 +4,7 @@
     :title="pageTitle"
     :description="pageDescription"
     icon="i-lucide-handshake"
-    secondary-label="For agents"
+    secondary-label="For hiring teams"
   >
     <AgentCollectionManager />
 
@@ -24,25 +24,25 @@ definePageMeta({
   nav: {
     visibility: { profiles: ['agent'] },
     key: 'agents',
-    label: 'Agents',
+    label: 'Hiring profiles',
     icon: 'i-lucide-building-2',
     order: 65,
     desktop: false,
     mobile: false,
     layouts: ['default'],
   },
-  title: 'Agents',
+  title: 'Hiring profiles',
   description:
-    'Meet agents connecting people, opportunities, and teams across the network.',
+    'Meet the hiring teams posting opportunities across the network.',
   layout: 'default',
   name: 'AgentsIndexPage',
 })
 
 const { appName } = useFireUXConfig()
 
-const pageTitle = 'Agents'
+const pageTitle = 'Hiring profiles'
 const pageDescription =
-  'Meet agents connecting people, opportunities, and teams across the network.'
+  'Meet the hiring teams posting opportunities across the network.'
 
 useSeo({
   title: `${appName} | ${pageTitle}`,

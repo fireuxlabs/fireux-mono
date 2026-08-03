@@ -47,6 +47,7 @@ type StoredMenuOrderTrackingSession = {
 
 const storagePrefix = 'fireux:menu-order-tracking:'
 const acknowledgementPrefix = 'fireux:menu-order-acknowledged:'
+const RECOVERY_MAX_AGE_MS = 24 * 60 * 60 * 1000
 const channels = new Set<KitchenOrderChannel>([
   'menu',
   'table_qr',
@@ -127,11 +128,12 @@ export function acknowledgeMenuOrder(orderId: unknown) {
 
 export function isMenuOrderAcknowledged(orderId: unknown) {
   const id = text(orderId)
-
-  return Boolean(
-    id &&
-    readStoredValue(`${acknowledgementPrefix}${encodeURIComponent(id)}`)
-  )
+  if (!id) return false
+  const key = `${acknowledgementPrefix}${encodeURIComponent(id)}`
+  const value = readStoredValue(key)
+  if (isCurrentTimestamp(value)) return true
+  removeStoredValue(key)
+  return false
 }
 
 export function safeCreatedMenuOrder(
@@ -227,6 +229,7 @@ function readStoredSession(
 ): StoredMenuOrderTrackingSession | null {
   const stored = record(value)
   if (stored.version !== 1) return null
+  if (!isCurrentTimestamp(stored.updated_at)) return null
 
   const order = safeCreatedMenuOrder(stored.order, orderType)
   if (!order) return null
@@ -334,4 +337,16 @@ function writeStoredValue(key: string, value: string) {
   } catch {
     return false
   }
+}
+
+function removeStoredValue(key: string) {
+  try {
+    window.localStorage.removeItem(key)
+  } catch {}
+}
+
+function isCurrentTimestamp(value: unknown) {
+  const timestamp = Date.parse(text(value))
+  const age = Date.now() - timestamp
+  return Number.isFinite(timestamp) && age >= 0 && age <= RECOVERY_MAX_AGE_MS
 }

@@ -2,6 +2,7 @@ import { setResponseHeaders, type H3Event } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { getRuntimeFirestore } from './getRuntimeFirestore'
 import { normalizeSlug } from '../../utils/slug/normalizeSlug'
+import { isFirestoreDocumentId } from '../../utils/firestoreDocumentId'
 
 type AnyRecord = Record<string, unknown>
 
@@ -9,6 +10,7 @@ export type RuntimeSitemapEntity = {
   entityKey: string
   canonicalCollectionPath: string
   routePrefix: string
+  routeIdentity: 'document-id' | 'field'
   slugField: string
   publicField: string
   publicValue: boolean | string | number
@@ -19,6 +21,7 @@ export type RuntimeSitemapEntity = {
 export type RuntimeSeoSitemaps = {
   siteUrl: string
   staticPaths: string[]
+  documents: string[]
   entities: RuntimeSitemapEntity[]
 }
 
@@ -27,9 +30,7 @@ export const SITEMAP_CACHE_CONTROL =
 
 function toStrings(value: unknown): string[] {
   if (!Array.isArray(value)) return []
-  return value
-    .map((entry) => String(entry ?? '').trim())
-    .filter(Boolean)
+  return value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
 }
 
 function toEntityList(value: unknown): RuntimeSitemapEntity[] {
@@ -39,7 +40,9 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
     if (!raw || typeof raw !== 'object' || Array.isArray(raw)) continue
     const entry = raw as Record<string, unknown>
     const entityKey = String(entry.entityKey ?? '').trim()
-    const canonicalCollectionPath = String(entry.canonicalCollectionPath ?? '').trim()
+    const canonicalCollectionPath = String(
+      entry.canonicalCollectionPath ?? ''
+    ).trim()
     if (!entityKey || !canonicalCollectionPath) continue
     const pageSizeRaw = Number(entry.pageSize ?? 5000)
     const pageSize = Number.isFinite(pageSizeRaw)
@@ -48,7 +51,8 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
     const updatedAtField =
       String(entry.updatedAtField ?? 'updatedAt').trim() || 'updatedAt'
     const routePrefix =
-      normalizePath(String(entry.routePrefix ?? `/${entityKey}`)) || `/${entityKey}`
+      normalizePath(String(entry.routePrefix ?? `/${entityKey}`)) ||
+      `/${entityKey}`
     const slugField = String(entry.slugField ?? 'slug').trim() || 'slug'
     const publicField =
       entry.publicField === ''
@@ -58,6 +62,8 @@ function toEntityList(value: unknown): RuntimeSitemapEntity[] {
       entityKey,
       canonicalCollectionPath,
       routePrefix,
+      routeIdentity:
+        entry.routeIdentity === 'document-id' ? 'document-id' : 'field',
       slugField,
       publicField,
       publicValue: normalizePublicValue(entry.publicValue),
@@ -118,7 +124,10 @@ function normalizeSiteUrl(input: unknown): string {
 }
 
 function isLocalHost(value: string): boolean {
-  const host = value.replace(/^https?:\/\//i, '').split('/')[0].toLowerCase()
+  const host = value
+    .replace(/^https?:\/\//i, '')
+    .split('/')[0]
+    .toLowerCase()
   return (
     host === 'localhost' ||
     host.startsWith('localhost:') ||
@@ -145,8 +154,8 @@ export function escapeXml(value: string): string {
 export function readRuntimeSeoSitemaps(): RuntimeSeoSitemaps {
   const runtime = useRuntimeConfig()
   const pub = (runtime.public || {}) as AnyRecord
-  const fireux = ((pub.fireux || {}) as AnyRecord)
-  const seo = ((fireux.seo || {}) as AnyRecord)
+  const fireux = (pub.fireux || {}) as AnyRecord
+  const seo = (fireux.seo || {}) as AnyRecord
 
   const siteUrl =
     normalizeSiteUrl(seo.siteUrl) ||
@@ -162,8 +171,19 @@ export function readRuntimeSeoSitemaps(): RuntimeSeoSitemaps {
   ).sort((a, b) => a.localeCompare(b))
 
   const entities = toEntityList(seo.sitemapEntities)
+  const documents = Array.from(
+    new Set(
+      toStrings(seo.sitemapDocuments)
+        .map((path) => normalizePath(path))
+        .filter((path): path is string =>
+          Boolean(path && /^\/sitemaps\/[a-z0-9][a-z0-9-]*\.xml$/i.test(path))
+        )
+        .filter((path) => path !== '/sitemaps/index.xml')
+        .filter((path) => path !== '/sitemaps/static.xml')
+    )
+  ).sort((a, b) => a.localeCompare(b))
 
-  return { siteUrl, staticPaths, entities }
+  return { siteUrl, staticPaths, documents, entities }
 }
 
 export function setSitemapResponseHeaders(
@@ -176,7 +196,9 @@ export function setSitemapResponseHeaders(
   })
 }
 
-export async function countPublicEntitySitemapDocs(entity: RuntimeSitemapEntity): Promise<number> {
+export async function countPublicEntitySitemapDocs(
+  entity: RuntimeSitemapEntity
+): Promise<number> {
   return countPublicCanonicalDocs(entity)
 }
 
@@ -197,7 +219,8 @@ function toIsoString(value: unknown): string | undefined {
   }
   if (typeof (value as any)?.toDate === 'function') {
     const d = (value as any).toDate()
-    if (d instanceof Date && Number.isFinite(d.getTime())) return d.toISOString()
+    if (d instanceof Date && Number.isFinite(d.getTime()))
+      return d.toISOString()
   }
   return undefined
 }
@@ -211,7 +234,7 @@ function resolveCanonicalDocPath(
   const normalizedPath = normalizePath(rawPath)
   if (normalizedPath) return normalizedPath
 
-  const slug = normalizeSlug(data[entity.slugField])
+  const slug = resolveRouteIdentity(entity, docId, data)
   if (!slug) {
     if (import.meta.dev) {
       console.warn(
@@ -221,9 +244,24 @@ function resolveCanonicalDocPath(
     return null
   }
   const encodedSlug = encodeURIComponent(slug)
-  const routePrefix = normalizePath(entity.routePrefix || `/${entity.entityKey}`)
+  const routePrefix = normalizePath(
+    entity.routePrefix || `/${entity.entityKey}`
+  )
   if (!routePrefix) return null
-  return routePrefix === '/' ? `/${encodedSlug}` : `${routePrefix}/${encodedSlug}`
+  return routePrefix === '/'
+    ? `/${encodedSlug}`
+    : `${routePrefix}/${encodedSlug}`
+}
+
+function resolveRouteIdentity(
+  entity: RuntimeSitemapEntity,
+  docId: string,
+  data: Record<string, unknown>
+): string {
+  if (entity.routeIdentity === 'document-id') {
+    return isFirestoreDocumentId(docId) ? docId.trim() : ''
+  }
+  return normalizeSlug(data[entity.slugField])
 }
 
 function isCanonicalDocPublic(
@@ -256,11 +294,15 @@ function isCanonicalDocPublic(
   return false
 }
 
-async function countPublicCanonicalDocs(entity: RuntimeSitemapEntity): Promise<number> {
+async function countPublicCanonicalDocs(
+  entity: RuntimeSitemapEntity
+): Promise<number> {
   if (!entity.canonicalCollectionPath) return 0
   try {
     const db = getRuntimeFirestore()
-    let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
+    let query: FirebaseFirestore.Query = db.collection(
+      entity.canonicalCollectionPath
+    )
 
     if (entity.publicField) {
       query = query.where(entity.publicField, '==', entity.publicValue)
@@ -284,21 +326,20 @@ async function fetchCanonicalEntitySitemapPage(
   const offset = Math.max(0, (page - 1) * pageSize)
   const db = getRuntimeFirestore()
 
-  let query: FirebaseFirestore.Query = db.collection(entity.canonicalCollectionPath)
+  let query: FirebaseFirestore.Query = db.collection(
+    entity.canonicalCollectionPath
+  )
   if (entity.publicField) {
     query = query.where(entity.publicField, '==', entity.publicValue)
   }
   query = query.orderBy('__name__')
 
-  const snap = await query
-    .offset(offset)
-    .limit(pageSize)
-    .get()
+  const snap = await query.offset(offset).limit(pageSize).get()
 
   const out: SitemapIndexEntry[] = []
   for (const doc of snap.docs) {
     const data = (doc.data() || {}) as Record<string, unknown>
-    const slug = normalizeSlug(data[entity.slugField])
+    const slug = resolveRouteIdentity(entity, doc.id, data)
     if (!isCanonicalDocPublic(entity, data, slug)) continue
 
     const path = resolveCanonicalDocPath(entity, doc.id, data)

@@ -63,14 +63,12 @@ const serverHandlers = [
   {
     route: '/api/internal/job-applications/:id',
     method: 'patch',
-    handler:
-      './runtime/server/api/internal/job-applications/[id].patch',
+    handler: './runtime/server/api/internal/job-applications/[id].patch',
   },
   {
     route: '/api/internal/job-engagements/:id',
     method: 'patch',
-    handler:
-      './runtime/server/api/internal/job-engagements/[id].patch',
+    handler: './runtime/server/api/internal/job-engagements/[id].patch',
   },
   {
     route: '/api/public/jobs',
@@ -81,6 +79,11 @@ const serverHandlers = [
     route: '/api/public/jobs/:id',
     method: 'get',
     handler: './runtime/server/api/public/jobs/[id].get',
+  },
+  {
+    route: '/sitemaps/jobs.xml',
+    method: 'get',
+    handler: './runtime/server/sitemaps/jobs.xml.get',
   },
   {
     route: '/api/public/agents',

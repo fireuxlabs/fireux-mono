@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-08-03
 // usage_note: baseline after scripts cleanup; update when run.
 // FILE: scripts/_lib/smoke.mjs
 // Concurrent edit — 2026-07-21 16:31 CEST — Misebox startup verification: tolerate one transient network failure during dev HMR.
@@ -32,14 +32,95 @@ function preview(text) {
   return text.replace(/\s+/g, ' ').trim().slice(0, 220)
 }
 
+function decodeHtml(value) {
+  return String(value || '')
+    .replace(/&quot;/g, '"')
+    .replace(/&#(?:x27|39);/gi, "'")
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+}
+
+function tagAttribute(tag, name) {
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  return decodeHtml(
+    tag.match(new RegExp(`\\b${escaped}\\s*=\\s*["']([^"']*)["']`, 'i'))?.[1]
+  )
+}
+
+function tags(body, name) {
+  return body.match(new RegExp(`<${name}\\b[^>]*>`, 'gi')) || []
+}
+
+function metaContent(body, attribute, value) {
+  const tag = tags(body, 'meta').find(
+    (entry) =>
+      tagAttribute(entry, attribute).toLowerCase() === value.toLowerCase()
+  )
+  return tag ? tagAttribute(tag, 'content') : ''
+}
+
+function renderedSeoFailures(seo, body) {
+  if (!seo) return []
+  const failures = []
+  const title = decodeHtml(
+    body.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]
+  ).trim()
+  const canonicalTag = tags(body, 'link').find((entry) =>
+    tagAttribute(entry, 'rel').split(/\s+/).includes('canonical')
+  )
+  const canonical = canonicalTag ? tagAttribute(canonicalTag, 'href') : ''
+  const description = metaContent(body, 'name', 'description')
+  const robots = metaContent(body, 'name', 'robots')
+  const ogUrl = metaContent(body, 'property', 'og:url')
+  const ogImage = metaContent(body, 'property', 'og:image')
+
+  for (const [label, actual, expected] of [
+    ['title', title, seo.title],
+    ['description', description, seo.description],
+    ['canonical', canonical, seo.canonical],
+    ['robots', robots, seo.robots],
+    ['Open Graph URL', ogUrl, seo.canonical],
+    ['Open Graph image', ogImage, seo.image],
+  ]) {
+    if (expected && actual !== expected) {
+      failures.push(
+        `expected rendered ${label} ${JSON.stringify(expected)}, received ${JSON.stringify(actual || 'none')}`
+      )
+    }
+  }
+
+  const jsonLd = (
+    body.match(
+      /<script\b(?=[^>]*\btype=["']application\/ld\+json["'])[^>]*>([\s\S]*?)<\/script>/gi
+    ) || []
+  ).join('\n')
+  for (const type of seo.jsonLdTypes ?? []) {
+    const escaped = type.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    if (!new RegExp(`"@type"\\s*:\\s*"${escaped}"`).test(decodeHtml(jsonLd))) {
+      failures.push(`missing rendered JSON-LD type ${JSON.stringify(type)}`)
+    }
+  }
+  for (const value of seo.jsonLdIncludes ?? []) {
+    if (!decodeHtml(jsonLd).includes(value)) {
+      failures.push(`missing rendered JSON-LD value ${JSON.stringify(value)}`)
+    }
+  }
+
+  return failures
+}
+
 export function runPrepareForApp(app) {
   ensureFireuxCoreConfigHelpers()
 
   console.log(`[smoke:prepare] ${app.name} -> nuxi prepare`)
 
-  const result = spawnSyncPnpm(['--filter', app.filter, 'exec', 'nuxi', 'prepare'], {
-    stdio: 'inherit',
-  })
+  const result = spawnSyncPnpm(
+    ['--filter', app.filter, 'exec', 'nuxi', 'prepare'],
+    {
+      stdio: 'inherit',
+    }
+  )
 
   if (result.status !== 0) {
     throw new Error(`[smoke:prepare] ${app.name} failed`)
@@ -54,7 +135,9 @@ export function ensureFireuxCoreConfigHelpers() {
   })
 
   if (result.status !== 0) {
-    throw new Error('[smoke:prepare] failed to build fireux-core config helpers')
+    throw new Error(
+      '[smoke:prepare] failed to build fireux-core config helpers'
+    )
   }
 }
 
@@ -120,7 +203,9 @@ function routeContractFailures(contract, response, body) {
   const failures = []
 
   if (response.status !== contract.status) {
-    failures.push(`expected status ${contract.status}, received ${response.status}`)
+    failures.push(
+      `expected status ${contract.status}, received ${response.status}`
+    )
   }
 
   if (contract.location) {
@@ -143,8 +228,10 @@ function routeContractFailures(contract, response, body) {
 
   if (typeof contract.noindex === 'boolean') {
     const robotsHeader = response.headers.get('x-robots-tag') || ''
-    const robotsMeta = /<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bcontent=["'][^"']*\bnoindex\b[^"']*["'])[^>]*>/i
-    const hasNoindex = /\bnoindex\b/i.test(robotsHeader) || robotsMeta.test(body)
+    const robotsMeta =
+      /<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bcontent=["'][^"']*\bnoindex\b[^"']*["'])[^>]*>/i
+    const hasNoindex =
+      /\bnoindex\b/i.test(robotsHeader) || robotsMeta.test(body)
 
     if (hasNoindex !== contract.noindex) {
       failures.push(
@@ -156,15 +243,20 @@ function routeContractFailures(contract, response, body) {
   }
 
   for (const value of contract.includes ?? []) {
-    if (!body.includes(value)) failures.push(`missing body marker ${JSON.stringify(value)}`)
+    if (!body.includes(value))
+      failures.push(`missing body marker ${JSON.stringify(value)}`)
   }
 
   for (const value of contract.excludes ?? []) {
-    if (body.includes(value)) failures.push(`found forbidden body marker ${JSON.stringify(value)}`)
+    if (body.includes(value))
+      failures.push(`found forbidden body marker ${JSON.stringify(value)}`)
   }
 
+  failures.push(...renderedSeoFailures(contract.seo, body))
+
   for (const value of FAILURE_MARKERS) {
-    if (body.includes(value)) failures.push(`found failure marker ${JSON.stringify(value)}`)
+    if (body.includes(value))
+      failures.push(`found failure marker ${JSON.stringify(value)}`)
   }
 
   return failures
@@ -200,7 +292,12 @@ export async function runRouteContractsForApp(app, contracts) {
       console.error(`[contract]   ${preview(body)}`)
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      failures.push({ contract, response: null, body: message, reasons: [message] })
+      failures.push({
+        contract,
+        response: null,
+        body: message,
+        reasons: [message],
+      })
       console.error(`[contract] ✗ ${contract.route} network error: ${message}`)
     }
   }
@@ -260,13 +357,21 @@ export async function runRouteSmokeForApp(app) {
       console.error(`[smoke]   ${preview(body)}`)
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error)
-      failures.push({ route, status: 0, marker: null, finalUrl: url, body: message })
+      failures.push({
+        route,
+        status: 0,
+        marker: null,
+        finalUrl: url,
+        body: message,
+      })
       console.error(`[smoke] ✗ ${route} network error: ${message}`)
     }
   }
 
   if (failures.length) {
-    throw new Error(`[smoke] ${app.name} failed ${failures.length} route check(s)`)
+    throw new Error(
+      `[smoke] ${app.name} failed ${failures.length} route check(s)`
+    )
   }
 
   console.log(`[smoke] PASS ${app.name} (${app.smokeRoutes.length} routes)`)

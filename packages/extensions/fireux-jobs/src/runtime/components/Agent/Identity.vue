@@ -15,12 +15,12 @@
 
     <UPageCard
       v-else-if="!resolvedCoreProfile"
-      title="Agent profile not available"
-      description="Your agent profile has not been created yet."
+      title="Hiring profile not available"
+      description="Your hiring profile has not been created yet."
       variant="subtle"
     >
       <UButton
-        :label="agentConfig.cta || 'Create Agent profile'"
+        :label="agentConfig.cta || 'Create hiring profile'"
         color="neutral"
         :loading="isCreating"
         @click="createProfile"
@@ -55,7 +55,9 @@ const createError = ref<string | null>(null)
 
 const isProfileLoading = computed(() => coreProfile.value === undefined)
 const resolvedCoreProfile = computed(() => coreProfile.value ?? null)
-const agentCard = computed(() => agentCardFromProfile(resolvedCoreProfile.value))
+const agentCard = computed(() =>
+  agentCardFromProfile(resolvedCoreProfile.value)
+)
 
 const createProfile = async () => {
   if (isCreating.value) return

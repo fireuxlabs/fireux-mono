@@ -1,9 +1,9 @@
 <!-- FILE: packages/extensions/fireux-jobs/src/runtime/pages/dashboard/agent/index.vue -->
 <!-- Concurrent edit — 2026-07-21 13:52 CEST — CSS necessity pass: let UDashboardPanel own body rhythm. -->
 <template>
-  <UDashboardPanel id="console-agent-home">
+  <UDashboardPanel id="dashboard-agent-home">
     <template #header>
-      <LayoutsDashboardNavbar title="Agent" />
+      <LayoutsDashboardNavbar title="Hiring profile" />
     </template>
 
     <template #body>
@@ -14,7 +14,7 @@
               <div class="min-w-0">
                 <p class="text-sm font-medium">Hi {{ greetingName }}</p>
                 <p class="text-sm text-dimmed">
-                  Agent overview — this is the identity that posts jobs.
+                  This is the public identity that posts jobs.
                 </p>
               </div>
 
@@ -54,14 +54,21 @@
           <div class="space-y-2">
             <UButton
               to="/dashboard/agent/profile"
-              label="Update agent profile"
+              label="Update hiring profile"
               color="neutral"
               block
             />
             <UButton
               to="/dashboard/agent/my-gigs"
-              label="View my gigs"
+              label="Review hiring"
               variant="soft"
+              color="neutral"
+              block
+            />
+            <UButton
+              to="/jobs/manage"
+              label="Manage job posts"
+              variant="ghost"
               color="neutral"
               block
             />
@@ -88,7 +95,7 @@
           </li>
           <li class="flex items-center gap-2">
             <UIcon name="i-lucide-check-circle" class="text-primary" />
-            Review your gigs to keep postings current.
+            Review your job posts to keep them current.
           </li>
         </ul>
       </UCard>
@@ -107,7 +114,7 @@ definePageMeta({
   nav: {
     visibility: { modules: ['fireux-jobs'], profiles: ['agent'] },
     key: 'dashboard-agent-home',
-    label: 'Agent',
+    label: 'Hiring profile',
     icon: 'i-lucide-shield-user',
     position: 'middle',
     desktop: false,

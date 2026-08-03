@@ -113,7 +113,15 @@ selection, gross sales, completed sales, and average sale. Therefore its
 surface says what can be reviewed; it does not lead with “what the Kitchen
 earned,” automatic conversion, profit, cash, or a generic Finance promise.
 
-The Kitchen Console may summarise its current operation catalogue. Misebox may
+The Kitchen Console may summarise its current operation catalogue. That
+catalogue follows real selected-Kitchen work rather than folder placement, so
+Kitchen Identity and Team are Operations even though Console anatomy keeps
+`Identity` and `Team` beside the structural `Operations` bucket. Finance is a
+selected-Kitchen reporting Operation. Overview is the Console home. QR is Menu
+tooling; Overview may expose quick access to important Menu QR results without
+owning the Tool. HACCP is a parked future Kitchen Operation until its workspace
+is wired. Training belongs under Team, and Purchasing belongs under Suppliers
+if Kitchen-owned purchasing gains authoritative producers. Misebox may
 summarise the Kitchen Console, ordering, Jobs, Suppliers, and other composed
 products. Its landing may summarise those sections only after their lower
 language is stable.

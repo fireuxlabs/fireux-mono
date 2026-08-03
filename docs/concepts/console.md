@@ -1,9 +1,11 @@
 # Console
+
 Updated: 2026-07-26
 Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
+
 Map the shared console system and domain adapters.
 
 ## Vertical links
@@ -182,6 +184,12 @@ Map the shared console system and domain adapters.
 ## Operations
 
 - Operations are child surfaces inside a selected console target.
+- Product classification follows the selected-target work, not the component
+  folder name alone. Domain-owned workspaces such as Kitchen Identity and Team
+  may remain in the shared structural `Identity` and `Team` buckets while also
+  appearing in the Kitchen Operation catalogue because managing them is
+  ongoing Kitchen work. A selected-Kitchen report such as Finance may also be
+  an Operation when it is a dedicated operational workspace.
 - Operations must not leak into Firestore entity root folders.
 - Operation browse families must name their visible jobs rather than relying on
   folder symmetry alone. The `like-menu` family is the records-then-tools

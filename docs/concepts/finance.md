@@ -5,6 +5,7 @@ Ref: 1e55eece7
 Role: map, not canon
 
 ## Purpose
+
 Map the shared financial-fact boundary without turning domain operations or
 reports into one generic Finance console.
 
@@ -178,11 +179,11 @@ reports into one generic Finance console.
 - A Product Demo may also expose the separate Kitchen Finance report from the
   completed-Order-derived Demo projection. Console Demo and Product Demo share
   the Kitchen-owned transaction/average/minor-unit projectors, and the landing
-  keeps the report under a distinct Reports affordance rather than adding
-  Finance to the Kitchen operation catalogue.
-- There is no generic Finance Console Operation in this pass. Kitchens keep
-  Kitchen operations; Suppliers, Projects, and Portfolios keep their own future
-  producer operations.
+  may keep a distinct Reports affordance while Finance remains in the Kitchen
+  Operation catalogue.
+- Kitchen Finance is a selected-Kitchen reporting Operation. There is no
+  generic cross-entity Finance Console Operation in this pass; Suppliers,
+  Projects, and Portfolios keep their own future producer operations.
 
 ## Current source
 

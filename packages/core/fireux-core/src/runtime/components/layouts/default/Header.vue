@@ -3,10 +3,7 @@
 <template>
   <ClientOnly>
     <!-- Single-source mobile toggle via UHeader -->
-    <UHeader
-      mode="slideover"
-      data-fireux-header-root
-    >
+    <UHeader mode="slideover" data-fireux-header-root>
       <!-- Brand -->
       <template #title>
         <NuxtLink to="/" aria-label="Home">
@@ -49,7 +46,7 @@
               to="/dashboard"
               variant="ghost"
               color="neutral"
-              aria-label="Go to dashboard"
+              aria-label="Open workspace"
               data-fireux-header-avatar
             >
               <UAvatar
@@ -61,10 +58,7 @@
             </UButton>
           </template>
 
-          <USkeleton
-            v-else
-            class="h-8 w-8 rounded-full"
-          />
+          <USkeleton v-else class="h-8 w-8 rounded-full" />
         </div>
       </template>
 
@@ -132,9 +126,7 @@ const { currentUser: authUser } = useAuth()
 const { getProxiedAvatarUrl } = useAvatarProxy()
 const headerAvatarName = computed(() =>
   String(
-    currentUser.value?.display_name ||
-    authUser.value?.displayName ||
-    ''
+    currentUser.value?.display_name || authUser.value?.displayName || ''
   ).trim()
 )
 const headerAvatarText = computed(() => {
@@ -151,12 +143,12 @@ const headerAvatarText = computed(() => {
   return `${parts[0][0] ?? ''}${parts[1][0] ?? ''}`.toUpperCase() || 'U'
 })
 const headerAvatarSrc = computed(() => {
-  const authAvatar = typeof authUser.value?.photoURL === 'string'
-    ? authUser.value.photoURL.trim()
-    : ''
+  const authAvatar =
+    typeof authUser.value?.photoURL === 'string'
+      ? authUser.value.photoURL.trim()
+      : ''
   const resolved = avatarSrc.value || ''
   const proxied = getProxiedAvatarUrl(resolved || authAvatar || undefined)
   return proxied || undefined
 })
-
 </script>

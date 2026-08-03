@@ -49,16 +49,19 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addHub('/places')
       ctx.addStaticPath('/places/learn-more')
     })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'places',
-        canonicalCollectionPath: 'places',
-        routePrefix: '/places',
-        slugField: 'id',
-        publicField: 'verified',
-        publicValue: true,
-      })
-    })
+    nuxt.hook(
+      'fireux:seo:sitemaps:extend' as any,
+      (ctx: FireuxSeoSitemapsExtendContext) => {
+        ctx.addEntity({
+          entityKey: 'places',
+          canonicalCollectionPath: 'places',
+          routePrefix: '/places',
+          routeIdentity: 'document-id',
+          publicField: 'verified',
+          publicValue: true,
+        })
+      }
+    )
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>

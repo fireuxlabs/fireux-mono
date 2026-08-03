@@ -43,6 +43,7 @@ const fireuxConfig = defineFireuxConfig({
   },
   seo: {
     siteUrl: 'https://interlaken-essen.misebox.app',
+    noindexPaths: ['/mis', '/mis/**'],
   },
 })
 

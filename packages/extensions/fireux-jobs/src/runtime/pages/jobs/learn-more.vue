@@ -12,8 +12,8 @@
         <p class="text-sm text-toned">
           Explore open public roles connected to canonical employers and
           workplaces. Signed-in professionals can prepare their profile, while
-          authorised agents can create, review, and publish employer-owned job
-          drafts.
+          authorised employers can create, review, and publish employer-owned
+          job drafts.
         </p>
       </section>
 
@@ -29,9 +29,9 @@
           </li>
           <li>
             <strong class="font-medium text-highlighted"
-              >Agent-authored drafts</strong
+              >Employer-authored drafts</strong
             >
-            &nbsp;— authorised agents can create and manage private drafts
+            &nbsp;— authorised employers can create and manage private drafts
             before publishing them.
           </li>
           <li>

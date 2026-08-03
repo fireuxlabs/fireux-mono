@@ -49,7 +49,7 @@
               <SproochliLanguageTrigger
                 :language-options="sproochliLanguageOptions"
                 :selected-language="sproochli.language"
-                default-language="mixed"
+                :default-language="sproochli.defaultLanguage"
                 :show-group-labels="true"
                 :show-when-single-option="true"
               />
@@ -235,6 +235,7 @@ const sproochli = computed(() => {
 const sproochliLanguageOptions = computed(() =>
   resolveSproochliLanguageState({
     enabled: true,
+    defaultLanguage: sproochli.value?.defaultLanguage,
     cachedLanguages: sproochli.value?.readyLanguages ?? [],
   }).options
 )
@@ -252,6 +253,7 @@ const menuDirection = computed(() =>
 const translationDebug = computed(() => ({
   state: sproochli.value?.state ?? 'off',
   language: sproochli.value?.language || 'Default',
+  default_language: sproochli.value?.defaultLanguage ?? null,
   ready_languages: sproochli.value?.readyLanguages ?? null,
 }))
 const preserveSproochliQuery = (to: string) => {

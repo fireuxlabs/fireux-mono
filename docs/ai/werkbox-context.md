@@ -1,6 +1,6 @@
 # Werkbox GPT Context
 
-Updated: 2026-08-02
+Updated: 2026-08-03
 Ref: 796952bf0
 Role: living context
 Scope: Werkbox ecosystem and Apps
@@ -91,7 +91,11 @@ remembered implementations are not authority.
 - `packages/ecosystem/fireux-werkbox` owns the shared deployed
   `/api/internal/werkbox/security-contract` attestation. It identifies the
   runtime App and binds both deployed Apps to the reviewed server/model/config
-  source manifest used by the Rules promotion gate.
+  source manifest used by the Rules promotion gate. Check that deterministic
+  local projection with `pnpm werkbox:security-contract`; after reviewing a
+  manifest change, refresh it only through the command's explicit `--write`
+  mode. That updates source, not production. Both Apps must later be deployed
+  and return the exact current hash before migration or Rules promotion.
 
 ## Living context
 

@@ -69,7 +69,7 @@ const steps = [
   {
     number: 1,
     label: 'Employer identity',
-    description: 'Sign in and prepare your Agent profile for this App.',
+    description: 'Sign in and prepare your hiring profile for this App.',
   },
   {
     number: 2,

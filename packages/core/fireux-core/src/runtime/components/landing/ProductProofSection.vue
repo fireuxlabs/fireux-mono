@@ -1,7 +1,10 @@
 <template>
   <section
     class="landing-product-proof"
-    :class="{ 'landing-product-proof--reverse': reverse }"
+    :class="{
+      'landing-product-proof--reverse': reverse,
+      'landing-product-proof--copy-emphasis': copyEmphasis,
+    }"
     :aria-labelledby="sectionId"
   >
     <div
@@ -16,12 +19,25 @@
       :data-landing-reveal="reverse ? 'left' : 'right'"
     >
       <p class="fx-type-headline">{{ eyebrow }}</p>
-      <h2 :id="sectionId" class="fx-type-section-display">{{ title }}</h2>
-      <p v-if="description" class="fx-type-description">{{ description }}</p>
+      <h2
+        :id="sectionId"
+        class="fx-type-section-display"
+        :class="{ 'text-4xl sm:text-5xl': copyEmphasis }"
+      >
+        {{ title }}
+      </h2>
+      <p
+        v-if="description"
+        class="fx-type-description"
+        :class="{ 'text-xl': copyEmphasis }"
+      >
+        {{ description }}
+      </p>
 
       <ul
         v-if="items?.length"
         class="landing-product-proof__items"
+        :class="{ 'text-base sm:text-lg': copyEmphasis }"
         :aria-label="`${eyebrow} includes`"
       >
         <li v-for="item in items" :key="item">
@@ -35,7 +51,7 @@
       <UButton
         v-if="action"
         :to="action.to"
-        size="lg"
+        :size="copyEmphasis ? 'xl' : 'lg'"
         class="landing-product-proof__action"
         :trailing-icon="action.icon || 'i-lucide-arrow-right'"
       >
@@ -58,10 +74,12 @@ withDefaults(
     items?: readonly string[]
     action?: LandingProductAction
     reverse?: boolean
+    copyEmphasis?: boolean
   }>(),
   {
     items: () => [],
     reverse: false,
+    copyEmphasis: false,
   }
 )
 </script>
@@ -85,6 +103,11 @@ withDefaults(
   min-width: 0;
   max-width: 38rem;
   gap: calc(var(--spacing) * 4);
+}
+
+.landing-product-proof--copy-emphasis .landing-product-proof__copy {
+  max-width: 44rem;
+  gap: calc(var(--spacing) * 5);
 }
 
 .landing-product-proof__copy :where(h2, p) {
@@ -135,8 +158,16 @@ withDefaults(
     justify-self: end;
   }
 
+  .landing-product-proof--copy-emphasis {
+    grid-template-columns: minmax(0, 0.9fr) minmax(28rem, 1.1fr);
+  }
+
   .landing-product-proof--reverse {
     grid-template-columns: minmax(22rem, 0.85fr) minmax(0, 1.15fr);
+  }
+
+  .landing-product-proof--reverse.landing-product-proof--copy-emphasis {
+    grid-template-columns: minmax(28rem, 1.1fr) minmax(0, 0.9fr);
   }
 
   .landing-product-proof--reverse .landing-product-proof__surface {

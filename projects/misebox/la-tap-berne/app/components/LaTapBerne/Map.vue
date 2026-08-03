@@ -2,6 +2,7 @@
 <template>
   <div class="latap-map">
     <iframe
+      v-if="mapRequested"
       :title="title"
       :src="src"
       loading="lazy"
@@ -9,11 +10,18 @@
       sandbox="allow-forms allow-popups allow-popups-to-escape-sandbox allow-scripts"
       credentialless
     />
+    <div v-else class="latap-map__gate">
+      <p>Google Maps loads only when you ask to view it.</p>
+      <UButton icon="i-lucide-map" label="Load Google Maps" @click="mapRequested = true" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { laTapBerneContent } from '../../config/content.config'
+
+const mapRequested = ref(false)
 
 withDefaults(defineProps<{
   title?: string
@@ -40,6 +48,16 @@ withDefaults(defineProps<{
   width: 100%;
   height: 100%;
   border: 0;
+}
+
+.latap-map__gate {
+  display: grid;
+  min-height: 100%;
+  place-content: center;
+  justify-items: center;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 8);
+  text-align: center;
 }
 
 @media (max-width: 720px) {

@@ -1,7 +1,7 @@
 <template>
   <UDashboardPanel id="dashboard-professional-my-work">
     <template #header>
-      <LayoutsDashboardNavbar title="My Work" />
+      <LayoutsDashboardNavbar title="Applications & work" />
     </template>
 
     <template #body>
@@ -16,7 +16,7 @@
         v-if="errorMessage"
         color="error"
         variant="soft"
-        title="My Work is unavailable"
+        title="Applications & work unavailable"
         :description="errorMessage"
       />
 
@@ -211,12 +211,12 @@ definePageMeta({
   nav: {
     visibility: { modules: ['fireux-jobs'], profiles: ['professional'] },
     key: 'dashboard-professional-my-work',
-    label: 'My Work',
+    label: 'Applications & work',
     icon: 'i-lucide-briefcase-business',
     position: 'middle',
     desktop: false,
     mobile: false,
-    group: 'profiles',
+    group: 'professional',
     profileId: 'professional',
   },
   requiresAuth: true,

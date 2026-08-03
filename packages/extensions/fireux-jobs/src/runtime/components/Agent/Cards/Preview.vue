@@ -1,7 +1,7 @@
 <template>
   <PublicProfileDirectoryCard
     variant="preview"
-    kind-label="Agent"
+    kind-label="Hiring profile"
     icon="i-lucide-handshake"
     :to="to"
     :avatar-url="avatarUrl"

@@ -114,7 +114,17 @@ const chatMessages = computed(() =>
 )
 
 onMounted(() => {
-  conversationId.value = localStorage.getItem(storageKey) || ''
+  try {
+    const stored = JSON.parse(localStorage.getItem(storageKey) || 'null')
+    const expiresAt = Date.parse(String(stored?.expiresAt ?? ''))
+    if (Number.isFinite(expiresAt) && expiresAt > Date.now()) {
+      conversationId.value = String(stored?.conversationId ?? '')
+    } else {
+      localStorage.removeItem(storageKey)
+    }
+  } catch {
+    localStorage.removeItem(storageKey)
+  }
 })
 
 function requireGuestDetails() {
@@ -164,7 +174,10 @@ async function sendMessage() {
           sender_name: senderName.value,
         },
       })
-      localStorage.setItem(storageKey, conversationId.value)
+      localStorage.setItem(storageKey, JSON.stringify({
+        conversationId: conversationId.value,
+        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      }))
     } else {
       await createConversationMessage(conversationId.value, {
         body,

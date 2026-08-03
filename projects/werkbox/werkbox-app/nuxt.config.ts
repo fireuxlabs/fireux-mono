@@ -17,6 +17,20 @@ export default defineFireuxConfig({
   domains: ['jobs'],
   profiles: ['agent', 'professional'],
   selfJoinEnabled: true,
+  navHiddenKeys: ['operations'],
+  navOverrides: {
+    'dashboard-home': { label: 'Workspace' },
+    'dashboard-agent-profile': { label: 'Hiring profile' },
+    'dashboard-agent-my-gigs': {
+      label: 'Hiring',
+      desktop: true,
+    },
+    'dashboard-professional-profile': { label: 'Professional profile' },
+    'dashboard-professional-my-work': {
+      label: 'Applications & work',
+      desktop: true,
+    },
+  },
   seo: {
     staticPaths: ['/categories/cleaning'],
   },

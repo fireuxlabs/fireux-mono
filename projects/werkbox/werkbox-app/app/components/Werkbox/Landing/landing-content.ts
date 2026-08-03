@@ -11,25 +11,25 @@ export const content = {
     title: 'Find Good Work.',
     accent: 'Build A Strong Team.',
     description:
-      'Werkbox connects practical jobs, skilled professionals, and the organisations that keep places running.',
+      'Browse public practical jobs before you join. Meet named employers directly, or build your team without a hiring commission.',
     primaryAction: {
       label: 'Browse jobs',
       to: '/jobs',
       icon: 'i-lucide-search',
     },
     secondaryAction: {
-      label: 'Post a job',
+      label: 'Hire directly',
       to: '/jobs/manage',
       icon: 'i-lucide-circle-plus',
     },
     quietAction: {
-      label: 'Explore cleaning',
-      to: '/categories/cleaning',
+      label: 'How direct hiring works',
+      to: '/jobs/learn-more',
     },
     trustItems: [
+      'Open jobs before signup',
       'Direct employer relationships',
-      'Reusable professional profiles',
-      'Product-neutral job categories',
+      'No hiring commission',
     ],
   },
 } as const satisfies LandingProductIndexContent
@@ -46,7 +46,7 @@ export const entryPaths = {
       kind: 'start',
       title: 'Find practical work',
       description:
-        'Browse open roles and use a reusable Professional profile when you apply.',
+        'See published roles, employers, workplaces, and terms before you create a reusable Professional profile to apply.',
       action: { label: 'Browse jobs', to: '/jobs' },
     },
     {
@@ -54,8 +54,8 @@ export const entryPaths = {
       kind: 'join',
       title: 'Hire practical professionals',
       description:
-        'Create an Agent profile, publish a role, and manage applications directly.',
-      action: { label: 'Post a job', to: '/jobs/manage' },
+        'Publish roles, meet applicants, and hire directly without paying a percentage of their work.',
+      action: { label: 'Hire directly', to: '/jobs/manage' },
     },
   ],
 } satisfies LandingProductEntryContent
@@ -65,7 +65,7 @@ export const networkCatalogue = {
   eyebrow: 'The network',
   title: 'Work, organisations, and people stay connected.',
   description:
-    'Each surface uses the same Jobs, Agent, Professional, Company, and Place foundations.',
+    'Each surface uses the same Jobs, hiring profile, professional profile, Company, and Place foundations.',
   items: [
     {
       id: 'jobs',
@@ -78,7 +78,8 @@ export const networkCatalogue = {
     {
       id: 'agents',
       title: 'Service organisations',
-      description: 'Discover organisations represented by Agent profiles.',
+      description:
+        'Discover organisations represented by public hiring profiles.',
       icon: 'i-lucide-building-2',
       to: '/agents',
       action: 'Browse organisations',

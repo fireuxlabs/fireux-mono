@@ -32,9 +32,14 @@ function readStoredMode(): FireUXColorMode | null {
 
 function writeStoredMode(mode: FireUXColorMode) {
   try {
+    if (mode === 'system') {
+      localStorage.removeItem(COLOR_MODE_STORAGE_KEY)
+      localStorage.removeItem(LEGACY_COLOR_MODE_STORAGE_KEY)
+      return
+    }
     // Nuxt UI's inline colour-mode script reads this key before hydration.
     localStorage.setItem(COLOR_MODE_STORAGE_KEY, mode)
-    localStorage.setItem(LEGACY_COLOR_MODE_STORAGE_KEY, mode)
+    localStorage.removeItem(LEGACY_COLOR_MODE_STORAGE_KEY)
   } catch {
     // ignore
   }
@@ -131,7 +136,9 @@ export function useColorMode() {
         writeStoredMode(next)
         applyMode(next, resolved)
       },
-      { immediate: true }
+      // Do not create preference storage on an ordinary public visit. The
+      // watcher runs only after the visitor changes the mode.
+      { immediate: false }
     )
   }
 

@@ -14,8 +14,10 @@ export function configPwa(nuxt: NuxtConfig, c: FireUXPwaConfig) {
   const brandAssets = resolveFireuxBrandAssets()
   ;(nuxt as any).pwa = {
     ...((nuxt as any).pwa || {}),
-    registerType: 'autoUpdate',
-    injectRegister: 'auto',
+    // A public visit must not create Cache Storage or a service-worker
+    // registration before the visitor explicitly requests an install/offline
+    // feature. FireUX currently exposes no such opt-in, so keep it disabled.
+    injectRegister: false,
     // Keep service worker disabled during local development by default.
     devOptions: { enabled: false },
     workbox: {

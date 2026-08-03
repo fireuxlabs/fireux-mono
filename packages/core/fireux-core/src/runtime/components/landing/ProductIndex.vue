@@ -2,12 +2,17 @@
   <div
     ref="landingRoot"
     class="landing-product"
-    :class="{ 'landing-product--full-hero': heroLayout === 'proof-wide' }"
+    :class="{
+      'landing-product--full-hero': heroLayout === 'proof-wide',
+      'landing-product--hero-onboarding': onboardingPlacement === 'hero',
+    }"
   >
     <section
       class="landing-product__hero"
       :class="{
         'landing-product__hero--proof-wide': heroLayout === 'proof-wide',
+        'landing-product__hero--with-onboarding':
+          onboardingPlacement === 'hero',
       }"
       aria-labelledby="landing-product-title"
     >
@@ -67,7 +72,7 @@
         </NuxtLink>
 
         <ul
-          v-if="heroMode === 'full'"
+          v-if="heroMode === 'full' && content.hero.trustItems.length"
           class="landing-product__trust-list"
           aria-label="Product principles"
         >
@@ -81,9 +86,16 @@
       <div class="landing-product__hero-preview">
         <slot name="hero-preview" />
       </div>
+
+      <div
+        v-if="onboardingPlacement === 'hero' && $slots.onboarding"
+        class="landing-product__hero-onboarding"
+      >
+        <slot name="onboarding" />
+      </div>
     </section>
 
-    <slot name="onboarding" />
+    <slot v-if="onboardingPlacement === 'section'" name="onboarding" />
 
     <div
       v-if="$slots.console"
@@ -152,10 +164,12 @@ withDefaults(
     content: LandingProductIndexContent
     heroLayout?: 'balanced' | 'proof-wide'
     heroMode?: 'full' | 'copy-proof'
+    onboardingPlacement?: 'section' | 'hero'
   }>(),
   {
     heroLayout: 'balanced',
     heroMode: 'full',
+    onboardingPlacement: 'section',
   }
 )
 

@@ -5,11 +5,13 @@ import {
 } from 'vue'
 
 type StoredOrderSubmission = {
+  createdAt: string
   fingerprint: string
   key: string
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
+const MAX_AGE_MS = 24 * 60 * 60 * 1000
 const canonicalValue = (value: unknown): unknown => {
   if (Array.isArray(value)) return value.map(canonicalValue)
   if (!value || typeof value !== 'object') return value
@@ -60,8 +62,13 @@ const readStored = (storageKey: string): StoredOrderSubmission | null => {
     const value = JSON.parse(window.localStorage.getItem(storageKey) || 'null')
     const fingerprint = text(value?.fingerprint)
     const key = text(value?.key)
+    const createdAt = text(value?.createdAt)
+    const createdAtMs = Date.parse(createdAt)
 
-    return fingerprint && key ? { fingerprint, key } : null
+    return fingerprint && key && Number.isFinite(createdAtMs) &&
+      Date.now() - createdAtMs >= 0 && Date.now() - createdAtMs <= MAX_AGE_MS
+      ? { createdAt, fingerprint, key }
+      : null
   } catch {
     return null
   }
@@ -90,6 +97,7 @@ export function useOrderIdempotency(
     const stored = readStored(nextStorageKey)
     const key = stored?.fingerprint === fingerprint ? stored.key : createKey()
     current.value = {
+      createdAt: new Date().toISOString(),
       storageKey: nextStorageKey,
       fingerprint,
       key,
@@ -99,7 +107,7 @@ export function useOrderIdempotency(
       try {
         window.localStorage.setItem(
           nextStorageKey,
-          JSON.stringify({ fingerprint, key })
+          JSON.stringify({ createdAt: current.value.createdAt, fingerprint, key })
         )
       } catch {
         // The in-memory key still protects retries in this mounted session.

@@ -188,16 +188,23 @@ Before each task:
   ownership.
 - Core `LandingProductIndex` owns the fixed Main App product-landing order:
   `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
-  `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
-  places product copy on the left and an app-owned product-card presentation on
-  the right.
-  `LandingProductEntryPaths` owns the ordered `start` and `join` choice plus
-  an optional subordinate Tool doorway, including its icons, card anatomy,
-  mobile-first layout, and reveal behavior. That slot is the public entry
-  decision, not account onboarding; Apps supply only truthful copy and routes.
+  `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The optional
+  `hero-preview` seam accepts an App-owned, reviewed product presentation.
+  Misebox currently fills it with a static product image; FireUX and Werkbox
+  remain copy-only.
+  The onboarding slot owns exactly one truthful public entry decision, not
+  account onboarding. `LandingProductEntryPaths` is the shared ordered
+  `start` and `join` choice plus an optional subordinate Tool doorway,
+  including its icons, card anatomy, mobile-first layout, compact hero-strip
+  variant, and reveal behavior. An App may instead own a narrowly scoped entry
+  component when the decision is App-specific and source-backed; Misebox uses
+  its compact pricing strip there because Free, Premium, and Managed are the
+  relevant landing choices.
   `scripts/guards/product-landing.mjs` discovers every project adapter that
-  consumes `LandingProductIndex` and requires exactly one entry component in
-  that slot. `LandingProductProofSection` owns the repeated proof-and-copy composition,
+  consumes `LandingProductIndex` and requires exactly one approved entry
+  component in that slot. `LandingProductProofSection` owns the repeated proof-and-copy
+  composition and its explicit copy-emphasis variant for sections where the
+  explanation must carry more visual weight,
   `LandingProductCatalogue` owns the shared catalogue grid, and
   `LandingConsolePreviewFrame` owns the responsive target rail, operation
   navigation, selected heading, and persistent full-Console doorway shared by
@@ -227,11 +234,10 @@ Before each task:
   gentle shared autoplay and touch orbit while the document is visible, so
   scrolling past the orbit never freezes its yaw; reduced motion remains
   static.
-  FireUX currently consumes that shared orbit with its bounded Live directory.
-  Misebox instead owns a mobile-first guest-Menu-to-Kitchen-Console handoff
-  stage backed by its existing Product Demo projection. Publish, Prepare, and
-  Serve are explicit user-selected chapters; the presentation never autoplays,
-  couples to page scrolling, or inherits orbit motion and geometry.
+  The reusable orbit remains guarded but is not mounted by a current Main App
+  hero. Misebox retains its mobile-first guest-Menu-to-Kitchen-Console handoff
+  stage as a dormant project-owned presentation backed by its existing Product
+  Demo projection; it is not mounted in the current copy-only hero.
 - A main App may explicitly select the typed Core `sci-fire` design pack
   through `app.designPack`. The config helper conditionally bundles its
   stylesheet and Nuxt UI variants; tenant and white-label Apps do not inherit
@@ -427,7 +433,7 @@ Before each task:
   app's Hosting site.
 - The shared deploy runner verifies the configured public URL after Firebase
   reports success and fails when it receives Firebase's default `Site Not
-  Found` page. An app may pass `--verify-text` for one public source-defined
+Found` page. An app may pass `--verify-text` for one public source-defined
   marker when a successful HTTP response alone is insufficient release proof.
 
 ## Shared Job authority
@@ -588,8 +594,14 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   private App-admin projection, and verified expiry at no more than 13 months.
 - Interlaken Essen is the first intended proof, not an app-local exception.
   Start at `docs/concepts/privacy-measurement.md`,
-  `runtime/pages/legal/privacy.vue`, and
+  `runtime/pages/legal/privacy.vue`, `runtime/pages/legal/storage.vue`,
+  `src/config/privacy/browser-storage.json`, and
   `scripts/guards/privacy-measurement.mjs`.
+- Browser storage begins only after an explicit feature request. Core disables
+  automatic service-worker registration, Firebase Auth uses browser-session
+  persistence, anonymous-order recovery expires within 24 hours, and public
+  Google Maps surfaces require an explicit load action. `/legal/privacy` owns
+  personal-data policy while `/legal/storage` owns the exact storage inventory.
 
 ## Firestore Rules source ownership
 

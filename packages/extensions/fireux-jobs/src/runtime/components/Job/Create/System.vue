@@ -3,23 +3,25 @@
 <!-- Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: diagnose the canonical Job authoring shape. -->
 <template>
   <div class="space-y-3">
-    
     <ClientOnly>
-      
       <UCard v-if="agentCard">
         <template #header>
           <div class="space-y-1">
             <p class="text-sm text-muted">Creator</p>
-            <h2 class="text-lg font-semibold">Current agent</h2>
-            <p class="text-sm text-muted">This agent will own the job posting.</p>
+            <h2 class="text-lg font-semibold">Current hiring profile</h2>
+            <p class="text-sm text-muted">
+              This hiring profile will own the job posting.
+            </p>
           </div>
         </template>
 
-        
-        <AgentCardsPill v-bind="agentCard" :show-subtitle="false" :link="true" />
+        <AgentCardsPill
+          v-bind="agentCard"
+          :show-subtitle="false"
+          :link="true"
+        />
       </UCard>
 
-      
       <MoleculesCreateShell
         :loading="submitting"
         submit-label="Create"
@@ -27,16 +29,13 @@
         @submit="onSubmit"
       >
         <template #write>
-          
           <JobCreateWrite v-model:form="form" />
         </template>
 
         <template #preview>
-          
           <JobCreatePreview :form="form" />
         </template>
       </MoleculesCreateShell>
-
     </ClientOnly>
   </div>
 </template>
@@ -51,7 +50,9 @@ const router = useRouter()
 const { form, reset, submit } = useJobCreate()
 const { coreProfile, pill: agentInterface } = useAgent()
 
-const agentCard = computed(() => (coreProfile.value ? agentInterface(coreProfile.value) : null))
+const agentCard = computed(() =>
+  coreProfile.value ? agentInterface(coreProfile.value) : null
+)
 
 const submitting = ref(false)
 
@@ -70,5 +71,4 @@ async function onSubmit() {
     submitting.value = false
   }
 }
-
 </script>

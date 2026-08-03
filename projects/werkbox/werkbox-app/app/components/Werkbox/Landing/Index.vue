@@ -1,14 +1,31 @@
 <template>
   <LandingProductIndex :content="content">
-    <template #hero-preview>
-      <HeroPreview />
-    </template>
-
     <template #onboarding>
       <LandingProductEntryPaths :content="entryPaths" />
     </template>
 
     <template #specifics>
+      <LandingProductProofSection
+        section-id="werkbox-direct-hiring"
+        eyebrow="For small businesses"
+        title="Pay for the platform, not a percentage of your team."
+        description="Werkbox Pro is $20 per month. Publish work, review applications, and hire directly while the employer and professional keep control of their relationship."
+        supporting="The named employer—not Werkbox—employs and pays the professional directly."
+        :items="[
+          'Public jobs before signup',
+          'Named employers and workplaces',
+          'Reusable professional profiles',
+          'No hiring commission',
+        ]"
+        :action="{
+          label: 'Start hiring',
+          to: '/jobs/manage',
+          icon: 'i-lucide-arrow-right',
+        }"
+      >
+        <EmployerValue />
+      </LandingProductProofSection>
+
       <LandingProductProofSection
         section-id="werkbox-cleaning"
         eyebrow="Cleaning"
@@ -45,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import HeroPreview from './HeroPreview.vue'
+import EmployerValue from './EmployerValue.vue'
 import { content, entryPaths, networkCatalogue } from './landing-content'
 </script>
 

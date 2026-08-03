@@ -4,13 +4,14 @@
       <UCard>
         <div class="space-y-2">
           <h3 class="text-base font-semibold text-highlighted">
-            App-level Agent Settings
+            App-level Hiring Profile Settings
           </h3>
           <p class="text-sm text-muted">
-            There are currently no app-specific fields for the agent profile.
+            There are currently no app-specific fields for the hiring profile.
           </p>
           <p class="text-xs text-dimmed">
-            This section is reserved for tenant-specific overrides when they are needed.
+            This section is reserved for tenant-specific overrides when they are
+            needed.
           </p>
         </div>
       </UCard>
@@ -18,7 +19,7 @@
 
     <MoleculesStateCard
       v-else
-      entity="agent app profile"
+      entity="hiring app profile"
       kind="document"
       loading
     />

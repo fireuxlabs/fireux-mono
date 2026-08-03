@@ -3,7 +3,7 @@
   <ClientOnly>
     <section class="space-y-4">
       <UCard v-if="isLoading">
-        <p class="preview__fallback">Loading agent preview…</p>
+        <p class="preview__fallback">Loading hiring profile preview…</p>
       </UCard>
 
       <UCard v-else-if="hasPreview" class="space-y-6">
@@ -11,7 +11,7 @@
           <div class="preview__header-content">
             <p class="preview__eyebrow">Directory preview</p>
             <p class="preview__copy">
-              Snapshot of how your agent profile renders inside FireUX.
+              Snapshot of how your hiring profile renders inside FireUX.
             </p>
           </div>
 
@@ -41,7 +41,7 @@
       </UCard>
 
       <UCard v-else>
-        <p class="preview__fallback">Agent preview unavailable.</p>
+        <p class="preview__fallback">Hiring profile preview unavailable.</p>
       </UCard>
     </section>
   </ClientOnly>
@@ -53,7 +53,9 @@ import { useAgent } from '../../../composables/fireux/firestore/profiles/Agent/u
 
 const { coreProfile, pending, preview: agentInterface } = useAgent()
 
-const previewCard = computed(() => (coreProfile.value ? agentInterface(coreProfile.value) : null))
+const previewCard = computed(() =>
+  coreProfile.value ? agentInterface(coreProfile.value) : null
+)
 const isLoading = computed(() => Boolean(pending.value))
 const hasPreview = computed(() => Boolean(previewCard.value))
 
@@ -65,5 +67,4 @@ const toggleView = () => {
   if (!canToggle.value) return
   showCellView.value = !showCellView.value
 }
-
 </script>

@@ -12,7 +12,10 @@ import {
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
-import type { FireuxSeoExtendContext } from 'fireux-core/config/app/seo'
+import type {
+  FireuxSeoExtendContext,
+  FireuxSeoSitemapsExtendContext,
+} from 'fireux-core/config/app/seo'
 import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
 import { configureLayouts } from './config/module/layouts-config'
@@ -26,14 +29,13 @@ export interface ModuleOptions {
   sourceAppDoorways?: FireuxJobSourceAppDoorways
 }
 
-function normalizeIdentifiers(value: unknown, fallback: string[] = []): string[] {
+function normalizeIdentifiers(
+  value: unknown,
+  fallback: string[] = []
+): string[] {
   const source = Array.isArray(value) ? value : fallback
   return Array.from(
-    new Set(
-      source
-        .map((entry) => String(entry ?? '').trim())
-        .filter(Boolean)
-    )
+    new Set(source.map((entry) => String(entry ?? '').trim()).filter(Boolean))
   )
 }
 
@@ -65,9 +67,12 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addStaticPath('/agents/learn-more')
       ctx.addStaticPath('/professionals/learn-more')
     })
-    // Job detail discovery cannot use the generic visibility-only root sitemap.
-    // Keep it fail-closed until sitemap generation consumes the same public
-    // status/category/tenant projection as `/api/public/jobs`.
+    nuxt.hook(
+      'fireux:seo:sitemaps:extend' as any,
+      (ctx: FireuxSeoSitemapsExtendContext) => {
+        ctx.addDocument('/sitemaps/jobs.xml')
+      }
+    )
     const categoryScope = options?.categories === 'all' ? 'all' : 'allowlist'
     const categories = normalizeIdentifiers(
       categoryScope === 'allowlist' ? options?.categories : [],

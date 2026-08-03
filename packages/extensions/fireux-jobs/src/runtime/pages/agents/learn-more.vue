@@ -1,19 +1,19 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Learn More: Agent Profile"
+      title="Learn more: Hiring profile"
       description="Present your business to the talent you want to hire."
     />
 
     <UPageBody class="pagebody">
       <p>
-        An Agent Profile represents the business, kitchen, or venue that is
-        hiring. It gives professionals a clear sense of who you are before they
-        apply.
+        A hiring profile represents the team posting jobs for a business,
+        kitchen, or venue. It gives professionals a clear sense of who is
+        posting before they apply.
       </p>
 
       <div>
-        <h2 class="font-semibold">With an Agent Profile you can:</h2>
+        <h2 class="font-semibold">With a hiring profile you can:</h2>
         <ul class="mt-2 list-disc space-y-1 pl-6">
           <li>Post jobs that surface across the FireUX network.</li>
           <li>Manage applicants with a consistent brand presence.</li>
@@ -38,5 +38,5 @@ definePageMeta({
   visibility: { profiles: ['agent'] },
 })
 
-useHead({ title: 'Agent Profile · Learn More' })
+useHead({ title: 'Hiring profile · Learn more' })
 </script>

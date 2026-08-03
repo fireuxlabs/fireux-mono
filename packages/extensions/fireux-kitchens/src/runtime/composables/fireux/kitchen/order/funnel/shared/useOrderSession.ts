@@ -70,6 +70,15 @@ const readStoredLines = (value: unknown): StoredSessionLine[] =>
         )
     : []
 
+const readStoredDraft = (value: unknown) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null
+  const stored = value as Record<string, unknown>
+  const expiresAt = Date.parse(text(stored.expiresAt))
+  return Number.isFinite(expiresAt) && expiresAt > Date.now()
+    ? stored.items
+    : null
+}
+
 export const orderSessionContextForOrderType = (
   orderType: KitchenOrderType
 ): MenuRouteContext => menuChoiceContextForOrderType(orderType)
@@ -143,8 +152,13 @@ export const readOrderSessionSummaries = (
       const orderType = key.slice(prefix.length, -':order'.length)
       if (!isKitchenOrderType(orderType)) continue
 
-      const parsed = JSON.parse(window.localStorage.getItem(key) || '{}')
-      const lines = readStoredLines(parsed)
+      const parsed = JSON.parse(window.localStorage.getItem(key) || 'null')
+      const storedDraft = readStoredDraft(parsed)
+      if (!storedDraft) {
+        window.localStorage.removeItem(key)
+        continue
+      }
+      const lines = readStoredLines(storedDraft)
       const quantity = lines.reduce(
         (total, line) => total + Math.max(0, numberValue(line.quantity)),
         0

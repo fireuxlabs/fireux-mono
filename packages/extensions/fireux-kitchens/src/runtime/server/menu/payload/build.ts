@@ -254,7 +254,8 @@ export async function buildMenuManifestPayload(
     manifest: sproochliEnabled
       ? await resolveMenuSproochli(
           manifest,
-          normalizeSproochliLanguage(scope.sproochliLanguage)
+          normalizeSproochliLanguage(scope.sproochliLanguage),
+          scope.sproochli?.default_language || 'mixed'
         )
       : manifest,
   }

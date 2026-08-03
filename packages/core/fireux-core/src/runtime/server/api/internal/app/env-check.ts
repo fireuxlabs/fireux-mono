@@ -189,10 +189,6 @@ export default defineEventHandler(async (event: H3Event): Promise<EnvCheckRespon
 
   const optionalClient = [
     {
-      key: 'firebaseApp.measurementId',
-      present: hasText(firebaseApp.measurementId),
-    },
-    {
       key: 'fireux.primaryColor',
       present:
         hasText(fireux.primaryColor) ||

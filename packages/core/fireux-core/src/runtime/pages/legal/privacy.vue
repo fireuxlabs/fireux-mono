@@ -56,7 +56,7 @@
 
       <section class="space-y-3">
         <h2 class="text-lg font-semibold">
-          3. Cookies, local storage, and measurement
+          3. Cookies and browser storage
         </h2>
         <p>
           FireUX and Misebox apps do not use analytics or advertising cookies,
@@ -66,12 +66,12 @@
           storage, these apps do not show a cookie-consent popup.
         </p>
         <p>
-          Some features use strictly necessary browser storage. Authentication
-          providers may maintain sign-in and security state. A selected
-          language may be remembered. An anonymous order may store a
-          short-lived recovery capability so that the same browser can return
-          to its order. These values provide the feature requested by the user;
-          they are not read as analytics identifiers and are not joined into a
+          Strictly necessary storage begins only after a visitor requests a
+          feature such as sign-in, a remembered preference, a cart, anonymous
+          order recovery, or chat. The authoritative list of purposes, owners,
+          lifetimes, and deletion behaviour is the
+          <NuxtLink to="/legal/storage">Cookies and browser storage page</NuxtLink>.
+          These values are not read as analytics identifiers or joined into a
           behavioural profile.
         </p>
         <p>

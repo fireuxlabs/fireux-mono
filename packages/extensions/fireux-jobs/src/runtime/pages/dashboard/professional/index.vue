@@ -25,7 +25,7 @@
             />
             <UButton
               to="/dashboard/professional/my-jobs"
-              label="View my work"
+              label="View applications & work"
               variant="soft"
               color="neutral"
               size="sm"
@@ -90,7 +90,7 @@ definePageMeta({
   nav: {
     visibility: { modules: ['fireux-jobs'], profiles: ['professional'] },
     key: 'dashboard-professional-home',
-    label: 'Professional Dashboard',
+    label: 'Professional profile',
     icon: 'i-lucide-user-star',
     position: 'middle',
     desktop: false,

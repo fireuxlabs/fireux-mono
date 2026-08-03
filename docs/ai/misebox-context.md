@@ -259,13 +259,23 @@ Before each task:
   definition is “The Control Centre For Kitchen
   Operations”; the Kitchen Console is the concrete workspace that runs menus,
   preparation, service, supply, and finance. The Main App hero uses the shared
-  typed hero text once and fills its named proof slot with a mobile-first
-  guest-Menu-to-Kitchen-Console handoff. Publish, Prepare, and Serve are
-  explicit user-selected chapters over the existing Product Demo projection;
-  no chapter autoplays or couples to page scrolling. The Menu and Console
-  children remain canonical read-only presentation, and changing chapters
-  performs no Demo, Live, Test, Firebase, Storage, or order mutation. Misebox
-  owns this composition and does not inherit Core orbit motion or geometry.
+  typed hero text once and fills its named preview slot with one static
+  Misebox-owned product image: a Deanos ordering kiosk, the Kitchen Console
+  Mise en place surface, and a customer delivery confirmation. The image is
+  presentation only and performs no Demo, Live, Test, Firebase, Storage, or
+  order mutation. Misebox owns its content while Core continues to own the
+  shared hero layout and responsive behaviour.
+  Misebox places a compact App-owned pricing strip full-width beneath the hero
+  copy and product image. It presents the source-backed Free, Premium, and
+  Managed tiers and links to the full pricing route; it replaces secondary
+  capability notes rather than duplicating a separate onboarding section. A
+  single horizontally scrolling rail above the hero projects only the current
+  Kitchen operations from the existing typed operation catalogue and links to
+  their canonical public routes. It omits the generic Operations doorway,
+  Console group labels, and Supplier operations.
+  The first Kitchen Console proof explicitly uses Core's copy-emphasis variant
+  so its selected Operation explanation is wider and more prominent than the
+  read-only Console preview; later proof sections retain the balanced default.
   The existing Core hero
   action system keeps the Get started and Go to console buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
@@ -392,6 +402,17 @@ Before each task:
   the same Firebase Auth, database, App membership, App Agent support, and
   `source_app_id` author boundary. Creating an independent Jobs App requires a
   separately verified membership, Rules, and existing-Job migration.
+- `suppliers.misebox.app` follows the same focused-doorway pattern over the
+  existing `misebox-app` authority. Its root redirects to the package-owned
+  Supplier directory and its public Supplier routes use a Supplier-focused
+  project layout with Browse, guidance, and Supplier Console doorways. It
+  retains the same Firebase Auth, database, App membership, Supplier/AppSupplier
+  authority, and canonical Supplier Console. The main `misebox.app` landing is
+  Kitchen-first: it projects only Kitchen Operations. Kitchen `Suppliers`
+  remains the Kitchen-side sourcing Operation; Supplier Catalogue,
+  Ingredients, and Items remain Supplier Console Operations and are presented
+  through the Supplier doorway. Creating an independent Supplier App requires
+  separately verified membership, Rules, and data migration.
 - Misebox owns its complete main Firestore Rules manifest at
   `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`
   and its named policy fragments in the adjacent `rules/` directory. Core

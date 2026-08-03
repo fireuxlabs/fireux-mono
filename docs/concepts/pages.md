@@ -1,9 +1,11 @@
 # Pages
-Updated: 2026-07-23
-Ref: 796952bf0
+
+Updated: 2026-08-03
+Ref: 8287d99bb
 Role: map, not canon
 
 ## Purpose
+
 Map how route pages should be built and where consensus is still forming.
 
 ## Vertical links
@@ -20,6 +22,7 @@ Map how route pages should be built and where consensus is still forming.
 - components.md
 - composables.md
 - debug.md
+- search-visibility.md
 
 ## Current convention
 
