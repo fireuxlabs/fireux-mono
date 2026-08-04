@@ -5,10 +5,13 @@
     hero-alt="A small brand team preparing products and storefront content"
     hero-position="58% center"
     :section-dwell="false"
+    :pricing-plans="landingTiers"
     :surface-items="surfaceItems"
   />
 </template>
 
 <script setup lang="ts">
 import { content, surfaceItems } from './landing-content'
+
+const { landingTiers } = useSlapPricing()
 </script>

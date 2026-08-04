@@ -6,6 +6,7 @@
     hero-position="54% center"
     rail-label="Guest stay operations"
     :rail-items="railItems"
+    :pricing-plans="landingTiers"
     :surface-items="surfaceItems"
   >
     <UContainer class="py-16">
@@ -105,8 +106,10 @@
 
 <script setup lang="ts">
 import { useBuenoHostHome } from '../../../composables/useBuenoHostHome'
+import { useBuenoHostPricing } from '../../../composables/useBuenoHostPricing'
 import { content, railItems, surfaceItems } from './landing-content'
 
 const { consoleFeatures, isExternalUrl, resolvedIntegrationCards } =
   useBuenoHostHome()
+const { landingTiers } = useBuenoHostPricing()
 </script>

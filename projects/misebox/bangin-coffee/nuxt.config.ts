@@ -1,7 +1,6 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
@@ -9,10 +8,5 @@ const fireuxConfig = defineFireuxConfig({
   name: 'Bangin Coffee',
   shortName: 'Bangin Coffee',
   role: 'tenant',
-  consoles: [],
   modules: ['fireux-go-qr'],
-})
-
-export default withFireuxNuxtConfig(fireuxConfig, {
-  css: ['@/assets/styles/main.css'],
 })

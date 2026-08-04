@@ -1,4 +1,3 @@
-// FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
@@ -8,11 +7,10 @@ export default defineFireuxConfig({
   id: 'yellow-velo',
   name: 'Yellow Velo',
   shortName: 'Yellow Velo',
-  databaseId: 'slap',
   role: 'tenant',
   modules: ['fireux-products'],
   seo: {
-    staticPaths: ['/', '/products', '/blog'],
+    staticPaths: ['/products', '/blog'],
     noindexPaths: ['/console', '/console/**', '/admin', '/admin/**'],
   },
 })

@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
 Updated: 2026-08-04
-Ref: d232cc731
+Ref: 1d6857c57
 Role: living context
 Scope: repo-wide
 
@@ -104,6 +104,9 @@ Before each task:
 - FireUX Core owns the default Nuxt page-transition config and its matching CSS
   integration. Navigation remains real Nuxt routing with clean URLs; the
   transition changes presentation only.
+- Core also discovers the conventional App-owned
+  `app/assets/styles/main.css`; projects own the stylesheet contents without
+  repeating its Nuxt registration.
 - Keep layout transitions disabled by default so persistent layout chrome stays
   mounted when the route keeps the same layout.
 - A genuine app-wide opt-out or override belongs in the native Nuxt `app`
@@ -288,13 +291,15 @@ Before each task:
   Operations remain navigation within a Console and do not become separate
   product surfaces. App-owned deeper feature sections follow the surface
   presentation.
-  Core `useProductPricingLiterature` owns the common commercial meanings and
+  Core `usePricing` owns the common commercial meanings and
   CHF amounts: Free is a functional Console, Pro is CHF 20/month self-managed,
   Managed is CHF 50/month with bounded FireUX assistance, and Your App is CHF
   600 setup followed by Pro or Managed. FireUX alone adds Your Ecosystem at CHF
   1,200 setup plus CHF 50/month maintenance and a 50% customer-App revenue
-  share. Each Main App owns its Console capabilities and limits; tenant Apps do
-  not acquire the ecosystem-owner literature. Main Apps place Core
+  share. Each Main App owns one `useXPricing` wrapper with its Console
+  capabilities, limits, name, and contact; pricing literature never enters
+  `defineFireuxConfig` or public runtime config. Tenant Apps do not acquire the
+  ecosystem-owner literature. Main Apps place Core
   `LandingOperationRail` above Section One and supply only their own working
   Console Operations. Every Console family owns Identity. Its source-backed
   Operation catalogue is the single authority for Console routes, the complete

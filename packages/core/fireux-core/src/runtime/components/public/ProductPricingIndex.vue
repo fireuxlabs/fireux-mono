@@ -1,13 +1,14 @@
 <template>
   <PublicPricingPage
-    :title="`${appName} pricing`"
-    :description="description"
+    :title="`${props.appName} pricing`"
+    :description="props.description"
     :plans="plans"
   >
     <template #intro>
       <p class="text-sm leading-6 text-toned">
         Free is functional. Pro gives the operation more capacity. Managed adds
-        practical help from FireUX. Your App gives the business its own identity.
+        practical help from FireUX. Your App gives the business its own
+        identity.
       </p>
     </template>
 
@@ -21,17 +22,21 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useProductPricingLiterature } from '../../composables/fireux/pricing/useProductPricingLiterature'
+import type { PricingTier } from '../../composables/fireux/pricing/usePricing'
 
-const { appName, description, tiers } = useProductPricingLiterature()
+const props = defineProps<{
+  appName: string
+  description: string
+  tiers: readonly PricingTier[]
+}>()
 const plans = computed(() =>
-  tiers.value.map((tier) => ({
+  props.tiers.map((tier) => ({
     ...tier,
     priceCurrency: 'CHF',
     button: {
       label: `View ${tier.title}`,
       to: tier.to,
-      color: tier.id === 'pro' ? 'primary' as const : 'neutral' as const,
+      color: tier.id === 'pro' ? ('primary' as const) : ('neutral' as const),
       variant: 'soft' as const,
       trailingIcon: 'i-lucide-arrow-right',
     },

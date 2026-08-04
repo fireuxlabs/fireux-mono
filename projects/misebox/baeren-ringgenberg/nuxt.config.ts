@@ -1,11 +1,6 @@
-// FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
-// Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: make the existing Bären Jobs workplace default explicit.
-// Concurrent edit — 2026-07-21 12:52 CEST — Misebox Jobs workplace adapter: classify new hospitality jobs explicitly.
-// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
@@ -37,8 +32,4 @@ const fireuxConfig = defineFireuxConfig({
       },
     ],
   ],
-})
-
-export default withFireuxNuxtConfig(fireuxConfig, {
-  css: ['@/assets/styles/main.css'],
 })

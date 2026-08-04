@@ -143,7 +143,6 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
       {}) as FireUXConfig['navOverrides'],
 
     contactEmail: optString(fireux, 'contactEmail'),
-    pricing: optRecord(fireux, 'pricing') as FireUXConfig['pricing'],
     designPack: optRecord(fireux, 'designPack') as FireUXConfig['designPack'],
     designPacks: optRecord(fireux, 'designPacks') as
       | Record<string, Record<string, unknown>>

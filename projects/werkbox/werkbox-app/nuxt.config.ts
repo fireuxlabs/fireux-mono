@@ -1,6 +1,3 @@
-// Concurrent edit — 2026-07-21 12:23 CEST — Cleanbox-to-Werkbox app migration: add the additive Werkbox global app config.
-// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
-// Concurrent edit — 2026-07-22 12:56 CEST — Werkbox all-category scope: expose the general practical-work Job hub.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
@@ -8,26 +5,10 @@ export default defineFireuxConfig({
   // Preserve deployed authority until a separately approved remote identity migration exists.
   projectId: 'cleanbox',
   ecosystemId: 'cleanbox',
-  databaseId: 'cleanbox',
   id: 'cleanbox-app',
   name: 'Werkbox',
   shortName: 'Werkbox',
   role: 'global',
-  pricing: {
-    consoleName: 'Work Console',
-    free: [
-      'Browse public work',
-      'Create a professional or business profile',
-      'Apply to published work directly',
-      'Use the functional Work Console',
-    ],
-    pro: [
-      'Publish work',
-      'Review applications and hire directly',
-      'Manage customer and job workspaces',
-      'Coordinate the team without a hiring commission',
-    ],
-  },
   domains: ['jobs'],
   profiles: ['agent', 'professional'],
   selfJoinEnabled: true,

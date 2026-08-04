@@ -98,8 +98,10 @@ export function configureDashboardPanelDefaults(nuxt: NuxtConfig) {
 }
 
 export function configureCoreCss(nuxt: NuxtConfig) {
+  const appCss = resolve(process.cwd(), 'app/assets/styles/main.css')
   nuxt.css = [
     'fireux-core/runtime/assets/styles/main.css',
     'fireux-core/runtime/assets/styles/main.scss',
+    ...(existsSync(appCss) ? ['@/assets/styles/main.css'] : []),
   ]
 }

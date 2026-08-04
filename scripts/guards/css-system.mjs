@@ -709,6 +709,19 @@ function assertCorePageTransitionArchitecture(repoRoot) {
       `${NUXT_BASELINE_PATH} must leave layout transitions disabled so shared chrome stays persistent`
     )
   }
+  if (
+    baselineSource &&
+    (!baselineSource.includes(
+      "resolve(process.cwd(), 'app/assets/styles/main.css')"
+    ) ||
+      !baselineSource.includes(
+        "existsSync(appCss) ? ['@/assets/styles/main.css'] : []"
+      ))
+  ) {
+    violations.push(
+      `${NUXT_BASELINE_PATH} must discover the conventional App-owned main stylesheet`
+    )
+  }
 
   const fireuxConfigSource = readRequiredSource(FIREUX_CONFIG_PATH)
   if (

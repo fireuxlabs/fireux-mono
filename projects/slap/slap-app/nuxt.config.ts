@@ -1,4 +1,3 @@
-// FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 
 export default defineFireuxConfig({
@@ -9,21 +8,5 @@ export default defineFireuxConfig({
   name: 'Slap',
   shortName: 'Slap',
   role: 'global',
-  pricing: {
-    consoleName: 'Commerce Console',
-    free: [
-      'Create one brand workspace',
-      'Publish products and stories',
-      'Use the Commerce Console',
-      'Build the first public brand surface',
-    ],
-    pro: [
-      'Manage products, collections, and drops',
-      'Publish stories and gallery content',
-      'Operate the branded storefront',
-      'Give the commerce team Console access',
-    ],
-  },
-  databaseId: 'slap',
   modules: ['fireux-products'],
 })

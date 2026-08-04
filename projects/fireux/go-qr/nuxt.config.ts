@@ -1,9 +1,6 @@
-// FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
-import { goQrNuxtOverrides } from './app/config/provider.config'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'fireux',
   projectId: 'fireux',
   id: 'go-qr',
@@ -17,5 +14,3 @@ const fireuxConfig = defineFireuxConfig({
     noindexPaths: ['/console', '/console/**', '/admin', '/admin/**'],
   },
 })
-
-export default withFireuxNuxtConfig(fireuxConfig, goQrNuxtOverrides)

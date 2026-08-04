@@ -55,7 +55,11 @@ const CORE_PRICING_STRIP_PATH =
 const CORE_PRODUCT_PRICING_STRIP_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue'
 const CORE_PRODUCT_PRICING_SOURCE_PATH =
-  'packages/core/fireux-core/src/runtime/composables/fireux/pricing/useProductPricingLiterature.ts'
+  'packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts'
+const CORE_PRODUCT_PRICING_INDEX_PATH =
+  'packages/core/fireux-core/src/runtime/components/public/ProductPricingIndex.vue'
+const CORE_PRODUCT_PRICING_TIER_PATH =
+  'packages/core/fireux-core/src/runtime/components/public/ProductPricingTier.vue'
 const CORE_OPERATION_RAIL_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/OperationRail.vue'
 const CORE_PRODUCT_LANDING_TYPE_PATH =
@@ -221,6 +225,80 @@ const FIREUX_ECOSYSTEMS_PATH =
   'projects/fireux/fireux-app/app/components/landing/Ecosystems.vue'
 const MOBILE_FIRST_MARKER =
   '/* Mobile-first baseline. Width queries below may only enhance this layout. */'
+const PRICING_APP_CONTRACTS = [
+  {
+    name: 'FireUX',
+    configPath: 'projects/fireux/fireux-app/nuxt.config.ts',
+    composablePath:
+      'projects/fireux/fireux-app/app/composables/useFireuxPricing.ts',
+    composableName: 'useFireuxPricing',
+    indexPath: 'projects/fireux/fireux-app/app/pages/pricing/index.vue',
+    tierPath: 'projects/fireux/fireux-app/app/pages/pricing/[tier].vue',
+    landingPath: FIREUX_PRICING_STRIP_PATH,
+  },
+  {
+    name: 'Misebox',
+    configPath: 'projects/misebox/misebox-app/nuxt.config.ts',
+    composablePath:
+      'projects/misebox/misebox-app/app/composables/useMiseboxPricing.ts',
+    composableName: 'useMiseboxPricing',
+    indexPath: 'projects/misebox/misebox-app/app/pages/pricing/index.vue',
+    tierPath: 'projects/misebox/misebox-app/app/pages/pricing/[tier].vue',
+    landingPath: MISEBOX_PRICING_STRIP_PATH,
+  },
+  {
+    name: 'Werkbox',
+    configPath: 'projects/werkbox/werkbox-app/nuxt.config.ts',
+    composablePath:
+      'projects/werkbox/werkbox-app/app/composables/useWerkboxPricing.ts',
+    composableName: 'useWerkboxPricing',
+    indexPath: 'projects/werkbox/werkbox-app/app/pages/pricing/index.vue',
+    tierPath: 'projects/werkbox/werkbox-app/app/pages/pricing/[tier].vue',
+    landingPath: WERKBOX_ADAPTER_PATH,
+  },
+  {
+    name: 'Bringli',
+    configPath: 'projects/bringli/bringli-app/nuxt.config.ts',
+    composablePath:
+      'projects/bringli/bringli-app/app/composables/useBringliPricing.ts',
+    composableName: 'useBringliPricing',
+    indexPath: 'projects/bringli/bringli-app/app/pages/pricing/index.vue',
+    tierPath: 'projects/bringli/bringli-app/app/pages/pricing/[tier].vue',
+    landingPath:
+      'projects/bringli/bringli-app/app/components/Bringli/Landing/Index.vue',
+  },
+  {
+    name: 'Slap',
+    configPath: 'projects/slap/slap-app/nuxt.config.ts',
+    composablePath: 'projects/slap/slap-app/app/composables/useSlapPricing.ts',
+    composableName: 'useSlapPricing',
+    indexPath: 'projects/slap/slap-app/app/pages/pricing/index.vue',
+    tierPath: 'projects/slap/slap-app/app/pages/pricing/[tier].vue',
+    landingPath: SLAP_ADAPTER_PATH,
+  },
+  {
+    name: 'Granite',
+    configPath: 'projects/granite/granite-app/nuxt.config.ts',
+    composablePath:
+      'projects/granite/granite-app/app/composables/useGranitePricing.ts',
+    composableName: 'useGranitePricing',
+    indexPath: 'projects/granite/granite-app/app/pages/pricing/index.vue',
+    tierPath: 'projects/granite/granite-app/app/pages/pricing/[tier].vue',
+    landingPath:
+      'projects/granite/granite-app/app/components/Granite/Landing/Index.vue',
+  },
+  {
+    name: 'BuenoHost',
+    configPath: 'projects/buenohost/buenohost-app/nuxt.config.ts',
+    composablePath:
+      'projects/buenohost/buenohost-app/app/composables/useBuenoHostPricing.ts',
+    composableName: 'useBuenoHostPricing',
+    indexPath: 'projects/buenohost/buenohost-app/app/pages/pricing.vue',
+    tierPath: 'projects/buenohost/buenohost-app/app/pages/pricing/[tier].vue',
+    landingPath:
+      'projects/buenohost/buenohost-app/app/components/BuenoHost/Landing/Index.vue',
+  },
+]
 
 function read(repoRoot, filePath) {
   return readFileSync(path.join(repoRoot, filePath), 'utf8')
@@ -705,10 +783,20 @@ export async function run(ctx) {
   const pricingStrip = read(repoRoot, CORE_PRICING_STRIP_PATH)
   const productPricingStrip = read(repoRoot, CORE_PRODUCT_PRICING_STRIP_PATH)
   const productPricingSource = read(repoRoot, CORE_PRODUCT_PRICING_SOURCE_PATH)
+  const productPricingIndex = read(repoRoot, CORE_PRODUCT_PRICING_INDEX_PATH)
+  const productPricingTier = read(repoRoot, CORE_PRODUCT_PRICING_TIER_PATH)
   const operationRail = read(repoRoot, CORE_OPERATION_RAIL_PATH)
   const miseboxPricingStrip = read(repoRoot, MISEBOX_PRICING_STRIP_PATH)
   const fireuxPricingStrip = read(repoRoot, FIREUX_PRICING_STRIP_PATH)
   const productLandingTypes = read(repoRoot, CORE_PRODUCT_LANDING_TYPE_PATH)
+  const pricingAppContracts = PRICING_APP_CONTRACTS.map((contract) => ({
+    ...contract,
+    config: read(repoRoot, contract.configPath),
+    composable: read(repoRoot, contract.composablePath),
+    index: read(repoRoot, contract.indexPath),
+    tier: read(repoRoot, contract.tierPath),
+    landing: read(repoRoot, contract.landingPath),
+  }))
   const discoveredProductLandingAdapters =
     discoverProductLandingAdapters(repoRoot)
   const alignedMainAppLandings = ALIGNED_MAIN_APP_LANDING_PATHS.map(
@@ -1081,7 +1169,8 @@ export async function run(ctx) {
     "price: 'CHF 50'",
     "price: 'CHF 600'",
     "price: 'CHF 1,200'",
-    "ecosystemKey === 'fireux'",
+    'includesEcosystemTier?: boolean',
+    'profile.includesEcosystemTier === true',
     '50% App revenue share',
   ]) {
     if (!productPricingSource.includes(required)) {
@@ -1091,11 +1180,62 @@ export async function run(ctx) {
     }
   }
 
-  for (const required of ['LandingPricingStrip', 'landingTiers']) {
+  for (const required of ['LandingPricingStrip', 'props.plans']) {
     if (!productPricingStrip.includes(required)) {
       violations.push(
         `${CORE_PRODUCT_PRICING_STRIP_PATH}: missing shared product pricing adapter (${required})`
       )
+    }
+  }
+
+  for (const [filePath, source] of [
+    [CORE_PRODUCT_PRICING_INDEX_PATH, productPricingIndex],
+    [CORE_PRODUCT_PRICING_TIER_PATH, productPricingTier],
+    [CORE_PRODUCT_PRICING_STRIP_PATH, productPricingStrip],
+  ]) {
+    for (const forbidden of [
+      'usePricing(',
+      'useFireUXConfig(',
+      'runtimeConfig',
+    ]) {
+      if (source.includes(forbidden)) {
+        violations.push(
+          `${filePath}: shared pricing presentation must receive App-owned pricing data (${forbidden})`
+        )
+      }
+    }
+  }
+
+  for (const contract of pricingAppContracts) {
+    if (/\bpricing\s*:/.test(contract.config)) {
+      violations.push(
+        `${contract.configPath}: ${contract.name} pricing literature belongs in ${contract.composablePath}, not App config`
+      )
+    }
+
+    for (const required of [
+      'type PricingProfile',
+      'satisfies PricingProfile',
+      `export function ${contract.composableName}()`,
+      'return usePricing(',
+    ]) {
+      if (!contract.composable.includes(required)) {
+        violations.push(
+          `${contract.composablePath}: missing App-owned pricing contract (${required})`
+        )
+      }
+    }
+
+    for (const [filePath, source] of [
+      [contract.indexPath, contract.index],
+      [contract.tierPath, contract.tier],
+      [contract.landingPath, contract.landing],
+    ]) {
+      if (!source.includes(`${contract.composableName}()`)) {
+        violations.push(
+          `${filePath}: ${contract.name} pricing surface must use ${contract.composableName}()`
+        )
+      }
     }
   }
 

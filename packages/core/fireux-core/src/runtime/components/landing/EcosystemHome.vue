@@ -24,7 +24,10 @@
       </template>
 
       <template #onboarding>
-        <LandingProductPricingStrip />
+        <LandingProductPricingStrip
+          :app-name="appName"
+          :plans="props.pricingPlans"
+        />
       </template>
 
       <template v-if="surfaceItems.length" #surfaces>
@@ -54,6 +57,7 @@ import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
 import type {
+  LandingPricingPlan,
   LandingOperationRailItem,
   LandingProductIndexContent,
   LandingProductSurface,
@@ -65,6 +69,7 @@ const props = withDefaults(
     heroAlt: string
     heroImage: string
     heroPosition?: string
+    pricingPlans: readonly LandingPricingPlan[]
     railItems?: readonly LandingOperationRailItem[]
     railLabel?: string
     sectionDwell?: boolean

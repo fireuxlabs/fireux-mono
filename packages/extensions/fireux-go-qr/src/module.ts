@@ -8,12 +8,13 @@ export type FireuxGoQrModuleOptions = {
 }
 
 function setGoQrRuntime(nuxt: any, options: FireuxGoQrModuleOptions) {
-  const isDev = Boolean((nuxt.options as any).dev)
   const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
   const pub = (rc.public ||= {}) as Record<string, any>
   const fireux = (pub.fireux ||= {}) as Record<string, any>
   const current =
-    fireux.goQr && typeof fireux.goQr === 'object' && !Array.isArray(fireux.goQr)
+    fireux.goQr &&
+    typeof fireux.goQr === 'object' &&
+    !Array.isArray(fireux.goQr)
       ? fireux.goQr
       : {}
 
@@ -22,10 +23,8 @@ function setGoQrRuntime(nuxt: any, options: FireuxGoQrModuleOptions) {
     enabled: options.enabled ?? true,
     providerBaseUrl:
       options.providerBaseUrl ||
-      (isDev
-        ? process.env.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL ||
-          process.env.GO_QR_PROVIDER_BASE_URL
-        : '') ||
+      process.env.NUXT_PUBLIC_GO_QR_PROVIDER_BASE_URL ||
+      process.env.GO_QR_PROVIDER_BASE_URL ||
       current.providerBaseUrl ||
       'https://go-qr.web.app',
   }

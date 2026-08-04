@@ -1,8 +1,14 @@
 <template>
-  <PublicProductPricingIndex />
+  <PublicProductPricingIndex
+    :app-name="appName"
+    :description="description"
+    :tiers="tiers"
+  />
 </template>
 
 <script setup lang="ts">
+const { appName, description, tiers } = useFireuxPricing()
+
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -19,6 +25,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Pricing · FireUX',
-  description: 'FireUX pricing for Consoles, standalone Apps, and product ecosystems.',
+  description:
+    'FireUX pricing for Consoles, standalone Apps, and product ecosystems.',
 })
 </script>

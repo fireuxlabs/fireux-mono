@@ -144,6 +144,9 @@ export async function run(ctx) {
       const shapeViolation = checkProjectApp(appPath)
       if (shapeViolation) violations.push(shapeViolation)
 
+      const configViolations = checkProjectNuxtConfig(repoRoot, appPath)
+      violations.push(...configViolations)
+
       const tsconfigViolation = checkProjectTsconfigBase(appPath)
       if (tsconfigViolation) violations.push(tsconfigViolation)
 
@@ -165,6 +168,91 @@ export async function run(ctx) {
   }
 
   console.log('[guard] ✅ project apps valid')
+}
+
+function literalConfigValue(source, key) {
+  return (
+    source.match(new RegExp(`\\b${key}:\\s*['\"]([^'\"]+)['\"]`))?.[1] || ''
+  )
+}
+
+function checkProjectNuxtConfig(repoRoot, appPath) {
+  const configPath = path.join(appPath, 'nuxt.config.ts')
+  if (!existsSync(configPath)) return []
+
+  const source = readFileSync(configPath, 'utf8')
+  const relative = path.relative(repoRoot, configPath)
+  const violations = []
+  const reject = (reason) =>
+    violations.push(`[guard] ❌ ${relative}: ${reason}`)
+
+  if (/FireUX app config guide:/.test(source)) {
+    reject('remove the obsolete App-config guide comment.')
+  }
+  if (/^\s*\/\/\s*Concurrent edit\b/m.test(source)) {
+    reject('keep change history in Git, not nuxt.config.ts comments.')
+  }
+  if (/['"]@\/assets\/styles\/main\.css['"]/.test(source)) {
+    reject('Core discovers app/assets/styles/main.css automatically.')
+  }
+  if (/\bconsoles:\s*\[\s*\]/s.test(source)) {
+    reject(
+      'omit consoles when the App has no Consoles; [] is the Core default.'
+    )
+  }
+  if (/\bstaticPaths:\s*\[[^\]]*['"]\/['"]/s.test(source)) {
+    reject("omit '/' from staticPaths; Core includes the root route.")
+  }
+  if (
+    /\b(?:googleMapsApiKey|googleMapsMapId|goQrProviderBaseUrl)\b/.test(source)
+  ) {
+    reject('integration runtime defaults belong to the consuming extension.')
+  }
+
+  const topLevelDeclarations =
+    source.match(
+      /^(?:const|let|var|function|class|type|interface|enum)\s+([A-Za-z_$][\w$]*)/gm
+    ) || []
+  for (const declaration of topLevelDeclarations) {
+    const name = declaration.match(/\s+([A-Za-z_$][\w$]*)/)?.[1]
+    if (name && name !== 'fireuxConfig') {
+      reject(
+        `move top-level ${name} into an owning App config, composable, or package seam.`
+      )
+    }
+  }
+
+  const role = literalConfigValue(source, 'role')
+  const ecosystem = literalConfigValue(source, 'ecosystem')
+  const appDatabaseId = literalConfigValue(source, 'databaseId')
+  const ecosystemConfigPath = path.join(
+    repoRoot,
+    'packages',
+    'ecosystem',
+    `fireux-${ecosystem}`,
+    'src',
+    'config',
+    'firebase',
+    'ecosystem.config.ts'
+  )
+  if (
+    role !== 'standalone' &&
+    appDatabaseId &&
+    existsSync(ecosystemConfigPath)
+  ) {
+    const ecosystemSource = readFileSync(ecosystemConfigPath, 'utf8')
+    const ecosystemDatabaseId = literalConfigValue(
+      ecosystemSource,
+      'databaseId'
+    )
+    if (appDatabaseId === ecosystemDatabaseId) {
+      reject(
+        `omit databaseId '${appDatabaseId}'; it is inherited from fireux-${ecosystem}.`
+      )
+    }
+  }
+
+  return violations
 }
 
 function checkProjectRegistryCompleteness(projectsRoot) {

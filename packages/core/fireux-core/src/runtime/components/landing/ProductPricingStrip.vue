@@ -1,14 +1,15 @@
 <template>
   <LandingPricingStrip
-    :ariaLabel="`${appName} plans`"
-    :plans="landingTiers"
+    :ariaLabel="`${props.appName} plans`"
+    :plans="props.plans"
   />
 </template>
 
 <script setup lang="ts">
-import type { ProductPricingProfile } from '../../composables/fireux/pricing/useProductPricingLiterature'
-import { useProductPricingLiterature } from '../../composables/fireux/pricing/useProductPricingLiterature'
+import type { LandingPricingPlan } from '../../../types/landing-product'
 
-const props = defineProps<{ profile?: ProductPricingProfile }>()
-const { appName, landingTiers } = useProductPricingLiterature(props.profile)
+const props = defineProps<{
+  appName: string
+  plans: readonly LandingPricingPlan[]
+}>()
 </script>

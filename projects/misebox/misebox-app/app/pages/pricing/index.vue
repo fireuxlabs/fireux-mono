@@ -1,8 +1,14 @@
 <template>
-  <PublicProductPricingIndex />
+  <PublicProductPricingIndex
+    :app-name="appName"
+    :description="description"
+    :tiers="tiers"
+  />
 </template>
 
 <script setup lang="ts">
+const { appName, description, tiers } = useMiseboxPricing()
+
 definePageMeta({
   layout: 'landing',
   nav: {
@@ -19,6 +25,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Pricing · Misebox',
-  description: 'Misebox pricing for the Kitchen Console, managed service, and your own App.',
+  description:
+    'Misebox pricing for the Kitchen Console, managed service, and your own App.',
 })
 </script>

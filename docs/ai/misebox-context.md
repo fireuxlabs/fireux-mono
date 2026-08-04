@@ -202,9 +202,9 @@ Before each task:
   defaults, or a competing public Menu renderer. Public Menu routes, layout,
   resolution, and ordering projections belong to `fireux-kitchens`.
 - `fireux-kitchens` also owns the shared Bringli Supplier-directory endpoint
-  and environment resolution used by its Supply surface. Misebox project Apps
-  do not repeat that runtime value, and an App that does not load Kitchens does
-  not acquire Kitchen supply configuration.
+  and Google Maps environment resolution used by its Supply and Delivery
+  surfaces. Misebox project Apps do not repeat those runtime values, and an App
+  that does not load Kitchens does not acquire Kitchen integration config.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
 - Misebox product literature follows `docs/concepts/product-language.md`.

@@ -7,9 +7,5 @@ export default defineFireuxConfig({
   id: 'holzworm',
   name: 'Holzworm',
   shortName: 'Holzworm',
-  databaseId: 'slap',
   role: 'tenant',
-  seo: {
-    staticPaths: ['/'],
-  },
 })

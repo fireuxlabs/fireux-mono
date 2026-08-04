@@ -1,7 +1,7 @@
 # Product language
 
 Updated: 2026-08-04
-Ref: d232cc731
+Ref: 1d6857c57
 Role: map, not canon
 
 ## Purpose
@@ -170,10 +170,12 @@ identity, and new development:
 - New Operations, Tools, integrations, third-party charges, and exceptional
   usage are not silently included; new development is quoted separately.
 
-Core `useProductPricingLiterature` owns these common meanings and amounts.
-Each Main App owns the concrete Console capabilities and limits that explain
-what its Free and Pro tiers contain. Tenant Apps do not own or advertise the
-FireUX ecosystem-creation offer.
+Core `usePricing` owns these common meanings and amounts. Each Main App owns a
+thin `useXPricing` wrapper containing the concrete Console capabilities and
+limits that explain what its Free and Pro tiers contain. Shared pricing
+components receive that result as presentation data. Pricing literature does
+not belong in `nuxt.config.ts` or public runtime config. Tenant Apps do not own
+or advertise the FireUX ecosystem-creation offer.
 
 ## Current source
 
@@ -184,7 +186,8 @@ FireUX ecosystem-creation offer.
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Dish.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue`
-- `packages/core/fireux-core/src/runtime/composables/fireux/pricing/useProductPricingLiterature.ts`
+- `packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts`
+- `projects/*/*-app/app/composables/use*Pricing.ts`
 
 ## Verification
 

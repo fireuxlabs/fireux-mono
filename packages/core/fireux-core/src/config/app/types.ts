@@ -5,12 +5,6 @@ import type { FireuxMetaContent } from './meta-content'
 
 export type FireuxAppRole = 'global' | 'tenant' | 'standalone'
 
-export type FireuxPricingConfig = {
-  consoleName: string
-  free: readonly string[]
-  pro: readonly string[]
-}
-
 export type FireuxConsoleFamilyConfig = {
   canCreate?: boolean
 }
@@ -58,8 +52,6 @@ export type FireuxAppConfig = {
   databaseId?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
-  /** Main App-owned product capabilities used by the shared pricing literature. */
-  pricing?: FireuxPricingConfig
   /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */
   designPack?: FireuxDesignPackConfig
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */

@@ -1,14 +1,12 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'buenohost',
   projectId: 'fireux',
   ecosystemId: 'buenohost',
   id: 'ausfinn-apartments',
   name: 'AUSFinn Apartments',
   shortName: 'AUSFinn',
-  databaseId: 'buenohost',
   role: 'tenant',
   seo: {
     siteUrl: 'https://ausfinn-apartments.web.app',
@@ -22,8 +20,4 @@ const fireuxConfig = defineFireuxConfig({
   domains: ['properties'],
   modules: ['fireux-properties', 'fireux-reservations'],
   navHiddenKeys: ['properties'],
-})
-
-export default withFireuxNuxtConfig(fireuxConfig, {
-  css: ['@/assets/styles/main.css'],
 })

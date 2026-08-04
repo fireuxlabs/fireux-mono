@@ -77,8 +77,10 @@ remembered implementations are not authority.
 - The Werkbox logical ecosystem currently uses the existing Firebase project
   `cleanbox-f15bc`, named database `cleanbox`, canonical Project/Ecosystem id
   `cleanbox`, and main App id `cleanbox-app`. These are physical or stored
-  legacy authority identifiers, not current product names. Renaming, moving,
-  or deleting remote resources requires an explicitly approved migration.
+  legacy authority identifiers, not current product names. Project Apps inherit
+  that physical database binding from `fireux-werkbox`; they do not repeat it
+  as an App-level `databaseId` override. Renaming, moving, or deleting remote
+  resources requires an explicitly approved migration.
 - Werkbox client Firestore authority is deliberately narrow: owners may read
   and edit only the allowlisted scalar portions of their canonical User,
   UserAccount, Agent, and Professional records; App membership/admin reads are

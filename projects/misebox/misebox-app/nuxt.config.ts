@@ -1,16 +1,7 @@
-// FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
-// Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: make the existing Misebox Jobs workplace default explicit.
-// Concurrent edit — 2026-07-21 12:52 CEST — Misebox Jobs workplace adapter: classify new hospitality jobs explicitly.
-// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: declare Misebox open self-membership policy.
-// Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: prerender the public Misebox demonstration family.
-// Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
-// The focused Jobs hostname remains a doorway over this Misebox App authority.
-// Supplier product ownership belongs to Bringli; Misebox consumes Supplier
-// projections only through its Kitchen sourcing operation.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
+import { miseboxJobsConfig } from './app/config/jobs.config'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'misebox',
   projectId: 'misebox',
   ecosystemId: 'misebox',
@@ -19,21 +10,6 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Misebox',
   contactEmail: 'misebox@misebox.app',
   role: 'global',
-  pricing: {
-    consoleName: 'Kitchen Console',
-    free: [
-      'Use one Kitchen workspace',
-      'Publish one Menu',
-      'Advertise permanent and temporary Jobs',
-      'Coordinate one active temporary Engagement',
-    ],
-    pro: [
-      'Publish multiple Menus',
-      'Manage team access and permissions',
-      'Run preparation, stations, tables, and orders',
-      'Manage suppliers, costing, and Kitchen finance',
-    ],
-  },
   designPack: { preset: 'sci-fire' },
   consoles: ['kitchen'],
   domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
@@ -85,28 +61,7 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-kitchens',
     'fireux-sproochli',
     ['fireux-suppliers', { mode: 'consumer' }],
-    [
-      'fireux-jobs',
-      {
-        categories: ['hospitality'],
-        sourceAppDoorways: {
-          'interlaken-essen': {
-            label: 'Apply with Interlaken Essen',
-            url: 'https://interlaken-essen.misebox.app',
-          },
-        },
-      },
-    ],
+    ['fireux-jobs', miseboxJobsConfig],
     'fireux-ai',
   ],
-})
-
-export default withFireuxNuxtConfig(fireuxConfig, {
-  css: ['@/assets/styles/main.css'],
-  runtimeConfig: {
-    public: {
-      googleMapsApiKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
-      googleMapsMapId: process.env.NUXT_PUBLIC_GOOGLE_MAPS_MAP_ID || '',
-    },
-  },
 })

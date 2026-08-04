@@ -1,7 +1,7 @@
 # Identity and product literature context
 
 Updated: 2026-08-04
-Ref: d232cc731
+Ref: 1d6857c57
 Role: living context
 Scope: cross-system Main App identity, landing, pricing, and product literature
 
@@ -28,8 +28,12 @@ shared public-language or pricing seam applies to them.
 
 ## Ownership boundaries
 
-- Core owns shared landing anatomy, motion, pricing meanings, tier routes, and
-  reusable presentation contracts.
+- Core owns shared landing anatomy, motion, pricing meanings, tier routes,
+  `usePricing`, and reusable prop-driven presentation contracts. Each Main App
+  owns one `useXPricing` wrapper for its Console name, capabilities, limits,
+  contact, and explicit ecosystem-tier eligibility. Pricing literature is not
+  App boot configuration and never enters `defineFireuxConfig` or public
+  runtime config.
 - Core owns the exact Main App Hero font family and display weight. Both remain
   identical across Main Apps unless an explicit product typography delta is
   declared.
@@ -90,7 +94,8 @@ summarises its children; it does not create a second product promise.
 - `packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue`
 - `packages/core/fireux-core/src/runtime/components/public/ProductPricingIndex.vue`
 - `packages/core/fireux-core/src/runtime/components/public/ProductPricingTier.vue`
-- `packages/core/fireux-core/src/runtime/composables/fireux/pricing/useProductPricingLiterature.ts`
+- `packages/core/fireux-core/src/runtime/composables/fireux/pricing/usePricing.ts`
+- `projects/*/*-app/app/composables/use*Pricing.ts`
 - `projects/*/*-app/app/components/*/Landing`
 - `scripts/guards/product-landing.mjs`
 - `docs/concepts/product-language.md`

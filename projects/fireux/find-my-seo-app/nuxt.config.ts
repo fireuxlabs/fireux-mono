@@ -1,4 +1,3 @@
-// FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 import { findMySeoNuxtOverrides } from './app/config/pages.config'

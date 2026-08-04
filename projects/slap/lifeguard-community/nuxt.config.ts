@@ -7,10 +7,9 @@ export default defineFireuxConfig({
   id: 'lifeguard-community',
   name: 'Lifeguard Community',
   shortName: 'Lifeguard Community',
-  databaseId: 'slap',
   role: 'tenant',
   seo: {
-    staticPaths: ['/', '/forum', '/training', '/merchandise'],
+    staticPaths: ['/forum', '/training', '/merchandise'],
     noindexPaths: ['/member', '/member/**'],
   },
 })

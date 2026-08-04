@@ -1,7 +1,7 @@
 # App config spine map
 
 Updated: 2026-08-04
-Ref: d232cc731
+Ref: 1d6857c57
 Role: map, not canon
 
 ## Purpose
@@ -30,10 +30,11 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 
 ## App pattern
 
-- Import `defineFireuxConfig`.
-- Import `withFireuxNuxtConfig`.
-- Build one `fireuxConfig`.
-- Export `withFireuxNuxtConfig(fireuxConfig, appOverrides)`.
+- Import `defineFireuxConfig` and export it directly when the App needs only
+  FireUX configuration.
+- Import `withFireuxNuxtConfig`, build one `fireuxConfig`, and export
+  `withFireuxNuxtConfig(fireuxConfig, appOverrides)` only for a genuine native
+  Nuxt or module override.
 - `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
   Do not repeat that package in `modules`.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
@@ -43,7 +44,12 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - Optional `databaseId` selects the App runtime database. The canonical App
   record lives there; without an override it lives in the Ecosystem binding
   database. The canonical Ecosystem record always stays in the binding's
-  identity database and must be read through an explicit identity seam.
+  identity database and must be read through an explicit identity seam. Do not
+  repeat the Ecosystem database id in project config; declare `databaseId` only
+  for a genuine App override, including a standalone App-owned database.
+- Core automatically includes `app/assets/styles/main.css` when the App owns
+  that conventional stylesheet. The stylesheet remains App-owned, but its
+  registration is not a project Nuxt override.
 - Core supplies the native Nuxt `app.pageTransition` default. It is presentation
   config, not a `FireuxAppConfig` or runtime field.
 - Blog is the one universal default extension and is loaded even when an App
@@ -55,16 +61,26 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
   Ecosystem packages do not bundle domain extensions on an App's behalf.
 - A reusable extension owns its shared runtime integration defaults and
   environment resolution. For example, `fireux-kitchens` owns the Bringli
-  Supplier-directory base URL used by its Supply surface; project Apps do not
-  repeat that runtime config, and Apps without Kitchens do not receive it.
+  Supplier-directory and Google Maps configuration used by its Kitchen
+  surfaces, while `fireux-go-qr` owns its provider origin. Project Apps do not
+  repeat those runtime values, and Apps that do not load the extension do not
+  receive its integration configuration.
 - Firebase SSR region and execution identity belong to the selected
   ecosystem's required `ssr` configuration. Apps inherit them and do not
   repeat deployment identity in `defineFireuxConfig`.
-- The authored `FireuxAppConfig` owns shared role, pricing, Console, auth, and
-  navigation subcontracts. `RuntimeApp` derives from it and makes normalized
+- The authored `FireuxAppConfig` owns shared role, Console, auth, and navigation
+  subcontracts. Pricing is App-owned product literature: each Main App keeps a
+  thin `useXPricing` wrapper over Core `usePricing`; commercial copy does not
+  enter `defineFireuxConfig` or public runtime config. `RuntimeApp` derives from
+  App config and makes normalized
   arrays/defaults explicit; `useFireUXConfig` maps that runtime shape to the
   consumer names once. Browser and trusted-server consumers use the same
   event-aware reader; Console consumers do not parse `runtimeConfig` again.
+- Keep `nuxt.config.ts` as a composition root. A substantial App-owned auth,
+  Jobs, or other option profile lives in a named `app/config/*.config.ts` file
+  and is imported into the relevant typed config or module option; executable
+  behavior belongs in a composable or owning package rather than a top-level
+  Nuxt-config helper.
 - Core `resolveConsoleCanCreate` owns the shared explicit-override then
   non-tenant fallback. Console UI and trusted entity onboarding use that same
   policy instead of repeating it inside each domain.

@@ -11,7 +11,10 @@
       </template>
 
       <template #onboarding>
-        <LandingProductPricingStrip />
+        <LandingProductPricingStrip
+          :app-name="pricingAppName"
+          :plans="landingTiers"
+        />
       </template>
 
       <template #surfaces>
@@ -94,6 +97,7 @@ import EmployerValue from './EmployerValue.vue'
 import { content, networkCatalogue, surfaceItems } from './landing-content'
 
 const appsController = useEcosystemAppCollection()
+const { appName: pricingAppName, landingTiers } = useWerkboxPricing()
 const showApps = computed(
   () =>
     appsController.outcome.value === 'pending' ||

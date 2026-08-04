@@ -6,10 +6,13 @@
     hero-position="55% center"
     rail-label="Supply operations"
     :rail-items="railItems"
+    :pricing-plans="landingTiers"
     :surface-items="surfaceItems"
   />
 </template>
 
 <script setup lang="ts">
 import { content, railItems, surfaceItems } from './landing-content'
+
+const { landingTiers } = useBringliPricing()
 </script>
