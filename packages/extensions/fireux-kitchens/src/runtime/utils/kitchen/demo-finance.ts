@@ -2,7 +2,7 @@ import {
   KitchenFinanceReportPeriodDays,
   type KitchenFinanceReportPeriod,
 } from '../../models/kitchen/finance-report.model'
-import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money.ts'
+import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money'
 import { addIsoDays } from './demo-finance-date'
 import { groupItems } from './demo-finance-items'
 import {

@@ -6,12 +6,12 @@ import {
   type H3Event,
 } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
-import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory.ts'
+import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
 import {
   projectPublicApp,
   toAppDirectoryEntry,
-} from 'fireux-core/runtime/server/utils/public-projection/public-app.dto.ts'
-import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/server/utils/public-projection/public-ecosystem.dto.ts'
+} from 'fireux-core/runtime/server/utils/public-projection/public-app.dto'
+import { projectEcosystemDirectoryEntry } from 'fireux-core/runtime/server/utils/public-projection/public-ecosystem.dto'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 
 type StoredDocument = Record<string, unknown> & { id: string }

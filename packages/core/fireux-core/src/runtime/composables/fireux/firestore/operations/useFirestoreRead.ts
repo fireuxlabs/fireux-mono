@@ -25,8 +25,8 @@ import {
   useCollection,
   useDocument,
   useFirestoreResolver,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { attachDevCollectionMeta } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+} from '../vuefire'
+import { attachDevCollectionMeta } from '../../../dev/useDevCollectionJson'
 import {
   createFirestoreExactDocLoader,
   type FirestoreLoadDocsByIdsOptions,

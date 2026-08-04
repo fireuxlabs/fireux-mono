@@ -80,7 +80,7 @@ import type { LandingProductCatalogueContent } from 'fireux-core/types/landing-p
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
-} from 'fireux-core/runtime/models/system/meta-content.model'
+} from 'fireux-core/config/app/meta-content'
 import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
 import { metaContent } from '../../../meta'
 import MiseboxLandingConsolePreview from './ConsolePreview/Index.vue'

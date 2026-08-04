@@ -1,10 +1,10 @@
-import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+import { safeString } from '../../../../../../shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import {
   AppStorage,
   type App,
 } from '../../../../../../../models/core/app.model'
-import type { AppSocialLinks } from '../../../../../../../models/utils/app'
+import type { AppSocialLinks } from '../../../../../../../models/core/app.model'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 import { resolveAppMediaForView } from '../appMedia'
 
@@ -55,7 +55,9 @@ export type AppSurfaceParts<TApp extends object = Partial<App>> = {
   app?: TApp | null | undefined
 }
 
-export type AppViewSource = Partial<App> & {
+export type AppViewSource = Partial<Omit<App, 'role' | 'status'>> & {
+  role?: App['role'] | ''
+  status?: App['status'] | ''
   detail_url?: string
   /** Narrow legacy read adapter. Canonical identity is ecosystem_id. */
   ecosystem?: string

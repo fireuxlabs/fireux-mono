@@ -52,7 +52,7 @@ export async function handleRemoveMember(
   const targetMembership = targetMembershipSnapshot.data()
   if (!targetMembershipSnapshot.exists) {
     const userRef = (sameDatabase ? appDb : identityDb)
-      .collection(UserStorage.rootCollection)
+      .collection(UserStorage.collection)
       .doc(userId)
     const driverRef = appRef.collection('drivers').doc(userId)
     const targetAuthorityRefs = await readTargetAuthorityRevocations(
@@ -110,7 +110,7 @@ export async function handleRemoveMember(
   }
   
   const userRef = (sameDatabase ? appDb : identityDb)
-    .collection(UserStorage.rootCollection)
+    .collection(UserStorage.collection)
     .doc(userId)
   const driverRef = appRef.collection('drivers').doc(userId)
   const [targetAuthorityRefs, driverSnapshot] = await Promise.all([

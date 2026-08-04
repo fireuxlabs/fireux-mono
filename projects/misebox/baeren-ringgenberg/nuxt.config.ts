@@ -24,6 +24,7 @@ const fireuxConfig = defineFireuxConfig({
   },
   navHiddenKeys: ['kitchens', 'places', 'companies', 'agents', 'professionals'],
   modules: [
+    'fireux-products',
     'fireux-places',
     'fireux-companies',
     'fireux-go-qr',

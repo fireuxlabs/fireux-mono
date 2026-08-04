@@ -1,7 +1,7 @@
 import {
   financialCurrencyMinorUnitDigits,
   financialMoneyFromDecimal,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import type {
   KitchenDemoDishSpec,
   KitchenDemoProductionAmount,

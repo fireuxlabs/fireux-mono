@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: expose filtered Ecosystem operation outcomes.
 import { computed } from 'vue'
-import { useEcosystemCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/fetch/useEcosystemCollection'
-import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
+import { useEcosystemCollection } from '../../../../firestore/core/ecosystem/fetch/useEcosystemCollection'
+import { useFirestoreCollectionState } from '../../../../firestore/operations/useFirestoreCollection'
 import { useProjectConsole } from '../../core/useProjectConsole'
 import {
   findProjectConsoleDemoScenario,

@@ -1,12 +1,16 @@
 {
   // App-local TypeScript config. Mirror the Nuxt app aliases explicitly for editor resolution.
-  "extends": "../tsconfig.app.base.json",
+  "extends": "../../tsconfig.projects.json",
   "compilerOptions": {
-    "composite": false,
-    "moduleResolution": "Bundler",
     "paths": {
-      "#pwa": ["../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": ["./.nuxt/imports.d.ts", "./app/.nuxt/imports.d.ts", "../../../types/nuxt-shims.d.ts"],
+      "#pwa": [
+        "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
+      ],
+      "#imports": [
+        "./.nuxt/imports.d.ts",
+        "./app/.nuxt/imports.d.ts",
+        "../../../types/nuxt-shims.d.ts"
+      ],
       "#build/*": ["./.nuxt/*", "./app/.nuxt/*"],
       "~": ["./app"],
       "~/*": ["./app/*"],
@@ -15,23 +19,32 @@
 
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
-      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
+      "fireux-core/runtime/*": [
+        "../../../packages/core/fireux-core/src/runtime/*"
+      ],
 
-      "fireux-fireux": ["../../../packages/ecosystem/fireux-fireux/src/module.ts"],
+      "fireux-fireux": [
+        "../../../packages/ecosystem/fireux-fireux/src/module.ts"
+      ],
       "fireux-fireux/*": ["../../../packages/ecosystem/fireux-fireux/src/*"],
-      "fireux-fireux/runtime/*": ["../../../packages/ecosystem/fireux-fireux/src/runtime/*"],
-      "@fireux-fireux/*": ["../../../packages/ecosystem/fireux-fireux/src/*"],
+      "fireux-fireux/runtime/*": [
+        "../../../packages/ecosystem/fireux-fireux/src/runtime/*"
+      ],
 
-      "fireux-products": ["../../../packages/extensions/fireux-products/src/module.ts"],
-      "fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"],
-      "fireux-products/runtime/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
-      "@fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"]
-    },
-    "skipLibCheck": true
+      "fireux-products": [
+        "../../../packages/extensions/fireux-products/src/module.ts"
+      ],
+      "fireux-products/*": [
+        "../../../packages/extensions/fireux-products/src/*"
+      ],
+      "fireux-products/runtime/*": [
+        "../../../packages/extensions/fireux-products/src/runtime/*"
+      ]
+    }
   },
   "include": [
-    "./.nuxt/nuxt.d.ts", "./app/.nuxt/nuxt.d.ts",
+    "./.nuxt/nuxt.d.ts",
+    "./app/.nuxt/nuxt.d.ts",
     "./**/*",
     "../../../types/**/*.d.ts"
   ],

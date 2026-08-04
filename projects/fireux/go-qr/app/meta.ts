@@ -1,7 +1,7 @@
 import {
   defineFireuxMeta,
   type FireuxMetaSolution,
-} from 'fireux-core/runtime/models/system/meta-content.model'
+} from 'fireux-core/config/app/meta-content'
 
 export const goQrProductSentence =
   'Turn one public thing into a scannable QR page or QR code.'

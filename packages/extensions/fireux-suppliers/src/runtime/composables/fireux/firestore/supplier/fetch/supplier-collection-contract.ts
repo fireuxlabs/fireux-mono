@@ -1,5 +1,5 @@
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/models/utils/meta.model'
+import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
 import type { Ref } from 'vue'
 import {
   SupplierStorage,

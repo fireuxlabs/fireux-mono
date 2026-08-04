@@ -1,4 +1,4 @@
-import type { AppSocialLinks } from '../../../../../../../models/utils/app'
+import type { AppSocialLinks } from '../../../../../../../models/core/app.model'
 
 /** Validates app description field */
 export function validateAppDescription(value: string): string | null {

@@ -5,103 +5,98 @@
     icon="i-lucide-image"
   >
     <div class="mt-4 space-y-4">
-        <UCard>
-          <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
-            <div class="flex flex-col items-center gap-2">
-              <MoleculesFormsFirestoreImagePicker
-                v-if="canWrite"
-                :src="logoImageUrl"
-                :alt="name || 'Kitchen logo'"
-                :initials="logoInitials"
-                avatar-class="!rounded-xl"
-                :style="{ backgroundColor: effectiveBackdropColor || undefined }"
-                :update-function="handleLogoUpload"
-              />
-              <UAvatar
-                v-else
-                :src="logoImageUrl || undefined"
-                :alt="name || 'Kitchen logo'"
-                :text="logoInitials"
-                icon="i-lucide-image"
-                size="3xl"
-                class="!rounded-xl"
-                :style="{ backgroundColor: effectiveBackdropColor || undefined }"
-              />
+      <UCard>
+        <div class="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
+          <div class="flex flex-col items-center gap-2">
+            <MoleculesFormsFirestoreImagePicker
+              v-if="canWrite"
+              :src="logoImageUrl"
+              :alt="name || 'Kitchen logo'"
+              :initials="logoInitials"
+              avatar-class="!rounded-xl"
+              :style="{ backgroundColor: effectiveBackdropColor || undefined }"
+              :update-function="handleLogoUpload"
+            />
+            <UAvatar
+              v-else
+              :src="logoImageUrl || undefined"
+              :alt="name || 'Kitchen logo'"
+              :text="logoInitials"
+              icon="i-lucide-image"
+              size="3xl"
+              class="!rounded-xl"
+              :style="{ backgroundColor: effectiveBackdropColor || undefined }"
+            />
 
-              <p
-                v-if="logoUploading"
-                class="text-xs text-dimmed"
-              >
-                Uploading logo...
+            <p v-if="logoUploading" class="text-xs text-dimmed">
+              Uploading logo...
+            </p>
+          </div>
+
+          <div class="space-y-4">
+            <div>
+              <p class="text-sm font-medium text-highlighted">Logo</p>
+              <p class="text-xs text-dimmed">
+                Current Kitchen logo. Recommended: 1024 × 1024 px, transparent
+                PNG.
               </p>
             </div>
 
-            <div class="space-y-4">
-              <div>
-                <p class="text-sm font-medium text-highlighted">
-                  Logo
-                </p>
-                <p class="text-xs text-dimmed">
-                  Current Kitchen logo. Recommended: 1024 × 1024 px,
-                  transparent PNG.
-                </p>
-              </div>
+            <div class="space-y-2">
+              <p class="text-sm font-medium text-highlighted">
+                Transparent-media backdrop
+              </p>
+              <p class="text-xs text-dimmed">
+                Applied behind transparent Kitchen logos and wordmarks. The
+                Kitchen inherits the linked Place colour until overridden.
+              </p>
 
-              <div class="space-y-2">
-                <p class="text-sm font-medium text-highlighted">
-                  Transparent-media backdrop
-                </p>
-                <p class="text-xs text-dimmed">
-                  Applied behind transparent Kitchen logos and wordmarks. The
-                  Kitchen inherits the linked Place colour until overridden.
-                </p>
-
-                <div class="flex flex-wrap items-center gap-2">
-                  <input
-                    v-model="backdropDraft"
-                    type="color"
-                    class="h-9 w-12 rounded border border-default bg-transparent p-1"
-                    :disabled="!canWrite"
-                    aria-label="Kitchen media backdrop colour"
-                  >
-                  <UInput
-                    v-model="backdropDraft"
-                    class="w-36"
-                    placeholder="#ffffff"
-                    :disabled="!canWrite"
-                    @blur="saveBackdrop"
-                    @keyup.enter="saveBackdrop"
-                  />
-                  <UButton
-                    size="sm"
-                    color="neutral"
-                    variant="ghost"
-                    :disabled="!canWrite || !identity.mediaBackdropColor"
-                    @click="clearBackdrop"
-                  >
-                    Inherit Place
-                  </UButton>
-                </div>
-                <p class="text-xs text-dimmed">
-                  Effective colour: {{ effectiveBackdropColor || 'not set' }}
-                </p>
-              </div>
-
-              <div class="flex flex-wrap gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <input
+                  v-model="backdropDraft"
+                  type="color"
+                  class="h-9 w-12 rounded border border-default bg-transparent p-1"
+                  :disabled="!canWrite"
+                  aria-label="Kitchen media backdrop colour"
+                />
+                <UInput
+                  v-model="backdropDraft"
+                  class="w-36"
+                  placeholder="#ffffff"
+                  :disabled="!canWrite"
+                  @blur="saveBackdrop"
+                  @keyup.enter="saveBackdrop"
+                />
                 <UButton
-                  v-if="placeId"
                   size="sm"
                   color="neutral"
-                  variant="soft"
-                  icon="i-lucide-map-pin"
-                  to="/console/kitchen/identity/place"
+                  variant="ghost"
+                  :disabled="!canWrite || !identity.mediaBackdropColor"
+                  @click="clearBackdrop"
                 >
-                  Open linked Place
+                  Inherit Place
                 </UButton>
               </div>
+              <p class="text-xs text-dimmed">
+                Effective colour: {{ effectiveBackdropColor || 'not set' }}
+              </p>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <UButton
+                v-if="placeId"
+                size="sm"
+                color="neutral"
+                variant="soft"
+                icon="i-lucide-map-pin"
+                to="/console/kitchen/identity/place"
+              >
+                Open linked Place
+              </UButton>
             </div>
           </div>
-        </UCard>
+        </div>
+      </UCard>
     </div>
   </MoleculesDisclosurePanel>
 </template>
@@ -136,13 +131,15 @@ const {
 const placeBackdropColor = computed(() =>
   String((props.kitchen as any)?.media_backdrop_color || '').trim()
 )
-const effectiveBackdropColor = computed(() =>
-  identity.value.mediaBackdropColor || placeBackdropColor.value
+const effectiveBackdropColor = computed(
+  () => identity.value.mediaBackdropColor || placeBackdropColor.value
 )
 const backdropDraft = ref(identity.value.mediaBackdropColor || '')
 watch(
   () => identity.value.mediaBackdropColor,
-  value => { backdropDraft.value = value || '' }
+  (value: string) => {
+    backdropDraft.value = value || ''
+  }
 )
 const logoImageUrl = computed(() =>
   String(identity.value.logoImageUrl || '').trim()
@@ -188,10 +185,11 @@ const saveBackdrop = async () => {
     return
   }
   return updateLogo(
-    () => updateKitchenMediaBackdropColor(
-      props.kitchenId,
-      color as KitchenMediaBackdropColor | ''
-    ),
+    () =>
+      updateKitchenMediaBackdropColor(
+        props.kitchenId,
+        color as KitchenMediaBackdropColor | ''
+      ),
     'Media backdrop updated',
     'Failed to update media backdrop'
   )

@@ -6,8 +6,11 @@ import { useMenuCreate } from './mutations/useMenuCreate'
 import { useMenuUpdate } from './mutations/useMenuUpdate'
 import { useMenuDelete } from './mutations/useMenuDelete'
 
-export type { Menu } from '../../../../models/kitchen/menu/menu.model'
-export type { MenuItem, MenuItemPriceOption } from '../../../../models/kitchen/menu/menu-item.model'
+export type { KitchenMenu as Menu } from '../../../../models/kitchen/menu/kitchen-menu.model'
+export type {
+  MenuItem,
+  MenuItemPriceOption,
+} from '../../../../models/kitchen/menu/menu-item.model'
 export type { MenuSection } from '../../../../models/kitchen/menu/menu-section.model'
 export { useMenuCollection } from './fetch/useMenuCollection'
 export { useKitchenMenuCollection } from './fetch/useKitchenMenuCollection'
@@ -52,15 +55,15 @@ export function useMenu(
   menuId: string | Ref<string>,
   options: UseMenuOptions = {}
 ) {
-  const { menu, exists } = useMenuFetch(
-    menuId,
-    options
-  )
+  const { menu, exists } = useMenuFetch(menuId, options)
 
   return {
     menu,
     exists,
-    ...useMenuComputed(menu, computed(() => false)),
+    ...useMenuComputed(
+      menu,
+      computed(() => false)
+    ),
     ...useMenuInterface(),
     ...useMenuCreate(options),
     ...useMenuUpdate(options),

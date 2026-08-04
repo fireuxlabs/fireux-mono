@@ -4,8 +4,8 @@ import {
   getRouterParam,
   setResponseHeaders,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { PublicIngredientDetailResponse } from '../../../models/ingredient-public.model.ts'
 import { projectPublicIngredient } from '../../ingredient/public-projection.ts'
 

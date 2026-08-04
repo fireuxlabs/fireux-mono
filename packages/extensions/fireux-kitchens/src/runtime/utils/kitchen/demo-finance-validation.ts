@@ -1,7 +1,7 @@
 import {
   financialCurrencyMinorUnitDigits,
   requireFinancialMinorAmount,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import type { KitchenDemoFinanceSource } from './demo-finance.types'
 import { addIsoDays, ISO_DATE_PATTERN, validTimezone } from './demo-finance-date'
 import { itemKey, MAX_DAILY_ITEM_GROUPS } from './demo-finance-items'

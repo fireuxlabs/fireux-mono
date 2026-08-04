@@ -4,7 +4,7 @@ import {
   escapeXml,
   readRuntimeSeoSitemaps,
   setSitemapResponseHeaders,
-} from 'fireux-core/runtime/server/utils/seo-sitemaps.ts'
+} from 'fireux-core/runtime/server/utils/seo-sitemaps'
 import { PUBLIC_JOB_INDEX_MAX_PAGE_SIZE } from '../../models/job-public.model.ts'
 import { readPublicJobIndexPage } from '../job/public-index.ts'
 

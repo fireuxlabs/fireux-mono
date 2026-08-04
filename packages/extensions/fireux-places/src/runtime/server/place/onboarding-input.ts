@@ -1,5 +1,5 @@
 import { createError } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 
 export type PlaceOnboardingRequest = {
   id?: unknown

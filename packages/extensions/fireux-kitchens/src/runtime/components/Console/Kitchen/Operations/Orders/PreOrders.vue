@@ -66,12 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { useKitchenConsoleOrders } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenConsoleOrders'
 import type { KitchenOrder } from '../../../../../models/kitchen/order.model'
 
@@ -80,7 +75,7 @@ defineOptions({ name: 'ConsoleKitchenOperationsOrdersPreOrders' })
 const acceptingOrderId = ref('')
 const rejectingOrderId = ref('')
 const currentTimeMs = ref(Date.now())
-let minuteClock: ReturnType<typeof setInterval> | undefined
+let minuteClock: number | undefined
 
 const {
   acceptOrder,
@@ -122,10 +117,10 @@ function canInteract(order: KitchenOrder) {
   const orderId = normalizeId(order.id)
   return Boolean(
     canOperate.value &&
-    orderId &&
-    !acceptingOrderId.value &&
-    !rejectingOrderId.value &&
-    !isOrderTransitioning(orderId)
+      orderId &&
+      !acceptingOrderId.value &&
+      !rejectingOrderId.value &&
+      !isOrderTransitioning(orderId)
   )
 }
 
@@ -155,7 +150,8 @@ async function sendBackPreOrder(payload: { id: string; note: string }) {
     !note ||
     rejectingOrderId.value ||
     acceptingOrderId.value
-  ) return
+  )
+    return
 
   rejectingOrderId.value = orderId
   try {

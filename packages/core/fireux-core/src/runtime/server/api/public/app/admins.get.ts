@@ -3,7 +3,7 @@ import { useRuntimeConfig } from '#imports'
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
-import { resolveUserAvatarSource } from '../../../../models/utils/user-avatar'
+import { resolveUserAvatarSource } from '../../../../utils/user-avatar.ts'
 import { AppUserStorage, UserStorage } from '../../../../models/core/user.model'
 import {
   getRuntimeFirestore,
@@ -94,7 +94,7 @@ export default defineEventHandler(async (event: H3Event) => {
       if (!uid) continue
 
       const userSnap = await identityDb
-        .collection(UserStorage.rootCollection)
+        .collection(UserStorage.collection)
         .doc(uid)
         .get()
       admins.push(mapUser(uid, userSnap.exists ? userSnap.data() || {} : null))

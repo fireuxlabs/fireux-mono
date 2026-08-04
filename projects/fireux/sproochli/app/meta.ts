@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove the retired personal BNB route family.
-import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 
 export const sproochliProductSentence =
   'Translation-ready public pages for instructions, menus, signs, notices, and local information.'

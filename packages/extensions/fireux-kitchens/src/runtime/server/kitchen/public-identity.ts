@@ -1,17 +1,17 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   FieldValue,
   type Transaction,
 } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   requireFirebaseStorageDownloadUrl,
   runtimeStorageBucketName,
-} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+} from 'fireux-core/runtime/server/utils/uploads/storage'
 import type {
   KitchenPublicIdentityEdit,
   KitchenPublicIdentityEditResponse,

@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-21 12:58 CEST — Console operations catalogue: compose Kitchen and Supplier operations.
 // Concurrent edit — 2026-07-23 09:40 CEST — Align landing metadata with the live restaurant workflow promise.
 // Concurrent edit — 2026-07-23 15:48 CEST — Separate the Kitchen acquisition promise from the focused Jobs doorway.
-import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 import { kitchenOperations } from 'fireux-kitchens/runtime/content/operations'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
 import { sourceMeta } from './content/meta/source'

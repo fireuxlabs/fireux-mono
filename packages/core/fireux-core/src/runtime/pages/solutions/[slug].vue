@@ -164,7 +164,7 @@
 import { computed } from 'vue'
 import { createError, useAsyncData, useRoute, useSeoMeta } from '#imports'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import type { FireuxMetaSolution } from '../../models/system/meta-content.model'
+import type { FireuxMetaSolution } from '../../../config/app/meta-content'
 
 type SolutionsResponse = {
   ok: boolean

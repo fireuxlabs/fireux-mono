@@ -4,8 +4,8 @@ import {
   readBody,
   type H3Event,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   estimateMenuAiCost,
   type MenuAiQuality,

@@ -6,7 +6,7 @@ import {
   serverTimestamp,
   setDoc,
 } from 'firebase/firestore'
-import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreResolver } from '../vuefire'
 import { useFireUXConfig } from '../../app/FireUXConfig'
 import { useRequireUser } from '../../firebase/useRequireUser'
 import type { Ref } from 'vue'

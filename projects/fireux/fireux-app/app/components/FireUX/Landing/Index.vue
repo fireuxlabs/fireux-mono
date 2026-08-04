@@ -68,7 +68,7 @@ import type {
 import type {
   FireuxMetaOperation,
   FireuxMetaSolution,
-} from 'fireux-core/runtime/models/system/meta-content.model'
+} from 'fireux-core/config/app/meta-content'
 import { fireuxOffer, metaContent } from '../../../meta'
 import { usePlatformAppDirectory } from '../../../composables/usePlatformDirectory'
 import FireUXLandingPricingStrip from './PricingStrip.vue'

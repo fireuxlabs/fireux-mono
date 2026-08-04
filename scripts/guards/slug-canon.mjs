@@ -1,3 +1,7 @@
+// @fireux-script
+// last_used: 2026-08-04
+// usage_note: run through pnpm guard; delegates to the canonical slug and route-key contract check.
+
 import { spawnSync } from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'

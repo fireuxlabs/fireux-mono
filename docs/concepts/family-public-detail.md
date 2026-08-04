@@ -1,7 +1,7 @@
 # Public detail family
 
-Updated: 2026-07-29
-Ref: e98ffb195
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -72,7 +72,7 @@ repository-wide template rewrite.
 | --------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | User                              | handle            | `accepted`: public human identity is the route contract                                                                                                                                |
 | Blog                              | slug              | `accepted`: authored content owns a stable public slug                                                                                                                                 |
-| Kitchen                           | slug              | `accepted`: public business identity is human-facing while storage id remains internal                                                                                                 |
+| Kitchen                           | slug/document ID  | `accepted`: the current public reader direct-loads the slug as the canonical Kitchen document ID and verifies the stored slug matches                                                  |
 | Supplier                          | slug              | `accepted`: supplier identity is company-style and public-facing                                                                                                                       |
 | Product                           | slug              | `accepted`: catalogue identity is public and human-readable                                                                                                                            |
 | Menu                              | menu route id     | `accepted`: the id participates in root, kitchen-directory, tenant, and contextual route grammar; see `family-menu.md`                                                                 |
@@ -93,21 +93,22 @@ review.
 | Profile details join canonical User presentation by uid                | `accepted`  | Domain profile roots remain owner/private authority and do not duplicate public User identity; public Agent, Chef, Driver, and Professional routes resolve the User handle at the trusted projection boundary |
 | Legacy profile uid URLs redirect permanently to the User-handle URL    | `migration` | Stored links remain usable during the route cutover while every new card, canonical tag, and share path uses the handle                                                                                       |
 | Job detail exact-loads the same bounded DTO as Job index               | `accepted`  | Category, tenant, publication, Company, and Place joins are server-owned                                                                                                                                      |
-| Kitchen detail can expose public KitchenMenus                          | `accepted`  | Kitchen is a public console entity with scoped published children; its public identity shares the Core entity hero without moving Kitchen content or authority into Core                                    |
-| Place and Kitchen share one public entity-hero presentation           | `accepted`  | Core owns cover/identity/action composition while each domain keeps its bounded DTO, media ownership, public sections, operator controls, and route behavior                                                   |
+| Kitchen detail can expose public KitchenMenus                          | `accepted`  | Kitchen is a public console entity with scoped published children; its public identity shares the Core entity hero without moving Kitchen content or authority into Core                                      |
+| Place and Kitchen share one public entity-hero presentation            | `accepted`  | Core owns cover/identity/action composition while each domain keeps its bounded DTO, media ownership, public sections, operator controls, and route behavior                                                  |
 | Menu detail can render a photo/PDF root Menu or structured KitchenMenu | `accepted`  | Root Menu and scoped KitchenMenu are distinct entities sharing public doorway behavior                                                                                                                        |
 | Portfolio is public-light/private-heavy                                | `accepted`  | Financial and operational Portfolio data stays out of the public projection; the exact public DTO remains to-confirm                                                                                          |
 | Tenant Menu detail omits Kitchen slug                                  | `accepted`  | Tenant App configuration supplies the one bounded Kitchen scope; route shape does not change data ownership                                                                                                   |
 
 ## Drift and decisions
 
-| Difference                                                                   | State        | Recommendation                                                                                                      |
-| ---------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------- |
-| Operator/action panels do not yet share a settled responsibility boundary    | `drift`      | Keep each named `XPublicOperatorPanel` domain-owned; extract shared behavior only after repeated jobs are identical |
-| Identity/profile/main ordering varies across older pages                     | `drift`      | Align when touching the page, using the emerging order and existing domain components                               |
-| Several current id routes have no recorded long-term route-identity decision | `to-confirm` | Decide per entity from public identity and redirect requirements, not visual preference                             |
-| Supplier and Portfolio public DTO declarations are incomplete                | `to-confirm` | Confirm bounded projections before promising detail parity                                                          |
-| Property public detail is partly app-specific today                          | `migration`  | Move reusable bounded detail behavior to the owning package while preserving tenant presentation deltas             |
+| Difference                                                                   | State        | Recommendation                                                                                                                                                                            |
+| ---------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Operator/action panels do not yet share a settled responsibility boundary    | `drift`      | Keep each named `XPublicOperatorPanel` domain-owned; extract shared behavior only after repeated jobs are identical                                                                       |
+| Identity/profile/main ordering varies across older pages                     | `drift`      | Align when touching the page, using the emerging order and existing domain components                                                                                                     |
+| Several current id routes have no recorded long-term route-identity decision | `to-confirm` | Decide per entity from public identity and redirect requirements, not visual preference                                                                                                   |
+| Supplier and Portfolio public DTO declarations are incomplete                | `to-confirm` | Confirm bounded projections before promising detail parity                                                                                                                                |
+| Property public detail is partly app-specific today                          | `migration`  | Move reusable bounded detail behavior to the owning package while preserving tenant presentation deltas                                                                                   |
+| Kitchen update can persist a slug that differs from its document ID          | `migration`  | Keep current public reads on the document ID; either reject divergent writes or perform a bounded document/links/redirect migration before treating Kitchen slug as independently mutable |
 
 ## Alignment roadmap
 

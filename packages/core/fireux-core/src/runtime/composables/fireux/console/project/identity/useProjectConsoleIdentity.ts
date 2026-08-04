@@ -1,5 +1,5 @@
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from '../../../../../utils/string'
 import { useProjectConsole } from '../core/useProjectConsole'
 
 export function useProjectConsoleIdentity() {

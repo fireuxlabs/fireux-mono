@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
+import { agentConfig } from '../../../composables/fireux/firestore/profiles/Agent/config/agentConfig'
 import { ref } from 'vue'
 
 const navLabel = agentConfig.navLabel ?? `${agentConfig.profileType} Profile`

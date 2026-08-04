@@ -1,8 +1,8 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: make Customer an app-private ordering record.
 // Profile family canon: docs/concepts/entities.md
 // Concurrent edit — 2026-07-20 18:00 CEST — Repo Efficiency Pass 2 of 6: own a server-loadable exact private Customer provisioning seed.
-import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
-import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
+import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
+import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**

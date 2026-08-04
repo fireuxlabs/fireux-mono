@@ -11,9 +11,11 @@ import {
 import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
-  AppMembershipRole,
 } from '../../../models/operations/app-membership'
-import { AppUserStorage } from '../../../models/core/user.model'
+import {
+  AppUserStorage,
+  type AppUserRole,
+} from '../../../models/core/user.model'
 import { requireFirestoreDocumentId } from '../ids/path'
 
 export type MutationContext = {
@@ -69,7 +71,7 @@ export function stamp(actorUid: string) {
 export function initialMembership(
   appId: string,
   actorUid: string,
-  role: AppMembershipRole
+  role: AppUserRole
 ) {
   return {
     role,
@@ -107,9 +109,7 @@ export function membershipRepairPatch(data: DocumentData, actorUid: string) {
   return patch
 }
 
-export function roleFrom(
-  data: DocumentData | undefined
-): AppMembershipRole | null {
+export function roleFrom(data: DocumentData | undefined): AppUserRole | null {
   return data?.role === 'admin' || data?.role === 'user' ? data.role : null
 }
 

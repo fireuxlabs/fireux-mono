@@ -9,8 +9,8 @@ import {
   PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE,
   type PublicPlaceIndexPage,
   type PublicPlaceProjection,
-} from 'fireux-places/runtime/models/place-public.model'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+} from '../../../../../models/place-public.model'
+import type { Place } from '../../../../../models/place.model'
 
 export type UsePlaceCollectionReturn = {
   collection: ComputedRef<Place[]>
@@ -30,12 +30,13 @@ export type UsePlaceCollectionReturn = {
 export function usePlaceCollection(): UsePlaceCollectionReturn {
   const state = useAsyncData<PublicPlaceIndexPage>(
     `public-place-index|limit=${PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE}`,
-    () => $fetch<PublicPlaceIndexPage>(
-      `/api/places?limit=${PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE}`
-    )
+    () =>
+      $fetch<PublicPlaceIndexPage>(
+        `/api/places?limit=${PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE}`
+      )
   )
-  const collection = computed<Place[]>(() =>
-    (state.data.value?.items ?? []) as Place[]
+  const collection = computed<Place[]>(
+    () => (state.data.value?.items ?? []) as Place[]
   )
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
@@ -43,7 +44,9 @@ export function usePlaceCollection(): UsePlaceCollectionReturn {
   const hasMore = computed(() => Boolean(nextCursor.value))
   const count = computed(() => collection.value.length)
   const pending = computed(() => state.pending.value)
-  const error = computed<unknown | undefined>(() => state.error.value ?? undefined)
+  const error = computed<unknown | undefined>(
+    () => state.error.value ?? undefined
+  )
   const { outcome } = useFirestoreCollectionState({ count, error, pending })
   const byId = computed(() => {
     const map = new Map<string, Place>()
@@ -67,7 +70,7 @@ export function usePlaceCollection(): UsePlaceCollectionReturn {
       if (!current) return false
 
       const items = new Map<string, PublicPlaceProjection>(
-        current.items.map(item => [item.id, item])
+        current.items.map((item: PublicPlaceProjection) => [item.id, item])
       )
       for (const item of page.items) items.set(item.id, item)
       state.data.value = {

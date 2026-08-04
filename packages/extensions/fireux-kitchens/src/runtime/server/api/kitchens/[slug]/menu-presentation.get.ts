@@ -4,7 +4,7 @@ import {
   defineEventHandler,
   getRouterParam,
 } from 'h3'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   menuKitchenIdentity,
   readAppMenuKitchenData,

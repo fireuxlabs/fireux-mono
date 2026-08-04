@@ -2,7 +2,7 @@ import type {
   KitchenFinanceDailySummary,
   KitchenFinanceItemSummary,
 } from '../../models/kitchen/finance-report.model'
-import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money.ts'
+import { formatFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 
 export function useKitchenFinanceDayDetail(props: { currencyCode: string; day: KitchenFinanceDailySummary | null; locale: string; timezone: string }) {
   type ItemView = {

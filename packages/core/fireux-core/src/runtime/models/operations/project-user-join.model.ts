@@ -1,4 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { AppUserRole } from '../core/user.model'
 
 export const ProjectUserJoinStorage = {
   database: 'platform-directory',
@@ -6,8 +7,6 @@ export const ProjectUserJoinStorage = {
   document: 'current',
   maxItems: 200,
 } as const
-
-export type ProjectUserJoinRole = 'admin' | 'user'
 
 export type ProjectUserJoinSource = {
   firebase_project_id: string
@@ -22,7 +21,7 @@ export type ProjectUserJoinPublicationV1 = {
   event_id: string
   source: ProjectUserJoinSource
   user_id: string
-  membership_role: ProjectUserJoinRole
+  membership_role: AppUserRole
   occurred_at: string
 }
 
@@ -32,7 +31,7 @@ export type ProjectUserJoinRecord = {
   event_id: string
   source: ProjectUserJoinSource
   user_id: string
-  membership_role: ProjectUserJoinRole
+  membership_role: AppUserRole
   occurred_at: FirebaseTimestamp
   received_at: FirebaseTimestamp
 }
@@ -52,7 +51,7 @@ export type ProjectUserJoinFeedItem = {
   ecosystem_id: string
   app_id: string
   user_id: string
-  membership_role: ProjectUserJoinRole
+  membership_role: AppUserRole
   occurred_at: string
 }
 

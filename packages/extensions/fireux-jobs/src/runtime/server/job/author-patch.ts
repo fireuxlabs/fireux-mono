@@ -1,8 +1,8 @@
 import type { H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import type {
   JobPatchIntent,
   PatchAuthorJobResponse,

@@ -1,7 +1,7 @@
 import {
   readRecord,
   readRecordString,
-} from 'fireux-core/runtime/server/utils/records/read.ts'
+} from 'fireux-core/runtime/server/utils/records/read'
 import {
   compactMenuPayloadRecord,
   type MenuPayloadScope,

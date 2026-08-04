@@ -1,4 +1,4 @@
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { PlaceStorage } from '../../../../../../models/place.model.ts'
 import type { PlaceLogoTarget } from './place-logo.types'
 import type { PlaceCard } from './usePlaceInterface.ts'
 

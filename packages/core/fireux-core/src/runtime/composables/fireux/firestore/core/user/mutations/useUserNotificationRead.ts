@@ -1,13 +1,11 @@
 // Concurrent edit — 2026-07-20 15:20 CEST — Customer order notification pass: add the owner-only notification read mutation.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: resolve the owner notification writer only when mark-read runs.
 import { doc, updateDoc } from 'firebase/firestore'
-import {
-  UserNotificationStorage,
-  UserStorage,
-} from '../../../../../../models/core/user.model'
+import { UserStorage } from '../../../../../../models/core/user.model'
+import { UserNotificationStorage } from '../../../../../../models/operations/user-notification.model'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import {
-  readRuntimeIdentityFirestoreDatabaseId,
+  readRuntimeFirestoreDatabaseId,
   useFirestore,
 } from '../../../vuefire'
 
@@ -20,10 +18,10 @@ function requireNotificationId(value: unknown) {
 }
 
 export function useUserNotificationRead() {
-  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
+  const appDatabaseId = readRuntimeFirestoreDatabaseId()
 
   const markRead = async (notificationId: string) => {
-    const identityDb = useFirestore(identityDatabaseId)
+    const appDb = useFirestore(appDatabaseId)
     const user = await useRequireUser()
     if (user.isAnonymous) {
       throw new Error('Sign in to update notifications.')
@@ -31,8 +29,8 @@ export function useUserNotificationRead() {
 
     await updateDoc(
       doc(
-        identityDb,
-        UserStorage.rootCollection,
+        appDb,
+        UserStorage.collection,
         user.uid,
         UserNotificationStorage.collection,
         requireNotificationId(notificationId)

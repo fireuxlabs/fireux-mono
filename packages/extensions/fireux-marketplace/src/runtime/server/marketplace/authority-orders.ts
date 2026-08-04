@@ -1,9 +1,9 @@
 import { createError, type H3Event } from 'h3'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   addFinancialMoney,
   multiplyFinancialMoney,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import type {
   MarketplaceOrder,
   MarketplaceOrderStatus,

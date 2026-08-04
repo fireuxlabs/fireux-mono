@@ -1,16 +1,11 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority — Portfolio: separate canonical root identity from app access overlay.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Portfolio root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Portfolio access support directly.
-// Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: make server-reachable workspace runtime value imports explicit.
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
-import type {
-  FireuxAppAccessRecord,
-  FireuxStamped,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
-import {
-  FireuxAppAccessRecordModel,
-  FireuxAppScope,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
+import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppScope } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =

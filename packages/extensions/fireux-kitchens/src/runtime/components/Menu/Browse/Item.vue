@@ -79,8 +79,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { formatCurrencyAmount } from 'fireux-core/runtime/models/utils/money.model'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model'
+import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
+import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{

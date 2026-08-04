@@ -23,6 +23,7 @@ import type {
   PublicMarketplaceOffer,
   PublicMarketplaceStore,
 } from 'fireux-marketplace/runtime/models/marketplace-api.model'
+import type { MarketplaceOffer } from 'fireux-marketplace/runtime/models/marketplace.model'
 
 definePageMeta({ layout: 'marketplace' })
 
@@ -35,18 +36,21 @@ const message = ref('')
 
 const previewStore = computed<PublicMarketplaceStore | null>(() => {
   if (!store.value) return null
-  const offers = store.value.offers.flatMap<PublicMarketplaceOffer>(offer =>
-    offer.price
-      ? [{
-          id: offer.id,
-          title: offer.title,
-          description: offer.description,
-          unit_label: offer.unit_label,
-          price: offer.price,
-          section_ids: offer.section_ids,
-          fulfilment_methods: offer.fulfilment_methods,
-        }]
-      : []
+  const offers = (store.value.offers as MarketplaceOffer[]).flatMap(
+    (offer: MarketplaceOffer): PublicMarketplaceOffer[] =>
+      offer.price
+        ? [
+            {
+              id: offer.id,
+              title: offer.title,
+              description: offer.description,
+              unit_label: offer.unit_label,
+              price: offer.price,
+              section_ids: offer.section_ids,
+              fulfilment_methods: offer.fulfilment_methods,
+            },
+          ]
+        : []
   )
   return {
     id: store.value.id,

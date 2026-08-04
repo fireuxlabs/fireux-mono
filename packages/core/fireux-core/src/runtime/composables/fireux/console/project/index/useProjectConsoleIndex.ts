@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use outcome as target-state authority.
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: identify authoritative Project targets.
 import { computed, type Ref } from 'vue'
-import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import type { ProjectCollectionFilter } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
-import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import { useConsoleIndex } from '../../../app/console/useConsoleIndex'
+import type { ProjectCollectionFilter } from '../../../firestore/core/project/fetch/useProjectCollection'
+import type { ProjectSurface } from '../../../firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsole } from '../core/useProjectConsole'
 
 type UseProjectConsoleIndexOptions = {

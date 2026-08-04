@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: hash the customer capability on Order and return the raw token only from creation.
 // Concurrent edit — 2026-07-21 16:24 CEST — FireUX Finance pass: persist currency-aware minor-unit pricing with every new Order.
 import { FieldValue } from 'firebase-admin/firestore'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type { KitchenOrderFulfilmentMatch } from '../../../models/kitchen/order.model.ts'
 import { menuRoutePath } from '../../../utils/kitchen-menu-route.ts'
 import { normalizeMenuOrderWhatsAppPhone } from '../../../utils/menu-order-whatsapp.ts'

@@ -1,16 +1,6 @@
 // @fireux-script
-// last_used: 2026-08-03
+// last_used: 2026-08-04
 // usage_note: canonical app identity, routes, and smoke-contract assignments.
-// Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: point local launch authority at the additive Werkbox apps.
-// Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: require the shared route across registered apps.
-// Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Pass 3 of 4: keep registry data separate from smoke-contract mechanics.
-// Concurrent edit — 2026-07-20 13:42 CEST — Public profile projection: require four Misebox directory APIs.
-// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: retire personal BNB routes and smoke only sanitized simulations.
-// Concurrent edit — 2026-07-22 10:47 CEST — Kiosk presentation pass: register the Indian Gourmet terminal entry contract.
-// Concurrent edit — 2026-07-22 12:47 CEST — Jobs smoke alignment: cover the shared public Jobs route and projection in both global apps.
-// Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: smoke the new FireUX request queue route.
-// Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: smoke pricing, solution, and intake entry points.
-// Concurrent edit — 2026-07-22 15:21 CEST — Kitchen directory preview: run public/fail-closed projection contracts on every Misebox launch.
 
 import {
   appDetailContract,
@@ -129,11 +119,7 @@ export const APP_REGISTRY = {
       '/console/kitchen/dishes',
       '/console/kitchen/recipes',
     ],
-    smokeRoutes: [
-      ...SHARED_ROUTES,
-      ...consoleRoutes(['kitchen']),
-      '/jobs',
-    ],
+    smokeRoutes: [...SHARED_ROUTES, ...consoleRoutes(['kitchen']), '/jobs'],
     httpContracts: [
       seoPageContract('/', {
         title: 'Misebox — Menu and kitchen management',
@@ -416,7 +402,7 @@ export const APP_REGISTRY = {
     key: 'sproochli',
     name: 'Sproochli',
     appId: 'sproochli',
-    ecosystem: 'buenohost',
+    ecosystem: 'fireux',
     databaseId: 'sproochli',
     role: 'standalone',
     workspace: './projects/fireux/sproochli',

@@ -1,12 +1,11 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
-import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
-import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
 
@@ -23,7 +22,9 @@ function setBlogsRuntime(nuxt: any, overrides: Record<string, any>) {
   const pub = (rc.public ||= {}) as Record<string, any>
   const fireux = (pub.fireux ||= {}) as Record<string, any>
   const current =
-    fireux.blogs && typeof fireux.blogs === 'object' && !Array.isArray(fireux.blogs)
+    fireux.blogs &&
+    typeof fireux.blogs === 'object' &&
+    !Array.isArray(fireux.blogs)
       ? fireux.blogs
       : {}
   fireux.blogs = { ...current, ...overrides }
@@ -41,18 +42,21 @@ export default defineNuxtModule({
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/blog')
     })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'blogs',
-        canonicalCollectionPath: 'blogs',
-        routePrefix: '/blog',
-        slugField: 'slug',
-        publicField: 'visibility',
-        publicValue: 'public',
-        pageSize: 5000,
-        updatedAtField: 'updatedAt',
-      })
-    })
+    nuxt.hook(
+      'fireux:seo:sitemaps:extend' as any,
+      (ctx: FireuxSeoSitemapsExtendContext) => {
+        ctx.addEntity({
+          entityKey: 'blogs',
+          canonicalCollectionPath: 'blogs',
+          routePrefix: '/blog',
+          slugField: 'slug',
+          publicField: 'visibility',
+          publicValue: 'public',
+          pageSize: 5000,
+          updatedAtField: 'updatedAt',
+        })
+      }
+    )
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
@@ -69,9 +73,8 @@ export default defineNuxtModule({
             ? { queryParameter: options.queryParameter }
             : {}),
         }),
-      composables: configureComposables,
+      composables: registerComposablesDir,
       components: configureComponents,
-      layouts: configureLayouts,
       pages: configurePages,
       server: configureServer,
     })

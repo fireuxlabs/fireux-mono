@@ -1,11 +1,9 @@
 // Concurrent edit — 2026-07-20 15:27 CEST — Customer order notification pass: publish accepted Kitchen Orders to canonical User notifications.
 import { createHash } from 'node:crypto'
 import { Timestamp } from 'firebase-admin/firestore'
-import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import {
-  UserNotificationStorage,
-  UserStorage,
-} from 'fireux-core/runtime/models/core/user.model.ts'
+import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { UserNotificationStorage } from 'fireux-core/runtime/models/operations/user-notification.model'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model.ts'
 
 type AcceptedOrderCustomerNotificationInput = {
@@ -28,7 +26,9 @@ function notificationMessage(
   orderNumber: string | undefined,
   orderType: KitchenOrderType
 ) {
-  const number = String(orderNumber ?? '').trim().slice(0, 64)
+  const number = String(orderNumber ?? '')
+    .trim()
+    .slice(0, 64)
   if (orderType === 'pre_order') {
     return number
       ? `Your pre-order ${number} has been confirmed by the Kitchen.`
@@ -45,7 +45,7 @@ export async function publishAcceptedOrderCustomerNotification(
 ) {
   const identityDb = getRuntimeIdentityFirestore()
   const ref = identityDb
-    .collection(UserStorage.rootCollection)
+    .collection(UserStorage.collection)
     .doc(input.customerUid)
     .collection(UserNotificationStorage.collection)
     .doc(notificationId(input))

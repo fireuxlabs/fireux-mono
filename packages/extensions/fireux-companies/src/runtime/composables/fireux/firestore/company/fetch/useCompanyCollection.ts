@@ -9,8 +9,8 @@ import {
   PUBLIC_COMPANY_INDEX_MAX_PAGE_SIZE,
   type PublicCompanyIndexPage,
   type PublicCompanyProjection,
-} from 'fireux-companies/runtime/models/company-public.model'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+} from '../../../../../models/company-public.model'
+import { CompanyStorage } from '../../../../../models/company.model'
 
 export type UseCompanyCollectionReturn<T> = {
   collectionPath: ComputedRef<string>
@@ -35,12 +35,13 @@ export function useCompanyCollection<
   const collectionPath = computed(() => CompanyStorage.collection)
   const state = useAsyncData<PublicCompanyIndexPage>(
     `public-company-index|limit=${PUBLIC_COMPANY_INDEX_MAX_PAGE_SIZE}`,
-    () => $fetch<PublicCompanyIndexPage>(
-      `/api/companies?limit=${PUBLIC_COMPANY_INDEX_MAX_PAGE_SIZE}`
-    )
+    () =>
+      $fetch<PublicCompanyIndexPage>(
+        `/api/companies?limit=${PUBLIC_COMPANY_INDEX_MAX_PAGE_SIZE}`
+      )
   )
-  const collection = computed<T[]>(() =>
-    (state.data.value?.items ?? []) as unknown as T[]
+  const collection = computed<T[]>(
+    () => (state.data.value?.items ?? []) as unknown as T[]
   )
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
@@ -48,7 +49,9 @@ export function useCompanyCollection<
   const hasMore = computed(() => Boolean(nextCursor.value))
   const count = computed(() => collection.value.length)
   const pending = computed(() => state.pending.value)
-  const error = computed<unknown | undefined>(() => state.error.value ?? undefined)
+  const error = computed<unknown | undefined>(
+    () => state.error.value ?? undefined
+  )
   const { outcome } = useFirestoreCollectionState({ count, error, pending })
 
   async function loadMore() {
@@ -65,7 +68,7 @@ export function useCompanyCollection<
       if (!current) return false
 
       const items = new Map<string, PublicCompanyProjection>(
-        current.items.map(item => [item.id, item])
+        current.items.map((item: PublicCompanyProjection) => [item.id, item])
       )
       for (const item of page.items) items.set(item.id, item)
       state.data.value = {

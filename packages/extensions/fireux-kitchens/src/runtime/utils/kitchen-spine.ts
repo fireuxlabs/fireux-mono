@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: normalize Kitchen-owned zones and per-surface payment capability.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model.ts'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model.ts'
+import type { CurrencyDisplayFormat } from '../models/shared/currency-display.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import {
   readSproochliAttachmentConfig,
   type SproochliAttachmentConfig,
@@ -17,7 +17,7 @@ import type {
 import {
   readMediaBackdropColor,
   readPlaceBusinessHours,
-} from 'fireux-places/runtime/utils/place-spine.ts'
+} from 'fireux-places/runtime/utils/place-spine'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import {
   kitchenOrderTypes,

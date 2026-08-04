@@ -1,0 +1,252 @@
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  serverTimestamp,
+  writeBatch,
+  type Firestore,
+} from 'firebase/firestore'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import { MenuStorage as RootMenuStorage } from '../../../../../models/kitchen/menu/menu.model'
+import { MenuSourceUploadStorage } from '../../../../../models/kitchen/menu/menu-source-upload.model'
+import { resolveKitchenCollectionBasePath } from '../../kitchen/utils/paths/useKitchenChildCollection'
+import { menuItemsPath, menuSectionsPath } from '../utils/paths'
+import {
+  menuRootEntryId,
+  menuRootEntryMergePatchFromSourceMenu,
+  menuRootEntryIdentifierPatch,
+  readMenuRootEntryDocs,
+  readSingleStaleMenuRootEntryDoc,
+} from '../utils/root-entry'
+
+const rootEntryDerivedKeys = [
+  'slug',
+  'path',
+  'qr_path',
+  'url',
+  'qr_url',
+  'source_path',
+  'source_kind',
+  'image_url',
+  'image_shade',
+  'ordering',
+  'kiosk_skin_id',
+  'views',
+]
+
+const withoutId = <T extends Record<string, unknown>>(
+  data: T,
+  extraKeys: string[] = []
+) => {
+  const next = { ...data }
+  for (const key of ['id', ...extraKeys]) delete next[key]
+  return next
+}
+
+export async function renameKitchenMenuDocuments({
+  appId,
+  db,
+  kitchenCollectionPath,
+  kitchenId,
+  menuCollectionPath,
+  menuId,
+  nextMenuId,
+}: {
+  appId: string
+  db: Firestore
+  kitchenCollectionPath: string
+  kitchenId: string
+  menuCollectionPath: string
+  menuId: string
+  nextMenuId: string
+}) {
+  const user = await useRequireUser()
+  const oldMenuRef = doc(db, menuCollectionPath, menuId)
+  const nextMenuRef = doc(db, menuCollectionPath, nextMenuId)
+  const [oldMenuSnap, nextMenuSnap] = await Promise.all([
+    getDoc(oldMenuRef),
+    getDoc(nextMenuRef),
+  ])
+
+  if (!oldMenuSnap.exists()) throw new Error(`Menu not found: ${menuId}`)
+  if (nextMenuSnap.exists()) {
+    throw new Error(`Menu already exists: ${nextMenuId}`)
+  }
+
+  let rootMenuDocs = await readMenuRootEntryDocs({
+    db,
+    appId,
+    kitchenId,
+    menuId,
+  })
+  if (!rootMenuDocs.length) {
+    rootMenuDocs = await readSingleStaleMenuRootEntryDoc({
+      db,
+      appId,
+      kitchenId,
+      scopedMenuCollectionPath: menuCollectionPath,
+      menuId,
+    })
+  }
+
+  const rootEntryMoves = await Promise.all(
+    rootMenuDocs.map(async (docSnap) => {
+      const rootData = docSnap.data() as Record<string, unknown>
+      const rootId = menuRootEntryId(nextMenuId) || docSnap.id
+      const ref = doc(db, RootMenuStorage.rootCollection, rootId)
+
+      if (rootId !== docSnap.id) {
+        const existingSnap = await getDoc(ref)
+        if (existingSnap.exists()) {
+          throw new Error(`Menu route already exists: ${rootId}`)
+        }
+      }
+
+      return {
+        from: docSnap,
+        to: ref,
+        id: rootId,
+        data: rootData,
+      }
+    })
+  )
+
+  const sectionsPath = menuSectionsPath({
+    kitchenCollectionPath,
+    kitchenId,
+    menuId,
+    appId,
+  })
+  const sectionsSnap = await getDocs(collection(db, sectionsPath))
+  const sectionsWithItems = await Promise.all(
+    sectionsSnap.docs.map(async (sectionSnap) => {
+      const itemsPath = menuItemsPath({
+        kitchenCollectionPath,
+        kitchenId,
+        menuId,
+        sectionId: sectionSnap.id,
+        appId,
+      })
+      const itemsSnap = await getDocs(collection(db, itemsPath))
+
+      return {
+        section: sectionSnap,
+        items: itemsSnap.docs,
+      }
+    })
+  )
+
+  const uploadPath = `${resolveKitchenCollectionBasePath(
+    kitchenCollectionPath,
+    appId
+  )}/${kitchenId.trim()}/${MenuSourceUploadStorage.collection}`
+  const oldUploadRef = doc(db, uploadPath, menuId)
+  const nextUploadRef = doc(db, uploadPath, nextMenuId)
+  const [oldUploadSnap, nextUploadSnap] = await Promise.all([
+    getDoc(oldUploadRef),
+    getDoc(nextUploadRef),
+  ])
+  const batch = writeBatch(db)
+  let batchOps = 0
+  const updated = {
+    at: serverTimestamp(),
+    by: user.uid,
+  }
+
+  const nextBatchOp = () => {
+    batchOps += 1
+    if (batchOps > 450) {
+      throw new Error('Menu is too large to rename in one operation.')
+    }
+
+    return batch
+  }
+
+  nextBatchOp().set(nextMenuRef, {
+    ...withoutId(oldMenuSnap.data() as Record<string, unknown>),
+    updated,
+  })
+
+  for (const { section, items } of sectionsWithItems) {
+    const nextSectionRef = doc(
+      db,
+      menuSectionsPath({
+        kitchenCollectionPath,
+        kitchenId,
+        menuId: nextMenuId,
+        appId,
+      }),
+      section.id
+    )
+    nextBatchOp().set(nextSectionRef, {
+      ...withoutId(section.data() as Record<string, unknown>),
+      menu_id: nextMenuId,
+      updated,
+    })
+
+    for (const item of items) {
+      const nextItemRef = doc(
+        db,
+        menuItemsPath({
+          kitchenCollectionPath,
+          kitchenId,
+          menuId: nextMenuId,
+          sectionId: section.id,
+          appId,
+        }),
+        item.id
+      )
+      nextBatchOp().set(nextItemRef, {
+        ...withoutId(item.data() as Record<string, unknown>),
+        menu_id: nextMenuId,
+        updated,
+      })
+    }
+  }
+
+  if (oldUploadSnap.exists() && !nextUploadSnap.exists()) {
+    nextBatchOp().set(nextUploadRef, {
+      ...withoutId(oldUploadSnap.data() as Record<string, unknown>),
+      updated,
+    })
+  }
+
+  if (oldUploadSnap.exists() && !nextUploadSnap.exists()) {
+    nextBatchOp().delete(oldUploadRef)
+  }
+
+  const rootMenuData = oldMenuSnap.data() as Record<string, unknown>
+  for (const move of rootEntryMoves) {
+    nextBatchOp().set(
+      move.to,
+      {
+        ...withoutId(move.data, rootEntryDerivedKeys),
+        ...menuRootEntryIdentifierPatch(move.id),
+        ...menuRootEntryMergePatchFromSourceMenu({
+          scopedMenuCollectionPath: menuCollectionPath,
+          menuId: nextMenuId,
+          data: rootMenuData,
+        }),
+        updated,
+      },
+      { merge: true }
+    )
+
+    if (move.id !== move.from.id) {
+      nextBatchOp().delete(move.from.ref)
+    }
+  }
+
+  for (const { section, items } of sectionsWithItems) {
+    for (const item of items) {
+      nextBatchOp().delete(item.ref)
+    }
+    nextBatchOp().delete(section.ref)
+  }
+  nextBatchOp().delete(oldMenuRef)
+
+  await batch.commit()
+
+  return { id: nextMenuId, changed: true }
+}

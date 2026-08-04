@@ -1,9 +1,48 @@
-// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: make App self-join an explicit bootstrap policy.
 import type { NuxtConfig } from '@nuxt/schema'
-import type { RuntimeAppRole } from './runtime'
 import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
-import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
+import type { FireuxMetaContent } from './meta-content'
+
+export type FireuxAppRole = 'global' | 'tenant' | 'standalone'
+
+export type FireuxPricingConfig = {
+  consoleName: string
+  free: readonly string[]
+  pro: readonly string[]
+}
+
+export type FireuxConsoleFamilyConfig = {
+  canCreate?: boolean
+}
+
+export type FireuxConsoleConfig = Record<string, FireuxConsoleFamilyConfig>
+
+export type FireuxAuthCompletionConfig = {
+  path: string
+  title?: string
+  description?: string
+  actionLabel?: string
+  delayMs?: number
+}
+
+export type FireuxAuthOnboardingConfig = {
+  title: string
+  description?: string
+  completeLabel?: string
+  skipLabel?: string
+}
+
+export type FireuxNavOverride = {
+  label?: string
+  icon?: string
+  position?: 'top' | 'middle' | 'bottom'
+  order?: number
+  desktop?: boolean
+  mobile?: boolean
+  layouts?: string[]
+}
+
+export type FireuxNavOverrides = Record<string, FireuxNavOverride>
 
 export type FireuxAppConfig = {
   /** Ecosystem package/Firebase binding key. This is infrastructure, not an entity relationship. */
@@ -20,21 +59,17 @@ export type FireuxAppConfig = {
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   /** Main App-owned product capabilities used by the shared pricing literature. */
-  pricing?: {
-    consoleName: string
-    free: string[]
-    pro: string[]
-  }
+  pricing?: FireuxPricingConfig
   /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */
   designPack?: FireuxDesignPackConfig
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
   designPacks?: Record<string, Record<string, unknown>>
-  role: RuntimeAppRole
-  /** Extra package capability or custom options for default modules. Product and Blog are baseline app modules. */
+  role: FireuxAppRole
+  /** Extra package capability or custom options for default modules. Blog is the baseline App module; Products is explicit. */
   modules?: NonNullable<NuxtConfig['modules']>
   consoles?: string[]
   /** Optional per-console app behavior, e.g. whether this app may create or pin console targets. */
-  consoleConfig?: Record<string, { canCreate?: boolean }>
+  consoleConfig?: FireuxConsoleConfig
   /** Optional public/admin root domains this app consumes. */
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */
@@ -44,35 +79,13 @@ export type FireuxAppConfig = {
   /** Initial email-auth mode shown on the shared auth page. */
   authDefaultMode?: 'sign-in' | 'sign-up'
   /** Optional app-owned completion experience after successful authentication. */
-  authCompletion?: {
-    path: string
-    title?: string
-    description?: string
-    actionLabel?: string
-    delayMs?: number
-  }
+  authCompletion?: FireuxAuthCompletionConfig
   /** Optional app-owned onboarding step shown after shared account creation. */
-  authOnboarding?: {
-    title: string
-    description?: string
-    completeLabel?: string
-    skipLabel?: string
-  }
+  authOnboarding?: FireuxAuthOnboardingConfig
   /** Optional public/dashboard nav item keys hidden by this app shell. */
   navHiddenKeys?: string[]
   /** App-level presentation overrides for inherited route navigation, keyed by nav key. */
-  navOverrides?: Record<
-    string,
-    {
-      label?: string
-      icon?: string
-      position?: 'top' | 'middle' | 'bottom'
-      order?: number
-      desktop?: boolean
-      mobile?: boolean
-      layouts?: string[]
-    }
-  >
+  navOverrides?: FireuxNavOverrides
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }

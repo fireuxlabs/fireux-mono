@@ -4,12 +4,12 @@
 // Concurrent edit — 2026-07-21 16:25 CEST — Place onboarding enrichment: expose bounded preview and trusted completion calls.
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
+import type { PlaceUpsertInput } from '../../../../../models/place.model'
 import type {
   PlaceOnboardingCompleteInput,
   PlaceOnboardingCompleteResult,
   PlaceOnboardingPreview,
-} from 'fireux-places/runtime/models/place-onboarding.model'
+} from '../../../../../models/place-onboarding.model'
 import { canonicalPlaceId } from '../fetch/google/usePlacesGoogle'
 
 export interface UsePlaceCreateOptions {

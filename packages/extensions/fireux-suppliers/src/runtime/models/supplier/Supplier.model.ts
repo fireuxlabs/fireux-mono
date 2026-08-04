@@ -2,16 +2,11 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove the generic App access mutation input.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Supplier root identity and access-only App support.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name Supplier access support directly.
-// Concurrent edit — 2026-07-21 16:39 CEST — Misebox dev stability pass: make server-reachable workspace runtime value imports explicit.
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
-import type {
-  FireuxAppAccessRecord,
-  FireuxStamped,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
-import {
-  FireuxAppAccessRecordModel,
-  FireuxAppScope,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
+import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
+import { FireuxAppScope } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type SupplierState = 'official' | 'public'

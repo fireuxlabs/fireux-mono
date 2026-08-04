@@ -5,7 +5,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/models/utils/app-user-access.ts'
+import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/utils/app-user-access.ts'
 import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
@@ -89,8 +89,13 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/models/core/user.model.ts'
   )
-  const modelStart = model.indexOf('export const AppUserModel = {')
-  const modelEnd = model.indexOf('\n} as const', modelStart)
+  const modelStart = model.indexOf('export const AppUserModel: AppUser = {')
+  const modelEnd = model.indexOf(
+    '\n}\n\nexport type UserCreateInput',
+    modelStart
+  )
+  assert.notEqual(modelStart, -1, 'AppUserModel must remain canonical.')
+  assert.notEqual(modelEnd, -1, 'AppUserModel must remain a bounded model.')
   const userAppModel = model.slice(modelStart, modelEnd)
   assert.doesNotMatch(
     userAppModel,
@@ -191,7 +196,9 @@ export async function run({ repoRoot }) {
     'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules',
     'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules',
   ]) {
-    const rules = await expandFirestoreRulesTemplate(read(repoRoot, relativePath))
+    const rules = await expandFirestoreRulesTemplate(
+      read(repoRoot, relativePath)
+    )
     assert.match(rules, /!\('profiles' in data\)/)
     assert.doesNotMatch(rules, /console_targets/)
     assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)

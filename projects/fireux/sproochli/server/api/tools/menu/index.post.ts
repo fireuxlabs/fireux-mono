@@ -1,15 +1,15 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import {
   SPROOCHLI_LANGUAGE_OPTIONS,
-} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage.ts'
+} from 'fireux-sproochli/runtime/composables/fireux/sproochli/publicLanguage'
 import {
   SPROOCHLI_HOST_DATABASE_ID,
   type SproochliHostTarget,
-} from 'fireux-sproochli/runtime/host.ts'
+} from 'fireux-sproochli/runtime/host'
 import type {
   SproochliMenuSource,
   SproochliMenuTranslationField,
-} from 'fireux-sproochli/runtime/sproochli.ts'
+} from 'fireux-sproochli/runtime/sproochli'
 import {
   setSproochliPrivateToolHeaders,
 } from '../../../utils/sproochliTools'

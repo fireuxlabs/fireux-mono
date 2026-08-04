@@ -9,4 +9,5 @@ export default defineFireuxConfig({
   name: 'FireUX Template',
   shortName: 'Template',
   role: 'tenant',
+  modules: ['fireux-products'],
 })

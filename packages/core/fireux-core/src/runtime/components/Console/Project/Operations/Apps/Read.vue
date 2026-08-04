@@ -47,7 +47,7 @@ import { computed } from 'vue'
 import {
   useAppInterface,
   type AppCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
+} from '../../../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useProjectConsoleApps } from '../../../../../composables/fireux/console/project/operations/Apps/useProjectConsoleApps'
 
 const { apps, outcome } = useProjectConsoleApps()

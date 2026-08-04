@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 12:58 CEST — Console operations catalogue: publish Kitchen operation routes.
 // Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: assign root public operation slugs.
-import type { FireuxMetaOperation } from 'fireux-core/runtime/models/system/meta-content.model'
+import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
 
 const kitchenConsole = {
   id: 'kitchen',

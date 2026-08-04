@@ -4,15 +4,15 @@ import type {
   DocumentSnapshot,
 } from 'firebase-admin/firestore'
 import { createError, setHeader, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
-} from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { projectPublicCompany } from 'fireux-companies/runtime/server/company/public-projection.ts'
-import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection.ts'
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { projectPublicCompany } from 'fireux-companies/runtime/server/company/public-projection'
+import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection'
 import type {
   AuthorJobListResponse,
   AuthorJobResponse,

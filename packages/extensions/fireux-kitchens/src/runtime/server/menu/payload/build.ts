@@ -1,6 +1,6 @@
 import { createError } from 'h3'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model'
 import type {
   MenuDetailPayload,
@@ -10,7 +10,7 @@ import type {
 import type { MenuChoice, MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import {
   normalizeSproochliLanguage,
-} from 'fireux-sproochli/runtime/sproochli.ts'
+} from 'fireux-sproochli/runtime/sproochli'
 import { readMenuOrderingConfig, isMenuOrderingEnabled } from '../ordering/config.ts'
 import {
   menuContextProfile,

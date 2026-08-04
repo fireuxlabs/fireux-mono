@@ -6,12 +6,12 @@ import {
 import {
   multipartField,
   readUploadedMultipartFile,
-} from 'fireux-core/runtime/server/utils/uploads/multipart.ts'
+} from 'fireux-core/runtime/server/utils/uploads/multipart'
 import {
   runtimeStorageBucketName,
   saveStorageFileWithDownloadToken,
-} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+} from 'fireux-core/runtime/server/utils/uploads/storage'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   goQrDocQrUrl,
   goQrDocRef,

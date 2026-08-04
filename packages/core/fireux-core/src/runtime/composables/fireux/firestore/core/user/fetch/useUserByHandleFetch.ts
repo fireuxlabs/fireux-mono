@@ -11,7 +11,7 @@ import { useNuxtApp } from '#imports'
 import {
   readRuntimeIdentityFirestoreDatabaseId,
   useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+} from '../../../vuefire'
 import { UserStorage } from '../../../../../../models/core/user.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { normalizeUserHandle } from '../utils/identity/useUserHandleIdentity'
@@ -40,12 +40,12 @@ export function useUserByHandleFetch(
   const matchUser = (value: string) => {
     if (!userMatchCache.has(value)) {
       const q = fsq(
-        collection(db, UserStorage.rootCollection),
+        collection(db, UserStorage.collection),
         where('handle', '==', value),
         fslimit(1)
       ) as Query<HandleUserMatch>
       const ref = nuxtApp.runWithContext(() =>
-        firestoreQuery<HandleUserMatch>(q, `${UserStorage.rootCollection}-by-handle-${value}`)
+        firestoreQuery<HandleUserMatch>(q, `${UserStorage.collection}-by-handle-${value}`)
       ) as Ref<HandleUserMatch[] | undefined>
       userMatchCache.set(value, ref)
     }

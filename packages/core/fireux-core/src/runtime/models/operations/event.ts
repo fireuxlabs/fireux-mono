@@ -1,4 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
+import type { AppUserRole } from '../core/user.model'
 
 export const AppEventStorage = {
   shape: 'scoped',
@@ -32,7 +33,7 @@ export interface AppEvent {
   }
   payload: {
     user_id: string
-    membership_role: 'admin' | 'user'
+    membership_role: AppUserRole
   }
   occurred_at: FirebaseTimestamp
   published_at: FirebaseTimestamp

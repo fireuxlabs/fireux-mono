@@ -1,5 +1,4 @@
 // FILE: packages/core/fireux-core/config/app/fireux.config.ts
-// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: publish explicit App self-join policy.
 import type { NuxtConfig } from '@nuxt/schema'
 import { configNitroFirebase } from './nitro'
 import { configPwa } from './pwa'
@@ -66,7 +65,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   const envDomain = reqEnv('APP_DOMAIN')
   const siteUrl = normalizeSiteUrl(app.seo?.siteUrl || envDomain)
-  const envPin = optEnv('DEVELOPER_PIN')
   const envDeveloperId =
     optEnv('DEVELOPER_ID') ||
     optEnv('DEVELOPER_UID') ||
@@ -118,7 +116,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
     },
 
     private: {
-      developerPin: envPin,
       ...(resolvedSeo ? { seo: resolvedSeo } : {}),
       ...(metaContent ? { meta: metaContent } : {}),
     },

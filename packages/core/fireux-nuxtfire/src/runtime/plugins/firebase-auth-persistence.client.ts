@@ -1,3 +1,4 @@
+import { defineNuxtPlugin } from '#imports'
 import { getApps } from 'firebase/app'
 import {
   browserSessionPersistence,

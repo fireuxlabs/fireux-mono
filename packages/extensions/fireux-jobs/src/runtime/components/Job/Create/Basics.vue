@@ -122,7 +122,7 @@
 
 <script setup lang="ts">
 import { Timestamp } from 'firebase/firestore'
-import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money.ts'
+import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money'
 import { computed } from 'vue'
 import { useFireuxJobsConfig } from '../../../composables/config/useFireuxJobsConfig'
 import type { JobCreateForm } from '../../../composables/fireux/firestore/jobs/mutations/useJobCreate'

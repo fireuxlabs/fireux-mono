@@ -27,7 +27,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.rootCollection)
+    .collection(UserStorage.collection)
     .doc(userId)
     .get()
   const item = mapPublicUserIdentity(snapshot)

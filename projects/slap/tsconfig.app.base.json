@@ -1,9 +1,0 @@
-{
-  "extends": "../tsconfig.projects.json",
-  "compilerOptions": {
-    "composite": false,
-    "skipLibCheck": true,
-    "noEmit": true,
-    "isolatedModules": true
-  }
-}

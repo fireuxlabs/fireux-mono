@@ -24,7 +24,6 @@
     "fireux-core": "workspace:*",
     "fireux-fireux": "workspace:*",
     "fireux-go-qr": "workspace:*",
-    "fireux-products": "workspace:*",
     "h3": "^1.15.4",
     "nuxt": "4.4.6",
     "qrcode": "^1.5.4",

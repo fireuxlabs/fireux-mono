@@ -1,68 +1,32 @@
-// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: expose explicit App self-join policy.
 import { useRuntimeConfig } from '#imports'
-import type { FireuxDesignPackConfig } from '../../../../config/app/design-packs'
+import type { H3Event } from 'h3'
+import type { RuntimeApp } from '../../../../config/app/runtime'
+import type {
+  FireuxAppRole,
+  FireuxConsoleConfig,
+} from '../../../../config/app/types'
 
-export type FireUXRole = 'global' | 'tenant' | 'standalone'
+export type FireUXRole = FireuxAppRole
 
-export interface FireUXConfig {
+export type FireUXConfig = Omit<
+  RuntimeApp,
+  'id' | 'name' | 'shortName' | 'domain'
+> & {
   devMode: boolean
-  role: FireUXRole
-
-  ecosystem: string
-  projectId: string
-  ecosystemId?: string
   appId: string
   appName: string
   appShortName: string
-  siteUrl?: string
-  modules: string[]
-  domains: string[]
-  profiles: string[]
-  selfJoinEnabled: boolean
-  authDefaultMode?: 'sign-in' | 'sign-up'
-  authCompletion?: {
-    path: string
-    title?: string
-    description?: string
-    actionLabel?: string
-    delayMs?: number
-  }
-  authOnboarding?: {
-    title: string
-    description?: string
-    completeLabel?: string
-    skipLabel?: string
-  }
-  navHiddenKeys: string[]
-  navOverrides: Record<string, unknown>
-
-  contactEmail?: string
-  pricing?: {
-    consoleName: string
-    free: readonly string[]
-    pro: readonly string[]
-  }
-  designPack?: FireuxDesignPackConfig
-  designPacks?: Record<string, Record<string, unknown>>
-  developerId?: string
 
   primaryColor?: string
   neutralColor?: string
   secondaryColor?: string
 
-  centralSignupUrl?: string
-  globalAppId?: string
-  developerPin?: string
-
-  // derived
   isTenant: boolean
   isGlobal: boolean
   isStandalone: boolean
 }
 
 type AnyRecord = Record<string, unknown>
-
-const FIREUX_CACHE_KEY = '__FIREUX_CONFIG'
 
 function isNonEmptyString(v: unknown): v is string {
   return typeof v === 'string' && v.trim().length > 0
@@ -100,6 +64,27 @@ function toStringArray(v: unknown): string[] {
     .filter(Boolean)
 }
 
+function toConsoleConfig(v: unknown): FireuxConsoleConfig {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return {}
+
+  return Object.fromEntries(
+    Object.entries(v as AnyRecord)
+      .map(([family, value]) => {
+        const key = family.trim().toLowerCase()
+        const config =
+          value && typeof value === 'object' && !Array.isArray(value)
+            ? (value as AnyRecord)
+            : {}
+        if (!key || typeof config.canCreate !== 'boolean') return null
+        return [key, { canCreate: config.canCreate }] as const
+      })
+      .filter(
+        (entry): entry is readonly [string, { canCreate: boolean }] =>
+          entry !== null
+      )
+  )
+}
+
 function reqRole(src: AnyRecord): FireUXRole {
   const raw = reqString(src, 'role').toLowerCase()
   if (raw !== 'global' && raw !== 'tenant' && raw !== 'standalone') {
@@ -110,8 +95,8 @@ function reqRole(src: AnyRecord): FireUXRole {
   return raw
 }
 
-function buildConfig(): Readonly<FireUXConfig> {
-  const pub = (useRuntimeConfig().public ?? {}) as AnyRecord
+function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
+  const pub = (useRuntimeConfig(event).public ?? {}) as AnyRecord
   const fireux = (pub.fireux ?? {}) as AnyRecord
 
   const devMode = import.meta.dev
@@ -137,6 +122,8 @@ function buildConfig(): Readonly<FireUXConfig> {
     siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),
+    consoles: toStringArray(fireux.consoles),
+    consoleConfig: toConsoleConfig(fireux.consoleConfig),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
@@ -152,13 +139,12 @@ function buildConfig(): Readonly<FireUXConfig> {
       | FireUXConfig['authOnboarding']
       | undefined,
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
-    navOverrides: optRecord(fireux, 'navOverrides') || {},
+    navOverrides: (optRecord(fireux, 'navOverrides') ||
+      {}) as FireUXConfig['navOverrides'],
 
     contactEmail: optString(fireux, 'contactEmail'),
     pricing: optRecord(fireux, 'pricing') as FireUXConfig['pricing'],
-    designPack: optRecord(fireux, 'designPack') as
-      | FireuxDesignPackConfig
-      | undefined,
+    designPack: optRecord(fireux, 'designPack') as FireUXConfig['designPack'],
     designPacks: optRecord(fireux, 'designPacks') as
       | Record<string, Record<string, unknown>>
       | undefined,
@@ -168,10 +154,6 @@ function buildConfig(): Readonly<FireUXConfig> {
     neutralColor: optString(fireux, 'neutralColor'),
     secondaryColor: optString(fireux, 'secondaryColor'),
 
-    centralSignupUrl: optString(fireux, 'centralSignupUrl'),
-    globalAppId: optString(fireux, 'globalAppId'),
-    developerPin: optString(fireux, 'developerPin'),
-
     isTenant: role === 'tenant',
     isGlobal: role === 'global',
     isStandalone: role === 'standalone',
@@ -180,47 +162,6 @@ function buildConfig(): Readonly<FireUXConfig> {
   return Object.freeze(cfg)
 }
 
-/**
- * Central accessor:
- * - On client, reuses a cached config (set by plugin OR computed here)
- * - On server, builds from runtime config
- * - Returns a frozen object with derived flags
- */
-export function useFireUXConfig(): Readonly<FireUXConfig> {
-  const g = globalThis as any
-
-  // Always (re)read runtime config first, then decide whether existing cache is
-  // still valid. This avoids stale app/ecosystem values across HMR or context
-  // switches during local multi-app development.
-  const cfg = buildConfig()
-
-  if (import.meta.client) {
-    const cached = g?.[FIREUX_CACHE_KEY] as Readonly<FireUXConfig> | undefined
-    const isCacheValid =
-      !!cached &&
-      cached.appId === cfg.appId &&
-      cached.ecosystem === cfg.ecosystem &&
-      cached.projectId === cfg.projectId &&
-      cached.ecosystemId === cfg.ecosystemId &&
-      cached.role === cfg.role &&
-      cached.selfJoinEnabled === cfg.selfJoinEnabled &&
-      cached.authDefaultMode === cfg.authDefaultMode &&
-      cached.authCompletion?.path === cfg.authCompletion?.path &&
-      cached.authCompletion?.title === cfg.authCompletion?.title &&
-      cached.authCompletion?.description === cfg.authCompletion?.description &&
-      cached.authCompletion?.actionLabel === cfg.authCompletion?.actionLabel &&
-      cached.authCompletion?.delayMs === cfg.authCompletion?.delayMs &&
-      cached.authOnboarding?.title === cfg.authOnboarding?.title &&
-      cached.authOnboarding?.description === cfg.authOnboarding?.description &&
-      cached.authOnboarding?.completeLabel ===
-        cfg.authOnboarding?.completeLabel &&
-      cached.authOnboarding?.skipLabel === cfg.authOnboarding?.skipLabel &&
-      JSON.stringify(cached.pricing) === JSON.stringify(cfg.pricing)
-
-    if (isCacheValid) return cached
-
-    g[FIREUX_CACHE_KEY] = cfg
-  }
-
-  return cfg
+export function useFireUXConfig(event?: H3Event): Readonly<FireUXConfig> {
+  return buildConfig(event)
 }

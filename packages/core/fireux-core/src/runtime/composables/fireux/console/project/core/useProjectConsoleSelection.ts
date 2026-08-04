@@ -1,6 +1,6 @@
-import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { useConsoleSelection } from '../../../app/console/useConsoleSelection'
+import type { ConsoleSource } from '../../../app/console/useConsole'
+import { normalizeString } from '../../../../../utils/string'
 
 type ProjectConsoleSelectionInput = {
   selectedId?: string

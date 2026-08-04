@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-19 22:10 CEST — Directory Publication Rules Pass: require the dedicated platform database with no fallback.
 // Concurrent edit — 2026-07-20 16:00 CEST — FireUX dev recovery: resolve cross-package server imports explicitly.
 
-import { DirectoryPublicationDatabases } from 'fireux-core/runtime/models/operations/directory-publication.ts'
+import { DirectoryPublicationDatabases } from 'fireux-core/runtime/models/operations/directory-publication'
 
 export type DirectoryPublicationReceiverConfig = {
   enabled: boolean

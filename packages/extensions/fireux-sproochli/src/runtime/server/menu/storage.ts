@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import type { Firestore } from 'firebase-admin/firestore'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   SPROOCHLI_HOST_DATABASE_ID,
   type SproochliHostTarget,

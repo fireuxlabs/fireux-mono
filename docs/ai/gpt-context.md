@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-08-02
-Ref: 33603376f
+Updated: 2026-08-04
+Ref: d232cc731
 Role: living context
 Scope: repo-wide
 
@@ -18,6 +18,7 @@ chats.
 Current scoped context entrypoints:
 
 - BuenoHost: `docs/ai/buenohost-context.md`
+- Identity and product literature: `docs/ai/identity-literature-context.md`
 - Misebox: `docs/ai/misebox-context.md`
 - Werkbox: `docs/ai/werkbox-context.md`
 
@@ -114,9 +115,14 @@ Before each task:
 
 ## Public route identity
 
-- A public entity slug is its Firestore document ID. Resolve it with a direct
-  document read; do not query a separate `slug` field or fall back between
-  `slug` and `id` in route construction.
+- Each public entity family declares one exact route key. When that key is the
+  Firestore document ID, resolve it with a direct document read; do not query a
+  second field or fall back between `slug` and `id` in route construction.
+- Kitchen currently uses its slug as its Firestore document ID. A stored
+  Kitchen slug that diverges from that ID is migration debt, not a second
+  supported route identity. Other families may deliberately use a reviewed
+  handle or authored slug only when their owning source and family map define
+  that boundary.
 - Presentation may fall back between display labels, but display fallback must
   never select storage or route identity.
 - `scripts/check-slug-canon.mjs`, registered by `pnpm guard`, enforces this
@@ -163,11 +169,28 @@ Before each task:
 ## Entity canon
 
 - FireUX Core runtime models are divided by ownership. `models/core` contains
-  canonical shared records, with App, Ecosystem, and User kept together;
-  `models/operations` contains persisted workflow and command/event contracts;
-  `models/utils` contains reusable model primitives and projections; and
-  `models/system` contains FireUX control-plane records only. Do not recreate
-  a generic `supporting` bucket.
+  exactly the canonical `app.model.ts`, `ecosystem.model.ts`, and
+  `user.model.ts` trio. `User` is the person and `AppUser` is App membership;
+  `models/operations` owns workflow contracts and their support records, such
+  as `UserAccount`, User notifications, conversations, membership commands,
+  events, and publication records. `models/utils` contains reusable model
+  contracts only: stamps, scope, Console Entity fragments, profile bases,
+  entity declarations, projection DTOs, and shared style vocabulary.
+  Normalization, access resolution, formatting, and UI controller state belong
+  in `runtime/utils` or `runtime/types`, not in a model library.
+- `models/system` contains only the canonical Project control-plane record.
+  Modules are source-controlled package and App configuration, not stored
+  system records. Authored App meta is configuration under `config/app`, and
+  domain policy such as Kitchen currency display remains with its extension.
+  Do not recreate a generic `supporting` bucket, a Firestore Module model, or
+  an App-only utility model beside the canonical App.
+- Source organization does not hide stored-data debt. `User.app_ids`,
+  `User.profiles`, `AppUser.profiles`, `AppUser.console_enabled`,
+  `App.derived.user_count`, and App build/database metadata are projections or
+  migration candidates, not competing identity. Remove them only through a
+  bounded migration that changes writers, readers, Rules, guards, and stored
+  records together. Use `docs/concepts/core-models.md` as the ownership and
+  migration map for this trio.
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.
@@ -192,9 +215,13 @@ Before each task:
   routes, actions, and publication authority. Keep these seams flat and
   semantic: no decorative gradients, glass, App selectors, or inferred media
   ownership.
-- Core `LandingProductIndex` owns the fixed Main App product-landing order:
-  `hero-preview`, the `onboarding` entry slot, `surfaces`, `console`, `specifics`,
-  `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The optional
+- Core `LandingProductIndex` owns the Main App product-landing region
+  vocabulary and default order: `hero-preview`, the `onboarding` entry slot,
+  `surfaces`, `console`, `specifics`, `ecosystems`, `apps`, `tools`,
+  `solutions`, then `operations`. An App may pass `regionOrder` as an ordered
+  subset of those named regions so unavailable product layers disappear
+  without copying the shared renderer or inventing a project-local region. The
+  optional
   `hero-preview` seam accepts an App-owned, reviewed product presentation.
   FireUX fills it with the live App and Ecosystem Card orbit. Static Main App
   hero photography uses Core `LandingProductHeroImage`, which owns one sharp,
@@ -349,6 +376,9 @@ Before each task:
   `app.user.joined` event under that App. The event is the durable signup log
   and atomically creates an owner-only in-app notification for each existing
   App admin; routine returning sign-ins do not create events or notifications.
+  Both the event and notification projection are App-database facts; User
+  identity remains in the identity database, but notification clients must not
+  cross that boundary to find an App-owned projection.
 - A configured source SSR runtime may publish the minimal join projection to
   the FireUX control plane over fixed-audience Google OIDC. FireUX accepts only
   exact service-account source scopes and exposes a bounded feed derived from
@@ -420,6 +450,10 @@ Before each task:
   second Demo binary mirror. Canonical Live media never moves into Demo merely
   because a Demo consumer displays it; it remains in the owning family's Live
   publication or storage path.
+- Cross-domain fictional contracts belong to the explicit-import-only
+  `fireux-demo` extension. Core remains product-neutral; domain packages keep
+  their own scenario records, while one Demo contract may be shared without an
+  ecosystem-to-extension dependency cycle. See `docs/concepts/demo-data.md`.
 
 ## Semantic catalogue boundaries
 
@@ -443,6 +477,22 @@ Before each task:
   apps compose them, and a module may support entities, Operations, tools,
   Solutions, or several surfaces together. Do not present Modules as stored
   entity records or use Firestore Product rows as package authority.
+- Blog is the sole universal default App extension. Every App declares its
+  direct `fireux-blogs` dependency even though Core adds the module by default.
+  Products are future/explicit: only an App with a current Product capability
+  declares and loads `fireux-products`.
+- Runtime package TypeScript imports are extensionless for both browser and
+  server consumers. Every Core, Ecosystem, and Extension manifest maps that
+  authored subpath to `src/runtime/*.ts`; `.vue`, `.css`, and `.scss` keep their
+  real suffix. Do not repair resolution by adding `.ts` to individual imports.
+- App runtime configuration derives from the authored `FireuxAppConfig` and is
+  normalized once by the event-aware `useFireUXConfig`; browser and trusted
+  server consumers do not reparse raw Console config, and Core does not cache a
+  partially compared App shape globally. Core `resolveConsoleCanCreate` owns
+  the shared explicit override and non-tenant fallback.
+- App initialization is protected by authenticated server UID authorization
+  and existing-admin checks. Do not recreate a cosmetic client developer PIN
+  or present one as a security boundary.
 
 ## Financial fact ownership
 
@@ -494,8 +544,9 @@ Before each task:
   configuration. Each entity family's App-support records state both which
   roots an App owns and which members may operate them. AppUser contains only
   App membership and capability state; it never mirrors entity target IDs.
-  Slugs remain mutable presentation fields and never require an App rebuild or
-  deployment to change.
+  Route keys and relationship targets are stored data, not build-time App
+  configuration. Changing one follows its owning family migration and never
+  requires hard-coding the value into Nuxt config.
 
 - New Apps have no provisional unguarded state. Before the first save they
   must satisfy the project App shape, complete public asset family, shared
@@ -584,6 +635,8 @@ Found` page. An app may pass `--verify-text` for one public source-defined
 - Lightweight marketplace feeds remain their own event family. They may
   reference a BlogPost by canonical slug but do not copy Blog truth or turn
   every feed event into a BlogPost.
+- See `docs/concepts/blog.md` for the current Blog literature and ownership
+  map.
 
 ## Brand asset authority
 
@@ -691,6 +744,10 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   persistence, anonymous-order recovery expires within 24 hours, and public
   Google Maps surfaces require an explicit load action. `/legal/privacy` owns
   personal-data policy while `/legal/storage` owns the exact storage inventory.
+- Guest chat contact data and message bodies use the trusted `/api/chat`
+  boundary. Direct Conversation Firestore access stays closed; the browser
+  retains an unguessable, time-bounded recovery capability and the App
+  database stores only its hash. See `docs/concepts/privacy-measurement.md`.
 
 ## Firestore Rules source ownership
 

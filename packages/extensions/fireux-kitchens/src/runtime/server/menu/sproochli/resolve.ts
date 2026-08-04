@@ -3,26 +3,26 @@ import {
   type SproochliDefaultLanguage,
   type SproochliLanguageCode,
   type SproochliMenuTranslationField,
-} from 'fireux-sproochli/runtime/sproochli.ts'
+} from 'fireux-sproochli/runtime/sproochli'
 import {
   resolveSproochliMenu,
-} from 'fireux-sproochli/runtime/server/menu/provider-client.ts'
+} from 'fireux-sproochli/runtime/server/menu/provider-client'
 import {
   readSproochliMenuTranslationCache,
   readSproochliMenuTranslationCacheLanguages,
   writeSproochliMenuTranslationCache,
-} from 'fireux-sproochli/runtime/server/menu/translation-cache.ts'
+} from 'fireux-sproochli/runtime/server/menu/translation-cache'
 import {
   readSproochliTranslationMemory,
   sproochliTranslationMemoryId,
   writeSproochliTranslationMemory,
-} from 'fireux-sproochli/runtime/server/menu/translation-memory.ts'
+} from 'fireux-sproochli/runtime/server/menu/translation-memory'
 import {
   sproochliMenuTranslationMemoryCandidate,
-} from 'fireux-sproochli/runtime/server/menu/translation-recipe.ts'
+} from 'fireux-sproochli/runtime/server/menu/translation-recipe'
 import {
   resolveSproochliHostStorage,
-} from 'fireux-sproochli/runtime/server/menu/storage.ts'
+} from 'fireux-sproochli/runtime/server/menu/storage'
 import {
   MENU_BROWSE_SURFACE_COPY_FIELDS,
   resolveMenuBrowseSurfaceCopy,

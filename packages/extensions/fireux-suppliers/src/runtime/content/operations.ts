@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 12:58 CEST — Console operations catalogue: publish Supplier operation routes.
-import type { FireuxMetaOperation } from 'fireux-core/runtime/models/system/meta-content.model'
+import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
 
 const supplierConsole = {
   id: 'supplier',

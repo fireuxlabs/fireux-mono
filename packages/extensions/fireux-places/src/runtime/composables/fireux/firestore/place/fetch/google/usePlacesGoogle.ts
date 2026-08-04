@@ -6,7 +6,7 @@ import {
   type GooglePlace,
   type PlaceAddress,
   type PlaceUpsertInput,
-} from 'fireux-places/runtime/models/place.model'
+} from '../../../../../../models/place.model'
 import { toShortAddress } from '../../utils/view/formatPlaceAddress'
 import {
   placeBusinessHoursFromGooglePeriods,

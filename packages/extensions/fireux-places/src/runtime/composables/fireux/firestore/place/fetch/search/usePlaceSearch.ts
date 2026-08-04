@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: search projected Places without browser Firestore access.
 import { ref, watch } from 'vue'
-import { type BasePlace, type PlaceImageShade, type PlaceSource } from 'fireux-places/runtime/models/place.model'
+import { type BasePlace, type PlaceImageShade, type PlaceSource } from '../../../../../../models/place.model'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'

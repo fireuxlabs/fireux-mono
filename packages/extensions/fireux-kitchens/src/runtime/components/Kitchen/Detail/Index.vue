@@ -44,7 +44,7 @@
 
         <KitchenDetailIdentity :kitchen="displayKitchen" />
 
-        <KitchenDetailMenus :kitchen="displayKitchen" />
+        <KitchenDetailMenus v-if="displayKitchen" :kitchen="displayKitchen" />
 
         <KitchenDetailFulfilment
           :kitchen="displayKitchen"
@@ -79,13 +79,16 @@ const emit = defineEmits<{
   refresh: []
 }>()
 
-const kitchen = computed(() =>
-  props.kitchen as KitchenSurface | null | undefined
+const kitchen = computed(
+  () => props.kitchen as KitchenSurface | null | undefined
 )
 const identityOverride = ref<KitchenPublicIdentityEdit | null>(null)
-watch(() => props.kitchen, () => {
-  identityOverride.value = null
-})
+watch(
+  () => props.kitchen,
+  () => {
+    identityOverride.value = null
+  }
+)
 const displayKitchen = computed<PublicKitchenDetail | null>(() => {
   if (!props.kitchen) return null
   const identity = identityOverride.value
@@ -105,9 +108,7 @@ const displayKitchen = computed<PublicKitchenDetail | null>(() => {
     ...(identity.logo_image_url
       ? { logo_image_url: identity.logo_image_url }
       : {}),
-    ...(imageUrl
-      ? { image_url: imageUrl, display_image_url: imageUrl }
-      : {}),
+    ...(imageUrl ? { image_url: imageUrl, display_image_url: imageUrl } : {}),
   }
 })
 const { appId, role } = useFireUXConfig()
@@ -115,10 +116,7 @@ const { isAdmin, isDeveloper } = useUser()
 const canEditIdentity = computed(() =>
   Boolean(
     (isAdmin.value || isDeveloper.value) &&
-    (
-      role === 'global' ||
-      props.kitchen?.app_scope_app_id === appId
-    )
+      (role === 'global' || props.kitchen?.app_scope_app_id === appId)
   )
 )
 const applyIdentity = (identity: KitchenPublicIdentityEdit) => {
@@ -143,14 +141,20 @@ const { data: fulfilmentData } = useFetch<KitchenFulfilmentConfig>(
     watch: [fulfilmentPath],
   }
 )
-const resolvedFulfilment = computed(() => fulfilmentData.value || emptyFulfilment)
+const resolvedFulfilment = computed(
+  () => fulfilmentData.value || emptyFulfilment
+)
 </script>
 
 <style scoped>
 .kitchen-detail {
   display: grid;
   gap: clamp(calc(var(--spacing) * 8), 4vw, calc(var(--spacing) * 14));
-  padding-bottom: clamp(calc(var(--spacing) * 8), 6vw, calc(var(--spacing) * 20));
+  padding-bottom: clamp(
+    calc(var(--spacing) * 8),
+    6vw,
+    calc(var(--spacing) * 20)
+  );
 }
 
 .kitchen-detail__toolbar {

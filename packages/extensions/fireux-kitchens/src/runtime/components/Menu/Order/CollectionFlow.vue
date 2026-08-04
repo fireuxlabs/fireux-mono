@@ -94,10 +94,11 @@ import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
-import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import {
-  useMenuOrderCollection,
-} from '../../../composables/fireux/menu/order/useMenuOrderCollection'
+  useMenuOrderBasket,
+  type MenuOrderBasketLine,
+} from '../../../composables/fireux/menu/order/useMenuOrderBasket'
+import { useMenuOrderCollection } from '../../../composables/fireux/menu/order/useMenuOrderCollection'
 import type { MenuOrderTimeSelection } from '../../../utils/menu-order-time'
 import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
 
@@ -132,14 +133,14 @@ const collectionTime = ref<MenuOrderTimeSelection | null>(null)
 const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
 const afterBasket = ref<'time' | 'checkout' | ''>('')
 const openCheckoutAfterTime = ref(false)
-const paymentMethods = computed(() =>
-  props.config?.fulfilment?.payment_methods || []
+const paymentMethods = computed(
+  () => props.config?.fulfilment?.payment_methods || []
 )
 const handoffInstructions = computed(() =>
   String(props.config?.fulfilment?.handoff_instructions || '').trim()
 )
-const requiredContactFields = computed(() =>
-  props.config?.customer?.required_fields || []
+const requiredContactFields = computed(
+  () => props.config?.customer?.required_fields || []
 )
 const basketActionLabel = computed(() =>
   collectionTime.value ? 'Review and send' : 'Choose collection time'
@@ -148,7 +149,7 @@ const basketActionLabel = computed(() =>
 // 2026-07-19 15:40 CEST: Amendment review rehydrates from the customer-owned Order projection; the transient basket remains presentation, not lifecycle authority.
 watch(
   () => order.amendmentLines.value,
-  (lines) => {
+  (lines: MenuOrderBasketLine[]) => {
     if (!basket.quantity.value && lines.length) basket.replace(lines)
   },
   { immediate: true }

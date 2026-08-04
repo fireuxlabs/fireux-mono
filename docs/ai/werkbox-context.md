@@ -1,7 +1,7 @@
 # Werkbox GPT Context
 
-Updated: 2026-08-03
-Ref: 796952bf0
+Updated: 2026-08-04
+Ref: d232cc731
 Role: living context
 Scope: Werkbox ecosystem and Apps
 
@@ -81,7 +81,7 @@ remembered implementations are not authority.
   or deleting remote resources requires an explicitly approved migration.
 - Werkbox client Firestore authority is deliberately narrow: owners may read
   and edit only the allowlisted scalar portions of their canonical User,
-  UserPrivate, Agent, and Professional records; App membership/admin reads are
+  UserAccount, Agent, and Professional records; App membership/admin reads are
   scoped to the current App. Jobs, Places, Companies, public identities, App
   people hydration, and structured Professional experience use bounded trusted
   package server APIs rather than raw browser collection access.

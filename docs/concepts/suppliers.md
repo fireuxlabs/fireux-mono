@@ -1,6 +1,7 @@
 # Suppliers
 
-Updated: 2026-08-03
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose

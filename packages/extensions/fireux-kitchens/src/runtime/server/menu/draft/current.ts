@@ -1,5 +1,5 @@
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,

@@ -1,16 +1,17 @@
-import { useCookie, useRuntimeConfig, useState } from '#imports'
+import { useCookie, useState } from '#imports'
 import { computed, ref, watch } from 'vue'
+import { resolveConsoleCanCreate } from '../../../../utils/console-policy'
 import { normalizeString, uniqueStrings } from '../../../../utils/string'
+import type {
+  FireuxConsoleConfig,
+  FireuxConsoleFamilyConfig,
+} from '../../../../../config/app/types'
 import { useFireUXConfig } from '../FireUXConfig'
 
 export type ConsoleAppMode = 'tenant' | 'global' | 'standalone'
 export type ConsoleSource = 'live' | 'test' | 'demo'
-export type ConsoleFamilyConfig = {
-  canCreate?: boolean
-}
-export type ConsoleConfig = Record<string, ConsoleFamilyConfig>
-
-type AnyRecord = Record<string, unknown>
+export type ConsoleFamilyConfig = FireuxConsoleFamilyConfig
+export type ConsoleConfig = FireuxConsoleConfig
 
 export function normalizeConsoleFamily(value: unknown) {
   return normalizeString(value).toLowerCase()
@@ -20,45 +21,6 @@ export function normalizeConsoleSource(value: unknown): ConsoleSource {
   const source = normalizeString(value).toLowerCase()
   if (source === 'demo' || source === 'test') return source
   return 'live'
-}
-
-function fireuxRuntime(): AnyRecord {
-  const pub = (useRuntimeConfig().public ?? {}) as AnyRecord
-  const fireux = pub.fireux
-  return fireux && typeof fireux === 'object' && !Array.isArray(fireux)
-    ? (fireux as AnyRecord)
-    : {}
-}
-
-function rawRecord(value: unknown): AnyRecord {
-  return value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as AnyRecord)
-    : {}
-}
-
-function readConsoleConfig(): ConsoleConfig {
-  const raw = rawRecord(fireuxRuntime().consoleConfig)
-
-  return Object.fromEntries(
-    Object.entries(raw)
-      .map(([family, value]) => {
-        const key = normalizeConsoleFamily(family)
-        const cfg = rawRecord(value)
-        if (!key || !Object.keys(cfg).length) return null
-
-        return [
-          key,
-          {
-            ...(typeof cfg.canCreate === 'boolean'
-              ? { canCreate: cfg.canCreate }
-              : {}),
-          },
-        ] as const
-      })
-      .filter((entry): entry is readonly [string, ConsoleFamilyConfig] =>
-        Boolean(entry)
-      )
-  )
 }
 
 export function useConsole(family = '') {
@@ -76,7 +38,7 @@ export function useConsole(family = '') {
         () => normalizeConsoleSource(sourceCookie.value)
       )
     : ref<ConsoleSource>('live')
-  watch(sourceCookie, (value) => {
+  watch(sourceCookie, (value: ConsoleSource | null | undefined) => {
     const nextSource = normalizeConsoleSource(value)
     if (sourceState.value !== nextSource) sourceState.value = nextSource
   })
@@ -89,8 +51,8 @@ export function useConsole(family = '') {
     : fireux.isStandalone
       ? 'standalone'
       : 'global'
-  const config = readConsoleConfig()
-  const families = uniqueStrings(fireuxRuntime().consoles)
+  const config = fireux.consoleConfig
+  const families = uniqueStrings(fireux.consoles)
 
   const configFor = (targetFamily = family) => {
     const key = normalizeConsoleFamily(targetFamily)
@@ -101,10 +63,7 @@ export function useConsole(family = '') {
     const key = normalizeConsoleFamily(targetFamily)
     if (key === normalizedFamily && readOnly.value) return false
 
-    const cfg = configFor(targetFamily)
-    if (typeof cfg?.canCreate === 'boolean') return cfg.canCreate
-
-    return !fireux.isTenant
+    return resolveConsoleCanCreate(fireux.role, config, targetFamily)
   }
 
   const setSource = (value: ConsoleSource = 'live') => {

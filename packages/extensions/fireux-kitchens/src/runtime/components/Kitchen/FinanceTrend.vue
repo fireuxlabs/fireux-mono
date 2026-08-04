@@ -8,10 +8,10 @@ import FinanceReportTrend from 'fireux-finance/runtime/components/Finance/Report
 import type {
   FinancialReportComparisonTone,
   FinancialReportTrendView,
-} from 'fireux-finance/runtime/models/report-presentation.model.ts'
+} from 'fireux-finance/runtime/models/report-presentation.model'
 import {
   formatFinancialMinorAmount,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 
 type KitchenFinanceTrendPoint = {
   id: string

@@ -10,12 +10,12 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
-import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
+import { chefConfig } from '../../config/chefConfig'
 import type {
   Chef,
   PublicChefDirectoryProfile,
   PublicChefProfile,
-} from 'fireux-kitchens/runtime/models/chef.model'
+} from '../../../../../../../models/chef.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &

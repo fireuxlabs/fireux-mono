@@ -1,9 +1,9 @@
 import { computed, useAsyncData } from '#imports'
 import type { ComputedRef } from 'vue'
 import type {
+  CurrentAppDto,
   CurrentAppContextResponse,
   CurrentAppMembershipDto,
-  PublicAppDto,
 } from '../../../server/utils/public-projection/public-dto.types'
 import { useAuth } from '../firebase/useAuth'
 import {
@@ -13,7 +13,7 @@ import {
 
 export type UseCurrentAppContextReturn = {
   uid: ComputedRef<string>
-  app: ComputedRef<PublicAppDto | null>
+  app: ComputedRef<CurrentAppDto | null>
   membership: ComputedRef<CurrentAppMembershipDto | null>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -53,7 +53,7 @@ export function useCurrentAppContext(): UseCurrentAppContextReturn {
 
   const response = computed(() =>
     state.data.value?.requestUid === uid.value
-      ? state.data.value?.response ?? null
+      ? (state.data.value?.response ?? null)
       : null
   )
   const app = computed(() => response.value?.app ?? null)

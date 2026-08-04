@@ -7,11 +7,45 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
-    "./runtime/info": "./src/runtime/info/index.ts",
+    "./runtime/info": {
+      "types": "./src/runtime/info/index.ts",
+      "default": "./src/runtime/info/index.ts"
+    },
     "./runtime/sproochli": "./src/runtime/sproochli.ts",
     "./runtime/sproochli.ts": "./src/runtime/sproochli.ts",
-    "./runtime/*": "./src/runtime/*",
+    "./runtime/*.vue": {
+      "types": "./src/runtime/*.vue",
+      "default": "./src/runtime/*.vue"
+    },
+    "./runtime/*.css": {
+      "types": "./src/runtime/*.css",
+      "default": "./src/runtime/*.css"
+    },
+    "./runtime/*.scss": {
+      "types": "./src/runtime/*.scss",
+      "default": "./src/runtime/*.scss"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    },
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*.vue": [
+        "src/runtime/*.vue"
+      ],
+      "runtime/*.css": [
+        "src/runtime/*.css"
+      ],
+      "runtime/*.scss": [
+        "src/runtime/*.scss"
+      ],
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ]
+    }
   },
   "files": [
     "src/**/*"

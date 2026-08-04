@@ -1,10 +1,10 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import { configureComponents } from './config/module/components-config'
-import { configureComposables } from './config/module/composables-config'
 import { configurePages } from './config/module/pages-config'
-import { configureRuntime } from './config/module/runtime-config'
+import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import { configureServer } from './config/module/server-config'
 
 export interface ModuleOptions {
@@ -36,10 +36,13 @@ export default defineNuxtModule<ModuleOptions>({
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
-        configureRuntime(nuxt, 'reservations', {
-          enabled: options.enabled !== false,
-        }),
-      composables: configureComposables,
+        configureRuntimeDefaults(
+          nuxt,
+          'reservations',
+          { enabled: options.enabled !== false },
+          { merge: true }
+        ),
+      composables: registerComposablesDir,
       components: configureComponents,
       pages: configurePages,
       server: configureServer,

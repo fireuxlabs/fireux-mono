@@ -1,14 +1,13 @@
 <template>
   <section class="grid gap-4 lg:grid-cols-[18rem_minmax(0,1fr)]">
     <div class="space-y-3">
-      <h2 class="text-lg font-black text-highlighted">
-        Kitchen receiving
-      </h2>
+      <h2 class="text-lg font-black text-highlighted">Kitchen receiving</h2>
 
       <ConsoleKitchenOperationsOrdersReceiving
         v-if="awaitingDecision"
         :accepting="false"
         :estimate-minutes="estimateMinutes"
+        :now-ms="nowMs"
         :order="displayOrder"
         :rejecting="false"
         @accept="accept"
@@ -27,23 +26,18 @@
           </UBadge>
         </div>
 
-        <ConsoleKitchenOperationsOrdersTicketPresentation :order="displayOrder" />
+        <ConsoleKitchenOperationsOrdersTicketPresentation
+          :order="displayOrder"
+        />
       </div>
     </div>
 
-    <OrderingObjectShape
-      :title="title"
-      :data="displayShape"
-    />
+    <OrderingObjectShape :title="title" :data="displayShape" />
   </section>
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  watch,
-} from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { OrderingKitchenReceiving } from '~/utils/orderingFunnelShapes'
 import {
   deriveKitchenOrderBoardStage,
@@ -69,11 +63,13 @@ const emit = defineEmits<{
 }>()
 
 const defaultEstimateMinutes = 45
+const nowMs = Date.now()
 const estimateMinutes = ref(defaultEstimateMinutes)
 const accepted = ref<{ estimatedMinutes: number | null } | null>(null)
 const cancelled = ref<{ note: string } | null>(null)
-const awaitingDecision = computed(() =>
-  props.receiving.order.status === 'pending_acceptance' &&
+const awaitingDecision = computed(
+  () =>
+    props.receiving.order.status === 'pending_acceptance' &&
     !accepted.value &&
     !cancelled.value
 )
@@ -173,7 +169,9 @@ function etaAt(minutes: number) {
 watch(
   () => [
     props.receiving.order.id,
-    JSON.stringify((props.receiving.order as Record<string, unknown>).collection || {}),
+    JSON.stringify(
+      (props.receiving.order as Record<string, unknown>).collection || {}
+    ),
   ],
   () => {
     accepted.value = null

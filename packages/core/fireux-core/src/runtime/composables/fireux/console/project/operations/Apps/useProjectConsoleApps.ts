@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: expose filtered App operation outcomes.
 import { computed } from 'vue'
-import { useAppCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/app/fetch/useAppCollection'
-import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
-import type { App } from 'fireux-core/runtime/models/core/app.model'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { useAppCollection } from '../../../../firestore/core/app/fetch/useAppCollection'
+import { useFirestoreCollectionState } from '../../../../firestore/operations/useFirestoreCollection'
+import type { App } from '../../../../../../models/core/app.model'
+import { AppStorage } from '../../../../../../models/core/app.model'
 import { useProjectConsole } from '../../core/useProjectConsole'
 import {
   findProjectConsoleDemoScenario,

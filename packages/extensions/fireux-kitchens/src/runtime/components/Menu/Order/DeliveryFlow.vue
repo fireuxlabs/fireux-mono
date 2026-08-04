@@ -99,7 +99,10 @@ import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
-import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
+import {
+  useMenuOrderBasket,
+  type MenuOrderBasketLine,
+} from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuDeliveryAddress } from '../../../composables/fireux/menu/order/useMenuDeliveryAddress'
 import { useMenuOrderDelivery } from '../../../composables/fireux/menu/order/useMenuOrderDelivery'
 import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
@@ -144,37 +147,47 @@ const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
 const afterBasket = ref<'address' | 'time' | 'checkout' | ''>('')
 const openTimeAfterAddress = ref(false)
 const openCheckoutAfterTime = ref(false)
-const paymentMethods = computed(() => props.config?.fulfilment?.payment_methods || [])
+const paymentMethods = computed(
+  () => props.config?.fulfilment?.payment_methods || []
+)
 const handoffInstructions = computed(() =>
   String(props.config?.fulfilment?.handoff_instructions || '').trim()
 )
-const requiredContactFields = computed(() =>
-  props.config?.customer?.required_fields || []
+const requiredContactFields = computed(
+  () => props.config?.customer?.required_fields || []
 )
 const basketActionLabel = computed(() => {
   if (!delivery.ready.value) return 'Choose delivery address'
   if (!deliveryTime.value) return 'Choose delivery time'
   return 'Review and send'
 })
-const basketSelectionLabel = computed(() => [
-  deliveryTime.value?.label,
-  delivery.ready.value ? delivery.label.value : '',
-].filter(Boolean).join(' · '))
+const basketSelectionLabel = computed(() =>
+  [deliveryTime.value?.label, delivery.ready.value ? delivery.label.value : '']
+    .filter(Boolean)
+    .join(' · ')
+)
 const checkoutSelectionLabel = computed(() => basketSelectionLabel.value)
 
-watch(() => order.amendmentLines.value, (lines) => {
-  if (!basket.quantity.value && lines.length) basket.replace(lines)
-}, { immediate: true })
+watch(
+  () => order.amendmentLines.value,
+  (lines: MenuOrderBasketLine[]) => {
+    if (!basket.quantity.value && lines.length) basket.replace(lines)
+  },
+  { immediate: true }
+)
 
-watch(() => basket.quantity.value, (quantity) => {
-  if (quantity || order.sentOrder.value) return
-  basketOpen.value = false
-  addressOpen.value = false
-  deliveryTimeOpen.value = false
-  checkoutOpen.value = false
-  deliveryTime.value = null
-  delivery.clear()
-})
+watch(
+  () => basket.quantity.value,
+  (quantity: number) => {
+    if (quantity || order.sentOrder.value) return
+    basketOpen.value = false
+    addressOpen.value = false
+    deliveryTimeOpen.value = false
+    checkoutOpen.value = false
+    deliveryTime.value = null
+    delivery.clear()
+  }
+)
 watch(scopeKey, () => {
   basketOpen.value = false
   addressOpen.value = false

@@ -10,9 +10,10 @@ export function usePublicBlogCollection() {
   const blogLanguage = usePublicBlogLanguage()
   const state = useAsyncData<PublicBlogIndexPage>(
     'public-blog-index',
-    () => $fetch<PublicBlogIndexPage>('/api/public/blogs', {
-      query: blogLanguage.query.value,
-    }),
+    () =>
+      $fetch<PublicBlogIndexPage>('/api/public/blogs', {
+        query: blogLanguage.query.value,
+      }),
     {
       watch: [blogLanguage.language],
     }
@@ -24,7 +25,7 @@ export function usePublicBlogCollection() {
 
   watch(
     () => state.data.value,
-    (page) => {
+    (page: PublicBlogIndexPage | null | undefined) => {
       additionalItems.value = []
       nextCursor.value = page?.nextCursor ?? ''
       loadMoreError.value = null
@@ -63,10 +64,7 @@ export function usePublicBlogCollection() {
           ...blogLanguage.query.value,
         },
       })
-      additionalItems.value = [
-        ...additionalItems.value,
-        ...page.items,
-      ]
+      additionalItems.value = [...additionalItems.value, ...page.items]
       nextCursor.value = page.nextCursor ?? ''
     } catch (error) {
       loadMoreError.value =

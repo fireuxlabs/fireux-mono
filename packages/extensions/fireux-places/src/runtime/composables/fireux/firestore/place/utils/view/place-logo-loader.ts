@@ -1,4 +1,4 @@
-import type { BasePlace } from 'fireux-places/runtime/models/place.model.ts'
+import type { BasePlace } from '../../../../../../models/place.model.ts'
 import type { LoadLogoOptions } from './place-logo.types'
 import { toLogoCard } from './place-logo-card'
 import { fetchLogo } from './place-logo-network'

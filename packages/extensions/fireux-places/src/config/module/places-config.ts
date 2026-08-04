@@ -1,4 +1,4 @@
-import { configureRuntime } from './runtime-config'
+import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 
 type PlacesConfigOptions = {
   debug?: boolean
@@ -6,16 +6,19 @@ type PlacesConfigOptions = {
   googleAutocompleteTypeFilters?: Record<string, string[]>
 }
 
-export function configurePlaces(
-  nuxt: any,
-  options: PlacesConfigOptions = {}
-) {
-  configureRuntime(nuxt, 'places', {
-    debug: Boolean(options.debug),
-    enabled: true,
-    types: options.types || [],
-    googleAutocompleteTypeFilters: options.googleAutocompleteTypeFilters || {},
-  })
+export function configurePlaces(nuxt: any, options: PlacesConfigOptions = {}) {
+  configureRuntimeDefaults(
+    nuxt,
+    'places',
+    {
+      debug: Boolean(options.debug),
+      enabled: true,
+      types: options.types || [],
+      googleAutocompleteTypeFilters:
+        options.googleAutocompleteTypeFilters || {},
+    },
+    { merge: true }
+  )
 
   const key =
     process.env.GOOGLE_PLACES_API_KEY ||

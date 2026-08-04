@@ -4,8 +4,8 @@ import { computed, isRef, ref, type ComputedRef, type Ref } from 'vue'
 import type {
   PublicPlaceDetailResponse,
   PublicPlaceProjection,
-} from 'fireux-places/runtime/models/place-public.model'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+} from '../../../../../models/place-public.model'
+import type { Place } from '../../../../../models/place.model'
 
 type PlaceLocatorInput = string | Ref<string | null | undefined>
 type PlaceFetchFunction = (id: string) => Ref<Place | undefined>

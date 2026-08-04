@@ -8,8 +8,8 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   IgnitionRequestStorage,
   parseIgnitionRequestPatch,

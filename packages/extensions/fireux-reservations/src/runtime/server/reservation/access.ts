@@ -1,13 +1,13 @@
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { canonicalPropertyRoot } from 'fireux-properties/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { canonicalPropertyRoot } from 'fireux-properties/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface'
 import {
   PropertyStorage,
   type Property,
-} from 'fireux-properties/runtime/models/property.model.ts'
+} from 'fireux-properties/runtime/models/property.model'
 import { reservationFail } from './records.ts'
 
 type Firestore = ReturnType<typeof getRuntimeFirestore>

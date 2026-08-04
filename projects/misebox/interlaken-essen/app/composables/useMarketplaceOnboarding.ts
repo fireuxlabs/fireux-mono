@@ -1,12 +1,6 @@
 import { useInterlakenCopy } from '@/composables/useInterlakenCopy'
 import { useInterlakenOnboardingStatus } from '@/composables/useInterlakenOnboardingStatus'
-import {
-  computed,
-  onMounted,
-  onUnmounted,
-  ref,
-  watch,
-} from '#imports'
+import { computed, onMounted, onUnmounted, ref, watch } from '#imports'
 import { useAvatarProxy } from 'fireux-core/runtime/composables/fireux/app/ui/useAvatarProxy'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
@@ -86,7 +80,10 @@ export function useMarketplaceOnboarding() {
 
   watch(
     [authState, () => authUser.value?.uid],
-    ([state, uid]) => {
+    ([state, uid]: [
+      'AUTHENTICATED' | 'NOT_AUTHENTICATED',
+      string | null | undefined,
+    ]) => {
       if (state !== 'AUTHENTICATED' || !uid) {
         clearOnboardingStatus()
         return

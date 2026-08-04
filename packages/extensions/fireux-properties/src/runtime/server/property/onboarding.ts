@@ -1,18 +1,17 @@
 // Concurrent edit — 2026-07-21 22:35 CEST — Console alignment — Property: atomically bind canonical root and App access.
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: reject coerced Property support and membership ids.
-import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import {
-  resolveFireuxAppScopeStateForRole,
-  type FireuxAppScopeState,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
+import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { canonicalPropertyRoot } from '../../composables/fireux/firestore/property/utils/view/usePropertyInterface.ts'
 import type { PropertyOnboardingCompleteResult } from '../../models/property-onboarding.model.ts'
 import {
@@ -40,10 +39,6 @@ type Actor = RuntimePolicy & {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
@@ -76,18 +71,18 @@ function request(value: unknown) {
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
-  const fireux = record(useRuntimeConfig(event).public?.fireux)
-  const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
-  const appRole = text(fireux.role)
-  const developerId = text(fireux.developerId)
+  const fireux = useFireUXConfig(event)
+  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
+  const appRole = fireux.role
+  const developerId = fireux.developerId || ''
   const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
   if (!appScopeState) fail(403, 'This App cannot own a Property console.')
 
-  const propertyConfig = record(record(fireux.consoleConfig).property)
-  const canCreate =
-    typeof propertyConfig.canCreate === 'boolean'
-      ? propertyConfig.canCreate
-      : appRole !== 'tenant'
+  const canCreate = resolveConsoleCanCreate(
+    appRole,
+    fireux.consoleConfig,
+    'property'
+  )
   return {
     appId,
     appRole,

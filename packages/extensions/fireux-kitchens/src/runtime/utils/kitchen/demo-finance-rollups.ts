@@ -1,4 +1,4 @@
-import { requireFinancialMinorAmount } from 'fireux-finance/runtime/utils/money.ts'
+import { requireFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
 import type {
   KitchenDemoFinanceDay,
   KitchenDemoFinanceDayHighlight,

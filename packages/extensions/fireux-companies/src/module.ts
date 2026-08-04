@@ -1,13 +1,12 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
-import { configureRuntime } from './config/module/runtime-config'
-import { configureComposables } from './config/module/composables-config'
+import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import { configureComponents } from './config/module/components-config'
-import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
 
@@ -53,10 +52,15 @@ export default defineNuxtModule<ModuleOptions>({
     )
 
     configureFireuxModule(resolver, nuxt, {
-      runtime: (nuxt) => configureRuntime(nuxt, 'companies'),
-      composables: configureComposables,
+      runtime: (nuxt) =>
+        configureRuntimeDefaults(
+          nuxt,
+          'companies',
+          { enabled: true },
+          { merge: true }
+        ),
+      composables: registerComposablesDir,
       components: configureComponents,
-      layouts: configureLayouts,
       pages: configurePages,
       server: configureServer,
     })

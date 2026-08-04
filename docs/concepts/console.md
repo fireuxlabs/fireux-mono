@@ -1,7 +1,7 @@
 # Console
 
-Updated: 2026-07-26
-Ref: 796952bf0
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -117,7 +117,9 @@ Map the shared console system and domain adapters.
   entity card through the shared selected-content slot; it must not replace the
   shared empty state or Clear behavior.
 - Tenant apps can auto-select a single persisted authorized target.
-- Global apps usually source target IDs from user/app data.
+- Every Live App sources target relationships and operator/team access from
+  the owning entity family's persisted App-support records. AppUser does not
+  carry Console target IDs.
 - Target adapters must pass the collection `outcome` through `useConsoleIndex`;
   it is the sole target-state authority, with no count or pending fallback.
   Named `ConsoleXIndexTargets` wrappers require that outcome and use

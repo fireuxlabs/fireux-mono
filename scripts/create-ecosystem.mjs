@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-26
+// last_used: 2026-08-04
 // usage_note: canonical ecosystem/App scaffold with explicit Firebase Auth hostname decisions.
-// Concurrent edit — 2026-07-20 23:42 CEST — Nuxt Package Toolchain Pass 2 of 3: scaffold the v1 builder without a direct mkdist dependency.
 import { spawnSync } from 'node:child_process'
 import { mkdirSync, existsSync, writeFileSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -91,52 +90,18 @@ function writeNewFile(filepath, content) {
   writeFileSync(filepath, content, 'utf8')
 }
 
-function readJsonWithOptionalLeadingComment(filepath) {
-  const raw = readFileSync(filepath, 'utf8')
-  const prefixMatch = raw.match(/^((?:\s*\/\/.*\n)+)/)
-  const prefix = prefixMatch ? prefixMatch[1] : ''
-  const jsonText = prefix ? raw.slice(prefix.length) : raw
-  return { prefix, data: JSON.parse(jsonText) }
-}
-
-function writeJsonWithOptionalLeadingComment(filepath, prefix, data) {
-  writeFileSync(filepath, `${prefix}${JSON.stringify(data, null, 2)}\n`, 'utf8')
-}
-
-function updateTsconfigBase(repoRoot, pkgName) {
+function updateWorkspaceTypeScriptPaths(repoRoot, pkgName) {
   const file = path.join(repoRoot, 'tsconfig.base.json')
   const data = JSON.parse(readFileSync(file, 'utf8'))
   const paths = ((data.compilerOptions ||= {}).paths ||= {})
 
   paths[pkgName] ||= [`./packages/ecosystem/${pkgName}/src/module.ts`]
   paths[`${pkgName}/*`] ||= [`./packages/ecosystem/${pkgName}/src/*`]
-  paths[`@${pkgName}/*`] ||= [`./packages/ecosystem/${pkgName}/src/*`]
+  paths[`${pkgName}/runtime/*`] ||= [
+    `./packages/ecosystem/${pkgName}/src/runtime/*`,
+  ]
 
   writeFileSync(file, `${JSON.stringify(data, null, 2)}\n`, 'utf8')
-}
-
-function addReferenceIfMissing(refs, value) {
-  if (!Array.isArray(refs)) return
-  if (refs.some((entry) => entry && entry.path === value)) return
-  refs.push({ path: value })
-}
-
-function updateTsProjectRefs(repoRoot, slug) {
-  const ecosystemPkg = `fireux-${slug}`
-
-  {
-    const file = path.join(repoRoot, 'packages', 'ecosystem', 'tsconfig.json')
-    const { prefix, data } = readJsonWithOptionalLeadingComment(file)
-    addReferenceIfMissing(data.references, ecosystemPkg)
-    writeJsonWithOptionalLeadingComment(file, prefix, data)
-  }
-
-  {
-    const file = path.join(repoRoot, 'packages', 'tsconfig.json')
-    const { prefix, data } = readJsonWithOptionalLeadingComment(file)
-    addReferenceIfMissing(data.references, `ecosystem/${ecosystemPkg}`)
-    writeJsonWithOptionalLeadingComment(file, prefix, data)
-  }
 }
 
 function ensureServiceAccountIgnoreContract(repoRoot) {
@@ -184,9 +149,32 @@ function makeFiles({
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
-    "./runtime/*": "./src/runtime/*",
+    "./runtime/*.vue": {
+      "types": "./src/runtime/*.vue",
+      "default": "./src/runtime/*.vue"
+    },
+    "./runtime/*.css": {
+      "types": "./src/runtime/*.css",
+      "default": "./src/runtime/*.css"
+    },
+    "./runtime/*.scss": {
+      "types": "./src/runtime/*.scss",
+      "default": "./src/runtime/*.scss"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    },
     "./config/*": "./src/config/*",
     "./package.json": "./package.json"
+  },
+  "typesVersions": {
+    "*": {
+      "runtime/*.vue": ["src/runtime/*.vue"],
+      "runtime/*.css": ["src/runtime/*.css"],
+      "runtime/*.scss": ["src/runtime/*.scss"],
+      "runtime/*": ["src/runtime/*.ts"]
+    }
   },
   "files": [
     "src/**/*"
@@ -353,7 +341,7 @@ export const ecosystemConfig = {
 // @fireux-rules-databases ${slug}
 // @fireux-rules-artifact scripts/firebase/${slug}/firestore.rules
 // @fireux-rules-fragments open,close
-// Concurrent edit — generated ecosystem scaffold: establish an ecosystem-owned default-deny release source.
+// New ecosystems begin with a default-deny Rules source.
 // @fireux-rules-template-source
 // @fireux-ecosystem-rules default-deny
 `,
@@ -693,7 +681,7 @@ async function main() {
     files.forEach(([rel]) =>
       console.log(`  - packages/ecosystem/${pkgName}/${rel}`)
     )
-    console.log('[dry-run] would update tsconfig refs and path aliases')
+    console.log('[dry-run] would update workspace TypeScript path aliases')
     if (authDomain) {
       console.log(
         shouldSyncAuthDomain
@@ -710,8 +698,7 @@ async function main() {
     writeNewFile(path.join(ecosystemDir, relativePath), content)
   }
 
-  updateTsconfigBase(repoRoot, pkgName)
-  updateTsProjectRefs(repoRoot, slug)
+  updateWorkspaceTypeScriptPaths(repoRoot, pkgName)
   ensureServiceAccountIgnoreContract(repoRoot)
 
   if (shouldSyncAuthDomain) {

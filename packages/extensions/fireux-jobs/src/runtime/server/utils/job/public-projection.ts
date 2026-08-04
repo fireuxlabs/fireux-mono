@@ -8,9 +8,9 @@ import {
   normalizeFireuxJobSourceAppDoorways,
   type FireuxJobSourceAppDoorways,
 } from '../../../../config/jobs.config.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { projectPublicCompany } from 'fireux-companies/runtime/server/company/public-projection.ts'
-import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { projectPublicCompany } from 'fireux-companies/runtime/server/company/public-projection'
+import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection'
 import type { PublicJobProjection } from '../../../models/job-public.model.ts'
 import type { Job } from '../../../models/job.model.ts'
 import { canonicalJobRoot } from '../../job/validation.ts'

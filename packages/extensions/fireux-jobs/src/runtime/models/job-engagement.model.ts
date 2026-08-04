@@ -1,9 +1,6 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model.ts'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
-import type {
-  JobContractType,
-  JobManagementMode,
-} from './job.model.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { JobContractType, JobManagementMode } from './job.model.ts'
 
 export const JobEngagementStorage = {
   collection: 'job-engagements',
@@ -24,8 +21,7 @@ export const JOB_ENGAGEMENT_STATUSES = [
   'cancelled',
 ] as const
 
-export type JobEngagementStatus =
-  (typeof JOB_ENGAGEMENT_STATUSES)[number]
+export type JobEngagementStatus = (typeof JOB_ENGAGEMENT_STATUSES)[number]
 
 export type JobEngagement = {
   id: string

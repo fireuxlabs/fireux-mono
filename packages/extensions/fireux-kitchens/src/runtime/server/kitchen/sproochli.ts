@@ -1,14 +1,14 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,
-} from 'fireux-sproochli/runtime/sproochli.ts'
+} from 'fireux-sproochli/runtime/sproochli'
 import { KitchenStorage } from '../../models/kitchen.model.ts'
 import {
   readKitchenOnboardingScope,
@@ -24,7 +24,7 @@ const allowedDefaultLanguages = [
 const allowedDefaultLanguageSet = new Set<SproochliDefaultLanguage>(
   allowedDefaultLanguages
 )
-type AllowedDefaultLanguage = typeof allowedDefaultLanguages[number]
+type AllowedDefaultLanguage = (typeof allowedDefaultLanguages)[number]
 
 function badRequest(statusMessage: string): never {
   throw createError({ statusCode: 400, statusMessage })
@@ -36,7 +36,7 @@ function request(value: unknown) {
   }
   const source = value as Record<string, unknown>
   const allowed = new Set(['kitchen_id', 'enabled', 'default_language'])
-  const unsupported = Object.keys(source).find(key => !allowed.has(key))
+  const unsupported = Object.keys(source).find((key) => !allowed.has(key))
   if (unsupported) {
     badRequest(`Kitchen Sproochli contains unsupported field: ${unsupported}.`)
   }
@@ -47,10 +47,7 @@ function request(value: unknown) {
   const defaultLanguage = String(source.default_language ?? '')
     .trim()
     .toLowerCase() as SproochliDefaultLanguage
-  if (
-    source.enabled &&
-    !allowedDefaultLanguageSet.has(defaultLanguage)
-  ) {
+  if (source.enabled && !allowedDefaultLanguageSet.has(defaultLanguage)) {
     badRequest('Kitchen Sproochli default language must be mixed, en, or de.')
   }
 
@@ -58,7 +55,7 @@ function request(value: unknown) {
     kitchenId: requireFirestoreDocumentId(source.kitchen_id, 'Kitchen id'),
     enabled: source.enabled,
     defaultLanguage: source.enabled
-      ? defaultLanguage as AllowedDefaultLanguage
+      ? (defaultLanguage as AllowedDefaultLanguage)
       : undefined,
   }
 }
@@ -75,10 +72,7 @@ function memberRole(
   return role
 }
 
-export async function updateKitchenSproochli(
-  event: H3Event,
-  input: unknown
-) {
+export async function updateKitchenSproochli(event: H3Event, input: unknown) {
   const requested = request(input)
   const runtimeAppId = requireFirestoreDocumentId(
     useRuntimeConfig(event).public?.fireux?.id,
@@ -89,25 +83,30 @@ export async function updateKitchenSproochli(
     'Sign in to manage this Kitchen.'
   )
   const db = getRuntimeFirestore()
-  const rootRef = db.collection(KitchenStorage.rootCollection)
+  const rootRef = db
+    .collection(KitchenStorage.rootCollection)
     .doc(requested.kitchenId)
   const runtimeMembershipRef = db.doc(`apps/${runtimeAppId}/users/${uid}`)
 
-  const result = await db.runTransaction(async transaction => {
+  const result = await db.runTransaction(async (transaction) => {
     const [root, runtimeMembership] = await Promise.all([
       transaction.get(rootRef),
       transaction.get(runtimeMembershipRef),
     ])
     if (!root.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Kitchen not found.',
+      })
     }
     memberRole(
       runtimeMembership.exists,
       runtimeMembership.get('role'),
       'Current App membership is required to manage this Kitchen.'
     )
-    const runtimeTargetIds = resolveKitchenConsoleTargetIds(
-      event,
+    const runtimeTargetIds = await resolveKitchenConsoleTargetIds(
+      runtimeAppId,
+      uid,
       runtimeMembership.data() || {}
     )
     if (!runtimeTargetIds.includes(requested.kitchenId)) {
@@ -144,7 +143,10 @@ export async function updateKitchenSproochli(
       'Kitchen owner App membership is required.'
     )
     if (!support.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Kitchen not found.',
+      })
     }
     const authority = readKitchenOnboardingSupport(support.data() || {})
     if (

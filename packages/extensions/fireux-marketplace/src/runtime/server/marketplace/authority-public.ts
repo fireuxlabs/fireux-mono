@@ -1,6 +1,6 @@
 import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type {
   ManagedMarketplaceStoreResponse,
   ManagedMarketplaceStoresResponse,

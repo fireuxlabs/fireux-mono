@@ -2,8 +2,8 @@
 
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { DriverDispatchWatchInput } from '../../../../models/driver/dispatch.ts'
 import { watchDriverDispatch } from '../../../../server/kitchen/driver-dispatch.ts'
 

@@ -1,11 +1,11 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { PortfolioStorage } from '../../models/portfolio.model.ts'
 import {
   assertOnboardingAuthority,

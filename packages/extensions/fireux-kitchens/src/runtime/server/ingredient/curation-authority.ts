@@ -1,8 +1,8 @@
 import { useRuntimeConfig } from '#imports'
 import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { text } from './curation-input'
 
 export async function curatorContext(event: H3Event) {

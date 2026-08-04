@@ -9,7 +9,10 @@ import process from 'node:process'
 import { setTimeout as delay } from 'node:timers/promises'
 
 import { parseArgs } from './_lib/args.mjs'
-import { DEV_APP_KEYS, getDevApp } from './_lib/dev-apps.mjs'
+import {
+  APP_KEYS,
+  getAppRegistryEntry,
+} from './_lib/app-registry.mjs'
 import {
   ensureFireuxCoreConfigHelpers,
   runPrepareForApp,
@@ -34,7 +37,7 @@ const HTML_FAILURE_MARKERS = [
 
 function usage() {
   console.error('Usage: node scripts/smoke-component-resolution.mjs --app <key> [--prepare]')
-  console.error(`Known apps: ${DEV_APP_KEYS.join(', ')}`)
+  console.error(`Known apps: ${APP_KEYS.join(', ')}`)
 }
 
 function preview(text) {
@@ -96,7 +99,7 @@ if (!appKey) {
   process.exit(2)
 }
 
-const app = getDevApp(appKey)
+const app = getAppRegistryEntry(appKey)
 const routes = app.componentSmokeRoutes?.length ? app.componentSmokeRoutes : app.smokeRoutes
 
 if (shouldPrepare) {

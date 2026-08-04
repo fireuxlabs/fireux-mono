@@ -27,9 +27,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleTargetOutcome } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import type { ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import type { ConsoleTargetOutcome } from '../../../../composables/fireux/app/console/useConsoleIndex'
+import type { ProjectSurface } from '../../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import { useProjectInterface } from '../../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 
 const props = withDefaults(
   defineProps<{

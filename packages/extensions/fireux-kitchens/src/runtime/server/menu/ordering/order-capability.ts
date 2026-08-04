@@ -4,7 +4,7 @@ import {
   getHeader,
   type H3Event,
 } from 'h3'
-import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   MENU_ORDER_CAPABILITY_HEADER,
   readMenuOrderCapabilityToken,

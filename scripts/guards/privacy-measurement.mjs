@@ -1,4 +1,8 @@
-import { readFileSync } from 'node:fs'
+// @fireux-script
+// last_used: 2026-08-04
+// usage_note: run through pnpm guard; rejects undeclared tracking and browser-storage behavior.
+
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { join } from 'node:path'
 
 const TRACKER_PATTERNS = [
@@ -170,6 +174,21 @@ export async function run({ repoRoot }) {
       'Firebase Auth must use the declared browser-session persistence.'
     )
   }
+
+  const directConversationClientRoot = join(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/conversation'
+  )
+  if (
+    existsSync(directConversationClientRoot) &&
+    readdirSync(directConversationClientRoot, { recursive: true }).some(
+      (entry) => String(entry).endsWith('.ts')
+    )
+  ) {
+    violations.push(
+      'The retired direct-Firestore Conversation client must not return; use the trusted /api/chat boundary.'
+    )
+  }
   if (!/if \(!getApps\(\)\.length\) return/.test(authPersistence)) {
     violations.push(
       'Firebase Auth persistence must tolerate Nuxt client HMR before App initialization.'
@@ -245,6 +264,54 @@ export async function run({ repoRoot }) {
     !storagePolicy.mechanisms.length
   ) {
     violations.push('Core browser-storage policy is missing or incomplete.')
+  }
+
+  const chatPage = readFileSync(
+    join(repoRoot, 'packages/core/fireux-core/src/runtime/pages/chat.vue'),
+    'utf8'
+  )
+  if (
+    !['/api/chat/start', '/api/chat/session', '/api/chat/message'].every(
+      (endpoint) => chatPage.includes(endpoint)
+    ) ||
+    /firestore\/core\/conversation/.test(chatPage)
+  ) {
+    violations.push(
+      'Chat PII must cross the trusted /api/chat boundary; the landing page may not read or write Conversation Firestore records directly.'
+    )
+  }
+
+  const chatSession = readFileSync(
+    join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/server/utils/chat/session.ts'
+    ),
+    'utf8'
+  )
+  for (const required of [
+    'randomBytes(32)',
+    "createHash('sha256')",
+    'timingSafeEqual',
+    'token_hash',
+    'runTransaction',
+    'SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000',
+    'MAX_CHAT_STARTS_PER_WINDOW',
+    'getRequestIP',
+    'rateLimitSalt',
+  ]) {
+    if (!chatSession.includes(required)) {
+      violations.push(
+        `Chat recovery boundary is missing ${required}; keep secrets unguessable, hashed at rest, constant-time checked, atomic, and time-bounded.`
+      )
+    }
+  }
+
+  if (!storagePolicy.mechanisms.some((entry) =>
+    entry.key === 'fireux:*:admin-chat' && entry.lifetime === 'At most 30 days'
+  )) {
+    violations.push(
+      'Core browser-storage policy must declare the exact fireux:*:admin-chat recovery key and its 30-day maximum lifetime.'
+    )
   }
 
   if (violations.length) {

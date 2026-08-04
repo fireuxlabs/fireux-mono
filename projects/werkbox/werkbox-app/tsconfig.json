@@ -1,11 +1,15 @@
 {
-  "extends": "../tsconfig.app.base.json",
+  "extends": "../../tsconfig.projects.json",
   "compilerOptions": {
-    "composite": false,
-    "moduleResolution": "Bundler",
     "paths": {
-      "#pwa": ["../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": ["./.nuxt/imports.d.ts", "./app/.nuxt/imports.d.ts", "../../../types/nuxt-shims.d.ts"],
+      "#pwa": [
+        "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
+      ],
+      "#imports": [
+        "./.nuxt/imports.d.ts",
+        "./app/.nuxt/imports.d.ts",
+        "../../../types/nuxt-shims.d.ts"
+      ],
       "#build/*": ["./.nuxt/*", "./app/.nuxt/*"],
       "~": ["./app"],
       "~/*": ["./app/*"],
@@ -13,28 +17,38 @@
       "@/*": ["./app/*"],
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
-      "@fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "fireux-companies": ["../../../packages/extensions/fireux-companies/src/module.ts"],
-      "fireux-companies/*": ["../../../packages/extensions/fireux-companies/src/*"],
-      "fireux-companies/runtime/*": ["../../../packages/extensions/fireux-companies/src/runtime/*"],
-      "@fireux-companies/*": ["../../../packages/extensions/fireux-companies/src/runtime/*"],
+      "fireux-core/runtime/*": [
+        "../../../packages/core/fireux-core/src/runtime/*"
+      ],
+      "fireux-companies": [
+        "../../../packages/extensions/fireux-companies/src/module.ts"
+      ],
+      "fireux-companies/*": [
+        "../../../packages/extensions/fireux-companies/src/*"
+      ],
+      "fireux-companies/runtime/*": [
+        "../../../packages/extensions/fireux-companies/src/runtime/*"
+      ],
       "fireux-jobs": ["../../../packages/extensions/fireux-jobs/src/module.ts"],
       "fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/*"],
-      "fireux-jobs/runtime/*": ["../../../packages/extensions/fireux-jobs/src/runtime/*"],
-      "@fireux-jobs/*": ["../../../packages/extensions/fireux-jobs/src/runtime/*"],
-      "fireux-places": ["../../../packages/extensions/fireux-places/src/module.ts"],
+      "fireux-jobs/runtime/*": [
+        "../../../packages/extensions/fireux-jobs/src/runtime/*"
+      ],
+      "fireux-places": [
+        "../../../packages/extensions/fireux-places/src/module.ts"
+      ],
       "fireux-places/*": ["../../../packages/extensions/fireux-places/src/*"],
-      "fireux-places/runtime/*": ["../../../packages/extensions/fireux-places/src/runtime/*"],
-      "@fireux-places/*": ["../../../packages/extensions/fireux-places/src/runtime/*"],
-      "fireux-werkbox": ["../../../packages/ecosystem/fireux-werkbox/src/module.ts"],
+      "fireux-places/runtime/*": [
+        "../../../packages/extensions/fireux-places/src/runtime/*"
+      ],
+      "fireux-werkbox": [
+        "../../../packages/ecosystem/fireux-werkbox/src/module.ts"
+      ],
       "fireux-werkbox/*": ["../../../packages/ecosystem/fireux-werkbox/src/*"],
-      "fireux-werkbox/runtime/*": ["../../../packages/ecosystem/fireux-werkbox/src/runtime/*"],
-      "@fireux-werkbox/*": ["../../../packages/ecosystem/fireux-werkbox/src/*"]
-    },
-    "skipLibCheck": true,
-    "noEmit": true,
-    "isolatedModules": true
+      "fireux-werkbox/runtime/*": [
+        "../../../packages/ecosystem/fireux-werkbox/src/runtime/*"
+      ]
+    }
   },
   "include": [
     "./.nuxt/nuxt.d.ts",

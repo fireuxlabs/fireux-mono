@@ -1,5 +1,5 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model.ts'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export const JobApplicationStorage = {
   collection: 'job-applications',
@@ -15,8 +15,7 @@ export const JOB_APPLICATION_STATUSES = [
   'withdrawn',
 ] as const
 
-export type JobApplicationStatus =
-  (typeof JOB_APPLICATION_STATUSES)[number]
+export type JobApplicationStatus = (typeof JOB_APPLICATION_STATUSES)[number]
 
 export const DIRECT_EMPLOYMENT_TERMS_VERSION = '2026-07-26' as const
 
@@ -49,11 +48,7 @@ export type JobApplicationCreateIntent = {
   message?: string
 }
 
-export type JobApplicationAction =
-  | 'offer'
-  | 'reject'
-  | 'withdraw'
-  | 'accept'
+export type JobApplicationAction = 'offer' | 'reject' | 'withdraw' | 'accept'
 
 export type JobApplicationActionIntent = {
   action: JobApplicationAction

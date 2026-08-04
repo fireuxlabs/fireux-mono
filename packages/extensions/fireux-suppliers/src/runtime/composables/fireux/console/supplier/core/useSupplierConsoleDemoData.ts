@@ -1,18 +1,10 @@
 // Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: lazily adapt owner-local Supplier fixtures for console use.
 import type { MaybeRefOrGetter } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import {
-  useConsoleDemoData,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDemoData'
-import {
-  type SupplierSurface,
-} from '../../../firestore/supplier/utils/view/useSupplierInterface'
-import {
-  projectSupplierDemoWorld,
-} from '../../../../../utils/supplier-demo-world'
-import type {
-  PublicCompanyProjection,
-} from 'fireux-companies/runtime/models/company-public.model'
+import { useConsoleDemoData } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleDemoData'
+import { type SupplierSurface } from '../../../firestore/supplier/utils/view/useSupplierInterface'
+import { projectSupplierDemoWorld } from '../../../../../utils/supplier-demo-world'
+import type { PublicCompanyProjection } from 'fireux-companies/runtime/models/company-public.model'
 import type {
   SupplierCatalogue,
   SupplierIngredient,
@@ -33,9 +25,7 @@ export type SupplierConsoleDemoData = {
   scenarios: SupplierConsoleDemoScenario[]
 }
 
-export function useSupplierConsoleDemoData(
-  active: MaybeRefOrGetter<boolean>
-) {
+export function useSupplierConsoleDemoData(active: MaybeRefOrGetter<boolean>) {
   const { appId } = useFireUXConfig()
 
   return useConsoleDemoData<SupplierConsoleDemoData>({
@@ -57,15 +47,15 @@ export function useSupplierConsoleDemoData(
             appId: scenario.appId,
             supplier: scenario.supplier,
             companyPlace: scenario.companyPlace,
-            ingredients: scenario.ingredients.map(ingredient => ({
+            ingredients: scenario.ingredients.map((ingredient) => ({
               ...ingredient,
             })),
-            items: scenario.items.map(item => ({ ...item })),
-            catalogues: scenario.catalogues.map(catalogue => ({
+            items: scenario.items.map((item) => ({ ...item })),
+            catalogues: scenario.catalogues.map((catalogue) => ({
               ...catalogue,
-              sections: catalogue.sections.map(section => ({
+              sections: catalogue.sections.map((section) => ({
                 ...section,
-                items: section.items.map(item => ({ ...item })),
+                items: section.items.map((item) => ({ ...item })),
               })),
             })),
           })
@@ -75,7 +65,7 @@ export function useSupplierConsoleDemoData(
       )
 
       return {
-        suppliers: scenarios.map(scenario => scenario.supplier),
+        suppliers: scenarios.map((scenario) => scenario.supplier),
         scenarios,
       }
     },
@@ -90,5 +80,5 @@ export function findSupplierConsoleDemoScenario(
   const id = String(supplierId ?? '').trim()
   if (!id) return null
 
-  return data?.scenarios.find(scenario => scenario.supplier.id === id) ?? null
+  return data?.scenarios.find((scenario) => scenario.supplier.id === id) ?? null
 }

@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { getQuery, type H3Event } from 'h3'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type {
   PublicBlogPostIndexProjection,
   PublicBlogPostProjection,

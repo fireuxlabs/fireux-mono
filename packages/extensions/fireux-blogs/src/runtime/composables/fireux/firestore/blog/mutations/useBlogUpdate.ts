@@ -1,4 +1,4 @@
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate.ts'
+import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import {
   BlogPostStorage,

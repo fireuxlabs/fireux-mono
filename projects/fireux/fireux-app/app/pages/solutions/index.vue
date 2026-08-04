@@ -11,11 +11,14 @@
           >
             FireUX
           </NuxtLink>
-          <h1 class="m-0 text-3xl font-semibold leading-tight text-highlighted sm:text-4xl">
+          <h1
+            class="m-0 text-3xl font-semibold leading-tight text-highlighted sm:text-4xl"
+          >
             FireUX solutions
           </h1>
           <p class="m-0 text-base leading-7 text-muted">
-            Search-led pages for specific jobs a FireUX App or Ecosystem can support.
+            Search-led pages for specific jobs a FireUX App or Ecosystem can
+            support.
           </p>
         </header>
 
@@ -56,7 +59,10 @@
                     {{ solution.description }}
                   </span>
                 </span>
-                <UIcon name="i-lucide-arrow-right" class="size-4 shrink-0 text-muted" />
+                <UIcon
+                  name="i-lucide-arrow-right"
+                  class="size-4 shrink-0 text-muted"
+                />
               </NuxtLink>
             </div>
           </UCard>
@@ -94,7 +100,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAsyncData, useSeoMeta } from '#imports'
-import type { FireuxMetaSolution } from 'fireux-core/runtime/models/system/meta-content.model'
+import type { FireuxMetaSolution } from 'fireux-core/config/app/meta-content'
 
 type SolutionsResponse = {
   ok: boolean
@@ -126,18 +132,24 @@ const { data } = await useAsyncData('public-app-solutions', () =>
 
 const fireuxSolutions = computed(() =>
   (data.value?.solutions || []).filter(
-    (solution) => solution.owner?.id === 'fireux' && seoSlugs.has(solution.slug)
+    (solution: FireuxMetaSolution) =>
+      solution.owner?.id === 'fireux' && seoSlugs.has(solution.slug)
   )
 )
 const featuredSolutions = computed(() =>
-  fireuxSolutions.value.filter((solution) => solution.featured)
+  fireuxSolutions.value.filter(
+    (solution: FireuxMetaSolution) => solution.featured
+  )
 )
 const moreSolutions = computed(() =>
-  fireuxSolutions.value.filter((solution) => !solution.featured)
+  fireuxSolutions.value.filter(
+    (solution: FireuxMetaSolution) => !solution.featured
+  )
 )
 const platformSolutions = computed(() =>
   (data.value?.solutions || []).filter(
-    (solution) => solution.owner?.id === 'fireux' && platformSlugs.has(solution.slug)
+    (solution: FireuxMetaSolution) =>
+      solution.owner?.id === 'fireux' && platformSlugs.has(solution.slug)
   )
 )
 

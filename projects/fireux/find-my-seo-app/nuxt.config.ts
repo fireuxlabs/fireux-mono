@@ -13,7 +13,7 @@ const fireuxConfig = defineFireuxConfig({
   role: 'standalone',
   domains: ['professionals'],
   profiles: ['professional'],
-  modules: ['fireux-jobs'],
+  modules: ['fireux-jobs', 'fireux-products'],
 })
 
 export default withFireuxNuxtConfig(fireuxConfig, findMySeoNuxtOverrides)

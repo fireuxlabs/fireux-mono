@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-22 14:08 CEST — Demo route integrity: do not project sections for an unresolved Menu detail route.
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import type { KitchenMenu as Menu } from '../../../../../../models/kitchen/menu/kitchen-menu.model'
 import type { MenuItemPriceOption } from '../../../../../../models/kitchen/menu/menu-item.model'
 import { useKitchenConsoleMenus } from './useKitchenConsoleMenus'
 import { useMenuSectionCollection } from '../../../../firestore/menu/fetch/useMenuSectionCollection'
@@ -35,21 +35,22 @@ export function useKitchenConsoleMenu() {
   const state = useKitchenConsoleMenus()
   const menuId = useRouteParam('menuId')
   const menu = computed<Menu | null>(
-    () => state.menus.value.find((item) => clean(item.id) === menuId.value) ?? null
+    () =>
+      state.menus.value.find((item) => clean(item.id) === menuId.value) ?? null
   )
   const source = computed(
-    () => state.menuSources.value.find((item) => clean(item.id) === menuId.value) ?? null
+    () =>
+      state.menuSources.value.find((item) => clean(item.id) === menuId.value) ??
+      null
   )
   const demoData = useKitchenConsoleDemoData(state.isDemo)
-  const demoScenario = computed(() => findKitchenConsoleDemoScenario(
-    demoData.data.value,
-    state.kitchenId.value
-  ))
-  const demoMenu = computed(() => findKitchenConsoleDemoMenu(
-    demoScenario.value,
-    menuId.value
-  ))
-  const sectionMenuId = computed(() => menu.value ? menuId.value : '')
+  const demoScenario = computed(() =>
+    findKitchenConsoleDemoScenario(demoData.data.value, state.kitchenId.value)
+  )
+  const demoMenu = computed(() =>
+    findKitchenConsoleDemoMenu(demoScenario.value, menuId.value)
+  )
+  const sectionMenuId = computed(() => (menu.value ? menuId.value : ''))
   const sectionState = useMenuSectionCollection(
     state.storageKitchenId,
     sectionMenuId,
@@ -65,14 +66,12 @@ export function useKitchenConsoleMenu() {
   const sections = computed(() =>
     state.isDemo.value
       ? menu.value && clean(menu.value.id) === menuId.value
-        ? demoMenu.value?.menuSections.map(entry => entry.section) ?? []
+        ? (demoMenu.value?.menuSections.map((entry) => entry.section) ?? [])
         : []
       : sectionState.sections.value
   )
   const sectionsPending = computed(() =>
-    state.isDemo.value
-      ? demoData.pending.value
-      : sectionState.pending.value
+    state.isDemo.value ? demoData.pending.value : sectionState.pending.value
   )
   const sectionsCollectionPath = computed(() =>
     state.isDemo.value
@@ -84,11 +83,12 @@ export function useKitchenConsoleMenu() {
       .sort((left, right) => left.sort_order - right.sort_order)
       .map((section) => {
         const demoSection = demoMenu.value?.menuSections.find(
-          entry => clean(entry.section.id) === clean(section.id)
+          (entry) => clean(entry.section.id) === clean(section.id)
         )
-        const activeItems = demoSection?.items
-          .filter(item => item.status === 'active')
-          .sort((left, right) => left.sort_order - right.sort_order) ?? []
+        const activeItems =
+          demoSection?.items
+            .filter((item) => item.status === 'active')
+            .sort((left, right) => left.sort_order - right.sort_order) ?? []
 
         return {
           id: clean(section.id),
@@ -97,14 +97,16 @@ export function useKitchenConsoleMenu() {
           itemCount: demoSection ? activeItems.length : null,
           items: activeItems.map((item) => {
             const dish = demoMenu.value?.dishes.find(
-              candidate => clean(candidate.id) === clean(item.dish_id)
+              (candidate) => clean(candidate.id) === clean(item.dish_id)
             )
 
             return {
               id: clean(item.id),
               name: clean(dish?.name) || clean(item.dish_id) || 'Menu item',
               imageUrl: clean(dish?.image),
-              price: Number.isFinite(Number(item.price)) ? Number(item.price) : 0,
+              price: Number.isFinite(Number(item.price))
+                ? Number(item.price)
+                : 0,
               priceOptions: [...(item.price_options ?? [])],
             }
           }),

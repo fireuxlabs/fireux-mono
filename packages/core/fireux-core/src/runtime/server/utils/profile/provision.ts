@@ -7,12 +7,12 @@ import {
 } from 'firebase-admin/firestore'
 import { createError, defineEventHandler } from 'h3'
 import { AppStorage } from '../../../models/core/app.model'
+import type { ProfileProvisionResult } from '../../../models/operations/profile-provisioning'
+import { AppUserStorage, UserStorage } from '../../../models/core/user.model'
 import {
   canonicalProfileIndex,
   isRuntimeProfileEnabled,
-  type ProfileProvisionResult,
-} from '../../../models/operations/profile-provisioning'
-import { AppUserStorage, UserStorage } from '../../../models/core/user.model'
+} from '../../../utils/profile-index'
 import { requireFirebaseBearerUser } from '../auth/bearer'
 import {
   getRuntimeFirestore,
@@ -81,7 +81,7 @@ function profileRefs(
   appDb: Firestore
 ) {
   return {
-    user: identityDb.collection(UserStorage.rootCollection).doc(uid),
+    user: identityDb.collection(UserStorage.collection).doc(uid),
     root: definition.root
       ? identityDb.collection(definition.root.collection).doc(uid)
       : null,

@@ -1,9 +1,9 @@
 // Protect the App-owned Ignition intake workflow with canonical App membership authority.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getFirestoreDb } from './firebase-admin'
 
 const text = (value: unknown) => String(value ?? '').trim()

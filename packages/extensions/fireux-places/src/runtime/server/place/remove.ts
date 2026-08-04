@@ -1,13 +1,13 @@
 // Concurrent edit — 2026-07-22 12:58 CEST — Place detail deletion: authorize and remove only unreferenced Place roots.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
-} from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+} from 'fireux-core/runtime/server/utils/ids/path'
+import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { PlaceStorage } from '../../models/place.model'
 
 const text = (value: unknown) => String(value ?? '').trim()

@@ -1,10 +1,4 @@
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 
 type KitchenOrderPassSelectionOptions = {
@@ -27,8 +21,9 @@ export function useKitchenOrderPassSelection(
       selectedIds.has(orderId(order.id))
     )
   })
-  const canAct = computed(() =>
-    toValue(options.canOperate) &&
+  const canAct = computed(
+    () =>
+      toValue(options.canOperate) &&
       selectedOrders.value.length > 0 &&
       !sending.value &&
       !selectedOrders.value.some((order) =>
@@ -38,9 +33,9 @@ export function useKitchenOrderPassSelection(
 
   watch(
     () => toValue(options.orders).map((order) => orderId(order.id)),
-    (currentOrderIds) => {
+    (currentOrderIds: string[]) => {
       const currentIds = new Set(currentOrderIds)
-      selectedOrderIds.value = selectedOrderIds.value.filter((id) =>
+      selectedOrderIds.value = selectedOrderIds.value.filter((id: string) =>
         currentIds.has(id)
       )
     }
@@ -52,10 +47,11 @@ export function useKitchenOrderPassSelection(
 
   function toggle(value: unknown) {
     const id = orderId(value)
-    if (!toValue(options.canOperate) || !id || options.isTransitioning(id)) return
+    if (!toValue(options.canOperate) || !id || options.isTransitioning(id))
+      return
 
     selectedOrderIds.value = isSelected(id)
-      ? selectedOrderIds.value.filter((selectedId) => selectedId !== id)
+      ? selectedOrderIds.value.filter((selectedId: string) => selectedId !== id)
       : [...selectedOrderIds.value, id]
   }
 
@@ -79,7 +75,7 @@ export function useKitchenOrderPassSelection(
       ids.filter((_, index) => results[index]?.status === 'rejected')
     )
     selectedOrderIds.value = selectedOrderIds.value.filter(
-      (id) => !ids.includes(id) || failedIds.has(id)
+      (id: string) => !ids.includes(id) || failedIds.has(id)
     )
   }
 

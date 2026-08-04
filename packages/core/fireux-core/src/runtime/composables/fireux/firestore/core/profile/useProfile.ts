@@ -7,7 +7,7 @@ import type {
   ProfileBase,
   ProfileConfig,
   ProfileRecord,
-} from '../../../../../models/core/profile.model'
+} from '../../../../../models/utils/profile.model'
 
 /**
  * Unified Profile composable (core-only)

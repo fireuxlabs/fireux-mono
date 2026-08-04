@@ -12,11 +12,11 @@ import {
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
-import { agentConfig } from 'fireux-jobs/runtime/composables/fireux/firestore/profiles/Agent/config/agentConfig'
+import { agentConfig } from '../../config/agentConfig'
 import type {
   Agent,
   PublicAgentDirectoryProfile,
-} from 'fireux-jobs/runtime/models/profiles/Agent/Agent.model'
+} from '../../../../../../../models/profiles/Agent/Agent.model'
 import type { Ref } from 'vue'
 
 type UserLike = Pick<User, 'display_name' | 'avatar'> &

@@ -1,4 +1,4 @@
-import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,

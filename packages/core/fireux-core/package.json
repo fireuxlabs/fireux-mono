@@ -7,7 +7,6 @@
   "types": "./src/module.ts",
   "exports": {
     ".": "./src/module.ts",
-
     "./types/*": "./src/types/*.ts",
     "./config/app/*": {
       "types": "./src/config/app/*.ts",
@@ -27,20 +26,55 @@
       "production": "./dist/config/module/*.mjs",
       "default": "./dist/config/module/*.mjs"
     },
-    "./runtime/*": "./src/runtime/*",
-
+    "./runtime/*.vue": {
+      "types": "./src/runtime/*.vue",
+      "default": "./src/runtime/*.vue"
+    },
+    "./runtime/*.css": {
+      "types": "./src/runtime/*.css",
+      "default": "./src/runtime/*.css"
+    },
+    "./runtime/*.scss": {
+      "types": "./src/runtime/*.scss",
+      "default": "./src/runtime/*.scss"
+    },
+    "./runtime/*": {
+      "types": "./src/runtime/*.ts",
+      "default": "./src/runtime/*.ts"
+    },
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
-      "types/*": ["src/types/*.ts"],
-      "config/app/*": ["src/config/app/*.ts"],
-      "config/app/runtime": ["src/config/app/runtime.ts"],
-      "config/module/*": ["src/config/module/*.ts"],
-      "runtime/*": ["src/runtime/*"]
+      "runtime/*.vue": [
+        "src/runtime/*.vue"
+      ],
+      "runtime/*.css": [
+        "src/runtime/*.css"
+      ],
+      "runtime/*.scss": [
+        "src/runtime/*.scss"
+      ],
+      "runtime/*": [
+        "src/runtime/*.ts"
+      ],
+      "types/*": [
+        "src/types/*.ts"
+      ],
+      "config/app/*": [
+        "src/config/app/*.ts"
+      ],
+      "config/app/runtime": [
+        "src/config/app/runtime.ts"
+      ],
+      "config/module/*": [
+        "src/config/module/*.ts"
+      ]
     }
   },
-  "files": ["src/**/*"],
+  "files": [
+    "src/**/*"
+  ],
   "scripts": {
     "build": "nuxt-module-build build",
     "dev": "nuxt-module-build --stub",

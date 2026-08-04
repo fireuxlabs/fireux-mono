@@ -1,9 +1,7 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: select App support paths without overlay terminology.
 import type { ConsoleSource } from '../../../../app/console/useConsole'
-import {
-  normalizeFireuxAppScopeState,
-  type FireuxAppScopeState,
-} from '../../../../../../models/utils/meta.model'
+import { normalizeFireuxAppScopeState } from '../../../../../../utils/app-scope-state'
+import type { FireuxAppScopeState } from '../../../../../../models/utils/scope.model'
 
 export type ConsoleEntityRuntimeMode = ConsoleSource
 

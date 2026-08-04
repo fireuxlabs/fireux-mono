@@ -8,8 +8,8 @@ import type {
   PlaceSocialLinks,
   PlaceSource,
 } from 'fireux-places/runtime/models/place.model'
-import type { CompanyHydrated } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/types'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import type { CompanyHydrated } from '../../fetch/types'
+import { CompanyStorage } from '../../../../../../models/company.model'
 
 export namespace CompanyCard {
   export type Card = {

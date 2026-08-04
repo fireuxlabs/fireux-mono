@@ -1,9 +1,11 @@
 # pnpm concept map
-Updated: 2026-08-03
-Ref: 318378b20
+
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
+
 Explain workspace/package command context.
 
 ## Vertical links
@@ -20,15 +22,23 @@ Explain workspace/package command context.
 - The repo uses pnpm workspaces.
 - Root package manager is `pnpm@11.9.0`.
 - The active repo Node pin is `22.23.1`; package engines require `>=22.23 <23`.
-- Workspaces include packages, projects, tools, and test packages.
+- Workspace globs are owned only by `pnpm-workspace.yaml` and cover exactly
+  Core, Extension, and Ecosystem package lanes, two-level project packages,
+  and tools. Static harnesses without a package manifest are not workspace
+  packages.
 - Shared pnpm settings live in `pnpm-workspace.yaml`, not `package.json#pnpm`.
+- Dependency install scripts are closed by default. The narrow
+  `allowBuilds` map records every reviewed package with an explicit `true` or
+  `false`; implicit or string-valued approvals are invalid.
 - Workspace overrides keep framework packages with identity-sensitive types,
   including H3 events, on one resolved version.
 - `scripts/_lib/runtime.mjs` rejects an installed virtual store outside the
   current checkout, missing direct workspace links, and split physical copies
   of identity-sensitive server packages before dev, guard, or deploy work starts.
-- The dependency-ownership guard requires server-reachable workspace runtime
-  value imports to end in `.ts`; erased type-only imports are exempt.
+- Runtime package manifests map one extensionless code subpath to authored
+  `.ts` source, so client and server consumers use the same import form. The
+  import-boundary guard locks the manifest projection and rejects `.ts`
+  suffixes in consumer package imports.
 - Shared Nuxt Vite config resolves Firebase Admin server subpaths through their
   supported CommonJS entrypoints, and the NuxtFire Admin fallback uses
   `createRequire`; the dependency-ownership guard protects both parts of that
@@ -36,10 +46,20 @@ Explain workspace/package command context.
 - Non-interactive scripts must not trigger implicit installs; `verifyDepsBeforeRun` is disabled.
 - The private root owns tooling through `devDependencies`; deployable/runtime
   dependencies belong to the package or app that imports them.
+- `tsconfig.base.json` owns one exact source-path alias family for every
+  package manifest. Package leaf configs remain local, Nuxt Apps share
+  `projects/tsconfig.projects.json`, and aggregate configs at package-family
+  and project roots are retired.
+- `scripts/_lib/app-registry.mjs` is authored App launch authority.
+  `pnpm sync:dev-workspace` generates its root dev/kill script projection and
+  the VS Code task/launch and toolbar App projections. Toolbar-only
+  presentation choices live in `tools/vscode-fireux-toolbar/apps.presentation.json`;
+  the generated `apps.js` is not authored source.
 
 ## Common commands
 
 - `pnpm guard`
+- `pnpm sync:dev-workspace:check` (read-only check of App registry projections)
 - `pnpm guard:product-landing` (fast landing feedback; never replaces the
   complete guard)
 - `pnpm build:packages`

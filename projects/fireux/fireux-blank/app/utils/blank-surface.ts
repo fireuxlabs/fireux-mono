@@ -1,6 +1,4 @@
-import {
-  normalizeFireuxAppScopeState,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
 import type {
   AppBlank,
   Blank,

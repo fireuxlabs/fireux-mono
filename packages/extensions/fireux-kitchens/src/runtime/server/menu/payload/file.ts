@@ -1,8 +1,8 @@
-import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind.ts'
+import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind'
 import {
   readRecord,
   readRecordString,
-} from 'fireux-core/runtime/server/utils/records/read.ts'
+} from 'fireux-core/runtime/server/utils/records/read'
 import {
   compactMenuPayloadRecord,
   menuPayloadText,

@@ -14,24 +14,19 @@
       >
         {{ appName }}
       </NuxtLink>
-      <UBadge
-        v-else
-        color="primary"
-        variant="soft"
-      >
-        Solutions
-      </UBadge>
+      <UBadge v-else color="primary" variant="soft"> Solutions </UBadge>
       <component
         :is="variant === 'hub' ? 'h1' : 'h2'"
         class="m-0 font-semibold tracking-normal text-highlighted"
-        :class="variant === 'hub' ? 'text-3xl leading-tight sm:text-4xl' : 'text-3xl leading-tight'"
+        :class="
+          variant === 'hub'
+            ? 'text-3xl leading-tight sm:text-4xl'
+            : 'text-3xl leading-tight'
+        "
       >
         {{ resolvedTitle }}
       </component>
-      <p
-        v-if="resolvedSubtitle"
-        class="m-0 text-base leading-7 text-muted"
-      >
+      <p v-if="resolvedSubtitle" class="m-0 text-base leading-7 text-muted">
         {{ resolvedSubtitle }}
       </p>
     </div>
@@ -69,7 +64,7 @@
 import { computed } from 'vue'
 import { useAsyncData } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import type { FireuxMetaSolution } from '../../models/system/meta-content.model'
+import type { FireuxMetaSolution } from '../../../config/app/meta-content'
 
 type SolutionsResponse = {
   ok: boolean
@@ -99,7 +94,9 @@ const { data } = await useAsyncData('public-app-solutions', () =>
   $fetch<SolutionsResponse>('/api/public/app/solutions')
 )
 
-const allSolutions = computed(() => data.value?.solutions || [])
+const allSolutions = computed<FireuxMetaSolution[]>(
+  () => data.value?.solutions || []
+)
 const displayedSolutions = computed(() =>
   props.variant === 'hub'
     ? allSolutions.value
@@ -112,8 +109,8 @@ const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
 const hasMoreSolutions = computed(
   () => allSolutions.value.length > displayedSolutions.value.length
 )
-const shouldShowMoreButton = computed(() =>
-  hasMoreSolutions.value || props.alwaysShowMoreButton
+const shouldShowMoreButton = computed(
+  () => hasMoreSolutions.value || props.alwaysShowMoreButton
 )
 const shouldRender = computed(() => {
   if (fireux.isTenant) return false

@@ -6,9 +6,9 @@ import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
 } from '../../../models/kitchen/menu/menu-item.model'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   KitchenMenuDraftTranslation,
   normalizeKitchenMenuDraftSections,
@@ -19,7 +19,7 @@ import {
 } from '../sproochli/cache-import'
 import type {
   SproochliMenuCacheImportUnit,
-} from 'fireux-sproochli/runtime/menu-cache.ts'
+} from 'fireux-sproochli/runtime/menu-cache'
 
 type DraftSections = ReturnType<typeof normalizeKitchenMenuDraftSections>
 

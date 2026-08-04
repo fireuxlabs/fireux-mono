@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FireuxMetaOperation } from '../../models/system/meta-content.model'
+import type { FireuxMetaOperation } from '../../../config/app/meta-content'
 
 defineProps<{
   operations: FireuxMetaOperation[]

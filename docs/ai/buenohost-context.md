@@ -1,6 +1,7 @@
 # BuenoHost GPT Context
 
-Updated: 2026-08-02
+Updated: 2026-08-04
+Ref: d232cc731
 Role: living context
 Scope: BuenoHost ecosystem and its property-hosting apps
 
@@ -32,8 +33,10 @@ select their own bounded property targets.
   transaction as Reservation creation or lifecycle changes.
 - The BuenoHost global app owns ecosystem-level public product and management
   composition.
-- Tenant apps own their property-specific presentation, copy, target IDs, and
-  contact/booking-channel configuration.
+- Tenant apps own their property-specific presentation, copy, and
+  contact/booking-channel configuration. Persisted same-id AppProperty support
+  records own their bounded Property targets and operator/team access; Nuxt
+  config does not pin target IDs.
 - Apps that expose the Property Reservation Console use the shared SSR
   Functions deployment shape; static-only hosting cannot provide its trusted
   authenticated server boundary.

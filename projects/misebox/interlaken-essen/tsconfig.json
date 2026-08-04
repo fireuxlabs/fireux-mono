@@ -1,11 +1,15 @@
 {
-  "extends": "../tsconfig.app.base.json",
+  "extends": "../../tsconfig.projects.json",
   "compilerOptions": {
-    "composite": false,
-    "moduleResolution": "Bundler",
     "paths": {
-      "#pwa": ["../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"],
-      "#imports": ["./.nuxt/imports.d.ts", "./app/.nuxt/imports.d.ts", "../../../types/nuxt-shims.d.ts"],
+      "#pwa": [
+        "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
+      ],
+      "#imports": [
+        "./.nuxt/imports.d.ts",
+        "./app/.nuxt/imports.d.ts",
+        "../../../types/nuxt-shims.d.ts"
+      ],
       "#build/*": ["./.nuxt/*", "./app/.nuxt/*"],
       "~": ["./app"],
       "~/*": ["./app/*"],
@@ -13,17 +17,31 @@
       "@/*": ["./app/*"],
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
-      "fireux-blogs": ["../../../packages/extensions/fireux-blogs/src/module.ts"],
+      "fireux-core/runtime/*": [
+        "../../../packages/core/fireux-core/src/runtime/*"
+      ],
+      "fireux-blogs": [
+        "../../../packages/extensions/fireux-blogs/src/module.ts"
+      ],
       "fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/*"],
-      "fireux-blogs/runtime/*": ["../../../packages/extensions/fireux-blogs/src/runtime/*"],
-      "fireux-misebox": ["../../../packages/ecosystem/fireux-misebox/src/module.ts"],
+      "fireux-blogs/runtime/*": [
+        "../../../packages/extensions/fireux-blogs/src/runtime/*"
+      ],
+      "fireux-misebox": [
+        "../../../packages/ecosystem/fireux-misebox/src/module.ts"
+      ],
       "fireux-misebox/*": ["../../../packages/ecosystem/fireux-misebox/src/*"],
-      "fireux-misebox/runtime/*": ["../../../packages/ecosystem/fireux-misebox/src/runtime/*"]
-    },
-    "skipLibCheck": true
+      "fireux-misebox/runtime/*": [
+        "../../../packages/ecosystem/fireux-misebox/src/runtime/*"
+      ]
+    }
   },
-  "include": ["./.nuxt/nuxt.d.ts", "./app/.nuxt/nuxt.d.ts", "./**/*", "../../../types/**/*.d.ts"],
+  "include": [
+    "./.nuxt/nuxt.d.ts",
+    "./app/.nuxt/nuxt.d.ts",
+    "./**/*",
+    "../../../types/**/*.d.ts"
+  ],
   "exclude": [
     "node_modules",
     "**/node_modules/**/@vite-pwa/nuxt/dist/runtime/components/*.vue"

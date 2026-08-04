@@ -1,21 +1,22 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
-import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/utils/meta.model.ts'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   compactBrandPalette,
   parseBrandPalette,
   readBrandPalette,
-} from 'fireux-core/runtime/utils/brand-palette.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+} from 'fireux-core/runtime/utils/brand-palette'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
@@ -73,17 +74,17 @@ function request(value: unknown, allowed: readonly string[]) {
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
-  const fireux = record(useRuntimeConfig(event).public?.fireux)
-  const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
-  const appRole = text(fireux.role)
+  const fireux = useFireUXConfig(event)
+  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
+  const appRole = fireux.role
   const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
   if (!appScopeState) fail(403, 'This App cannot own a Kitchen console.')
 
-  const kitchenConfig = record(record(fireux.consoleConfig).kitchen)
-  const canCreate =
-    typeof kitchenConfig.canCreate === 'boolean'
-      ? kitchenConfig.canCreate
-      : appRole !== 'tenant'
+  const canCreate = resolveConsoleCanCreate(
+    appRole,
+    fireux.consoleConfig,
+    'kitchen'
+  )
   return { appId, appRole, appScopeState, canCreate }
 }
 

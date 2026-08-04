@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: map canonical employer, Place, contract, schedule, and compensation truth.
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money.ts'
+import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money'
 import type {
   PublicJobCompanyProjection,
   PublicJobPlaceProjection,

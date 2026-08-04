@@ -85,7 +85,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
-import { formatCurrencyAmount } from 'fireux-core/runtime/models/utils/money.model'
+import { formatCurrencyAmount } from '../../../utils/currency-display'
 import type { MenuManifestItem } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuOrderBasketInput } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import {

@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 12:41 CEST — Kitchen palette console: share fixed-runtime target bounds between reads and trusted writes.
 import { createError } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { KITCHEN_CONSOLE_TARGET_LIMIT } from '../../models/kitchen/kitchen-index.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()

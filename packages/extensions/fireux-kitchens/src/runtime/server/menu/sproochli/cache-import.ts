@@ -1,20 +1,20 @@
 import {
   normalizeSproochliLanguage,
-} from 'fireux-sproochli/runtime/sproochli.ts'
+} from 'fireux-sproochli/runtime/sproochli'
 import type {
   SproochliMenuCacheImportUnit,
-} from 'fireux-sproochli/runtime/menu-cache.ts'
+} from 'fireux-sproochli/runtime/menu-cache'
 import {
   resolveSproochliHostStorage,
-} from 'fireux-sproochli/runtime/server/menu/storage.ts'
+} from 'fireux-sproochli/runtime/server/menu/storage'
 import {
   sproochliMenuTranslationMemoryCandidate,
-} from 'fireux-sproochli/runtime/server/menu/translation-recipe.ts'
+} from 'fireux-sproochli/runtime/server/menu/translation-recipe'
 import {
   sproochliTranslationMemoryId,
   writeSproochliTranslationMemory,
   type SproochliTranslationMemoryValue,
-} from 'fireux-sproochli/runtime/server/menu/translation-memory.ts'
+} from 'fireux-sproochli/runtime/server/menu/translation-memory'
 import type { KitchenMenuDraftTranslation } from '../draft/sections'
 
 const text = (value: unknown) => String(value ?? '').trim()

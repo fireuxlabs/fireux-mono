@@ -1,8 +1,8 @@
 import { createError } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { readString } from 'fireux-core/runtime/server/utils/records/read'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   actualMenuAiCost,
   estimateMenuAiCost,

@@ -1,7 +1,7 @@
 # Documentation system
 
-Updated: 2026-07-22
-Ref: 796952bf0
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -27,13 +27,13 @@ update the map in the same change when the corrected rule is durable.
 
 ## Document roles
 
-| Document | Job | Must not become |
-| --- | --- | --- |
-| `AGENTS.md` | Short operating router | The whole repository rulebook |
-| `docs/ai/gpt-context.md` | Durable repo-wide agent context | A copy of every concept map |
-| `docs/ai/*-context.md` | Durable scope-specific agent context | Task status, chat history, or speculative plans |
-| `docs/concepts/*.md` | Navigable concept and family maps | An implementation substitute |
-| README files | Guard-required placeholder or package landing map | Architectural authority |
+| Document                 | Job                                               | Must not become                                 |
+| ------------------------ | ------------------------------------------------- | ----------------------------------------------- |
+| `AGENTS.md`              | Short operating router                            | The whole repository rulebook                   |
+| `docs/ai/gpt-context.md` | Durable repo-wide agent context                   | A copy of every concept map                     |
+| `docs/ai/*-context.md`   | Durable scope-specific agent context              | Task status, chat history, or speculative plans |
+| `docs/concepts/*.md`     | Navigable concept and family maps                 | An implementation substitute                    |
+| README files             | Guard-required placeholder or package landing map | Architectural authority                         |
 
 ## Metadata
 
@@ -47,6 +47,8 @@ Role: living context | map, not canon
 
 - `Updated` is the last meaningful content review, not a formatting touch.
 - `Ref` is the source baseline used during that review. It is not a changelog.
+- `Ref` is a short commit that resolves in, and is an ancestor of, the current
+  checkout.
 - Git owns document history. Do not accumulate per-edit timestamp comments in
   the body.
 - Use `Scope:` when a context applies to only one ecosystem, product, package
@@ -61,6 +63,32 @@ Role: living context | map, not canon
 - Link to current source and guards instead of copying large implementation
   excerpts into prose.
 
+## Guarded documentation shape
+
+`scripts/guards/documentation.mjs`, registered by `pnpm guard`, protects the
+mechanical documentation contract without treating prose as implementation
+authority. It verifies:
+
+- exact `Updated`, `Ref`, and `Role` metadata for every living context and
+  concept map, plus one non-empty `Scope` for each living context;
+- resolvable reviewed Git refs;
+- explicit local Markdown links, concept links, and repository-root path
+  references;
+- removal of retired `Concurrent edit` timestamp comments; and
+- a reachable concept graph. `fireux-mono.md`, `documentation.md`, and
+  `spine.md` are graph roots; every other concept map must have an incoming
+  reference from `AGENTS.md`, a living context, or another concept map.
+
+The guard validates shape and reachability only. It does not infer whether a
+claim is true, require cosmetic sections, or turn a mention into canon.
+
+## Viewer
+
+`fireux-docs` renders `AGENTS.md`, living contexts, and concept maps from their
+current repository locations. The host App owns the Nuxt Content source
+collection; the package owns reusable `/docs` routes. Rendered content and the
+docs manifest are views over this graph, never copied documentation authority.
+
 ## Family maps
 
 A family map is useful only when it distinguishes the shared spine from its
@@ -74,12 +102,12 @@ deltas. Each family map should answer:
 
 Use these delta states consistently:
 
-| State | Meaning | Required treatment |
-| --- | --- | --- |
-| `accepted` | Product or authority difference that should remain | Explain the reason and point to source or guard evidence |
-| `migration` | Temporary compatibility difference | Name the desired destination and removal trigger |
-| `drift` | Difference with no accepted reason | Recommend alignment; do not normalize it in prose |
-| `to-confirm` | Product decision is genuinely unresolved | State the question and avoid implementation ceremony |
+| State        | Meaning                                            | Required treatment                                       |
+| ------------ | -------------------------------------------------- | -------------------------------------------------------- |
+| `accepted`   | Product or authority difference that should remain | Explain the reason and point to source or guard evidence |
+| `migration`  | Temporary compatibility difference                 | Name the desired destination and removal trigger         |
+| `drift`      | Difference with no accepted reason                 | Recommend alignment; do not normalize it in prose        |
+| `to-confirm` | Product decision is genuinely unresolved           | State the question and avoid implementation ceremony     |
 
 “Different” is not an explanation. A delta without a reason is drift until it
 is reviewed.
@@ -105,14 +133,15 @@ Before finishing a documentation change:
 - Keep context files durable and move detailed family material into concept
   maps.
 - Check local paths and metadata.
-- Run `git diff --check`; run broader guards only when executable contracts or
-  guarded documentation requirements changed.
+- Run the documentation guard through `pnpm guard`, then `git diff --check`;
+  run broader focused checks when executable contracts changed.
 
 ## Documentation roadmap
 
 ### Now
 
 - Keep `AGENTS.md` short and use this map as the documentation contract.
+- Keep the documentation guard structural and its concept graph reachable.
 - Keep family maps on the shared spine/delta/roadmap vocabulary as source
   changes.
 - Keep the entity matrix and guard-backed families clearly distinguished from
@@ -120,12 +149,12 @@ Before finishing a documentation change:
 
 ### Next
 
-- Add a small documentation audit that checks required metadata, local links,
-  and family-map sections without treating prose as implementation authority.
+- Add graph edges when a durable family map is introduced; do not weaken the
+  orphan check or create a broad exclusion list.
 - Split overgrown maps only when a stable sub-family has its own owner and
   source boundary.
 
 ### Later
 
-- Let the FireUX Docs app render this link graph and metadata. The app should
-  consume the maps; it must not become a competing source of truth.
+- Add viewer affordances only when they can continue consuming the guarded
+  graph without copying or reclassifying its source documents.

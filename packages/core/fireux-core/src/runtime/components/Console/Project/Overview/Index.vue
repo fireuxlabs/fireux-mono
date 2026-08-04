@@ -29,8 +29,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ConsoleTargetCard } from 'fireux-core/runtime/components/Console/types'
-import { useProjectInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import type { ConsoleTargetCard } from '../../types'
+import { useProjectInterface } from '../../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
 import { useProjectConsoleOverview } from '../../../../composables/fireux/console/project/overview/useProjectConsoleOverview'
 
 const { focus, multiple, debug } = useProjectConsoleOverview()

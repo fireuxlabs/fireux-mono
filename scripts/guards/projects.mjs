@@ -1,7 +1,6 @@
 // @fireux-script
-// last_used: 2026-07-26
-// usage_note: guard project App shape and Core-owned PWA manifest authority.
-// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify the replacement project app shapes.
+// last_used: 2026-08-04
+// usage_note: guard project App shape, shared TypeScript base, and Core-owned PWA manifest authority.
 // FILE: scripts/guards/projects.mjs
 // FireUX Projects (Apps) Guard
 //
@@ -76,6 +75,7 @@ function isAllowedDotfile(name) {
 }
 
 const HARD_FORBIDDEN_L1 = ['.firebaserc']
+const PROJECT_TSCONFIG_BASE = '../../tsconfig.projects.json'
 
 const STATIC_HARNESS_FORBIDDEN_L1 = [
   ...HARD_FORBIDDEN_L1,
@@ -143,6 +143,9 @@ export async function run(ctx) {
 
       const shapeViolation = checkProjectApp(appPath)
       if (shapeViolation) violations.push(shapeViolation)
+
+      const tsconfigViolation = checkProjectTsconfigBase(appPath)
+      if (tsconfigViolation) violations.push(tsconfigViolation)
 
       const publicViolation = checkProjectPublicImageLibrary(appPath)
       if (publicViolation) violations.push(publicViolation)
@@ -365,6 +368,32 @@ function checkProjectApp(appPath) {
   )
 
   return lines.join('\n')
+}
+
+function checkProjectTsconfigBase(appPath) {
+  const tsconfigPath = path.join(appPath, 'tsconfig.json')
+  if (!existsSync(tsconfigPath)) return null
+
+  const source = readFileSync(tsconfigPath, 'utf8')
+  const extendsMatch = source.match(/^\s*"extends"\s*:\s*"([^"]+)"\s*,?\s*$/m)
+  const actualBase = extendsMatch?.[1]
+  const legacyAlias = source.match(/"(@fireux-[^"]+)"\s*:/)?.[1]
+
+  if (actualBase === PROJECT_TSCONFIG_BASE && !legacyAlias) return null
+
+  return [
+    '[guard] ❌ project TypeScript base violation:',
+    `  Path: ${tsconfigPath}`,
+    `  Expected extends: ${PROJECT_TSCONFIG_BASE}`,
+    `  Actual extends: ${actualBase ?? '(missing)'}`,
+    ...(legacyAlias ? [`  Retired path alias: ${legacyAlias}`] : []),
+    '',
+    '[guard] Fix:',
+    '- Extend the single shared projects/tsconfig.projects.json base.',
+    '- Keep only App-owned paths, include/exclude boundaries, and durable comments locally.',
+    '- Use canonical package paths; do not restore @fireux-* path aliases.',
+    '- Do not add ecosystem-level tsconfig.app.base.json intermediates.',
+  ].join('\n')
 }
 
 function checkStaticProjectHarness(appPath) {

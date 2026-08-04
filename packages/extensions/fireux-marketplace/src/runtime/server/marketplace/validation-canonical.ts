@@ -1,7 +1,7 @@
 import {
   addFinancialMoney,
   multiplyFinancialMoney,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import {
   MARKETPLACE_OFFER_STATES,
   MARKETPLACE_ORDER_STATUSES,

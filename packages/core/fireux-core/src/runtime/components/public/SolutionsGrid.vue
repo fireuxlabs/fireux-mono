@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import type { FireuxMetaSolution } from '../../models/system/meta-content.model'
+import type { FireuxMetaSolution } from '../../../config/app/meta-content'
 
 defineProps<{
   solutions: FireuxMetaSolution[]

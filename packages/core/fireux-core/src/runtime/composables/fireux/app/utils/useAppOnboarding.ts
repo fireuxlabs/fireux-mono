@@ -1,7 +1,4 @@
-// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: make the developer PIN cosmetic and bootstrap admin only after server UID authorization.
-// Concurrent edit — 2026-07-20 15:50 CEST — Repo Efficiency Pass 1 of 6: refresh narrow App status after successful initialization.
-
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useToastify } from '../ui/useToastify'
@@ -14,11 +11,6 @@ import { useAppEnvCheck } from './useAppEnvCheck'
 
 export interface AppOnboardingState {
   coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>
-  isUnlocked: Ref<boolean>
-  pin: Ref<number[]>
-  pinError: Ref<string | null>
-  pinLength: Ref<number>
-  expectedPin: Ref<string>
   env: Ref<EnvCheckResponse | null>
   envError: Ref<string | null>
   pending: Ref<boolean>
@@ -26,7 +18,6 @@ export interface AppOnboardingState {
   canProceed: Ref<boolean>
   bypassWarning: Ref<boolean>
   proceedError: Ref<string | null>
-  checkPin: () => void
   onRefreshEnv: () => void
   onProceed: () => Promise<void>
 }
@@ -34,57 +25,15 @@ export interface AppOnboardingState {
 export function useAppOnboarding(
   options: { onInitialized?: () => void | Promise<void> } = {}
 ): AppOnboardingState {
-  const { developerPin, devMode } = useFireUXConfig()
-  const { appId } = useFireUXConfig()
-  const isDev = import.meta.dev
-
-  const expectedPin = computed(() => {
-    const raw = typeof developerPin === 'string' ? developerPin.trim() : ''
-    const digits = raw.replaceAll(/\D/g, '')
-    return digits || '1234'
-  })
-
-  const pinLength = computed(() => expectedPin.value.length)
+  const { appId, devMode } = useFireUXConfig()
 
   const { uid } = useAuth()
   const { coreUser: coreUserRef } = useUser()
   const coreUser = computed(() => coreUserRef.value ?? null)
   const toast = useToastify()
 
-  const pin = ref<number[]>([])
-  const pinError = ref<string | null>(null)
-  const isUnlocked = ref(false)
   const actionPending = ref(false)
   const proceedError = ref<string | null>(null)
-
-  const resetPin = () => {
-    pin.value = []
-  }
-
-  const checkPin = () => {
-    const entry = pin.value.join('')
-    if (isDev) {
-      console.info('[onboarding] checkPin', {
-        entry,
-        expected: expectedPin.value,
-      })
-    }
-    if (entry === expectedPin.value) {
-      isUnlocked.value = true
-      pinError.value = null
-    } else {
-      pinError.value = 'Incorrect PIN. Try again.'
-    }
-    resetPin()
-  }
-
-  watch(coreUser, (value: typeof coreUser.value) => {
-    if (!value) {
-      isUnlocked.value = false
-      pinError.value = null
-      resetPin()
-    }
-  })
 
   const { data, pending, error, refresh: refreshEnv } = useAppEnvCheck()
 
@@ -115,12 +64,13 @@ export function useAppOnboarding(
       const created = await createApp()
       console.log('[proceed] createApp result', created)
 
-      // The PIN unlocks the UI only. The server verifies the authenticated uid
-      // against the configured developer and refuses bootstrap once another
-      // canonical App admin exists.
+      // The server verifies the authenticated uid against the configured
+      // developer and refuses bootstrap once another canonical App admin exists.
       const currentUid = String(uid.value ?? coreUser.value?.id ?? '').trim()
       if (!currentUid || !appId) {
-        throw new Error('Authenticated user is not ready yet. Please try again.')
+        throw new Error(
+          'Authenticated user is not ready yet. Please try again.'
+        )
       }
       await bootstrapAppUserAdmin(appId, currentUid)
       await options.onInitialized?.()
@@ -152,10 +102,6 @@ export function useAppOnboarding(
 
   return {
     coreUser,
-    isUnlocked,
-    pin,
-    pinError,
-    pinLength,
     env,
     envError,
     pending: envPending,
@@ -163,8 +109,6 @@ export function useAppOnboarding(
     canProceed,
     bypassWarning,
     proceedError,
-    expectedPin,
-    checkPin,
     onRefreshEnv,
     onProceed,
   }

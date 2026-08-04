@@ -24,7 +24,6 @@
     "fireux-core": "workspace:*",
     "fireux-go-qr": "workspace:*",
     "fireux-misebox": "workspace:*",
-    "fireux-products": "workspace:*",
     "nuxt": "4.4.6",
     "vue": "3.5.20",
     "vue-router": "4.5.1"

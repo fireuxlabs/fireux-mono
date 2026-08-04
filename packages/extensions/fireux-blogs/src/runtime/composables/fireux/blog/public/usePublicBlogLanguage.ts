@@ -7,14 +7,12 @@ const languageCode = (value: unknown) => {
     .trim()
     .replace(/_/g, '-')
     .toLowerCase()
-  return /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/.test(language)
-    ? language
-    : ''
+  return /^[a-z]{2,3}(?:-[a-z0-9]{2,8})*$/.test(language) ? language : ''
 }
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 export function usePublicBlogLanguage() {
@@ -26,8 +24,7 @@ export function usePublicBlogLanguage() {
     ? blogs.languages.map(languageCode).filter(Boolean)
     : []
   const defaultLanguage = languageCode(blogs.defaultLanguage)
-  const queryParameter =
-    String(blogs.queryParameter ?? '').trim() || 'language'
+  const queryParameter = String(blogs.queryParameter ?? '').trim() || 'language'
   const selectionCookie =
     String(blogs.selectionCookie ?? '').trim() || 'fireux.blogs.language'
   const storedLanguage = useCookie<string>(selectionCookie, {
@@ -43,7 +40,7 @@ export function usePublicBlogLanguage() {
 
   watch(
     requestedLanguage,
-    (language) => {
+    (language: string) => {
       if (isAllowed(language) && storedLanguage.value !== language) {
         storedLanguage.value = language
       }
@@ -60,8 +57,6 @@ export function usePublicBlogLanguage() {
 
   return {
     language,
-    query: computed(() =>
-      language.value ? { language: language.value } : {}
-    ),
+    query: computed(() => (language.value ? { language: language.value } : {})),
   }
 }

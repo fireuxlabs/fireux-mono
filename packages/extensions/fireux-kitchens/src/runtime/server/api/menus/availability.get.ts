@@ -1,7 +1,7 @@
 import { defineEventHandler, getQuery } from 'h3'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
-import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
+import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 
 const reservedSlugs = [

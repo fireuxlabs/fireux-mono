@@ -2,12 +2,7 @@ import { computed } from '#imports'
 import { useAuth } from '../firebase/useAuth'
 import { useFireUXConfig } from './FireUXConfig'
 
-/**
- * FireUX developer dashboard access.
- *
- * `DEVELOPER_ID` is an app-runtime uid pin. It is intentionally separate from
- * `DEVELOPER_PIN`, which unlocks app onboarding flows.
- */
+/** FireUX developer dashboard access bound to the configured developer uid. */
 export function useDeveloperAccess() {
   const { developerId } = useFireUXConfig()
   const { uid } = useAuth()

@@ -5,7 +5,7 @@ import { useCompanyCreate } from './mutations/useCompanyCreate'
 import { useCompanySeo } from './utils/useCompanySeo'
 import { useCompanyComputed } from './utils/view/useCompanyComputed'
 import { useCompanyInterface } from './utils/view/useCompanyInterface'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import { CompanyStorage } from '../../../../models/company.model'
 
 export {
   useCompanyCollection,

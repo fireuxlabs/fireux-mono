@@ -1,13 +1,12 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configurePlaces } from './config/module/places-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
-import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
-import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
 
@@ -71,9 +70,8 @@ export default defineNuxtModule<ModuleOptions>({
           googleAutocompleteTypeFilters:
             options.googleAutocompleteTypeFilters || {},
         }),
-      composables: (resolver) => configureComposables(resolver, options),
+      composables: registerComposablesDir,
       components: configureComponents,
-      layouts: configureLayouts,
       pages: configurePages,
       server: configureServer,
     })

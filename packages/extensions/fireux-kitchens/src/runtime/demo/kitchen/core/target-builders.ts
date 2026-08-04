@@ -2,9 +2,9 @@ import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.
 import {
   PlaceModel,
   type Place,
-} from 'fireux-places/runtime/models/place.model.ts'
-import type { PublicPlaceProjection } from 'fireux-places/runtime/models/place-public.model.ts'
-import { normalizePublicPlaceProjection } from 'fireux-places/runtime/utils/public-place-projection.ts'
+} from 'fireux-places/runtime/models/place.model'
+import type { PublicPlaceProjection } from 'fireux-places/runtime/models/place-public.model'
+import { normalizePublicPlaceProjection } from 'fireux-places/runtime/utils/public-place-projection'
 import {
   KitchenModel,
   type AppKitchen,

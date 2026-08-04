@@ -4,8 +4,8 @@ import {
   getQuery,
   getRouterParam,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import { readMenuOrderContext } from '../../../../menu/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,

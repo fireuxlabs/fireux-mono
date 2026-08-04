@@ -4,11 +4,11 @@ import {
   getQuery,
   setResponseHeaders,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   TranslationDocumentStorage,
   TranslationStorage,
-} from 'fireux-sproochli/runtime/models/translation.model.ts'
+} from 'fireux-sproochli/runtime/models/translation.model'
 
 type PublishedTranslation = {
   code: string

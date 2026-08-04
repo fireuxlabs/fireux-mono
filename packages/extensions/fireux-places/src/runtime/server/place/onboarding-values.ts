@@ -1,10 +1,10 @@
 import { createError, type H3Event } from 'h3'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   requireFirebaseStorageDownloadUrl,
   runtimeStorageBucketName,
-} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
-import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
+} from 'fireux-core/runtime/server/utils/uploads/storage'
+import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { PlaceOnboardingDefaults } from '../../models/place-onboarding.model'
 import {
   normalizePlaceCurrencyCode,

@@ -4,11 +4,11 @@ import { randomUUID } from 'node:crypto'
 import { getStorage } from 'firebase-admin/storage'
 import { createError } from 'h3'
 import sharp from 'sharp'
-import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
+import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
 import {
   firebaseStorageDownloadUrl,
   runtimeStorageBucketName,
-} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+} from 'fireux-core/runtime/server/utils/uploads/storage'
 import { dishImageStoragePath } from '../../utils/dish-image-storage.ts'
 
 const outputSize = 1200

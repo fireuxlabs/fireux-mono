@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job UI alignment: emit SEO from the bounded canonical Job projection.
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
-import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money.ts'
+import { financialCurrencyMinorUnitDigits } from 'fireux-finance/runtime/utils/money'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { JobStorage } from '../../../../../models/job.model'
 import type { JobView } from './view/useJobInterface'

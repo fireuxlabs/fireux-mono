@@ -1,6 +1,6 @@
 import type {
   FinancialReportTrendView,
-} from 'fireux-finance/runtime/models/report-presentation.model.ts'
+} from 'fireux-finance/runtime/models/report-presentation.model'
 import { computed, ref, watch } from 'vue'
 import { useKitchenConsoleFinance } from '../../../../composables/fireux/console/kitchen/overview/useKitchenConsoleFinance'
 import type {

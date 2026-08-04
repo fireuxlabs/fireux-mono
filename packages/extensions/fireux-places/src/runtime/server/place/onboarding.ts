@@ -1,5 +1,5 @@
 import { createError, type H3Event } from 'h3'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import type {
   PlaceOnboardingCompleteResult,
   PlaceOnboardingPreview,

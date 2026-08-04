@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 22:30 CEST — Console alignment — Property: share exact draft-root normalization between public and trusted creation.
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   Property,
   PropertyCreateInput,

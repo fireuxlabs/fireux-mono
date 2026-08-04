@@ -1,10 +1,10 @@
 {
-  "extends": "../tsconfig.app.base.json",
+  "extends": "../../tsconfig.projects.json",
   "compilerOptions": {
-    "composite": false,
-    "moduleResolution": "Bundler",
     "paths": {
-      "#pwa": ["../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"],
+      "#pwa": [
+        "../../../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index"
+      ],
       "#imports": ["./.nuxt/imports.d.ts", "./app/.nuxt/imports.d.ts"],
       "#build/*": ["./.nuxt/*", "./app/.nuxt/*"],
       "~": ["./app"],
@@ -13,29 +13,46 @@
       "@/*": ["./app/*"],
       "fireux-core": ["../../../packages/core/fireux-core/src/module.ts"],
       "fireux-core/*": ["../../../packages/core/fireux-core/src/*"],
-      "fireux-core/runtime/*": ["../../../packages/core/fireux-core/src/runtime/*"],
-      "@fireux-core/*": ["../../../packages/core/fireux-core/src/runtime/*"],
-      "fireux-bringli": ["../../../packages/extensions/fireux-bringli/src/module.ts"],
+      "fireux-core/runtime/*": [
+        "../../../packages/core/fireux-core/src/runtime/*"
+      ],
+      "fireux-bringli": [
+        "../../../packages/extensions/fireux-bringli/src/module.ts"
+      ],
       "fireux-bringli/*": ["../../../packages/extensions/fireux-bringli/src/*"],
-      "fireux-bringli/runtime/*": ["../../../packages/extensions/fireux-bringli/src/runtime/*"],
-      "@fireux-bringli/*": ["../../../packages/extensions/fireux-bringli/src/runtime/*"],
-      "fireux-blogs": ["../../../packages/extensions/fireux-blogs/src/module.ts"],
+      "fireux-bringli/runtime/*": [
+        "../../../packages/extensions/fireux-bringli/src/runtime/*"
+      ],
+      "fireux-blogs": [
+        "../../../packages/extensions/fireux-blogs/src/module.ts"
+      ],
       "fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/*"],
-      "fireux-blogs/runtime/*": ["../../../packages/extensions/fireux-blogs/src/runtime/*"],
-      "@fireux-blogs/*": ["../../../packages/extensions/fireux-blogs/src/runtime/*"],
-      "fireux-products": ["../../../packages/extensions/fireux-products/src/module.ts"],
-      "fireux-products/*": ["../../../packages/extensions/fireux-products/src/*"],
-      "fireux-products/runtime/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
-      "@fireux-products/*": ["../../../packages/extensions/fireux-products/src/runtime/*"],
-      "fireux-suppliers": ["../../../packages/extensions/fireux-suppliers/src/module.ts"],
-      "fireux-suppliers/*": ["../../../packages/extensions/fireux-suppliers/src/*"],
-      "fireux-suppliers/runtime/*": ["../../../packages/extensions/fireux-suppliers/src/runtime/*"],
-      "@fireux-suppliers/*": ["../../../packages/extensions/fireux-suppliers/src/runtime/*"]
-    },
-    "skipLibCheck": true
+      "fireux-blogs/runtime/*": [
+        "../../../packages/extensions/fireux-blogs/src/runtime/*"
+      ],
+      "fireux-products": [
+        "../../../packages/extensions/fireux-products/src/module.ts"
+      ],
+      "fireux-products/*": [
+        "../../../packages/extensions/fireux-products/src/*"
+      ],
+      "fireux-products/runtime/*": [
+        "../../../packages/extensions/fireux-products/src/runtime/*"
+      ],
+      "fireux-suppliers": [
+        "../../../packages/extensions/fireux-suppliers/src/module.ts"
+      ],
+      "fireux-suppliers/*": [
+        "../../../packages/extensions/fireux-suppliers/src/*"
+      ],
+      "fireux-suppliers/runtime/*": [
+        "../../../packages/extensions/fireux-suppliers/src/runtime/*"
+      ]
+    }
   },
   "include": [
-    "./.nuxt/nuxt.d.ts", "./app/.nuxt/nuxt.d.ts",
+    "./.nuxt/nuxt.d.ts",
+    "./app/.nuxt/nuxt.d.ts",
     "./**/*",
     "../../../types/**/*.d.ts"
   ],

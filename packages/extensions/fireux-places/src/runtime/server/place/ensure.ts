@@ -2,11 +2,11 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Place provenance/privacy hardening: accept only an id and verify missing Place truth with the server-side provider.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { PlaceStorage } from '../../models/place.model'
 import { fetchVerifiedGooglePlacePayload } from './google-details'
 

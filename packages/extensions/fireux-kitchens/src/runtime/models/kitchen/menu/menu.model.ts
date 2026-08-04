@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 23:38 CEST — Entity Vocabulary + Matrix Pass: declare projected root Menu separately from KitchenMenu publication source.
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 // Concurrent edit — 2026-07-19 21:10 CEST — Pre-order WhatsApp pass: expose the shared Menu notification policy types.

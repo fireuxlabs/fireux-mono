@@ -3,17 +3,18 @@
     <UPageHeader
       class="pageheader"
       title="Modules: Learn More (Dev)"
-      description="Technical reference for module records and runtime usage."
+      description="Technical reference for source-controlled module packages and App configuration."
     />
 
     <UPageBody class="pagebody space-y-6">
       <UCard>
         <template #header>
-          <h2 class="text-lg font-semibold">Canonical records</h2>
+          <h2 class="text-lg font-semibold">Source authority</h2>
         </template>
 
         <ul class="list-disc fx-list-stack text-sm">
-          <li>Package metadata: tracked package <code>registry.json</code> files.</li>
+          <li>Module identity and metadata live with each source-controlled extension package and its <code>registry.json</code>.</li>
+          <li>Apps select the modules they use through their FireUX configuration.</li>
           <li>The module index is an authored public projection of reusable packages under <code>packages/extensions/fireux-*</code>.</li>
           <li>Module detail route is exposed as <code>/modules/[id]</code>.</li>
         </ul>
@@ -49,6 +50,6 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Modules: Learn More (Dev) · FireUX',
-  description: 'Technical reference for FireUX module records and routes.',
+  description: 'Technical reference for source-controlled FireUX module packages and routes.',
 })
 </script>

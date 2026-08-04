@@ -6,7 +6,7 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   KitchenGrossSalesReportInputError,
   KitchenGrossSalesReportInvariantError,

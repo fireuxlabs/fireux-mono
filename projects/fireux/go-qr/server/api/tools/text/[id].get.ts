@@ -1,5 +1,5 @@
 import { defineEventHandler, getRouterParam } from 'h3'
-import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider.ts'
+import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider'
 import { readToolConfig } from '../../../utils/tools/config-store'
 import {
   type GoQrTextToolConfig,

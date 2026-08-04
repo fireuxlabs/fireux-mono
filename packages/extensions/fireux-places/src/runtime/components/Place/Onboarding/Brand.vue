@@ -85,7 +85,7 @@ const initials = computed(() => {
 
   return parts
     .slice(0, 2)
-    .map(part => part[0]?.toUpperCase() || '')
+    .map((part) => part[0]?.toUpperCase() || '')
     .join('')
 })
 
@@ -122,7 +122,7 @@ function clearImage() {
 
 watch(
   () => props.imageFile,
-  file => syncPreview(file),
+  (file: File | null) => syncPreview(file),
   { immediate: true }
 )
 

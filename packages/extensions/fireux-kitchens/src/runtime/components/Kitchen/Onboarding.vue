@@ -12,10 +12,7 @@
       loading
     />
 
-    <div
-      v-else-if="!place && existingRootId"
-      class="form-stack-sm"
-    >
+    <div v-else-if="!place && existingRootId" class="form-stack-sm">
       <UAlert
         color="error"
         variant="soft"
@@ -74,14 +71,16 @@
       @back="onBack"
       @continue="onContinue"
     >
-
       <div v-if="!preview.can_complete" class="form-stack-sm">
         <UAlert
           color="warning"
           variant="soft"
           icon="i-lucide-lock-keyhole"
           title="Kitchen access required"
-          :description="preview.message || 'Ask an App admin or Kitchen operator for access.'"
+          :description="
+            preview.message ||
+            'Ask an App admin or Kitchen operator for access.'
+          "
         />
         <UButton
           v-if="existingKitchenTo"
@@ -118,7 +117,6 @@
         :editable="canEditPalette"
         @update:model-value="setPaletteOverride"
       />
-
     </MoleculesOnboardingSystem>
   </section>
 </template>
@@ -132,19 +130,22 @@ import { useKitchenConsoleSelection } from '../../composables/fireux/console/kit
 import { useKitchenOnboarding } from '../../composables/fireux/kitchen/useKitchenOnboarding'
 import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboarding.model'
 
-const props = withDefaults(defineProps<{
-  mode?: ConsoleCreateMode
-  existingRootId?: string
-  placeId?: string
-  returnTo?: string
-  cancelTo?: string
-}>(), {
-  mode: 'console',
-  existingRootId: '',
-  placeId: '',
-  returnTo: '',
-  cancelTo: '',
-})
+const props = withDefaults(
+  defineProps<{
+    mode?: ConsoleCreateMode
+    existingRootId?: string
+    placeId?: string
+    returnTo?: string
+    cancelTo?: string
+  }>(),
+  {
+    mode: 'console',
+    existingRootId: '',
+    placeId: '',
+    returnTo: '',
+    cancelTo: '',
+  }
+)
 
 const emit = defineEmits<{
   (event: 'created', result: KitchenOnboardingCompleteResult): void
@@ -195,10 +196,9 @@ const initialPlaceId = computed(() =>
 const hasInitialSelection = computed(() =>
   Boolean(existingRootId.value || initialPlaceId.value)
 )
-const initialSelectionPending = computed(() =>
-  hasInitialSelection.value &&
-  !initialLoaded.value &&
-  !selectionError.value
+const initialSelectionPending = computed(
+  () =>
+    hasInitialSelection.value && !initialLoaded.value && !selectionError.value
 )
 const canChangePlace = computed(() => !existingRootId.value)
 const resolvedCancelTo = computed(() => {
@@ -215,15 +215,11 @@ const resolvedReturnTo = computed(() => {
 })
 const existingKitchenTo = computed(() => {
   if (!preview.value?.existing) return ''
-  const locator = String(
-    preview.value.slug || preview.value.kitchen_id
-  ).trim()
+  const locator = String(preview.value.slug || preview.value.kitchen_id).trim()
   return locator ? `/kitchens/${encodeURIComponent(locator)}` : ''
 })
-const continueDisabled = computed(() =>
-  pending.value ||
-  selectionPending.value ||
-  !preview.value?.can_complete
+const continueDisabled = computed(
+  () => pending.value || selectionPending.value || !preview.value?.can_complete
 )
 const continueLabel = computed(() => {
   if (!isLastStep.value) return 'Continue'
@@ -287,7 +283,10 @@ onMounted(async () => {
 
 watch(
   [existingRootId, initialPlaceId],
-  async ([kitchenId, placeId], [previousKitchenId, previousPlaceId]) => {
+  async (
+    [kitchenId, placeId]: [string, string],
+    [previousKitchenId, previousPlaceId]: [string, string]
+  ) => {
     if (!mounted.value) return
     if (kitchenId === previousKitchenId && placeId === previousPlaceId) return
     initialLoaded.value = false

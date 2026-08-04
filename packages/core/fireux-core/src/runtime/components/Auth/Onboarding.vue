@@ -13,7 +13,7 @@
       v-if="error"
       color="error"
       variant="subtle"
-      title="Registrierig het nid klappt"
+      title="Registration was not completed"
       :description="error"
     />
 

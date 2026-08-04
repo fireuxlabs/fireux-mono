@@ -1,6 +1,6 @@
 import type { NuxtConfig } from '@nuxt/schema'
 
-const defaultAppModules = ['fireux-products', 'fireux-blogs'] as const
+export const DEFAULT_APP_MODULES = ['fireux-blogs'] as const
 
 export function moduleName(entry: unknown): string | undefined {
   if (typeof entry === 'string') return entry
@@ -13,10 +13,9 @@ export function withDefaultAppModules(
 ): NonNullable<NuxtConfig['modules']> {
   const appModules = modules || []
   const appModuleNames = new Set(appModules.map(moduleName).filter(Boolean))
-  const defaults = defaultAppModules.filter((name) => !appModuleNames.has(name))
+  const defaults = DEFAULT_APP_MODULES.filter(
+    (name) => !appModuleNames.has(name)
+  )
 
-  return [
-    ...defaults,
-    ...appModules,
-  ] as NonNullable<NuxtConfig['modules']>
+  return [...defaults, ...appModules] as NonNullable<NuxtConfig['modules']>
 }

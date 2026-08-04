@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: validate free neutral category ids only for all-category Apps.
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
-import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money.ts'
+import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money'
 import { ref } from 'vue'
 import type { JobCreateIntent } from '../../../../../models/job-author.model'
 import {

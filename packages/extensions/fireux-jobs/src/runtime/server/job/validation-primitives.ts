@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money'
 import {
   JOB_PAY_UNITS,
   type Job,

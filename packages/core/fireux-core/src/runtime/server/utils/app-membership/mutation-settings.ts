@@ -1,4 +1,4 @@
-import type { AppMembershipRole } from '../../../models/operations/app-membership'
+import type { AppUserRole } from '../../../models/core/user.model'
 import { requireFirestoreDocumentId } from '../ids/path'
 import {
   countTransactionAdmins,
@@ -27,7 +27,7 @@ export async function handleMembershipSettings(
   if (input.action === 'set-role') {
     requireAdmin(actorMembership)
     const userId = requireFirestoreDocumentId(input.userId, 'User id')
-    const role: AppMembershipRole =
+    const role: AppUserRole =
       input.role === 'admin' || input.role === 'user'
         ? input.role
         : forbidden(400, 'Role must be admin or user.')
@@ -62,7 +62,7 @@ export async function handleMembershipSettings(
       identityMirror: null,
     }
   }
-  
+
   if (input.action === 'set-premium') {
     requireAdmin(actorMembership)
     const userId = requireFirestoreDocumentId(input.userId, 'User id')
@@ -87,7 +87,7 @@ export async function handleMembershipSettings(
       identityMirror: null,
     }
   }
-  
+
   if (input.action === 'set-onboarding-status') {
     if (!actorMembershipSnapshot.exists) {
       forbidden(409, 'The current App membership does not exist.')
@@ -99,7 +99,7 @@ export async function handleMembershipSettings(
       input.status === 'completed' || input.status === 'skipped'
         ? input.status
         : forbidden(400, 'Onboarding status must be completed or skipped.')
-  
+
     transaction.update(actorMembershipRef, {
       onboarding_status: status,
       updated: stamp(actorUid),

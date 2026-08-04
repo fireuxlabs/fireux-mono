@@ -878,7 +878,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     menuResolver,
-    /fireux-sproochli\/runtime\/server\/menu\/provider-client\.ts/
+    /fireux-sproochli\/runtime\/server\/menu\/provider-client/
   )
   assert.doesNotMatch(kitchenMenuModel, /source_language/)
   assert.doesNotMatch(rootMenuModel, /source_language/)

@@ -3,7 +3,7 @@ import {
   runFireuxAiDocumentExtraction,
   type FireuxAiDocumentFileResult,
   type FireuxAiDocumentSourceFile,
-} from 'fireux-ai/runtime/server/utils/document-ai.server.ts'
+} from 'fireux-ai/runtime/server/utils/document-ai.server'
 import { MENU_EXTRACTION_JSON_SCHEMA } from './schema'
 import type { MenuAiNormalizationResult } from './normalization'
 import {

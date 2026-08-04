@@ -6,8 +6,8 @@ import {
   getRouterParam,
   setResponseHeaders,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { PublicPlaceDetailResponse } from '../../../models/place-public.model'
 import { PlaceStorage } from '../../../models/place.model'
 import { projectPublicPlaceDetail } from '../../place/public-projection'

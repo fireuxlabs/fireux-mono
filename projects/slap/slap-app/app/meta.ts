@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: declare the current empty console-operation set.
-import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 
 export const appMeta = {
   name: 'Slap',

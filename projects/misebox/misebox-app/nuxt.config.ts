@@ -104,11 +104,6 @@ const fireuxConfig = defineFireuxConfig({
 export default withFireuxNuxtConfig(fireuxConfig, {
   css: ['@/assets/styles/main.css'],
   runtimeConfig: {
-    supplierNetworkBaseUrl:
-      process.env.SUPPLIER_NETWORK_BASE_URL ||
-      (process.env.NODE_ENV === 'development'
-        ? 'http://localhost:3006'
-        : 'https://bringli.app'),
     public: {
       googleMapsApiKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
       googleMapsMapId: process.env.NUXT_PUBLIC_GOOGLE_MAPS_MAP_ID || '',

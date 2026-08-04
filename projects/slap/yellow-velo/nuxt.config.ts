@@ -10,6 +10,7 @@ export default defineFireuxConfig({
   shortName: 'Yellow Velo',
   databaseId: 'slap',
   role: 'tenant',
+  modules: ['fireux-products'],
   seo: {
     staticPaths: ['/', '/products', '/blog'],
     noindexPaths: ['/console', '/console/**', '/admin', '/admin/**'],

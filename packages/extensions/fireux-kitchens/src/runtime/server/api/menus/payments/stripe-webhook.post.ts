@@ -6,7 +6,7 @@ import {
   type H3Event,
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   isKitchenOrderPostPaymentStatus,
   isKitchenOrderStatus,

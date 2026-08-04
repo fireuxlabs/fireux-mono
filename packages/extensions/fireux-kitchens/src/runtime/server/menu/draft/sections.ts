@@ -1,4 +1,4 @@
-import { readString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import {
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
@@ -11,7 +11,7 @@ import { defaultMenuLanguageText } from '../language/default-text'
 import {
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
-} from 'fireux-sproochli/runtime/sproochli.ts'
+} from 'fireux-sproochli/runtime/sproochli'
 
 export type KitchenMenuDraftTranslation = {
   language: Exclude<SproochliLanguageCode, ''>

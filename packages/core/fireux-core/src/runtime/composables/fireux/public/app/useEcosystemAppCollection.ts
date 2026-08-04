@@ -1,11 +1,11 @@
 import { useAsyncData } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../app/FireUXConfig'
+import type { AppDirectoryEntry } from '../../../../models/utils/directory'
 import type {
   AppDirectoryController,
-  AppDirectoryEntry,
   DirectoryOutcome,
-} from '../../../../models/utils/directory'
+} from '../../../../types/directory-controller.types'
 import type { PublicCollectionResponse } from '../../../../server/utils/public-projection/public-dto.types'
 
 /** Read the current owning Ecosystem's allowlisted public App projection. */

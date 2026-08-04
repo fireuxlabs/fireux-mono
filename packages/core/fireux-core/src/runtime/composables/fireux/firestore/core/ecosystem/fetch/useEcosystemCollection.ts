@@ -3,6 +3,7 @@ import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
 import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
 
 type EcosystemCollectionDoc = EcosystemSurface
 const DEFAULT_COLLECTION_PATH = EcosystemStorage.collection
@@ -10,7 +11,9 @@ const DEFAULT_COLLECTION_PATH = EcosystemStorage.collection
 export function useEcosystemCollection(
   collectionPath: MaybeRef<string | null | undefined> = DEFAULT_COLLECTION_PATH
 ) {
-  const { firestoreFetchCollection } = useFirestoreRead()
+  const { firestoreFetchCollection } = useFirestoreRead({
+    databaseId: readRuntimeIdentityFirestoreDatabaseId(),
+  })
   const path = computed(() => String(unref(collectionPath) ?? '').trim())
   const source = firestoreFetchCollection<EcosystemCollectionDoc>(path)
   const ecosystems = computed(() => source.value ?? [])

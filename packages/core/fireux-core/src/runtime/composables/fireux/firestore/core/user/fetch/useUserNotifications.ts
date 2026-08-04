@@ -8,15 +8,15 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, onMounted, ref } from 'vue'
-import type { UserNotification } from '../../../../../../models/utils/user'
+import { UserStorage } from '../../../../../../models/core/user.model'
 import {
+  type UserNotification,
   UserNotificationStorage,
-  UserStorage,
-} from '../../../../../../models/core/user.model'
+} from '../../../../../../models/operations/user-notification.model'
 import { useAuth } from '../../../../firebase/useAuth'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import {
-  readRuntimeIdentityFirestoreDatabaseId,
+  readRuntimeFirestoreDatabaseId,
   useFirestore,
 } from '../../../vuefire'
 
@@ -36,8 +36,8 @@ export function useUserNotifications() {
   }
 
   const { currentUser } = useAuth()
-  const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
-  const identityDb = useFirestore(identityDatabaseId)
+  const appDatabaseId = readRuntimeFirestoreDatabaseId()
+  const appDb = useFirestore(appDatabaseId)
   const clientReady = ref(false)
   onMounted(() => {
     clientReady.value = true
@@ -50,7 +50,7 @@ export function useUserNotifications() {
   const collectionPath = computed(() => {
     const uid = ownerUid.value
     return uid
-      ? `${UserStorage.rootCollection}/${uid}/${UserNotificationStorage.collection}`
+      ? `${UserStorage.collection}/${uid}/${UserNotificationStorage.collection}`
       : ''
   })
   const notificationQuery = computed<Query<UserNotificationRecord> | null>(() => {
@@ -58,13 +58,13 @@ export function useUserNotifications() {
     if (!path) return null
 
     return query(
-      collection(identityDb, path),
+      collection(appDb, path),
       orderBy('created.at', 'desc'),
       limit(MAX_VISIBLE_NOTIFICATIONS)
     ) as Query<UserNotificationRecord>
   })
   const { firestoreQuery } = useFirestoreRead({
-    databaseId: identityDatabaseId,
+    databaseId: appDatabaseId,
   })
   const source = firestoreQuery<UserNotificationRecord>(
     notificationQuery,

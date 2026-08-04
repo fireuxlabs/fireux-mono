@@ -4,7 +4,7 @@ import { computed, isRef, ref, type ComputedRef, type Ref } from 'vue'
 import type {
   PublicCompanyDetailResponse,
   PublicCompanyIndexPage,
-} from 'fireux-companies/runtime/models/company-public.model'
+} from '../../../../../models/company-public.model'
 import type { CompanyHydrated } from './types'
 
 type CompanyIdInput = string | Ref<string | null | undefined>

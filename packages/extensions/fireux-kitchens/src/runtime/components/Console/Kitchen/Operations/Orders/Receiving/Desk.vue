@@ -54,11 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  watch,
-} from 'vue'
+import { computed, ref, watch } from 'vue'
 import type { KitchenOrder } from '../../../../../../models/kitchen/order.model'
 
 defineOptions({ name: 'ConsoleKitchenOperationsOrdersReceivingDesk' })
@@ -73,8 +69,14 @@ const props = defineProps<{
 }>()
 
 const emit = defineEmits<{
-  (event: 'accept', payload: { id: string; estimatedMinutes: number | null }): void
-  (event: 'accept-many', payload: Array<{ id: string; estimatedMinutes: number | null }>): void
+  (
+    event: 'accept',
+    payload: { id: string; estimatedMinutes: number | null }
+  ): void
+  (
+    event: 'accept-many',
+    payload: Array<{ id: string; estimatedMinutes: number | null }>
+  ): void
   (event: 'nudge-estimate', payload: { id: string; amount: number }): void
   (event: 'reject', payload: { id: string; note: string }): void
   (event: 'set-estimate', payload: { id: string; minutes: number }): void
@@ -83,35 +85,52 @@ const emit = defineEmits<{
 const normalize = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const inspectedOrderId = ref('')
 const selectedOrderIds = ref<string[]>([])
 const scheduledOrders = computed(() => props.orders.filter(isScheduled))
-const collectionOrders = computed(() => props.orders.filter((order) =>
-  order.order_type === 'collection' && !isScheduled(order)
-))
-const allCollectionSelected = computed(() => groupIsSelected(collectionOrders.value))
-const allScheduledSelected = computed(() => groupIsSelected(scheduledOrders.value))
-const selectedOrders = computed(() => props.orders.filter((order) =>
-  selectedOrderIds.value.includes(normalize(order.id))
-))
-const selectedOrdersAccepting = computed(() => selectedOrders.value.some((order) =>
-  props.acceptingOrderId === normalize(order.id)
-))
-const canAcceptSelectedOrders = computed(() =>
-  Boolean(selectedOrders.value.length) && selectedOrders.value.every(props.canInteract)
+const collectionOrders = computed(() =>
+  props.orders.filter(
+    (order) => order.order_type === 'collection' && !isScheduled(order)
+  )
 )
-const inspectedOrder = computed(() =>
-  props.orders.find((order) => normalize(order.id) === inspectedOrderId.value) ||
-    props.orders[0]
+const allCollectionSelected = computed(() =>
+  groupIsSelected(collectionOrders.value)
+)
+const allScheduledSelected = computed(() =>
+  groupIsSelected(scheduledOrders.value)
+)
+const selectedOrders = computed(() =>
+  props.orders.filter((order) =>
+    selectedOrderIds.value.includes(normalize(order.id))
+  )
+)
+const selectedOrdersAccepting = computed(() =>
+  selectedOrders.value.some(
+    (order) => props.acceptingOrderId === normalize(order.id)
+  )
+)
+const canAcceptSelectedOrders = computed(
+  () =>
+    Boolean(selectedOrders.value.length) &&
+    selectedOrders.value.every(props.canInteract)
+)
+const inspectedOrder = computed(
+  () =>
+    props.orders.find(
+      (order) => normalize(order.id) === inspectedOrderId.value
+    ) || props.orders[0]
 )
 
 watch(
   () => props.orders.map((order) => normalize(order.id)),
-  (ids) => {
-    if (!ids.includes(inspectedOrderId.value)) inspectedOrderId.value = ids[0] || ''
-    selectedOrderIds.value = selectedOrderIds.value.filter((id) => ids.includes(id))
+  (ids: string[]) => {
+    if (!ids.includes(inspectedOrderId.value))
+      inspectedOrderId.value = ids[0] || ''
+    selectedOrderIds.value = selectedOrderIds.value.filter((id: string) =>
+      ids.includes(id)
+    )
   },
   { immediate: true }
 )
@@ -121,7 +140,7 @@ function toggleOrderSelection(orderId: unknown) {
   if (!id) return
 
   selectedOrderIds.value = selectedOrderIds.value.includes(id)
-    ? selectedOrderIds.value.filter((selectedId) => selectedId !== id)
+    ? selectedOrderIds.value.filter((selectedId: string) => selectedId !== id)
     : [...selectedOrderIds.value, id]
 }
 
@@ -131,23 +150,25 @@ function toggleOrderGroup(orders: KitchenOrder[]) {
 
   const group = new Set(ids)
   selectedOrderIds.value = groupIsSelected(orders)
-    ? selectedOrderIds.value.filter((id) => !group.has(id))
+    ? selectedOrderIds.value.filter((id: string) => !group.has(id))
     : Array.from(new Set([...selectedOrderIds.value, ...ids]))
 }
 
 function groupIsSelected(orders: KitchenOrder[]) {
   return Boolean(
     orders.length &&
-    orders.every((order) => selectedOrderIds.value.includes(normalize(order.id)))
+      orders.every((order) =>
+        selectedOrderIds.value.includes(normalize(order.id))
+      )
   )
 }
 
 function isScheduled(order: KitchenOrder) {
-  return order.order_type === 'pre_order' ||
-    (
-      order.order_type === 'collection' &&
-      normalize(record(order.collection).mode) === 'scheduled'
-    )
+  return (
+    order.order_type === 'pre_order' ||
+    (order.order_type === 'collection' &&
+      normalize(record(order.collection).mode) === 'scheduled')
+  )
 }
 
 function acceptSelectedOrders() {
@@ -161,7 +182,6 @@ function acceptSelectedOrders() {
     }))
   )
 }
-
 </script>
 
 <style scoped>

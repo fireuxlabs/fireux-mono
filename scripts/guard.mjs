@@ -1,19 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-26
+// last_used: 2026-08-04
 // usage_note: validates the authored repository spine after repo-efficiency passes.
-// Concurrent edit — 2026-07-24 — FireUX brand authority: guard Core-owned projections into the parent ecosystem and app.
-// Concurrent edit — 2026-07-22 01:05 CEST — Dish media verification: record the full repository guard run used for this pass.
-// Concurrent edit — 2026-07-19 17:54 CEST — Directory Publication Scaffold: register reconciliation and dormant pipeline guards.
-// Concurrent edit — 2026-07-20 16:26 CEST — Console Spine pass: verify the combined console architecture cut.
-// Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: register owner and loading boundary checks.
-// Concurrent edit — 2026-07-20 20:54 CEST — Repo Efficiency Pass 3 of 6: register operational script safety checks.
-// Concurrent edit — 2026-07-20 22:18 CEST — Both-Entity Authority: register root/app support boundary checks.
-// Concurrent edit — 2026-07-20 22:33 CEST — Repo Efficiency Pass 5 of 6: register dependency ownership checks.
-// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: register AST-backed declaration checks.
-// Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: register the explicitly named root/App-support authority guard.
-// Concurrent edit — 2026-07-21 13:57 CEST — CSS necessity pass: run the full repository gate after reducing the shared stylesheet surface.
-// Concurrent edit — 2026-07-21 21:23 CEST — Console index parity: register the shared selected/target presentation guard.
 // FILE: scripts/guard.mjs
 //
 // FireUX Guard — single entrypoint
@@ -27,14 +15,19 @@
 console.log('[guard] 🔎 Running FireUX guard checks...')
 
 import process from 'node:process'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
 
 import { assertFireuxRuntime } from './_lib/runtime.mjs'
 import { run as runRoot } from './guards/root.mjs'
+import { run as runDocumentation } from './guards/documentation.mjs'
 import { run as runDevWorkspace } from './guards/dev-workspace.mjs'
 import { run as runSecrets } from './guards/secrets.mjs'
 import { run as runGeneratedArtifacts } from './guards/generated-artifacts.mjs'
 import { run as runDependencyOwnership } from './guards/dependency-ownership.mjs'
+import { run as runImportBoundaries } from './guards/import-boundaries.mjs'
 import { run as runOperationalScripts } from './guards/operational-scripts.mjs'
+import { run as runScriptLifecycle } from './guards/script-lifecycle.mjs'
 import { run as runOwnership } from './guards/ownership.mjs'
 import { run as runRuntimeRegistration } from './guards/runtime-registration.mjs'
 import { run as runDemoData } from './guards/demo-data.mjs'
@@ -80,11 +73,14 @@ try {
 
 const guards = [
   { key: 'root', run: runRoot },
+  { key: 'documentation', run: runDocumentation },
   { key: 'dev-workspace', run: runDevWorkspace },
   { key: 'secrets', run: runSecrets },
   { key: 'generated-artifacts', run: runGeneratedArtifacts },
   { key: 'dependency-ownership', run: runDependencyOwnership },
+  { key: 'import-boundaries', run: runImportBoundaries },
   { key: 'operational-scripts', run: runOperationalScripts },
+  { key: 'script-lifecycle', run: runScriptLifecycle },
   { key: 'ownership', run: runOwnership },
   { key: 'runtime-registration', run: runRuntimeRegistration },
   { key: 'demo-data', run: runDemoData },
@@ -143,6 +139,14 @@ if (errors.length) {
   for (const e of errors) {
     console.error(`--- ${e.guard.toUpperCase()} ---`)
     console.error(e.message.trimEnd())
+    const sourceKey = e.guard === 'app-user-access' ? 'user-app-access' : e.guard
+    const source = `scripts/guards/${sourceKey}.mjs`
+    if (existsSync(join(repoRoot, source))) {
+      console.error(`\nOwner: ${source}`)
+    }
+    console.error(
+      'Repair: fix the reported source boundary, compare its nearest working sibling, then rerun pnpm guard.'
+    )
     console.error('')
   }
 

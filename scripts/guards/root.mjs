@@ -1,9 +1,6 @@
 // @fireux-script
-// last_used: 2026-07-21
+// last_used: 2026-08-04
 // usage_note: enforces the portable root and sole pnpm workspace authority.
-// Concurrent edit — 2026-07-21 12:40 CEST — Cleanbox-to-Werkbox migration: verify the renamed root command surface.
-// Concurrent edit — 2026-07-20 11:50 CEST — Root Efficiency Passes 2 and 4 of 4: lock portable root and demo ownership.
-// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: lock canonical root quality commands without forwarding aliases.
 // FILE: scripts/guards/root.mjs
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
@@ -70,6 +67,108 @@ const ALLOWED_ROOT_DOTFILES = new Set([
   '.prettierrc',
 ])
 
+const RETIRED_AGGREGATE_TSCONFIGS = [
+  'packages/tsconfig.json',
+  'packages/core/tsconfig.json',
+  'packages/ecosystem/tsconfig.json',
+  'packages/extensions/tsconfig.json',
+  'projects/tsconfig.json',
+]
+
+function assertWorkspacePolicy(repoRoot) {
+  const workspace = readFileSync(
+    path.join(repoRoot, 'pnpm-workspace.yaml'),
+    'utf8'
+  )
+  const allowBuilds = workspace.match(
+    /(?:^|\n)allowBuilds:\n((?: {2}[^\n]+\n?)*)/
+  )?.[1]
+
+  if (!allowBuilds) {
+    throw new Error('[guard] ❌ pnpm workspace must declare allowBuilds.')
+  }
+
+  const invalidApprovals = allowBuilds
+    .trimEnd()
+    .split('\n')
+    .filter(Boolean)
+    .filter((line) => !/: (?:true|false)$/.test(line))
+
+  if (invalidApprovals.length) {
+    throw new Error(
+      [
+        '[guard] ❌ pnpm allowBuilds values must be explicit booleans:',
+        ...invalidApprovals.map((line) => `  - ${line.trim()}`),
+      ].join('\n')
+    )
+  }
+
+  const retired = RETIRED_AGGREGATE_TSCONFIGS.filter((file) =>
+    existsSync(path.join(repoRoot, file))
+  )
+  if (retired.length) {
+    throw new Error(
+      [
+        '[guard] ❌ Hand-maintained aggregate TypeScript configs are retired:',
+        ...retired.map((file) => `  - ${file}`),
+        '',
+        'Use package leaf configs and projects/tsconfig.projects.json.',
+      ].join('\n')
+    )
+  }
+}
+
+function assertWorkspaceTypeScriptPaths(repoRoot) {
+  const tsconfig = JSON.parse(
+    readFileSync(path.join(repoRoot, 'tsconfig.base.json'), 'utf8')
+  )
+  const paths = tsconfig.compilerOptions?.paths || {}
+  const violations = []
+
+  for (const family of ['core', 'ecosystem', 'extensions']) {
+    const familyRoot = path.join(repoRoot, 'packages', family)
+    for (const entry of readdirSync(familyRoot, { withFileTypes: true })) {
+      if (!entry.isDirectory()) continue
+      const manifestPath = path.join(familyRoot, entry.name, 'package.json')
+      if (!existsSync(manifestPath)) continue
+      const manifest = JSON.parse(readFileSync(manifestPath, 'utf8'))
+      const name = String(manifest.name || '').trim()
+      if (!name) continue
+
+      const sourceRoot = `./packages/${family}/${entry.name}/src`
+      const expected = {
+        [name]: [`${sourceRoot}/module.ts`],
+        [`${name}/*`]: [`${sourceRoot}/*`],
+        [`${name}/runtime/*`]: [`${sourceRoot}/runtime/*`],
+      }
+
+      for (const [alias, targets] of Object.entries(expected)) {
+        if (JSON.stringify(paths[alias]) !== JSON.stringify(targets)) {
+          violations.push(`${alias} -> ${targets.join(', ')}`)
+        }
+      }
+    }
+  }
+
+  const legacyAliases = Object.keys(paths).filter(
+    (alias) =>
+      alias.startsWith('@fireux-') ||
+      ['@/*', '~/*', '@@/*', '~~/*'].includes(alias)
+  )
+
+  if (violations.length || legacyAliases.length) {
+    throw new Error(
+      [
+        '[guard] ❌ Workspace TypeScript path authority drift:',
+        ...violations.map((entry) => `  Missing or incorrect: ${entry}`),
+        ...legacyAliases.map((entry) => `  Retired root alias: ${entry}`),
+        '',
+        'Every package has name, wildcard, and runtime aliases; App-local aliases belong in the App tsconfig.',
+      ].join('\n')
+    )
+  }
+}
+
 function isDirentDirectory(repoRoot, dirent) {
   if (dirent.isDirectory()) return true
 
@@ -87,6 +186,8 @@ function isDirentDirectory(repoRoot, dirent) {
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
+  assertWorkspacePolicy(repoRoot)
+  assertWorkspaceTypeScriptPaths(repoRoot)
   const entries = readdirSync(repoRoot, { withFileTypes: true })
 
   const unexpected = []

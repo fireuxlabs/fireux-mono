@@ -1,7 +1,10 @@
-import type { AppStatus } from '../core/app.model'
+import type {
+  AppDerived,
+  AppMedia,
+  AppRole,
+  AppStatus,
+} from '../core/app.model'
 import type { EcosystemStatus } from '../core/ecosystem.model'
-import type { AppDerived, AppMedia, AppRole } from './app'
-import type { Ref } from 'vue'
 
 /**
  * Public directory projections are transport records, not stored entities.
@@ -49,26 +52,4 @@ export type PlatformDirectoryResponse = {
   generatedAt: string
   apps: AppDirectoryEntry[]
   ecosystems: EcosystemDirectoryEntry[]
-}
-
-export type DirectoryOutcome = 'pending' | 'error' | 'empty' | 'ready'
-
-export type AppDirectoryController = {
-  apps: Ref<AppDirectoryEntry[]>
-  count: Ref<number>
-  pending: Ref<boolean>
-  error: Ref<unknown>
-  outcome: Ref<DirectoryOutcome>
-  source: 'ecosystem' | 'platform'
-  refresh?: () => Promise<unknown>
-}
-
-export type EcosystemDirectoryController = {
-  ecosystems: Ref<EcosystemDirectoryEntry[]>
-  count: Ref<number>
-  pending: Ref<boolean>
-  error: Ref<unknown>
-  outcome: Ref<DirectoryOutcome>
-  source: 'platform'
-  refresh?: () => Promise<unknown>
 }

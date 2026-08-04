@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import { CompanyStorage } from '../../../../../models/company.model'
 import type { CompanyHydrated } from '../fetch/types'
 
 const clean = (value: unknown) => String(value ?? '').trim()

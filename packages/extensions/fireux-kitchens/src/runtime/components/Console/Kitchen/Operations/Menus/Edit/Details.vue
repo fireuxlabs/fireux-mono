@@ -4,7 +4,9 @@
       <div class="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 class="text-base font-semibold text-highlighted">Menu details</h2>
-          <p class="text-sm text-dimmed">Edit the menu name and guest-facing description.</p>
+          <p class="text-sm text-dimmed">
+            Edit the menu name and guest-facing description.
+          </p>
         </div>
 
         <UBadge :color="statusColor" variant="soft">
@@ -49,7 +51,6 @@
         disabled-message="This menu is read-only."
         :update-function="handleDescription"
       />
-
     </div>
   </UCard>
 </template>
@@ -60,16 +61,10 @@ import { computed } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleMenu } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
-import type { MenuUpdateInput } from '../../../../../../models/kitchen/menu/menu.model'
+import type { KitchenMenuUpdateInput as MenuUpdateInput } from '../../../../../../models/kitchen/menu/kitchen-menu.model'
 
-const {
-  menu,
-  kitchenId,
-  menuId,
-  canWrite,
-  updateMenu,
-  renameMenu,
-} = useKitchenConsoleMenu()
+const { menu, kitchenId, menuId, canWrite, updateMenu, renameMenu } =
+  useKitchenConsoleMenu()
 const toast = useToastify()
 const router = useRouter()
 
@@ -148,7 +143,9 @@ async function handleMenuId(value: string) {
   try {
     const result = await renameMenu(kitchenId.value, currentMenuId, nextMenuId)
     if (result.changed) {
-      await router.replace(`/console/kitchen/menus/${encodeURIComponent(result.id)}`)
+      await router.replace(
+        `/console/kitchen/menus/${encodeURIComponent(result.id)}`
+      )
     }
     toast.add({
       title: 'Menu identifier updated',
@@ -166,5 +163,4 @@ async function handleMenuId(value: string) {
     throw error
   }
 }
-
 </script>

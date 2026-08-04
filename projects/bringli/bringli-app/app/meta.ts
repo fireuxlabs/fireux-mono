@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: compose Bringli Supplier operations.
-import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 import { supplierOperations } from 'fireux-suppliers/runtime/content/operations'
 import { sourceMeta } from './content/meta/source'
 

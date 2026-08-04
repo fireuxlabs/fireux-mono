@@ -39,7 +39,6 @@
         <dd>{{ paletteLabel }}</dd>
       </div>
     </dl>
-
   </section>
 </template>
 
@@ -59,13 +58,15 @@ const props = defineProps<{
 const objectUrl = ref('')
 let previewedFile: File | null = null
 
-const previewSource = computed(() => objectUrl.value || String(props.place.image_url || '').trim())
+const previewSource = computed(
+  () => objectUrl.value || String(props.place.image_url || '').trim()
+)
 
 const address = computed(() =>
   String(
     props.place.formatted_address ||
-    props.place.short_address ||
-    'Physical location confirmed'
+      props.place.short_address ||
+      'Physical location confirmed'
   ).trim()
 )
 
@@ -77,11 +78,14 @@ const logoLabel = computed(() => {
 
 const paletteLabel = computed(() => {
   const count = Object.keys(props.brandPalette).length
-  return count ? `${count} Place colour${count === 1 ? '' : 's'}` : 'FireUX defaults'
+  return count
+    ? `${count} Place colour${count === 1 ? '' : 's'}`
+    : 'FireUX defaults'
 })
 
 function revokeObjectUrl() {
-  if (objectUrl.value && import.meta.client) URL.revokeObjectURL(objectUrl.value)
+  if (objectUrl.value && import.meta.client)
+    URL.revokeObjectURL(objectUrl.value)
   objectUrl.value = ''
   previewedFile = null
 }
@@ -97,7 +101,7 @@ function syncPreview(file: File | null) {
 
 watch(
   () => props.imageFile,
-  file => syncPreview(file),
+  (file: File | null) => syncPreview(file),
   { immediate: true }
 )
 

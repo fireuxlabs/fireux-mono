@@ -8,10 +8,10 @@ import {
 } from '../../../models/operations/event'
 import {
   AppUserStorage,
-  UserNotificationStorage,
   UserStorage,
   type AppUser,
 } from '../../../models/core/user.model'
+import { UserNotificationStorage } from '../../../models/operations/user-notification.model'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
 
 export type PublishAppUserJoinedEventInput = {
@@ -146,7 +146,7 @@ export async function publishAppUserJoinedEvent(
       if (admin.id === input.userId) continue
 
       const notificationRef = db
-        .collection(UserStorage.rootCollection)
+        .collection(UserStorage.collection)
         .doc(admin.id)
         .collection(UserNotificationStorage.collection)
         .doc(eventId)

@@ -2,9 +2,9 @@
 
 import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { DriverKitchenLink } from '../../models/driver.model.ts'
 import {
   DRIVER_KITCHEN_LINK_LIMIT,

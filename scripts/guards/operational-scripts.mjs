@@ -722,7 +722,7 @@ async function assertWerkboxRulesSurface(repoRoot) {
         `actual:   ${contractSha256 || '(missing)'}`,
         `expected: ${expectedContract.sha256}`,
         'Review the manifest changes, then run:',
-        '  pnpm werkbox:security-contract -- --write',
+        '  pnpm werkbox:security-contract --write',
         'This refreshes local source only; deployment remains a separate authorised action.',
       ].join('\n')
     )

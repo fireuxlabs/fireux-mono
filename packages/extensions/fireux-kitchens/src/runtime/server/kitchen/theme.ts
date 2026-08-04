@@ -2,15 +2,15 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   compactBrandPalette,
   parseBrandPalette,
-} from 'fireux-core/runtime/utils/brand-palette.ts'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model.ts'
+} from 'fireux-core/runtime/utils/brand-palette'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import { KitchenStorage } from '../../models/kitchen.model.ts'
 import { parseMenuPageStyleInput } from '../menu/payload/page-style.ts'
 import {
@@ -21,7 +21,7 @@ import { resolveKitchenConsoleTargetIds } from './console-targets.ts'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 function badRequest(statusMessage: string): never {
@@ -34,8 +34,9 @@ function request(value: unknown) {
   }
   const source = value as Record<string, unknown>
   const allowed = new Set(['kitchen_id', 'style'])
-  const unsupported = Object.keys(source).find(key => !allowed.has(key))
-  if (unsupported) badRequest(`Kitchen theme contains unsupported field: ${unsupported}.`)
+  const unsupported = Object.keys(source).find((key) => !allowed.has(key))
+  if (unsupported)
+    badRequest(`Kitchen theme contains unsupported field: ${unsupported}.`)
   const style = parseMenuPageStyleInput(source.style)
   if ('error' in style) badRequest(style.error)
   return {
@@ -85,24 +86,30 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
     'Sign in to manage this Kitchen.'
   )
   const db = getRuntimeFirestore()
-  const rootRef = db.collection(KitchenStorage.rootCollection).doc(requested.kitchenId)
+  const rootRef = db
+    .collection(KitchenStorage.rootCollection)
+    .doc(requested.kitchenId)
   const runtimeMembershipRef = db.doc(`apps/${runtimeAppId}/users/${uid}`)
 
-  const result = await db.runTransaction(async transaction => {
+  const result = await db.runTransaction(async (transaction) => {
     const [root, runtimeMembership] = await Promise.all([
       transaction.get(rootRef),
       transaction.get(runtimeMembershipRef),
     ])
     if (!root.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Kitchen not found.',
+      })
     }
     memberRole(
       runtimeMembership.exists,
       runtimeMembership.get('role'),
       'Current App membership is required to manage this Kitchen.'
     )
-    const runtimeTargetIds = resolveKitchenConsoleTargetIds(
-      event,
+    const runtimeTargetIds = await resolveKitchenConsoleTargetIds(
+      runtimeAppId,
+      uid,
       runtimeMembership.data() || {}
     )
     if (!runtimeTargetIds.includes(requested.kitchenId)) {
@@ -139,7 +146,10 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
       'Kitchen owner App membership is required.'
     )
     if (!support.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Kitchen not found.',
+      })
     }
     const authority = readKitchenOnboardingSupport(support.data() || {})
     if (
@@ -152,7 +162,10 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
       })
     }
 
-    const placeId = requireFirestoreDocumentId(root.get('place_id'), 'Kitchen Place id')
+    const placeId = requireFirestoreDocumentId(
+      root.get('place_id'),
+      'Kitchen Place id'
+    )
     const placeRef = db.doc(`places/${placeId}`)
     const place = await transaction.get(placeRef)
     if (!place.exists) {
@@ -171,7 +184,9 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
     }
     const compact = compactRootStyle(requested.style, placePalette.value)
     const rootPatch: Record<string, unknown> = {
-      'menus.style': Object.keys(compact).length ? compact : FieldValue.delete(),
+      'menus.style': Object.keys(compact).length
+        ? compact
+        : FieldValue.delete(),
       updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
     }
     if (Object.hasOwn(root.data() || {}, 'menu_style')) {

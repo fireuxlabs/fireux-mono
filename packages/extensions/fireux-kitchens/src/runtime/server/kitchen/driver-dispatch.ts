@@ -3,15 +3,15 @@
 
 import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   AppUserStorage,
   UserStorage,
-} from 'fireux-core/runtime/models/core/user.model.ts'
+} from 'fireux-core/runtime/models/core/user.model'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
-} from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { AppDriverStorage } from '../../models/driver.model.ts'
 import {
   DriverDispatchVisibleStatuses,
@@ -209,7 +209,7 @@ export async function watchDriverDispatch(
 ): Promise<DriverDispatchWatchResult> {
   const { db, appRef, driverRef } = await requireDriver(context)
   const userSnapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.rootCollection)
+    .collection(UserStorage.collection)
     .doc(context.actorUid)
     .get()
   if (!userSnapshot.exists) {

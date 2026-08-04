@@ -1,6 +1,7 @@
 # Project user monitor
 
-Updated: 2026-07-24
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose

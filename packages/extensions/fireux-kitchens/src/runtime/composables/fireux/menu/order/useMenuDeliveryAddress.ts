@@ -1,12 +1,6 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: use the shared customer autofill seam.
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
-import { formatCurrencyAmount } from 'fireux-core/runtime/models/utils/money.model'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import { formatCurrencyAmount } from '../../../../utils/currency-display'
 import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,
@@ -61,28 +55,41 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
 
     return `/api/menus/${encodeURIComponent(menuId)}/delivery-address${suffix ? `?${suffix}` : ''}`
   })
-  const subtotal = computed(() => Math.max(0, Number(toValue(options.subtotal)) || 0))
-  const minimum = computed(() => Math.max(0, Number(result.value?.zone?.min_order_chf) || 0))
-  const fee = computed(() => Math.max(0, Number(result.value?.zone?.fee_chf) || 0))
+  const subtotal = computed(() =>
+    Math.max(0, Number(toValue(options.subtotal)) || 0)
+  )
+  const minimum = computed(() =>
+    Math.max(0, Number(result.value?.zone?.min_order_chf) || 0)
+  )
+  const fee = computed(() =>
+    Math.max(0, Number(result.value?.zone?.fee_chf) || 0)
+  )
   const total = computed(() => subtotal.value + fee.value)
-  const minimumMet = computed(() => !result.value?.zone || subtotal.value >= minimum.value)
-  const label = computed(() =>
-    text(result.value?.address?.formatted) ||
-    text(selectedAddress.value?.description) ||
-    text(address.value)
+  const minimumMet = computed(
+    () => !result.value?.zone || subtotal.value >= minimum.value
   )
-  const placeId = computed(() =>
-    text(result.value?.address?.place_id) || text(selectedAddress.value?.place_id)
+  const label = computed(
+    () =>
+      text(result.value?.address?.formatted) ||
+      text(selectedAddress.value?.description) ||
+      text(address.value)
   )
-  const zoneLabel = computed(() =>
-    text(result.value?.zone?.label) || text(result.value?.zone?.id)
+  const placeId = computed(
+    () =>
+      text(result.value?.address?.place_id) ||
+      text(selectedAddress.value?.place_id)
   )
-  const ready = computed(() => Boolean(
-    label.value &&
-    result.value?.deliverable &&
-    minimumMet.value &&
-    !checkPending.value
-  ))
+  const zoneLabel = computed(
+    () => text(result.value?.zone?.label) || text(result.value?.zone?.id)
+  )
+  const ready = computed(() =>
+    Boolean(
+      label.value &&
+        result.value?.deliverable &&
+        minimumMet.value &&
+        !checkPending.value
+    )
+  )
   const status = computed(() => {
     if (checkPending.value) return 'Checking delivery area…'
     if (checkError.value) return checkError.value
@@ -95,7 +102,9 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
     return [
       zoneLabel.value,
       fee.value ? `${money(fee.value)} delivery` : 'Free delivery',
-    ].filter(Boolean).join(' · ')
+    ]
+      .filter(Boolean)
+      .join(' · ')
   })
   const totalLabel = computed(() => money(total.value))
 
@@ -106,13 +115,16 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
     await check({ place_id: prediction.place_id })
   }
 
-  async function check(input: string | { address?: string, place_id?: string }) {
-    const body = typeof input === 'string'
-      ? { address: text(input) }
-      : {
-          ...(text(input.address) ? { address: text(input.address) } : {}),
-          ...(text(input.place_id) ? { place_id: text(input.place_id) } : {}),
-        }
+  async function check(
+    input: string | { address?: string; place_id?: string }
+  ) {
+    const body =
+      typeof input === 'string'
+        ? { address: text(input) }
+        : {
+            ...(text(input.address) ? { address: text(input.address) } : {}),
+            ...(text(input.place_id) ? { place_id: text(input.place_id) } : {}),
+          }
     if (!endpoint.value || (!body.address && !body.place_id)) {
       result.value = null
       checkError.value = endpoint.value
@@ -124,10 +136,13 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
     checkPending.value = true
     checkError.value = ''
     try {
-      const checked = await $fetch<MenuDeliveryAddressCheckResult>(endpoint.value, {
-        method: 'POST',
-        body,
-      })
+      const checked = await $fetch<MenuDeliveryAddressCheckResult>(
+        endpoint.value,
+        {
+          method: 'POST',
+          body,
+        }
+      )
       result.value = checked
       return checked
     } catch (caught) {
@@ -135,7 +150,8 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
         data?: { statusMessage?: unknown }
         statusMessage?: unknown
       } | null
-      checkError.value = text(source?.data?.statusMessage) ||
+      checkError.value =
+        text(source?.data?.statusMessage) ||
         text(source?.statusMessage) ||
         'Delivery address could not be checked.'
       result.value = null
@@ -160,7 +176,7 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
     })
   }
 
-  watch(address, (value) => {
+  watch(address, (value: string) => {
     const input = text(value)
     if (!input) {
       selectedAddress.value = null
@@ -168,27 +184,34 @@ export function useMenuDeliveryAddress(options: UseMenuDeliveryAddressOptions) {
       return
     }
     const selected = text(selectedAddress.value?.description)
-    const checked = text(result.value?.address?.formatted || result.value?.address?.input)
+    const checked = text(
+      result.value?.address?.formatted || result.value?.address?.input
+    )
     if (result.value && input !== selected && input !== checked) {
       selectedAddress.value = null
       result.value = null
     }
   })
 
-  watch(customer, async (value: { address: string, address_place_id: string }) => {
-    const savedAddress = text(value.address)
-    if (autofillApplied.value || !savedAddress || text(address.value)) return
-    autofillApplied.value = true
-    address.value = savedAddress
-    selectedAddress.value = {
-      place_id: text(value.address_place_id),
-      description: savedAddress,
-    }
-    await check(value.address_place_id
-      ? { address: savedAddress, place_id: value.address_place_id }
-      : savedAddress
-    )
-  }, { immediate: true })
+  watch(
+    customer,
+    async (value: { address: string; address_place_id: string }) => {
+      const savedAddress = text(value.address)
+      if (autofillApplied.value || !savedAddress || text(address.value)) return
+      autofillApplied.value = true
+      address.value = savedAddress
+      selectedAddress.value = {
+        place_id: text(value.address_place_id),
+        description: savedAddress,
+      }
+      await check(
+        value.address_place_id
+          ? { address: savedAddress, place_id: value.address_place_id }
+          : savedAddress
+      )
+    },
+    { immediate: true }
+  )
 
   return {
     address,

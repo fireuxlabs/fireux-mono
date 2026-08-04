@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: delete stale root Menu description projections under merge.
 import { FieldValue, type Firestore } from 'firebase-admin/firestore'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { KitchenStorage } from '../../../models/kitchen.model'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
 

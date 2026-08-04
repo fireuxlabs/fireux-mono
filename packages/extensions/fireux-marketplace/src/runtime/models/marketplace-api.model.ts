@@ -1,4 +1,4 @@
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {
   MarketplaceFulfilmentMethod,
   MarketplaceLocality,

@@ -25,7 +25,6 @@
     "fireux-blogs": "workspace:*",
     "fireux-core": "workspace:*",
     "fireux-buenohost": "workspace:*",
-    "fireux-products": "workspace:*",
     "fireux-properties": "workspace:*",
     "fireux-reservations": "workspace:*",
     "nuxt": "4.4.6",

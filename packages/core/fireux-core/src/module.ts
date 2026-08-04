@@ -1,6 +1,6 @@
 // FILE: packages/core/fireux-core/src/module.ts
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: register the authenticated runtime App membership endpoint.
-// Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: register trusted UserPrivate provisioning.
+// Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: register trusted UserAccount provisioning.
 // Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: register trusted handle reservation.
 // Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: register exact public identity and App-admin people endpoints.
@@ -13,25 +13,26 @@ import {
   type FireuxSeoConfig,
 } from './config/app/seo'
 import { configureFireuxModule } from './config/module/module-wiring'
+import {
+  registerComposablesDir,
+  registerLayoutsDir,
+} from './config/module/module-helpers'
 import { configurePlugins } from './config/module/plugins-config'
-import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
-import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
 
 const DEV_RESPONSE_MAX_LISTENERS = 32
 
 function asSeoConfig(value: unknown): FireuxSeoConfig | undefined {
-  if (!value || typeof value !== 'object' || Array.isArray(value)) return undefined
+  if (!value || typeof value !== 'object' || Array.isArray(value))
+    return undefined
   return value as FireuxSeoConfig
 }
 
 function toStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) return []
-  return value
-    .map((entry) => String(entry ?? '').trim())
-    .filter(Boolean)
+  return value.map((entry) => String(entry ?? '').trim()).filter(Boolean)
 }
 
 export default defineNuxtModule({
@@ -76,7 +77,9 @@ export default defineNuxtModule({
     })
     addServerHandler({
       route: '/sitemaps/:entityPage.xml',
-      handler: resolver.resolve('./runtime/server/sitemaps/[entity]-[page].xml.get'),
+      handler: resolver.resolve(
+        './runtime/server/sitemaps/[entity]-[page].xml.get'
+      ),
     })
     addServerHandler({
       route: '/manifest.webmanifest',
@@ -89,7 +92,9 @@ export default defineNuxtModule({
     })
     addServerHandler({
       route: '/api/public/users/:handle',
-      handler: resolver.resolve('./runtime/server/api/public/users/[handle].get'),
+      handler: resolver.resolve(
+        './runtime/server/api/public/users/[handle].get'
+      ),
     })
     addServerHandler({
       route: '/api/public/user-identities/:userId',
@@ -164,10 +169,11 @@ export default defineNuxtModule({
     })
 
     nuxt.hook('modules:done', async () => {
-      const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+      const runtimeConfig = ((nuxt.options as any).runtimeConfig ||=
+        {}) as Record<string, any>
       const pub = (runtimeConfig.public ||= {}) as Record<string, any>
       const fireux = (pub.fireux ||= {}) as Record<string, any>
-      const privateFireux = ((runtimeConfig.fireux ||= {}) as Record<string, any>)
+      const privateFireux = (runtimeConfig.fireux ||= {}) as Record<string, any>
 
       const appName =
         typeof fireux.name === 'string' && fireux.name.trim()
@@ -188,10 +194,11 @@ export default defineNuxtModule({
     })
 
     nuxt.hook('pages:resolved', (pages: any[]) => {
-      const runtimeConfig = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
+      const runtimeConfig = ((nuxt.options as any).runtimeConfig ||=
+        {}) as Record<string, any>
       const pub = (runtimeConfig.public ||= {}) as Record<string, any>
       const fireux = (pub.fireux ||= {}) as Record<string, any>
-      const seo = ((fireux.seo ||= {}) as Record<string, any>)
+      const seo = (fireux.seo ||= {}) as Record<string, any>
 
       const autoPaths = collectAutoSitemapPaths(pages, {
         disallowPaths: toStringArray(seo.disallow),
@@ -203,9 +210,9 @@ export default defineNuxtModule({
 
     configureFireuxModule(resolver, nuxt, {
       plugins: configurePlugins,
-      composables: configureComposables,
+      composables: registerComposablesDir,
       components: configureComponents,
-      layouts: configureLayouts,
+      layouts: registerLayoutsDir,
       pages: configurePages,
       assets: configureAssets,
     })

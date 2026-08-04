@@ -349,6 +349,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-demo:
+        specifier: workspace:*
+        version: link:../fireux-demo
       fireux-places:
         specifier: workspace:*
         version: link:../fireux-places
@@ -375,6 +378,21 @@ importers:
       '@nuxt/module-builder':
         specifier: ^1.0.2
         version: 1.0.2(@nuxt/cli@3.35.2(@nuxt/schema@4.4.6)(cac@6.7.14)(magicast@0.5.3))(@vue/compiler-core@3.5.34)(esbuild@0.28.0)(sass@1.96.0)(typescript@5.9.2)(vue-tsc@3.3.0(typescript@5.9.2))(vue@3.5.20(typescript@5.9.2))
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+
+  packages/extensions/fireux-demo:
+    devDependencies:
+      '@nuxt/kit':
+        specifier: 4.4.6
+        version: 4.4.6(magicast@0.5.3)
+      '@nuxt/module-builder':
+        specifier: ^1.0.2
+        version: 1.0.2(@nuxt/cli@3.35.2(@nuxt/schema@4.4.6)(cac@6.7.14)(magicast@0.5.3))(@vue/compiler-core@3.5.34)(esbuild@0.28.0)(sass@1.96.0)(typescript@5.9.2)(vue-tsc@3.3.0(typescript@5.9.2))(vue@3.5.20(typescript@5.9.2))
+      '@nuxt/schema':
+        specifier: 4.4.6
+        version: 4.4.6
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
@@ -475,6 +493,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-demo:
+        specifier: workspace:*
+        version: link:../fireux-demo
       fireux-finance:
         specifier: workspace:*
         version: link:../fireux-finance
@@ -617,6 +638,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../core/fireux-core
+      fireux-demo:
+        specifier: workspace:*
+        version: link:../fireux-demo
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -676,9 +700,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       fireux-suppliers:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-suppliers
@@ -710,6 +731,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-buenohost:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-buenohost
@@ -753,6 +777,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-buenohost:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-buenohost
@@ -805,9 +832,6 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       fireux-properties:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-properties
@@ -985,9 +1009,6 @@ importers:
       fireux-fireux:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-fireux
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       h3:
         specifier: 1.15.11
         version: 1.15.11
@@ -1034,9 +1055,6 @@ importers:
       fireux-go-qr:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-go-qr
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       h3:
         specifier: 1.15.11
         version: 1.15.11
@@ -1153,9 +1171,6 @@ importers:
       fireux-fireux:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-fireux
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       nuxt:
         specifier: 4.4.6
         version: 4.4.6(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.30.1)(magicast@0.5.3)(optionator@0.9.4)(rollup-plugin-visualizer@7.0.1(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
@@ -1211,9 +1226,6 @@ importers:
       fireux-granite:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-granite
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       fireux-properties:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-properties
@@ -1333,9 +1345,6 @@ importers:
       fireux-misebox:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-misebox
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       nuxt:
         specifier: 4.4.6
         version: 4.4.6(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.30.1)(magicast@0.5.3)(optionator@0.9.4)(rollup-plugin-visualizer@7.0.1(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
@@ -1376,15 +1385,24 @@ importers:
       fireux-blogs:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-blogs
+      fireux-companies:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-companies
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-jobs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-jobs
       fireux-marketplace:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-marketplace
       fireux-misebox:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-misebox
+      fireux-places:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-places
       fireux-sproochli:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-sproochli
@@ -1446,9 +1464,6 @@ importers:
       fireux-places:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-places
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       nuxt:
         specifier: 4.4.6
         version: 4.4.6(@babel/plugin-syntax-jsx@7.27.1(@babel/core@7.29.0))(@babel/plugin-syntax-typescript@7.28.6(@babel/core@7.29.0))(@parcel/watcher@2.5.6)(@types/node@22.18.1)(@vue/compiler-sfc@3.5.34)(better-sqlite3@12.6.0)(cac@6.7.14)(db0@0.3.4(better-sqlite3@12.6.0))(eslint@9.39.4(jiti@2.7.0))(ioredis@5.10.1)(lightningcss@1.30.1)(magicast@0.5.3)(optionator@0.9.4)(rollup-plugin-visualizer@7.0.1(rollup@4.60.4))(rollup@4.60.4)(sass@1.96.0)(terser@5.44.0)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-tsc@3.3.0(typescript@5.9.2))(yaml@2.8.2)
@@ -1519,6 +1534,9 @@ importers:
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-demo:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-demo
       fireux-go-qr:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-go-qr
@@ -1534,9 +1552,6 @@ importers:
       fireux-places:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-places
-      fireux-products:
-        specifier: workspace:*
-        version: link:../../../packages/extensions/fireux-products
       fireux-sproochli:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-sproochli
@@ -1577,6 +1592,9 @@ importers:
       '@nuxt/ui':
         specifier: ^4.0.0-alpha.2
         version: 4.0.0-alpha.2(@babel/parser@7.29.3)(change-case@5.4.4)(db0@0.3.4(better-sqlite3@12.6.0))(embla-carousel@8.6.0)(ioredis@5.10.1)(magicast@0.5.3)(qrcode@1.5.4)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-router@4.5.1(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))(zod@3.25.76)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
@@ -1608,6 +1626,9 @@ importers:
       '@nuxt/ui':
         specifier: ^4.0.0-alpha.2
         version: 4.0.0-alpha.2(@babel/parser@7.29.3)(change-case@5.4.4)(db0@0.3.4(better-sqlite3@12.6.0))(embla-carousel@8.6.0)(ioredis@5.10.1)(magicast@0.5.3)(qrcode@1.5.4)(typescript@5.9.2)(vite@7.3.3(@types/node@22.18.1)(jiti@2.7.0)(lightningcss@1.30.1)(sass@1.96.0)(terser@5.44.0)(yaml@2.8.2))(vue-router@4.5.1(vue@3.5.20(typescript@5.9.2)))(vue@3.5.20(typescript@5.9.2))(zod@3.25.76)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
@@ -1768,6 +1789,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
@@ -1811,6 +1835,9 @@ importers:
       firebase-functions:
         specifier: ^6.3.2
         version: 6.6.0(firebase-admin@12.7.0)
+      fireux-blogs:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-blogs
       fireux-companies:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-companies

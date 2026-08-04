@@ -1,11 +1,7 @@
 # Misebox GPT Context
 
-<!-- Concurrent edit — 2026-07-23 02:43 CEST — Record the Core-owned product landing and Misebox-owned proof boundary. -->
-<!-- Concurrent edit — 2026-07-23 — Record the shared preview-frame chrome and project-owned proof body. -->
-<!-- Concurrent edit — 2026-07-25 — Keep Main App hero copy in Core while Misebox proves it with the real Orders board. -->
-
-Updated: 2026-07-30
-Ref: 33603376f
+Updated: 2026-08-04
+Ref: d232cc731
 Role: living context
 Scope: Misebox ecosystem and Apps
 
@@ -205,6 +201,10 @@ Before each task:
 - The ecosystem package must not own tenant-id branches, Kitchen/Menu source
   defaults, or a competing public Menu renderer. Public Menu routes, layout,
   resolution, and ordering projections belong to `fireux-kitchens`.
+- `fireux-kitchens` also owns the shared Bringli Supplier-directory endpoint
+  and environment resolution used by its Supply surface. Misebox project Apps
+  do not repeat that runtime value, and an App that does not load Kitchens does
+  not acquire Kitchen supply configuration.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
 - Misebox product literature follows `docs/concepts/product-language.md`.
@@ -242,9 +242,10 @@ Before each task:
   only as explicitly labelled candidates, such as `Kiosk · Item`; they do not
   become members of the generic Card family.
 - Shared product-led landing presentation belongs to Core
-  `LandingProductIndex`. Its fixed order is `hero-preview`, the `onboarding`
-  entry slot, `console`, `specifics`, optional `ecosystems`, `apps`, `tools`,
-  `solutions`, then `operations`. Core places the hero copy on the left and
+  `LandingProductIndex`. Core owns the region vocabulary and default order;
+  Misebox supplies the guarded ordered subset `surfaces`, `specifics`,
+  `operations`, `solutions`, `tools`, then conditional `apps` through
+  `regionOrder`. Core places the hero copy on the left and
   an app-owned product-card presentation on the right, owns the responsive/reveal behavior, and
   uses flat semantic surfaces without decorative gradients or flares.
   `LandingProductProofSection` owns the repeated proof-and-copy split and

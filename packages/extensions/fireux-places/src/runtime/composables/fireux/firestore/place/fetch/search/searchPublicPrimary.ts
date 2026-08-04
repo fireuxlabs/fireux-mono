@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: search the bounded public endpoint without raw Firestore queries.
-import type { PublicPlaceIndexPage } from 'fireux-places/runtime/models/place-public.model'
+import type { PublicPlaceIndexPage } from '../../../../../../models/place-public.model'
 import type { MapToBasePlace, SearchStage } from './types'
 
 async function search(query: string) {

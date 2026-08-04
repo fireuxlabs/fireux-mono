@@ -4,7 +4,6 @@
 node_modules/
 .pnpm-store/
 
-# Concurrent edit — 2026-07-20 11:40 CEST — Root Efficiency Pass 2 of 4: ignore machine-local Figma exports.
 # Optional machine-local design export directory or symlink
 /figma-export
 

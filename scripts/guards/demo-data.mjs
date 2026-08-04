@@ -1082,7 +1082,7 @@ export async function run(ctx) {
   const demoMediaManifestFile = 'scripts/data/misebox-demo-media/manifest.json'
   const demoMediaManifestPath = path.join(repoRoot, demoMediaManifestFile)
   const demoMediaContractFile =
-    'packages/core/fireux-core/src/runtime/utils/misebox-demo-media.ts'
+    'packages/extensions/fireux-demo/src/runtime/media/misebox.ts'
   const demoMediaPublisherFile = 'scripts/publish-misebox-demo-media.mjs'
   const expectedDemoMediaObjects = []
   let demoMediaManifest = null

@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-22 12:56 CEST — Job category scope: carry explicit all-versus-allowlist server authority.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 
 export type JobServerScope = {
   appId: string

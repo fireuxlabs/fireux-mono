@@ -43,7 +43,7 @@
 
 <script setup lang="ts">
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
-import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
+import { chefConfig } from '../../composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
 import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
 

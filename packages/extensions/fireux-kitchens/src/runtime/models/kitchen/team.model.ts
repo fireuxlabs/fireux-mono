@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen/team.model.ts
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**

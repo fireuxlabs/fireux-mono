@@ -1,5 +1,5 @@
 import { defineEventHandler, setResponseStatus } from 'h3'
-import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider.ts'
+import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider'
 
 export default defineEventHandler((event) => {
   setToolProviderResponseHeaders(event)

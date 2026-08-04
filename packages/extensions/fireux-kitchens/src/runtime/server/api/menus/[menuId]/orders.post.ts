@@ -5,9 +5,9 @@ import {
   getRouterParam,
   readBody,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { firebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   menuOrderIdempotencyRequest,
   prepareMenuOrderCommand,

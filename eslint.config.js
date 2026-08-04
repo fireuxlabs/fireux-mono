@@ -4,8 +4,6 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-// Concurrent edit — 2026-07-20 11:54 CEST — Root Efficiency Pass 1 of 4: cover authored Node scripts and bound generated scans.
-
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 const baseRestrictedImportPatterns = [
@@ -88,8 +86,27 @@ const makeInternalAliasBanPatterns = (aliasPrefix) => [
   {
     group: [aliasPrefix, `${aliasPrefix}/*`, `${aliasPrefix}/**`],
     message:
-      'Internal path aliases are package-scoped; outside the package, import via the package name instead.',
+      'Generated Nuxt aliases are not authored import paths; use a relative import inside the owner or a package export from a consumer.',
   },
+]
+
+const workspacePackages = getPackages()
+const internalAliasBanPatterns = [
+  {
+    group: ['@fireux-*', '@fireux-*/**'],
+    message:
+      'Legacy @fireux aliases are retired; use an App-local relative import or a package export.',
+  },
+  ...workspacePackages.flatMap(({ name }) =>
+    makeInternalAliasBanPatterns(`#${name}`)
+  ),
+  ...makeInternalAliasBanPatterns('#fireux-core-runtime'),
+  ...makeInternalAliasBanPatterns('#fireux-core-composables'),
+  ...makeInternalAliasBanPatterns('#fireux-core-models'),
+]
+const authoredRestrictedImportPatterns = [
+  ...baseRestrictedImportPatterns,
+  ...internalAliasBanPatterns,
 ]
 
 export default [
@@ -137,7 +154,7 @@ export default [
           selector:
             "CallExpression[callee.name='addImportsDir'] Literal[value='runtime/models'], CallExpression[callee.name='addImportsDir'] Literal[value='./runtime/models'], CallExpression[callee.name='addImportsDir'] Literal[value='../runtime/models']",
           message:
-            'addImportsDir(runtime/models) is disallowed; models are explicit imports only via #*-models/*.',
+            'addImportsDir(runtime/models) is disallowed; models use explicit relative imports inside their owner and package exports for consumers.',
         },
       ],
     },
@@ -160,7 +177,9 @@ export default [
     rules: {
       'no-console': 'off',
       'no-debugger': 'warn',
-      'no-restricted-imports': makeNoRestrictedImportsRule(),
+      'no-restricted-imports': makeNoRestrictedImportsRule({
+        patterns: authoredRestrictedImportPatterns,
+      }),
     },
   },
   // TS/JS files
@@ -179,7 +198,9 @@ export default [
     rules: {
       'no-console': 'off',
       'no-debugger': 'warn',
-      'no-restricted-imports': makeNoRestrictedImportsRule(),
+      'no-restricted-imports': makeNoRestrictedImportsRule({
+        patterns: authoredRestrictedImportPatterns,
+      }),
     },
   },
   // Authored Node scripts use ESLint's native module/commonjs parsing and a
@@ -206,45 +227,19 @@ export default [
     },
   },
 
-  // Ban self-imports inside each workspace package (prevents drift back to "from '<pkg>/*'" internally)
-  ...getPackages().map(({ name, dir }) => ({
+  // Package code uses relative imports internally. Consumers use package
+  // exports; authored code never reaches through Nuxt's generated aliases.
+  ...workspacePackages.map(({ name, dir }) => ({
     files: [`${dir}/**/*.{js,ts,vue}`],
     rules: {
       'no-restricted-imports': makeNoRestrictedImportsRule({
-        patterns: makeSelfImportBanPatterns(name),
-      }),
-    },
-  })),
-
-  // Ban use of internal aliases outside each package (outside must use package imports)
-  ...getPackages().map(({ name, dir }) => ({
-    files: ['**/*.{js,ts,vue}'],
-    ignores: [`${dir}/**`],
-    rules: {
-      'no-restricted-imports': makeNoRestrictedImportsRule({
         patterns: [
-          ...baseRestrictedImportPatterns,
-          ...makeInternalAliasBanPatterns(`#${name}`),
+          ...makeSelfImportBanPatterns(name),
+          ...internalAliasBanPatterns,
         ],
       }),
     },
   })),
-
-  // Special-case: fireux-core exports additional internal aliases that must remain package-scoped
-  {
-    files: ['**/*.{js,ts,vue}'],
-    ignores: ['packages/core/fireux-core/**'],
-    rules: {
-      'no-restricted-imports': makeNoRestrictedImportsRule({
-        patterns: [
-          ...baseRestrictedImportPatterns,
-          ...makeInternalAliasBanPatterns('#fireux-core-runtime'),
-          ...makeInternalAliasBanPatterns('#fireux-core-composables'),
-          ...makeInternalAliasBanPatterns('#fireux-core-models'),
-        ],
-      }),
-    },
-  },
 
   // fireux-products: forbid relative Firestore manager imports; use fireux-core runtime path
   // (placed after global + package rules so it actually applies)
@@ -252,7 +247,10 @@ export default [
     files: ['packages/extensions/fireux-products/src/runtime/**/*.{ts,vue}'],
     rules: {
       'no-restricted-imports': makeNoRestrictedImportsRule({
-        patterns: makeSelfImportBanPatterns('fireux-products'),
+        patterns: [
+          ...makeSelfImportBanPatterns('fireux-products'),
+          ...internalAliasBanPatterns,
+        ],
         paths: [
           {
             name: '../../operations/useFirestoreManager',

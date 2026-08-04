@@ -44,6 +44,7 @@
     "lint:envs": "node scripts/lint-envs.mjs",
     "format": "prettier --write .",
     "guard": "node scripts/guard.mjs",
+    "measure:workspace": "node scripts/measure-workspace.mjs",
     "guard:product-landing": "node scripts/check-product-landing.mjs",
     "audit:slug": "node scripts/check-slug-canon.mjs",
     "audit:slug:report": "node scripts/check-slug-canon.mjs --report",

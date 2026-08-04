@@ -44,7 +44,9 @@ type UseMenuOrderLifecycleOptions = {
 }
 
 type SubmitMenuOrderLifecycleInput = {
-  body: Record<string, unknown>, fulfilmentLabel: string, paymentLabel: string
+  body: Record<string, unknown>
+  fulfilmentLabel: string
+  paymentLabel: string
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -99,20 +101,19 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
 
     return suffix ? `?${suffix}` : ''
   })
-  const endpoint = computed(() => endpointBase.value
-    ? `${endpointBase.value}${querySuffix.value}`
-    : ''
+  const endpoint = computed(() =>
+    endpointBase.value ? `${endpointBase.value}${querySuffix.value}` : ''
   )
   const statusEndpoint = computed(() => orderEndpoint(''))
-  const customerResponseEndpoint = computed(() => orderEndpoint('/customer-response'))
+  const customerResponseEndpoint = computed(() =>
+    orderEndpoint('/customer-response')
+  )
   const customerName = computed(() => {
     const displayName = text(currentUser.value?.displayName)
     return displayName || text(currentUser.value?.email).split('@')[0] || ''
   })
-  const accessHeaders = () => menuOrderAccessHeaders(
-    currentUser.value,
-    tracking.capabilityToken.value
-  )
+  const accessHeaders = () =>
+    menuOrderAccessHeaders(currentUser.value, tracking.capabilityToken.value)
 
   function orderEndpoint(suffix: string) {
     const orderId = text(tracking.sentOrder.value?.id)
@@ -152,7 +153,10 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
       scheduleStatusRefresh(0)
       return created
     } catch (caught) {
-      error.value = customerOrderRequestError(caught, 'Order could not be sent.')
+      error.value = customerOrderRequestError(
+        caught,
+        'Order could not be sent.'
+      )
       return null
     } finally {
       pending.value = false
@@ -179,9 +183,12 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     if (!statusEndpoint.value || statusPending.value) return null
     statusPending.value = true
     try {
-      const next = await $fetch<MenuOrderLifecycleStatus>(statusEndpoint.value, {
-        headers: await accessHeaders(),
-      })
+      const next = await $fetch<MenuOrderLifecycleStatus>(
+        statusEndpoint.value,
+        {
+          headers: await accessHeaders(),
+        }
+      )
       if (next.order_type !== options.orderType) {
         throw new Error('The Kitchen returned an invalid order type.')
       }
@@ -214,15 +221,17 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     try {
       const response = await $fetch<{
         ok: boolean
-        order: { id: string, status: KitchenOrderStatus }
+        order: { id: string; status: KitchenOrderStatus }
       }>(customerResponseEndpoint.value, {
         method: 'POST',
         headers: await accessHeaders(),
         body: { action: input.action },
       })
       if (!response.ok) throw new Error('The response could not be saved.')
-      if (input.action === 'amend') amendmentLines.value =
-        createdMenuOrderBasketLines(tracking.receiptItems.value)
+      if (input.action === 'amend')
+        amendmentLines.value = createdMenuOrderBasketLines(
+          tracking.receiptItems.value
+        )
       tracking.acknowledge()
       if (input.action === 'cancel') amendmentLines.value = []
       return response.order
@@ -243,7 +252,8 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     if (
       tracking.status.value &&
       pausedTrackingStatuses.has(tracking.status.value.status)
-    ) return
+    )
+      return
     statusTimer = setTimeout(async () => {
       await refreshStatus()
       scheduleStatusRefresh(nextStatusRefreshDelay(consecutiveStatusFailures))
@@ -272,22 +282,30 @@ export function useMenuOrderLifecycle(options: UseMenuOrderLifecycleOptions) {
     customerRecovery.resetTransientState()
   }
 
-  watch(() => text(toValue(options.scopeKey)), () => {
-    stopStatusRefresh()
-    customerRecovery.stopRetry()
-    tracking.resetMemory()
-    resetTransientState()
-    void customerRecovery.restoreOrder()
-  })
-  watch(currentUser, user => {
-    if (user) void customerRecovery.restoreOrder()
-  })
-  watch(hasAuthState, resolved => {
+  watch(
+    () => text(toValue(options.scopeKey)),
+    () => {
+      stopStatusRefresh()
+      customerRecovery.stopRetry()
+      tracking.resetMemory()
+      resetTransientState()
+      void customerRecovery.restoreOrder()
+    }
+  )
+  watch(
+    currentUser,
+    (user: { getIdToken: () => Promise<string> } | null | undefined) => {
+      if (user) void customerRecovery.restoreOrder()
+    }
+  )
+  watch(hasAuthState, (resolved: boolean) => {
     if (resolved && !tracking.sentOrder.value) {
       void customerRecovery.restoreOrder()
     }
   })
-  onMounted(() => { void customerRecovery.restoreOrder() })
+  onMounted(() => {
+    void customerRecovery.restoreOrder()
+  })
   onBeforeUnmount(() => {
     stopStatusRefresh()
     customerRecovery.stopRetry()
@@ -319,6 +337,6 @@ function nextStatusRefreshDelay(failures: number) {
 
   return Math.min(
     maximumStatusRefreshDelay,
-    statusRefreshDelay * (2 ** Math.min(failures, 3))
+    statusRefreshDelay * 2 ** Math.min(failures, 3)
   )
 }

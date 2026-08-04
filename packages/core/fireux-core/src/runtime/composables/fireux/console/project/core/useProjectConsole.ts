@@ -1,18 +1,18 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: adopt authoritative target outcomes.
 import { computed } from 'vue'
-import { normalizeString } from 'fireux-core/runtime/utils/string'
+import { normalizeString } from '../../../../../utils/string'
 import {
   useConsole,
   type ConsoleSource,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+} from '../../../app/console/useConsole'
 import { consoleData } from '../../../app/console/useConsoleData'
-import { useConsoleEntityRuntime } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleEntityRuntime'
+import { useConsoleEntityRuntime } from '../../../app/console/useConsoleEntityRuntime'
 import {
   useProjectCollection,
   type ProjectCollectionFilter,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
-import { type ProjectSurface } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
-import { ProjectStorage } from 'fireux-core/runtime/models/system/project.model'
+} from '../../../firestore/core/project/fetch/useProjectCollection'
+import { type ProjectSurface } from '../../../firestore/core/project/utils/view/useProjectInterface'
+import { ProjectStorage } from '../../../../../models/system/project.model'
 import type { Ref } from 'vue'
 import { useProjectConsoleDemoTargets } from './useProjectConsoleDemoTargets'
 

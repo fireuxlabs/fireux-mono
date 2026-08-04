@@ -1,5 +1,5 @@
 import { updateDoc, doc, serverTimestamp } from 'firebase/firestore'
-import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useFirestoreResolver } from '../vuefire'
 import { useRequireUser } from '../../firebase/useRequireUser'
 import type { Ref } from 'vue'
 

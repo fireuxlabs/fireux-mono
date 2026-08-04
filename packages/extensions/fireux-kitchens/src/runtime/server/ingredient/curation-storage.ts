@@ -1,6 +1,6 @@
 import type { Transaction } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   INGREDIENT_CATEGORIES,
   INGREDIENT_KINDS,

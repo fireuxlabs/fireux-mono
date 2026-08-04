@@ -1,6 +1,7 @@
 # Translation and reviewed copy
 
-Updated: 2026-08-01
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose

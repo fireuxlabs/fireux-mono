@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { chefConfig } from 'fireux-kitchens/runtime/composables/fireux/firestore/profiles/Chef/config/chefConfig'
+import { chefConfig } from '../../../composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { ref } from 'vue'
 
 const profileKey = chefConfig.id ?? 'chef'

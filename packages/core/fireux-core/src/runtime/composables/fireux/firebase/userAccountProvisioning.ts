@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: send the Firebase bearer token to trusted UserPrivate provisioning.
+// Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: send the Firebase bearer token to trusted UserAccount provisioning.
 
 import type { User } from 'firebase/auth'
 import {

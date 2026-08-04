@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-24 17:35 CEST — Kitchen public family: share one strict index/detail projection.
-import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
-import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine.ts'
+import type { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine'
 import type {
   PublicKitchenDetail,
   PublicKitchenIndexItem,

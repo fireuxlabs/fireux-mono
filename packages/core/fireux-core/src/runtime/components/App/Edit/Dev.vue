@@ -91,10 +91,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import {
-  AppFieldGroups,
-  type AppModel,
-} from '../../../models/core/app.model'
+import type { AppModel } from '../../../models/core/app.model'
 
 const props = defineProps<{ app: AppModel }>()
 const app = computed(() => props.app)
@@ -103,6 +100,28 @@ const display = (value: unknown) => {
   const text = String(value ?? '').trim()
   return text || 'Not set'
 }
+
+const appFieldGroups = {
+  developer: [
+    'media',
+    'database_id',
+    'fireux_native',
+    'fireux_size',
+    'fireux_repo',
+  ],
+  control: [
+    'project_id',
+    'ecosystem_id',
+    'slug',
+    'status',
+    'role',
+    'app_name',
+    'app_short_name',
+    'self_join_enabled',
+  ],
+  admin: ['tagline', 'description', 'short_bio', 'long_bio', 'social_links'],
+  system: ['id', 'derived', 'created', 'updated'],
+} as const
 
 const appSummary = computed(() => {
   const repository = display(props.app.fireux_repo?.key)
@@ -141,28 +160,28 @@ const ownershipSections = [
     label: 'Developer',
     description: 'Builds and checks App media, database binding and repo metadata.',
     icon: 'i-lucide-code-xml',
-    fields: AppFieldGroups.developer,
+    fields: appFieldGroups.developer,
   },
   {
     key: 'control',
     label: 'App control',
     description: 'Changes App identity, relationships, lifecycle and routing.',
     icon: 'i-lucide-panels-top-left',
-    fields: AppFieldGroups.control,
+    fields: appFieldGroups.control,
   },
   {
     key: 'admin',
     label: 'Admin',
     description: 'Runs the App and maintains its public story.',
     icon: 'i-lucide-shield-check',
-    fields: AppFieldGroups.admin,
+    fields: appFieldGroups.admin,
   },
   {
     key: 'system',
     label: 'System',
     description: 'Maintains canonical identity, stamps and derived values.',
     icon: 'i-lucide-cpu',
-    fields: AppFieldGroups.system,
+    fields: appFieldGroups.system,
   },
 ] as const
 </script>

@@ -1,7 +1,6 @@
 // @fireux-script
-// last_used: 2026-07-20
-// usage_note: baseline after scripts cleanup; update when run.
-// Concurrent edit — 2026-07-20 23:46 CEST — Nuxt Package Toolchain Pass 2 of 3: admit explicit builder lifecycle config.
+// last_used: 2026-08-04
+// usage_note: guards Core package shape, exports, and the canonical App runtime-config seam.
 // FILE: scripts/guards/core.mjs
 import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
@@ -34,6 +33,20 @@ export async function run(ctx) {
     if (v) violations.push(v)
   }
 
+  const runtimeConfigViolations = checkRuntimeConfigConsumers(repoRoot)
+  if (runtimeConfigViolations.length) {
+    violations.push(
+      [
+        '[guard] ❌ App runtime config boundary violation:',
+        ...runtimeConfigViolations.map((file) => `  - ${file}`),
+        '',
+        '[guard] Fix:',
+        '- Read normalized App config through useFireUXConfig(event).',
+        '- Resolve Console creation policy through resolveConsoleCanCreate.',
+      ].join('\n')
+    )
+  }
+
   if (violations.length) throw new Error(violations.join('\n\n'))
 
   console.log('[guard] ✅ core packages valid')
@@ -48,8 +61,15 @@ function checkCorePackage(pkgPath) {
   })
 
   const exportViolations = checkPackageExports(pkgPath)
+  const contractViolations = checkFireuxCoreContracts(pkgPath)
 
-  if (!missing.length && !unexpected.length && !exportViolations.length) return null
+  if (
+    !missing.length &&
+    !unexpected.length &&
+    !exportViolations.length &&
+    !contractViolations.length
+  )
+    return null
 
   const lines = [
     '[guard] ❌ core package shape violation:',
@@ -74,6 +94,11 @@ function checkCorePackage(pkgPath) {
     exportViolations.forEach((m) => lines.push(`    - ${m}`))
   }
 
+  if (contractViolations.length) {
+    lines.push('  Core contracts invalid:')
+    contractViolations.forEach((message) => lines.push(`    - ${message}`))
+  }
+
   lines.push(
     '',
     '[guard] Fix:',
@@ -84,6 +109,121 @@ function checkCorePackage(pkgPath) {
   )
 
   return lines.join('\n')
+}
+
+function checkFireuxCoreContracts(pkgPath) {
+  if (path.basename(pkgPath) !== 'fireux-core') return []
+
+  const source = (relativePath) =>
+    readFileSync(path.join(pkgPath, relativePath), 'utf8')
+  const violations = []
+  const runtimeType = source('src/config/app/runtime.ts')
+  const runtimeView = source(
+    'src/runtime/composables/fireux/app/FireUXConfig.ts'
+  )
+  const pluginConfig = source('src/config/module/plugins-config.ts')
+  const onboarding = source('src/runtime/components/App/Create/System.vue')
+  const console = source(
+    'src/runtime/composables/fireux/app/console/useConsole.ts'
+  )
+  const consolePolicy = source('src/runtime/utils/console-policy.ts')
+
+  if (!runtimeType.includes('Omit<FireuxAppConfig, RuntimeNormalizedFields>')) {
+    violations.push('RuntimeApp must derive from the authored FireuxAppConfig.')
+  }
+  if (
+    !runtimeView.includes('consoles: toStringArray(fireux.consoles)') ||
+    !runtimeView.includes(
+      'consoleConfig: toConsoleConfig(fireux.consoleConfig)'
+    )
+  ) {
+    violations.push(
+      'FireUXConfig must normalize Console families and config once for runtime consumers.'
+    )
+  }
+  if (!runtimeView.includes('useRuntimeConfig(event)')) {
+    violations.push(
+      'FireUXConfig must support the shared event-aware browser/server reader.'
+    )
+  }
+  if (
+    !console.includes('resolveConsoleCanCreate') ||
+    !consolePolicy.includes("role !== 'tenant'")
+  ) {
+    violations.push(
+      'Console UI and trusted onboarding must share the Core creation policy.'
+    )
+  }
+  if (
+    /FIREUX_CACHE_KEY|__FIREUX_CONFIG|developerPin|globalAppId|centralSignupUrl/.test(
+      runtimeView
+    )
+  ) {
+    violations.push('FireUXConfig contains a retired cache or ghost field.')
+  }
+  if (/fireux-config\.(?:client|server)/.test(pluginConfig)) {
+    violations.push('Core must not restore the unused FireUX config providers.')
+  }
+  for (const plugin of [
+    'src/runtime/plugins/fireux-config.client.ts',
+    'src/runtime/plugins/fireux-config.server.ts',
+  ]) {
+    if (existsSync(path.join(pkgPath, plugin))) {
+      violations.push(`${plugin} is retired; use useFireUXConfig directly.`)
+    }
+  }
+  if (/UPinInput|developer PIN/i.test(onboarding)) {
+    violations.push(
+      'App onboarding must rely on trusted server UID authorization, not a cosmetic client PIN.'
+    )
+  }
+
+  return violations
+}
+
+function checkRuntimeConfigConsumers(repoRoot) {
+  const canonicalReader = path.join(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts'
+  )
+  const roots = ['packages', 'projects'].map((root) =>
+    path.join(repoRoot, root)
+  )
+  const violations = []
+  const stack = roots.filter(existsSync)
+
+  while (stack.length) {
+    const current = stack.pop()
+    if (!current) continue
+
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      if (
+        entry.isDirectory() &&
+        ['node_modules', 'dist', '.nuxt', '.output'].includes(entry.name)
+      ) {
+        continue
+      }
+
+      const entryPath = path.join(current, entry.name)
+      if (entry.isDirectory()) {
+        stack.push(entryPath)
+        continue
+      }
+      if (entryPath === canonicalReader || !/\.(?:ts|vue)$/.test(entry.name)) {
+        continue
+      }
+
+      const contents = readFileSync(entryPath, 'utf8')
+      if (
+        contents.includes('consoleConfig') &&
+        /\buseRuntimeConfig\s*\(/.test(contents)
+      ) {
+        violations.push(path.relative(repoRoot, entryPath))
+      }
+    }
+  }
+
+  return violations.sort((a, b) => a.localeCompare(b))
 }
 
 function checkPackageExports(pkgPath) {
@@ -104,8 +244,13 @@ function checkPackageExports(pkgPath) {
 
   // Core packages should not expose a synthetic ./runtime index.
   // Prefer subpath exports via ./runtime/* and direct file imports.
-  if (exportsMap && Object.prototype.hasOwnProperty.call(exportsMap, './runtime')) {
-    violations.push("exports['./runtime'] is forbidden (use './runtime/*' subpath exports only)")
+  if (
+    exportsMap &&
+    Object.prototype.hasOwnProperty.call(exportsMap, './runtime')
+  ) {
+    violations.push(
+      "exports['./runtime'] is forbidden (use './runtime/*' subpath exports only)"
+    )
   }
 
   const runtimeIndexPath = path.join(pkgPath, 'src', 'runtime', 'index.ts')

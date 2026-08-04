@@ -4,7 +4,7 @@ import {
   escapeXml,
   readRuntimeSeoSitemaps,
   setSitemapResponseHeaders,
-} from 'fireux-core/runtime/server/utils/seo-sitemaps.ts'
+} from 'fireux-core/runtime/server/utils/seo-sitemaps'
 import { PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE } from '../../models/kitchen/kitchen-index.model.ts'
 import { readPublicKitchenIndexPage } from '../kitchen/public-index.ts'
 

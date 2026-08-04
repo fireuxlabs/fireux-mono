@@ -31,7 +31,7 @@ Check the deterministic Werkbox server-source attestation:
   pnpm werkbox:security-contract
 
 Refresh the local endpoint constant after reviewing all manifest changes:
-  pnpm werkbox:security-contract -- --write
+  pnpm werkbox:security-contract --write
 
 This command never deploys an App, mutates Firebase, or changes Firestore Rules.
 `)
@@ -41,7 +41,9 @@ This command never deploys an App, mutates Firebase, or changes Firestore Rules.
 const source = await readFile(contractPath, 'utf8')
 const currentHash = source.match(hashPattern)?.[2]
 if (!currentHash) {
-  throw new Error('Werkbox security-contract endpoint has no exact source hash.')
+  throw new Error(
+    'Werkbox security-contract endpoint has no exact source hash.'
+  )
 }
 
 const evidence = await buildWerkboxServerSourceEvidence({ repoRoot })
@@ -57,16 +59,13 @@ if (!args.has('--write')) {
       `actual:   ${currentHash}`,
       `expected: ${evidence.sha256}`,
       'Review the manifest changes, then run:',
-      '  pnpm werkbox:security-contract -- --write',
+      '  pnpm werkbox:security-contract --write',
     ].join('\n')
   )
   process.exit(1)
 }
 
-const nextSource = source.replace(
-  hashPattern,
-  `$1${evidence.sha256}$3`
-)
+const nextSource = source.replace(hashPattern, `$1${evidence.sha256}$3`)
 await writeFile(contractPath, nextSource, 'utf8')
 console.log(
   `[werkbox-security-contract] ✅ wrote ${evidence.sha256} to ${path.relative(repoRoot, contractPath)}`

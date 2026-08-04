@@ -24,7 +24,7 @@ import {
 } from '../../../utils/public-projection/public-user-scope'
 import { getRuntimeIdentityFirestore } from '../../../utils/getRuntimeFirestore'
 import { UserStorage } from '../../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../../models/utils/user-avatar'
+import { resolveUserAvatarSource } from '../../../../utils/user-avatar.ts'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
@@ -72,7 +72,7 @@ async function readCanonicalUserByHandle(
   handle: string
 ): Promise<PublicUserDto | null> {
   const snap = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.rootCollection)
+    .collection(UserStorage.collection)
     .where('handle', '==', handle)
     .limit(1)
     .get()

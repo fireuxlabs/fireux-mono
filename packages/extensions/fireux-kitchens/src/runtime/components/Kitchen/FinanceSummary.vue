@@ -9,10 +9,10 @@ import type {
   FinancialReportComparisonTone,
   FinancialReportMetricView,
   FinancialReportMetricSummaryView,
-} from 'fireux-finance/runtime/models/report-presentation.model.ts'
+} from 'fireux-finance/runtime/models/report-presentation.model'
 import {
   formatFinancialMinorAmount,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 
 const props = withDefaults(defineProps<{
   averageDailyGrossSalesMinor?: number | null

@@ -152,7 +152,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from '#imports'
-import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
+import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 
 type CardLabStyle =
   | 'baseline'

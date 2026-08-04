@@ -1,8 +1,8 @@
 import { createError, type H3Event } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   IngredientCreateInput,
   IngredientUpdateInput,

@@ -28,11 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  ref,
-  watch,
-} from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useKitchenOrdersWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrdersWorkspace'
 
 defineOptions({ name: 'ConsoleKitchenOperationsOrdersComplete' })
@@ -47,7 +43,7 @@ const completeDescription = computed(() =>
 
 watch(
   () => recentOrders.value.length,
-  (count) => {
+  (count: number) => {
     if (!count) completeOpen.value = false
   }
 )

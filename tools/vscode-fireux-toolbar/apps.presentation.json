@@ -1,0 +1,45 @@
+{
+  "apps": {
+    "fireux": { "icon": "$(flame)", "order": 10 },
+    "misebox": { "icon": "$(book)", "order": 20 },
+    "werkbox": { "icon": "$(beaker)", "order": 30 },
+    "richies": { "icon": "$(tools)", "order": 40 },
+    "tenant": { "icon": "$(home)", "order": 50 },
+    "bringli": { "icon": "$(symbol-namespace)", "order": 60 },
+    "find-my-seo": { "icon": "$(search)", "order": 70 },
+    "sproochli": { "icon": "$(globe)", "order": 80 },
+    "buenohost": {
+      "icon": "$(key)",
+      "order": 90
+    },
+    "go-qr": { "icon": "$(file-media)", "order": 100 },
+    "fireux-blank": { "icon": "$(empty-window)", "order": 120 },
+    "yellow-velo": { "icon": "$(symbol-color)", "order": 130 },
+    "holzworm": { "icon": "$(tools)", "order": 140 },
+    "lifeguard-community": { "icon": "$(heart)", "order": 150 },
+    "granite": { "icon": "$(database)", "order": 160 },
+    "slap": { "icon": "$(sparkle)", "order": 170 },
+    "la-tap-berne": { "icon": "$(tag)", "order": 180 },
+    "baeren-ringgenberg": { "icon": "$(tag)", "order": 190 },
+    "book-with-nats": { "icon": "$(home)", "order": 200 },
+    "ausfinn-apartments": { "icon": "$(home)", "order": 210 },
+    "bangin-coffee": { "icon": "$(coffee)", "order": 220 },
+    "interlaken-essen": { "icon": "$(tag)", "order": 230 }
+  },
+  "extras": [
+    {
+      "key": "embed-harness",
+      "ecosystem": "fireux",
+      "name": "Plain Jane",
+      "icon": "$(browser)",
+      "port": 3025,
+      "commandId": "fireuxToolbar.startPlainJane",
+      "taskLabel": "pnpm dev:embed-harness",
+      "terminalName": "Plain Jane (3025)",
+      "pnpmCommand": "pnpm dev:embed-harness",
+      "tooltip": "Start Plain Jane embed harness (port 3025)",
+      "url": "http://localhost:3025",
+      "order": 110
+    }
+  ]
+}

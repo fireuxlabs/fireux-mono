@@ -9,5 +9,5 @@ export default defineFireuxConfig({
   shortName: 'Sproochli',
   databaseId: 'sproochli',
   role: 'standalone',
-  modules: ['fireux-sproochli', 'fireux-ai'],
+  modules: ['fireux-sproochli', 'fireux-ai', 'fireux-products'],
 })

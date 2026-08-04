@@ -1,9 +1,7 @@
 // FILE: packages/extensions/fireux-products/src/runtime/models/product.model.ts
 
-import {
-  FireuxRootScope,
-  type FireuxStamped,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { FireuxRootScope } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =

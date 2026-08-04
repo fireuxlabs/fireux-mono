@@ -27,7 +27,10 @@ function normalizeSiteUrl(input: unknown): string | undefined {
 }
 
 function isLocalHost(value: string): boolean {
-  const host = value.replace(/^https?:\/\//i, '').split('/')[0].toLowerCase()
+  const host = value
+    .replace(/^https?:\/\//i, '')
+    .split('/')[0]
+    .toLowerCase()
   return (
     host === 'localhost' ||
     host.startsWith('localhost:') ||
@@ -36,7 +39,10 @@ function isLocalHost(value: string): boolean {
   )
 }
 
-function toAbsoluteUrl(input: unknown, siteOrigin?: string): string | undefined {
+function toAbsoluteUrl(
+  input: unknown,
+  siteOrigin?: string
+): string | undefined {
   const value = normalizePublicImgAsset(asString(input))
   if (!value) return undefined
   if (/^https?:\/\//i.test(value)) return value
@@ -67,9 +73,16 @@ function asNonNegativeInt(value: unknown): number {
   return Number.isFinite(n) ? Math.max(0, Math.trunc(n)) : 0
 }
 
-function normalizeStatus(value: unknown): 'draft' | 'active' | 'paused' | 'archived' {
+function normalizeStatus(
+  value: unknown
+): 'draft' | 'active' | 'paused' | 'archived' {
   const raw = asString(value)
-  if (raw === 'draft' || raw === 'active' || raw === 'paused' || raw === 'archived') {
+  if (
+    raw === 'draft' ||
+    raw === 'active' ||
+    raw === 'paused' ||
+    raw === 'archived'
+  ) {
     return raw
   }
   return 'active'
@@ -91,7 +104,9 @@ export default defineEventHandler(async (event: H3Event) => {
   const siteOrigin =
     normalizeSiteUrl(runtime.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
-    normalizeSiteUrl((runtime.public?.fireux as Record<string, unknown> | undefined)?.domain)
+    normalizeSiteUrl(
+      (runtime.public?.fireux as Record<string, unknown> | undefined)?.domain
+    )
   const ecosystemSlug = normalizeSlug(cfg.ecosystemId)
   const appSlug = normalizeSlug(appData.slug) || appSlugFromId(cfg.appId)
   const logoUrl =
@@ -100,19 +115,10 @@ export default defineEventHandler(async (event: H3Event) => {
   const thumbnailUrl =
     toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
     toAbsoluteUrl(brandAssets.thumbnail, siteOrigin)
-  const ecosystemName = ecosystemSlug &&
-    cfg.isGlobal && appSlug === ecosystemSlug
+  const ecosystemName =
+    ecosystemSlug && cfg.isGlobal && appSlug === ecosystemSlug
       ? cfg.appName
       : labelize(ecosystemSlug) || cfg.ecosystem
-  const parentApp =
-    cfg.isTenant && cfg.globalAppId
-      ? {
-          id: cfg.globalAppId,
-          slug: appSlugFromId(cfg.globalAppId),
-          name: labelize(cfg.globalAppId.replace(/-app$/i, '')) || cfg.globalAppId,
-        }
-      : undefined
-
   setResponseHeaders(event, {
     'Content-Type': 'application/json; charset=utf-8',
     'Cache-Control': 'no-store',
@@ -135,7 +141,8 @@ export default defineEventHandler(async (event: H3Event) => {
       slug: appSlug,
       status: normalizeStatus(appData.status),
       app_name: asString(appData.app_name) || cfg.appName,
-      app_short_name: asString(appData.app_short_name) || cfg.appShortName || cfg.appName,
+      app_short_name:
+        asString(appData.app_short_name) || cfg.appShortName || cfg.appName,
       role: asString(appData.role),
       tagline: asString(appData.tagline),
       description: asString(appData.description),
@@ -160,11 +167,12 @@ export default defineEventHandler(async (event: H3Event) => {
       media: {
         thumbnail_url: thumbnailUrl || '',
         logo_url: logoUrl || '',
-        wordmark_light_url: toAbsoluteUrl(media.wordmark_light_url, siteOrigin) || '',
-        wordmark_dark_url: toAbsoluteUrl(media.wordmark_dark_url, siteOrigin) || '',
+        wordmark_light_url:
+          toAbsoluteUrl(media.wordmark_light_url, siteOrigin) || '',
+        wordmark_dark_url:
+          toAbsoluteUrl(media.wordmark_dark_url, siteOrigin) || '',
         cover_url: toAbsoluteUrl(media.cover_url, siteOrigin) || '',
       },
-      ...(parentApp ? { parent_app: parentApp } : {}),
     },
     now: new Date().toISOString(),
   }

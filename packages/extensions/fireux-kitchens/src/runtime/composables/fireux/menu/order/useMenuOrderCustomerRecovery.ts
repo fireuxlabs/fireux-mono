@@ -1,8 +1,4 @@
-import {
-  ref,
-  toValue,
-  type MaybeRefOrGetter,
-} from 'vue'
+import { ref, toValue, type MaybeRefOrGetter } from 'vue'
 import type {
   CustomerOrderPage,
   CustomerOrderSummary,
@@ -27,6 +23,10 @@ import type {
 type MenuOrderRecoveryUser = {
   getIdToken: () => Promise<string>
   uid: string
+}
+
+type RecoverableCustomerOrder = CustomerOrderSummary & {
+  order_number: string
 }
 
 type UseMenuOrderCustomerRecoveryOptions = {
@@ -71,7 +71,14 @@ export function useMenuOrderCustomerRecovery(
       source_menu_id: sourceMenuId,
       scope_ready: Boolean(expectedScope),
     }
-    if (!user || !expectedUserId || !expectedScope || !kitchenId || !sourceMenuId) return
+    if (
+      !user ||
+      !expectedUserId ||
+      !expectedScope ||
+      !kitchenId ||
+      !sourceMenuId
+    )
+      return
 
     try {
       const token = await user.getIdToken()
@@ -81,23 +88,27 @@ export function useMenuOrderCustomerRecovery(
       if (
         expectedScope !== text(toValue(options.scopeKey)) ||
         expectedUserId !== toValue(options.currentUser)?.uid
-      ) return
+      )
+        return
       consecutiveRecoveryFailures = 0
 
       const trackedId = text(options.tracking.sentOrder.value?.id)
       const trackedCandidate = trackedId
-        ? page.items.find(order => order.id === trackedId)
+        ? page.items.find((order) => order.id === trackedId)
         : undefined
-      const matching = page.items.filter(order =>
-        order.order_type === options.orderType &&
-        order.kitchen.id === kitchenId &&
-        order.menu.id === sourceMenuId &&
-        !options.tracking.isAcknowledged(order.id)
+      const matching = page.items.filter(
+        (order): order is RecoverableCustomerOrder =>
+          isRecoverableCustomerOrder(order) &&
+          order.order_type === options.orderType &&
+          order.kitchen.id === kitchenId &&
+          order.menu.id === sourceMenuId &&
+          !options.tracking.isAcknowledged(order.id)
       )
-      const recovered = trackedCandidate &&
+      const recovered =
+        isRecoverableCustomerOrder(trackedCandidate) &&
         !isTerminalMenuOrderStatus(trackedCandidate.status)
-        ? trackedCandidate
-        : matching.find(order => !isTerminalMenuOrderStatus(order.status))
+          ? trackedCandidate
+          : matching.find((order) => !isTerminalMenuOrderStatus(order.status))
       recovery.value = {
         phase: recovered ? 'customer-order' : 'no-match',
         signed_in: true,
@@ -128,7 +139,10 @@ export function useMenuOrderCustomerRecovery(
         waiting_for: 'customer',
         error: transientFailure
           ? 'Customer order recovery is temporarily unavailable.'
-          : customerOrderRequestError(caught, 'Customer order recovery failed.'),
+          : customerOrderRequestError(
+              caught,
+              'Customer order recovery failed.'
+            ),
       }
       if (transientFailure) scheduleRetry()
     }
@@ -140,12 +154,12 @@ export function useMenuOrderCustomerRecovery(
       !import.meta.client ||
       !toValue(options.currentUser) ||
       hasActiveTrackedOrder()
-    ) return
-
-    recoveryTimer = setTimeout(
-      () => { void restoreOrder() },
-      nextRecoveryDelay(consecutiveRecoveryFailures)
     )
+      return
+
+    recoveryTimer = setTimeout(() => {
+      void restoreOrder()
+    }, nextRecoveryDelay(consecutiveRecoveryFailures))
   }
 
   function stopRetry() {
@@ -159,13 +173,14 @@ export function useMenuOrderCustomerRecovery(
   }
 
   function hasActiveTrackedOrder() {
-    const status = options.tracking.status.value?.status ||
+    const status =
+      options.tracking.status.value?.status ||
       options.tracking.sentOrder.value?.status
 
     return Boolean(status && !isTerminalMenuOrderStatus(status))
   }
 
-  function restoreCustomerOrder(order: CustomerOrderSummary) {
+  function restoreCustomerOrder(order: RecoverableCustomerOrder) {
     options.tracking.capabilityToken.value = ''
     options.tracking.sentOrder.value = {
       id: order.id,
@@ -180,8 +195,8 @@ export function useMenuOrderCustomerRecovery(
       order_number: order.order_number,
       status: order.status,
       order_type: order.order_type,
-      estimated_ready_minutes: order.estimated_ready_minutes,
-      estimated_ready_at: order.estimated_ready_at,
+      estimated_ready_minutes: order.estimated_ready_minutes ?? 0,
+      estimated_ready_at: order.estimated_ready_at ?? '',
       ...(order.kitchen_note ? { kitchen_note: order.kitchen_note } : {}),
       ...(order.collection ? { collection: order.collection } : {}),
     }
@@ -202,10 +217,16 @@ export function useMenuOrderCustomerRecovery(
   }
 }
 
+function isRecoverableCustomerOrder(
+  order: CustomerOrderSummary | undefined
+): order is RecoverableCustomerOrder {
+  return Boolean(order && text(order.order_number))
+}
+
 function nextRecoveryDelay(failures: number) {
   return Math.min(
     maximumCustomerRecoveryRetryDelay,
-    customerRecoveryRetryDelay * (2 ** Math.min(Math.max(failures - 1, 0), 3))
+    customerRecoveryRetryDelay * 2 ** Math.min(Math.max(failures - 1, 0), 3)
   )
 }
 
@@ -225,6 +246,6 @@ function paymentLabel(
 
 function recoveredChannel(orderType: KitchenOrderType) {
   return orderType === 'eat_in' || orderType === 'takeaway'
-    ? 'kiosk' as const
-    : 'menu' as const
+    ? ('kiosk' as const)
+    : ('menu' as const)
 }

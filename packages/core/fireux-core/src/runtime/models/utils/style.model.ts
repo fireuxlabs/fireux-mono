@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette onboarding: define one shared sparse brand-palette contract.
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Runtime models canon: docs/ai/gpt-context.md
  *
  * Family: Model support
  * Storage: shared runtime model support, not a persisted entity
@@ -29,7 +29,7 @@ export const BRAND_PALETTE_KEYS = [
   'secondary_color',
 ] as const satisfies readonly (keyof BrandPalette)[]
 
-export type BrandPaletteKey = typeof BRAND_PALETTE_KEYS[number]
+export type BrandPaletteKey = (typeof BRAND_PALETTE_KEYS)[number]
 export type SparseBrandPalette = Partial<BrandPalette>
 
 export type PageStyle = BrandPalette & {

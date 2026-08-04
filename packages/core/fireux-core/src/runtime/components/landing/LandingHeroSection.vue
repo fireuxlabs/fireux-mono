@@ -172,9 +172,9 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
-import { useConsoleEntryCta } from 'fireux-core/runtime/composables/fireux/app/ui/nav/useConsoleEntryCta'
-import { useKeyEntityTags } from 'fireux-core/runtime/composables/fireux/app/routing/useKeyEntityTags'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConsoleEntryCta'
+import { useKeyEntityTags } from '../../composables/fireux/app/routing/useKeyEntityTags'
 import { useAssets } from '../../composables/fireux/app/useAssets'
 
 type RightPanelItem = {

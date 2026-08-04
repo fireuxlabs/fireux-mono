@@ -30,13 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useKitchenOrdersWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Orders/useKitchenOrdersWorkspace'
 
 defineOptions({ name: 'ConsoleKitchenOperationsOrdersIncoming' })
@@ -47,7 +41,7 @@ const acceptingOrderId = ref('')
 const rejectingOrderId = ref('')
 const currentTimeMs = ref(Date.now())
 const estimatesByOrderId = ref<Record<string, number>>({})
-let minuteClock: ReturnType<typeof setInterval> | undefined
+let minuteClock: number | undefined
 const {
   incomingOrders,
   canOperate,
@@ -63,7 +57,7 @@ const incomingDescription = computed(() =>
 )
 watch(
   () => incomingOrders.value.length,
-  (count) => {
+  (count: number) => {
     if (!count) incomingOpen.value = false
   }
 )
@@ -79,9 +73,10 @@ onBeforeUnmount(() => {
   if (minuteClock) window.clearInterval(minuteClock)
 })
 
-async function acceptIncomingOrder(
-  payload: { id: string; estimatedMinutes: number | null }
-) {
+async function acceptIncomingOrder(payload: {
+  id: string
+  estimatedMinutes: number | null
+}) {
   const orderId = normalizeId(payload.id)
   if (!canOperate.value || !orderId || acceptingOrderId.value) return
 
@@ -112,7 +107,8 @@ async function rejectIncomingOrder(payload: { id: string; note: string }) {
     !note ||
     rejectingOrderId.value ||
     acceptingOrderId.value
-  ) return
+  )
+    return
 
   rejectingOrderId.value = orderId
   try {
@@ -126,8 +122,11 @@ async function rejectIncomingOrder(payload: { id: string; note: string }) {
 
 function estimateMinutes(order: Record<string, unknown>) {
   const orderId = normalizeId(order.id)
-  return estimatesByOrderId.value[orderId] || clampEstimate(
-    Number(order.estimated_ready_minutes || defaultEstimateMinutes)
+  return (
+    estimatesByOrderId.value[orderId] ||
+    clampEstimate(
+      Number(order.estimated_ready_minutes || defaultEstimateMinutes)
+    )
   )
 }
 

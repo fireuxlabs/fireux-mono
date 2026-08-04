@@ -1,7 +1,8 @@
 # Card family
 
-Updated: 2026-07-28
-Role: family map, not implementation authority
+Updated: 2026-08-04
+Ref: d232cc731
+Role: map, not canon
 
 ## Purpose
 
@@ -72,31 +73,31 @@ Companies, Kitchens, Suppliers, and Jobs `Cards` trees after the 2026-07-27
 alignment: 54 canonical variants, 17 legacy Profile compositions, and 3 Place
 dropdown support components.
 
-| Owner | Canonical dumb variants | Profile/detail migration | Card support |
-| --- | --- | --- | --- |
-| Core App | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Core Ecosystem | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Core Project | `Cell`, `Pill` | — | — |
-| Core User | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Company | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Agent | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Job | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Professional | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Chef | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Customer | `Cell`, `Pill` | — | — |
-| Driver | `Cell`, `Pill` | `Profile` | — |
-| Ingredient | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Kitchen | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Menu | `Cell`, `Pill`, `Preview` | — | — |
-| Kitchen Operation Dish | `Cell` | `Profile` | — |
-| Kitchen Operation Ingredient | `Cell` | — | — |
-| Kitchen Operation Menu | — | `Profile` | — |
-| Kitchen Operation Mise | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Kitchen Operation Recipe | `Cell` | — | — |
-| Kitchen Operation Supplier | `Cell` | `Profile` | — |
-| Place | `Cell`, `Pill`, `Preview` | `Profile` | `Dropdown/Fireux`, `Dropdown/Google`, `Dropdown/Selected` |
-| Supplier | `Cell`, `Pill`, `Preview` | `Profile` | — |
-| Supplier Item | `Cell`, `Pill` | — | — |
+| Owner                        | Canonical dumb variants   | Profile/detail migration | Card support                                              |
+| ---------------------------- | ------------------------- | ------------------------ | --------------------------------------------------------- |
+| Core App                     | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Core Ecosystem               | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Core Project                 | `Cell`, `Pill`            | —                        | —                                                         |
+| Core User                    | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Company                      | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Agent                        | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Job                          | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Professional                 | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Chef                         | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Customer                     | `Cell`, `Pill`            | —                        | —                                                         |
+| Driver                       | `Cell`, `Pill`            | `Profile`                | —                                                         |
+| Ingredient                   | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Kitchen                      | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Menu                         | `Cell`, `Pill`, `Preview` | —                        | —                                                         |
+| Kitchen Operation Dish       | `Cell`                    | `Profile`                | —                                                         |
+| Kitchen Operation Ingredient | `Cell`                    | —                        | —                                                         |
+| Kitchen Operation Menu       | —                         | `Profile`                | —                                                         |
+| Kitchen Operation Mise       | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Kitchen Operation Recipe     | `Cell`                    | —                        | —                                                         |
+| Kitchen Operation Supplier   | `Cell`                    | `Profile`                | —                                                         |
+| Place                        | `Cell`, `Pill`, `Preview` | `Profile`                | `Dropdown/Fireux`, `Dropdown/Google`, `Dropdown/Selected` |
+| Supplier                     | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Supplier Item                | `Cell`, `Pill`            | —                        | —                                                         |
 
 ## Alignment status
 

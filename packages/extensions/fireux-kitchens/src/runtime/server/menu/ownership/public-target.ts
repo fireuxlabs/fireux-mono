@@ -1,8 +1,8 @@
 // Concurrent edit — 2026-07-20 22:18 CEST — Place-root authority pass: hydrate sparse scoped Menu Place truth only from the explicit reference.
 import { useRuntimeConfig } from '#imports'
 import { createError } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 import {
   readKitchenAppScope,

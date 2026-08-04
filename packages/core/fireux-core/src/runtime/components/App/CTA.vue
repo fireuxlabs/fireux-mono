@@ -31,7 +31,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMyApps } from '../../composables/fireux/firestore/core/app/utils/useMyApps'
-import type { AppDirectoryController } from '../../models/utils/directory'
+import type { AppDirectoryController } from '../../types/directory-controller.types'
 
 const props = defineProps<{
   controller: AppDirectoryController

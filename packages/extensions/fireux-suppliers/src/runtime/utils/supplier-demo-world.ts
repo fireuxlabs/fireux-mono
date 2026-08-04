@@ -1,10 +1,5 @@
-import type {
-  PublicCompanyProjection,
-} from 'fireux-companies/runtime/models/company-public.model'
-import type {
-  AppSupplier,
-  Supplier,
-} from '../models/supplier/Supplier.model'
+import type { PublicCompanyProjection } from 'fireux-companies/runtime/models/company-public.model'
+import type { AppSupplier, Supplier } from '../models/supplier/Supplier.model'
 import {
   useSupplierInterface,
   type SupplierSurface,
@@ -44,10 +39,10 @@ export function projectSupplierDemoWorld<
   for (const target of input.companyTargets) {
     const companyId = clean(target.company.id)
     if (
-      !companyId
-      || companyTargetById.has(companyId)
-      || clean(target.place.id) !== companyId
-      || clean(target.publicCompany.id) !== companyId
+      !companyId ||
+      companyTargetById.has(companyId) ||
+      clean(target.place.id) !== companyId ||
+      clean(target.publicCompany.id) !== companyId
     ) {
       throw new Error(
         `Supplier Demo Company/Place target is invalid: ${companyId || '(missing-id)'}`
@@ -63,10 +58,10 @@ export function projectSupplierDemoWorld<
     const companyId = clean(scenario.supplier.company_id)
     const companyTarget = companyTargetById.get(companyId)
     if (
-      !supplierId
-      || supplierIds.has(supplierId)
-      || !companyTarget
-      || 'place_id' in scenario.supplier
+      !supplierId ||
+      supplierIds.has(supplierId) ||
+      !companyTarget ||
+      'place_id' in scenario.supplier
     ) {
       throw new Error(
         `Supplier Demo Company/Place relationship is unresolved: ${
@@ -81,9 +76,7 @@ export function projectSupplierDemoWorld<
       companyPlace: companyTarget.publicCompany,
     })
     if (!supplier) {
-      throw new Error(
-        `Supplier Demo surface is incomplete: ${supplierId}`
-      )
+      throw new Error(`Supplier Demo surface is incomplete: ${supplierId}`)
     }
     supplierIds.add(supplierId)
 

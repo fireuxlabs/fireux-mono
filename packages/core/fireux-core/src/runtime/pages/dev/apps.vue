@@ -54,8 +54,8 @@
 // Concurrent edit — 2026-07-20 16:18 CEST — Repo Efficiency Pass 1 of 6: inspect raw Apps through the authenticated dev API across all app roles.
 // Concurrent edit — 2026-07-20 17:01 CEST — Demo Data Spine pass: remove redundant non-console App fixtures.
 import { definePageMeta } from '#imports'
-import { useDevAppCollection } from 'fireux-core/runtime/composables/dev/useDevAppCollection'
-import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
+import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
+import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'

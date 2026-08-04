@@ -1,12 +1,12 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
-} from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   AppProfessionalStorage,
   ProfessionalConstraints,

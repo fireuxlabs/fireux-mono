@@ -1,18 +1,19 @@
 // Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: bind root and App support in one trusted transaction.
-import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+} from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   SupplierOnboardingAction,
   SupplierOnboardingCompleteResult,
@@ -30,10 +31,6 @@ type RuntimePolicy = {
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
-const record = (value: unknown): Record<string, unknown> =>
-  value && typeof value === 'object' && !Array.isArray(value)
-    ? (value as Record<string, unknown>)
-    : {}
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
@@ -54,18 +51,18 @@ function request(value: unknown) {
 }
 
 function runtimePolicy(event: H3Event): RuntimePolicy {
-  const fireux = record(useRuntimeConfig(event).public?.fireux)
-  const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
-  const appRole = text(fireux.role)
-  const developerId = text(fireux.developerId)
+  const fireux = useFireUXConfig(event)
+  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
+  const appRole = fireux.role
+  const developerId = fireux.developerId || ''
   const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
   if (!appScopeState) fail(403, 'This App cannot own a Supplier console.')
 
-  const supplierConfig = record(record(fireux.consoleConfig).supplier)
-  const canCreate =
-    typeof supplierConfig.canCreate === 'boolean'
-      ? supplierConfig.canCreate
-      : appRole !== 'tenant'
+  const canCreate = resolveConsoleCanCreate(
+    appRole,
+    fireux.consoleConfig,
+    'supplier'
+  )
   return {
     appId,
     appRole,

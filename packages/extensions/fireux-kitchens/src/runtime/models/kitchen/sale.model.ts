@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: define the Kitchen-owned immutable Sale record.
 // Concurrent edit — 2026-07-21 17:04 CEST — Kitchen Finance surface: keep Finance model types resolvable in consuming Nuxt apps.
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {
   KitchenOrderChannel,
   KitchenOrderPricing,

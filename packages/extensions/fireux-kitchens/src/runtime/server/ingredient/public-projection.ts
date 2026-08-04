@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   INGREDIENT_CATEGORIES,
   INGREDIENT_KINDS,

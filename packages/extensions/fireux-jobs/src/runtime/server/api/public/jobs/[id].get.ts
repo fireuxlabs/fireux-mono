@@ -6,13 +6,13 @@ import {
   defineEventHandler,
   setResponseHeaders,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
-} from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+} from 'fireux-core/runtime/server/utils/ids/path'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type { PublicJobDetailResponse } from '../../../../models/job-public.model.ts'
 import {
   isPublicJobCandidate,

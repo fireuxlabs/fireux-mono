@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 17:05 CEST — Kitchen Finance surface: define the bounded gross-sales report projection.
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {
   KitchenOrderChannel,
   KitchenOrderType,

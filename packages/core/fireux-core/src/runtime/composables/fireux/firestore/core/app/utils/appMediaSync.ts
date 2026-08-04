@@ -1,4 +1,4 @@
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { normalizeString } from '../../../../../../utils/string'
 import type { AppMediaSyncResponse } from './appMedia'
 

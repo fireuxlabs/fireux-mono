@@ -1,6 +1,6 @@
 import { defineEventHandler, type H3Event } from 'h3'
-import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import {
   assertKitchenMenuUploadAccess,
   assertKitchenMenuUploadAvailable,

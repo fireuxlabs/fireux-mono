@@ -10,4 +10,11 @@ export function configureRuntime(
   }
 ) {
   configureRuntimeDefaults(nuxt, key, defaults, { merge: true })
+
+  const runtimeConfig = (nuxt.options.runtimeConfig ||= {}) as Record<
+    string,
+    unknown
+  >
+  runtimeConfig.supplierDirectoryBaseUrl ||=
+    nuxt.options.dev === true ? 'http://localhost:3006' : 'https://bringli.app'
 }

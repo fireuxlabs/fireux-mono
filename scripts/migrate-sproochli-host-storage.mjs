@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // manual_entrypoint: true
+// last_used: 2026-07-30
 // usage_note: plan or explicitly provision and create-only migrate Misebox-owned Sproochli Menu caches and linked translation memory.
 
 import { execFile } from 'node:child_process'

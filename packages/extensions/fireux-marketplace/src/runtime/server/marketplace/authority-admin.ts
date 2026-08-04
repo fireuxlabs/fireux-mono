@@ -1,6 +1,6 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import type { MarketplaceStore } from '../../models/marketplace.model'
 import type {
   MarketplaceAdminStoresResponse,

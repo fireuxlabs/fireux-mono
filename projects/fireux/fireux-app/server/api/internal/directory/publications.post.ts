@@ -9,20 +9,20 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   applyDirectoryPublicationTransaction,
   DirectoryPublicationAuthorizationError,
   DirectoryPublicationStateError,
-} from 'fireux-core/runtime/server/utils/directory-publication/firestore.ts'
+} from 'fireux-core/runtime/server/utils/directory-publication/firestore'
 import {
   DirectoryPublisherOidcError,
   verifyDirectoryPublisherOidc,
-} from 'fireux-core/runtime/server/utils/directory-publication/oidc.ts'
+} from 'fireux-core/runtime/server/utils/directory-publication/oidc'
 import {
   DirectoryPublicationValidationError,
   parseDirectoryPublicationV1,
-} from 'fireux-core/runtime/server/utils/directory-publication/validate.ts'
+} from 'fireux-core/runtime/server/utils/directory-publication/validate'
 import {
   getDirectoryPublicationReceiverConfig,
   isDirectoryPublicationDatabase,

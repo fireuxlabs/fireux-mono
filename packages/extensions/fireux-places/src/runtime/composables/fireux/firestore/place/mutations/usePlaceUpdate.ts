@@ -8,7 +8,7 @@ import type {
   Place,
   PlaceBusinessHours,
   PlaceSocialLinks,
-} from 'fireux-places/runtime/models/place.model'
+} from '../../../../../models/place.model'
 import { normalizePlaceBusinessHours } from '../../../../../utils/place-spine'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 

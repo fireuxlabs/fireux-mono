@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="`Chat with ${fireux.appShortName || fireux.appName}`"
-      description="Send a message to the admin team. They can reply from the admin dashboard."
+      description="Start a private conversation with this App team."
     >
       <template #headline>
         <UBadge color="primary" variant="soft">
@@ -53,7 +53,7 @@
             <template #footer>
               <div class="flex items-center justify-between gap-3">
                 <p class="text-xs text-muted">
-                  Public chat starts a private conversation with the admins for this app.
+                  Your recovery key stays in this browser for 30 days.
                 </p>
                 <UChatPromptSubmit :status="chatStatus" label="Send" />
               </div>
@@ -70,17 +70,28 @@ import { computed, definePageMeta, onMounted, reactive, ref } from '#imports'
 import { useRoute } from 'vue-router'
 import { useFireUXConfig } from '../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../composables/fireux/firebase/useAuth'
-import { useConversationCreate } from '../composables/fireux/firestore/core/conversation/mutations/useConversationCreate'
-import { useConversationMessageCreate } from '../composables/fireux/firestore/core/conversation/mutations/useConversationMessageCreate'
-import { useConversationMessages } from '../composables/fireux/firestore/core/conversation/fetch/useConversationMessages'
 
 type ChatStatus = 'ready' | 'submitted' | 'streaming' | 'error'
+type ChatMessage = {
+  id: string
+  body: string
+  sender_name: string
+  sender_type: 'admin' | 'user' | 'guest' | 'system'
+  created_at: string
+}
+type StoredChatSession = {
+  conversationId: string
+  token: string
+  expiresAt: string
+}
 
 const fireux = useFireUXConfig()
 const route = useRoute()
 const { uid, currentUser } = useAuth()
 const storageKey = `fireux:${fireux.appId}:admin-chat`
 const conversationId = ref('')
+const recoveryToken = ref('')
+const messages = ref<ChatMessage[]>([])
 const draft = ref('')
 const submitting = ref(false)
 const statusTitle = ref('')
@@ -90,10 +101,6 @@ const guest = reactive({
   name: '',
   email: '',
 })
-
-const { createConversation } = useConversationCreate()
-const { createConversationMessage } = useConversationMessageCreate()
-const { messages } = useConversationMessages(conversationId)
 
 const chatStatus = computed<ChatStatus>(() =>
   submitting.value ? 'submitted' : statusColor.value === 'error' ? 'error' : 'ready'
@@ -105,7 +112,7 @@ const senderEmail = computed(() => currentUser.value?.email || guest.email)
 const chatMessages = computed(() =>
   messages.value.map((message) => ({
     id: message.id,
-    role: message.sender_type === 'user' ? 'assistant' : 'user',
+    role: message.sender_type === 'admin' ? 'assistant' : 'user',
     parts: [{ type: 'text', text: message.body }],
     metadata: {
       senderName: message.sender_name,
@@ -113,12 +120,16 @@ const chatMessages = computed(() =>
   }))
 )
 
-onMounted(() => {
+onMounted(async () => {
   try {
-    const stored = JSON.parse(localStorage.getItem(storageKey) || 'null')
+    const stored = JSON.parse(
+      localStorage.getItem(storageKey) || 'null'
+    ) as StoredChatSession | null
     const expiresAt = Date.parse(String(stored?.expiresAt ?? ''))
     if (Number.isFinite(expiresAt) && expiresAt > Date.now()) {
       conversationId.value = String(stored?.conversationId ?? '')
+      recoveryToken.value = String(stored?.token ?? '')
+      await refreshSession()
     } else {
       localStorage.removeItem(storageKey)
     }
@@ -126,6 +137,28 @@ onMounted(() => {
     localStorage.removeItem(storageKey)
   }
 })
+
+async function requestHeaders() {
+  const user = currentUser.value
+  if (!user || user.isAnonymous) return undefined
+  const token = await user.getIdToken()
+  return { authorization: `Bearer ${token}` }
+}
+
+async function refreshSession() {
+  if (!conversationId.value || !recoveryToken.value) return
+  const response = await $fetch<{
+    messages: ChatMessage[]
+  }>('/api/chat/session', {
+    method: 'POST',
+    headers: await requestHeaders(),
+    body: {
+      conversation_id: conversationId.value,
+      token: recoveryToken.value,
+    },
+  })
+  messages.value = response.messages
+}
 
 function requireGuestDetails() {
   if (conversationId.value) return true
@@ -151,46 +184,47 @@ async function sendMessage() {
 
   try {
     if (!conversationId.value) {
-      conversationId.value = await createConversation({
-        app_id: fireux.appId,
-        kind: 'general',
-        related_entity: {
-          family: 'apps',
-          id: fireux.appId,
-          path: `apps/${fireux.appId}`,
-          label: fireux.appName,
-        },
-        guest_contact: {
+      const session = await $fetch<{
+        conversation_id: string
+        token: string
+        expires_at: string
+      }>('/api/chat/start', {
+        method: 'POST',
+        headers: await requestHeaders(),
+        body: {
           name: senderName.value,
           email: senderEmail.value,
-          preferred_channel: 'chat',
-        },
-        participant_ids: uid.value ? [uid.value] : [],
-        source_route: route.fullPath,
-        initial_message: {
           body,
-          sender_id: uid.value || '',
-          sender_type: uid.value ? 'user' : 'guest',
-          sender_name: senderName.value,
+          source_route: route.fullPath,
         },
       })
-      localStorage.setItem(storageKey, JSON.stringify({
-        conversationId: conversationId.value,
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      }))
+      conversationId.value = session.conversation_id
+      recoveryToken.value = session.token
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          conversationId: session.conversation_id,
+          token: session.token,
+          expiresAt: session.expires_at,
+        } satisfies StoredChatSession)
+      )
     } else {
-      await createConversationMessage(conversationId.value, {
-        body,
-        sender_id: uid.value || '',
-        sender_type: uid.value ? 'user' : 'guest',
-        sender_name: senderName.value,
+      await $fetch('/api/chat/message', {
+        method: 'POST',
+        headers: await requestHeaders(),
+        body: {
+          conversation_id: conversationId.value,
+          token: recoveryToken.value,
+          body,
+        },
       })
     }
 
+    await refreshSession()
     draft.value = ''
     statusColor.value = 'success'
     statusTitle.value = 'Message sent'
-    statusMessage.value = 'The admin team can reply from their dashboard.'
+    statusMessage.value = 'Your message is stored in this private chat.'
   } catch (error) {
     statusColor.value = 'error'
     statusTitle.value = 'Message not sent'

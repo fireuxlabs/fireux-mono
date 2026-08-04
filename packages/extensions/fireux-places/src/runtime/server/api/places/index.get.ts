@@ -7,8 +7,8 @@ import {
   getQuery,
   setResponseHeaders,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   PUBLIC_PLACE_EXACT_MAX_IDS,
   PUBLIC_PLACE_INDEX_MAX_PAGE_SIZE,

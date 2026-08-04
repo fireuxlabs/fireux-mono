@@ -6,12 +6,15 @@ import {
   serverTimestamp,
   setDoc,
 } from 'firebase/firestore'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useAssets } from 'fireux-core/runtime/composables/fireux/app/useAssets'
+import {
+  readRuntimeIdentityFirestoreDatabaseId,
+  useFirestore,
+} from '../../../vuefire'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useAssets } from '../../../../app/useAssets'
 import type { Firestore } from 'firebase/firestore'
 import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
 
 function normalizeString(value: unknown) {
   return String(value || '').trim()
@@ -24,7 +27,7 @@ async function resolveFirestoreEcosystemRef(db: Firestore, ecosystemId: string) 
 
 export function useEcosystemCreate() {
   const fireux = useFireUXConfig()
-  const db = useFirestore()
+  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
   async function createEcosystem() {
     if (fireux.role !== 'global') return

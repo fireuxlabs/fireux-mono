@@ -1,6 +1,6 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 
 export type MarketplaceServerScope = {
   appId: string

@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-24
-// usage_note: baseline after scripts cleanup; update when run.
-// Concurrent edit — 2026-07-21 13:11 CEST — Cleanbox-to-Werkbox migration: record the verified workspace registration sync.
+// last_used: 2026-08-04
+// usage_note: generate and verify developer commands, VS Code launch surfaces, and toolbar App data from the App registry.
 
 import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
@@ -14,12 +13,15 @@ import {
   getAppGroupEntries,
   getAppRegistryEntries,
 } from './_lib/app-registry.mjs'
+import { buildToolbarAppsSource } from './_lib/toolbar-apps.mjs'
 
 const repoRoot = resolve(import.meta.dirname, '..')
 const packageJsonPath = resolve(repoRoot, 'package.json')
 const tasksPath = resolve(repoRoot, '.vscode/tasks.json')
 const launchPath = resolve(repoRoot, '.vscode/launch.json')
-const isDirectRun = process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+const toolbarAppsPath = resolve(repoRoot, 'tools/vscode-fireux-toolbar/apps.js')
+const isDirectRun =
+  process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)
 
 const backgroundMatcher = {
   owner: 'fireux-dev',
@@ -180,7 +182,9 @@ function buildLaunchConfigurations() {
       name: 'Run FireUX Toolbar Extension',
       type: 'extensionHost',
       request: 'launch',
-      args: ['--extensionDevelopmentPath=${workspaceFolder}/tools/vscode-fireux-toolbar'],
+      args: [
+        '--extensionDevelopmentPath=${workspaceFolder}/tools/vscode-fireux-toolbar',
+      ],
     },
     {
       name: 'Git Tree',
@@ -247,15 +251,18 @@ function buildDevScripts(existingScripts) {
 
   for (const key of APP_KEYS) {
     const app = getAppRegistryEntries([key])[0]
-    nextScripts[`dev:${key}`] = `node scripts/dev-app-with-smoke.mjs --app ${key}`
+    nextScripts[`dev:${key}`] =
+      `node scripts/dev-app-with-smoke.mjs --app ${key}`
     nextScripts[`kill:${key}`] = `node scripts/free-port.mjs ${app.port}`
   }
 
   nextScripts['dev:all'] = 'node scripts/dev-app-group.mjs --group all'
-  nextScripts['dev:all-extended'] = 'node scripts/dev-app-group.mjs --group all-extended'
+  nextScripts['dev:all-extended'] =
+    'node scripts/dev-app-group.mjs --group all-extended'
   nextScripts['dev:full'] = 'node scripts/dev-app-group.mjs --group full'
   nextScripts['sync:dev-workspace'] = 'node scripts/sync-dev-workspace.mjs'
-  nextScripts['sync:dev-workspace:check'] = 'node scripts/sync-dev-workspace.mjs --check'
+  nextScripts['sync:dev-workspace:check'] =
+    'node scripts/sync-dev-workspace.mjs --check'
 
   return nextScripts
 }
@@ -267,7 +274,13 @@ function parseArgs(argv) {
 }
 
 async function buildGeneratedWorkspaceFiles() {
-  const rawPackageJson = await readFile(packageJsonPath, 'utf8')
+  const [rawPackageJson, toolbarAppsSource] = await Promise.all([
+    readFile(packageJsonPath, 'utf8'),
+    buildToolbarAppsSource({
+      repoRoot,
+      registryApps: getAppRegistryEntries(),
+    }),
+  ])
   const packageJson = JSON.parse(rawPackageJson)
   packageJson.scripts = buildDevScripts(packageJson.scripts || {})
 
@@ -275,6 +288,7 @@ async function buildGeneratedWorkspaceFiles() {
     'package.json': `${JSON.stringify(packageJson, null, 2)}\n`,
     '.vscode/tasks.json': `${JSON.stringify(buildTasks(), null, 2)}\n`,
     '.vscode/launch.json': `${JSON.stringify(buildLaunch(), null, 2)}\n`,
+    'tools/vscode-fireux-toolbar/apps.js': toolbarAppsSource,
   }
 }
 
@@ -283,6 +297,10 @@ async function readCurrentWorkspaceFiles() {
     'package.json': await readFile(packageJsonPath, 'utf8'),
     '.vscode/tasks.json': await readFile(tasksPath, 'utf8'),
     '.vscode/launch.json': await readFile(launchPath, 'utf8'),
+    'tools/vscode-fireux-toolbar/apps.js': await readFile(
+      toolbarAppsPath,
+      'utf8'
+    ),
   }
 }
 
@@ -331,6 +349,11 @@ export async function syncDevWorkspace(options = {}) {
     writeFile(packageJsonPath, expectedFiles['package.json'], 'utf8'),
     writeFile(tasksPath, expectedFiles['.vscode/tasks.json'], 'utf8'),
     writeFile(launchPath, expectedFiles['.vscode/launch.json'], 'utf8'),
+    writeFile(
+      toolbarAppsPath,
+      expectedFiles['tools/vscode-fireux-toolbar/apps.js'],
+      'utf8'
+    ),
   ])
 
   const result = {

@@ -4,16 +4,14 @@
 import {
   safeArray,
   safeString,
-} from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
+} from '../../../../../../shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import {
+  USER_ECOSYSTEM_AVATAR_SRC,
   UserStorage,
   type User,
 } from '../../../../../../../models/core/user.model'
-import {
-  USER_ECOSYSTEM_AVATAR_SRC,
-  resolveUserAvatarSource,
-} from '../../../../../../../models/utils/user-avatar'
+import { resolveUserAvatarSource } from '../../../../../../../utils/user-avatar'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
 
@@ -102,7 +100,7 @@ export function useUserInterface(
     return {
       id,
       to: handle
-        ? `/${UserStorage.rootCollection}/${encodeURIComponent(handle)}`
+        ? `/${UserStorage.collection}/${encodeURIComponent(handle)}`
         : '',
 
       imageUrl: resolveAvatarUrl(user),

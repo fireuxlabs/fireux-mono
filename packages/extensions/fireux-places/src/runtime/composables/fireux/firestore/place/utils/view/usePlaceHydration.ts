@@ -1,5 +1,5 @@
 import { computed, type ComputedRef } from 'vue'
-import type { Place } from 'fireux-places/runtime/models/place.model'
+import type { Place } from '../../../../../../models/place.model'
 
 type CollectionEntryWithId = { id: string }
 

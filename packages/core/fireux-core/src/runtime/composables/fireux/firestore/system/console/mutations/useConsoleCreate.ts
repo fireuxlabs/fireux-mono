@@ -13,14 +13,14 @@ import {
   setDoc,
   where,
 } from 'firebase/firestore'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { AppStorage } from '../../../../../../models/core/app.model'
 import {
   normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/models/utils/meta.model'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
-import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access'
+} from '../../../../../../utils/app-scope-state'
+import { AppUserStorage } from '../../../../../../models/core/user.model'
+import { hasAppUserPremiumAccess } from '../../../../../../utils/app-user-access'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'

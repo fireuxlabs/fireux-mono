@@ -3,10 +3,8 @@ import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
 import { configureComponents } from './config/module/components-config'
-import { configureImports } from './config/module/imports-config'
 import { configureModulePages } from './config/module/pages-config'
 import { configurePublicAssets } from './config/module/public-assets-config'
-import { configureRuntimeConfig } from './config/module/runtime-config'
 
 const module: NuxtModule<Record<string, never>> = defineNuxtModule({
   meta: {
@@ -18,10 +16,8 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     const resolver = createResolver(import.meta.url)
     configureFireuxEcosystemModule(resolver, nuxt, {
       ecosystem: ecosystemConfig,
-      configureRuntimeConfig,
       configurePages: configureModulePages,
       configureComponents,
-      configureImports,
       configurePublicAssets,
     })
 

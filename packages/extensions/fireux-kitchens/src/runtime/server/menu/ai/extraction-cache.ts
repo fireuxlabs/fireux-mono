@@ -1,4 +1,4 @@
-import type { FireuxAiDocumentSourceFile } from 'fireux-ai/runtime/server/utils/document-ai.server.ts'
+import type { FireuxAiDocumentSourceFile } from 'fireux-ai/runtime/server/utils/document-ai.server'
 import {
   countKitchenMenuDraftItems,
   normalizeKitchenMenuDraftSections,

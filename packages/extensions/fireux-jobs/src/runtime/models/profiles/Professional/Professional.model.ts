@@ -4,10 +4,10 @@
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: own exact storage, provision, and public detail/directory shapes.
 // Concurrent edit — 2026-07-21 15:26 CEST — Misebox Nitro startup fix: resolve server-loaded core model and Firebase type imports explicitly.
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model.ts'
-import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
-import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
+import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type {
   CertificationItem,
   EducationItem,
@@ -30,7 +30,7 @@ export type {
 } from './supporting'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Runtime models canon: docs/ai/gpt-context.md
  *
  * Family: Identity
  * Storage: root canonical record plus app overlay

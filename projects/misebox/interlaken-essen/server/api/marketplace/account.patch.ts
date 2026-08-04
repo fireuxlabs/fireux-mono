@@ -1,10 +1,10 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   INTERLAKEN_ESSEN_APP_ID,
   MARKETPLACE_PROFILE_COLLECTION,

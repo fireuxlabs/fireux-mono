@@ -12,25 +12,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenConsoleMenu } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenu'
-import type { KitchenMenu } from '../../../../../models/kitchen/menu/kitchen-menu.model'
 
-const props = withDefaults(defineProps<{
-  currentLabel?: string
-}>(), {
-  currentLabel: '',
-})
-
-const {
-  menu,
-  menuId,
-  sections,
-  source,
-} = useKitchenConsoleMenu()
-const operationalMenu = computed(() =>
-  menu.value as unknown as KitchenMenu | null
+const props = withDefaults(
+  defineProps<{
+    currentLabel?: string
+  }>(),
+  {
+    currentLabel: '',
+  }
 )
-const menuPath = computed(() =>
-  `/console/kitchen/menus/${encodeURIComponent(menuId.value)}`
+
+const { menu, menuId, sections, source } = useKitchenConsoleMenu()
+const operationalMenu = computed(() => menu.value)
+const menuPath = computed(
+  () => `/console/kitchen/menus/${encodeURIComponent(menuId.value)}`
 )
 const menuLabel = computed(() =>
   String(menu.value?.name || source.value?.id || 'Menu').trim()
@@ -46,8 +41,6 @@ const breadcrumbItems = computed(() => [
     icon: 'i-lucide-list-tree',
     ...(props.currentLabel ? { to: menuPath.value } : {}),
   },
-  ...(props.currentLabel
-    ? [{ label: props.currentLabel }]
-    : []),
+  ...(props.currentLabel ? [{ label: props.currentLabel }] : []),
 ])
 </script>

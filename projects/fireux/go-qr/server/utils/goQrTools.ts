@@ -2,7 +2,7 @@ import type { H3Event } from 'h3'
 import {
   defineToolProviderRegistry,
   toolProviderResponse,
-} from 'fireux-core/runtime/server/utils/tool-provider.ts'
+} from 'fireux-core/runtime/server/utils/tool-provider'
 import { docTool } from './tools/doc'
 import { textTool } from './tools/text'
 import { urlTool } from './tools/url'

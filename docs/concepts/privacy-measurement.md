@@ -1,6 +1,7 @@
 # Privacy-first measurement
 
-Updated: 2026-07-29
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -38,6 +39,13 @@ Public visits do not automatically register the PWA service worker. Public
 Google Maps embeds require an explicit load action. Firebase Auth uses browser
 session persistence, and anonymous-order recovery values expire after no more
 than 24 hours.
+
+Chat contact details and message bodies remain in the current App database
+behind the trusted `/api/chat` boundary. The browser receives an unguessable
+30-day recovery capability; only its SHA-256 hash is stored server-side, and
+conversation/message creation is atomic. Direct browser Firestore access stays
+closed. New-session abuse control keeps only an ephemeral salted IP hash in
+process memory; it never persists or logs a raw address.
 
 ## Required future aggregate seam
 

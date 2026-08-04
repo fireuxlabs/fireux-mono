@@ -8,8 +8,8 @@ import {
   readBody,
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,

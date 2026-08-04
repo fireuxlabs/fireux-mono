@@ -39,7 +39,7 @@ import { computed } from 'vue'
 import { useKitchenConsoleMenus } from '../../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import { useKitchenMenuUrl } from '../../../../../../composables/fireux/kitchen/menu/useKitchenMenuUrl'
 import type { KitchenOrderType } from '../../../../../../models/kitchen/order.model'
-import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
+import type { KitchenMenu as Menu } from '../../../../../../models/kitchen/menu/kitchen-menu.model'
 import type { MenuRouteContext } from '../../../../../../models/kitchen/menu/menu-context.model'
 import { menuOrderTypeLabel } from '../../../../../../utils/menu-ordering-ui'
 import { publicMenuSurfaceProfiles } from '../../../../../../utils/menu-context'
@@ -59,15 +59,18 @@ const orderTypes = new Set<KitchenOrderType>([
   'pre_order',
   'room_service',
 ])
-const kitchen = computed(() => selectedKitchen.value as Record<string, unknown> | null)
+const kitchen = computed(
+  () => selectedKitchen.value as Record<string, unknown> | null
+)
 const kitchenSlug = computed(() => clean(kitchen.value?.slug))
 const menuUrlResolver = useKitchenMenuUrl({
   appId: activeKitchenAppId,
   kitchenSlug,
 })
 const menuPanels = computed(() => buildMenuPanels(menus.value))
-const draftSource = computed(() =>
-  menuSources.value.find((source) => clean(source.status) === 'draft') ?? null
+const draftSource = computed(
+  () =>
+    menuSources.value.find((source) => clean(source.status) === 'draft') ?? null
 )
 
 function buildMenuPanels(sourceMenus: Menu[]): MenuQrPanel[] {
@@ -77,18 +80,18 @@ function buildMenuPanels(sourceMenus: Menu[]): MenuQrPanel[] {
       if (!menuId) return null
 
       const menuName = clean(menu.name) || menuId
-      const targets = menu.status === 'published'
-        ? buildQrTargets(menu, menuId)
-        : []
+      const targets =
+        menu.status === 'published' ? buildQrTargets(menu, menuId) : []
 
       return {
         id: menuId,
         label: menuName,
         description: clean(menu.description),
         status: menu.status,
-        summary: menu.status === 'published'
-          ? describeMenuPanel(targets)
-          : 'Publish this menu before creating guest entries.',
+        summary:
+          menu.status === 'published'
+            ? describeMenuPanel(targets)
+            : 'Publish this menu before creating guest entries.',
         editPath: `/console/kitchen/menus/${encodeURIComponent(menuId)}`,
         targets,
       }
@@ -145,12 +148,15 @@ function enabledOrderTypes(menu: Menu): KitchenOrderType[] {
     )
 }
 
-function addMenuContextTarget(targets: MenuQrTarget[], options: {
-  menuId: string
-  context: MenuRouteContext
-  label: string
-  description: string
-}) {
+function addMenuContextTarget(
+  targets: MenuQrTarget[],
+  options: {
+    menuId: string
+    context: MenuRouteContext
+    label: string
+    description: string
+  }
+) {
   addTarget(targets, {
     id: `${options.menuId}:${options.context}`,
     label: options.label,

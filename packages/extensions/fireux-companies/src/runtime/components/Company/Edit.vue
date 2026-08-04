@@ -20,10 +20,13 @@
 </template>
 
 <script setup lang="ts">
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser';
-import type { Place } from 'fireux-places/runtime/models/place.model';
-import { computed } from 'vue';
-import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types';
+import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import {
+  PlaceModel,
+  type Place,
+} from 'fireux-places/runtime/models/place.model'
+import { computed } from 'vue'
+import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
 
 const props = defineProps<{ company: CompanyHydrated | null }>()
 const company = computed(() => props.company)
@@ -34,6 +37,6 @@ const canEdit = computed(() => {
   return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
 })
 const placeForEdit = computed<Place | null>(() =>
-  company.value ? ({ ...company.value } as Place) : null
+  company.value ? { ...PlaceModel, ...company.value } : null
 )
 </script>

@@ -244,7 +244,8 @@ const assertAtomicConsoleOnboarding = ({
 }
 
 const files = {
-  metaModel: 'packages/core/fireux-core/src/runtime/models/utils/meta.model.ts',
+  consoleEntityModel:
+    'packages/core/fireux-core/src/runtime/models/utils/console-entity.model.ts',
   consoleAccess:
     'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleAccess.ts',
   sharedCreate:
@@ -432,9 +433,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   assert.match(source.supplierModel, /export const AppSupplierModel/)
   assert.match(source.portfolioModel, /export const AppPortfolioModel/)
-  assert.match(source.metaModel, /export const FireuxAppAccessRecordModel/)
-  assert.match(source.metaModel, /export type FireuxAppAccessRecord/)
-  assert.doesNotMatch(source.metaModel, /FireuxAppOverlay/)
+  assert.match(
+    source.consoleEntityModel,
+    /export const FireuxAppAccessRecordModel/
+  )
+  assert.match(source.consoleEntityModel, /export type FireuxAppAccessRecord/)
+  assert.doesNotMatch(source.consoleEntityModel, /FireuxAppOverlay/)
   assert.match(
     source.consoleAccess,
     /export function readConsoleTargetAuthority[\s\S]*operator_ids[\s\S]*team_ids[\s\S]*join_requests/,

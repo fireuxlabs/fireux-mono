@@ -1,12 +1,7 @@
 # Components spine map
 
-<!-- Concurrent edit — 2026-07-23 02:43 CEST — Map the shared product-led landing surface and project proof slot. -->
-<!-- Concurrent edit — 2026-07-23 12:13 CEST — Record FireUX as the second shared product-landing consumer. -->
-<!-- Concurrent edit — 2026-07-23 — Extract the two-consumer product-preview frame without moving product proof into Core. -->
-<!-- Concurrent edit — 2026-07-25 — Map Misebox's real Orders proof inside the shared Main App hero. -->
-
-Updated: 2026-07-29
-Ref: 33603376f
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -74,9 +69,12 @@ Map component folder and naming conventions.
   generic data-configured entity framework. Profile editors use Nuxt UI cards
   and named `Edit/*` form
   composition; and page organisms to genuinely shared layout and route
-  regions. Core `LandingProductIndex` owns the fixed product-led landing order:
-  `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
-  `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
+  regions. Core `LandingProductIndex` owns the product-led landing region
+  vocabulary and default order: `hero-preview`, the `onboarding` entry slot,
+  `surfaces`, `console`, `specifics`, `ecosystems`, `apps`, `tools`,
+  `solutions`, then `operations`. An App may provide an ordered subset through
+  the shared `regionOrder` prop so absent product layers disappear without
+  copying the renderer or adding an unowned region. The hero
   places shared product copy on the left and the App-owned product presentation
   on the right. FireUX uses the live public App and Ecosystem Card orbit;
   Static Main App photography uses Core `LandingProductHeroImage`, which owns

@@ -1,11 +1,11 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: keep private client updates within account preferences.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer the private Firestore writer until an owner action runs in the browser.
-import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { UserPrivateUpdateInput } from '../../../../../../models/core/user.model'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
+import { UserStorage } from '../../../../../../models/core/user.model'
 import {
-  UserPrivateStorage,
-  UserStorage,
-} from '../../../../../../models/core/user.model'
+  type UserAccountUpdateInput,
+  UserAccountStorage,
+} from '../../../../../../models/operations/user-account.model'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../fetch/useUserFetch'
 import { useCoreUserUpdate } from '../utils/update/useCoreUserUpdate'
@@ -21,11 +21,13 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   const cfg = useFireUXConfig()
 
   const update = async (
-    data: UserPrivateUpdateInput,
+    data: UserAccountUpdateInput,
     options: { private: true }
   ) => {
     if (options.private !== true) {
-      throw new Error('[useUserUpdate] Private updates require { private: true }.')
+      throw new Error(
+        '[useUserUpdate] Private updates require { private: true }.'
+      )
     }
 
     const uid = user.coreUser?.value?.id ?? user.user?.value?.id
@@ -45,8 +47,8 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
       databaseId: identityDatabaseId,
     })
     await identityUpdate.updateDocument(
-      `${UserStorage.rootCollection}/${uid}/${UserPrivateStorage.collection}`,
-      UserPrivateStorage.document,
+      `${UserStorage.collection}/${uid}/${UserAccountStorage.collection}`,
+      UserAccountStorage.document,
       data
     )
   }
@@ -57,7 +59,7 @@ export function useUserUpdate(user: UserRefs, sourceLabel = 'unspecified') {
   // NOTE: appUser.id is ALSO uid (NOT appId)
   const appUserUid = user.appUser?.value?.id ?? null
 
-  const activeAppId = cfg.appId || cfg.globalAppId
+  const activeAppId = cfg.appId
 
   if (cfg.devMode) {
     if (coreUid && appUserUid && coreUid !== appUserUid) {

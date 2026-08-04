@@ -1,14 +1,15 @@
 // Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: atomically create Blank root and App support.
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep access out of Blank root and reject coerced target ids.
-import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/utils/meta.model.ts'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { BlankStorage } from '../../../app/models/blank.model.ts'
 
 type BlankOnboardingResult = {
@@ -21,7 +22,7 @@ type BlankOnboardingResult = {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -33,7 +34,7 @@ function request(value: unknown) {
     fail(400, 'Blank onboarding request must be an object.')
   }
   const body = record(value)
-  const unsupported = Object.keys(body).find(key => key !== 'name')
+  const unsupported = Object.keys(body).find((key) => key !== 'name')
   if (unsupported) {
     fail(400, `Blank onboarding contains unsupported field: ${unsupported}.`)
   }
@@ -46,13 +47,13 @@ function stringList(value: unknown, label: string, max: number) {
   if (!Array.isArray(value) || value.length > max) {
     fail(409, `${label} has an invalid stored shape.`)
   }
-  if (value.some(item => typeof item !== 'string')) {
+  if (value.some((item) => typeof item !== 'string')) {
     fail(409, `${label} has invalid stored ids.`)
   }
-  const items = (value as string[]).map(item => item.trim())
+  const items = (value as string[]).map((item) => item.trim())
   if (
-    items.some((item, index) =>
-      !item || item !== value[index] || item.length > 1500
+    items.some(
+      (item, index) => !item || item !== value[index] || item.length > 1500
     ) ||
     new Set(items).size !== items.length
   ) {
@@ -67,16 +68,13 @@ export async function completeBlankOnboarding(
 ): Promise<BlankOnboardingResult> {
   const { name } = request(input)
   const { uid } = await requireFirebaseBearerUser(event)
-  const fireux = record(useRuntimeConfig(event).public?.fireux)
-  const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
-  const role = text(fireux.role)
+  const fireux = useFireUXConfig(event)
+  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
+  const role = fireux.role
   const scopeState = resolveFireuxAppScopeStateForRole(role)
   if (!scopeState) fail(403, 'This App cannot own a Blank console.')
 
-  const blankConfig = record(record(fireux.consoleConfig).blank)
-  const canCreate = typeof blankConfig.canCreate === 'boolean'
-    ? blankConfig.canCreate
-    : role !== 'tenant'
+  const canCreate = resolveConsoleCanCreate(role, fireux.consoleConfig, 'blank')
   if (!canCreate) fail(403, 'Blank creation is disabled for this App.')
 
   const db = getRuntimeFirestore()
@@ -88,7 +86,7 @@ export async function completeBlankOnboarding(
     `apps/${appId}/${BlankStorage.appCollection}/${rootRef.id}`
   )
 
-  return db.runTransaction(async transaction => {
+  return db.runTransaction(async (transaction) => {
     const membership = await transaction.get(membershipRef)
     if (!membership.exists || text(membership.get('role')) !== 'admin') {
       fail(403, 'Current App admin membership is required to create a Blank.')

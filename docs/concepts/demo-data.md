@@ -1,7 +1,7 @@
 # Demo World and Demo Data spine map
 
-Updated: 2026-07-29
-Ref: 796952bf0
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -89,6 +89,9 @@ remain real data even when a Demo record links to them.
   `demo/misebox-app/{kitchens|suppliers|places}/...` paths. Kitchen and Supplier
   logos stay under their own ids; Place imagery stays under the Place id.
   Fixtures hold fixed HTTPS values and import no Firebase or Storage SDK.
+  The explicit-import-only `fireux-demo` extension owns the one cross-domain
+  Misebox URL contract; product-specific bucket knowledge does not live in
+  FireUX Core or get copied into Kitchen, Supplier, and Company packages.
   Canonical Ingredient images and shared App/brand media never move into this
   Demo prefix merely because a Demo surface displays them. Live-owned media
   stays in its owning Live publication or storage path, never in `demo/`.

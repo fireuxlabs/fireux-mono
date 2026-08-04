@@ -208,7 +208,7 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
     )
     assertMatch(
       runtimeSource,
-      /getId:\s*data\s*=>\s*options\.getId\(data\.value\),\s*getType:\s*data\s*=>\s*data\.type/,
+      /getId:\s*(?:\(\s*data\s*\)|data)\s*=>\s*options\.getId\(data\.value\),\s*getType:\s*(?:\(\s*data\s*\)|data)\s*=>\s*data\.type/,
       runtimeRelative,
       'entity runtime selection must bind envelope value and type together',
       violations

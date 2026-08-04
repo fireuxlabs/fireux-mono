@@ -2,15 +2,17 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import {
+  registerComposablesDir,
+  registerLayoutsDir,
+} from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
 import { configurePlugins } from './config/module/plugins-config'
-import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
-import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
 import { configureServer } from './config/module/server-config'
@@ -44,6 +46,11 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    nuxt.hook('prepare:types', ({ references }) => {
+      references.push({
+        path: resolver.resolve('./runtime/types/pdf-worker.types.ts'),
+      })
+    })
     registerReservedRootRouteKeys([
       'menus',
       'kitchens',
@@ -75,9 +82,9 @@ export default defineNuxtModule<ModuleOptions>({
           ensureTestKitchen: options.ensureTestKitchen !== false,
         }),
       plugins: configurePlugins,
-      composables: configureComposables,
+      composables: registerComposablesDir,
       components: configureComponents,
-      layouts: configureLayouts,
+      layouts: registerLayoutsDir,
       pages: configurePages,
       assets: configureAssets,
       server: configureServer,

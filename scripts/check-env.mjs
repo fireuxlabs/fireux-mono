@@ -1,8 +1,8 @@
 // @fireux-script
-// last_used: 2026-06-25
-// usage_note: baseline after scripts cleanup; update when run.
+// last_used: 2026-08-04
+// usage_note: checks the minimal App environment contract without treating cosmetic client gates as secrets.
 const required = ['APP_DOMAIN', 'NUXT_FIREBASE_APP_ID']
-const optional = ['NUXT_FIREBASE_MEASUREMENT_ID', 'DEVELOPER_PIN']
+const optional = ['NUXT_FIREBASE_MEASUREMENT_ID']
 
 const missing = required.filter((name) => {
   const value = process.env[name]

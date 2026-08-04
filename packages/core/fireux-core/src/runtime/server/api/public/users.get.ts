@@ -25,7 +25,7 @@ import {
 } from '../../utils/public-projection/public-user-scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { UserStorage } from '../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../models/utils/user-avatar'
+import { resolveUserAvatarSource } from '../../../utils/user-avatar.ts'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 
@@ -83,7 +83,7 @@ function mapUserDocToDto(
 
 async function readGlobalCanonicalUsers(limit: number): Promise<PublicUserDto[]> {
   const snapshot = await getRuntimeIdentityFirestore()
-    .collection(UserStorage.rootCollection)
+    .collection(UserStorage.collection)
     .orderBy('handle')
     .limit(limit)
     .get()
@@ -108,7 +108,7 @@ async function readTenantCanonicalUsers(
   const identityDb = getRuntimeIdentityFirestore()
   const snapshots = await identityDb.getAll(
     ...userIds.map(userId =>
-      identityDb.collection(UserStorage.rootCollection).doc(userId)
+      identityDb.collection(UserStorage.collection).doc(userId)
     )
   )
   const users = snapshots.flatMap((snapshot) => {

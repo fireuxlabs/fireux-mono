@@ -3,7 +3,7 @@
   <div class="menu-browse-catalogue">
     <MenuSectionNav
       v-if="browseSections.length > 1"
-      :aria-label="copy.menuSectionsAriaLabel"
+      :navigation-label="copy.menuSectionsAriaLabel"
       :choose-label="copy.chooseMenuSectionAriaLabel"
       :sections-label="copy.sectionsLabel"
       :sections="browseSections"
@@ -55,21 +55,24 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model'
+import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuBrowseSurfaceCopy } from '../../../content/menu-surface-copy'
 import { menuSectionLinks } from '../../../utils/menu-section-links'
 
-const props = withDefaults(defineProps<{
-  currencyCode: string
-  currencyFormat?: CurrencyDisplayFormat
-  copy: MenuBrowseSurfaceCopy
-  sections: MenuManifestSection[]
-  showCurrency?: boolean
-}>(), {
-  currencyFormat: 'dash',
-  showCurrency: true,
-})
+const props = withDefaults(
+  defineProps<{
+    currencyCode: string
+    currencyFormat?: CurrencyDisplayFormat
+    copy: MenuBrowseSurfaceCopy
+    sections: MenuManifestSection[]
+    showCurrency?: boolean
+  }>(),
+  {
+    currencyFormat: 'dash',
+    showCurrency: true,
+  }
+)
 
 const browseSections = computed(() => menuSectionLinks(props.sections))
 </script>

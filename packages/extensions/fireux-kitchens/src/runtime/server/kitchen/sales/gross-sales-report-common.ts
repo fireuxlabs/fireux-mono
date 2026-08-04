@@ -1,6 +1,6 @@
 import type { DocumentData, Timestamp } from 'firebase-admin/firestore'
-import { requireFinancialMinorAmount } from 'fireux-finance/runtime/utils/money.ts'
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import { requireFinancialMinorAmount } from 'fireux-finance/runtime/utils/money'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {
   KitchenFinanceItemSummary,
   KitchenFinanceTransactionSummary,

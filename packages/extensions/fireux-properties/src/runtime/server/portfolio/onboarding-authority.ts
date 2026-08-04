@@ -1,19 +1,13 @@
-import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import {
-  boundedIds,
-  fail,
-  isRecord,
-  record,
-  text,
-  type MemberRole,
-} from './onboarding-input'
+} from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { boundedIds, fail, text, type MemberRole } from './onboarding-input'
 
 export type Firestore = ReturnType<typeof getRuntimeFirestore>
 
@@ -32,18 +26,18 @@ export type Actor = RuntimePolicy & {
 }
 
 export function runtimePolicy(event: H3Event): RuntimePolicy {
-  const fireux = record(useRuntimeConfig(event).public?.fireux)
-  const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
-  const appRole = text(fireux.role)
-  const developerId = text(fireux.developerId)
+  const fireux = useFireUXConfig(event)
+  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
+  const appRole = fireux.role
+  const developerId = fireux.developerId || ''
   const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
   if (!appScopeState) fail(403, 'This App cannot own a Portfolio console.')
 
-  const portfolioConfig = record(record(fireux.consoleConfig).portfolio)
-  const canCreate =
-    typeof portfolioConfig.canCreate === 'boolean'
-      ? portfolioConfig.canCreate
-      : appRole !== 'tenant'
+  const canCreate = resolveConsoleCanCreate(
+    appRole,
+    fireux.consoleConfig,
+    'portfolio'
+  )
   return {
     appId,
     appRole,

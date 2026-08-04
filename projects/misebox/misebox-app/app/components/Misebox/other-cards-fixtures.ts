@@ -1,4 +1,4 @@
-import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
+import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import type { PublicMenuIndexItem } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-index.model'
 
 export const dishImage = miseboxDemoMediaUrl('kitchens/deanos/menu/deanos-classic.jpg')

@@ -1,13 +1,13 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: hydrate Kitchen fulfilment capability with Menu ownership.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: hydrate sparse Menu baselines through concrete Place runtime imports.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: resolve Place base, migration fallback, then canonical root override.
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
   readPlaceCurrencyCode,
   readPlacePresentation,
-} from 'fireux-places/runtime/utils/place-spine.ts'
+} from 'fireux-places/runtime/utils/place-spine'
 import {
   readKitchenAppScope,
   readKitchenFulfilmentConfig,
@@ -23,7 +23,7 @@ import type {
   KitchenImageShade,
 } from '../../../models/kitchen.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model.ts'
+import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
 import { menuSourceFromData } from '../payload/source.ts'
 import { resolveMenuPageStyle } from '../payload/page-style.ts'
 

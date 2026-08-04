@@ -1,4 +1,4 @@
-import type { BasePlace, PlaceImageShade, PlaceSource } from 'fireux-places/runtime/models/place.model'
+import type { BasePlace, PlaceImageShade, PlaceSource } from '../../../../../../models/place.model'
 import { canonicalPlaceId } from '../../fetch/google/usePlacesGoogle'
 import type { BasePlaceRecord, MapToBasePlace } from '../../fetch/search/types'
 

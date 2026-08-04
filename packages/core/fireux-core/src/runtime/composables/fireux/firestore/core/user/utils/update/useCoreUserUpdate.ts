@@ -3,10 +3,12 @@
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: preserve a canonical safe avatar on clear and upload.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: construct Firebase write and Storage clients only when a User edit runs.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography through the canonical public User updater.
-import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import type { User } from '../../../../../../../models/core/user.model'
-import { UserStorage } from '../../../../../../../models/core/user.model'
-import { USER_ECOSYSTEM_AVATAR_SRC } from '../../../../../../../models/utils/user-avatar'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../vuefire'
+import {
+  USER_ECOSYSTEM_AVATAR_SRC,
+  UserStorage,
+  type User,
+} from '../../../../../../../models/core/user.model'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'
@@ -45,7 +47,7 @@ export function useCoreUserUpdate(user: UserRefs) {
 
   const updateCore = (data: Record<string, unknown>) =>
     useFirestoreUpdate({ databaseId: identityDatabaseId }).updateDocument<User>(
-      UserStorage.rootCollection,
+      UserStorage.collection,
       requireCoreId(),
       data as Partial<User>
     )
@@ -94,7 +96,7 @@ export function useCoreUserUpdate(user: UserRefs) {
     uploadAvatar: async (source: File | Blob) => {
       const id = requireCoreId()
       const extension = avatarFileExtension(source)
-      const path = `${UserStorage.rootCollection}/${id}/avatar/${Date.now()}.${extension}`
+      const path = `${UserStorage.collection}/${id}/avatar/${Date.now()}.${extension}`
       const { uploadImage } = useImageStorage()
       const url = await uploadImage(path, source)
       const formatted = formatAndValidate(

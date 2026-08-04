@@ -8,11 +8,11 @@ import {
 import {
   readRecord,
   readRecordString,
-} from 'fireux-core/runtime/server/utils/records/read.ts'
+} from 'fireux-core/runtime/server/utils/records/read'
 import {
   downloadStorageFile,
   runtimeStorageBucketName,
-} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
+} from 'fireux-core/runtime/server/utils/uploads/storage'
 import { resolvePublicMenuTarget } from '../../../menu/ownership/public-target.ts'
 
 export default defineEventHandler(async (event) => {

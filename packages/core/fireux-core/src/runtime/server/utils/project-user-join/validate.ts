@@ -1,7 +1,5 @@
-import type {
-  ProjectUserJoinPublicationV1,
-  ProjectUserJoinRole,
-} from '../../../models/operations/project-user-join.model'
+import type { AppUserRole } from '../../../models/core/user.model'
+import type { ProjectUserJoinPublicationV1 } from '../../../models/operations/project-user-join.model'
 
 const ID = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,1499}$/
 const EVENT_ID = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,1499}$/
@@ -93,7 +91,7 @@ export function parseProjectUserJoinPublicationV1(
       app_id: id(source.app_id, 'App id'),
     },
     user_id: id(input.user_id, 'User id'),
-    membership_role: membershipRole as ProjectUserJoinRole,
+    membership_role: membershipRole as AppUserRole,
     occurred_at: new Date(occurredAtMs).toISOString(),
   }
 }

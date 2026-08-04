@@ -1,7 +1,7 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
-import { configureComposables } from './config/module/composables-config'
 import { configureServer } from './config/module/server-config'
 
 export type FireuxMarketplaceModuleOptions = {
@@ -34,7 +34,7 @@ export default defineNuxtModule<FireuxMarketplaceModuleOptions>({
           },
           { merge: true }
         ),
-      composables: configureComposables,
+      composables: registerComposablesDir,
       server: configureServer,
     })
   },

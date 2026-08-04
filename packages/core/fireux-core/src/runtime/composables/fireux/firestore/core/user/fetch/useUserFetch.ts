@@ -9,19 +9,17 @@ import {
   readRuntimeIdentityFirestoreDatabaseId,
   useDocument,
   useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+} from '../../../vuefire'
 import type { Ref } from 'vue'
 import { computed, isRef, watch } from 'vue'
-import type {
-  UserPrivate,
-  User,
-} from '../../../../../../models/core/user.model'
+import type { User } from '../../../../../../models/core/user.model'
+import { UserStorage } from '../../../../../../models/core/user.model'
 import {
-  UserPrivateModel,
-  UserPrivateStorage,
-  UserStorage,
-} from '../../../../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../../../../models/utils/user-avatar'
+  type UserAccount,
+  UserAccountModel,
+  UserAccountStorage,
+} from '../../../../../../models/operations/user-account.model'
+import { resolveUserAvatarSource } from '../../../../../../utils/user-avatar'
 import type { CurrentAppMembershipDto } from '../../../../../../server/utils/public-projection/public-dto.types'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/useCurrentAppContext'
@@ -55,17 +53,17 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
   }
 }
 
-function normalizeUserPrivate(
-  raw: UserPrivate,
+function normalizeUserAccount(
+  raw: UserAccount,
   fallbackId: string
-): UserPrivate {
+): UserAccount {
   const preferences =
     raw.preferences && typeof raw.preferences === 'object'
       ? raw.preferences
-      : UserPrivateModel.preferences
+      : UserAccountModel.preferences
   const theme = ['system', 'light', 'dark'].includes(String(preferences.theme))
     ? preferences.theme
-    : UserPrivateModel.preferences.theme
+    : UserAccountModel.preferences.theme
 
   return {
     ...raw,
@@ -75,18 +73,18 @@ function normalizeUserPrivate(
       language:
         typeof preferences.language === 'string' && preferences.language.trim()
           ? preferences.language
-          : UserPrivateModel.preferences.language,
+          : UserAccountModel.preferences.language,
       theme,
       email_security_alerts:
         typeof preferences.email_security_alerts === 'boolean'
           ? preferences.email_security_alerts
-          : UserPrivateModel.preferences.email_security_alerts,
+          : UserAccountModel.preferences.email_security_alerts,
       share_usage_analytics:
         typeof preferences.share_usage_analytics === 'boolean'
           ? preferences.share_usage_analytics
-          : UserPrivateModel.preferences.share_usage_analytics,
+          : UserAccountModel.preferences.share_usage_analytics,
     },
-    terms: raw.terms ?? UserPrivateModel.terms,
+    terms: raw.terms ?? UserAccountModel.terms,
   }
 }
 
@@ -152,7 +150,7 @@ export function useUserFetch(
     const appUser = computed<CurrentAppMembershipDto | null | undefined>(
       () => null
     )
-    const privateUser = computed<UserPrivate | null | undefined>(() => null)
+    const privateUser = computed<UserAccount | null | undefined>(() => null)
     const user = computed<User | null>(() => null)
     const pending = computed(() => false)
     const coreError = computed<unknown>(() => null)
@@ -184,7 +182,7 @@ export function useUserFetch(
 
   const coreDoc = computed(() =>
     uid.value
-      ? (doc(identityDb, UserStorage.rootCollection, uid.value) as any)
+      ? (doc(identityDb, UserStorage.collection, uid.value) as any)
       : null
   )
 
@@ -192,10 +190,10 @@ export function useUserFetch(
     uid.value && includePrivate
       ? (doc(
           identityDb,
-          UserStorage.rootCollection,
+          UserStorage.collection,
           uid.value,
-          UserPrivateStorage.collection,
-          UserPrivateStorage.document
+          UserAccountStorage.collection,
+          UserAccountStorage.document
         ) as any)
       : null
   )
@@ -206,7 +204,7 @@ export function useUserFetch(
       ssrKey: 'user-fetch-core',
     } as any
   )
-  const privateState = useDocument<UserPrivate | undefined>(
+  const privateState = useDocument<UserAccount | undefined>(
     privateDoc as any,
     {
       ssrKey: 'user-fetch-private',
@@ -248,12 +246,12 @@ export function useUserFetch(
   })
   guardDocumentPromise(
     coreState as any,
-    () => `${UserStorage.rootCollection}/${uid.value ?? ''}`
+    () => `${UserStorage.collection}/${uid.value ?? ''}`
   )
   guardDocumentPromise(
     privateState as any,
     () =>
-      `${UserStorage.rootCollection}/${uid.value ?? ''}/${UserPrivateStorage.collection}/${UserPrivateStorage.document}`
+      `${UserStorage.collection}/${uid.value ?? ''}/${UserAccountStorage.collection}/${UserAccountStorage.document}`
   )
 
   const coreUser = computed<User | null | undefined>(() => {
@@ -274,12 +272,12 @@ export function useUserFetch(
     return appContext?.membership.value ?? null
   })
 
-  const privateUser = computed<UserPrivate | null | undefined>(() => {
+  const privateUser = computed<UserAccount | null | undefined>(() => {
     if (!privateDoc.value) return null
     if (privatePending.value) return undefined
     const raw = privateUserRef.value
     if (!raw) return null
-    return normalizeUserPrivate(raw as UserPrivate, uid.value ?? '')
+    return normalizeUserAccount(raw as UserAccount, uid.value ?? '')
   })
 
   const coreOutcome = computed<UserFetchOutcome>(() => {

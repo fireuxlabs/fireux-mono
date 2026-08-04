@@ -68,7 +68,7 @@ async function mutateInTransaction(
 
     if (input.action === 'ensure-self') {
       const userRef = (sameDatabase ? appDb : identityDb)
-        .collection(UserStorage.rootCollection)
+        .collection(UserStorage.collection)
         .doc(actorUid)
       await requireIdentityUser(
         transaction,
@@ -123,7 +123,7 @@ async function mutateInTransaction(
         forbidden(403, 'Only the configured developer can bootstrap this App.')
       }
       const userRef = (sameDatabase ? appDb : identityDb)
-        .collection(UserStorage.rootCollection)
+        .collection(UserStorage.collection)
         .doc(actorUid)
       await requireIdentityUser(
         transaction,
@@ -281,7 +281,7 @@ export async function mutateRuntimeAppMembership(
 
   if (!sameDatabase && requiredUserId) {
     const snapshot = await identityDb
-      .collection(UserStorage.rootCollection)
+      .collection(UserStorage.collection)
       .doc(requiredUserId)
       .get()
     if (!snapshot.exists) {
@@ -300,7 +300,7 @@ export async function mutateRuntimeAppMembership(
 
   if (!sameDatabase && outcome.identityMirror) {
     const userRef = identityDb
-      .collection(UserStorage.rootCollection)
+      .collection(UserStorage.collection)
       .doc(outcome.userId)
     const userSnapshot = await userRef.get()
     if (userSnapshot.exists) {

@@ -1,4 +1,4 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { Company } from '../../models/company.model'
 
 const record = (value: unknown): Record<string, unknown> | null =>

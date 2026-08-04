@@ -1,9 +1,9 @@
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { CompanyStorage } from 'fireux-companies/runtime/models/company.model.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
   PUBLIC_JOB_INDEX_MAX_PAGE_SIZE,
   PUBLIC_JOB_INDEX_MAX_SCAN_SIZE,

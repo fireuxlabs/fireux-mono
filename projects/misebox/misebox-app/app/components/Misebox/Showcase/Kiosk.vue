@@ -40,11 +40,11 @@
       </UButton>
 
       <div class="showcase-kiosk__preview-status">
-        <UBadge color="neutral" variant="soft">
-          Demo preview
-        </UBadge>
+        <UBadge color="neutral" variant="soft"> Demo preview </UBadge>
         <span class="showcase-kiosk__preview-copy">
-          <small class="showcase-kiosk__preview-safety">No live orders are sent</small>
+          <small class="showcase-kiosk__preview-safety"
+            >No live orders are sent</small
+          >
           <small class="showcase-kiosk__preview-target">
             <UIcon name="i-lucide-monitor-smartphone" aria-hidden="true" />
             Optimised for 1080 × 1920 portrait
@@ -172,6 +172,11 @@ type DemoKitchenOption = {
   tagline: string
 }
 
+type PositionedScreen = Screen & {
+  availLeft?: number
+  availTop?: number
+}
+
 const props = defineProps<{
   appearance: MiseboxProductDemoKioskAppearance
   embeddedPreview?: boolean
@@ -189,30 +194,28 @@ defineEmits<{
 
 const kioskConfigs = computed(() =>
   (props.manifest.behaviour.ordering?.order_types || []).filter(
-    config => config.type === 'eat_in' || config.type === 'takeaway'
+    (config) => config.type === 'eat_in' || config.type === 'takeaway'
   )
 )
 
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: computed(() => props.manifest.presentation.pageStyle),
-  colorMode: 'light',
-  pageCanvas: true,
-})
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: computed(() => props.manifest.presentation.pageStyle),
+    colorMode: 'light',
+    pageCanvas: true,
+  })
 
 const previewOpen = ref(false)
 const previewScale = ref(0.5)
-const standalonePreviewStyle = computed<Record<string, string> | undefined>(() =>
-  props.standalonePreview
-    ? { '--demo-kiosk-window-scale': String(previewScale.value) }
-    : undefined
+const standalonePreviewStyle = computed<Record<string, string> | undefined>(
+  () =>
+    props.standalonePreview
+      ? { '--demo-kiosk-window-scale': String(previewScale.value) }
+      : undefined
 )
 
 function updatePreviewScale() {
-  if (!import.meta.client)
-    return
+  if (!import.meta.client) return
 
   if (props.standalonePreview) {
     previewScale.value = Math.min(
@@ -222,7 +225,6 @@ function updatePreviewScale() {
     )
     return
   }
-
 }
 
 onMounted(() => {
@@ -235,26 +237,28 @@ onBeforeUnmount(() => {
 })
 
 function openPortraitPreview() {
-  if (!import.meta.client)
-    return
+  if (!import.meta.client) return
 
   const previewUrl = new URL(window.location.href)
   previewUrl.searchParams.set('viewport', '1080x1920')
   previewUrl.searchParams.delete('embedded')
   previewUrl.searchParams.delete('previewRequest')
 
-  const availableWidth = Math.max(window.screen.availWidth - 64, 480)
-  const availableHeight = Math.max(window.screen.availHeight - 64, 720)
+  const availableScreen = window.screen as PositionedScreen
+  const availableLeft = availableScreen.availLeft ?? 0
+  const availableTop = availableScreen.availTop ?? 0
+  const availableWidth = Math.max(availableScreen.availWidth - 64, 480)
+  const availableHeight = Math.max(availableScreen.availHeight - 64, 720)
   const popupScale = Math.min(availableWidth / 1080, availableHeight / 1920, 1)
   const popupWidth = Math.round(1080 * popupScale)
   const popupHeight = Math.round(1920 * popupScale)
   const popupLeft = Math.max(
-    window.screen.availLeft + Math.round((window.screen.availWidth - popupWidth) / 2),
-    window.screen.availLeft
+    availableLeft + Math.round((availableScreen.availWidth - popupWidth) / 2),
+    availableLeft
   )
   const popupTop = Math.max(
-    window.screen.availTop + Math.round((window.screen.availHeight - popupHeight) / 2),
-    window.screen.availTop
+    availableTop + Math.round((availableScreen.availHeight - popupHeight) / 2),
+    availableTop
   )
 
   const portraitWindow = window.open(
@@ -279,8 +283,8 @@ function openPortraitPreview() {
     portraitWindow.moveTo(popupLeft, popupTop)
 
     const openedAsDetachedWindow =
-      portraitWindow.outerWidth <= popupWidth + 160
-      && portraitWindow.outerHeight <= popupHeight + 220
+      portraitWindow.outerWidth <= popupWidth + 160 &&
+      portraitWindow.outerHeight <= popupHeight + 220
 
     if (openedAsDetachedWindow) {
       portraitWindow.location.replace(previewUrl.toString())

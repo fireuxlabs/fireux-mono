@@ -5,9 +5,9 @@
 import type {
   PublicProfileHandlerConfig,
   PublicProfileMapper,
-} from 'fireux-core/runtime/server/utils/public-projection/public-profile.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId.ts'
-import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl.ts'
+} from 'fireux-core/runtime/server/utils/public-projection/public-profile'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/utils/firestoreDocumentId'
+import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
 import { ProfessionalConstraints } from '../../../models/profiles/Professional/Professional.model'
 
 function text(value: unknown, max: number): string {

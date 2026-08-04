@@ -6,7 +6,7 @@ import {
 } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
-import { resolveAppUserAccess } from '../../../../models/utils/app-user-access'
+import { resolveAppUserAccess } from '../../../../utils/app-user-access.ts'
 import { AppUserStorage } from '../../../../models/core/user.model'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
@@ -32,11 +32,11 @@ function stringList(
   if (
     !Array.isArray(value) ||
     value.length > options.max ||
-    value.some(entry => typeof entry !== 'string')
+    value.some((entry) => typeof entry !== 'string')
   ) {
     conflict(`${label} is malformed.`)
   }
-  const entries = value.map(entry => entry.trim())
+  const entries = value.map((entry) => entry.trim())
   if (
     entries.some(
       (entry, index) =>
@@ -68,9 +68,7 @@ function membershipDto(
     conflict('Current App membership has invalid capability fields.')
   }
   const onboardingStatus =
-    value.onboarding_status === undefined
-      ? 'pending'
-      : value.onboarding_status
+    value.onboarding_status === undefined ? 'pending' : value.onboarding_status
   if (
     onboardingStatus !== 'pending' &&
     onboardingStatus !== 'completed' &&
@@ -93,40 +91,36 @@ function membershipDto(
     onboarding_status: onboardingStatus,
     profiles: stringList(value.profiles ?? [], 'Current App profiles', {
       max: 20,
-      allowed: new Set([
-        'agent',
-        'chef',
-        'customer',
-        'driver',
-        'professional',
-      ]),
+      allowed: new Set(['agent', 'chef', 'customer', 'driver', 'professional']),
     }),
   }
 }
 
 export default defineEventHandler(async (event: H3Event) => {
   const { uid } = await requireFirebaseBearerUser(event)
-  const { appId, developerId } = useFireUXConfig()
+  const { appId, developerId } = useFireUXConfig(event)
   const appRef = getRuntimeFirestore()
     .collection(AppStorage.collection)
     .doc(appId)
-  const membershipRef = appRef
-    .collection(AppUserStorage.collection)
-    .doc(uid)
+  const membershipRef = appRef.collection(AppUserStorage.collection).doc(uid)
   const [appSnapshot, membershipSnapshot] = await getRuntimeFirestore().getAll(
     appRef,
     membershipRef
   )
 
-  const app = appSnapshot.exists
-    ? projectPublicApp(
-        (appSnapshot.data() || {}) as Record<string, unknown>,
-        { id: appSnapshot.id }
-      )
+  const appData = (appSnapshot.data() || {}) as Record<string, unknown>
+  const projectedApp = appSnapshot.exists
+    ? projectPublicApp(appData, { id: appSnapshot.id })
     : null
-  if (appSnapshot.exists && !app) {
+  if (appSnapshot.exists && !projectedApp) {
     conflict('Current App has an invalid canonical shape.')
   }
+  const app = projectedApp
+    ? {
+        ...projectedApp,
+        self_join_enabled: appData.self_join_enabled === true,
+      }
+    : null
 
   const membership = membershipSnapshot.exists
     ? membershipDto(

@@ -27,7 +27,7 @@ import { computed } from 'vue'
 import { createError, useAsyncData, useSeoMeta } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
-import type { FireuxMetaOperation } from '../../models/system/meta-content.model'
+import type { FireuxMetaOperation } from '../../../config/app/meta-content'
 
 type OperationsResponse = {
   ok: boolean

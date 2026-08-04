@@ -7,10 +7,7 @@
       compact
     >
       <template #controls>
-        <UFieldGroup
-          v-if="showFilters"
-          size="sm"
-        >
+        <UFieldGroup v-if="showFilters" size="sm">
           <UButton
             color="neutral"
             :variant="activeEntityFamily === 'all' ? 'solid' : 'ghost'"
@@ -43,9 +40,7 @@
           size="sm"
           color="neutral"
           variant="ghost"
-          :icon="
-            variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'
-          "
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
           :aria-label="
             variant === 'pill'
               ? 'Switch to card view'
@@ -94,10 +89,7 @@
     </CollectionDirectoryState>
 
     <div v-else-if="cardsFiltered.length" class="place-directory__results">
-      <PlaceCollectionList
-        :cards="cardsFiltered"
-        :variant="variant"
-      >
+      <PlaceCollectionList :cards="cardsFiltered" :variant="variant">
         <template #pill="{ card }">
           <PlaceCardsPill v-bind="card" :link="linkEnabled" />
         </template>
@@ -122,7 +114,7 @@
           color="neutral"
           :loading="loadingMore"
           :disabled="loadingMore"
-          @click="loadMore"
+          @click="handleLoadMore"
         />
       </div>
     </div>
@@ -181,7 +173,8 @@ const props = withDefaults(
   }>(),
   {
     title: 'Place directory',
-    description: 'Explore venues and the physical places behind local services.',
+    description:
+      'Explore venues and the physical places behind local services.',
     link: true,
     searchPlaceholder: 'Search places…',
     showSearch: true,
@@ -198,13 +191,16 @@ const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
-const loadMore = () => fetched.loadMore()
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+async function handleLoadMore(): Promise<void> {
+  await fetched.loadMore()
+}
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Place directory'))
 const description = computed(() =>
   String(
     props.description ||
-    'Explore venues and the physical places behind local services.'
+      'Explore venues and the physical places behind local services.'
   )
 )
 const linkEnabled = computed(() => props.link !== false)
@@ -246,12 +242,14 @@ const showFilters = computed(
   () => showFilterToggle.value && entityFamilyFilters.value.length > 0
 )
 
-const { query, variant, toggleVariant, visibleItems } =
-  useCollectionSearch<BasePlace, NonNullable<ReturnType<typeof makeCard>>>({
-    items: collection,
-    makeCard: (place: BasePlace) => makeCard(place),
-    initialVariant: props.initialVariant,
-  })
+const { query, variant, toggleVariant, visibleItems } = useCollectionSearch<
+  BasePlace,
+  NonNullable<ReturnType<typeof makeCard>>
+>({
+  items: collection,
+  makeCard: (place: BasePlace) => makeCard(place),
+  initialVariant: props.initialVariant,
+})
 
 const filteredVisibleItems = computed(() =>
   visibleItems.value.filter((place) => matchesEntityFamilyFilter(place))
@@ -294,7 +292,12 @@ watch(
   entityFamilyFilters,
   (nextFilters: Array<{ id: string }>) => {
     if (activeEntityFamily.value === 'all') return
-    if (nextFilters.some((filter: { id: string }) => filter.id === activeEntityFamily.value)) return
+    if (
+      nextFilters.some(
+        (filter: { id: string }) => filter.id === activeEntityFamily.value
+      )
+    )
+      return
     activeEntityFamily.value = 'all'
   },
   { immediate: true }

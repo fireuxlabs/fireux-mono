@@ -1,15 +1,15 @@
 // Concurrent edit — 2026-07-21 16:27 CEST — FireUX Finance pass: derive a source-resolvable immutable Sale and gross-sale fact from Order completion.
 // Concurrent edit — 2026-07-21 17:04 CEST — Misebox Nitro finance import fix: use explicit TypeScript server and model imports.
-import type { FinancialFact } from 'fireux-finance/runtime/models/financial-fact.model.ts'
+import type { FinancialFact } from 'fireux-finance/runtime/models/financial-fact.model'
 import {
   buildFinancialFact,
   financialFactPath,
-} from 'fireux-finance/runtime/server/financial-fact.ts'
+} from 'fireux-finance/runtime/server/financial-fact'
 import {
   addFinancialMoney,
   financialMoneyFromDecimal,
   multiplyFinancialMoney,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import {
   isKitchenOrderChannel,
   isKitchenOrderType,

@@ -1,4 +1,4 @@
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type { DocumentReference } from 'firebase-admin/firestore'
 
 export async function writeKitchenMenuAiUsage(input: {

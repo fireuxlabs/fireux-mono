@@ -108,7 +108,15 @@ export function useConsoleSelection<TTarget = never>(
       type: selectedType.value,
       canonicalId: normalizeString(state.value?.id),
     }),
-    ({ id, type, canonicalId }) => {
+    ({
+      id,
+      type,
+      canonicalId,
+    }: {
+      id: string
+      type: ConsoleDataType | null
+      canonicalId: string
+    }) => {
       if (!id || (canonicalId === id && type)) return
       state.value = {
         id,
@@ -152,7 +160,7 @@ export function useConsoleSelection<TTarget = never>(
       id: selectedId.value,
       type: selectedType.value,
     }),
-    ({ id, type }) => {
+    ({ id, type }: { id: string; type: ConsoleDataType | null }) => {
       if (!id || !type || consoleRoot.source.value === type) return
       consoleRoot.setSource(type)
     },

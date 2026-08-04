@@ -10,12 +10,12 @@ import {
   setResponseStatus,
   type H3Event,
 } from 'h3'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   AppUserStorage,
-  UserNotificationStorage,
   UserStorage,
-} from 'fireux-core/runtime/models/core/user.model.ts'
+} from 'fireux-core/runtime/models/core/user.model'
+import { UserNotificationStorage } from 'fireux-core/runtime/models/operations/user-notification.model'
 import { getFirestoreDb } from '../../utils/firebase-admin'
 import {
   emptyIgnitionChecklist,
@@ -78,7 +78,7 @@ async function publishOwnerNotifications(input: {
   const batch = db.batch()
   for (const userId of userIds) {
     const notificationRef = db
-      .collection(UserStorage.rootCollection)
+      .collection(UserStorage.collection)
       .doc(userId)
       .collection(UserNotificationStorage.collection)
       .doc(`ignition-${input.requestId}`)

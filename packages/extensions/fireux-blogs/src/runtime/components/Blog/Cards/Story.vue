@@ -79,11 +79,7 @@ const badge = computed(() => ({
 }))
 const visibleTags = computed(() =>
   Array.from(
-    new Set(
-      props.tags
-        .map((tag) => String(tag || '').trim())
-        .filter(Boolean)
-    )
+    new Set(props.tags.map((tag) => String(tag || '').trim()).filter(Boolean))
   ).slice(0, props.lead ? 3 : 2)
 )
 const readingTimeLabel = computed(() => {
@@ -118,8 +114,8 @@ const authors = computed(() => [
 const image = computed(() => ({
   src: props.imageUrl,
   alt: '',
-  loading: props.lead ? 'eager' : 'lazy',
-  decoding: 'async',
+  loading: (props.lead ? 'eager' : 'lazy') as 'eager' | 'lazy',
+  decoding: 'async' as const,
   ...(props.lead ? { fetchpriority: 'high' } : {}),
 }))
 
@@ -194,9 +190,7 @@ const blogPostUi = {
 }
 
 .blog-story--lead :deep(.blog-story__footer-slot) {
-  padding:
-    0 calc(var(--spacing) * 4)
-    calc(var(--spacing) * 4);
+  padding: 0 calc(var(--spacing) * 4) calc(var(--spacing) * 4);
 }
 
 .blog-story__footer {
@@ -226,9 +220,7 @@ const blogPostUi = {
 @media (min-width: 64rem) {
   .blog-story--lead :deep(.blog-story__footer-slot) {
     grid-column: 1 / -1;
-    padding:
-      0 calc(var(--spacing) * 6)
-      calc(var(--spacing) * 6);
+    padding: 0 calc(var(--spacing) * 6) calc(var(--spacing) * 6);
   }
 }
 

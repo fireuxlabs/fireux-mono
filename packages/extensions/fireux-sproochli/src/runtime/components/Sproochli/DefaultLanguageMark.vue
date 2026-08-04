@@ -6,11 +6,14 @@
     aria-hidden="true"
     decoding="async"
     draggable="false"
-  >
+  />
 </template>
 
 <script setup lang="ts">
-import defaultLanguageMarkUrl from '../../assets/sproochli/default-language-mark.webp'
+const defaultLanguageMarkUrl = new URL(
+  '../../assets/sproochli/default-language-mark.webp',
+  import.meta.url
+).href
 </script>
 
 <style scoped>

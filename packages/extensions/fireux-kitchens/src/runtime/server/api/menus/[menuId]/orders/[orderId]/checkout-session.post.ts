@@ -8,8 +8,8 @@ import {
 } from 'h3'
 import { createHash } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   isKitchenOrderPostPaymentStatus,
   type KitchenOrderType,

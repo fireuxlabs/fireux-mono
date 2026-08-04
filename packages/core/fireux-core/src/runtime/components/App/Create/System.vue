@@ -5,32 +5,22 @@
       <AuthSystem />
     </template>
 
-    <!-- 2) PIN -->
-    <template v-else-if="!isUnlocked">
-      <div class="flex min-h-[30vh] flex-col items-center justify-center gap-4">
-        <p class="text-sm text-muted">🔒 Enter the developer PIN to continue.</p>
-        <UPinInput
-          v-model="pin"
-          :length="pinLength"
-          type="number"
-          placeholder="○"
-          @complete="checkPin"
-        />
-        <p v-if="pinError" class="text-xs text-error">{{ pinError }}</p>
-      </div>
-    </template>
-
-    <!-- 3) Env check + proceed -->
+    <!-- 2) Env check + proceed -->
     <template v-else>
       <div class="space-y-6 py-6">
         <header class="flex flex-wrap items-center justify-between gap-3">
           <div class="flex items-center gap-2">
             <h2 class="text-lg font-semibold">Environment Check</h2>
-            <UBadge :color="env?.isValid ? 'success' : 'warning'" variant="soft">
+            <UBadge
+              :color="env?.isValid ? 'success' : 'warning'"
+              variant="soft"
+            >
               {{ env?.isValid ? 'ready' : 'pending' }}
             </UBadge>
           </div>
-          <UButton size="xs" variant="soft" @click="onRefreshEnv">Refresh</UButton>
+          <UButton size="xs" variant="soft" @click="onRefreshEnv"
+            >Refresh</UButton
+          >
         </header>
 
         <AppCreateOnboardingVariables
@@ -81,10 +71,6 @@ const props = defineProps<{
 
 const {
   coreUser,
-  isUnlocked,
-  pin,
-  pinError,
-  pinLength,
   env,
   envError,
   pending,
@@ -92,7 +78,6 @@ const {
   canProceed,
   bypassWarning,
   proceedError,
-  checkPin,
   onRefreshEnv,
   onProceed,
 } = props.state ?? useAppOnboarding()

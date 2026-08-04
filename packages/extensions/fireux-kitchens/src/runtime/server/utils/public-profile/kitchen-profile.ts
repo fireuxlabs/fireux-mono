@@ -4,9 +4,9 @@
 import type {
   PublicProfileHandlerConfig,
   PublicProfileMapper,
-} from 'fireux-core/runtime/server/utils/public-projection/public-profile.ts'
-import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl.ts'
-import { CHEF_GALLERY_MAX_ITEMS } from 'fireux-kitchens/runtime/models/chef.model.ts'
+} from 'fireux-core/runtime/server/utils/public-projection/public-profile'
+import { readHttpsUrl } from 'fireux-core/runtime/utils/httpsUrl'
+import { CHEF_GALLERY_MAX_ITEMS } from '../../../models/chef.model.ts'
 
 function text(value: unknown, max: number): string {
   return typeof value === 'string' ? value.trim().slice(0, max) : ''

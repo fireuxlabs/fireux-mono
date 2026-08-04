@@ -4,33 +4,33 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import {
-  UserPrivateModel,
-  UserPrivateStorage,
-  UserStorage,
-} from '../../../models/core/user.model'
+  UserAccountModel,
+  UserAccountStorage,
+} from '../../../models/operations/user-account.model'
+import { UserStorage } from '../../../models/core/user.model'
 import {
   FIREUX_ACCOUNT_TERMS_VERSION,
   type UserAccountProvisioningResult,
 } from '../../../models/operations/user-account-provisioning'
 import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
 
-type ProvisionUserPrivateAccountInput = {
+type ProvisionUserAccountInput = {
   uid: string
   email: string
   emailVerified: boolean
   termsVersion?: string
 }
 
-export async function provisionUserPrivateAccount(
-  input: ProvisionUserPrivateAccountInput
+export async function provisionUserAccount(
+  input: ProvisionUserAccountInput
 ): Promise<UserAccountProvisioningResult> {
   const db = getRuntimeIdentityFirestore()
-  const userRef = db.collection(UserStorage.rootCollection).doc(input.uid)
+  const userRef = db.collection(UserStorage.collection).doc(input.uid)
   const ref = db
-    .collection(UserStorage.rootCollection)
+    .collection(UserStorage.collection)
     .doc(input.uid)
-    .collection(UserPrivateStorage.collection)
-    .doc(UserPrivateStorage.document)
+    .collection(UserAccountStorage.collection)
+    .doc(UserAccountStorage.document)
 
   return db.runTransaction(async (transaction) => {
     const [userSnapshot, snapshot] = await transaction.getAll(userRef, ref)
@@ -44,8 +44,7 @@ export async function provisionUserPrivateAccount(
       const termsUnrecorded =
         recordedVersion === '' && terms?.accepted_at == null
       const shouldRecordCurrentTerms =
-        input.termsVersion === FIREUX_ACCOUNT_TERMS_VERSION &&
-        termsUnrecorded
+        input.termsVersion === FIREUX_ACCOUNT_TERMS_VERSION && termsUnrecorded
       const emailChanged =
         input.emailVerified &&
         String(snapshot.get('email') || '').trim() !== input.email
@@ -58,7 +57,11 @@ export async function provisionUserPrivateAccount(
         })
       }
 
-      if (!userSnapshot.exists && !currentTermsRecorded && !shouldRecordCurrentTerms) {
+      if (
+        !userSnapshot.exists &&
+        !currentTermsRecorded &&
+        !shouldRecordCurrentTerms
+      ) {
         throw createError({
           statusCode: 409,
           statusMessage:
@@ -69,12 +72,14 @@ export async function provisionUserPrivateAccount(
       if (shouldRecordCurrentTerms || emailChanged) {
         transaction.update(ref, {
           ...(emailChanged ? { email: input.email } : {}),
-          ...(shouldRecordCurrentTerms ? {
-          terms: {
-            version: input.termsVersion,
-            accepted_at: FieldValue.serverTimestamp(),
-          },
-          } : {}),
+          ...(shouldRecordCurrentTerms
+            ? {
+                terms: {
+                  version: input.termsVersion,
+                  accepted_at: FieldValue.serverTimestamp(),
+                },
+              }
+            : {}),
           updated: {
             at: FieldValue.serverTimestamp(),
             by: input.uid,
@@ -103,7 +108,7 @@ export async function provisionUserPrivateAccount(
     }
     transaction.create(ref, {
       email: input.email,
-      preferences: { ...UserPrivateModel.preferences },
+      preferences: { ...UserAccountModel.preferences },
       terms: input.termsVersion
         ? {
             version: input.termsVersion,

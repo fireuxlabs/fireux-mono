@@ -2,7 +2,7 @@ import {
   defineEventHandler,
   getQuery,
 } from 'h3'
-import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability.ts'
+import { checkPublicSlugAvailability } from 'fireux-core/runtime/server/utils/slug/checkPublicSlugAvailability'
 import {
   goQrDocRef,
   reservedGoQrDocSlugs,

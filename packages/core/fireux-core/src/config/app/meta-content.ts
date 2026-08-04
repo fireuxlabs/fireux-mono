@@ -5,7 +5,16 @@ import type {
   FireuxMetaChecklistItem,
   FireuxMetaContent,
   FireuxMetaSolution,
-} from '../../runtime/models/system/meta-content.model'
+} from './meta-content.types'
+
+export type * from './meta-content.types'
+
+/** Type-preserving helper for authored `app/meta.ts` configuration. */
+export function defineFireuxMeta<const T extends FireuxMetaContent>(
+  meta: T
+): T {
+  return meta
+}
 
 type FireuxSolutionMarkdownContent = Pick<
   FireuxMetaSolution,
@@ -24,14 +33,20 @@ export function loadFireuxAppMetaContent(
 
   try {
     const loadTypeScriptModule = createJiti(import.meta.url)
-    const loaded = loadTypeScriptModule(appMeta) as { metaContent?: FireuxMetaContent }
+    const loaded = loadTypeScriptModule(appMeta) as {
+      metaContent?: FireuxMetaContent
+    }
     if (!loaded.metaContent) {
-      throw new Error(`[fireux] App meta file must export metaContent: ${appMeta}`)
+      throw new Error(
+        `[fireux] App meta file must export metaContent: ${appMeta}`
+      )
     }
     return loaded.metaContent
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    throw new Error(`[fireux] Failed to load app meta from ${appMeta}: ${message}`)
+    throw new Error(
+      `[fireux] Failed to load app meta from ${appMeta}: ${message}`
+    )
   }
 }
 
@@ -59,7 +74,8 @@ function parseFireuxSolutionsMarkdown(
   const out: Record<string, FireuxSolutionMarkdownContent> = {}
   const lines = markdown.replace(/\r\n/g, '\n').split('\n')
   let slug = ''
-  let mode: 'body' | 'steps' | 'businessCase' | 'provisioning' | 'checklist' = 'body'
+  let mode: 'body' | 'steps' | 'businessCase' | 'provisioning' | 'checklist' =
+    'body'
   let bodyLines: string[] = []
   let steps: string[] = []
   let businessCaseLines: string[] = []
@@ -128,7 +144,9 @@ function parseFireuxSolutionsMarkdown(
     }
 
     if (mode === 'provisioning' || mode === 'checklist') {
-      const item = line.match(/^\s*(?:[-*]|\d+\.)\s+(?:\[( |x|X)\]\s*)?(.+?)\s*$/)
+      const item = line.match(
+        /^\s*(?:[-*]|\d+\.)\s+(?:\[( |x|X)\]\s*)?(.+?)\s*$/
+      )
       if (item?.[2]) {
         const label = (item[2] || '').trim()
         if (!label) continue
@@ -146,7 +164,10 @@ function parseFireuxSolutionsMarkdown(
   return out
 }
 
-export function loadFireuxSolutionsMarkdown(): Record<string, FireuxSolutionMarkdownContent> {
+export function loadFireuxSolutionsMarkdown(): Record<
+  string,
+  FireuxSolutionMarkdownContent
+> {
   const solutionContentPath = resolve(process.cwd(), 'app/solutions.md')
   if (!existsSync(solutionContentPath)) return {}
 
@@ -169,9 +190,15 @@ export function mergeFireuxSolutionMarkdownContent(
         ...solution,
         ...(markdown.body ? { body: markdown.body } : {}),
         ...(markdown.steps?.length ? { steps: markdown.steps } : {}),
-        ...(markdown.businessCase ? { businessCase: markdown.businessCase } : {}),
-        ...(markdown.provisioning?.length ? { provisioning: markdown.provisioning } : {}),
-        ...(markdown.checklist?.length ? { checklist: markdown.checklist } : {}),
+        ...(markdown.businessCase
+          ? { businessCase: markdown.businessCase }
+          : {}),
+        ...(markdown.provisioning?.length
+          ? { provisioning: markdown.provisioning }
+          : {}),
+        ...(markdown.checklist?.length
+          ? { checklist: markdown.checklist }
+          : {}),
       }
     }),
   }

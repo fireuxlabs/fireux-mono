@@ -6,7 +6,7 @@ import type { ProjectSurface } from '../utils/view/useProjectInterface'
 import { useProjectInterface } from '../utils/view/useProjectInterface'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import type { FirestoreCollectionOutcome } from '../../../operations/useFirestoreCollection'
-import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
+import type { ConsoleSource } from '../../../../app/console/useConsole'
 import { useAuth } from '../../../../firebase/useAuth'
 
 type ProjectControlResponse = {

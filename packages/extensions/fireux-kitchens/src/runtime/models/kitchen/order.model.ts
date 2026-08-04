@@ -1,6 +1,6 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type { DishItemKind } from './dish.model'
 import {
   type KitchenOrderChannel,

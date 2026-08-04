@@ -1,11 +1,5 @@
-import {
-  computed,
-  ref,
-  toValue,
-  watch,
-  type MaybeRefOrGetter,
-} from 'vue'
-import { formatCurrencyAmount } from 'fireux-core/runtime/models/utils/money.model'
+import { computed, ref, toValue, watch, type MaybeRefOrGetter } from 'vue'
+import { formatCurrencyAmount } from '../../../../utils/currency-display'
 import type {
   MenuManifestAddOn,
   MenuManifestItem,
@@ -45,7 +39,9 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
   const lines = ref<MenuOrderBasketLine[]>([])
   let lineSequence = 0
   const currencyCode = computed(() => {
-    const code = String(toValue(options.currencyCode) || '').trim().toUpperCase()
+    const code = String(toValue(options.currencyCode) || '')
+      .trim()
+      .toUpperCase()
 
     return /^[A-Z]{3}$/.test(code) ? code : 'CHF'
   })
@@ -77,7 +73,10 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
 
     let remaining = resolved.quantity
     for (const line of lines.value) {
-      if (line.configurationKey !== resolved.configurationKey || line.quantity >= 99) {
+      if (
+        line.configurationKey !== resolved.configurationKey ||
+        line.quantity >= 99
+      ) {
         continue
       }
 
@@ -120,7 +119,9 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
     const id = canonicalText(lineId)
     if (!id) return false
 
-    const lineIndex = lines.value.findIndex(candidate => candidate.id === id)
+    const lineIndex = lines.value.findIndex(
+      (candidate: MenuOrderBasketLine) => candidate.id === id
+    )
     if (lineIndex < 0) return false
 
     lines.value.splice(lineIndex, 1)
@@ -151,7 +152,8 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
 
     const variants = resolveMenuOrderPriceOptions(item.priceOptions)
     const availableAddOns = resolveMenuOrderAddOns(item.addOns)
-    if (!variants || !availableAddOns || !Array.isArray(input.addOnIds)) return null
+    if (!variants || !availableAddOns || !Array.isArray(input.addOnIds))
+      return null
 
     const hasRequestedVariant = input.variantId !== undefined
     if (hasRequestedVariant && typeof input.variantId !== 'string') return null
@@ -162,7 +164,8 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
     if (hasRequestedVariant && !requestedVariantId) return null
     if (!variants.length && hasRequestedVariant) return null
 
-    const variant = variants.find(({ id }) => id === requestedVariantId) ||
+    const variant =
+      variants.find(({ id }) => id === requestedVariantId) ||
       (!hasRequestedVariant && variants.length === 1 ? variants[0] : null)
     if (variants.length && !variant) return null
 
@@ -179,7 +182,9 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
       requestedAddOnIds.push(id)
     }
 
-    const addOnsById = new Map(availableAddOns.map(addOn => [addOn.id, addOn]))
+    const addOnsById = new Map(
+      availableAddOns.map((addOn) => [addOn.id, addOn])
+    )
     const addOns: MenuManifestAddOn[] = []
     for (const id of requestedAddOnIds.sort()) {
       const addOn = addOnsById.get(id)
@@ -188,12 +193,14 @@ export function useMenuOrderBasket(options: UseMenuOrderBasketOptions) {
       addOns.push(addOn)
     }
 
-    const unitPrice = Number(basePrice) + addOns.reduce(
-      (sum, { price }) => sum + Number(price),
-      0
-    )
+    const unitPrice =
+      Number(basePrice) +
+      addOns.reduce((sum, { price }) => sum + Number(price), 0)
     const lineTotal = unitPrice * requestedQuantity
-    if (!menuOrderPositivePrice(unitPrice) || !menuOrderPositivePrice(lineTotal)) {
+    if (
+      !menuOrderPositivePrice(unitPrice) ||
+      !menuOrderPositivePrice(lineTotal)
+    ) {
       return null
     }
 

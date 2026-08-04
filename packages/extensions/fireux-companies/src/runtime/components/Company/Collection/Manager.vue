@@ -8,9 +8,7 @@
           <p>{{ description }}</p>
         </div>
 
-        <div
-          class="collection-manager__controls"
-        >
+        <div class="collection-manager__controls">
           <div class="ml-auto flex items-center gap-2">
             <UInput
               v-if="showSearchInput"
@@ -91,7 +89,7 @@
         color="neutral"
         :loading="loadingMore"
         :disabled="loadingMore"
-        @click="loadMore"
+        @click="handleLoadMore"
       >
         Load more companies
       </UButton>
@@ -148,13 +146,18 @@ const props = withDefaults(
 )
 
 const fetched = useCompanyCollection<CompanyHydrated>()
-const collection = computed<CompanyHydrated[]>(() => fetched.collection.value ?? [])
+const collection = computed<CompanyHydrated[]>(
+  () => fetched.collection.value ?? []
+)
 const outcome = computed(() => fetched.outcome.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
-const loadMore = () => fetched.loadMore()
-const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collection)
+async function handleLoadMore(): Promise<void> {
+  await fetched.loadMore()
+}
+const { devJsonData, loadDevJson, unloadDevJson } =
+  useDevCollectionJson(collection)
 const title = computed(() => String(props.title || 'Companies'))
 const description = computed(() =>
   String(props.description || 'Browse company records built on claimed places.')

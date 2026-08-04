@@ -6,18 +6,16 @@ import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import {
-  UserPrivateStorage,
+  USER_ECOSYSTEM_AVATAR_SRC,
   UserStorage,
 } from '../../../models/core/user.model'
+import { UserAccountStorage } from '../../../models/operations/user-account.model'
 import {
   type UserHandleReservationInput,
   type UserHandleReservationResult,
 } from '../../../models/operations/user-handle-reservation'
 import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/operations/user-account-provisioning'
-import {
-  USER_ECOSYSTEM_AVATAR_SRC,
-  resolveUserAvatarSource,
-} from '../../../models/utils/user-avatar'
+import { resolveUserAvatarSource } from '../../../utils/user-avatar.ts'
 import { readHttpsUrl } from '../../../utils/httpsUrl'
 import { validatePublicSlug } from '../../../utils/slug/validatePublicSlug'
 import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
@@ -85,7 +83,9 @@ function ownerUid(snapshot: FirebaseFirestore.DocumentSnapshot) {
 }
 
 function canonicalExistingHandle(value: unknown) {
-  const handle = String(value || '').trim().toLowerCase()
+  const handle = String(value || '')
+    .trim()
+    .toLowerCase()
   return /^[a-z0-9][a-z0-9-]{2,29}$/.test(handle) ? handle : ''
 }
 
@@ -99,7 +99,7 @@ export async function reserveUserHandle(input: {
   const requestedHandle = requireHandle(input.payload?.handle)
   const creation = normalizeCreation(input.payload?.create)
   const db = getRuntimeIdentityFirestore()
-  const users = db.collection(UserStorage.rootCollection)
+  const users = db.collection(UserStorage.collection)
   const userRef = users.doc(uid)
   const existingUser = await userRef.get()
   const existingHandle = existingUser.exists
@@ -108,18 +108,20 @@ export async function reserveUserHandle(input: {
   // Initial provisioning is idempotent: an existing identity keeps its canonical
   // handle and repairs its reservation instead of being renamed from Auth data.
   const handle = creation && existingHandle ? existingHandle : requestedHandle
-  const reservationRef = db.collection(USER_HANDLE_RESERVATION_COLLECTION).doc(handle)
+  const reservationRef = db
+    .collection(USER_HANDLE_RESERVATION_COLLECTION)
+    .doc(handle)
   const stateRef = db
     .collection(USER_HANDLE_STATE_COLLECTION)
     .doc(USER_HANDLE_STATE_DOCUMENT)
   const accountRef = userRef
-    .collection(UserPrivateStorage.collection)
-    .doc(UserPrivateStorage.document)
+    .collection(UserAccountStorage.collection)
+    .doc(UserAccountStorage.document)
 
   // Existing identities predate the reservation collection. Do not let a new
   // reservation steal one while the one-time backfill is still outstanding.
   const existing = await users.where('handle', '==', handle).limit(2).get()
-  if (existing.docs.some(row => row.id !== uid)) {
+  if (existing.docs.some((row) => row.id !== uid)) {
     fail(409, 'This handle is already in use.')
   }
 
@@ -144,11 +146,15 @@ export async function reserveUserHandle(input: {
       : ''
     const currentHandle = canonicalExistingHandle(storedHandle)
     if (creation && currentHandle && currentHandle !== handle) {
-      fail(409, 'The user identity changed while handle provisioning was in progress.')
+      fail(
+        409,
+        'The user identity changed while handle provisioning was in progress.'
+      )
     }
-    const oldReservationRef = currentHandle && currentHandle !== handle
-      ? db.collection(USER_HANDLE_RESERVATION_COLLECTION).doc(currentHandle)
-      : null
+    const oldReservationRef =
+      currentHandle && currentHandle !== handle
+        ? db.collection(USER_HANDLE_RESERVATION_COLLECTION).doc(currentHandle)
+        : null
     const oldReservationSnapshot = oldReservationRef
       ? await transaction.get(oldReservationRef)
       : null

@@ -1,5 +1,5 @@
 import type { Firestore } from 'firebase-admin/firestore'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import type {
   MenuChoice,
 } from '../../../models/kitchen/menu/menu.model.ts'

@@ -1,9 +1,9 @@
 import { Timestamp } from 'firebase-admin/firestore'
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import {
   multiplyFinancialMoney,
   requireFinancialMoney,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import {
   isKitchenOrderChannel,
   isKitchenOrderType,

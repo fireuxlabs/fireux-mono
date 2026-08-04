@@ -1,9 +1,5 @@
 <template>
-  <nav
-    ref="navElement"
-    class="menu-section-nav"
-    :aria-label="ariaLabel"
-  >
+  <nav ref="navElement" class="menu-section-nav" :aria-label="navigationLabel">
     <details ref="detailsElement">
       <summary :aria-label="chooseLabel">
         <span class="menu-section-nav__icon" aria-hidden="true">
@@ -35,7 +31,9 @@
           :class="{
             'menu-section-nav__option--active': activeAnchor === section.anchor,
           }"
-          :aria-current="activeAnchor === section.anchor ? 'location' : undefined"
+          :aria-current="
+            activeAnchor === section.anchor ? 'location' : undefined
+          "
           @click="activateSection(section.anchor)"
         >
           <span class="menu-section-nav__number" aria-hidden="true">
@@ -54,13 +52,7 @@
 </template>
 
 <script setup lang="ts">
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  ref,
-  watch,
-} from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 type MenuSectionLink = {
   anchor: string
@@ -69,7 +61,7 @@ type MenuSectionLink = {
 }
 
 const props = defineProps<{
-  ariaLabel: string
+  navigationLabel: string
   chooseLabel: string
   sectionsLabel: string
   sections: MenuSectionLink[]
@@ -81,14 +73,17 @@ const detailsElement = ref<HTMLDetailsElement | null>(null)
 let scrollFrame = 0
 let trackingSuspendedUntil = 0
 const activeSectionNumber = computed(() => {
-  const index = props.sections.findIndex(({ anchor }) => anchor === activeAnchor.value)
+  const index = props.sections.findIndex(
+    ({ anchor }) => anchor === activeAnchor.value
+  )
 
   return index >= 0 ? index + 1 : 1
 })
-const activeSectionLabel = computed(() =>
-  props.sections.find(({ anchor }) => anchor === activeAnchor.value)?.label ||
-  props.sections[0]?.label ||
-  'Menu'
+const activeSectionLabel = computed(
+  () =>
+    props.sections.find(({ anchor }) => anchor === activeAnchor.value)?.label ||
+    props.sections[0]?.label ||
+    'Menu'
 )
 
 function sectionNumber(index: number) {
@@ -116,7 +111,9 @@ function currentHashAnchor() {
 }
 
 function activateSection(anchor: string) {
-  const section = props.sections.find(candidate => candidate.anchor === anchor)
+  const section = props.sections.find(
+    (candidate) => candidate.anchor === anchor
+  )
   if (!section) return
 
   if (detailsElement.value) detailsElement.value.open = false
@@ -157,20 +154,23 @@ function trackActiveSection() {
   if (Number.isFinite(columnCount) && columnCount > 1) return
 
   const documentHeight = document.documentElement.scrollHeight
-  const atDocumentEnd = Math.ceil(window.scrollY + window.innerHeight) >=
-    documentHeight - 2
+  const atDocumentEnd =
+    Math.ceil(window.scrollY + window.innerHeight) >= documentHeight - 2
   if (atDocumentEnd) {
     setActive(sections.at(-1)?.id || '')
     return
   }
 
-  const activationLine = (navElement.value?.getBoundingClientRect().bottom || 0) + 20
-  const positions = sections.map(element => ({
+  const activationLine =
+    (navElement.value?.getBoundingClientRect().bottom || 0) + 20
+  const positions = sections.map((element) => ({
     element,
     rect: element.getBoundingClientRect(),
   }))
   const crossing = positions
-    .filter(({ rect }) => rect.top <= activationLine && rect.bottom > activationLine)
+    .filter(
+      ({ rect }) => rect.top <= activationLine && rect.bottom > activationLine
+    )
     .sort((a, b) => a.rect.left - b.rect.left)
   const ahead = positions
     .filter(({ rect }) => rect.top > activationLine)
@@ -198,7 +198,8 @@ function handlePointerDown(event: PointerEvent) {
     !detailsElement.value?.open ||
     !(event.target instanceof Node) ||
     nav?.contains(event.target)
-  ) return
+  )
+    return
 
   detailsElement.value.open = false
 }
@@ -207,7 +208,10 @@ function handleKeydown(event: KeyboardEvent) {
   if (event.key !== 'Escape' || !detailsElement.value?.open) return
 
   detailsElement.value.open = false
-  detailsElement.value.querySelector<HTMLElement>('summary')?.focus()
+  const summary = detailsElement.value.querySelector(
+    'summary'
+  ) as HTMLElement | null
+  summary?.focus()
 }
 
 function resetNavigation() {
@@ -215,9 +219,7 @@ function resetNavigation() {
 
   const hashAnchor = currentHashAnchor()
   const hasHashAnchor = hasAnchor(hashAnchor)
-  const anchor = hasHashAnchor
-    ? hashAnchor
-    : props.sections[0]?.anchor || ''
+  const anchor = hasHashAnchor ? hashAnchor : props.sections[0]?.anchor || ''
   activeAnchor.value = anchor
   if (!hasHashAnchor) requestTracking()
 }

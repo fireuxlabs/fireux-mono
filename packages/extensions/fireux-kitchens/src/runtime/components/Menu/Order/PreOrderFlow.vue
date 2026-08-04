@@ -96,7 +96,10 @@ import { computed, nextTick, ref, shallowRef, watch } from 'vue'
 import type { MenuOrderTypeConfig } from '../../../models/kitchen/menu/menu.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model'
-import { useMenuOrderBasket } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
+import {
+  useMenuOrderBasket,
+  type MenuOrderBasketLine,
+} from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 import { useMenuOrderPreOrder } from '../../../composables/fireux/menu/order/useMenuOrderPreOrder'
 import type { MenuOrderTimeSelection } from '../../../utils/menu-order-time'
 import type { MenuOrderCheckoutInput } from '../../../utils/menu-order-payment'
@@ -134,29 +137,39 @@ const basketTrigger = shallowRef<HTMLButtonElement | null>(null)
 const timeTrigger = shallowRef<HTMLButtonElement | null>(null)
 const openCheckoutAfterBasket = ref(false)
 const parsedPartySize = computed(() => Number(partySize.value))
-const planReady = computed(() =>
-  Boolean(requestedTime.value?.requestedFor) &&
-  Number.isSafeInteger(parsedPartySize.value) &&
-  parsedPartySize.value >= 1 &&
-  parsedPartySize.value <= 500
+const planReady = computed(
+  () =>
+    Boolean(requestedTime.value?.requestedFor) &&
+    Number.isSafeInteger(parsedPartySize.value) &&
+    parsedPartySize.value >= 1 &&
+    parsedPartySize.value <= 500
 )
-const paymentMethods = computed(() => props.config?.fulfilment?.payment_methods || [])
+const paymentMethods = computed(
+  () => props.config?.fulfilment?.payment_methods || []
+)
 const handoffInstructions = computed(() =>
   String(props.config?.fulfilment?.handoff_instructions || '').trim()
 )
-const requiredContactFields = computed(() =>
-  props.config?.customer?.required_fields || []
+const requiredContactFields = computed(
+  () => props.config?.customer?.required_fields || []
 )
 
-watch(() => order.amendmentLines.value, (lines) => {
-  if (!basket.quantity.value && lines.length) basket.replace(lines)
-}, { immediate: true })
+watch(
+  () => order.amendmentLines.value,
+  (lines: MenuOrderBasketLine[]) => {
+    if (!basket.quantity.value && lines.length) basket.replace(lines)
+  },
+  { immediate: true }
+)
 
-watch(() => basket.quantity.value, (quantity) => {
-  if (quantity || order.sentOrder.value) return
-  basketOpen.value = false
-  checkoutOpen.value = false
-})
+watch(
+  () => basket.quantity.value,
+  (quantity: number) => {
+    if (quantity || order.sentOrder.value) return
+    basketOpen.value = false
+    checkoutOpen.value = false
+  }
+)
 watch(scopeKey, () => {
   closeDialogs()
   requestedTime.value = null

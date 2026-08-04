@@ -2,9 +2,9 @@
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: recover source item identity for signed-in amend resubmission.
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: join the concrete Place runtime model and omit absent customer Order values.
 import { defineEventHandler, getQuery } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
   isKitchenOrderStatus,
   isKitchenOrderType,

@@ -1,12 +1,12 @@
 // Concurrent edit — 2026-07-21 16:24 CEST — FireUX Finance pass: derive and validate currency-aware Order pricing snapshots.
 // Concurrent edit — 2026-07-21 17:04 CEST — Misebox Nitro finance import fix: use explicit TypeScript server and model imports.
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import {
   addFinancialMoney,
   financialCurrencyMinorUnitDigits,
   financialMoneyFromDecimal,
   requireFinancialMoney,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import type { KitchenOrderPricing } from '../../../models/kitchen/order.model'
 
 function requireMinorUnitDigits(value: unknown): number {

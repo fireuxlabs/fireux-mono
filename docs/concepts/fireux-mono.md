@@ -1,7 +1,7 @@
 # FireUX Mono concept map
 
-Updated: 2026-07-26
-Ref: 796952bf0
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -36,7 +36,9 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - `packages/core/*`: shared foundations.
 - `packages/ecosystem/*`: ecosystem identity/config packages.
 - `packages/extensions/*`: reusable domain packages.
-- `projects/*/*`: concrete Nuxt apps.
+- `projects/*/*`: concrete Nuxt Apps and the guarded project template; the
+  explicit no-FireUX embed harness is a static project exception, not a
+  workspace package.
 - `scripts/guards/*`: executable shape rules.
 - `tools/*`: local tools.
 - `packages/*/*/src/runtime/demo`: package-owned reusable console Demo Data.
@@ -51,12 +53,28 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - Root `package.json` owns workspace scripts.
 - `pnpm-workspace.yaml` solely owns workspace package globs; do not duplicate
   them in `package.json#workspaces`.
+- The five workspace lanes are exactly `packages/core/*`,
+  `packages/extensions/*`, `packages/ecosystem/*`, `projects/*/*`, and
+  `tools/*`. A directory does not become a package without its own manifest.
+- `pnpm-workspace.yaml#allowBuilds` is the narrow install-script policy and
+  every entry uses an explicit boolean.
+- `tsconfig.base.json` is the root package-path authority. Each package keeps
+  its leaf config, every Nuxt App extends `projects/tsconfig.projects.json`,
+  and hand-maintained aggregate configs under package lanes or `projects/` are
+  retired.
 - Root `demo/` is rejected; Demo stays with its package or app owner and loads
   only when an owning console selects it.
 - Test, simulation, dev, and public prototype content are separate from Demo.
-- `scripts/_lib/app-registry.mjs` owns app records and contract assignments;
-  `scripts/_lib/app-smoke-contracts.mjs` owns pure HTTP contract builders.
+- `scripts/_lib/app-registry.mjs` is the authored source for App records and
+  contract assignments; `scripts/_lib/app-smoke-contracts.mjs` owns pure HTTP
+  contract builders. `pnpm sync:dev-workspace` projects the registry into root
+  App dev/kill scripts, VS Code task/launch files, and the generated toolbar
+  App list. `tools/vscode-fireux-toolbar/apps.presentation.json` owns only
+  toolbar-specific order, icons, and non-App extras.
 - `scripts/guard.mjs` is the single guard entrypoint.
+- `pnpm measure:workspace` times the existing verification commands and emits
+  environment-labelled JSON; it does not create a second correctness gate or
+  an evidence-free timing threshold.
 - `scripts/guards/dependency-ownership.mjs` rejects root runtime dependencies,
   undeclared direct imports, and nested source manifests.
 - `pnpm guard` is the repo shape signal.
@@ -70,9 +88,9 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 
 - A project directory is not an App until it passes the same project guard as
   every existing App. Direct folder copies do not create an exception: the
-  canonical Level-1 shape, complete public image library, explicit brand
-  ownership, Core-owned auth/PWA seams, and exact App registry workspace are
-  mandatory from the first save.
+  canonical Level-1 shape, complete public image library, explicit asset
+  source/projection authority, Core-owned auth/PWA seams, and exact App
+  registry workspace are mandatory from the first save.
 - Every real `projects/<ecosystem>/<app>` package must have exactly one current
   workspace entry in `scripts/_lib/app-registry.mjs`. Missing Apps and stale
   registry targets are blocking repository drift; the guarded template is the
@@ -83,9 +101,12 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
   Authentication decision; pass `--firebase-site` when the site id differs
   from the scaffold slug. Automated creation must provide the corresponding
   yes/no flag; it may not silently skip or mutate remote Auth configuration.
-- Add the app to `scripts/_lib/app-registry.mjs` with its unique port, workspace, identity, role, consoles, and focused smoke routes.
-- Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root dev/kill scripts, `.vscode/tasks.json`, or `.vscode/launch.json`.
-- Add the app to the app list in `tools/vscode-fireux-toolbar/extension.js` so VS Code exposes the standard start control and running spinner.
+- Add the app to `scripts/_lib/app-registry.mjs` with its unique port,
+  workspace, identity, role, consoles, and focused smoke routes.
+- Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root
+  dev/kill scripts, `.vscode/tasks.json`, `.vscode/launch.json`, or
+  `tools/vscode-fireux-toolbar/apps.js`. Add an optional presentation entry
+  only when the toolbar needs a non-default icon or order.
 - Complete the standard `/img/app/*` artwork family before saving. Materialize
   named Core/ecosystem projections from their canonical source and never
   borrow another App's export.

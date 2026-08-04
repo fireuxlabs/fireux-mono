@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/meta.model'
+import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'

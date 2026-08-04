@@ -1,6 +1,8 @@
 # Place and Kitchen media
 
-Status: canonical family contract
+Updated: 2026-08-04
+Ref: d232cc731
+Role: map, not canon
 
 ## Ownership
 

@@ -6,13 +6,13 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model.ts'
-import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine'
 import {
   type KitchenConsoleTargetItem,
   type KitchenConsoleTargetsResponse,

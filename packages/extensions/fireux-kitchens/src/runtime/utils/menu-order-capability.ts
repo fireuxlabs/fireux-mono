@@ -9,7 +9,9 @@ export function readMenuOrderCapabilityToken(value: unknown) {
   return MENU_ORDER_CAPABILITY_PATTERN.test(token) ? token : ''
 }
 
-export function menuOrderCapabilityHeaders(value: unknown) {
+export function menuOrderCapabilityHeaders(
+  value: unknown
+): Record<string, string> {
   const token = readMenuOrderCapabilityToken(value)
 
   return token ? { [MENU_ORDER_CAPABILITY_HEADER]: token } : {}
@@ -18,7 +20,7 @@ export function menuOrderCapabilityHeaders(value: unknown) {
 export async function menuOrderAccessHeaders(
   user: { getIdToken: () => Promise<string> } | null | undefined,
   capability: unknown
-) {
+): Promise<Record<string, string>> {
   const authToken = await user?.getIdToken().catch(() => '')
 
   return {

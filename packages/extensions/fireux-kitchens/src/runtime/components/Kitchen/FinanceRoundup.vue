@@ -113,7 +113,7 @@
 import { computed } from 'vue'
 import {
   formatFinancialMinorAmount,
-} from 'fireux-finance/runtime/utils/money.ts'
+} from 'fireux-finance/runtime/utils/money'
 import type {
   KitchenFinanceItemSummary,
 } from '../../models/kitchen/finance-report.model'

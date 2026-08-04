@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 13:07 CEST — Operation detail surfaces: include declared pages in static SEO paths.
-import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
+import type { FireuxMetaContent } from './meta-content'
 import type { FireuxSeoConfig } from './seo'
 
 function normalizePublicPath(input: unknown): string | undefined {

@@ -86,7 +86,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const userSnapshots = userIds.length
     ? await identityDb.getAll(
         ...userIds.map((userId) =>
-          identityDb.collection(UserStorage.rootCollection).doc(userId)
+          identityDb.collection(UserStorage.collection).doc(userId)
         )
       )
     : []

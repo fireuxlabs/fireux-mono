@@ -1,46 +1,20 @@
-import { addImportsDir, type Resolver } from '@nuxt/kit'
+import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { existsSync } from 'fs'
+import type { FireuxEcosystemConfig } from '../../types/ecosystem'
 import { setRuntimeFirebaseEcosystem } from '../app/runtime'
+import { registerComposablesDir, registerLayoutsDir } from './module-helpers'
 import { configurePages } from './pages-config'
-
-type EcosystemFirebase = {
-  id: string
-  name: string
-  description: string
-  firebase: {
-    apiKey: string
-    authDomain: string
-    projectId: string
-    storageBucket: string
-    messagingSenderId: string
-    databaseId?: string
-    identityDatabaseId?: string
-    simulationDatabaseId?: string
-  }
-  ssr: {
-    region: string
-    serviceAccount?: string
-  }
-}
 
 type EcosystemResolverStep = (resolver: Resolver, nuxt: Nuxt) => void
 type EcosystemNuxtStep = (nuxt: Nuxt) => void
 
 export type ConfigureFireuxEcosystemModuleOptions = {
-  ecosystem: EcosystemFirebase
+  ecosystem: FireuxEcosystemConfig
   configureRuntimeConfig?: EcosystemNuxtStep
   configurePages?: EcosystemResolverStep
   configureComponents: EcosystemResolverStep
-  configureLayouts?: EcosystemResolverStep
-  configureImports?: EcosystemResolverStep
   configurePublicAssets?: EcosystemResolverStep
-}
-
-const configureDefaultImports = (resolver: Resolver) => {
-  const composablesDir = resolver.resolve('./runtime/composables')
-  if (!existsSync(composablesDir)) return
-  addImportsDir(composablesDir)
 }
 
 const configureDefaultPublicAssets = (
@@ -117,13 +91,8 @@ export function configureFireuxEcosystemModule(
   options.configureRuntimeConfig?.(nuxt)
   ;(options.configurePages || configurePages)(resolver, nuxt)
   options.configureComponents(resolver, nuxt)
-  options.configureLayouts?.(resolver, nuxt)
-
-  if (options.configureImports) {
-    options.configureImports(resolver, nuxt)
-  } else {
-    configureDefaultImports(resolver)
-  }
+  registerLayoutsDir(resolver)
+  registerComposablesDir(resolver)
 
   if (options.configurePublicAssets) {
     options.configurePublicAssets(resolver, nuxt)

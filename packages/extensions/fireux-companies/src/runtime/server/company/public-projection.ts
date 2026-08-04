@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: require a valid same-id pair and explicitly copy only card-safe Place reference fields.
 // Concurrent edit — 2026-07-21 15:21 CEST — Misebox Nitro startup fix: resolve the Places server projection through its explicit TypeScript import.
 // Concurrent edit — 2026-07-28 — Entity canon: validate the role marker once and return the canonical Place projection.
-import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection.ts'
+import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection'
 import type { PublicCompanyProjection } from '../../models/company-public.model'
 import { canonicalCompanyRole } from './canonical'
 

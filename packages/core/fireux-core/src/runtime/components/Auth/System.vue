@@ -1,5 +1,4 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/Auth/System.vue -->
-<!-- Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: show explicit Terms acceptance, Privacy acknowledgement, and legal version. -->
 <template>
   <div class="w-full">
     <UCard class="w-full">
@@ -60,8 +59,8 @@
               v-else-if="membershipLoading"
               color="neutral"
               variant="soft"
-              title="Registrierig wird vorbereitet"
-              :description="`Agmäldet aus ${authIdentityLabel}.`"
+              title="Registration is being prepared"
+              :description="`Signed in as ${authIdentityLabel}.`"
             />
 
             <UserCardsPill
@@ -374,7 +373,7 @@ const handleOnboarding = async (status: 'completed' | 'skipped') => {
     onboardingError.value =
       error instanceof Error && error.message.trim()
         ? error.message
-        : 'D Registrierig het nid chönne gspeicheret wärde.'
+        : 'Registration could not be saved.'
   } finally {
     onboardingLoading.value = ''
   }

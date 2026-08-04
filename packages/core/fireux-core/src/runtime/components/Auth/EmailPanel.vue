@@ -1,5 +1,4 @@
 <!-- FILE: packages/core/fireux-core/src/runtime/components/Auth/EmailPanel.vue -->
-<!-- Concurrent edit — 2026-07-20 13:19 CEST — Account consent follow-up: show explicit Terms acceptance, Privacy acknowledgement, and legal version. -->
 <template>
   <div class="w-full space-y-3">
     <p class="font-medium">Sign in or create an account.</p>
@@ -103,7 +102,7 @@ const fields = computed(() => [
         color: 'neutral' as const,
         variant: 'outline' as const,
         label: 'Name',
-        placeholder: 'Din Name',
+        placeholder: 'Your name',
         required: true,
         autocomplete: 'name',
         defaultValue: '',

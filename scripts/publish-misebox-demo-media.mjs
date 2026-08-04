@@ -15,7 +15,7 @@ import {
   miseboxDemoMediaContract,
   miseboxDemoMediaObjectPath,
   miseboxDemoMediaUrl,
-} from '../packages/core/fireux-core/src/runtime/utils/misebox-demo-media.ts'
+} from '../packages/extensions/fireux-demo/src/runtime/media/misebox.ts'
 import {
   firebaseAdminCredentialHelp,
   resolveFirebaseAdminCredential,

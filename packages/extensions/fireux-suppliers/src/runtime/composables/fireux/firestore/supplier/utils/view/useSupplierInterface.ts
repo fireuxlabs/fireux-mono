@@ -10,9 +10,7 @@ import {
   type AppSupplier,
   type Supplier,
 } from '../../../../../../models/supplier/Supplier.model'
-import type {
-  PublicCompanyProjection,
-} from 'fireux-companies/runtime/models/company-public.model'
+import type { PublicCompanyProjection } from 'fireux-companies/runtime/models/company-public.model'
 import type { Ref } from 'vue'
 
 const supplierCollection = SupplierStorage.rootCollection
@@ -50,16 +48,20 @@ type SupplierAccessSurface = Partial<
   Pick<AppSupplier, 'operator_ids' | 'team_ids' | 'join_requests'>
 >
 
-export type SupplierSurface = Partial<Supplier> & SupplierAccessSurface & {
-  company_place?: PublicCompanyProjection
-}
-export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> = {
-  supplier?: TSupplier | null | undefined
-  appSupport?: Partial<AppSupplier> | null | undefined
-  companyPlace?: PublicCompanyProjection | null | undefined
-}
+export type SupplierSurface = Partial<Supplier> &
+  SupplierAccessSurface & {
+    company_place?: PublicCompanyProjection
+  }
+export type SupplierSurfaceParts<TSupplier extends object = Partial<Supplier>> =
+  {
+    supplier?: TSupplier | null | undefined
+    appSupport?: Partial<AppSupplier> | null | undefined
+    companyPlace?: PublicCompanyProjection | null | undefined
+  }
 
-export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null) {
+export function useSupplierInterface(
+  supplier?: SupplierRootAndAppSupport | null
+) {
   type SupplierIdentity = SupplierCard.Card
   type SupplierPill = SupplierCard.Card
   type SupplierCell = SupplierCard.Card
@@ -122,8 +124,8 @@ export function useSupplierInterface(supplier?: SupplierRootAndAppSupport | null
     const placeImageUrl = safeString(target.company_place?.image_url)
     const imageUrl = placeImageUrl || logoImageUrl
     const headquartersLabel =
-      safeString(target.company_place?.short_address)
-      || safeString(target.company_place?.name)
+      safeString(target.company_place?.short_address) ||
+      safeString(target.company_place?.name)
     const categoriesCsv = csv(badges)
     const locationsLabel = deliveryAreas.join(', ')
 

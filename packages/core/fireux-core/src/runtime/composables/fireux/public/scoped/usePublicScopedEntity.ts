@@ -1,9 +1,7 @@
 import { computed, unref, type MaybeRef } from 'vue'
 import { useFireUXConfig } from '../../app/FireUXConfig'
-import {
-  normalizeFireuxAppScopeState,
-  type FireuxAppScopeState,
-} from '../../../../models/utils/meta.model'
+import { normalizeFireuxAppScopeState } from '../../../../utils/app-scope-state'
+import type { FireuxAppScopeState } from '../../../../models/utils/scope.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()

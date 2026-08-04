@@ -9,16 +9,15 @@ import {
   type FireuxJobCategorySelection,
   type FireuxJobSourceAppDoorways,
 } from './config/jobs.config'
-import { configureRuntime } from './config/module/runtime-config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
+import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
 import { registerReservedRootRouteKeys } from 'fireux-core/config/module/reserved-route-keys'
+import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-config'
 import type {
   FireuxSeoExtendContext,
   FireuxSeoSitemapsExtendContext,
 } from 'fireux-core/config/app/seo'
-import { configureComposables } from './config/module/composables-config'
 import { configureComponents } from './config/module/components-config'
-import { configureLayouts } from './config/module/layouts-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
 import { configureServer } from './config/module/server-config'
@@ -83,15 +82,19 @@ export default defineNuxtModule<ModuleOptions>({
     )
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
-        configureRuntime(nuxt, 'jobs', {
-          enabled: true,
-          categoryScope,
-          categories,
-          sourceAppDoorways,
-        }),
-      composables: configureComposables,
+        configureRuntimeDefaults(
+          nuxt,
+          'jobs',
+          {
+            enabled: true,
+            categoryScope,
+            categories,
+            sourceAppDoorways,
+          },
+          { merge: true }
+        ),
+      composables: registerComposablesDir,
       components: configureComponents,
-      layouts: configureLayouts,
       pages: configurePages,
       assets: configureAssets,
       server: configureServer,

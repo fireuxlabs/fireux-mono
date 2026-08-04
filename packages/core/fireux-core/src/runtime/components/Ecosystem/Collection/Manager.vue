@@ -96,7 +96,7 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
-import { useDevCollectionJson } from 'fireux-core/runtime/composables/dev/useDevCollectionJson'
+import { useDevCollectionJson } from '../../../composables/dev/useDevCollectionJson'
 import { computed } from 'vue'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
@@ -104,7 +104,7 @@ import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
 } from '../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
-import type { EcosystemDirectoryController } from '../../../models/utils/directory'
+import type { EcosystemDirectoryController } from '../../../types/directory-controller.types'
 
 const props = withDefaults(
   defineProps<{

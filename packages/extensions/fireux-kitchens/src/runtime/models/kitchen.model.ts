@@ -1,19 +1,19 @@
 // Concurrent edit — 2026-07-19 17:02 CEST — Delivery pass: model Kitchen-owned payment applicability and fulfilment capability.
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: make Kitchen hours an optional operational override and remove Kitchen currency authority.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Kitchen root identity and access-only App support.
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type {
   FireuxConsoleEntityAppScope,
   FireuxConsoleEntityIdentity,
   FireuxConsoleEntityVisibility,
-  FireuxStamped,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
+} from 'fireux-core/runtime/models/utils/console-entity.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import {
   FireuxConsoleEntityAppScopeModel,
   FireuxConsoleEntityVisibilityModel,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model.ts'
-import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model.ts'
+} from 'fireux-core/runtime/models/utils/console-entity.model'
+import type { CurrencyDisplayFormat } from './shared/currency-display.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenOrderType } from './kitchen/order.model'

@@ -1,8 +1,8 @@
 import { FieldPath, Filter } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE,
   PUBLIC_KITCHEN_INDEX_PAGE_SIZE,

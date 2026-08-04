@@ -2,8 +2,8 @@ import { doc, getDoc } from 'firebase/firestore'
 import {
   AppStorage,
   type AppCreateInput,
-} from 'fireux-core/runtime/models/core/app.model'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+} from '../../../../../../models/core/app.model'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { normalizeString } from '../../../../../../utils/string'
 import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
 import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'

@@ -1,5 +1,5 @@
 import { defineEventHandler, readBody } from 'h3'
-import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider.ts'
+import { setToolProviderResponseHeaders } from 'fireux-core/runtime/server/utils/tool-provider'
 import { createToolConfig } from '../../../utils/tools/config-store'
 import { normalizeTextToolConfig } from '../../../utils/tools/text'
 

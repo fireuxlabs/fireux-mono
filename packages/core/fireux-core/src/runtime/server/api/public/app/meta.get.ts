@@ -3,7 +3,7 @@ import { createError, defineEventHandler, setResponseHeaders, type H3Event } fro
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { useAssets } from '../../../../composables/fireux/app/useAssets'
 import { AppStorage } from '../../../../models/core/app.model'
-import type { FireuxMetaContent } from '../../../../models/system/meta-content.model'
+import type { FireuxMetaContent } from '../../../../../config/app/meta-content'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { normalizePublicImgAsset } from '../../../../../utils/brandAssets'
 

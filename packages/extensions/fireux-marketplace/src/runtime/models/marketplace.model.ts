@@ -1,7 +1,7 @@
-import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
-import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model.ts'
-import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
-import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 
 export const MarketplaceStoreStorage = {
   shape: 'app-scoped',
@@ -94,8 +94,7 @@ export const MARKETPLACE_ORDER_STATUSES = [
   'rejected',
   'cancelled',
 ] as const
-export type MarketplaceOrderStatus =
-  (typeof MARKETPLACE_ORDER_STATUSES)[number]
+export type MarketplaceOrderStatus = (typeof MARKETPLACE_ORDER_STATUSES)[number]
 
 export const MARKETPLACE_FULFILMENT_METHODS = [
   'collection',

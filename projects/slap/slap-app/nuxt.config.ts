@@ -25,4 +25,5 @@ export default defineFireuxConfig({
     ],
   },
   databaseId: 'slap',
+  modules: ['fireux-products'],
 })

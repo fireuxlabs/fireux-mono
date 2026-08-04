@@ -8,8 +8,8 @@ import type {
   AppMedia,
   AppRole,
   AppSocialLinks,
-} from '../../../models/utils/app'
-import type { AppUserAccessTier } from '../../../models/utils/app-user-access'
+} from '../../../models/core/app.model'
+import type { AppUserAccessTier } from '../../../utils/app-user-access'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 
 export type PublicSeoDto = {
@@ -70,10 +70,15 @@ export type CurrentAppMembershipDto = {
   profiles: string[]
 }
 
+/** Authenticated current-App context adds only the policy needed by its caller. */
+export type CurrentAppDto = PublicAppDto & {
+  self_join_enabled: boolean
+}
+
 export type CurrentAppContextResponse = {
   ok: true
   appId: string
-  app: PublicAppDto | null
+  app: CurrentAppDto | null
   membership: CurrentAppMembershipDto | null
 }
 

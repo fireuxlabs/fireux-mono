@@ -1,4 +1,4 @@
-import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { defineFireuxMeta } from 'fireux-core/config/app/meta-content'
 
 export const metaContent = defineFireuxMeta({
   app: {

@@ -1,7 +1,7 @@
 import { useRuntimeConfig } from '#imports'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 
 export type GoQrDocRecord = {
   id: string

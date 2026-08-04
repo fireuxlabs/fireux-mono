@@ -1,7 +1,7 @@
 # Brand asset authority map
 
-Updated: 2026-07-26
-Ref: current source
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -29,12 +29,10 @@ the boundary that lets genuinely branded Apps carry a different identity.
   `packages/core/fireux-core/src/runtime/pages/assets.vue`
 - SVG/raster render declaration and manifest:
   `scripts/_lib/fireux-brand-render.mjs`
-- Read-only render check and explicit renderer:
+- Sole read-only check and explicit render/projection writer:
   `scripts/render-fireux-brand-assets.mjs`
 - Projection declaration:
   `scripts/_lib/fireux-brand-assets.mjs`
-- Read-only check and explicit writer:
-  `scripts/sync-fireux-brand-assets.mjs`
 - Executable guard:
   `scripts/guards/fireux-brand-assets.mjs`
 - BuenoHost ecosystem source family:
@@ -85,8 +83,8 @@ node scripts/render-fireux-brand-assets.mjs --write
 That command renders the canonical PNG, PWA, 1200-by-630 thumbnail, and
 favicon family, records source/output hashes and dimensions, then updates the
 projections. Running it without `--write` is a read-only drift check. Use
-`scripts/sync-fireux-brand-assets.mjs --write` only when the canonical outputs
-are current and a projection alone needs restoring.
+the same entrypoint for projection recovery so source rendering and every
+declared target remain one transaction-shaped local workflow.
 
 ## App boundary
 

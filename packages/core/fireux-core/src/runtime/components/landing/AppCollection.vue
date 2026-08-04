@@ -138,10 +138,8 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type {
-  AppDirectoryController,
-  AppDirectoryEntry,
-} from '../../models/utils/directory'
+import type { AppDirectoryEntry } from '../../models/utils/directory'
+import type { AppDirectoryController } from '../../types/directory-controller.types'
 
 type LandingAppMediaOverride = {
   coverUrl?: string

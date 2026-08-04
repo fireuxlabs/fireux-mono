@@ -16,9 +16,7 @@ import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fir
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import {
-  normalizeFireuxAppScopeState,
-} from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
 import {
   BlankStorage,
   type AppBlank,

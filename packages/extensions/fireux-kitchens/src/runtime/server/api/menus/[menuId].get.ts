@@ -4,13 +4,13 @@ import {
   getQuery,
   getRouterParam,
 } from 'h3'
-import { readRecordString } from 'fireux-core/runtime/server/utils/records/read.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   normalizeSproochliLanguage,
   type SproochliLanguageCode,
-} from 'fireux-sproochli/runtime/sproochli.ts'
+} from 'fireux-sproochli/runtime/sproochli'
 import { buildMenuPayload } from '../../menu/payload/build.ts'
 import { menuSourceFromData } from '../../menu/payload/source.ts'
 import { readKitchenMenuSections } from '../../menu/manifest/sections.ts'

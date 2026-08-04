@@ -44,7 +44,8 @@
               :key="kitchen.id"
               type="button"
               :class="{
-                'showcase-kiosk-preview__menu--active': kitchen.id === kitchenId,
+                'showcase-kiosk-preview__menu--active':
+                  kitchen.id === kitchenId,
               }"
               :aria-pressed="kitchen.id === kitchenId"
               @click="kitchenId = kitchen.id"
@@ -85,9 +86,8 @@ const previewUrl = computed(() => {
   return url.toString()
 })
 
-watch(open, (isOpen) => {
-  if (isOpen)
-    void nextTick(() => scrollSurface.value?.scrollTo(0, 0))
+watch(open, (isOpen: boolean) => {
+  if (isOpen) void nextTick(() => scrollSurface.value?.scrollTo(0, 0))
 })
 </script>
 

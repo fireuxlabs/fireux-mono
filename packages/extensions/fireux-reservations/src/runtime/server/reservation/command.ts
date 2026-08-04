@@ -1,6 +1,6 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import type { Reservation, ReservationCreateInput, ReservationResponse, ReservationUpdateInput } from '../../models/reservation.model.ts'
 import { ReservationNightStorage } from '../../models/reservation.model.ts'
 import { requireReservationActor } from './access.ts'

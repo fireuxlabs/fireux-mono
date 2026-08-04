@@ -1,5 +1,5 @@
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
-import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money.ts'
+import { requireFinancialMoney } from 'fireux-finance/runtime/utils/money'
 import {
   MARKETPLACE_FULFILMENT_METHODS,
   type MarketplaceFulfilmentMethod,

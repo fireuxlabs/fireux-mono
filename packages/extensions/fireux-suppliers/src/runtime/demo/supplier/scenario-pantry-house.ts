@@ -1,4 +1,4 @@
-import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
+import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import { buildSupplierDemoScenario } from './scenario-build'
 
 export const pantryHouse = buildSupplierDemoScenario({

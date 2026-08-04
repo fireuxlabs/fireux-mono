@@ -4,7 +4,7 @@ import {
   safeString,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { User } from 'fireux-core/runtime/models/core/user.model'
-import type { Customer } from 'fireux-kitchens/runtime/models/customer.model'
+import type { Customer } from '../../../../../../../models/customer.model'
 
 type UserLike = Pick<User, 'display_name' | 'avatar' | 'handle'> &
   Partial<Pick<User, 'id'>>

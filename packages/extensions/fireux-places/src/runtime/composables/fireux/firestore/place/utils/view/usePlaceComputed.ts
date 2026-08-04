@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { BasePlace } from 'fireux-places/runtime/models/place.model'
+import type { BasePlace } from '../../../../../../models/place.model'
 
 export function usePlaceComputed(
   place?: Ref<BasePlace | null | undefined>

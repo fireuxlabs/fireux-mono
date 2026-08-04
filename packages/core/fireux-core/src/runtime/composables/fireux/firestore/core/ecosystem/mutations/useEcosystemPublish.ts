@@ -1,4 +1,4 @@
-import { usePublish } from 'fireux-core/runtime/composables/fireux/publishing/usePublish'
+import { usePublish } from '../../../../publishing/usePublish'
 import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
 import { assertPublicSlug } from '../../../../../../utils/slug/validatePublicSlug'
 

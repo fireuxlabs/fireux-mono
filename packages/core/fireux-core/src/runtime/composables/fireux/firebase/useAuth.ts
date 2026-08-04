@@ -16,7 +16,7 @@ import {
 } from 'firebase/auth'
 import { computed, watch, type Ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useCurrentUser, useFirebaseAuth } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { useCurrentUser, useFirebaseAuth } from '../firestore/vuefire'
 import { useUserCreate } from '../firestore/core/user/mutations/useUserCreate'
 import {
   clearPendingAccountConsent,

@@ -1,14 +1,14 @@
 // Concurrent edit — 2026-07-20 19:27 CEST — Repo Efficiency Pass 2 of 6: expose separate root and App profile mutation authorities.
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import type { ProfileRefs } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/fetch/useProfileFetch'
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
+import { useFireUXConfig } from '../../../../app/FireUXConfig'
+import { useRequireUser } from '../../../../firebase/useRequireUser'
+import type { ProfileRefs } from '../fetch/useProfileFetch'
+import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
+import { AppStorage } from '../../../../../../models/core/app.model'
 import type {
   AppProfileBase,
   ProfileRecord,
-} from 'fireux-core/runtime/models/core/profile.model'
+} from '../../../../../../models/utils/profile.model'
 
 function useProfileMutationIdentity<
   TCore extends ProfileRecord,

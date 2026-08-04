@@ -5,8 +5,8 @@ import {
   getQuery,
   setResponseHeaders,
 } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import type { PublicIngredientCollectionResponse } from '../../../models/ingredient-public.model.ts'
 import { projectPublicIngredient } from '../../ingredient/public-projection.ts'
 

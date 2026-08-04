@@ -14,7 +14,10 @@ import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 
 import { parseArgs } from './_lib/args.mjs'
-import { DEV_APP_KEYS, getDevApp } from './_lib/dev-apps.mjs'
+import {
+  APP_KEYS,
+  getAppRegistryEntry,
+} from './_lib/app-registry.mjs'
 import { assertFireuxRuntime } from './_lib/runtime.mjs'
 import {
   ensureFireuxCoreConfigHelpers,
@@ -33,7 +36,7 @@ try {
 
 function usage() {
   console.error('Usage: node scripts/dev-app-with-smoke.mjs --app <key> [--checked] [--prepare] [--smoke] [--host [host]] [--go-qr-provider deployed|local|url]')
-  console.error(`Known apps: ${DEV_APP_KEYS.join(', ')}`)
+  console.error(`Known apps: ${APP_KEYS.join(', ')}`)
 }
 
 const args = parseArgs(process.argv.slice(2))
@@ -46,7 +49,7 @@ if (!appKey) {
   process.exit(2)
 }
 
-const app = getDevApp(appKey)
+const app = getAppRegistryEntry(appKey)
 const checked = args.checked === true
 const shouldPrepare =
   args['skip-prepare'] !== true && (checked || args.prepare === true)

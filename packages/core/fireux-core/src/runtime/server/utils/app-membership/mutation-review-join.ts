@@ -51,7 +51,7 @@ export async function handleReviewJoin(
   
   if (input.approve) {
     const userRef = (sameDatabase ? appDb : identityDb)
-      .collection(UserStorage.rootCollection)
+      .collection(UserStorage.collection)
       .doc(userId)
     await requireIdentityUser(
       transaction,

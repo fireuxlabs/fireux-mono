@@ -3,7 +3,7 @@ import { computed } from '#imports'
 import {
   resolveAppUserAccess,
   type AppUserAccessTier,
-} from '../../../../../../../models/utils/app-user-access'
+} from '../../../../../../../utils/app-user-access'
 import type { CurrentAppMembershipDto } from '../../../../../../../server/utils/public-projection/public-dto.types'
 import { useDeveloperAccess } from '../../../../../app/useDeveloperAccess'
 import type { UserRefs } from '../../fetch/useUserFetch'

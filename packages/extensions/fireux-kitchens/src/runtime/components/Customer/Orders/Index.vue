@@ -2,9 +2,7 @@
   <section class="customer-orders" aria-labelledby="customer-orders-title">
     <header class="customer-orders__header">
       <div>
-        <h1 id="customer-orders-title">
-          My orders
-        </h1>
+        <h1 id="customer-orders-title">My orders</h1>
         <p>Current and previous kitchen orders.</p>
       </div>
     </header>
@@ -18,7 +16,11 @@
     />
 
     <div v-else-if="pending" class="customer-orders__loading">
-      <USkeleton v-for="index in 3" :key="index" class="customer-orders__skeleton" />
+      <USkeleton
+        v-for="index in 3"
+        :key="index"
+        class="customer-orders__skeleton"
+      />
     </div>
 
     <MoleculesStateCard
@@ -33,7 +35,11 @@
     </MoleculesStateCard>
 
     <div v-else class="customer-orders__list">
-      <UCard v-for="order in orders" :key="order.id" class="customer-orders__card">
+      <UCard
+        v-for="order in orders"
+        :key="order.id"
+        class="customer-orders__card"
+      >
         <div class="customer-orders__card-heading">
           <div class="customer-orders__identity">
             <UAvatar
@@ -56,7 +62,11 @@
               <p v-else class="customer-orders__kitchen">
                 {{ order.kitchen.name }}
               </p>
-              <h2>{{ order.order_number ? `Order ${order.order_number}` : 'Order' }}</h2>
+              <h2>
+                {{
+                  order.order_number ? `Order ${order.order_number}` : 'Order'
+                }}
+              </h2>
             </div>
           </div>
 
@@ -130,24 +140,15 @@
 // Concurrent edit — 2026-07-20 15:11 CEST — Pre-order intake pass: present asynchronous Kitchen confirmation in My orders.
 // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: present sparse customer Order identifiers without blank copy.
 import { useCustomerOrders } from '../../../composables/fireux/customer/useCustomerOrders'
-import type {
-  CustomerOrderSummary,
-} from '../../../models/customer/order.model'
+import type { CustomerOrderSummary } from '../../../models/customer/order.model'
 import type {
   KitchenOrderStatus,
   KitchenOrderType,
 } from '../../../models/kitchen/order.model'
-import { menuOrderPaymentLabel } from '../../../utils/menu-order-payment'
+import { kitchenOrderPaymentMethodLabel } from '../../../utils/menu-order-payment'
 
-const {
-  debug,
-  error,
-  hasMore,
-  loadMore,
-  loadingMore,
-  orders,
-  pending,
-} = useCustomerOrders()
+const { debug, error, hasMore, loadMore, loadingMore, orders, pending } =
+  useCustomerOrders()
 
 const statusLabels: Record<KitchenOrderStatus, string> = {
   pending_payment: 'Payment needed',
@@ -191,7 +192,7 @@ function kitchenAvatarClass(order: CustomerOrderSummary) {
 function orderTypeLabel(type: KitchenOrderType) {
   return type
     .split('_')
-    .map(word => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
+    .map((word) => `${word.charAt(0).toUpperCase()}${word.slice(1)}`)
     .join(' ')
 }
 
@@ -200,13 +201,14 @@ function orderTimeLabel(order: CustomerOrderSummary) {
   const requested = formatDate(
     order.collection?.requested_for || order.requested_for
   )
-  if (order.order_type === 'delivery' && !requested) return 'As soon as possible'
+  if (order.order_type === 'delivery' && !requested)
+    return 'As soon as possible'
   return requested || formatDate(order.created_at) || 'Time unavailable'
 }
 
 function paymentLabel(order: CustomerOrderSummary) {
   if (!order.payment?.method) return ''
-  return menuOrderPaymentLabel(order.order_type, order.payment.method)
+  return kitchenOrderPaymentMethodLabel(order.order_type, order.payment.method)
 }
 
 function formatDate(value?: string) {

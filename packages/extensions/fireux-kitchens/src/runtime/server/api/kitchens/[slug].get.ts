@@ -5,8 +5,8 @@ import {
   getRouterParam,
   setResponseHeaders,
 } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type {
   PublicKitchenDetailResponse,
 } from '../../../models/kitchen/kitchen-index.model.ts'

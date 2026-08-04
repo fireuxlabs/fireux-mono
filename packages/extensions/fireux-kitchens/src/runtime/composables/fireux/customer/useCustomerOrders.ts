@@ -36,7 +36,9 @@ export function useCustomerOrders() {
     projection: sourceDebug.value,
   }))
 
-  async function load(options: { append?: boolean, background?: boolean } = {}) {
+  async function load(
+    options: { append?: boolean; background?: boolean } = {}
+  ) {
     const user = currentUser.value
     if (!user || pending.value || refreshing.value || loadingMore.value) return
     const requestUid = user.uid
@@ -50,32 +52,39 @@ export function useCustomerOrders() {
 
     try {
       const token = await user.getIdToken()
-      const query = append && nextCursor.value
-        ? `?cursor=${encodeURIComponent(nextCursor.value)}`
-        : ''
-      const page = await $fetch<CustomerOrderPage>(`/api/customer/orders${query}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const query =
+        append && nextCursor.value
+          ? `?cursor=${encodeURIComponent(nextCursor.value)}`
+          : ''
+      const page = await $fetch<CustomerOrderPage>(
+        `/api/customer/orders${query}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      )
       if (currentUser.value?.uid !== requestUid) return
 
-      const pageItems = Array.isArray(page?.items) ? page.items : []
+      const pageItems: CustomerOrderSummary[] = Array.isArray(page?.items)
+        ? page.items
+        : []
       sourceDebug.value = page?.debug
       lastLoadedAt.value = new Date().toISOString()
       if (append) {
         orders.value = [...orders.value, ...pageItems]
       } else if (background) {
-        const freshIds = new Set(pageItems.map(order => order.id))
+        const freshIds = new Set(pageItems.map((order) => order.id))
         orders.value = [
           ...pageItems,
-          ...orders.value.filter(order => !freshIds.has(order.id)),
+          ...orders.value.filter(
+            (order: CustomerOrderSummary) => !freshIds.has(order.id)
+          ),
         ]
       } else {
         orders.value = pageItems
       }
       if (!background) {
-        nextCursor.value = typeof page?.nextCursor === 'string'
-          ? page.nextCursor
-          : null
+        nextCursor.value =
+          typeof page?.nextCursor === 'string' ? page.nextCursor : null
       }
       error.value = ''
     } catch (caught) {
@@ -104,21 +113,18 @@ export function useCustomerOrders() {
     refreshTimer = undefined
   }
 
-  watch(
-    currentUser,
-    (user) => {
-      orders.value = []
-      nextCursor.value = null
-      error.value = ''
-      sourceDebug.value = undefined
-      lastLoadedAt.value = ''
-      stopRefresh()
-      if (mounted && user) {
-        void load()
-        scheduleRefresh()
-      }
+  watch(currentUser, (user: { uid: string } | null | undefined) => {
+    orders.value = []
+    nextCursor.value = null
+    error.value = ''
+    sourceDebug.value = undefined
+    lastLoadedAt.value = ''
+    stopRefresh()
+    if (mounted && user) {
+      void load()
+      scheduleRefresh()
     }
-  )
+  })
 
   onMounted(() => {
     mounted = true
@@ -142,8 +148,12 @@ export function useCustomerOrders() {
 
 function requestError(caught: unknown) {
   if (caught && typeof caught === 'object' && 'statusMessage' in caught) {
-    const message = String((caught as { statusMessage?: unknown }).statusMessage ?? '').trim()
+    const message = String(
+      (caught as { statusMessage?: unknown }).statusMessage ?? ''
+    ).trim()
     if (message) return message
   }
-  return caught instanceof Error ? caught.message : 'Orders could not be loaded.'
+  return caught instanceof Error
+    ? caught.message
+    : 'Orders could not be loaded.'
 }

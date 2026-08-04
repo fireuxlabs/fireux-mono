@@ -5,7 +5,7 @@ import {
   readRuntimeIdentityFirestoreDatabaseId,
   useDocument,
   useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+} from '../../../vuefire'
 import { computed, isRef } from 'vue'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import type { Ref } from 'vue'
@@ -15,7 +15,7 @@ import type {
   ProfileBase,
   ProfileConfig,
   ProfileRecord,
-} from '../../../../../../models/core/profile.model'
+} from '../../../../../../models/utils/profile.model'
 
 /**
  * Minimal profile fetch:

@@ -85,7 +85,7 @@ import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConso
 import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
 import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import { USER_ECOSYSTEM_AVATAR_SRC } from '../../models/utils/user-avatar'
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../models/core/user.model'
 import DashboardOverviewApp from './Overview/App.vue'
 import DashboardOverviewEcosystem from './Overview/Ecosystem.vue'
 import DashboardOverviewUser from './Overview/User.vue'

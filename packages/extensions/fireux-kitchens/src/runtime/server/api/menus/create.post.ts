@@ -7,22 +7,22 @@ import {
   readMultipartFormData,
   type H3Event,
 } from 'h3'
-import { bearerTokenFromEvent } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
-import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind.ts'
-import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors.ts'
+import { bearerTokenFromEvent } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { documentKindFromFile } from 'fireux-core/runtime/server/utils/files/document-kind'
+import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   multipartField,
   readUploadedMultipartFile,
-} from 'fireux-core/runtime/server/utils/uploads/multipart.ts'
+} from 'fireux-core/runtime/server/utils/uploads/multipart'
 import {
   runtimeStorageBucketName,
   saveStorageFileWithDownloadToken,
-} from 'fireux-core/runtime/server/utils/uploads/storage.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
-import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug.ts'
-import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin.ts'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+} from 'fireux-core/runtime/server/utils/uploads/storage'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
+import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 
 const maxFileSizeMb = 10

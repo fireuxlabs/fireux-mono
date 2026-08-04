@@ -2,7 +2,10 @@
   <div class="menu-order-collection-time__host">
     <UModal
       v-model:open="openModel"
-      :description="description || `Choose when you would like your ${surfaceLabel.toLowerCase()} order.`"
+      :description="
+        description ||
+        `Choose when you would like your ${surfaceLabel.toLowerCase()} order.`
+      "
       :portal="false"
       :title="`${timeLabel} time`"
       :ui="modalUi"
@@ -12,19 +15,25 @@
         <div
           class="menu-order-collection-time"
           data-menu-collection-time="local"
-          :data-menu-collection-time-state="timing.known ? 'ready' : 'unavailable'"
+          :data-menu-collection-time-state="
+            timing.known ? 'ready' : 'unavailable'
+          "
         >
           <button
             v-if="timing.queueAvailable"
             type="button"
             class="menu-order-collection-time__asap"
             :class="{
-              'menu-order-collection-time__asap--active': selectedValue === 'queue',
+              'menu-order-collection-time__asap--active':
+                selectedValue === 'queue',
             }"
             :aria-pressed="selectedValue === 'queue'"
             @click="selectedValue = 'queue'"
           >
-            <span class="menu-order-collection-time__asap-icon" aria-hidden="true">
+            <span
+              class="menu-order-collection-time__asap-icon"
+              aria-hidden="true"
+            >
               <UIcon name="i-lucide-zap" />
             </span>
             <span>
@@ -85,9 +94,14 @@
           >
             <UIcon name="i-lucide-clock-alert" aria-hidden="true" />
             <div>
-              <strong>{{ unavailableTitle || `${timeLabel} times unavailable` }}</strong>
+              <strong>{{
+                unavailableTitle || `${timeLabel} times unavailable`
+              }}</strong>
               <p>
-                {{ unavailableDescription || `The Kitchen has not published ${surfaceLabel.toLowerCase()} hours yet.` }}
+                {{
+                  unavailableDescription ||
+                  `The Kitchen has not published ${surfaceLabel.toLowerCase()} hours yet.`
+                }}
               </p>
             </div>
           </div>
@@ -97,7 +111,10 @@
             class="menu-order-collection-time__empty"
             role="status"
           >
-            {{ emptyDescription || `No ${surfaceLabel.toLowerCase()} times are currently available.` }}
+            {{
+              emptyDescription ||
+              `No ${surfaceLabel.toLowerCase()} times are currently available.`
+            }}
           </p>
         </div>
       </template>
@@ -110,7 +127,11 @@
           :disabled="!selected"
           @click="confirmSelection"
         >
-          <span>{{ selected ? selected.label : `Choose a ${timeLabel.toLowerCase()} time` }}</span>
+          <span>{{
+            selected
+              ? selected.label
+              : `Choose a ${timeLabel.toLowerCase()} time`
+          }}</span>
           <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
         </button>
       </template>
@@ -165,19 +186,22 @@ const openModel = computed({
   get: () => props.open,
   set: (open: boolean) => emit('update:open', open),
 })
-const timing = computed(() => menuOrderTimeOptions({
-  hours: props.hours,
-  noticeHours: props.noticeHours,
-  asapEnabled: props.asapEnabled,
-  slotIntervalMinutes: props.slotIntervalMinutes,
-  scheduleHorizonDays: props.scheduleHorizonDays,
-}))
+const timing = computed(() =>
+  menuOrderTimeOptions({
+    hours: props.hours,
+    noticeHours: props.noticeHours,
+    asapEnabled: props.asapEnabled,
+    slotIntervalMinutes: props.slotIntervalMinutes,
+    scheduleHorizonDays: props.scheduleHorizonDays,
+  })
+)
 const selectedValue = ref('')
 const activeDate = ref('')
-const activeDay = computed(() =>
-  timing.value.days.find(day => day.date === activeDate.value) ||
-  timing.value.days[0] ||
-  null
+const activeDay = computed(
+  () =>
+    timing.value.days.find((day) => day.date === activeDate.value) ||
+    timing.value.days[0] ||
+    null
 )
 const selected = computed<MenuOrderTimeSelection | null>(() => {
   if (selectedValue.value === 'queue' && timing.value.queueAvailable) {
@@ -186,7 +210,7 @@ const selected = computed<MenuOrderTimeSelection | null>(() => {
 
   for (const day of timing.value.days) {
     const slot = day.slots.find(
-      candidate => candidate.requestedFor === selectedValue.value
+      (candidate) => candidate.requestedFor === selectedValue.value
     )
     if (slot) {
       return {
@@ -202,10 +226,10 @@ const selected = computed<MenuOrderTimeSelection | null>(() => {
 
 function resetSelection() {
   const requestedFor = props.selection?.requestedFor || ''
-  selectedValue.value = props.selection?.mode === 'queue'
-    ? 'queue'
-    : requestedFor
-  activeDate.value = requestedFor.slice(0, 10) || timing.value.days[0]?.date || ''
+  selectedValue.value =
+    props.selection?.mode === 'queue' ? 'queue' : requestedFor
+  activeDate.value =
+    requestedFor.slice(0, 10) || timing.value.days[0]?.date || ''
 }
 
 function confirmSelection() {
@@ -215,12 +239,18 @@ function confirmSelection() {
   emit('update:open', false)
 }
 
-watch(() => props.open, open => {
-  if (open) resetSelection()
-})
+watch(
+  () => props.open,
+  (open: boolean) => {
+    if (open) resetSelection()
+  }
+)
 watch(timing, () => {
   if (props.open) resetSelection()
 })
 </script>
 
-<style scoped src="../../../assets/styles/menu-order-collection-time.css"></style>
+<style
+  scoped
+  src="../../../assets/styles/menu-order-collection-time.css"
+></style>

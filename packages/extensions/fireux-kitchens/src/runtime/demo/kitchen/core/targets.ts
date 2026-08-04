@@ -1,5 +1,5 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
-import { hasExactPublicPlaceProjectionShape } from 'fireux-places/runtime/utils/public-place-projection.ts'
+import { hasExactPublicPlaceProjectionShape } from 'fireux-places/runtime/utils/public-place-projection'
 import type { Kitchen } from '../../../models/kitchen.model'
 import {
   deanosKitchenDemoIdentity,

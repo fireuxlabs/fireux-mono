@@ -1,4 +1,4 @@
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager.ts'
+import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
 import { BlogPostStorage } from '../../../../../models/blogPost.model'
 
 export function useBlogDelete() {

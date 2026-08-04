@@ -47,15 +47,15 @@ export function useUserCollection() {
 
   const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
   const binding = useCollection<User>(
-    fsq(collection(db, UserStorage.rootCollection)) as Query<User>,
+    fsq(collection(db, UserStorage.collection)) as Query<User>,
     {
-      ssrKey: UserStorage.rootCollection,
+      ssrKey: UserStorage.collection,
       transform: (docSnap: QueryDocumentSnapshot<User>) => {
         return { ...(docSnap.data() as User), id: docSnap.id } as User
       },
     } as any
   )
-  guardCollectionPromise(binding as any, UserStorage.rootCollection)
+  guardCollectionPromise(binding as any, UserStorage.collection)
 
   const users = computed(() => binding.data.value ?? [])
   const count = computed(() => users.value.length)
@@ -81,7 +81,7 @@ export function useUserHydration(
   const databaseId = readRuntimeIdentityFirestoreDatabaseId()
   const { firestoreLoadDocsByIds } = useFirestoreRead({ databaseId })
   const binding = firestoreLoadDocsByIds<User>({
-    collectionPath: UserStorage.rootCollection,
+    collectionPath: UserStorage.collection,
     ids,
   })
   const users = computed(() => binding.docs.value ?? [])

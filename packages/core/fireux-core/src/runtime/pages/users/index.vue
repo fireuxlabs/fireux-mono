@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { useHead, useRuntimeConfig, useSeoMeta } from '#imports'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { computed } from 'vue'
 
 definePageMeta({

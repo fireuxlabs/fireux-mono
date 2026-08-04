@@ -1,12 +1,12 @@
 import { Timestamp } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
-} from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { JobApplicationStorage } from '../../models/job-application.model.ts'
 import { JobEngagementStorage, JobHiringCapacityStorage } from '../../models/job-engagement.model.ts'
 import type { JobApplicationResponse } from '../../models/job-hiring.model.ts'

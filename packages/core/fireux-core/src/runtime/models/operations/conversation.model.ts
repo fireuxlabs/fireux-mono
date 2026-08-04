@@ -1,8 +1,8 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxStamped } from '../utils/meta.model'
+import type { FireuxStamped } from '../utils/stamps.model'
 
 /**
- * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
+ * Runtime models canon: docs/ai/gpt-context.md
  *
  * Family: App-scoped communication
  * Storage: app-scoped conversation record with message child records
@@ -12,8 +12,9 @@ import type { FireuxStamped } from '../utils/meta.model'
  * Decision note:
  * - Conversation is a shared communication engine scoped to the app where it started.
  * - Product apps provide labels and related entity context; the stored shape stays shared.
- * - Public enquiry creation may use guest contact fields, but shipping rules must restrict
- *   reads and follow-up writes to participants or trusted server paths.
+ * - Guest contact fields and message bodies are PII. Browsers use the trusted Chat API;
+ *   Firestore Rules remain closed to direct Conversation reads and writes.
+ * - Recovery secrets live only as hashes in the server-owned private/session child.
  */
 
 export const ConversationStorage = {
@@ -35,6 +36,14 @@ export const ConversationMessageStorage = {
   idParam: 'messageId',
 } as const
 
+export const ConversationAccessStorage = {
+  shape: 'private-support',
+  path: 'apps/{appId}/conversations/{conversationId}/private/session',
+  collection: 'private',
+  document: 'session',
+  parent: 'conversation',
+} as const
+
 export type ConversationKind =
   | 'property_enquiry'
   | 'guest_support'
@@ -42,7 +51,7 @@ export type ConversationKind =
   | 'general'
 
 export type ConversationStatus = 'open' | 'pending' | 'closed' | 'archived'
-export type ConversationParticipantType = 'user' | 'guest' | 'system'
+export type ConversationParticipantType = 'admin' | 'user' | 'guest' | 'system'
 export type ConversationPreferredChannel = 'chat' | 'email' | 'phone' | 'whatsapp'
 
 export type ConversationRelatedEntity = {
@@ -88,6 +97,7 @@ export const ConversationModel = {
     preferred_channel: 'chat' as ConversationPreferredChannel,
   } as ConversationGuestContact,
   source_route: '',
+  expires_at: {} as FirebaseTimestamp,
   last_message: {
     body: '',
     sender_id: '',
@@ -116,6 +126,7 @@ export interface Conversation {
   participant_ids: string[]
   guest_contact: ConversationGuestContact
   source_route: string
+  expires_at: FirebaseTimestamp
   last_message: ConversationLastMessage
   created: typeof ConversationModel.created
   updated: typeof ConversationModel.updated

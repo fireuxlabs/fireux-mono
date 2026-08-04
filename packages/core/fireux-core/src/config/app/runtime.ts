@@ -1,72 +1,40 @@
 // FILE: packages/core/fireux-core/config/app/runtime.ts
-// Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: carry explicit App self-join policy into runtime config.
 import type { NuxtConfig } from '@nuxt/schema'
-import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
-import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
+import type { FireuxMetaContent } from './meta-content'
+import type {
+  FireuxAppConfig,
+  FireuxConsoleConfig,
+  FireuxNavOverrides,
+} from './types'
 
-export type RuntimeAppRole = 'global' | 'tenant' | 'standalone'
+type RuntimeNormalizedFields =
+  | 'databaseId'
+  | 'modules'
+  | 'consoles'
+  | 'consoleConfig'
+  | 'domains'
+  | 'profiles'
+  | 'selfJoinEnabled'
+  | 'navHiddenKeys'
+  | 'navOverrides'
+  | 'seo'
+  | 'meta'
 
-export type RuntimeApp = {
-  id: string
-  name: string
-  shortName: string
-  /** Optional public contact/support email shown in shared UI (e.g. footer). */
-  contactEmail?: string
-  pricing?: {
-    consoleName: string
-    free: readonly string[]
-    pro: readonly string[]
-  }
-  /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */
-  designPack?: FireuxDesignPackConfig
-  /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */
-  designPacks?: Record<string, Record<string, unknown>>
+export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   /** Optional signed-in uid allowed to access developer-only dashboard tools. */
   developerId?: string
   domain: string
   /** Optional canonical origin used for SEO surfaces (e.g. https://fireux.app). */
   siteUrl?: string
-  role: RuntimeAppRole
-  /** Ecosystem package/Firebase binding key. */
-  ecosystem: string
-  /** Canonical FireUX Project entity id. */
-  projectId: string
-  /** Canonical Ecosystem entity id when the App belongs to one. */
-  ecosystemId?: string
   modules: readonly string[]
   consoles: readonly string[]
-  consoleConfig?: Record<string, { canCreate?: boolean }>
+  consoleConfig: FireuxConsoleConfig
   domains: readonly string[]
   profiles: readonly string[]
   selfJoinEnabled: boolean
-  authDefaultMode?: 'sign-in' | 'sign-up'
-  authCompletion?: {
-    path: string
-    title?: string
-    description?: string
-    actionLabel?: string
-    delayMs?: number
-  }
-  authOnboarding?: {
-    title: string
-    description?: string
-    completeLabel?: string
-    skipLabel?: string
-  }
-  navHiddenKeys?: readonly string[]
-  navOverrides?: Record<
-    string,
-    {
-      label?: string
-      icon?: string
-      position?: 'top' | 'middle' | 'bottom'
-      order?: number
-      desktop?: boolean
-      mobile?: boolean
-      layouts?: string[]
-    }
-  >
+  navHiddenKeys: readonly string[]
+  navOverrides: FireuxNavOverrides
 }
 
 export type RuntimeFirebaseEcosystem = {
@@ -91,7 +59,6 @@ export type RuntimeFirebaseApp = {
 }
 
 export type RuntimePrivate = {
-  developerPin?: string
   seo?: FireuxSeoConfig
   meta?: FireuxMetaContent
 }

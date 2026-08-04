@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-20 22:52 CEST — Both-Entity Authority: require explicit publication and canonical document identity.
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError, defineEventHandler, getQuery } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { canonicalPropertyRoot } from '../../../composables/fireux/firestore/property/utils/view/usePropertyInterface.ts'
 import {
   PUBLIC_PROPERTY_INDEX_MAX_PAGE_SIZE,

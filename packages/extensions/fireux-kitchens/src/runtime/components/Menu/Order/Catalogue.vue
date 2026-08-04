@@ -6,7 +6,7 @@
   >
     <MenuSectionNav
       v-if="catalogueSections.length > 1"
-      :aria-label="copy.menuSectionsAriaLabel"
+      :navigation-label="copy.menuSectionsAriaLabel"
       :choose-label="copy.chooseMenuSectionAriaLabel"
       :sections-label="copy.sectionsLabel"
       :sections="catalogueSections"
@@ -81,13 +81,16 @@ type MenuOrderItemSelection = {
   variantId?: string
 }
 
-const props = withDefaults(defineProps<{
-  copy?: MenuBrowseSurfaceCopy
-  currencyCode: string
-  sections: MenuManifestSection[]
-}>(), {
-  copy: () => resolveMenuBrowseSurfaceCopy(),
-})
+const props = withDefaults(
+  defineProps<{
+    copy?: MenuBrowseSurfaceCopy
+    currencyCode: string
+    sections: MenuManifestSection[]
+  }>(),
+  {
+    copy: () => resolveMenuBrowseSurfaceCopy(),
+  }
+)
 
 const emit = defineEmits<{
   (event: 'add', input: MenuOrderBasketInput): void

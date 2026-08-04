@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 // @fireux-script
-// Read-only audit. This script never writes Firestore or Storage.
+// manual_entrypoint: true
+// last_used: 2026-07-29
+// usage_note: read-only audit of live Place and Kitchen media that still need an explicit backdrop decision.
 
 import { initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'

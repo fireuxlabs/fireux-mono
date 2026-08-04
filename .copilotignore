@@ -19,7 +19,6 @@ artifacts/
 /scripts/gitsave.sh
 
 # Ecosystem Firebase credentials (human-managed; may contain secrets)
-# Concurrent edit — 2026-07-21 12:29 CEST — Cleanbox-to-Werkbox registration cutover: protect the active Werkbox Firebase config path.
 /packages/ecosystem/fireux-fireux/src/config/firebase/
 /packages/ecosystem/fireux-misebox/src/config/firebase/
 /packages/ecosystem/fireux-werkbox/src/config/firebase/

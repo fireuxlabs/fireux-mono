@@ -25,7 +25,10 @@ export type MenuOrderCheckoutInput = {
   paymentMethod: MenuOrderPaymentSelection
 }
 
-const laterCopy: Record<KitchenOrderType, Pick<MenuOrderPaymentOption, 'label' | 'description'>> = {
+const laterCopy: Record<
+  KitchenOrderType,
+  Pick<MenuOrderPaymentOption, 'label' | 'description'>
+> = {
   collection: {
     label: 'Pay when you collect',
     description: 'Settle with the Kitchen at pickup.',
@@ -71,13 +74,14 @@ export function menuOrderPaymentOptions(input: {
       timing: 'now',
     })
   }
-  if (methods.some(method => method !== 'online_card')) {
-    const copy = input.orderType === 'room_service' && !methods.includes('room_charge')
-      ? {
-          label: 'Pay later',
-          description: 'Settle with the hotel during your stay.',
-        }
-      : laterCopy[input.orderType]
+  if (methods.some((method) => method !== 'online_card')) {
+    const copy =
+      input.orderType === 'room_service' && !methods.includes('room_charge')
+        ? {
+            label: 'Pay later',
+            description: 'Settle with the hotel during your stay.',
+          }
+        : laterCopy[input.orderType]
     options.push({
       value: 'pay_later',
       ...copy,
@@ -92,7 +96,25 @@ export function menuOrderPaymentLabel(
   orderType: KitchenOrderType,
   selection: MenuOrderPaymentSelection
 ) {
-  return selection === 'online_card'
-    ? 'Pay online'
-    : laterCopy[orderType].label
+  return selection === 'online_card' ? 'Pay online' : laterCopy[orderType].label
+}
+
+const persistedPaymentMethodLabels: Record<
+  Exclude<KitchenOrderPaymentMethod, MenuOrderPaymentSelection>,
+  string
+> = {
+  deposit: 'Online deposit',
+  cash: 'Cash',
+  card_at_pickup: 'Card at pickup',
+  card_to_driver: 'Card to driver',
+  room_charge: 'Charge to room',
+}
+
+export function kitchenOrderPaymentMethodLabel(
+  orderType: KitchenOrderType,
+  method: KitchenOrderPaymentMethod
+) {
+  return method === 'online_card' || method === 'pay_later'
+    ? menuOrderPaymentLabel(orderType, method)
+    : persistedPaymentMethodLabels[method]
 }

@@ -1,4 +1,4 @@
-import type { FireuxMetaOperation } from 'fireux-core/runtime/models/system/meta-content.model'
+import type { FireuxMetaOperation } from 'fireux-core/config/app/meta-content'
 
 const portfolioConsole = {
   id: 'portfolio',

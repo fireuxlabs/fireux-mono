@@ -5,12 +5,12 @@ import {
 } from 'h3'
 import type {
   SproochliHostTarget,
-} from 'fireux-sproochli/runtime/host.ts'
-import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+} from 'fireux-sproochli/runtime/host'
+import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   ServiceAccountOidcError,
   verifyServiceAccountOidc,
-} from 'fireux-core/runtime/server/utils/auth/service-account-oidc.ts'
+} from 'fireux-core/runtime/server/utils/auth/service-account-oidc'
 
 type SproochliMenuProviderSourceScope = {
   serviceAccountEmail: string

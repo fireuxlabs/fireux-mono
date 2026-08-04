@@ -3,6 +3,9 @@ import type {
   AppDirectoryController,
   DirectoryOutcome,
   EcosystemDirectoryController,
+} from 'fireux-core/runtime/types/directory-controller.types'
+import type {
+  EcosystemDirectoryEntry,
   PlatformDirectoryResponse,
 } from 'fireux-core/runtime/models/utils/directory'
 
@@ -62,7 +65,7 @@ export function usePublishedPlatformEcosystemDirectory(): EcosystemDirectoryCont
   const { data, pending, error, refresh } = usePlatformDirectory()
   const ecosystems = computed(() =>
     (data.value?.ecosystems ?? []).filter(
-      (ecosystem) =>
+      (ecosystem: EcosystemDirectoryEntry) =>
         ecosystem.status === 'active' &&
         !retiredPublicEcosystemSlugs.has(ecosystem.slug)
     )

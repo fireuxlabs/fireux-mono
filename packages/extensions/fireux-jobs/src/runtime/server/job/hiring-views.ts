@@ -2,7 +2,7 @@ import type { DocumentSnapshot } from 'firebase-admin/firestore'
 import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
-} from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
+} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { JobEngagementStorage } from '../../models/job-engagement.model.ts'
 import type {
   JobApplicationResponse,

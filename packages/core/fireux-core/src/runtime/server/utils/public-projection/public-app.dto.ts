@@ -3,7 +3,7 @@ import type { AppStatus } from '../../../models/core/app.model'
 import type {
   AppRole,
   AppSocialLinks,
-} from '../../../models/utils/app'
+} from '../../../models/core/app.model'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 import type { AppDirectoryEntry } from '../../../models/utils/directory'
 import { asTrimmedString } from './public-dto.helpers'

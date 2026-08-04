@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
 import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
 import {
+  readRuntimeIdentityFirestoreDatabaseId,
   useDocument,
   useFirestore,
 } from '../../../vuefire'
@@ -15,7 +16,7 @@ export function useEcosystemFetch(id: string | { value: string }) {
     }
   }
 
-  const db = useFirestore()
+  const db = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
   const ecosystemId = computed(() =>
     typeof id === 'string' ? String(id || '').trim() : String(id.value || '').trim()

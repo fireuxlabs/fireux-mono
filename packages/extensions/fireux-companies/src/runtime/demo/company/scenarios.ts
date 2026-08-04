@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
-import { miseboxDemoMediaUrl } from 'fireux-core/runtime/utils/misebox-demo-media'
+import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import type { PlaceStored } from 'fireux-places/runtime/models/place.model'
 import {
   hasExactPublicPlaceProjectionShape,

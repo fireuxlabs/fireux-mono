@@ -1,7 +1,7 @@
 # Product language
 
-Updated: 2026-08-03
-Ref: 796952bf0
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -177,7 +177,7 @@ FireUX ecosystem-creation offer.
 
 ## Current source
 
-- `packages/core/fireux-core/src/runtime/models/system/meta-content.model.ts`
+- `packages/core/fireux-core/src/config/app/meta-content.ts`
 - `packages/extensions/fireux-kitchens/src/runtime/content/operations.ts`
 - `packages/extensions/fireux-suppliers/src/runtime/content/operations.ts`
 - `packages/ecosystem/fireux-misebox/src/runtime/content/solutions.ts`

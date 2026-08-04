@@ -8,6 +8,7 @@ import {
   type MaybeRefOrGetter,
   type Ref,
 } from 'vue'
+import type { RouteRecordNormalized } from 'vue-router'
 import { useAsyncData, useRouter } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
@@ -27,7 +28,7 @@ export type PublicMenuIndexOutcome =
   | { kind: 'loading' }
   | { kind: 'unavailable' }
   | { kind: 'empty' }
-  | { kind: 'redirect', path: string }
+  | { kind: 'redirect'; path: string }
   | { kind: 'list' }
 
 type UsePublicMenuIndexOptions = {
@@ -95,28 +96,37 @@ export function usePublicMenuIndex(
   const loadingMore = ref(false)
   const loadMoreError = ref<unknown>(null)
   const ready = state.then(() => undefined)
-  const menus = computed(() => state.data.value?.items ?? [])
+  const menus = computed<PublicMenuIndexItem[]>(
+    () => state.data.value?.items ?? []
+  )
   const nextCursor = computed(() => state.data.value?.nextCursor ?? null)
   const hasMore = computed(() => Boolean(nextCursor.value))
-  const tenantRouteCollisions = computed(() =>
+  const tenantRouteCollisions = computed<PublicMenuIndexItem[]>(() =>
     routeScope.value.kind === 'tenant'
-      ? menus.value.filter((menu) => !router
-          .resolve(menuLink(menu.id))
-          .matched
-          .some(record => record.meta.menuProjection === true))
+      ? menus.value.filter(
+          (menu: PublicMenuIndexItem) =>
+            !router
+              .resolve(menuLink(menu.id))
+              .matched.some(
+                (record: RouteRecordNormalized) =>
+                  record.meta.menuProjection === true
+              )
+        )
       : []
   )
   const routePolicyError = computed<Error | null>(() =>
     tenantRouteCollisions.value.length
       ? new Error(
           `Tenant Menu ids collide with existing root routes: ${tenantRouteCollisions.value
-            .map(menu => menu.id)
+            .map((menu: PublicMenuIndexItem) => menu.id)
             .join(', ')}`
         )
       : null
   )
   const error = computed(() => state.error.value || routePolicyError.value)
-  const redirectSingleTenant = computed(() => routeScope.value.kind === 'tenant')
+  const redirectSingleTenant = computed(
+    () => routeScope.value.kind === 'tenant'
+  )
   const outcome = computed<PublicMenuIndexOutcome>(() => {
     if (state.pending.value) return { kind: 'loading' }
     if (error.value || !state.data.value) return { kind: 'unavailable' }
@@ -160,7 +170,9 @@ export function usePublicMenuIndex(
       const current = state.data.value
       if (!current) return false
 
-      const items = new Map(current.items.map(item => [item.id, item]))
+      const items = new Map<string, PublicMenuIndexItem>(
+        current.items.map((item: PublicMenuIndexItem) => [item.id, item])
+      )
       for (const item of page.items) items.set(item.id, item)
 
       state.data.value = {
@@ -209,14 +221,14 @@ function requestStatusCode(value: unknown) {
   const error = value as {
     status?: number
     statusCode?: number
-    data?: { status?: number, statusCode?: number }
+    data?: { status?: number; statusCode?: number }
   }
   const statusCode = Number(
     error.statusCode ||
-    error.status ||
-    error.data?.statusCode ||
-    error.data?.status ||
-    500
+      error.status ||
+      error.data?.statusCode ||
+      error.data?.status ||
+      500
   )
 
   return Number.isInteger(statusCode) && statusCode >= 400 && statusCode <= 599

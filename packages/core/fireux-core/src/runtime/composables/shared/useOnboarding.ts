@@ -22,7 +22,9 @@ export type OnboardingStep<TId extends string> = {
   label: string
   description?: string
   icon?: string
-  validate?: () => OnboardingValidationResult | Promise<OnboardingValidationResult>
+  validate?: () =>
+    | OnboardingValidationResult
+    | Promise<OnboardingValidationResult>
 }
 
 export type UseOnboardingOptions<TId extends string> = {
@@ -60,9 +62,9 @@ export function useOnboarding<TId extends string>(
       return true
     })
   })
-  const activeStepId = ref<TId | null>(options.initialStepId ?? null) as Ref<
-    TId | null
-  >
+  const activeStepId = ref<TId | null>(
+    options.initialStepId ?? null
+  ) as Ref<TId | null>
   const completedStepIds = ref<TId[]>([]) as Ref<TId[]>
   const visitedStepIds = ref<TId[]>([]) as Ref<TId[]>
   const pending = ref(false)
@@ -70,7 +72,9 @@ export function useOnboarding<TId extends string>(
   const finished = ref(false)
 
   const activeStepIndex = computed(() => {
-    const index = steps.value.findIndex((step) => step.id === activeStepId.value)
+    const index = steps.value.findIndex(
+      (step) => step.id === activeStepId.value
+    )
     return index >= 0 ? index : 0
   })
   const currentStep = computed(() => steps.value[activeStepIndex.value] ?? null)
@@ -182,7 +186,7 @@ export function useOnboarding<TId extends string>(
 
   watch(
     steps,
-    (availableSteps) => {
+    (availableSteps: readonly OnboardingStep<TId>[]) => {
       if (!availableSteps.length) {
         activeStepId.value = null
         completedStepIds.value = []
@@ -190,14 +194,19 @@ export function useOnboarding<TId extends string>(
         return
       }
 
-      const ids = new Set(availableSteps.map((step) => step.id))
-      completedStepIds.value = completedStepIds.value.filter((id) => ids.has(id))
+      const ids = new Set(
+        availableSteps.map((step: OnboardingStep<TId>) => step.id)
+      )
+      completedStepIds.value = completedStepIds.value.filter((id) =>
+        ids.has(id)
+      )
       visitedStepIds.value = visitedStepIds.value.filter((id) => ids.has(id))
       if (!activeStepId.value || !ids.has(activeStepId.value)) {
         const initial = options.initialStepId
-        activeStepId.value = initial && ids.has(initial)
-          ? initial
-          : availableSteps[0]?.id ?? null
+        activeStepId.value =
+          initial && ids.has(initial)
+            ? initial
+            : (availableSteps[0]?.id ?? null)
       }
       if (activeStepId.value) visit(activeStepId.value)
     },

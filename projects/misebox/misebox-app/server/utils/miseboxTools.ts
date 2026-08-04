@@ -1,5 +1,5 @@
 import type { H3Event } from 'h3'
-import { defineToolProviderRegistry } from 'fireux-core/runtime/server/utils/tool-provider.ts'
+import { defineToolProviderRegistry } from 'fireux-core/runtime/server/utils/tool-provider'
 import { orderingTool } from './tools/ordering'
 import type { MiseboxToolContract, MiseboxToolId } from './tools/types'
 

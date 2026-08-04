@@ -11,7 +11,7 @@ import {
 import {
   readRecord,
   readRecordString,
-} from 'fireux-core/runtime/server/utils/records/read.ts'
+} from 'fireux-core/runtime/server/utils/records/read'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const numberValue = (value: unknown) => {

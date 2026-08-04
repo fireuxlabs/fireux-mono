@@ -8,8 +8,8 @@ import type {
   Place as PlaceModel,
   PlaceSocialLinks,
   PlaceSource,
-} from 'fireux-places/runtime/models/place.model'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+} from '../../../../../../models/place.model'
+import { PlaceStorage } from '../../../../../../models/place.model'
 
 export namespace PlaceCard {
   export type Card = {

@@ -1,6 +1,9 @@
 # Identity and product literature context
 
-Updated: 2026-08-03
+Updated: 2026-08-04
+Ref: d232cc731
+Role: living context
+Scope: cross-system Main App identity, landing, pricing, and product literature
 
 ## Inheritance
 
@@ -36,6 +39,10 @@ shared public-language or pricing seam applies to them.
 - Main App landings use Hero, pricing, product surfaces, then App-owned deeper
   features. A single surface has no selector; multiple genuine usage surfaces
   may use one. Operations inside a Console are not separate surfaces.
+- Core owns the landing region vocabulary and default order. Each Main App may
+  provide an ordered subset through the shared `regionOrder` seam so its real
+  product layers remain truthful without copying the renderer or inventing
+  another landing framework.
 - FireUX alone owns the platform Ecosystems section. Ecosystem Main Apps show
   an Apps section only when their public collection contains more than one
   active child App after excluding the Main App; the heading is only

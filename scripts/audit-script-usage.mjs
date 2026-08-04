@@ -1,10 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-22
+// last_used: 2026-08-04
 // usage_note: enforce dated script headers, tracked callers, and valid package-command file targets.
-// Concurrent edit — 2026-07-22 01:05 CEST — Dish media verification: record the operational script lifecycle audit used for this pass.
-// Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: make orphaned script files a blocking lifecycle failure.
-// Concurrent edit — 2026-07-20 23:27 CEST — Repo Efficiency Pass 6 of 6: validate script file targets in every authored package manifest.
 
 import { execFileSync } from 'node:child_process'
 import { existsSync, readFileSync, statSync } from 'node:fs'

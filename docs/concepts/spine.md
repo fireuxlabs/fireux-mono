@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-08-03
-Ref: 8287d99bb
+Updated: 2026-08-04
+Ref: d232cc731
 Role: map, not canon
 
 ## Purpose
@@ -52,11 +52,15 @@ contract.
 | Tenant/global                 | `family-tenant-global.md`   | App config, `useFireUXConfig`, and `useConsole`                                                  | Runtime mode is shared; transfer and second-tenant proof remain incomplete                                                                          |
 | Menu                          | `family-menu.md`            | Entity declarations and menu route guard                                                         | Identity and route contexts are strong; content migration remains active                                                                            |
 | Menu ordering                 | `menu-ordering.md`          | Menu route grammar, order models, and lifecycle composables                                      | One lifecycle is mapped; the older funnel tree remains migration debt                                                                               |
-| Marketplace                   | `marketplace.md`            | `fireux-marketplace` models, trusted handlers, and closed raw Rules                              | Supplier-backed App listings and supplier-partitioned offline Order requests are the accepted boundary                                             |
-| Supplier                      | `suppliers.md`              | `SupplierEntity`, atomic onboarding, Supplier Console, and root/App-support guards               | Supplier owns identity and Items; the unshipped marketplace Store/Offer prototype is being replaced outright                                       |
+| Place/Kitchen media           | `place-kitchen-media.md`    | Place/Kitchen models, projectors, media writers, and entity authority guard                      | Media ownership is shared; legacy `image_shade` decoding remains migration debt                                                                     |
+| Finance                       | `finance.md`                | Finance primitives, trusted fact producer, and `scripts/guards/finance.mjs`                      | Money and immutable fact ownership are guarded; new producers require dated authoritative operations                                                |
+| Marketplace                   | `marketplace.md`            | `fireux-marketplace` models, trusted handlers, and closed raw Rules                              | Supplier-backed App listings and supplier-partitioned offline Order requests are the accepted boundary                                              |
+| Supplier                      | `suppliers.md`              | `SupplierEntity`, atomic onboarding, Supplier Console, and root/App-support guards               | Supplier owns identity and Items; the unshipped marketplace Store/Offer prototype is being replaced outright                                        |
 | Collection manager            | `collection-manager.md`     | Shared directory components, manager siblings, and CSS guards                                    | Ownership roles are clear; presentation classes still need deliberate classification                                                                |
 | Card                          | `card-family.md`            | Prop-driven Card variants plus `scripts/guards/components.mjs`                                   | Cell/Pill/Preview are canonical; legacy Cards/Profile paths are frozen migration debt                                                               |
+| Core models                   | `core-models.md`            | Canonical model files plus entity-authority and user-app-access guards                           | App, Ecosystem, User/AppUser, and Project ownership is explicit; named stored projections remain migration debt                                     |
 | Product language              | `product-language.md`       | Atomic source fields, child surfaces, operation catalogues, and parent composition               | Bottom-up derivation is defined; existing cross-repo copy still needs progressive review                                                            |
+| Blog                          | `blog.md`                   | Blog root/public projection plus `scripts/guards/blog-authority.mjs`                             | Blog truth and ecosystem-wide publication are shared; authored story language remains owner-defined                                                 |
 | Search visibility             | `search-visibility.md`      | Core SEO runtime plus `scripts/guards/seo-spine.mjs`                                             | Route identity, private indexing, and bounded Jobs discovery are guarded; metadata adoption, entity graphs, and multilingual URLs remain incomplete |
 | Create                        | `create.md`                 | `useXCreate` siblings, trusted endpoints, and `createStrategy.ts`                                | Create families are classified; plan metadata and optional-field handling are not aligned                                                           |
 | Tool provider                 | `tool-provider.md`          | Core registry, loader, iframe protocol, and provider APIs                                        | Transport is shared; Go QR wrappers and dogfood config contain duplication                                                                          |
@@ -71,6 +75,7 @@ contract.
 | Layout                        | `layouts.md`                | `AppShell` and current runtime layouts                                                           | Ownership is clear; slot versus direct route rendering is `to-confirm`                                                                              |
 | Debug                         | `debug.md`                  | `DevJson` and `DevFireuxDebugPanel`                                                              | Two distinct surfaces are accepted; a third generic panel is drift                                                                                  |
 | Privacy-first measurement     | `privacy-measurement.md`    | Shared legal surface plus `scripts/guards/privacy-measurement.mjs`                               | No tracking is active; the bounded aggregate server/admin family must land before collection begins                                                 |
+| Repository performance        | `repository-performance.md` | `scripts/measure-workspace.mjs` and the root verification commands                               | Measurement is reproducible; timing budgets remain to-confirm until repeated reference-environment evidence exists                                  |
 
 ## Stop signals
 

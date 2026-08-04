@@ -2,8 +2,8 @@
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: expose every canonical Place only through a coarse card-safe reference DTO.
 // Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: add locale defaults only to the bounded detail projection.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: project only validated sparse brand colours.
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
-import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette.ts'
+import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { readBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import type { PlaceType } from '../../models/place.model'
 import type {
   PublicPlaceDetailProjection,

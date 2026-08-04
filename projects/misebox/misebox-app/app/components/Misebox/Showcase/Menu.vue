@@ -23,12 +23,15 @@
 
     <aside class="showcase-menu__notice" aria-label="Allergy information">
       <strong>Allergies or intolerances?</strong>
-      <span>Please ask the Kitchen about allergens and dietary requirements.</span>
+      <span
+        >Please ask the Kitchen about allergens and dietary requirements.</span
+      >
     </aside>
 
     <MenuBrowseCatalogue
       :currency-code="manifest.presentation.currencyCode"
       :currency-format="manifest.presentation.currencyFormat"
+      :copy="browseSurfaceCopy"
       :sections="manifest.content.sections"
       :show-currency="manifest.presentation.showCurrency !== false"
     />
@@ -38,19 +41,22 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
+import { resolveMenuBrowseSurfaceCopy } from 'fireux-kitchens/runtime/content/menu-surface-copy'
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 
 const props = defineProps<{
   manifest: MenuManifest
 }>()
 
-const {
-  className: themeClassName,
-  styleVars: themeStyleVars,
-} = useMenuThemeSurface({
-  pageStyle: computed(() => props.manifest.presentation.pageStyle),
-  colorMode: 'light',
-})
+const browseSurfaceCopy = computed(
+  () => props.manifest.sproochli?.surfaceCopy ?? resolveMenuBrowseSurfaceCopy()
+)
+
+const { className: themeClassName, styleVars: themeStyleVars } =
+  useMenuThemeSurface({
+    pageStyle: computed(() => props.manifest.presentation.pageStyle),
+    colorMode: 'light',
+  })
 </script>
 
 <style scoped>

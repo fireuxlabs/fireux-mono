@@ -5,14 +5,14 @@ import { collection } from 'firebase/firestore'
 import {
   useCollection,
   useFirestore,
-} from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
+} from '../../../vuefire'
+import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { computed } from 'vue'
 import type {
   ProfileBase,
   ProfileConfig,
   ProfileRecord,
-} from '../../../../../../models/core/profile.model'
+} from '../../../../../../models/utils/profile.model'
 import { AppStorage } from '../../../../../../models/core/app.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 

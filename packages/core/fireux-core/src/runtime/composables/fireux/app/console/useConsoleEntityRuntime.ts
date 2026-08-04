@@ -3,19 +3,14 @@
 import { computed, unref, watch, type MaybeRef } from 'vue'
 import { normalizeString } from '../../../../utils/string'
 import { useAuth } from '../../firebase/useAuth'
-import {
-  useConsoleEntityFirestore,
-} from '../../firestore/system/console/utils/useConsoleEntityFirestore'
+import { useConsoleEntityFirestore } from '../../firestore/system/console/utils/useConsoleEntityFirestore'
 import type {
   ConsoleEntityCollectionFamily,
   ConsoleEntityRuntimeMode,
   ConsoleEntityScopeTarget,
 } from '../../firestore/system/console/utils/resolveConsoleEntityCollectionPath'
 import { targetHasOperator } from './useConsoleAccess'
-import {
-  type ConsoleData,
-  type ConsoleDataType,
-} from './useConsoleData'
+import { type ConsoleData, type ConsoleDataType } from './useConsoleData'
 import { useConsoleDataAuthority } from './useConsoleDataAuthority'
 import { normalizeConsoleSource, useConsole } from './useConsole'
 import type { ConsoleTargetOutcome } from './useConsoleIndex'
@@ -55,8 +50,9 @@ export function useConsoleEntityRuntime<TTarget extends object>(
     () => normalizeString(unref(options.userId)) || normalizeString(uid.value)
   )
   const targetData = computed<Array<ConsoleData<TTarget>>>(() =>
-    (unref(options.targetData) ?? [])
-      .filter((data): data is ConsoleData<TTarget> => data != null)
+    (unref(options.targetData) ?? []).filter(
+      (data): data is ConsoleData<TTarget> => data != null
+    )
   )
   const {
     selectedId,
@@ -66,16 +62,14 @@ export function useConsoleEntityRuntime<TTarget extends object>(
   } = useConsoleSelection<ConsoleData<TTarget>>(options.family, {
     targetItems: targetData,
     targetOutcome: computed(() => unref(options.targetOutcome)),
-    getId: data => options.getId(data.value),
-    getType: data => data.type,
+    getId: (data) => options.getId(data.value),
+    getType: (data) => data.type,
   })
   const selectedTarget = computed<TTarget | null>(
     () => selectedData.value?.value ?? null
   )
   const dataType = computed<ConsoleDataType | null>(() =>
-    selectedData.value?.type === source.value
-      ? selectedData.value.type
-      : null
+    selectedData.value?.type === source.value ? selectedData.value.type : null
   )
   const dataAuthority = useConsoleDataAuthority(options.family)
   watch(
@@ -85,7 +79,8 @@ export function useConsoleEntityRuntime<TTarget extends object>(
         : '',
       type: dataType.value,
     }),
-    ({ id, type }) => dataAuthority.setAuthority(id, type),
+    ({ id, type }: { id: string; type: ConsoleDataType | null }) =>
+      dataAuthority.setAuthority(id, type),
     { immediate: true }
   )
   const isDemo = computed(() => dataType.value === 'demo')
@@ -109,15 +104,11 @@ export function useConsoleEntityRuntime<TTarget extends object>(
     useAppSupport: options.useAppSupport,
   })
   const readOnly = computed(
-    () =>
-      !dataType.value ||
-      isDemo.value ||
-      Boolean(unref(options.readOnly))
+    () => !dataType.value || isDemo.value || Boolean(unref(options.readOnly))
   )
   const canWrite = computed(
     () =>
-      !readOnly.value &&
-      targetHasOperator(selectedTarget.value, userId.value)
+      !readOnly.value && targetHasOperator(selectedTarget.value, userId.value)
   )
   const rootCollection = firestore.writeCollection
 

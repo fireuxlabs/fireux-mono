@@ -8,16 +8,16 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { ProjectUserJoinStorage } from 'fireux-core/runtime/models/operations/project-user-join.model.ts'
-import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
+import { ProjectUserJoinStorage } from 'fireux-core/runtime/models/operations/project-user-join.model'
+import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer'
 import {
   ServiceAccountOidcError,
   verifyServiceAccountOidc,
-} from 'fireux-core/runtime/server/utils/auth/service-account-oidc.ts'
+} from 'fireux-core/runtime/server/utils/auth/service-account-oidc'
 import {
   parseProjectUserJoinPublicationV1,
   ProjectUserJoinValidationError,
-} from 'fireux-core/runtime/server/utils/project-user-join/validate.ts'
+} from 'fireux-core/runtime/server/utils/project-user-join/validate'
 import { getFirestoreDb } from '../../../../utils/firebase-admin'
 import {
   getSignupMonitorReceiverConfig,

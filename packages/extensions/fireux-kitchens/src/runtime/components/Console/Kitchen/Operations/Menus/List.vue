@@ -1,16 +1,12 @@
 <template>
   <section aria-label="Menus">
-    <div v-if="pending" class="text-sm text-dimmed">
-      Loading menus...
-    </div>
+    <div v-if="pending" class="text-sm text-dimmed">Loading menus...</div>
 
     <div v-else-if="menus.length" class="flex flex-wrap gap-3">
       <article
         v-for="menu in menus"
         :key="menu.id"
-        :data-service-state="
-          isMenuInService(menu.id) ? 'active' : 'inactive'
-        "
+        :data-service-state="isMenuInService(menu.id) ? 'active' : 'inactive'"
         class="menu-list__card flex min-w-0 flex-col overflow-hidden rounded-xl border border-default bg-default shadow-sm"
         :class="isMenuInService(menu.id) ? '' : 'border-dashed'"
       >
@@ -23,13 +19,9 @@
             :src="menuPreviewDish(menu)?.imageUrl"
             :alt="`${menuPreviewDish(menu)?.name} from ${menuTitle(menu)}`"
             class="menu-list__thumbnail w-full object-cover"
-            :class="
-              isMenuInService(menu.id)
-                ? ''
-                : 'opacity-45 saturate-50'
-            "
+            :class="isMenuInService(menu.id) ? '' : 'opacity-45 saturate-50'"
             loading="lazy"
-          >
+          />
           <div
             v-else
             class="menu-list__thumbnail flex w-full items-center justify-center bg-elevated text-muted"
@@ -39,7 +31,9 @@
             <UIcon name="i-lucide-image" class="size-7" />
           </div>
 
-          <div class="flex min-w-0 w-full items-center gap-2 border-t border-default px-3 py-3">
+          <div
+            class="flex min-w-0 w-full items-center gap-2 border-t border-default px-3 py-3"
+          >
             <h3
               class="truncate text-sm font-semibold text-highlighted"
               :class="isMenuInService(menu.id) ? '' : 'opacity-55'"
@@ -85,16 +79,18 @@
       color="neutral"
       variant="soft"
       title="No menus yet"
-      :description="readOnly
-        ? 'No menus are available in this read-only source.'
-        : 'Create a menu from a URL, photo, or PDF source.'"
+      :description="
+        readOnly
+          ? 'No menus are available in this read-only source.'
+          : 'Create a menu from a URL, photo, or PDF source.'
+      "
     />
   </section>
 </template>
 
 <script setup lang="ts">
 import { useKitchenMenusWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenMenusWorkspace'
-import type { Menu } from '../../../../../models/kitchen/menu/menu.model'
+import type { KitchenMenu as Menu } from '../../../../../models/kitchen/menu/kitchen-menu.model'
 
 const {
   menus,
@@ -109,7 +105,8 @@ const {
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-const menuTitle = (menu: Menu) => text(menu.name) || text(menu.id) || 'Untitled menu'
+const menuTitle = (menu: Menu) =>
+  text(menu.name) || text(menu.id) || 'Untitled menu'
 const menuPath = (menu: Menu) =>
   `/console/kitchen/menus/${encodeURIComponent(text(menu.id))}`
 const menuPreviewDish = (menu: Menu) => getMenuPreviewDish(menu.id)
