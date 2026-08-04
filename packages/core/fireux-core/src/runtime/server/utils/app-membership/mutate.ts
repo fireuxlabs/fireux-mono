@@ -6,13 +6,13 @@ import { FieldValue, type Firestore } from 'firebase-admin/firestore'
 import { AppStorage } from '../../../models/core/app.model'
 import type {
   AppMembershipMutationResult,
-} from '../../../models/core/supporting/app-membership'
+} from '../../../models/operations/app-membership'
 import {
   AppJoinRequestStorage,
   AppMembershipBlockStorage,
-} from '../../../models/core/supporting/app-membership'
+} from '../../../models/operations/app-membership'
 import {
-  UserAppStorage,
+  AppUserStorage,
   UserStorage,
 } from '../../../models/core/user.model'
 import {
@@ -36,7 +36,6 @@ import {
 } from './mutation-contract'
 import { handleRemoveMember } from './mutation-removal'
 import { handleReviewJoin } from './mutation-review-join'
-import { handleSetConsoleTarget } from './mutation-console-target'
 import { handleMembershipSettings } from './mutation-settings'
 
 
@@ -49,7 +48,7 @@ async function mutateInTransaction(
 ): Promise<TransactionOutcome> {
   const { actorUid, appId, developerUid, input } = context
   const appRef = appDb.collection(AppStorage.collection).doc(appId)
-  const membershipCollection = appRef.collection(UserAppStorage.collection)
+  const membershipCollection = appRef.collection(AppUserStorage.collection)
 
   return appDb.runTransaction(async (transaction) => {
     const appSnapshot = await transaction.get(appRef)
@@ -249,24 +248,6 @@ async function mutateInTransaction(
 
     if (input.action === 'remove-member') {
       return handleRemoveMember({
-        context,
-        transaction,
-        appDb,
-        identityDb,
-        sameDatabase,
-        crossDatabaseUserVerified,
-        appRef,
-        membershipCollection,
-        appData,
-        actorMembershipRef,
-        actorMembershipBlockRef,
-        actorMembershipSnapshot,
-        actorMembership,
-      })
-    }
-
-    if (input.action === 'set-console-target') {
-      return handleSetConsoleTarget({
         context,
         transaction,
         appDb,

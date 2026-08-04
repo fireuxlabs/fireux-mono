@@ -34,7 +34,6 @@ export function useBlankConsole() {
     appCollectionPath,
   } = useBlankCollection({
     source: consoleRoot.source,
-    targetIds: consoleTargets.targetIds,
   })
   const demoData = useBlankConsoleDemoData(
     computed(() => consoleRoot.source.value === 'demo')

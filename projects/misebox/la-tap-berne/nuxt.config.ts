@@ -1,7 +1,6 @@
 // FireUX app config guide: packages/core/fireux-docs/src/config/app/nuxt.config.md
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
-import kitchenConfig from './app/config/kitchen.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
@@ -10,7 +9,6 @@ const fireuxConfig = defineFireuxConfig({
   id: 'la-tap-berne',
   name: 'La Tap Berne',
   shortName: 'La Tap Berne',
-  brand: { owner: 'app', status: 'provisional' },
   role: 'tenant',
   seo: {
     siteUrl: 'https://tapberne.misebox.app',
@@ -18,8 +16,7 @@ const fireuxConfig = defineFireuxConfig({
   consoles: ['kitchen'],
   consoleConfig: {
     kitchen: {
-      canCreate: kitchenConfig.canCreate,
-      targetIds: [...kitchenConfig.kitchens],
+      canCreate: false,
     },
   },
   navHiddenKeys: ['kitchens', 'places'],

@@ -4,7 +4,6 @@
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
-import kitchenConfig from './app/config/kitchen.config'
 
 const fireuxConfig = defineFireuxConfig({
   ecosystem: 'misebox',
@@ -13,7 +12,6 @@ const fireuxConfig = defineFireuxConfig({
   id: 'baeren-ringgenberg',
   name: 'Hotel Bären Ringgenberg',
   shortName: 'Bären Ringgenberg',
-  brand: { owner: 'app', status: 'provisional' },
   role: 'tenant',
   seo: {
     siteUrl: 'https://baeren-ringgenberg.web.app',
@@ -21,8 +19,7 @@ const fireuxConfig = defineFireuxConfig({
   consoles: ['kitchen'],
   consoleConfig: {
     kitchen: {
-      canCreate: kitchenConfig.canCreate,
-      targetIds: [...kitchenConfig.kitchens],
+      canCreate: false,
     },
   },
   navHiddenKeys: ['kitchens', 'places', 'companies', 'agents', 'professionals'],

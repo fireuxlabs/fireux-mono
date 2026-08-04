@@ -6,7 +6,7 @@ import {
   watch,
   type MaybeRefOrGetter,
 } from 'vue'
-import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
+import { formatCurrencyAmount } from 'fireux-core/runtime/models/utils/money.model'
 import {
   useCustomerDeliveryAddressAutocomplete,
   type CustomerDeliveryAddressPrediction,

@@ -13,11 +13,7 @@ import {
   inspectLevelOne,
 } from './_lib/filesystem-policy.mjs'
 
-const REQUIRED_L1 = [
-  ...COMMON_PACKAGE_REQUIRED_L1,
-  'docs',
-  '.firebaserc',
-]
+const REQUIRED_L1 = [...COMMON_PACKAGE_REQUIRED_L1, 'docs', '.firebaserc']
 
 // Ecosystem config contract (inside each ecosystem package)
 const REQUIRED_CONFIG_DIR = path.join('src', 'config')
@@ -29,14 +25,15 @@ const CONFIG_ALLOWED_NOISE = ['.DS_Store']
 const REQUIRED_FIREBASE_DIR = path.join('src', 'config', 'firebase')
 const REQUIRED_FIREBASE_FILES = [
   'ecosystem.config.ts',
+  'firestore.template.rules',
+  'rules',
   'service-account.example.json',
 ]
-const OPTIONAL_FIREBASE_FILES = ['firestore.template.rules', 'rules']
+const OPTIONAL_FIREBASE_FILES = []
 const FIREBASE_ALLOWED_NOISE = ['.DS_Store']
 
 // Ecosystem runtime contract
 const REQUIRED_RUNTIME_PUBLIC_DIR = path.join('src', 'runtime', 'public')
-
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -119,7 +116,6 @@ function checkEcosystemPackage(pkgPath) {
     lines.push('', ...configViolations.split('\n'))
   }
 
-
   if (firebaseConfigViolations) {
     lines.push('', ...firebaseConfigViolations.split('\n'))
   }
@@ -168,7 +164,10 @@ function checkConfigShape(pkgPath) {
 
   const missingDirs = REQUIRED_CONFIG_DIRS.filter((d) => !entries.includes(d))
 
-  const allowedEntries = new Set([...ALLOWED_CONFIG_FILES, ...REQUIRED_CONFIG_DIRS])
+  const allowedEntries = new Set([
+    ...ALLOWED_CONFIG_FILES,
+    ...REQUIRED_CONFIG_DIRS,
+  ])
   const isAllowedConfigEntry = (entry) => {
     if (allowedEntries.has(entry)) return true
     if (CONFIG_ALLOWED_NOISE.includes(entry)) return true
@@ -184,7 +183,9 @@ function checkConfigShape(pkgPath) {
     missingDirs.forEach((d) => lines.push(`      - ${d}`))
   }
   if (unexpected.length) {
-    lines.push('    Unexpected config entries (only allow specific files/dirs):')
+    lines.push(
+      '    Unexpected config entries (only allow specific files/dirs):'
+    )
     unexpected
       .slice()
       .sort((a, b) => a.localeCompare(b))
@@ -230,9 +231,7 @@ function checkFirebaseConfig(pkgPath) {
 
     // Enforce non-empty string literals. This intentionally stays simple because
     // ecosystem configs are expected to be static literals.
-    const emptyLiteral = new RegExp(`\\b${key}\\s*:\\s*(['"])\\s*\\1`).test(
-      raw
-    )
+    const emptyLiteral = new RegExp(`\\b${key}\\s*:\\s*(['"])\\s*\\1`).test(raw)
     if (emptyLiteral) emptyKeys.push(key)
   }
 
@@ -274,10 +273,7 @@ function checkFirebaseShape(pkgPath) {
 
   if (!missing.length && !unexpected.length && !rulesViolation) return null
 
-  const lines = [
-    '  Firebase shape violation:',
-    `    Dir: ${firebaseDir}`,
-  ]
+  const lines = ['  Firebase shape violation:', `    Dir: ${firebaseDir}`]
 
   if (missing.length) {
     lines.push('    Missing required:')
@@ -286,7 +282,7 @@ function checkFirebaseShape(pkgPath) {
 
   if (unexpected.length) {
     lines.push(
-      '    Unexpected (only tracked public config, optional Rules template, and inert credential example; no local credential or index):'
+      '    Unexpected (only tracked public config, required Rules source, and inert credential example; no local credential or index):'
     )
     unexpected
       .slice()
@@ -304,7 +300,6 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
   const hasTemplate = existsSync(templatePath)
   const hasFragments = existsSync(fragmentsDir)
 
-  if (!hasTemplate && !hasFragments) return null
   if (hasTemplate !== hasFragments) {
     return [
       '    Firestore Rules manifest and rules/ fragments must exist together.',
@@ -312,9 +307,9 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
   }
 
   const template = readFileSync(templatePath, 'utf8')
-  const declared = [...template.matchAll(
-    /^\/\/ @fireux-ecosystem-rules ([a-z][a-z0-9-]*)$/gm
-  )].map((match) => match[1])
+  const declared = [
+    ...template.matchAll(/^\/\/ @fireux-ecosystem-rules ([a-z][a-z0-9-]*)$/gm),
+  ].map((match) => match[1])
   const entries = readdirSync(fragmentsDir, { withFileTypes: true })
   const invalidEntries = entries.filter(
     (entry) => !entry.isFile() || !/^[a-z][a-z0-9-]*\.rules$/.test(entry.name)
@@ -326,7 +321,10 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
   const expected = [...new Set(declared)].sort()
   const ecosystem = path.basename(pkgPath).replace(/^fireux-/, '')
   const invalidHeaders = actual.filter((name) => {
-    const source = readFileSync(path.join(fragmentsDir, `${name}.rules`), 'utf8')
+    const source = readFileSync(
+      path.join(fragmentsDir, `${name}.rules`),
+      'utf8'
+    )
     return !source.startsWith(
       `// @fireux-ecosystem-rules-fragment ${ecosystem}/${name}\n`
     )
@@ -338,19 +336,24 @@ function checkFirebaseRulesFragments(firebaseDir, pkgPath) {
     actual.join(',') === expected.join(',') &&
     !invalidEntries.length &&
     !invalidHeaders.length
-  ) return null
+  )
+    return null
 
   return [
     '    Firestore Rules fragment contract is invalid:',
     ...(declared.length ? [] : ['      - manifest declares no fragments']),
-    ...(declared.length === expected.length ? [] : ['      - manifest repeats a fragment']),
-    ...invalidEntries.map((entry) => `      - invalid entry: rules/${entry.name}`),
-    ...expected.filter((name) => !actual.includes(name)).map(
-      (name) => `      - missing declared fragment: rules/${name}.rules`
+    ...(declared.length === expected.length
+      ? []
+      : ['      - manifest repeats a fragment']),
+    ...invalidEntries.map(
+      (entry) => `      - invalid entry: rules/${entry.name}`
     ),
-    ...actual.filter((name) => !expected.includes(name)).map(
-      (name) => `      - undeclared fragment: rules/${name}.rules`
-    ),
+    ...expected
+      .filter((name) => !actual.includes(name))
+      .map((name) => `      - missing declared fragment: rules/${name}.rules`),
+    ...actual
+      .filter((name) => !expected.includes(name))
+      .map((name) => `      - undeclared fragment: rules/${name}.rules`),
     ...invalidHeaders.map(
       (name) => `      - invalid source header: rules/${name}.rules`
     ),

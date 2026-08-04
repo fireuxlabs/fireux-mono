@@ -8,7 +8,6 @@ export default defineFireuxConfig({
   id: 'fireux-tenant',
   name: 'Michel AG Metallbau',
   shortName: 'Michel AG',
-  brand: { owner: 'core' },
   role: 'tenant',
   contactEmail: 'info@michelmetallbau.ch',
 })

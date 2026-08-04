@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: expose explicit App self-join policy.
 import { useRuntimeConfig } from '#imports'
 import type { FireuxDesignPackConfig } from '../../../../config/app/design-packs'
-import type { FireuxAppBrandConfig } from '../../../../config/app/types'
 
 export type FireUXRole = 'global' | 'tenant' | 'standalone'
 
@@ -15,7 +14,6 @@ export interface FireUXConfig {
   appId: string
   appName: string
   appShortName: string
-  brand: FireuxAppBrandConfig
   siteUrl?: string
   modules: string[]
   domains: string[]
@@ -86,7 +84,10 @@ function optString(src: AnyRecord, key: string): string | undefined {
   return v.trim()
 }
 
-function optRecord(src: AnyRecord, key: string): Record<string, unknown> | undefined {
+function optRecord(
+  src: AnyRecord,
+  key: string
+): Record<string, unknown> | undefined {
   const v = src[key]
   if (!v || typeof v !== 'object' || Array.isArray(v)) return undefined
   return v as Record<string, unknown>
@@ -107,23 +108,6 @@ function reqRole(src: AnyRecord): FireUXRole {
     )
   }
   return raw
-}
-
-function reqBrand(src: AnyRecord): FireuxAppBrandConfig {
-  const value = src.brand
-  if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error('[fireux] runtimeConfig.public.fireux.brand must declare an owner.')
-  }
-  const brand = value as Record<string, unknown>
-  const owner = brand.owner
-  if (owner === 'core' || owner === 'ecosystem') return { owner }
-  if (
-    owner === 'app' &&
-    (brand.status === 'approved' || brand.status === 'provisional')
-  ) {
-    return { owner, status: brand.status }
-  }
-  throw new Error('[fireux] runtime brand ownership is invalid.')
 }
 
 function buildConfig(): Readonly<FireUXConfig> {
@@ -150,7 +134,6 @@ function buildConfig(): Readonly<FireUXConfig> {
     appId: reqString(fireux, 'id'),
     appName: reqString(fireux, 'name'),
     appShortName: reqString(fireux, 'shortName'),
-    brand: reqBrand(fireux),
     siteUrl: optString(fireux, 'siteUrl'),
 
     modules: toStringArray(fireux.modules),
@@ -158,7 +141,8 @@ function buildConfig(): Readonly<FireUXConfig> {
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
     authDefaultMode:
-      fireux.authDefaultMode === 'sign-in' || fireux.authDefaultMode === 'sign-up'
+      fireux.authDefaultMode === 'sign-in' ||
+      fireux.authDefaultMode === 'sign-up'
         ? fireux.authDefaultMode
         : undefined,
     authCompletion: optRecord(fireux, 'authCompletion') as
@@ -228,7 +212,8 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
       cached.authCompletion?.delayMs === cfg.authCompletion?.delayMs &&
       cached.authOnboarding?.title === cfg.authOnboarding?.title &&
       cached.authOnboarding?.description === cfg.authOnboarding?.description &&
-      cached.authOnboarding?.completeLabel === cfg.authOnboarding?.completeLabel &&
+      cached.authOnboarding?.completeLabel ===
+        cfg.authOnboarding?.completeLabel &&
       cached.authOnboarding?.skipLabel === cfg.authOnboarding?.skipLabel &&
       JSON.stringify(cached.pricing) === JSON.stringify(cfg.pricing)
 

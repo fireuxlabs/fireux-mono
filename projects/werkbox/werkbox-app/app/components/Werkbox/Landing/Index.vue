@@ -1,7 +1,5 @@
 <template>
   <div>
-    <LandingOperationRail ariaLabel="Werkbox work" :operations="railItems" />
-
     <LandingProductIndex
       :content="content"
       hero-layout="proof-wide"
@@ -93,12 +91,7 @@
 import { computed } from 'vue'
 import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
 import EmployerValue from './EmployerValue.vue'
-import {
-  content,
-  networkCatalogue,
-  railItems,
-  surfaceItems,
-} from './landing-content'
+import { content, networkCatalogue, surfaceItems } from './landing-content'
 
 const appsController = useEcosystemAppCollection()
 const showApps = computed(

@@ -5,7 +5,7 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import {
   FIREUX_ACCOUNT_TERMS_VERSION,
   type UserAccountProvisioningInput,
-} from '../../../../models/core/supporting/user-account-provisioning'
+} from '../../../../models/operations/user-account-provisioning'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { provisionUserPrivateAccount } from '../../../utils/user-account/provision'
 

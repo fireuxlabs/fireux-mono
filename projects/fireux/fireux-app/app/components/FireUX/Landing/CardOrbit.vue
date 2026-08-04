@@ -134,7 +134,7 @@ import type {
 import type {
   AppDirectoryEntry,
   EcosystemDirectoryEntry,
-} from 'fireux-core/runtime/models/core/supporting/directory'
+} from 'fireux-core/runtime/models/utils/directory'
 import {
   useAppInterface,
   type AppCard,

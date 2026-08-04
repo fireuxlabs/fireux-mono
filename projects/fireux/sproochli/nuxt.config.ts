@@ -7,7 +7,6 @@ export default defineFireuxConfig({
   id: 'sproochli',
   name: 'Sproochli',
   shortName: 'Sproochli',
-  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'sproochli',
   role: 'standalone',
   modules: ['fireux-sproochli', 'fireux-ai'],

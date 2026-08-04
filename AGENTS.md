@@ -57,14 +57,12 @@ cannot explain.
 
 ## App Brand Rule
 
-Every App belongs to one brand-asset system. Its `defineFireuxConfig` must
-declare exactly one `brand.owner`: `core`, `ecosystem`, or `app`. Core and
-ecosystem ownership means deterministic projection from that owner's canonical
-source; App ownership means a complete App-owned family with `approved` or
-explicitly temporary `provisional` status. Never loan, copy, invent, or ignore
-assets merely to satisfy the public-image guard. Keep the shared runtime
-contract at `public/img/app/*`; change ownership through source, config,
-materialization, and guards together.
+Every App uses the same runtime brand-asset contract at `public/img/app/*`.
+`defineFireuxConfig` does not declare asset ownership or approval state.
+Canonical Core and ecosystem projection scripts retain their own explicit
+source/target authority, while genuinely App-owned artwork lives in that App's
+standard asset family. Never loan, copy, invent, or ignore assets merely to
+satisfy the public-image guard.
 
 ## Authority Order
 

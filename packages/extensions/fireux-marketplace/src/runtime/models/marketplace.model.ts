@@ -1,5 +1,5 @@
-import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase.ts'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model.ts'
 

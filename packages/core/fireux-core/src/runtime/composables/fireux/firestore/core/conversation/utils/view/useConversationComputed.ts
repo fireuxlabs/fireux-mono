@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import type { Conversation } from '../../../../../../../models/core/conversation.model'
+import type { Conversation } from '../../../../../../../models/operations/conversation.model'
 
 const clean = (value: unknown) => String(value || '').trim()
 

@@ -6,7 +6,7 @@ import type {
   PublicPlaceDetailProjection,
   PublicPlaceDetailResponse,
 } from 'fireux-places/runtime/models/place-public.model'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref } from 'vue'
 import type {

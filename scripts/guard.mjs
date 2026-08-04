@@ -57,7 +57,7 @@ import { run as runBuenoHostBrandAssets } from './guards/buenohost-brand-assets.
 import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runRootAppSupportAuthority } from './guards/root-app-support-authority.mjs'
-import { run as runUserAppAccess } from './guards/user-app-access.mjs'
+import { run as runAppUserAccess } from './guards/user-app-access.mjs'
 import { run as runDirectoryReconciliation } from './guards/directory-reconciliation.mjs'
 import { run as runDirectoryPublication } from './guards/directory-publication.mjs'
 import { run as runKitchenPublicProjection } from './guards/kitchen-public-projection.mjs'
@@ -107,7 +107,7 @@ const guards = [
   { key: 'entity-matrix', run: runEntityMatrix },
   { key: 'entity-authority', run: runEntityAuthority },
   { key: 'root-app-support-authority', run: runRootAppSupportAuthority },
-  { key: 'user-app-access', run: runUserAppAccess },
+  { key: 'user-app-access', run: runAppUserAccess },
   { key: 'directory-reconciliation', run: runDirectoryReconciliation },
   { key: 'directory-publication', run: runDirectoryPublication },
   { key: 'kitchen-public-projection', run: runKitchenPublicProjection },

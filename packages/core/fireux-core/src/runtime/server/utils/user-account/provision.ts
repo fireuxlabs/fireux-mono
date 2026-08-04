@@ -11,7 +11,7 @@ import {
 import {
   FIREUX_ACCOUNT_TERMS_VERSION,
   type UserAccountProvisioningResult,
-} from '../../../models/core/supporting/user-account-provisioning'
+} from '../../../models/operations/user-account-provisioning'
 import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
 
 type ProvisionUserPrivateAccountInput = {

@@ -34,7 +34,7 @@
 
 <script setup lang="ts">
 import type { PublicPlaceDetailProjection } from 'fireux-places/runtime/models/place-public.model'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { computed } from 'vue'
 import type { KitchenOnboardingPreview } from '../../../models/kitchen-onboarding.model'
 

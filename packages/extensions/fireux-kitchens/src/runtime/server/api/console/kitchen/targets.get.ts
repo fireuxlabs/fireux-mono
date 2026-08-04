@@ -219,7 +219,11 @@ export default defineEventHandler(
       })
     }
 
-    const targetIds = resolveKitchenConsoleTargetIds(event, currentMembership)
+    const targetIds = await resolveKitchenConsoleTargetIds(
+      appId,
+      uid,
+      currentMembership
+    )
     if (!targetIds.length) {
       setResponseHeaders(event, {
         'Content-Type': 'application/json; charset=utf-8',

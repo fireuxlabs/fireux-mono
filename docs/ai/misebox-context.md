@@ -67,9 +67,9 @@ Before each task:
   surfaces; public detail never restores a raw browser Kitchen-root write.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It composes the
   Place package's canonical onboarding, then atomically creates or connects the
-  sparse Kitchen root, Misebox App access, and UserApp console target. Misebox
+  sparse Kitchen root and Misebox App-support authority. Misebox
   apps configure whether creation is available and tenant Apps remain bounded
-  to their configured Kitchen targets. A current App admin creates or attaches
+  to persisted AppKitchen support. A current App admin creates or attaches
   the root; apps do not recreate the funnel or copy Place defaults into Kitchen.
   Place onboarding may establish sparse primary/secondary brand colours. New
   Kitchens inherit them and persist only differing colours on the canonical
@@ -520,16 +520,16 @@ Before each task:
   Ingredient identity is never fixture or Demo data: Kitchen and Supplier Demo
   worlds may contain usage, offer, and production links, but they must not copy
   root names, taxonomy, lifecycle, parents, or images.
-- Interlaken Essen onboarding keeps UserApp limited to App governance,
+- Interlaken Essen onboarding keeps AppUser limited to App governance,
   capability, and lifecycle. Locality and offer presentation belong to the
   app-private `apps/interlaken-essen/marketplace-profiles/{uid}` record; the
   trusted project endpoint owns strict validation and writes that profile with
-  the UserApp `onboarding_status` transition in one transaction. The live
+  the AppUser `onboarding_status` transition in one transaction. The live
   contract is in the project's `app/content/marketplace-profile.ts` and
   `server/api/onboarding/profile.post.ts`.
 - Interlaken Essen's `/mis` route is a project-owned personal marketplace home,
   not a Core Dashboard or Console. It reuses Core authentication, avatar, User,
-  and UserApp state. Its buyer surface may store sparse private settings such
+  and AppUser state. Its buyer surface may store sparse private settings such
   as `delivery_address` on the existing app-private marketplace profile through
   the fixed-runtime authenticated `/api/marketplace/account` projection.
   The current `fireux-marketplace` App-scoped Store and Store-owned Offer

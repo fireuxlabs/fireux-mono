@@ -4,7 +4,7 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -46,7 +46,7 @@ export async function materializeCompany(
     'Runtime App id'
   )
   const membershipRef = db.doc(
-    `apps/${runtimeAppId}/${UserAppStorage.collection}/${uid}`
+    `apps/${runtimeAppId}/${AppUserStorage.collection}/${uid}`
   )
   const placeRef = db.collection(PlaceStorage.collection).doc(id)
   const companyRef = db.collection(CompanyStorage.collection).doc(id)

@@ -14,8 +14,9 @@ export type FireuxEcosystemConfig = {
     simulationDatabaseId?: string
   }
 
-  /**
-   * Standard SSR region for all apps in this ecosystem (e.g., 'europe-west1')
-   */
-  ssrRegion?: string
+  /** Shared Firebase SSR deployment identity for every App in this ecosystem. */
+  ssr: {
+    region: string
+    serviceAccount?: string
+  }
 }

@@ -4,7 +4,7 @@ import { refreshNuxtData } from '#imports'
 import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
-} from '../../../../../../models/core/supporting/app-membership'
+} from '../../../../../../models/operations/app-membership'
 import { CURRENT_APP_CONTEXT_ASYNC_DATA_KEY } from '../../../../app/currentAppContext'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 

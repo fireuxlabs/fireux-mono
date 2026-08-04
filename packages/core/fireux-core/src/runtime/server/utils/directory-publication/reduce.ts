@@ -8,8 +8,8 @@ import type {
   DirectoryPublicationV1,
   DirectoryPublisherPrincipalV1,
   DirectorySourceAuthorizationV1,
-} from '../../../models/core/supporting/directory-publication'
-import { compareDirectoryPublicationOrderV1 } from '../../../models/core/supporting/directory-publication'
+} from '../../../models/operations/directory-publication'
+import { compareDirectoryPublicationOrderV1 } from '../../../models/operations/directory-publication'
 
 export type DirectoryPublicationReduction = {
   outcome: DirectoryPublicationDecisionOutcome

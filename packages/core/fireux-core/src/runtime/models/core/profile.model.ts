@@ -4,7 +4,7 @@
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: support atomic domain-owned root profile seeds.
 // Concurrent edit — 2026-07-20 17:41 CEST — Repo Efficiency Pass 2 of 6: route profile creation through trusted domain provisioners.
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxStamped } from './meta.model'
+import type { FireuxStamped } from '../utils/meta.model'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md

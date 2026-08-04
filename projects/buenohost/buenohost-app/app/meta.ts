@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: route product copy to the sanitized local preview.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { propertyOperations } from 'fireux-properties/runtime/content/operations'
 
 export const buenoHostProductSentence =
   'Digital stay guides for hosts, properties, and guests.'
@@ -37,7 +38,11 @@ export const buenoHostLanguage = {
       'local recommendations for guests',
       'host information system',
     ],
-    audience: ['holiday apartment hosts', 'short-stay hosts', 'property managers'],
+    audience: [
+      'holiday apartment hosts',
+      'short-stay hosts',
+      'property managers',
+    ],
     categories: ['guest experience', 'host tools', 'digital stay companion'],
     primary_topic: 'digital stay companions for guest accommodation',
   },
@@ -67,42 +72,49 @@ export const buenoHostLanguage = {
       'Designed for rooms, apartments, holidays and serviced stays',
     ],
   },
+  operations: [...propertyOperations],
   solutions: [
     {
       slug: 'guest-guide-qr-code',
       title: 'Guest guide QR code',
-      description: 'Give guests one QR-friendly guide for the information they need during a stay.',
+      description:
+        'Give guests one QR-friendly guide for the information they need during a stay.',
       icon: 'i-lucide-book-open',
     },
     {
       slug: 'wifi-instructions-page',
       title: 'Wi-Fi instructions page',
-      description: 'Publish Wi-Fi details and connection notes in a clean guest-facing page.',
+      description:
+        'Publish Wi-Fi details and connection notes in a clean guest-facing page.',
       icon: 'i-lucide-wifi',
     },
     {
       slug: 'house-manual-qr-code',
       title: 'House manual QR code',
-      description: 'Turn house rules, appliances, parking, and checkout notes into a shareable guide.',
+      description:
+        'Turn house rules, appliances, parking, and checkout notes into a shareable guide.',
       icon: 'i-lucide-home',
     },
     {
       slug: 'check-in-instructions-page',
       title: 'Check-in instructions page',
-      description: 'Create a simple page for arrival details, key pickup, entry codes, and timing.',
+      description:
+        'Create a simple page for arrival details, key pickup, entry codes, and timing.',
       icon: 'i-lucide-key-round',
     },
     {
       slug: 'local-recommendations-guide',
       title: 'Local recommendations guide',
-      description: 'Share nearby places, tips, and host recommendations without repeatedly sending messages.',
+      description:
+        'Share nearby places, tips, and host recommendations without repeatedly sending messages.',
       icon: 'i-lucide-map',
     },
   ],
   entities: [
     {
       id: 'Property',
-      purpose: 'The room, apartment, holiday, or serviced stay guests are using.',
+      purpose:
+        'The room, apartment, holiday, or serviced stay guests are using.',
     },
     {
       id: 'Reservation',
@@ -111,7 +123,8 @@ export const buenoHostLanguage = {
     },
     {
       id: 'StayCompanion',
-      purpose: 'The public mobile experience guests open before or during a stay.',
+      purpose:
+        'The public mobile experience guests open before or during a stay.',
     },
     {
       id: 'CompanionSection',
@@ -120,7 +133,8 @@ export const buenoHostLanguage = {
     },
     {
       id: 'GuestMessage',
-      purpose: 'A stay-specific welcome message that can later connect to calendar or booking data.',
+      purpose:
+        'A stay-specific welcome message that can later connect to calendar or booking data.',
     },
   ],
   relations_ascii: `

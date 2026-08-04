@@ -3,7 +3,7 @@
 import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import type { DriverKitchenLink } from '../../models/driver.model.ts'
 import {
@@ -85,10 +85,10 @@ export async function mutateDriverKitchenAccess(
   const db = getRuntimeFirestore(databaseId)
   const appRef = db.collection(AppStorage.collection).doc(appId)
   const actorMembershipRef = appRef
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(actorUid)
   const targetMembershipRef = appRef
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(input.driver_id)
   const kitchenRef = appRef
     .collection(KitchenStorage.scopeCollection)

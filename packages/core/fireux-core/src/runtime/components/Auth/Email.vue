@@ -61,7 +61,7 @@ import { useRouter } from 'vue-router'
 import { ref, computed, reactive } from 'vue'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/core/supporting/user-account-provisioning'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/operations/user-account-provisioning'
 
 const router = useRouter()
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()

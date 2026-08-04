@@ -35,8 +35,12 @@ const directTypeFields = (source, name) => {
   const end = source.indexOf('\n}', start + marker.length)
   assert.notEqual(end, -1, `Unclosed ${name}.`)
   return [
-    ...source.slice(start + marker.length, end).matchAll(/^  ([A-Za-z][A-Za-z0-9_]*)\??:/gm),
-  ].map((match) => match[1]).sort()
+    ...source
+      .slice(start + marker.length, end)
+      .matchAll(/^  ([A-Za-z][A-Za-z0-9_]*)\??:/gm),
+  ]
+    .map((match) => match[1])
+    .sort()
 }
 
 const assertNoStorageSelectorsInApiTypes = (source, label) => {
@@ -55,8 +59,7 @@ const assertNoStorageSelectorsInApiTypes = (source, label) => {
   }
 }
 
-const escapeRegex = (value) =>
-  value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 
 const findMatchingDelimiter = (source, open, opening, closing) => {
   let depth = 0
@@ -158,7 +161,6 @@ const assertAtomicConsoleOnboarding = ({
   handlerSource,
   completionFunction,
   onboardingSource,
-  targetField,
   serverConfigSource,
   handlerPath,
 }) => {
@@ -212,11 +214,14 @@ const assertAtomicConsoleOnboarding = ({
     `${name} onboarding must use exactly one Firestore transaction.`
   )
   const transactionSource = transactions[0]
-  assert.match(transactionSource, /^runTransaction\s*\(\s*async\s+transaction\s*=>/)
+  assert.match(
+    transactionSource,
+    /^runTransaction\s*\(\s*async\s+\(?transaction\)?\s*=>/
+  )
   assert.match(
     transactionSource,
     /transaction\.get\([^\n]*(?:membershipRef|current\.membershipRef)/,
-    `${name} onboarding must read current UserApp authority inside the transaction.`
+    `${name} onboarding must read current AppUser authority inside the transaction.`
   )
   assert.match(
     transactionSource,
@@ -228,14 +233,6 @@ const assertAtomicConsoleOnboarding = ({
     /transaction\.create\(supportRef,[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
     `${name} onboarding must create a complete same-id App support record inside the transaction.`
   )
-  assert.match(
-    transactionSource,
-    new RegExp(
-      `transaction\\.update\\((?:current\\.)?membershipRef,[\\s\\S]*['\"]console_targets\\.${escapeRegex(targetField)}['\"]`
-    ),
-    `${name} onboarding must update the UserApp target index in the same transaction.`
-  )
-
   if (!serverConfigSource) return
   assert.match(
     serverConfigSource,
@@ -247,14 +244,13 @@ const assertAtomicConsoleOnboarding = ({
 }
 
 const files = {
-  metaModel:
-    'packages/core/fireux-core/src/runtime/models/core/meta.model.ts',
+  metaModel: 'packages/core/fireux-core/src/runtime/models/utils/meta.model.ts',
   consoleAccess:
     'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleAccess.ts',
   sharedCreate:
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate.ts',
   entityModel:
-    'packages/core/fireux-core/src/runtime/models/core/entity.model.ts',
+    'packages/core/fireux-core/src/runtime/models/utils/entity.model.ts',
   supplierModel:
     'packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts',
   supplierCollection:
@@ -375,8 +371,7 @@ const files = {
     'packages/extensions/fireux-kitchens/src/config/module/server-config.ts',
   blankCollection:
     'projects/fireux/fireux-blank/app/composables/fireux/firestore/blank/useBlank.ts',
-  blankModel:
-    'projects/fireux/fireux-blank/app/models/blank.model.ts',
+  blankModel: 'projects/fireux/fireux-blank/app/models/blank.model.ts',
   blankOnboardingHandler:
     'projects/fireux/fireux-blank/server/api/console/blank/onboarding.post.ts',
   blankOnboarding:
@@ -445,20 +440,41 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /export function readConsoleTargetAuthority[\s\S]*operator_ids[\s\S]*team_ids[\s\S]*join_requests/,
     'Shared Console access must retain strict validation for every complete App-support authority array.'
   )
-  assert.match(source.propertyModel, /export const PropertyEntity = defineFireuxEntity/)
+  assert.match(
+    source.propertyModel,
+    /export const PropertyEntity = defineFireuxEntity/
+  )
   assert.match(source.entityModel, /\| 'property'/)
-  assert.match(source.propertyModel, /family:\s*\['property',\s*'console-entity'\]/)
+  assert.match(
+    source.propertyModel,
+    /family:\s*\['property',\s*'console-entity'\]/
+  )
   assert.match(source.propertyModel, /export const AppPropertyModel/)
-  assert.match(source.propertyModel, /export type AppProperty = FireuxAppAccessRecord/)
+  assert.match(
+    source.propertyModel,
+    /export type AppProperty = FireuxAppAccessRecord/
+  )
   assert.match(
     source.propertyModel,
     /apps\/\{appId\}\/properties\/\{propertyId\}\/private\/manual/
   )
-  assert.doesNotMatch(source.propertyModel, /AppProperty[^\n]*manual|manual\?: PropertyManual/)
-  assert.doesNotMatch(constBlock(source.propertyModel, 'PropertyModel'), /manual:/)
-  assert.match(constBlock(source.propertyModel, 'PropertyModel'), /portfolio_id:/)
+  assert.doesNotMatch(
+    source.propertyModel,
+    /AppProperty[^\n]*manual|manual\?: PropertyManual/
+  )
+  assert.doesNotMatch(
+    constBlock(source.propertyModel, 'PropertyModel'),
+    /manual:/
+  )
+  assert.match(
+    constBlock(source.propertyModel, 'PropertyModel'),
+    /portfolio_id:/
+  )
   assert.match(constBlock(source.propertyModel, 'PropertyModel'), /place_id:/)
-  assert.match(constBlock(source.propertyModel, 'PropertyModel'), /publication_state:/)
+  assert.match(
+    constBlock(source.propertyModel, 'PropertyModel'),
+    /publication_state:/
+  )
   assert.doesNotMatch(
     constBlock(source.propertyModel, 'PropertyIdentityModel'),
     /address_line|city|postcode|country|place_id/,
@@ -507,8 +523,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       `${name} access joins must use explicit App support vocabulary.`
     )
   }
-  assert.match(source.supplierCollection, /!appSupport[\s\S]*supplierRootBelongsToApp/)
-  assert.match(source.portfolioCollection, /!appSupport[\s\S]*portfolioRootBelongsToApp/)
+  assert.match(
+    source.supplierCollection,
+    /!appSupport[\s\S]*supplierRootBelongsToApp/
+  )
+  assert.match(
+    source.portfolioCollection,
+    /!appSupport[\s\S]*portfolioRootBelongsToApp/
+  )
   assert.match(
     source.propertyCollection,
     /resolvedShape\.value === 'root-with-app-support'[\s\S]*!appSupport[\s\S]*root\.app_scope_app_id !== resolvedAppId\.value/
@@ -524,7 +546,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ['Portfolio', source.portfolioInterface],
     ['Property', source.propertyInterface],
   ]) {
-    assert.match(interfaceSource, /canonicalPropertyRoot|_legacy|_rootOperatorIds/)
+    assert.match(
+      interfaceSource,
+      /canonicalPropertyRoot|_legacy|_rootOperatorIds/
+    )
     assert.match(interfaceSource, /operator_ids:\s*safeStringArray/)
     assert.match(interfaceSource, /team_ids:\s*safeStringArray/)
     assert.match(interfaceSource, /join_requests:\s*safeStringArray/)
@@ -546,10 +571,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.propertyFetch,
     source.propertyUpdate,
   ]) {
-    assertNoStorageSelectorsInApiTypes(fixedPathSource, 'Root/App-support read/create/update')
+    assertNoStorageSelectorsInApiTypes(
+      fixedPathSource,
+      'Root/App-support read/create/update'
+    )
   }
   assert.doesNotMatch(source.supplierUpdate, /commitUpdate/)
-  assert.doesNotMatch(source.supplierUpdate, /useRequireUser|SupplierMutationOptions = \{\}/)
+  assert.doesNotMatch(
+    source.supplierUpdate,
+    /useRequireUser|SupplierMutationOptions = \{\}/
+  )
   assert.match(source.supplierUpdate, /updateSupplierRoot/)
   assert.doesNotMatch(
     source.supplierUpdate,
@@ -566,7 +597,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.propertyCreate, /createPropertyManual/)
   assert.match(source.propertyUpdate, /updatePropertyRoot/)
   assert.match(source.propertyUpdate, /updatePropertyManual/)
-  assert.doesNotMatch(source.propertyUpdate, /updateProperty(?:Overlay|AppSupport)/)
+  assert.doesNotMatch(
+    source.propertyUpdate,
+    /updateProperty(?:Overlay|AppSupport)/
+  )
 
   for (const [name, retiredPath, useSource] of [
     ['Supplier', files.retiredSupplierDelete, source.supplierUse],
@@ -590,7 +624,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(source.propertyInterface, /manual\?: PropertyManual/)
   assert.match(source.propertyInterface, /hasOnlyKeys/)
   assert.match(source.propertyInterface, /validStamp/)
-  assert.match(source.propertyInterface, /typeof identity\.unit_count !== 'number'/)
+  assert.match(
+    source.propertyInterface,
+    /typeof identity\.unit_count !== 'number'/
+  )
   assert.match(source.propertyInterface, /Number\.isInteger\(unitCount\)/)
   assert.match(source.propertyCollection, /invalid canonical Property root/)
   assert.match(source.propertyFetch, /invalid canonical Property root/)
@@ -601,25 +638,39 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     false,
     'The nested full-Property document reader must not return.'
   )
-  assert.match(source.portfolioPropertyCollection, /where\('portfolio_id',\s*'=='/)
-  assert.match(source.portfolioPropertyCollection, /where\('app_scope_app_id',\s*'=='/)
-  assert.match(source.portfolioPropertyCollection, /PropertyStorage\.rootCollection/)
+  assert.match(
+    source.portfolioPropertyCollection,
+    /where\('portfolio_id',\s*'=='/
+  )
+  assert.match(
+    source.portfolioPropertyCollection,
+    /where\('app_scope_app_id',\s*'=='/
+  )
+  assert.match(
+    source.portfolioPropertyCollection,
+    /PropertyStorage\.rootCollection/
+  )
   assert.match(source.portfolioPropertyCollection, /authorizedPortfolioId/)
-  assert.match(source.portfolioPropertyCollection, /runtimePortfolio\.canRead\.value/)
-  assert.match(source.portfolioPropertyCollection, /runtimePortfolio\.consoleAppId\.value/)
+  assert.match(
+    source.portfolioPropertyCollection,
+    /runtimePortfolio\.canRead\.value/
+  )
+  assert.match(
+    source.portfolioPropertyCollection,
+    /runtimePortfolio\.consoleAppId\.value/
+  )
   assert.match(source.portfolioPropertyCollection, /propertyBelongsToApp/)
   assert.match(source.portfolioPropertyCollection, /root\/App scope mismatch/)
-  assert.match(source.portfolioPropertyCollection, /invalid Portfolio Property root/)
+  assert.match(
+    source.portfolioPropertyCollection,
+    /invalid Portfolio Property root/
+  )
   assert.match(source.activePortfolio, /targetOutcome\.value === 'ready'/)
 
-  assert.deepEqual(directTypeFields(source.propertyPublicModel, 'PublicPropertyIndexItem'), [
-    'id',
-    'image_url',
-    'name',
-    'property_type',
-    'slug',
-    'unit_count',
-  ])
+  assert.deepEqual(
+    directTypeFields(source.propertyPublicModel, 'PublicPropertyIndexItem'),
+    ['id', 'image_url', 'name', 'property_type', 'slug', 'unit_count']
+  )
   assert.doesNotMatch(
     source.propertyPublicModel,
     /estimated_value|portfolio_id|place_id|operator_ids|team_ids|manual/,
@@ -640,7 +691,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.propertyPublicApi, /Property directory source is invalid/)
   assert.match(source.propertyPublicApi, /id:\s*document\.id/)
   assert.match(source.propertyPublicApi, /canonical\.status !== 'active'/)
-  assert.match(source.propertyPublicApi, /canonical\.publication_state !== 'published'/)
+  assert.match(
+    source.propertyPublicApi,
+    /canonical\.publication_state !== 'published'/
+  )
   assert.doesNotMatch(
     source.propertyPublicApi,
     /\.\.\.canonical/,
@@ -653,7 +707,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(source.propertyServerConfig, /route:\s*'\/api\/properties'/)
   assert.match(source.propertyServerConfig, /method:\s*'get'/)
-  assert.match(source.propertyServerConfig, /runtime\/server\/api\/properties\/index\.get/)
+  assert.match(
+    source.propertyServerConfig,
+    /runtime\/server\/api\/properties\/index\.get/
+  )
 
   assert.match(
     source.sharedCreate,
@@ -661,7 +718,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Console attachment must re-read the root returned by createRoot before ownership checks.'
   )
   assert.match(source.sharedCreate, /validateRoot\?:/)
-  assert.match(source.sharedCreate, /await options\.validateRoot\(id, existingRootData\)/)
+  assert.match(
+    source.sharedCreate,
+    /await options\.validateRoot\(id, existingRootData\)/
+  )
   assert.match(source.sharedCreate, /createAppSupport\?:/)
   assert.match(source.sharedCreate, /createdAppSupport:/)
   assert.doesNotMatch(
@@ -672,18 +732,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   assert.match(
     source.blankCollection,
-    /const targetIds = computed\([\s\S]*unref\(options\.targetIds\)/,
-    'Blank live targets must be bounded by the UserApp target ids supplied by the family core.'
+    /where\(field, ['"]array-contains['"], userId\.value\)/,
+    'Blank live targets must query App-support operator and team authority.'
   )
   assert.match(
     source.blankCollection,
-    /firestoreLoadDocsByIds<AppBlank>\(\{[\s\S]*collectionPath:\s*appCollectionPath,[\s\S]*ids:\s*targetIds/,
-    'Blank must exact-load App support records by UserApp target id.'
+    /operatorBlanks[\s\S]*teamBlanks/,
+    'Blank must union operator and team App-support records.'
   )
   assert.match(
     source.blankCollection,
     /firestoreLoadDocsByIds<Blank>\(\{[\s\S]*collectionPath:\s*rootCollectionPath,[\s\S]*ids:\s*targetIds/,
-    'Blank must exact-load canonical roots by UserApp target id.'
+    'Blank must exact-load canonical roots by authorized App-support id.'
   )
   assert.doesNotMatch(
     source.blankCollection,
@@ -702,7 +762,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerSource: source.blankOnboardingHandler,
     completionFunction: 'completeBlankOnboarding',
     onboardingSource: source.blankOnboarding,
-    targetField: 'blank_ids',
   })
   assertAtomicConsoleOnboarding({
     name: 'Kitchen',
@@ -712,7 +771,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerSource: source.kitchenOnboardingHandler,
     completionFunction: 'completeKitchenOnboarding',
     onboardingSource: source.kitchenOnboarding,
-    targetField: 'kitchen_ids',
     serverConfigSource: source.kitchenServerConfig,
     handlerPath: './runtime/server/api/kitchens/onboarding/complete.post',
   })
@@ -724,7 +782,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerSource: source.supplierOnboardingHandler,
     completionFunction: 'completeSupplierOnboarding',
     onboardingSource: source.supplierOnboarding,
-    targetField: 'supplier_ids',
     serverConfigSource: source.supplierServerConfig,
     handlerPath: './runtime/server/api/suppliers/onboarding/complete.post',
   })
@@ -736,7 +793,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerSource: source.portfolioOnboardingHandler,
     completionFunction: 'completePortfolioOnboarding',
     onboardingSource: source.portfolioOnboarding,
-    targetField: 'portfolio_ids',
     serverConfigSource: source.propertyServerConfig,
     handlerPath: './runtime/server/api/portfolios/onboarding/complete.post',
   })
@@ -748,7 +804,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerSource: source.propertyOnboardingHandler,
     completionFunction: 'completePropertyOnboarding',
     onboardingSource: source.propertyOnboarding,
-    targetField: 'property_ids',
     serverConfigSource: source.propertyServerConfig,
     handlerPath: './runtime/server/api/properties/onboarding/complete.post',
   })
@@ -770,8 +825,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const blankRootCreate = callBlocks(
     source.blankOnboarding,
     'transaction.create'
-  ).find(call => /transaction\.create\(rootRef,/.test(call))
-  assert.ok(blankRootCreate, 'Blank onboarding must create its root in the transaction.')
+  ).find((call) => /transaction\.create\(rootRef,/.test(call))
+  assert.ok(
+    blankRootCreate,
+    'Blank onboarding must create its root in the transaction.'
+  )
   assert.doesNotMatch(
     blankRootCreate,
     /operator_ids|team_ids|join_requests/,
@@ -861,8 +919,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(source.kitchenTargetCollection, /dedupe:\s*'defer'/)
   assert.match(source.kitchenTargetCollection, /useFirestoreCollectionState/)
-  assert.match(source.kitchenTargetCollection, /value\.requestUid !== uid\.value/)
-  assert.match(source.kitchenTargetCollection, /value\.response\.appId !== appId/)
+  assert.match(
+    source.kitchenTargetCollection,
+    /value\.requestUid !== uid\.value/
+  )
+  assert.match(
+    source.kitchenTargetCollection,
+    /value\.response\.appId !== appId/
+  )
   assert.match(source.kitchenConsoleIndex, /targets:\s*targetCollection/)
   assert.doesNotMatch(
     source.kitchenConsoleIndex,
@@ -888,7 +952,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /getRuntimeFirestore\(\)/)
   assert.match(
     source.kitchenTargetApi,
-    /resolveKitchenConsoleTargetIds\(event,\s*currentMembership\)/
+    /resolveKitchenConsoleTargetIds\(\s*appId,\s*uid,\s*currentMembership\s*\)/
   )
   assert.match(source.kitchenTargetResolver, /KITCHEN_CONSOLE_TARGET_LIMIT/)
   assert.match(
@@ -903,7 +967,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /'app_scope_app_id'/)
   assert.match(source.kitchenTargetApi, /db\.getAll/)
   assert.match(source.kitchenTargetApi, /readKitchenOnboardingSupport/)
-  assert.match(source.kitchenTargetApi, /authority\.operatorIds\.includes\(uid\)/)
+  assert.match(
+    source.kitchenTargetApi,
+    /authority\.operatorIds\.includes\(uid\)/
+  )
   assert.match(source.kitchenTargetApi, /authority\.teamIds\.includes\(uid\)/)
   assert.match(source.kitchenTargetApi, /Cache-Control': 'private, no-store'/)
   assert.doesNotMatch(
@@ -915,10 +982,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.kitchenServerConfig,
     /route:\s*'\/api\/console\/kitchen\/targets'[\s\S]*method:\s*'get'[\s\S]*runtime\/server\/api\/console\/kitchen\/targets\.get/
   )
-  assert.match(
-    source.kitchenCreate,
-    /\/api\/kitchens\/onboarding\/complete/
-  )
+  assert.match(source.kitchenCreate, /\/api\/kitchens\/onboarding\/complete/)
   assert.match(source.kitchenCreate, /getIdToken\(\)/)
   assert.match(source.kitchenCreate, /Authorization:\s*`Bearer/)
   assert.doesNotMatch(
@@ -987,11 +1051,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       [source.portfolioCollection, source.portfolioCreate],
       'test-portfolios',
     ],
-    [
-      'Property',
-      [source.propertyCollection],
-      'test-properties',
-    ],
+    ['Property', [source.propertyCollection], 'test-properties'],
   ]) {
     for (const testSource of sources) {
       assert.doesNotMatch(
@@ -1001,7 +1061,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       )
     }
     assert.ok(
-      sources.some(testSource =>
+      sources.some((testSource) =>
         testSource.includes('no canonical simulation producer exists')
       ),
       `${name} Test must fail closed until a canonical simulation producer exists.`

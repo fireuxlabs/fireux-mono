@@ -18,7 +18,7 @@ export type {
   ConversationPreferredChannel,
   ConversationRelatedEntity,
   ConversationStatus,
-} from '../../../../../models/core/conversation.model'
+} from '../../../../../models/operations/conversation.model'
 
 export { useConversationCollection } from './fetch/useConversationCollection'
 export { useConversationFetch } from './fetch/useConversationFetch'

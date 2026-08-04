@@ -1,4 +1,4 @@
-import type { FirebaseTimestamp } from '../../../../types/firebase'
+import type { FirebaseTimestamp } from '../../../types/firebase'
 
 export const AppEventStorage = {
   shape: 'scoped',

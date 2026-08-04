@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/core/meta.model.ts'
+import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/meta.model.ts'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
@@ -120,22 +120,6 @@ export function readKitchenOnboardingSupport(
       100,
       'Kitchen join requests'
     ),
-  }
-}
-
-export function assertKitchenOnboardingMembershipCapacity(
-  membership: Record<string, unknown>,
-  kitchenId: string
-) {
-  const targets = onboardingRecord(membership.console_targets)
-  if (targets.kitchen_ids === undefined) return
-  const ids = boundedIds(
-    targets.kitchen_ids,
-    50,
-    'UserApp Kitchen console targets'
-  )
-  if (!ids.includes(kitchenId) && ids.length >= 50) {
-    fail(409, 'The UserApp Kitchen console target list is full.')
   }
 }
 

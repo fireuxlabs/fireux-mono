@@ -7,7 +7,7 @@ import {
 import {
   ProjectUserJoinStorage,
   type ProjectUserJoinFeedItem,
-} from 'fireux-core/runtime/models/system/project-user-join.model.ts'
+} from 'fireux-core/runtime/models/operations/project-user-join.model.ts'
 import { getFirestoreDb } from '../../../../utils/firebase-admin'
 import { requireFireuxAppAdmin } from '../../../../utils/require-fireux-app-admin'
 

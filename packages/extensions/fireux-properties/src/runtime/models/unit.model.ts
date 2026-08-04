@@ -1,4 +1,4 @@
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**

@@ -1,7 +1,7 @@
 import {
   AppJoinRequestStorage,
   AppMembershipBlockStorage,
-} from '../../../models/core/supporting/app-membership'
+} from '../../../models/operations/app-membership'
 import { UserStorage } from '../../../models/core/user.model'
 import { requireFirestoreDocumentId } from '../ids/path'
 import {

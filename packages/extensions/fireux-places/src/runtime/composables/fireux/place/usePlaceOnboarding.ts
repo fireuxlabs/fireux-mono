@@ -3,7 +3,7 @@
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: expose the singular Place domain adapter over usePlaceCreate.
 import { useOnboarding, type OnboardingStep } from 'fireux-core/runtime/composables/shared/useOnboarding'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref } from 'vue'
 import {

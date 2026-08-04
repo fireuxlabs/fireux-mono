@@ -8,7 +8,6 @@ const fireuxConfig = defineFireuxConfig({
   id: 'book-with-nats',
   name: 'Book with Nats',
   shortName: 'Nats',
-  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'buenohost',
   role: 'tenant',
   seo: {
@@ -18,12 +17,6 @@ const fireuxConfig = defineFireuxConfig({
   consoleConfig: {
     property: {
       canCreate: false,
-      targetIds: [
-        'matten-central-family-suite',
-        'matten-central-studio',
-        'penthouse-holiday-apartment',
-        'wine-berry-views',
-      ],
     },
   },
   domains: ['properties'],

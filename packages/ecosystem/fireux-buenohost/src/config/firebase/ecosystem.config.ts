@@ -14,5 +14,7 @@ export const ecosystemConfig = {
     databaseId: 'buenohost',
     identityDatabaseId: 'buenohost',
   },
-  ssrRegion: 'europe-west6',
+  ssr: {
+    region: 'europe-west6',
+  },
 } as const satisfies FireuxEcosystemConfig

@@ -1,5 +1,5 @@
-import type { EcosystemStatus } from '../../../models/system/ecosystem.model'
-import type { EcosystemDirectoryEntry } from '../../../models/core/supporting/directory'
+import type { EcosystemStatus } from '../../../models/core/ecosystem.model'
+import type { EcosystemDirectoryEntry } from '../../../models/utils/directory'
 import { asTrimmedString } from './public-dto.helpers'
 
 const ECOSYSTEM_STATUSES = new Set<EcosystemStatus>([

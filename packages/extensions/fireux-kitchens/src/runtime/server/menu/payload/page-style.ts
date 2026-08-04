@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: merge style tokens from low to high precedence.
 // Concurrent edit — 2026-07-22 12:24 CEST — Canonical Kitchen theme write: validate the full portable style contract server-side.
 // Concurrent edit — 2026-07-22 12:39 CEST — Kitchen palette console: validate fonts against the shared rendered token set.
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model.ts'
 import {
   readRecord,
   readRecordString,

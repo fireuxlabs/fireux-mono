@@ -121,8 +121,9 @@ Map component folder and naming conventions.
   image and product order. Core `LandingPricingStrip` owns the shared Monthly
   subscriptions presentation; both Main Apps supply their source-backed Free,
   Premium, and Managed plans at the project edge. Core `LandingOperationRail`
-  sits above Section One in both Main Apps; each App supplies its canonical
-  operation titles, icons, and routes. As Section One hands off, Core moves the
+  sits above Section One in both Main Apps; each App projects its complete
+  source-backed Console Operation catalogue, including Identity, to matching
+  `/operations/<slug>` literature routes. As Section One hands off, Core moves the
   immersive landing header and Operations rail upward and out rather than
   hiding either surface beneath pricing; reverse scrolling restores both. This
   behavior is scoped to the immersive landing and does not affect ordinary App

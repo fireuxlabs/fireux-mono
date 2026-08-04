@@ -1,6 +1,6 @@
-// FILE: packages/core/fireux-core/src/runtime/models/core/supporting/user.ts
+// FILE: packages/core/fireux-core/src/runtime/models/utils/user.ts
 
-import type { FirebaseTimestamp } from '../../../../types/firebase'
+import type { FirebaseTimestamp } from '../../../types/firebase'
 
 export type NotificationScope = 'ecosystem' | 'app'
 

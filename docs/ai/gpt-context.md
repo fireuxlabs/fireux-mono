@@ -162,6 +162,12 @@ Before each task:
 
 ## Entity canon
 
+- FireUX Core runtime models are divided by ownership. `models/core` contains
+  canonical shared records, with App, Ecosystem, and User kept together;
+  `models/operations` contains persisted workflow and command/event contracts;
+  `models/utils` contains reusable model primitives and projections; and
+  `models/system` contains FireUX control-plane records only. Do not recreate
+  a generic `supporting` bucket.
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.
@@ -263,7 +269,10 @@ Before each task:
   share. Each Main App owns its Console capabilities and limits; tenant Apps do
   not acquire the ecosystem-owner literature. Main Apps place Core
   `LandingOperationRail` above Section One and supply only their own working
-  operation or product-area routes. That rail sticks
+  Console Operations. Every Console family owns Identity. Its source-backed
+  Operation catalogue is the single authority for Console routes, the complete
+  landing subheader, and `/operations/<slug>` literature pages; public product
+  directories never masquerade as Operations. That rail sticks
   beneath the header, then exits upward as the shared pricing strip approaches
   the same edge. Pricing exposes no visible heading and compacts without
   residual detail rows to plan names and prices while later content continues
@@ -346,14 +355,15 @@ Before each task:
   immutable local events through its App-admin Project Users API; browsers
   never query tenant databases directly. See
   `docs/concepts/project-user-monitor.md`.
-- UserApp persists orthogonal App authority and lifecycle: `role` remains
+- AppUser persists orthogonal App authority and lifecycle: `role` remains
   `user | admin`, `is_premium` remains the explicit entitlement, and
   `onboarding_status` remains `pending | completed | skipped`. The shared
   `user-app-access` resolver derives `dev > admin > premium > free` only for a
   valid membership; Dev never manufactures Admin authority, while Dev and Admin
-  inherit Premium product capability. Empty `profiles` and `console_targets`
-  indexes are omitted at rest and normalized on read. Rules accept missing
-  optional indexes but reject malformed, unknown, or oversized values.
+  inherit Premium product capability. Empty `profiles` indexes are omitted at
+  rest and normalized on read. AppUser never duplicates Console entity
+  ownership or access; each entity family's App-support records are that
+  authority.
 - Public User list and detail projections remain canonical-identity DTOs. On a
   tenant runtime, candidate visibility comes only from exact valid
   `apps/{appId}/users/{uid}` memberships before root User hydration; a guessed
@@ -366,13 +376,13 @@ Before each task:
   membership through a bounded server projection. They do not raw-read private
   App or App-user authority from browser Firestore merely to render overview
   state.
-- Live root/App-support families exact-load only bounded UserApp/configured
-  target IDs and expose no partial pair when a root, same-id support record,
+- Live root/App-support families query bounded entity App-support authority and
+  expose no partial pair when a root, same-id support record,
   App scope, stored authority shape, or caller access is invalid.
 - Production onboarding for those families is a fixed-runtime authenticated
   domain endpoint. One trusted transaction creates or attaches the canonical
-  root, completes the same-id App support record, and updates the caller's
-  UserApp target index. Operators may mutate; team members have target/read
+  root and completes the same-id App support record with the caller's
+  operator/team authority. Operators may mutate; team members have target/read
   membership only; current App admins are the explicit override.
 - Kitchen retains Place and live/Demo composition, Blank remains the small
   harness, and Project remains a read-only control-plane family. Those are
@@ -457,7 +467,7 @@ Before each task:
   another Supplier authority.
 - `fireux-marketplace` owns App-local Supplier publication Listings, customer
   baskets, and private offline marketplace Order Records. Buyer and seller are
-  product surfaces, not UserApp roles. The unshipped Store/Offer prototype is
+  product surfaces, not AppUser roles. The unshipped Store/Offer prototype is
   migration debt and is not a compatibility contract.
 - Supplier operators manage Supplier truth in Bringli; marketplace App Admins
   moderate Listings. Public readers consume bounded joined Supplier, Listing
@@ -469,8 +479,26 @@ Before each task:
 
 ## Firebase Auth App domains
 
+- Every ecosystem declares one shared Firebase SSR deployment contract at
+  `ecosystemConfig.ssr`. `region` is required; `serviceAccount` is optional and
+  names the non-secret execution identity inherited by every App in that
+  ecosystem. Apps do not repeat or override either value in
+  `defineFireuxConfig`; private credential material remains outside Git.
+- Every ecosystem owns a deployable `firestore.template.rules` manifest and
+  ecosystem-local `rules/` directory for its Apps and tenants. Core owns only
+  reusable Rules fragments, composition, lexical contracts, and verification.
+  An ecosystem without released browser policy retains an explicit local
+  default-deny fragment; it never omits its Rules authority or uses an open
+  placeholder.
+- Console target IDs are persisted relationship authority, not Nuxt
+  configuration. Each entity family's App-support records state both which
+  roots an App owns and which members may operate them. AppUser contains only
+  App membership and capability state; it never mirrors entity target IDs.
+  Slugs remain mutable presentation fields and never require an App rebuild or
+  deployment to change.
+
 - New Apps have no provisional unguarded state. Before the first save they
-  must satisfy the project App shape, public asset, brand ownership, shared
+  must satisfy the project App shape, complete public asset family, shared
   auth/PWA, and App registry contracts enforced by `scripts/guards/projects.mjs`.
   Do not treat copying an existing project directory as an App creation
   workflow or defer registration and canonical assets until later cleanup.
@@ -559,9 +587,9 @@ Found` page. An app may pass `--verify-text` for one public source-defined
 
 ## Brand asset authority
 
-- Every App declares exactly one brand owner through `brand.owner`: `core`,
-  `ecosystem`, or `app`. This ownership declaration is required architecture,
-  not optional presentation metadata.
+- Every App consumes the same `/img/app/*` runtime asset paths. Asset source
+  authority and projection are repository/build concerns and are not declared
+  in `defineFireuxConfig` or exposed through runtime configuration.
 - FireUX Core owns the default FireUX platform asset family under
   `packages/core/fireux-core/src/runtime/public/img/core/brand`.
 - The `fireux-fireux` ecosystem and FireUX parent App retain their required
@@ -572,14 +600,10 @@ Found` page. An app may pass `--verify-text` for one public source-defined
   rejects drift.
 - `wordmark-light` means a wordmark for a light surface; `wordmark-dark` means
   one for a dark surface.
-- An ecosystem-owned App consumes byte-identical projections from the
-  ecosystem package's canonical `runtime/public/img/ecosystem/brand` family.
-- A genuinely branded child App may own a complete `/img/app` family and must
-  declare whether that identity is `approved` or `provisional`. Provisional is
-  visible migration debt; it is never permission to borrow another App's
-  identity. Do not overwrite child identities, maintain an unguarded second
-  source, or weaken a guard to accommodate an undeclared owner. See
-  `docs/concepts/brand-assets.md`.
+- Explicit projection scripts may keep a Core or ecosystem source family
+  byte-identical with named App targets. A genuinely branded child App keeps
+  its complete family locally. Do not borrow another App's identity or weaken
+  the required runtime-family guard. See `docs/concepts/brand-assets.md`.
 
 ## Translation and reviewed-copy authority
 

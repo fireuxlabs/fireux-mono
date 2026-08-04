@@ -1,16 +1,14 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
 import { PortfolioStorage } from '../../models/portfolio.model.ts'
 import {
-  assertMembershipCapacity,
   assertOnboardingAuthority,
-  assertRuntimeTarget,
   assertScope,
   assertSupportCapacity,
   readSupport,
@@ -38,7 +36,7 @@ async function actor(event: H3Event): Promise<Actor> {
     uid,
     db,
     membershipRef: db.doc(
-      `apps/${policy.appId}/${UserAppStorage.collection}/${uid}`
+      `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
     ),
   }
 }
@@ -61,7 +59,6 @@ export async function completePortfolioOnboarding(
     ? requireFirestoreDocumentId(existingRootId, 'Portfolio id')
     : draft!.slug
   const current = await actor(event)
-  assertRuntimeTarget(current, portfolioId)
 
   const rootRef = current.db
     .collection(PortfolioStorage.rootCollection)
@@ -74,7 +71,7 @@ export async function completePortfolioOnboarding(
     .where('operator_ids', 'array-contains', current.uid)
     .limit(2)
 
-  return current.db.runTransaction(async transaction => {
+  return current.db.runTransaction(async (transaction) => {
     const [membership, root, support, operatorSupports] = await Promise.all([
       transaction.get(current.membershipRef),
       transaction.get(rootRef),
@@ -83,8 +80,6 @@ export async function completePortfolioOnboarding(
     ])
     const membershipData = membership.exists ? membership.data() || {} : {}
     const role = requireMemberRole(membership.exists, membership.get('role'))
-    assertMembershipCapacity(membershipData, portfolioId)
-
     const rootData = root.exists ? root.data() || {} : null
     if (existingRootId && !rootData) {
       fail(404, 'Portfolio not found.')
@@ -108,7 +103,7 @@ export async function completePortfolioOnboarding(
     }
 
     if (
-      !hasUserAppPremiumAccess(membershipData, {
+      !hasAppUserPremiumAccess(membershipData, {
         isConfiguredDeveloper:
           Boolean(current.developerId) && current.uid === current.developerId,
       })
@@ -177,7 +172,6 @@ export async function completePortfolioOnboarding(
 
     transaction.update(current.membershipRef, {
       console_enabled: true,
-      'console_targets.portfolio_ids': FieldValue.arrayUnion(portfolioId),
       updated: serverAuditStamp({ by: current.uid }),
     })
 

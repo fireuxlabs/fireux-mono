@@ -2,8 +2,8 @@ import type {
   AppDirectoryPublicationPayloadV1,
   DirectoryPublicationSourceV1,
   EcosystemDirectoryPublicationPayloadV1,
-} from '../../../models/core/supporting/directory-publication'
-import { DirectoryPublicationEventTimeV1 } from '../../../models/core/supporting/directory-publication'
+} from '../../../models/operations/directory-publication'
+import { DirectoryPublicationEventTimeV1 } from '../../../models/operations/directory-publication'
 
 type UnknownRecord = Record<string, unknown>
 

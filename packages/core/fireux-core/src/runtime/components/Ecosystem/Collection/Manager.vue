@@ -104,7 +104,7 @@ import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
 } from '../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
-import type { EcosystemDirectoryController } from '../../../models/core/supporting/directory'
+import type { EcosystemDirectoryController } from '../../../models/utils/directory'
 
 const props = withDefaults(
   defineProps<{

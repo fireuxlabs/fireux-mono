@@ -9,7 +9,7 @@ import {
   type DirectoryPublicationDecisionOutcome,
   type DirectoryPublicationV1,
   type DirectoryPublisherPrincipalV1,
-} from '../../../models/core/supporting/directory-publication'
+} from '../../../models/operations/directory-publication'
 import { reduceDirectoryPublication } from './reduce'
 import {
   DirectoryPublicationValidationError,

@@ -5,12 +5,12 @@ import {
   AppEventStorage,
   appUserJoinedEventId,
   type AppEvent,
-} from '../../../models/core/supporting/event'
+} from '../../../models/operations/event'
 import {
-  UserAppStorage,
+  AppUserStorage,
   UserNotificationStorage,
   UserStorage,
-  type UserApp,
+  type AppUser,
 } from '../../../models/core/user.model'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
 
@@ -77,7 +77,7 @@ export async function publishAppUserJoinedEvent(
   const db = getRuntimeFirestore()
   const appRef = db.collection(AppStorage.collection).doc(input.appId)
   const membershipRef = appRef
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(input.userId)
   let eventId = ''
   let membershipRole: 'admin' | 'user' = 'user'
@@ -96,7 +96,7 @@ export async function publishAppUserJoinedEvent(
       throw new Error('The authenticated user is not a member of this app.')
     }
 
-    const membership = membershipSnapshot.data() as UserApp
+    const membership = membershipSnapshot.data() as AppUser
     const membershipCreatedAt = membership?.created?.at
     membershipRole = membership.role === 'admin' ? 'admin' : 'user'
     occurredAt = timestampIso(membershipCreatedAt)
@@ -106,7 +106,7 @@ export async function publishAppUserJoinedEvent(
     )
     const eventRef = appRef.collection(AppEventStorage.collection).doc(eventId)
     const adminsQuery = appRef
-      .collection(UserAppStorage.collection)
+      .collection(AppUserStorage.collection)
       .where('role', '==', 'admin')
       .limit(32)
     const [eventSnapshot, adminsSnapshot] = await Promise.all([

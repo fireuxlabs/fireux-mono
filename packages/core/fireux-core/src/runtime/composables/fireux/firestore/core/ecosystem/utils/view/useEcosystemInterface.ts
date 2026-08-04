@@ -1,8 +1,8 @@
 import type {
   Ecosystem,
   EcosystemStatus,
-} from '../../../../../../../models/system/ecosystem.model'
-import { EcosystemStorage } from '../../../../../../../models/system/ecosystem.model'
+} from '../../../../../../../models/core/ecosystem.model'
+import { EcosystemStorage } from '../../../../../../../models/core/ecosystem.model'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const labelize = (value: string) =>

@@ -3,7 +3,7 @@ import { useFireUXConfig } from '../../app/FireUXConfig'
 import {
   normalizeFireuxAppScopeState,
   type FireuxAppScopeState,
-} from '../../../../models/core/meta.model'
+} from '../../../../models/utils/meta.model'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const key = (value: unknown) => text(value).toLowerCase()

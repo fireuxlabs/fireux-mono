@@ -1,13 +1,11 @@
-// Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, App access, and UserApp target.
+// Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import {
-  resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -24,7 +22,6 @@ import type {
 } from '../../models/kitchen-onboarding.model'
 import { KitchenStorage } from '../../models/kitchen.model'
 import {
-  assertKitchenOnboardingMembershipCapacity,
   assertKitchenOnboardingPlaceDefaults,
   assertKitchenOnboardingScope,
   assertKitchenOnboardingSupportCapacity,
@@ -44,7 +41,6 @@ type RuntimePolicy = {
   appRole: string
   appScopeState: 'parent_app' | 'tenant_app'
   canCreate: boolean
-  targetIds: string[]
 }
 
 type Actor = RuntimePolicy & {
@@ -69,7 +65,7 @@ function request(value: unknown, allowed: readonly string[]) {
   }
   const source = value as Record<string, unknown>
   const supported = new Set(allowed)
-  const unsupported = Object.keys(source).find(key => !supported.has(key))
+  const unsupported = Object.keys(source).find((key) => !supported.has(key))
   if (unsupported) {
     fail(400, `Kitchen onboarding contains unsupported field: ${unsupported}.`)
   }
@@ -84,21 +80,11 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   if (!appScopeState) fail(403, 'This App cannot own a Kitchen console.')
 
   const kitchenConfig = record(record(fireux.consoleConfig).kitchen)
-  const canCreate = typeof kitchenConfig.canCreate === 'boolean'
-    ? kitchenConfig.canCreate
-    : appRole !== 'tenant'
-  const targetIds = Array.isArray(kitchenConfig.targetIds)
-    ? Array.from(new Set(kitchenConfig.targetIds.map(text).filter(Boolean)))
-    : []
-
-  return { appId, appRole, appScopeState, canCreate, targetIds }
-}
-
-function assertRuntimeTarget(current: RuntimePolicy, kitchenId: string) {
-  if (current.appRole !== 'tenant') return
-  if (!current.targetIds.includes(kitchenId)) {
-    fail(403, 'This Kitchen is not a configured target for the tenant App.')
-  }
+  const canCreate =
+    typeof kitchenConfig.canCreate === 'boolean'
+      ? kitchenConfig.canCreate
+      : appRole !== 'tenant'
+  return { appId, appRole, appScopeState, canCreate }
 }
 
 async function actor(event: H3Event): Promise<Actor & { role: MemberRole }> {
@@ -106,14 +92,17 @@ async function actor(event: H3Event): Promise<Actor & { role: MemberRole }> {
   const policy = runtimePolicy(event)
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${policy.appId}/${UserAppStorage.collection}/${uid}`
+    `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
   )
   const membership = await membershipRef.get()
   const role = memberRole(membership.exists, membership.get('role'))
   return { ...policy, uid, db, membershipRef, role }
 }
 
-async function kitchenForPlace(db: Firestore, placeId: string): Promise<Locator> {
+async function kitchenForPlace(
+  db: Firestore,
+  placeId: string
+): Promise<Locator> {
   const collection = db.collection(KitchenStorage.rootCollection)
   const exact = await collection.doc(placeId).get()
   const exactData = exact.exists ? exact.data() || {} : null
@@ -121,7 +110,10 @@ async function kitchenForPlace(db: Firestore, placeId: string): Promise<Locator>
     return { placeId, kitchenId: exact.id, kitchen: exactData }
   }
 
-  const matches = await collection.where('place_id', '==', placeId).limit(2).get()
+  const matches = await collection
+    .where('place_id', '==', placeId)
+    .limit(2)
+    .get()
   if (matches.size > 1) {
     fail(409, 'More than one Kitchen references this Place.')
   }
@@ -141,7 +133,10 @@ async function resolveLocator(
 ): Promise<Locator> {
   const requestedKitchenId = text(value.kitchen_id)
   if (requestedKitchenId) {
-    const kitchenId = requireFirestoreDocumentId(requestedKitchenId, 'Kitchen id')
+    const kitchenId = requireFirestoreDocumentId(
+      requestedKitchenId,
+      'Kitchen id'
+    )
     const snapshot = await db
       .collection(KitchenStorage.rootCollection)
       .doc(kitchenId)
@@ -170,14 +165,16 @@ export async function previewKitchenOnboarding(
   const body = request(input, ['place_id', 'kitchen_id'])
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
-  assertRuntimeTarget(current, locator.kitchenId)
-  if (locator.kitchen) assertKitchenOnboardingScope(locator.kitchen, current.appId)
+  if (locator.kitchen)
+    assertKitchenOnboardingScope(locator.kitchen, current.appId)
 
   const [place, support] = await Promise.all([
     current.db.collection(PlaceStorage.collection).doc(locator.placeId).get(),
-    current.db.doc(
-      `apps/${current.appId}/${KitchenStorage.scopeCollection}/${locator.kitchenId}`
-    ).get(),
+    current.db
+      .doc(
+        `apps/${current.appId}/${KitchenStorage.scopeCollection}/${locator.kitchenId}`
+      )
+      .get(),
   ])
   if (!place.exists) fail(409, 'The linked Place does not exist.')
   assertKitchenOnboardingPlaceDefaults(place.data() || {})
@@ -198,14 +195,12 @@ export async function previewKitchenOnboarding(
   const identity = record(locator.kitchen?.identity)
   const displayName = text(
     identity.display_name ||
-    locator.kitchen?.display_name ||
-    locator.kitchen?.name
+      locator.kitchen?.display_name ||
+      locator.kitchen?.name
   )
   const visibility = record(locator.kitchen?.visibility)
   const published = visibility.show === true || locator.kitchen?.show === true
-  const paletteOverride = readBrandPalette(
-    record(locator.kitchen?.menus).style
-  )
+  const paletteOverride = readBrandPalette(record(locator.kitchen?.menus).style)
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
@@ -237,7 +232,6 @@ export async function completeKitchenOnboarding(
   if ('error' in requestedPalette) fail(400, requestedPalette.error)
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
-  assertRuntimeTarget(current, locator.kitchenId)
   const rootRef = current.db
     .collection(KitchenStorage.rootCollection)
     .doc(locator.kitchenId)
@@ -248,7 +242,7 @@ export async function completeKitchenOnboarding(
     `apps/${current.appId}/${KitchenStorage.scopeCollection}/${locator.kitchenId}`
   )
 
-  return current.db.runTransaction(async transaction => {
+  return current.db.runTransaction(async (transaction) => {
     const [membership, place, root, support] = await Promise.all([
       transaction.get(current.membershipRef),
       transaction.get(placeRef),
@@ -258,10 +252,6 @@ export async function completeKitchenOnboarding(
     const role = memberRole(membership.exists, membership.get('role'))
     if (!place.exists) fail(409, 'The linked Place no longer exists.')
     assertKitchenOnboardingPlaceDefaults(place.data() || {})
-    assertKitchenOnboardingMembershipCapacity(
-      membership.data() || {},
-      locator.kitchenId
-    )
 
     const rootData = root.exists ? root.data() || {} : null
     if (rootData) {
@@ -355,7 +345,6 @@ export async function completeKitchenOnboarding(
 
     transaction.update(current.membershipRef, {
       console_enabled: true,
-      'console_targets.kitchen_ids': FieldValue.arrayUnion(locator.kitchenId),
       updated: serverAuditStamp({ by: current.uid }),
     })
 

@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: shape the shared app control room around real App and UserApp authority. -->
+<!-- Concurrent edit — 2026-07-21 16:25 CEST — Dashboard Admin pass: shape the shared app control room around real App and AppUser authority. -->
 <template>
   <MoleculesStateCard
     v-if="appOutcome === 'idle' || appOutcome === 'pending'"

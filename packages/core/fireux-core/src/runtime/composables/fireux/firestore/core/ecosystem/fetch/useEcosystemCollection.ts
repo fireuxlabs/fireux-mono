@@ -1,5 +1,5 @@
 import { computed, unref, type MaybeRef } from 'vue'
-import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
+import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
 import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'

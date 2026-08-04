@@ -39,9 +39,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 }
 
 export async function assertGitSavePolicy(repoRoot) {
-  const source = await readFile(path.join(repoRoot, 'scripts/gitsave.sh'), 'utf8')
-  const envLint = await readFile(path.join(repoRoot, 'scripts/lint-envs.mjs'), 'utf8')
-  const ciWorkflow = await readFile(path.join(repoRoot, '.github/workflows/ci.yml'), 'utf8')
+  const source = await readFile(
+    path.join(repoRoot, 'scripts/gitsave.sh'),
+    'utf8'
+  )
+  const envLint = await readFile(
+    path.join(repoRoot, 'scripts/lint-envs.mjs'),
+    'utf8'
+  )
+  const ciWorkflow = await readFile(
+    path.join(repoRoot, '.github/workflows/ci.yml'),
+    'utf8'
+  )
 
   assert.match(source, /Guard failures cannot be bypassed\./)
   assert.doesNotMatch(
@@ -75,10 +84,7 @@ export async function assertFirebaseAuthDomainSync(repoRoot) {
   )
   const interlakenPackage = JSON.parse(
     await readFile(
-      path.join(
-        repoRoot,
-        'projects/misebox/interlaken-essen/package.json'
-      ),
+      path.join(repoRoot, 'projects/misebox/interlaken-essen/package.json'),
       'utf8'
     )
   )
@@ -108,7 +114,7 @@ export async function assertFirebaseAuthDomainSync(repoRoot) {
   )
   assert.match(
     createEcosystem,
-    /before any App declares brand\.owner = ecosystem/
+    /canonical ecosystem brand source and its named App projections/
   )
 
   const createScript = path.join(repoRoot, 'scripts/create-ecosystem.mjs')
@@ -143,10 +149,7 @@ export async function assertFirebaseAuthDomainSync(repoRoot) {
   assert.equal(explicitNo.status, 0)
   assert.match(explicitNo.stdout, /would leave Firebase Auth domains unchanged/)
   assert.match(explicitNo.stdout, /app\.example\.com/)
-  assert.match(
-    explicitNo.stdout,
-    /auth-domain-guard-fixture\.web\.app/
-  )
+  assert.match(explicitNo.stdout, /auth-domain-guard-fixture\.web\.app/)
 
   const explicitSite = spawnSync(
     process.execPath,
@@ -271,9 +274,7 @@ async function assertRulesFragmentScope(repoRoot) {
   const joinMarker = '        // @fireux-core-rules join-validator'
   const reboundJoin = template.replace(
     joinMarker,
-    '      }\n' +
-      '      match  /join-requests/{userId} {\n' +
-      joinMarker
+    '      }\n' + '      match  /join-requests/{userId} {\n' + joinMarker
   )
   await assert.rejects(
     () => composeFirestoreRules(reboundJoin),
@@ -281,13 +282,10 @@ async function assertRulesFragmentScope(repoRoot) {
     'A first-use contracted frame must remain structurally unique.'
   )
 
-  const membershipMarker =
-    '      // @fireux-core-rules membership-block'
+  const membershipMarker = '      // @fireux-core-rules membership-block'
   const reboundApp = template.replace(
     membershipMarker,
-    '    }\n' +
-      '    match  /apps/{appId} {\n' +
-      membershipMarker
+    '    }\n' + '    match  /apps/{appId} {\n' + membershipMarker
   )
   await assert.rejects(
     () => composeFirestoreRules(reboundApp),
@@ -309,8 +307,7 @@ async function assertRulesFragmentScope(repoRoot) {
     'Wildcard aliases must not create an overlapping contracted App frame.'
   )
 
-  const overlayMarker =
-    '        // @fireux-core-rules overlay-validator'
+  const overlayMarker = '        // @fireux-core-rules overlay-validator'
   const overlayMatch = '      match /{profileCollection}/{userId} {'
   const appScopedOverlay = template
     .replace(`${overlayMarker}\n`, '')
@@ -485,7 +482,7 @@ async function assertRulesReleaseBackup(repoRoot) {
     ),
     [
       'const releaseBackup = await backupReleases([SIMULATION_DATABASE_ID])',
-      "const ruleset = await api(`projects/${PROJECT_ID}/rulesets`",
+      'const ruleset = await api(`projects/${PROJECT_ID}/rulesets`',
       'const release = await pointRelease(',
     ],
     'Werkbox simulation release'
@@ -498,7 +495,7 @@ async function assertRulesReleaseBackup(repoRoot) {
     ),
     [
       'const releaseBackup = await backupReleases([PRODUCTION_DATABASE_ID])',
-      "const ruleset = await api(`projects/${PROJECT_ID}/rulesets`",
+      'const ruleset = await api(`projects/${PROJECT_ID}/rulesets`',
       'const release = await pointRelease(',
     ],
     'Werkbox quarantine release'
@@ -605,7 +602,10 @@ async function assertWerkboxRulesSurface(repoRoot) {
     'unknown root defaults to deny',
     'writeProtectedJsonArtifact',
   ]) {
-    assert.ok(source.includes(token), `Werkbox Rules harness must retain ${token}.`)
+    assert.ok(
+      source.includes(token),
+      `Werkbox Rules harness must retain ${token}.`
+    )
   }
   assert.doesNotMatch(
     source,
@@ -637,10 +637,7 @@ async function assertWerkboxRulesSurface(repoRoot) {
   )
 
   const quarantine = await readFile(
-    path.join(
-      repoRoot,
-      'scripts/firebase/werkbox/firestore-quarantine.rules'
-    ),
+    path.join(repoRoot, 'scripts/firebase/werkbox/firestore-quarantine.rules'),
     'utf8'
   )
   const quarantineAllows = [
@@ -685,13 +682,12 @@ async function assertWerkboxRulesSurface(repoRoot) {
     'productionStillQuarantined: true',
     'candidateRulesPromoted: false',
   ]) {
-    assert.ok(migrator.includes(token), `Werkbox migrator must retain ${token}.`)
+    assert.ok(
+      migrator.includes(token),
+      `Werkbox migrator must retain ${token}.`
+    )
   }
-  const applySlice = branchSource(
-    migrator,
-    '  } else {',
-    '} finally {'
-  )
+  const applySlice = branchSource(migrator, '  } else {', '} finally {')
   assertOrderedTokens(
     applySlice,
     [
@@ -914,7 +910,10 @@ export async function assertUserIdentityPlannerReadOnly(
   const firestoreIndex = executor.indexOf('await applyFirestoreTransaction')
   const storageIndex = executor.indexOf('await applyStorageDeletes')
   const verificationIndex = executor.indexOf('await verifyResults')
-  assert.ok(backupIndex >= 0, 'User identity apply requires a protected preimage.')
+  assert.ok(
+    backupIndex >= 0,
+    'User identity apply requires a protected preimage.'
+  )
   assert.ok(
     backupIndex < firestoreIndex &&
       firestoreIndex < storageIndex &&

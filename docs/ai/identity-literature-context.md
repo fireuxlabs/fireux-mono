@@ -42,6 +42,9 @@ shared public-language or pricing seam applies to them.
   `<App name>'s Apps`.
 - Each Main App owns its product nouns, Console name, capability limits,
   imagery, actions, and working routes.
+- Identity is a required Operation for every Console family. The owning
+  Operation catalogue keeps its Console route, landing subheader entry, and
+  `/operations/<slug>` literature page aligned.
 - Static ecosystem hero photography shows people doing the product's current
   work through Core's sharp image frame. FireUX's live App/Ecosystem orbit and
   Misebox Kitchen's product-surface composition are the explicit non-people

@@ -1,5 +1,5 @@
 import { computed, isRef, type Ref } from 'vue'
-import type { ConversationMessage } from '../../../../../../models/core/conversation.model'
+import type { ConversationMessage } from '../../../../../../models/operations/conversation.model'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useConversationPaths } from '../utils/paths/useConversationPaths'
 

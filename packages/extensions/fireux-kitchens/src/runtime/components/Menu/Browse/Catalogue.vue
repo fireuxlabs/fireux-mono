@@ -55,7 +55,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model'
 import type { MenuManifestSection } from '../../../models/kitchen/menu/menu-detail.model'
 import type { MenuBrowseSurfaceCopy } from '../../../content/menu-surface-copy'
 import { menuSectionLinks } from '../../../utils/menu-section-links'

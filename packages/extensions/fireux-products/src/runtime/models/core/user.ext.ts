@@ -5,7 +5,7 @@ declare module 'fireux-core/runtime/models/core/user.model' {
     canManageProducts?: boolean
   }
 
-  interface UserAppExtensions {
+  interface AppUserExtensions {
     canManageProducts?: boolean
   }
 }

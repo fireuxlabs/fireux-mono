@@ -23,7 +23,7 @@ import type {
   KitchenImageShade,
 } from '../../../models/kitchen.model.ts'
 import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-time.model.ts'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model.ts'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model.ts'
 import { menuSourceFromData } from '../payload/source.ts'
 import { resolveMenuPageStyle } from '../payload/page-style.ts'
 

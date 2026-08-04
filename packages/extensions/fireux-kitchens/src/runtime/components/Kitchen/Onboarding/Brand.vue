@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 
 defineProps<{
   modelValue: SparseBrandPalette

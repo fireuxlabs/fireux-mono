@@ -23,7 +23,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const script = read(repoRoot, 'scripts/reconcile-platform-directory.mjs')
   const contract = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/models/core/supporting/directory-publication.ts'
+    'packages/core/fireux-core/src/runtime/models/operations/directory-publication.ts'
   )
 
   assert.match(script, /mode:\s*'read-only'/)
@@ -98,7 +98,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       jiti.import(
         path.join(
           repoRoot,
-          'packages/core/fireux-core/src/runtime/models/core/supporting/directory-publication.ts'
+          'packages/core/fireux-core/src/runtime/models/operations/directory-publication.ts'
         )
       ),
     ])

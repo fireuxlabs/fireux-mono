@@ -66,14 +66,13 @@ const isFirestoreDocumentId = (value: string) =>
   new TextEncoder().encode(value).length <= 1_500
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
-const strings = (value: unknown) =>
-  Array.isArray(value) ? value.map(text).filter(Boolean) : []
-const configurationError = (statusMessage: string) => createError({
-  statusCode: 500,
-  statusMessage,
-})
+const configurationError = (statusMessage: string) =>
+  createError({
+    statusCode: 500,
+    statusMessage,
+  })
 
 const runtimeApp = () =>
   record((useRuntimeConfig().public?.fireux ?? {}) as Record<string, unknown>)
@@ -82,18 +81,7 @@ export const currentPublicMenuAppId = () => text(runtimeApp().id)
 
 export const isTenantPublicMenuApp = () => text(runtimeApp().role) === 'tenant'
 
-const tenantKitchenIds = () => {
-  const app = runtimeApp()
-  if (!isTenantPublicMenuApp()) return []
-
-  const consoleConfig = record(app.consoleConfig)
-  const kitchen = record(consoleConfig.kitchen)
-  return strings(kitchen.targetIds)
-}
-
-const explicitKitchenSourceAppId = (
-  kitchenData: Record<string, unknown>
-) => {
+const explicitKitchenSourceAppId = (kitchenData: Record<string, unknown>) => {
   const scope = readKitchenAppScope(kitchenData)
 
   return scope.state === 'parent_app' || scope.state === 'tenant_app'
@@ -101,9 +89,7 @@ const explicitKitchenSourceAppId = (
     : ''
 }
 
-const requireKitchenSourceAppId = (
-  kitchenData: Record<string, unknown>
-) => {
+const requireKitchenSourceAppId = (kitchenData: Record<string, unknown>) => {
   const appId = explicitKitchenSourceAppId(kitchenData)
   if (appId) return appId
 
@@ -113,10 +99,15 @@ const requireKitchenSourceAppId = (
 export async function resolveTenantPublicMenuScope(): Promise<TenantPublicMenuScope | null> {
   if (!isTenantPublicMenuApp()) return null
 
-  const targetIds = tenantKitchenIds()
+  const appId = currentPublicMenuAppId()
+  const targetSnapshot = await getRuntimeFirestore()
+    .collection(`apps/${appId}/kitchens`)
+    .limit(2)
+    .get()
+  const targetIds = targetSnapshot.docs.map((document) => document.id)
   if (targetIds.length !== 1) {
     throw configurationError(
-      'Tenant menu scope must configure exactly one Kitchen target.'
+      'Tenant menu scope requires exactly one persisted App Kitchen target.'
     )
   }
 
@@ -175,10 +166,7 @@ const requireRootMenuKitchen = async (
     readRecordString(rootMenuData, 'source_kind') === 'kitchen-menu' ||
     readRecordString(rootMenuData, 'kind') === 'menu'
   const hasSourcePointer = Boolean(
-    source.app_id ||
-    source.kitchen_id ||
-    source.kitchen_slug ||
-    source.menu_id
+    source.app_id || source.kitchen_id || source.kitchen_slug || source.menu_id
   )
 
   if (!isKitchenMenu && !hasSourcePointer) return
@@ -243,7 +231,10 @@ const scopedTarget = async (
     placeData
   )
   const kitchenPlaceId = readRecordString(input.rootKitchenData, 'place_id')
-  const fulfilment = menuKitchenFulfilment(input.rootKitchenData, appKitchenData)
+  const fulfilment = menuKitchenFulfilment(
+    input.rootKitchenData,
+    appKitchenData
+  )
   const kitchenOperationHours = menuKitchenOperationHours(
     input.rootKitchenData,
     appKitchenData,
@@ -257,9 +248,7 @@ const scopedTarget = async (
     sourceMenuId: menuId,
     appId: input.appId,
     kitchenId: input.kitchenId,
-    kitchenSlug:
-      input.kitchenSlug ||
-      readRecordString(appKitchenData, 'slug'),
+    kitchenSlug: input.kitchenSlug || readRecordString(appKitchenData, 'slug'),
     rootKitchenData: input.rootKitchenData,
     appKitchenData,
     menuData,
@@ -270,15 +259,15 @@ const scopedTarget = async (
         ? { kitchenImageShade: identity.imageShade }
         : {}),
       ...(identity.imageUrl ? { kitchenImageUrl: identity.imageUrl } : {}),
-      ...(identity.logoImageUrl ? { kitchenLogoImageUrl: identity.logoImageUrl } : {}),
-      ...(
-        input.kitchenSlug || readRecordString(appKitchenData, 'slug')
-          ? {
-              kitchenSlug:
-                input.kitchenSlug || readRecordString(appKitchenData, 'slug'),
-            }
-          : {}
-      ),
+      ...(identity.logoImageUrl
+        ? { kitchenLogoImageUrl: identity.logoImageUrl }
+        : {}),
+      ...(input.kitchenSlug || readRecordString(appKitchenData, 'slug')
+        ? {
+            kitchenSlug:
+              input.kitchenSlug || readRecordString(appKitchenData, 'slug'),
+          }
+        : {}),
       ...(identity.name ? { kitchenName: identity.name } : {}),
       ...(identity.wordmarkImageUrl
         ? { kitchenWordmarkImageUrl: identity.wordmarkImageUrl }
@@ -352,7 +341,10 @@ export async function resolvePublicMenuTarget(
     .doc(menuId)
     .get()
   const rootMenuData = rootSnap.data() || {}
-  if (!rootSnap.exists || readRecordString(rootMenuData, 'status') !== 'published') {
+  if (
+    !rootSnap.exists ||
+    readRecordString(rootMenuData, 'status') !== 'published'
+  ) {
     throw createError({
       statusCode: 404,
       statusMessage: 'Menu not found.',
@@ -360,16 +352,14 @@ export async function resolvePublicMenuTarget(
   }
 
   await requireRootMenuKitchen(rootMenuData)
-  const scope = await readRootMenuKitchenScope(
-    rootMenuData,
-    ''
-  )
+  const scope = await readRootMenuKitchenScope(rootMenuData, '')
   const appId = text(scope.kitchenAppId)
   const kitchenId = text(scope.kitchenId)
   const sourceMenuId = text(scope.kitchenMenuId)
-  const sourceMenuData = appId && kitchenId && sourceMenuId
-    ? await publishedMenuData(appId, kitchenId, sourceMenuId)
-    : {}
+  const sourceMenuData =
+    appId && kitchenId && sourceMenuId
+      ? await publishedMenuData(appId, kitchenId, sourceMenuId)
+      : {}
 
   return {
     kind: 'root-doorway',

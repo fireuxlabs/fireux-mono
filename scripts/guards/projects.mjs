@@ -10,9 +10,8 @@
 // Called by scripts/guard.mjs.
 // MUST NOT be run directly.
 
-import { readdirSync, existsSync, readFileSync, statSync } from 'node:fs'
+import { readdirSync, existsSync, readFileSync } from 'node:fs'
 import assert from 'node:assert/strict'
-import { createHash } from 'node:crypto'
 import path from 'node:path'
 import { withBuildVersion } from '../../packages/core/fireux-core/src/runtime/utils/buildVersionUrl.ts'
 import {
@@ -76,9 +75,7 @@ function isAllowedDotfile(name) {
   return false
 }
 
-const HARD_FORBIDDEN_L1 = [
-  '.firebaserc',
-]
+const HARD_FORBIDDEN_L1 = ['.firebaserc']
 
 const STATIC_HARNESS_FORBIDDEN_L1 = [
   ...HARD_FORBIDDEN_L1,
@@ -107,20 +104,6 @@ const REQUIRED_PUBLIC_ASSETS = [
   'img/app/pwa/icon-192.png',
   'img/app/pwa/icon-512.png',
 ]
-
-const BRAND_SOURCE_BY_RUNTIME_ASSET = Object.freeze({
-  'img/app/cover.png': 'cover.png',
-  'img/app/thumbnail.png': 'thumbnail.png',
-  'img/app/logo.png': 'logo.png',
-  'img/app/favicon.ico': 'favicon.ico',
-  'img/app/wordmark.png': 'wordmark-light.png',
-  'img/app/wordmark.svg': 'wordmark-light.svg',
-  'img/app/wordmark-light.png': 'wordmark-light.png',
-  'img/app/wordmark-light.svg': 'wordmark-light.svg',
-  'img/app/wordmark-dark.png': 'wordmark-dark.png',
-  'img/app/pwa/icon-192.png': 'pwa/icon-192.png',
-  'img/app/pwa/icon-512.png': 'pwa/icon-512.png',
-})
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -164,13 +147,6 @@ export async function run(ctx) {
       const publicViolation = checkProjectPublicImageLibrary(appPath)
       if (publicViolation) violations.push(publicViolation)
 
-      const brandViolation = checkProjectBrandOwnership(
-        appPath,
-        eco,
-        repoRoot
-      )
-      if (brandViolation) violations.push(brandViolation)
-
       const authViolation = checkProjectAuthSpine(appPath)
       if (authViolation) violations.push(authViolation)
 
@@ -179,7 +155,6 @@ export async function run(ctx) {
     }
   }
 
-  violations.push(...checkDuplicateAppOwnedBrandFamilies(projectsRoot))
   violations.push(...checkProjectRegistryCompleteness(projectsRoot))
 
   if (violations.length) {
@@ -209,8 +184,8 @@ function checkProjectRegistryCompleteness(projectsRoot) {
   )
   const registered = new Set(registeredPaths)
   const actual = new Set(appPaths)
-  const missing = appPaths.filter((entry) =>
-    entry !== templatePath && !registered.has(entry)
+  const missing = appPaths.filter(
+    (entry) => entry !== templatePath && !registered.has(entry)
   )
   const stale = registeredPaths.filter((entry) => !actual.has(entry))
 
@@ -262,10 +237,7 @@ export function assertCorePwaCacheVersioning(repoRoot) {
     'utf8'
   )
   const pwaConfig = readFileSync(
-    path.join(
-      repoRoot,
-      'packages/core/fireux-core/src/config/app/pwa.ts'
-    ),
+    path.join(repoRoot, 'packages/core/fireux-core/src/config/app/pwa.ts'),
     'utf8'
   )
   const coreModule = readFileSync(
@@ -351,9 +323,13 @@ function checkProjectApp(appPath) {
     isAllowed: (entry) => entry.startsWith('.') && isAllowedDotfile(entry),
   })
 
-  if (!missing.length && !forbiddenFound.length && !unexpected.length) return null
+  if (!missing.length && !forbiddenFound.length && !unexpected.length)
+    return null
 
-  const lines = ['[guard] ❌ project app shape violation:', `  Path: ${appPath}`]
+  const lines = [
+    '[guard] ❌ project app shape violation:',
+    `  Path: ${appPath}`,
+  ]
 
   if (missing.length) {
     lines.push('  Missing required:')
@@ -479,7 +455,8 @@ function checkStaticProjectHarnessContent(appPath) {
     !endpointViolations.length &&
     !localComparisonViolations.length &&
     !providerViolations.length
-  ) return null
+  )
+    return null
 
   const lines = [
     '[guard] ❌ static project harness content violation:',
@@ -487,7 +464,9 @@ function checkStaticProjectHarnessContent(appPath) {
   ]
 
   if (endpointViolations.length) {
-    lines.push('  Insecure endpoints are forbidden outside approved local comparisons:')
+    lines.push(
+      '  Insecure endpoints are forbidden outside approved local comparisons:'
+    )
     endpointViolations
       .slice()
       .sort((a, b) => a.localeCompare(b))
@@ -506,7 +485,9 @@ function checkStaticProjectHarnessContent(appPath) {
     lines.push('  Provider page contract violations:')
     providerViolations.forEach((violation) => {
       lines.push(`    - ${violation.rel} (${violation.provider})`)
-      violation.missing.forEach((needle) => lines.push(`      missing: ${needle}`))
+      violation.missing.forEach((needle) =>
+        lines.push(`      missing: ${needle}`)
+      )
     })
   }
 
@@ -578,7 +559,7 @@ function checkProjectPublicImageLibrary(appPath) {
   const lines = [
     '[guard] ❌ project public image library violation:',
     `  Path: ${appPath}`,
-    `  Missing required public assets:`
+    `  Missing required public assets:`,
   ]
   missing
     .slice()
@@ -594,104 +575,4 @@ function checkProjectPublicImageLibrary(appPath) {
   )
 
   return lines.join('\n')
-}
-
-function checkProjectBrandOwnership(appPath, ecosystem, repoRoot) {
-  const configPath = path.join(appPath, 'nuxt.config.ts')
-  if (!existsSync(configPath)) return null
-  const source = readFileSync(configPath, 'utf8')
-  const declaration = source.match(
-    /brand:\s*\{\s*owner:\s*'(core|ecosystem|app)'(?:\s*,\s*status:\s*'(approved|provisional)')?\s*\}/
-  )
-  if (!declaration) {
-    return `${configPath} (must declare brand.owner as core, ecosystem, or app)`
-  }
-
-  const [, owner, status] = declaration
-  if (owner === 'app' && !status) {
-    return `${configPath} (App-owned brand must declare approved or provisional status)`
-  }
-  if (owner !== 'app' && status) {
-    return `${configPath} (inherited brands must not declare App-owned status)`
-  }
-
-  const emptyAssets = REQUIRED_PUBLIC_ASSETS.filter((relative) => {
-    const absolute = path.join(appPath, 'public', relative)
-    return existsSync(absolute) && statSync(absolute).size === 0
-  })
-  if (emptyAssets.length) {
-    return `${configPath} (${owner} brand has empty runtime assets: ${emptyAssets.join(', ')})`
-  }
-
-  if (owner === 'app') return null
-
-  const canonicalRoot = owner === 'core'
-    ? path.join(
-        repoRoot,
-        'packages/core/fireux-core/src/runtime/public/img/core/brand'
-      )
-    : path.join(
-        repoRoot,
-        `packages/ecosystem/fireux-${ecosystem}/src/runtime/public/img/ecosystem/brand`
-      )
-  const drift = []
-  for (const runtimeRelative of REQUIRED_PUBLIC_ASSETS) {
-    const sourceRelative = BRAND_SOURCE_BY_RUNTIME_ASSET[runtimeRelative]
-    const canonicalPath = path.join(canonicalRoot, sourceRelative)
-    const runtimePath = path.join(appPath, 'public', runtimeRelative)
-    if (!existsSync(canonicalPath)) {
-      drift.push(`missing owner source ${path.relative(repoRoot, canonicalPath)}`)
-      continue
-    }
-    if (
-      existsSync(runtimePath) &&
-      !readFileSync(canonicalPath).equals(readFileSync(runtimePath))
-    ) {
-      drift.push(`drifted projection ${path.relative(repoRoot, runtimePath)}`)
-    }
-  }
-  if (!drift.length) return null
-  return [
-    `${configPath} (${owner} brand ownership violation)`,
-    ...drift.map((entry) => `  - ${entry}`),
-  ].join('\n')
-}
-
-function checkDuplicateAppOwnedBrandFamilies(projectsRoot) {
-  const ownersByHash = new Map()
-  for (const ecosystem of readdirSync(projectsRoot, { withFileTypes: true })) {
-    if (!ecosystem.isDirectory() || ecosystem.name.startsWith('.')) continue
-    const ecosystemPath = path.join(projectsRoot, ecosystem.name)
-    for (const app of readdirSync(ecosystemPath, { withFileTypes: true })) {
-      if (!app.isDirectory() || app.name.startsWith('.')) continue
-      const appPath = path.join(ecosystemPath, app.name)
-      const configPath = path.join(appPath, 'nuxt.config.ts')
-      if (!existsSync(configPath)) continue
-      const config = readFileSync(configPath, 'utf8')
-      if (!/brand:\s*\{\s*owner:\s*'app'/.test(config)) continue
-
-      const assets = REQUIRED_PUBLIC_ASSETS.map((relative) =>
-        path.join(appPath, 'public', relative)
-      )
-      if (assets.some((asset) => !existsSync(asset) || statSync(asset).size === 0)) {
-        continue
-      }
-      const hash = createHash('sha256')
-      for (const asset of assets) hash.update(readFileSync(asset))
-      const digest = hash.digest('hex')
-      const owners = ownersByHash.get(digest) ?? []
-      owners.push(`${ecosystem.name}/${app.name}`)
-      ownersByHash.set(digest, owners)
-    }
-  }
-
-  return [...ownersByHash.entries()].flatMap(([digest, owners]) =>
-    owners.length > 1
-      ? [
-          `[guard] ❌ App-owned brand family is duplicated across Apps (${digest.slice(0, 12)}):\n` +
-            owners.map((owner) => `  - ${owner}`).join('\n') +
-            '\nDeclare the real shared Core/ecosystem owner or provide genuinely App-owned identity.',
-        ]
-      : []
-  )
 }

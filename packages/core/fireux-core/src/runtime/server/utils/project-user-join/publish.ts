@@ -1,5 +1,5 @@
 import { GoogleAuth } from 'google-auth-library'
-import type { ProjectUserJoinPublicationV1 } from '../../../models/system/project-user-join.model'
+import type { ProjectUserJoinPublicationV1 } from '../../../models/operations/project-user-join.model'
 
 export type ProjectUserJoinDeliveryOutcome =
   | 'disabled'

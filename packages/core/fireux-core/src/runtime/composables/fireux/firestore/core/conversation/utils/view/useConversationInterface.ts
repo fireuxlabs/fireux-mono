@@ -1,4 +1,4 @@
-import type { Conversation } from '../../../../../../../models/core/conversation.model'
+import type { Conversation } from '../../../../../../../models/operations/conversation.model'
 
 export type ConversationSurface = Conversation & {
   title: string

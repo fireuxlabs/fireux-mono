@@ -12,11 +12,8 @@ import type {
   AppMembershipMutationInput,
   AppMembershipMutationResult,
   AppMembershipRole,
-} from '../../../models/core/supporting/app-membership'
-import {
-  UserAppConsoleTargetsModel,
-  UserAppStorage,
-} from '../../../models/core/user.model'
+} from '../../../models/operations/app-membership'
+import { AppUserStorage } from '../../../models/core/user.model'
 import { requireFirestoreDocumentId } from '../ids/path'
 
 export type MutationContext = {
@@ -104,38 +101,7 @@ export function membershipRepairPatch(data: DocumentData, actorUid: string) {
   }
   if ('notifications' in data) patch.notifications = FieldValue.delete()
 
-  if ('console_targets' in data) {
-    const currentTargets =
-      data.console_targets &&
-      typeof data.console_targets === 'object' &&
-      !Array.isArray(data.console_targets)
-        ? (data.console_targets as Record<string, unknown>)
-        : null
-    const knownFields = new Set(Object.keys(UserAppConsoleTargetsModel))
-    const targetsNeedRepair =
-      !currentTargets ||
-      Object.entries(currentTargets).some(
-        ([key, value]) => !knownFields.has(key) || !Array.isArray(value)
-      )
-
-    if (targetsNeedRepair) {
-      const repairedTargets = currentTargets
-        ? Object.fromEntries(
-            Object.entries(currentTargets)
-              .filter(
-                ([key, value]) => knownFields.has(key) && Array.isArray(value)
-              )
-              .map(([key, value]) => [
-                key,
-                normalizeMembershipStringList(value, 50),
-              ])
-          )
-        : {}
-      patch.console_targets = Object.keys(repairedTargets).length
-        ? repairedTargets
-        : FieldValue.delete()
-    }
-  }
+  if ('console_targets' in data) patch.console_targets = FieldValue.delete()
 
   if (Object.keys(patch).length) patch.updated = stamp(actorUid)
   return patch
@@ -163,8 +129,7 @@ export function requiredIdentityUserId(
 ) {
   if (
     input.action === 'ensure-self' ||
-    input.action === 'bootstrap-admin' ||
-    input.action === 'set-console-target'
+    input.action === 'bootstrap-admin'
   ) {
     return actorUid
   }
@@ -233,28 +198,11 @@ export async function countTransactionAdmins(
 ) {
   const snapshot = await transaction.get(
     appRef
-      .collection(UserAppStorage.collection)
+      .collection(AppUserStorage.collection)
       .where('role', '==', 'admin')
       .limit(2)
   )
   return snapshot.size
-}
-
-export function normalizedConsoleTargets(data: DocumentData) {
-  const source =
-    data.console_targets &&
-    typeof data.console_targets === 'object' &&
-    !Array.isArray(data.console_targets)
-      ? (data.console_targets as Record<string, unknown>)
-      : {}
-
-  return Object.fromEntries(
-    Object.entries(source)
-      .filter(([key]) =>
-        Object.prototype.hasOwnProperty.call(UserAppConsoleTargetsModel, key)
-      )
-      .map(([key, value]) => [key, normalizeMembershipStringList(value, 50)])
-  ) as Record<string, string[]>
 }
 
 export async function readTargetAuthorityRevocations(

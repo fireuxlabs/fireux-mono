@@ -445,36 +445,13 @@ service cloud.firestore {
       }
 
       match /users/{userId} {
-        function isValidConsoleTargets(value) {
-          return value is map &&
-            value.keys().hasOnly([
-              'kitchen_ids', 'supplier_ids', 'property_ids',
-              'portfolio_ids', 'blank_ids'
-            ]) &&
-            (!('kitchen_ids' in value) ||
-              (value.kitchen_ids is list &&
-                value.kitchen_ids.size() <= 50)) &&
-            (!('supplier_ids' in value) ||
-              (value.supplier_ids is list &&
-                value.supplier_ids.size() <= 50)) &&
-            (!('property_ids' in value) ||
-              (value.property_ids is list &&
-                value.property_ids.size() <= 50)) &&
-            (!('portfolio_ids' in value) ||
-              (value.portfolio_ids is list &&
-                value.portfolio_ids.size() <= 50)) &&
-            (!('blank_ids' in value) ||
-              (value.blank_ids is list &&
-                value.blank_ids.size() <= 50));
-        }
-
-        function isValidUserApp(data) {
+        function isValidAppUser(data) {
           return data.keys().hasAll([
               'role', 'is_premium', 'console_enabled', 'created', 'updated'
             ]) &&
             data.keys().hasOnly([
               'role', 'is_premium', 'console_enabled', 'onboarding_status',
-              'profiles', 'console_targets', 'created', 'updated'
+              'profiles', 'created', 'updated'
             ]) &&
             data.role in ['admin', 'user'] &&
             data.is_premium is bool &&
@@ -487,8 +464,6 @@ service cloud.firestore {
               (data.profiles is list &&
                 data.profiles.size() <= 2 &&
                 data.profiles.hasOnly(['agent', 'professional']))) &&
-            (!('console_targets' in data) ||
-              isValidConsoleTargets(data.console_targets)) &&
             validCreatedStamp(data.created) &&
             data.created.app_id == appId &&
             validUpdatedStamp(data.updated);
@@ -496,10 +471,10 @@ service cloud.firestore {
 
         allow get: if isKnownApp(appId) &&
           (isOwner(userId) ||
-            (isAppAdmin(appId) && isValidUserApp(resource.data)));
+            (isAppAdmin(appId) && isValidAppUser(resource.data)));
         allow list: if isAppAdmin(appId) &&
           request.query.limit <= 100 &&
-          isValidUserApp(resource.data);
+          isValidAppUser(resource.data);
         allow create, update, delete: if false;
       }
 
@@ -535,7 +510,6 @@ service cloud.firestore {
           validOwnerUpdateStamp(request.resource.data, userId);
       }
     }
-
     function isValidAgent(data) {
       return data.keys().size() == 14 &&
         data.keys().hasAll([

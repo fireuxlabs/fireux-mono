@@ -1,6 +1,7 @@
 // Concurrent edit — 2026-07-20 17:03 CEST — Demo Data Spine pass: remove stale entity samples from product metadata.
 // Concurrent edit — 2026-07-21 13:08 CEST — Operations catalogue: keep parked Portfolio work out of the public index.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
+import { portfolioOperations } from 'fireux-properties/runtime/content/operations'
 import { sourceMeta } from './content/meta/source'
 
 const aboutHero = sourceMeta.about.hero as {
@@ -124,36 +125,41 @@ export const metaContent = defineFireuxMeta({
     hero_bullets: [...appMeta.heroBullets],
     about_ticks: [...appMeta.aboutPanelTicks],
   },
-  operations: [],
+  operations: [...portfolioOperations],
   solutions: [
     {
       slug: 'property-showcase',
       title: 'Showcase a property',
-      description: 'Create a public property page when a property needs a clean, shareable presentation.',
+      description:
+        'Create a public property page when a property needs a clean, shareable presentation.',
       icon: 'i-lucide-building-2',
     },
     {
       slug: 'property-portfolio-pages',
       title: 'Explain a property portfolio',
-      description: 'Use portfolio-style pages when properties need a public narrative and investor-ready context.',
+      description:
+        'Use portfolio-style pages when properties need a public narrative and investor-ready context.',
       icon: 'i-lucide-layout-dashboard',
     },
     {
       slug: 'private-property-records',
       title: 'Manage private property records',
-      description: 'Keep operational property information private while still using shared FireUX app structure.',
+      description:
+        'Keep operational property information private while still using shared FireUX app structure.',
       icon: 'i-lucide-lock-keyhole',
     },
     {
       slug: 'investor-property-summaries',
       title: 'Prepare investor summaries',
-      description: 'Shape property information into concise summaries for portfolio and stakeholder conversations.',
+      description:
+        'Shape property information into concise summaries for portfolio and stakeholder conversations.',
       icon: 'i-lucide-chart-no-axes-combined',
     },
     {
       slug: 'property-operator-app',
       title: 'Launch a property operator app',
-      description: 'Run a branded property operations app for portfolios, compliance, and team workflows.',
+      description:
+        'Run a branded property operations app for portfolios, compliance, and team workflows.',
       icon: 'i-lucide-landmark',
     },
   ],

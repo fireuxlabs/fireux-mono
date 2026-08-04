@@ -1,4 +1,4 @@
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 
 type TenantPaletteToken = {
   role: string

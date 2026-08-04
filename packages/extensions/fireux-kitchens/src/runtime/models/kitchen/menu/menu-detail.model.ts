@@ -1,5 +1,5 @@
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model'
 import type {
   SproochliDefaultLanguage,
   SproochliLanguageCode,

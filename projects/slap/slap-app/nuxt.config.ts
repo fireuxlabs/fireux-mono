@@ -8,12 +8,21 @@ export default defineFireuxConfig({
   id: 'slap-app',
   name: 'Slap',
   shortName: 'Slap',
-  brand: { owner: 'app', status: 'provisional' },
   role: 'global',
   pricing: {
     consoleName: 'Commerce Console',
-    free: ['Create one brand workspace', 'Publish products and stories', 'Use the Commerce Console', 'Build the first public brand surface'],
-    pro: ['Manage products, collections, and drops', 'Publish stories and gallery content', 'Operate the branded storefront', 'Give the commerce team Console access'],
+    free: [
+      'Create one brand workspace',
+      'Publish products and stories',
+      'Use the Commerce Console',
+      'Build the first public brand surface',
+    ],
+    pro: [
+      'Manage products, collections, and drops',
+      'Publish stories and gallery content',
+      'Operate the branded storefront',
+      'Give the commerce team Console access',
+    ],
   },
   databaseId: 'slap',
 })

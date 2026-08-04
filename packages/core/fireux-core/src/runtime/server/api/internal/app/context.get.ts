@@ -6,11 +6,8 @@ import {
 } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
-import { resolveUserAppAccess } from '../../../../models/core/supporting/user-app-access'
-import {
-  UserAppConsoleTargetsModel,
-  UserAppStorage,
-} from '../../../../models/core/user.model'
+import { resolveAppUserAccess } from '../../../../models/utils/app-user-access'
+import { AppUserStorage } from '../../../../models/core/user.model'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 import { projectPublicApp } from '../../../utils/public-projection/public-app.dto'
@@ -81,31 +78,7 @@ function membershipDto(
   ) {
     conflict('Current App membership has an invalid onboarding status.')
   }
-  const rawTargets = value.console_targets
-  if (
-    rawTargets !== undefined &&
-    (!rawTargets ||
-      typeof rawTargets !== 'object' ||
-      Array.isArray(rawTargets))
-  ) {
-    conflict('Current App membership has invalid Console targets.')
-  }
-  const knownTargetFields = new Set(Object.keys(UserAppConsoleTargetsModel))
-  if (
-    Object.keys(rawTargets ?? {}).some(key => !knownTargetFields.has(key))
-  ) {
-    conflict('Current App membership has an unknown Console target family.')
-  }
-  const consoleTargets = Object.fromEntries(
-    Object.entries(rawTargets ?? {}).map(([key, entries]) => [
-      key,
-      stringList(entries, `Console target ${key}`, {
-        max: 50,
-        documentIds: true,
-      }),
-    ])
-  )
-  const access = resolveUserAppAccess({
+  const access = resolveAppUserAccess({
     membership: value,
     isConfiguredDeveloper,
   })
@@ -128,7 +101,6 @@ function membershipDto(
         'professional',
       ]),
     }),
-    console_targets: consoleTargets,
   }
 }
 
@@ -139,7 +111,7 @@ export default defineEventHandler(async (event: H3Event) => {
     .collection(AppStorage.collection)
     .doc(appId)
   const membershipRef = appRef
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(uid)
   const [appSnapshot, membershipSnapshot] = await getRuntimeFirestore().getAll(
     appRef,

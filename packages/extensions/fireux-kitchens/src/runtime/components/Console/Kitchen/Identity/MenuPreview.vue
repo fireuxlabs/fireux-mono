@@ -94,7 +94,7 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { MenuManifestSection } from '../../../../models/kitchen/menu/menu-detail.model'
 import { useMenuThemeSurface } from '../../../../composables/fireux/menu/useMenuThemeSurface'
 import type { Menu } from '../../../../models/kitchen/menu/menu.model'

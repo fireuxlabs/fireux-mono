@@ -1,7 +1,7 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/chef.model.ts
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: own exact storage, provision, and public detail/directory shapes.
 
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
 import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
 import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'

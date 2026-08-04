@@ -1,7 +1,7 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { useConsoleDemoData } from '../../../app/console/useConsoleDemoData'
 import type { App } from '../../../../../models/core/app.model'
-import type { Ecosystem } from '../../../../../models/system/ecosystem.model'
+import type { Ecosystem } from '../../../../../models/core/ecosystem.model'
 import {
   useProjectInterface,
   type ProjectSurface,

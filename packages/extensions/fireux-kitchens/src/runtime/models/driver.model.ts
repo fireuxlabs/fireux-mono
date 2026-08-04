@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: expose a server-owned Driver kitchen authorization index beside operational links.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: keep Driver storage domain-only and join canonical User by uid.
 // Concurrent edit — 2026-07-20 17:43 CEST — Repo Efficiency Pass 2 of 6: own exact root and App Driver provisioning seeds.
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
 import type { AppProfileBase } from 'fireux-core/runtime/models/core/profile.model.ts'
 import { AppProfileStamps } from 'fireux-core/runtime/models/core/profile.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'

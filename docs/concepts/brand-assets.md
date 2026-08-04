@@ -6,8 +6,8 @@ Role: map, not canon
 
 ## Purpose
 
-Map the single FireUX platform identity source, its deterministic projections,
-and the boundary that lets genuinely branded Apps own a different identity.
+Map standard App runtime asset paths, explicit deterministic projections, and
+the boundary that lets genuinely branded Apps carry a different identity.
 
 ## Vertical links
 
@@ -48,19 +48,11 @@ and the boundary that lets genuinely branded Apps own a different identity.
 
 ## Authority contract
 
-Every App declares exactly one owner in `defineFireuxConfig`:
-
-- `brand: { owner: 'core' }`: Core is canonical and `/img/app` is a
-  byte-identical projection.
-- `brand: { owner: 'ecosystem' }`: the selected ecosystem package is canonical
-  and `/img/app` is a byte-identical projection.
-- `brand: { owner: 'app', status: 'approved' | 'provisional' }`: the App owns
-  the complete family. `provisional` records unresolved identity work and must
-  not be normalized as approval.
-
-Brand artwork may differ. Ownership vocabulary, required assets, runtime
-paths, surface semantics, and verification do not differ. Never loan another
-App's export to pass a check.
+Every App exposes the same complete `/img/app/*` runtime family. Nuxt app
+configuration does not declare artwork ownership or approval state. Explicit
+Core and ecosystem render/projection declarations name their canonical source
+and targets; all other Apps carry their artwork directly in their standard
+runtime family. Never loan another App's export to pass a check.
 
 FireUX Core owns the default FireUX platform mark, light and dark wordmarks,
 app icon, PWA icons, favicon, thumbnail, and social cover. The
@@ -133,15 +125,15 @@ their own complete identity.
 
 ## Delta register
 
-| Difference                                           | State      | Reason or alignment trigger                                                                |
-| ---------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------ |
-| Branded child Apps own different marks and wordmarks | `accepted` | Product identity is an App-level presentation delta                                        |
-| FireUX ecosystem PNG paths mirror Core assets        | `accepted` | Existing runtime consumers require ecosystem-local public paths; the projection is guarded |
-| FireUX parent App paths mirror Core assets           | `accepted` | The App media contract requires `/img/app`; the projection is guarded                      |
-| An unguarded duplicate of FireUX platform identity   | `drift`    | Add a projection target or consume the Core fallback directly                              |
-| Light and dark wordmarks carry the same text colour  | `drift`    | Surface semantics must remain visible and distinct                                         |
-| App identity is borrowed from an unrelated App       | `drift`    | Declare the real owner and materialize from that source                                     |
-| App-owned identity is awaiting approval              | `migration`| Declare `provisional`; replace the whole family when approved                               |
+| Difference                                           | State       | Reason or alignment trigger                                                                |
+| ---------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
+| Branded child Apps own different marks and wordmarks | `accepted`  | Product identity is an App-level presentation delta                                        |
+| FireUX ecosystem PNG paths mirror Core assets        | `accepted`  | Existing runtime consumers require ecosystem-local public paths; the projection is guarded |
+| FireUX parent App paths mirror Core assets           | `accepted`  | The App media contract requires `/img/app`; the projection is guarded                      |
+| An unguarded duplicate of FireUX platform identity   | `drift`     | Add a projection target or consume the Core fallback directly                              |
+| Light and dark wordmarks carry the same text colour  | `drift`     | Surface semantics must remain visible and distinct                                         |
+| App identity is borrowed from an unrelated App       | `drift`     | Restore the App's real standard asset family or a named projection                         |
+| App identity is awaiting approval                    | `migration` | Track that work in its owning product/design source, not Nuxt runtime config               |
 
 ## Verification and maintenance
 

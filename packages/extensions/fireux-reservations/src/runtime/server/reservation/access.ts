@@ -4,22 +4,32 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { canonicalPropertyRoot } from 'fireux-properties/runtime/composables/fireux/firestore/property/utils/view/usePropertyInterface.ts'
-import { PropertyStorage, type Property } from 'fireux-properties/runtime/models/property.model.ts'
+import {
+  PropertyStorage,
+  type Property,
+} from 'fireux-properties/runtime/models/property.model.ts'
 import { reservationFail } from './records.ts'
 
 type Firestore = ReturnType<typeof getRuntimeFirestore>
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, any> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, any>
+    ? (value as Record<string, any>)
     : {}
 
 function boundedIds(value: unknown, max: number, label: string) {
-  if (!Array.isArray(value) || value.length > max || value.some(id => typeof id !== 'string')) {
+  if (
+    !Array.isArray(value) ||
+    value.length > max ||
+    value.some((id) => typeof id !== 'string')
+  ) {
     reservationFail(409, `${label} has an invalid stored shape.`)
   }
   const ids = (value as string[]).map(text)
-  if (ids.some((id, index) => !id || id !== value[index]) || new Set(ids).size !== ids.length) {
+  if (
+    ids.some((id, index) => !id || id !== value[index]) ||
+    new Set(ids).size !== ids.length
+  ) {
     reservationFail(409, `${label} has invalid stored ids.`)
   }
   return ids
@@ -42,17 +52,12 @@ export async function requireReservationActor(
   const fireux = record(useRuntimeConfig(event).public?.fireux)
   const appId = requireFirestoreDocumentId(fireux.id, 'Runtime App id')
   const propertyId = requireFirestoreDocumentId(rawPropertyId, 'Property id')
-  const role = text(fireux.role)
-  const configuredTargets = record(record(fireux.consoleConfig).property).targetIds
-  if (
-    role === 'tenant' &&
-    (!Array.isArray(configuredTargets) || !configuredTargets.map(text).includes(propertyId))
-  ) reservationFail(403, 'This Property is not configured for the tenant App.')
-
   const db = getRuntimeFirestore()
   const [membership, support, root] = await db.getAll(
     db.doc(`apps/${appId}/users/${uid}`),
-    db.doc(`apps/${appId}/${PropertyStorage.appSupportCollection}/${propertyId}`),
+    db.doc(
+      `apps/${appId}/${PropertyStorage.appSupportCollection}/${propertyId}`
+    ),
     db.collection(PropertyStorage.rootCollection).doc(propertyId)
   )
   const memberRole = text(membership.get('role'))
@@ -64,12 +69,17 @@ export async function requireReservationActor(
     : null
   if (!rootValue) reservationFail(404, 'Property not found.')
   if (!support.exists) reservationFail(403, 'Property access is required.')
-  const operators = boundedIds(support.get('operator_ids'), 50, 'Property operators')
+  const operators = boundedIds(
+    support.get('operator_ids'),
+    50,
+    'Property operators'
+  )
   const team = boundedIds(support.get('team_ids'), 100, 'Property team')
   boundedIds(support.get('join_requests'), 100, 'Property join requests')
   const canWrite = memberRole === 'admin' || operators.includes(uid)
   const canRead = canWrite || team.includes(uid)
   if (!canRead) reservationFail(403, 'Property read access is required.')
-  if (write && !canWrite) reservationFail(403, 'Property operator access is required.')
+  if (write && !canWrite)
+    reservationFail(403, 'Property operator access is required.')
   return { uid, appId, propertyId, db, canWrite }
 }

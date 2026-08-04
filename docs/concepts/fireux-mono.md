@@ -1,9 +1,11 @@
 # FireUX Mono concept map
+
 Updated: 2026-07-26
 Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
+
 Explain the repo as a workspace so agents do not rediscover the skeleton.
 
 ## Scope
@@ -84,9 +86,9 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
 - Add the app to `scripts/_lib/app-registry.mjs` with its unique port, workspace, identity, role, consoles, and focused smoke routes.
 - Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root dev/kill scripts, `.vscode/tasks.json`, or `.vscode/launch.json`.
 - Add the app to the app list in `tools/vscode-fireux-toolbar/extension.js` so VS Code exposes the standard start control and running spinner.
-- Declare one `brand.owner` before adding artwork. Materialize Core/ecosystem
-  projections from their canonical source; an App-owned family must declare
-  `approved` or `provisional` and may never borrow another App's export.
+- Complete the standard `/img/app/*` artwork family before saving. Materialize
+  named Core/ecosystem projections from their canonical source and never
+  borrow another App's export.
 - A new app is not complete until its root dev command, kill command, VS Code task/launch entry, toolbar spinner, and focused smoke route exist.
 - Run `pnpm guard` after the workspace sync.
 

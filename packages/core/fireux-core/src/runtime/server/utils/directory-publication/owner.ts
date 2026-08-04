@@ -10,7 +10,7 @@ import {
   type DirectoryPublicationOutboxV1,
   type DirectoryPublicationSourceV1,
   type DirectoryPublicationV1,
-} from '../../../models/core/supporting/directory-publication'
+} from '../../../models/operations/directory-publication'
 import {
   buildDirectoryPublicationEvent as buildDirectoryPublication,
   directoryPublicationBuilderPrimitives,

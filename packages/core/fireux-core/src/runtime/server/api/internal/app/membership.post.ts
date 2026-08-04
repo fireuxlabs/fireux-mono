@@ -2,7 +2,7 @@
 
 import { useRuntimeConfig } from '#imports'
 import { createError, defineEventHandler, readBody } from 'h3'
-import type { AppMembershipMutationInput } from '../../../../models/core/supporting/app-membership'
+import type { AppMembershipMutationInput } from '../../../../models/operations/app-membership'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import { mutateRuntimeAppMembership } from '../../../utils/app-membership/mutate'
 

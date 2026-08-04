@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useFetch } from '#imports'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { MenuLoadFailure } from '../../../composables/fireux/menu/useMenu'
 import { useMenuThemeSurface } from '../../../composables/fireux/menu/useMenuThemeSurface'
 

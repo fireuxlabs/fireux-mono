@@ -1,7 +1,7 @@
 import type {
   Conversation,
   ConversationStatus,
-} from '../../../../../../models/core/conversation.model'
+} from '../../../../../../models/operations/conversation.model'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useConversationPaths } from '../utils/paths/useConversationPaths'
 

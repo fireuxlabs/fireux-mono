@@ -5,7 +5,7 @@ declare module 'fireux-core/runtime/models/core/user.model' {
     canPost?: boolean
   }
 
-  interface UserAppExtensions {
+  interface AppUserExtensions {
     canPost?: boolean
   }
 }

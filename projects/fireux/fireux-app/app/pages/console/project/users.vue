@@ -101,7 +101,7 @@ import { computed, useAsyncData } from '#imports'
 import type {
   ProjectUserJoinFeedItem,
   ProjectUserJoinFeedResponse,
-} from 'fireux-core/runtime/models/system/project-user-join.model'
+} from 'fireux-core/runtime/models/operations/project-user-join.model'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 
 const { currentUser, hasAuthState } = useAuth()

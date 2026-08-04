@@ -10,7 +10,7 @@ import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/v
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAssets } from 'fireux-core/runtime/composables/fireux/app/useAssets'
 import type { Firestore } from 'firebase/firestore'
-import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
+import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 
 function normalizeString(value: unknown) {

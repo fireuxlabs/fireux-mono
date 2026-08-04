@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-21 22:35 CEST — Console alignment — Property: atomically bind canonical root, App access, and UserApp target.
+// Concurrent edit — 2026-07-21 22:35 CEST — Console alignment — Property: atomically bind canonical root and App access.
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: reject coerced Property support and membership ids.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
@@ -6,9 +6,9 @@ import { createError, type H3Event } from 'h3'
 import {
   resolveFireuxAppScopeStateForRole,
   type FireuxAppScopeState,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access.ts'
+} from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -31,7 +31,6 @@ type RuntimePolicy = {
   developerId: string
   appScopeState: Exclude<FireuxAppScopeState, 'root_only'>
   canCreate: boolean
-  targetIds: string[]
 }
 
 type Actor = RuntimePolicy & {
@@ -43,7 +42,7 @@ type Actor = RuntimePolicy & {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -64,13 +63,13 @@ function request(value: unknown) {
     'identity',
     'status',
   ])
-  const unsupported = Object.keys(source).find(key => !supported.has(key))
+  const unsupported = Object.keys(source).find((key) => !supported.has(key))
   if (unsupported) {
     fail(400, `Property onboarding contains unsupported field: ${unsupported}.`)
   }
 
   const propertyId = text(source.property_id)
-  if (propertyId && Object.keys(source).some(key => key !== 'property_id')) {
+  if (propertyId && Object.keys(source).some((key) => key !== 'property_id')) {
     fail(400, 'Existing Property attachment accepts only property_id.')
   }
   return source
@@ -85,20 +84,16 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   if (!appScopeState) fail(403, 'This App cannot own a Property console.')
 
   const propertyConfig = record(record(fireux.consoleConfig).property)
-  const canCreate = typeof propertyConfig.canCreate === 'boolean'
-    ? propertyConfig.canCreate
-    : appRole !== 'tenant'
-  const targetIds = Array.isArray(propertyConfig.targetIds)
-    ? Array.from(new Set(propertyConfig.targetIds.map(text).filter(Boolean)))
-    : []
-
+  const canCreate =
+    typeof propertyConfig.canCreate === 'boolean'
+      ? propertyConfig.canCreate
+      : appRole !== 'tenant'
   return {
     appId,
     appRole,
     developerId,
     appScopeState,
     canCreate,
-    targetIds,
   }
 }
 
@@ -110,21 +105,14 @@ function requireMemberRole(exists: boolean, value: unknown): MemberRole {
   return role
 }
 
-function assertRuntimeTarget(current: RuntimePolicy, propertyId: string) {
-  if (current.appRole !== 'tenant') return
-  if (!current.targetIds.includes(propertyId)) {
-    fail(403, 'This Property is not a configured target for the tenant App.')
-  }
-}
-
 function boundedIds(value: unknown, max: number, label: string) {
   if (!Array.isArray(value) || value.length > max) {
     fail(409, `${label} has an invalid stored shape.`)
   }
-  if (value.some(id => typeof id !== 'string')) {
+  if (value.some((id) => typeof id !== 'string')) {
     fail(409, `${label} has invalid stored ids.`)
   }
-  const ids = (value as string[]).map(id => id.trim())
+  const ids = (value as string[]).map((id) => id.trim())
   if (
     ids.some((id, index) => !id || id !== value[index]) ||
     new Set(ids).size !== ids.length
@@ -147,19 +135,6 @@ function readSupport(value: Record<string, unknown> | null) {
   }
 }
 
-function assertMembershipTargets(value: Record<string, unknown>, propertyId: string) {
-  const targets = record(value.console_targets)
-  if (targets.property_ids === undefined) return
-  const ids = boundedIds(
-    targets.property_ids,
-    50,
-    'UserApp Property console targets'
-  )
-  if (!ids.includes(propertyId) && ids.length >= 50) {
-    fail(409, 'The UserApp Property console target list is full.')
-  }
-}
-
 async function actor(event: H3Event): Promise<Actor> {
   const { uid } = await requireFirebaseBearerUser(event)
   const policy = runtimePolicy(event)
@@ -169,7 +144,7 @@ async function actor(event: H3Event): Promise<Actor> {
     uid,
     db,
     membershipRef: db.doc(
-      `apps/${policy.appId}/${UserAppStorage.collection}/${uid}`
+      `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
     ),
   }
 }
@@ -209,7 +184,6 @@ export async function completePropertyOnboarding(
   const propertyId = requestedPropertyId
     ? requireFirestoreDocumentId(requestedPropertyId, 'Property id')
     : plan!.id
-  assertRuntimeTarget(current, propertyId)
 
   const rootRef = current.db
     .collection(PropertyStorage.rootCollection)
@@ -218,25 +192,20 @@ export async function completePropertyOnboarding(
     `apps/${current.appId}/${PropertyStorage.appSupportCollection}/${propertyId}`
   )
   const operatorQuery = current.db
-    .collection(
-      `apps/${current.appId}/${PropertyStorage.appSupportCollection}`
-    )
+    .collection(`apps/${current.appId}/${PropertyStorage.appSupportCollection}`)
     .where('operator_ids', 'array-contains', current.uid)
     .limit(2)
 
-  return current.db.runTransaction(async transaction => {
+  return current.db.runTransaction(async (transaction) => {
     const membership = await transaction.get(current.membershipRef)
     const role = requireMemberRole(membership.exists, membership.get('role'))
     const membershipData = membership.data() || {}
-    assertMembershipTargets(membershipData, propertyId)
-
     const [root, support, currentOperatorSupports] = await Promise.all([
       transaction.get(rootRef),
       transaction.get(supportRef),
-      hasUserAppPremiumAccess(membershipData, {
+      hasAppUserPremiumAccess(membershipData, {
         isConfiguredDeveloper:
-          Boolean(current.developerId) &&
-          current.uid === current.developerId,
+          Boolean(current.developerId) && current.uid === current.developerId,
       })
         ? Promise.resolve(null)
         : transaction.get(operatorQuery),
@@ -244,7 +213,7 @@ export async function completePropertyOnboarding(
 
     if (currentOperatorSupports) {
       const otherProperty = currentOperatorSupports.docs.find(
-        document => document.id !== propertyId
+        (document) => document.id !== propertyId
       )
       if (otherProperty) {
         fail(
@@ -281,7 +250,8 @@ export async function completePropertyOnboarding(
 
     const supportData = support.exists ? support.data() || {} : null
     const supportAuthority = readSupport(supportData)
-    const isOperator = supportAuthority?.operatorIds.includes(current.uid) === true
+    const isOperator =
+      supportAuthority?.operatorIds.includes(current.uid) === true
     const creatingRoot = !root.exists
     const creatingSupport = !support.exists
     const connectingRoot = canonicalRoot?.app_scope_state === 'root_only'
@@ -294,7 +264,11 @@ export async function completePropertyOnboarding(
           : 'Property creation is disabled for this App.'
       )
     }
-    if (!creatingRoot && (creatingSupport || connectingRoot) && role !== 'admin') {
+    if (
+      !creatingRoot &&
+      (creatingSupport || connectingRoot) &&
+      role !== 'admin'
+    ) {
       fail(403, 'An App admin must connect this Property.')
     }
     if (!creatingSupport && role !== 'admin' && !isOperator) {
@@ -332,10 +306,8 @@ export async function completePropertyOnboarding(
       transaction.create(rootRef, payload)
     } else if (
       canonicalRoot &&
-      (
-        canonicalRoot.app_scope_state !== current.appScopeState ||
-        canonicalRoot.app_scope_app_id !== current.appId
-      )
+      (canonicalRoot.app_scope_state !== current.appScopeState ||
+        canonicalRoot.app_scope_app_id !== current.appId)
     ) {
       transaction.update(rootRef, {
         app_scope_state: current.appScopeState,
@@ -362,7 +334,6 @@ export async function completePropertyOnboarding(
 
     transaction.update(current.membershipRef, {
       console_enabled: true,
-      'console_targets.property_ids': FieldValue.arrayUnion(propertyId),
       updated: serverAuditStamp({ by: current.uid }),
     })
 

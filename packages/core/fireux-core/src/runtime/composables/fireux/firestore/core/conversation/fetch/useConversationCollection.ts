@@ -3,7 +3,7 @@ import type {
   Conversation,
   ConversationKind,
   ConversationStatus,
-} from '../../../../../../models/core/conversation.model'
+} from '../../../../../../models/operations/conversation.model'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { useConversationPaths } from '../utils/paths/useConversationPaths'

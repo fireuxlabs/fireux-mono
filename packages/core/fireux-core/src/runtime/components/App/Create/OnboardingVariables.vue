@@ -27,7 +27,9 @@
         </UBadge>
         <UBadge :color="adminBadgeColor" variant="soft">
           Explicit Admin auth:
-          {{ envData.server?.adminAuth?.configured ? 'detected' : 'ADC unprobed' }}
+          {{
+            envData.server?.adminAuth?.configured ? 'detected' : 'ADC unprobed'
+          }}
         </UBadge>
         <UBadge :color="brandBadgeColor" variant="soft">
           Brand assets: {{ summaryBrand }}
@@ -78,7 +80,10 @@
           >
             {{ proceedPending ? 'Initializing...' : 'Continue' }}
           </button>
-          <p v-if="proceedDisabled && !proceedPending" class="mt-2 text-xs text-muted">
+          <p
+            v-if="proceedDisabled && !proceedPending"
+            class="mt-2 text-xs text-muted"
+          >
             Finish the required checks above to continue.
           </p>
         </div>
@@ -154,11 +159,9 @@
           </div>
         </div>
         <p class="text-sm text-muted">
-          Declare the App's brand owner in <code>defineFireuxConfig</code>
-          before onboarding. Materialize Core or ecosystem projections from
-          that canonical source. An App-owned family belongs in
-          <code>/public/img/app</code> and must be declared approved or
-          provisional; never loan another App's export.
+          Complete the App's standard <code>/public/img/app</code> asset family
+          before onboarding. Every App uses the same runtime paths; never loan
+          another App's export to fill a missing asset.
         </p>
       </UCard>
 
@@ -191,7 +194,10 @@
         title="Next steps"
       >
         <ol class="list-decimal space-y-1 pl-5 text-sm">
-          <li>Update the missing configuration in ecosystem config, app config, or local <code>.env</code>.</li>
+          <li>
+            Update the missing configuration in ecosystem config, app config, or
+            local <code>.env</code>.
+          </li>
           <li>Restart the development server: <code>pnpm dev</code>.</li>
           <li>Refresh this page to re-run the check.</li>
         </ol>
@@ -275,8 +281,7 @@ const explicitAdminConfigured = computed(
   () => envData.value?.server?.adminAuth?.configured ?? false
 )
 const overallValid = computed(
-  () =>
-    !hasRequiredIssues.value && !hasBrandIssues.value
+  () => !hasRequiredIssues.value && !hasBrandIssues.value
 )
 
 const status = computed(() => {
@@ -349,15 +354,13 @@ async function copyRequiredStatus() {
 const summaryRequired = computed(
   () => envData.value?.summary?.required ?? '0/0'
 )
-const summaryOptionalClient = computed(
-  () => {
-    const summary = envData.value?.summary as
-      | (EnvCheckResponse['summary'] & { optional?: string })
-      | undefined
+const summaryOptionalClient = computed(() => {
+  const summary = envData.value?.summary as
+    | (EnvCheckResponse['summary'] & { optional?: string })
+    | undefined
 
-    return summary?.optionalClient ?? summary?.optional ?? '0/0'
-  }
-)
+  return summary?.optionalClient ?? summary?.optional ?? '0/0'
+})
 const summaryBrand = computed(
   () => envData.value?.summary?.brandAssets ?? '0/0'
 )

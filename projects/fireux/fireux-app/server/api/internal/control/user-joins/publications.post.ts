@@ -8,7 +8,7 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { ProjectUserJoinStorage } from 'fireux-core/runtime/models/system/project-user-join.model.ts'
+import { ProjectUserJoinStorage } from 'fireux-core/runtime/models/operations/project-user-join.model.ts'
 import { requireBearerToken } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import {
   ServiceAccountOidcError,

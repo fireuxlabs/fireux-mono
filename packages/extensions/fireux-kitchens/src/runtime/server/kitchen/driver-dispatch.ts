@@ -5,7 +5,7 @@ import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import {
-  UserAppStorage,
+  AppUserStorage,
   UserStorage,
 } from 'fireux-core/runtime/models/core/user.model.ts'
 import {
@@ -109,7 +109,7 @@ async function requireDriver(
   const db = getRuntimeFirestore(context.databaseId)
   const appRef = db.collection(AppStorage.collection).doc(context.appId)
   const membershipRef = appRef
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(context.actorUid)
   const driverRef = appRef
     .collection(AppDriverStorage.collection)
@@ -224,7 +224,7 @@ export async function watchDriverDispatch(
 
   return db.runTransaction(async (transaction) => {
     const membershipRef = appRef
-      .collection(UserAppStorage.collection)
+      .collection(AppUserStorage.collection)
       .doc(context.actorUid)
     const membershipSnapshot = await transaction.get(membershipRef)
     const driverSnapshot = await transaction.get(driverRef)

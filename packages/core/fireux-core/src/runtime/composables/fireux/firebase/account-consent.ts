@@ -1,4 +1,4 @@
-import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/core/supporting/user-account-provisioning'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/operations/user-account-provisioning'
 
 const STORAGE_KEY = 'fireux_pending_account_consent'
 const MAX_AGE_MS = 60 * 60 * 1000

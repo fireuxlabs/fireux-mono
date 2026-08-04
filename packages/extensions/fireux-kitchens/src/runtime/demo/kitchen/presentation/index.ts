@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-22 12:40 CEST — Demo World correction: feature Garden Room and resolve Kitchen-owned payments into presentation only.
 // Concurrent edit — 2026-07-22 14:12 CEST — Demo surface selectors: derive explicit Menu, Kiosk and Service presentation exports.
 // Concurrent edit — 2026-07-22 13:11 CEST — Demo Kitchen identity pass: feature Misebox Restaurant as the default presentation world.
-import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
+import { formatCurrencyAmount } from 'fireux-core/runtime/models/utils/money.model'
 import type {
   MenuManifest,
   MenuManifestItem,

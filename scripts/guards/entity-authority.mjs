@@ -2,7 +2,7 @@
 // last_used: 2026-07-22
 // usage_note: run through pnpm guard; locks App/Ecosystem/Project authority boundaries.
 // Concurrent edit — 2026-07-20 20:46 CEST — Repo Efficiency Pass 3 of 6: forbid generic cross-domain drift mutation tooling.
-// Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: lock Project access to UserApp admin membership.
+// Concurrent edit — 2026-07-20 16:22 CEST — Console Spine pass: lock Project access to AppUser admin membership.
 // Concurrent edit — 2026-07-20 20:22 CEST — Repo Efficiency Pass 2 of 6: lock exact projected profile types, transport, and self-only mutations.
 // Concurrent edit — 2026-07-22 12:39 CEST — Shared Job spine alignment: lock explicit owner, Place, compensation, and exact-root authority.
 // Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: lock exact stored ids and fail-closed public runtime scope.
@@ -44,13 +44,13 @@ const PROJECT_MODEL =
 const APP_MODEL =
   'packages/core/fireux-core/src/runtime/models/core/app.model.ts'
 const ECOSYSTEM_MODEL =
-  'packages/core/fireux-core/src/runtime/models/system/ecosystem.model.ts'
+  'packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts'
 const USER_MODEL =
   'packages/core/fireux-core/src/runtime/models/core/user.model.ts'
 const DIRECTORY_MODEL =
-  'packages/core/fireux-core/src/runtime/models/core/supporting/directory.ts'
+  'packages/core/fireux-core/src/runtime/models/utils/directory.ts'
 const PROFILE_PROVISIONING_MODEL =
-  'packages/core/fireux-core/src/runtime/models/core/supporting/profile-provisioning.ts'
+  'packages/core/fireux-core/src/runtime/models/operations/profile-provisioning.ts'
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const placeModel = read(
@@ -488,7 +488,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(projectCollection, /\/api\/internal\/control\/projects/)
   assert.match(projectControlApi, /requireFirebaseBearerUser/)
-  assert.match(projectControlApi, /UserAppStorage\.collection/)
+  assert.match(projectControlApi, /AppUserStorage\.collection/)
   assert.match(projectControlApi, /membershipSnapshot/)
   assert.match(projectControlApi, /membership\.role/)
   assert.match(projectControlApi, /===\s*['"]admin['"]/)

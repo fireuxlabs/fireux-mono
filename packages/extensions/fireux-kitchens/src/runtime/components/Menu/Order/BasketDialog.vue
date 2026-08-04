@@ -91,7 +91,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { formatCurrencyAmount } from 'fireux-core/runtime/models/core/money.model'
+import { formatCurrencyAmount } from 'fireux-core/runtime/models/utils/money.model'
 import type { MenuOrderBasketLine } from '../../../composables/fireux/menu/order/useMenuOrderBasket'
 
 const props = withDefaults(

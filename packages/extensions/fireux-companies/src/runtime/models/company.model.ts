@@ -1,6 +1,6 @@
 // FILE: packages/extensions/fireux-companies/src/runtime/models/company.model.ts
 
-import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**

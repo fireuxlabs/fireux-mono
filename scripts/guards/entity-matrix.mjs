@@ -17,7 +17,7 @@ const MODEL_ROOTS = [
 ]
 
 const ENTITY_MODEL =
-  'packages/core/fireux-core/src/runtime/models/core/entity.model.ts'
+  'packages/core/fireux-core/src/runtime/models/utils/entity.model.ts'
 
 const CLASSIFICATION_TYPES = {
   kind: 'FireuxEntityKind',

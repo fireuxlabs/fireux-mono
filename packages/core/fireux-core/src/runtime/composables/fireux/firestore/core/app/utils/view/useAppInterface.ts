@@ -4,7 +4,7 @@ import {
   AppStorage,
   type App,
 } from '../../../../../../../models/core/app.model'
-import type { AppSocialLinks } from '../../../../../../../models/core/supporting/app'
+import type { AppSocialLinks } from '../../../../../../../models/utils/app'
 import { useResolvedColorMode } from '../../../../../app/useColorMode'
 import { resolveAppMediaForView } from '../appMedia'
 

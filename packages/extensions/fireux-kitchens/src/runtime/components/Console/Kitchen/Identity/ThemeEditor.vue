@@ -164,7 +164,7 @@
 
 <script setup lang="ts">
 import { useHead } from '#imports'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import { computed } from 'vue'
 import {
   menuThemeFontFromId,

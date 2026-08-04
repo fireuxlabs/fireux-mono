@@ -6,7 +6,7 @@ import { useEcosystemPublish } from './mutations/useEcosystemPublish'
 import { useEcosystemSeo } from './utils/useEcosystemSeo'
 import { useEcosystemInterface } from './utils/view/useEcosystemInterface'
 
-export type { Ecosystem } from '../../../../../models/system/ecosystem.model'
+export type { Ecosystem } from '../../../../../models/core/ecosystem.model'
 
 /**
  * FireUX stack family: Core/system root context.

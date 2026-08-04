@@ -1,4 +1,4 @@
-import type { AppSocialLinks } from '../../../../../../../models/core/supporting/app'
+import type { AppSocialLinks } from '../../../../../../../models/utils/app'
 
 export const createEmptyAppSocialLinks = (): AppSocialLinks => ({
   website: '',

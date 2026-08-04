@@ -82,7 +82,7 @@ Map how route pages should be built and where consensus is still forming.
 - Public User and owner-private account outcomes remain independent on the
   route. Only canonical public User identity is editable there: photo, display
   name, handle, and the optional 280-character bio. The private section is a
-  read-only account summary; Settings owns session actions. UserApp membership
+  read-only account summary; Settings owns session actions. AppUser membership
   and entitlements are not presented as editable profile fields.
 - The signed-in Profile header may show the derived highest current-App access
   badge. It never stores or publishes that App-private authority on User.

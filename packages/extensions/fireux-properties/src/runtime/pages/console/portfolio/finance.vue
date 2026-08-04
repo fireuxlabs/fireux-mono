@@ -30,8 +30,6 @@ definePageMeta({
     label: 'Financial Signals',
     icon: 'i-lucide-chart-line',
     position: 'top',
-    hidden: true,
-    parked: true,
     order: 25,
     desktop: true,
     mobile: true,

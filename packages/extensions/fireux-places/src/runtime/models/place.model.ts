@@ -3,9 +3,9 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: make shared venue colours optional canonical Place truth.
 // Concurrent edit — 2026-07-28 — Entity canon: declare Place as the independent shared location root.
 
-import { defineFireuxEntity } from 'fireux-core/runtime/models/core/entity.model.ts'
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**

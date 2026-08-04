@@ -1,7 +1,7 @@
 import { useHead } from '#imports'
 import { computed, onMounted, onUnmounted, ref, type MaybeRefOrGetter } from 'vue'
 import { toValue } from 'vue'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import {
   resolveMenuPageStyle,
   resolveMenuFont,

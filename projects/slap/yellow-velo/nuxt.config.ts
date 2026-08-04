@@ -8,20 +8,10 @@ export default defineFireuxConfig({
   id: 'yellow-velo',
   name: 'Yellow Velo',
   shortName: 'Yellow Velo',
-  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'slap',
   role: 'tenant',
   seo: {
-    staticPaths: [
-      '/',
-      '/products',
-      '/blog',
-    ],
-    noindexPaths: [
-      '/console',
-      '/console/**',
-      '/admin',
-      '/admin/**',
-    ],
+    staticPaths: ['/', '/products', '/blog'],
+    noindexPaths: ['/console', '/console/**', '/admin', '/admin/**'],
   },
 })

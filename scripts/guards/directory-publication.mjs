@@ -40,7 +40,7 @@ const VALIDATE_PATH =
 const VALIDATION_PRIMITIVES_PATH =
   'packages/core/fireux-core/src/runtime/server/utils/directory-publication/validation-primitives.ts'
 const MODEL_PATH =
-  'packages/core/fireux-core/src/runtime/models/core/supporting/directory-publication.ts'
+  'packages/core/fireux-core/src/runtime/models/operations/directory-publication.ts'
 const REDUCE_PATH =
   'packages/core/fireux-core/src/runtime/server/utils/directory-publication/reduce.ts'
 const FIRESTORE_PATH =

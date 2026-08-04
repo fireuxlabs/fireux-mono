@@ -659,13 +659,6 @@ function buildSecurityTests(databaseId) {
     is_premium: false,
     console_enabled: false,
     profiles: ['agent', 'professional'],
-    console_targets: {
-      kitchen_ids: [],
-      supplier_ids: [],
-      property_ids: [],
-      portfolio_ids: [],
-      blank_ids: [],
-    },
     created: created('migration-admin', appId),
     updated: updated('migration-admin'),
   })
@@ -676,13 +669,6 @@ function buildSecurityTests(databaseId) {
     onboarding_status: 'pending',
     created: created('migration-admin', 'cleanbox-app'),
     updated: updated('migration-admin'),
-  }
-  const partialTargetMembership = {
-    ...sparseMembership,
-    console_enabled: true,
-    console_targets: {
-      property_ids: ['security-rules-property'],
-    },
   }
   const overlay = {
     created: created(ownerId),
@@ -816,18 +802,15 @@ function buildSecurityTests(databaseId) {
     create('client Ecosystem create denied', 'DENY', databaseId, 'ecosystems/cleanbox', adminId, {}, writeTime),
     update('client Ecosystem update denied', 'DENY', databaseId, 'ecosystems/cleanbox', adminId, {}, {}, updateTime),
 
-    read('owner UserApp get', 'ALLOW', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership()),
-    read('UserApp PII denied to stranger', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, strangerId, membership()),
-    list('App admin bounded canonical UserApp list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, membership()),
-    list('App admin bounded sparse UserApp list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, sparseMembership),
-    list('App admin bounded partial-target UserApp list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, partialTargetMembership),
-    list('App admin unbounded UserApp list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 101 }, membership()),
-    list('App admin malformed UserApp list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...membership(), secret: true }),
-    list('App admin invalid UserApp onboarding status denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, onboarding_status: 'forged' }),
-    list('App admin unknown UserApp Console target denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, console_targets: { forged_ids: [] } }),
-    list('App admin malformed UserApp Console target denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, console_targets: { property_ids: 'not-a-list' } }),
-    read('Richies UserApp isolated from Werkbox admin', 'DENY', databaseId, `apps/richies-reinigung/users/${ownerId}`, adminId, membership('user', 'richies-reinigung'), adminMocks),
-    update('client UserApp privilege update denied', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership(), { ...membership(), role: 'admin' }, updateTime),
+    read('owner AppUser get', 'ALLOW', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership()),
+    read('AppUser PII denied to stranger', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, strangerId, membership()),
+    list('App admin bounded canonical AppUser list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, membership()),
+    list('App admin bounded sparse AppUser list', 'ALLOW', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, sparseMembership),
+    list('App admin unbounded AppUser list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 101 }, membership()),
+    list('App admin malformed AppUser list denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...membership(), secret: true }),
+    list('App admin invalid AppUser onboarding status denied', 'DENY', databaseId, 'apps/cleanbox-app/users', adminId, adminMocks, { limit: 100 }, { ...sparseMembership, onboarding_status: 'forged' }),
+    read('Richies AppUser isolated from Werkbox admin', 'DENY', databaseId, `apps/richies-reinigung/users/${ownerId}`, adminId, membership('user', 'richies-reinigung'), adminMocks),
+    update('client AppUser privilege update denied', 'DENY', databaseId, `apps/cleanbox-app/users/${ownerId}`, ownerId, membership(), { ...membership(), role: 'admin' }, updateTime),
 
     list('App admin bounded canonical join-request list', 'ALLOW', databaseId, 'apps/cleanbox-app/join-requests', adminId, adminMocks, { limit: 100 }, joinRequest),
     list('App admin unbounded join-request list denied', 'DENY', databaseId, 'apps/cleanbox-app/join-requests', adminId, adminMocks, { limit: 101 }, joinRequest),

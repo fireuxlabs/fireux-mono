@@ -6,7 +6,6 @@
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
 import { kitchenOperations } from 'fireux-kitchens/runtime/content/operations'
 import { miseboxSolutions } from 'fireux-misebox/runtime/content/solutions'
-import { supplierOperations } from 'fireux-suppliers/runtime/content/operations'
 import { sourceMeta } from './content/meta/source'
 
 const aboutHero = sourceMeta.about.hero as {
@@ -138,7 +137,6 @@ export const metaContent = defineFireuxMeta({
   },
   operations: [
     ...kitchenOperations,
-    ...supplierOperations,
   ],
   solutions: miseboxSolutions,
   entities: appMeta.entities.map((entity) => ({

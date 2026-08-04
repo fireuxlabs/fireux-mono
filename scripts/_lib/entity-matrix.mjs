@@ -29,7 +29,7 @@ export const entityMatrix = [
     id: 'system/ecosystem',
     state: 'declared',
     owner: 'fireux-core',
-    source: 'packages/core/fireux-core/src/runtime/models/system/ecosystem.model.ts',
+    source: 'packages/core/fireux-core/src/runtime/models/core/ecosystem.model.ts',
     export: 'EcosystemEntity',
     classification: {
       kind: 'entity',

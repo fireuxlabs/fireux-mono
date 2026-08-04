@@ -6,7 +6,7 @@ import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { requireUid } from '../../../utils/useEnsureCommon'
 import {
   createCoreUserDocument,
-  createUserAppMembership,
+  createAppUserMembership,
 } from '../utils/createHelpers'
 
 function looksLikeEmail(value: string): boolean {
@@ -129,7 +129,7 @@ export function useUserCreate() {
     }
 
     const membership = shouldCreateMembership
-      ? await createUserAppMembership(appId, uid, 'user')
+      ? await createAppUserMembership(appId, uid, 'user')
       : { created: false }
 
     const event = membershipExists || membership.created

@@ -4,7 +4,7 @@ import type {
   DirectoryProjectionV1,
   DirectoryPublicationV1,
   DirectorySourceAuthorizationV1,
-} from '../../../models/core/supporting/directory-publication'
+} from '../../../models/operations/directory-publication'
 import { directoryPublicationValidationPrimitives } from './validation-primitives'
 
 const {

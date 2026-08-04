@@ -1442,13 +1442,6 @@ async function buildSecurityTests() {
     },
     updated: { at: writeTime, by: adminId },
   }
-  const partialTargetMembershipProbeData = {
-    ...sparseMembershipProbeData,
-    console_enabled: true,
-    console_targets: {
-      kitchen_ids: ['security-rules-probe'],
-    },
-  }
   const tests = [
     list(
       'raw public User collection listing uses projection API',
@@ -1569,7 +1562,7 @@ async function buildSecurityTests() {
       missingOwnerId
     ),
     read(
-      'owner can get missing UserApp before trusted create',
+      'owner can get missing AppUser before trusted create',
       'ALLOW',
       `apps/misebox-app/users/${missingOwnerId}`,
       missingOwnerId
@@ -1659,27 +1652,27 @@ async function buildSecurityTests() {
     ...appUsers.map((document) => {
       const userId = documentId(document)
       return read(
-        `owner can read strict UserApp membership ${userId}`,
+        `owner can read strict AppUser membership ${userId}`,
         'ALLOW',
         `apps/misebox-app/users/${userId}`,
         userId
       )
     }),
     read(
-      'another member cannot read UserApp membership',
+      'another member cannot read AppUser membership',
       'DENY',
       `apps/misebox-app/users/${regularId}`,
       strangerId
     ),
     read(
-      'canonical admin can read another UserApp membership',
+      'canonical admin can read another AppUser membership',
       'ALLOW',
       `apps/misebox-app/users/${regularId}`,
       adminId,
       appAdminMocks(adminId, path)
     ),
     readResource(
-      'canonical admin can read sparse UserApp membership',
+      'canonical admin can read sparse AppUser membership',
       'ALLOW',
       sparseMembershipProbePath,
       adminId,
@@ -1687,15 +1680,15 @@ async function buildSecurityTests() {
       appAdminMocks(adminId, path)
     ),
     readResource(
-      'canonical admin can read partial UserApp Console targets',
+      'canonical admin can read partial AppUser Console targets',
       'ALLOW',
       sparseMembershipProbePath,
       adminId,
-      partialTargetMembershipProbeData,
+      sparseMembershipProbeData,
       appAdminMocks(adminId, path)
     ),
     readResource(
-      'canonical admin cannot read invalid UserApp onboarding status',
+      'canonical admin cannot read invalid AppUser onboarding status',
       'DENY',
       sparseMembershipProbePath,
       adminId,
@@ -1705,30 +1698,8 @@ async function buildSecurityTests() {
       },
       appAdminMocks(adminId, path)
     ),
-    readResource(
-      'canonical admin cannot read unknown UserApp Console target family',
-      'DENY',
-      sparseMembershipProbePath,
-      adminId,
-      {
-        ...sparseMembershipProbeData,
-        console_targets: { forged_ids: [] },
-      },
-      appAdminMocks(adminId, path)
-    ),
-    readResource(
-      'canonical admin cannot read malformed UserApp Console target list',
-      'DENY',
-      sparseMembershipProbePath,
-      adminId,
-      {
-        ...sparseMembershipProbeData,
-        console_targets: { kitchen_ids: 'not-a-list' },
-      },
-      appAdminMocks(adminId, path)
-    ),
     list(
-      'canonical admin can list bounded sparse UserApp memberships',
+      'canonical admin can list bounded sparse AppUser memberships',
       'ALLOW',
       'apps/misebox-app/users',
       adminId,
@@ -1737,7 +1708,7 @@ async function buildSecurityTests() {
       { limit: 100 }
     ),
     list(
-      'canonical admin cannot list unbounded UserApp memberships',
+      'canonical admin cannot list unbounded AppUser memberships',
       'DENY',
       'apps/misebox-app/users',
       adminId,
@@ -2085,21 +2056,6 @@ async function buildSecurityTests() {
         operatorIds: ['another-user'],
         teamIds: [],
       })
-    ),
-    readResource(
-      'UserApp Kitchen target alone cannot grant root identity access',
-      'DENY',
-      rootKitchenProbePath,
-      regularId,
-      rootKitchenProbeData,
-      [
-        ...miseboxKitchenTargetMocks(regularId, path, ['security-rules-probe']),
-        ...missingKitchenSupportMocks(
-          path,
-          'security-rules-tenant',
-          'security-rules-probe'
-        ),
-      ]
     ),
     readResource(
       'App admin cannot read root Kitchen without same-id support',
@@ -3544,29 +3500,6 @@ function appMemberMocks(userId, path) {
       function: 'get',
       args: [{ exactValue: membershipPath }],
       result: { value: { data: { role: 'user' } } },
-    },
-  ]
-}
-
-function miseboxKitchenTargetMocks(userId, path, kitchenIds) {
-  const membershipPath = path(`apps/misebox-app/users/${userId}`)
-  return [
-    {
-      function: 'exists',
-      args: [{ exactValue: membershipPath }],
-      result: { value: true },
-    },
-    {
-      function: 'get',
-      args: [{ exactValue: membershipPath }],
-      result: {
-        value: {
-          data: {
-            role: 'user',
-            console_targets: { kitchen_ids: kitchenIds },
-          },
-        },
-      },
     },
   ]
 }

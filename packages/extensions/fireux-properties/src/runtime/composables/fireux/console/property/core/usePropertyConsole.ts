@@ -51,7 +51,10 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
       : (options.filter ?? {})
 
     if (consoleRoot.source.value === 'demo') return explicitFilter
-    return consoleTargets.filter(explicitFilter)
+    return {
+      ...explicitFilter,
+      operatorId: userId.value,
+    }
   })
   const liveCollection = usePropertyCollection({
     source: consoleRoot.source,

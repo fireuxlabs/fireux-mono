@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-19 17:47 CEST — Directory Publication Scaffold: verify fixed-audience Google publisher identity.
 
-import type { DirectoryPublisherPrincipalV1 } from '../../../models/core/supporting/directory-publication'
+import type { DirectoryPublisherPrincipalV1 } from '../../../models/operations/directory-publication'
 import {
   ServiceAccountOidcError,
   verifyServiceAccountOidc,

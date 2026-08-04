@@ -12,7 +12,7 @@ import {
   type ConversationPreferredChannel,
   type ConversationRelatedEntity,
   type ConversationStatus,
-} from '../../../../../../models/core/conversation.model'
+} from '../../../../../../models/operations/conversation.model'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useConversationPaths } from '../utils/paths/useConversationPaths'
 

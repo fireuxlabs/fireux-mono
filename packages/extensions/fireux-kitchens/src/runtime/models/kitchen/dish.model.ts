@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-22 02:08 CEST — Dish media ownership: name the food-owned field image, independent of its Storage transport.
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**

@@ -21,7 +21,7 @@ import {
   UserPrivateStorage,
   UserStorage,
 } from '../../../../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../../../../models/core/supporting/user-avatar'
+import { resolveUserAvatarSource } from '../../../../../../models/utils/user-avatar'
 import type { CurrentAppMembershipDto } from '../../../../../../server/utils/public-projection/public-dto.types'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/useCurrentAppContext'

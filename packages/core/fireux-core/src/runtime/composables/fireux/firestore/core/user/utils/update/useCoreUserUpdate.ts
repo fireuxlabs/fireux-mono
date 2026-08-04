@@ -6,7 +6,7 @@
 import { readRuntimeIdentityFirestoreDatabaseId } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import type { User } from '../../../../../../../models/core/user.model'
 import { UserStorage } from '../../../../../../../models/core/user.model'
-import { USER_ECOSYSTEM_AVATAR_SRC } from '../../../../../../../models/core/supporting/user-avatar'
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../../../../../../models/utils/user-avatar'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'

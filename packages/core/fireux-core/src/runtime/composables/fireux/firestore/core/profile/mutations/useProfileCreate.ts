@@ -1,9 +1,9 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: bind browser-created profiles to the authenticated User id.
-// Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: keep overlays delta-only and mirror every app-backed profile to UserApp.
+// Concurrent edit — 2026-07-20 13:19 CEST — Profile overlay follow-up: keep overlays delta-only and mirror every app-backed profile to AppUser.
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: create and repair domain-only root profile documents.
 // Concurrent edit — 2026-07-20 18:05 CEST — Repo Efficiency Pass 2 of 6: expose self-provisioning without a caller-supplied User target.
 import type { ProfileConfig } from '../../../../../../models/core/profile.model'
-import type { ProfileProvisionResult } from '../../../../../../models/core/supporting/profile-provisioning'
+import type { ProfileProvisionResult } from '../../../../../../models/operations/profile-provisioning'
 import { requireUid } from '../../../utils/useEnsureCommon'
 
 function responseMessage(payload: unknown, fallback: string) {

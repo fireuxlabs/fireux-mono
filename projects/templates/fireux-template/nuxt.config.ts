@@ -8,6 +8,5 @@ export default defineFireuxConfig({
   id: 'fireux-template',
   name: 'FireUX Template',
   shortName: 'Template',
-  brand: { owner: 'core' },
   role: 'tenant',
 })

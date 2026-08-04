@@ -1,0 +1,8 @@
+// @fireux-ecosystem-rules-fragment fireux/default-deny
+// @fireux-core-rules open
+    // This ecosystem owns its deployable Rules surface. Domain policies may
+    // replace this fallback only through reviewed ecosystem-local fragments.
+    match /{document=**} {
+      allow read, write: if request.auth != null && false;
+    }
+// @fireux-core-rules close

@@ -25,9 +25,7 @@ import {
   MENU_SURFACE_COPY_VERSION,
   resolveMenuBrowseSurfaceCopy,
 } from '../../packages/extensions/fireux-kitchens/src/runtime/content/menu-surface-copy.ts'
-import {
-  TranslationMemoryStorage,
-} from '../../packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts'
+import { TranslationMemoryStorage } from '../../packages/extensions/fireux-sproochli/src/runtime/models/translation.model.ts'
 import {
   makeSproochliMenuMemoryKey,
   makeSproochliSourceHash,
@@ -116,13 +114,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'projects/misebox/interlaken-essen/app/pages/mis.vue',
     'projects/misebox/interlaken-essen/app/composables/usePersonalMarketplace.ts',
   ]
-    .map(relativePath => read(repoRoot, relativePath))
+    .map((relativePath) => read(repoRoot, relativePath))
     .join('\n')
   const interlakenMarketplaceOnboarding = [
     'projects/misebox/interlaken-essen/app/components/Market/OnboardingModal.vue',
     'projects/misebox/interlaken-essen/app/composables/useMarketplaceOnboarding.ts',
   ]
-    .map(relativePath => read(repoRoot, relativePath))
+    .map((relativePath) => read(repoRoot, relativePath))
     .join('\n')
   const interlakenOwnedCopyConsumers = [
     ...[
@@ -139,7 +137,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       'projects/misebox/interlaken-essen/app/components/marketplace/Shared.vue',
       'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalSellerCard.vue',
       'projects/misebox/interlaken-essen/app/components/marketplace/CanonicalStorefront.vue',
-    ].map(relativePath => read(repoRoot, relativePath)),
+    ].map((relativePath) => read(repoRoot, relativePath)),
     interlakenPersonalMarketplace,
     interlakenMarketplaceOnboarding,
   ]
@@ -147,7 +145,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'projects/misebox/interlaken-essen/app/pages/marktplatz/index.vue',
     'projects/misebox/interlaken-essen/app/pages/marktplatz/[sellerId].vue',
     'projects/misebox/interlaken-essen/app/pages/choufe/[sectionId].vue',
-  ].map(relativePath => read(repoRoot, relativePath)).join('\n')
+  ]
+    .map((relativePath) => read(repoRoot, relativePath))
+    .join('\n')
   const translationReadme = read(
     repoRoot,
     'packages/extensions/fireux-translation/README.md'
@@ -223,21 +223,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-sproochli/src/runtime/server/menu/provider-client.ts'
   )
-  const coreAppConfigTypes = read(
+  const coreEcosystemConfigTypes = read(
     repoRoot,
-    'packages/core/fireux-core/src/config/app/types.ts'
+    'packages/core/fireux-core/src/types/ecosystem.ts'
   )
   const coreNitroConfig = read(
     repoRoot,
     'packages/core/fireux-core/src/config/app/nitro.ts'
   )
-  const coreFireuxConfig = read(
+  const coreEcosystemWiring = read(
     repoRoot,
-    'packages/core/fireux-core/src/config/app/fireux.config.ts'
+    'packages/core/fireux-core/src/config/module/ecosystem-wiring.ts'
   )
-  const miseboxNuxtConfig = read(
+  const miseboxEcosystemConfig = read(
     repoRoot,
-    'projects/misebox/misebox-app/nuxt.config.ts'
+    'packages/ecosystem/fireux-misebox/src/config/firebase/ecosystem.config.ts'
   )
   const firebaseOutputPreparation = read(
     repoRoot,
@@ -382,21 +382,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.equal(interlakenCopyPack.profiles.de.locale, 'de-CH')
   assert.equal(INTERLAKEN_SITE_DEFAULT_LANGUAGE, 'gsw')
+  assert.deepEqual(INTERLAKEN_SITE_LANGUAGE_CODES, ['gsw', 'de', 'en'])
   assert.deepEqual(
-    INTERLAKEN_SITE_LANGUAGE_CODES,
-    ['gsw', 'de', 'en']
-  )
-  assert.deepEqual(
-    INTERLAKEN_SITE_LANGUAGE_OPTIONS.map(option => option.code),
+    INTERLAKEN_SITE_LANGUAGE_OPTIONS.map((option) => option.code),
     ['gsw', 'de', 'en']
   )
   assert.ok(
     INTERLAKEN_SITE_LANGUAGE_OPTIONS.every(
-      option => option.source === 'attached'
+      (option) => option.source === 'attached'
     )
   )
   assert.equal(
-    INTERLAKEN_SITE_LANGUAGE_OPTIONS.some(option => !option.code),
+    INTERLAKEN_SITE_LANGUAGE_OPTIONS.some((option) => !option.code),
     false
   )
   assert.equal(normalizeInterlakenSiteLanguage('de'), 'de')
@@ -405,25 +402,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.equal(normalizeInterlakenSiteLanguage('fr'), '')
   assert.equal(normalizeInterlakenSiteLanguage('es'), '')
   assert.equal(resolveInterlakenSiteLanguage('unsupported'), 'gsw')
+  assert.equal(isInterlakenSiteLanguageAvailableOnPath('de', '/'), true)
   assert.equal(
-    isInterlakenSiteLanguageAvailableOnPath('de', '/'),
+    isInterlakenSiteLanguageAvailableOnPath('de', '/marktplatz/example-store'),
     true
   )
-  assert.equal(
-    isInterlakenSiteLanguageAvailableOnPath(
-      'de',
-      '/marktplatz/example-store'
-    ),
-    true
-  )
-  assert.equal(
-    isInterlakenSiteLanguageAvailableOnPath('de', '/blog'),
-    true
-  )
-  assert.equal(
-    isInterlakenSiteLanguageAvailableOnPath('de', '/auth'),
-    false
-  )
+  assert.equal(isInterlakenSiteLanguageAvailableOnPath('de', '/blog'), true)
+  assert.equal(isInterlakenSiteLanguageAvailableOnPath('de', '/auth'), false)
   assert.equal(interlakenCopy('buy', 'gsw'), 'Choufe')
   assert.equal(interlakenCopy('buy', 'de'), 'Kaufen')
   assert.equal(interlakenCopy('buy', 'en'), 'Buy')
@@ -431,10 +416,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'onboarding_locality_body',
     'onboarding_offer_body',
   ]) {
-    assert.equal(
-      Object.hasOwn(interlakenCopyPack.entries, removedKey),
-      false
-    )
+    assert.equal(Object.hasOwn(interlakenCopyPack.entries, removedKey), false)
     assert.doesNotMatch(interlakenOnboardingModal, new RegExp(removedKey))
   }
   assert.equal(
@@ -456,7 +438,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.ok(Object.keys(interlakenCopyPack.entries).length >= 100)
   assert.ok(
     Object.values(interlakenCopyPack.entries).every(
-      entry =>
+      (entry) =>
         entry.source_language === 'en' &&
         ['de', 'gsw'].every((language) => {
           const translation = entry.translations[language]
@@ -472,7 +454,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.ok(
     Object.values(interlakenCopyPack.entries).every(
-      entry =>
+      (entry) =>
         entry.translations.de.provenance.kind === 'ai' &&
         entry.translations.de.provenance.provider === 'openai-codex' &&
         Boolean(entry.translations.de.provenance.generated_at) &&
@@ -481,24 +463,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(
     Object.values(interlakenCopyPack.entries)
-      .map(entry => entry.translations.de.text)
+      .map((entry) => entry.translations.de.text)
       .join('\n'),
     /ß/
   )
   assert.doesNotMatch(
     Object.values(interlakenCopyPack.entries)
-      .flatMap(entry => [
+      .flatMap((entry) => [
         entry.source_text,
-        ...Object.values(entry.translations)
-          .map(translation => translation?.text || ''),
+        ...Object.values(entry.translations).map(
+          (translation) => translation?.text || ''
+        ),
       ])
       .join('\n'),
     /Your location helps us keep the food truly local|From your fridge to your kitchen table|Anything goes – your products should feel like you|Din Ort hilft üs, s Futter würkli lokal z halte|Vom Chüelschrank bis zum Chuchi-Tisch|Ganz frei – dini Produkt söue zu dir passe/
   )
   for (const [key, entry] of Object.entries(interlakenCopyPack.entries)) {
     const variables = Object.fromEntries(
-      [...entry.source_text.matchAll(/\{([A-Za-z][A-Za-z0-9_]*)\}/g)]
-        .map(match => [match[1], 'test'])
+      [...entry.source_text.matchAll(/\{([A-Za-z][A-Za-z0-9_]*)\}/g)].map(
+        (match) => [match[1], 'test']
+      )
     )
     assert.equal(typeof interlakenCopy(key, 'en', variables), 'string')
     assert.equal(typeof interlakenCopy(key, 'de', variables), 'string')
@@ -510,10 +494,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     interlakenSiteLanguage,
     /isInterlakenSiteLanguageAvailableOnPath/
   )
-  assert.match(
-    interlakenSiteLanguage,
-    /watch\(\s*availableRequestedLanguage/
-  )
+  assert.match(interlakenSiteLanguage, /watch\(\s*availableRequestedLanguage/)
   assert.match(interlakenCopyComposable, /de: 'de-CH'/)
   assert.match(interlakenCopyComposable, /en: 'en-GB'/)
   assert.match(interlakenCopyComposable, /gsw: 'gsw-CH'/)
@@ -521,10 +502,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(interlakenMarketplaceLayout, /siteSproochli\.languageOptions/)
   assert.match(interlakenMarketplaceLayout, /siteSproochli\.selectedLanguage/)
   assert.match(interlakenMarketplaceLayout, /language_trigger_current/)
-  assert.match(
-    interlakenMarketplaceLayout,
-    /language_trigger_visit_sproochli/
-  )
+  assert.match(interlakenMarketplaceLayout, /language_trigger_visit_sproochli/)
   assert.doesNotMatch(
     interlakenMarketplaceLayout,
     /language_trigger_(heading|description)/
@@ -542,35 +520,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /useMarketplaceOnboarding[\s\S]*useInterlakenCopy/
   )
   assert.ok(
-    interlakenOwnedCopyConsumers.every(
-      consumer => consumer.includes('useInterlakenCopy')
+    interlakenOwnedCopyConsumers.every((consumer) =>
+      consumer.includes('useInterlakenCopy')
     )
   )
-  assert.match(
-    interlakenPublicCopy,
-    /language_trigger_visit_sproochli/
-  )
+  assert.match(interlakenPublicCopy, /language_trigger_visit_sproochli/)
   assert.match(interlakenPublicCopy, /de: 'Sproochli besuchen'/)
   assert.doesNotMatch(
     interlakenPublicCopy,
     /language_trigger_(heading|description)/
   )
   assert.match(interlakenMeta, /defaultCopy\('app_meta_headline'\)/)
-  assert.match(
-    interlakenMeta,
-    /defaultCopy\('app_meta_seo_description'\)/
-  )
+  assert.match(interlakenMeta, /defaultCopy\('app_meta_seo_description'\)/)
   assert.match(interlakenMeta, /copy\.status !== 'approved'/)
   assert.doesNotMatch(interlakenMeta, /target_text/)
   assert.doesNotMatch(interlakenMeta, /Local food, offered nearby/)
-  assert.match(
-    interlakenFutter,
-    /slug: 'wo-sind-die-chuehlschraenke'/
-  )
-  assert.match(
-    interlakenFutter,
-    /slug: 'interlaken-essen-isch-live'/
-  )
+  assert.match(interlakenFutter, /slug: 'wo-sind-die-chuehlschraenke'/)
+  assert.match(interlakenFutter, /slug: 'interlaken-essen-isch-live'/)
   assert.doesNotMatch(interlakenFutter, /feed_launch_title/)
   assert.match(interlakenFeed, /blogPost\.featuredImage/)
   assert.match(interlakenFeed, /blogPost\.available_languages\.includes/)
@@ -584,10 +550,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /marketplace-preview|marketplacePreviewSellers|MarketplaceSellerCard|MarketplaceStorefront/
   )
   assert.match(interlakenStyleFacade, /@import '\.\/market-shell\.css';/)
-  assert.match(
-    interlakenStyleFacade,
-    /@import '\.\/market-discovery\.css';/
-  )
+  assert.match(interlakenStyleFacade, /@import '\.\/market-discovery\.css';/)
   assert.match(
     interlakenStyles,
     /button\.market-language\.sproochli-language-trigger--emoji/
@@ -642,10 +605,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(languageTrigger, /triggerCopy\.visitSproochli/)
   assert.match(languageTrigger, /target="_blank"/)
   assert.match(languageTrigger, /rel="noopener noreferrer"/)
-  assert.doesNotMatch(
-    languageTrigger,
-    /Choose how to read this content/
-  )
+  assert.doesNotMatch(languageTrigger, /Choose how to read this content/)
   assert.match(languageTrigger, /sproochli-language-trigger--emoji/)
   assert.match(languageTrigger, /<button\s+type="button"/)
   assert.doesNotMatch(
@@ -660,10 +620,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(languageTrigger, /transform:\s*scale/)
   assert.doesNotMatch(languageTrigger, /i-lucide-languages/)
   assert.match(languageTrigger, /defaultOption\.value\?\.label/)
-  assert.match(
-    languageTrigger,
-    /return triggerCopy\.value\.defaultSelection/
-  )
+  assert.match(languageTrigger, /return triggerCopy\.value\.defaultSelection/)
   assert.match(languageTrigger, /showWhenSingleOption/)
   assert.match(languageTrigger, /onlyOriginalOption/)
   assert.match(languageTrigger, /\(option\) => option\.source === 'original'/)
@@ -706,10 +663,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.equal(
     existsSync(
-      path.join(
-        repoRoot,
-        'projects/fireux/sproochli/public/img/app/logo.svg'
-      )
+      path.join(repoRoot, 'projects/fireux/sproochli/public/img/app/logo.svg')
     ),
     false
   )
@@ -762,10 +716,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(menuEndpoint, /normalizeSproochliLanguage\(query\.sproochli\)/)
   assert.match(menuPayload, /await resolveMenuSproochli\(/)
   assert.match(menuResolver, /const storage = resolveSproochliHostStorage\(\)/)
-  assert.match(
-    menuResolver,
-    /await readCanonicalCacheLanguages\(cacheScope\)/
-  )
+  assert.match(menuResolver, /await readCanonicalCacheLanguages\(cacheScope\)/)
   assert.match(menuResolver, /\.map\(normalizeSproochliLanguage\)/)
   assert.match(menuResolver, /if \(!requestedLanguage\)/)
   assert.ok(
@@ -775,17 +726,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.ok(
     menuResolver.indexOf(
       'let translations = await readSproochliMenuTranslationCache'
-    ) <
-      menuResolver.indexOf('if (!translations)')
+    ) < menuResolver.indexOf('if (!translations)')
   )
   assert.ok(
     menuResolver.indexOf('if (!translations)') <
       menuResolver.indexOf('await resolveSproochliMenu({')
   )
-  assert.equal(
-    (menuResolver.match(/resolveSproochliMenu\(/g) || []).length,
-    1
-  )
+  assert.equal((menuResolver.match(/resolveSproochliMenu\(/g) || []).length, 1)
   assert.match(menuResolver, /\.\.\.menuFields\(menu\)/)
   assert.match(menuResolver, /MENU_BROWSE_SURFACE_COPY_FIELDS/)
   assert.match(menuResolver, /translations\.size !== fields\.length/)
@@ -798,7 +745,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(menuResolver, /if \(missingFields\.length\)/)
   assert.match(menuResolver, /fields: missingFields/)
   assert.match(menuResolver, /host: storage\.target/)
-  assert.match(menuResolver, /resolution\.host\.appId === storage\.target\.appId/)
+  assert.match(
+    menuResolver,
+    /resolution\.host\.appId === storage\.target\.appId/
+  )
   assert.match(
     menuResolver,
     /resolution\.host\.firebaseProjectId ===\s*storage\.target\.firebaseProjectId/
@@ -811,10 +761,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     menuResolver,
     /writeSproochliTranslationMemory\(\s*storage,\s*candidates/s
   )
-  assert.match(
-    menuResolver,
-    /await writeSproochliMenuTranslationCache\(\{/
-  )
+  assert.match(menuResolver, /await writeSproochliMenuTranslationCache\(\{/)
   assert.match(
     menuResolver,
     /readyLanguages =\s*await readCanonicalCacheLanguages\(cacheScope\)/
@@ -846,12 +793,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /GoogleAuth|\bfetch\s*\(|readyLanguages|cachedLanguages|targetLanguages|includeTranslations|menuCache/
   )
   assert.match(menuProviderClient, /new GoogleAuth\(\)\.getIdTokenClient/)
+  assert.match(menuProviderClient, /SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE/)
   assert.match(
     menuProviderClient,
-    /SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE/
+    /headers\.authorization = `Bearer \$\{token\}`/
   )
-  assert.match(menuProviderClient, /headers\.authorization = `Bearer \$\{token\}`/)
-  assert.match(menuProviderClient, /AbortSignal\.timeout\(PROVIDER_TIMEOUT_MS\)/)
+  assert.match(
+    menuProviderClient,
+    /AbortSignal\.timeout\(PROVIDER_TIMEOUT_MS\)/
+  )
   assert.match(menuProviderClient, /const PROVIDER_TIMEOUT_MS = 8_000/)
   assert.match(menuProviderClient, /localDevelopment/)
   assert.match(
@@ -862,23 +812,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     sproochliReadme,
     /Adding `fireux-sproochli` to `app\.modules` enables the package\. It does not\s*complete production registration\./
   )
-  assert.match(sproochliReadme, /app\.serverFunctionServiceAccount/)
+  assert.match(sproochliReadme, /ecosystem's\s*`ssr\.serviceAccount`/)
   assert.match(sproochliReadme, /SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES/)
-  assert.match(sproochliReadme, /service-account keys, default compute identities/)
+  assert.match(
+    sproochliReadme,
+    /service-account keys, default compute identities/
+  )
   assert.match(sproochliReadme, /future WordPress or non-Google adapter/)
-  assert.match(coreAppConfigTypes, /serverFunctionServiceAccount\?: string/)
+  assert.match(coreEcosystemConfigTypes, /serviceAccount\?: string/)
   assert.match(coreNitroConfig, /serviceAccount\?: string/)
   assert.match(
     coreNitroConfig,
     /\.\.\.\(c\.serviceAccount \? \{ serviceAccount: c\.serviceAccount \} : \{\}\)/
   )
   assert.match(
-    coreFireuxConfig,
-    /serviceAccount: app\.serverFunctionServiceAccount/
+    coreEcosystemWiring,
+    /httpsOptions\.serviceAccount = serviceAccount/
   )
   assert.match(
-    miseboxNuxtConfig,
-    /serverFunctionServiceAccount:\s*\n?\s*'misebox-ssr@misebox-78f9c\.iam\.gserviceaccount\.com'/
+    miseboxEcosystemConfig,
+    /serviceAccount:\s*'misebox-ssr@misebox-78f9c\.iam\.gserviceaccount\.com'/
   )
   assert.ok(
     firebaseOutputPreparation.includes('server/firebase.runtime-env.json')
@@ -945,10 +898,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     sproochliHostTarget,
     /databaseId: typeof SPROOCHLI_HOST_DATABASE_ID/
   )
-  assert.match(
-    sproochliHostStorage,
-    /runtime\.public\?\.fireux\?\.id/
-  )
+  assert.match(sproochliHostStorage, /runtime\.public\?\.fireux\?\.id/)
   assert.match(
     sproochliHostStorage,
     /runtime\.public\?\.firebaseEcosystem\?\.firebase\?\.projectId/
@@ -961,16 +911,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(sproochliHostStorage, /firebase_project_id:/)
   assert.match(sproochliHostStorage, /database_id:/)
   assert.match(sproochliHostStorage, /matchesSproochliStorageMetadata/)
-  assert.match(sproochliHostStorage, /const hostAppId = text\(data\.host_app_id\)/)
+  assert.match(
+    sproochliHostStorage,
+    /const hostAppId = text\(data\.host_app_id\)/
+  )
   assert.match(sproochliHostStorage, /Boolean\(hostAppId\)/)
   assert.doesNotMatch(
     sproochliHostStorage,
     /text\(data\.host_app_id\) === expected\.host_app_id/
   )
-  assert.doesNotMatch(
-    sproochliHostStorage,
-    /fireux-2005|misebox-78f9c/
-  )
+  assert.doesNotMatch(sproochliHostStorage, /fireux-2005|misebox-78f9c/)
   assert.match(menuTranslationEndpoint, /host\?: unknown/)
   assert.match(menuTranslationEndpoint, /function parseHost\(/)
   assert.match(
@@ -1012,8 +962,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(menuProviderAuth, /verifyServiceAccountOidc/)
   assert.match(menuProviderAuth, /SPROOCHLI_MENU_PROVIDER_OIDC_AUDIENCE/)
   assert.match(menuProviderAuth, /SPROOCHLI_MENU_PROVIDER_SOURCE_SCOPES/)
-  assert.match(menuProviderAuth, /scope\.serviceAccountEmail === principal\.service_account_email/)
-  assert.match(menuProviderAuth, /scope\.firebaseProjectId === host\.firebaseProjectId/)
+  assert.match(
+    menuProviderAuth,
+    /scope\.serviceAccountEmail === principal\.service_account_email/
+  )
+  assert.match(
+    menuProviderAuth,
+    /scope\.firebaseProjectId === host\.firebaseProjectId/
+  )
   assert.match(menuProviderAuth, /scope\.databaseId === host\.databaseId/)
   assert.match(menuProviderAuth, /scope\.appIds\.includes\(host\.appId\)/)
   assert.match(menuProviderAuth, /isLoopbackDevelopmentRequest/)
@@ -1061,10 +1017,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /storage: sproochliStorageMetadata\(input\.cache\.storage\.target\)/
   )
   assert.doesNotMatch(menuCompleteCache, /getRuntimeFirestore/)
-  assert.match(
-    menuCompleteCache,
-    /readSproochliMenuTranslationCacheLanguages/
-  )
+  assert.match(menuCompleteCache, /readSproochliMenuTranslationCacheLanguages/)
   assert.match(
     menuCompleteCache,
     /\.where\('fingerprint', '==', scope\.fingerprint\)/
@@ -1073,7 +1026,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     menuMemoryRecipe,
     /SPROOCHLI_MENU_MEMORY_CACHE_VERSION\s*=\s*\n?\s*'menu_translation_memory_v1'/
   )
-  assert.match(menuMemoryRecipe, /SPROOCHLI_MENU_MEMORY_DOMAIN = 'restaurant_menu'/)
+  assert.match(
+    menuMemoryRecipe,
+    /SPROOCHLI_MENU_MEMORY_DOMAIN = 'restaurant_menu'/
+  )
   for (const removedCentralStateFile of [
     'projects/fireux/sproochli/server/utils/sproochliMenuTranslationCache.ts',
     'projects/fireux/sproochli/server/utils/sproochliTranslationMemory.ts',
@@ -1100,14 +1056,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(menuAiSchema, /LOCALIZED_TEXT_SCHEMA/)
   assert.match(menuAiSchema, /label_translations:\s*LOCALIZED_TEXT_SCHEMA/)
   assert.match(menuAiSchema, /name_translations:\s*LOCALIZED_TEXT_SCHEMA/)
-  assert.match(menuAiSchema, /description_translations:\s*LOCALIZED_TEXT_SCHEMA/)
+  assert.match(
+    menuAiSchema,
+    /description_translations:\s*LOCALIZED_TEXT_SCHEMA/
+  )
   assert.match(
     menuAiExtraction,
     /MENU_SOURCE_EXTRACTION_PROMPT_VERSION = 'menu-source-v9'/
   )
   assert.match(menuAiExtraction, /canonical Default text/)
   assert.doesNotMatch(menuAiExtraction, /Drop translated duplicate text/)
-  assert.match(menuAiNormalization, /preserve extracted aligned language copies/)
+  assert.match(
+    menuAiNormalization,
+    /preserve extracted aligned language copies/
+  )
   assert.doesNotMatch(menuAiNormalization, /Drop translated duplicate text/)
   assert.match(menuDraftSections, /normalizeSproochliLanguage/)
   assert.match(menuDraftSections, /cleanTranslations/)
@@ -1124,10 +1086,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     kitchenMenuCacheImport,
     /generatedBy: 'sproochli-menu-cache-import'/
   )
-  assert.match(
-    kitchenMenuCacheImport,
-    /provider: 'source-document-extraction'/
-  )
+  assert.match(kitchenMenuCacheImport, /provider: 'source-document-extraction'/)
   assert.match(kitchenMenuCacheImport, /valuesByIdentity\.get\(identity\)/)
   assert.match(
     kitchenMenuCacheImport,
@@ -1150,14 +1109,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     3
   )
   assert.doesNotMatch(sproochliHostRules, /if true|request\.auth/)
-  assert.match(
-    sproochliHostFirebaseConfig,
-    /"database": "sproochli"/
-  )
-  assert.match(
-    sproochliHostFirebaseConfig,
-    /"rules": "server-only\.rules"/
-  )
+  assert.match(sproochliHostFirebaseConfig, /"database": "sproochli"/)
+  assert.match(sproochliHostFirebaseConfig, /"rules": "server-only\.rules"/)
   assert.match(
     sproochliHostMigration,
     /const SOURCE_PROJECT_ID = 'fireux-2005'/
@@ -1169,36 +1122,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(sproochliHostMigration, /const DATABASE_ID = 'sproochli'/)
   assert.match(sproochliHostMigration, /const LOCATION = 'eur3'/)
   assert.match(sproochliHostMigration, /const EDITION = 'standard'/)
-  assert.match(
-    sproochliHostMigration,
-    /const CLI_READ_TIMEOUT_MS = 30_000/
-  )
-  assert.match(
-    sproochliHostMigration,
-    /const CLI_WRITE_TIMEOUT_MS = 120_000/
-  )
-  assert.match(
-    sproochliHostMigration,
-    /timeout: CLI_WRITE_TIMEOUT_MS/
-  )
+  assert.match(sproochliHostMigration, /const CLI_READ_TIMEOUT_MS = 30_000/)
+  assert.match(sproochliHostMigration, /const CLI_WRITE_TIMEOUT_MS = 120_000/)
+  assert.match(sproochliHostMigration, /timeout: CLI_WRITE_TIMEOUT_MS/)
   assert.match(
     sproochliHostMigration,
     /service-account options authorize Admin SDK document access only/
   )
-  assert.match(
-    sproochliHostMigration,
-    /const HOST_APP_ID = 'misebox-app'/
-  )
-  assert.match(
-    sproochliHostMigration,
-    /writeProtectedJsonArtifact\(\{/
-  )
+  assert.match(sproochliHostMigration, /const HOST_APP_ID = 'misebox-app'/)
+  assert.match(sproochliHostMigration, /writeProtectedJsonArtifact\(\{/)
   assert.match(sproochliHostMigration, /transaction\.create\(/)
   assert.match(sproochliHostMigration, /--delete-protection/)
-  assert.match(
-    sproochliHostMigration,
-    /source_delete_authorized: false/
-  )
+  assert.match(sproochliHostMigration, /source_delete_authorized: false/)
   assert.doesNotMatch(
     sproochliHostMigration,
     /transaction\.(?:delete|set|update)\(/
@@ -1256,18 +1191,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     [{ code: '', label: '', name: 'Original', source: 'original' }]
   )
   const catalogueState = resolveSproochliLanguageState({ enabled: true })
-  assert.equal(
-    catalogueState.options.length,
-    SPROOCHLI_LANGUAGE_OPTIONS.length
-  )
+  assert.equal(catalogueState.options.length, SPROOCHLI_LANGUAGE_OPTIONS.length)
   assert.equal(
     catalogueState.selectableLanguages.length,
     SPROOCHLI_LANGUAGE_OPTIONS.length
   )
   assert.ok(
     catalogueState.options
-      .filter(option => option.code)
-      .every(option => option.source === 'on_demand')
+      .filter((option) => option.code)
+      .every((option) => option.source === 'on_demand')
   )
   const groupedState = resolveSproochliLanguageState({
     enabled: true,
@@ -1275,12 +1207,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   })
   assert.deepEqual(
     groupedState.options
-      .filter(option => option.source === 'cache')
-      .map(option => option.code),
+      .filter((option) => option.source === 'cache')
+      .map((option) => option.code),
     ['ar', 'en']
   )
   assert.equal(
-    groupedState.options.find(option => option.code === 'es')?.source,
+    groupedState.options.find((option) => option.code === 'es')?.source,
     'on_demand'
   )
   assert.equal(isSproochliRtlLanguage('fa'), true)
@@ -1288,12 +1220,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.equal(MENU_SURFACE_COPY_VERSION, 'v3')
   assert.equal(MENU_BROWSE_SURFACE_COPY_FIELDS.length, 12)
   assert.equal(
-    new Set(MENU_BROWSE_SURFACE_COPY_FIELDS.map(field => field.id)).size,
+    new Set(MENU_BROWSE_SURFACE_COPY_FIELDS.map((field) => field.id)).size,
     MENU_BROWSE_SURFACE_COPY_FIELDS.length
   )
   assert.ok(
     MENU_BROWSE_SURFACE_COPY_FIELDS.every(
-      field => field.id.startsWith('menu-surface:v3:') && field.sourceText
+      (field) => field.id.startsWith('menu-surface:v3:') && field.sourceText
     )
   )
   assert.deepEqual(resolveMenuBrowseSurfaceCopy(), {
@@ -1312,9 +1244,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     pricesLabel: 'Prices',
   })
   assert.deepEqual(
-    resolveMenuBrowseSurfaceCopy(new Map([
-      ['menu-surface:v3:browse:allergy-title', 'Allergies ou intolérances ?'],
-    ])),
+    resolveMenuBrowseSurfaceCopy(
+      new Map([
+        ['menu-surface:v3:browse:allergy-title', 'Allergies ou intolérances ?'],
+      ])
+    ),
     {
       allergyAriaLabel: 'Allergy information',
       allergyTitle: 'Allergies ou intolérances ?',
@@ -1392,12 +1326,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     },
   })
   assert.equal(resolveApprovedSproochliCopy(approved, 'buy'), 'Choufe')
-  assert.equal(
-    resolveApprovedSproochliCopy(approved, 'buy', 'de'),
-    'Kaufen'
-  )
+  assert.equal(resolveApprovedSproochliCopy(approved, 'buy', 'de'), 'Kaufen')
   assert.equal(resolveApprovedSproochliCopy(approved, 'buy', 'en'), 'Buy')
-  assert.equal(formatSproochliCopy('Hello {name}', { name: 'Ada' }), 'Hello Ada')
+  assert.equal(
+    formatSproochliCopy('Hello {name}', { name: 'Ada' }),
+    'Hello Ada'
+  )
   assert.throws(() => formatSproochliCopy('Hello {name}'))
   assert.throws(() =>
     defineSproochliCopyPack({

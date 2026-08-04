@@ -29,7 +29,7 @@ behind compatibility routes or adapters.
 
 ## Authority
 
-- UserApp governs App access only. Buyer and seller are surfaces, not stored
+- AppUser governs App access only. Buyer and seller are surfaces, not stored
   account roles.
 - Supplier App-support operators grant Supplier management. App Admin remains
   the marketplace publication and moderation authority; Listings do not own a

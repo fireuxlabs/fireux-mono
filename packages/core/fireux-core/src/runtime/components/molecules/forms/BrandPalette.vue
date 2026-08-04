@@ -43,7 +43,7 @@
 import {
   type BrandPaletteKey,
   type SparseBrandPalette,
-} from '../../../models/core/style.model'
+} from '../../../models/utils/style.model'
 import { DEFAULT_BRAND_PALETTE } from '../../../utils/brand-palette'
 
 const props = withDefaults(defineProps<{

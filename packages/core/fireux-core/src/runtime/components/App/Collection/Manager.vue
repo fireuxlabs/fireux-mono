@@ -104,7 +104,7 @@ import {
 } from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
-import type { AppDirectoryController } from '../../../models/core/supporting/directory'
+import type { AppDirectoryController } from '../../../models/utils/directory'
 
 const props = withDefaults(
   defineProps<{

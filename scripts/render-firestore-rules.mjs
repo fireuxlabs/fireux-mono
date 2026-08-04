@@ -4,7 +4,7 @@
 // usage_note: check deterministic Firestore Rules artifacts or explicitly regenerate known ecosystem targets.
 // Concurrent edit — 2026-07-21 15:27 CEST — Shared Firestore Rules pass: expose read-only drift checking and explicit artifact rendering.
 
-import { writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 import {
@@ -34,9 +34,11 @@ if (args.write) {
   const targets = (await listFirestoreRulesTargets()).filter(
     (target) => !args.ecosystem || target.manifest.key === args.ecosystem
   )
-  if (!targets.length) throw new Error(`Unknown Rules ecosystem ${args.ecosystem}.`)
+  if (!targets.length)
+    throw new Error(`Unknown Rules ecosystem ${args.ecosystem}.`)
 
   for (const target of targets) {
+    await mkdir(path.dirname(target.artifactPath), { recursive: true })
     await writeFile(target.artifactPath, target.content, 'utf8')
   }
   printTargets('write', targets)
@@ -56,7 +58,8 @@ function parseArgs(values) {
     else if (value === '--help' || value === '-h') parsed.help = true
     else if (value === '--ecosystem') {
       const key = values[index + 1]
-      if (!key || key.startsWith('--')) throw new Error('--ecosystem requires a key.')
+      if (!key || key.startsWith('--'))
+        throw new Error('--ecosystem requires a key.')
       parsed.ecosystem = key
       index += 1
     } else throw new Error(`Unknown argument: ${value}`)

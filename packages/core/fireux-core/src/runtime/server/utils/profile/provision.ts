@@ -11,8 +11,8 @@ import {
   canonicalProfileIndex,
   isRuntimeProfileEnabled,
   type ProfileProvisionResult,
-} from '../../../models/core/supporting/profile-provisioning'
-import { UserAppStorage, UserStorage } from '../../../models/core/user.model'
+} from '../../../models/operations/profile-provisioning'
+import { AppUserStorage, UserStorage } from '../../../models/core/user.model'
 import { requireFirebaseBearerUser } from '../auth/bearer'
 import {
   getRuntimeFirestore,
@@ -88,7 +88,7 @@ function profileRefs(
     membership: appDb
       .collection(AppStorage.collection)
       .doc(appId)
-      .collection(UserAppStorage.collection)
+      .collection(AppUserStorage.collection)
       .doc(uid),
     app: appDb
       .collection(AppStorage.collection)

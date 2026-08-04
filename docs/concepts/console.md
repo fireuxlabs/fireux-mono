@@ -116,7 +116,7 @@ Map the shared console system and domain adapters.
   the family index forwards `actions.clear`. A family may project its existing
   entity card through the shared selected-content slot; it must not replace the
   shared empty state or Clear behavior.
-- Tenant apps can auto-select single configured targets.
+- Tenant apps can auto-select a single persisted authorized target.
 - Global apps usually source target IDs from user/app data.
 - Target adapters must pass the collection `outcome` through `useConsoleIndex`;
   it is the sole target-state authority, with no count or pending fallback.
@@ -145,9 +145,9 @@ Map the shared console system and domain adapters.
   composable instance. Its cookie is persistence, not a second live source
   authority; source changes update both together so source-aware selection
   cannot race between `live`, `demo`, and `test`.
-- Global target adapters compose UserApp membership pending/error with the
+- Global target adapters compose AppUser membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
-- Global UserApp target IDs and tenant-configured IDs bound live reads. Exact
+- Entity App-support operator/team records bound live reads. Exact
   root and same-id App-support reads must fail the complete outcome on a missing
   half, wrong App scope, malformed support authority, or unauthorized indexed
   id; they never leave an unused full-root listener behind client filtering.
@@ -156,7 +156,7 @@ Map the shared console system and domain adapters.
   authorizes every canonical root/App-support/Place join, and the selected live
   Kitchen reuses that projected root instead of starting a second raw browser
   query. Its response is the sole live target outcome: do not overlay a second
-  browser UserApp read, and share the keyed request across selected/index
+  browser AppUser target read, and share the keyed request across selected/index
   consumers. Missing pairs and scope drift remain errors, never partial target
   lists.
 - Demo target adapters use `useConsoleDemoData` and a dynamic import. The
@@ -170,7 +170,7 @@ Map the shared console system and domain adapters.
   fixed-runtime authenticated server endpoint. The caller cannot choose the
   App, database, collection path, or App-support id.
 - One Firestore transaction owns the root scope, same-id complete App support,
-  and caller UserApp target index. Missing or conflicting halves fail before a
+  and caller operator/team authority. Missing or conflicting halves fail before a
   partial chooser row can be created.
 - `operator_ids` is mutation authority. `team_ids` is target/read membership,
   not write authority. Current App admins remain the explicit administrative
@@ -184,6 +184,11 @@ Map the shared console system and domain adapters.
 ## Operations
 
 - Operations are child surfaces inside a selected console target.
+- Every Console family owns Identity. One source-backed Operation catalogue
+  accounts for every top-level Operation route and projects the complete
+  landing subheader plus matching `/operations/<slug>` literature pages.
+  Overview, Create, dev tooling, and child/detail routes are not Operations;
+  product directories do not enter the Console Operation catalogue.
 - Product classification follows the selected-target work, not the component
   folder name alone. Domain-owned workspaces such as Kitchen Identity and Team
   may remain in the shared structural `Identity` and `Team` buckets while also

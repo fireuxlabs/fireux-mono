@@ -60,7 +60,7 @@ import { useAppProfileView } from 'fireux-core/runtime/composables/fireux/firest
 import type {
   AppDirectoryEntry,
   PlatformDirectoryResponse,
-} from 'fireux-core/runtime/models/core/supporting/directory'
+} from 'fireux-core/runtime/models/utils/directory'
 
 definePageMeta({
   layout: 'default',

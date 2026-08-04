@@ -1,10 +1,10 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: type Blank App access as a support record.
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep Blank access exclusively in same-id App support.
-import type { FireuxStamped } from 'fireux-core/runtime/models/core/meta.model.ts'
+import type { FireuxStamped } from 'fireux-core/runtime/models/utils/meta.model.ts'
 import {
   FireuxAppAccessRecordModel,
   FireuxAppScope,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
+} from 'fireux-core/runtime/models/utils/meta.model.ts'
 
 type WidenLiteral<T> =
   T extends string ? string

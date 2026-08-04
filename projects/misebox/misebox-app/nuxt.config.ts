@@ -17,15 +17,22 @@ const fireuxConfig = defineFireuxConfig({
   id: 'misebox-app',
   name: 'Misebox',
   shortName: 'Misebox',
-  brand: { owner: 'app', status: 'provisional' },
   contactEmail: 'misebox@misebox.app',
-  serverFunctionServiceAccount:
-    'misebox-ssr@misebox-78f9c.iam.gserviceaccount.com',
   role: 'global',
   pricing: {
     consoleName: 'Kitchen Console',
-    free: ['Use one Kitchen workspace', 'Publish one Menu', 'Advertise permanent and temporary Jobs', 'Coordinate one active temporary Engagement'],
-    pro: ['Publish multiple Menus', 'Manage team access and permissions', 'Run preparation, stations, tables, and orders', 'Manage suppliers, costing, and Kitchen finance'],
+    free: [
+      'Use one Kitchen workspace',
+      'Publish one Menu',
+      'Advertise permanent and temporary Jobs',
+      'Coordinate one active temporary Engagement',
+    ],
+    pro: [
+      'Publish multiple Menus',
+      'Manage team access and permissions',
+      'Run preparation, stations, tables, and orders',
+      'Manage suppliers, costing, and Kitchen finance',
+    ],
   },
   designPack: { preset: 'sci-fire' },
   consoles: ['kitchen'],

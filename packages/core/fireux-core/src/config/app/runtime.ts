@@ -4,7 +4,6 @@ import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
-import type { FireuxAppBrandConfig } from './types'
 
 export type RuntimeAppRole = 'global' | 'tenant' | 'standalone'
 
@@ -12,7 +11,6 @@ export type RuntimeApp = {
   id: string
   name: string
   shortName: string
-  brand: FireuxAppBrandConfig
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   pricing?: {
@@ -38,10 +36,7 @@ export type RuntimeApp = {
   ecosystemId?: string
   modules: readonly string[]
   consoles: readonly string[]
-  consoleConfig?: Record<
-    string,
-    { canCreate?: boolean; targetIds?: string[]; devTargetIds?: string[] }
-  >
+  consoleConfig?: Record<string, { canCreate?: boolean }>
   domains: readonly string[]
   profiles: readonly string[]
   selfJoinEnabled: boolean

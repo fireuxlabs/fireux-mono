@@ -36,15 +36,15 @@ Global and tenant Apps must:
 
 ## Runtime behavior matrix
 
-| Concern | Global App | Tenant App | Why the delta exists |
-| --- | --- | --- | --- |
-| Example | Misebox | La Tap Berne | Product composition |
-| App role | `global` | `tenant` | Explicit runtime identity |
-| Target source | Bounded UserApp membership/authority | `consoleConfig.<family>.targetIds` | Global users may operate several targets; tenants pin a known set |
-| Selection | User chooses among authorized targets | One configured target may auto-select | Tenant removes redundant choice, not authority checks |
-| Create default | Allowed unless family config disables it | Disabled unless family config enables it | Tenant Apps usually manage an existing bounded target |
-| Public routes | Often explicit entity/directory scope | May omit the configured target segment | Tenant App already supplies the bounded scope |
-| Domain implementation | Owning package | Same owning package | App role is composition, not a domain fork |
+| Concern               | Global App                               | Tenant App                               | Why the delta exists                                                       |
+| --------------------- | ---------------------------------------- | ---------------------------------------- | -------------------------------------------------------------------------- |
+| Example               | Misebox                                  | La Tap Berne                             | Product composition                                                        |
+| App role              | `global`                                 | `tenant`                                 | Explicit runtime identity                                                  |
+| Target source         | Bounded AppUser membership/authority     | Bounded AppUser membership/authority     | Firestore App support owns relationships; memberships own operator indexes |
+| Selection             | User chooses among authorized targets    | One persisted target may auto-select     | Tenant removes redundant choice, not authority checks                      |
+| Create default        | Allowed unless family config disables it | Disabled unless family config enables it | Tenant Apps usually manage an existing bounded target                      |
+| Public routes         | Often explicit entity/directory scope    | May omit the persisted target segment    | Tenant App support supplies the bounded scope                              |
+| Domain implementation | Owning package                           | Same owning package                      | App role is composition, not a domain fork                                 |
 
 `standalone` is a third FireUX-owned App role. It shares explicit config and
 package contracts; it must not become an implicit fallback for unknown roles.
@@ -66,13 +66,13 @@ identity.
 
 ## Accepted deltas
 
-| Delta | State | Reason |
-| --- | --- | --- |
-| Tenant auto-selects one configured target | `accepted` | The configured target is already bounded; the shared Index still owns selection validity |
-| Global App shows a user-specific target chooser | `accepted` | A global ecosystem can expose several authorized targets |
-| Tenant may disable target creation | `accepted` | A branded tenant commonly operates an existing business instead of onboarding competitors |
-| Tenant Menu detail is `/<menuId>` while directory detail includes Kitchen scope | `accepted` | Route scope is implicit in tenant config but explicit in a multi-Kitchen directory |
-| Tenant apps own app-local brand and presentation components | `accepted` | Reusable domain truth stays package-owned while the tenant remains visually bespoke |
+| Delta                                                                           | State      | Reason                                                                                    |
+| ------------------------------------------------------------------------------- | ---------- | ----------------------------------------------------------------------------------------- |
+| Tenant auto-selects one persisted target                                        | `accepted` | The authorized target is already bounded; the shared Index still owns selection validity  |
+| Global App shows a user-specific target chooser                                 | `accepted` | A global ecosystem can expose several authorized targets                                  |
+| Tenant may disable target creation                                              | `accepted` | A branded tenant commonly operates an existing business instead of onboarding competitors |
+| Tenant Menu detail is `/<menuId>` while directory detail includes Kitchen scope | `accepted` | Route scope is implicit in tenant config but explicit in a multi-Kitchen directory        |
+| Tenant apps own app-local brand and presentation components                     | `accepted` | Reusable domain truth stays package-owned while the tenant remains visually bespoke       |
 
 ## Ownership and transfer
 
@@ -120,13 +120,13 @@ accepted while only one mature tenant proves the shape.
 
 ## Migration and drift register
 
-| Difference | State | Required direction |
-| --- | --- | --- |
-| Stored `dedicated_app` values | `migration` | Normalize through reviewed family migrations to `tenant_app` |
-| Transfer executor is absent | `to-confirm` | Define authentication, recursive inventory, backup, verification ledger, and recovery before live use |
-| La Tap Berne is the only mature tenant page-composition reference | `to-confirm` | Compare a second tenant before extracting generic Tenant Page components |
-| Hard-coded tenant ids, hosts, or domain branches in reusable packages | `drift` | Replace with App config, target authority, or entity support data; do not add another branch |
-| Domain logic implemented separately in a tenant project | `drift` | Move reusable behavior to the owning package and leave app-local composition in the tenant |
+| Difference                                                            | State        | Required direction                                                                                    |
+| --------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------- |
+| Stored `dedicated_app` values                                         | `migration`  | Normalize through reviewed family migrations to `tenant_app`                                          |
+| Transfer executor is absent                                           | `to-confirm` | Define authentication, recursive inventory, backup, verification ledger, and recovery before live use |
+| La Tap Berne is the only mature tenant page-composition reference     | `to-confirm` | Compare a second tenant before extracting generic Tenant Page components                              |
+| Hard-coded tenant ids, hosts, or domain branches in reusable packages | `drift`      | Replace with App config, target authority, or entity support data; do not add another branch          |
+| Domain logic implemented separately in a tenant project               | `drift`      | Move reusable behavior to the owning package and leave app-local composition in the tenant            |
 
 ## Alignment roadmap
 

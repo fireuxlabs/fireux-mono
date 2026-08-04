@@ -57,7 +57,10 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
       : (options.filter ?? {})
 
     if (consoleRoot.source.value === 'demo') return explicitFilter
-    return consoleTargets.filter(explicitFilter)
+    return {
+      ...explicitFilter,
+      operatorId: normalizedUid.value,
+    }
   })
   const liveCollection = usePortfolioCollection({
     source: consoleRoot.source,

@@ -4,7 +4,7 @@ import type {
   DirectoryEntityKind,
   DirectoryPublicationV1,
   EcosystemDirectoryPublicationPayloadV1,
-} from '../../../models/core/supporting/directory-publication'
+} from '../../../models/operations/directory-publication'
 import {
   projectPublicApp,
   toAppDirectoryEntry,

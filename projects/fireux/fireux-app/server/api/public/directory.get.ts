@@ -6,7 +6,7 @@ import {
   type H3Event,
 } from 'h3'
 import type { Firestore } from 'firebase-admin/firestore'
-import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/core/supporting/directory.ts'
+import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory.ts'
 import {
   projectPublicApp,
   toAppDirectoryEntry,

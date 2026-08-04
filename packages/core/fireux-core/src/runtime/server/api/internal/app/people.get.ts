@@ -8,8 +8,8 @@ import {
 } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
-import { AppJoinRequestStorage } from '../../../../models/core/supporting/app-membership'
-import { UserAppStorage, UserStorage } from '../../../../models/core/user.model'
+import { AppJoinRequestStorage } from '../../../../models/operations/app-membership'
+import { AppUserStorage, UserStorage } from '../../../../models/core/user.model'
 import { requireFirebaseBearerUser } from '../../../utils/auth/bearer'
 import {
   getRuntimeFirestore,
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event: H3Event) => {
   const appRef = appDb.collection(AppStorage.collection).doc(appId)
 
   const actorMembership = await appRef
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(uid)
     .get()
   if (!actorMembership.exists || actorMembership.data()?.role !== 'admin') {
@@ -49,7 +49,7 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const [memberSnapshot, requestSnapshot] = await Promise.all([
     appRef
-      .collection(UserAppStorage.collection)
+      .collection(AppUserStorage.collection)
       .orderBy(FieldPath.documentId())
       .limit(MAX_MEMBERS)
       .get(),

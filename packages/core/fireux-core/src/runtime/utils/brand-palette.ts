@@ -2,7 +2,7 @@
 import {
   BRAND_PALETTE_KEYS,
   type SparseBrandPalette,
-} from '../models/core/style.model.ts'
+} from '../models/utils/style.model.ts'
 
 export const DEFAULT_BRAND_PALETTE = {
   primary_color: '#0f766e',

@@ -12,7 +12,7 @@ import {
 } from 'h3'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
 import {
-  UserAppStorage,
+  AppUserStorage,
   UserNotificationStorage,
   UserStorage,
 } from 'fireux-core/runtime/models/core/user.model.ts'
@@ -65,7 +65,7 @@ async function publishOwnerNotifications(input: {
   const memberships = await db
     .collection(AppStorage.collection)
     .doc(input.appId)
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .where('role', '==', 'admin')
     .limit(16)
     .get()

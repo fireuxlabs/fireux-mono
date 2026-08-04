@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-21 15:05 CEST — Place provenance/privacy hardening: define Place identity as a non-sensitive public reference card, never a raw root.
 // Concurrent edit — 2026-07-21 16:35 CEST — Place onboarding completion: expose safe locale defaults on detail without bloating directory cards.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: expose validated public brand colours only on Place detail.
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type {
   MediaBackdropColor,
   PlaceBusinessHours,

@@ -8,7 +8,6 @@ const fireuxConfig = defineFireuxConfig({
   id: 'bangin-coffee',
   name: 'Bangin Coffee',
   shortName: 'Bangin Coffee',
-  brand: { owner: 'app', status: 'provisional' },
   role: 'tenant',
   consoles: [],
   modules: ['fireux-go-qr'],

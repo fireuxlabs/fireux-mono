@@ -81,13 +81,13 @@ Example Firestore stack names, not automatic entity proof:
 - Some root entities have a separate App support record. That support record is
   not another entity scope or fallback identity.
 - An app-private profile record uses only the app-scoped path, records its id on
-  `UserApp.profiles`, and must not acquire a root collection or public index.
+  `AppUser.profiles`, and must not acquire a root collection or public index.
 - Every root profile record is domain-only and uses its document id as the
   canonical `/users/{uid}` join key. Public presentation hydrates or projects
   that User; root profile documents never embed a User summary.
 - Every App profile delta record is non-identity support: it does not duplicate
   public User identity, and successful create/repair records the profile id on
-  `UserApp.profiles`. Root-backed profiles separately retain their public root
+  `AppUser.profiles`. Root-backed profiles separately retain their public root
   record and `User.profiles` id.
 - Model placement and Firestore composable placement are related but not identical.
 - Root profile models with App delta records can live on the root model spine
@@ -141,7 +141,7 @@ Example Firestore stack names, not automatic entity proof:
   validation.
 - Root and App create/read seams have fixed paths and one shared id. Independent
   root/App deletes and generic App access mutation helpers are withheld until a
-  trusted lifecycle can maintain root scope, access records, and UserApp target
+  trusted lifecycle can maintain root scope and App-support access
   indexes together.
 - Shared console attachment re-reads the root returned by an idempotent create
   before it checks App ownership. This closes accidental slug-collision attach

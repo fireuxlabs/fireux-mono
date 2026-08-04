@@ -4,7 +4,7 @@ import type {
   DirectoryOutcome,
   EcosystemDirectoryController,
   PlatformDirectoryResponse,
-} from 'fireux-core/runtime/models/core/supporting/directory'
+} from 'fireux-core/runtime/models/utils/directory'
 
 const retiredPublicEcosystemSlugs = new Set(['cleanbox'])
 

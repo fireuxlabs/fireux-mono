@@ -10,6 +10,5 @@ export default defineFireuxConfig({
   id: 'richies-reinigung',
   name: 'Richies',
   shortName: 'Richies',
-  brand: { owner: 'app', status: 'provisional' },
   role: 'tenant',
 })

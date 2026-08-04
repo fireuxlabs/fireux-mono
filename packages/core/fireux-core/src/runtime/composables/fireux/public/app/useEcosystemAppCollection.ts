@@ -5,7 +5,7 @@ import type {
   AppDirectoryController,
   AppDirectoryEntry,
   DirectoryOutcome,
-} from '../../../../models/core/supporting/directory'
+} from '../../../../models/utils/directory'
 import type { PublicCollectionResponse } from '../../../../server/utils/public-projection/public-dto.types'
 
 /** Read the current owning Ecosystem's allowlisted public App projection. */

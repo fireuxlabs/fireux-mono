@@ -60,12 +60,6 @@ export type AppMembershipMutationInput =
       action: 'remove-member'
       userId?: string
     }
-  | {
-      action: 'set-console-target'
-      family: string
-      targetId: string
-      enabled: boolean
-    }
 
 export type AppMembershipMutationResult = {
   ok: true

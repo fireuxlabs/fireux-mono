@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-22 12:39 CEST — Kitchen palette console: centralize portable Menu font tokens for UI and trusted writes.
-import type { PageStyleFontSource } from 'fireux-core/runtime/models/core/style.model.ts'
+import type { PageStyleFontSource } from 'fireux-core/runtime/models/utils/style.model.ts'
 
 export type MenuThemeFontOption = {
   id: string

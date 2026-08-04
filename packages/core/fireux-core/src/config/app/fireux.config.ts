@@ -49,7 +49,9 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
   validateFireuxAppConfig(app)
 
   const nuxt: NuxtConfig = {}
-  const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(app.databaseId)
+  const appDatabaseRuntimeModule = createAppDatabaseRuntimeModule(
+    app.databaseId
+  )
 
   configureViewport(nuxt)
   configurePageTransition(nuxt)
@@ -86,7 +88,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       id: app.id,
       name: app.name,
       shortName: app.shortName,
-      brand: app.brand,
       ...(app.contactEmail ? { contactEmail: app.contactEmail } : {}),
       ...(app.pricing ? { pricing: app.pricing } : {}),
       ...(app.designPack ? { designPack: app.designPack } : {}),
@@ -133,10 +134,9 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
 
   configNitroFirebase(nuxt, {
     serverFunctionName: toValidJsIdentifier(app.id),
-    region: process.env.NITRO_FIREBASE_REGION || defaultNitroFirebaseRegion(app.ecosystem),
-    ...(app.serverFunctionServiceAccount
-      ? { serviceAccount: app.serverFunctionServiceAccount }
-      : {}),
+    region:
+      process.env.NITRO_FIREBASE_REGION ||
+      defaultNitroFirebaseRegion(app.ecosystem),
   })
 
   configViteWorkspace(nuxt)

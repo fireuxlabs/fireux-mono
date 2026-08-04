@@ -13,7 +13,7 @@ import {
 import {
   USER_ECOSYSTEM_AVATAR_SRC,
   resolveUserAvatarSource,
-} from '../../../../../../../models/core/supporting/user-avatar'
+} from '../../../../../../../models/utils/user-avatar'
 import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
 import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
 

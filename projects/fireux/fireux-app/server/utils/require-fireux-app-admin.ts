@@ -2,7 +2,7 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getFirestoreDb } from './firebase-admin'
 
@@ -23,7 +23,7 @@ export async function requireFireuxAppAdmin(event: H3Event) {
   const appRef = db.collection(AppStorage.collection).doc(appId)
   const [appSnapshot, membershipSnapshot] = await Promise.all([
     appRef.get(),
-    appRef.collection(UserAppStorage.collection).doc(uid).get(),
+    appRef.collection(AppUserStorage.collection).doc(uid).get(),
   ])
   const membership = (membershipSnapshot.data() || {}) as Record<
     string,

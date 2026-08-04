@@ -3,7 +3,7 @@ import type { H3Event } from 'h3'
 import {
   normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
+} from 'fireux-core/runtime/models/utils/meta.model.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import {
@@ -23,7 +23,6 @@ export type RuntimePolicy = {
   developerId: string
   appScopeState: 'parent_app' | 'tenant_app'
   canCreate: boolean
-  targetIds: string[]
 }
 
 export type Actor = RuntimePolicy & {
@@ -45,17 +44,12 @@ export function runtimePolicy(event: H3Event): RuntimePolicy {
     typeof portfolioConfig.canCreate === 'boolean'
       ? portfolioConfig.canCreate
       : appRole !== 'tenant'
-  const targetIds = Array.isArray(portfolioConfig.targetIds)
-    ? Array.from(new Set(portfolioConfig.targetIds.map(text).filter(Boolean)))
-    : []
-
   return {
     appId,
     appRole,
     developerId,
     appScopeState,
     canCreate,
-    targetIds,
   }
 }
 
@@ -65,16 +59,6 @@ export function requireMemberRole(exists: boolean, value: unknown): MemberRole {
     fail(403, 'Current App membership is required to onboard a Portfolio.')
   }
   return role
-}
-
-export function assertRuntimeTarget(
-  current: RuntimePolicy,
-  portfolioId: string
-) {
-  if (current.appRole !== 'tenant') return
-  if (!current.targetIds.includes(portfolioId)) {
-    fail(403, 'This Portfolio is not a configured target for the tenant App.')
-  }
 }
 
 export function readSupport(value: Record<string, unknown> | null) {
@@ -87,29 +71,6 @@ export function readSupport(value: Record<string, unknown> | null) {
       100,
       'Portfolio join requests'
     ),
-  }
-}
-
-export function assertMembershipCapacity(
-  membership: Record<string, unknown>,
-  portfolioId: string
-) {
-  if (
-    membership.console_targets !== undefined &&
-    !isRecord(membership.console_targets)
-  ) {
-    fail(409, 'UserApp Console targets have an invalid stored shape.')
-  }
-  const targets = record(membership.console_targets)
-  if (targets.portfolio_ids === undefined) return
-
-  const ids = boundedIds(
-    targets.portfolio_ids,
-    50,
-    'UserApp Portfolio console targets'
-  )
-  if (!ids.includes(portfolioId) && ids.length >= 50) {
-    fail(409, 'The UserApp Portfolio console target list is full.')
   }
 }
 

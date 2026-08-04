@@ -2,7 +2,7 @@ import { useRuntimeConfig } from '#imports'
 import { FieldPath } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { AppStorage } from '../../../models/core/app.model'
-import { UserAppStorage } from '../../../models/core/user.model'
+import { AppUserStorage } from '../../../models/core/user.model'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
 
 export type PublicUserScope =
@@ -56,7 +56,7 @@ export async function readPublicUserScopeIds(
   const snapshot = await getRuntimeFirestore()
     .collection(AppStorage.collection)
     .doc(scope.appId)
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .orderBy(FieldPath.documentId())
     .limit(limit)
     .get()
@@ -77,7 +77,7 @@ export async function publicUserBelongsToScope(
   const membership = await getRuntimeFirestore()
     .collection(AppStorage.collection)
     .doc(scope.appId)
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(userId)
     .get()
 

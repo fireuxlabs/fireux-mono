@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: attach console targets through the server-owned UserApp capability transaction.
+// Concurrent edit — 2026-07-20 11:52 CEST — Security spine: attach console targets through the server-owned AppUser capability transaction.
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: re-read created roots before app-support ownership checks.
 // Concurrent edit — 2026-07-20 22:40 CEST — Supplier/Portfolio Authority Hardening: bind App support ids to validated canonical roots.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name console App support creation explicitly.
@@ -18,13 +18,12 @@ import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/models/core/meta.model'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model'
-import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access'
+} from 'fireux-core/runtime/models/utils/meta.model'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
+import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'
-import { mutateAppMembership } from '../../../core/user/utils/appMembershipMutation'
 
 export type ConsoleEntityType =
   | 'kitchen'
@@ -102,13 +101,13 @@ export function useConsoleCreate() {
       db,
       AppStorage.collection,
       currentAppId,
-      UserAppStorage.collection,
+      AppUserStorage.collection,
       currentUid
     )
     const appUserSnap = await getDoc(appUserRef)
     if (
       appUserSnap.exists() &&
-      hasUserAppPremiumAccess(appUserSnap.data(), {
+      hasAppUserPremiumAccess(appUserSnap.data(), {
         isConfiguredDeveloper:
           Boolean(developerId) && currentUid === developerId,
       })
@@ -278,12 +277,6 @@ export function useConsoleCreate() {
         { merge: true }
       )
 
-      await mutateAppMembership({
-        action: 'set-console-target',
-        family: options.type,
-        targetId: id,
-        enabled: true,
-      })
     }
 
     const rootRef = doc(db, collectionName, id)

@@ -1,4 +1,4 @@
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import {
   PlaceModel,
   type Place,

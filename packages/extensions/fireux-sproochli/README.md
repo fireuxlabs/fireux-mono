@@ -31,8 +31,8 @@ complete production registration.
 
 A production FireUX Firebase SSR host also requires:
 
-1. a dedicated host SSR service account bound through
-   `app.serverFunctionServiceAccount`;
+1. a dedicated host SSR service account bound through the host ecosystem's
+   `ssr.serviceAccount`;
 2. a server-only named Firestore database called `sproochli` in the host
    Firebase project;
 3. the minimum host-local IAM required for that server to use its own storage;

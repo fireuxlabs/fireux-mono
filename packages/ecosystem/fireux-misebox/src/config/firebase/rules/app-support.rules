@@ -14,33 +14,7 @@
       // Administrative removal blocks are server-owned and never client-readable.
       // @fireux-core-rules membership-block
       match /users/{userId} {
-        function isValidConsoleTargets(value) {
-          return value is map &&
-            value.keys().hasOnly([
-              'kitchen_ids',
-              'supplier_ids',
-              'property_ids',
-              'portfolio_ids',
-              'blank_ids'
-            ]) &&
-            (!('kitchen_ids' in value) ||
-              (value.kitchen_ids is list &&
-                value.kitchen_ids.size() <= 50)) &&
-            (!('supplier_ids' in value) ||
-              (value.supplier_ids is list &&
-                value.supplier_ids.size() <= 50)) &&
-            (!('property_ids' in value) ||
-              (value.property_ids is list &&
-                value.property_ids.size() <= 50)) &&
-            (!('portfolio_ids' in value) ||
-              (value.portfolio_ids is list &&
-                value.portfolio_ids.size() <= 50)) &&
-            (!('blank_ids' in value) ||
-              (value.blank_ids is list &&
-                value.blank_ids.size() <= 50));
-        }
-
-        function isValidUserApp(data) {
+        function isValidAppUser(data) {
           return data.keys().hasAll([
               'role',
               'is_premium',
@@ -54,7 +28,6 @@
               'console_enabled',
               'onboarding_status',
               'profiles',
-              'console_targets',
               'created',
               'updated'
             ]) &&
@@ -77,18 +50,16 @@
                   'driver',
                   'professional'
                 ]))) &&
-            (!('console_targets' in data) ||
-              isValidConsoleTargets(data.console_targets)) &&
             validCreatedStamp(data.created) &&
             data.created.app_id == appId &&
             validUpdatedStamp(data.updated);
         }
 
         allow get: if isOwner(userId) ||
-          (isAppAdmin(appId) && isValidUserApp(resource.data));
+          (isAppAdmin(appId) && isValidAppUser(resource.data));
         allow list: if isAppAdmin(appId) &&
           request.query.limit <= 100 &&
-          isValidUserApp(resource.data);
+          isValidAppUser(resource.data);
         allow create, update, delete: if false;
       }
 
@@ -156,7 +127,7 @@
           (isAppAdmin(appId) && isValidCustomer(resource.data));
         allow list: if isAppAdmin(appId);
         // Trusted profile provisioning creates the record and updates
-        // UserApp.profiles in one server transaction.
+        // AppUser.profiles in one server transaction.
         allow create: if false;
         allow update: if isOwner(userId) &&
           isAppMember(appId) &&
@@ -195,7 +166,7 @@
           (isAppAdmin(appId) && isValidAppDriver(resource.data));
         allow list: if isAppAdmin(appId);
         // Trusted profile provisioning creates the record and updates
-        // UserApp.profiles in one server transaction.
+        // AppUser.profiles in one server transaction.
         allow create: if false;
         allow update: if isOwner(userId) &&
           isAppMember(appId) &&
@@ -248,7 +219,7 @@
         allow list: if isIdentityProfileOverlay() &&
           isAppAdmin(appId);
         // Trusted profile provisioning creates the record and updates
-        // UserApp.profiles in one server transaction.
+        // AppUser.profiles in one server transaction.
         allow create: if false;
         allow update: if isIdentityProfileOverlay() &&
           isOwner(userId) &&

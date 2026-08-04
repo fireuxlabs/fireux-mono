@@ -25,7 +25,7 @@ import {
 } from '../../utils/public-projection/public-user-scope'
 import { getRuntimeIdentityFirestore } from '../../utils/getRuntimeFirestore'
 import { UserStorage } from '../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../models/core/supporting/user-avatar'
+import { resolveUserAvatarSource } from '../../../models/utils/user-avatar'
 
 const CACHE_CONTROL = 'public, max-age=120, s-maxage=600, stale-while-revalidate=3600'
 

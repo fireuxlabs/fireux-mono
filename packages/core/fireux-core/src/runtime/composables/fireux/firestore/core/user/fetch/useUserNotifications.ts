@@ -8,7 +8,7 @@ import {
   type Query,
 } from 'firebase/firestore'
 import { computed, onMounted, ref } from 'vue'
-import type { UserNotification } from '../../../../../../models/core/supporting/user'
+import type { UserNotification } from '../../../../../../models/utils/user'
 import {
   UserNotificationStorage,
   UserStorage,

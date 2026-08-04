@@ -36,7 +36,7 @@
             to create or attach the root and its same-id App support record.
           </li>
           <li>
-            The transaction also updates the current UserApp Supplier target.
+            The transaction also updates the current AppUser Supplier target.
           </li>
           <li>
             Adds the current operator to supplier

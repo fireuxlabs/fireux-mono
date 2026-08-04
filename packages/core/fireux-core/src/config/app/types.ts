@@ -5,11 +5,6 @@ import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from '../../runtime/models/system/meta-content.model'
 
-export type FireuxAppBrandConfig =
-  | { owner: 'core' }
-  | { owner: 'ecosystem' }
-  | { owner: 'app'; status: 'approved' | 'provisional' }
-
 export type FireuxAppConfig = {
   /** Ecosystem package/Firebase binding key. This is infrastructure, not an entity relationship. */
   ecosystem: string
@@ -20,12 +15,8 @@ export type FireuxAppConfig = {
   id: string
   name: string
   shortName: string
-  /** Declares the single authority for the complete /public/img/app runtime family. */
-  brand: FireuxAppBrandConfig
   /** Optional app-owned Firestore database id. Standalone apps should set this. */
   databaseId?: string
-  /** Optional dedicated service account for the deployed Firebase SSR function. */
-  serverFunctionServiceAccount?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
   /** Main App-owned product capabilities used by the shared pricing literature. */
@@ -43,10 +34,7 @@ export type FireuxAppConfig = {
   modules?: NonNullable<NuxtConfig['modules']>
   consoles?: string[]
   /** Optional per-console app behavior, e.g. whether this app may create or pin console targets. */
-  consoleConfig?: Record<
-    string,
-    { canCreate?: boolean; targetIds?: string[]; devTargetIds?: string[] }
-  >
+  consoleConfig?: Record<string, { canCreate?: boolean }>
   /** Optional public/admin root domains this app consumes. */
   domains?: string[]
   /** Optional profile identities this app lets users create/manage. */

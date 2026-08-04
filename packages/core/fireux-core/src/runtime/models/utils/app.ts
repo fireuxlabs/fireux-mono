@@ -1,4 +1,4 @@
-// FILE: packages/core/fireux-core/src/runtime/models/core/supporting/app.ts
+// FILE: packages/core/fireux-core/src/runtime/models/utils/app.ts
 // Concurrent edit — 2026-07-20 15:59 CEST — Repo Efficiency Pass 1 of 6: align App repo console-family types with the security contract.
 
 /**

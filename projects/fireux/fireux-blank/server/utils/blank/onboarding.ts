@@ -1,9 +1,9 @@
-// Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: atomically create Blank root, App support, and UserApp target.
+// Concurrent edit — 2026-07-21 22:28 CEST — Console family alignment: atomically create Blank root and App support.
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep access out of Blank root and reject coerced target ids.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/core/meta.model.ts'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -81,7 +81,7 @@ export async function completeBlankOnboarding(
 
   const db = getRuntimeFirestore()
   const membershipRef = db.doc(
-    `apps/${appId}/${UserAppStorage.collection}/${uid}`
+    `apps/${appId}/${AppUserStorage.collection}/${uid}`
   )
   const rootRef = db.collection(BlankStorage.rootCollection).doc()
   const supportRef = db.doc(
@@ -92,17 +92,6 @@ export async function completeBlankOnboarding(
     const membership = await transaction.get(membershipRef)
     if (!membership.exists || text(membership.get('role')) !== 'admin') {
       fail(403, 'Current App admin membership is required to create a Blank.')
-    }
-
-    const membershipData = membership.data() || {}
-    const consoleTargets = record(membershipData.console_targets)
-    const blankIds = stringList(
-      consoleTargets.blank_ids ?? [],
-      'UserApp Blank console targets',
-      50
-    )
-    if (blankIds.length >= 50) {
-      fail(409, 'The UserApp Blank console target list is full.')
     }
 
     const slug = normalizeSlug(`${name}-${rootRef.id.slice(0, 6)}`)
@@ -125,7 +114,6 @@ export async function completeBlankOnboarding(
     })
     transaction.update(membershipRef, {
       console_enabled: true,
-      'console_targets.blank_ids': [...blankIds, rootRef.id],
       updated: serverAuditStamp({ by: uid }),
     })
 

@@ -4,7 +4,7 @@
 import { deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
 import { AppStorage, type App } from '../../../../../../models/core/app.model'
-import type { AppSocialLinks } from '../../../../../../models/core/supporting/app'
+import type { AppSocialLinks } from '../../../../../../models/utils/app'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'

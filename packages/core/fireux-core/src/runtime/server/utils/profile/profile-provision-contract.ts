@@ -3,7 +3,7 @@ import {
   type DocumentSnapshot,
 } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { canonicalProfileIndex } from '../../../models/core/supporting/profile-provisioning'
+import { canonicalProfileIndex } from '../../../models/operations/profile-provisioning'
 import { serverAuditStamp } from '../records/stamps'
 
 export type ProfileProvisionContractSeed = Readonly<Record<string, unknown>>

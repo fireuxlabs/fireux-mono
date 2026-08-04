@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe root/App support transfers without overlay language.
 import { AppStorage } from '../../../models/core/app.model'
-import type { FireuxAppScopeState } from '../../../models/core/meta.model'
+import type { FireuxAppScopeState } from '../../../models/utils/meta.model'
 
 export type AppScopeRepresentation = 'flat' | 'nested'
 export type AppScopeTransferDestinationState = Exclude<

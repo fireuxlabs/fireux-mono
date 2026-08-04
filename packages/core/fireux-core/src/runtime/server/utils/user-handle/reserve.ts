@@ -12,12 +12,12 @@ import {
 import {
   type UserHandleReservationInput,
   type UserHandleReservationResult,
-} from '../../../models/core/supporting/user-handle-reservation'
-import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/core/supporting/user-account-provisioning'
+} from '../../../models/operations/user-handle-reservation'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/operations/user-account-provisioning'
 import {
   USER_ECOSYSTEM_AVATAR_SRC,
   resolveUserAvatarSource,
-} from '../../../models/core/supporting/user-avatar'
+} from '../../../models/utils/user-avatar'
 import { readHttpsUrl } from '../../../utils/httpsUrl'
 import { validatePublicSlug } from '../../../utils/slug/validatePublicSlug'
 import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'

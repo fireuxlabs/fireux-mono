@@ -30,7 +30,7 @@
 import { computed, ref, useRouter } from '#imports'
 import { useResolvedColorMode } from '../../composables/fireux/app/useColorMode'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/core/supporting/user-account-provisioning'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/operations/user-account-provisioning'
 
 const router = useRouter()
 const { signInWithGoogle } = useAuth()

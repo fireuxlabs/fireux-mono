@@ -3,9 +3,9 @@ import type { AppStatus } from '../../../models/core/app.model'
 import type {
   AppRole,
   AppSocialLinks,
-} from '../../../models/core/supporting/app'
+} from '../../../models/utils/app'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
-import type { AppDirectoryEntry } from '../../../models/core/supporting/directory'
+import type { AppDirectoryEntry } from '../../../models/utils/directory'
 import { asTrimmedString } from './public-dto.helpers'
 import type { PublicAppDto } from './public-dto.types'
 

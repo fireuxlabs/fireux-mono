@@ -1,5 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxStamped } from '../core/meta.model'
+import type { FireuxStamped } from '../utils/meta.model'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md

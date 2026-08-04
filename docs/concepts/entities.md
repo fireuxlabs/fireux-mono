@@ -137,13 +137,13 @@ Company role and then to the same-id Place; Supplier does not add a synonymous
 
 ### Identity plus membership
 
-User is public identity. UserApp is App-owned membership/entitlement and
+User is public identity. AppUser is App-owned membership/entitlement and
 UserPrivate is private account support. Neither support record is another User.
 
 The visible Dev/Admin/Premium/Free access badge is derived presentation. It is
 not stored on User and never replaces server or Rules authority.
 
-UserApp stores App governance (`role: user | admin`), an explicit Premium
+AppUser stores App governance (`role: user | admin`), an explicit Premium
 grant, and onboarding lifecycle separately. A configured developer with a
 valid membership resolves to Dev, an Admin resolves to Admin, then explicit
 Premium and Free follow. Dev and Admin include Premium product capability, but
@@ -153,7 +153,7 @@ turning the indexes into authority.
 
 Public User projections preserve the same split. Global runtimes may enumerate
 the canonical User catalogue. Tenant runtimes first enumerate exact valid
-UserApp memberships for their configured App, then hydrate only those canonical
+AppUser memberships for their configured App, then hydrate only those canonical
 User identities. Root `User.app_ids` is denormalized identity metadata, not
 tenant-directory selection authority, and tenant detail routes apply the same
 membership decision as their list.
@@ -182,7 +182,7 @@ projection; it does not establish raw root-read authority.
 - `FinancialMoney`: Primitive.
 - `FinancialFact`: immutable App-owned Record derived from a source operation.
 - `KitchenSale`: Kitchen-owned Record derived from a completed KitchenOrder.
-- `UserApp`, `UserPrivate`, and App access rows: support Records.
+- `AppUser`, `UserPrivate`, and App access rows: support Records.
 - `AppDirectoryEntry` and `EcosystemDirectoryEntry`: public projection Shapes
   or Records.
 - Menu choice, fulfilment policy, and presentation objects: Shapes unless a

@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: centralize the strict public User identity allowlist.
-import { resolveUserAvatarSource } from '../../../models/core/supporting/user-avatar'
+import { resolveUserAvatarSource } from '../../../models/utils/user-avatar'
 import type { PublicUserIdentityDto } from './public-dto.types'
 
 const USER_HANDLE_PATTERN = /^[a-z0-9][a-z0-9-]{2,29}$/

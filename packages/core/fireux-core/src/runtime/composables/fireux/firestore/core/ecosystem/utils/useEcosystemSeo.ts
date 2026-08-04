@@ -1,6 +1,6 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
-import { EcosystemStorage } from '../../../../../../models/system/ecosystem.model'
+import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
 import type { EcosystemSurface } from './view/useEcosystemInterface'
 
 const clean = (value: unknown) => String(value ?? '').trim()

@@ -62,7 +62,8 @@ Options:
 Examples:
   pnpm create:ecosystem -- --name <name>
   pnpm create:ecosystem -- --name <name> --firebase-project <firebase-project-id> --auth-domain app.example.com
-`) }
+`)
+}
 
 function normalizeEcosystemName(value) {
   return String(value || '')
@@ -105,7 +106,7 @@ function writeJsonWithOptionalLeadingComment(filepath, prefix, data) {
 function updateTsconfigBase(repoRoot, pkgName) {
   const file = path.join(repoRoot, 'tsconfig.base.json')
   const data = JSON.parse(readFileSync(file, 'utf8'))
-  const paths = (data.compilerOptions ||= {}).paths ||= {}
+  const paths = ((data.compilerOptions ||= {}).paths ||= {})
 
   paths[pkgName] ||= [`./packages/ecosystem/${pkgName}/src/module.ts`]
   paths[`${pkgName}/*`] ||= [`./packages/ecosystem/${pkgName}/src/*`]
@@ -159,11 +160,21 @@ function ensureServiceAccountIgnoreContract(repoRoot) {
   writeFileSync(file, `${lines.join('\n').trimEnd()}\n`, 'utf8')
 }
 
-function makeFiles({ slug, pkgName, displayName, description, firebaseProject, ssrRegion, team }) {
+function makeFiles({
+  slug,
+  pkgName,
+  displayName,
+  description,
+  firebaseProject,
+  ssrRegion,
+  team,
+}) {
   const authDomain = `${firebaseProject}.firebaseapp.com`
   const storageBucket = `${firebaseProject}.firebasestorage.app`
   return [
-    ['package.json', `{
+    [
+      'package.json',
+      `{
   "name": "${pkgName}",
   "version": "0.1.0",
   "description": "${description}",
@@ -212,8 +223,11 @@ function makeFiles({ slug, pkgName, displayName, description, firebaseProject, s
     "glob": "^11.0.3"
   }
 }
-`],
-    ['README.md', `# ${pkgName}
+`,
+    ],
+    [
+      'README.md',
+      `# ${pkgName}
 
 ${displayName} ecosystem package for FireUX.
 
@@ -229,21 +243,30 @@ This package defines ${displayName} branding, configuration, and ecosystem-speci
 - Keep Level-1 strict and minimal
 - Put implementation inside src/
 - Do not commit build output
-`],
-    ['registry.json', `{
+`,
+    ],
+    [
+      'registry.json',
+      `{
   "type": "ecosystem",
   "id": "${pkgName}",
   "name": "${slug}",
   "team": "${team}"
 }
-`],
-    ['.firebaserc', `{
+`,
+    ],
+    [
+      '.firebaserc',
+      `{
   "projects": {
     "default": "${firebaseProject}"
   }
 }
-`],
-    ['tsconfig.json', `{
+`,
+    ],
+    [
+      'tsconfig.json',
+      `{
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
     "noEmit": true,
@@ -254,9 +277,15 @@ This package defines ${displayName} branding, configuration, and ecosystem-speci
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.vue"],
   "exclude": ["node_modules", "dist"]
 }
-`],
-    ['docs/.gitkeep', '# Keep docs directory for ecosystem package contract.\n'],
-    ['src/module.ts', `import { createResolver, defineNuxtModule } from '@nuxt/kit'
+`,
+    ],
+    [
+      'docs/.gitkeep',
+      '# Keep docs directory for ecosystem package contract.\n',
+    ],
+    [
+      'src/module.ts',
+      `import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
@@ -292,8 +321,11 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
 })
 
 export default module
-`],
-    ['src/config/firebase/ecosystem.config.ts', `import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
+`,
+    ],
+    [
+      'src/config/firebase/ecosystem.config.ts',
+      `import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 
 export const ecosystemConfig = {
   id: '${pkgName}',
@@ -308,10 +340,39 @@ export const ecosystemConfig = {
     messagingSenderId: 'REPLACE_WITH_MESSAGING_SENDER_ID',
     databaseId: '${slug}',
   },
-  ssrRegion: '${ssrRegion}',
+  ssr: {
+    region: '${ssrRegion}',
+  },
 } as const satisfies FireuxEcosystemConfig
-`],
-    ['src/config/firebase/service-account.example.json', `{
+`,
+    ],
+    [
+      'src/config/firebase/firestore.template.rules',
+      `// @fireux-rules-template ${slug}
+// @fireux-rules-project ${firebaseProject}
+// @fireux-rules-databases ${slug}
+// @fireux-rules-artifact scripts/firebase/${slug}/firestore.rules
+// @fireux-rules-fragments open,close
+// Concurrent edit — generated ecosystem scaffold: establish an ecosystem-owned default-deny release source.
+// @fireux-rules-template-source
+// @fireux-ecosystem-rules default-deny
+`,
+    ],
+    [
+      'src/config/firebase/rules/default-deny.rules',
+      `// @fireux-ecosystem-rules-fragment ${slug}/default-deny
+// @fireux-core-rules open
+    // This ecosystem owns its deployable Rules surface. Domain policies may
+    // replace this fallback only through reviewed ecosystem-local fragments.
+    match /{document=**} {
+      allow read, write: if request.auth != null && false;
+    }
+// @fireux-core-rules close
+`,
+    ],
+    [
+      'src/config/firebase/service-account.example.json',
+      `{
   "type": "service_account",
   "project_id": "REPLACE_WITH_FIREBASE_PROJECT_ID",
   "private_key_id": "",
@@ -323,8 +384,11 @@ export const ecosystemConfig = {
   "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
   "client_x509_cert_url": ""
 }
-`],
-    ['src/config/module/components-config.ts', `import type { Resolver } from '@nuxt/kit'
+`,
+    ],
+    [
+      'src/config/module/components-config.ts',
+      `import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { registerComponentsDir } from 'fireux-core/config/module/module-helpers'
 
@@ -341,8 +405,11 @@ export function configureComponents(resolver: Resolver, nuxt: Nuxt) {
   ;(nuxt.options.alias as Record<string, string>)['#${pkgName}-components'] =
     componentsDir
 }
-`],
-    ['src/config/module/imports-config.ts', `import { addImportsDir, type Resolver } from '@nuxt/kit'
+`,
+    ],
+    [
+      'src/config/module/imports-config.ts',
+      `import { addImportsDir, type Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { existsSync } from 'fs'
 
@@ -352,16 +419,22 @@ export const configureImports = (resolver: Resolver, _nuxt: Nuxt) => {
     addImportsDir(composablesDir)
   }
 }
-`],
-    ['src/config/module/pages-config.ts', `import type { Resolver } from '@nuxt/kit'
+`,
+    ],
+    [
+      'src/config/module/pages-config.ts',
+      `import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { configurePages } from 'fireux-core/config/module/pages-config'
 
 export const configureModulePages = (resolver: Resolver, nuxt: Nuxt) => {
   configurePages(resolver, nuxt)
 }
-`],
-    ['src/config/module/public-assets-config.ts', `import type { Resolver } from '@nuxt/kit'
+`,
+    ],
+    [
+      'src/config/module/public-assets-config.ts',
+      `import type { Resolver } from '@nuxt/kit'
 import type { Nuxt } from '@nuxt/schema'
 import { existsSync } from 'fs'
 
@@ -387,8 +460,11 @@ export const configurePublicAssets = (resolver: Resolver, nuxt: Nuxt) => {
     ecoDirs.push({ key: '${slug}', title: '${displayName} ecosystem images', dir: publicDir })
   }
 }
-`],
-    ['src/config/module/runtime-config.ts', `import type { Nuxt } from '@nuxt/schema'
+`,
+    ],
+    [
+      'src/config/module/runtime-config.ts',
+      `import type { Nuxt } from '@nuxt/schema'
 
 export const configureRuntimeConfig = (nuxt: Nuxt) => {
   const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
@@ -409,8 +485,11 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
     ? { ...ecosystemDefaults, ...currentEcosystem }
     : { ...ecosystemDefaults }
 }
-`],
-    ['src/runtime/pages/dev/fireux-' + slug + '.vue', `<template>
+`,
+    ],
+    [
+      'src/runtime/pages/dev/fireux-' + slug + '.vue',
+      `<template>
   <UPage>
     <UPageHeader
       title="Dev · ${displayName}"
@@ -468,9 +547,16 @@ definePageMeta({
 
 const cfg = useFireUXConfig()
 </script>
-`],
-    ['src/runtime/public/img/ecosystem/.gitkeep', '# Ecosystem runtime projections live here.\n'],
-    ['src/runtime/public/img/ecosystem/brand/.gitkeep', '# Canonical complete ecosystem brand source. Remove this placeholder only when the guarded family is complete.\n'],
+`,
+    ],
+    [
+      'src/runtime/public/img/ecosystem/.gitkeep',
+      '# Ecosystem runtime projections live here.\n',
+    ],
+    [
+      'src/runtime/public/img/ecosystem/brand/.gitkeep',
+      '# Canonical complete ecosystem brand source. Remove this placeholder only when the guarded family is complete.\n',
+    ],
   ]
 }
 
@@ -494,10 +580,10 @@ async function resolveAuthDomainSyncDecision(args, authDomains) {
   if (!process.stdin.isTTY || !process.stdout.isTTY) {
     throw new Error(
       `[create-ecosystem] Firebase Auth domain set (${authDomains.join(', ')}) ` +
-      'needs an explicit Firebase Auth ' +
-      'authorized-domain decision in non-interactive mode. Re-run with ' +
-      '--sync-auth-domain to add it additively, or --no-sync-auth-domain ' +
-      'to leave Firebase unchanged.'
+        'needs an explicit Firebase Auth ' +
+        'authorized-domain decision in non-interactive mode. Re-run with ' +
+        '--sync-auth-domain to add it additively, or --no-sync-auth-domain ' +
+        'to leave Firebase unchanged.'
     )
   }
 
@@ -509,8 +595,8 @@ async function resolveAuthDomainSyncDecision(args, authDomains) {
     while (true) {
       const answer = await prompt.question(
         'Add all intended public origins to Firebase Authentication authorized domains?\n' +
-        `${authDomains.map(domain => `  - ${domain}`).join('\n')}\n` +
-        'Authorize all? [y/n] '
+          `${authDomains.map((domain) => `  - ${domain}`).join('\n')}\n` +
+          'Authorize all? [y/n] '
       )
       if (/^(?:y|yes)$/i.test(answer.trim())) return true
       if (/^(?:n|no)$/i.test(answer.trim())) return false
@@ -522,7 +608,11 @@ async function resolveAuthDomainSyncDecision(args, authDomains) {
 }
 
 function syncFirebaseAuthDomains({ repoRoot, firebaseProject, authDomains }) {
-  const script = path.join(repoRoot, 'scripts', 'sync-firebase-auth-domains.mjs')
+  const script = path.join(
+    repoRoot,
+    'scripts',
+    'sync-firebase-auth-domains.mjs'
+  )
   const result = spawnSync(
     process.execPath,
     [script, '--project', firebaseProject, '--domains', authDomains.join(',')],
@@ -566,7 +656,9 @@ async function main() {
   const hostingAuthDomain = authDomain
     ? assertFirebaseAuthDomain(`${firebaseSite}.web.app`)
     : ''
-  const authDomains = [...new Set([authDomain, hostingAuthDomain].filter(Boolean))]
+  const authDomains = [
+    ...new Set([authDomain, hostingAuthDomain].filter(Boolean)),
+  ]
   const shouldSyncAuthDomain = await resolveAuthDomainSyncDecision(
     args,
     authDomains
@@ -581,7 +673,9 @@ async function main() {
   const ecosystemDir = path.join(repoRoot, 'packages', 'ecosystem', pkgName)
 
   if (existsSync(ecosystemDir) && !args.force) {
-    throw new Error(`Target already exists: ${ecosystemDir}. Use --force only if you know what you are doing.`)
+    throw new Error(
+      `Target already exists: ${ecosystemDir}. Use --force only if you know what you are doing.`
+    )
   }
 
   const files = makeFiles({
@@ -596,7 +690,9 @@ async function main() {
 
   if (args['dry-run']) {
     console.log(`[dry-run] would create ecosystem package: ${pkgName}`)
-    files.forEach(([rel]) => console.log(`  - packages/ecosystem/${pkgName}/${rel}`))
+    files.forEach(([rel]) =>
+      console.log(`  - packages/ecosystem/${pkgName}/${rel}`)
+    )
     console.log('[dry-run] would update tsconfig refs and path aliases')
     if (authDomain) {
       console.log(
@@ -625,10 +721,18 @@ async function main() {
   console.log(`Scaffolded ecosystem package: ${pkgName}`)
   console.log(`Path: packages/ecosystem/${pkgName}`)
   console.log('Next steps:')
-  console.log(`  1. Fill Firebase values in packages/ecosystem/${pkgName}/src/config/firebase/ecosystem.config.ts`)
-  console.log(`  2. Keep service-account.example.json inert; supply real Admin credentials through environment/application-default credentials`)
-  console.log('  3. Complete the canonical ecosystem brand source before any App declares brand.owner = ecosystem')
-  console.log('  4. In Firebase Auth, enable Email/Password, Google, and Anonymous sign-in providers')
+  console.log(
+    `  1. Fill Firebase values in packages/ecosystem/${pkgName}/src/config/firebase/ecosystem.config.ts`
+  )
+  console.log(
+    `  2. Keep service-account.example.json inert; supply real Admin credentials through environment/application-default credentials`
+  )
+  console.log(
+    '  3. Complete the canonical ecosystem brand source and its named App projections'
+  )
+  console.log(
+    '  4. In Firebase Auth, enable Email/Password, Google, and Anonymous sign-in providers'
+  )
   console.log(
     authDomain
       ? shouldSyncAuthDomain

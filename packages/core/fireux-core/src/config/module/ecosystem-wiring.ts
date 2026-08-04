@@ -18,6 +18,10 @@ type EcosystemFirebase = {
     identityDatabaseId?: string
     simulationDatabaseId?: string
   }
+  ssr: {
+    region: string
+    serviceAccount?: string
+  }
 }
 
 type EcosystemResolverStep = (resolver: Resolver, nuxt: Nuxt) => void
@@ -70,6 +74,34 @@ export function configureFireuxEcosystemModule(
   nuxt: Nuxt,
   options: ConfigureFireuxEcosystemModuleOptions
 ) {
+  const ssrRegion = String(options.ecosystem.ssr.region || '').trim()
+  if (!ssrRegion) {
+    throw new Error('[fireux] ecosystem.ssr.region must be a non-empty region.')
+  }
+  const serviceAccount = String(
+    options.ecosystem.ssr.serviceAccount || ''
+  ).trim()
+  if (
+    serviceAccount &&
+    !/^[a-z][a-z0-9-]{4,28}[a-z0-9]@[a-z][a-z0-9-]{4,28}[a-z0-9]\.iam\.gserviceaccount\.com$/i.test(
+      serviceAccount
+    )
+  ) {
+    throw new Error(
+      '[fireux] ecosystem.ssr.serviceAccount must be an exact Google service-account email.'
+    )
+  }
+
+  const nitro = ((nuxt.options as any).nitro ||= {}) as Record<string, any>
+  const firebase = (nitro.firebase ||= {}) as Record<string, any>
+  const httpsOptions = (firebase.httpsOptions ||= {}) as Record<string, any>
+  httpsOptions.region = ssrRegion
+  if (serviceAccount) {
+    httpsOptions.serviceAccount = serviceAccount
+  } else {
+    delete httpsOptions.serviceAccount
+  }
+
   setRuntimeFirebaseEcosystem(nuxt as any, {
     id: options.ecosystem.id,
     name: options.ecosystem.name,
@@ -96,7 +128,9 @@ export function configureFireuxEcosystemModule(
   if (options.configurePublicAssets) {
     options.configurePublicAssets(resolver, nuxt)
   } else {
-    const key = String(options.ecosystem.name || options.ecosystem.id || 'ecosystem')
+    const key = String(
+      options.ecosystem.name || options.ecosystem.id || 'ecosystem'
+    )
       .trim()
       .toLowerCase()
     const title = `${String(options.ecosystem.name || options.ecosystem.id || 'Ecosystem').trim()} ecosystem images`

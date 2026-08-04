@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-22 00:38 CEST — Dish image server: expose App-admin-or-Kitchen-operator write authority.
 import { createError, type H3Event } from 'h3'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -91,7 +91,7 @@ export async function requireKitchenWriter(
   const db = getRuntimeFirestore()
   const appRef = db.collection(AppStorage.collection).doc(input.appId)
   const membershipRef = appRef
-    .collection(UserAppStorage.collection)
+    .collection(AppUserStorage.collection)
     .doc(user.uid)
   const kitchenRef = appRef
     .collection(KitchenStorage.scopeCollection)

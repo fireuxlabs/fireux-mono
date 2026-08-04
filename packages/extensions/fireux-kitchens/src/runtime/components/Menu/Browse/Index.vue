@@ -130,7 +130,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { setResponseStatus, useRoute } from '#imports'
-import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/core/money.model'
+import type { CurrencyDisplayFormat } from 'fireux-core/runtime/models/utils/money.model'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import {
   isSproochliRtlLanguage,

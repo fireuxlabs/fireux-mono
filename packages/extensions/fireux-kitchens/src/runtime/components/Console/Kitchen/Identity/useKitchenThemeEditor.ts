@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-22 12:44 CEST — Canonical Kitchen theme write: retain lossless target-bound drafts while writes refresh authority.
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'

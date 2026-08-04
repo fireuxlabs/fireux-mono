@@ -1,18 +1,18 @@
 // @fireux-script
 // last_used: 2026-07-24
-// usage_note: run through pnpm guard; locks derived UserApp tiers, inherited Premium capability, and sparse optional indexes.
+// usage_note: run through pnpm guard; locks derived AppUser tiers, inherited Premium capability, and sparse optional indexes.
 
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import path from 'node:path'
-import { resolveUserAppAccess } from '../../packages/core/fireux-core/src/runtime/models/core/supporting/user-app-access.ts'
+import { resolveAppUserAccess } from '../../packages/core/fireux-core/src/runtime/models/utils/app-user-access.ts'
 import { expandFirestoreRulesTemplate } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 
 const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
 
 function assertAccess(input, expected) {
-  const access = resolveUserAppAccess(input)
+  const access = resolveAppUserAccess(input)
   assert.equal(access.tier, expected.tier, expected.label)
   assert.equal(
     access.hasAdminAuthority,
@@ -89,13 +89,18 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/models/core/user.model.ts'
   )
-  const modelStart = model.indexOf('export const UserAppModel = {')
+  const modelStart = model.indexOf('export const AppUserModel = {')
   const modelEnd = model.indexOf('\n} as const', modelStart)
   const userAppModel = model.slice(modelStart, modelEnd)
   assert.doesNotMatch(
     userAppModel,
     /\b(?:access_?tier|tier):/,
-    'UserApp must not persist the derived access tier.'
+    'AppUser must not persist the derived access tier.'
+  )
+  assert.doesNotMatch(
+    userAppModel,
+    /console_targets/,
+    'AppUser must not duplicate entity App-support authority.'
   )
 
   const mutation = read(
@@ -112,12 +117,12 @@ export async function run({ repoRoot }) {
   assert.doesNotMatch(
     initialMembership,
     /\bprofiles:/,
-    'New UserApp memberships must omit an empty profile index.'
+    'New AppUser memberships must omit an empty profile index.'
   )
   assert.doesNotMatch(
     initialMembership,
     /\bconsole_targets:/,
-    'New UserApp memberships must omit empty Console target indexes.'
+    'New AppUser memberships must omit empty Console target indexes.'
   )
 
   const context = read(
@@ -125,7 +130,7 @@ export async function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/server/api/internal/app/context.get.ts'
   )
   assert.match(context, /value\.profiles \?\? \[\]/)
-  assert.match(context, /Object\.entries\(rawTargets \?\? \{\}\)/)
+  assert.doesNotMatch(context, /console_targets/)
   assert.match(context, /has_premium_access: access\.hasPremiumAccess/)
 
   const activeUserFetch = read(
@@ -135,7 +140,7 @@ export async function run({ repoRoot }) {
   assert.match(activeUserFetch, /useCurrentAppContext/)
   assert.doesNotMatch(
     activeUserFetch,
-    /\b(?:AppStorage|UserAppStorage|normalizeUserApp)\b/,
+    /\b(?:AppStorage|AppUserStorage|normalizeAppUser)\b/,
     'Active User membership must use the bounded current-App server projection.'
   )
 
@@ -157,7 +162,7 @@ export async function run({ repoRoot }) {
   assert.match(routeAuthGuard, /fetchCurrentAppContext/)
   assert.doesNotMatch(
     routeAuthGuard,
-    /firebase\/firestore|UserAppStorage/,
+    /firebase\/firestore|AppUserStorage/,
     'Client route authority must use the bounded current-App server projection.'
   )
 
@@ -168,7 +173,7 @@ export async function run({ repoRoot }) {
   assert.match(userCreate, /fetchCurrentAppContext/)
   assert.doesNotMatch(
     userCreate,
-    /\b(?:getDoc|UserAppStorage)\b/,
+    /\b(?:getDoc|AppUserStorage)\b/,
     'User provisioning must not inspect App membership through browser Firestore.'
   )
 
@@ -188,7 +193,7 @@ export async function run({ repoRoot }) {
   ]) {
     const rules = await expandFirestoreRulesTemplate(read(repoRoot, relativePath))
     assert.match(rules, /!\('profiles' in data\)/)
-    assert.match(rules, /!\('console_targets' in data\)/)
+    assert.doesNotMatch(rules, /console_targets/)
     assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)
     assert.match(rules, /allow create, update, delete: if false;/)
   }
@@ -200,10 +205,10 @@ export async function run({ repoRoot }) {
   ]) {
     assert.match(
       read(repoRoot, relativePath),
-      /hasUserAppPremiumAccess/,
+      /hasAppUserPremiumAccess/,
       `${relativePath} must use the shared Premium capability resolver.`
     )
   }
 
-  console.log('[guard] ✅ UserApp access and sparse-index contract is aligned')
+  console.log('[guard] ✅ AppUser access and sparse-index contract is aligned')
 }

@@ -13,5 +13,7 @@ export const ecosystemConfig = {
     messagingSenderId: '286263060307',
     databaseId: 'bringli',
   },
-  ssrRegion: 'europe-west1',
+  ssr: {
+    region: 'europe-west1',
+  },
 } as const satisfies FireuxEcosystemConfig

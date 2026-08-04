@@ -3,7 +3,8 @@ import type { FireuxEcosystemConfig } from 'fireux-core/types/ecosystem'
 export const ecosystemConfig = {
   id: 'fireux-slap',
   name: 'slap',
-  description: 'FireUX Slap - Lifestyle-commerce ecosystem for culture-led brands',
+  description:
+    'FireUX Slap - Lifestyle-commerce ecosystem for culture-led brands',
 
   firebase: {
     apiKey: 'AIzaSyAFrIqgvbr3f3eK5JVOuDSFvATSuZCh_Cc',
@@ -13,5 +14,7 @@ export const ecosystemConfig = {
     messagingSenderId: '884456976096',
     databaseId: 'slap',
   },
-  ssrRegion: 'europe-west1',
+  ssr: {
+    region: 'europe-west1',
+  },
 } as const satisfies FireuxEcosystemConfig

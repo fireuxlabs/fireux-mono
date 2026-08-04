@@ -1,13 +1,13 @@
-// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: bind root, App support, and UserApp target in one trusted transaction.
+// Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: bind root and App support in one trusted transaction.
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import {
   normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/models/core/meta.model.ts'
-import { UserAppStorage } from 'fireux-core/runtime/models/core/user.model.ts'
-import { hasUserAppPremiumAccess } from 'fireux-core/runtime/models/core/supporting/user-app-access.ts'
+} from 'fireux-core/runtime/models/utils/meta.model.ts'
+import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model.ts'
+import { hasAppUserPremiumAccess } from 'fireux-core/runtime/models/utils/app-user-access.ts'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer.ts'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
@@ -27,13 +27,12 @@ type RuntimePolicy = {
   developerId: string
   appScopeState: 'parent_app' | 'tenant_app'
   canCreate: boolean
-  targetIds: string[]
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 function fail(statusCode: number, statusMessage: string): never {
@@ -47,7 +46,7 @@ function request(value: unknown) {
 
   const source = value as Record<string, unknown>
   const supported = new Set(['supplier_id', 'organization_name'])
-  const unsupported = Object.keys(source).find(key => !supported.has(key))
+  const unsupported = Object.keys(source).find((key) => !supported.has(key))
   if (unsupported) {
     fail(400, `Supplier onboarding contains unsupported field: ${unsupported}.`)
   }
@@ -63,27 +62,16 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   if (!appScopeState) fail(403, 'This App cannot own a Supplier console.')
 
   const supplierConfig = record(record(fireux.consoleConfig).supplier)
-  const canCreate = typeof supplierConfig.canCreate === 'boolean'
-    ? supplierConfig.canCreate
-    : appRole !== 'tenant'
-  const targetIds = Array.isArray(supplierConfig.targetIds)
-    ? Array.from(new Set(supplierConfig.targetIds.map(text).filter(Boolean)))
-    : []
-
+  const canCreate =
+    typeof supplierConfig.canCreate === 'boolean'
+      ? supplierConfig.canCreate
+      : appRole !== 'tenant'
   return {
     appId,
     appRole,
     developerId,
     appScopeState,
     canCreate,
-    targetIds,
-  }
-}
-
-function assertRuntimeTarget(policy: RuntimePolicy, supplierId: string) {
-  if (policy.appRole !== 'tenant') return
-  if (!policy.targetIds.includes(supplierId)) {
-    fail(403, 'This Supplier is not a configured target for the tenant App.')
   }
 }
 
@@ -100,10 +88,10 @@ function boundedIds(value: unknown, max: number, label: string) {
     fail(409, `${label} has an invalid stored shape.`)
   }
 
-  if (value.some(id => typeof id !== 'string')) {
+  if (value.some((id) => typeof id !== 'string')) {
     fail(409, `${label} has invalid stored ids.`)
   }
-  const ids = (value as string[]).map(id => id.trim())
+  const ids = (value as string[]).map((id) => id.trim())
   if (
     ids.some((id, index) => !id || id !== value[index]) ||
     new Set(ids).size !== ids.length
@@ -140,31 +128,6 @@ function readSupport(value: Record<string, unknown>) {
       100,
       'Supplier join requests'
     ),
-  }
-}
-
-function assertMembershipCapacity(
-  membership: Record<string, unknown>,
-  supplierId: string
-) {
-  if (membership.console_targets === undefined) return
-  if (
-    !membership.console_targets ||
-    typeof membership.console_targets !== 'object' ||
-    Array.isArray(membership.console_targets)
-  ) {
-    fail(409, 'UserApp console targets have an invalid stored shape.')
-  }
-  const targets = membership.console_targets as Record<string, unknown>
-  if (targets.supplier_ids === undefined) return
-
-  const ids = boundedIds(
-    targets.supplier_ids,
-    50,
-    'UserApp Supplier console targets'
-  )
-  if (!ids.includes(supplierId) && ids.length >= 50) {
-    fail(409, 'The UserApp Supplier console target list is full.')
   }
 }
 
@@ -272,21 +235,17 @@ export async function completeSupplierOnboarding(
   }
   const supplierId = requestedSupplierId
     ? requireFirestoreDocumentId(requestedSupplierId, 'Supplier id')
-    : requireFirestoreDocumentId(
-        normalizeSlug(organizationName),
-        'Supplier id'
-      )
-  assertRuntimeTarget(policy, supplierId)
+    : requireFirestoreDocumentId(normalizeSlug(organizationName), 'Supplier id')
 
   const rootRef = db.collection(SupplierStorage.rootCollection).doc(supplierId)
   const supportRef = db.doc(
     `apps/${policy.appId}/${SupplierStorage.appSupportCollection}/${supplierId}`
   )
   const membershipRef = db.doc(
-    `apps/${policy.appId}/${UserAppStorage.collection}/${uid}`
+    `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
   )
 
-  return db.runTransaction(async transaction => {
+  return db.runTransaction(async (transaction) => {
     const [membership, root, support] = await Promise.all([
       transaction.get(membershipRef),
       transaction.get(rootRef),
@@ -294,8 +253,6 @@ export async function completeSupplierOnboarding(
     ])
     const role = memberRole(membership.exists, membership.get('role'))
     const membershipData = membership.data() || {}
-    assertMembershipCapacity(membershipData, supplierId)
-
     if (requestedSupplierId && !root.exists) {
       fail(404, 'Supplier not found.')
     }
@@ -307,7 +264,9 @@ export async function completeSupplierOnboarding(
     }
 
     const rootData = root.exists ? root.data() || {} : null
-    const supportData = support.exists ? readSupport(support.data() || {}) : null
+    const supportData = support.exists
+      ? readSupport(support.data() || {})
+      : null
     const action = resolveAction({
       root: rootData,
       support: supportData,
@@ -322,7 +281,7 @@ export async function completeSupplierOnboarding(
 
     if (
       !support.exists &&
-      !hasUserAppPremiumAccess(membershipData, {
+      !hasAppUserPremiumAccess(membershipData, {
         isConfiguredDeveloper:
           Boolean(policy.developerId) && uid === policy.developerId,
       })
@@ -383,7 +342,6 @@ export async function completeSupplierOnboarding(
 
     transaction.update(membershipRef, {
       console_enabled: true,
-      'console_targets.supplier_ids': FieldValue.arrayUnion(supplierId),
       updated: serverAuditStamp({ by: uid }),
     })
 

@@ -3,7 +3,7 @@ import type { ConsoleSource } from '../../../../app/console/useConsole'
 import {
   normalizeFireuxAppScopeState,
   type FireuxAppScopeState,
-} from '../../../../../../models/core/meta.model'
+} from '../../../../../../models/utils/meta.model'
 
 export type ConsoleEntityRuntimeMode = ConsoleSource
 

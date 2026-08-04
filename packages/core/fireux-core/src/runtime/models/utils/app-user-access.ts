@@ -1,11 +1,11 @@
-// FILE: packages/core/fireux-core/src/runtime/models/core/supporting/user-app-access.ts
+// FILE: packages/core/fireux-core/src/runtime/models/utils/app-user-access.ts
 
-export type UserAppAccessTier = 'free' | 'premium' | 'admin' | 'dev'
-export type UserAppMembershipRole = 'user' | 'admin'
+export type AppUserAccessTier = 'free' | 'premium' | 'admin' | 'dev'
+export type AppUserMembershipRole = 'user' | 'admin'
 
-export type ResolvedUserAppAccess = {
-  tier: UserAppAccessTier | null
-  role: UserAppMembershipRole | null
+export type ResolvedAppUserAccess = {
+  tier: AppUserAccessTier | null
+  role: AppUserMembershipRole | null
   hasMembership: boolean
   hasAdminAuthority: boolean
   hasExplicitPremiumEntitlement: boolean
@@ -13,7 +13,7 @@ export type ResolvedUserAppAccess = {
   isConfiguredDeveloper: boolean
 }
 
-type ResolveUserAppAccessInput = {
+type ResolveAppUserAccessInput = {
   membership?: unknown
   isConfiguredDeveloper?: boolean
 }
@@ -27,7 +27,7 @@ function asRecord(value: unknown): Record<string, unknown> {
 /**
  * Resolve the current App's display tier and product capability implications.
  *
- * Stored UserApp authority remains orthogonal:
+ * Stored AppUser authority remains orthogonal:
  * - `role` controls App governance.
  * - `is_premium` records an explicitly granted premium entitlement.
  * - the configured developer identity is runtime authority, never a stored role.
@@ -36,11 +36,11 @@ function asRecord(value: unknown): Record<string, unknown> {
  * This resolver is presentation/capability logic and must not replace server or
  * Firestore Rules authorization.
  */
-export function resolveUserAppAccess(
-  input: ResolveUserAppAccessInput
-): ResolvedUserAppAccess {
+export function resolveAppUserAccess(
+  input: ResolveAppUserAccessInput
+): ResolvedAppUserAccess {
   const membership = asRecord(input.membership)
-  const role: UserAppMembershipRole | null =
+  const role: AppUserMembershipRole | null =
     membership.role === 'admin' || membership.role === 'user'
       ? membership.role
       : null
@@ -55,7 +55,7 @@ export function resolveUserAppAccess(
       hasAdminAuthority ||
       hasExplicitPremiumEntitlement)
 
-  const tier: UserAppAccessTier | null = !hasMembership
+  const tier: AppUserAccessTier | null = !hasMembership
     ? null
     : isConfiguredDeveloper
       ? 'dev'
@@ -76,11 +76,11 @@ export function resolveUserAppAccess(
   }
 }
 
-export function hasUserAppPremiumAccess(
+export function hasAppUserPremiumAccess(
   membership: unknown,
   options: { isConfiguredDeveloper?: boolean } = {}
 ): boolean {
-  return resolveUserAppAccess({
+  return resolveAppUserAccess({
     membership,
     isConfiguredDeveloper: options.isConfiguredDeveloper,
   }).hasPremiumAccess

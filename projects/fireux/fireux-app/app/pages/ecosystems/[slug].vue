@@ -47,8 +47,8 @@ import { computed } from 'vue'
 import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
-import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/core/supporting/directory'
-import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/models/core/supporting/directory'
+import type { PlatformDirectoryResponse } from 'fireux-core/runtime/models/utils/directory'
+import type { EcosystemDirectoryEntry } from 'fireux-core/runtime/models/utils/directory'
 
 definePageMeta({
   layout: 'default',

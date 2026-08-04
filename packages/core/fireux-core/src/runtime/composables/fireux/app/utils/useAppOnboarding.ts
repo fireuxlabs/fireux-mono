@@ -8,7 +8,7 @@ import { useToastify } from '../ui/useToastify'
 import { useAuth } from '../../firebase/useAuth'
 import { useUser } from '../../firestore/core/user/useUser'
 import { useAppCreate } from '../../firestore/core/app/mutations/useAppCreate'
-import { bootstrapUserAppAdmin } from '../../firestore/core/user/utils/createHelpers'
+import { bootstrapAppUserAdmin } from '../../firestore/core/user/utils/createHelpers'
 import type { EnvCheckResponse } from './env-check.types'
 import { useAppEnvCheck } from './useAppEnvCheck'
 
@@ -122,7 +122,7 @@ export function useAppOnboarding(
       if (!currentUid || !appId) {
         throw new Error('Authenticated user is not ready yet. Please try again.')
       }
-      await bootstrapUserAppAdmin(appId, currentUid)
+      await bootstrapAppUserAdmin(appId, currentUid)
       await options.onInitialized?.()
 
       const syncResult = await syncAppMedia(created.id)

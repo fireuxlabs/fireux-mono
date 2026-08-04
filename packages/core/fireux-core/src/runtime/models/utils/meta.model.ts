@@ -1,4 +1,4 @@
-// FILE: packages/core/fireux-core/src/runtime/models/core/meta.model.ts
+// FILE: packages/core/fireux-core/src/runtime/models/utils/meta.model.ts
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority: clarify canonical-root relationship and app support semantics.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: name access support directly without changing persisted fields.
 

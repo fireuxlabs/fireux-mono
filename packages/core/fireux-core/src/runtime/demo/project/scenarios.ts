@@ -2,7 +2,7 @@ import { AppModel, type App } from '../../models/core/app.model'
 import {
   EcosystemModel,
   type Ecosystem,
-} from '../../models/system/ecosystem.model'
+} from '../../models/core/ecosystem.model'
 import type { Project } from '../../models/system/project.model'
 import {
   fireuxDemoProject,

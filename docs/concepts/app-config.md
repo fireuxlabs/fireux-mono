@@ -7,6 +7,7 @@ Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
+
 Map how FireUX project apps declare identity, modules, domains, consoles, and app mode.
 
 ## Vertical links
@@ -49,6 +50,9 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - `modules` lists explicit extension capabilities. The app package declares
   those workspace dependencies directly; ecosystem packages do not bundle
   domain extensions on the app's behalf.
+- Firebase SSR region and execution identity belong to the selected
+  ecosystem's required `ssr` configuration. Apps inherit them and do not
+  repeat deployment identity in `defineFireuxConfig`.
 
 ## Important fields
 
@@ -59,9 +63,6 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - `id`
 - `name`
 - `shortName`
-- `brand`: required single asset authority. Use `{ owner: 'core' }`,
-  `{ owner: 'ecosystem' }`, or
-  `{ owner: 'app', status: 'approved' | 'provisional' }`.
 - `role`
 - `modules`
 - `consoles`
@@ -85,10 +86,12 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 ## Mode differences
 
 - Global apps can expose multiple domains and consoles.
-- Tenant apps usually pin console targets through `consoleConfig.<family>.targetIds`.
+- Apps declare Console capabilities, while Firestore App-support and AppUser
+  membership records own target relationships and operator access.
 - Standalone is a FireUX-owned mode.
 
 ## Working rule
+
 Do not duplicate app mode logic in domain code. Read it through `useFireUXConfig` and `useConsole`.
 
 App-wide design packs are selected at build/config time through
@@ -113,21 +116,21 @@ CSS and does not reuse Core's `fx-page` selector namespace.
 
 ## Delta register
 
-| Difference | State | Reason or alignment trigger |
-| --- | --- | --- |
-| Global, tenant, and standalone roles differ | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag |
-| Direct Project Apps may omit `ecosystemId` | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts |
-| Apps declare different extension modules | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer |
-| Tenant apps pin console target IDs | `accepted` | A tenant normally has bounded target scope; global apps derive user-authorized targets |
-| Apps present inherited public navigation differently | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority |
-| App-specific Nuxt overrides exist | `accepted` | External integration or deployment requirements may differ; repeated FireUX defaults belong in `withFireuxNuxtConfig` |
-| A main App explicitly selects the Core Sci-Fire design pack | `accepted` | Nuxt UI remains the universal default while a reviewed ecosystem App may add shared atmosphere without copying CSS |
-| Tenant or white-label styling inferred from ecosystem or role | `drift` | Design-pack adoption is explicit; product role and visual theme are separate contracts |
-| A project copies Sci-Fire selectors or styles | `drift` | The conditional stylesheet and Nuxt UI variant configuration belong to Core |
-| An app disables or replaces the Core page transition through native Nuxt app config | `accepted` | The shared default remains Core-owned while a deliberate product delta stays explicit |
-| A project app shell or stylesheet copies the shared page transition | `drift` | App-wide overrides belong in config and route-specific exceptions belong in page meta |
-| Repeating a shared default in many project `nuxt.config.ts` files | `drift` | Move the stable value to the Core config spine and leave only genuine app values locally |
-| App brand structure differs by project | `drift` | Keep one ownership declaration and one `/img/app` runtime family; only artwork differs |
+| Difference                                                                          | State      | Reason or alignment trigger                                                                                           |
+| ----------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| Global, tenant, and standalone roles differ                                         | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag                        |
+| Direct Project Apps may omit `ecosystemId`                                          | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts                                     |
+| Apps declare different extension modules                                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer      |
+| Tenant apps pin console target IDs                                                  | `accepted` | A tenant normally has bounded target scope; global apps derive user-authorized targets                                |
+| Apps present inherited public navigation differently                                | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority               |
+| App-specific Nuxt overrides exist                                                   | `accepted` | External integration or deployment requirements may differ; repeated FireUX defaults belong in `withFireuxNuxtConfig` |
+| A main App explicitly selects the Core Sci-Fire design pack                         | `accepted` | Nuxt UI remains the universal default while a reviewed ecosystem App may add shared atmosphere without copying CSS    |
+| Tenant or white-label styling inferred from ecosystem or role                       | `drift`    | Design-pack adoption is explicit; product role and visual theme are separate contracts                                |
+| A project copies Sci-Fire selectors or styles                                       | `drift`    | The conditional stylesheet and Nuxt UI variant configuration belong to Core                                           |
+| An app disables or replaces the Core page transition through native Nuxt app config | `accepted` | The shared default remains Core-owned while a deliberate product delta stays explicit                                 |
+| A project app shell or stylesheet copies the shared page transition                 | `drift`    | App-wide overrides belong in config and route-specific exceptions belong in page meta                                 |
+| Repeating a shared default in many project `nuxt.config.ts` files                   | `drift`    | Move the stable value to the Core config spine and leave only genuine app values locally                              |
+| App brand structure differs by project                                              | `drift`    | Keep one ownership declaration and one `/img/app` runtime family; only artwork differs                                |
 
 ## Alignment roadmap
 

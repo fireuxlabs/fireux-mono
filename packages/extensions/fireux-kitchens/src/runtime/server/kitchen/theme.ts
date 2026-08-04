@@ -10,7 +10,7 @@ import {
   compactBrandPalette,
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette.ts'
-import type { PageStyle } from 'fireux-core/runtime/models/core/style.model.ts'
+import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model.ts'
 import { KitchenStorage } from '../../models/kitchen.model.ts'
 import { parseMenuPageStyleInput } from '../menu/payload/page-style.ts'
 import {

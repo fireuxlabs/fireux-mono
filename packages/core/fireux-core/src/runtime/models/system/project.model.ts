@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: declare private Project control-plane authority.
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import { defineFireuxEntity } from '../core/entity.model'
-import type { FireuxStamped } from '../core/meta.model'
+import { defineFireuxEntity } from '../utils/entity.model'
+import type { FireuxStamped } from '../utils/meta.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 

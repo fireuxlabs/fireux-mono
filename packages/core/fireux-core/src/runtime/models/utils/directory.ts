@@ -1,5 +1,5 @@
-import type { AppStatus } from '../app.model'
-import type { EcosystemStatus } from '../../system/ecosystem.model'
+import type { AppStatus } from '../core/app.model'
+import type { EcosystemStatus } from '../core/ecosystem.model'
 import type { AppDerived, AppMedia, AppRole } from './app'
 import type { Ref } from 'vue'
 

@@ -3,7 +3,7 @@
 import type {
   UserHandleReservationInput,
   UserHandleReservationResult,
-} from '../../../../../../models/core/supporting/user-handle-reservation'
+} from '../../../../../../models/operations/user-handle-reservation'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 

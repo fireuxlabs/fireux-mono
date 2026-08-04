@@ -718,12 +718,12 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
     assertMatch(
       coreSource,
       family === 'Blank'
-        ? /targetIds:\s*consoleTargets\.targetIds/
-        : /consoleTargets\.filter\s*\(\s*explicitFilter\s*\)/,
+        ? /useBlankCollection\s*\(\s*\{[\s\S]*source:\s*consoleRoot\.source/
+        : /operatorId:\s*(?:userId|normalizedUid)\.value/,
       coreRelative,
       family === 'Blank'
-        ? 'Blank collection must exact-load the UserApp target ids'
-        : 'family collection filter must be bounded by UserApp target ids',
+        ? 'Blank collection must resolve target access from App support'
+        : 'family collection filter must query App-support operator authority',
       violations
     )
     assertMatch(

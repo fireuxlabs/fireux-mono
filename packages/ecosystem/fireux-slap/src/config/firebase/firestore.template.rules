@@ -1,0 +1,8 @@
+// @fireux-rules-template slap
+// @fireux-rules-project slap-45389
+// @fireux-rules-databases slap
+// @fireux-rules-artifact scripts/firebase/slap/firestore.rules
+// @fireux-rules-fragments open,close
+// Concurrent edit — 2026-08-04 — Ecosystem Rules spine: establish an ecosystem-owned default-deny release source.
+// @fireux-rules-template-source
+// @fireux-ecosystem-rules default-deny

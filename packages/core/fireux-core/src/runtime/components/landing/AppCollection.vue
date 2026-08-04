@@ -141,7 +141,7 @@ import { computed } from 'vue'
 import type {
   AppDirectoryController,
   AppDirectoryEntry,
-} from '../../models/core/supporting/directory'
+} from '../../models/utils/directory'
 
 type LandingAppMediaOverride = {
   coverUrl?: string

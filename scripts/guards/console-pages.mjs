@@ -12,7 +12,8 @@ import { GENERATED_DIRECTORY_NAMES } from './_lib/filesystem-policy.mjs'
 const SOURCE_ROOTS = ['packages', 'projects']
 const SKIP_DIRS = new Set(GENERATED_DIRECTORY_NAMES)
 const PAGE_MARKER = '/pages/console/'
-const CONSOLE_LAYOUT = 'packages/core/fireux-core/src/runtime/layouts/console.vue'
+const CONSOLE_LAYOUT =
+  'packages/core/fireux-core/src/runtime/layouts/console.vue'
 const KITCHEN_MENUS_COMPONENT_ROOT =
   'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Menus'
 const KITCHEN_RECIPES_COMPONENT_ROOT =
@@ -31,8 +32,14 @@ const STANDARD_SURFACES = new Set([
 ])
 const NON_DIRECT_PAGES = new Map([
   ['packages/core/fireux-core/src/runtime/pages/console/index.vue', 'redirect'],
-  ['packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/identity.vue', 'router'],
-  ['packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue', 'live'],
+  [
+    'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/identity.vue',
+    'router',
+  ],
+  [
+    'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen/orders.vue',
+    'live',
+  ],
 ])
 const ROUTE_ONLY_META_KEYS = [
   'requiresAuth',
@@ -40,6 +47,67 @@ const ROUTE_ONLY_META_KEYS = [
   'roles',
   'visibility',
 ]
+const CONSOLE_OPERATION_CONTRACTS = {
+  project: {
+    catalogue: 'projects/fireux/fireux-app/app/meta.ts',
+    operations: ['identity', 'apps', 'ecosystem', 'users'],
+    routeRoot: 'projects/fireux/fireux-app/app/pages/console/project',
+  },
+  kitchen: {
+    catalogue:
+      'packages/extensions/fireux-kitchens/src/runtime/content/operations.ts',
+    operations: [
+      'identity',
+      'dishes',
+      'ingredients',
+      'menus',
+      'mise',
+      'orders',
+      'recipes',
+      'stations',
+      'team',
+      'suppliers',
+      'tables',
+      'finance',
+    ],
+    routeRoot:
+      'packages/extensions/fireux-kitchens/src/runtime/pages/console/kitchen',
+  },
+  supplier: {
+    catalogue:
+      'packages/extensions/fireux-suppliers/src/runtime/content/operations.ts',
+    operations: ['identity', 'catalogue', 'ingredients', 'items', 'team'],
+    routeRoot:
+      'packages/extensions/fireux-suppliers/src/runtime/pages/console/supplier',
+  },
+  portfolio: {
+    catalogue:
+      'packages/extensions/fireux-properties/src/runtime/content/operations.ts',
+    operations: [
+      'identity',
+      'properties',
+      'compliance',
+      'documents',
+      'tasks',
+      'finance',
+      'team',
+    ],
+    routeRoot:
+      'packages/extensions/fireux-properties/src/runtime/pages/console/portfolio',
+  },
+  property: {
+    catalogue:
+      'packages/extensions/fireux-properties/src/runtime/content/operations.ts',
+    operations: ['identity', 'reservations', 'calendar', 'team'],
+    routeRoot:
+      'packages/extensions/fireux-properties/src/runtime/pages/console/property',
+  },
+  blank: {
+    catalogue: 'projects/fireux/fireux-blank/app/meta.ts',
+    operations: ['identity'],
+    routeRoot: 'projects/fireux/fireux-blank/app/pages/console/blank',
+  },
+}
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
@@ -47,6 +115,7 @@ export async function run(ctx) {
   const seenPages = new Set()
 
   validateConsoleLayout(repoRoot, violations)
+  validateConsoleOperationContracts(repoRoot, violations)
   validateKitchenMenusWorkspace(repoRoot, violations)
   validateKitchenRecipesWorkspace(repoRoot, violations)
 
@@ -63,24 +132,73 @@ export async function run(ctx) {
   }
 
   if (violations.length) {
-    throw new Error([
-      '[guard] ❌ console page contract drift detected:',
-      ...violations
-        .sort((left, right) => left.localeCompare(right))
-        .map((violation) => `  - ${violation}`),
-      '',
-      '[guard] Fix:',
-      '- Every Console page using the shared transition has one real root DOM element; only an explicit pageTransition: false route is exempt.',
-      '- Console pages compose UDashboardPanel, LayoutsConsoleNavbar, and a body slot directly.',
-      '- Pages own body width and spacing; named domain components own domain presentation.',
-      '- Header actions belong in the console navbar right slot.',
-      '- Route access, visibility, roles, and selection requirements belong at top-level page meta; nav owns presentation only.',
-      '- Surface metadata, when declared, uses browse, detail, create, edit, workflow, or live.',
-      '- Only redirects, nested routers, and live layouts are exempt.',
-    ].join('\n'))
+    throw new Error(
+      [
+        '[guard] ❌ console page contract drift detected:',
+        ...violations
+          .sort((left, right) => left.localeCompare(right))
+          .map((violation) => `  - ${violation}`),
+        '',
+        '[guard] Fix:',
+        '- Every Console page using the shared transition has one real root DOM element; only an explicit pageTransition: false route is exempt.',
+        '- Console pages compose UDashboardPanel, LayoutsConsoleNavbar, and a body slot directly.',
+        '- Pages own body width and spacing; named domain components own domain presentation.',
+        '- Header actions belong in the console navbar right slot.',
+        '- Route access, visibility, roles, and selection requirements belong at top-level page meta; nav owns presentation only.',
+        '- Surface metadata, when declared, uses browse, detail, create, edit, workflow, or live.',
+        '- Only redirects, nested routers, and live layouts are exempt.',
+      ].join('\n')
+    )
   }
 
   console.log('[guard] ✅ console pages use the explicit page contract')
+}
+
+function validateConsoleOperationContracts(repoRoot, violations) {
+  for (const [family, contract] of Object.entries(
+    CONSOLE_OPERATION_CONTRACTS
+  )) {
+    const catalogue = contract.catalogue
+      ? readFileSync(path.join(repoRoot, contract.catalogue), 'utf8')
+      : ''
+
+    for (const operation of contract.operations) {
+      const routeCandidates = [
+        path.join(repoRoot, contract.routeRoot, `${operation}.vue`),
+        path.join(repoRoot, contract.routeRoot, operation, 'index.vue'),
+      ]
+      if (!routeCandidates.some((candidate) => existsSync(candidate))) {
+        violations.push(
+          `${contract.routeRoot}/${operation} (missing ${family} Console Operation route)`
+        )
+      }
+      if (
+        contract.catalogue &&
+        !catalogue.includes(`'${family}.${operation}'`) &&
+        !catalogue.includes(`['${operation}'`) &&
+        !catalogue.includes(`'${operation}',`)
+      ) {
+        violations.push(
+          `${contract.catalogue} (missing ${family}.${operation} Operation catalogue entry)`
+        )
+      }
+    }
+
+    const identityRoute = routeCandidatesForIdentity(
+      repoRoot,
+      contract.routeRoot
+    )
+    if (!identityRoute.some((candidate) => existsSync(candidate))) {
+      violations.push(`${contract.routeRoot} (every Console requires Identity)`)
+    }
+  }
+}
+
+function routeCandidatesForIdentity(repoRoot, routeRoot) {
+  return [
+    path.join(repoRoot, routeRoot, 'identity.vue'),
+    path.join(repoRoot, routeRoot, 'identity', 'index.vue'),
+  ]
 }
 
 function validateKitchenRecipesWorkspace(repoRoot, violations) {
@@ -103,7 +221,9 @@ function validateKitchenRecipesWorkspace(repoRoot, violations) {
     const relative = `${KITCHEN_RECIPES_COMPONENT_ROOT}/${name}.vue`
     const fullPath = path.join(repoRoot, relative)
     if (!existsSync(fullPath)) {
-      violations.push(`${relative} (missing Kitchen Recipes workspace consumer)`)
+      violations.push(
+        `${relative} (missing Kitchen Recipes workspace consumer)`
+      )
       continue
     }
 
@@ -221,7 +341,9 @@ function validateConsoleLayout(repoRoot, violations) {
   const hasDirectSlot = /<slot\b[^>]*\bv-else\b/.test(source)
   const hasGuardedSlot =
     /<NuxtErrorBoundary\b[^>]*\bv-else\b/.test(source) &&
-    /<NuxtErrorBoundary\b[\s\S]*?<slot\s*\/>[\s\S]*?<template\s+#error=/.test(source) &&
+    /<NuxtErrorBoundary\b[\s\S]*?<slot\s*\/>[\s\S]*?<template\s+#error=/.test(
+      source
+    ) &&
     /console-page-unavailable/.test(source) &&
     /clearPageError/.test(source)
   if (!hasDirectSlot && !hasGuardedSlot) {
@@ -230,7 +352,9 @@ function validateConsoleLayout(repoRoot, violations) {
     )
   }
   if (/<NuxtPage\b/.test(source)) {
-    violations.push(`${CONSOLE_LAYOUT} (must not render a second route tree inside AppShell)`)
+    violations.push(
+      `${CONSOLE_LAYOUT} (must not render a second route tree inside AppShell)`
+    )
   }
 }
 
@@ -247,7 +371,8 @@ function scan(dir, repoRoot, violations, seenPages) {
     }
 
     const normalized = fullPath.split(path.sep).join('/')
-    if (!normalized.includes(PAGE_MARKER) || !normalized.endsWith('.vue')) continue
+    if (!normalized.includes(PAGE_MARKER) || !normalized.endsWith('.vue'))
+      continue
 
     const source = readFileSync(fullPath, 'utf8')
     const relative = path.relative(repoRoot, fullPath).split(path.sep).join('/')
@@ -267,15 +392,26 @@ function scan(dir, repoRoot, violations, seenPages) {
     }
 
     if (normalized.endsWith('/edit.vue') && surface !== 'edit') {
-      violations.push(`${relative} (edit route must declare consoleSurface: 'edit')`)
+      violations.push(
+        `${relative} (edit route must declare consoleSurface: 'edit')`
+      )
     }
 
     if (exceptionKind) {
       if (directContract) {
-        violations.push(`${relative} (direct page must be removed from exceptions)`)
+        violations.push(
+          `${relative} (direct page must be removed from exceptions)`
+        )
         continue
       }
-      validateException(relative, exceptionKind, template, script, surface, violations)
+      validateException(
+        relative,
+        exceptionKind,
+        template,
+        script,
+        surface,
+        violations
+      )
       continue
     }
 
@@ -297,7 +433,13 @@ function validateRenderedPageRoot(relative, template, pageMeta, violations) {
   }
 }
 
-function validateDirectContract(relative, template, script, pageMeta, violations) {
+function validateDirectContract(
+  relative,
+  template,
+  script,
+  pageMeta,
+  violations
+) {
   const requiredTemplateParts = [
     ['UDashboardPanel', /<UDashboardPanel\b/],
     ['header slot', /<template\s+#header\b/],
@@ -312,13 +454,19 @@ function validateDirectContract(relative, template, script, pageMeta, violations
   }
 
   if (!/\blayout\s*:\s*['"]console['"]/.test(script)) {
-    violations.push(`${relative} (direct console page must declare layout: 'console')`)
+    violations.push(
+      `${relative} (direct console page must declare layout: 'console')`
+    )
   }
   if (!/\brequiresAuth\s*:\s*true\b/.test(script)) {
-    violations.push(`${relative} (direct console page must declare requiresAuth: true)`)
+    violations.push(
+      `${relative} (direct console page must declare requiresAuth: true)`
+    )
   }
   if (!hasTopLevelProperty(pageMeta, 'requiresSelection')) {
-    violations.push(`${relative} (direct console page must declare top-level requiresSelection)`)
+    violations.push(
+      `${relative} (direct console page must declare top-level requiresSelection)`
+    )
   }
 }
 
@@ -337,7 +485,14 @@ function validateRouteMetaPlacement(relative, pageMeta, violations) {
   }
 }
 
-function validateException(relative, kind, template, script, surface, violations) {
+function validateException(
+  relative,
+  kind,
+  template,
+  script,
+  surface,
+  violations
+) {
   if (kind === 'redirect' && !/\bnavigateTo\s*\(/.test(script)) {
     violations.push(`${relative} (redirect exception must call navigateTo)`)
   }
@@ -346,7 +501,9 @@ function validateException(relative, kind, template, script, surface, violations
   }
   if (kind === 'live') {
     if (surface !== 'live') {
-      violations.push(`${relative} (live exception must declare consoleSurface: 'live')`)
+      violations.push(
+        `${relative} (live exception must declare consoleSurface: 'live')`
+      )
     }
     if (!/\blayout\s*:\s*['"][^'"]+['"]/.test(script)) {
       violations.push(`${relative} (live exception must declare its layout)`)
@@ -440,9 +597,7 @@ function findTopLevelProperty(objectSource, property) {
     }
     if (depth !== 1 || !/[A-Za-z_$]/.test(character)) continue
 
-    const candidate = objectSource
-      .slice(index)
-      .match(/^([A-Za-z_$][\w$]*)\s*:/)
+    const candidate = objectSource.slice(index).match(/^([A-Za-z_$][\w$]*)\s*:/)
     if (!candidate || candidate[1] !== property) continue
 
     let valueStart = index + candidate[0].length

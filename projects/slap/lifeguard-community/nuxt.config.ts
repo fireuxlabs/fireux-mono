@@ -7,7 +7,6 @@ export default defineFireuxConfig({
   id: 'lifeguard-community',
   name: 'Lifeguard Community',
   shortName: 'Lifeguard Community',
-  brand: { owner: 'app', status: 'provisional' },
   databaseId: 'slap',
   role: 'tenant',
   seo: {

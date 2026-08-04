@@ -46,7 +46,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import type { PlaceUpsertInput } from '../../../models/place.model'
-import type { SparseBrandPalette } from 'fireux-core/runtime/models/core/style.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 
 const props = defineProps<{
   place: PlaceUpsertInput

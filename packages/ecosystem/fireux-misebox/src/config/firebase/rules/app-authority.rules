@@ -23,8 +23,7 @@
 
       // Public Kitchen cards/details use bounded server projections. The raw
       // root is exact-readable only when its canonical App scope and same-id
-      // support record prove current Console authority. UserApp target ids are
-      // navigation indexes and never grant access by themselves.
+      // support record prove current Console authority.
       allow get: if isAuthenticated() &&
         isCanonicalAttachedKitchen(resource.data) &&
         hasSameIdAppKitchenSupport(resource.data.app_scope.app_id) &&
@@ -232,4 +231,3 @@
         request.resource.data.created == resource.data.created &&
         validOwnerUpdateStamp(request.resource.data, request.auth.uid);
       allow delete: if false;
-

@@ -3,7 +3,7 @@ import type { ConsoleRootCreateResult } from 'fireux-core/runtime/composables/fi
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { stampDoc } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/core/meta.model'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/models/utils/meta.model'
 import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,

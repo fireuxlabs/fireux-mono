@@ -1,7 +1,7 @@
 import type {
   ProjectUserJoinPublicationV1,
   ProjectUserJoinRole,
-} from '../../../models/system/project-user-join.model'
+} from '../../../models/operations/project-user-join.model'
 
 const ID = /^[a-zA-Z0-9][a-zA-Z0-9._-]{0,1499}$/
 const EVENT_ID = /^[a-zA-Z0-9][a-zA-Z0-9._:-]{0,1499}$/

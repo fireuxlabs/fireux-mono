@@ -1,6 +1,6 @@
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { useFireUXConfig } from '../../../../../app/FireUXConfig'
-import { ConversationMessageStorage, ConversationStorage } from '../../../../../../../models/core/conversation.model'
+import { ConversationMessageStorage, ConversationStorage } from '../../../../../../../models/operations/conversation.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 

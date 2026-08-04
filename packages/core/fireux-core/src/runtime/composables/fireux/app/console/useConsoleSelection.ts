@@ -38,7 +38,7 @@ export function useConsoleSelection<TTarget = never>(
   const normalizedFamily = normalizeConsoleFamily(family)
   const consoleRoot = useConsole(normalizedFamily)
   // Keep selection unset until there is a real target; tenant auto-select should
-  // not write an empty cookie before writing the configured target.
+  // not write an empty cookie before writing the resolved target.
   const state = useCookie<ConsoleSelectionState | null>(
     `fireux-console-${normalizedFamily}`,
     {
@@ -59,10 +59,7 @@ export function useConsoleSelection<TTarget = never>(
     options ? unref(options.targetOutcome) : 'idle'
   )
 
-  const selectTarget = (
-    id: string,
-    type: ConsoleSource = 'live'
-  ) => {
+  const selectTarget = (id: string, type: ConsoleSource = 'live') => {
     const nextId = normalizeString(id)
     if (!nextId) {
       clearSelection()
@@ -93,10 +90,13 @@ export function useConsoleSelection<TTarget = never>(
     const id = selectedId.value
     if (!id || !options) return null
 
-    return targetItems.value.find((item) =>
-      getTargetId(item) === id &&
-      (!options.getType || getTargetType(item) === selectedType.value)
-    ) ?? null
+    return (
+      targetItems.value.find(
+        (item) =>
+          getTargetId(item) === id &&
+          (!options.getType || getTargetType(item) === selectedType.value)
+      ) ?? null
+    )
   })
 
   // Legacy selections used `selectedId` and could omit type. Canonicalize them
@@ -135,11 +135,13 @@ export function useConsoleSelection<TTarget = never>(
         const { id, type, items, outcome } = state
         if (!id || (outcome !== 'ready' && outcome !== 'empty')) return
         if (
-          items.some((item) =>
-            getTargetId(item) === id &&
-            (!options.getType || getTargetType(item) === type)
+          items.some(
+            (item) =>
+              getTargetId(item) === id &&
+              (!options.getType || getTargetType(item) === type)
           )
-        ) return
+        )
+          return
         clearSelection()
       },
       { immediate: true }

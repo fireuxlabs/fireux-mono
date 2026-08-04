@@ -3,7 +3,7 @@
 import type {
   AppDirectoryEntry,
   EcosystemDirectoryEntry,
-} from './directory'
+} from '../utils/directory'
 
 export const DirectoryPublicationStorage = {
   appProjections: 'directory-app-projections',

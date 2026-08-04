@@ -8,7 +8,6 @@ const fireuxConfig = defineFireuxConfig({
   id: 'interlaken-essen',
   name: 'Interlaken Essen',
   shortName: 'Interlaken Essen',
-  brand: { owner: 'app', status: 'provisional' },
   role: 'tenant',
   selfJoinEnabled: true,
   domains: ['jobs'],

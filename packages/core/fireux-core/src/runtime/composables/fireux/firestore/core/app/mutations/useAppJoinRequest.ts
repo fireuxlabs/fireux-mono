@@ -4,7 +4,7 @@
 import { computed } from 'vue'
 import { doc } from 'firebase/firestore'
 import { AppStorage } from '../../../../../../models/core/app.model'
-import { AppJoinRequestStorage } from '../../../../../../models/core/supporting/app-membership'
+import { AppJoinRequestStorage } from '../../../../../../models/operations/app-membership'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useAuth } from '../../../../firebase/useAuth'
 import { useDocument, useFirestore } from '../../../vuefire'

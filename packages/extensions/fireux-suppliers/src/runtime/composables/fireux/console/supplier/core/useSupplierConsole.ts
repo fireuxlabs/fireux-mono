@@ -49,7 +49,10 @@ export function useSupplierConsole(
       : options.filter ?? {}
 
     if (consoleRoot.source.value === 'demo') return explicitFilter
-    return consoleTargets.filter(explicitFilter)
+    return {
+      ...explicitFilter,
+      operatorId: userId.value,
+    }
   })
   const sourceCollection = useSupplierCollection({
     source: consoleRoot.source,

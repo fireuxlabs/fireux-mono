@@ -1,7 +1,7 @@
 import {
   formatCurrencyAmount,
   type CurrencyDisplayFormat,
-} from 'fireux-core/runtime/models/core/money.model'
+} from 'fireux-core/runtime/models/utils/money.model'
 import type { KitchenMenuItemRow } from './types'
 
 type MenuItemPriceOptions = {

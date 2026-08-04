@@ -8,8 +8,8 @@ import type {
   AppMedia,
   AppRole,
   AppSocialLinks,
-} from '../../../models/core/supporting/app'
-import type { UserAppAccessTier } from '../../../models/core/supporting/user-app-access'
+} from '../../../models/utils/app'
+import type { AppUserAccessTier } from '../../../models/utils/app-user-access'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 
 export type PublicSeoDto = {
@@ -63,12 +63,11 @@ export type CurrentAppMembershipDto = {
   id: string
   role: 'admin' | 'user'
   is_premium: boolean
-  access_tier: UserAppAccessTier
+  access_tier: AppUserAccessTier
   has_premium_access: boolean
   console_enabled: boolean
   onboarding_status: 'pending' | 'completed' | 'skipped'
   profiles: string[]
-  console_targets: Record<string, string[]>
 }
 
 export type CurrentAppContextResponse = {
@@ -96,7 +95,7 @@ export type PublicProfileDto<
  *
  * App storage also contains build, moderation, and join-request fields. Those
  * fields must never reach a public response through object spreading.
- * App membership and role identities remain private UserApp concerns. Project
+ * App membership and role identities remain private AppUser concerns. Project
  * ownership and ambiguous legacy team data remain private control-plane data.
  */
 export type PublicAppDto = {

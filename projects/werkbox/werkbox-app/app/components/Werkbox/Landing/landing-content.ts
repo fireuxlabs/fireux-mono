@@ -2,7 +2,6 @@ import type {
   LandingProductCatalogueContent,
   LandingProductIndexContent,
   LandingProductSurface,
-  LandingOperationRailItem,
 } from 'fireux-core/types/landing-product'
 
 export const content = {
@@ -24,35 +23,42 @@ export const content = {
   },
 } as const satisfies LandingProductIndexContent
 
-export const railItems = [
-  { id: 'jobs', title: 'Jobs', icon: 'i-lucide-briefcase-business', to: '/jobs' },
-  { id: 'organisations', title: 'Organisations', icon: 'i-lucide-building-2', to: '/agents' },
-  { id: 'professionals', title: 'Professionals', icon: 'i-lucide-users', to: '/professionals' },
-] as const satisfies readonly LandingOperationRailItem[]
-
 export const surfaceItems = [
   {
     id: 'jobs',
     title: 'Jobs',
-    description: 'Publish work where professionals can find it and review the named employer before applying.',
+    description:
+      'Publish work where professionals can find it and review the named employer before applying.',
     icon: 'i-lucide-briefcase-business',
     to: '/jobs',
     action: 'Browse jobs',
-    items: ['Published jobs', 'Named employers', 'Workplaces', 'Direct applications'],
+    items: [
+      'Published jobs',
+      'Named employers',
+      'Workplaces',
+      'Direct applications',
+    ],
   },
   {
     id: 'employer',
     title: 'Employer Workspace',
-    description: 'Publish jobs, review applications and manage direct hiring work.',
+    description:
+      'Publish jobs, review applications and manage direct hiring work.',
     icon: 'i-lucide-building-2',
     to: '/jobs/manage',
     action: 'Open employer workspace',
-    items: ['Job publishing', 'Applications', 'Hiring status', 'Employer control'],
+    items: [
+      'Job publishing',
+      'Applications',
+      'Hiring status',
+      'Employer control',
+    ],
   },
   {
     id: 'professionals',
     title: 'Professional Profiles',
-    description: 'Give professionals a reusable public identity for their experience and applications.',
+    description:
+      'Give professionals a reusable public identity for their experience and applications.',
     icon: 'i-lucide-user-round-search',
     to: '/professionals',
     action: 'Browse professionals',

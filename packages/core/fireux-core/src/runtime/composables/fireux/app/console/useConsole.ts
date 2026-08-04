@@ -7,8 +7,6 @@ export type ConsoleAppMode = 'tenant' | 'global' | 'standalone'
 export type ConsoleSource = 'live' | 'test' | 'demo'
 export type ConsoleFamilyConfig = {
   canCreate?: boolean
-  targetIds?: string[]
-  devTargetIds?: string[]
 }
 export type ConsoleConfig = Record<string, ConsoleFamilyConfig>
 
@@ -48,23 +46,17 @@ function readConsoleConfig(): ConsoleConfig {
         const cfg = rawRecord(value)
         if (!key || !Object.keys(cfg).length) return null
 
-        const targetIds = uniqueStrings(cfg.targetIds)
-        const devTargetIds = uniqueStrings(cfg.devTargetIds)
-
         return [
           key,
           {
             ...(typeof cfg.canCreate === 'boolean'
               ? { canCreate: cfg.canCreate }
               : {}),
-            ...(targetIds.length ? { targetIds } : {}),
-            ...(devTargetIds.length ? { devTargetIds } : {}),
           },
         ] as const
       })
-      .filter(
-        (entry): entry is readonly [string, ConsoleFamilyConfig] =>
-          Boolean(entry)
+      .filter((entry): entry is readonly [string, ConsoleFamilyConfig] =>
+        Boolean(entry)
       )
   )
 }
@@ -73,13 +65,10 @@ export function useConsole(family = '') {
   const fireux = useFireUXConfig()
   const normalizedFamily = normalizeConsoleFamily(family)
   const sourceCookie = normalizedFamily
-    ? useCookie<ConsoleSource>(
-        `fireux-console-${normalizedFamily}-source`,
-        {
-          default: () => 'live',
-          sameSite: 'lax',
-        }
-      )
+    ? useCookie<ConsoleSource>(`fireux-console-${normalizedFamily}-source`, {
+        default: () => 'live',
+        sameSite: 'lax',
+      })
     : ref<ConsoleSource>('live')
   const sourceState = normalizedFamily
     ? useState<ConsoleSource>(
@@ -118,15 +107,6 @@ export function useConsole(family = '') {
     return !fireux.isTenant
   }
 
-  const targetIds = (targetFamily = family) => {
-    const cfg = configFor(targetFamily)
-    return uniqueStrings(cfg?.targetIds)
-  }
-  const devTargetIds = (targetFamily = family) => {
-    const cfg = configFor(targetFamily)
-    return import.meta.dev ? uniqueStrings(cfg?.devTargetIds) : []
-  }
-
   const setSource = (value: ConsoleSource = 'live') => {
     const nextSource = normalizeConsoleSource(value)
     sourceState.value = nextSource
@@ -151,8 +131,6 @@ export function useConsole(family = '') {
     config,
     configFor,
     canCreateTarget,
-    targetIds,
-    devTargetIds,
     setSource,
     resetSource,
   }

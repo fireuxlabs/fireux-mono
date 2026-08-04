@@ -25,8 +25,6 @@ definePageMeta({
     label: 'Properties',
     icon: 'i-lucide-building',
     position: 'top',
-    hidden: true,
-    parked: true,
     order: 20,
     desktop: true,
     mobile: true,

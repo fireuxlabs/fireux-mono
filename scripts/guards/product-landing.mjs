@@ -80,6 +80,23 @@ const STANDARD_PRODUCT_HERO_IMAGE = {
   height: 1000,
   maximumBytes: 2_500_000,
 }
+const ECOSYSTEM_OPERATION_RAIL_CONTRACTS = [
+  {
+    filePath:
+      'projects/bringli/bringli-app/app/components/Bringli/Landing/landing-content.ts',
+    catalogue: 'supplierOperations',
+  },
+  {
+    filePath:
+      'projects/buenohost/buenohost-app/app/components/BuenoHost/Landing/landing-content.ts',
+    catalogue: 'propertyOperations',
+  },
+  {
+    filePath:
+      'projects/granite/granite-app/app/components/Granite/Landing/landing-content.ts',
+    catalogue: 'portfolioOperations',
+  },
+]
 const WERKBOX_ADAPTER_PATH =
   'projects/werkbox/werkbox-app/app/components/Werkbox/Landing/Index.vue'
 const WERKBOX_HERO_PATH =
@@ -1795,6 +1812,21 @@ export async function run(ctx) {
     }
   }
 
+  for (const contract of ECOSYSTEM_OPERATION_RAIL_CONTRACTS) {
+    const source = read(repoRoot, contract.filePath)
+    for (const required of [
+      `import { ${contract.catalogue} }`,
+      `${contract.catalogue}.map((operation) =>`,
+      'to: `/operations/${operation.slug}`',
+    ]) {
+      if (!source.includes(required)) {
+        violations.push(
+          `${contract.filePath}: landing subheader must project the complete Console Operation catalogue (${required})`
+        )
+      }
+    }
+  }
+
   for (const imagePath of STANDARD_PRODUCT_HERO_IMAGE_PATHS) {
     if (!existsSync(path.join(repoRoot, imagePath))) {
       violations.push(`${imagePath}: standard product hero image is missing`)
@@ -1829,7 +1861,6 @@ export async function run(ctx) {
   }
 
   for (const required of [
-    '<LandingOperationRail',
     '<LandingProductIndex',
     '<LandingProductPricingStrip',
     '<LandingProductSurfaceShowcase',
@@ -1841,6 +1872,16 @@ export async function run(ctx) {
     if (!werkboxAdapter.includes(required)) {
       violations.push(
         `${WERKBOX_ADAPTER_PATH}: missing aligned Main App landing contract (${required})`
+      )
+    }
+  }
+  for (const [filePath, source] of [
+    [WERKBOX_ADAPTER_PATH, werkboxAdapter],
+    [SLAP_ADAPTER_PATH, slapAdapter],
+  ]) {
+    if (source.includes('<LandingOperationRail')) {
+      violations.push(
+        `${filePath}: product routes must not masquerade as Console Operations before the App owns a Console Entity`
       )
     }
   }

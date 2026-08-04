@@ -45,11 +45,7 @@
 
           <div class="mt-auto lg:hidden">
             <USeparator
-              v-if="
-                topNav.length ||
-                middleNav.length ||
-                familyRootNav.length
-              "
+              v-if="topNav.length || middleNav.length || familyRootNav.length"
             />
 
             <UNavigationMenu
@@ -195,64 +191,51 @@ const familySelections = new Map(
   )
 )
 const topNav = computed(() =>
-  consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'top')
+  consoleNav.desktop.value.filter(
+    (item) => consoleNav.resolveItemPosition(item) === 'top'
+  )
 )
 const middleNav = computed(() =>
-  consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'middle')
+  consoleNav.desktop.value.filter(
+    (item) => consoleNav.resolveItemPosition(item) === 'middle'
+  )
 )
 const familyRootNav = computed(() =>
-  consoleNav.desktop.value.filter((item) => consoleNav.resolveItemPosition(item) === 'bottom')
+  consoleNav.desktop.value.filter(
+    (item) => consoleNav.resolveItemPosition(item) === 'bottom'
+  )
 )
 
 const route = useRoute()
 const family = computed(() => consoleFamilyFromPath(String(route.path || '')))
-const familyLabel = computed(() => toConsoleFamilyLabel(family.value) || 'Console')
-const familyPath = computed(() => family.value ? toConsoleFamilyPath(family.value) : '/console')
+const familyLabel = computed(
+  () => toConsoleFamilyLabel(family.value) || 'Console'
+)
+const familyPath = computed(() =>
+  family.value ? toConsoleFamilyPath(family.value) : '/console'
+)
 const activeSelectionId = computed(() => {
   const activeFamily = family.value
   if (!activeFamily) return ''
   return familySelections.get(activeFamily)?.selectedId.value ?? ''
 })
-const configuredTargetIds = computed(() =>
-  familyConsoles.get(family.value)?.targetIds() ?? []
-)
 const requiresSelection = computed(() => {
   const nav = route.meta.nav as Record<string, unknown> | undefined
-  return route.meta.requiresSelection === true || nav?.requiresSelection === true
+  return (
+    route.meta.requiresSelection === true || nav?.requiresSelection === true
+  )
 })
-watch(
-  () => ({
-    activeFamily: family.value,
-    selectedId: normalizeString(activeSelectionId.value),
-    requiresSelection: requiresSelection.value,
-    targetIds: configuredTargetIds.value,
-  }),
-  (state: {
-    activeFamily: string
-    selectedId: string
-    requiresSelection: boolean
-    targetIds: string[]
-  }) => {
-    const onlyTargetId = normalizeString(state.targetIds[0])
-    const activeConsole = familyConsoles.get(state.activeFamily)
-    const activeSelection = familySelections.get(state.activeFamily)
-    if (!state.activeFamily) return
-    if (!state.requiresSelection) return
-    if (!activeConsole?.isTenant || !activeSelection) return
-    if (state.selectedId) return
-    if (state.targetIds.length !== 1 || !onlyTargetId) return
-
-    activeSelection.selectTarget(onlyTargetId, 'live')
-  },
-  { immediate: true }
+const selectionBlocked = computed(
+  () => requiresSelection.value && !normalizeString(activeSelectionId.value)
 )
-const selectionBlocked = computed(() =>
-  requiresSelection.value && !normalizeString(activeSelectionId.value)
+const selectionRequiredTitle = computed(
+  () => `Select ${familyLabel.value} first`
 )
-const selectionRequiredTitle = computed(() => `Select ${familyLabel.value} first`)
-const selectionRequiredDescription = computed(() =>
-  `This console page needs an active ${familyLabel.value.toLowerCase()} before it can load.`
+const selectionRequiredDescription = computed(
+  () =>
+    `This console page needs an active ${familyLabel.value.toLowerCase()} before it can load.`
 )
-const selectionRequiredActionLabel = computed(() => `Choose ${familyLabel.value}`)
-
+const selectionRequiredActionLabel = computed(
+  () => `Choose ${familyLabel.value}`
+)
 </script>

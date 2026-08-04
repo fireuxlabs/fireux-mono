@@ -14,5 +14,8 @@ export const ecosystemConfig = {
     databaseId: 'misebox',
     simulationDatabaseId: 'misebox-simulation',
   },
-  ssrRegion: 'europe-west6',
+  ssr: {
+    region: 'europe-west6',
+    serviceAccount: 'misebox-ssr@misebox-78f9c.iam.gserviceaccount.com',
+  },
 } as const satisfies FireuxEcosystemConfig

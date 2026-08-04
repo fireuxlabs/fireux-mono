@@ -1,4 +1,4 @@
-import type { AppMembershipRole } from '../../../models/core/supporting/app-membership'
+import type { AppMembershipRole } from '../../../models/operations/app-membership'
 import { requireFirestoreDocumentId } from '../ids/path'
 import {
   countTransactionAdmins,

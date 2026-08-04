@@ -1,0 +1,8 @@
+// @fireux-rules-template bringli
+// @fireux-rules-project bringli-b0517
+// @fireux-rules-databases bringli
+// @fireux-rules-artifact scripts/firebase/bringli/firestore.rules
+// @fireux-rules-fragments open,close
+// Concurrent edit — 2026-08-04 — Ecosystem Rules spine: establish an ecosystem-owned default-deny release source.
+// @fireux-rules-template-source
+// @fireux-ecosystem-rules default-deny
