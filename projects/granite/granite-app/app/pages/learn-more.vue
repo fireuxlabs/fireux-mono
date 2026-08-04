@@ -35,8 +35,8 @@
           </template>
           <div class="flex flex-wrap gap-2">
             <UButton to="/console/portfolio" color="primary" variant="soft" icon="i-lucide-terminal">Portfolio console</UButton>
-            <UButton to="/pricing/apps" color="neutral" variant="soft" icon="i-lucide-app-window">App model</UButton>
-            <UButton to="/pricing/partners" color="neutral" variant="soft" icon="i-lucide-handshake">Partners</UButton>
+            <UButton to="/pricing/your-app" color="neutral" variant="soft" icon="i-lucide-app-window">Your App</UButton>
+            <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
           </div>
         </UCard>
       </UContainer>

@@ -58,6 +58,7 @@
     "firebase-functions": "^6.3.2",
     "fireux-nuxtfire": "workspace:*",
     "google-auth-library": "^9.15.1",
+    "gsap": "^3.15.0",
     "h3": "^1.15.4",
     "image-size": "^2.0.2",
     "jiti": "^2.7.0",

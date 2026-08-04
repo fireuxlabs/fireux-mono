@@ -64,7 +64,7 @@
           variant="soft"
           icon="i-lucide-external-link"
         >
-          Open public job
+          Open job
         </UButton>
 
         <UButton
@@ -83,7 +83,7 @@
   <UModal
     v-model="isConfirmOpen"
     title="Publish this job?"
-    description="Publishing makes this open job visible in the public Jobs directory."
+    description="Publishing makes this job visible in the Jobs directory."
   >
     <template #body>
       <div class="space-y-4">
@@ -92,7 +92,7 @@
           variant="soft"
           icon="i-lucide-shield-check"
           title="Canonical employer and location"
-          description="The public posting will use the linked Company and Place as the source of employer and location truth."
+          description="The published job will use the linked Company and Place as the source of employer and location truth."
         />
         <div class="flex justify-end gap-2">
           <UButton
@@ -211,7 +211,7 @@ async function onPublish() {
     emit('published', response.job)
     toast.add({
       title: 'Job published',
-      description: 'The posting is now available in the public Jobs directory.',
+      description: 'The job is now available in the Jobs directory.',
       color: 'success',
       icon: 'i-lucide-circle-check',
     })

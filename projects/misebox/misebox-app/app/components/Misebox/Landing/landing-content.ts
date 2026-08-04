@@ -176,12 +176,10 @@ export const toolsCatalogue = {
 
 export const content = {
   hero: {
-    badge: 'Misebox',
-    kicker: 'Kitchen Console',
     title: 'The Control Centre For',
-    accent: 'Kitchen Operations',
+    accent: ['Kitchen', 'Operations'],
     description:
-      'Develop dishes. Create digital menus. Manage recipes and ingredients. Generate kitchen prep lists. Process restaurant orders. Track food costs and sales.',
+      'An integrated menu platform connecting QR and kiosk ordering directly to your Kitchen Console. Publish menus, manage recipes and mise en place, process orders, and track food costs and sales.',
     primaryAction: {
       label: 'Get started',
       to: '/get-started',

@@ -124,7 +124,7 @@ export function useIgnitionQueue() {
 
   function originTo(origin: IgnitionOrigin) {
     const ref = encodeURIComponent(origin.ref)
-    if (origin.surface === 'pricing') return '/pricing/apps'
+    if (origin.surface === 'pricing') return '/pricing/your-app'
     if (origin.surface === 'solution') return `/solutions/${ref}`
     return `/apps/${ref}`
   }

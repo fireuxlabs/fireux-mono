@@ -48,7 +48,7 @@
         <h2 class="text-lg font-semibold text-highlighted">Need your own app later?</h2>
       </template>
       <p class="text-muted">
-        Move to a branded Werkbox app for $600 setup, then choose $20/month self-managed or $50/month managed.
+        Move to a branded Werkbox App for CHF 600 setup, then choose CHF 20/month Pro or CHF 50/month Managed.
       </p>
     </UCard>
 
@@ -59,8 +59,8 @@
       >
         Ask to join
       </UButton>
-      <UButton to="/ecosystems/werkbox/pricing" color="neutral" variant="soft">
-        See pricing
+      <UButton to="/apps/werkbox" color="neutral" variant="soft">
+        View Werkbox
       </UButton>
     </template>
   </PublicSimplePage>

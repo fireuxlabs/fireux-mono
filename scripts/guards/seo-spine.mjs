@@ -164,6 +164,65 @@ export async function run({ repoRoot }) {
     )
   }
 
+  const kitchensModule = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/module.ts'
+  )
+  const kitchensServerConfig = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/config/module/server-config.ts'
+  )
+  const kitchensApi = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/index.get.ts'
+  )
+  const kitchensIndex = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/public-index.ts'
+  )
+  const kitchensSitemap = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/sitemaps/kitchens.xml.get.ts'
+  )
+
+  if (!kitchensModule.includes("ctx.addDocument('/sitemaps/kitchens.xml')")) {
+    violations.push(
+      'Kitchens must contribute its projection-backed sitemap document.'
+    )
+  }
+  if (kitchensModule.includes("entityKey: 'kitchens'")) {
+    violations.push(
+      'Kitchens must not use the visibility-only generic sitemap provider.'
+    )
+  }
+  if (!kitchensServerConfig.includes("route: '/sitemaps/kitchens.xml'")) {
+    violations.push('Kitchens must register its sitemap XML handler.')
+  }
+  for (const source of [kitchensApi, kitchensSitemap]) {
+    if (!source.includes('readPublicKitchenIndexPage')) {
+      violations.push(
+        'Kitchen JSON and sitemap transport must share the bounded public index reader.'
+      )
+      break
+    }
+  }
+  for (const gate of [
+    'isPublishedKitchen',
+    'hydrateKitchenPublicDocuments',
+    'projectPublicKitchenIndexItem',
+  ]) {
+    if (!kitchensIndex.includes(gate)) {
+      violations.push(
+        `Kitchen sitemap reader must retain the ${gate} public gate.`
+      )
+    }
+  }
+  if (kitchensSitemap.includes("collection('kitchens')")) {
+    violations.push(
+      'Kitchen sitemap transport must not duplicate a raw root query.'
+    )
+  }
+
   const fireuxLanding = read(
     repoRoot,
     'projects/fireux/fireux-app/app/pages/index.vue'

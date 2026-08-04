@@ -9,8 +9,8 @@
     "preview": "nuxi preview",
     "prepare:firebase-output": "node ../../../scripts/prepare-firebase-output.mjs && pnpm --dir .output/server install --prod --ignore-workspace --ignore-scripts",
     "deploy:preflight": "node ../../../scripts/firebase-deploy-preflight.mjs --project misebox-78f9c --config firebase.json",
-    "deploy": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json --app-domain https://misebox.app",
-    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json --app-domain https://misebox.app",
+    "deploy": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json --app-domain https://misebox.app --auth-domains misebox.app,misebox-78f9c.web.app,jobs.misebox.app,suppliers.misebox.app",
+    "deploy:hosting": "node ../../../scripts/firebase-deploy.mjs --project misebox-78f9c --config firebase.json --app-domain https://misebox.app --auth-domains misebox.app,misebox-78f9c.web.app,jobs.misebox.app,suppliers.misebox.app",
     "check:env": "node ../../../scripts/check-env.mjs",
     "postinstall": "node -e \"if(process.env.CI||process.env.GITHUB_ACTIONS) process.exit(0); require('child_process').execSync('nuxi prepare',{stdio:'inherit',env:{...process.env,CI:'1'}});\"",
     "clean": "rimraf .nuxt app/.nuxt .output dist"

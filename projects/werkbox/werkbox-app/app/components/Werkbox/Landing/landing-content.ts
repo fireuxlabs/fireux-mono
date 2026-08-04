@@ -1,64 +1,64 @@
 import type {
   LandingProductCatalogueContent,
-  LandingProductEntryContent,
   LandingProductIndexContent,
+  LandingProductSurface,
+  LandingOperationRailItem,
 } from 'fireux-core/types/landing-product'
 
 export const content = {
   hero: {
-    badge: 'Werkbox',
-    kicker: 'Practical work',
-    title: 'Find Good Work.',
-    accent: 'Build A Strong Team.',
+    title: 'The Control Centre For',
+    accent: ['Recruitment', 'Operations'],
     description:
-      'Browse public practical jobs before you join. Meet named employers directly, or build your team without a hiring commission.',
+      'An integrated work platform connecting jobs, employers and professionals directly to your Work Console. Publish work, review applications, coordinate teams and manage customer jobs.',
     primaryAction: {
-      label: 'Browse jobs',
-      to: '/jobs',
-      icon: 'i-lucide-search',
+      label: 'Get started',
+      to: '/get-started',
     },
     secondaryAction: {
-      label: 'Hire directly',
+      label: 'Go to console',
       to: '/jobs/manage',
-      icon: 'i-lucide-circle-plus',
+      icon: 'i-lucide-layout-dashboard',
     },
-    quietAction: {
-      label: 'How direct hiring works',
-      to: '/jobs/learn-more',
-    },
-    trustItems: [
-      'Open jobs before signup',
-      'Direct employer relationships',
-      'No hiring commission',
-    ],
+    trustItems: [],
   },
 } as const satisfies LandingProductIndexContent
 
-export const entryPaths = {
-  sectionId: 'werkbox-entry',
-  eyebrow: 'Start with Werkbox',
-  title: 'Looking for work or building a team?',
-  description:
-    'Use one practical-work network from either side of the relationship.',
-  paths: [
-    {
-      id: 'find-work',
-      kind: 'start',
-      title: 'Find practical work',
-      description:
-        'See published roles, employers, workplaces, and terms before you create a reusable Professional profile to apply.',
-      action: { label: 'Browse jobs', to: '/jobs' },
-    },
-    {
-      id: 'hire',
-      kind: 'join',
-      title: 'Hire practical professionals',
-      description:
-        'Publish roles, meet applicants, and hire directly without paying a percentage of their work.',
-      action: { label: 'Hire directly', to: '/jobs/manage' },
-    },
-  ],
-} satisfies LandingProductEntryContent
+export const railItems = [
+  { id: 'jobs', title: 'Jobs', icon: 'i-lucide-briefcase-business', to: '/jobs' },
+  { id: 'organisations', title: 'Organisations', icon: 'i-lucide-building-2', to: '/agents' },
+  { id: 'professionals', title: 'Professionals', icon: 'i-lucide-users', to: '/professionals' },
+] as const satisfies readonly LandingOperationRailItem[]
+
+export const surfaceItems = [
+  {
+    id: 'jobs',
+    title: 'Jobs',
+    description: 'Publish work where professionals can find it and review the named employer before applying.',
+    icon: 'i-lucide-briefcase-business',
+    to: '/jobs',
+    action: 'Browse jobs',
+    items: ['Published jobs', 'Named employers', 'Workplaces', 'Direct applications'],
+  },
+  {
+    id: 'employer',
+    title: 'Employer Workspace',
+    description: 'Publish jobs, review applications and manage direct hiring work.',
+    icon: 'i-lucide-building-2',
+    to: '/jobs/manage',
+    action: 'Open employer workspace',
+    items: ['Job publishing', 'Applications', 'Hiring status', 'Employer control'],
+  },
+  {
+    id: 'professionals',
+    title: 'Professional Profiles',
+    description: 'Give professionals a reusable public identity for their experience and applications.',
+    icon: 'i-lucide-user-round-search',
+    to: '/professionals',
+    action: 'Browse professionals',
+    items: ['Public profiles', 'Work identity', 'Experience', 'Applications'],
+  },
+] as const satisfies readonly LandingProductSurface[]
 
 export const networkCatalogue = {
   sectionId: 'werkbox-network',

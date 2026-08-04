@@ -22,6 +22,7 @@ Use the smallest current context that fits the task.
 - Repo-wide agent context: `docs/ai/gpt-context.md`
 - Misebox-specific work: `docs/ai/misebox-context.md`
 - Werkbox-specific work: `docs/ai/werkbox-context.md`
+- Cross-system identity, landing, and pricing literature: `docs/ai/identity-literature-context.md`
 - Product literature and common tongue: `docs/concepts/product-language.md`
 - Concept maps and family language: `docs/concepts/*.md`
 - Source shape and executable authority: `scripts/guards/*`

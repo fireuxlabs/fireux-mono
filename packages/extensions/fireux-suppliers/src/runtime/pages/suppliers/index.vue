@@ -2,7 +2,7 @@
   <UPage>
     <UPageHeader
       :title="pageTitle"
-      description="Find and join suppliers, or create your own Supplier Console."
+      description="Supplier identity, catalogue work, items, ingredients and team access in one Misebox Console."
     />
 
     <UPageBody>
@@ -32,7 +32,7 @@ definePageMeta({
   layout: 'default',
   name: 'SuppliersIndexPage',
   title: 'Suppliers',
-  description: 'Find and join suppliers, or create your own Supplier Console.',
+  description: 'Open a Supplier Console or browse public Supplier identities.',
 })
 
 const pageTitle = 'Suppliers'

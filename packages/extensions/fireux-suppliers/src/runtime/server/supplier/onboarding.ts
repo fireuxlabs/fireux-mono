@@ -12,6 +12,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore.ts'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path.ts'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps.ts'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug.ts'
 import type {
   SupplierOnboardingAction,
   SupplierOnboardingCompleteResult,
@@ -45,7 +46,8 @@ function request(value: unknown) {
   }
 
   const source = value as Record<string, unknown>
-  const unsupported = Object.keys(source).find(key => key !== 'supplier_id')
+  const supported = new Set(['supplier_id', 'organization_name'])
+  const unsupported = Object.keys(source).find(key => !supported.has(key))
   if (unsupported) {
     fail(400, `Supplier onboarding contains unsupported field: ${unsupported}.`)
   }
@@ -223,14 +225,16 @@ function resolveAction(input: {
 
 function newSupplierRoot(
   policy: RuntimePolicy,
-  uid: string
+  uid: string,
+  supplierId: string,
+  organizationName: string
 ): Record<string, unknown> {
   return {
     app_scope_state: policy.appScopeState,
     app_scope_app_id: policy.appId,
     company_id: '',
-    slug: '',
-    supplier_organization_name: '',
+    slug: supplierId,
+    supplier_organization_name: organizationName,
     tagline: '',
     supplier_headline: '',
     summary: '',
@@ -256,9 +260,22 @@ export async function completeSupplierOnboarding(
   const policy = runtimePolicy(event)
   const db = getRuntimeFirestore()
   const requestedSupplierId = text(body.supplier_id)
+  const organizationName = text(body.organization_name)
+  if (requestedSupplierId && organizationName) {
+    fail(400, 'Choose either an existing Supplier or a new organization name.')
+  }
+  if (!requestedSupplierId && organizationName.length < 2) {
+    fail(400, 'Organization name must contain at least 2 characters.')
+  }
+  if (organizationName.length > 120) {
+    fail(400, 'Organization name must contain at most 120 characters.')
+  }
   const supplierId = requestedSupplierId
     ? requireFirestoreDocumentId(requestedSupplierId, 'Supplier id')
-    : db.collection(SupplierStorage.rootCollection).doc().id
+    : requireFirestoreDocumentId(
+        normalizeSlug(organizationName),
+        'Supplier id'
+      )
   assertRuntimeTarget(policy, supplierId)
 
   const rootRef = db.collection(SupplierStorage.rootCollection).doc(supplierId)
@@ -281,6 +298,9 @@ export async function completeSupplierOnboarding(
 
     if (requestedSupplierId && !root.exists) {
       fail(404, 'Supplier not found.')
+    }
+    if (!requestedSupplierId && root.exists) {
+      fail(409, 'A Supplier with this organization name already exists.')
     }
     if (!root.exists && support.exists) {
       fail(409, 'Supplier access exists without its canonical root.')
@@ -327,7 +347,10 @@ export async function completeSupplierOnboarding(
     const createdAppSupport = !support.exists
 
     if (createdRoot) {
-      transaction.create(rootRef, newSupplierRoot(policy, uid))
+      transaction.create(
+        rootRef,
+        newSupplierRoot(policy, uid, supplierId, organizationName)
+      )
     } else {
       const scope = readRootScope(rootData || {})
       if (

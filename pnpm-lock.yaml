@@ -122,6 +122,9 @@ importers:
       google-auth-library:
         specifier: ^9.15.1
         version: 9.15.1
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       h3:
         specifier: 1.15.11
         version: 1.15.11
@@ -518,6 +521,9 @@ importers:
       fireux-finance:
         specifier: workspace:*
         version: link:../fireux-finance
+      fireux-suppliers:
+        specifier: workspace:*
+        version: link:../fireux-suppliers
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -1382,6 +1388,9 @@ importers:
       fireux-sproochli:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-sproochli
+      fireux-suppliers:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-suppliers
       h3:
         specifier: 1.15.11
         version: 1.15.11
@@ -7067,6 +7076,9 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  gsap@3.15.0:
+    resolution: {integrity: sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A==}
 
   gtoken@7.1.0:
     resolution: {integrity: sha512-pCcEwRi+TKpMlxAQObHDQ56KawURgyAf6jtIY046fJ5tIv3zDe/LEIubckAO8fj6JnAxLdmWkUfNyulQ2iKdEw==}
@@ -16578,6 +16590,8 @@ snapshots:
   gopd@1.2.0: {}
 
   graceful-fs@4.2.11: {}
+
+  gsap@3.15.0: {}
 
   gtoken@7.1.0:
     dependencies:

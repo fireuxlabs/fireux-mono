@@ -265,18 +265,30 @@ Before each task:
   presentation only and performs no Demo, Live, Test, Firebase, Storage, or
   order mutation. Misebox owns its content while Core continues to own the
   shared hero layout and responsive behaviour.
-  Misebox places a compact App-owned pricing strip full-width beneath the hero
-  copy and product image. It presents the source-backed Free, Premium, and
-  Managed tiers and links to the full pricing route; it replaces secondary
+  Misebox composes Core `LandingProductPricingStrip` immediately after the Hero rather
+  than inside its pinned grid. Section One remains the shared two-part Hero:
+  product title and actions on the left, project-owned image on the right.
+  Its thin adapter presents the shared Free, Pro, Managed, and Your App tiers
+  and links to the full pricing routes; it replaces secondary
   capability notes rather than duplicating a separate onboarding section. A
-  single horizontally scrolling rail above the hero projects only the current
-  Kitchen operations from the existing typed operation catalogue and links to
+  Core `LandingOperationRail` provides the horizontally scrolling rail above
+  Section One in both Main Apps. Misebox projects only the current Kitchen
+  operations from the existing typed operation catalogue and links to
   their canonical public routes. It omits the generic Operations doorway,
   Console group labels, and Supplier operations.
   The first Kitchen Console proof explicitly uses Core's copy-emphasis variant
   so its selected Operation explanation is wider and more prominent than the
   read-only Console preview; later proof sections retain the balanced default.
-  The existing Core hero
+  Misebox Kitchen and Supplier hero photography consumes Core
+  `LandingProductHeroImage`; Misebox owns the reviewed assets, alternative
+  text, and focal position but does not duplicate or decorate the shared sharp
+  image frame. The Misebox Main App opts into Core's immersive landing composition and
+  inherits its pinned hero handoff, scrubbed chapter transitions, responsive
+  behavior, and reduced-motion fallback without importing GSAP. Its static
+  Kitchen operations image, pricing strip, Kitchen-first region order, and
+  proof remain Misebox-owned. Core animates only the named region shell;
+  Misebox sections own their internal `data-landing-reveal` participants so
+  their product presentation is independently targetable. The existing Core hero
   action system keeps the Get started and Go to console buttons, Operations
   doorway, and concise capability notes directly beside that proof rather than
   adding a detached CTA section. The later landing sections retain the
@@ -369,16 +381,14 @@ Before each task:
   product proof are unconditioned defaults, while wider layouts enhance them
   only through `min-width` breakpoints. The executable contract lives in
   `scripts/guards/product-landing.mjs`.
-- Misebox sells one connected Kitchen and Jobs membership. Free includes
-  unlimited permanent and fixed-term publishing and hiring, unlimited
-  temporary advertising and applications, and one active temporary
-  Engagement. Premium is CHF 20 per month and unlocks multiple concurrent
-  temporary Engagements together with the Premium Kitchen Console; Misebox
-  takes no hiring percentage. The project-owned `/pricing` projection is the
-  public authority for current CHF amounts and inclusions. Managed service adds
-  bounded human setup and support rather than acting as a recruiter, employer,
-  payroll provider, or personnel lessor. A Dedicated App is a configured
-  Misebox deployment, not bespoke software.
+- Misebox follows the shared ecosystem pricing literature. Free provides a
+  functional Kitchen Console, Pro is CHF 20/month self-managed, Managed is CHF
+  50/month with bounded FireUX assistance, and Your App is CHF 600 setup
+  followed by Pro or Managed. Core owns these common amounts and service
+  meanings; Misebox owns its Kitchen-specific capabilities and limits. Managed
+  service does not make FireUX a recruiter, employer, payroll provider, or
+  personnel lessor. A Misebox App configures existing product capabilities;
+  new development is quoted separately.
 - The main landing's Our Apps section consumes Core
   `LandingAppCollection` through the product landing's named App slot and the
   existing `useEcosystemAppCollection` controller. It shows only active Apps
@@ -402,17 +412,22 @@ Before each task:
   the same Firebase Auth, database, App membership, App Agent support, and
   `source_app_id` author boundary. Creating an independent Jobs App requires a
   separately verified membership, Rules, and existing-Job migration.
-- `suppliers.misebox.app` follows the same focused-doorway pattern over the
-  existing `misebox-app` authority. Its root redirects to the package-owned
-  Supplier directory and its public Supplier routes use a Supplier-focused
-  project layout with Browse, guidance, and Supplier Console doorways. It
-  retains the same Firebase Auth, database, App membership, Supplier/AppSupplier
-  authority, and canonical Supplier Console. The main `misebox.app` landing is
-  Kitchen-first: it projects only Kitchen Operations. Kitchen `Suppliers`
-  remains the Kitchen-side sourcing Operation; Supplier Catalogue,
-  Ingredients, and Items remain Supplier Console Operations and are presented
-  through the Supplier doorway. Creating an independent Supplier App requires
-  separately verified membership, Rules, and data migration.
+- Bringli is the canonical Supplier product and supply-network host. Misebox
+  loads `fireux-suppliers` in consumer mode only: it receives shared Supplier
+  presentation and bounded projection contracts, but no Supplier public routes,
+  Supplier Console, onboarding, sitemap, or direct Supplier storage authority.
+  Kitchen `Suppliers` remains the seamless Kitchen-side sourcing and procurement
+  Operation; it owns Kitchen selections, preferences, delivery receipt and cost
+  context while resolving Supplier identity, Catalogue and Items from Bringli.
+  The retired `suppliers.misebox.app` doorway redirects permanently to Bringli
+  during DNS and bookmark migration and must not regain a local landing.
+  New Suppliers enter through Bringli's trusted Supplier Console onboarding
+  transaction; the normalized organization slug is both canonical document id
+  and public route identity. Detached browser-created Supplier roots are not a
+  supported acquisition path. Bringli Supplier owns identity, Items, Ingredients, and
+  Catalogues. A marketplace may publish a Supplier through an App-local
+  listing and own customer baskets and Orders, but it must not recreate Store
+  identity or Offer product authority. See `docs/concepts/suppliers.md`.
 - Misebox owns its complete main Firestore Rules manifest at
   `packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules`
   and its named policy fragments in the adjacent `rules/` directory. Core
@@ -517,16 +532,20 @@ Before each task:
   and UserApp state. Its buyer surface may store sparse private settings such
   as `delivery_address` on the existing app-private marketplace profile through
   the fixed-runtime authenticated `/api/marketplace/account` projection.
-  `fireux-marketplace` owns the canonical App-scoped Store Entity, Store-owned
-  Offer Records, and private offline marketplace Order Records. Seller
+  The current `fireux-marketplace` App-scoped Store and Store-owned Offer
+  records are an unshipped prototype being replaced outright by
+  Supplier-backed marketplace listings; they are not a compatibility contract.
+  Do not extend them with Supplier identity, media, catalogue, or item
+  management. Marketplace remains the owner of App-local publication,
+  customer baskets, and private offline Order Records. Seller
   visibility and writes derive from bounded Store owner/editor authority, not
-  the legacy profile `offers_enabled` presentation flag. App Admin creates
+  the obsolete prototype profile `offers_enabled` presentation flag. App Admin creates
   Stores and assigns existing App members; an unassigned draft cannot enter
   review. Public Store/Offer reads and every private mutation use the package's
   bounded trusted endpoints; raw browser Firestore access is closed.
   Marketplace Orders must not reuse
   KitchenOrder outside Menu fulfilment or create payment/FinancialFact truth.
-  See `docs/concepts/marketplace.md`.
+  See `docs/concepts/marketplace.md` and `docs/concepts/suppliers.md`.
 
 Current code, executable guards, and tests are implementation truth. Concept
 maps provide navigation and working context. Deleted docs, previous chat

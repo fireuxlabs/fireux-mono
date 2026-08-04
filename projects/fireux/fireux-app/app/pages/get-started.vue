@@ -18,12 +18,12 @@
       </UCard>
 
       <UCard variant="subtle">
-        <p class="text-sm text-muted">Maintenance</p>
+        <p class="text-sm text-muted">Monthly plan</p>
         <p class="mt-1 text-3xl font-semibold text-highlighted">
           {{ appMeta.getStarted.monthlyPrice }}
         </p>
         <p class="mt-2 text-sm text-muted">
-          Hosting, updates, and maintenance.
+          CHF 20 Pro or CHF 50 Managed.
         </p>
       </UCard>
     </section>

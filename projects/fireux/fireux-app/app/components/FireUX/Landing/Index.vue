@@ -1,62 +1,68 @@
 <!-- Concurrent edit — 2026-07-28 — Align the FireUX and Misebox Main App landing family. -->
 <template>
-  <LandingProductIndex :content="content">
-    <template #onboarding>
-      <LandingProductEntryPaths :content="entryPaths" />
-    </template>
+  <div>
+    <LandingOperationRail
+      ariaLabel="Project operations"
+      :operations="catalogueOperations"
+    />
 
-    <template #console>
-      <LandingProductProofSection
-        section-id="fireux-console"
-        :eyebrow="selectedConsoleCopy.eyebrow"
-        :title="selectedConsoleCopy.title"
-        :description="selectedConsoleCopy.description"
-        :supporting="selectedConsoleCopy.supporting"
-        :items="selectedConsoleCopy.items"
-        :action="{
-          label: selectedConsoleCopy.action,
-          to: selectedConsoleCopy.to,
-          icon: 'i-lucide-arrow-right',
-        }"
-      >
-        <FireUXLandingConsolePreview
+    <LandingProductIndex
+      :content="content"
+      hero-layout="proof-wide"
+      presentation="immersive"
+      :region-order="[
+        'surfaces',
+        'ecosystems',
+        'apps',
+        'solutions',
+        'operations',
+      ]"
+    >
+      <template #hero-preview>
+        <FireUXLandingCardOrbit presentation="hero" />
+      </template>
+
+      <template #onboarding>
+        <FireUXLandingPricingStrip />
+      </template>
+
+      <template #surfaces>
+        <FireUXLandingSurfaceShowcase
           v-model:surface-id="selectedConsoleSurfaceId"
           :operations="consoleOperations"
+          :copy="projectConsoleCopy"
         />
-      </LandingProductProofSection>
-    </template>
+      </template>
 
-    <template #ecosystems>
-      <LandingEcosystems />
-    </template>
+      <template #apps>
+        <LandingAppCollection
+          :controller="appsController"
+          title="FireUX's Apps"
+          action-label="Explore all apps"
+          action-to="/apps"
+          :limit="6"
+        />
+      </template>
 
-    <template #apps>
-      <LandingAppCollection
-        :controller="appsController"
-        eyebrow="Ecosystem apps"
-        title="See the apps already running on FireUX."
-        description="Browse active Apps across the FireUX platform and open each canonical App detail."
-        action-label="Explore all apps"
-        action-to="/apps"
-        :limit="6"
-      />
-    </template>
+      <template #ecosystems>
+        <LandingEcosystems />
+      </template>
 
-    <template #solutions>
-      <LandingProductCatalogue :content="solutionsCatalogue" />
-    </template>
+      <template #solutions>
+        <LandingProductCatalogue :content="solutionsCatalogue" />
+      </template>
 
-    <template #operations>
-      <LandingProductCatalogue :content="operationsCatalogue" />
-    </template>
-  </LandingProductIndex>
+      <template #operations>
+        <LandingProductCatalogue :content="operationsCatalogue" />
+      </template>
+    </LandingProductIndex>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import type {
   LandingProductCatalogueContent,
-  LandingProductEntryContent,
   LandingProductIndexContent,
 } from 'fireux-core/types/landing-product'
 import type {
@@ -65,19 +71,7 @@ import type {
 } from 'fireux-core/runtime/models/system/meta-content.model'
 import { fireuxOffer, metaContent } from '../../../meta'
 import { usePlatformAppDirectory } from '../../../composables/usePlatformDirectory'
-import FireUXLandingConsolePreview from './ConsolePreview/Index.vue'
-
-type ConsoleSurfaceCopy = {
-  action: string
-  description: string
-  eyebrow: string
-  items: readonly string[]
-  supporting?: string
-  title: string
-}
-type SelectedConsoleSurfaceCopy = ConsoleSurfaceCopy & {
-  to: string
-}
+import FireUXLandingPricingStrip from './PricingStrip.vue'
 
 const appsController = usePlatformAppDirectory()
 const selectedConsoleSurfaceId = ref('project.apps')
@@ -101,57 +95,14 @@ const catalogueOperations = landingOperations.map((operation) => ({
   to: operation.slug ? `/operations/${operation.slug}` : operation.to,
 }))
 
-const consoleSurfaceCopy = {
-  'project.ignition': {
-    eyebrow: 'Project Console · Ignition',
-    title: 'Manage Ignition requests.',
-    description:
-      'Review each request, update its status, and work through the launch checklist.',
-    items: ['Business and contact', 'App requirements', 'Access', 'Launch checklist'],
-    action: 'Open Ignition',
-  },
-  'project.apps': {
-    eyebrow: 'Project Console · Apps',
-    title: 'Review the Apps in a Project.',
-    description:
-      'See the App records connected to the selected Project and the Ecosystem each App belongs to.',
-    items: ['App identity', 'Ecosystem relationship', 'Runtime role', 'Project scope'],
-    action: 'Open Project Apps',
-  },
-  'project.ecosystem': {
-    eyebrow: 'Project Console · Ecosystem',
-    title: 'Review the Project Ecosystem.',
-    description:
-      'See the Ecosystem connected to the selected Project and the Apps grouped inside it.',
-    items: ['Ecosystem identity', 'Project relationship', 'Connected Apps', 'Current status'],
-    action: 'Open Project Ecosystem',
-  },
-  'project.users': {
-    eyebrow: 'Project Console · Users',
-    title: 'Monitor new App users.',
-    description:
-      'Review the bounded signup feed published by Apps connected to FireUX.',
-    items: ['Recent joins', 'Source App', 'Project', 'Membership role'],
-    supporting: 'Returning sign-ins are excluded from the feed.',
-    action: 'Open Project Users',
-  },
-} as const satisfies Record<string, ConsoleSurfaceCopy>
-
-const selectedConsoleCopy = computed<SelectedConsoleSurfaceCopy>(() => {
-  const copy: ConsoleSurfaceCopy =
-    consoleSurfaceCopy[
-      selectedConsoleSurfaceId.value as keyof typeof consoleSurfaceCopy
-    ] || consoleSurfaceCopy['project.apps']
-  const operation =
-    consoleOperations.find(
-      candidate => candidate.id === selectedConsoleSurfaceId.value
-    ) || consoleOperations[0]
-
-  return {
-    ...copy,
-    to: operation?.to || '/console/project',
-  }
-})
+const projectConsoleCopy = {
+  title: 'Project Console',
+  description:
+    'Develop and monitor your Project, its Apps, Ecosystem and users from one Console.',
+  items: ['Apps', 'Ecosystem', 'Users', 'Project identity'],
+  action: 'Open Project Console',
+  to: '/console/project',
+} as const
 
 const solutions = landingSolutions
   .filter(
@@ -171,8 +122,7 @@ const solutionsCatalogue = {
   sectionId: 'fireux-solutions',
   eyebrow: 'Solutions',
   title: 'What can FireUX launch?',
-  description:
-    'Each Solution starts with a specific job for an App to do.',
+  description: 'Each Solution starts with a specific job for an App to do.',
   action: {
     label: 'Explore all solutions',
     to: '/solutions',
@@ -195,39 +145,8 @@ const operationsCatalogue = {
   items: catalogueOperations,
 } satisfies LandingProductCatalogueContent
 
-const entryPaths = {
-  sectionId: 'fireux-entry',
-  eyebrow: 'Start with FireUX',
-  title: 'Need an App?',
-  description: fireuxOffer.entry.description,
-  paths: [
-    {
-      id: 'project',
-      kind: 'start',
-      title: fireuxOffer.entry.request.title,
-      description: fireuxOffer.entry.request.description,
-      action: {
-        label: fireuxOffer.entry.request.actionLabel,
-        to: '/get-started',
-      },
-    },
-    {
-      id: 'ecosystem',
-      kind: 'join',
-      title: fireuxOffer.entry.ecosystems.title,
-      description: fireuxOffer.entry.ecosystems.description,
-      action: {
-        label: fireuxOffer.entry.ecosystems.actionLabel,
-        to: '/ecosystems',
-      },
-    },
-  ],
-} satisfies LandingProductEntryContent
-
 const content = {
   hero: {
-    badge: 'Projects · Apps · Ecosystems',
-    kicker: 'FireUX App',
     title: 'Ignite Your Project',
     accent: 'With FireUX',
     description: fireuxOffer.heroDescription,
@@ -241,11 +160,7 @@ const content = {
       to: '/console/project',
       icon: 'i-lucide-layout-dashboard',
     },
-    quietAction: {
-      label: 'Browse ecosystems',
-      to: '/ecosystems',
-    },
-    trustItems: fireuxOffer.heroBullets.slice(0, 3),
+    trustItems: [],
   },
 } as const satisfies LandingProductIndexContent
 </script>

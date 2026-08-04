@@ -1,0 +1,99 @@
+<template>
+  <div>
+    <LandingOperationRail
+      v-if="railItems.length"
+      :ariaLabel="railLabel"
+      :operations="railItems"
+    />
+
+    <LandingProductIndex
+      :content="content"
+      hero-layout="proof-wide"
+      presentation="immersive"
+      :region-order="regionOrder"
+      :section-dwell="sectionDwell"
+    >
+      <template #hero-preview>
+        <slot name="hero-preview">
+          <LandingProductHeroImage
+            :src="heroImage"
+            :alt="heroAlt"
+            :position="heroPosition"
+          />
+        </slot>
+      </template>
+
+      <template #onboarding>
+        <LandingProductPricingStrip />
+      </template>
+
+      <template v-if="surfaceItems.length" #surfaces>
+        <slot name="surfaces">
+          <LandingProductSurfaceShowcase :items="surfaceItems" />
+        </slot>
+      </template>
+
+      <template v-if="showApps" #apps>
+        <LandingAppCollection
+          :controller="appsController"
+          :title="`${appName}'s Apps`"
+          action-label="Explore all apps"
+          action-to="/apps"
+          :exclude-ids="[appId]"
+          :minimum-items="2"
+        />
+      </template>
+    </LandingProductIndex>
+
+    <slot />
+  </div>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
+import type {
+  LandingOperationRailItem,
+  LandingProductIndexContent,
+  LandingProductSurface,
+} from '../../../types/landing-product'
+
+const props = withDefaults(
+  defineProps<{
+    content: LandingProductIndexContent
+    heroAlt: string
+    heroImage: string
+    heroPosition?: string
+    railItems?: readonly LandingOperationRailItem[]
+    railLabel?: string
+    sectionDwell?: boolean
+    surfaceItems?: readonly LandingProductSurface[]
+  }>(),
+  {
+    heroPosition: 'center',
+    railItems: () => [],
+    railLabel: 'Product work',
+    sectionDwell: true,
+    surfaceItems: () => [],
+  }
+)
+
+const { appId, appName } = useFireUXConfig()
+const appsController = useEcosystemAppCollection()
+const eligibleApps = computed(() =>
+  appsController.apps.value.filter(
+    (app) => app.status === 'active' && app.id !== appId
+  )
+)
+const showApps = computed(
+  () =>
+    appsController.outcome.value === 'pending' ||
+    appsController.outcome.value === 'error' ||
+    eligibleApps.value.length > 1
+)
+const regionOrder = computed(() => [
+  ...(props.surfaceItems.length ? (['surfaces'] as const) : []),
+  ...(showApps.value ? (['apps'] as const) : []),
+])
+</script>

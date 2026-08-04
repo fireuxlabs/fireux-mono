@@ -187,19 +187,34 @@ Before each task:
   semantic: no decorative gradients, glass, App selectors, or inferred media
   ownership.
 - Core `LandingProductIndex` owns the fixed Main App product-landing order:
-  `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
+  `hero-preview`, the `onboarding` entry slot, `surfaces`, `console`, `specifics`,
   `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The optional
   `hero-preview` seam accepts an App-owned, reviewed product presentation.
-  Misebox currently fills it with a static product image; FireUX and Werkbox
-  remain copy-only.
+  FireUX fills it with the live App and Ecosystem Card orbit. Static Main App
+  hero photography uses Core `LandingProductHeroImage`, which owns one sharp,
+  clipped frame without atmospheric blur or edge fades; Apps own only the
+  reviewed image, alternative text, and focal position. Static ecosystem hero
+  photography shows people doing that product's real work. FireUX's live orbit
+  and Misebox Kitchen's product-surface composition are the two explicit
+  non-people hero exceptions.
+  Core keeps each hero image sharp outside a responsive desktop-only blur band
+  running the image's full height when the oversized heading overlaps it. The
+  measured overlap controls a long horizontal fade; the shared Hero recomputes
+  it as copy, fonts, and viewport geometry change. The copy is untreated, and
+  stacked layouts resolve to no blur. A bounded desktop fallback keeps the fade
+  attached to the image edge when motion briefly removes the measured overlap,
+  and the mask reaches transparency before its filter region ends.
+  Reviewed static product hero sources are standardised at 1600 x 1000 pixels
+  (16:10), 8-bit opaque RGB PNG, no larger than 2.5 MB. The landing guard owns
+  the executable file contract; Apps retain subject, alternative text, and
+  focal-position ownership.
   The onboarding slot owns exactly one truthful public entry decision, not
   account onboarding. `LandingProductEntryPaths` is the shared ordered
   `start` and `join` choice plus an optional subordinate Tool doorway,
   including its icons, card anatomy, mobile-first layout, compact hero-strip
-  variant, and reveal behavior. An App may instead own a narrowly scoped entry
-  component when the decision is App-specific and source-backed; Misebox uses
-  its compact pricing strip there because Free, Premium, and Managed are the
-  relevant landing choices.
+  variant, and reveal behavior. Main ecosystem Apps use the onboarding slot
+  for Core `LandingProductPricingStrip`: Free, Pro, Managed, and Your App are
+  the common public entry choices immediately after the Hero.
   `scripts/guards/product-landing.mjs` discovers every project adapter that
   consumes `LandingProductIndex` and requires exactly one approved entry
   component in that slot. `LandingProductProofSection` owns the repeated proof-and-copy
@@ -214,9 +229,53 @@ Before each task:
   These surfaces use flat semantic Nuxt UI treatments without decorative
   gradients or flares. Product Apps retain truthful data, copy, routes, and
   proof and may omit any unavailable slot; FireUX places its Ecosystems section
-  before Apps and does not fabricate a Tools catalogue. Both Main App heroes
-  use `Get started` and `Go to console` as their primary action pair while each
-  project retains its own destination routes. Every
+  before Apps and does not fabricate a Tools catalogue. FireUX alone owns the
+  platform Ecosystems landing section. An ecosystem Main App shows its Apps
+  section only when more than one active child App remains after excluding the
+  Main App itself; its heading is only `<App name>'s Apps`. Main App heroes use
+  `Get started` and `Go to console` as their primary action pair while each
+  project retains its own destination routes. Core `useLandingMotion`
+  coordinates the shared semantic hero parts and each App-owned preview through
+  one responsive GSAP timeline; Apps retain the preview and do not import GSAP.
+  FireUX, Misebox, Werkbox, BuenoHost, Bringli, and Granite use the shared Main
+  App immersive section dwell while retaining project-owned proof, product
+  language, routes, and later sections. Slap retains the shared Main App
+  anatomy but is an accepted interaction delta: its brand-commerce landing
+  opts out of the shared section dwell rather than copying or overriding Core
+  sticky CSS.
+  Core owns the exact Main App Hero font family and display weight. Every Main
+  App consumes those Core tokens; typography must not depend on which Tailwind
+  utilities an App happens to compile. Product-specific typography requires an
+  explicit owned delta.
+  Section One is the two-part Hero only: product title/actions on the left and
+  App-owned visual proof on the right. Subscription pricing follows the Hero
+  and does not enter its pinned grid. Product surfaces follow pricing. A
+  one-surface App presents that surface directly without a selector or visible
+  `Surfaces` label; a multi-surface App may provide a selector. Console
+  Operations remain navigation within a Console and do not become separate
+  product surfaces. App-owned deeper feature sections follow the surface
+  presentation.
+  Core `useProductPricingLiterature` owns the common commercial meanings and
+  CHF amounts: Free is a functional Console, Pro is CHF 20/month self-managed,
+  Managed is CHF 50/month with bounded FireUX assistance, and Your App is CHF
+  600 setup followed by Pro or Managed. FireUX alone adds Your Ecosystem at CHF
+  1,200 setup plus CHF 50/month maintenance and a 50% customer-App revenue
+  share. Each Main App owns its Console capabilities and limits; tenant Apps do
+  not acquire the ecosystem-owner literature. Main Apps place Core
+  `LandingOperationRail` above Section One and supply only their own working
+  operation or product-area routes. That rail sticks
+  beneath the header, then exits upward as the shared pricing strip approaches
+  the same edge. Pricing exposes no visible heading and compacts without
+  residual detail rows to plan names and prices while later content continues
+  beneath it.
+  Immersive desktop landings use the
+  same scoped Core motion context for a pinned copy-to-proof handoff, optional
+  App-owned semantic entity participants, and section-owned reveal markers.
+  Each major product region holds briefly at the viewport edge
+  before releasing, so adjacent sections remain distinct without trapping
+  phone or reduced-motion scrolling. Slotted components retain their own internal reveal markers;
+  compact and reduced-motion modes do not inherit that choreography.
+  Every
   `LandingCardOrbit` declares
   exactly one `demo` or `live` data source. Its owning adapter supplies the
   complete slotted Card envelope from that source; local orbit ids, labels, and
@@ -234,8 +293,9 @@ Before each task:
   gentle shared autoplay and touch orbit while the document is visible, so
   scrolling past the orbit never freezes its yaw; reduced motion remains
   static.
-  The reusable orbit remains guarded but is not mounted by a current Main App
-  hero. Misebox retains its mobile-first guest-Menu-to-Kitchen-Console handoff
+  FireUX mounts the reusable orbit in its Main App hero as a live public App
+  and Ecosystem presentation. Misebox retains its mobile-first
+  guest-Menu-to-Kitchen-Console handoff
   stage as a dormant project-owned presentation backed by its existing Product
   Demo projection; it is not mounted in the current copy-only hero.
 - A main App may explicitly select the typed Core `sci-fire` design pack
@@ -391,13 +451,18 @@ Before each task:
 
 ## Shared marketplace authority
 
-- `fireux-marketplace` owns App-scoped Store identity, Store-owned Offer
-  Records, and private offline marketplace Order Records. Buyer and seller are
-  product surfaces, not UserApp roles.
-- Store owner/editor ids are bounded private authority; App Admin creates and
-  moderates Stores and assigns existing App members. Public readers consume
-  only bounded published Store/Offer projections, while all writes and Order
-  reads use trusted fixed-runtime endpoints.
+- Bringli owns canonical Supplier identity, Catalogue and Supplier Items through
+  `fireux-suppliers`. Misebox Kitchens and marketplace Apps consume bounded
+  Supplier projections; they do not read Bringli Firestore directly or create
+  another Supplier authority.
+- `fireux-marketplace` owns App-local Supplier publication Listings, customer
+  baskets, and private offline marketplace Order Records. Buyer and seller are
+  product surfaces, not UserApp roles. The unshipped Store/Offer prototype is
+  migration debt and is not a compatibility contract.
+- Supplier operators manage Supplier truth in Bringli; marketplace App Admins
+  moderate Listings. Public readers consume bounded joined Supplier, Listing
+  and Item projections, while all writes and Order reads use trusted
+  fixed-runtime endpoints.
 - Marketplace prices reuse Finance minor-unit money, but catalogue prices and
   offline order requests do not emit FinancialFacts. MarketplaceOrder and
   KitchenOrder are separate fulfilment families.

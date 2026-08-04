@@ -7,6 +7,16 @@ import {
 
 const serverHandlers = [
   {
+    route: '/api/public/suppliers',
+    method: 'get',
+    handler: './runtime/server/api/public/suppliers.get',
+  },
+  {
+    route: '/api/public/suppliers/:id',
+    method: 'get',
+    handler: './runtime/server/api/public/suppliers/[id].get',
+  },
+  {
     route: '/api/suppliers/onboarding/complete',
     method: 'post',
     handler: './runtime/server/api/suppliers/onboarding/complete.post',

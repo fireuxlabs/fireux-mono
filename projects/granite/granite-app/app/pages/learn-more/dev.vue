@@ -9,7 +9,7 @@
         </p>
         <div class="flex flex-wrap gap-2">
           <UButton to="/learn-more" color="primary" icon="i-lucide-book-open">Public learn more</UButton>
-          <UButton to="/pricing/partners" color="neutral" variant="soft" icon="i-lucide-handshake">Partner model</UButton>
+          <UButton to="/pricing" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">Pricing</UButton>
         </div>
       </UContainer>
     </section>
@@ -33,16 +33,16 @@
           </template>
           <div class="space-y-2 text-sm">
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/users</p>
-              <p class="text-dimmed">User access model for ecosystem onboarding.</p>
+              <p class="font-mono">GET /pricing/free</p>
+              <p class="text-dimmed">Functional Console access.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/apps</p>
-              <p class="text-dimmed">App setup and maintenance model.</p>
+              <p class="font-mono">GET /pricing/your-app</p>
+              <p class="text-dimmed">Branded App setup and monthly plan.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/partners</p>
-              <p class="text-dimmed">Partner economics and operator route.</p>
+              <p class="font-mono">GET /pricing/managed</p>
+              <p class="text-dimmed">Managed product and assistance.</p>
             </div>
           </div>
         </UCard>

@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-20 22:24 CEST — Both-Entity Authority — Supplier: require an explicit entity id on fixed root and App-overlay writes.
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: retire generic App access-array updates.
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   SupplierStorage,
   type Supplier,
@@ -125,11 +124,9 @@ export function useSupplierUpdate() {
     options: SupplierMutationOptions
   ) => {
     const normalized = cleanString(value)
-    const slug = normalized ? normalizeSlug(normalized) : undefined
     await updateSupplierRoot(
       {
         supplier_organization_name: normalized ?? undefined,
-        slug,
       },
       options
     )

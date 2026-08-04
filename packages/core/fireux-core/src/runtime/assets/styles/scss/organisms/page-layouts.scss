@@ -11,6 +11,10 @@
 	padding-block: calc(var(--spacing) * 4);
 }
 
+.fx-layout-main--landing {
+	padding-block-start: 0;
+}
+
 .pagebody {
 	display: flex;
 	flex-direction: column;

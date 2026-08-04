@@ -6,10 +6,10 @@ export type LandingProductAction = {
 }
 
 export type LandingProductHero = {
-  badge: string
-  kicker: string
+  badge?: string
+  kicker?: string
   title: string
-  accent: string
+  accent: string | readonly string[]
   description: string
   primaryAction: LandingProductAction
   secondaryAction: LandingProductAction
@@ -78,6 +78,34 @@ export type LandingProductEntryContent = {
 
 export type LandingProductIndexContent = {
   hero: LandingProductHero
+}
+
+export type LandingPricingPlan = {
+  id: string
+  title: string
+  description: string
+  price: string
+  billingCycle?: string
+  features: readonly string[]
+  to?: string
+}
+
+export type LandingOperationRailItem = {
+  id: string
+  title: string
+  icon?: string
+  to: string
+}
+
+export type LandingProductSurface = {
+  id: string
+  title: string
+  description: string
+  icon: string
+  to: string
+  action: string
+  items?: readonly string[]
+  supporting?: string
 }
 
 export type LandingConsolePreviewItem = {

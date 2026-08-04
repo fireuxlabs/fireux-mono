@@ -2,7 +2,7 @@
   <div class="fx-layout-shell">
     <LayoutsDefaultHeader />
 
-    <main class="fx-layout-main">
+    <main class="fx-layout-main fx-layout-main--landing">
       <UContainer>
         <NuxtPage />
       </UContainer>

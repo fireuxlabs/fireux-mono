@@ -11,27 +11,30 @@ Firestore Rules remain authority.
 
 ## Classification and storage
 
-- `MarketplaceStore` is an App-scoped Entity with a public route and
-  independent publication lifecycle. Its App parent owns its authority.
-- `MarketplaceOffer` is a Store-owned Record. A fixed CHF minor-unit price is
-  required before it can be published.
-- `MarketplaceOrder` is a private operational Record owned by a Store and
-  references one authenticated buyer.
-- Canonical paths are
-  `apps/{appId}/marketplace-stores/{storeId}`,
-  its `offers/{offerId}` children, and
-  `apps/{appId}/marketplace-orders/{orderId}`.
+The current Store/Offer implementation is an unshipped prototype, not a
+legacy contract. Supplier identity and saleable item truth belong to
+`fireux-suppliers`; the prototype will be replaced outright rather than kept
+behind compatibility routes or adapters.
+
+- `MarketplaceListing` is App-scoped publication configuration for one
+  canonical Supplier. Its document id and `supplier_id` are the Supplier id.
+- A Listing selects canonical Supplier Items and owns only channel-specific
+  sections, editorial copy, fulfilment choices, and publication state.
+- `MarketplaceOrder` is a private App-scoped operational Record partitioned
+  by Supplier and references one authenticated buyer.
+- Canonical marketplace paths are
+  `apps/{appId}/marketplace-listings/{supplierId}` and
+  `apps/{appId}/marketplace-orders/{orderId}`. Supplier Items remain at
+  `suppliers/{supplierId}/items/{supplierItemId}`.
 
 ## Authority
 
 - UserApp governs App access only. Buyer and seller are surfaces, not stored
   account roles.
-- Store `owner_ids` and `editor_ids` grant Store management. App Admin remains
-  the creation, moderation and membership authority. An ordinary App member
-  cannot create a Store or grant themselves Store membership.
-- An Admin may prepare an unassigned draft. At least one existing App member
-  must be assigned as owner before the Store can enter review.
-- Public browsers consume bounded published Store/Offer projections. All
+- Supplier App-support operators grant Supplier management. App Admin remains
+  the marketplace publication and moderation authority; Listings do not own a
+  second seller-membership system.
+- Public browsers consume a bounded joined Supplier/Listing/Item projection. All
   authoring, moderation and Order reads/writes use trusted fixed-runtime
   endpoints.
 - Public marketplace routes never merge source-authored preview sellers,
@@ -43,8 +46,8 @@ Firestore Rules remain authority.
 
 ## Lifecycle
 
-- Store: `draft`, `pending_review`, `published`, `paused`.
-- Offer: `draft`, `published`, `unavailable`, `archived`.
+- Listing: `draft`, `pending_review`, `published`, `paused`.
+- Item availability remains Supplier-owned.
 - Order: `requested`, `accepted`, `ready`, `completed`, with `rejected` and
   `cancelled` terminal exits.
 
@@ -60,3 +63,7 @@ The first implementation deliberately excludes online payment, commission,
 stock automation, delivery pricing/routing, reviews, chat and global catalogue
 identity. `fireux-products`, Supplier and KitchenOrder remain separate
 families.
+
+The boundary is mapped in `docs/concepts/suppliers.md`: a marketplace
+listing references one canonical Supplier and selected Supplier Items, while
+the marketplace continues to own customer baskets, publication, and Orders.

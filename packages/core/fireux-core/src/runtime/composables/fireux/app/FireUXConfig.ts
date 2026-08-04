@@ -39,6 +39,11 @@ export interface FireUXConfig {
   navOverrides: Record<string, unknown>
 
   contactEmail?: string
+  pricing?: {
+    consoleName: string
+    free: readonly string[]
+    pro: readonly string[]
+  }
   designPack?: FireuxDesignPackConfig
   designPacks?: Record<string, Record<string, unknown>>
   developerId?: string
@@ -166,6 +171,7 @@ function buildConfig(): Readonly<FireUXConfig> {
     navOverrides: optRecord(fireux, 'navOverrides') || {},
 
     contactEmail: optString(fireux, 'contactEmail'),
+    pricing: optRecord(fireux, 'pricing') as FireUXConfig['pricing'],
     designPack: optRecord(fireux, 'designPack') as
       | FireuxDesignPackConfig
       | undefined,
@@ -223,7 +229,8 @@ export function useFireUXConfig(): Readonly<FireUXConfig> {
       cached.authOnboarding?.title === cfg.authOnboarding?.title &&
       cached.authOnboarding?.description === cfg.authOnboarding?.description &&
       cached.authOnboarding?.completeLabel === cfg.authOnboarding?.completeLabel &&
-      cached.authOnboarding?.skipLabel === cfg.authOnboarding?.skipLabel
+      cached.authOnboarding?.skipLabel === cfg.authOnboarding?.skipLabel &&
+      JSON.stringify(cached.pricing) === JSON.stringify(cfg.pricing)
 
     if (isCacheValid) return cached
 

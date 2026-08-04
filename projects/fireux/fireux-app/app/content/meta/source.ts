@@ -1,6 +1,6 @@
 export const fireuxOffer = {
   heroDescription:
-    'Request a FireUX App through Ignition or explore an existing Ecosystem. The Project Console reviews Apps, Ecosystems, and new App users.',
+    'Design, build and launch your SaaS App. Develop your business tools. Manage your team and users. Monitor your Project from the Console.',
   heroBullets: [
     'Send an App request through Ignition',
     'Review Project Apps and Ecosystems',
@@ -260,15 +260,15 @@ Module package manifest
     eyebrow: 'FireUX App',
     title: 'Ignition',
     description: fireuxOffer.ignition.description,
-    setupPrice: '$150',
-    monthlyPrice: '$15/month',
+    setupPrice: 'CHF 600',
+    monthlyPrice: 'CHF 20/month',
     included: [
       'Your branding',
       'Web app and installable PWA',
       'User accounts',
       'Operator console',
       'Hosting and deployment',
-      'Pages and App features agreed before launch',
+      'Existing FireUX capabilities agreed before launch',
     ],
     requirements: [
       'Business name, logo, and colours',
@@ -282,7 +282,7 @@ Module package manifest
     seo: {
       title: 'FireUX App Ignition',
       description:
-        'Request a FireUX App through Ignition. Setup is $150 and maintenance is $15 per month.',
+        'Request a standalone FireUX App through Ignition. Setup is CHF 600, followed by Pro or Managed service.',
     },
   },
   roadmap: {

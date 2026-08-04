@@ -41,8 +41,8 @@
       <UButton to="/ecosystems/werkbox/cleaning" icon="i-lucide-sparkles">
         Explore cleaning
       </UButton>
-      <UButton to="/ecosystems/werkbox/pricing" color="neutral" variant="soft">
-        Werkbox pricing
+      <UButton to="/apps/werkbox" color="neutral" variant="soft">
+        View Werkbox
       </UButton>
     </template>
   </PublicSimplePage>

@@ -26,7 +26,7 @@
       <UAlert
         v-else-if="failed"
         title="Job unavailable"
-        description="The public job could not be loaded. Please try again."
+        description="The job could not be loaded. Please try again."
         color="error"
         variant="soft"
       />
@@ -34,7 +34,7 @@
       <UAlert
         v-else-if="missing"
         title="Job not found"
-        description="This job is not currently available as an open public posting."
+        description="This job is not currently open."
         color="error"
         variant="soft"
       />

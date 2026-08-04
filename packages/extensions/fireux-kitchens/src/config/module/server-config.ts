@@ -16,6 +16,11 @@ import {
 
 const baseServerHandlers = [
   {
+    route: '/api/supply/suppliers',
+    method: 'get',
+    handler: './runtime/server/api/supply/suppliers.get',
+  },
+  {
     route: '/api/ingredients',
     method: 'get',
     handler: './runtime/server/api/ingredients/index.get',
@@ -44,6 +49,11 @@ const baseServerHandlers = [
     route: '/api/kitchens',
     method: 'get',
     handler: './runtime/server/api/kitchens/index.get',
+  },
+  {
+    route: '/sitemaps/kitchens.xml',
+    method: 'get',
+    handler: './runtime/server/sitemaps/kitchens.xml.get',
   },
   {
     route: '/api/kitchens/onboarding/preview',

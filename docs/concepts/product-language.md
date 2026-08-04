@@ -1,6 +1,6 @@
 # Product language
 
-Updated: 2026-08-02
+Updated: 2026-08-03
 Ref: 796952bf0
 Role: map, not canon
 
@@ -57,6 +57,8 @@ Reject:
   connected without naming the records or relationship;
 - explanations of internal automation when the surface should explain what
   the user can inspect or do;
+- `publish once`, which describes an internal action without naming what
+  becomes available, where it appears, or who can use it;
 - `everything in one place`, `transform your workflow`, `order your way`, and
   similar copy that could describe an unrelated product.
 
@@ -141,6 +143,38 @@ language is stable.
 Do not centralise every string in this document. Centralise the derivation
 method and keep source literature beside its owner.
 
+## Product surfaces
+
+A product surface is a distinct place where a user or operator uses the App,
+such as a Console, mobile Menu, Kiosk, public profile, guest guide, or
+storefront. An Operation inside a Console is not another product surface.
+
+Main App landings present Hero, pricing, product surfaces, then deeper
+App-owned features. Present a single surface directly without a selector or a
+visible `Surfaces` label. Use a selector only when the App has multiple genuine
+usage surfaces backed by current routes.
+
+## Pricing literature
+
+Pricing separates product access, operating capacity, human service, product
+identity, and new development:
+
+- **Free** is a functional Console with App-owned limits.
+- **Pro** is the fuller self-managed Console at CHF 20/month.
+- **Managed** is Pro plus bounded FireUX setup and operating assistance at CHF
+  50/month. Ecosystem membership alone does not make the product more expensive.
+- **Your App** is a branded App at CHF 600 setup, followed by Pro or Managed.
+- **Your Ecosystem** belongs only to FireUX. It is CHF 1,200 setup plus CHF
+  50/month maintenance and gives the ecosystem owner half of each customer
+  App's setup and monthly price.
+- New Operations, Tools, integrations, third-party charges, and exceptional
+  usage are not silently included; new development is quoted separately.
+
+Core `useProductPricingLiterature` owns these common meanings and amounts.
+Each Main App owns the concrete Console capabilities and limits that explain
+what its Free and Pro tiers contain. Tenant Apps do not own or advertise the
+FireUX ecosystem-creation offer.
+
 ## Current source
 
 - `packages/core/fireux-core/src/runtime/models/system/meta-content.model.ts`
@@ -150,6 +184,7 @@ method and keep source literature beside its owner.
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Operations/Dishes/Dish.vue`
 - `packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Overview/Finance.vue`
 - `projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue`
+- `packages/core/fireux-core/src/runtime/composables/fireux/pricing/useProductPricingLiterature.ts`
 
 ## Verification
 

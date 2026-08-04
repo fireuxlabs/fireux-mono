@@ -13,9 +13,9 @@ const subtitle = 'Choose an existing app or launch one for your own workflow.'
 
 const items = [
   {
-    title: 'Starter app',
-    description: 'Launch a focused, branded business app from $150 setup and $15/month.',
-    to: '/pricing/apps',
+    title: 'Your App',
+    description: 'Launch a standalone branded FireUX App for CHF 600 setup, followed by Pro or Managed.',
+    to: '/pricing/your-app',
     cta: 'Compare offers',
     icon: 'i-lucide-rocket',
   },
@@ -35,8 +35,8 @@ const items = [
   },
   {
     title: 'Your own ecosystem',
-    description: 'Turn a repeatable industry workflow into a branded parent app with customer apps beneath it.',
-    to: '/ecosystems/pricing',
+    description: 'Create a product ecosystem that can launch and support its own customer Apps.',
+    to: '/pricing/your-ecosystem',
     cta: 'See ecosystem pricing',
     icon: 'i-lucide-network',
   },

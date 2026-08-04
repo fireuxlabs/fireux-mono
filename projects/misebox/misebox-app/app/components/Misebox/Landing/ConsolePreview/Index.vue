@@ -2,11 +2,8 @@
   <LandingConsolePreviewFrame
     :model-value="selectedSurfaceId"
     :items="operations"
-    :secondary-items="[financeSurface]"
     label="Interactive Kitchen Console preview"
     navigation-label="Kitchen Operations"
-    secondary-label="Reports"
-    secondary-navigation-label="Kitchen reports"
     console-to="/console/kitchen"
     :open-console-aria-label="`Open the full ${consoleKitchenPill.title} Kitchen Console`"
     @update:model-value="selectSurface"
@@ -134,35 +131,29 @@ const selectedDishPage = ref<DishChildPage>('detail')
 const selectedSurface = computed(() => {
   if (selectedSurfaceId.value === financeSurface.id) return financeSurface
 
-  return operations.find(
-    operation => operation.id === selectedSurfaceId.value
-  ) || operations[0]
+  return (
+    operations.find((operation) => operation.id === selectedSurfaceId.value) ||
+    operations[0]
+  )
 })
-const {
-  data: productDemo,
-  error: productDemoError,
-} = await useMiseboxProductDemo()
-const consoleKitchenId = computed(() =>
-  productDemo.value?.console.kitchenId || 'deanos'
+const { data: productDemo, error: productDemoError } =
+  await useMiseboxProductDemo()
+const consoleKitchenId = computed(
+  () => productDemo.value?.console.kitchenId || 'deanos'
 )
-const {
-  setKitchenConsoleSelection,
-} = useKitchenConsoleSelection()
-const {
-  hasInServiceMenu,
-} = useKitchenMenuServiceSelection(
+const { setKitchenConsoleSelection } = useKitchenConsoleSelection()
+const { hasInServiceMenu } = useKitchenMenuServiceSelection(
   consoleKitchenId,
-  () => (productDemo.value?.console.menus ?? []).map(
-    (menu: ProductDemoMenu) => ({
+  () =>
+    (productDemo.value?.console.menus ?? []).map((menu: ProductDemoMenu) => ({
       id: menu.id,
       defaultInService: menu.defaultInService,
-    })
-  )
+    }))
 )
 const consoleMiseTasks = computed(() =>
   (productDemo.value?.console.miseTasks ?? []).filter(
     (task: ProductDemoMiseTask) =>
-    !task.menuIds.length || hasInServiceMenu(task.menuIds)
+      !task.menuIds.length || hasInServiceMenu(task.menuIds)
   )
 )
 const previewDishes = computed(() =>
@@ -172,19 +163,20 @@ const previewDishes = computed(() =>
 )
 const consoleKitchenPill = computed<
   MiseboxProductDemo['console']['kitchenPill']
->(() =>
-  productDemo.value?.console.kitchenPill || {
-    title: 'Deanos',
-    subtitle: '',
-    imageUrl: '',
-    imageShade: 'none',
-  }
+>(
+  () =>
+    productDemo.value?.console.kitchenPill || {
+      title: 'Deanos',
+      subtitle: '',
+      imageUrl: '',
+      imageShade: 'none',
+    }
 )
-const selectedDish = computed(() =>
-  previewDishes.value.find(
-    (dish: ProductDemoDish) => dish.id === selectedDishId.value
-  )
-  || null
+const selectedDish = computed(
+  () =>
+    previewDishes.value.find(
+      (dish: ProductDemoDish) => dish.id === selectedDishId.value
+    ) || null
 )
 const selectDish = (dishId: string) => {
   selectedDishId.value = dishId

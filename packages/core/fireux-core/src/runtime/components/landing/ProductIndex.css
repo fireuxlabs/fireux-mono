@@ -1,4 +1,6 @@
 /* Mobile-first baseline. Width queries below may only enhance this layout. */
+@import './ProductIndexImmersive.css';
+
 .landing-product {
   display: grid;
   min-width: 0;
@@ -7,22 +9,29 @@
 }
 
 .landing-product.landing-product--full-hero {
-  box-sizing: border-box;
-  width: 100dvw;
-  margin-inline: calc(50% - 50dvw);
-  padding-inline: clamp(
+  --landing-product-gutter: clamp(
     calc(var(--spacing) * 4),
     2vw,
     calc(var(--spacing) * 8)
   );
+
+  box-sizing: border-box;
+  width: 100dvw;
+  margin-inline: calc(50% - 50dvw);
+  padding-inline: var(--landing-product-gutter);
 }
 
 .landing-product :where(h1, p) {
   margin: 0;
 }
 
-.landing-product__region {
+.landing-product__region,
+.landing-product__region-dwell {
   min-width: 0;
+}
+
+.landing-product__region-dwell-spacer {
+  display: none;
 }
 
 .landing-product :deep([data-reveal].is-reveal-ready:not(.is-reveal-visible)) {
@@ -36,6 +45,11 @@
     opacity 420ms ease,
     transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
   transition-delay: var(--landing-reveal-delay, 0ms);
+}
+
+.landing-product.is-gsap-motion
+  :deep([data-reveal].is-reveal-ready.is-reveal-armed) {
+  transition: none;
 }
 
 .landing-product
@@ -54,12 +68,14 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .landing-product__hero-copy {
+  .landing-product:not(.is-motion-pending, .is-gsap-motion)
+    .landing-product__hero-copy {
     animation: landing-product-hero-enter 500ms 60ms both
       cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .landing-product__hero-preview {
+  .landing-product:not(.is-motion-pending, .is-gsap-motion)
+    .landing-product__hero-preview {
     animation: landing-product-hero-enter 580ms 120ms both
       cubic-bezier(0.16, 1, 0.3, 1);
   }
@@ -112,8 +128,9 @@
 .landing-product__hero h1 {
   max-width: none;
   color: var(--ui-text-highlighted);
+  font-family: var(--font-fireux-hero);
   font-size: clamp(var(--text-5xl), 14vw, 3.65rem);
-  font-weight: var(--font-weight-black);
+  font-weight: var(--font-weight-fireux-hero);
   letter-spacing: -0.07em;
   line-height: 0.88;
   text-wrap: balance;

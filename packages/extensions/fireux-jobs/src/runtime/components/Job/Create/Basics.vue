@@ -88,7 +88,7 @@
       <UFormField label="Compensation">
         <USwitch
           v-model="discloseCompensation"
-          label="Show compensation on the public job"
+          label="Show compensation on the job"
         />
       </UFormField>
 

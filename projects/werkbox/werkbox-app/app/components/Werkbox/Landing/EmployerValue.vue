@@ -6,7 +6,7 @@
         Werkbox Pro
       </span>
       <p class="werkbox-employer-value__price">
-        <strong>$20</strong>
+        <strong>CHF 20</strong>
         <span>per month</span>
       </p>
     </header>

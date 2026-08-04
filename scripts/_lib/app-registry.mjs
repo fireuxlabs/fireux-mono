@@ -117,7 +117,7 @@ export const APP_REGISTRY = {
     role: 'global',
     workspace: './projects/misebox/misebox-app',
     port: 3001,
-    consoles: ['kitchen', 'supplier'],
+    consoles: ['kitchen'],
     toolProviders: ['go-qr'],
     componentSmokeRoutes: [
       '/console/kitchen',
@@ -128,11 +128,10 @@ export const APP_REGISTRY = {
       '/console/kitchen/menus',
       '/console/kitchen/dishes',
       '/console/kitchen/recipes',
-      '/console/supplier',
     ],
     smokeRoutes: [
       ...SHARED_ROUTES,
-      ...consoleRoutes(['kitchen', 'supplier']),
+      ...consoleRoutes(['kitchen']),
       '/jobs',
     ],
     httpContracts: [

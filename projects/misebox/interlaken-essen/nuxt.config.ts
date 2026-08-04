@@ -17,6 +17,7 @@ const fireuxConfig = defineFireuxConfig({
   modules: [
     'fireux-sproochli',
     'fireux-marketplace',
+    ['fireux-suppliers', { mode: 'consumer' }],
     'fireux-places',
     'fireux-companies',
     [
@@ -49,6 +50,13 @@ const fireuxConfig = defineFireuxConfig({
 
 export default withFireuxNuxtConfig(fireuxConfig, {
   css: ['@/assets/styles/main.css'],
+  runtimeConfig: {
+    supplierNetworkBaseUrl:
+      process.env.SUPPLIER_NETWORK_BASE_URL ||
+      (process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3006'
+        : 'https://bringli.app'),
+  },
   fireuxBlogs: {
     languages: ['gsw', 'de', 'en'],
     defaultLanguage: 'gsw',

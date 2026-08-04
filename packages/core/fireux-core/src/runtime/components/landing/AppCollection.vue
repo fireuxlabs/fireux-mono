@@ -1,17 +1,18 @@
 <!-- Concurrent edit — 2026-07-23 — Render the canonical public App projection inside product landings. -->
 <template>
   <section
+    v-if="shouldRender"
     class="landing-app-collection"
     aria-labelledby="landing-product-apps-title"
   >
     <div class="landing-app-collection__heading">
       <div>
-        <p class="fx-type-headline">{{ eyebrow }}</p>
+        <p v-if="eyebrow" class="fx-type-headline">{{ eyebrow }}</p>
         <h2 id="landing-product-apps-title">{{ title }}</h2>
       </div>
 
       <div>
-        <p>{{ description }}</p>
+        <p v-if="description">{{ description }}</p>
         <UButton
           :to="actionTo"
           color="neutral"
@@ -152,15 +153,16 @@ type LandingAppMediaOverride = {
 const props = withDefaults(
   defineProps<{
     controller: AppDirectoryController
-    eyebrow: string
+    eyebrow?: string
     title: string
-    description: string
+    description?: string
     actionLabel?: string
     actionTo?: string
     excludeIds?: readonly string[]
     featuredIds?: readonly string[]
     limit?: number
     mediaOverrides?: Readonly<Record<string, LandingAppMediaOverride>>
+    minimumItems?: number
   }>(),
   {
     actionLabel: 'Explore all apps',
@@ -169,6 +171,7 @@ const props = withDefaults(
     featuredIds: () => [],
     limit: 0,
     mediaOverrides: () => ({}),
+    minimumItems: 1,
   }
 )
 
@@ -186,6 +189,12 @@ const apps = computed(() => {
   return props.limit > 0 ? selected.slice(0, props.limit) : selected
 })
 const outcome = computed(() => props.controller.outcome.value)
+const shouldRender = computed(
+  () =>
+    outcome.value === 'pending' ||
+    outcome.value === 'error' ||
+    apps.value.length >= props.minimumItems
+)
 
 async function refreshApps(): Promise<void> {
   await props.controller.refresh?.()
@@ -197,9 +206,7 @@ function displayName(app: AppDirectoryEntry): string {
 
 function roleLabel(app: AppDirectoryEntry): string {
   if (app.role === 'global') return 'Platform app'
-  return props.controller.source === 'platform'
-    ? 'Ecosystem app'
-    : 'Hospitality app'
+  return props.controller.source === 'platform' ? 'Ecosystem app' : 'App'
 }
 
 function portableMediaUrl(value: unknown): string {

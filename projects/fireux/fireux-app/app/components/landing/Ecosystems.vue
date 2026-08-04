@@ -2,15 +2,10 @@
   <section class="fireux-ecosystems" aria-labelledby="fireux-ecosystems-title">
     <div class="fireux-ecosystems__heading">
       <div>
-        <p class="fx-type-headline">Our ecosystems</p>
-        <h2 id="fireux-ecosystems-title">Use what already exists.</h2>
+        <h2 id="fireux-ecosystems-title">FireUX's Ecosystems</h2>
       </div>
 
       <div>
-        <p>
-          Each ecosystem brings together apps and operations for a kind of work.
-          If one fits, start there.
-        </p>
         <UButton
           to="/ecosystems"
           color="neutral"

@@ -120,6 +120,10 @@ provider.
   Company, and Place contract uses one projection-backed reader for the public
   JSON index and its extension-owned sitemap document. It must never fall back
   to the generic visibility-only root provider.
+- Kitchens follow the same transport rule with their own domain gates: public
+  JSON and XML share one reader that applies publication, Test exclusion, App
+  scope, AppKitchen support, Place linkage, and the bounded Kitchen DTO. A raw
+  `visibility.show` query is not sufficient sitemap authority.
 - Empty sitemap results and storage failures require observable verification;
   production must not silently present missing public inventory as success.
 
@@ -198,17 +202,18 @@ templates have measurable baselines.
 
 ## Delta register
 
-| Difference                                                         | State        | Reason and treatment                                                                               |
-| ------------------------------------------------------------------ | ------------ | -------------------------------------------------------------------------------------------------- |
-| Core owns runtime robots while Apps add bounded route policy       | `accepted`   | Transport is shared; genuine private route families remain App-owned config                        |
-| Entity sitemap route identity may be document ID or authored field | `accepted`   | Route-family identity decisions differ; every provider must declare the choice explicitly          |
-| Jobs requires a custom projection-backed sitemap                   | `accepted`   | JSON and XML share the bounded public reader; generic visibility-only discovery stays prohibited   |
-| Many project landings call `useSeoMeta` directly                   | `drift`      | FireUX, Misebox, and Interlaken are proofs; migrate remaining Apps without copying their facts     |
-| Entity JSON-LD builders emit isolated sparse objects               | `drift`      | Add stable canonical IDs and a connected graph only through proven shared primitives               |
-| Three landings have rendered shared SEO contracts                  | `accepted`   | FireUX, Misebox, and Interlaken smoke verifies canonical, robots, social metadata, and graph facts |
-| Interlaken changes page language without crawlable alternate URLs  | `to-confirm` | Approve a stable language-route policy before emitting `hreflang` or multilingual sitemap entries  |
-| Public-template performance has no shared budget                   | `to-confirm` | Measure representative siblings before guarding thresholds                                         |
-| Search-result and indexation measurement is not integrated         | `migration`  | Add only aggregate, privacy-safe operational evidence; do not introduce behavioral tracking        |
+| Difference                                                         | State        | Reason and treatment                                                                                |
+| ------------------------------------------------------------------ | ------------ | --------------------------------------------------------------------------------------------------- |
+| Core owns runtime robots while Apps add bounded route policy       | `accepted`   | Transport is shared; genuine private route families remain App-owned config                         |
+| Entity sitemap route identity may be document ID or authored field | `accepted`   | Route-family identity decisions differ; every provider must declare the choice explicitly           |
+| Jobs requires a custom projection-backed sitemap                   | `accepted`   | JSON and XML share the bounded public reader; generic visibility-only discovery stays prohibited    |
+| Kitchens require a custom projection-backed sitemap                | `accepted`   | JSON and XML share App, support, Place, publication, and Test gates before emitting a Kitchen route |
+| Many project landings call `useSeoMeta` directly                   | `drift`      | FireUX, Misebox, and Interlaken are proofs; migrate remaining Apps without copying their facts      |
+| Entity JSON-LD builders emit isolated sparse objects               | `drift`      | Add stable canonical IDs and a connected graph only through proven shared primitives                |
+| Three landings have rendered shared SEO contracts                  | `accepted`   | FireUX, Misebox, and Interlaken smoke verifies canonical, robots, social metadata, and graph facts  |
+| Interlaken changes page language without crawlable alternate URLs  | `to-confirm` | Approve a stable language-route policy before emitting `hreflang` or multilingual sitemap entries   |
+| Public-template performance has no shared budget                   | `to-confirm` | Measure representative siblings before guarding thresholds                                          |
+| Search-result and indexation measurement is not integrated         | `migration`  | Add only aggregate, privacy-safe operational evidence; do not introduce behavioral tracking         |
 
 ## Verification
 
@@ -237,6 +242,8 @@ iterating and `pnpm guard` before repository handoff.
 - Keep exact sitemap route identity and shared private-route protection guarded.
 - Keep Core as the only runtime robots owner.
 - Keep Jobs JSON and sitemap discovery on the same bounded public reader.
+- Keep Kitchen JSON and sitemap discovery on its relationship-aware public
+  reader.
 - Keep FireUX, Misebox, and Interlaken landing metadata and connected graphs
   under rendered smoke.
 

@@ -1,4 +1,6 @@
-// Keep the Supplier doorway focused without creating a second App authority.
+// Retire the former Misebox Supplier product doorway. Bringli owns Supplier
+// onboarding, identity, catalogue and Console surfaces; Misebox retains only
+// Kitchen-side sourcing and procurement.
 import { defineNuxtRouteMiddleware, navigateTo, useRequestURL } from '#imports'
 import type { RouteLocationNormalized } from 'vue-router'
 
@@ -7,20 +9,14 @@ const SUPPLIER_HOSTNAMES = new Set([
   'suppliers.localhost',
 ])
 
-const SUPPLIER_PUBLIC_ROUTE = /^\/suppliers(?:\/|$)/
-
 export default defineNuxtRouteMiddleware((to: RouteLocationNormalized) => {
   const hostname = useRequestURL().hostname.toLowerCase()
   if (!SUPPLIER_HOSTNAMES.has(hostname)) return
 
-  if (to.path === '/') {
-    return navigateTo('/suppliers', {
-      redirectCode: 302,
-      replace: true,
-    })
-  }
-
-  if (SUPPLIER_PUBLIC_ROUTE.test(to.path)) {
-    to.meta.layout = 'misebox-suppliers'
-  }
+  const path = to.path === '/' ? '/' : to.fullPath
+  return navigateTo(`https://bringli.app${path}`, {
+    external: true,
+    redirectCode: 308,
+    replace: true,
+  })
 })

@@ -51,6 +51,14 @@ remembered implementations are not authority.
   `projects/werkbox/werkbox-app/app/components/Werkbox/Landing`, and verify the
   composition through `scripts/guards/product-landing.mjs`; do not restore a
   project-local landing framework or move Werkbox artwork into Core.
+- Werkbox hero photography consumes Core `LandingProductHeroImage`; Werkbox
+  owns its reviewed asset, alternative text, and focal position but does not
+  duplicate the shared sharp image frame.
+- Werkbox follows the shared ecosystem pricing literature: Free is a functional
+  Work Console, Pro is CHF 20/month self-managed, Managed is CHF 50/month with
+  bounded FireUX assistance, and Your App is CHF 600 setup followed by Pro or
+  Managed. Werkbox owns work-specific capabilities and limits; Core owns the
+  common commercial meanings and amounts.
 - Reusable work concepts remain in their owning extension packages. Job and
   category identifiers must stay product-neutral so a category can move to a
   different product without rewriting its underlying records.

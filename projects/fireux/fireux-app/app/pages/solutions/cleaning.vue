@@ -23,7 +23,7 @@
     <section class="space-y-3">
       <h2 class="text-xl font-semibold text-highlighted">Move only when it makes sense</h2>
       <p class="text-muted">
-        If Werkbox works for you and your own brand needs a separate home, we can move you to a dedicated Werkbox app from $600 setup.
+        If Werkbox works for you and your own brand needs a separate home, launch a Werkbox App for CHF 600 setup.
       </p>
     </section>
 
@@ -31,8 +31,8 @@
       <UButton to="/ecosystems/werkbox/cleaning" icon="i-lucide-sparkles">
         See Werkbox cleaning
       </UButton>
-      <UButton to="/ecosystems/werkbox/pricing" color="neutral" variant="soft">
-        See prices
+      <UButton to="/apps/werkbox" color="neutral" variant="soft">
+        View Werkbox
       </UButton>
     </template>
   </SolutionPage>

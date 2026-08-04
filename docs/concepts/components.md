@@ -1,16 +1,20 @@
 # Components spine map
+
 <!-- Concurrent edit — 2026-07-23 02:43 CEST — Map the shared product-led landing surface and project proof slot. -->
 <!-- Concurrent edit — 2026-07-23 12:13 CEST — Record FireUX as the second shared product-landing consumer. -->
 <!-- Concurrent edit — 2026-07-23 — Extract the two-consumer product-preview frame without moving product proof into Core. -->
 <!-- Concurrent edit — 2026-07-25 — Map Misebox's real Orders proof inside the shared Main App hero. -->
+
 Updated: 2026-07-29
 Ref: 33603376f
 Role: map, not canon
 
 ## Purpose
+
 Map component folder and naming conventions.
 
 ## Vertical links
+
 - Parent: nuxt-ui.md
 - Child: family-console-entity.md
 - Child: family-public-index.md
@@ -18,15 +22,18 @@ Map component folder and naming conventions.
 - Child: card-family.md
 
 ## Horizontal links
+
 - pages.md
 - composables.md
 - debug.md
 
 ## Package components
+
 - Package UI belongs under `src/runtime/components`.
 - App UI belongs under `app/components`.
 
 ## CSS-to-component mapping
+
 - The CSS atomic taxonomy supports the Vue tree; it does not mirror it. Vue
   components remain domain-first (`Kitchen/Cards`, `Supplier/Collection`,
   `Console/X/Operations`) and pages remain route-first.
@@ -70,8 +77,19 @@ Map component folder and naming conventions.
   regions. Core `LandingProductIndex` owns the fixed product-led landing order:
   `hero-preview`, the `onboarding` entry slot, `console`, `specifics`,
   `ecosystems`, `apps`, `tools`, `solutions`, then `operations`. The hero
-  places shared product copy on the left and the app-owned product-card presentation on
-  the right. `LandingProductEntryPaths` owns the ordered `start` and `join`
+  places shared product copy on the left and the App-owned product presentation
+  on the right. FireUX uses the live public App and Ecosystem Card orbit;
+  Static Main App photography uses Core `LandingProductHeroImage`, which owns
+  the sharp clipped frame while each App owns its reviewed image, alternative
+  text, and focal position. Core measures the live heading/image intersection
+  and uses it to size a long horizontal blur fade running the image's full
+  height. A bounded desktop fallback and transparent end buffer prevent the
+  fade detaching during motion; the copy remains untreated and stacked layouts
+  resolve to no blur.
+  Reviewed source files share the guarded 1600 x 1000
+  pixel, 8-bit opaque RGB PNG contract. FireUX's live Card orbit is the accepted
+  non-image hero delta. `LandingProductEntryPaths`
+  owns the ordered `start` and `join`
   choice, optional subordinate Tool doorway, icons, card anatomy, responsive
   layout, and reveal behavior. The slot is a public entry decision rather than
   account onboarding, so App adapters contribute only copy and routes.
@@ -89,7 +107,37 @@ Map component folder and naming conventions.
   before Solutions and Operations. FireUX and Misebox are the current sibling
   consumers. Slotted content opts into Core's single IntersectionObserver
   reveal system with `data-landing-reveal`; projects do not create a second
-  scroll-animation observer or stylesheet. Core
+  scroll-animation observer or stylesheet. Core `useLandingMotion` owns that
+  observer lifecycle and uses its Core-owned GSAP dependency for a responsive
+  hero timeline plus one-shot, interruptible in-page reveals. The timeline
+  coordinates semantic hero copy and preview parts while the App retains the
+  proof itself. Both Main Apps call this two-part composition Section One:
+  Hero, with product title and actions on the left and App-owned visual proof
+  on the right. Subscription pricing follows outside the pinned Hero. FireUX
+  proves the opt-in `immersive` composition with a
+  viewport-scale hero, a pinned copy-to-proof handoff driven by its live App
+  and Ecosystem cards, and scrubbed chapter transitions. Misebox now shares
+  that immersive Core composition while retaining its Kitchen-owned hero
+  image and product order. Core `LandingPricingStrip` owns the shared Monthly
+  subscriptions presentation; both Main Apps supply their source-backed Free,
+  Premium, and Managed plans at the project edge. Core `LandingOperationRail`
+  sits above Section One in both Main Apps; each App supplies its canonical
+  operation titles, icons, and routes. As Section One hands off, Core moves the
+  immersive landing header and Operations rail upward and out rather than
+  hiding either surface beneath pricing; reverse scrolling restores both. This
+  behavior is scoped to the immersive landing and does not affect ordinary App
+  layouts. The pricing strip has no
+  visible heading; its App-owned aria label retains the semantic name. Core
+  compacts it promptly to plan names and prices, then moves the compact strip
+  upward and out as the first content stage takes over the full viewport. Core
+  animates only each named region's motion-stage shell; the slotted component
+  owns its internal reveal markers so chapter motion does not reach across that
+  boundary. Compact and reduced-motion modes remain free of that choreography.
+  It preserves visible SSR output, falls back
+  to the CSS reveal contract if GSAP cannot load, kills active tweens on
+  unmount, and exposes no project-level GSAP seam. Reduced-motion users see
+  the final layout without movement. Native Nuxt route transitions remain a
+  separate Core integration and do not move into GSAP. Core
   `LandingConsolePreviewFrame` owns the shared Nuxt UI Console shell: target
   rail, primary and optional secondary navigation, selected heading,
   responsive composition, and persistent full-Console doorway. Misebox's
@@ -131,11 +179,12 @@ Map component folder and naming conventions.
   Demo loading, live reads, Firebase, or write authority. The project source
   begins at
   `projects/misebox/misebox-app/app/components/Misebox/Landing/ConsolePreview/Index.vue`.
-  FireUX consumes the same shell for its Project Operations, projects Apps and
-  Ecosystems from the explicitly FireUX-owned Core Project Demo scenario, and
-  keeps authenticated Ignition and User activity as truthful private-operation
-  states. Its doorway selects the real Demo Project only when that projection
-  succeeds. Mobile keeps each component before the text and desktop places it
+  FireUX consumes the same shell for its Project Operations and projects Apps
+  and Ecosystems from the explicitly FireUX-owned Core Project Demo scenario.
+  Ignition remains App intake with a separate private app-admin delivery
+  workflow; it is not a Project Operation. User activity remains a truthful
+  private state. The Console doorway selects the real Demo Project only when
+  that projection succeeds. Mobile keeps each component before the text and desktop places it
   to the left. Project proof truth never moves into Core. Core
   `LandingCardOrbit` owns deterministic sphere geometry, drag/keyboard
   interaction, a one-shot visibility-gated desktop launch with one stable
@@ -175,6 +224,7 @@ Map component folder and naming conventions.
   and mobile specimens for these shared contracts.
 
 ## Domain component folders
+
 - `X/Cards`
 - `X/Collection`
 - `X/Create`
@@ -186,16 +236,19 @@ Map component folder and naming conventions.
 - `Console/X/*`
 
 ## Detail rule
+
 - Use `X/Detail.vue` when the detail component is simple and self-contained.
 - Use `X/Detail/Index.vue` when the detail surface owns child components.
 - Put those child components inside `X/Detail/*` so the filesystem reads like the UI surface.
 
 ## Root entity naming
+
 - Root entity component folders such as `Kitchen/**`, `Menu/**`, and `Supplier/**` are already public/root surfaces.
 - Do not prefix components in those folders with `Public` unless it names an external imported concept.
 - Use route/composable buckets such as `fireux/public/*` when “public” distinguishes runtime behavior rather than component location.
 
 ## Console component folders
+
 - `Console/X/Index`
 - `Console/X/Overview`
 - `Console/X/Identity`
@@ -204,6 +257,7 @@ Map component folder and naming conventions.
 - `Console/X/Sundries`
 
 ## Console bucket rule
+
 - Every `components/Console/X` family should expose the same peer buckets: `Index`, `Overview`, `Identity`, `Team`, `Operations`, and optional `Sundries`.
 - These buckets are directories. Prefer `Console/X/Overview/Index.vue` over `Console/X/Overview.vue`.
 - `Team` is a shared console access concept, not an operation.
@@ -222,6 +276,7 @@ Map component folder and naming conventions.
 - Workflow subfolders under operations should be named after visible operator concepts, not technical storage buckets.
 
 ## Working rules
+
 - Prefer named domain components over vague generic shells.
 - Share functions/composables where behavior is common.
 - Let child components own local presentation when it reduces parent script weight.
@@ -316,6 +371,7 @@ Map component folder and naming conventions.
   non-system deltas, or intentional branded color.
 
 ## Guard warnings
+
 - No component `organisms` folders or `Organisms*` component names.
 - `assets/styles/scss/organisms` is a CSS composition layer, not a component
   bucket; keep it semantic and shared rather than using it as catch-all CSS.

@@ -19,7 +19,7 @@
           variant="soft"
           icon="i-lucide-external-link"
         >
-          Open public job
+          Open job
         </UButton>
       </template>
     </UPageHeader>
@@ -276,7 +276,7 @@ async function onPublished() {
 const pageTitle = computed(() => form.value.title || 'Edit job')
 const pageSubtitle = computed(() =>
   job.value?.visibility === 'public' && job.value.status === 'open'
-    ? 'Live public job'
+    ? 'Open job'
     : job.value?.status === 'closed'
       ? 'Closed job'
       : 'Private draft'

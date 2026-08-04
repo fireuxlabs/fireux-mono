@@ -22,7 +22,7 @@
 <script setup lang="ts">
 const promises = [
   {
-    title: 'Public job board',
+    title: 'Jobs',
     value: 'Open',
   },
   {

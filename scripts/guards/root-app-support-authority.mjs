@@ -220,7 +220,7 @@ const assertAtomicConsoleOnboarding = ({
   )
   assert.match(
     transactionSource,
-    /transaction\.create\(rootRef,/,
+    /transaction\.create\(\s*rootRef,/,
     `${name} onboarding must create its canonical root inside the transaction.`
   )
   assert.match(

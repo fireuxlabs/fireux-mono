@@ -136,7 +136,7 @@ export const baerenRinggenbergContent = {
     },
     gallery: {
       title: 'Gallery.',
-      subtitle: 'The Bären mark from the existing Misebox kitchen record.',
+      subtitle: 'The Bären App mark and its connected Misebox venue.',
       seoTitle: 'Hotel Bären Ringgenberg | Gallery',
       seoDescription: 'Bären Ringgenberg venue identity and Misebox kitchen link.',
     },

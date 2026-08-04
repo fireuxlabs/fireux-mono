@@ -47,7 +47,7 @@
         <UButton to="/apps/learn-more/dev" color="neutral" variant="soft" icon="i-lucide-code-2">
           Dev details
         </UButton>
-        <UButton to="/pricing/apps" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">
+        <UButton to="/pricing/your-app" color="neutral" variant="soft" icon="i-lucide-badge-dollar-sign">
           App pricing
         </UButton>
         <UButton to="/get-started" color="neutral" variant="ghost" icon="i-lucide-rocket">

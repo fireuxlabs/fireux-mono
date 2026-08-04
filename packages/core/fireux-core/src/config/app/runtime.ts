@@ -15,6 +15,11 @@ export type RuntimeApp = {
   brand: FireuxAppBrandConfig
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
+  pricing?: {
+    consoleName: string
+    free: readonly string[]
+    pro: readonly string[]
+  }
   /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */
   designPack?: FireuxDesignPackConfig
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */

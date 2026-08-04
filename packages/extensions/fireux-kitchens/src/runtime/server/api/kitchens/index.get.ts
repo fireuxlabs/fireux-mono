@@ -1,5 +1,5 @@
 // Concurrent edit — 2026-07-24 17:35 CEST — Kitchen public family: consume the shared strict index/detail projection.
-import { FieldPath, Filter } from 'firebase-admin/firestore'
+import { FieldPath } from 'firebase-admin/firestore'
 import {
   createError,
   defineEventHandler,
@@ -19,10 +19,10 @@ import {
 } from '../../../models/kitchen/kitchen-index.model.ts'
 import {
   hydrateKitchenPublicDocuments,
-  isPublishedKitchen,
   projectPublicKitchenIndexItem,
   type KitchenPublicDirectoryScope,
 } from '../../kitchen/public-projection.ts'
+import { readPublicKitchenIndexPage } from '../../kitchen/public-index.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const pageSize = (value: unknown) => {
@@ -73,95 +73,95 @@ async function requirePrivateKitchenIndex(
   })
 }
 
-export default defineEventHandler(async (event): Promise<PublicKitchenIndexPage> => {
-  const db = getRuntimeFirestore()
-  const fireux = useFireUXConfig()
-  const directoryScope: KitchenPublicDirectoryScope = {
-    appId: fireux.appId,
-    ecosystemId: text(fireux.ecosystemId || fireux.ecosystem),
-    role: fireux.role,
-  }
-  const query = getQuery(event)
-  const requestedVisibility = text(query.visibility)
-  const requestedPlaceId = text(query.placeId)
-  if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Place id is invalid.',
-    })
-  }
-  const requestedAll = requestedVisibility === 'all'
-  const requestedPublished = requestedVisibility === 'published'
-  const includeAll = (import.meta.dev && !requestedPublished) || requestedAll
-  if (requestedVisibility && !requestedAll && !requestedPublished) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Kitchen visibility mode is invalid.',
-    })
-  }
-  if (requestedAll) {
-    await requirePrivateKitchenIndex(event, db)
-  } else if (includeAll) {
-    setResponseHeaders(event, {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control': 'private, no-store',
-    })
-  } else {
-    setResponseHeaders(event, {
-      'Content-Type': 'application/json; charset=utf-8',
-      'Cache-Control':
-        'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
-    })
-  }
+export default defineEventHandler(
+  async (event): Promise<PublicKitchenIndexPage> => {
+    const query = getQuery(event)
+    const requestedVisibility = text(query.visibility)
+    const requestedPlaceId = text(query.placeId)
+    if (requestedPlaceId && !isFirestoreDocumentId(requestedPlaceId)) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Place id is invalid.',
+      })
+    }
+    const requestedAll = requestedVisibility === 'all'
+    const requestedPublished = requestedVisibility === 'published'
+    const includeAll = (import.meta.dev && !requestedPublished) || requestedAll
+    if (requestedVisibility && !requestedAll && !requestedPublished) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Kitchen visibility mode is invalid.',
+      })
+    }
+    if (!includeAll) {
+      setResponseHeaders(event, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control':
+          'public, max-age=60, s-maxage=300, stale-while-revalidate=900',
+      })
+      return readPublicKitchenIndexPage({
+        cursor: query.cursor,
+        limit: query.limit,
+        placeId: query.placeId,
+      })
+    }
 
-  const limit = pageSize(query.limit)
-  const requestedCursor = text(query.cursor)
-  const cursor = decodeCursor(requestedCursor)
-  if (requestedCursor && !cursor) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Kitchen cursor is invalid.',
-    })
-  }
+    const db = getRuntimeFirestore()
+    const fireux = useFireUXConfig()
+    const directoryScope: KitchenPublicDirectoryScope = {
+      appId: fireux.appId,
+      ecosystemId: text(fireux.ecosystemId || fireux.ecosystem),
+      role: fireux.role,
+    }
+    if (requestedAll) {
+      await requirePrivateKitchenIndex(event, db)
+    } else {
+      setResponseHeaders(event, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'private, no-store',
+      })
+    }
 
-  const collection = db.collection('kitchens')
-  let kitchenQuery = requestedPlaceId
-    ? collection
-        .where('place_id', '==', requestedPlaceId)
-        .orderBy(FieldPath.documentId())
-        .limit(limit + 1)
-    : includeAll
-    ? collection.orderBy(FieldPath.documentId()).limit(limit + 1)
-    : collection
-        .where(Filter.or(
-          Filter.where('visibility.show', '==', true),
-          Filter.where('show', '==', true)
-        ))
-        .orderBy(FieldPath.documentId())
-        .limit(limit + 1)
-  if (cursor) kitchenQuery = kitchenQuery.startAfter(cursor)
+    const limit = pageSize(query.limit)
+    const requestedCursor = text(query.cursor)
+    const cursor = decodeCursor(requestedCursor)
+    if (requestedCursor && !cursor) {
+      throw createError({
+        statusCode: 400,
+        statusMessage: 'Kitchen cursor is invalid.',
+      })
+    }
 
-  const snapshot = await kitchenQuery.get()
-  const hasMore = snapshot.docs.length > limit
-  const pageDocs = hasMore ? snapshot.docs.slice(0, limit) : snapshot.docs
-  const documents = pageDocs
-    .map(document => ({
+    const collection = db.collection('kitchens')
+    let kitchenQuery = requestedPlaceId
+      ? collection
+          .where('place_id', '==', requestedPlaceId)
+          .orderBy(FieldPath.documentId())
+          .limit(limit + 1)
+      : collection.orderBy(FieldPath.documentId()).limit(limit + 1)
+    if (cursor) kitchenQuery = kitchenQuery.startAfter(cursor)
+
+    const snapshot = await kitchenQuery.get()
+    const hasMore = snapshot.docs.length > limit
+    const pageDocs = hasMore ? snapshot.docs.slice(0, limit) : snapshot.docs
+    const documents = pageDocs.map((document) => ({
       id: document.id,
       data: document.data() || {},
     }))
-    .filter(document => includeAll || isPublishedKitchen(document.data))
-  const dataByPath = await hydrateKitchenPublicDocuments(db, documents)
-  const items = documents
-    .map(document =>
-      projectPublicKitchenIndexItem(document, dataByPath, directoryScope)
-    )
-    .filter((item): item is PublicKitchenIndexItem => Boolean(item))
-  const nextCursor = hasMore && pageDocs.length
-    ? encodeCursor(pageDocs[pageDocs.length - 1]?.id || '')
-    : ''
+    const dataByPath = await hydrateKitchenPublicDocuments(db, documents)
+    const items = documents
+      .map((document) =>
+        projectPublicKitchenIndexItem(document, dataByPath, directoryScope)
+      )
+      .filter((item): item is PublicKitchenIndexItem => Boolean(item))
+    const nextCursor =
+      hasMore && pageDocs.length
+        ? encodeCursor(pageDocs[pageDocs.length - 1]?.id || '')
+        : ''
 
-  return {
-    items,
-    ...(nextCursor ? { nextCursor } : {}),
+    return {
+      items,
+      ...(nextCursor ? { nextCursor } : {}),
+    }
   }
-})
+)

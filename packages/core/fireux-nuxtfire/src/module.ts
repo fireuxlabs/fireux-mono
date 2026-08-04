@@ -1,5 +1,10 @@
 // FILE: packages/core/fireux-nuxtfire/src/module.ts
-import { addPlugin, createResolver, defineNuxtModule, installModule } from '@nuxt/kit'
+import {
+  addPlugin,
+  createResolver,
+  defineNuxtModule,
+  installModule,
+} from '@nuxt/kit'
 
 type FirebaseEcosystemConfig = {
   apiKey?: string
@@ -16,7 +21,9 @@ type FirebaseAppConfig = {
 
 function requireNonEmpty(value: unknown, label: string): string {
   if (typeof value === 'string' && value.trim()) return value.trim()
-  throw new Error(`[fireux-nuxtfire] Missing required Firebase config: ${label}`)
+  throw new Error(
+    `[fireux-nuxtfire] Missing required Firebase config: ${label}`
+  )
 }
 
 function pickFirebaseRuntime(nuxt: any) {
@@ -62,10 +69,12 @@ export default defineNuxtModule({
       eco.messagingSenderId,
       'public.firebaseEcosystem.firebase.messagingSenderId'
     )
-    const appId = requireNonEmpty(app.appId, 'public.firebaseApp.appId (env: NUXT_FIREBASE_APP_ID)')
+    const appId = requireNonEmpty(
+      app.appId,
+      'public.firebaseApp.appId (env: NUXT_FIREBASE_APP_ID)'
+    )
 
     ;(nuxt.options as any).vuefire = (nuxt.options as any).vuefire || {}
-
     ;(nuxt.options as any).vuefire.config = {
       apiKey,
       authDomain,
@@ -78,12 +87,15 @@ export default defineNuxtModule({
     // nuxt-vuefire's SSR plugin reads from runtimeConfig.public.vuefire.config.
     // Populate it here to avoid SSR 500s if nuxt-vuefire doesn't inject it
     // (or if injection order varies across Nuxt versions).
-    ;(nuxt.options as any).runtimeConfig = (nuxt.options as any).runtimeConfig || {}
-    ;(nuxt.options as any).runtimeConfig.public = (nuxt.options as any).runtimeConfig.public || {}
+    ;(nuxt.options as any).runtimeConfig =
+      (nuxt.options as any).runtimeConfig || {}
+    ;(nuxt.options as any).runtimeConfig.public =
+      (nuxt.options as any).runtimeConfig.public || {}
     ;(nuxt.options as any).runtimeConfig.public.vuefire =
       (nuxt.options as any).runtimeConfig.public.vuefire || {}
-    ;(nuxt.options as any).runtimeConfig.public.vuefire.config =
-      (nuxt.options as any).vuefire.config
+    ;(nuxt.options as any).runtimeConfig.public.vuefire.config = (
+      nuxt.options as any
+    ).vuefire.config
 
     // Ensure VueFire Auth module is installed.
     const existingAuth = ((nuxt.options as any).vuefire.auth ?? {}) as any
@@ -120,7 +132,8 @@ export default defineNuxtModule({
       if (googleApplicationCredentials === undefined) {
         delete process.env.GOOGLE_APPLICATION_CREDENTIALS
       } else {
-        process.env.GOOGLE_APPLICATION_CREDENTIALS = googleApplicationCredentials
+        process.env.GOOGLE_APPLICATION_CREDENTIALS =
+          googleApplicationCredentials
       }
     }
 
@@ -132,19 +145,29 @@ export default defineNuxtModule({
     // nuxt-vuefire ensures this plugin runs BEFORE nuxt-vuefire's plugins.
     if ((nuxt.options as any).ssr) {
       addPlugin({
-        src: resolver.resolve('./runtime/plugins/firebase-admin-fallback.server.ts'),
+        src: resolver.resolve(
+          './runtime/plugins/firebase-admin-fallback.server.ts'
+        ),
         mode: 'server',
       })
     }
 
-    addPlugin({
-      src: resolver.resolve('./runtime/plugins/firebase-auth-persistence.client.ts'),
-      mode: 'client',
-    })
+    // Nuxt plugins are prepended by default. Append the persistence plugin so
+    // NuxtFire has created the default client App before getAuth() is called.
+    addPlugin(
+      {
+        src: resolver.resolve(
+          './runtime/plugins/firebase-auth-persistence.client.ts'
+        ),
+        mode: 'client',
+      },
+      { append: true }
+    )
 
     if (isDev) {
-      console.info('[fireux-nuxtfire] vuefire configured: yes, auth enabled: yes')
+      console.info(
+        '[fireux-nuxtfire] vuefire configured: yes, auth enabled: yes'
+      )
     }
-
   },
 })

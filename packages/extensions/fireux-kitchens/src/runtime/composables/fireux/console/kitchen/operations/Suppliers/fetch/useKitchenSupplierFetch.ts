@@ -1,10 +1,8 @@
+import { useFetch } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreRead'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import {
-  AppSupplierStorage,
-  SupplierStorage,
-} from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import { SupplierStorage } from 'fireux-suppliers/runtime/models/supplier/Supplier.model'
+import type { PublicSupplierIndex } from 'fireux-suppliers/runtime/models/supplier/supplier-public.model'
 import type { Ref } from 'vue'
 import { computed, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
@@ -50,7 +48,6 @@ export function useKitchenSupplierFetch(
     databaseId: options.databaseId,
   })
   const { appId } = useFireUXConfig()
-
   const isEnabled = computed(() => unref(options.enabled) !== false)
 
   const resolvedKitchenId = computed(() =>
@@ -70,23 +67,23 @@ export function useKitchenSupplierFetch(
       ? resolveKitchenCollectionPath(kitchenCollectionPath.value, resolvedKitchenId.value)
       : ''
   )
-  const canonicalCorePath = computed(() => (
-    isEnabled.value ? SupplierStorage.rootCollection : ''
-  ))
-
-  const canonicalAppPath = computed(() =>
-    isEnabled.value && appId
-      ? `${AppStorage.collection}/${appId}/${AppSupplierStorage.collection}`
-      : ''
-  )
-
   const supplierLinksRef = firestoreFetchCollection<SupplierDoc>(collectionPath)
-  const coreSuppliersRef = firestoreFetchCollection<SupplierDoc>(canonicalCorePath)
-  const appSuppliersRef = firestoreFetchCollection<SupplierDoc>(canonicalAppPath)
+  const supplierNetwork = useFetch<PublicSupplierIndex>('/api/supply/suppliers', {
+    key: 'bringli-public-suppliers',
+    immediate: isEnabled.value,
+  })
 
   const supplierLinks = computed<SupplierDoc[]>(() => supplierLinksRef.value ?? [])
-  const coreSuppliers = computed<SupplierDoc[]>(() => coreSuppliersRef.value ?? [])
-  const appSuppliers = computed<SupplierDoc[]>(() => appSuppliersRef.value ?? [])
+  const networkSuppliers = computed<SupplierDoc[]>(() =>
+    (supplierNetwork.data.value?.suppliers ?? []).map((entry: PublicSupplierIndex['suppliers'][number]) => ({
+      ...entry,
+      supplier_organization_name: entry.organization_name,
+      supplier_headline: entry.headline,
+      supplier_image: entry.image_url,
+      supplier_item_categories: entry.categories,
+      supplier_delivery_areas: entry.delivery_areas,
+    }))
+  )
 
   const canonicalSupplierById = computed(() => {
     const map = new Map<string, SupplierDoc>()
@@ -102,8 +99,7 @@ export function useKitchenSupplierFetch(
       })
     }
 
-    for (const entry of coreSuppliers.value) append(entry)
-    for (const entry of appSuppliers.value) append(entry)
+    for (const entry of networkSuppliers.value) append(entry)
 
     return map
   })
@@ -148,10 +144,7 @@ export function useKitchenSupplierFetch(
     if (!isEnabled.value || !resolvedKitchenId.value) return false
 
     return (
-      supplierLinksRef.value === undefined ||
-      coreSuppliersRef.value === undefined ||
-      (Boolean(canonicalAppPath.value) &&
-        appSuppliersRef.value === undefined)
+      supplierLinksRef.value === undefined || supplierNetwork.pending.value
     )
   })
 
@@ -163,5 +156,6 @@ export function useKitchenSupplierFetch(
     suppliers,
     count,
     pending,
+    error: computed(() => supplierNetwork.error.value ?? null),
   }
 }

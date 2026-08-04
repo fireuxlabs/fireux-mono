@@ -3,31 +3,32 @@
 /* Concurrent edit — 2026-07-21 13:51 CEST — CSS necessity pass: leave the default radius under Nuxt UI ownership. */
 
 :root {
-	/* FireUX Core Design Tokens */
+  /* FireUX Core Design Tokens */
 
-	/* FireUX-owned runtime tokens */
-	--fx-fireux-yellow: #f59e0b;
-	--fx-debug-ink: #111827;
-	--fx-debug-yellow: #f59e0b;
-	--fx-debug-yellow-muted: #b45309;
-	--fx-debug-yellow-border: rgb(245 158 11 / 0.42);
-	--fx-debug-yellow-bg: rgb(245 158 11 / 0.1);
-	--fx-debug-yellow-bg-strong: rgb(245 158 11 / 0.16);
-	--fx-dev-note-border: var(--fx-debug-yellow-border);
-	--fx-dev-note-bg: var(--fx-debug-yellow-bg);
-	--fx-elevation-low: 0 0.25rem 0.75rem rgb(0 0 0 / 0.08);
-	--fx-elevation-medium: 0 0.6rem 1.5rem rgb(0 0 0 / 0.11);
-	--fx-elevation-high: 0 1rem 2.5rem rgb(0 0 0 / 0.14);
-
+  /* FireUX-owned runtime tokens */
+  --font-fireux-hero: var(--font-sans);
+  --font-weight-fireux-hero: 900;
+  --fx-fireux-yellow: #f59e0b;
+  --fx-debug-ink: #111827;
+  --fx-debug-yellow: #f59e0b;
+  --fx-debug-yellow-muted: #b45309;
+  --fx-debug-yellow-border: rgb(245 158 11 / 0.42);
+  --fx-debug-yellow-bg: rgb(245 158 11 / 0.1);
+  --fx-debug-yellow-bg-strong: rgb(245 158 11 / 0.16);
+  --fx-dev-note-border: var(--fx-debug-yellow-border);
+  --fx-dev-note-bg: var(--fx-debug-yellow-bg);
+  --fx-elevation-low: 0 0.25rem 0.75rem rgb(0 0 0 / 0.08);
+  --fx-elevation-medium: 0 0.6rem 1.5rem rgb(0 0 0 / 0.11);
+  --fx-elevation-high: 0 1rem 2.5rem rgb(0 0 0 / 0.14);
 }
 
 /* Color mode spine: docs/concepts/color-mode.md. FireUX applies mode on <html>. */
 :root.dark {
-	--fx-debug-ink: #f9fafb;
-	--fx-debug-yellow-muted: #fbbf24;
-	--fx-debug-yellow-border: rgb(251 191 36 / 0.44);
-	--fx-debug-yellow-bg: rgb(245 158 11 / 0.15);
-	--fx-debug-yellow-bg-strong: rgb(245 158 11 / 0.22);
-	--fx-dev-note-border: var(--fx-debug-yellow-border);
-	--fx-dev-note-bg: var(--fx-debug-yellow-bg);
+  --fx-debug-ink: #f9fafb;
+  --fx-debug-yellow-muted: #fbbf24;
+  --fx-debug-yellow-border: rgb(251 191 36 / 0.44);
+  --fx-debug-yellow-bg: rgb(245 158 11 / 0.15);
+  --fx-debug-yellow-bg-strong: rgb(245 158 11 / 0.22);
+  --fx-dev-note-border: var(--fx-debug-yellow-border);
+  --fx-dev-note-bg: var(--fx-debug-yellow-bg);
 }

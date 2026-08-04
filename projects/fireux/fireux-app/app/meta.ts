@@ -5,7 +5,7 @@
 // Concurrent edit — 2026-07-21 12:44 CEST — Operations catalogue: declare FireUX route-backed capabilities.
 // Concurrent edit — 2026-07-21 12:36 CEST — Cleanbox-to-Werkbox migration: update the FireUX product highlight vocabulary.
 // Concurrent edit — 2026-07-21 13:16 CEST — FireUX project positioning: publish Project Operations with working public and Console homes.
-// Concurrent edit — 2026-07-22 12:49 CEST — Ignition delivery pass: publish the request-to-launch operation and its Console route.
+// Concurrent edit — 2026-08-03 — Keep Ignition as App intake and a private delivery workflow, not a Project Operation.
 // Concurrent edit — 2026-07-22 13:03 CEST — Origin-aware Ignition pipelines: retain FireUX solution intent through intake.
 // Concurrent edit — 2026-07-23 12:13 CEST — FireUX landing makeover: align public metadata with the concrete Ignition offer.
 import { defineFireuxMeta } from 'fireux-core/runtime/models/system/meta-content.model'
@@ -101,11 +101,7 @@ export const metaContent = defineFireuxMeta({
       'modular web apps',
     ],
     audience: ['project owners', 'app operators', 'founders', 'partners'],
-    categories: [
-      'project operations',
-      'app platforms',
-      'ecosystem software',
-    ],
+    categories: ['project operations', 'app platforms', 'ecosystem software'],
     primary_topic: 'FireUX Projects and Apps',
   },
   cta: {
@@ -132,19 +128,6 @@ export const metaContent = defineFireuxMeta({
   },
   operations: [
     {
-      id: 'project.ignition',
-      slug: 'ignition',
-      title: 'Ignition',
-      description: 'Manage App requests from intake through the launch checklist.',
-      to: '/console/project/ignitions',
-      console: {
-        id: 'project',
-        name: 'Project console',
-        to: '/console/project',
-      },
-      icon: 'i-lucide-rocket',
-    },
-    {
       id: 'project.apps',
       slug: 'apps',
       title: 'Apps',
@@ -161,7 +144,8 @@ export const metaContent = defineFireuxMeta({
       id: 'project.ecosystem',
       slug: 'ecosystem',
       title: 'Ecosystem',
-      description: 'Review the selected Project Ecosystem and the Apps inside it.',
+      description:
+        'Review the selected Project Ecosystem and the Apps inside it.',
       to: '/console/project/ecosystem',
       console: {
         id: 'project',

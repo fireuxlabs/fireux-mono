@@ -1,7 +1,7 @@
 {
   "name": "fireux-suppliers",
   "version": "0.1.0",
-  "description": "Scaffold extension for FireUX supplier features (placeholder)",
+  "description": "Canonical Supplier identity, onboarding, public directory, Console operations, and bounded consumer projections",
   "private": true,
   "main": "./src/module.ts",
   "types": "./src/module.ts",

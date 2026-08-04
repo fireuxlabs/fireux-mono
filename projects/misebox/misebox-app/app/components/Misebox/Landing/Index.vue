@@ -1,12 +1,16 @@
 <!-- Concurrent edit — 2026-07-28 — Align the FireUX and Misebox Main App landing family. -->
 <template>
   <div>
-    <MiseboxLandingOperationRail :operations="landingOperations" />
+    <LandingOperationRail
+      ariaLabel="Kitchen operations"
+      :operations="operationRailItems"
+    />
 
     <LandingProductIndex
       :content="content"
       hero-layout="proof-wide"
-      onboarding-placement="hero"
+      presentation="immersive"
+      :region-order="regionOrder"
     >
       <template #hero-preview>
         <MiseboxLandingHeroImage />
@@ -16,7 +20,11 @@
         <MiseboxLandingPricingStrip />
       </template>
 
-      <template #console>
+      <template #surfaces>
+        <MiseboxLandingOrderingShowcase />
+      </template>
+
+      <template #specifics>
         <LandingProductProofSection
           section-id="misebox-console"
           copy-emphasis
@@ -37,53 +45,17 @@
         </LandingProductProofSection>
       </template>
 
-      <template #specifics>
-        <LandingProductProofSection
-          section-id="misebox-menu-surfaces"
-          copy-emphasis
-          eyebrow="Menu surfaces"
-          title="Serve phones and kiosks."
-          description="Guests order for collection or delivery when the selected Menu and Kitchen configure those paths."
-          :items="['Self-service kiosk']"
-          supporting="Each order uses the same published Menu and enters the Kitchen Console."
-          :action="{
-            label: 'Explore guest ordering',
-            to: '/demo/kiosk',
-            icon: 'i-lucide-arrow-right',
-          }"
-          reverse
-        >
-          <MiseboxLandingOrderingPreview />
-        </LandingProductProofSection>
-
-        <LandingProductProofSection
-          section-id="misebox-finance"
-          eyebrow="Kitchen Finance"
-          title="Review Kitchen sales."
-          description="Compare gross sales, completed sales, and average sale for the selected period."
-          supporting="Choose 7, 30, or 90 days. Each currency remains separate."
-          :action="{
-            label: 'Open Kitchen Finance',
-            to: '/console/kitchen/finance',
-            icon: 'i-lucide-arrow-right',
-          }"
-        >
-          <MiseboxLandingFinancePreview />
-        </LandingProductProofSection>
-      </template>
-
       <template #apps>
         <LandingAppCollection
           :controller="appsController"
-          eyebrow="Our apps"
-          title="Explore Misebox apps."
-          description="See how different hospitality businesses present their own identity, menus and customer experience with Misebox."
+          title="Misebox's Apps"
           action-label="Explore all Misebox apps"
           action-to="/apps"
           :exclude-ids="['misebox-app']"
           :featured-ids="featuredAppIds"
           :limit="3"
           :media-overrides="featuredAppMedia"
+          :minimum-items="2"
         />
       </template>
 
@@ -112,10 +84,8 @@ import type {
 import { useEcosystemAppCollection } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppCollection'
 import { metaContent } from '../../../meta'
 import MiseboxLandingConsolePreview from './ConsolePreview/Index.vue'
-import MiseboxLandingFinancePreview from './FinancePreview.vue'
 import MiseboxLandingHeroImage from './HeroImage.vue'
-import MiseboxLandingOrderingPreview from './OrderingPreview.vue'
-import MiseboxLandingOperationRail from './OperationRail.vue'
+import MiseboxLandingOrderingShowcase from './OrderingShowcase.vue'
 import MiseboxLandingPricingStrip from './PricingStrip.vue'
 import {
   consoleSurfaceCopy,
@@ -127,6 +97,24 @@ import {
 } from './landing-content'
 
 const appsController = useEcosystemAppCollection()
+const showApps = computed(
+  () =>
+    appsController.outcome.value === 'pending' ||
+    appsController.outcome.value === 'error' ||
+    appsController.apps.value.filter(
+      (app) => app.status === 'active' && app.id !== 'misebox-app'
+    ).length > 1
+)
+const baseRegionOrder = [
+  'surfaces',
+  'specifics',
+  'operations',
+  'solutions',
+  'tools',
+] as const
+const regionOrder = computed(() =>
+  showApps.value ? ([...baseRegionOrder, 'apps'] as const) : baseRegionOrder
+)
 const selectedConsoleSurfaceId = ref('kitchen.dishes')
 const landingOperations: readonly FireuxMetaOperation[] =
   metaContent.operations?.filter(
@@ -134,6 +122,12 @@ const landingOperations: readonly FireuxMetaOperation[] =
   ) ?? []
 const landingSolutions: readonly FireuxMetaSolution[] =
   metaContent.solutions ?? []
+const operationRailItems = landingOperations.map((operation) => ({
+  id: operation.id,
+  title: operation.title,
+  icon: operation.icon,
+  to: operation.slug ? `/operations/${operation.slug}` : operation.to,
+}))
 
 const selectedConsoleCopy = computed<ConsoleSurfaceCopy>(
   () =>

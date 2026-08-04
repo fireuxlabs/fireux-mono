@@ -28,6 +28,12 @@ export type FireuxAppConfig = {
   serverFunctionServiceAccount?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */
   contactEmail?: string
+  /** Main App-owned product capabilities used by the shared pricing literature. */
+  pricing?: {
+    consoleName: string
+    free: string[]
+    pro: string[]
+  }
   /** Optional Core-owned app presentation preset. Absent means Nuxt UI defaults. */
   designPack?: FireuxDesignPackConfig
   /** Optional app-level surface design packs, e.g. designPacks.publicMenu. */

@@ -13,8 +13,19 @@ import path from 'node:path'
 
 const CORE_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductIndex.vue'
+const CORE_ECOSYSTEM_HOME_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/EcosystemHome.vue'
 const CORE_STYLE_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductIndex.css'
+const CORE_IMMERSIVE_STYLE_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/ProductIndexImmersive.css'
+const CORE_TOKENS_PATH =
+  'packages/core/fireux-core/src/runtime/assets/styles/scss/atoms/tokens.scss'
+const CORE_LANDING_MOTION_PATH =
+  'packages/core/fireux-core/src/runtime/composables/fireux/motion/useLandingMotion.ts'
+const CORE_LANDING_STICKY_MOTION_PATH =
+  'packages/core/fireux-core/src/runtime/composables/fireux/motion/landing-sticky-motion.ts'
+const CORE_PACKAGE_PATH = 'packages/core/fireux-core/package.json'
 const CORE_APP_COLLECTION_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/AppCollection.vue'
 const CORE_CONSOLE_PREVIEW_FRAME_PATH =
@@ -31,17 +42,58 @@ const CORE_CARD_ORBIT_TYPE_PATH =
   'packages/core/fireux-core/src/types/landing-card-orbit.ts'
 const CORE_PRODUCT_PROOF_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductProofSection.vue'
+const CORE_PRODUCT_HERO_IMAGE_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/ProductHeroImage.vue'
+const CORE_PRODUCT_SURFACE_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/ProductSurfaceShowcase.vue'
 const CORE_PRODUCT_CATALOGUE_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductCatalogue.vue'
 const CORE_PRODUCT_ENTRY_PATH =
   'packages/core/fireux-core/src/runtime/components/landing/ProductEntryPaths.vue'
+const CORE_PRICING_STRIP_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/PricingStrip.vue'
+const CORE_PRODUCT_PRICING_STRIP_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/ProductPricingStrip.vue'
+const CORE_PRODUCT_PRICING_SOURCE_PATH =
+  'packages/core/fireux-core/src/runtime/composables/fireux/pricing/useProductPricingLiterature.ts'
+const CORE_OPERATION_RAIL_PATH =
+  'packages/core/fireux-core/src/runtime/components/landing/OperationRail.vue'
 const CORE_PRODUCT_LANDING_TYPE_PATH =
   'packages/core/fireux-core/src/types/landing-product.ts'
 const PROJECTS_PATH = 'projects'
+const ALIGNED_MAIN_APP_LANDING_PATHS = [
+  'projects/bringli/bringli-app/app/components/Bringli/Landing/Index.vue',
+  'projects/buenohost/buenohost-app/app/components/BuenoHost/Landing/Index.vue',
+  'projects/granite/granite-app/app/components/Granite/Landing/Index.vue',
+  'projects/slap/slap-app/app/components/Slap/Landing/Index.vue',
+]
+const STANDARD_PRODUCT_HERO_IMAGE_PATHS = [
+  'projects/bringli/bringli-app/public/img/landing/supply-operations-hero-v1.png',
+  'projects/buenohost/buenohost-app/public/img/landing/guest-operations-hero-v1.png',
+  'projects/granite/granite-app/public/img/landing/property-operations-hero-v1.png',
+  'projects/misebox/misebox-app/public/img/landing/supplier-operations-hero-v3.png',
+  'projects/slap/slap-app/public/img/landing/brand-commerce-hero-v1.png',
+  'projects/werkbox/werkbox-app/public/img/landing/practical-work-hero-v3.png',
+]
+const STANDARD_PRODUCT_HERO_IMAGE = {
+  width: 1600,
+  height: 1000,
+  maximumBytes: 2_500_000,
+}
+const WERKBOX_ADAPTER_PATH =
+  'projects/werkbox/werkbox-app/app/components/Werkbox/Landing/Index.vue'
+const WERKBOX_HERO_PATH =
+  'projects/werkbox/werkbox-app/app/components/Werkbox/Landing/HeroPreview.vue'
+const SLAP_ADAPTER_PATH =
+  'projects/slap/slap-app/app/components/Slap/Landing/Index.vue'
 const MISEBOX_ADAPTER_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/Index.vue'
 const MISEBOX_LANDING_CONTENT_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/landing-content.ts'
+const MISEBOX_HERO_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/HeroImage.vue'
+const MISEBOX_PRICING_STRIP_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/PricingStrip.vue'
 const MISEBOX_PAGE_PATH = 'projects/misebox/misebox-app/app/pages/index.vue'
 const MISEBOX_CARD_WINDOW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/ElementWindow.vue'
@@ -61,6 +113,8 @@ const MISEBOX_HANDOFF_STAGE_STYLE_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/handoff-stage.css'
 const MISEBOX_ORDERING_PREVIEW_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Landing/OrderingPreview.vue'
+const MISEBOX_ORDERING_SHOWCASE_PATH =
+  'projects/misebox/misebox-app/app/components/Misebox/Landing/OrderingShowcase.vue'
 const MISEBOX_ORDERING_TOOL_PATH =
   'projects/misebox/misebox-app/app/components/Misebox/Provider/Tools/Ordering.vue'
 const MISEBOX_ORDERING_TOOL_CONTRACT_PATH =
@@ -125,13 +179,16 @@ const MISEBOX_JOBS_LAYOUT_PATH =
   'projects/misebox/misebox-app/app/layouts/misebox-jobs.vue'
 const MISEBOX_SUPPLIERS_MIDDLEWARE_PATH =
   'projects/misebox/misebox-app/app/middleware/misebox-suppliers-surface.global.ts'
-const MISEBOX_SUPPLIERS_LAYOUT_PATH =
-  'projects/misebox/misebox-app/app/layouts/misebox-suppliers.vue'
 const FIREUX_ADAPTER_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/Index.vue'
+const FIREUX_PRICING_STRIP_PATH =
+  'projects/fireux/fireux-app/app/components/FireUX/Landing/PricingStrip.vue'
 const FIREUX_PAGE_PATH = 'projects/fireux/fireux-app/app/pages/index.vue'
+const FIREUX_META_PATH = 'projects/fireux/fireux-app/app/meta.ts'
 const FIREUX_CONSOLE_PREVIEW_PATH =
   'projects/fireux/fireux-app/app/components/FireUX/Landing/ConsolePreview/Index.vue'
+const FIREUX_SURFACE_SHOWCASE_PATH =
+  'projects/fireux/fireux-app/app/components/FireUX/Landing/SurfaceShowcase.vue'
 const FIREUX_PRODUCT_DEMO_PATH =
   'projects/fireux/fireux-app/app/composables/product-demo/useFireuxProductDemo.ts'
 const FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS = {
@@ -150,6 +207,21 @@ const MOBILE_FIRST_MARKER =
 
 function read(repoRoot, filePath) {
   return readFileSync(path.join(repoRoot, filePath), 'utf8')
+}
+
+function readPngMetadata(repoRoot, filePath) {
+  const image = readFileSync(path.join(repoRoot, filePath))
+  const pngSignature = '89504e470d0a1a0a'
+
+  if (image.subarray(0, 8).toString('hex') !== pngSignature) return null
+
+  return {
+    width: image.readUInt32BE(16),
+    height: image.readUInt32BE(20),
+    bitDepth: image[24],
+    colorType: image[25],
+    bytes: image.byteLength,
+  }
 }
 
 function discoverProductLandingAdapters(repoRoot) {
@@ -588,10 +660,17 @@ function checkMobileFirst({
 
 export async function run(ctx) {
   const repoRoot = ctx?.repoRoot ?? process.cwd()
+  const coreStyle = read(repoRoot, CORE_STYLE_PATH)
   const core = [
     read(repoRoot, CORE_PATH),
-    read(repoRoot, CORE_STYLE_PATH),
+    coreStyle,
+    read(repoRoot, CORE_IMMERSIVE_STYLE_PATH),
+    read(repoRoot, CORE_TOKENS_PATH),
+    read(repoRoot, CORE_LANDING_MOTION_PATH),
+    read(repoRoot, CORE_LANDING_STICKY_MOTION_PATH),
   ].join('\n')
+  const corePackage = read(repoRoot, CORE_PACKAGE_PATH)
+  const ecosystemHome = read(repoRoot, CORE_ECOSYSTEM_HOME_PATH)
   const appCollection = read(repoRoot, CORE_APP_COLLECTION_PATH)
   const consolePreviewFrame = read(repoRoot, CORE_CONSOLE_PREVIEW_FRAME_PATH)
   const cardOrbit = [
@@ -602,15 +681,30 @@ export async function run(ctx) {
   ].join('\n')
   const cardOrbitType = read(repoRoot, CORE_CARD_ORBIT_TYPE_PATH)
   const productProof = read(repoRoot, CORE_PRODUCT_PROOF_PATH)
+  const productHeroImage = read(repoRoot, CORE_PRODUCT_HERO_IMAGE_PATH)
+  const productSurface = read(repoRoot, CORE_PRODUCT_SURFACE_PATH)
   const productCatalogue = read(repoRoot, CORE_PRODUCT_CATALOGUE_PATH)
   const productEntryPaths = read(repoRoot, CORE_PRODUCT_ENTRY_PATH)
+  const pricingStrip = read(repoRoot, CORE_PRICING_STRIP_PATH)
+  const productPricingStrip = read(repoRoot, CORE_PRODUCT_PRICING_STRIP_PATH)
+  const productPricingSource = read(repoRoot, CORE_PRODUCT_PRICING_SOURCE_PATH)
+  const operationRail = read(repoRoot, CORE_OPERATION_RAIL_PATH)
+  const miseboxPricingStrip = read(repoRoot, MISEBOX_PRICING_STRIP_PATH)
+  const fireuxPricingStrip = read(repoRoot, FIREUX_PRICING_STRIP_PATH)
   const productLandingTypes = read(repoRoot, CORE_PRODUCT_LANDING_TYPE_PATH)
   const discoveredProductLandingAdapters =
     discoverProductLandingAdapters(repoRoot)
+  const alignedMainAppLandings = ALIGNED_MAIN_APP_LANDING_PATHS.map(
+    (filePath) => [filePath, read(repoRoot, filePath)]
+  )
+  const werkboxAdapter = read(repoRoot, WERKBOX_ADAPTER_PATH)
+  const werkboxHero = read(repoRoot, WERKBOX_HERO_PATH)
+  const slapAdapter = read(repoRoot, SLAP_ADAPTER_PATH)
   const miseboxAdapter = [
     read(repoRoot, MISEBOX_ADAPTER_PATH),
     read(repoRoot, MISEBOX_LANDING_CONTENT_PATH),
   ].join('\n')
+  const miseboxHero = read(repoRoot, MISEBOX_HERO_PATH)
   const miseboxPage = read(repoRoot, MISEBOX_PAGE_PATH)
   const miseboxCardWindow = read(repoRoot, MISEBOX_CARD_WINDOW_PATH)
   const miseboxPowerCards = read(repoRoot, MISEBOX_POWER_CARDS_PATH)
@@ -623,6 +717,7 @@ export async function run(ctx) {
     read(repoRoot, MISEBOX_HANDOFF_STAGE_STYLE_PATH),
   ].join('\n')
   const miseboxOrderingPreview = read(repoRoot, MISEBOX_ORDERING_PREVIEW_PATH)
+  const miseboxOrderingShowcase = read(repoRoot, MISEBOX_ORDERING_SHOWCASE_PATH)
   const miseboxOrderingTool = read(repoRoot, MISEBOX_ORDERING_TOOL_PATH)
   const miseboxOrderingToolContract = read(
     repoRoot,
@@ -649,10 +744,11 @@ export async function run(ctx) {
     repoRoot,
     MISEBOX_SUPPLIERS_MIDDLEWARE_PATH
   )
-  const miseboxSuppliersLayout = read(repoRoot, MISEBOX_SUPPLIERS_LAYOUT_PATH)
   const fireuxAdapter = read(repoRoot, FIREUX_ADAPTER_PATH)
   const fireuxPage = read(repoRoot, FIREUX_PAGE_PATH)
+  const fireuxMeta = read(repoRoot, FIREUX_META_PATH)
   const fireuxConsolePreview = read(repoRoot, FIREUX_CONSOLE_PREVIEW_PATH)
+  const fireuxSurfaceShowcase = read(repoRoot, FIREUX_SURFACE_SHOWCASE_PATH)
   const fireuxProductDemo = read(repoRoot, FIREUX_PRODUCT_DEMO_PATH)
   const fireuxConsolePreviewComponents = Object.fromEntries(
     Object.entries(FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
@@ -774,9 +870,20 @@ export async function run(ctx) {
     violations,
   })
 
-  const landingSlotOrder = [
-    'hero-preview',
-    'onboarding',
+  for (const slotName of ['hero-preview', 'onboarding']) {
+    const slotCount = count(
+      core,
+      new RegExp(`<slot\\s+name=["']${slotName}["']`, 'g')
+    )
+    if (slotCount !== 1) {
+      violations.push(
+        `${CORE_PATH}: expected exactly one ${slotName} slot, found ${slotCount}`
+      )
+    }
+  }
+
+  const landingRegions = [
+    'surfaces',
     'console',
     'specifics',
     'ecosystems',
@@ -785,26 +892,34 @@ export async function run(ctx) {
     'solutions',
     'operations',
   ]
-  let previousSlotIndex = -1
-  for (const slotName of landingSlotOrder) {
-    const marker = `<slot name="${slotName}"`
-    const slotIndex = core.indexOf(marker)
-    const slotCount = count(
-      core,
-      new RegExp(`<slot\\s+name=["']${slotName}["']`, 'g')
-    )
-
-    if (slotCount !== 1) {
+  for (const region of landingRegions) {
+    if (!core.includes(`| '${region}'`)) {
       violations.push(
-        `${CORE_PATH}: expected exactly one ${slotName} slot, found ${slotCount}`
+        `${CORE_PATH}: configurable landing region is missing ${region}`
       )
     }
-    if (slotIndex !== -1 && slotIndex <= previousSlotIndex) {
+  }
+  for (const required of [
+    'regionOrder?: readonly LandingProductRegion[]',
+    'v-for="region in regionOrder"',
+    '<slot :name="region" />',
+    'ref="heroHeading"',
+    'ref="heroPreview"',
+    'new ResizeObserver(syncHeroOverlap)',
+    'heading.getBoundingClientRect()',
+    'preview.getBoundingClientRect()',
+    "window.addEventListener('resize', syncHeroOverlap",
+    "window.removeEventListener('resize', syncHeroOverlap)",
+    "'--landing-hero-overlap-width'",
+    'Math.min(128, Math.max(80, window.innerWidth * 0.07))',
+    'Math.min(192, Math.max(112, window.innerWidth * 0.1))',
+    'const blurWidth = hasOverlap ? overlapWidth + feather : fallback',
+  ]) {
+    if (!core.includes(required)) {
       violations.push(
-        `${CORE_PATH}: ${slotName} must follow the fixed ${landingSlotOrder.join(' → ')} slot order`
+        `${CORE_PATH}: missing configurable landing-region contract (${required})`
       )
     }
-    if (slotIndex !== -1) previousSlotIndex = slotIndex
   }
 
   if (!core.includes('<slot name="onboarding" />')) {
@@ -854,20 +969,25 @@ export async function run(ctx) {
     [CORE_CONSOLE_PREVIEW_FRAME_PATH, consolePreviewFrame],
     [CORE_CARD_ORBIT_PATH, cardOrbit],
     [CORE_PRODUCT_PROOF_PATH, productProof],
+    [CORE_PRODUCT_SURFACE_PATH, productSurface],
     [CORE_PRODUCT_CATALOGUE_PATH, productCatalogue],
     [CORE_PRODUCT_ENTRY_PATH, productEntryPaths],
+    [CORE_PRICING_STRIP_PATH, pricingStrip],
+    [CORE_OPERATION_RAIL_PATH, operationRail],
     [MISEBOX_ADAPTER_PATH, miseboxAdapter],
     [MISEBOX_CARD_WINDOW_PATH, miseboxCardWindow],
     [MISEBOX_POWER_CARDS_PATH, miseboxPowerCards],
     [MISEBOX_HANDOFF_PREVIEW_PATH, miseboxHandoffPreview],
     [MISEBOX_CONSOLE_PREVIEW_PATH, miseboxConsolePreview],
     [MISEBOX_ORDERING_PREVIEW_PATH, miseboxOrderingPreview],
+    [MISEBOX_ORDERING_SHOWCASE_PATH, miseboxOrderingShowcase],
     [MISEBOX_FINANCE_PREVIEW_PATH, miseboxFinancePreview],
     ...Object.entries(MISEBOX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
       ([key, filePath]) => [filePath, miseboxConsolePreviewComponents[key]]
     ),
     [FIREUX_ADAPTER_PATH, fireuxAdapter],
     [FIREUX_CONSOLE_PREVIEW_PATH, fireuxConsolePreview],
+    [FIREUX_SURFACE_SHOWCASE_PATH, fireuxSurfaceShowcase],
     [FIREUX_PRODUCT_DEMO_PATH, fireuxProductDemo],
     ...Object.entries(FIREUX_CONSOLE_PREVIEW_COMPONENT_PATHS).map(
       ([key, filePath]) => [filePath, fireuxConsolePreviewComponents[key]]
@@ -900,6 +1020,75 @@ export async function run(ctx) {
     if (!productProof.includes(required)) {
       violations.push(
         `${CORE_PRODUCT_PROOF_PATH}: missing shared product-proof contract (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    'LandingPricingPlan',
+    ':aria-label="ariaLabel"',
+    'data-landing-reveal="up"',
+    'v-for="plan in plans"',
+  ]) {
+    if (!pricingStrip.includes(required)) {
+      violations.push(
+        `${CORE_PRICING_STRIP_PATH}: missing shared subscription-strip contract (${required})`
+      )
+    }
+  }
+
+  if (pricingStrip.includes('Monthly subscriptions')) {
+    violations.push(
+      `${CORE_PRICING_STRIP_PATH}: shared pricing strip must keep its label semantic rather than visible`
+    )
+  }
+
+  for (const [filePath, source] of [
+    [MISEBOX_PRICING_STRIP_PATH, miseboxPricingStrip],
+    [FIREUX_PRICING_STRIP_PATH, fireuxPricingStrip],
+  ]) {
+    if (!source.includes('<LandingProductPricingStrip')) {
+      violations.push(
+        `${filePath}: Main App pricing adapter must consume the canonical product pricing strip`
+      )
+    }
+  }
+
+  for (const required of [
+    "id: 'free'",
+    "id: 'pro'",
+    "id: 'managed'",
+    "id: 'your-app'",
+    "id: 'your-ecosystem'",
+    "price: 'CHF 20'",
+    "price: 'CHF 50'",
+    "price: 'CHF 600'",
+    "price: 'CHF 1,200'",
+    "ecosystemKey === 'fireux'",
+    '50% App revenue share',
+  ]) {
+    if (!productPricingSource.includes(required)) {
+      violations.push(
+        `${CORE_PRODUCT_PRICING_SOURCE_PATH}: missing canonical pricing contract (${required})`
+      )
+    }
+  }
+
+  for (const required of ['LandingPricingStrip', 'landingTiers']) {
+    if (!productPricingStrip.includes(required)) {
+      violations.push(
+        `${CORE_PRODUCT_PRICING_STRIP_PATH}: missing shared product pricing adapter (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    'data-landing-motion-entity="app"',
+    'data-landing-motion-entity="ecosystem"',
+  ]) {
+    if (!fireuxCardOrbit.includes(required)) {
+      violations.push(
+        `${FIREUX_CARD_ORBIT_PATH}: missing FireUX transition participant (${required})`
       )
     }
   }
@@ -958,11 +1147,28 @@ export async function run(ctx) {
     '<UPageCard',
     'app.detail_url',
     "app.status === 'active'",
+    'minimumItems',
+    'shouldRender',
     'portableMediaUrl',
   ]) {
     if (!appCollection.includes(required)) {
       violations.push(
         `${CORE_APP_COLLECTION_PATH}: missing public App collection contract (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    'useEcosystemAppCollection',
+    'eligibleApps',
+    'eligibleApps.value.length > 1',
+    ':exclude-ids="[appId]"',
+    ':minimum-items="2"',
+    ':title="`${appName}\'s Apps`"',
+  ]) {
+    if (!ecosystemHome.includes(required)) {
+      violations.push(
+        `${CORE_ECOSYSTEM_HOME_PATH}: missing conditional ecosystem App collection contract (${required})`
       )
     }
   }
@@ -986,9 +1192,7 @@ export async function run(ctx) {
     '<LandingConsolePreviewFrame',
     'label="Interactive Kitchen Console preview"',
     ':items="operations"',
-    ':secondary-items="[financeSurface]"',
     'navigation-label="Kitchen Operations"',
-    'secondary-navigation-label="Kitchen reports"',
     'console-to="/console/kitchen"',
     '@update:model-value="selectSurface"',
     '@open-console="openFullKitchenConsole"',
@@ -1425,7 +1629,7 @@ export async function run(ctx) {
     '<LandingConsolePreviewFrame',
     'label="Interactive Project Console preview"',
     ':items="operations"',
-    'navigation-label="Project Operations"',
+    'navigation-label="Project Console"',
     'console-to="/console/project"',
     'open-console-aria-label="Open the full Project Console"',
     '<UAvatar',
@@ -1559,6 +1763,88 @@ export async function run(ctx) {
     )
   }
 
+  for (const [filePath, source] of alignedMainAppLandings) {
+    if (!source.includes('<LandingEcosystemHome')) {
+      violations.push(
+        `${filePath}: aligned Main App landing must consume LandingEcosystemHome`
+      )
+    }
+    if (!source.includes(':surface-items="surfaceItems"')) {
+      violations.push(
+        `${filePath}: aligned Main App landing must supply its source-backed product surfaces`
+      )
+    }
+    const heroImageMatch = source.match(
+      /hero-image="(\/img\/landing\/[^"\s]+\.png)"/
+    )
+    if (!heroImageMatch) {
+      violations.push(
+        `${filePath}: static Main App hero must use reviewed people-at-work photography under /img/landing`
+      )
+    } else {
+      const projectRoot = filePath.slice(0, filePath.indexOf('/app/'))
+      if (
+        !existsSync(
+          path.join(repoRoot, projectRoot, 'public', heroImageMatch[1])
+        )
+      ) {
+        violations.push(
+          `${filePath}: configured Main App hero image is missing (${heroImageMatch[1]})`
+        )
+      }
+    }
+  }
+
+  for (const imagePath of STANDARD_PRODUCT_HERO_IMAGE_PATHS) {
+    if (!existsSync(path.join(repoRoot, imagePath))) {
+      violations.push(`${imagePath}: standard product hero image is missing`)
+      continue
+    }
+
+    const metadata = readPngMetadata(repoRoot, imagePath)
+    if (
+      !metadata ||
+      metadata.width !== STANDARD_PRODUCT_HERO_IMAGE.width ||
+      metadata.height !== STANDARD_PRODUCT_HERO_IMAGE.height ||
+      metadata.bitDepth !== 8 ||
+      metadata.colorType !== 2 ||
+      metadata.bytes > STANDARD_PRODUCT_HERO_IMAGE.maximumBytes
+    ) {
+      violations.push(
+        `${imagePath}: product hero must be 1600x1000, 8-bit opaque RGB PNG, and no larger than 2.5 MB`
+      )
+    }
+  }
+
+  if (!slapAdapter.includes(':section-dwell="false"')) {
+    violations.push(
+      `${SLAP_ADAPTER_PATH}: accepted brand-commerce landing delta must use the Core section-dwell opt-out`
+    )
+  }
+
+  if (!fireuxEcosystems.includes("FireUX's Ecosystems")) {
+    violations.push(
+      `${FIREUX_ECOSYSTEMS_PATH}: platform Ecosystems section must use the canonical heading`
+    )
+  }
+
+  for (const required of [
+    '<LandingOperationRail',
+    '<LandingProductIndex',
+    '<LandingProductPricingStrip',
+    '<LandingProductSurfaceShowcase',
+    '<LandingAppCollection',
+    '<WerkboxLandingHeroPreview',
+    'title="Werkbox\'s Apps"',
+    ':minimum-items="2"',
+  ]) {
+    if (!werkboxAdapter.includes(required)) {
+      violations.push(
+        `${WERKBOX_ADAPTER_PATH}: missing aligned Main App landing contract (${required})`
+      )
+    }
+  }
+
   for (const filePath of [MISEBOX_ADAPTER_PATH, FIREUX_ADAPTER_PATH]) {
     if (
       !discoveredProductLandingAdapters.some(
@@ -1572,12 +1858,21 @@ export async function run(ctx) {
   }
 
   for (const adapter of discoveredProductLandingAdapters) {
-    const usesPricingStrip = adapter.source.includes(
-      '<MiseboxLandingPricingStrip'
-    )
-    const entryComponent = usesPricingStrip
-      ? 'MiseboxLandingPricingStrip'
-      : 'LandingProductEntryPaths'
+    if (
+      /from ['"]gsap(?:\/[^'"]*)?['"]|import\(['"]gsap/.test(adapter.source)
+    ) {
+      violations.push(
+        `${adapter.filePath}: App landing bypasses the Core landing-motion concern`
+      )
+    }
+
+    const pricingStripComponent = [
+      'MiseboxLandingPricingStrip',
+      'FireUXLandingPricingStrip',
+      'LandingProductPricingStrip',
+    ].find((component) => adapter.source.includes(`<${component}`))
+    const usesPricingStrip = Boolean(pricingStripComponent)
+    const entryComponent = pricingStripComponent || 'LandingProductEntryPaths'
 
     for (const [label, pattern] of [
       ['LandingProductIndex', /<LandingProductIndex\b/g],
@@ -1628,21 +1923,71 @@ export async function run(ctx) {
     }
   }
 
+  for (const required of [
+    'position: relative',
+    'overflow: hidden',
+    'border: 1px solid var(--ui-border)',
+    'border-radius: calc(var(--ui-radius) * 3)',
+    'background: var(--ui-bg-muted)',
+    'box-shadow: var(--shadow-xl)',
+    'object-position: var(--landing-hero-position)',
+    '.landing-product-hero-image::before',
+    '@media (min-width: 1024px)',
+    'inset-block: 0',
+    'width: var(--landing-hero-overlap-width, 0)',
+    'backdrop-filter: blur(clamp(8px, 1vw, 14px))',
+    'transparent 82%',
+  ]) {
+    if (!productHeroImage.includes(required)) {
+      violations.push(
+        `${CORE_PRODUCT_HERO_IMAGE_PATH}: missing shared sharp photographic frame contract (${required})`
+      )
+    }
+  }
+  for (const forbidden of ['::after']) {
+    if (productHeroImage.includes(forbidden)) {
+      violations.push(
+        `${CORE_PRODUCT_HERO_IMAGE_PATH}: shared photographic frame must not add atmospheric image treatment (${forbidden})`
+      )
+    }
+  }
+  if (/(^|\n)\s*filter:\s*blur\(/.test(productHeroImage)) {
+    violations.push(
+      `${CORE_PRODUCT_HERO_IMAGE_PATH}: shared photographic frame must not blur the source image directly`
+    )
+  }
+  for (const [filePath, source] of [
+    [MISEBOX_HERO_PATH, miseboxHero],
+    [WERKBOX_HERO_PATH, werkboxHero],
+  ]) {
+    if (!source.includes('<LandingProductHeroImage')) {
+      violations.push(
+        `${filePath}: static Main App hero must consume the Core photographic frame`
+      )
+    }
+    if (/<style\b|<img\b/.test(source)) {
+      violations.push(
+        `${filePath}: static Main App hero must not duplicate the Core image or frame presentation`
+      )
+    }
+  }
+
   const consumers = [
     {
       filePath: MISEBOX_ADAPTER_PATH,
       source: miseboxAdapter,
       onboardingMarker: '<MiseboxLandingPricingStrip',
       heroPreviewTag: 'MiseboxLandingHeroImage',
-      proofSectionCount: 3,
+      proofSectionCount: 1,
       catalogueCount: 3,
+      surfaceMarker: '<MiseboxLandingOrderingShowcase',
       required: [
         '<LandingProductIndex',
         'hero-layout="proof-wide"',
-        'onboarding-placement="hero"',
+        'presentation="immersive"',
         '#hero-preview',
         '#onboarding',
-        '#console',
+        '#surfaces',
         '#specifics',
         '#apps',
         '#tools',
@@ -1650,19 +1995,23 @@ export async function run(ctx) {
         '#operations',
         '<MiseboxLandingHeroImage',
         '<MiseboxLandingPricingStrip',
-        '<MiseboxLandingOperationRail',
+        '<LandingOperationRail',
         '<LandingProductProofSection',
         '<MiseboxLandingConsolePreview',
         'copy-emphasis',
-        '<MiseboxLandingOrderingPreview',
-        '<MiseboxLandingFinancePreview',
+        '<MiseboxLandingOrderingShowcase',
+        "'operations',",
+        "'solutions',",
+        "'tools',",
         '<LandingAppCollection',
         '<LandingProductCatalogue',
         ':featured-ids="featuredAppIds"',
         ':media-overrides="featuredAppMedia"',
+        'title="Misebox\'s Apps"',
+        ':minimum-items="2"',
         'wordmarkUrl:',
         'useEcosystemAppCollection',
-        'MiseboxLandingOperationRail',
+        ':operations="operationRailItems"',
         'MiseboxLandingPricingStrip',
         "operation.console.id === 'kitchen'",
         "title: 'Work inside the Kitchen Console.'",
@@ -1684,37 +2033,41 @@ export async function run(ctx) {
     {
       filePath: FIREUX_ADAPTER_PATH,
       source: fireuxAdapter,
-      onboardingMarker: '<LandingProductEntryPaths',
-      proofSectionCount: 1,
+      onboardingMarker: '<FireUXLandingPricingStrip',
+      proofSectionCount: 0,
       catalogueCount: 2,
+      surfaceMarker: '<FireUXLandingSurfaceShowcase',
       required: [
         '<LandingProductIndex',
+        'hero-layout="proof-wide"',
+        'presentation="immersive"',
+        '#hero-preview',
         '#onboarding',
-        '#console',
+        '#surfaces',
         '#ecosystems',
         '#apps',
         '#solutions',
         '#operations',
-        '<LandingProductEntryPaths',
-        '<LandingProductProofSection',
-        '<FireUXLandingConsolePreview',
+        '<FireUXLandingPricingStrip',
+        '<LandingOperationRail',
+        ':operations="catalogueOperations"',
+        '<FireUXLandingCardOrbit presentation="hero"',
+        '<FireUXLandingSurfaceShowcase',
         '<LandingEcosystems',
+        ':copy="projectConsoleCopy"',
+        ':operations="consoleOperations"',
         '<LandingAppCollection',
+        'title="FireUX\'s Apps"',
         '<LandingProductCatalogue',
         "import { fireuxOffer, metaContent } from '../../../meta'",
         'metaContent.operations',
         'metaContent.solutions',
         'solutionsCatalogue',
         'operationsCatalogue',
-        "sectionId: 'fireux-entry'",
-        "title: 'Need an App?'",
-        "kind: 'start'",
-        "kind: 'join'",
         "label: 'Get started'",
         "label: 'Go to console'",
         "to: '/get-started'",
         "to: '/console/project'",
-        "to: '/ecosystems'",
       ],
       forbidden: ['#specifics', '#tools', 'toolsCatalogue', "to: '/tools"],
     },
@@ -1758,7 +2111,7 @@ export async function run(ctx) {
 
     for (const [slotName, marker] of [
       ['onboarding', consumer.onboardingMarker],
-      ['console', '<LandingProductProofSection'],
+      ['surfaces', consumer.surfaceMarker],
       ['apps', '<LandingAppCollection'],
       ['solutions', '<LandingProductCatalogue'],
       ['operations', '<LandingProductCatalogue'],
@@ -1790,17 +2143,23 @@ export async function run(ctx) {
   for (const adapter of discoveredProductLandingAdapters) {
     if (
       /#hero-preview\b/.test(adapter.source) &&
-      adapter.filePath !== MISEBOX_ADAPTER_PATH
+      ![
+        MISEBOX_ADAPTER_PATH,
+        FIREUX_ADAPTER_PATH,
+        WERKBOX_ADAPTER_PATH,
+      ].includes(adapter.filePath)
     ) {
       violations.push(
-        `${adapter.filePath}: only Misebox currently owns an approved Main App hero preview`
+        `${adapter.filePath}: Main App hero preview has no approved product-owned presentation`
       )
     }
   }
 
   for (const [slotName, marker] of [
-    ['specifics', '<MiseboxLandingOrderingPreview'],
-    ['specifics', '<MiseboxLandingFinancePreview'],
+    ['surfaces', '<MiseboxLandingOrderingShowcase'],
+    ['specifics', '<LandingProductProofSection'],
+    ['operations', '<LandingProductCatalogue'],
+    ['solutions', '<LandingProductCatalogue'],
     ['tools', '<LandingProductCatalogue'],
   ]) {
     if (!slotContains(miseboxAdapter, slotName, marker)) {
@@ -1810,10 +2169,63 @@ export async function run(ctx) {
     }
   }
 
-  if (!slotContains(fireuxAdapter, 'ecosystems', '<LandingEcosystems')) {
+  if (
+    !slotContains(fireuxAdapter, 'surfaces', '<FireUXLandingSurfaceShowcase')
+  ) {
     violations.push(
-      `${FIREUX_ADAPTER_PATH}: optional ecosystems slot must own the FireUX ecosystem projection`
+      `${FIREUX_ADAPTER_PATH}: surfaces slot must own the FireUX Surface showcase`
     )
+  }
+
+  for (const required of [
+    'items.length > 1',
+    'LandingProductProofSection',
+    ':aria-label="selectorLabel"',
+    'selected.title',
+    'selected.description',
+    'selected.to',
+  ]) {
+    if (!productSurface.includes(required)) {
+      violations.push(
+        `${CORE_PRODUCT_SURFACE_PATH}: missing one-or-many surface contract (${required})`
+      )
+    }
+  }
+
+  for (const required of [
+    'class="fireux-surface-showcase"',
+    '<FireUXLandingConsolePreview',
+    'v-model:surface-id="selectedSurfaceId"',
+    ':operations="operations"',
+    '{{ copy.title }}',
+    '{{ copy.description }}',
+    '{{ copy.action }}',
+  ]) {
+    if (!fireuxSurfaceShowcase.includes(required)) {
+      violations.push(
+        `${FIREUX_SURFACE_SHOWCASE_PATH}: missing FireUX Surface showcase contract (${required})`
+      )
+    }
+  }
+
+  for (const forbidden of [
+    '>Surfaces</p>',
+    'fireux-surface-showcase__selector',
+    'aria-label="FireUX surfaces"',
+  ]) {
+    if (fireuxSurfaceShowcase.includes(forbidden)) {
+      violations.push(
+        `${FIREUX_SURFACE_SHOWCASE_PATH}: single-Surface presentation must not render selector chrome (${forbidden})`
+      )
+    }
+  }
+
+  for (const forbidden of ["id: 'project.ignition'", "slug: 'ignition'"]) {
+    if (fireuxMeta.includes(forbidden)) {
+      violations.push(
+        `${FIREUX_META_PATH}: Ignition is App intake with a private delivery workflow, not a Project Operation (${forbidden})`
+      )
+    }
   }
 
   for (const required of [
@@ -2178,17 +2590,54 @@ export async function run(ctx) {
 
   for (const required of [
     "'landing-product--full-hero': heroLayout === 'proof-wide'",
+    "'landing-product--immersive': presentation === 'immersive'",
+    "'landing-product--section-dwell': sectionDwell",
+    '--font-fireux-hero:',
+    '--font-weight-fireux-hero: 900',
+    'font-family: var(--font-fireux-hero)',
+    'font-weight: var(--font-weight-fireux-hero)',
     'width: 100dvw',
     'margin-inline: calc(50% - 50dvw)',
     "querySelectorAll<HTMLElement>('[data-landing-reveal]')",
-    "window.matchMedia('(prefers-reduced-motion: reduce)')",
+    "const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)'",
     'activeRevealObservers',
+    'useLandingMotion(landingRoot)',
+    "import('gsap')",
+    "import('gsap/ScrollTrigger')",
+    'gsap.registerPlugin(runtime.ScrollTrigger)',
+    'animateImmersiveChapters(root)',
+    "'[data-landing-motion-entity]'",
+    ':data-landing-motion-stage="region"',
+    'landing-product__region-dwell',
+    'landing-product__region-dwell-spacer',
+    '.landing-product--immersive.landing-product--section-dwell',
+    "querySelectorAll<HTMLElement>('[data-landing-pricing-detail]')",
+    "!element.classList.contains('landing-pricing-strip')",
+    "start: 'top 32%'",
+    "end: 'top 0px'",
+    "start: 'top 55%'",
+    "start: 'top -96px'",
+    "end: '+=24%'",
+    "'[data-fireux-header-root]'",
+    'yPercent: -110',
+    "end: '+=85%'",
+    'pinSpacing: false',
+    'pin: true',
+    "ease: 'power3.out'",
+    "classList.add('is-gsap-motion')",
+    'activeTweens.forEach((tween) => tween.kill())',
   ]) {
     if (!core.includes(required)) {
       violations.push(
         `${CORE_PATH}: missing mobile-first full-viewport hero seam (${required})`
       )
     }
+  }
+
+  if (!/"gsap"\s*:\s*"\^3\./.test(corePackage)) {
+    violations.push(
+      `${CORE_PACKAGE_PATH}: Core landing motion must own the GSAP dependency`
+    )
   }
 
   for (const forbidden of [
@@ -2289,30 +2738,25 @@ export async function run(ctx) {
   for (const required of [
     "'suppliers.misebox.app'",
     "'suppliers.localhost'",
-    "to.meta.layout = 'misebox-suppliers'",
-    "navigateTo('/suppliers'",
+    'navigateTo(`https://bringli.app${path}`',
+    'redirectCode: 308',
   ]) {
     if (!miseboxSuppliersMiddleware.includes(required)) {
       violations.push(
-        `${MISEBOX_SUPPLIERS_MIDDLEWARE_PATH}: missing focused Supplier doorway behavior (${required})`
+        `${MISEBOX_SUPPLIERS_MIDDLEWARE_PATH}: missing retired Supplier-host migration behavior (${required})`
       )
     }
   }
 
-  for (const required of [
-    'data-misebox-suppliers-layout',
-    '<LayoutsDefaultHeader',
-    '<LayoutsDefaultFooter',
+  for (const forbidden of [
+    "to.meta.layout = 'misebox-suppliers'",
+    "navigateTo('/suppliers'",
     'Misebox Suppliers',
-    'to="/suppliers"',
-    'to="/suppliers/learn-more"',
-    'to="/console/supplier"',
   ]) {
-    if (!miseboxSuppliersLayout.includes(required)) {
-      violations.push(
-        `${MISEBOX_SUPPLIERS_LAYOUT_PATH}: missing focused Supplier shell contract (${required})`
-      )
-    }
+    if (!miseboxSuppliersMiddleware.includes(forbidden)) continue
+    violations.push(
+      `${MISEBOX_SUPPLIERS_MIDDLEWARE_PATH}: retired Misebox Supplier product authority remains (${forbidden})`
+    )
   }
 
   if (violations.length) {

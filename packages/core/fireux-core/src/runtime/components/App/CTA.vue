@@ -19,7 +19,7 @@
           color="neutral"
           variant="soft"
           icon="i-lucide-badge-dollar-sign"
-          to="/pricing/apps"
+          to="/pricing/your-app"
         >
           View pricing
         </UButton>

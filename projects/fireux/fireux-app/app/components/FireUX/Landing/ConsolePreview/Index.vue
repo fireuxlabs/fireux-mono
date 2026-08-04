@@ -3,7 +3,7 @@
     :model-value="selectedSurfaceId"
     :items="operations"
     label="Interactive Project Console preview"
-    navigation-label="Project Operations"
+    navigation-label="Project Console"
     console-to="/console/project"
     open-console-aria-label="Open the full Project Console"
     @update:model-value="selectedSurfaceId = $event"
@@ -22,7 +22,9 @@
         v-else
         icon="i-lucide-folders"
         size="md"
-        :aria-label="productDemoError ? 'Demo Project unavailable' : 'Loading Demo Project'"
+        :aria-label="
+          productDemoError ? 'Demo Project unavailable' : 'Loading Demo Project'
+        "
       />
     </template>
 
@@ -66,19 +68,17 @@ const props = defineProps<{
 const selectedSurfaceId = defineModel<string>('surfaceId', {
   default: 'project.apps',
 })
-const {
-  data: productDemo,
-  error: productDemoError,
-} = await useFireuxProductDemo()
+const { data: productDemo, error: productDemoError } =
+  await useFireuxProductDemo()
 const { setProjectConsoleSelection } = useProjectConsoleSelection()
 
 const selectedSurface = computed(
   () =>
     props.operations.find(
-      operation => operation.id === selectedSurfaceId.value
-    )
-    ?? props.operations[0]
-    ?? null
+      (operation) => operation.id === selectedSurfaceId.value
+    ) ??
+    props.operations[0] ??
+    null
 )
 
 const projectPill = computed<ProjectInterfaceCard | null>(
@@ -86,15 +86,6 @@ const projectPill = computed<ProjectInterfaceCard | null>(
 )
 
 const privateState = computed(() => {
-  if (selectedSurface.value?.id === 'project.ignition') {
-    return {
-      title: 'Ignition requests stay private',
-      description:
-        'Open the authenticated Project Console to review requests and their launch checklists.',
-      icon: 'i-lucide-shield-check',
-    }
-  }
-
   if (selectedSurface.value?.id === 'project.users') {
     return {
       title: 'User activity stays private',

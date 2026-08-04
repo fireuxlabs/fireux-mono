@@ -1,4 +1,4 @@
-<!-- Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: add the private delivery operation to the FireUX Project Console. -->
+<!-- Ignition is FireUX App intake with a private app-admin delivery workflow; it is not a Project Operation. -->
 <template>
   <div class="flex min-h-full min-w-0 flex-1">
     <UDashboardPanel id="console-project-ignitions">

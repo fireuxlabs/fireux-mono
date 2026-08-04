@@ -4,7 +4,9 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: declare Misebox open self-membership policy.
 // Concurrent edit — 2026-07-22 12:41 CEST — Product Demo app pass: prerender the public Misebox demonstration family.
 // Concurrent edit — 2026-07-22 12:37 CEST — Shared Job spine alignment: make categories the only app-configured Job delta.
-// Focused Jobs and Supplier hostnames remain doorways over this single Misebox App authority.
+// The focused Jobs hostname remains a doorway over this Misebox App authority.
+// Supplier product ownership belongs to Bringli; Misebox consumes Supplier
+// projections only through its Kitchen sourcing operation.
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
 import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
 
@@ -20,9 +22,14 @@ const fireuxConfig = defineFireuxConfig({
   serverFunctionServiceAccount:
     'misebox-ssr@misebox-78f9c.iam.gserviceaccount.com',
   role: 'global',
+  pricing: {
+    consoleName: 'Kitchen Console',
+    free: ['Use one Kitchen workspace', 'Publish one Menu', 'Advertise permanent and temporary Jobs', 'Coordinate one active temporary Engagement'],
+    pro: ['Publish multiple Menus', 'Manage team access and permissions', 'Run preparation, stations, tables, and orders', 'Manage suppliers, costing, and Kitchen finance'],
+  },
   designPack: { preset: 'sci-fire' },
-  consoles: ['kitchen', 'supplier'],
-  domains: ['kitchens', 'suppliers', 'jobs', 'chefs', 'ingredients'],
+  consoles: ['kitchen'],
+  domains: ['kitchens', 'jobs', 'chefs', 'ingredients'],
   profiles: ['chef', 'professional', 'agent', 'customer', 'driver'],
   selfJoinEnabled: true,
   navHiddenKeys: ['products', 'blog'],
@@ -70,7 +77,7 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-go-qr',
     'fireux-kitchens',
     'fireux-sproochli',
-    'fireux-suppliers',
+    ['fireux-suppliers', { mode: 'consumer' }],
     [
       'fireux-jobs',
       {
@@ -90,6 +97,11 @@ const fireuxConfig = defineFireuxConfig({
 export default withFireuxNuxtConfig(fireuxConfig, {
   css: ['@/assets/styles/main.css'],
   runtimeConfig: {
+    supplierNetworkBaseUrl:
+      process.env.SUPPLIER_NETWORK_BASE_URL ||
+      (process.env.NODE_ENV === 'development'
+        ? 'http://localhost:3006'
+        : 'https://bringli.app'),
     public: {
       googleMapsApiKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY || '',
       googleMapsMapId: process.env.NUXT_PUBLIC_GOOGLE_MAPS_MAP_ID || '',

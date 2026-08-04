@@ -2,22 +2,13 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Supplier/Portfolio Authority Hardening: remove caller-selected Supplier root collection paths.
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: expose explicit App support creation results.
 // Concurrent edit — 2026-07-21 22:34 CEST — Supplier atomic onboarding: route live Console creation through the trusted transaction.
-import { collection, doc, getDoc } from 'firebase/firestore'
 import type {
   ConsoleCreateMode,
   ConsoleCreateResult,
   ConsoleRootCreateResult,
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
-import { useUserCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
-import { requireUid } from 'fireux-core/runtime/composables/fireux/firestore/utils/useEnsureCommon'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import {
-  SupplierStorage,
-  type Supplier,
-} from '../../../../../models/supplier/Supplier.model'
 import type { SupplierOnboardingCompleteResult } from '../../../../../models/supplier/supplier-onboarding.model'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
@@ -31,6 +22,7 @@ export type SupplierCreateOptions = {
 export type SupplierCreateModeOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
+  organizationName?: string | null
 }
 
 type SupplierTestCreateInput = {
@@ -45,11 +37,6 @@ export const SupplierCreatePlan = defineFireuxCreatePlan({
 })
 
 export function useSupplierCreate(options: SupplierCreateOptions = {}) {
-  const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
-  const { createUser } = useUserCreate()
-  const supplierCollection = SupplierStorage.rootCollection
-
   const requireCanonicalWriteSource = () => {
     if (options.test === true) {
       throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
@@ -62,67 +49,10 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     throw new Error(UNSUPPORTED_TEST_WRITE_MESSAGE)
   }
 
-  async function createSupplierRoot(
-    options: SupplierCreateModeOptions = {}
-  ): Promise<ConsoleRootCreateResult> {
-    requireCanonicalWriteSource()
-    await createUser()
-    await requireUid()
-    const requestedRootId = normalizeString(options.existingRootId)
-    const rootId = requestedRootId || doc(collection(db, supplierCollection)).id
-    const coreRef = doc(db, supplierCollection, rootId)
-    const coreSnap = await getDoc(coreRef)
-
-    if (coreSnap.exists()) {
-      return {
-        id: rootId,
-        created: false,
-      }
-    }
-
-    const payload: Omit<Supplier, 'id' | 'created' | 'updated'> = {
-      app_scope_state: 'root_only',
-      app_scope_app_id: '',
-      company_id: '',
-      slug: '',
-      supplier_organization_name: '',
-      tagline: '',
-      supplier_headline: '',
-      summary: '',
-      supplier_bio: '',
-      supplier_image: '',
-      supplier_item_categories: [] as string[],
-      supplier_delivery_areas: [] as string[],
-      state: 'public',
-      catalogue_state: 'public_only',
-      linked_ingredient_ids: [] as string[],
-      hello: '',
-    }
-
-    await setDocument(
-      supplierCollection,
-      rootId,
-      payload,
-      {
-        creator: true,
-      }
-    )
-
-    return {
-      id: rootId,
-      created: true,
-    }
-  }
-
   async function createSupplier(
     options: SupplierCreateModeOptions = {}
   ): Promise<ConsoleCreateResult> {
-    const root = await createSupplierRoot(options)
-    return {
-      id: root.id,
-      createdRoot: root.created,
-      createdAppSupport: false,
-    }
+    return createSupplierConsole(options)
   }
 
   async function createSupplierConsole(
@@ -130,6 +60,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
   ): Promise<ConsoleCreateResult> {
     requireCanonicalWriteSource()
     const supplierId = normalizeString(options.existingRootId)
+    const organizationName = normalizeString(options.organizationName)
     const user = await useRequireUser()
     const token = await user.getIdToken()
     const result = await $fetch<SupplierOnboardingCompleteResult>(
@@ -137,7 +68,9 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
       {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
-        body: supplierId ? { supplier_id: supplierId } : {},
+        body: supplierId
+          ? { supplier_id: supplierId }
+          : { organization_name: organizationName },
       }
     )
     if (result?.ok !== true || !normalizeString(result.supplier_id)) {

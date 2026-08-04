@@ -60,18 +60,12 @@ export default defineNuxtModule<ModuleOptions>({
       ctx.addStaticPath('/kitchens/learn-more/dev')
       ctx.addStaticPath('/chefs/learn-more')
     })
-    nuxt.hook('fireux:seo:sitemaps:extend' as any, (ctx: FireuxSeoSitemapsExtendContext) => {
-      ctx.addEntity({
-        entityKey: 'kitchens',
-        canonicalCollectionPath: 'kitchens',
-        routePrefix: '/kitchens',
-        slugField: 'slug',
-        publicField: 'visibility.show',
-        publicValue: true,
-        pageSize: 5000,
-        updatedAtField: 'updatedAt',
-      })
-    })
+    nuxt.hook(
+      'fireux:seo:sitemaps:extend' as any,
+      (ctx: FireuxSeoSitemapsExtendContext) => {
+        ctx.addDocument('/sitemaps/kitchens.xml')
+      }
+    )
 
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>

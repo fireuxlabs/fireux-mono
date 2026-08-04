@@ -1,33 +1,33 @@
 <template>
   <UPage>
-    <UPageHeader
-      title="Learn More: Supplier"
-      description="Introduce your supplier items to kitchens and venues that need them."
+      <UPageHeader
+      title="Misebox for suppliers"
+      description="Keep one Supplier identity and work from the catalogue, item, ingredient and team records it owns."
     />
 
     <UPageBody class="pagebody">
       <p>
-        A supplier workspace helps connect your business with chefs, kitchens,
-        and hospitality teams looking for trusted partners. It gives you a
-        clear business presence to showcase what you provide.
+        A Supplier Console is the working home for a supplier in Misebox. The
+        Supplier owns its identity and the records that describe what it can
+        supply. Apps and marketplaces can later publish selected Supplier
+        records without copying that authority.
       </p>
 
       <div>
         <h2 class="font-semibold">With a supplier workspace you can:</h2>
         <ul class="mt-2 list-disc space-y-1 pl-6">
           <li>
-            Highlight your product range or services to the right audience.
+            Maintain one public Supplier identity.
           </li>
-          <li>Connect with decision makers inside FireUX apps.</li>
-          <li>Earn trust by maintaining a consistent business identity.</li>
-          <li>Increase visibility as the supplier network expands.</li>
+          <li>Work with Supplier items, catalogues and linked ingredients.</li>
+          <li>Control Supplier Console access for your team.</li>
+          <li>Keep marketplace publication separate from Supplier ownership.</li>
         </ul>
       </div>
 
-      <p>
-        Future releases will bring catalogue tools, ordering workflows, and more
-        ways to collaborate with the teams that rely on your supply chain.
-      </p>
+      <UButton to="/suppliers/create" icon="i-lucide-arrow-right">
+        Create your Supplier Console
+      </UButton>
     </UPageBody>
   </UPage>
 </template>

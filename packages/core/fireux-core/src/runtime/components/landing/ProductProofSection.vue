@@ -18,7 +18,7 @@
       class="landing-product-proof__copy"
       :data-landing-reveal="reverse ? 'left' : 'right'"
     >
-      <p class="fx-type-headline">{{ eyebrow }}</p>
+      <p v-if="eyebrow" class="fx-type-headline">{{ eyebrow }}</p>
       <h2
         :id="sectionId"
         class="fx-type-section-display"
@@ -38,7 +38,7 @@
         v-if="items?.length"
         class="landing-product-proof__items"
         :class="{ 'text-base sm:text-lg': copyEmphasis }"
-        :aria-label="`${eyebrow} includes`"
+        :aria-label="`${eyebrow || title} includes`"
       >
         <li v-for="item in items" :key="item">
           <UIcon name="i-lucide-check" aria-hidden="true" />
@@ -67,7 +67,7 @@ import type { LandingProductAction } from '../../../types/landing-product'
 withDefaults(
   defineProps<{
     sectionId: string
-    eyebrow: string
+    eyebrow?: string
     title: string
     description?: string
     supporting?: string

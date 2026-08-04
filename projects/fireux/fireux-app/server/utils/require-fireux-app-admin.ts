@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-22 12:38 CEST — Ignition delivery pass: protect app-owned intake operations with canonical App membership authority.
+// Protect the App-owned Ignition intake workflow with canonical App membership authority.
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model.ts'

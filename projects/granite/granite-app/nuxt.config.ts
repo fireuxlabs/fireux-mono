@@ -12,6 +12,11 @@ const fireuxConfig = defineFireuxConfig({
   shortName: 'Granite',
   brand: { owner: 'app', status: 'provisional' },
   role: 'global',
+  pricing: {
+    consoleName: 'Portfolio Console',
+    free: ['Use one Portfolio workspace', 'Record properties and clients', 'Use the Portfolio Console', 'Review the current portfolio structure'],
+    pro: ['Manage portfolios, properties, and clients', 'Track compliance, incidents, documents, and tasks', 'Review portfolio financial signals', 'Give the portfolio team Console access'],
+  },
   consoles: ['portfolio'],
   domains: ['properties', 'portfolios'],
   modules: [

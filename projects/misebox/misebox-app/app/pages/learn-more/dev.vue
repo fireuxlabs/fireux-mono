@@ -33,16 +33,16 @@
           </template>
           <div class="space-y-2 text-sm">
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/users</p>
-              <p class="text-dimmed">User access model for ecosystem onboarding.</p>
+              <p class="font-mono">GET /pricing/free</p>
+              <p class="text-dimmed">Functional Kitchen Console access.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/apps</p>
-              <p class="text-dimmed">App operating model for ecosystem buyers.</p>
+              <p class="font-mono">GET /pricing/your-app</p>
+              <p class="text-dimmed">Branded Misebox App setup and monthly plan.</p>
             </div>
             <div class="fx-inset-panel">
-              <p class="font-mono">GET /pricing/partners</p>
-              <p class="text-dimmed">Partner economics and operator path.</p>
+              <p class="font-mono">GET /pricing/managed</p>
+              <p class="text-dimmed">Managed product and assistance.</p>
             </div>
           </div>
         </UCard>

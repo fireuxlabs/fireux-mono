@@ -104,7 +104,7 @@
                     variant="ghost"
                     icon="i-lucide-external-link"
                   >
-                    Open public job
+                    Open job
                   </UButton>
                 </div>
               </div>

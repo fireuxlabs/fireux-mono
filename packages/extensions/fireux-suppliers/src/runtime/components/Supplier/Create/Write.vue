@@ -1,17 +1,33 @@
 <template>
   <div class="space-y-6">
+    <UFormField
+      v-if="isConsoleMode && !create"
+      label="Organization name"
+      description="This becomes the Supplier identity and public web address."
+      required
+    >
+      <UInput
+        v-model="organizationName"
+        class="w-full"
+        autocomplete="organization"
+        minlength="2"
+        maxlength="120"
+        placeholder="For example, Imkerei Familie Thöni"
+      />
+    </UFormField>
+
     <ul class="grid gap-3">
       <li class="flex items-center gap-3 text-sm text-dimmed">
         <UIcon name="i-lucide-badge-check" />
-        <span>Listed in the FireUX directory</span>
+        <span>Create one canonical Supplier identity</span>
       </li>
       <li class="flex items-center gap-3 text-sm text-dimmed">
         <UIcon name="i-lucide-briefcase" />
-        <span>Add categories, coverage, and supplier details</span>
+        <span>Manage identity, categories, and delivery areas</span>
       </li>
       <li class="flex items-center gap-3 text-sm text-dimmed">
         <UIcon name="i-lucide-sparkles" />
-        <span>Receive invites from chefs and teams</span>
+        <span>Open Supplier Items, Ingredients, Catalogue, and Team</span>
       </li>
     </ul>
 
@@ -25,7 +41,7 @@
           :disabled="isCreating"
           @click="handleCreate"
         >
-          {{ isCreating ? 'Creating…' : 'Create supplier' }}
+          {{ isCreating ? 'Creating…' : 'Create Supplier Console' }}
         </UButton>
         <UButton
           v-if="cancelTo"
@@ -70,12 +86,17 @@ const { setSupplierConsoleSelection } = useSupplierConsoleSelection()
 
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
+const organizationName = ref('')
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
 const resolvedMode = computed<ConsoleCreateMode>(() => props.mode ?? 'console')
 const isConsoleMode = computed(() => resolvedMode.value === 'console')
 
 const handleCreate = async () => {
   if (isCreating.value) return
+  if (isConsoleMode.value && !props.create && organizationName.value.trim().length < 2) {
+    errorMessage.value = 'Enter the supplier organization name.'
+    return
+  }
 
   const create = props.create ?? (
     isConsoleMode.value ? createSupplierConsole : createSupplier
@@ -84,7 +105,11 @@ const handleCreate = async () => {
   errorMessage.value = null
 
   try {
-    const result = await create()
+    const result = props.create
+      ? await create()
+      : isConsoleMode.value
+        ? await createSupplierConsole({ organizationName: organizationName.value })
+        : await createSupplier()
     if (isConsoleMode.value) {
       setSupplierConsoleSelection({ supplierId: result.id })
     }

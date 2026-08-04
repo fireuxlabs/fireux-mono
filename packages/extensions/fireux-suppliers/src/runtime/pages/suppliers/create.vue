@@ -2,12 +2,16 @@
   <UPage>
     <UPageHeader
       class="pageheader"
-      title="Create Supplier"
-      description="Create the public supplier record. Console setup happens separately."
+      title="Create your Supplier Console"
+      description="Create one Supplier identity, its Misebox access, and your first Console target together."
     />
 
     <UPageBody class="pagebody">
-      <SupplierCreateSystem mode="public" />
+      <SupplierCreateSystem
+        mode="console"
+        return-to="/console/supplier"
+        cancel-to="/suppliers"
+      />
     </UPageBody>
   </UPage>
 </template>
@@ -19,8 +23,8 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 definePageMeta({
   layout: 'default',
   requiresAuth: true,
-  title: 'Create Supplier',
-  description: 'Create the public supplier record.',
+  title: 'Create Supplier Console',
+  description: 'Create a Supplier identity and Console access together.',
   nav: {
     key: 'suppliers-create',
     label: 'Create supplier',
@@ -34,5 +38,5 @@ definePageMeta({
 })
 
 const { appName } = useFireUXConfig()
-useHead({ title: `${appName} | Create Supplier` })
+useHead({ title: `${appName} | Create Supplier Console` })
 </script>

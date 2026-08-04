@@ -35,6 +35,7 @@
         <div
           v-if="item.id === 'app-cell' && appCellCard"
           class="fireux-card-orbit__card fireux-card-orbit__card--cell"
+          data-landing-motion-entity="app"
         >
           <AppCardsCell v-bind="appCellCard" :link="false" />
         </div>
@@ -42,6 +43,7 @@
         <div
           v-else-if="item.id === 'ecosystem-pill' && ecosystemPillCard"
           class="fireux-card-orbit__card fireux-card-orbit__card--pill"
+          data-landing-motion-entity="ecosystem"
         >
           <EcosystemCardsPill v-bind="ecosystemPillCard" :link="false" />
         </div>
@@ -49,6 +51,7 @@
         <div
           v-else-if="item.id === 'app-preview' && appPreviewCard"
           class="fireux-card-orbit__card fireux-card-orbit__card--preview"
+          data-landing-motion-entity="app"
         >
           <AppCardsPreview v-bind="appPreviewCard" />
         </div>
@@ -56,6 +59,7 @@
         <div
           v-else-if="item.id === 'ecosystem-cell' && ecosystemCellCard"
           class="fireux-card-orbit__card fireux-card-orbit__card--cell"
+          data-landing-motion-entity="ecosystem"
         >
           <EcosystemCardsCell v-bind="ecosystemCellCard" :link="false" />
         </div>
@@ -63,6 +67,7 @@
         <div
           v-else-if="item.id === 'app-pill' && appPillCard"
           class="fireux-card-orbit__card fireux-card-orbit__card--pill"
+          data-landing-motion-entity="app"
         >
           <AppCardsPill v-bind="appPillCard" :link="false" />
         </div>
@@ -70,6 +75,7 @@
         <div
           v-else-if="item.id === 'ecosystem-preview' && ecosystemPreviewCard"
           class="fireux-card-orbit__card fireux-card-orbit__card--preview"
+          data-landing-motion-entity="ecosystem"
         >
           <EcosystemCardsPreview :item="ecosystemPreviewCard" />
         </div>
@@ -275,6 +281,11 @@ const orbitItems = computed<LandingCardOrbitItem[]>(() => {
   border-block: 0;
 }
 
+.fireux-card-orbit--hero :deep(.landing-card-orbit) {
+  min-height: 31rem;
+  overflow: visible;
+}
+
 .fireux-card-orbit__heading {
   display: grid;
   max-width: 42rem;
@@ -313,5 +324,11 @@ const orbitItems = computed<LandingCardOrbitItem[]>(() => {
   display: flex;
   flex-wrap: wrap;
   gap: calc(var(--spacing) * 2);
+}
+
+@media (min-width: 48rem) {
+  .fireux-card-orbit--hero :deep(.landing-card-orbit) {
+    min-height: 48rem;
+  }
 }
 </style>
