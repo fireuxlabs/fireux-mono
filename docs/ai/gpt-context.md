@@ -187,13 +187,13 @@ Before each task:
   domain policy such as Kitchen currency display remains with its extension.
   Do not recreate a generic `supporting` bucket, a Firestore Module model, or
   an App-only utility model beside the canonical App.
-- Source organization does not hide stored-data debt. `User.app_ids`,
-  `User.profiles`, `AppUser.profiles`, `AppUser.console_enabled`,
-  `App.derived.user_count`, and App build/database metadata are projections or
-  migration candidates, not competing identity. Remove them only through a
-  bounded migration that changes writers, readers, Rules, guards, and stored
-  records together. Use `docs/concepts/core-models.md` as the ownership and
-  migration map for this trio.
+- Source organization does not hide stored-data debt. The 2026-08-05 bounded
+  migration removed duplicated User/AppUser App/profile/capability indexes
+  across current databases. Membership documents determine App access,
+  profile documents determine profile state, and server-owned Console target
+  ids live at `users/{uid}/private/targets`. `App.derived.user_count` and App
+  build/database metadata remain migration candidates. Use
+  `docs/concepts/core-models.md` as the ownership and migration map.
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.
@@ -401,15 +401,15 @@ Before each task:
   `onboarding_status` remains `pending | completed | skipped`. The shared
   `user-app-access` resolver derives `dev > admin > premium > free` only for a
   valid membership; Dev never manufactures Admin authority, while Dev and Admin
-  inherit Premium product capability. Empty `profiles` indexes are omitted at
-  rest and normalized on read. AppUser never duplicates Console entity
+  inherit Premium product capability. Profile documents, not User/AppUser
+  arrays, are profile authority. AppUser never duplicates Console entity
   ownership or access; each entity family's App-support records are that
   authority.
 - Public User list and detail projections remain canonical-identity DTOs. On a
   tenant runtime, candidate visibility comes only from exact valid
   `apps/{appId}/users/{uid}` memberships before root User hydration; a guessed
-  global handle and the denormalized root `app_ids` field never establish
-  tenant visibility. Global runtimes retain the ecosystem-wide User catalogue.
+  global handle never establishes tenant visibility. Global runtimes retain
+  the ecosystem-wide User catalogue.
 - A family core owns the authoritative target items, outcome, and selection
   validity. Index and overview adapters consume that state; they do not create
   a second membership or target-outcome authority.
@@ -744,10 +744,11 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
 ## Firebase project directory
 
 - Every Firebase project's `(default)` database owns that Firebase project's
-  bounded local `project/{projectId}` record plus its locally hosted
-  `ecosystems/{ecosystemId}` and `apps/{appId}` directory projections. The
-  local Project collection is singular because a Firebase project has one
-  local Project record; Ecosystems and Apps remain plural.
+  bounded local `project/{projectId}` ProjectMeta projection,
+  `ecosystem/{ecosystemId}` EcosystemMeta projection, and its locally hosted
+  `apps/{appId}` AppMeta projections. Project and Ecosystem collections are
+  singular because this directory describes the one local Firebase project and
+  its owning ecosystem; Apps remain plural.
 - The directory lists only Projects, Ecosystems, and Apps hosted by that
   Firebase project. A global Console aggregates project directories through a
   trusted server boundary; one project never stores another project's copy.
@@ -757,7 +758,15 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   named database.
 - A named database may retain its canonical `apps/{appId}` record because App
   membership and operational authority live beneath it. The matching default
-  record is a bounded directory projection, not competing App identity.
+  `AppMeta` record is a bounded directory projection, not competing App
+  identity. `AppMeta` contains only local ownership, database routing, role,
+  status, public presentation, assets, and Console-family discovery. It never
+  contains memberships, User ids, counts, moderation state, repository paths,
+  build state, or operational content.
+- Every production `standalone` App selects a dedicated named database in each
+  Firebase project that hosts its local outputs. Global and tenant Apps use
+  their ecosystem's named database. A development harness must be classified
+  explicitly and never weakens the standalone database rule.
 
 ## Privacy-first measurement
 

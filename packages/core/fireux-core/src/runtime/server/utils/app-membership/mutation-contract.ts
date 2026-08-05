@@ -56,11 +56,6 @@ export function normalizeMembershipStringList(value: unknown, max = 500) {
   return [...new Set(values)]
 }
 
-export function membershipCount(data: DocumentData) {
-  const count = Number(data?.derived?.user_count)
-  return Number.isSafeInteger(count) && count >= 0 ? count : 0
-}
-
 export function stamp(actorUid: string) {
   return {
     at: FieldValue.serverTimestamp(),
@@ -76,7 +71,6 @@ export function initialMembership(
   return {
     role,
     is_premium: false,
-    console_enabled: role === 'admin',
     onboarding_status: 'pending',
     created: {
       at: FieldValue.serverTimestamp(),
@@ -90,7 +84,6 @@ export function initialMembership(
 export function membershipRepairPatch(data: DocumentData, actorUid: string) {
   const patch: Record<string, unknown> = {}
   if (typeof data.is_premium !== 'boolean') patch.is_premium = false
-  if (typeof data.console_enabled !== 'boolean') patch.console_enabled = false
   if (
     data.onboarding_status !== 'pending' &&
     data.onboarding_status !== 'completed' &&
@@ -98,9 +91,8 @@ export function membershipRepairPatch(data: DocumentData, actorUid: string) {
   ) {
     patch.onboarding_status = 'pending'
   }
-  if ('profiles' in data && !Array.isArray(data.profiles)) {
-    patch.profiles = FieldValue.delete()
-  }
+  if ('console_enabled' in data) patch.console_enabled = FieldValue.delete()
+  if ('profiles' in data) patch.profiles = FieldValue.delete()
   if ('notifications' in data) patch.notifications = FieldValue.delete()
 
   if ('console_targets' in data) patch.console_targets = FieldValue.delete()
@@ -158,17 +150,14 @@ export function updateIdentityMirror(
   actorUid: string,
   mode: Exclude<MirrorMode, null>
 ) {
-  transaction.set(
-    userRef,
-    {
-      app_ids:
-        mode === 'add'
-          ? FieldValue.arrayUnion(appId)
-          : FieldValue.arrayRemove(appId),
-      updated: stamp(actorUid),
-    },
-    { merge: true }
-  )
+  // Membership documents are the authority. Canonical User records do not
+  // mirror App ids; retained arguments keep older mutation branches source-
+  // compatible while callers are progressively simplified.
+  void transaction
+  void userRef
+  void appId
+  void actorUid
+  void mode
 }
 
 export function appGovernancePatch(
@@ -182,12 +171,8 @@ export function appGovernancePatch(
     updated: stamp(actorUid),
   }
 
-  if (options.countDelta) {
-    patch['derived.user_count'] = Math.max(
-      0,
-      membershipCount(appData) + options.countDelta
-    )
-  }
+  void appData
+  void options
 
   return patch
 }

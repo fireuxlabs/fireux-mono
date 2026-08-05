@@ -7,7 +7,6 @@ import {
   type H3Event,
 } from 'h3'
 import {
-  asStringArray,
   asBoundedTrimmedString,
   asTrimmedString,
   buildPublicPath,
@@ -52,8 +51,6 @@ function mapUserDocToDto(
     displayName,
     bio,
     avatar,
-    apps: asStringArray(data.app_ids),
-    profiles: asStringArray(data.profiles),
     title: displayName,
     description: resolvePublicDescription(
       bio,

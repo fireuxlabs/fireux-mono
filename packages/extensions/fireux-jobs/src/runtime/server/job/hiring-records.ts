@@ -22,6 +22,7 @@ import {
   type JobManagementMode,
 } from '../../models/job.model.ts'
 import { AppProfessionalStorage } from '../../models/profiles/Professional/Professional.model.ts'
+import { AppAgentStorage } from '../../models/profiles/Agent/Agent.model.ts'
 import { canonicalJobRoot } from './validation.ts'
 
 export const APPLICATION_LIMIT = 100
@@ -80,18 +81,23 @@ export function appProfessionalRef(
   return db.doc(`apps/${appId}/${AppProfessionalStorage.collection}/${uid}`)
 }
 
+export function appAgentRef(
+  db: FirebaseFirestore.Firestore,
+  appId: string,
+  uid: string
+) {
+  return db.doc(`apps/${appId}/${AppAgentStorage.collection}/${uid}`)
+}
+
 export function isCurrentMembership(snapshot: DocumentSnapshot): boolean {
   if (!snapshot.exists) return false
   return ['user', 'admin'].includes(text(snapshot.data()?.role))
 }
 
 export function hasProfile(
-  snapshot: DocumentSnapshot,
-  profileId: string
+  snapshot: DocumentSnapshot
 ): boolean {
-  if (!isCurrentMembership(snapshot)) return false
-  const profiles = snapshot.data()?.profiles
-  return Array.isArray(profiles) && profiles.map(text).includes(profileId)
+  return snapshot.exists
 }
 
 export function assertCurrentAppMembership(

@@ -134,12 +134,6 @@ function isCurrentMembership(snapshot: DocumentSnapshot): boolean {
   return role === 'user' || role === 'admin'
 }
 
-function hasProfile(snapshot: DocumentSnapshot, profileId: string): boolean {
-  if (!isCurrentMembership(snapshot)) return false
-  const profiles = snapshot.data()?.profiles
-  return Array.isArray(profiles) && profiles.map(text).includes(profileId)
-}
-
 export function membershipRef(
   db: FirebaseFirestore.Firestore,
   appId: string,
@@ -187,7 +181,7 @@ export function assertActiveAgent(
   appAgentSnapshot: DocumentSnapshot
 ): void {
   if (
-    !hasProfile(membershipSnapshot, 'agent') ||
+    !isCurrentMembership(membershipSnapshot) ||
     !appAgentSnapshot.exists
   ) {
     throw createError({

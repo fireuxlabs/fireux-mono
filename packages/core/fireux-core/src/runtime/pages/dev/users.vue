@@ -135,8 +135,6 @@ const users = computed<User[]>(() => {
     bio: user.bio,
     avatar: user.avatar,
     handle: user.handle,
-    app_ids: user.apps,
-    profiles: user.profiles,
   } as User))
 })
 const usersError = publicUsers.error

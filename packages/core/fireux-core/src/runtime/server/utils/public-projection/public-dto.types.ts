@@ -27,8 +27,6 @@ export type PublicUserDto = PublicSeoDto & {
   displayName: string
   bio: string
   avatar: string
-  apps: string[]
-  profiles: string[]
 }
 
 export type PublicUserIdentityDto = {

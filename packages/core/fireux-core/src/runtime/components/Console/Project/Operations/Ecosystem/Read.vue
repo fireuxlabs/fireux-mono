@@ -98,7 +98,7 @@ const ecosystemCollection = computed<EcosystemInterfaceInput[]>(() => {
     href: value.id ? `/ecosystems/${encodeURIComponent(value.id)}` : '',
     src: value.image_url,
     text: value.name,
-    key: value.slug,
+    key: value.id,
   }))
 })
 const { cell } = useEcosystemInterface()

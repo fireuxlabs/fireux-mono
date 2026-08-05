@@ -24,7 +24,6 @@ export const fireuxDemoProject: Project = {
   ...ProjectModel,
   id: 'fireux-demo-project',
   name: 'FireUX Demo Project',
-  slug: 'fireux-demo-project',
   description: 'A deterministic read-only control-plane project.',
   status: 'active',
   created: projectDemoCreated,

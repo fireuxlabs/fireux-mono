@@ -5,8 +5,6 @@ import {
 } from '../../../../../../models/core/app.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { normalizeString } from '../../../../../../utils/string'
-import { normalizeSlug } from '../../../../../../utils/slug/normalizeSlug'
-import { validateSlugFormat } from '../../../../../../utils/slug/validateSlugFormat'
 import { useFirestore } from '../../../vuefire'
 import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
@@ -41,20 +39,9 @@ export function useAppCreate(options: AppCreateOptions = {}) {
     const fireux = useFireUXConfig()
     const payload = input ?? buildAppEnsureCreateInput(fireux)
     const resolvedId = normalizeString(payload?.id)
-    const slug = normalizeSlug(payload?.slug)
-    const slugFormat = validateSlugFormat(slug, {
-      required: true,
-      minLength: 3,
-      maxLength: 80,
-      label: 'App slug',
-    })
 
     if (!resolvedId) {
       throw new Error('App id is required')
-    }
-
-    if (!slugFormat.isValid) {
-      throw new Error(slugFormat.message || 'Invalid app slug')
     }
 
     if (!input) {
@@ -78,12 +65,7 @@ export function useAppCreate(options: AppCreateOptions = {}) {
       return { created: false, id: resolvedId }
     }
 
-    const createPayload = {
-      ...payload,
-      slug,
-    }
-
-    await setDocument(collectionPath, resolvedId, createPayload, {
+    await setDocument(collectionPath, resolvedId, payload, {
       creator: true,
     })
 

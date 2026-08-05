@@ -146,7 +146,6 @@ async function mutateInTransaction(
         transaction.update(actorMembershipRef, {
           ...membershipRepairPatch(actorMembership ?? {}, actorUid),
           role: 'admin',
-          console_enabled: true,
           updated: stamp(actorUid),
         })
       }
@@ -297,25 +296,6 @@ export async function mutateRuntimeAppMembership(
     sameDatabase,
     crossDatabaseUserVerified
   )
-
-  if (!sameDatabase && outcome.identityMirror) {
-    const userRef = identityDb
-      .collection(UserStorage.collection)
-      .doc(outcome.userId)
-    const userSnapshot = await userRef.get()
-    if (userSnapshot.exists) {
-      await userRef.set(
-        {
-          app_ids:
-            outcome.identityMirror === 'add'
-              ? FieldValue.arrayUnion(context.appId)
-              : FieldValue.arrayRemove(context.appId),
-          updated: stamp(context.actorUid),
-        },
-        { merge: true }
-      )
-    }
-  }
 
   const { identityMirror: _identityMirror, ...result } = outcome
   return result

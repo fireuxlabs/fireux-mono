@@ -13,16 +13,6 @@
 
     <div class="section__item">
       <MoleculesFormsFirestoreSimpleField
-        label="Tagline"
-        :maxlength="120"
-        :firebase-value="app.tagline"
-        placeholder="A short one-liner for cards and lists"
-        :update-function="handleTaglineUpdate"
-      />
-    </div>
-
-    <div class="section__item">
-      <MoleculesFormsFirestoreSimpleField
         label="Description"
         type="textarea"
         :rows="3"
@@ -33,29 +23,6 @@
       />
     </div>
 
-    <div class="section__item">
-      <MoleculesFormsFirestoreSimpleField
-        label="Short bio"
-        type="textarea"
-        :rows="2"
-        :maxlength="240"
-        :firebase-value="app.short_bio"
-        placeholder="Short bio used on compact surfaces"
-        :update-function="handleShortBioUpdate"
-      />
-    </div>
-
-    <div class="section__item">
-      <MoleculesFormsFirestoreSimpleField
-        label="Long bio"
-        type="textarea"
-        :rows="6"
-        :maxlength="4000"
-        :firebase-value="app.long_bio"
-        placeholder="Long bio for profile pages"
-        :update-function="handleLongBioUpdate"
-      />
-    </div>
   </UCard>
 </template>
 
@@ -64,9 +31,6 @@ import type { AppModel } from '../../../../models/core/app.model';
 
 defineProps<{
   app: AppModel
-  handleTaglineUpdate: (value: string) => Promise<unknown>
   handleDescriptionUpdate: (value: string) => Promise<unknown>
-  handleShortBioUpdate: (value: string) => Promise<unknown>
-  handleLongBioUpdate: (value: string) => Promise<unknown>
 }>()
 </script>

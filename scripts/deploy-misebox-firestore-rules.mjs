@@ -1433,7 +1433,6 @@ async function buildSecurityTests() {
   const sparseMembershipProbeData = {
     role: 'user',
     is_premium: false,
-    console_enabled: false,
     onboarding_status: 'pending',
     created: {
       at: writeTime,
@@ -3239,8 +3238,6 @@ async function buildSecurityTests() {
         display_name: 'Attacker',
         avatar: '/img/ecosystem/avatar.png',
         handle: 'security-rules-attacker',
-        app_ids: [],
-        profiles: [],
         created: {},
         updated: {},
       }
@@ -3640,6 +3637,11 @@ function canonicalUserMocks(userId, path, documentsByPath) {
       function: 'get',
       args: [{ exactValue: rulesPath }],
       result: { value: firestoreRulesResource(document) },
+    },
+    {
+      function: 'exists',
+      args: [{ exactValue: path(`drivers/${userId}`) }],
+      result: { value: documentsByPath.has(`drivers/${userId}`) },
     },
   ]
 }

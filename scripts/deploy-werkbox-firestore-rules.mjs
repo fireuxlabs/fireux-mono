@@ -599,8 +599,6 @@ function buildSecurityTests(databaseId) {
     display_name: 'Rules Owner',
     avatar: 'https://example.invalid/avatar.png',
     handle: 'rules-owner',
-    app_ids: ['cleanbox-app'],
-    profiles: ['agent', 'professional'],
     created: created(),
     updated: updated(),
   }
@@ -657,15 +655,12 @@ function buildSecurityTests(databaseId) {
   const membership = (role = 'user', appId = 'cleanbox-app') => ({
     role,
     is_premium: false,
-    console_enabled: false,
-    profiles: ['agent', 'professional'],
     created: created('migration-admin', appId),
     updated: updated('migration-admin'),
   })
   const sparseMembership = {
     role: 'user',
     is_premium: false,
-    console_enabled: false,
     onboarding_status: 'pending',
     created: created('migration-admin', 'cleanbox-app'),
     updated: updated('migration-admin'),

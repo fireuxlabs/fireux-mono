@@ -629,6 +629,7 @@ export const APP_REGISTRY = {
     ecosystem: 'fireux',
     databaseId: 'fireux',
     role: 'standalone',
+    provisioning: 'harness',
     workspace: './projects/fireux/fireux-blank',
     port: 3015,
     consoles: ['blank'],

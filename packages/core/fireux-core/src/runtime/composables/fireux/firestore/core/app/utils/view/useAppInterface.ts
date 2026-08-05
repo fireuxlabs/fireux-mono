@@ -75,12 +75,8 @@ function safeMedia(app: AppViewSource) {
   )
 }
 
-function safeDerived(app: AppViewSource) {
-  return app.derived ?? { user_count: 0 }
-}
-
 function makeAvatarText(app: AppViewSource): string {
-  const source = safeString(app.app_short_name || app.app_name || app.id)
+  const source = safeString(app.short_name || app.name || app.id)
   if (!source) return ''
 
   return source
@@ -128,7 +124,6 @@ export function useAppInterface(
     const media = resolveAppMediaForView(safeMedia(app), {
       devLocalFallback: false,
     })
-    const derived = safeDerived(app)
     const id = safeString(app.id).trim()
     const ecosystemId = safeString(app.ecosystem_id || app.ecosystem)
 
@@ -143,28 +138,27 @@ export function useAppInterface(
       avatarText: makeAvatarText(app),
       thumbnailUrl: safeString(media.thumbnailUrl),
 
-      title: safeString(app.app_name),
-      subtitle: safeString(app.tagline) || ecosystemId,
-      displayName: safeString(app.app_name),
+      title: safeString(app.name),
+      subtitle: ecosystemId,
+      displayName: safeString(app.name),
       ecosystem: ecosystemId,
       badges: [app.role, ecosystemId]
         .map((value) => safeString(value))
         .filter(Boolean),
 
-      summary: safeString(app.short_bio) || safeString(app.description),
+      summary: safeString(app.description),
       status: app.role != null ? String(app.role) : '',
       ownerLabel: '',
       locationLabel: '',
 
-      tagline: safeString(app.tagline),
-      shortName: safeString(app.app_short_name),
+      tagline: '',
+      shortName: safeString(app.short_name),
       role: app.role != null ? String(app.role) : '',
-      userCount:
-        typeof derived.user_count === 'number' ? derived.user_count : 0,
+      userCount: 0,
 
       description: safeString(app.description),
-      shortBio: safeString(app.short_bio),
-      longBio: safeString(app.long_bio),
+      shortBio: safeString(app.description),
+      longBio: safeString(app.description),
 
       logoUrl: safeString(media.logoUrl),
       wordmarkLightUrl: safeString(media.wordmarkLightUrl),
@@ -172,7 +166,7 @@ export function useAppInterface(
       coverUrl: safeString(media.coverUrl),
       wordmarkUrl: resolveWordmarkUrl(app),
 
-      socialLinks: (app.social_links ?? {}) as AppSocialLinks,
+      socialLinks: {} as AppSocialLinks,
     }
   }
 

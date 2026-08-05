@@ -50,7 +50,6 @@ export async function handleMembershipSettings(
   
     transaction.update(targetMembershipRef, {
       role,
-      ...(role === 'admin' ? { console_enabled: true } : {}),
       updated: stamp(actorUid),
     })
     return {

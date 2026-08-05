@@ -103,6 +103,11 @@ Explain the repo as a workspace so agents do not rediscover the skeleton.
   yes/no flag; it may not silently skip or mutate remote Auth configuration.
 - Add the app to `scripts/_lib/app-registry.mjs` with its unique port,
   workspace, identity, role, consoles, and focused smoke routes.
+- Resolve data ownership before generating product code: global and tenant
+  Apps inherit the ecosystem database; every production standalone App gets a
+  dedicated named database. Provision `(default)/apps/{appId}` AppMeta and the
+  canonical named-database `apps/{appId}` record through the same creation
+  workflow. A folder alone is never a completed App.
 - Run `pnpm sync:dev-workspace`; do not hand-maintain the generated root
   dev/kill scripts, `.vscode/tasks.json`, `.vscode/launch.json`, or
   `tools/vscode-fireux-toolbar/apps.js`. Add an optional presentation entry

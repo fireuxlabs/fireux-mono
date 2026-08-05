@@ -152,11 +152,11 @@
     // Canonical User identity. Membership/profile indices are server-owned.
     function isValidUser(data) {
       return data.keys().hasAll([
-          'display_name', 'avatar', 'handle', 'app_ids', 'profiles',
+          'display_name', 'avatar', 'handle',
           'created', 'updated'
         ]) &&
         data.keys().hasOnly([
-          'display_name', 'bio', 'avatar', 'handle', 'app_ids', 'profiles',
+          'display_name', 'bio', 'avatar', 'handle',
           'created', 'updated'
         ]) &&
         validRequiredText(data, 'display_name', 1, 120) &&
@@ -164,12 +164,6 @@
         isValidUserAvatar(data.avatar) &&
         data.handle is string &&
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
-        data.app_ids is list &&
-        data.app_ids.size() <= 2 &&
-        data.app_ids.hasOnly(['cleanbox-app', 'richies-reinigung']) &&
-        data.profiles is list &&
-        data.profiles.size() <= 2 &&
-        data.profiles.hasOnly(['agent', 'professional']) &&
         validCreatedStamp(data.created) &&
         validUpdatedStamp(data.updated);
     }
@@ -180,8 +174,6 @@
       allow list, create, delete: if false;
       allow update: if isOwner(userId) &&
         isValidUser(request.resource.data) &&
-        request.resource.data.app_ids == resource.data.app_ids &&
-        request.resource.data.profiles == resource.data.profiles &&
         request.resource.data.handle == resource.data.handle &&
         request.resource.data.created == resource.data.created &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -243,6 +235,11 @@
           validOwnerUpdateStamp(request.resource.data, userId);
       }
 
+
+      match /private/targets {
+        allow get, list, create, update, delete: if false;
+      }
+
       match /notifications/{notificationId} {
         function isValidNotification(data) {
           return data.keys().hasAll(['message', 'scope', 'created', 'read']) &&
@@ -270,4 +267,3 @@
         allow delete: if false;
       }
     }
-

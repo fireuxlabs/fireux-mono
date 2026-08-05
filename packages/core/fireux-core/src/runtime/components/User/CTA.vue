@@ -6,7 +6,7 @@
     class="space-y-2"
   >
     <UserCtaCurrent :current-user="currentUser" />
-    <UserCtaProfileChoices :current-profiles="currentUser.profiles" />
+    <UserCtaProfileChoices :current-profiles="appUser?.profiles || []" />
   </div>
 
   <UPageCTA
@@ -25,5 +25,5 @@
 <script setup lang="ts">
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 
-const { currentUser } = useUser()
+const { currentUser, appUser } = useUser()
 </script>

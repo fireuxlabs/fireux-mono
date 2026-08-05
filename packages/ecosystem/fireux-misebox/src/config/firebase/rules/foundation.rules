@@ -15,8 +15,8 @@
     // ===============================================================
     // Assumed data model
     // ===============================================================
-    // users/{uid}: public identity only (display_name, bio, avatar, handle,
-    //   app_ids, profiles, optional kitchen_ids, created, updated). No email
+    // users/{uid}: public identity only (display_name, optional bio, avatar,
+    //   handle, created, updated). No email
     //   or private settings.
     // users/{uid}/private/account: owner-only email, preferences, terms.
     // users/{uid}/notifications/{id}: owner-only notification records.

@@ -81,34 +81,33 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   }
 
   async function updateTagline(tagline: string) {
-    await updateApp({ tagline: text(tagline, 120) })
+    await updateDescription(tagline)
   }
 
   async function updateShortBio(shortBio: string) {
-    await updateApp({ short_bio: text(shortBio, 240) })
+    await updateDescription(shortBio)
   }
 
   async function updateLongBio(longBio: string) {
-    await updateApp({ long_bio: text(longBio, 4000) })
+    await updateDescription(longBio)
   }
 
   async function updateAppName(name: string) {
-    await updateApp({ app_name: text(name, 60) })
+    await updateApp({ name: text(name, 60) })
   }
 
   async function updateAppShortName(name: string) {
-    await updateApp({ app_short_name: text(name, 40) })
+    await updateApp({ short_name: text(name, 40) })
   }
 
   async function updateInstagram(url: string | null) {
-    const sanitized = sanitizeInstagram(url)
-    await updateApp({
-      'social_links.instagram': sanitized,
-    })
+    sanitizeInstagram(url)
+    throw new Error('Social links are not part of canonical App storage.')
   }
 
   async function updateSocialLinks(links: AppSocialLinks) {
-    await updateApp({ social_links: links })
+    void links
+    throw new Error('Social links are not part of canonical App storage.')
   }
 
   async function updateAvatarUrl(url: string | null) {

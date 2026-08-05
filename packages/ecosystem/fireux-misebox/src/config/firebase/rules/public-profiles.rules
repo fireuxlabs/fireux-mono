@@ -50,8 +50,7 @@
           hasValidCanonicalUserProfile(userId, 'driver'));
       // Public Driver listing is projected by /api/public/drivers.
       allow list: if false;
-      // Trusted profile provisioning creates the root and updates
-      // User.profiles in one server transaction.
+      // Trusted profile provisioning creates the root profile document.
       allow create: if false;
       allow update: if isOwner(userId) &&
         isValidPublicDriver(request.resource.data) &&
@@ -291,7 +290,7 @@
       allow get: if isOwner(userId);
       allow list: if false;
       // Trusted profile provisioning creates the root and updates
-      // User.profiles in one server transaction.
+      // Profile document existence is the capability index.
       allow create: if false;
       allow update: if isOwner(userId) &&
         isValidChef(request.resource.data) &&
@@ -305,7 +304,7 @@
       allow get: if isOwner(userId);
       allow list: if false;
       // Trusted profile provisioning creates the root and updates
-      // User.profiles in one server transaction.
+      // Profile document existence is the capability index.
       allow create: if false;
       allow update: if isOwner(userId) &&
         isValidAgent(request.resource.data) &&
@@ -319,7 +318,7 @@
       allow get: if isOwner(userId);
       allow list: if false;
       // Trusted profile provisioning creates the root and updates
-      // User.profiles in one server transaction.
+      // Profile document existence is the capability index.
       allow create: if false;
       allow update: if isOwner(userId) &&
         isValidProfessionalOwnerUpdate(request.resource.data, userId);

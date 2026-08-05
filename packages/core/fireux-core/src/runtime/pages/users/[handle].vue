@@ -22,7 +22,7 @@
         :display-name="pageTitle"
         :handle="pageHeadline"
         :bio="String(displayProfile.bio || '').trim()"
-        :profiles="displayProfile.profiles || []"
+        :profiles="[]"
         :is-self="isSelf"
         :access-tier="isSelf ? accessTier : null"
       />
@@ -138,8 +138,6 @@ const liveSelfProfile = computed<PublicUserDto | null>(() => {
   if (!userHandle || userHandle !== handle.value) return null
 
   const displayName = String(user.display_name || '').trim() || `@${userHandle}`
-  const apps = Array.isArray(user.app_ids) ? user.app_ids : []
-  const profiles = Array.isArray(user.profiles) ? user.profiles : []
   const avatar = String(user.avatar || '').trim()
   const bio = String(user.bio || '').trim()
 
@@ -151,8 +149,6 @@ const liveSelfProfile = computed<PublicUserDto | null>(() => {
     displayName,
     bio,
     avatar,
-    apps,
-    profiles,
     title: displayName,
     description: bio || `Public profile for ${displayName}.`,
     path: `/users/${encodeURIComponent(userHandle)}`,

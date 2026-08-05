@@ -956,7 +956,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /getRuntimeFirestore\(\)/)
   assert.match(
     source.kitchenTargetApi,
-    /resolveKitchenConsoleTargetIds\(\s*appId,\s*uid,\s*currentMembership\s*\)/
+    /resolveKitchenConsoleTargetIds\(\s*uid,\s*currentMembership\s*\)/
+  )
+  assert.match(
+    source.kitchenTargetResolver,
+    /users\/\$\{uid\}\/private\/targets/
   )
   assert.match(source.kitchenTargetResolver, /KITCHEN_CONSOLE_TARGET_LIMIT/)
   assert.match(

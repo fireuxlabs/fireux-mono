@@ -11,20 +11,10 @@
       </div>
     </template>
 
-    <div class="section__item">
-      <MoleculesFormsFirestoreSocialLinks
-        :firebase-value="app.social_links"
-        :update-function="handleUpdateSocialLinks"
-      />
-    </div>
+    <p>Links belong to the local App registry metadata.</p>
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { AppModel } from '../../../../models/core/app.model';
-
-defineProps<{
-  app: AppModel
-  handleUpdateSocialLinks: (value: AppModel['social_links']) => Promise<unknown>
-}>()
+defineProps<{}>()
 </script>

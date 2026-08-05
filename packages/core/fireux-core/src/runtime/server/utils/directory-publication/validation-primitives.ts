@@ -7,13 +7,7 @@ import { DirectoryPublicationEventTimeV1 } from '../../../models/operations/dire
 
 type UnknownRecord = Record<string, unknown>
 
-const APP_ROLES = new Set([
-  'global',
-  'tenant',
-  'standalone',
-  'ecosystem',
-  'system',
-])
+const APP_ROLES = new Set(['global', 'tenant', 'standalone'])
 const ENTITY_KINDS = new Set(['app', 'ecosystem'])
 const MAX_FUTURE_SKEW_MS = 5 * 60 * 1000
 

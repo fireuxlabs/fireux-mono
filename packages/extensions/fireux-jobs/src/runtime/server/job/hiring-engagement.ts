@@ -14,6 +14,7 @@ import { nextEngagementStatus } from '../../utils/job-hiring-policy.ts'
 import { readJobServerScope } from './runtime.ts'
 import {
   appRef,
+  appAgentRef,
   assertCurrentAppMembership,
   canonicalApplication,
   canonicalEngagement,
@@ -56,12 +57,13 @@ export async function mutateJobEngagement(
     ) {
       fail(404, 'Engagement not found.')
     }
-    const [appSnapshot, membershipSnapshot] = await transaction.getAll(
+    const [appSnapshot, membershipSnapshot, agentSnapshot] = await transaction.getAll(
       appRef(db, scope.appId),
-      membershipRef(db, scope.appId, uid)
+      membershipRef(db, scope.appId, uid),
+      appAgentRef(db, scope.appId, uid)
     )
     assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-    if (!hasProfile(membershipSnapshot, 'agent')) {
+    if (!hasProfile(agentSnapshot)) {
       fail(403, 'An active Agent profile is required.')
     }
     const capacityRef =

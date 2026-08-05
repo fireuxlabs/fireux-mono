@@ -104,52 +104,29 @@ const display = (value: unknown) => {
 const appFieldGroups = {
   developer: [
     'media',
-    'database_id',
-    'fireux_native',
-    'fireux_size',
-    'fireux_repo',
   ],
   control: [
     'project_id',
     'ecosystem_id',
-    'slug',
     'status',
     'role',
-    'app_name',
-    'app_short_name',
+    'name',
+    'short_name',
     'self_join_enabled',
   ],
-  admin: ['tagline', 'description', 'short_bio', 'long_bio', 'social_links'],
-  system: ['id', 'derived', 'created', 'updated'],
+  admin: ['description'],
+  system: ['id', 'created', 'updated'],
 } as const
 
 const appSummary = computed(() => {
-  const repository = display(props.app.fireux_repo?.key)
-  const workspace = display(props.app.fireux_repo?.workspace)
-
   return [
     { label: 'App ID', value: display(props.app.id), detail: '' },
-    {
-      label: 'Database',
-      value: display(props.app.database_id),
-      detail: 'Firestore runtime',
-    },
-    {
-      label: 'Repository',
-      value: repository,
-      detail: workspace === 'Not set' ? '' : workspace,
-    },
     {
       label: 'Project',
       value: display(props.app.project_id),
       detail: props.app.ecosystem_id
         ? `Ecosystem: ${display(props.app.ecosystem_id)}`
         : '',
-    },
-    {
-      label: 'Runtime',
-      value: props.app.fireux_native ? 'FireUX native' : 'External',
-      detail: `Size: ${display(props.app.fireux_size)}`,
     },
   ]
 })

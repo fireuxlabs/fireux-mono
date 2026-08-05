@@ -20,51 +20,17 @@ function conflict(message: string): never {
   throw createError({ statusCode: 409, statusMessage: message })
 }
 
-function stringList(
-  value: unknown,
-  label: string,
-  options: {
-    max: number
-    allowed?: ReadonlySet<string>
-    documentIds?: boolean
-  }
-): string[] {
-  if (
-    !Array.isArray(value) ||
-    value.length > options.max ||
-    value.some((entry) => typeof entry !== 'string')
-  ) {
-    conflict(`${label} is malformed.`)
-  }
-  const entries = value.map((entry) => entry.trim())
-  if (
-    entries.some(
-      (entry, index) =>
-        !entry ||
-        entry !== value[index] ||
-        (options.documentIds && entry.includes('/')) ||
-        (options.allowed && !options.allowed.has(entry))
-    ) ||
-    new Set(entries).size !== entries.length
-  ) {
-    conflict(`${label} is malformed.`)
-  }
-  return entries
-}
-
 function membershipDto(
   id: string,
   value: Record<string, unknown>,
-  isConfiguredDeveloper: boolean
+  isConfiguredDeveloper: boolean,
+  profiles: string[]
 ): CurrentAppMembershipDto {
   const role = value.role
   if (role !== 'admin' && role !== 'user') {
     conflict('Current App membership has an invalid role.')
   }
-  if (
-    typeof value.is_premium !== 'boolean' ||
-    typeof value.console_enabled !== 'boolean'
-  ) {
+  if (typeof value.is_premium !== 'boolean') {
     conflict('Current App membership has invalid capability fields.')
   }
   const onboardingStatus =
@@ -87,25 +53,33 @@ function membershipDto(
     is_premium: value.is_premium,
     access_tier: access.tier ?? 'free',
     has_premium_access: access.hasPremiumAccess,
-    console_enabled: value.console_enabled,
+    console_enabled: access.hasAdminAuthority || isConfiguredDeveloper,
     onboarding_status: onboardingStatus,
-    profiles: stringList(value.profiles ?? [], 'Current App profiles', {
-      max: 20,
-      allowed: new Set(['agent', 'chef', 'customer', 'driver', 'professional']),
-    }),
+    profiles,
   }
 }
 
 export default defineEventHandler(async (event: H3Event) => {
   const { uid } = await requireFirebaseBearerUser(event)
-  const { appId, developerId } = useFireUXConfig(event)
+  const { appId, developerId, profiles: configuredProfiles } = useFireUXConfig(event)
   const appRef = getRuntimeFirestore()
     .collection(AppStorage.collection)
     .doc(appId)
   const membershipRef = appRef.collection(AppUserStorage.collection).doc(uid)
-  const [appSnapshot, membershipSnapshot] = await getRuntimeFirestore().getAll(
+  const profileIds = configuredProfiles.filter((profile) =>
+    ['agent', 'chef', 'customer', 'driver', 'professional'].includes(profile)
+  )
+  const profileRefs = profileIds.map((profile) =>
+    appRef.collection(`${profile}s`).doc(uid)
+  )
+  const [appSnapshot, membershipSnapshot, ...profileSnapshots] =
+    await getRuntimeFirestore().getAll(
     appRef,
-    membershipRef
+    membershipRef,
+    ...profileRefs
+  )
+  const activeProfiles = profileIds.filter(
+    (_profile, index) => profileSnapshots[index]?.exists
   )
 
   const appData = (appSnapshot.data() || {}) as Record<string, unknown>
@@ -126,7 +100,8 @@ export default defineEventHandler(async (event: H3Event) => {
     ? membershipDto(
         membershipSnapshot.id,
         (membershipSnapshot.data() || {}) as Record<string, unknown>,
-        Boolean(developerId) && uid === developerId
+        Boolean(developerId) && uid === developerId,
+        activeProfiles
       )
     : null
 

@@ -24,7 +24,7 @@ const canShowDashboardItem = (
 
 export const useDashboardNav = () => {
   const nav = useNav(['dashboard'])
-  const { appUser, isAdmin, user } = useUser()
+  const { appUser, isAdmin } = useUser()
   const { isDeveloper } = useDeveloperAccess()
   const { hasConsoleEntry } = useConsoleEntryCta()
 
@@ -60,7 +60,6 @@ export const useDashboardNav = () => {
     () =>
       new Set(
         [
-          ...(user.value?.profiles ?? []),
           ...(appUser.value?.profiles ?? []),
         ].filter(
           (profileId): profileId is string =>

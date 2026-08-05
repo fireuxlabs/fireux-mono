@@ -44,6 +44,11 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
   identity database and must be read through an explicit identity seam. Do not
   repeat the Ecosystem database id in project config; declare `databaseId` only
   for a genuine App override, including a standalone App-owned database.
+- Every production `standalone` App declares its own named `databaseId`; the
+  database is created in each Firebase project where that App owns local
+  outputs. A standalone App never falls back to the FireUX ecosystem database.
+  Global and tenant Apps inherit their ecosystem database unless a separately
+  reviewed storage boundary proves otherwise.
 - Core automatically includes `app/assets/styles/main.css` when the App owns
   that conventional stylesheet. The stylesheet remains App-owned, but its
   registration is not a project Nuxt override.
@@ -167,6 +172,7 @@ App-wide need is a missing shared seam and must be promoted before use.
 | A project app shell or stylesheet copies the shared page transition | `drift`    | Keep shared behavior in Core and route-specific exceptions in page meta                                            |
 | Repeating a shared default in many project `nuxt.config.ts` files   | `drift`    | Move the stable value to the Core config spine and leave only genuine app values locally                           |
 | Repeating an extension integration URL in project runtime config    | `drift`    | Let the consuming extension own its default and environment resolution; Apps retain only genuine endpoint deltas   |
+| A standalone App uses the FireUX ecosystem database                 | `drift`    | Provision its dedicated named database or classify the project explicitly as a non-production harness              |
 | A client PIN appears to protect App initialization                  | `drift`    | Remove the cosmetic gate; authenticated server UID authorization is the write boundary                             |
 | A second runtime parser or global cache mirrors App config          | `drift`    | Derive the runtime contract from `FireuxAppConfig` and normalize it once in `useFireUXConfig`                      |
 | App brand structure differs by project                              | `drift`    | Keep one `/img/app` runtime family and explicit source/projection authority; only the owned artwork differs        |

@@ -135,8 +135,6 @@ export async function updateUserHandle(input: {
         bio: '',
         avatar: creation.avatar,
         handle,
-        app_ids: [],
-        profiles: [],
         created: {
           at: FieldValue.serverTimestamp(),
           by: uid,

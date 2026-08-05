@@ -1,9 +1,6 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: project only the public App creation date.
 import type { AppStatus } from '../../../models/core/app.model'
-import type {
-  AppRole,
-  AppSocialLinks,
-} from '../../../models/core/app.model'
+import type { AppRole, AppSocialLinks } from '../../../models/core/app.model'
 import type { FirebaseTimestamp } from '../../../../types/firebase'
 import type { AppDirectoryEntry } from '../../../models/utils/directory'
 import { asTrimmedString } from './public-dto.helpers'
@@ -16,13 +13,7 @@ const APP_STATUSES = new Set<AppStatus>([
   'archived',
 ])
 
-const APP_ROLES = new Set<AppRole>([
-  'global',
-  'tenant',
-  'standalone',
-  'ecosystem',
-  'system',
-])
+const APP_ROLES = new Set<AppRole>(['global', 'tenant', 'standalone'])
 
 function asRecord(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)

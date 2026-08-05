@@ -42,12 +42,13 @@ export default defineEventHandler(async (event: H3Event) => {
     appRef.collection(AppUserStorage.collection).doc(uid).get(),
   ])
   const membership = (membershipSnapshot.data() || {}) as Record<string, unknown>
-  const isAdmin = text(membership.role) === 'admin'
+  const hasMembership =
+    text(membership.role) === 'admin' || text(membership.role) === 'user'
 
-  if (!appSnapshot.exists || !isAdmin) {
+  if (!appSnapshot.exists || !hasMembership) {
     throw createError({
       statusCode: 403,
-      statusMessage: 'FireUX App admin access is required.',
+      statusMessage: 'FireUX App membership is required.',
     })
   }
 
@@ -62,18 +63,11 @@ export default defineEventHandler(async (event: H3Event) => {
     requestedSource === 'test'
       ? (await db.collection('test-projects').get()).docs
       : await (async () => {
-          const supports = appRef.collection(ProjectStorage.scopeCollection)
-          const snapshots = await Promise.all([
-            supports.where('operator_ids', 'array-contains', uid).get(),
-            supports.where('team_ids', 'array-contains', uid).get(),
-          ])
-          const ids = [
-            ...new Set(
-              snapshots.flatMap(snapshot =>
-                snapshot.docs.map(document => document.id)
-              )
-            ),
-          ]
+          const targets = await db.doc(`users/${uid}/private/targets`).get()
+          const rawIds = targets.data()?.project_ids
+          const ids = Array.isArray(rawIds)
+            ? [...new Set(rawIds.map(text).filter(id => id && !id.includes('/')))]
+            : []
           if (ids.length === 0) return []
           const roots = await db.getAll(
             ...ids.map(id =>

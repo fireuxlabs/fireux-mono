@@ -8,9 +8,6 @@ export function useProjectComputed(
   const hasMissingName = computed(() =>
     !String(project?.value?.name || '').trim()
   )
-  const hasMissingSlug = computed(() =>
-    !String(project?.value?.slug || '').trim()
-  )
   const isDraft = computed(() => project?.value?.status === 'draft')
   const isActive = computed(() => project?.value?.status === 'active')
   const isPaused = computed(() => project?.value?.status === 'paused')
@@ -25,7 +22,6 @@ export function useProjectComputed(
   const displayName = computed(() =>
     String(
       project?.value?.name ||
-        project?.value?.slug ||
         project?.value?.id ||
         ''
     ).trim()
@@ -36,7 +32,6 @@ export function useProjectComputed(
   return {
     hasProject,
     hasMissingName,
-    hasMissingSlug,
     isDraft,
     isActive,
     isPaused,

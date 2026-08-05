@@ -27,13 +27,7 @@ export const DIRECTORY_RECONCILIATION_CLASSIFICATIONS = [
 ]
 
 const APP_STATUSES = new Set(['draft', 'active', 'paused', 'archived'])
-const APP_ROLES = new Set([
-  'global',
-  'tenant',
-  'standalone',
-  'ecosystem',
-  'system',
-])
+const APP_ROLES = new Set(['global', 'tenant', 'standalone'])
 const ECOSYSTEM_STATUSES = new Set(['draft', 'active', 'paused', 'archived'])
 
 const text = (value) => (typeof value === 'string' ? value.trim() : '')

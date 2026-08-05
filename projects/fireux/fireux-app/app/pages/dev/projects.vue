@@ -107,7 +107,7 @@ definePageMeta({
   },
 })
 
-const projectModelRuntime = ProjectModelRuntime
+const projectModelRuntime = ProjectModelRuntime as unknown as Record<string, unknown>
 const { appId } = useFireUXConfig()
 const { selectedId } = useProjectConsoleSelection()
 const resolvedAppId = computed(() => String(appId || '').trim())

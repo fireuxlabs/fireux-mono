@@ -39,21 +39,10 @@
         </div>
       </section>
 
-      <section v-if="showMeta && (appIds.length || appsLabel)" class="profile__section">
+      <section v-if="showMeta && appsLabel" class="profile__section">
         <div class="profile__label">Apps</div>
         <div class="profile__value">
-          <div v-if="appIds.length" class="flex flex-wrap gap-2">
-            <UBadge
-              v-for="appId in appIds"
-              :key="appId"
-              color="neutral"
-              variant="soft"
-              size="xs"
-            >
-              {{ appId }}
-            </UBadge>
-          </div>
-          <span v-else-if="appsLabel">{{ appsLabel }}</span>
+          <span>{{ appsLabel }}</span>
         </div>
       </section>
 
@@ -118,7 +107,6 @@ type Props = {
 
   user?: {
     id?: string
-    app_ids?: string[]
     created?: {
       at?: unknown
     } | null
@@ -157,13 +145,6 @@ const props = withDefaults(defineProps<Props>(), {
 const profileSummary = computed(() =>
   String(props.bioOverride || props.summary || props.bio || '').trim()
 )
-
-const appIds = computed(() => {
-  const rawIds = Array.isArray(props.user?.app_ids) ? props.user.app_ids : []
-  return Array.from(
-    new Set(rawIds.map((id) => String(id || '').trim()).filter(Boolean))
-  )
-})
 
 const createdAtLabel = computed(() => formatTimestampLabel(props.user?.created?.at))
 const updatedAtLabel = computed(() => formatTimestampLabel(props.user?.updated?.at))

@@ -9,13 +9,29 @@ import {
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 
-type WidenLiteral<T> =
-  T extends string ? string
-  : T extends number ? number
-  : T extends boolean ? boolean
-  : T extends readonly (infer U)[] ? WidenLiteral<U>[]
-  : T extends Record<string, unknown> ? { -readonly [K in keyof T]: WidenLiteral<T[K]> }
-  : T
+export interface ProjectIdentity {
+  id: string
+  status: ProjectStatus
+}
+
+export interface ProjectPresentation {
+  name: string
+  description: string
+  image_url: string
+}
+
+export interface Project
+  extends FireuxStamped,
+    ProjectIdentity,
+    ProjectPresentation {}
+
+/** Local `(default)` projection for this Firebase project's Project. */
+export interface ProjectMeta
+  extends ProjectIdentity,
+    ProjectPresentation,
+    Pick<FireuxStamped, 'updated'> {
+  database_id: string
+}
 
 /**
  * Entity map: docs/concepts/entities.md
@@ -40,12 +56,22 @@ type WidenLiteral<T> =
  */
 export const ProjectStorage = {
   shape: 'root-and-app-support',
+  database: 'named',
   root: 'projects/{projectId}',
   scope: 'apps/{appId}/projects/{projectId}',
   rootCollection: 'projects',
   scopeCollection: 'projects',
   collection: 'projects',
   idParam: 'projectId',
+} as const
+
+export const ProjectMetaStorage = {
+  shape: 'projection',
+  database: '(default)',
+  path: 'project/{projectId}',
+  collection: 'project',
+  idParam: 'projectId',
+  authority: 'canonical-project-and-source-config',
 } as const
 
 export const ProjectEntity = defineFireuxEntity({
@@ -62,27 +88,41 @@ export const ProjectEntity = defineFireuxEntity({
   appSupportPath: ProjectStorage.scope,
 })
 
-export const ProjectModel = {
+export const ProjectIdentityModel: ProjectIdentity = {
   id: '',
+  status: 'draft',
+}
 
-  // Control-plane identity
+export const ProjectPresentationModel: ProjectPresentation = {
   name: '',
-  slug: '',
   description: '',
   image_url: '',
-  status: 'active' as ProjectStatus,
+}
+
+export const ProjectModel: Project = {
+  ...ProjectIdentityModel,
+  ...ProjectPresentationModel,
+  status: 'active',
   created: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
+    by: undefined,
+    app_id: undefined,
   },
   updated: {
     at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
+    by: undefined,
   },
-} as const
+}
 
-export type Project = WidenLiteral<typeof ProjectModel>
+export const ProjectMetaModel: ProjectMeta = {
+  ...ProjectIdentityModel,
+  ...ProjectPresentationModel,
+  database_id: '',
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined,
+  },
+}
 
 export const AppProjectModel = {
   ...FireuxAppAccessRecordModel,
@@ -90,5 +130,9 @@ export const AppProjectModel = {
 
 export type AppProject = FireuxAppAccessRecord
 
-export type ProjectCreateInput = Pick<Project, 'id' | 'name' | 'slug'> &
+export type ProjectCreateInput = Pick<Project, 'id' | 'name'> &
   Partial<Pick<Project, 'description' | 'image_url' | 'status'>>
+export type ProjectUpdateInput = Partial<
+  Pick<Project, 'name' | 'description' | 'image_url' | 'status'>
+>
+export type ProjectMetaInput = Omit<ProjectMeta, 'updated'>

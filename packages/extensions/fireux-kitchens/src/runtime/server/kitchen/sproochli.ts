@@ -105,7 +105,6 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       'Current App membership is required to manage this Kitchen.'
     )
     const runtimeTargetIds = await resolveKitchenConsoleTargetIds(
-      runtimeAppId,
       uid,
       runtimeMembership.data() || {}
     )

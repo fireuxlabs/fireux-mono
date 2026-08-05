@@ -312,18 +312,55 @@ function checkProjectRegistryCompleteness(projectsRoot) {
     )
   })
 
-  if (!missing.length && !stale.length && !identityDrift.length) return []
+  const databaseDrift = registryEntries.flatMap((entry) => {
+    if (entry.role !== 'standalone' || entry.provisioning === 'harness') {
+      return []
+    }
+
+    const ecosystemConfigPath = path.join(
+      projectsRoot,
+      '..',
+      'packages',
+      'ecosystem',
+      `fireux-${entry.ecosystem}`,
+      'src',
+      'config',
+      'firebase',
+      'ecosystem.config.ts'
+    )
+    if (!existsSync(ecosystemConfigPath)) return []
+
+    const ecosystemDatabaseId = literalConfigValue(
+      readFileSync(ecosystemConfigPath, 'utf8'),
+      'databaseId'
+    )
+    return entry.databaseId && entry.databaseId !== ecosystemDatabaseId
+      ? []
+      : [
+          `${entry.workspace}: production standalone App '${entry.appId}' must select a dedicated database instead of '${ecosystemDatabaseId}'.`,
+        ]
+  })
+
+  if (
+    !missing.length &&
+    !stale.length &&
+    !identityDrift.length &&
+    !databaseDrift.length
+  )
+    return []
 
   const lines = [
     '[guard] ❌ project App registry drift:',
     ...missing.map((entry) => `  Unregistered App: ${entry}`),
     ...stale.map((entry) => `  Registry target missing: ${entry}`),
     ...identityDrift.map((entry) => `  Identity drift: ${entry}`),
+    ...databaseDrift.map((entry) => `  Database drift: ${entry}`),
     '',
     '[guard] Fix:',
     '- Do not copy project folders without completing the canonical App workflow.',
     '- Every real App must have one exact workspace entry in scripts/_lib/app-registry.mjs.',
     '- Registry appId, ecosystem, and role must match the App Nuxt config.',
+    '- Every production standalone App must select a dedicated named database; only an explicitly classified harness may share its ecosystem database.',
     '- The canonical template is the only project package excluded from registration.',
   ]
   return [lines.join('\n')]

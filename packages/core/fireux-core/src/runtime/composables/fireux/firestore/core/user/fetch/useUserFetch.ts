@@ -31,11 +31,6 @@ export type UserFetchOutcome =
   | 'missing'
   | 'error'
 
-function asStringArray(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-  return value.filter((v): v is string => typeof v === 'string' && v.length > 0)
-}
-
 function normalizeCoreUser(raw: User, fallbackId: string): User {
   const anyRaw = raw as any
   return {
@@ -48,8 +43,6 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
         : '',
     avatar: resolveUserAvatarSource((raw as any).avatar),
     handle: (raw as any).handle ?? '',
-    app_ids: asStringArray(anyRaw.app_ids),
-    profiles: asStringArray(anyRaw.profiles),
   }
 }
 

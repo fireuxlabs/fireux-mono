@@ -23,12 +23,6 @@ function asString(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function asStringArray(value: unknown): string[] {
-  return Array.isArray(value)
-    ? value.map((entry) => asString(entry)).filter(Boolean)
-    : []
-}
-
 function normalizeLimit(value: unknown): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return 8
@@ -58,7 +52,7 @@ function mapUser(
     displayName: displayName || 'Admin profile unavailable',
     handle,
     avatar: resolveUserAvatarSource(data.avatar),
-    profiles: asStringArray(data.profiles),
+    profiles: [],
     ...(!displayName ? { unavailable: true } : {}),
   }
 }

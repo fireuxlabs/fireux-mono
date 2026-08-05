@@ -36,14 +36,6 @@ export type PublicProfileHandlerConfig = {
   mapProfile: PublicProfileMapper
 }
 
-function asStringList(value: unknown): string[] {
-  if (!Array.isArray(value)) return []
-  return value
-    .filter((entry): entry is string => typeof entry === 'string')
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-}
-
 function normalizeLimit(value: unknown): number {
   const parsed = Number(value)
   if (!Number.isFinite(parsed)) return DEFAULT_LIMIT
@@ -51,18 +43,9 @@ function normalizeLimit(value: unknown): number {
 }
 
 function mapCanonicalUser(
-  snapshot: FirebaseFirestore.DocumentSnapshot,
-  expectedProfile: PublicProfileKind
+  snapshot: FirebaseFirestore.DocumentSnapshot
 ): PublicProfileUserDto | null {
-  const user = mapPublicUserIdentity(snapshot)
-  if (!user) return null
-  const data = (snapshot.data() || {}) as Record<string, unknown>
-  const profiles = asStringList(data.profiles)
-  if (!profiles.includes(expectedProfile)) {
-    return null
-  }
-
-  return user
+  return mapPublicUserIdentity(snapshot)
 }
 
 function mapEntry(
@@ -74,7 +57,7 @@ function mapEntry(
   if (!profileSnapshot.exists || profileSnapshot.id !== userSnapshot.id) {
     return null
   }
-  const user = mapCanonicalUser(userSnapshot, config.kind)
+  const user = mapCanonicalUser(userSnapshot)
   const profile = config.mapProfile(
     (profileSnapshot.data() || {}) as Record<string, unknown>,
     mode

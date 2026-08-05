@@ -18,38 +18,24 @@
           return data.keys().hasAll([
               'role',
               'is_premium',
-              'console_enabled',
               'created',
               'updated'
             ]) &&
             data.keys().hasOnly([
               'role',
               'is_premium',
-              'console_enabled',
               'onboarding_status',
-              'profiles',
               'created',
               'updated'
             ]) &&
             data.role in ['admin', 'user'] &&
             data.is_premium is bool &&
-            data.console_enabled is bool &&
             (!('onboarding_status' in data) ||
               data.onboarding_status in [
                 'pending',
                 'completed',
                 'skipped'
               ]) &&
-            (!('profiles' in data) ||
-              (data.profiles is list &&
-                data.profiles.size() <= 20 &&
-                data.profiles.hasOnly([
-                  'agent',
-                  'chef',
-                  'customer',
-                  'driver',
-                  'professional'
-                ]))) &&
             validCreatedStamp(data.created) &&
             data.created.app_id == appId &&
             validUpdatedStamp(data.updated);
@@ -126,8 +112,7 @@
         allow get: if (isOwner(userId) && isAppMember(appId)) ||
           (isAppAdmin(appId) && isValidCustomer(resource.data));
         allow list: if isAppAdmin(appId);
-        // Trusted profile provisioning creates the record and updates
-        // AppUser.profiles in one server transaction.
+        // Trusted profile provisioning creates the profile record.
         allow create: if false;
         allow update: if isOwner(userId) &&
           isAppMember(appId) &&
@@ -165,8 +150,7 @@
         allow get: if (isOwner(userId) && isAppMember(appId)) ||
           (isAppAdmin(appId) && isValidAppDriver(resource.data));
         allow list: if isAppAdmin(appId);
-        // Trusted profile provisioning creates the record and updates
-        // AppUser.profiles in one server transaction.
+        // Trusted profile provisioning creates the profile record.
         allow create: if false;
         allow update: if isOwner(userId) &&
           isAppMember(appId) &&
@@ -218,8 +202,7 @@
             (isAppAdmin(appId) && isValidProfileOverlay(resource.data)));
         allow list: if isIdentityProfileOverlay() &&
           isAppAdmin(appId);
-        // Trusted profile provisioning creates the record and updates
-        // AppUser.profiles in one server transaction.
+        // Trusted profile provisioning creates the profile record.
         allow create: if false;
         allow update: if isIdentityProfileOverlay() &&
           isOwner(userId) &&

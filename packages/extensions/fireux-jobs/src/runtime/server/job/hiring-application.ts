@@ -21,6 +21,7 @@ import { readJobServerScope } from './runtime.ts'
 import {
   applicationAction,
   applicationDocumentId,
+  appAgentRef,
   appProfessionalRef,
   appRef,
   assertCurrentAppMembership,
@@ -84,7 +85,7 @@ export async function createJobApplication(
     )
     assertCurrentAppMembership(appSnapshot, membershipSnapshot)
     if (
-      !hasProfile(membershipSnapshot, 'professional') ||
+      !hasProfile(appProfessionalSnapshot) ||
       !appProfessionalSnapshot.exists
     ) {
       fail(403, 'Complete your Professional profile before applying.')
@@ -160,14 +161,15 @@ export async function mutateJobApplication(
       const jobRef = db
         .collection(JobStorage.collection)
         .doc(application.job_id)
-      const [appSnapshot, membershipSnapshot, jobSnapshot] =
+      const [appSnapshot, membershipSnapshot, agentSnapshot, jobSnapshot] =
         await transaction.getAll(
           appRef(db, scope.appId),
           membershipRef(db, scope.appId, uid),
+          appAgentRef(db, scope.appId, uid),
           jobRef
         )
       assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-      if (!hasProfile(membershipSnapshot, 'agent')) {
+      if (!hasProfile(agentSnapshot)) {
         fail(403, 'An active Agent profile is required.')
       }
       const nextStatus = nextApplicationStatus(

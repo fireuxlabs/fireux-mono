@@ -108,7 +108,6 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
       'Current App membership is required to manage this Kitchen.'
     )
     const runtimeTargetIds = await resolveKitchenConsoleTargetIds(
-      runtimeAppId,
       uid,
       runtimeMembership.data() || {}
     )

@@ -211,7 +211,6 @@ function toProfileEntry(
   }
 }
 
-const rootProfileIds = computed(() => new Set(coreUser.value?.profiles ?? []))
 const activeRows = computed<DashboardOverviewProfileEntry[]>(() =>
   activeProfileEntries.value
     .map((entry) => toProfileEntry(entry, true))
@@ -222,16 +221,9 @@ const availableRows = computed<DashboardOverviewProfileEntry[]>(() =>
     .map((entry) => toProfileEntry(entry, false))
     .filter((entry): entry is DashboardOverviewProfileEntry => Boolean(entry))
 )
-const ecosystemProfileEntries = computed<DashboardOverviewProfileEntry[]>(() =>
-  activeRows.value.filter((entry: DashboardOverviewProfileEntry) =>
-    rootProfileIds.value.has(entry.profileId)
-  )
-)
+const ecosystemProfileEntries = computed<DashboardOverviewProfileEntry[]>(() => [])
 const appProfileEntries = computed<DashboardOverviewProfileEntry[]>(() => [
-  ...activeRows.value.filter(
-    (entry: DashboardOverviewProfileEntry) =>
-      !hasEcosystem.value || !rootProfileIds.value.has(entry.profileId)
-  ),
+  ...activeRows.value,
   ...availableRows.value,
 ])
 </script>

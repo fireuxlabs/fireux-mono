@@ -3,7 +3,6 @@ import {
   type DocumentSnapshot,
 } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { canonicalProfileIndex } from '../../../utils/profile-index'
 import { serverAuditStamp } from '../records/stamps'
 
 export type ProfileProvisionContractSeed = Readonly<Record<string, unknown>>
@@ -116,30 +115,6 @@ export function assertProfileProvisionSeed(
   return seed
 }
 
-function assertProfileList(
-  value: unknown,
-  order: readonly string[],
-  label: string
-): string[] {
-  const allowed = new Set(order)
-  if (
-    !Array.isArray(value) ||
-    value.length > 20 ||
-    value.some((entry) => typeof entry !== 'string' || !allowed.has(entry)) ||
-    new Set(value).size !== value.length
-  ) {
-    failProfileProvision(409, `${label} has an invalid profile index.`)
-  }
-  const canonical = canonicalProfileIndex(value, order)
-  if (canonical.some((profileId, index) => value[index] !== profileId)) {
-    failProfileProvision(
-      409,
-      `${label} profile index is not in canonical order.`
-    )
-  }
-  return value
-}
-
 export function requireProfileProvisionCanonicalUser(
   snapshot: DocumentSnapshot
 ) {
@@ -149,11 +124,6 @@ export function requireProfileProvisionCanonicalUser(
       'Create the canonical User before creating a profile.'
     )
   }
-  return assertProfileList(
-    snapshot.data()?.profiles,
-    PROFILE_PROVISION_ROOT_ORDER,
-    'The canonical User'
-  )
 }
 
 export function requireProfileProvisionAppMembership(
@@ -168,11 +138,6 @@ export function requireProfileProvisionAppMembership(
     failProfileProvision(409, 'The App membership is invalid.')
   }
 
-  return assertProfileList(
-    data.profiles ?? [],
-    PROFILE_PROVISION_APP_ORDER,
-    'The App membership'
-  )
 }
 
 export function buildRootProfileProvisionData(

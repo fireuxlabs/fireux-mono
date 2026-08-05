@@ -183,11 +183,11 @@ service cloud.firestore {
     // Canonical User identity. Membership/profile indices are server-owned.
     function isValidUser(data) {
       return data.keys().hasAll([
-          'display_name', 'avatar', 'handle', 'app_ids', 'profiles',
+          'display_name', 'avatar', 'handle',
           'created', 'updated'
         ]) &&
         data.keys().hasOnly([
-          'display_name', 'bio', 'avatar', 'handle', 'app_ids', 'profiles',
+          'display_name', 'bio', 'avatar', 'handle',
           'created', 'updated'
         ]) &&
         validRequiredText(data, 'display_name', 1, 120) &&
@@ -195,12 +195,6 @@ service cloud.firestore {
         isValidUserAvatar(data.avatar) &&
         data.handle is string &&
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
-        data.app_ids is list &&
-        data.app_ids.size() <= 2 &&
-        data.app_ids.hasOnly(['cleanbox-app', 'richies-reinigung']) &&
-        data.profiles is list &&
-        data.profiles.size() <= 2 &&
-        data.profiles.hasOnly(['agent', 'professional']) &&
         validCreatedStamp(data.created) &&
         validUpdatedStamp(data.updated);
     }
@@ -211,8 +205,6 @@ service cloud.firestore {
       allow list, create, delete: if false;
       allow update: if isOwner(userId) &&
         isValidUser(request.resource.data) &&
-        request.resource.data.app_ids == resource.data.app_ids &&
-        request.resource.data.profiles == resource.data.profiles &&
         request.resource.data.handle == resource.data.handle &&
         request.resource.data.created == resource.data.created &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
@@ -274,6 +266,11 @@ service cloud.firestore {
           validOwnerUpdateStamp(request.resource.data, userId);
       }
 
+
+      match /private/targets {
+        allow get, list, create, update, delete: if false;
+      }
+
       match /notifications/{notificationId} {
         function isValidNotification(data) {
           return data.keys().hasAll(['message', 'scope', 'created', 'read']) &&
@@ -301,7 +298,6 @@ service cloud.firestore {
         allow delete: if false;
       }
     }
-
     // Ecosystem records are Admin-owned; no raw client read or write is a
     // supported API. The migration planner owns exact stored-shape validation.
     match /ecosystems/{ecosystemId} {
@@ -447,23 +443,17 @@ service cloud.firestore {
       match /users/{userId} {
         function isValidAppUser(data) {
           return data.keys().hasAll([
-              'role', 'is_premium', 'console_enabled', 'created', 'updated'
+              'role', 'is_premium', 'created', 'updated'
             ]) &&
             data.keys().hasOnly([
-              'role', 'is_premium', 'console_enabled', 'onboarding_status',
-              'profiles', 'created', 'updated'
+              'role', 'is_premium', 'onboarding_status', 'created', 'updated'
             ]) &&
             data.role in ['admin', 'user'] &&
             data.is_premium is bool &&
-            data.console_enabled is bool &&
             (!('onboarding_status' in data) ||
               data.onboarding_status in [
                 'pending', 'completed', 'skipped'
               ]) &&
-            (!('profiles' in data) ||
-              (data.profiles is list &&
-                data.profiles.size() <= 2 &&
-                data.profiles.hasOnly(['agent', 'professional']))) &&
             validCreatedStamp(data.created) &&
             data.created.app_id == appId &&
             validUpdatedStamp(data.updated);

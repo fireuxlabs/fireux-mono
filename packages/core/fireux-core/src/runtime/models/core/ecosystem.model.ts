@@ -4,23 +4,57 @@ import type { FireuxStamped } from '../utils/stamps.model'
 
 export type EcosystemStatus = 'draft' | 'active' | 'paused' | 'archived'
 
-/** Canonical Ecosystem identity stored at `ecosystems/{ecosystemId}`. */
-export interface Ecosystem extends FireuxStamped {
+export interface EcosystemIdentity {
   id: string
   project_id: string
+  status: EcosystemStatus
+}
+
+export interface EcosystemPresentation {
   name: string
-  slug: string
   description: string
   image_url: string
   website_url: string
-  status: EcosystemStatus
+}
+
+/**
+ * Canonical Ecosystem identity.
+ *
+ * Storage: `ecosystems/{ecosystemId}` in the Ecosystem's named database.
+ */
+export interface Ecosystem
+  extends FireuxStamped,
+    EcosystemIdentity,
+    EcosystemPresentation {}
+
+/**
+ * Bounded local registry projection for the Ecosystem hosted by one Firebase
+ * project.
+ *
+ * Storage: `(default)/ecosystem/{ecosystemId}`.
+ */
+export interface EcosystemMeta
+  extends EcosystemIdentity,
+    EcosystemPresentation,
+    Pick<FireuxStamped, 'updated'> {
+  database_id: string
 }
 
 export const EcosystemStorage = {
   shape: 'root',
+  database: 'named',
   path: 'ecosystems/{ecosystemId}',
   collection: 'ecosystems',
   idParam: 'ecosystemId',
+} as const
+
+export const EcosystemMetaStorage = {
+  shape: 'projection',
+  database: '(default)',
+  path: 'ecosystem/{ecosystemId}',
+  collection: 'ecosystem',
+  idParam: 'ecosystemId',
+  authority: 'canonical-ecosystem-and-source-config',
 } as const
 
 export const EcosystemEntity = defineFireuxEntity({
@@ -35,14 +69,22 @@ export const EcosystemEntity = defineFireuxEntity({
   root: EcosystemStorage.path,
 })
 
-export const EcosystemModel: Ecosystem = {
+export const EcosystemIdentityModel: EcosystemIdentity = {
   id: '',
   project_id: '',
+  status: 'draft',
+}
+
+export const EcosystemPresentationModel: EcosystemPresentation = {
   name: '',
-  slug: '',
   description: '',
   image_url: '',
   website_url: '',
+}
+
+export const EcosystemModel: Ecosystem = {
+  ...EcosystemIdentityModel,
+  ...EcosystemPresentationModel,
   status: 'active',
   created: {
     at: {} as FirebaseTimestamp,
@@ -55,5 +97,16 @@ export const EcosystemModel: Ecosystem = {
   },
 }
 
+export const EcosystemMetaModel: EcosystemMeta = {
+  ...EcosystemIdentityModel,
+  ...EcosystemPresentationModel,
+  database_id: '',
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined,
+  },
+}
+
 export type EcosystemCreateInput = Omit<Ecosystem, 'id' | 'created' | 'updated'>
 export type EcosystemUpdateInput = Partial<EcosystemCreateInput>
+export type EcosystemMetaInput = Omit<EcosystemMeta, 'updated'>

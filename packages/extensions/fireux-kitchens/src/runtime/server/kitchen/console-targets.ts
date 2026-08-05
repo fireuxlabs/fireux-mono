@@ -10,18 +10,18 @@ function conflict(statusMessage: string): never {
 }
 
 export async function resolveKitchenConsoleTargetIds(
-  appId: string,
   uid: string,
   membership: Record<string, unknown>
 ) {
   const role = text(membership.role)
   if (role !== 'admin' && role !== 'user') return []
-  const collection = getRuntimeFirestore().collection(`apps/${appId}/kitchens`)
-  const snapshots = await Promise.all([
-    collection.where('operator_ids', 'array-contains', uid).get(),
-    collection.where('team_ids', 'array-contains', uid).get(),
-  ])
-  const ids = [...new Set(snapshots.flatMap(snapshot => snapshot.docs.map(document => document.id)))]
+  const snapshot = await getRuntimeFirestore()
+    .doc(`users/${uid}/private/targets`)
+    .get()
+  const rawIds = snapshot.data()?.kitchen_ids
+  const ids = Array.isArray(rawIds)
+    ? [...new Set(rawIds.map(text).filter(id => id && !id.includes('/')))]
+    : []
 
   if (ids.length > KITCHEN_CONSOLE_TARGET_LIMIT) {
     conflict('Kitchen console targets exceed the supported limit.')

@@ -9,6 +9,8 @@ import type {
 import { readJobServerScope } from './runtime.ts'
 import {
   APPLICATION_LIMIT,
+  appAgentRef,
+  appProfessionalRef,
   appRef,
   assertCurrentAppMembership,
   canonicalApplication,
@@ -30,17 +32,21 @@ export async function listJobApplications(
   const listScope: JobApplicationListScope =
     rawScope === 'employer' ? 'employer' : 'candidate'
   const db = getRuntimeFirestore(scope.databaseId)
-  const [appSnapshot, membershipSnapshot] = await db.getAll(
+  const profileRef = listScope === 'employer'
+    ? appAgentRef(db, scope.appId, uid)
+    : appProfessionalRef(db, scope.appId, uid)
+  const [appSnapshot, membershipSnapshot, profileSnapshot] = await db.getAll(
     appRef(db, scope.appId),
-    membershipRef(db, scope.appId, uid)
+    membershipRef(db, scope.appId, uid),
+    profileRef
   )
   assertCurrentAppMembership(appSnapshot, membershipSnapshot)
-  if (listScope === 'employer' && !hasProfile(membershipSnapshot, 'agent')) {
+  if (listScope === 'employer' && !hasProfile(profileSnapshot)) {
     fail(403, 'An active Agent profile is required.')
   }
   if (
     listScope === 'candidate' &&
-    !hasProfile(membershipSnapshot, 'professional')
+    !hasProfile(profileSnapshot)
   ) {
     fail(403, 'An active Professional profile is required.')
   }

@@ -23,6 +23,6 @@ const emit = defineEmits<{
 }>()
 
 const projectName = computed(() =>
-  String(props.project?.name || props.project?.slug || '').trim()
+  String(props.project?.name || '').trim()
 )
 </script>

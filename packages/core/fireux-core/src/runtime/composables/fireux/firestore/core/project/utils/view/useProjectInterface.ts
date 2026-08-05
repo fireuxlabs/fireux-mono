@@ -13,12 +13,10 @@ const labelize = (value: string) =>
 
 export type ProjectSurface = {
   id?: string
-  key?: string
   name?: string
-  slug?: string
   description?: string
   image_url?: string
-  status?: ProjectStatus | string
+  status?: ProjectStatus
   created?: Project['created']
   updated?: Project['updated']
 }
@@ -56,10 +54,9 @@ export function useProjectInterface() {
     return {
       id,
       name: safeString(raw.name),
-      slug: safeString(raw.slug),
       description: safeString(raw.description),
       image_url: safeString(raw.image_url),
-      status: safeString(raw.status),
+      status: raw.status,
       created: raw.created,
       updated: raw.updated,
     } as TProject & ProjectSurface

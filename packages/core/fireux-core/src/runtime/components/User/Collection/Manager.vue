@@ -193,8 +193,8 @@ const liveSelfUser = computed<PublicUserDto | null>(() => {
     displayName,
     bio: String(user.bio || '').trim(),
     avatar,
-    apps: Array.isArray(user.app_ids) ? user.app_ids : [],
-    profiles: Array.isArray(user.profiles) ? user.profiles : [],
+    apps: [],
+    profiles: [],
     path: `/users/${encodeURIComponent(handle)}`,
     isPublic: true,
   }
@@ -230,8 +230,6 @@ const collection = computed<User[]>(() =>
     bio: user.bio,
     avatar: user.avatar,
     handle: user.handle,
-    app_ids: Array.isArray(user.apps) ? user.apps : [],
-    profiles: Array.isArray(user.profiles) ? user.profiles : [],
   }))
 )
 const title = computed(() => String(props.title || 'Users'))

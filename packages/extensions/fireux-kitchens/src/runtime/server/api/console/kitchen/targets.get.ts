@@ -220,7 +220,6 @@ export default defineEventHandler(
     }
 
     const targetIds = await resolveKitchenConsoleTargetIds(
-      appId,
       uid,
       currentMembership
     )

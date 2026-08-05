@@ -134,7 +134,11 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/server/api/internal/app/context.get.ts'
   )
-  assert.match(context, /value\.profiles \?\? \[\]/)
+  assert.match(context, /profileSnapshots\[index\]\?\.exists/)
+  assert.match(
+    context,
+    /console_enabled: access\.hasAdminAuthority \|\| isConfiguredDeveloper/
+  )
   assert.doesNotMatch(context, /console_targets/)
   assert.match(context, /has_premium_access: access\.hasPremiumAccess/)
 
@@ -199,7 +203,8 @@ export async function run({ repoRoot }) {
     const rules = await expandFirestoreRulesTemplate(
       read(repoRoot, relativePath)
     )
-    assert.match(rules, /!\('profiles' in data\)/)
+    assert.match(rules, /match \/private\/targets[\s\S]*allow get, list, create, update, delete: if false;/)
+    assert.doesNotMatch(rules, /data\.profiles|data\.app_ids/)
     assert.doesNotMatch(rules, /console_targets/)
     assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)
     assert.match(rules, /allow create, update, delete: if false;/)

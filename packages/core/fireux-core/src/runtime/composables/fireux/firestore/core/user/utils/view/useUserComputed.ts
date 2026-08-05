@@ -103,7 +103,6 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     if (!key) return false
 
     const profiles = [
-      ...(coreUser.value?.profiles ?? []),
       ...(appUser.value?.profiles ?? []),
     ]
 

@@ -84,8 +84,6 @@
           'display_name',
           'avatar',
           'handle',
-          'app_ids',
-          'profiles',
           'created',
           'updated'
         ]) &&
@@ -94,9 +92,6 @@
           'bio',
           'avatar',
           'handle',
-          'app_ids',
-          'profiles',
-          'kitchen_ids',
           'created',
           'updated'
         ]) &&
@@ -105,17 +100,6 @@
         isValidUserAvatar(data.avatar) &&
         data.handle is string &&
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
-        data.app_ids is list &&
-        data.app_ids.size() <= 50 &&
-        validOptionalList(data, 'kitchen_ids', 50) &&
-        data.profiles is list &&
-        data.profiles.size() <= 20 &&
-        data.profiles.hasOnly([
-          'agent',
-          'chef',
-          'driver',
-          'professional'
-        ]) &&
         validCreatedStamp(data.created) &&
         validUpdatedStamp(data.updated);
     }
@@ -129,8 +113,8 @@
 
     function hasValidCanonicalUserProfile(userId, profileId) {
       return hasValidCanonicalUser(userId) &&
-        get(/databases/$(database)/documents/users/$(userId))
-          .data.profiles.hasAny([profileId]);
+        profileId == 'driver' &&
+        exists(/databases/$(database)/documents/drivers/$(userId));
     }
 
     match /users/{userId} {
@@ -143,14 +127,12 @@
       allow update: if isOwner(userId) &&
         uidNotModified() &&
         isValidUser(request.resource.data) &&
-        request.resource.data.app_ids == resource.data.app_ids &&
         request.resource.data.handle == resource.data.handle &&
         request.resource.data.created == resource.data.created &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'display_name',
           'bio',
           'avatar',
-          'kitchen_ids',
           'updated'
         ]) &&
         validOwnerUpdateStamp(request.resource.data, userId);
@@ -226,6 +208,12 @@
           request.resource.data.terms == resource.data.terms &&
           request.resource.data.created == resource.data.created &&
           validOwnerUpdateStamp(request.resource.data, userId);
+      }
+
+      match /private/targets {
+        // Target ids are private server-owned navigation state. Trusted APIs
+        // project the referenced public roots after authenticating the owner.
+        allow get, list, create, update, delete: if false;
       }
 
       match /notifications/{notificationId} {

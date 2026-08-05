@@ -72,15 +72,11 @@ function assertActiveProfessional(
     'App membership'
   )
   const membershipRole = String(membership.role ?? '').trim()
-  const profiles = Array.isArray(membership.profiles)
-    ? membership.profiles.map((value) => String(value ?? '').trim())
-    : []
   if (
     !appSnapshot?.exists ||
     !membershipSnapshot?.exists ||
     !appProfileSnapshot?.exists ||
-    (membershipRole !== 'user' && membershipRole !== 'admin') ||
-    !profiles.includes('professional')
+    (membershipRole !== 'user' && membershipRole !== 'admin')
   ) {
     throw createError({
       statusCode: 403,

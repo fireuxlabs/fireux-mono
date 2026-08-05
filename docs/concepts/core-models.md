@@ -20,19 +20,43 @@ Current source is authoritative:
 
 ## The simple spine
 
-| Record      | Meaning                                 | Authority                                             |
-| ----------- | --------------------------------------- | ----------------------------------------------------- |
-| `App`       | One deployed product surface            | `apps/{appId}` in its owning App database             |
-| `Ecosystem` | The product family an App may belong to | `ecosystems/{ecosystemId}` in the identity database   |
-| `User`      | One person                              | `users/{uid}` in the identity database                |
-| `AppUser`   | That User's membership in one App       | `apps/{appId}/users/{uid}` in the owning App database |
+| Record          | Meaning                                      | Authority                                                        |
+| --------------- | -------------------------------------------- | ---------------------------------------------------------------- |
+| `App`           | One deployed product surface                 | `apps/{appId}` in its owning App database                        |
+| `AppMeta`       | Local discovery projection of that App       | `(default)/apps/{appId}` in its Firebase host project            |
+| `Ecosystem`     | The product family an App may belong to      | `ecosystems/{ecosystemId}` in the identity database              |
+| `EcosystemMeta` | Local discovery projection of that Ecosystem | `(default)/ecosystem/{ecosystemId}` in its Firebase host project |
+| `Project`       | One FireUX control-plane Project             | `projects/{projectId}` in the FireUX named database              |
+| `ProjectMeta`   | Local discovery projection of that Project   | `(default)/project/{projectId}` in its Firebase host project     |
+| `User`          | One person                                   | `users/{uid}` in the identity database                           |
+| `AppUser`       | That User's membership in one App            | `apps/{appId}/users/{uid}` in the owning App database            |
 
-Each Firebase project's `(default)` database also carries a bounded singular
-`project/{projectId}` local record plus plural `ecosystems` and `apps`
-directory projections for only the things hosted by that Firebase project.
-Those safe routing and presentation records
+Each Firebase project's `(default)` database also carries bounded singular
+`project/{projectId}` and `ecosystem/{ecosystemId}` local records plus plural
+`apps/{appId}` AppMeta projections for only the things hosted by that Firebase
+project. Those safe routing and presentation records
 are not canonical identity or operational storage; canonical App membership
 and domain state remain in the owning named database.
+
+`AppMeta` is part of the App family but is not another Entity. It keeps only
+the local Project/Ecosystem/database pointers, App role and status, public
+identity and media, website route, Console-family discovery, and projection
+update stamp. It excludes membership, User ids and counts, moderation,
+repository/build metadata, join policy, and operational content.
+
+App role has exactly three product meanings: `global`, `tenant`, and
+`standalone`. Ecosystem identity is represented by `Ecosystem`, while internal
+system behavior is not an App role.
+
+`EcosystemMeta` follows the same projection rule. The canonical Ecosystem keeps
+identity, presentation, and stamps in its named database; the local meta adds
+only the named `database_id` needed for routing. Ecosystem document ID is route
+identity, so no duplicate stored slug exists in either shape.
+
+`ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
+in the FireUX control-plane named database, `AppProject` owns FireUX Console
+access, and the local meta adds only its named `database_id`. Project document
+ID is route identity, so neither Project shape stores a duplicate slug.
 
 The FireUX control-plane named database keeps canonical `projects/{projectId}`
 roots for every Project added to the Console. Its
@@ -58,7 +82,9 @@ stamps, and entity declarations are shared model utilities, not core records.
 
 Module composition is source controlled through extension packages and App
 configuration. There is deliberately no generic Firestore `Module` model.
-Likewise, App meta content is authored configuration, not a system record.
+Authored `app/meta.ts` content remains source configuration. Stored `AppMeta`
+is the separate bounded local-registry projection derived from canonical App
+and authored App configuration; neither becomes an alternate App identity.
 
 ## Identity rules
 
@@ -84,12 +110,17 @@ Likewise, App meta content is authored configuration, not a system record.
 
 ## Named projection debt
 
-The current stored contract still contains reconciled or duplicated values:
+The simplified source model excludes reconciled or duplicated values. The
+2026-08-05 bounded User migration removed the User/AppUser copies from every
+current named database. Membership documents now determine App access, profile
+document existence determines profile state, and owner navigation targets live
+only at `users/{uid}/private/targets`:
 
-- `User.app_ids`
-- `User.profiles`
-- `AppUser.profiles`
-- `AppUser.console_enabled`
+- `project_ids`
+- `kitchen_ids`
+
+Remaining non-User projection debt is:
+
 - `App.derived.user_count`
 - App database and repository/build metadata
 
@@ -104,9 +135,9 @@ cleanup: migrate readers, writers, Rules, guards, and stored records together.
    identity database; canonical stacks must not use an ambiguous default.
 3. Replace Nuxt-driven identity repair with an explicit provisioning command
    and a read-only current-App context.
-4. Remove `AppUser.console_enabled`, then replace or formally reconcile
-   `User.app_ids`, profile indexes, and `App.derived.user_count` one projection
-   at a time.
+4. Keep User readers, writers, Rules, and stored records on the completed
+   minimal shape; migrate remaining App projections such as
+   `App.derived.user_count` independently.
 5. Collapse App database metadata to one infrastructure source and remove
    stored-id/slug duplication only after route and data migrations are proven.
 
