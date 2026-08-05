@@ -74,6 +74,38 @@ and brand images feed the shared canonical, social metadata, and connected
 Organization/WebSite/WebPage graph. Other Apps retain their facts while
 converging on that transport.
 
+FireUX is also the first public catalogue proof beyond the landing. Its
+Operations and Solutions hubs project source-owned child catalogues as
+canonical CollectionPage/ItemList graphs, while their detail routes project
+canonical WebPages through the same Core transport. Unreleased Solution
+statuses remain outside generated sitemap discovery. A Solution composed from
+another ecosystem links to and permanently redirects through its declared
+canonical destination; FireUX does not manufacture a competing local detail
+or sitemap entry.
+
+FireUX owns one canonical parent overview at `/ecosystems/misebox`. It explains
+the FireUX–Misebox relationship from Misebox-owned Ecosystem literature, links
+to canonical Misebox Operations and Solution pages, and lists only active Apps
+from the bounded public directory. The former `/misebox` doorway permanently
+redirects to that overview and remains outside the sitemap. Missing App copy is
+not filled with invented claims; richer descriptions appear only when the App
+owner publishes them to the public projection.
+
+The platform relationship graph follows one rule across all Apps. FireUX
+publishes the `/apps` directory. A global or tenant App detail links to its
+bounded Ecosystem parent; the Ecosystem page links back to its active Apps. A
+standalone App has no canonical Ecosystem parent and links directly back to the
+FireUX Apps directory. The App's `ecosystem` runtime package selector does not
+manufacture a stored `ecosystem_id` relationship for standalone Apps.
+
+FireUX owns `/sitemaps/directory.xml` for dynamic App and Ecosystem details.
+The JSON directory endpoint and XML sitemap share one bounded reader, so search
+discovery cannot bypass active-record projection rules. The App-owned sitemap
+document is registered through Core's typed SEO configuration and appears in
+the sitemap index. Retired Cleanbox Ecosystem identity redirects to Werkbox and
+the FireUX Blank development harness remains `noindex` and outside the dynamic
+sitemap.
+
 - Canonicals use the configured production App origin, never an arbitrary
   request host when a reviewed origin exists.
 - A canonical route key must match the route-family decision in
@@ -202,18 +234,23 @@ templates have measurable baselines.
 
 ## Delta register
 
-| Difference                                                         | State        | Reason and treatment                                                                                |
-| ------------------------------------------------------------------ | ------------ | --------------------------------------------------------------------------------------------------- |
-| Core owns runtime robots while Apps add bounded route policy       | `accepted`   | Transport is shared; genuine private route families remain App-owned config                         |
-| Entity sitemap route identity may be document ID or authored field | `accepted`   | Route-family identity decisions differ; every provider must declare the choice explicitly           |
-| Jobs requires a custom projection-backed sitemap                   | `accepted`   | JSON and XML share the bounded public reader; generic visibility-only discovery stays prohibited    |
-| Kitchens require a custom projection-backed sitemap                | `accepted`   | JSON and XML share App, support, Place, publication, and Test gates before emitting a Kitchen route |
-| Many project landings call `useSeoMeta` directly                   | `drift`      | FireUX, Misebox, and Interlaken are proofs; migrate remaining Apps without copying their facts      |
-| Entity JSON-LD builders emit isolated sparse objects               | `drift`      | Add stable canonical IDs and a connected graph only through proven shared primitives                |
-| Three landings have rendered shared SEO contracts                  | `accepted`   | FireUX, Misebox, and Interlaken smoke verifies canonical, robots, social metadata, and graph facts  |
-| Interlaken changes page language without crawlable alternate URLs  | `to-confirm` | Approve a stable language-route policy before emitting `hreflang` or multilingual sitemap entries   |
-| Public-template performance has no shared budget                   | `to-confirm` | Measure representative siblings before guarding thresholds                                          |
-| Search-result and indexation measurement is not integrated         | `migration`  | Add only aggregate, privacy-safe operational evidence; do not introduce behavioral tracking         |
+| Difference                                                         | State        | Reason and treatment                                                                                          |
+| ------------------------------------------------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------- |
+| Core owns runtime robots while Apps add bounded route policy       | `accepted`   | Transport is shared; genuine private route families remain App-owned config                                   |
+| Entity sitemap route identity may be document ID or authored field | `accepted`   | Route-family identity decisions differ; every provider must declare the choice explicitly                     |
+| Jobs requires a custom projection-backed sitemap                   | `accepted`   | JSON and XML share the bounded public reader; generic visibility-only discovery stays prohibited              |
+| Kitchens require a custom projection-backed sitemap                | `accepted`   | JSON and XML share App, support, Place, publication, and Test gates before emitting a Kitchen route           |
+| Many project landings call `useSeoMeta` directly                   | `drift`      | FireUX, Misebox, and Interlaken are proofs; migrate remaining Apps without copying their facts                |
+| Entity JSON-LD builders emit isolated sparse objects               | `drift`      | Add stable canonical IDs and a connected graph only through proven shared primitives                          |
+| Three landings have rendered shared SEO contracts                  | `accepted`   | FireUX, Misebox, and Interlaken smoke verifies canonical, robots, social metadata, and graph facts            |
+| FireUX Operations and Solutions prove hub/detail search transport  | `accepted`   | Source catalogues feed canonical collection/detail pages, connected lists, sitemap policy, and rendered smoke |
+| FireUX describes Misebox at one parent Ecosystem route             | `accepted`   | Source-owned relationship copy, released Solutions, and bounded active App records feed the rendered page     |
+| Dynamic App/Ecosystem details use one directory sitemap            | `accepted`   | JSON and XML share the bounded reader; App details expose their canonical parent relationship                 |
+| Standalone Apps have no canonical Ecosystem parent                 | `accepted`   | Runtime package selection does not create a stored public relationship                                        |
+| FireUX Blank remains visible but non-indexable                     | `migration`  | Current source defines a harness; archive its public record or approve a product role before indexing         |
+| Interlaken changes page language without crawlable alternate URLs  | `to-confirm` | Approve a stable language-route policy before emitting `hreflang` or multilingual sitemap entries             |
+| Public-template performance has no shared budget                   | `to-confirm` | Measure representative siblings before guarding thresholds                                                    |
+| Search-result and indexation measurement is not integrated         | `migration`  | Add only aggregate, privacy-safe operational evidence; do not introduce behavioral tracking                   |
 
 ## Verification
 
@@ -246,6 +283,12 @@ iterating and `pnpm guard` before repository handoff.
   reader.
 - Keep FireUX, Misebox, and Interlaken landing metadata and connected graphs
   under rendered smoke.
+- Keep FireUX Operations and Solutions hub/detail canonicals, graphs, and
+  released-status sitemap eligibility under rendered smoke and the SEO guard.
+- Keep `/ecosystems/misebox` as the FireUX parent overview, `/misebox` as a
+  permanent redirect, and all product-depth links canonical to Misebox.
+- Keep the FireUX App/Ecosystem JSON directory and directory sitemap on one
+  bounded reader, and keep every indexable App detail linked to its real parent.
 
 ### Next
 

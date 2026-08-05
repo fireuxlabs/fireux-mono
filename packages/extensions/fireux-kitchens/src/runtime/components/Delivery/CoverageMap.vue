@@ -28,9 +28,8 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeConfig } from '#imports'
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { loadFireuxGoogleMaps, readGoogleMaps } from '../../utils/google-maps'
+import { useGoogleMaps } from 'fireux-places/runtime/composables/fireux/places/useGoogleMaps'
 import {
   extendBoundsWithLocalZones,
   fitDeliveryZoneBounds,
@@ -73,8 +72,7 @@ const emit = defineEmits<{
   ): void
 }>()
 
-const runtimeConfig = useRuntimeConfig()
-const publicConfig = runtimeConfig.public as Record<string, unknown>
+const googleMaps = useGoogleMaps()
 const mapEl = ref<HTMLElement | null>(null)
 const mapMessage = ref('Loading delivery map...')
 const mapError = ref('')
@@ -83,32 +81,26 @@ const mapClickListener = ref<{ remove: () => void } | null>(null)
 const zoneColorsByPlaceId = ref<Record<string, string>>({})
 const deliveryZones = computed(() => props.zones)
 const mapPadding = 28
-const googleMapsApiKey = computed(() =>
-  String(publicConfig.googleMapsApiKey || '').trim()
-)
-const googleMapsMapId = computed(() =>
-  String(publicConfig.googleMapsMapId || '').trim()
-)
 
 onMounted(async () => {
   isMounted.value = true
   if (!mapEl.value) return
-  if (!googleMapsApiKey.value || !googleMapsMapId.value) {
+  if (!googleMaps.apiKey.value || !googleMaps.mapId.value) {
     mapMessage.value = ''
     mapError.value = 'Google Maps key or Map ID is missing.'
     return
   }
 
   try {
-    await loadFireuxGoogleMaps(googleMapsApiKey.value)
+    await googleMaps.load()
 
-    const google = readGoogleMaps()
+    const google = googleMaps.read()
     await google.maps.importLibrary('maps')
 
     const map = new google.maps.Map(mapEl.value, {
       center: props.center,
       zoom: props.compact ? 10 : 11,
-      mapId: googleMapsMapId.value,
+      mapId: googleMaps.mapId.value,
       fullscreenControl: false,
       mapTypeControl: false,
       streetViewControl: false,

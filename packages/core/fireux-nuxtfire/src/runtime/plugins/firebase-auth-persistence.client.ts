@@ -1,7 +1,7 @@
 import { defineNuxtPlugin } from '#imports'
 import { getApps } from 'firebase/app'
 import {
-  browserSessionPersistence,
+  browserLocalPersistence,
   getAuth,
   setPersistence,
 } from 'firebase/auth'
@@ -12,7 +12,8 @@ export default defineNuxtPlugin(async () => {
   // transient plugin-order state into a fatal application error.
   if (!getApps().length) return
 
-  // Keep authentication within the browser session. Apps must make a separate,
-  // reviewed product decision before offering a persistent-sign-in feature.
-  await setPersistence(getAuth(), browserSessionPersistence)
+  // Authentication is an explicit user-requested feature and must survive
+  // reloads and browser restarts until the user signs out or clears site data.
+  // Keep this as one shared Core policy rather than an App-specific delta.
+  await setPersistence(getAuth(), browserLocalPersistence)
 })

@@ -10,11 +10,15 @@
   >
     <UCard variant="subtle">
       <template #header>
-        <h2 class="text-lg font-semibold text-highlighted">Start in the shared app</h2>
+        <h2 class="text-lg font-semibold text-highlighted">
+          Start in the shared app
+        </h2>
       </template>
 
       <p class="text-muted">
-        Use Werkbox before paying for a dedicated app. Start free, upgrade when the shared tools earn their place in your business, and move to your own branded app later if needed.
+        Use Werkbox before paying for a dedicated app. Start free, upgrade when
+        the shared tools earn their place in your business, and move to your own
+        branded app later if needed.
       </p>
     </UCard>
 
@@ -28,10 +32,25 @@
           to="/ecosystems/werkbox/cleaning"
           variant="subtle"
         />
+      </div>
+    </section>
+
+    <section v-if="publishedApps.length" class="space-y-4">
+      <div class="space-y-1">
+        <h2 class="text-xl font-semibold text-highlighted">Werkbox Apps</h2>
+        <p class="text-sm leading-6 text-muted">
+          Active Apps connected through Werkbox's existing Cleanbox storage
+          identity in the bounded FireUX directory.
+        </p>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2">
         <UPageCard
-          title="More practical work"
-          description="Additional practical-work categories can reuse the same neutral Job and Place foundations when their workflows are ready."
-          icon="i-lucide-wrench"
+          v-for="app in publishedApps"
+          :key="app.id"
+          :title="app.app_name"
+          :description="appSummary(app)"
+          :to="app.detail_url"
+          icon="i-lucide-app-window"
           variant="subtle"
         />
       </div>
@@ -41,7 +60,7 @@
       <UButton to="/ecosystems/werkbox/cleaning" icon="i-lucide-sparkles">
         Explore cleaning
       </UButton>
-      <UButton to="/apps/werkbox" color="neutral" variant="soft">
+      <UButton to="/apps/cleanbox-app" color="neutral" variant="soft">
         View Werkbox
       </UButton>
     </template>
@@ -49,12 +68,67 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useAsyncData } from '#imports'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import type {
+  AppDirectoryEntry,
+  PlatformDirectoryResponse,
+} from 'fireux-core/runtime/models/utils/directory'
+
 definePageMeta({
   layout: 'landing',
 })
 
-useSeoMeta({
+const { data } = await useAsyncData<PlatformDirectoryResponse>(
+  'fireux-platform-directory',
+  () => $fetch('/api/public/directory'),
+  { server: true, lazy: false }
+)
+const publishedApps = computed<AppDirectoryEntry[]>(() =>
+  (data.value?.apps ?? [])
+    .filter(
+      (app: AppDirectoryEntry) =>
+        app.status === 'active' && app.ecosystem_id === 'cleanbox'
+    )
+    .sort((left: AppDirectoryEntry, right: AppDirectoryEntry) => {
+      if (left.role === 'global') return -1
+      if (right.role === 'global') return 1
+      return left.app_name.localeCompare(right.app_name)
+    })
+)
+const appSummary = (app: AppDirectoryEntry) =>
+  app.tagline ||
+  app.short_bio ||
+  app.description ||
+  `${app.app_name} is a published ${app.role === 'global' ? 'main App' : 'tenant App'} in the Werkbox Ecosystem.`
+
+useSeo({
   title: 'Werkbox · FireUX Ecosystem',
-  description: 'Start with shared tools for practical work, then move to a dedicated Werkbox app when the business needs one.',
+  description:
+    'Explore Werkbox cleaning services and the active Apps connected to the FireUX practical-work Ecosystem.',
+  path: '/ecosystems/werkbox',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      pageType: 'CollectionPage',
+      title: context.title,
+      items: [
+        {
+          name: 'Cleaning',
+          url: context.absoluteUrl('/ecosystems/werkbox/cleaning'),
+        },
+        ...publishedApps.value.map((app) => ({
+          name: app.app_name,
+          url: context.absoluteUrl(app.detail_url),
+        })),
+      ],
+    }),
 })
 </script>

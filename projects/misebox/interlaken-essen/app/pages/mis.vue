@@ -21,7 +21,7 @@
           <p class="market-intro">
             {{ copy('account_guest_intro') }}
           </p>
-          <NuxtLink to="/auth" class="market-personal__primary-action">
+          <NuxtLink to="/auth?redirect=/mis" class="market-personal__primary-action">
             <UIcon name="i-lucide-log-in" aria-hidden="true" />
             <strong>{{ copy('account_sign_in') }}</strong>
             <UIcon name="i-lucide-arrow-right" aria-hidden="true" />

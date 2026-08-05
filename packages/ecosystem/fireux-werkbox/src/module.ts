@@ -1,5 +1,4 @@
-// Concurrent edit — 2026-07-21 14:40 CEST — Werkbox Firebase hardening: expose a build-bound security-contract attestation on every Werkbox App.
-import { addServerHandler, createResolver, defineNuxtModule } from '@nuxt/kit'
+import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import type { Nuxt, NuxtModule } from '@nuxt/schema'
 import { configureFireuxEcosystemModule } from 'fireux-core/config/module/ecosystem-wiring'
 import { ecosystemConfig } from './config/firebase/ecosystem.config'
@@ -17,13 +16,6 @@ const module: NuxtModule<Record<string, never>> = defineNuxtModule({
     configureFireuxEcosystemModule(resolver, nuxt, {
       ecosystem: ecosystemConfig,
       configureComponents,
-    })
-    addServerHandler({
-      route: '/api/internal/werkbox/security-contract',
-      method: 'get',
-      handler: resolver.resolve(
-        './runtime/server/api/internal/werkbox/security-contract.get'
-      ),
     })
   },
 })

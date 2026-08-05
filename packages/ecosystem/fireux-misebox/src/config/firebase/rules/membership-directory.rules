@@ -96,6 +96,7 @@
           'handle',
           'app_ids',
           'profiles',
+          'kitchen_ids',
           'created',
           'updated'
         ]) &&
@@ -106,6 +107,7 @@
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
         data.app_ids is list &&
         data.app_ids.size() <= 50 &&
+        validOptionalList(data, 'kitchen_ids', 50) &&
         data.profiles is list &&
         data.profiles.size() <= 20 &&
         data.profiles.hasOnly([
@@ -148,6 +150,7 @@
           'display_name',
           'bio',
           'avatar',
+          'kitchen_ids',
           'updated'
         ]) &&
         validOwnerUpdateStamp(request.resource.data, userId);

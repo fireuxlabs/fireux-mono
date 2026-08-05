@@ -11,7 +11,7 @@
     </span>
 
     <NuxtLink
-      to="/auth"
+      to="/auth?mode=sign-up&redirect=/mis"
       class="market-launch__action"
     >
       {{ copy('register_business') }}

@@ -12,7 +12,7 @@ import {
   loadFireuxAppMetaContent,
   loadFireuxSolutionsMarkdown,
   mergeFireuxSolutionMarkdownContent,
-} from './meta-content'
+} from './meta-content-loader'
 import { moduleName } from './modules'
 import {
   configureAppModules,
@@ -102,9 +102,6 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       domains: app.domains || [],
       profiles: app.profiles || [],
       selfJoinEnabled: app.selfJoinEnabled === true,
-      ...(app.authDefaultMode ? { authDefaultMode: app.authDefaultMode } : {}),
-      ...(app.authCompletion ? { authCompletion: app.authCompletion } : {}),
-      ...(app.authOnboarding ? { authOnboarding: app.authOnboarding } : {}),
       navHiddenKeys: app.navHiddenKeys || [],
       navOverrides: app.navOverrides || {},
     },

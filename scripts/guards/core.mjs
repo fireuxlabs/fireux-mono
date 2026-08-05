@@ -127,6 +127,16 @@ function checkFireuxCoreContracts(pkgPath) {
     'src/runtime/composables/fireux/app/console/useConsole.ts'
   )
   const consolePolicy = source('src/runtime/utils/console-policy.ts')
+  const appConfig = source('src/config/app/fireux.config.ts')
+  const metaContent = source('src/config/app/meta-content.ts')
+  const metaContentLoader = source('src/config/app/meta-content-loader.ts')
+  const authSystem = source('src/runtime/components/Auth/System.vue')
+  const defaultHeader = source(
+    'src/runtime/components/layouts/default/Header.vue'
+  )
+  const landingHero = source(
+    'src/runtime/components/landing/LandingHeroSection.vue'
+  )
 
   if (!runtimeType.includes('Omit<FireuxAppConfig, RuntimeNormalizedFields>')) {
     violations.push('RuntimeApp must derive from the authored FireuxAppConfig.')
@@ -164,6 +174,19 @@ function checkFireuxCoreContracts(pkgPath) {
   if (/fireux-config\.(?:client|server)/.test(pluginConfig)) {
     violations.push('Core must not restore the unused FireUX config providers.')
   }
+  if (/from\s+['"](?:node:|jiti)/.test(metaContent)) {
+    violations.push(
+      'Authored App metadata must remain browser-safe; Node-only loading belongs in meta-content-loader.ts.'
+    )
+  }
+  if (
+    !appConfig.includes("from './meta-content-loader'") ||
+    !metaContentLoader.includes("from 'node:fs'")
+  ) {
+    violations.push(
+      'defineFireuxConfig must use the config-only App metadata loader.'
+    )
+  }
   for (const plugin of [
     'src/runtime/plugins/fireux-config.client.ts',
     'src/runtime/plugins/fireux-config.server.ts',
@@ -175,6 +198,26 @@ function checkFireuxCoreContracts(pkgPath) {
   if (/UPinInput|developer PIN/i.test(onboarding)) {
     violations.push(
       'App onboarding must rely on trusted server UID authorization, not a cosmetic client PIN.'
+    )
+  }
+  for (const [owner, contents] of [
+    ['Auth System', authSystem],
+    ['default Header', defaultHeader],
+    ['landing Hero', landingHero],
+  ]) {
+    if (!contents.includes('Open Dashboard') || /Open workspace/i.test(contents)) {
+      violations.push(
+        `${owner} must name the shared signed-in destination Open Dashboard.`
+      )
+    }
+  }
+  if (
+    !authSystem.includes('accountRecoveryConsentRequired') ||
+    !authSystem.includes("'Complete account setup'") ||
+    !authSystem.includes('FIREUX_ACCOUNT_TERMS_VERSION')
+  ) {
+    violations.push(
+      'Auth System must retain the shared explicit-consent recovery path for signed-in identities missing canonical account evidence.'
     )
   }
 

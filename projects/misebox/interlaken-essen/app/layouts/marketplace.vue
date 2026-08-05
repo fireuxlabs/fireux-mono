@@ -75,7 +75,7 @@
         <ClientOnly>
           <NuxtLink
             v-if="authPhase === 'guest'"
-            to="/auth"
+            to="/auth?redirect=/mis"
             class="market-account market-account--signin"
           >
             <UIcon name="i-lucide-user-round" aria-hidden="true" />

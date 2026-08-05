@@ -67,6 +67,7 @@ export type PublicMarketplaceStore = {
   image_alt: string
   section_ids: string[]
   fulfilment_methods: MarketplaceFulfilmentMethod[]
+  publication_state?: MarketplaceStoreState
   offers?: PublicMarketplaceOffer[]
 }
 

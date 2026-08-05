@@ -4,10 +4,15 @@
     <UContainer class="py-10 sm:py-14">
       <div class="mx-auto grid max-w-5xl gap-10">
         <header class="grid max-w-3xl gap-3">
-          <NuxtLink to="/" class="w-fit text-sm font-semibold text-primary hover:underline">
+          <NuxtLink
+            to="/"
+            class="w-fit text-sm font-semibold text-primary hover:underline"
+          >
             {{ appName }}
           </NuxtLink>
-          <h1 class="m-0 text-3xl font-semibold leading-tight text-highlighted sm:text-4xl">
+          <h1
+            class="m-0 text-3xl font-semibold leading-tight text-highlighted sm:text-4xl"
+          >
             Operations
           </h1>
           <p class="m-0 text-base leading-7 text-muted">
@@ -65,8 +70,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAsyncData, useSeoMeta } from '#imports'
+import { useAsyncData } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from '../../composables/fireux/seo/useSeo'
 import type { FireuxMetaOperation } from '../../../config/app/meta-content'
 
 type OperationsResponse = {
@@ -116,8 +125,29 @@ definePageMeta({
   },
 })
 
-useSeoMeta({
-  title: () => `Operations - ${appName.value}`,
-  description: () => `Operations across ${appName.value} consoles.`,
+const pageTitle = computed(() => `Operations - ${appName.value}`)
+const pageDescription = computed(
+  () => `Operations across ${appName.value} consoles.`
+)
+
+useSeo({
+  title: pageTitle,
+  description: pageDescription,
+  path: '/operations',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      pageType: 'CollectionPage',
+      title: context.title,
+      items: operations.value
+        .filter((operation) => operation.slug)
+        .map((operation) => ({
+          name: operation.title,
+          url: context.absoluteUrl(`/operations/${operation.slug}`),
+        })),
+    }),
 })
 </script>

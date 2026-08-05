@@ -2,13 +2,18 @@
 <template>
   <OperationRoadmapPage
     title="Ecosystem"
-    description="Manage your project's ecosystem."
+    description="Review the selected Project Ecosystem and the Apps inside it."
     :items="roadmap"
     :action="action"
   />
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 const roadmap = [
   { label: 'View the ecosystem connected to your project', done: true },
   { label: 'Create or connect an ecosystem', done: false },
@@ -24,8 +29,18 @@ const action = {
   icon: 'i-lucide-orbit',
 } as const
 
-useSeoMeta({
+useSeo({
   title: 'Manage your project ecosystem - FireUX',
-  description: 'Manage the ecosystem connected to your FireUX project.',
+  description:
+    'Review the selected FireUX Project Ecosystem and the Apps inside it.',
+  path: '/operations/ecosystem',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
 })
 </script>

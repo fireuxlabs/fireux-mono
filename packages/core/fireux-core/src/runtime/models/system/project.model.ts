@@ -2,6 +2,10 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../utils/entity.model'
 import type { FireuxStamped } from '../utils/stamps.model'
+import {
+  FireuxAppAccessRecordModel,
+  type FireuxAppAccessRecord,
+} from '../utils/console-entity.model'
 
 export type ProjectStatus = 'draft' | 'active' | 'paused' | 'archived'
 
@@ -17,8 +21,9 @@ type WidenLiteral<T> =
  * Entity map: docs/concepts/entities.md
  *
  * Family: FireUX control-plane root entity
- * Storage: private control-plane record
+ * Storage: private control-plane root plus FireUX App access support
  * Root path: /projects/<projectId>
+ * App path: /apps/<appId>/projects/<projectId>
  * Management surface: /console/project in fireux-app
  *
  * Decision note:
@@ -26,15 +31,19 @@ type WidenLiteral<T> =
  *   directory entity and is not bootstrapped into every ecosystem database.
  * - App and Ecosystem records point to their parent with `project_id`.
  * - Project does not store inverse `app_id`, `ecosystem_id`, or access lists.
- * - Project access currently follows FireUX App administration. A dedicated
- *   Project membership model should be introduced only when that lifecycle is real.
+ * - The root owns Project identity and control-plane configuration.
+ * - The AppProject record determines which Projects are attached to the
+ *   FireUX App Console and owns only access/support fields.
  * - The Project console may manage related App and Ecosystem surfaces, but those surfaces edit each entity's own stored truth.
  * - A Project management surface must not invent separate App or Ecosystem stored identities unless the model docs say so.
  * - If this decision changes, update the entity map and this source together.
  */
 export const ProjectStorage = {
-  shape: 'private/control-plane-root',
-  path: 'projects/{projectId}',
+  shape: 'root-and-app-support',
+  root: 'projects/{projectId}',
+  scope: 'apps/{appId}/projects/{projectId}',
+  rootCollection: 'projects',
+  scopeCollection: 'projects',
   collection: 'projects',
   idParam: 'projectId',
 } as const
@@ -45,11 +54,12 @@ export const ProjectEntity = defineFireuxEntity({
   family: ['system', 'console-entity'],
   identity: 'root',
   authority: 'fireux-control-plane',
-  appSupport: 'none',
+  appSupport: 'access-record',
   publicRead: 'none',
   status: 'confirmed',
   console: true,
-  root: ProjectStorage.path,
+  root: ProjectStorage.root,
+  appSupportPath: ProjectStorage.scope,
 })
 
 export const ProjectModel = {
@@ -73,6 +83,12 @@ export const ProjectModel = {
 } as const
 
 export type Project = WidenLiteral<typeof ProjectModel>
+
+export const AppProjectModel = {
+  ...FireuxAppAccessRecordModel,
+} as const
+
+export type AppProject = FireuxAppAccessRecord
 
 export type ProjectCreateInput = Pick<Project, 'id' | 'name' | 'slug'> &
   Partial<Pick<Project, 'description' | 'image_url' | 'status'>>

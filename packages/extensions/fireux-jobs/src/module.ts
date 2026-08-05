@@ -5,9 +5,7 @@
 import { createResolver, defineNuxtModule } from '@nuxt/kit'
 import {
   defaultFireuxJobsConfig,
-  normalizeFireuxJobSourceAppDoorways,
   type FireuxJobCategorySelection,
-  type FireuxJobSourceAppDoorways,
 } from './config/jobs.config'
 import { configureFireuxModule } from 'fireux-core/config/module/module-wiring'
 import { registerComposablesDir } from 'fireux-core/config/module/module-helpers'
@@ -25,7 +23,6 @@ import { configureServer } from './config/module/server-config'
 export interface ModuleOptions {
   prefix?: string
   categories?: FireuxJobCategorySelection
-  sourceAppDoorways?: FireuxJobSourceAppDoorways
 }
 
 function normalizeIdentifiers(
@@ -36,6 +33,17 @@ function normalizeIdentifiers(
   return Array.from(
     new Set(source.map((entry) => String(entry ?? '').trim()).filter(Boolean))
   )
+}
+
+function appCapabilities(nuxt: any) {
+  const fireux = nuxt.options.runtimeConfig?.public?.fireux || {}
+  const domains = new Set(normalizeIdentifiers(fireux.domains))
+  const profiles = new Set(normalizeIdentifiers(fireux.profiles))
+  return {
+    jobs: domains.has('jobs'),
+    agents: profiles.has('agent'),
+    professionals: profiles.has('professional'),
+  }
 }
 
 declare module '@nuxt/schema' {
@@ -57,28 +65,36 @@ export default defineNuxtModule<ModuleOptions>({
   defaults: { prefix: 'Fire' },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
-    registerReservedRootRouteKeys(['jobs', 'agents', 'professionals'])
+    const capabilities = appCapabilities(nuxt)
+    registerReservedRootRouteKeys([
+      ...(capabilities.jobs ? ['jobs'] : []),
+      ...(capabilities.agents ? ['agents'] : []),
+      ...(capabilities.professionals ? ['professionals'] : []),
+    ])
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
-      ctx.addHub('/jobs')
-      ctx.addHub('/agents')
-      ctx.addHub('/professionals')
-      ctx.addStaticPath('/jobs/learn-more')
-      ctx.addStaticPath('/agents/learn-more')
-      ctx.addStaticPath('/professionals/learn-more')
+      if (capabilities.jobs) {
+        ctx.addHub('/jobs')
+        ctx.addStaticPath('/jobs/learn-more')
+      }
+      if (capabilities.agents) {
+        ctx.addHub('/agents')
+        ctx.addStaticPath('/agents/learn-more')
+      }
+      if (capabilities.professionals) {
+        ctx.addHub('/professionals')
+        ctx.addStaticPath('/professionals/learn-more')
+      }
     })
     nuxt.hook(
       'fireux:seo:sitemaps:extend' as any,
       (ctx: FireuxSeoSitemapsExtendContext) => {
-        ctx.addDocument('/sitemaps/jobs.xml')
+        if (capabilities.jobs) ctx.addDocument('/sitemaps/jobs.xml')
       }
     )
     const categoryScope = options?.categories === 'all' ? 'all' : 'allowlist'
     const categories = normalizeIdentifiers(
       categoryScope === 'allowlist' ? options?.categories : [],
       defaultFireuxJobsConfig.categories
-    )
-    const sourceAppDoorways = normalizeFireuxJobSourceAppDoorways(
-      options?.sourceAppDoorways
     )
     configureFireuxModule(resolver, nuxt, {
       runtime: (nuxt) =>
@@ -89,13 +105,12 @@ export default defineNuxtModule<ModuleOptions>({
             enabled: true,
             categoryScope,
             categories,
-            sourceAppDoorways,
           },
           { merge: true }
         ),
       composables: registerComposablesDir,
       components: configureComponents,
-      pages: configurePages,
+      pages: (resolver, nuxt) => configurePages(resolver, nuxt, capabilities),
       assets: configureAssets,
       server: configureServer,
     })

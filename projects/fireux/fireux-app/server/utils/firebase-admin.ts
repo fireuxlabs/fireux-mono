@@ -103,5 +103,7 @@ export async function getFirestoreDb(databaseId?: string): Promise<Firestore> {
     databaseId || runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
   ).trim()
 
-  return configuredDatabaseId ? getFirestore(app, configuredDatabaseId) : getFirestore(app)
+  return configuredDatabaseId && configuredDatabaseId !== '(default)'
+    ? getFirestore(app, configuredDatabaseId)
+    : getFirestore(app)
 }

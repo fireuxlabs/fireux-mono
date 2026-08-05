@@ -31,6 +31,7 @@ import {
   DIRECTORY_PUBLICATION_RECEIVER,
   DIRECTORY_PUBLICATION_TARGETS,
 } from '../_lib/directory-publication-targets.mjs'
+import { APP_REGISTRY } from '../_lib/app-registry.mjs'
 
 const read = (repoRoot, relativePath) =>
   readFileSync(path.join(repoRoot, relativePath), 'utf8')
@@ -415,26 +416,9 @@ function assertPublisherTargets() {
     'misebox',
     'slap',
   ]
-  const expectedAppIds = [
-    'baeren-ringgenberg',
-    'bangin-coffee',
-    'book-with-nats',
-    'bringli-app',
-    'buenohost',
-    'cleanbox-app',
-    'find-my-seo-app',
-    'fireux-app',
-    'fireux-blank',
-    'fireux-tenant',
-    'go-qr',
-    'granite-app',
-    'la-tap-berne',
-    'misebox-app',
-    'richies-reinigung',
-    'slap-app',
-    'sproochli',
-    'yellow-velo',
-  ]
+  const expectedAppIds = Object.values(APP_REGISTRY)
+    .map((entry) => entry.appId)
+    .sort()
   const expectedEcosystemIds = [
     'bringli',
     'buenohost',

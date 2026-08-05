@@ -16,6 +16,10 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { usePublishedPlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
 
 const ecosystemsController = usePublishedPlatformEcosystemDirectory()
@@ -37,9 +41,22 @@ definePageMeta({
   name: 'EcosystemsIndexPage',
 })
 
-useSeoMeta({
+useSeo({
   title: 'FireUX Ecosystems',
   description: 'Browse published FireUX ecosystems and their connected Apps.',
+  path: '/ecosystems',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      pageType: 'CollectionPage',
+      title: context.title,
+      items: ecosystemsController.ecosystems.value.map((ecosystem) => ({
+        name: ecosystem.name,
+        url: context.absoluteUrl(ecosystem.detail_url),
+      })),
+    }),
 })
-
 </script>

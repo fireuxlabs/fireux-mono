@@ -86,10 +86,9 @@
 </template>
 
 <script setup lang="ts">
-import { useRuntimeConfig } from '#imports'
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useGoogleMaps } from 'fireux-places/runtime/composables/fireux/places/useGoogleMaps'
 import type { KitchenDeliveryZone } from '../../../../../../models/kitchen.model'
-import { loadFireuxGoogleMaps, readGoogleMaps } from '../../../../../../utils/google-maps'
 
 type LatLngPoint = { lat: number, lng: number }
 
@@ -111,8 +110,7 @@ const emit = defineEmits<{
   (event: 'update:polygon', points: LatLngPoint[]): void
 }>()
 
-const runtimeConfig = useRuntimeConfig()
-const publicConfig = runtimeConfig.public as Record<string, unknown>
+const googleMapsRuntime = useGoogleMaps()
 const mapEl = ref<HTMLElement | null>(null)
 const mapMessage = ref('Loading delivery map...')
 const mapError = ref('')
@@ -125,32 +123,26 @@ const markers = ref<any[]>([])
 const activeZone = computed(() => props.zones[props.selectedIndex] || null)
 const activePolygon = computed<LatLngPoint[]>(() => activeZone.value?.polygon || [])
 const pointCount = computed(() => activePolygon.value.length)
-const googleMapsApiKey = computed(() =>
-  String(publicConfig.googleMapsApiKey || '').trim()
-)
-const googleMapsMapId = computed(() =>
-  String(publicConfig.googleMapsMapId || '').trim()
-)
 
 onMounted(async () => {
   isMounted.value = true
   if (!mapEl.value) return
-  if (!googleMapsApiKey.value || !googleMapsMapId.value) {
+  if (!googleMapsRuntime.apiKey.value || !googleMapsRuntime.mapId.value) {
     mapMessage.value = ''
     mapError.value = 'Google Maps key or Map ID is missing.'
     return
   }
 
   try {
-    await loadFireuxGoogleMaps(googleMapsApiKey.value)
+    await googleMapsRuntime.load()
 
-    const google = readGoogleMaps()
+    const google = googleMapsRuntime.read()
     await google.maps.importLibrary('maps')
     googleMaps.value = google
     map.value = new google.maps.Map(mapEl.value, {
       center: { lat: 46.7004, lng: 7.8922 },
       zoom: 11,
-      mapId: googleMapsMapId.value,
+      mapId: googleMapsRuntime.mapId.value,
       fullscreenControl: false,
       mapTypeControl: false,
       streetViewControl: false,

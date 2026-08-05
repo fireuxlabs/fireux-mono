@@ -23,16 +23,16 @@ const ECOSYSTEM_ID = 'cleanbox'
 const APP_IDS = Object.freeze(['cleanbox-app', 'richies-reinigung'])
 const MIGRATION_MARKER_PATH =
   'security-migrations/werkbox-firestore-rules-v1'
-const SERVER_CONTRACT_HOSTS = Object.freeze({
-  'https://cleanbox.web.app': 'cleanbox-app',
-  'https://richies-reinigung.web.app': 'richies-reinigung',
-})
+const SERVER_API_HOSTS = Object.freeze([
+  'https://cleanbox.web.app',
+  'https://richies-reinigung.web.app',
+])
 const SERVER_API_PROBES = [
   { baseUrl: 'https://cleanbox.web.app', method: 'GET', path: '/api/internal/jobs' },
   { baseUrl: 'https://cleanbox.web.app', method: 'POST', path: '/api/places/ensure' },
   { baseUrl: 'https://cleanbox.web.app', method: 'POST', path: '/api/companies/materialize' },
   { baseUrl: 'https://cleanbox.web.app', method: 'PATCH', path: '/api/internal/profiles/professional/structured' },
-  ...Object.keys(SERVER_CONTRACT_HOSTS).flatMap((baseUrl) => [
+  ...SERVER_API_HOSTS.flatMap((baseUrl) => [
     { baseUrl, method: 'POST', path: '/api/internal/app/membership' },
     { baseUrl, method: 'POST', path: '/api/internal/user/account' },
     { baseUrl, method: 'POST', path: '/api/internal/user/handle' },
@@ -1028,7 +1028,6 @@ async function assertReleaseEvidence({ sourceSha256, quarantineSha256 }) {
     'final_plan_sha256',
     'post_migration_inventory_sha256',
     'server_api_probe_sha256',
-    'server_api_source_sha256',
   ]) {
     if (!/^[a-f0-9]{64}$/.test(evidence[field] || '')) errors.push(field)
   }
@@ -1060,15 +1059,6 @@ async function assertReleaseEvidence({ sourceSha256, quarantineSha256 }) {
     ])
   ) {
     errors.push('known_descendant_collection_ids')
-  }
-  if (
-    stableJson(evidence.server_api_hosts) !==
-    stableJson({
-      'https://cleanbox.web.app': 'cleanbox-app',
-      'https://richies-reinigung.web.app': 'richies-reinigung',
-    })
-  ) {
-    errors.push('server_api_hosts')
   }
   for (const field of ['completed_at', 'server_api_verified_at']) {
     if (
@@ -1110,33 +1100,6 @@ async function assertLiveServerEvidence(evidence) {
     }
   }
 
-  for (const [baseUrl, appId] of Object.entries(SERVER_CONTRACT_HOSTS)) {
-    const response = await fetch(
-      `${baseUrl}/api/internal/werkbox/security-contract`,
-      {
-        headers: {
-          accept: 'application/json',
-          'cache-control': 'no-cache',
-        },
-        redirect: 'manual',
-        signal: AbortSignal.timeout(15_000),
-      }
-    )
-    const payload = await response.json().catch(() => ({}))
-    if (
-      response.status !== 200 ||
-      payload.contract !== 'werkbox-firestore-v1' ||
-      payload.source_sha256 !== evidence.server_api_source_sha256 ||
-      payload.app_id !== appId ||
-      payload.project_id !== 'cleanbox' ||
-      payload.ecosystem_id !== 'cleanbox' ||
-      payload.database_id !== 'cleanbox'
-    ) {
-      throw new Error(
-        `Live deployed security contract no longer matches migration evidence for ${baseUrl}.`
-      )
-    }
-  }
 }
 
 async function firestoreGet(documentPath) {

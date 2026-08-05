@@ -11,6 +11,7 @@ import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type { PublicJobDetailResponse } from '../../../../models/job-public.model.ts'
@@ -55,16 +56,22 @@ export default defineEventHandler(async (event): Promise<PublicJobDetailResponse
 
   const companyId = text(data.company_id)
   const placeId = text(data.place_id)
-  if (!isFirestoreDocumentId(companyId) || !isFirestoreDocumentId(placeId)) {
+  const sourceAppId = text(data.source_app_id)
+  if (
+    !isFirestoreDocumentId(companyId) ||
+    !isFirestoreDocumentId(placeId) ||
+    !isFirestoreDocumentId(sourceAppId)
+  ) {
     throw createError({
       statusCode: 503,
       statusMessage: 'The published Job has invalid relationships.',
     })
   }
-  const [company, companyPlace, place] = await db.getAll(
+  const [company, companyPlace, place, sourceApp] = await db.getAll(
     db.collection(CompanyStorage.collection).doc(companyId),
     db.collection(PlaceStorage.collection).doc(companyId),
-    db.collection(PlaceStorage.collection).doc(placeId)
+    db.collection(PlaceStorage.collection).doc(placeId),
+    db.collection(AppStorage.collection).doc(sourceAppId)
   ).catch(() => {
     throw createError({
       statusCode: 503,
@@ -78,6 +85,7 @@ export default defineEventHandler(async (event): Promise<PublicJobDetailResponse
       company: company.data() || {},
       companyPlace: companyPlace.data() || {},
       place: place.data() || {},
+      sourceApp: sourceApp.data() || {},
     })
   } catch {
     throw createError({

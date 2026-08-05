@@ -23,16 +23,6 @@ export function validateFireuxAppConfig(app: FireuxAppConfig): void {
     )
   }
 
-  if (
-    app.authDefaultMode &&
-    app.authDefaultMode !== 'sign-in' &&
-    app.authDefaultMode !== 'sign-up'
-  ) {
-    throw new Error(
-      '[fireux] app.authDefaultMode must be "sign-in" or "sign-up".'
-    )
-  }
-
   const ecosystemModule = `fireux-${app.ecosystem}`
   if (app.modules?.some((entry) => moduleName(entry) === ecosystemModule)) {
     throw new Error(

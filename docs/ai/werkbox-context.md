@@ -97,15 +97,10 @@ remembered implementations are not authority.
   production quarantine, and promotion.
   The one-time data executor creates its release marker only after protected
   backup, exact writes, full known-descendant inventory verification, and live
-  build-bound API attestations from both Werkbox Apps.
-- `packages/ecosystem/fireux-werkbox` owns the shared deployed
-  `/api/internal/werkbox/security-contract` attestation. It identifies the
-  runtime App and binds both deployed Apps to the reviewed server/model/config
-  source manifest used by the Rules promotion gate. Check that deterministic
-  local projection with `pnpm werkbox:security-contract`; after reviewing a
-  manifest change, refresh it only through the command's explicit `--write`
-  mode. That updates source, not production. Both Apps must later be deployed
-  and return the exact current hash before migration or Rules promotion.
+  protected-API probes from both Werkbox Apps. Werkbox does not own a parallel
+  build-hash security endpoint: shared Rules mechanics live in Core, ecosystem
+  policy leaves stay beside the ecosystem template, and deployment proof comes
+  from the Rules artifact and guarded release process.
 
 ## Living context
 

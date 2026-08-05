@@ -25,16 +25,13 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
 - `packages/core/fireux-core/src/config/app/modules.ts`
 - `packages/core/fireux-core/src/config/app/design-packs.ts`
 - `packages/core/fireux-core/src/config/app/nuxt-baseline.ts`
-- `packages/core/fireux-core/src/config/app/nuxt-overrides.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/app/FireUXConfig.ts`
 
 ## App pattern
 
-- Import `defineFireuxConfig` and export it directly when the App needs only
-  FireUX configuration.
-- Import `withFireuxNuxtConfig`, build one `fireuxConfig`, and export
-  `withFireuxNuxtConfig(fireuxConfig, appOverrides)` only for a genuine native
-  Nuxt or module override.
+- Import `defineFireuxConfig` and export it directly. Project Apps do not own a
+  second Nuxt-override layer; repeated runtime or framework behavior belongs in
+  its Core, ecosystem, or extension owner.
 - `ecosystem` automatically loads exactly one `fireux-<ecosystem>` module.
   Do not repeat that package in `modules`.
 - `ecosystem` is the package/Firebase binding key, not an entity relationship.
@@ -61,26 +58,29 @@ Map how FireUX project apps declare identity, modules, domains, consoles, and ap
   Ecosystem packages do not bundle domain extensions on an App's behalf.
 - A reusable extension owns its shared runtime integration defaults and
   environment resolution. For example, `fireux-kitchens` owns the Bringli
-  Supplier-directory and Google Maps configuration used by its Kitchen
-  surfaces, while `fireux-go-qr` owns its provider origin. Project Apps do not
-  repeat those runtime values, and Apps that do not load the extension do not
-  receive its integration configuration.
+  Supplier-directory configuration, `fireux-places` owns Google Maps and
+  Places provider configuration, and `fireux-go-qr` owns its provider origin.
+  Project Apps do not repeat those runtime values.
 - Firebase SSR region and execution identity belong to the selected
   ecosystem's required `ssr` configuration. Apps inherit them and do not
   repeat deployment identity in `defineFireuxConfig`.
-- The authored `FireuxAppConfig` owns shared role, Console, auth, and navigation
-  subcontracts. Pricing is App-owned product literature: each Main App keeps a
+- The authored `FireuxAppConfig` owns identity, role, capability, Console, and
+  navigation declarations. Authentication stays Core-owned; entry routes carry
+  mode and redirect intent. Pricing is App-owned product literature: each Main App keeps a
   thin `useXPricing` wrapper over Core `usePricing`; commercial copy does not
   enter `defineFireuxConfig` or public runtime config. `RuntimeApp` derives from
   App config and makes normalized
   arrays/defaults explicit; `useFireUXConfig` maps that runtime shape to the
   consumer names once. Browser and trusted-server consumers use the same
   event-aware reader; Console consumers do not parse `runtimeConfig` again.
-- Keep `nuxt.config.ts` as a composition root. A substantial App-owned auth,
-  Jobs, or other option profile lives in a named `app/config/*.config.ts` file
-  and is imported into the relevant typed config or module option; executable
-  behavior belongs in a composable or owning package rather than a top-level
-  Nuxt-config helper.
+- Keep `nuxt.config.ts` as a declarative composition root. Content, pricing,
+  onboarding, stored relationships, and executable behavior belong in their
+  domain composable, stored authority, or owning package—not a top-level helper
+  or imported App-config profile.
+- Authored `app/meta.ts` is pure data and may be consumed by browser or server
+  presentation. Its `defineFireuxMeta` helper and types stay free of Node-only
+  dependencies; filesystem and Markdown loading belong to Core's config-only
+  metadata loader.
 - Core `resolveConsoleCanCreate` owns the shared explicit-override then
   non-tenant fallback. Console UI and trusted entity onboarding use that same
   policy instead of repeating it inside each domain.
@@ -137,12 +137,9 @@ App-wide design packs are selected at build/config time through
 `designPacks` field remains for named, surface-specific runtime configuration
 such as `publicMenu` and is not an alternate app-chrome loader.
 
-Use `withFireuxNuxtConfig` with `app.pageTransition: false` for a genuine
-app-wide transition opt-out, or provide a custom native Nuxt transition there.
-The helper preserves the Core app defaults while applying that override.
-Route-specific exceptions use `definePageMeta`; app shells do not set
-`NuxtPage` transition props. A custom transition name owns its matching local
-CSS and does not reuse Core's `fx-page` selector namespace.
+Apps inherit the Core page transition. Route-specific exceptions use
+`definePageMeta`; app shells do not set `NuxtPage` transition props. A repeated
+App-wide need is a missing shared seam and must be promoted before use.
 
 ## App media
 
@@ -154,25 +151,25 @@ CSS and does not reuse Core's `fx-page` selector namespace.
 
 ## Delta register
 
-| Difference                                                                          | State      | Reason or alignment trigger                                                                                           |
-| ----------------------------------------------------------------------------------- | ---------- | --------------------------------------------------------------------------------------------------------------------- |
-| Global, tenant, and standalone roles differ                                         | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag                        |
-| Direct Project Apps may omit `ecosystemId`                                          | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts                                     |
-| Apps declare different extension modules                                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer      |
-| Blog loads for every App while Products is explicit                                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it             |
-| A tenant App pins Console target IDs in Nuxt config                                 | `drift`    | Persist bounded targets and operator/team access in that entity family's same-id App-support records                  |
-| Apps present inherited public navigation differently                                | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority               |
-| App-specific Nuxt overrides exist                                                   | `accepted` | External integration or deployment requirements may differ; repeated FireUX defaults belong in `withFireuxNuxtConfig` |
-| A main App explicitly selects the Core Sci-Fire design pack                         | `accepted` | Nuxt UI remains the universal default while a reviewed ecosystem App may add shared atmosphere without copying CSS    |
-| Tenant or white-label styling inferred from ecosystem or role                       | `drift`    | Design-pack adoption is explicit; product role and visual theme are separate contracts                                |
-| A project copies Sci-Fire selectors or styles                                       | `drift`    | The conditional stylesheet and Nuxt UI variant configuration belong to Core                                           |
-| An app disables or replaces the Core page transition through native Nuxt app config | `accepted` | The shared default remains Core-owned while a deliberate product delta stays explicit                                 |
-| A project app shell or stylesheet copies the shared page transition                 | `drift`    | App-wide overrides belong in config and route-specific exceptions belong in page meta                                 |
-| Repeating a shared default in many project `nuxt.config.ts` files                   | `drift`    | Move the stable value to the Core config spine and leave only genuine app values locally                              |
-| Repeating an extension integration URL in project runtime config                    | `drift`    | Let the consuming extension own its default and environment resolution; Apps retain only genuine endpoint deltas      |
-| A client PIN appears to protect App initialization                                  | `drift`    | Remove the cosmetic gate; authenticated server UID authorization is the write boundary                                |
-| A second runtime parser or global cache mirrors App config                          | `drift`    | Derive the runtime contract from `FireuxAppConfig` and normalize it once in `useFireUXConfig`                         |
-| App brand structure differs by project                                              | `drift`    | Keep one `/img/app` runtime family and explicit source/projection authority; only the owned artwork differs           |
+| Difference                                                          | State      | Reason or alignment trigger                                                                                        |
+| ------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------ |
+| Global, tenant, and standalone roles differ                         | `accepted` | App role is product/runtime truth and drives route scope, not a project-local convenience flag                     |
+| Direct Project Apps may omit `ecosystemId`                          | `accepted` | Infrastructure binding and canonical Ecosystem relationship are separate concepts                                  |
+| Apps declare different extension modules                            | `accepted` | Capability ownership is explicit per app; ecosystem packages do not smuggle optional domains into every consumer   |
+| Blog loads for every App while Products is explicit                 | `accepted` | Blog is the universal editorial surface; Product capability exists only in Apps that currently declare it          |
+| A tenant App pins Console target IDs in Nuxt config                 | `drift`    | Persist bounded targets and operator/team access in that entity family's same-id App-support records               |
+| Apps present inherited public navigation differently                | `accepted` | `navOverrides` changes app-level discovery only; the owning route keeps its canonical key and authority            |
+| App-specific Nuxt overrides exist                                   | `drift`    | Promote framework and runtime behavior to its Core, ecosystem, or extension owner                                  |
+| A main App explicitly selects the Core Sci-Fire design pack         | `accepted` | Nuxt UI remains the universal default while a reviewed ecosystem App may add shared atmosphere without copying CSS |
+| Tenant or white-label styling inferred from ecosystem or role       | `drift`    | Design-pack adoption is explicit; product role and visual theme are separate contracts                             |
+| A project copies Sci-Fire selectors or styles                       | `drift`    | The conditional stylesheet and Nuxt UI variant configuration belong to Core                                        |
+| An app disables or replaces the Core page transition globally       | `drift`    | Apps inherit the shared default; route-specific exceptions belong in page meta                                     |
+| A project app shell or stylesheet copies the shared page transition | `drift`    | Keep shared behavior in Core and route-specific exceptions in page meta                                            |
+| Repeating a shared default in many project `nuxt.config.ts` files   | `drift`    | Move the stable value to the Core config spine and leave only genuine app values locally                           |
+| Repeating an extension integration URL in project runtime config    | `drift`    | Let the consuming extension own its default and environment resolution; Apps retain only genuine endpoint deltas   |
+| A client PIN appears to protect App initialization                  | `drift`    | Remove the cosmetic gate; authenticated server UID authorization is the write boundary                             |
+| A second runtime parser or global cache mirrors App config          | `drift`    | Derive the runtime contract from `FireuxAppConfig` and normalize it once in `useFireUXConfig`                      |
+| App brand structure differs by project                              | `drift`    | Keep one `/img/app` runtime family and explicit source/projection authority; only the owned artwork differs        |
 
 ## Alignment roadmap
 

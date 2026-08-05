@@ -4,16 +4,13 @@
 // Concurrent edit — 2026-07-22 13:06 CEST — Job category scope hardening: fail closed when runtime role or tenant identity is invalid.
 import { useRuntimeConfig } from '#imports'
 import type { H3Event } from 'h3'
-import {
-  normalizeFireuxJobSourceAppDoorways,
-  type FireuxJobSourceAppDoorways,
-} from '../../../../config/jobs.config.ts'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { projectPublicCompany } from 'fireux-companies/runtime/server/company/public-projection'
 import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection'
 import type { PublicJobProjection } from '../../../models/job-public.model.ts'
 import type { Job } from '../../../models/job.model.ts'
 import { canonicalJobRoot } from '../../job/validation.ts'
+import { projectSourceAppDoorway } from './source-app-doorway.ts'
 
 const text = (value: unknown, maxLength: number) =>
   typeof value === 'string' && value.trim().length <= maxLength
@@ -23,9 +20,7 @@ const text = (value: unknown, maxLength: number) =>
 const identifiers = (value: unknown) =>
   new Set(
     Array.isArray(value)
-      ? value
-          .map(entry => text(entry, 120))
-          .filter(Boolean)
+      ? value.map((entry) => text(entry, 120)).filter(Boolean)
       : []
   )
 
@@ -33,13 +28,13 @@ export type PublicJobRuntimeScope = {
   categoryScope: 'all' | 'allowlist'
   categories: ReadonlySet<string>
   tenantAppId: string | null
-  sourceAppDoorways: FireuxJobSourceAppDoorways
 }
 
 export type PublicJobLinkedRoots = {
   company: Record<string, unknown>
   companyPlace: Record<string, unknown>
   place: Record<string, unknown>
+  sourceApp: Record<string, unknown>
 }
 
 export function readPublicJobRuntimeScope(
@@ -59,30 +54,18 @@ export function readPublicJobRuntimeScope(
     categoryScope:
       eligible && jobs.categoryScope === 'all' ? 'all' : 'allowlist',
     categories: eligible ? identifiers(jobs.categories) : new Set<string>(),
-    tenantAppId:
-      eligible && role === 'tenant'
-        ? appId
-        : null,
-    sourceAppDoorways: eligible
-      ? normalizeFireuxJobSourceAppDoorways(jobs.sourceAppDoorways)
-      : {},
+    tenantAppId: eligible && role === 'tenant' ? appId : null,
   }
 }
 
 function projectApplicationDoorway(
   jobId: string,
   sourceAppId: string,
-  scope: PublicJobRuntimeScope
+  scope: PublicJobRuntimeScope,
+  sourceApp: Record<string, unknown>
 ) {
   if (scope.tenantAppId === sourceAppId) return null
-  const doorway = scope.sourceAppDoorways[sourceAppId]
-  if (!doorway) return null
-
-  const path = `/jobs/${encodeURIComponent(jobId)}`
-  return {
-    label: doorway.label,
-    url: `${doorway.url}${path}`,
-  }
+  return projectSourceAppDoorway(jobId, sourceApp)
 }
 
 /** Cheap scope gate used before bounded linked-root hydration. */
@@ -94,16 +77,17 @@ export function isPublicJobCandidate(
   if (
     (scope.categoryScope === 'allowlist' && !scope.categories.size) ||
     !isFirestoreDocumentId(id)
-  ) return false
+  )
+    return false
   if (data.status !== 'open' || data.visibility !== 'public') return false
 
   const sourceAppId = text(data.source_app_id, 1_500)
   const categoryId = text(data.category_id, 120)
   return Boolean(
     isFirestoreDocumentId(sourceAppId) &&
-    isFirestoreDocumentId(categoryId) &&
-    (scope.categoryScope === 'all' || scope.categories.has(categoryId)) &&
-    (scope.tenantAppId === null || sourceAppId === scope.tenantAppId)
+      isFirestoreDocumentId(categoryId) &&
+      (scope.categoryScope === 'all' || scope.categories.has(categoryId)) &&
+      (scope.tenantAppId === null || sourceAppId === scope.tenantAppId)
   )
 }
 
@@ -130,7 +114,9 @@ function timestampIso(value: Job['start_at']): string | null {
   ) {
     throw new Error('Canonical Job schedule contains an invalid timestamp.')
   }
-  return new Date(seconds * 1_000 + Math.floor(nanoseconds / 1_000_000)).toISOString()
+  return new Date(
+    seconds * 1_000 + Math.floor(nanoseconds / 1_000_000)
+  ).toISOString()
 }
 
 export function projectPublicJob(
@@ -145,7 +131,8 @@ export function projectPublicJob(
   const applicationDoorway = projectApplicationDoorway(
     job.id,
     job.source_app_id,
-    scope
+    scope,
+    linked.sourceApp
   )
   const company = projectPublicCompany(
     job.company_id,
@@ -154,7 +141,9 @@ export function projectPublicJob(
   )
   const place = projectPublicPlace(job.place_id, linked.place)
   if (!company || !place) {
-    throw new Error('Canonical Job has an invalid Company or Place relationship.')
+    throw new Error(
+      'Canonical Job has an invalid Company or Place relationship.'
+    )
   }
 
   return {
@@ -181,8 +170,6 @@ export function projectPublicJob(
     end_at: timestampIso(job.end_at),
     title: job.title,
     description: job.description,
-    ...(applicationDoorway
-      ? { application_doorway: applicationDoorway }
-      : {}),
+    ...(applicationDoorway ? { application_doorway: applicationDoorway } : {}),
   }
 }

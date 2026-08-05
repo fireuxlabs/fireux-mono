@@ -1,5 +1,4 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { interlakenEssenAuthConfig } from './app/config/auth.config'
 
 export default defineFireuxConfig({
   ecosystem: 'misebox',
@@ -34,7 +33,6 @@ export default defineFireuxConfig({
       },
     ],
   ],
-  ...interlakenEssenAuthConfig,
   seo: {
     siteUrl: 'https://interlaken-essen.misebox.app',
     noindexPaths: ['/mis', '/mis/**'],

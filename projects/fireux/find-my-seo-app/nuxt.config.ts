@@ -1,8 +1,6 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
-import { findMySeoNuxtOverrides } from './app/config/pages.config'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'fireux',
   projectId: 'fireux',
   id: 'find-my-seo-app',
@@ -14,5 +12,3 @@ const fireuxConfig = defineFireuxConfig({
   profiles: ['professional'],
   modules: ['fireux-jobs', 'fireux-products'],
 })
-
-export default withFireuxNuxtConfig(fireuxConfig, findMySeoNuxtOverrides)

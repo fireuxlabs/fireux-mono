@@ -137,7 +137,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(ecosystemModel, /EcosystemCanonicalStorage|WidenLiteral/)
   assert.doesNotMatch(ecosystemModel, /^  (apps|team|source_url):/m)
 
-  assert.match(projectModel, /shape:\s*'private\/control-plane-root'/)
+  assert.match(projectModel, /shape:\s*'root-and-app-support'/)
+  assert.match(projectModel, /scope:\s*'apps\/\{appId\}\/projects\/\{projectId\}'/)
+  assert.match(projectModel, /AppProjectModel/)
+  assert.match(projectModel, /FireuxAppAccessRecordModel/)
   assert.doesNotMatch(
     projectModel,
     /^  (app_id|ecosystem_id|operator_ids|owner_user_id|firebase_project_id|console_endpoint_url|project_type|primary_project):/m
@@ -585,6 +588,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectControlApi, /membership\.role/)
   assert.match(projectControlApi, /===\s*['"]admin['"]/)
   assert.doesNotMatch(projectControlApi, /admin_ids/)
+  assert.match(projectControlApi, /ProjectStorage\.scopeCollection/)
+  assert.match(projectControlApi, /ProjectStorage\.rootCollection/)
+  assert.match(projectControlApi, /where\('operator_ids', 'array-contains', uid\)/)
+  assert.match(projectControlApi, /where\('team_ids', 'array-contains', uid\)/)
 
   const projectUserJoinPage = read(
     repoRoot,

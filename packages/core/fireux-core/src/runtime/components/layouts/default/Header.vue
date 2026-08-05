@@ -46,7 +46,7 @@
               to="/dashboard"
               variant="ghost"
               color="neutral"
-              aria-label="Open workspace"
+              aria-label="Open Dashboard"
               data-fireux-header-avatar
             >
               <UAvatar

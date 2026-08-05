@@ -21,7 +21,7 @@
 
     <ClientOnly>
       <NuxtLink
-        :to="isSignedIn ? '/mis/stores' : '/auth'"
+        :to="isSignedIn ? '/mis/stores' : '/auth?mode=sign-up&redirect=/mis'"
         class="market-action market-action--light market-sell-start__action"
       >
         <UIcon

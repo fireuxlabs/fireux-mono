@@ -10,8 +10,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useSeoMeta } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from '../../composables/fireux/seo/useSeo'
 
 const fireux = useFireUXConfig()
 const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
@@ -33,12 +36,18 @@ definePageMeta({
   },
 })
 
-useSeoMeta({
-  title: () => `Solutions - ${appName.value}`,
-  ogTitle: () => `Solutions - ${appName.value}`,
-  twitterTitle: () => `Solutions - ${appName.value}`,
-  description: () => `Practical solution pages for ${appName.value}.`,
-  ogDescription: () => `Practical solution pages for ${appName.value}.`,
-  twitterDescription: () => `Practical solution pages for ${appName.value}.`,
+useSeo({
+  title: computed(() => `Solutions - ${appName.value}`),
+  description: computed(() => `Practical solution pages for ${appName.value}.`),
+  path: '/solutions',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      pageType: 'CollectionPage',
+      title: context.title,
+    }),
 })
 </script>

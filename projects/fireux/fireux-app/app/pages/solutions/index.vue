@@ -99,7 +99,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useAsyncData, useSeoMeta } from '#imports'
+import { useAsyncData } from '#imports'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import type { FireuxMetaSolution } from 'fireux-core/config/app/meta-content'
 
 type SolutionsResponse = {
@@ -170,9 +174,27 @@ definePageMeta({
   },
 })
 
-useSeoMeta({
+useSeo({
   title: 'FireUX Solutions',
   description:
     'Find a specific job for a FireUX App, then use it to brief an Ignition request.',
+  path: '/solutions',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      pageType: 'CollectionPage',
+      title: context.title,
+      items: [...fireuxSolutions.value, ...platformSolutions.value].map(
+        (solution) => ({
+          name: solution.title,
+          url: context.absoluteUrl(
+            solution.to || `/solutions/${solution.slug}`
+          ),
+        })
+      ),
+    }),
 })
 </script>

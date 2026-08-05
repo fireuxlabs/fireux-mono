@@ -36,6 +36,11 @@ export type UseAppLandingSeoOptions = {
   language?: MaybeRefOrGetter<string | null | undefined>
 }
 
+export type FireuxPublicPageJsonLdItem = {
+  name: string
+  url: string
+}
+
 const clean = (value: unknown) => String(value ?? '').trim()
 
 const normalizePath = (value: unknown) => {
@@ -134,6 +139,64 @@ export function buildAppLandingJsonLd(input: {
         ...(language ? { inLanguage: language } : {}),
         ...(image ? { primaryImageOfPage: image } : {}),
       },
+    ],
+  }
+}
+
+export function buildPublicPageJsonLd(input: {
+  canonicalUrl: string
+  description: string
+  image?: string
+  items?: FireuxPublicPageJsonLdItem[]
+  pageType?: 'CollectionPage' | 'WebPage'
+  title: string
+}): FireuxSeoJsonLd | null {
+  const canonicalUrl = clean(input.canonicalUrl)
+  const description = clean(input.description)
+  const title = clean(input.title)
+  if (!canonicalUrl || !description || !title) return null
+
+  let siteUrl = ''
+  try {
+    siteUrl = `${new URL(canonicalUrl).origin}/`
+  } catch {
+    return null
+  }
+
+  const webpageId = `${canonicalUrl}#webpage`
+  const itemListId = `${canonicalUrl}#item-list`
+  const image = clean(input.image)
+  const items = (input.items ?? [])
+    .map((item) => ({ name: clean(item.name), url: clean(item.url) }))
+    .filter((item) => item.name && item.url)
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': input.pageType ?? 'WebPage',
+        '@id': webpageId,
+        url: canonicalUrl,
+        name: title,
+        description,
+        isPartOf: { '@id': `${siteUrl}#website` },
+        ...(image ? { primaryImageOfPage: image } : {}),
+        ...(items.length ? { mainEntity: { '@id': itemListId } } : {}),
+      },
+      ...(items.length
+        ? [
+            {
+              '@type': 'ItemList',
+              '@id': itemListId,
+              itemListElement: items.map((item, index) => ({
+                '@type': 'ListItem',
+                position: index + 1,
+                name: item.name,
+                url: item.url,
+              })),
+            },
+          ]
+        : []),
     ],
   }
 }

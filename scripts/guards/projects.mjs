@@ -192,6 +192,11 @@ function checkProjectNuxtConfig(repoRoot, appPath) {
   if (/^\s*\/\/\s*Concurrent edit\b/m.test(source)) {
     reject('keep change history in Git, not nuxt.config.ts comments.')
   }
+  if (/\bwithFireuxNuxtConfig\b/.test(source)) {
+    reject(
+      'project Nuxt overrides are not an App delta; promote shared behavior to its owning Core or extension seam.'
+    )
+  }
   if (/['"]@\/assets\/styles\/main\.css['"]/.test(source)) {
     reject('Core discovers app/assets/styles/main.css automatically.')
   }
@@ -215,7 +220,7 @@ function checkProjectNuxtConfig(repoRoot, appPath) {
     ) || []
   for (const declaration of topLevelDeclarations) {
     const name = declaration.match(/\s+([A-Za-z_$][\w$]*)/)?.[1]
-    if (name && name !== 'fireuxConfig') {
+    if (name) {
       reject(
         `move top-level ${name} into an owning App config, composable, or package seam.`
       )
@@ -270,7 +275,8 @@ function checkProjectRegistryCompleteness(projectsRoot) {
     }
   }
 
-  const registeredPaths = Object.values(APP_REGISTRY).map((entry) =>
+  const registryEntries = Object.values(APP_REGISTRY)
+  const registeredPaths = registryEntries.map((entry) =>
     String(entry.workspace || '').replace(/^\.\//, '')
   )
   const registered = new Set(registeredPaths)
@@ -280,16 +286,44 @@ function checkProjectRegistryCompleteness(projectsRoot) {
   )
   const stale = registeredPaths.filter((entry) => !actual.has(entry))
 
-  if (!missing.length && !stale.length) return []
+  const identityDrift = registryEntries.flatMap((entry) => {
+    const workspace = String(entry.workspace || '').replace(/^\.\//, '')
+    const configPath = path.join(
+      projectsRoot,
+      '..',
+      workspace,
+      'nuxt.config.ts'
+    )
+    if (!existsSync(configPath)) return []
+
+    const source = readFileSync(configPath, 'utf8')
+    const expected = {
+      appId: literalConfigValue(source, 'id'),
+      ecosystem: literalConfigValue(source, 'ecosystem'),
+      role: literalConfigValue(source, 'role'),
+    }
+
+    return Object.entries(expected).flatMap(([field, value]) =>
+      String(entry[field] || '') === value
+        ? []
+        : [
+            `${workspace}: registry ${field} '${String(entry[field] || '')}' does not match App config '${value}'.`,
+          ]
+    )
+  })
+
+  if (!missing.length && !stale.length && !identityDrift.length) return []
 
   const lines = [
     '[guard] ❌ project App registry drift:',
     ...missing.map((entry) => `  Unregistered App: ${entry}`),
     ...stale.map((entry) => `  Registry target missing: ${entry}`),
+    ...identityDrift.map((entry) => `  Identity drift: ${entry}`),
     '',
     '[guard] Fix:',
     '- Do not copy project folders without completing the canonical App workflow.',
     '- Every real App must have one exact workspace entry in scripts/_lib/app-registry.mjs.',
+    '- Registry appId, ecosystem, and role must match the App Nuxt config.',
     '- The canonical template is the only project package excluded from registration.',
   ]
   return [lines.join('\n')]

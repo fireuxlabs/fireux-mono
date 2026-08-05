@@ -156,7 +156,7 @@ export const DIRECTORY_PUBLICATION_TARGETS = Object.freeze([
     projectId: 'fireux',
     ecosystemId: 'buenohost',
     region: 'europe-west6',
-    appIds: ['buenohost', 'book-with-nats'],
+    appIds: ['ausfinn-apartments', 'book-with-nats', 'buenohost'],
     ecosystemIds: ['buenohost'],
   }),
   target({
@@ -223,6 +223,7 @@ export const DIRECTORY_PUBLICATION_TARGETS = Object.freeze([
     appIds: [
       'baeren-ringgenberg',
       'bangin-coffee',
+      'interlaken-essen',
       'la-tap-berne',
       'misebox-app',
     ],
@@ -235,7 +236,7 @@ export const DIRECTORY_PUBLICATION_TARGETS = Object.freeze([
     projectId: 'slap',
     ecosystemId: 'slap',
     region: 'europe-west1',
-    appIds: ['slap-app', 'yellow-velo'],
+    appIds: ['holzworm', 'lifeguard-community', 'slap-app', 'yellow-velo'],
     ecosystemIds: ['slap'],
   }),
 ])

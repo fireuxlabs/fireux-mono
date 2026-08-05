@@ -4,7 +4,6 @@
 import { useRuntimeConfig } from '#imports'
 import {
   defaultFireuxJobsConfig,
-  normalizeFireuxJobSourceAppDoorways,
   type FireuxJobsConfig,
 } from '../../../config/jobs.config'
 
@@ -28,15 +27,10 @@ export function useFireuxJobsConfig(): Readonly<FireuxJobsConfig> {
 
   const categoryScope = raw.categoryScope === 'all' ? 'all' : 'allowlist'
   const categories = toStringArray(raw.categories)
-  const sourceAppDoorways = normalizeFireuxJobSourceAppDoorways(
-    raw.sourceAppDoorways
-  )
-
   const config: FireuxJobsConfig = {
     ...defaultFireuxJobsConfig,
     categoryScope,
     categories,
-    sourceAppDoorways,
   }
 
   return Object.freeze(config)

@@ -1,9 +1,9 @@
-// Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: use the trusted reservation boundary instead of client writes.
+// User handle writes use the trusted User endpoint instead of client writes.
 
 import type {
-  UserHandleReservationInput,
-  UserHandleReservationResult,
-} from '../../../../../../models/operations/user-handle-reservation'
+  UserHandleInput,
+  UserHandleResult,
+} from '../../../../../../models/operations/user-handle'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
 
@@ -19,12 +19,12 @@ function responseMessage(payload: unknown, fallback: string) {
   return fallback
 }
 
-export function useUserHandleClaim() {
-  const claimHandle = async (
+export function useUserHandleUpdate() {
+  const updateHandle = async (
     uid: string,
     desiredHandle: string,
-    create?: UserHandleReservationInput['create']
-  ): Promise<UserHandleReservationResult> => {
+    create?: UserHandleInput['create']
+  ): Promise<UserHandleResult> => {
     const normalizedUid = String(uid || '').trim()
     if (!normalizedUid) throw new Error('Missing uid')
 
@@ -37,7 +37,7 @@ export function useUserHandleClaim() {
     }
 
     const token = await user.getIdToken()
-    const body: UserHandleReservationInput = {
+    const body: UserHandleInput = {
       handle: validation.handle,
       ...(create ? { create } : {}),
     }
@@ -52,12 +52,12 @@ export function useUserHandleClaim() {
     const payload = await response.json().catch(() => null)
     if (!response.ok) {
       throw new Error(
-        responseMessage(payload, `Handle reservation failed (${response.status}).`)
+        responseMessage(payload, `Handle update failed (${response.status}).`)
       )
     }
 
-    return payload as UserHandleReservationResult
+    return payload as UserHandleResult
   }
 
-  return { claimHandle }
+  return { updateHandle }
 }

@@ -4,7 +4,7 @@
 
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { useUserHandleClaim } from '../mutations/useUserHandleClaim'
+import { useUserHandleUpdate } from '../mutations/useUserHandleUpdate'
 import { mutateAppMembership } from './appMembershipMutation'
 
 export type CreateCoreOptions = {
@@ -36,8 +36,8 @@ export async function createCoreUserDocument(
     throw new Error('[createCoreUserDocument] Missing displayName')
   }
   const handle = makeHandle(displayName, uid)
-  const { claimHandle } = useUserHandleClaim()
-  const result = await claimHandle(uid, handle, {
+  const { updateHandle } = useUserHandleUpdate()
+  const result = await updateHandle(uid, handle, {
     display_name: displayName,
     avatar: options.avatar,
   })

@@ -1,44 +1,39 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import { normalizeFireuxJobSourceAppDoorways } from '../config/jobs.config.ts'
+import { projectSourceAppDoorway } from '../runtime/server/utils/job/source-app-doorway.ts'
 
-test('normalizes trusted HTTPS source-App doorways', () => {
+const sourceApp = {
+  status: 'active',
+  app_name: 'Interlaken Essen',
+  app_short_name: 'Interlaken Essen',
+  social_links: {
+    website: 'https://interlaken-essen.misebox.app/',
+  },
+}
+
+test('projects a Job doorway from current canonical App identity', () => {
   assert.deepEqual(
-    normalizeFireuxJobSourceAppDoorways({
-      'interlaken-essen': {
-        label: 'Apply with Interlaken Essen',
-        url: 'https://interlaken-essen.misebox.app/',
-      },
-    }),
+    projectSourceAppDoorway('chef de partie', sourceApp),
     {
-      'interlaken-essen': {
-        label: 'Apply with Interlaken Essen',
-        url: 'https://interlaken-essen.misebox.app',
-      },
+      label: 'Apply with Interlaken Essen',
+      url: 'https://interlaken-essen.misebox.app/jobs/chef%20de%20partie',
     }
   )
 })
 
-test('rejects unsafe or malformed source-App doorways', () => {
-  assert.deepEqual(
-    normalizeFireuxJobSourceAppDoorways({
-      'bad/app': {
-        label: 'Bad',
-        url: 'https://example.com',
-      },
-      insecure: {
-        label: 'Insecure',
-        url: 'http://example.com',
-      },
-      credentials: {
-        label: 'Credentials',
-        url: 'https://user:password@example.com',
-      },
-      empty: {
-        label: '',
-        url: 'https://example.com',
-      },
+test('rejects inactive Apps and unsafe App websites', () => {
+  assert.equal(
+    projectSourceAppDoorway('job', {
+      ...sourceApp,
+      status: 'paused',
     }),
-    {}
+    null
+  )
+  assert.equal(
+    projectSourceAppDoorway('job', {
+      ...sourceApp,
+      social_links: { website: 'http://example.com' },
+    }),
+    null
   )
 })

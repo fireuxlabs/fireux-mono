@@ -40,6 +40,17 @@ export function useMarketplaceClient() {
       `/api/public/marketplace/stores/${encodeURIComponent(slug)}`
     )
 
+  const previewStore = async (slug: string) =>
+    $fetch<PublicMarketplaceStoreResponse>(
+      `/api/public/marketplace/stores/${encodeURIComponent(slug)}`,
+      import.meta.dev
+        ? undefined
+        : {
+            query: { visibility: 'all' },
+            headers: await marketplaceAuthorization(),
+          }
+    )
+
   const managedStores = async () =>
     $fetch<ManagedMarketplaceStoresResponse>('/api/marketplace/stores', {
       headers: await marketplaceAuthorization(),
@@ -190,6 +201,7 @@ export function useMarketplaceClient() {
   return {
     publicStores,
     publicStore,
+    previewStore,
     managedStores,
     managedStore,
     createStore,

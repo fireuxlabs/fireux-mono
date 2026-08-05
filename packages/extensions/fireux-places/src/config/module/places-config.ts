@@ -7,6 +7,11 @@ type PlacesConfigOptions = {
 }
 
 export function configurePlaces(nuxt: any, options: PlacesConfigOptions = {}) {
+  const browserMapsApiKey =
+    process.env.NUXT_PUBLIC_GOOGLE_MAPS_API_KEY ||
+    process.env.NUXT_PUBLIC_GOOGLE_PLACES_API_KEY ||
+    ''
+  const browserMapsMapId = process.env.NUXT_PUBLIC_GOOGLE_MAPS_MAP_ID || ''
   configureRuntimeDefaults(
     nuxt,
     'places',
@@ -16,17 +21,24 @@ export function configurePlaces(nuxt: any, options: PlacesConfigOptions = {}) {
       types: options.types || [],
       googleAutocompleteTypeFilters:
         options.googleAutocompleteTypeFilters || {},
+      googleMaps: {
+        apiKey: browserMapsApiKey,
+        mapId: browserMapsMapId,
+      },
     },
     { merge: true }
   )
 
-  const key =
+  const placesApiKey =
     process.env.GOOGLE_PLACES_API_KEY ||
     process.env.NUXT_GOOGLE_PLACES_API_KEY ||
     process.env.NUXT_PUBLIC_GOOGLE_PLACES_API_KEY
-  if (!key) return
+  const mapsApiKey =
+    process.env.GOOGLE_MAPS_API_KEY ||
+    process.env.NUXT_GOOGLE_MAPS_API_KEY ||
+    placesApiKey
+  if (!placesApiKey && !mapsApiKey) return
   const rc = ((nuxt.options as any).runtimeConfig ||= {}) as Record<string, any>
-  const pub = (rc.public ||= {}) as Record<string, any>
-  rc.googlePlacesApiKey ||= key
-  pub.googlePlacesApiKey ||= key
+  if (placesApiKey) rc.googlePlacesApiKey ||= placesApiKey
+  if (mapsApiKey) rc.googleMapsApiKey ||= mapsApiKey
 }

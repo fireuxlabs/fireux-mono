@@ -19,8 +19,6 @@ const CORE_PAGE_TRANSITION_STYLE_PATH =
   'packages/core/fireux-core/src/runtime/assets/styles/scss/integrations/nuxt-page-transition.scss'
 const FIREUX_CONFIG_PATH =
   'packages/core/fireux-core/src/config/app/fireux.config.ts'
-const NUXT_OVERRIDES_PATH =
-  'packages/core/fireux-core/src/config/app/nuxt-overrides.ts'
 const CORE_DESIGN_PACK_CONFIG_PATH =
   'packages/core/fireux-core/src/config/app/design-packs.ts'
 const SCI_FIRE_STYLE_PATH =
@@ -733,25 +731,13 @@ function assertCorePageTransitionArchitecture(repoRoot) {
     )
   }
 
-  const overrideSource = readRequiredSource(NUXT_OVERRIDES_PATH)
-  if (
-    overrideSource &&
-    !/app:\s*\{\s*\.\.\.app,\s*\.\.\.overrideApp,\s*\}/s.test(
-      overrideSource
-    )
-  ) {
-    violations.push(
-      `${NUXT_OVERRIDES_PATH} must merge app overrides so pageTransition can be disabled or replaced`
-    )
-  }
-
   if (violations.length) {
     throw new Error(
       [
         '[guard] Core page-transition drift detected:',
         ...violations.map((violation) => `  - ${violation}`),
         '',
-        '[guard] Keep the Nuxt-native default and generated transition selectors in Core; use Nuxt app config or page meta for genuine opt-outs.',
+        '[guard] Keep the Nuxt-native default and generated transition selectors in Core; use page meta for genuine route-specific exceptions.',
       ].join('\n')
     )
   }
@@ -1962,7 +1948,7 @@ function formatViolations(violations) {
     '- Replace the guarded gray/dark text pairs with `text-highlighted`, `text-toned`, or `text-muted`.',
     '- Replace the guarded generic surface pairs with `border-default` and `bg-default/*`.',
     '- Register Menu detail CSS once through the kitchens module; do not import it from leaf pages or components.',
-    '- Use the Core Nuxt page-transition default. App-wide opt-outs or overrides belong in `withFireuxNuxtConfig`; route-specific exceptions belong in page meta.',
+    '- Use the Core Nuxt page-transition default. Route-specific exceptions belong in page meta.',
     '- One-off Tailwind for local layout or pixel-perfect deltas remains allowed.'
   )
 

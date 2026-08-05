@@ -73,7 +73,7 @@ export const entityMatrix = [
       family: ['system', 'console-entity'],
       identity: 'root',
       authority: 'fireux-control-plane',
-      appSupport: 'none',
+      appSupport: 'access-record',
       publicRead: 'none',
       status: 'confirmed',
       console: true,

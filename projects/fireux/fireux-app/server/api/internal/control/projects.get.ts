@@ -58,10 +58,31 @@ export default defineEventHandler(async (event: H3Event) => {
       statusMessage: 'Test Project data is unavailable in production.',
     })
   }
-  const collection =
-    requestedSource === 'test' ? 'test-projects' : ProjectStorage.collection
-  const snapshot = await db.collection(collection).get()
-  const items = snapshot.docs
+  const documents =
+    requestedSource === 'test'
+      ? (await db.collection('test-projects').get()).docs
+      : await (async () => {
+          const supports = appRef.collection(ProjectStorage.scopeCollection)
+          const snapshots = await Promise.all([
+            supports.where('operator_ids', 'array-contains', uid).get(),
+            supports.where('team_ids', 'array-contains', uid).get(),
+          ])
+          const ids = [
+            ...new Set(
+              snapshots.flatMap(snapshot =>
+                snapshot.docs.map(document => document.id)
+              )
+            ),
+          ]
+          if (ids.length === 0) return []
+          const roots = await db.getAll(
+            ...ids.map(id =>
+              db.collection(ProjectStorage.rootCollection).doc(id)
+            )
+          )
+          return roots.filter(document => document.exists)
+        })()
+  const items = documents
     .map((document) => {
       const source = (document.data() || {}) as Record<string, unknown>
       const rawStatus = text(source.status) as ProjectStatus

@@ -1,5 +1,4 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { miseboxJobsConfig } from './app/config/jobs.config'
 
 export default defineFireuxConfig({
   ecosystem: 'misebox',
@@ -61,7 +60,7 @@ export default defineFireuxConfig({
     'fireux-kitchens',
     'fireux-sproochli',
     ['fireux-suppliers', { mode: 'consumer' }],
-    ['fireux-jobs', miseboxJobsConfig],
+    ['fireux-jobs', { categories: ['hospitality'] }],
     'fireux-ai',
   ],
 })

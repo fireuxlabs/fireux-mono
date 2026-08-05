@@ -11,19 +11,30 @@
       </template>
 
       <div class="space-y-4 text-muted">
-        <p>Explore cleaning through Werkbox before deciding whether your brand needs a separate app.</p>
+        <p>
+          Explore cleaning through Werkbox before deciding whether your brand
+          needs a separate app.
+        </p>
         <ul class="fx-list-stack">
-          <li>Use product-neutral Jobs classified with the <code>cleaning</code> category.</li>
+          <li>
+            Use product-neutral Jobs classified with the
+            <code>cleaning</code> category.
+          </li>
           <li>Reuse shared Agent and Professional profile foundations.</li>
-          <li>Keep Places and Companies independent of any one product name.</li>
+          <li>
+            Keep Places and Companies independent of any one product name.
+          </li>
         </ul>
       </div>
     </UCard>
 
     <section class="space-y-3">
-      <h2 class="text-xl font-semibold text-highlighted">Move only when it makes sense</h2>
+      <h2 class="text-xl font-semibold text-highlighted">
+        Move only when it makes sense
+      </h2>
       <p class="text-muted">
-        If Werkbox works for you and your own brand needs a separate home, launch a Werkbox App for CHF 600 setup.
+        If Werkbox works for you and your own brand needs a separate home,
+        launch a Werkbox App for CHF 600 setup.
       </p>
     </section>
 
@@ -39,12 +50,29 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 definePageMeta({
   layout: 'landing',
+  robots: 'noindex, nofollow',
 })
 
-useSeoMeta({
+useSeo({
   title: 'App for a Cleaning Business · FireUX',
-  description: 'Start your cleaning business on shared Werkbox, then move to a dedicated app only when you need one.',
+  description:
+    'Start your cleaning business on shared Werkbox, then move to a dedicated app only when you need one.',
+  path: '/solutions/cleaning',
+  image: '/img/app/cover.png',
+  robots: 'noindex, nofollow',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
 })
 </script>

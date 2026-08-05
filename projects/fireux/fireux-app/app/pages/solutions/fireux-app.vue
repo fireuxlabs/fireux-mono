@@ -17,7 +17,9 @@
                 <UBadge color="neutral" variant="soft">PWA + Website</UBadge>
               </div>
               <h2 class="text-2xl font-semibold">{{ product.name }}</h2>
-              <p class="text-sm text-toned">{{ product.tagline || product.description }}</p>
+              <p class="text-sm text-toned">
+                {{ product.tagline || product.description }}
+              </p>
               <div
                 v-if="product.content"
                 class="prose prose-sm max-w-none dark:prose-invert"
@@ -35,7 +37,11 @@
                   Setup, deployment, and maintenance are handled by FireUX.
                 </p>
                 <div class="flex flex-wrap gap-2">
-                  <UButton :to="`/products/${product.slug}`" color="primary" variant="solid">
+                  <UButton
+                    :to="`/products/${product.slug}`"
+                    color="primary"
+                    variant="solid"
+                  >
                     Buy now
                   </UButton>
                   <UButton to="/products" color="neutral" variant="outline">
@@ -57,7 +63,10 @@
               :key="`${feature.title}-${index}`"
               class="flex items-start gap-2 rounded-md border p-3"
             >
-              <UIcon name="i-lucide-check-circle-2" class="mt-0.5 text-primary" />
+              <UIcon
+                name="i-lucide-check-circle-2"
+                class="mt-0.5 text-primary"
+              />
               <p class="text-sm">{{ feature.title }}</p>
             </div>
           </div>
@@ -91,11 +100,29 @@ import type {
   Price,
 } from 'fireux-products/runtime/models/product.model'
 import { useProduct } from 'fireux-products/runtime/composables/fireux/firestore/product/useProduct'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 
 definePageMeta({
   layout: 'default',
   title: 'FireUX App',
   name: 'SolutionsFireuxAppPage',
+})
+
+useSeo({
+  title: 'FireUX App',
+  description: 'A professional website and App operated by FireUX.',
+  path: '/solutions/fireux-app',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
 })
 
 const { fetchProductBySlug, fetchProductPrices } = useProduct()

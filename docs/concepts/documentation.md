@@ -88,6 +88,8 @@ claim is true, require cosmetic sections, or turn a mention into canon.
 current repository locations. The host App owns the Nuxt Content source
 collection; the package owns reusable `/docs` routes. Rendered content and the
 docs manifest are views over this graph, never copied documentation authority.
+Each content source keeps the narrowest watch root that contains its files; a
+single root document must never make the App watch the whole repository.
 
 ## Family maps
 

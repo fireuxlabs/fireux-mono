@@ -39,8 +39,14 @@ behind compatibility routes or adapters.
   authoring, moderation and Order reads/writes use trusted fixed-runtime
   endpoints.
 - Public marketplace routes never merge source-authored preview sellers,
-  fixtures, or seed records into those projections. Draft previews remain
-  authenticated management views over canonical Store and Offer records.
+  fixtures, or seed records into those projections. The directory renders its
+  bounded published projection first. A signed-in current-App admin may then
+  request the same bounded directory DTO with unpublished publication states;
+  local development uses that all-record projection by default, matching the
+  Kitchen directory preview convention. Deployed guests remain published-only,
+  and unpublished cards route to administration rather than a public detail
+  route. Canonical owner, editor, moderation and Offer fields never enter the
+  directory DTO.
 - Marketplace Orders are requests for offline collection or local delivery.
   They do not reuse KitchenOrder and do not create payment or FinancialFact
   truth.

@@ -27,6 +27,18 @@ Current source is authoritative:
 | `User`      | One person                              | `users/{uid}` in the identity database                |
 | `AppUser`   | That User's membership in one App       | `apps/{appId}/users/{uid}` in the owning App database |
 
+Each Firebase project's `(default)` database also carries a bounded singular
+`project/{projectId}` local record plus plural `ecosystems` and `apps`
+directory projections for only the things hosted by that Firebase project.
+Those safe routing and presentation records
+are not canonical identity or operational storage; canonical App membership
+and domain state remain in the owning named database.
+
+The FireUX control-plane named database keeps canonical `projects/{projectId}`
+roots for every Project added to the Console. Its
+`apps/{appId}/projects/{projectId}` AppProject records are access-only support
+and determine which roots that App Console exposes.
+
 `UserAccount` and User notifications are private, User-scoped support records.
 They are not additional User identities. Profile bases, directory DTOs,
 stamps, and entity declarations are shared model utilities, not core records.
@@ -52,6 +64,10 @@ Likewise, App meta content is authored configuration, not a system record.
 
 - Firestore document IDs are stable identity. Public route keys are declared
   per family and never selected through a silent `slug || id` fallback.
+- User identity has one root at `users/{uid}`. Its Firebase Auth UID remains
+  stable while `handle` is an editable User field; no parallel handle lookup,
+  reservation, migration-state, fallback-read, or duplicate-write collection
+  is part of the canonical family.
 - Kitchen currently exposes its document ID as the public slug and direct-reads
   that document. The existing mutation path that can write a different stored
   slug is migration debt; it does not establish an independently mutable

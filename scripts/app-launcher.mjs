@@ -3,8 +3,11 @@
 // last_used: 2026-08-04
 // usage_note: interactive local App launcher backed by the canonical App registry.
 
-import { spawn } from 'node:child_process'
+import { spawn, spawnSync } from 'node:child_process'
+import { existsSync, mkdirSync } from 'node:fs'
 import net from 'node:net'
+import os from 'node:os'
+import path from 'node:path'
 import process from 'node:process'
 import readline from 'node:readline'
 import { fileURLToPath } from 'node:url'
@@ -12,6 +15,15 @@ import { fileURLToPath } from 'node:url'
 import { getAppRegistryEntries } from './_lib/app-registry.mjs'
 
 const repoRoot = fileURLToPath(new URL('..', import.meta.url))
+const firefoxPath =
+  '/Applications/Firefox Developer Edition.app/Contents/MacOS/firefox'
+const firefoxProfilePath = path.join(
+  os.homedir(),
+  'Library',
+  'Application Support',
+  'FireUX Launcher',
+  'Firefox Profile'
+)
 const allApps = getAppRegistryEntries().sort(
   (left, right) =>
     (left.launchOrder ?? Number.MAX_SAFE_INTEGER) -
@@ -77,15 +89,29 @@ const starting = new Set()
 let selectedIndex = 0
 let statusMessage = 'Checking local servers...'
 let statusRefreshRunning = false
+let batchActionRunning = false
 let stopped = false
 
 function sleep(milliseconds) {
   return new Promise((resolve) => setTimeout(resolve, milliseconds))
 }
 
-function isPortOpen(port, timeoutMs = 350) {
+function getListeningPorts() {
+  const check = spawnSync('lsof', ['-nP', '-iTCP', '-sTCP:LISTEN'], {
+    encoding: 'utf8',
+  })
+  if (check.error || check.status !== 0) return null
+
+  return new Set(
+    [...String(check.stdout).matchAll(/:(\d+)\s+\(LISTEN\)/g)].map((match) =>
+      Number(match[1])
+    )
+  )
+}
+
+function probePort(port, timeoutMs = 500) {
   return new Promise((resolve) => {
-    const socket = net.createConnection({ host: '127.0.0.1', port })
+    const socket = net.createConnection({ host: 'localhost', port })
     let settled = false
 
     const finish = (isOpen) => {
@@ -100,6 +126,12 @@ function isPortOpen(port, timeoutMs = 350) {
     socket.once('timeout', () => finish(false))
     socket.once('error', () => finish(false))
   })
+}
+
+async function isPortOpen(port) {
+  const listeningPorts = getListeningPorts()
+  if (listeningPorts) return listeningPorts.has(port)
+  return probePort(port)
 }
 
 function plainLength(value) {
@@ -137,12 +169,23 @@ function appKind(app, ecosystem) {
   return 'APP'
 }
 
+function quickKeyForIndex(index) {
+  if (index < 9) return String(index + 1)
+  return String.fromCharCode('A'.charCodeAt(0) + index - 9)
+}
+
+function quickIndexForKey(value) {
+  if (/^[1-9]$/.test(value)) return Number(value) - 1
+  if (/^[A-Z]$/.test(value)) return value.charCodeAt(0) - 65 + 9
+  return -1
+}
+
 function appLine(app, ecosystem, index, width, selected) {
   const isMain = app.key === ecosystem.mainApp.key
-  const number = index < 9 ? `${index + 1}` : ' '
+  const quickKey = quickKeyForIndex(index)
   const branch = isMain ? '' : '|-- '
   const marker = selected ? '>' : ' '
-  const rawLeft = `${marker} ${number}  ${branch}${app.name} [${appKind(app, ecosystem)}]`
+  const rawLeft = `${marker} ${quickKey}  ${branch}${app.name} [${appKind(app, ecosystem)}]`
   const status = statuses.get(app.key)
   const rawRight = `${statusLabel(status)}  :${app.port}`
   const maxLeftWidth = Math.max(12, width - rawRight.length - 3)
@@ -176,7 +219,8 @@ function render() {
   }
 
   output.push(
-    `${ansi.dim}Up/Down: App   Left/Right: ecosystem   Enter: start/open   1-9: quick open   R: refresh   Q: quit${ansi.reset}`
+    `${ansi.dim}Enter or 1-9/A-M: start/open   O: open all running   X: kill all running${ansi.reset}`,
+    `${ansi.dim}Up/Down: App   Left/Right: ecosystem   R: refresh   Q: quit${ansi.reset}`
   )
 
   process.stdout.write(output.join('\n'))
@@ -187,9 +231,12 @@ async function refreshStatuses() {
   statusRefreshRunning = true
 
   try {
-    const results = await Promise.all(
-      allApps.map(async (app) => [app.key, await isPortOpen(app.port)])
-    )
+    const listeningPorts = getListeningPorts()
+    const results = listeningPorts
+      ? allApps.map((app) => [app.key, listeningPorts.has(app.port)])
+      : await Promise.all(
+          allApps.map(async (app) => [app.key, await probePort(app.port)])
+        )
 
     for (const [key, running] of results) {
       if (running) {
@@ -211,20 +258,112 @@ async function refreshStatuses() {
 }
 
 function openBrowser(app) {
-  const command =
-    process.platform === 'darwin'
+  const useFireuxFirefox =
+    process.platform === 'darwin' && existsSync(firefoxPath)
+  if (useFireuxFirefox) {
+    try {
+      mkdirSync(firefoxProfilePath, { recursive: true })
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      statusMessage = `Could not prepare the FireUX Firefox profile: ${message}`
+      render()
+      return
+    }
+  }
+
+  const command = useFireuxFirefox
+    ? firefoxPath
+    : process.platform === 'darwin'
       ? 'open'
       : process.platform === 'win32'
         ? 'cmd'
         : 'xdg-open'
-  const args =
-    process.platform === 'win32'
+  const args = useFireuxFirefox
+    ? ['-profile', firefoxProfilePath, '-new-tab', app.baseUrl]
+    : process.platform === 'win32'
       ? ['/c', 'start', '', app.baseUrl]
       : [app.baseUrl]
   const browser = spawn(command, args, { detached: true, stdio: 'ignore' })
+  browser.once('error', (error) => {
+    statusMessage = `Could not open Firefox: ${error.message}`
+    render()
+  })
   browser.unref()
-  statusMessage = `Opened ${app.name} at ${app.baseUrl}`
+  statusMessage = `Opened ${app.name} in the FireUX Firefox session.`
   render()
+}
+
+async function getRunningApps() {
+  const listeningPorts = getListeningPorts()
+  if (listeningPorts) {
+    return allApps.filter((app) => listeningPorts.has(app.port))
+  }
+
+  const checks = await Promise.all(
+    allApps.map(async (app) => [app, await probePort(app.port)])
+  )
+  return checks.filter(([, running]) => running).map(([app]) => app)
+}
+
+async function openAllRunning() {
+  if (batchActionRunning) return
+  batchActionRunning = true
+
+  try {
+    const runningApps = await getRunningApps()
+    if (runningApps.length === 0) {
+      statusMessage = 'No running Apps to open.'
+      render()
+      return
+    }
+
+    for (const app of runningApps) openBrowser(app)
+    statusMessage = `Opened ${runningApps.length} running Apps in the FireUX Firefox session.`
+    render()
+  } finally {
+    batchActionRunning = false
+  }
+}
+
+function runKillCommand(app) {
+  return new Promise((resolve) => {
+    const child = spawn('pnpm', [`kill:${app.key}`], {
+      cwd: repoRoot,
+      stdio: 'ignore',
+    })
+    child.once('error', () => resolve(false))
+    child.once('close', (exitCode) => resolve(exitCode === 0))
+  })
+}
+
+async function killAllRunning() {
+  if (batchActionRunning) return
+  batchActionRunning = true
+
+  try {
+    const runningApps = await getRunningApps()
+    if (runningApps.length === 0) {
+      statusMessage = 'No running Apps to kill.'
+      render()
+      return
+    }
+
+    statusMessage = `Stopping ${runningApps.length} running Apps...`
+    render()
+    const results = await Promise.all(runningApps.map(runKillCommand))
+    const failedCount = results.filter((succeeded) => !succeeded).length
+    for (const app of runningApps) {
+      starting.delete(app.key)
+      statuses.set(app.key, 'stopped')
+    }
+    statusMessage = failedCount
+      ? `Stopped running Apps; ${failedCount} kill command(s) reported an error.`
+      : `Stopped ${runningApps.length} running Apps.`
+    render()
+    await refreshStatuses()
+  } finally {
+    batchActionRunning = false
+  }
 }
 
 async function startAndOpen(app) {
@@ -323,7 +462,13 @@ process.stdin.resume()
 process.stdout.write(`${ansi.saveScreen}${ansi.hideCursor}`)
 
 process.stdin.on('keypress', (value, key) => {
-  if (key.ctrl && key.name === 'c') cleanup()
+  const quickIndex = quickIndexForKey(value)
+
+  if (quickIndex >= 0 && quickIndex < launcherRows.length) {
+    selectedIndex = quickIndex
+    render()
+    void startAndOpen(launcherRows[selectedIndex].app)
+  } else if (key.ctrl && key.name === 'c') cleanup()
   else if (key.name === 'q' || key.name === 'escape') cleanup()
   else if (key.name === 'left' || key.name === 'h') moveToEcosystem(-1)
   else if (key.name === 'right' || key.name === 'l') moveToEcosystem(1)
@@ -331,16 +476,11 @@ process.stdin.on('keypress', (value, key) => {
   else if (key.name === 'down' || key.name === 'j') moveSelection(1)
   else if (key.name === 'return')
     void startAndOpen(launcherRows[selectedIndex].app)
+  else if (key.name === 'o') void openAllRunning()
+  else if (key.name === 'x') void killAllRunning()
   else if (key.name === 'r') {
     statusMessage = 'Refreshing server status...'
     void refreshStatuses()
-  } else if (/^[1-9]$/.test(value)) {
-    const quickIndex = Number(value) - 1
-    if (quickIndex < launcherRows.length) {
-      selectedIndex = quickIndex
-      render()
-      void startAndOpen(launcherRows[selectedIndex].app)
-    }
   }
 })
 

@@ -9,12 +9,18 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+
 const roadmap = [
   { label: 'Shared FireUX user identity', done: true },
   { label: 'Review new App users across FireUX', done: true },
   { label: 'See the source App and Project for each new user', done: true },
   {
-    label: 'Receive a notification when a new user signs up to one of your apps',
+    label:
+      'Receive a notification when a new user signs up to one of your apps',
     done: false,
   },
   { label: 'Invite users to your project', done: false },
@@ -30,9 +36,18 @@ const action = {
   icon: 'i-lucide-users',
 } as const
 
-useSeoMeta({
+useSeo({
   title: 'Project users - FireUX',
   description:
     'Monitor new App users across FireUX and see their source App and Project.',
+  path: '/operations/users',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
 })
 </script>

@@ -188,7 +188,7 @@ export function useAuth() {
 
   const {
     createOnce,
-    retry: retryAccountProvisioning,
+    retry: retryProvisioning,
     reset: resetAccountProvisioning,
     creating,
   } = createAuthAccountProvisioner({
@@ -198,6 +198,11 @@ export function useAuth() {
     lastError: lastAccountProvisionError,
     userCreate,
   })
+
+  const retryAccountProvisioning = async (termsVersion?: string) => {
+    if (termsVersion) rememberPendingAccountConsent(termsVersion)
+    return await retryProvisioning()
+  }
 
   async function ensureSignedInUser(
     user: User | null,

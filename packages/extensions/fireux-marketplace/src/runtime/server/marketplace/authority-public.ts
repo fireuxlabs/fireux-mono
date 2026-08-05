@@ -1,5 +1,7 @@
-import type { DocumentSnapshot } from 'firebase-admin/firestore'
-import { createError, type H3Event } from 'h3'
+import type { DocumentSnapshot, Query } from 'firebase-admin/firestore'
+import { createError, getQuery, type H3Event } from 'h3'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import type {
   ManagedMarketplaceStoreResponse,
@@ -8,7 +10,11 @@ import type {
   PublicMarketplaceStoreListResponse,
   PublicMarketplaceStoreResponse,
 } from '../../models/marketplace-api.model'
-import { projectPublicMarketplaceStore } from './projection'
+import {
+  projectMarketplaceStoreDirectoryPreview,
+  projectMarketplaceStorePreview,
+  projectPublicMarketplaceStore,
+} from './projection'
 import { readMarketplaceServerScope } from './runtime'
 import { marketplaceDocumentId } from './validation'
 import {
@@ -26,14 +32,62 @@ import {
   storesRef,
 } from './authority-common'
 
+const text = (value: unknown) => String(value ?? '').trim()
+
+async function requireMarketplaceDirectoryPreview(
+  event: H3Event,
+  db: ReturnType<typeof getRuntimeFirestore>,
+  appId: string
+) {
+  const { uid } = await requireFirebaseBearerUser(
+    event,
+    'Sign in to preview unpublished marketplace shops.'
+  )
+  const { developerId } = useFireUXConfig()
+  const isDeveloper = import.meta.dev && uid === text(developerId)
+  const membership = await db.doc(`apps/${appId}/users/${uid}`).get()
+  const isAdmin = membership.exists && text(membership.data()?.role) === 'admin'
+  if (!isAdmin && !isDeveloper) {
+    throw createError({
+      statusCode: 403,
+      statusMessage:
+        'Current App administrator access is required to preview unpublished marketplace shops.',
+    })
+  }
+  privateRead(event)
+}
+
 export async function listPublicMarketplaceStores(
   event: H3Event
 ): Promise<PublicMarketplaceStoreListResponse> {
-  publicRead(event)
   const scope = readMarketplaceServerScope(event)
   const db = getRuntimeFirestore(scope.databaseId)
-  const snapshot = await storesRef(db, scope.appId)
-    .where('publication_state', '==', 'published')
+  const visibility = text(getQuery(event).visibility)
+  if (visibility && visibility !== 'all' && visibility !== 'published') {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Marketplace directory visibility is invalid.',
+    })
+  }
+  const requestedAll = visibility === 'all'
+  const requestedPublished = visibility === 'published'
+  const includeAll = (import.meta.dev && !requestedPublished) || requestedAll
+  if (requestedAll) {
+    await requireMarketplaceDirectoryPreview(event, db, scope.appId)
+  } else if (includeAll) {
+    privateRead(event)
+  } else {
+    publicRead(event)
+  }
+  let directoryQuery: Query = storesRef(db, scope.appId)
+  if (!includeAll) {
+    directoryQuery = directoryQuery.where(
+      'publication_state',
+      '==',
+      'published'
+    )
+  }
+  const snapshot = await directoryQuery
     .limit(STORE_LIMIT + 1)
     .get()
     .catch(() => {
@@ -45,7 +99,11 @@ export async function listPublicMarketplaceStores(
   const stores = snapshot.docs
     .slice(0, STORE_LIMIT)
     .map(canonicalStore)
-    .map((store) => projectPublicMarketplaceStore(store))
+    .map((store) =>
+      includeAll
+        ? projectMarketplaceStoreDirectoryPreview(store)
+        : projectPublicMarketplaceStore(store)
+    )
     .filter((store): store is PublicMarketplaceStore => Boolean(store))
     .sort((left, right) => left.name.localeCompare(right.name))
   return {
@@ -58,10 +116,26 @@ export async function getPublicMarketplaceStore(
   event: H3Event,
   rawSlug: unknown
 ): Promise<PublicMarketplaceStoreResponse> {
-  publicRead(event)
   const scope = readMarketplaceServerScope(event)
   const slug = badRequest(() => marketplaceDocumentId(rawSlug, 'Store slug'))
   const db = getRuntimeFirestore(scope.databaseId)
+  const visibility = text(getQuery(event).visibility)
+  if (visibility && visibility !== 'all' && visibility !== 'published') {
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Marketplace Store visibility is invalid.',
+    })
+  }
+  const requestedAll = visibility === 'all'
+  const requestedPublished = visibility === 'published'
+  const includeAll = (import.meta.dev && !requestedPublished) || requestedAll
+  if (requestedAll) {
+    await requireMarketplaceDirectoryPreview(event, db, scope.appId)
+  } else if (includeAll) {
+    privateRead(event)
+  } else {
+    publicRead(event)
+  }
   const ref = storeRef(db, scope.appId, slug)
   const snapshot = await ref.get()
   if (!snapshot.exists) {
@@ -71,14 +145,13 @@ export async function getPublicMarketplaceStore(
   if (
     store.app_id !== scope.appId ||
     store.slug !== slug ||
-    store.publication_state !== 'published'
+    (!includeAll && store.publication_state !== 'published')
   ) {
     throw createError({ statusCode: 404, statusMessage: 'Store not found.' })
   }
-  const projected = projectPublicMarketplaceStore(
-    store,
-    await readStoreOffers(ref, true)
-  )
+  const projected = includeAll
+    ? projectMarketplaceStorePreview(store, await readStoreOffers(ref))
+    : projectPublicMarketplaceStore(store, await readStoreOffers(ref, true))
   if (!projected) {
     throw createError({ statusCode: 404, statusMessage: 'Store not found.' })
   }

@@ -1,8 +1,6 @@
 import { defineFireuxConfig } from 'fireux-core/config/app/fireux.config'
-import { withFireuxNuxtConfig } from 'fireux-core/config/app/nuxt-overrides'
-import { graniteNuxtOverrides } from './app/config/vite.config'
 
-const fireuxConfig = defineFireuxConfig({
+export default defineFireuxConfig({
   ecosystem: 'granite',
   projectId: 'granite',
   ecosystemId: 'granite',
@@ -19,5 +17,3 @@ const fireuxConfig = defineFireuxConfig({
     'fireux-tasks',
   ],
 })
-
-export default withFireuxNuxtConfig(fireuxConfig, graniteNuxtOverrides)

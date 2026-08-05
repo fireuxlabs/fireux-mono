@@ -21,6 +21,10 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/config/app/seo.ts'
   )
+  const staticPaths = read(
+    repoRoot,
+    'packages/core/fireux-core/src/config/app/static-paths.ts'
+  )
   const runtime = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/server/utils/seo-sitemaps.ts'
@@ -39,6 +43,29 @@ export async function run({ repoRoot }) {
       violations.push(`Core noindex defaults must include ${route}.`)
     }
   }
+  for (const status of ['coming-soon', 'planned', 'later']) {
+    if (!staticPaths.includes(`'${status}'`)) {
+      violations.push(
+        `Solution sitemap discovery must exclude ${status} literature.`
+      )
+    }
+  }
+  if (!staticPaths.includes('NON_INDEXABLE_SOLUTION_STATUSES.has')) {
+    violations.push(
+      'Solution sitemap discovery must apply the non-indexable status gate.'
+    )
+  }
+  for (const marker of [
+    'if (solution.external === true) return undefined',
+    '/^https?:\\/\\//i.test(destination)',
+    'resolveLocalSolutionPath(solution)',
+  ]) {
+    if (!staticPaths.includes(marker)) {
+      violations.push(
+        `Solution sitemap discovery must retain canonical-destination handling: ${marker}.`
+      )
+    }
+  }
 
   if (!config.includes("routeIdentity?: 'document-id' | 'field'")) {
     violations.push('SEO config must declare explicit sitemap route identity.')
@@ -55,6 +82,16 @@ export async function run({ repoRoot }) {
     violations.push(
       'Core must expose the extension-owned sitemap document seam.'
     )
+  }
+  for (const marker of [
+    'sitemapDocuments?: string[]',
+    '...(options.seo?.sitemapDocuments || [])',
+  ]) {
+    if (!config.includes(marker)) {
+      violations.push(
+        `Core App-owned sitemap document configuration must retain ${marker}.`
+      )
+    }
   }
   if (!runtime.includes('toStrings(seo.sitemapDocuments)')) {
     violations.push('Sitemap runtime must consume custom sitemap documents.')
@@ -78,6 +115,184 @@ export async function run({ repoRoot }) {
   }
   if (!useSeo.includes('...(language ? { inLanguage: language } : {})')) {
     violations.push('Core App landing JSON-LD must retain explicit language.')
+  }
+  for (const marker of [
+    'export function buildPublicPageJsonLd',
+    "pageType?: 'CollectionPage' | 'WebPage'",
+    "'@type': 'ItemList'",
+    "isPartOf: { '@id': `${siteUrl}#website` }",
+  ]) {
+    if (!useSeo.includes(marker)) {
+      violations.push(`Core public-page JSON-LD must retain ${marker}.`)
+    }
+  }
+
+  const sharedPublicPages = [
+    'packages/core/fireux-core/src/runtime/pages/operations/index.vue',
+    'packages/core/fireux-core/src/runtime/pages/operations/[slug].vue',
+    'packages/core/fireux-core/src/runtime/pages/solutions/index.vue',
+    'packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue',
+  ]
+  for (const relative of sharedPublicPages) {
+    const source = read(repoRoot, relative)
+    if (!source.includes('useSeo({')) {
+      violations.push(`${relative} must consume the shared SEO seam.`)
+    }
+    if (source.includes('useSeoMeta({')) {
+      violations.push(`${relative} must not bypass the shared SEO seam.`)
+    }
+    if (!source.includes('buildPublicPageJsonLd({')) {
+      violations.push(`${relative} must publish connected public-page JSON-LD.`)
+    }
+  }
+  const solutionDetail = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/pages/solutions/[slug].vue'
+  )
+  for (const marker of [
+    'canonicalDestination.value !== solutionPath.value',
+    'redirectCode: 301',
+    "isIndexable.value ? 'index, follow' : 'noindex, nofollow'",
+  ]) {
+    if (!solutionDetail.includes(marker)) {
+      violations.push(
+        `Solution detail canonical handling must retain ${marker}.`
+      )
+    }
+  }
+
+  const fireuxPublicOverrides = [
+    'projects/fireux/fireux-app/app/pages/apps/index.vue',
+    'projects/fireux/fireux-app/app/pages/apps/[id].vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/[slug].vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/misebox/index.vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/werkbox/index.vue',
+    'projects/fireux/fireux-app/app/pages/solutions/index.vue',
+    'projects/fireux/fireux-app/app/pages/solutions/cleaning.vue',
+    'projects/fireux/fireux-app/app/pages/solutions/fireux-app.vue',
+    'projects/fireux/fireux-app/app/pages/solutions/fireux-template.vue',
+    'projects/fireux/fireux-app/app/pages/operations/apps.vue',
+    'projects/fireux/fireux-app/app/pages/operations/ecosystem.vue',
+    'projects/fireux/fireux-app/app/pages/operations/users.vue',
+  ]
+  for (const relative of fireuxPublicOverrides) {
+    const source = read(repoRoot, relative)
+    if (!source.includes('useSeo({')) {
+      violations.push(`${relative} must consume the shared SEO seam.`)
+    }
+    if (source.includes('useSeoMeta({')) {
+      violations.push(`${relative} must not bypass the shared SEO seam.`)
+    }
+  }
+
+  const fireuxDirectoryReader = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/utils/platform-directory.ts'
+  )
+  const fireuxDirectoryApi = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/api/public/directory.get.ts'
+  )
+  const fireuxDirectorySitemap = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/routes/sitemaps/directory.xml.get.ts'
+  )
+  const fireuxDirectoryPolicy = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/utils/directorySearchPolicy.ts'
+  )
+  const fireuxAppDetail = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/pages/apps/[id].vue'
+  )
+  for (const source of [fireuxDirectoryApi, fireuxDirectorySitemap]) {
+    if (!source.includes('readPlatformDirectory')) {
+      violations.push(
+        'FireUX directory JSON and sitemap transport must share the bounded directory reader.'
+      )
+      break
+    }
+  }
+  for (const marker of [
+    "fetchCollection(db, 'apps')",
+    "fetchCollection(db, 'ecosystems')",
+    'projectPublicApp',
+    'projectEcosystemDirectoryEntry',
+  ]) {
+    if (!fireuxDirectoryReader.includes(marker)) {
+      violations.push(`FireUX directory reader must retain ${marker}.`)
+    }
+  }
+  for (const marker of [
+    "NON_INDEXABLE_DIRECTORY_APP_IDS = new Set(['fireux-blank'])",
+    "RETIRED_PUBLIC_ECOSYSTEM_IDS = new Set(['cleanbox'])",
+  ]) {
+    if (!fireuxDirectoryPolicy.includes(marker)) {
+      violations.push(`FireUX directory search policy must retain ${marker}.`)
+    }
+  }
+  for (const marker of [
+    'isDirectoryAppIndexable',
+    'isDirectoryEcosystemIndexable',
+    'setSitemapResponseHeaders(event)',
+  ]) {
+    if (!fireuxDirectorySitemap.includes(marker)) {
+      violations.push(`FireUX directory sitemap must retain ${marker}.`)
+    }
+  }
+  for (const marker of [
+    'isDirectoryAppIndexable',
+    'ecosystem.value.name',
+    "isIndexable.value ? 'index, follow' : 'noindex, nofollow'",
+  ]) {
+    if (!fireuxAppDetail.includes(marker)) {
+      violations.push(`FireUX App relationship detail must retain ${marker}.`)
+    }
+  }
+
+  const fireuxMiseboxProfile = read(
+    repoRoot,
+    'packages/ecosystem/fireux-misebox/src/runtime/content/ecosystem-profile.ts'
+  )
+  const fireuxMiseboxPage = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/pages/ecosystems/misebox/index.vue'
+  )
+  const fireuxMiseboxRedirect = read(
+    repoRoot,
+    'projects/fireux/fireux-app/app/pages/misebox.vue'
+  )
+  for (const marker of [
+    "websiteUrl: 'https://misebox.app'",
+    "'digital-restaurant-menu'",
+    "'restaurant-menu-management'",
+  ]) {
+    if (!fireuxMiseboxProfile.includes(marker)) {
+      violations.push(
+        `Misebox Ecosystem literature must retain its source-backed relationship marker: ${marker}.`
+      )
+    }
+  }
+  for (const marker of [
+    "path: '/ecosystems/misebox'",
+    'buildPublicPageJsonLd({',
+    "entry.status === 'active'",
+    "entry.ecosystem_id === 'misebox'",
+    "solution.status === 'live'",
+    'miseboxEcosystemProfile',
+  ]) {
+    if (!fireuxMiseboxPage.includes(marker)) {
+      violations.push(`FireUX Misebox relationship page must retain ${marker}.`)
+    }
+  }
+  for (const marker of [
+    "navigateTo('/ecosystems/misebox'",
+    'redirectCode: 301',
+  ]) {
+    if (!fireuxMiseboxRedirect.includes(marker)) {
+      violations.push(`Legacy /misebox redirect must retain ${marker}.`)
+    }
   }
 
   for (const relative of DOCUMENT_ID_MODULES) {
@@ -282,6 +497,34 @@ export async function run({ repoRoot }) {
       violations.push(
         `App registry must retain rendered SEO evidence for ${marker}.`
       )
+    }
+  }
+  for (const marker of [
+    "seoPageContract('/operations', {",
+    "seoPageContract('/operations/identity', {",
+    "seoPageContract('/solutions', {",
+    "seoPageContract('/solutions/app-for-small-business', {",
+    "jsonLdTypes: ['CollectionPage', 'ItemList']",
+    "route: '/sitemaps/static.xml'",
+    "route: '/solutions/cleaning'",
+    'noindex: true',
+    "route: '/solutions/restaurant-menu-management'",
+    "location: 'https://misebox.app/solutions/restaurant-menu-management'",
+    "seoPageContract('/ecosystems/misebox', {",
+    "canonical: 'http://localhost:3000/ecosystems/misebox'",
+    "seoPageContract('/apps', {",
+    "seoPageContract('/apps/misebox-app', {",
+    "route: '/sitemaps/directory.xml'",
+    "'<loc>http://localhost:3000/apps/misebox-app</loc>'",
+    "'<loc>http://localhost:3000/sitemaps/directory.xml</loc>'",
+    "route: '/apps/fireux-blank'",
+    "route: '/misebox'",
+    "location: '/ecosystems/misebox'",
+    "route: '/ecosystems/cleanbox'",
+    "location: '/ecosystems/werkbox'",
+  ]) {
+    if (!appRegistry.includes(marker)) {
+      violations.push(`FireUX hub/detail smoke must retain ${marker}.`)
     }
   }
 

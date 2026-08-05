@@ -12,7 +12,10 @@ export default defineContentConfig({
       source: [
         {
           cwd: repoRoot,
-          include: 'AGENTS.md',
+          // Nuxt Content derives its watch root from the static prefix before
+          // the first wildcard. Keep the wildcard after the exact filename so
+          // development watches AGENTS.md rather than the whole repository.
+          include: 'AGENTS.md*',
           prefix: '/governance',
         },
         {

@@ -36,9 +36,10 @@ These feature values are not analytics identifiers and must never be consumed
 by measurement code.
 
 Public visits do not automatically register the PWA service worker. Public
-Google Maps embeds require an explicit load action. Firebase Auth uses browser
-session persistence, and anonymous-order recovery values expire after no more
-than 24 hours.
+Google Maps embeds require an explicit load action. After authentication is
+explicitly requested, Firebase Auth keeps the sign-in across reloads and
+browser restarts until explicit sign-out or browser-data removal. Anonymous-
+order recovery values expire after no more than 24 hours.
 
 Chat contact details and message bodies remain in the current App database
 behind the trusted `/api/chat` boundary. The browser receives an unguessable

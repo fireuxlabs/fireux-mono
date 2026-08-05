@@ -44,3 +44,44 @@ export function projectPublicMarketplaceStore(
     ...(projectedOffers ? { offers: projectedOffers } : {}),
   }
 }
+
+export function projectMarketplaceStoreDirectoryPreview(
+  store: MarketplaceStore
+): PublicMarketplaceStore {
+  return {
+    id: store.id,
+    slug: store.slug,
+    name: store.name,
+    description: store.description,
+    locality: store.locality,
+    image_url: store.image_url,
+    image_alt: store.image_alt,
+    section_ids: store.section_ids,
+    fulfilment_methods: store.fulfilment_methods,
+    publication_state: store.publication_state,
+  }
+}
+
+export function projectMarketplaceStorePreview(
+  store: MarketplaceStore,
+  offers: MarketplaceOffer[]
+): PublicMarketplaceStore {
+  return {
+    ...projectMarketplaceStoreDirectoryPreview(store),
+    offers: offers
+      .flatMap((offer): PublicMarketplaceOffer[] =>
+        offer.price
+          ? [{
+              id: offer.id,
+              title: offer.title,
+              description: offer.description,
+              unit_label: offer.unit_label,
+              price: offer.price,
+              section_ids: offer.section_ids,
+              fulfilment_methods: offer.fulfilment_methods,
+            }]
+          : []
+      )
+      .sort((left, right) => left.title.localeCompare(right.title)),
+  }
+}

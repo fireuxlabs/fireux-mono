@@ -25,6 +25,8 @@ export type FireuxSeoConfig = {
    */
   hubs?: string[]
   staticPaths?: string[]
+  /** App-owned sitemap documents backed by a bounded public projection. */
+  sitemapDocuments?: string[]
 
   /**
    * robots.txt and indexing controls
@@ -252,6 +254,13 @@ export async function configureSeoDefaults(
   const siteUrl = normalizeSiteUrl(options.seo?.siteUrl || options.domain)
   const ext = await collectSeoExtensions(nuxt)
   const sitemaps = await collectSitemaps(nuxt)
+  const sitemapDocuments = normalizePaths([
+    ...(options.seo?.sitemapDocuments || []),
+    ...sitemaps.documents,
+  ])
+    .filter((path) => /^\/sitemaps\/[a-z0-9][a-z0-9-]*\.xml$/i.test(path))
+    .filter((path) => path !== '/sitemaps/index.xml')
+    .filter((path) => path !== '/sitemaps/static.xml')
 
   const hubs = normalizePaths([
     ...(options.seo?.hubs || []),
@@ -284,7 +293,7 @@ export async function configureSeoDefaults(
       options.seo?.defaultDescription?.trim() || `${options.appName} on FireUX`,
     hubs,
     sitemapPaths,
-    sitemapDocuments: sitemaps.documents,
+    sitemapDocuments,
     sitemapEntities: sitemaps.entities,
     disallowPaths,
     noindexPaths,

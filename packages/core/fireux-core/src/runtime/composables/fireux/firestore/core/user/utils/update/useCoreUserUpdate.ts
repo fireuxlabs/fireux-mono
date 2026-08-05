@@ -12,7 +12,7 @@ import {
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
 import type { UserRefs } from '../../fetch/useUserFetch'
-import { useUserHandleClaim } from '../../mutations/useUserHandleClaim'
+import { useUserHandleUpdate } from '../../mutations/useUserHandleUpdate'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
 
 function avatarFileExtension(source: File | Blob): string {
@@ -36,7 +36,7 @@ export function useCoreUserUpdate(user: UserRefs) {
   const identityDatabaseId = readRuntimeIdentityFirestoreDatabaseId()
   const { DisplayName, Bio, AvatarUrl, Handle } =
     useUserFormattingAndValidation()
-  const { claimHandle } = useUserHandleClaim()
+  const { updateHandle } = useUserHandleUpdate()
   const core = user.coreUser as { value: User | undefined }
 
   const requireCoreId = () => {
@@ -115,7 +115,7 @@ export function useCoreUserUpdate(user: UserRefs) {
       )
       const uid = requireCoreId()
       if (!normalized) throw new Error('Handle cannot be empty.')
-      await claimHandle(uid, normalized)
+      await updateHandle(uid, normalized)
     },
   }
 

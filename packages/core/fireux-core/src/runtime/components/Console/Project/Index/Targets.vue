@@ -4,15 +4,12 @@
     :outcome="props.outcome"
     :count="cards.length"
     entity="project targets"
-    error-description="Project targets could not be loaded. Please try again."
-    empty-title="No Project targets found"
-    empty-description="FireUX control-plane Projects will appear here."
+    title="Your projects"
+    description="Live projects linked to your current user profile."
+    error-description="Your projects could not be loaded. Please try again."
+    empty-title="No projects linked to you"
+    empty-description="Projects linked to your current user profile will appear here."
   >
-    <template #header>
-      <h2>Choose Project</h2>
-      <p>Select the Project console target you want to work on.</p>
-    </template>
-
     <ProjectCardsCell
       v-for="card in cards"
       :key="card.id"

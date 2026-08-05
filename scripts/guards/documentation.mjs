@@ -273,6 +273,27 @@ function inspectTimestampComments(repoRoot) {
   return violations
 }
 
+function inspectDocsViewerSource(repoRoot) {
+  const relativePath = 'projects/fireux/fireux-app/content.config.ts'
+  const absolutePath = path.join(repoRoot, relativePath)
+  if (!existsSync(absolutePath)) {
+    return [`${relativePath} is missing.`]
+  }
+
+  const source = readFileSync(absolutePath, 'utf8')
+  if (
+    !/cwd:\s*repoRoot,[\s\S]{0,320}include:\s*['"]AGENTS\.md\*['"]/.test(
+      source
+    )
+  ) {
+    return [
+      `${relativePath} must watch AGENTS.md through the file-bounded AGENTS.md* source; a literal include with repoRoot makes Nuxt Content watch the entire checkout.`,
+    ]
+  }
+
+  return []
+}
+
 export async function run({ repoRoot = process.cwd() } = {}) {
   const refStatusCache = new Map()
   const contextPaths = markdownFiles(
@@ -302,6 +323,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     ),
     ...inspectReferences(repoRoot, [...contextPaths, ...conceptPaths]),
     ...inspectTimestampComments(repoRoot),
+    ...inspectDocsViewerSource(repoRoot),
   ]
 
   if (violations.length) {

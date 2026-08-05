@@ -265,7 +265,7 @@ const canPersonalizeAuthCta = computed(
 const longButtonLabelResolved = computed(
   () =>
     props.rightPanelLongButtonLabel ||
-    (canPersonalizeAuthCta.value ? 'Open workspace' : 'Sign up')
+    (canPersonalizeAuthCta.value ? 'Open Dashboard' : 'Sign up')
 )
 
 const longButtonToResolved = computed(

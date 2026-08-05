@@ -1,7 +1,7 @@
 // FILE: packages/core/fireux-core/src/module.ts
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: register the authenticated runtime App membership endpoint.
 // Concurrent edit — 2026-07-20 12:59 CEST — Account consent slice: register trusted UserAccount provisioning.
-// Concurrent edit — 2026-07-20 13:10 CEST — User handle security pass: register trusted handle reservation.
+// User handle updates use the trusted canonical User endpoint.
 // Concurrent edit — 2026-07-20 16:25 CEST — Repo Efficiency Pass 1 of 6: register narrow public status and keep authenticated dev surfaces client-only.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: register exact public identity and App-admin people endpoints.
 import { defaultMaxListeners, setMaxListeners } from 'node:events'

@@ -24,8 +24,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { createError, useAsyncData, useSeoMeta } from '#imports'
+import { createError, useAsyncData } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from '../../composables/fireux/seo/useSeo'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
 import type { FireuxMetaOperation } from '../../../config/app/meta-content'
 
@@ -43,7 +47,9 @@ const { data } = await useAsyncData('public-app-operations', () =>
 )
 
 const operation = computed(() =>
-  (data.value?.operations || []).find((entry) => entry.slug === requestedSlug.value)
+  (data.value?.operations || []).find(
+    (entry) => entry.slug === requestedSlug.value
+  )
 )
 
 if (!operation.value) {
@@ -57,12 +63,23 @@ definePageMeta({
   layout: 'landing',
 })
 
-useSeoMeta({
-  title: () => `${operation.value?.title || 'Operation'} - ${appName.value}`,
-  ogTitle: () => `${operation.value?.title || 'Operation'} - ${appName.value}`,
-  twitterTitle: () => `${operation.value?.title || 'Operation'} - ${appName.value}`,
+useSeo({
+  title: computed(
+    () => `${operation.value?.title || 'Operation'} - ${appName.value}`
+  ),
   description: () => operation.value?.description || '',
-  ogDescription: () => operation.value?.description || '',
-  twitterDescription: () => operation.value?.description || '',
+  path: computed(() =>
+    requestedSlug.value
+      ? `/operations/${encodeURIComponent(requestedSlug.value)}`
+      : ''
+  ),
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      title: context.title,
+    }),
 })
 </script>

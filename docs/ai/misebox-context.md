@@ -171,10 +171,11 @@ Before each task:
   materializes a Kitchen.
 - Misebox tenant Apps may compose that shared Jobs family with a hospitality
   allowlist. Their public catalogue remains exact-source scoped, while the main
-  Misebox catalogue can aggregate those public Jobs and return applicants to
-  the source tenant through a configured HTTPS doorway. Interlaken Essen is
-  the first such local doorway: its `/jobs` route, Companies, Places, Agents,
-  and Professionals are shared capabilities, not tenant-owned entity forks.
+  Misebox catalogue can aggregate those Jobs and return applicants through the
+  source tenant's canonical active App identity and stored HTTPS website.
+  Interlaken Essen is the first such local doorway: its `/jobs` route,
+  Companies, Places, Agents, and Professionals are shared capabilities, not
+  tenant-owned entity forks.
 - Misebox Blogs use the shared `fireux-blogs` root and bounded public
   projection. Every Misebox App `/blog` aggregates every public BlogPost whose
   source ecosystem is Misebox; source App is provenance, not Blog visibility.
@@ -201,10 +202,11 @@ Before each task:
 - The ecosystem package must not own tenant-id branches, Kitchen/Menu source
   defaults, or a competing public Menu renderer. Public Menu routes, layout,
   resolution, and ordering projections belong to `fireux-kitchens`.
-- `fireux-kitchens` also owns the shared Bringli Supplier-directory endpoint
-  and Google Maps environment resolution used by its Supply and Delivery
-  surfaces. Misebox project Apps do not repeat those runtime values, and an App
-  that does not load Kitchens does not acquire Kitchen integration config.
+- `fireux-kitchens` owns the shared Bringli Supplier-directory endpoint used by
+  its Supply surfaces. `fireux-places` owns Google provider resolution, browser
+  loading, and runtime configuration; Kitchens composes that seam for Delivery
+  overlays, and other Place consumers can reuse it without Kitchen coupling.
+  Project Apps do not repeat those integration values.
 - `projects/misebox/*` apps may compose and configure package-owned behavior;
   they should not recreate shared domain truth locally.
 - Misebox product literature follows `docs/concepts/product-language.md`.

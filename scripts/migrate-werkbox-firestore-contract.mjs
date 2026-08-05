@@ -27,7 +27,6 @@ import {
 } from './_lib/firebase-admin-credentials.mjs'
 import { assertFirestoreRulesArtifactCurrent } from './_lib/firestore-rules-source.mjs'
 import { writeProtectedJsonArtifact } from './_lib/protected-json-artifact.mjs'
-import { buildWerkboxServerSourceEvidence } from './_lib/werkbox-security-contract.mjs'
 
 const PROJECT_ID = 'cleanbox-f15bc'
 const DATABASE_ID = 'cleanbox'
@@ -104,10 +103,6 @@ const SERVER_API_PROBES = [
     ]
   ),
 ]
-const SERVER_CONTRACT_HOSTS = Object.freeze({
-  'https://cleanbox.web.app': 'cleanbox-app',
-  'https://richies-reinigung.web.app': 'richies-reinigung',
-})
 const KNOWN_DESCENDANT_COLLECTION_IDS = Object.freeze([
   'users',
   'agents',
@@ -237,13 +232,12 @@ try {
     const dataOperations = plan.operations.filter(
       (operation) => operation.path !== MIGRATION_MARKER_PATH
     )
-    const sourceEvidence = await buildServerApiSourceEvidence()
     const candidateRules = await assertFirestoreRulesArtifactCurrent('werkbox')
     const candidateRulesSha256 = rawSha256(candidateRules.content)
     const quarantineRulesSha256 = rawSha256(
       await readFile(QUARANTINE_RULES_PATH, 'utf8')
     )
-    const preProbe = await probeTrustedServerApis(sourceEvidence.sha256)
+    const preProbe = await probeTrustedServerApis()
     const quarantineEvidence = await assertProductionQuarantine(
       quarantineRulesSha256
     )
@@ -262,7 +256,6 @@ try {
         candidateRulesSha256,
         quarantineRulesSha256,
         quarantineRulesetName: quarantineEvidence.rulesetName,
-        serverApiSourceSha256: sourceEvidence.sha256,
         serverApiProbeSha256: sha256(preProbe),
       },
       authorityInventory: preInventory,
@@ -288,7 +281,7 @@ try {
     }
     const postInventory = await captureAuthorityInventory()
     assertInventoryTransition(preInventory, postInventory, dataOperations)
-    const postProbe = await probeTrustedServerApis(sourceEvidence.sha256)
+    const postProbe = await probeTrustedServerApis()
     const finalQuarantineEvidence = await assertProductionQuarantine(
       quarantineRulesSha256
     )
@@ -316,8 +309,6 @@ try {
       server_api_cutover_version: 1,
       server_api_cutovers: SERVER_API_CUTOVERS,
       server_api_base_url: SERVER_API_BASE_URL,
-      server_api_hosts: SERVER_CONTRACT_HOSTS,
-      server_api_source_sha256: sourceEvidence.sha256,
       server_api_probe_sha256: sha256(probeEvidence),
       server_api_verified_at: serverValue('timestamp'),
     }
@@ -347,7 +338,6 @@ try {
           postWriteVerified: true,
           postMigrationInventorySha256: sha256(postInventory),
           serverApiProbeSha256: sha256(probeEvidence),
-          serverApiSourceSha256: sourceEvidence.sha256,
           candidateRulesSha256,
           quarantineRulesSha256,
           migrationMarker: MIGRATION_MARKER_PATH,
@@ -364,53 +354,7 @@ try {
   await deleteApp(adminApp)
 }
 
-async function buildServerApiSourceEvidence() {
-  const evidence = await buildWerkboxServerSourceEvidence({
-    repoRoot: REPO_ROOT,
-  })
-  const { files } = evidence
-  const packageSources = [
-    'projects/werkbox/werkbox-app/package.json',
-    'projects/werkbox/richies-reinigung/package.json',
-  ].map((targetPath) =>
-    files.find((entry) => entry.path === targetPath)?.source
-  )
-  const nuxtSource = files.find(
-    (entry) => entry.path === 'projects/werkbox/werkbox-app/nuxt.config.ts'
-  )?.source
-  if (packageSources.some((entry) => !entry) || !nuxtSource) {
-    throw new Error('Werkbox source manifest is incomplete.')
-  }
-  for (const packageSource of packageSources) {
-    const appPackage = JSON.parse(packageSource)
-    for (const disabledPackage of ['fireux-products', 'fireux-blogs']) {
-      if (appPackage.dependencies?.[disabledPackage]) {
-        throw new Error(
-          `Werkbox must remove disabled package ${disabledPackage} before migration.`
-        )
-      }
-    }
-  }
-  for (const disabledPackage of ['fireux-products', 'fireux-blogs']) {
-    if (nuxtSource.includes(`'${disabledPackage}'`)) {
-      throw new Error(
-        `Werkbox must not configure disabled module ${disabledPackage}.`
-      )
-    }
-  }
-  for (const requiredModule of [
-    "'fireux-places'",
-    "'fireux-companies'",
-    "'fireux-jobs'",
-  ]) {
-    if (!nuxtSource.includes(requiredModule)) {
-      throw new Error(`Werkbox source lost required module ${requiredModule}.`)
-    }
-  }
-  return { files: evidence.manifest, sha256: evidence.sha256 }
-}
-
-async function probeTrustedServerApis(expectedSourceSha256) {
+async function probeTrustedServerApis() {
   const results = []
   for (const probe of SERVER_API_PROBES) {
     const response = await fetch(`${probe.baseUrl}${probe.path}`, {
@@ -439,41 +383,6 @@ async function probeTrustedServerApis(expectedSourceSha256) {
       )
     }
     results.push({ ...probe, status: response.status, contentType })
-  }
-  for (const [baseUrl, appId] of Object.entries(SERVER_CONTRACT_HOSTS)) {
-    const response = await fetch(
-      `${baseUrl}/api/internal/werkbox/security-contract`,
-      {
-        headers: {
-          accept: 'application/json',
-          'cache-control': 'no-cache',
-        },
-        redirect: 'manual',
-        signal: AbortSignal.timeout(15_000),
-      }
-    )
-    const payload = await response.json().catch(() => ({}))
-    if (
-      response.status !== 200 ||
-      payload.contract !== 'werkbox-firestore-v1' ||
-      payload.source_sha256 !== expectedSourceSha256 ||
-      payload.app_id !== appId ||
-      payload.project_id !== 'cleanbox' ||
-      payload.ecosystem_id !== 'cleanbox' ||
-      payload.database_id !== 'cleanbox'
-    ) {
-      throw new Error(
-        `Deployed security contract does not match reviewed source for ${baseUrl}.`
-      )
-    }
-    results.push({
-      baseUrl,
-      method: 'GET',
-      path: '/api/internal/werkbox/security-contract',
-      status: response.status,
-      appId,
-      sourceSha256: expectedSourceSha256,
-    })
   }
   return results
 }

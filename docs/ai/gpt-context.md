@@ -109,10 +109,10 @@ Before each task:
   repeating its Nuxt registration.
 - Keep layout transitions disabled by default so persistent layout chrome stays
   mounted when the route keeps the same layout.
-- A genuine app-wide opt-out or override belongs in the native Nuxt `app`
-  config through `withFireuxNuxtConfig`; a genuine route exception belongs in
-  page meta. Do not attach transition props to app-shell `NuxtPage` instances
-  or copy the shared generated-selector CSS into projects.
+- Apps inherit the Core transition unchanged. A genuine route exception belongs
+  in page meta; a repeated App-wide need must be promoted to its owning shared
+  seam. Do not attach transition props to app-shell `NuxtPage` instances or
+  copy the shared generated-selector CSS into projects.
 - Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
   `scripts/guards/css-system.mjs` when this contract changes.
 
@@ -197,6 +197,10 @@ Before each task:
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.
+- Canonical User identity has one root, `users/{uid}`. The Firebase Auth UID is
+  the stable document id and the public handle is an editable field on that
+  User. Do not create parallel `handles`, `user-handles`, or
+  `user-handle-state` roots, compatibility reads, or duplicate writers.
 - App-support records contain only their declared access, membership, profile,
   or operational delta. They do not copy root identity or payload.
 - Public projections are bounded transport shapes derived from valid canonical
@@ -375,8 +379,10 @@ Before each task:
 
 - FireUX Core owns the single `/auth` route and its sign-in, registration,
   account-provisioning, and authenticated redirect behavior for every App.
-  Project Apps supply identity and branding through configuration and shared
-  assets; they do not add local `/auth`, `/login`, or `/register` pages.
+  Entry links may declare `mode=sign-up` and a same-origin `redirect`; the
+  destination owns any domain onboarding after authentication. Project Apps
+  supply identity and branding through shared assets; they do not add local
+  `/auth`, `/login`, or `/register` pages or auth presentation in App config.
 - A newly created App membership publishes one deterministic
   `app.user.joined` event under that App. The event is the durable signup log
   and atomically creates an owner-only in-app notification for each existing
@@ -573,6 +579,12 @@ Before each task:
   `--no-sync-auth-domain`. A yes decision sends the deduplicated hostname set
   through the same shared additive sync path and never writes a replacement
   domain list.
+- Core owns account provisioning and recovery for every App. A Firebase Auth
+  identity that predates its canonical User/account evidence must be able to
+  finish setup through the shared authenticated surface after explicit current
+  Terms acceptance and Privacy acknowledgement; Apps must not implement local
+  recovery branches or leave the user in a retry loop that cannot attach that
+  consent.
 
 ## Firebase Hosting release proof
 
@@ -601,9 +613,10 @@ Found` page. An app may pass `--verify-text` for one public source-defined
   Both are exposed only through trusted server commands with exact candidate
   and employer partitions; browsers do not read their root collections.
 - A tenant App owns applications for Jobs it sourced. A broader ecosystem Job
-  catalogue may hand an applicant back to that tenant only through an
-  explicitly configured, normalized HTTPS source-App doorway; public Job DTOs
-  never expose source App identity or invent a second application path.
+  catalogue derives the return doorway from that source App's canonical active
+  `apps/{appId}` identity and HTTPS `social_links.website`; changing a hostname
+  never requires an App rebuild. Job DTOs never expose source App identity or
+  invent a second application path.
 - Direct hiring means the named employer employs and pays the worker. The
   platform records the offer, both parties' actions, the agreed Job revision,
   and versioned acknowledgement of that relationship; it is not the employer,
@@ -728,6 +741,24 @@ Before any remote Firebase operation:
 
 Do not add per-app MCP configuration files merely to expose Firebase to Codex.
 
+## Firebase project directory
+
+- Every Firebase project's `(default)` database owns that Firebase project's
+  bounded local `project/{projectId}` record plus its locally hosted
+  `ecosystems/{ecosystemId}` and `apps/{appId}` directory projections. The
+  local Project collection is singular because a Firebase project has one
+  local Project record; Ecosystems and Apps remain plural.
+- The directory lists only Projects, Ecosystems, and Apps hosted by that
+  Firebase project. A global Console aggregates project directories through a
+  trusted server boundary; one project never stores another project's copy.
+- Directory records contain non-secret routing, status, public presentation,
+  and asset-reference fields only. Canonical memberships, Users, domain
+  entities, content, credentials, and operational state remain in the owning
+  named database.
+- A named database may retain its canonical `apps/{appId}` record because App
+  membership and operational authority live beneath it. The matching default
+  record is a bounded directory projection, not competing App identity.
+
 ## Privacy-first measurement
 
 - FireUX and Misebox Apps do not use analytics or advertising cookies,
@@ -745,10 +776,12 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   `src/config/privacy/browser-storage.json`, and
   `scripts/guards/privacy-measurement.mjs`.
 - Browser storage begins only after an explicit feature request. Core disables
-  automatic service-worker registration, Firebase Auth uses browser-session
-  persistence, anonymous-order recovery expires within 24 hours, and public
-  Google Maps surfaces require an explicit load action. `/legal/privacy` owns
-  personal-data policy while `/legal/storage` owns the exact storage inventory.
+  automatic service-worker registration. After the user requests
+  authentication, Firebase Auth persists the sign-in across reloads and browser
+  restarts until explicit sign-out or browser-data removal. Anonymous-order
+  recovery expires within 24 hours, and public Google Maps surfaces require an
+  explicit load action. `/legal/privacy` owns personal-data policy while
+  `/legal/storage` owns the exact storage inventory.
 - Guest chat contact data and message bodies use the trusted `/api/chat`
   boundary. Direct Conversation Firestore access stays closed; the browser
   retains an unguessable, time-bounded recovery capability and the App

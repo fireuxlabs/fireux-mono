@@ -31,8 +31,9 @@ type UseProjectConsoleOptions = {
  *
  * This file adapts FireUX control-plane Project records into the private
  * /console/project selected runtime.
- * Access is gated by the current FireUX App admin role at the route boundary.
- * Project has no separate membership or operator model today.
+ * Access requires the current FireUX App membership at the route boundary and
+ * a same-id AppProject support record linking the current User as an operator
+ * or team member.
  * Project console can inspect related App and Ecosystem surfaces without redefining their stored identity.
  * It should not redefine generic Project collection reads, introduce scoped
  * Project ownership, or redefine related entity identities.

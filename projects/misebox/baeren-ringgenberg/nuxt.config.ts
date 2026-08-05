@@ -12,6 +12,8 @@ export default defineFireuxConfig({
     siteUrl: 'https://baeren-ringgenberg.web.app',
   },
   consoles: ['kitchen'],
+  domains: ['jobs'],
+  profiles: ['agent', 'professional'],
   consoleConfig: {
     kitchen: {
       canCreate: false,

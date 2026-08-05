@@ -1,5 +1,5 @@
-import { useRuntimeConfig } from '#imports'
 import { createError } from 'h3'
+import { resolveGoogleMapsApiKey } from 'fireux-places/runtime/server/utils/google-api-key'
 
 // Server API spine: keep provider plumbing separate from delivery-zone matching.
 // See docs/concepts/server-api.md and docs/concepts/menu-ordering.md.
@@ -20,54 +20,10 @@ const numberValue = (value: unknown) => {
   return Number.isFinite(number) ? number : undefined
 }
 
-const googleMapsApiKey = () => {
-  const runtime = useRuntimeConfig() as Record<string, any>
-  const candidates = [
-    { source: 'runtime.googlePlacesApiKey', value: runtime.googlePlacesApiKey },
-    {
-      source: 'runtime.fireux.googlePlacesApiKey',
-      value: runtime.fireux?.googlePlacesApiKey,
-    },
-    { source: 'runtime.googleMapsApiKey', value: runtime.googleMapsApiKey },
-    {
-      source: 'runtime.fireux.googleMapsApiKey',
-      value: runtime.fireux?.googleMapsApiKey,
-    },
-    {
-      source: 'env.GOOGLE_PLACES_API_KEY',
-      value: process.env.GOOGLE_PLACES_API_KEY,
-    },
-    {
-      source: 'env.NUXT_GOOGLE_PLACES_API_KEY',
-      value: process.env.NUXT_GOOGLE_PLACES_API_KEY,
-    },
-    { source: 'env.GOOGLE_MAPS_API_KEY', value: process.env.GOOGLE_MAPS_API_KEY },
-    {
-      source: 'env.NUXT_GOOGLE_MAPS_API_KEY',
-      value: process.env.NUXT_GOOGLE_MAPS_API_KEY,
-    },
-    {
-      source: 'public.googlePlacesApiKey',
-      value: runtime.public?.googlePlacesApiKey,
-    },
-    {
-      source: 'public.fireux.googlePlacesApiKey',
-      value: runtime.public?.fireux?.googlePlacesApiKey,
-    },
-    { source: 'public.googleMapsApiKey', value: runtime.public?.googleMapsApiKey },
-  ]
-  const found = candidates.find((candidate) => text(candidate.value))
-
-  return {
-    key: text(found?.value),
-    source: found?.source || 'missing',
-  }
-}
-
 export async function readMenuDeliveryPlaceDetails(
   placeId: string
 ): Promise<MenuDeliveryAddress> {
-  const key = googleMapsApiKey()
+  const key = resolveGoogleMapsApiKey()
   if (!key.key) {
     throw createError({
       statusCode: 500,
@@ -150,7 +106,7 @@ export async function readMenuDeliveryPlaceDetails(
 export async function geocodeMenuDeliveryAddress(
   address: string
 ): Promise<MenuDeliveryAddress> {
-  const key = googleMapsApiKey()
+  const key = resolveGoogleMapsApiKey()
   if (!key.key) {
     throw createError({
       statusCode: 500,
@@ -202,7 +158,7 @@ export async function reverseGeocodeMenuDeliveryAddress(
   lat: number,
   lng: number
 ): Promise<MenuDeliveryAddress> {
-  const key = googleMapsApiKey()
+  const key = resolveGoogleMapsApiKey()
   if (!key.key) {
     throw createError({
       statusCode: 500,

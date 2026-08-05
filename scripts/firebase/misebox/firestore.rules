@@ -18,7 +18,8 @@ service cloud.firestore {
     // Assumed data model
     // ===============================================================
     // users/{uid}: public identity only (display_name, bio, avatar, handle,
-    //   app_ids, profiles, created, updated). No email or private settings.
+    //   app_ids, profiles, optional kitchen_ids, created, updated). No email
+    //   or private settings.
     // users/{uid}/private/account: owner-only email, preferences, terms.
     // users/{uid}/notifications/{id}: owner-only notification records.
     // apps/{appId}: canonical App truth. Guests use allowlisted server DTOs;
@@ -132,7 +133,6 @@ service cloud.firestore {
                             (value.size() == 5 ||
                               isValidChefGalleryItem(value[5]))))))))))));
     }
-
     function isValidBoundedString(value, maxSize) {
       return value is string && value.size() <= maxSize;
     }
@@ -601,6 +601,7 @@ service cloud.firestore {
           'handle',
           'app_ids',
           'profiles',
+          'kitchen_ids',
           'created',
           'updated'
         ]) &&
@@ -611,6 +612,7 @@ service cloud.firestore {
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
         data.app_ids is list &&
         data.app_ids.size() <= 50 &&
+        validOptionalList(data, 'kitchen_ids', 50) &&
         data.profiles is list &&
         data.profiles.size() <= 20 &&
         data.profiles.hasOnly([
@@ -653,6 +655,7 @@ service cloud.firestore {
           'display_name',
           'bio',
           'avatar',
+          'kitchen_ids',
           'updated'
         ]) &&
         validOwnerUpdateStamp(request.resource.data, userId);

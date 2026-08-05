@@ -1,22 +1,27 @@
 # Nuxt UI concept map
+
 Updated: 2026-07-28
 Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
+
 Explain the UI library context for agents.
 
 ## Vertical links
+
 - Parent: AGENTS.md
 - Child: components.md
 - Child: pages.md
 
 ## Horizontal links
+
 - nuxt4.md
 - debug.md
 - color-mode.md
 
 ## UI stack
+
 - FireUX uses Nuxt UI / Nuxt UI Pro style components.
 - Common shell components include `UPage`, `UPageHeader`, `UPageBody`,
   `UPageGrid`, `UPageColumns`, `UPageCard`, `UPageFeature`, `UPageHero`,
@@ -26,6 +31,7 @@ Explain the UI library context for agents.
   component or prop exists without checking the installed package.
 
 ## Working style
+
 - Prefer existing Nuxt UI components over handmade HTML chrome.
 - Configure universal component defaults through Nuxt UI app configuration;
   use direct component props for ordinary color, variant, size, loading, and
@@ -37,11 +43,10 @@ Explain the UI library context for agents.
   cards, entity-card action roots, and explicit state cards.
 - Do not recreate a Nuxt UI page grid, card root, dashboard body stack, or
   ordinary radius default in global CSS. Core owns one narrow Nuxt-generated
-  page-transition integration for all apps; projects opt out or override it
-  through native Nuxt config instead of copying transition CSS. A
-  one-component layout delta stays with that component; other global CSS
-  requires repeated cross-tree evidence or a narrow browser/accessibility
-  behavior.
+  page-transition integration for all Apps; route-specific exceptions use page
+  meta instead of copying transition CSS or adding a project override layer. A
+  one-component layout delta stays with that component; other global CSS needs
+  repeated cross-tree evidence or a narrow browser/accessibility behavior.
 - Nuxt UI is the universal visual baseline. A main App may explicitly opt into
   the Core-owned `sci-fire` design pack through `app.designPack`; tenant and
   white-label Apps inherit no ecosystem aesthetic automatically. The pack is
@@ -60,6 +65,7 @@ Explain the UI library context for agents.
 - Avoid heavy parent scripts that pass many tiny display props; let named child components own local presentation when reasonable.
 
 ## Typography
+
 - Nuxt UI's semantic text colors and Tailwind's installed typography scale are
   the default system.
 - Core `.fx-type-*` roles name repeated Nuxt UI page typography without owning
@@ -70,11 +76,13 @@ Explain the UI library context for agents.
   typography remain owned deltas when the shared roles do not describe them.
 
 ## Design caution
+
 - Display defaults are okay.
 - Fake stored truth is not okay.
 - Do not add fallback identity, fake logos, fake avatars, or fake canonical data.
 
 ## When touching frontend
+
 - Check nearest sibling page/component first.
 - Keep mobile and desktop layout safe.
 - Avoid generic AI-looking boilerplate if creating a new visual surface.

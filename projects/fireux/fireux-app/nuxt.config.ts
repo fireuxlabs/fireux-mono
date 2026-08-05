@@ -10,6 +10,11 @@ export default defineFireuxConfig({
   role: 'global',
   designPack: { preset: 'sci-fire' },
   consoles: ['project'],
+  seo: {
+    staticPaths: ['/apps', '/ecosystems', '/ecosystems/werkbox'],
+    sitemapDocuments: ['/sitemaps/directory.xml'],
+    noindexPaths: ['/apps/fireux-blank'],
+  },
   modules: [
     [
       'fireux-products',

@@ -2,6 +2,7 @@ import { FieldPath } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { CompanyStorage } from 'fireux-companies/runtime/models/company.model'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
@@ -115,7 +116,14 @@ export async function readPublicJobIndexPage(
           .filter(isFirestoreDocumentId),
       ])
     )
-    const [companies, places] = await Promise.all([
+    const sourceAppIds = Array.from(
+      new Set(
+        candidates
+          .map((document) => text(document.data()?.source_app_id))
+          .filter(isFirestoreDocumentId)
+      )
+    )
+    const [companies, places, sourceApps] = await Promise.all([
       companyIds.length
         ? db.getAll(
             ...companyIds.map((id) =>
@@ -127,6 +135,13 @@ export async function readPublicJobIndexPage(
         ? db.getAll(
             ...placeIds.map((id) =>
               db.collection(PlaceStorage.collection).doc(id)
+            )
+          )
+        : Promise.resolve([]),
+      sourceAppIds.length
+        ? db.getAll(
+            ...sourceAppIds.map((id) =>
+              db.collection(AppStorage.collection).doc(id)
             )
           )
         : Promise.resolve([]),
@@ -142,6 +157,9 @@ export async function readPublicJobIndexPage(
     const placesById = new Map(
       places.map((document) => [document.id, document])
     )
+    const sourceAppsById = new Map(
+      sourceApps.map((document) => [document.id, document])
+    )
 
     for (const [index, document] of snapshot.docs.entries()) {
       scanned += 1
@@ -149,12 +167,14 @@ export async function readPublicJobIndexPage(
       const data = document.data() || {}
       const companyId = text(data.company_id)
       const placeId = text(data.place_id)
+      const sourceAppId = text(data.source_app_id)
       let item: PublicJobIndexPage['items'][number] | null = null
       try {
         item = projectPublicJob(document.id, data, scope, {
           company: companiesById.get(companyId)?.data() || {},
           companyPlace: placesById.get(companyId)?.data() || {},
           place: placesById.get(placeId)?.data() || {},
+          sourceApp: sourceAppsById.get(sourceAppId)?.data() || {},
         })
       } catch {
         throw createError({

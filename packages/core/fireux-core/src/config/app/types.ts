@@ -11,21 +11,6 @@ export type FireuxConsoleFamilyConfig = {
 
 export type FireuxConsoleConfig = Record<string, FireuxConsoleFamilyConfig>
 
-export type FireuxAuthCompletionConfig = {
-  path: string
-  title?: string
-  description?: string
-  actionLabel?: string
-  delayMs?: number
-}
-
-export type FireuxAuthOnboardingConfig = {
-  title: string
-  description?: string
-  completeLabel?: string
-  skipLabel?: string
-}
-
 export type FireuxNavOverride = {
   label?: string
   icon?: string
@@ -68,12 +53,6 @@ export type FireuxAppConfig = {
   profiles?: string[]
   /** Whether a signed-in canonical User may create their own App membership. */
   selfJoinEnabled?: boolean
-  /** Initial email-auth mode shown on the shared auth page. */
-  authDefaultMode?: 'sign-in' | 'sign-up'
-  /** Optional app-owned completion experience after successful authentication. */
-  authCompletion?: FireuxAuthCompletionConfig
-  /** Optional app-owned onboarding step shown after shared account creation. */
-  authOnboarding?: FireuxAuthOnboardingConfig
   /** Optional public/dashboard nav item keys hidden by this app shell. */
   navHiddenKeys?: string[]
   /** App-level presentation overrides for inherited route navigation, keyed by nav key. */

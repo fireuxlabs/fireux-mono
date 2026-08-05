@@ -149,6 +149,11 @@ A product surface is a distinct place where a user or operator uses the App,
 such as a Console, mobile Menu, Kiosk, public profile, guest guide, or
 storefront. An Operation inside a Console is not another product surface.
 
+For authenticated navigation, `Dashboard` names the User and App overview and
+`Console` names the selected operational product area. Do not use `workspace`
+as a substitute for either surface. Keep that word only where it literally
+describes repository tooling or a physical workplace.
+
 Main App landings present Hero, pricing, product surfaces, then deeper
 App-owned features. Present a single surface directly without a selector or a
 visible `Surfaces` label. Use a selector only when the App has multiple genuine

@@ -22,58 +22,57 @@
         <template v-if="isAuthenticated">
           <div class="w-full space-y-4">
             <UAlert
-              v-if="showCompletion"
-              color="success"
-              variant="subtle"
-              :title="authCompletionTitle"
-              :description="authCompletionDescription"
-            />
-            <UAlert
               v-if="accountProvisionErrorMessage"
               color="error"
               variant="subtle"
               title="Account setup incomplete"
               :description="accountProvisionErrorMessage"
             />
+            <div
+              v-if="accountRecoveryConsentRequired"
+              class="flex items-start gap-2"
+            >
+              <UCheckbox
+                v-model="accountRecoveryConsentAcknowledged"
+                :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy for account recovery`"
+                :disabled="creatingUser"
+              />
+              <p class="text-sm text-muted">
+                I accept the
+                <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
+                and acknowledge the
+                <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
+                <span class="block">
+                  Terms and Privacy version {{ FIREUX_ACCOUNT_TERMS_VERSION }}.
+                </span>
+              </p>
+            </div>
             <UButton
               v-if="accountProvisionErrorMessage"
               block
               color="primary"
               variant="soft"
               :loading="creatingUser"
+              :disabled="
+                accountRecoveryConsentRequired &&
+                !accountRecoveryConsentAcknowledged
+              "
               @click="handleAccountRetry"
             >
-              Retry account setup
+              {{
+                accountRecoveryConsentRequired
+                  ? 'Complete account setup'
+                  : 'Retry account setup'
+              }}
             </UButton>
-            <AuthOnboarding
-              v-else-if="showOnboarding"
-              :title="authOnboarding!.title"
-              :description="authOnboarding!.description"
-              :complete-label="authOnboarding!.completeLabel"
-              :skip-label="authOnboarding!.skipLabel"
-              :loading="onboardingLoading"
-              :error="onboardingError"
-              @submit="handleOnboarding"
-            />
-            <UAlert
-              v-else-if="membershipLoading"
-              color="neutral"
-              variant="soft"
-              title="Registration is being prepared"
-              :description="`Signed in as ${authIdentityLabel}.`"
-            />
-
             <UserCardsPill
-              v-else-if="!showCompletion && currentUserPill"
+              v-else-if="currentUserPill"
               v-bind="currentUserPill"
               :link="Boolean(currentUserPill && currentUserPill.to)"
               :show-badges="false"
             />
 
-            <div
-              v-if="!showOnboarding && !membershipLoading"
-              class="flex w-full flex-col gap-3"
-            >
+            <div class="flex w-full flex-col gap-3">
               <UButton
                 block
                 color="primary"
@@ -82,7 +81,7 @@
                 "
                 @click="goToCompletion"
               >
-                {{ authenticatedPrimaryLabel }}
+                Open Dashboard
               </UButton>
               <UButton
                 block
@@ -138,7 +137,7 @@
 
           <AuthEmailPanel
             :brand-label="ecosystemLabel"
-            :default-mode="config.authDefaultMode"
+            :default-mode="authMode"
           />
         </template>
       </div>
@@ -161,7 +160,6 @@ const {
   hasAuthState,
   signOutUser,
   signInWithGoogle,
-  currentUser: authUser,
   creating: creatingUser,
   lastAccountProvisionError,
   retryAccountProvisioning,
@@ -170,11 +168,13 @@ const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
 const providerError = ref('')
-const onboardingLoading = ref<'' | 'completed' | 'skipped'>('')
-const onboardingError = ref('')
-const submittedOnboardingStatus = ref<'' | 'completed' | 'skipped'>('')
 const navigationInFlight = ref(false)
 const googleConsentAcknowledged = ref(false)
+const accountRecoveryConsentAcknowledged = ref(false)
+const ACCOUNT_RECOVERY_CONSENT_MESSAGES = [
+  'Accept the current Terms of Service and acknowledge the Privacy Policy to recover this incomplete account.',
+  'Accept the current Terms of Service and acknowledge the Privacy Policy for a new account.',
+] as const
 const accountProvisionErrorMessage = computed(() => {
   const error = lastAccountProvisionError.value
   if (!error) return ''
@@ -186,6 +186,11 @@ const accountProvisionErrorMessage = computed(() => {
 
   return message || 'Your signed-in account could not be prepared.'
 })
+const accountRecoveryConsentRequired = computed(() =>
+  ACCOUNT_RECOVERY_CONSENT_MESSAGES.some((message) =>
+    accountProvisionErrorMessage.value.includes(message)
+  )
+)
 
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
@@ -199,27 +204,11 @@ const ecosystemBrandAlt = computed(
 const ecosystemWordmarkLight = '/img/ecosystem/wordmark-light.svg'
 const ecosystemWordmarkDark = '/img/ecosystem/wordmark-dark.svg'
 
-const {
-  currentUser,
-  appUser,
-  appPending,
-  appOutcome,
-  app: appUpdates,
-} = useUser()
-const { membership } = appUpdates
+const { currentUser } = useUser()
 const { pill: userInterface } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
 )
-const authIdentityLabel = computed(() =>
-  String(
-    authUser.value?.displayName ||
-      authUser.value?.email ||
-      authUser.value?.uid ||
-      'unknown'
-  )
-)
-
 function sanitizeRedirect(value: unknown): string | null {
   const raw = Array.isArray(value) ? value[0] : value
   if (typeof raw !== 'string') return null
@@ -229,65 +218,16 @@ function sanitizeRedirect(value: unknown): string | null {
   return trimmed
 }
 
-const authCompletion = computed(() => config.authCompletion)
-const authOnboarding = computed(() => config.authOnboarding)
-const onboardingStatus = computed(
-  () =>
-    submittedOnboardingStatus.value ||
-    appUser.value?.onboarding_status ||
-    'pending'
-)
-const membershipLoading = computed(
-  () =>
-    Boolean(authOnboarding.value) &&
-    (appPending.value ||
-      appOutcome.value === 'pending' ||
-      appOutcome.value === 'idle')
-)
-const showOnboarding = computed(
-  () =>
-    Boolean(authOnboarding.value) &&
-    !membershipLoading.value &&
-    appOutcome.value === 'ready' &&
-    onboardingStatus.value === 'pending' &&
-    !accountProvisionErrorMessage.value
-)
-const showCompletion = computed(
-  () =>
-    Boolean(authCompletion.value) &&
-    (!authOnboarding.value || onboardingStatus.value === 'completed')
-)
-const authCompletionTitle = computed(
-  () => authCompletion.value?.title || 'Thanks for registering!'
-)
-const authCompletionDescription = computed(
-  () =>
-    authCompletion.value?.description || 'We’re taking you to the next page.'
-)
-const authenticatedPrimaryLabel = computed(
-  () =>
-    authCompletion.value?.actionLabel ||
-    (authCompletion.value ? 'Continue' : 'Open workspace')
-)
-const completionDelay = computed(() => {
-  const delay = authCompletion.value?.delayMs
-  return typeof delay === 'number' && Number.isFinite(delay)
-    ? Math.min(Math.max(delay, 0), 10_000)
-    : 0
-})
-const completionPath = computed(
-  () => sanitizeRedirect(authCompletion.value?.path) ?? '/dashboard'
+const authMode = computed(() =>
+  route.query.mode === 'sign-up' ? 'sign-up' : 'sign-in'
 )
 const resolvedPostAuthPath = computed(
-  () => sanitizeRedirect(route.query.redirect) ?? completionPath.value
+  () => sanitizeRedirect(route.query.redirect) ?? '/dashboard'
 )
 
-async function completeAuthNavigation(target: string, showDelay = true) {
+async function completeAuthNavigation(target: string) {
   if (navigationInFlight.value) return
   navigationInFlight.value = true
-  if (showDelay && completionDelay.value > 0 && authCompletion.value) {
-    await new Promise((resolve) => setTimeout(resolve, completionDelay.value))
-  }
   await router.replace(target).catch(() => {})
 }
 
@@ -300,9 +240,6 @@ watch(
       resolvedPostAuthPath.value,
       creatingUser.value,
       lastAccountProvisionError.value,
-      appPending.value,
-      appOutcome.value,
-      onboardingStatus.value,
     ] as const,
   async ([
     path,
@@ -311,30 +248,11 @@ watch(
     target,
     creating,
     accountError,
-    membershipPending,
-    membershipOutcome,
-    status,
-  ]: readonly [
-    string,
-    boolean,
-    boolean,
-    string,
-    boolean,
-    unknown,
-    boolean,
-    string,
-    string,
-  ]) => {
+  ]: readonly [string, boolean, boolean, string, boolean, unknown]) => {
     if (path !== '/auth') return
     if (!authReady || !authenticated) return
     if (creating) return
     if (accountError) return
-    if (authOnboarding.value) {
-      if (membershipPending || membershipOutcome !== 'ready') return
-      if (status === 'pending') return
-      await completeAuthNavigation(target, status === 'completed')
-      return
-    }
     await completeAuthNavigation(target)
   },
   { immediate: true }
@@ -355,28 +273,15 @@ const handleSignOut = async () => {
 }
 
 const handleAccountRetry = async () => {
-  await retryAccountProvisioning().catch(() => {})
-}
-
-const handleOnboarding = async (status: 'completed' | 'skipped') => {
-  if (onboardingLoading.value) return
-  onboardingError.value = ''
-  onboardingLoading.value = status
-  try {
-    await membership.setOnboardingStatus(status)
-    submittedOnboardingStatus.value = status
-    await completeAuthNavigation(
-      resolvedPostAuthPath.value,
-      status === 'completed'
-    )
-  } catch (error) {
-    onboardingError.value =
-      error instanceof Error && error.message.trim()
-        ? error.message
-        : 'Registration could not be saved.'
-  } finally {
-    onboardingLoading.value = ''
-  }
+  if (
+    accountRecoveryConsentRequired.value &&
+    !accountRecoveryConsentAcknowledged.value
+  ) return
+  await retryAccountProvisioning(
+    accountRecoveryConsentRequired.value
+      ? FIREUX_ACCOUNT_TERMS_VERSION
+      : undefined
+  ).catch(() => {})
 }
 
 const handleGoogle = async () => {

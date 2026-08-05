@@ -11,10 +11,7 @@
         {{ solution.body || solution.description }}
       </p>
 
-      <UCard
-        v-if="solution.steps?.length"
-        variant="subtle"
-      >
+      <UCard v-if="solution.steps?.length" variant="subtle">
         <template #header>
           <h2 class="m-0 text-base font-semibold text-highlighted">
             How this comes to life
@@ -27,7 +24,9 @@
             :key="`${index}-${step}`"
             class="flex min-w-0 gap-3 text-sm leading-6 text-muted"
           >
-            <span class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold leading-none text-primary">
+            <span
+              class="mt-0.5 grid size-6 shrink-0 place-items-center rounded-full bg-primary/10 text-xs font-semibold leading-none text-primary"
+            >
               {{ index + 1 }}
             </span>
             <span>{{ step }}</span>
@@ -35,10 +34,7 @@
         </ol>
       </UCard>
 
-      <UCard
-        v-if="solution.relatedApp"
-        variant="subtle"
-      >
+      <UCard v-if="solution.relatedApp" variant="subtle">
         <template #header>
           <h2 class="m-0 text-base font-semibold text-highlighted">
             Related FireUX app
@@ -47,7 +43,10 @@
 
         <div class="grid min-w-0 gap-3">
           <p class="m-0 text-sm leading-6 text-muted">
-            {{ solution.relatedApp.description || `${solution.relatedApp.name} owns the deeper workflow for this solution.` }}
+            {{
+              solution.relatedApp.description ||
+              `${solution.relatedApp.name} owns the deeper workflow for this solution.`
+            }}
           </p>
           <UButton
             :to="solution.relatedApp.to"
@@ -61,18 +60,13 @@
         </div>
       </UCard>
 
-      <UCard
-        v-if="isAdmin && hasAdminPlanning"
-        variant="subtle"
-      >
+      <UCard v-if="isAdmin && hasAdminPlanning" variant="subtle">
         <template #header>
           <div class="flex flex-wrap items-center gap-2">
             <h2 class="m-0 text-base font-semibold text-highlighted">
               Admin planning
             </h2>
-            <UBadge color="neutral" variant="soft">
-              Internal
-            </UBadge>
+            <UBadge color="neutral" variant="soft"> Internal </UBadge>
           </div>
         </template>
 
@@ -84,10 +78,7 @@
             {{ solution.businessCase }}
           </p>
 
-          <div
-            v-if="solution.keywords?.length"
-            class="grid min-w-0 gap-2"
-          >
+          <div v-if="solution.keywords?.length" class="grid min-w-0 gap-2">
             <h3 class="m-0 text-sm font-semibold text-highlighted">
               Search intent
             </h3>
@@ -103,38 +94,33 @@
             </div>
           </div>
 
-          <div
-            v-if="solution.provisioning?.length"
-            class="grid min-w-0 gap-2"
-          >
+          <div v-if="solution.provisioning?.length" class="grid min-w-0 gap-2">
             <h3 class="m-0 text-sm font-semibold text-highlighted">
               Provisioning
             </h3>
             <ul class="m-0 grid gap-1.5 pl-4 text-sm leading-6 text-muted">
-              <li
-                v-for="item in solution.provisioning"
-                :key="item"
-              >
+              <li v-for="item in solution.provisioning" :key="item">
                 {{ item }}
               </li>
             </ul>
           </div>
 
-          <div
-            v-if="solution.checklist?.length"
-            class="grid min-w-0 gap-2"
-          >
+          <div v-if="solution.checklist?.length" class="grid min-w-0 gap-2">
             <h3 class="m-0 text-sm font-semibold text-highlighted">
               Checklist
             </h3>
-            <ul class="m-0 grid list-none gap-2 p-0 text-sm leading-6 text-muted">
+            <ul
+              class="m-0 grid list-none gap-2 p-0 text-sm leading-6 text-muted"
+            >
               <li
                 v-for="item in solution.checklist"
                 :key="item.label"
                 class="flex min-w-0 gap-2.5"
               >
                 <UIcon
-                  :name="item.done ? 'i-lucide-square-check' : 'i-lucide-square'"
+                  :name="
+                    item.done ? 'i-lucide-square-check' : 'i-lucide-square'
+                  "
                   class="mt-1 size-4 shrink-0"
                   :class="item.done ? 'text-primary' : 'text-muted'"
                 />
@@ -162,7 +148,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { createError, useAsyncData, useRoute, useSeoMeta } from '#imports'
+import { createError, navigateTo, useAsyncData, useRoute } from '#imports'
+import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from '../../composables/fireux/seo/useSeo'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import type { FireuxMetaSolution } from '../../../config/app/meta-content'
 
@@ -172,9 +163,13 @@ type SolutionsResponse = {
 }
 
 const route = useRoute()
+const fireux = useFireUXConfig()
 const { isAdmin } = useUser()
+const appName = computed(() => fireux.appName || fireux.appShortName || 'App')
 const requestedSlug = computed(() =>
-  Array.isArray(route.params.slug) ? route.params.slug[0] : String(route.params.slug || '')
+  Array.isArray(route.params.slug)
+    ? route.params.slug[0]
+    : String(route.params.slug || '')
 )
 
 const { data } = await useAsyncData('public-app-solutions', () =>
@@ -182,11 +177,32 @@ const { data } = await useAsyncData('public-app-solutions', () =>
 )
 
 const solution = computed(() =>
-  (data.value?.solutions || []).find((entry) => entry.slug === requestedSlug.value)
+  (data.value?.solutions || []).find(
+    (entry) => entry.slug === requestedSlug.value
+  )
+)
+const solutionPath = computed(() =>
+  requestedSlug.value
+    ? `/solutions/${encodeURIComponent(requestedSlug.value)}`
+    : ''
+)
+const canonicalDestination = computed(() =>
+  String(solution.value?.to || '').trim()
+)
+const isExternalDestination = computed(
+  () =>
+    solution.value?.external === true ||
+    /^https?:\/\//i.test(canonicalDestination.value)
+)
+const isIndexable = computed(
+  () =>
+    !['coming-soon', 'planned', 'later'].includes(
+      String(solution.value?.status || '')
+    )
 )
 const hasAdminPlanning = computed(() =>
   Boolean(
-      solution.value?.businessCase ||
+    solution.value?.businessCase ||
       solution.value?.keywords?.length ||
       solution.value?.provisioning?.length ||
       solution.value?.checklist?.length
@@ -200,12 +216,34 @@ if (!solution.value) {
   })
 }
 
-useSeoMeta({
-  title: () => `${solution.value?.title || 'Solution'}`,
-  ogTitle: () => `${solution.value?.title || 'Solution'}`,
-  twitterTitle: () => `${solution.value?.title || 'Solution'}`,
+if (
+  canonicalDestination.value &&
+  canonicalDestination.value !== solutionPath.value
+) {
+  await navigateTo(canonicalDestination.value, {
+    external: isExternalDestination.value,
+    redirectCode: 301,
+  })
+}
+
+useSeo({
+  title: computed(
+    () => `${solution.value?.title || 'Solution'} - ${appName.value}`
+  ),
   description: () => solution.value?.description || '',
-  ogDescription: () => solution.value?.description || '',
-  twitterDescription: () => solution.value?.description || '',
+  path: solutionPath,
+  image: '/img/app/cover.png',
+  robots: computed(() =>
+    isIndexable.value ? 'index, follow' : 'noindex, nofollow'
+  ),
+  jsonLdBuilder: (context) =>
+    isIndexable.value
+      ? buildPublicPageJsonLd({
+          canonicalUrl: context.canonicalUrl,
+          description: context.description,
+          image: context.image,
+          title: context.title,
+        })
+      : null,
 })
 </script>

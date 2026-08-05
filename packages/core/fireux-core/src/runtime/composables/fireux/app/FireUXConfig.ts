@@ -127,17 +127,6 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
-    authDefaultMode:
-      fireux.authDefaultMode === 'sign-in' ||
-      fireux.authDefaultMode === 'sign-up'
-        ? fireux.authDefaultMode
-        : undefined,
-    authCompletion: optRecord(fireux, 'authCompletion') as
-      | FireUXConfig['authCompletion']
-      | undefined,
-    authOnboarding: optRecord(fireux, 'authOnboarding') as
-      | FireUXConfig['authOnboarding']
-      | undefined,
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
     navOverrides: (optRecord(fireux, 'navOverrides') ||
       {}) as FireUXConfig['navOverrides'],

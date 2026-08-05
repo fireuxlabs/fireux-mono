@@ -68,9 +68,6 @@ Explain workspace/package command context.
 - `pnpm audit:app-media -- --ecosystem <key>`
 - `pnpm firebase:rules:render` (read-only drift check; pass `--write` only for
   an intentional local artifact regeneration)
-- `pnpm werkbox:security-contract` (read-only local attestation check; pass
-  `--write` only after reviewing the exact trusted-source manifest changes;
-  this never deploys either App)
 - `pnpm sync:misebox-public-card-snapshots -- --project <id> --database <id>`
   (dry-run the guarded Kitchen/Place-to-Menu display snapshot sync; Company
   roots are excluded)

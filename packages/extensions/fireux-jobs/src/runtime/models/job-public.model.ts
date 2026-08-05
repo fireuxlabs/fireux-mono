@@ -5,7 +5,6 @@ import type {
   JobContractType,
   JobManagementMode,
 } from './job.model'
-import type { FireuxJobSourceAppDoorway } from '../../config/jobs.config'
 
 export const PUBLIC_JOB_INDEX_PAGE_SIZE = 24
 export const PUBLIC_JOB_INDEX_MAX_PAGE_SIZE = 48
@@ -23,6 +22,11 @@ export type PublicJobPlaceProjection = {
   short_name?: string
   short_address?: string
   image_url?: string
+}
+
+export type PublicJobApplicationDoorway = {
+  label: string
+  url: string
 }
 
 /**
@@ -50,7 +54,7 @@ export type PublicJobProjection = {
    * Present only when this runtime is a catalogue doorway and the Job must be
    * actioned on its trusted source App.
    */
-  application_doorway?: FireuxJobSourceAppDoorway
+  application_doorway?: PublicJobApplicationDoorway
 }
 
 export type PublicJobIndexPage = {

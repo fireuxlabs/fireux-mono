@@ -54,7 +54,7 @@ application databases. No source delete is permitted during this migration.
 - Main Firebase Web App and the Richies tenant Web App
 - Hosting authority for the Werkbox main App and Richies
 - Auth provider configuration and required authorized domains
-- App registry, deploy commands, Rules targets, security-contract manifest,
+- App registry, deploy commands, Rules targets,
   project/app IDs, Firebase environment, public directory source, and PWA/SEO
 
 ### Redirect

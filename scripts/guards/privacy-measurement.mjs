@@ -166,12 +166,12 @@ export async function run({ repoRoot }) {
     'utf8'
   )
   if (
-    !/setPersistence\(getAuth\(\), browserSessionPersistence\)/.test(
+    !/setPersistence\(getAuth\(\), browserLocalPersistence\)/.test(
       authPersistence
     )
   ) {
     violations.push(
-      'Firebase Auth must use the declared browser-session persistence.'
+      'Firebase Auth must use the declared durable local persistence.'
     )
   }
 

@@ -20,7 +20,12 @@
 </template>
 
 <script setup lang="ts">
+import {
+  buildPublicPageJsonLd,
+  useSeo,
+} from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { usePlatformAppDirectory } from '../../composables/usePlatformDirectory'
+import { isDirectoryAppIndexable } from '../../utils/directorySearchPolicy'
 
 const appsController = usePlatformAppDirectory()
 
@@ -41,10 +46,25 @@ definePageMeta({
   name: 'FireuxAppsIndexPage',
 })
 
-useSeoMeta({
+useSeo({
   title: 'FireUX Apps',
   description:
     'Browse published apps across the FireUX platform, including direct Project Apps and Ecosystem Apps.',
+  path: '/apps',
+  image: '/img/app/cover.png',
+  jsonLdBuilder: (context) =>
+    buildPublicPageJsonLd({
+      canonicalUrl: context.canonicalUrl,
+      description: context.description,
+      image: context.image,
+      pageType: 'CollectionPage',
+      title: context.title,
+      items: appsController.apps.value
+        .filter((app) => isDirectoryAppIndexable(app.id))
+        .map((app) => ({
+          name: app.app_name,
+          url: context.absoluteUrl(app.detail_url),
+        })),
+    }),
 })
-
 </script>

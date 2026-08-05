@@ -21,7 +21,6 @@ import {
 } from '../../packages/core/fireux-core/src/config/firebase/rules/compose.mjs'
 import { assertAllFirestoreRulesArtifactsCurrent } from '../_lib/firestore-rules-source.mjs'
 import { writeProtectedJsonArtifact } from '../_lib/protected-json-artifact.mjs'
-import { buildWerkboxServerSourceEvidence } from '../_lib/werkbox-security-contract.mjs'
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   await assertGitSavePolicy(repoRoot)
@@ -583,7 +582,6 @@ async function assertWerkboxRulesSurface(repoRoot) {
     'quarantine_rules_sha256',
     'post_migration_inventory_sha256',
     'server_api_probe_sha256',
-    'server_api_source_sha256',
     'server_api_cutover_version',
     'no_legacy_compatibility',
     'operation_set_sha256',
@@ -673,8 +671,7 @@ async function assertWerkboxRulesSurface(repoRoot) {
   )
   for (const token of [
     'assertProductionQuarantine(',
-    'probeTrustedServerApis(sourceEvidence.sha256)',
-    '/api/internal/werkbox/security-contract',
+    'probeTrustedServerApis()',
     'https://richies-reinigung.web.app',
     'captureAuthorityInventory()',
     'assertInventoryTransition(',
@@ -691,42 +688,18 @@ async function assertWerkboxRulesSurface(repoRoot) {
   assertOrderedTokens(
     applySlice,
     [
-      'const preProbe = await probeTrustedServerApis(sourceEvidence.sha256)',
+      'const preProbe = await probeTrustedServerApis()',
       'const quarantineEvidence = await assertProductionQuarantine(',
       'const backupArtifact = await writeProtectedJsonArtifact({',
       'await applyTransaction(dataOperations)',
       'const verification = await verifyResults(dataOperations)',
       'assertInventoryTransition(preInventory, postInventory, dataOperations)',
-      'const postProbe = await probeTrustedServerApis(sourceEvidence.sha256)',
+      'const postProbe = await probeTrustedServerApis()',
       'await finalizeMigrationMarker({',
       'const markerVerification = await verifyResults([',
     ],
     'Werkbox migration apply'
   )
-
-  const contractSource = await readFile(
-    path.join(
-      repoRoot,
-      'packages/ecosystem/fireux-werkbox/src/runtime/server/api/internal/werkbox/security-contract.get.ts'
-    ),
-    'utf8'
-  )
-  const contractSha256 = contractSource.match(
-    /WERKBOX_SERVER_SOURCE_SHA256\s*=\s*\n?\s*'([a-f0-9]{64})'/
-  )?.[1]
-  const expectedContract = await buildWerkboxServerSourceEvidence({ repoRoot })
-  if (contractSha256 !== expectedContract.sha256) {
-    throw new Error(
-      [
-        'Werkbox local security-contract hash must match the exact trusted source manifest.',
-        `actual:   ${contractSha256 || '(missing)'}`,
-        `expected: ${expectedContract.sha256}`,
-        'Review the manifest changes, then run:',
-        '  pnpm werkbox:security-contract --write',
-        'This refreshes local source only; deployment remains a separate authorised action.',
-      ].join('\n')
-    )
-  }
 }
 
 async function assertAppMediaOperationalSurface(repoRoot) {

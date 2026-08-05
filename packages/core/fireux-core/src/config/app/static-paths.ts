@@ -2,6 +2,12 @@
 import type { FireuxMetaContent } from './meta-content'
 import type { FireuxSeoConfig } from './seo'
 
+const NON_INDEXABLE_SOLUTION_STATUSES = new Set([
+  'coming-soon',
+  'planned',
+  'later',
+])
+
 function normalizePublicPath(input: unknown): string | undefined {
   if (typeof input !== 'string') return undefined
   const trimmed = input.trim()
@@ -23,12 +29,26 @@ function mergeStaticPaths(paths: readonly unknown[]): string[] {
   return merged
 }
 
+function resolveLocalSolutionPath(
+  solution: NonNullable<FireuxMetaContent['solutions']>[number]
+): string | undefined {
+  if (solution.external === true) return undefined
+  const destination = String(solution.to || '').trim()
+  if (/^https?:\/\//i.test(destination)) return undefined
+  return normalizePublicPath(destination || `/solutions/${solution.slug}`)
+}
+
 export function resolveSeoConfig(
   seo: FireuxSeoConfig | undefined,
   meta: FireuxMetaContent | undefined
 ): FireuxSeoConfig | undefined {
   const solutionPaths = (meta?.solutions || [])
-    .map((solution) => normalizePublicPath(`/solutions/${solution.slug}`))
+    .filter(
+      (solution) =>
+        !solution.status ||
+        !NON_INDEXABLE_SOLUTION_STATUSES.has(solution.status)
+    )
+    .map((solution) => resolveLocalSolutionPath(solution))
     .filter((path): path is string => Boolean(path))
   const operationPaths = (meta?.operations || [])
     .map((operation) => operation.slug)

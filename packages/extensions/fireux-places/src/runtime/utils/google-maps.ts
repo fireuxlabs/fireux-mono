@@ -7,16 +7,11 @@ export function readGoogleMaps() {
   return (window as GoogleMapsWindow).google
 }
 
-export function loadFireuxGoogleMaps(apiKey: string) {
+export function loadGoogleMaps(apiKey: string) {
   const target = window as GoogleMapsWindow
 
-  if (target.google?.maps?.importLibrary) {
-    return Promise.resolve()
-  }
-
-  if (target.__fireuxGoogleMapsPromise) {
-    return target.__fireuxGoogleMapsPromise
-  }
+  if (target.google?.maps?.importLibrary) return Promise.resolve()
+  if (target.__fireuxGoogleMapsPromise) return target.__fireuxGoogleMapsPromise
 
   target.__fireuxGoogleMapsPromise = new Promise<void>((resolve, reject) => {
     const callbackName = `__fireuxGoogleMapsReady_${Date.now()}`
@@ -34,7 +29,8 @@ export function loadFireuxGoogleMaps(apiKey: string) {
     script.src = url.toString()
     script.async = true
     script.defer = true
-    script.onerror = () => reject(new Error('Google Maps script failed to load.'))
+    script.onerror = () =>
+      reject(new Error('Google Maps script failed to load.'))
     document.head.appendChild(script)
   })
 

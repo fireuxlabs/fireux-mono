@@ -73,12 +73,12 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { FireuxJobSourceAppDoorway } from '../../../../config/jobs.config'
+import type { PublicJobApplicationDoorway } from '../../../models/job-public.model'
 import { applyToJobRequest } from '../../../composables/fireux/jobs/hiring/jobHiringClient'
 
 const props = defineProps<{
   jobId: string
-  applicationDoorway?: FireuxJobSourceAppDoorway
+  applicationDoorway?: PublicJobApplicationDoorway
 }>()
 
 const message = ref('')
