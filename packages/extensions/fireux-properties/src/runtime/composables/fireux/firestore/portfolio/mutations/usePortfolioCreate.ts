@@ -12,7 +12,8 @@ import type {
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   Portfolio,
@@ -54,7 +55,7 @@ export const PortfolioCreatePlan = defineFireuxCreatePlan({
 
 export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
   const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const collectionPath = PortfolioStorage.rootCollection
 
   const requireCanonicalWriteSource = () => {
@@ -111,10 +112,11 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       },
     }
 
-    await setDocument<Portfolio>(collectionPath, slug, payload, {
-      creator: true,
-      app: true,
-    })
+    await create(
+      defineRuntimeClientCreateTarget('project.portfolios', collectionPath),
+      payload,
+      { id: slug, creator: true, app: true }
+    )
 
     return slug
   }
@@ -167,10 +169,11 @@ export function usePortfolioCreate(options: PortfolioCreateOptions = {}) {
       },
     }
 
-    await setDocument<Portfolio>(collectionPath, slug, payload, {
-      creator: true,
-      app: true,
-    })
+    await create(
+      defineRuntimeClientCreateTarget('project.portfolios', collectionPath),
+      payload,
+      { id: slug, creator: true, app: true }
+    )
 
     return { id: slug, created: true }
   }

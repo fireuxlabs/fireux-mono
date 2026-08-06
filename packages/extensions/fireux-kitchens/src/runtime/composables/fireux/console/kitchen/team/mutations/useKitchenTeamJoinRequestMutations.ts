@@ -1,8 +1,9 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { unref, type Ref } from 'vue'
 import {
   KitchenTeamJoinRequestStorage,
@@ -21,7 +22,7 @@ type Options = {
 export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { appId } = useFireUXConfig()
-  const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
+  const create = useFirestoreClientCreate()
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { deleteDocument } = useFirestoreDelete({ databaseId: options.databaseId })
 
@@ -47,8 +48,11 @@ export function useKitchenTeamJoinRequestMutations(options: Options = {}) {
     if (!collectionPath) throw new Error('Kitchen id is required')
     if (!userId) throw new Error('User id is required')
 
-    return createDocument<Partial<KitchenTeamJoinRequest>>(
-      collectionPath,
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-team-join-requests',
+        collectionPath
+      ),
       {
         kitchen_id: kitchenId,
         user_id: userId,

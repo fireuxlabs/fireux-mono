@@ -1,11 +1,12 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: create sparse KitchenMenus using their exact linked Place authority.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { doc, getDoc } from 'firebase/firestore'
 import { computed, unref, type Ref } from 'vue'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   MenuStorage,
   type Menu,
@@ -105,9 +106,7 @@ export function useMenuCreate(
   } = {}
 ) {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
-  const { createDocument, createDocumentWithId } = useFirestoreCreate({
-    databaseId: options.databaseId,
-  })
+  const create = useFirestoreClientCreate()
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
   const db = useFirestore(options.databaseId)
@@ -151,18 +150,18 @@ export function useMenuCreate(
     await requireLinkedPlaceCurrency(kitchenId)
 
     const payload = buildMenuPayload({ ...input, kitchenId }, name)
-    const id = menuId
-      ? await createDocumentWithId<Partial<Menu>>(
-          collectionPath,
-          menuId,
-          payload,
-          { app: true, creator: true }
-        )
-      : await createDocument<Partial<Menu>>(
-          collectionPath,
-          payload,
-          { app: true, creator: true }
-        )
+    const id = await create(
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-menus',
+        collectionPath
+      ),
+      payload,
+      {
+        ...(menuId ? { id: menuId } : {}),
+        app: true,
+        creator: true,
+      }
+    )
 
     return { created: true, id }
   }

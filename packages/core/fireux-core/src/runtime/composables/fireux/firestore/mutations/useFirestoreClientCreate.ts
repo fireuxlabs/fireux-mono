@@ -1,23 +1,53 @@
-import { addDoc, collection, doc, runTransaction } from 'firebase/firestore'
+import {
+  addDoc,
+  collection,
+  doc,
+  runTransaction,
+  serverTimestamp,
+} from 'firebase/firestore'
 import { useFirestoreResolver } from '../vuefire'
+import { useFireUXConfig } from '../../app/FireUXConfig'
+import { useRequireUser } from '../../firebase/useRequireUser'
 import {
   assertFirestoreMutationVerb,
   resolveFirestoreMutationDatabaseId,
 } from '../../../../utils/firestore-mutations/targets'
 import type { FirestoreMutationTarget } from '../../../../types/firestore-mutations'
 
-export function useClientCreate() {
+export type ClientCreateOptions = Readonly<{
+  id?: string
+  stamp?: boolean
+  creator?: boolean
+  app?: boolean
+}>
+
+export function useFirestoreClientCreate() {
   return async function create<T>(
     target: FirestoreMutationTarget<string, 'client'>,
     data: T,
-    id?: string
+    options: ClientCreateOptions = {}
   ): Promise<string> {
     assertFirestoreMutationVerb(target, 'client', 'create')
     const db = useFirestoreResolver(
       resolveFirestoreMutationDatabaseId(target)
     )()
-    const payload = { ...(data as Record<string, unknown>) }
+    const payload: Record<string, unknown> = {
+      ...(data as Record<string, unknown>),
+    }
     delete payload.id
+    if (options.stamp !== false) {
+      const created: Record<string, unknown> = { at: serverTimestamp() }
+      const updated: Record<string, unknown> = { at: serverTimestamp() }
+      if (options.app) created.app_id = useFireUXConfig().appId
+      if (options.creator) {
+        const user = await useRequireUser()
+        created.by = user.uid
+        updated.by = user.uid
+      }
+      payload.created = created
+      payload.updated = updated
+    }
+    const id = options.id?.trim()
     if (!id)
       return (await addDoc(collection(db, target.collectionPath), payload)).id
     await runTransaction(db, async (transaction) => {

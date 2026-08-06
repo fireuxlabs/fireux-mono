@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for document linking.
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   requirePortfolioConsoleWrite,
   useActivePortfolio,
@@ -21,7 +22,7 @@ export type LinkDocumentToEntityInput = {
 const normalize = (value: unknown) => String(value || '').trim()
 
 export function linkDocumentToEntity(runtimePortfolio = useActivePortfolio()) {
-  const { createDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const { createTask } = useTaskCreate(runtimePortfolio)
   const { fromDocumentLink } = useTaskProjection(runtimePortfolio)
   const collectionPath = usePortfolioConsoleChildPath(
@@ -61,11 +62,14 @@ export function linkDocumentToEntity(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-documents] runtime document link path is required.')
     }
 
-    const linkId = await createDocument<Omit<DocumentLink, 'id'>>(collectionPath.value, payload, {
-      stamp: true,
-      creator: true,
-      app: true,
-    })
+    const linkId = await create(
+      defineRuntimeClientCreateTarget(
+        'project.portfolio.document-links',
+        collectionPath.value
+      ),
+      payload,
+      { stamp: true, creator: true, app: true }
+    )
 
     if (input.createTask) {
       await createTask(

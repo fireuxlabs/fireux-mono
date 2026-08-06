@@ -49,7 +49,8 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   `packages/core/fireux-core/src/runtime/utils/firestore-mutations/target-definition.ts`
   and `server-targets.ts` in the same directory
 - Client touchpoints:
-  `packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useClient{Create,Update,Delete}.ts`
+  `packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate.ts`
+  and the remaining Update/Delete migration touchpoints in that directory
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
 - MCP/Skill touchpoints:

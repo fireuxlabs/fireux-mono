@@ -4,6 +4,7 @@ import {
 } from './target-definition'
 
 export * from './server-targets'
+export * from './client-targets'
 export {
   assertFirestoreMutationVerb,
   defineFirestoreMutationTarget,

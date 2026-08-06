@@ -1,4 +1,5 @@
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   SupplierItemStorage,
   type SupplierItem,
@@ -11,7 +12,7 @@ const normalizeString = (value: unknown) => String(value ?? '').trim()
 export function useSupplierItemCreate(options: {
   supplierCollectionPath?: string
 } = {}) {
-  const { createDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
 
   async function createSupplierItem(
     supplierId: string,
@@ -37,11 +38,14 @@ export function useSupplierItemCreate(options: {
       product_id: productId,
     }
 
-    return createDocument<Partial<SupplierItem>>(collectionPath, payload, {
-      stamp: true,
-      creator: true,
-      app: true,
-    })
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.supplier-items',
+        collectionPath
+      ),
+      payload,
+      { stamp: true, creator: true, app: true }
+    )
   }
 
   return {

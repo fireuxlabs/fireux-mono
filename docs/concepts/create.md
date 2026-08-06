@@ -57,7 +57,8 @@ write from an app/runtime surface.
 
 - Component/page gathers input.
 - Domain create composable validates and shapes payload.
-- Domain create composable calls `useFirestoreCreate` or `useFirestoreManager`.
+- Domain create composable calls the typed Client Create touchpoint or a
+  guarded Server Create seam with a domain-owned authority target.
 - Firestore write creates the record.
 
 #### Use this when

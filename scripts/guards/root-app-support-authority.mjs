@@ -394,10 +394,6 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding.ts',
   kitchenOnboardingPolicy:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-policy.ts',
-  kitchenTestCreate:
-    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenTestCreate.ts',
-  kitchenTestScenario:
-    'packages/extensions/fireux-kitchens/src/runtime/test/kitchen/scenario.ts',
   kitchenServerConfig:
     'packages/extensions/fireux-kitchens/src/config/module/server-config.ts',
   blankCollection:
@@ -1056,31 +1052,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.kitchenOnboardingPolicy,
     /unsupported field:[\s\S]*boundedIds\(value\.operator_ids[\s\S]*boundedIds\(value\.team_ids[\s\S]*value\.join_requests/,
     'AppKitchen support must reject domain payload and require the three access arrays.'
-  )
-  for (const pattern of [
-    /PlaceStorage\.collection/,
-    /KitchenStorage\.rootCollection/,
-    /KitchenStorage\.scopeCollection/,
-    /writeBatch\(simulationDb\)/,
-    /batch\.set\(placeRef/,
-    /batch\.set\(kitchenRef/,
-    /batch\.set\(supportRef/,
-  ]) {
-    assert.match(
-      source.kitchenTestCreate,
-      pattern,
-      'A Test Kitchen must atomically create its canonical Place, Kitchen root, and access-only App support.'
-    )
-  }
-  assert.match(
-    source.kitchenTestScenario,
-    /state:\s*'parent_app'[\s\S]*appSupport:\s*\{[\s\S]*scenario\.kitchen\.id !== scenario\.place\.id[\s\S]*scenario\.kitchen\.id !== scenario\.appSupport\.id/,
-    'The static Kitchen Test seed must retain its same-App Kitchen, Place, and access-only AppKitchen relationship.'
-  )
-  assert.doesNotMatch(
-    source.kitchenTestScenario,
-    /state:\s*'root_only'/,
-    'A Test Kitchen associated with App support must not claim root_only scope.'
   )
   for (const [name, sources, retiredPath] of [
     [

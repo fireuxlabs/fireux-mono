@@ -2,8 +2,9 @@ import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
-import { useFirestoreManager } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreManager'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { assertPublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import type {
@@ -72,7 +73,7 @@ export const ProductCreatePlan = defineFireuxCreatePlan({
 
 export function useProductCreate() {
   const db = useFirestore()
-  const { setDocument } = useFirestoreManager()
+  const create = useFirestoreClientCreate()
   const fireux = useFireUXConfig()
   const { currentUser } = useAuth()
 
@@ -192,11 +193,14 @@ export function useProductCreate() {
       prices
         .filter((price) => Boolean(price.id))
         .map((price) =>
-          setDocument<ProductPrice>(
-            pricesCollectionPath,
-            String(price.id),
+          create(
+            defineRuntimeClientCreateTarget(
+              'project.product-prices',
+              pricesCollectionPath
+            ),
             price,
             {
+              id: String(price.id),
               stamp: false,
             }
           )
@@ -280,9 +284,11 @@ export function useProductCreate() {
         },
       } as Omit<FirebaseProduct, 'created' | 'updated'>
 
-      await setDocument<FirebaseProduct>(collectionPath, slug, data as FirebaseProduct, {
-        creator: true,
-      })
+      await create(
+        defineRuntimeClientCreateTarget('project.products', collectionPath),
+        data as FirebaseProduct,
+        { id: slug, creator: true }
+      )
 
       await createProductPriceRecords(slug, normalizedPrices)
 

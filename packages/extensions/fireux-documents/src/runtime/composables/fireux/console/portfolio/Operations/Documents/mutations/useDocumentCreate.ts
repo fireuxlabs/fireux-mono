@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for document creation.
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   requirePortfolioConsoleWrite,
   useActivePortfolio,
@@ -10,7 +11,7 @@ import { DocumentStorage, type Document, type DocumentCreateInput } from '../../
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
-  const { createDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const collectionPath = usePortfolioConsoleChildPath(
     runtimePortfolio,
     DocumentStorage.collection
@@ -47,11 +48,18 @@ export function useDocumentCreate(runtimePortfolio = useActivePortfolio()) {
       throw new Error('[fireux-documents] runtime document path is required.')
     }
 
-    return createDocument<Omit<Document, 'id'>>(collectionPath.value, payload, {
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.portfolio.documents',
+        collectionPath.value
+      ),
+      payload,
+      {
       stamp: true,
       creator: true,
       app: true,
-    })
+      }
+    )
   }
 
   return {

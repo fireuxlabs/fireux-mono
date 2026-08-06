@@ -28,24 +28,6 @@
         <UCard>
           <div class="flex items-center justify-between gap-3">
             <div class="text-sm font-semibold">
-              Simulation Kitchens
-            </div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('simulation-kitchens')"
-            >
-              {{ openSections['simulation-kitchens'] ? 'Hide' : 'Show' }}
-            </UButton>
-          </div>
-          <div v-show="openSections['simulation-kitchens']" class="mt-4">
-            <DevKitchenTestSystem />
-          </div>
-        </UCard>
-
-        <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">
               Ingredients
             </div>
             <UButton
@@ -88,7 +70,6 @@ import { reactive } from 'vue'
 
 const openSections = reactive({
   kitchens: false,
-  'simulation-kitchens': false,
   ingredients: false,
   chefs: false,
 })

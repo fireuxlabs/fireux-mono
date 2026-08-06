@@ -1,9 +1,10 @@
 import { doc, getDoc } from 'firebase/firestore'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { useTranslationSeed } from 'fireux-translation/runtime/useTranslationSeed'
 import { computed, unref, type Ref } from 'vue'
 import {
@@ -87,7 +88,7 @@ export function useRecipeCreate(
   } = {}
 ) {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
-  const { setDocument } = useFirestoreCreate({ databaseId: options.databaseId })
+  const create = useFirestoreClientCreate()
   const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
   const { selectedId } = useKitchenConsoleSelection()
@@ -128,10 +129,14 @@ export function useRecipeCreate(
       createOptions
     )
 
-    await setDocument<RecipeDoc>(collectionPath, recipeId, payload as RecipeDoc, {
-      app: true,
-      creator: true,
-    })
+    await create(
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-recipes',
+        collectionPath
+      ),
+      payload as RecipeDoc,
+      { id: recipeId, app: true, creator: true }
+    )
 
     return { id: recipeId, failedLanguages }
   }

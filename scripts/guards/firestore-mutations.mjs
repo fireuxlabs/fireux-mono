@@ -2,7 +2,7 @@
 // last_used: 2026-08-05
 // usage_note: run through pnpm guard; enforces the three-lane Firestore mutation spine.
 
-import { readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 import assert from 'node:assert/strict'
 import path from 'node:path'
@@ -19,7 +19,7 @@ const ADMIN_DOCUMENT_WRITE =
   /\b(?:transaction|batch|bulkWriter|writer|[A-Za-z]\w*(?:Ref|Reference))\.(?:create|set|update|delete)\s*\(|\.doc\s*\([^)]*\)\.(?:create|set|update|delete)\s*\(/
 
 const APPROVED_CLIENT_IMPLEMENTATIONS = new Set([
-  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useClientCreate.ts',
+  'packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate.ts',
   'packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useClientUpdate.ts',
   'packages/core/fireux-core/src/runtime/composables/fireux/firestore/mutations/useClientDelete.ts',
 ])
@@ -38,7 +38,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 // typed lane; additions fail the guard. This turns the pre-spine writers into a
 // bounded, executable remaining-file inventory instead of an expanding allowlist.
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
-  'e15746355b4b5a590e2c52c94dfd8fc2e6746df1a49a794590aa13f9cd3cfaa1'
+  'a600747c11b4a7498952ce087e7f0a18b14633f4cbcc09518e1567a7be45aca2'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
   'bda76e185e9be6e3cf978e8d2e494c3d24cd1cbd789aab845b6691cdc20a5b76'
 
@@ -83,6 +83,16 @@ function fingerprint(files) {
 }
 
 export function run({ repoRoot }) {
+  assert.equal(
+    existsSync(
+      path.join(
+        repoRoot,
+        'packages/core/fireux-core/src/runtime/composables/fireux/firestore/operations/useFirestoreCreate.ts'
+      )
+    ),
+    false,
+    'The generic useFirestoreCreate API is retired; use the typed Client Create touchpoint.'
+  )
   const targetsSource = readFileSync(
     path.join(
       repoRoot,

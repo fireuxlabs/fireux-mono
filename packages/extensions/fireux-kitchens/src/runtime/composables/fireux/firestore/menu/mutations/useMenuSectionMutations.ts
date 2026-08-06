@@ -1,7 +1,8 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { unref, type Ref } from 'vue'
 import {
   MenuSectionModel,
@@ -19,7 +20,7 @@ const optionPath = (value: Options['kitchenCollectionPath']) => clean(unref(valu
 
 export function useMenuSectionMutations(options: Options = {}) {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
-  const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
+  const create = useFirestoreClientCreate()
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
 
@@ -44,8 +45,11 @@ export function useMenuSectionMutations(options: Options = {}) {
     if (!collectionPath) throw new Error('Missing menu')
     if (!label) throw new Error('Section label is required')
 
-    return createDocument(
-      collectionPath,
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-menu-sections',
+        collectionPath
+      ),
       {
         ...MenuSectionModel,
         kitchen_id: clean(input.kitchenId),

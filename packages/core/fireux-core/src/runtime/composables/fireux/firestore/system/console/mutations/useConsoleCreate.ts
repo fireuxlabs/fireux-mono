@@ -21,9 +21,10 @@ import {
 } from '../../../../../../utils/app-scope-state'
 import { AppUserStorage } from '../../../../../../models/core/user.model'
 import { hasAppUserPremiumAccess } from '../../../../../../utils/app-user-access'
-import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from '../../../mutations/useFirestoreClientCreate'
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'
+import { defineRuntimeClientCreateTarget } from '../../../../../../utils/firestore-mutations/targets'
 
 export type ConsoleEntityType =
   | 'kitchen'
@@ -83,7 +84,7 @@ function readAppScope(rootData: Record<string, unknown>) {
 
 export function useConsoleCreate() {
   const db = useFirestore()
-  const { setDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const { appId, developerId, role } = useFireUXConfig()
   const { uid } = useAuth()
 
@@ -250,11 +251,16 @@ export function useConsoleCreate() {
     if (!appSupportSnap.exists()) {
       await assertCanCreateAdditionalConsole(options.type, id)
       const appSupportPayload = await options.createAppSupport(id)
-      await setDocument<TAppSupport>(
-        `${AppStorage.collection}/${currentAppId}/${collectionName}`,
-        id,
+      const appSupportCollection =
+        `${AppStorage.collection}/${currentAppId}/${collectionName}`
+      await create(
+        defineRuntimeClientCreateTarget(
+          `project.app-support.${options.type}`,
+          appSupportCollection
+        ),
         appSupportPayload,
         {
+          id,
           app: true,
           creator: true,
         }

@@ -1,5 +1,6 @@
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   KitchenTeamMemberStorage,
   KitchenTeamMemberModel,
@@ -32,7 +33,7 @@ const slugifyTeamMemberName = (value: string) =>
     .replace(/^-+|-+$/g, '')
 export function useKitchenTeamMemberCreate() {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
-  const { setDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
 
   const createKitchenTeamMember = async (input: CreateKitchenTeamMemberInput) => {
     requireWritableData()
@@ -59,11 +60,15 @@ export function useKitchenTeamMemberCreate() {
       sort_order: Number.isFinite(sortOrder) ? sortOrder : 0,
     }
 
-    await setDocument<KitchenTeamMember>(
-      `${rootCollection}/${kitchenId}/${KitchenTeamMemberStorage.collection}`,
-      memberId,
+    const collectionPath =
+      `${rootCollection}/${kitchenId}/${KitchenTeamMemberStorage.collection}`
+    await create(
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-team-members',
+        collectionPath
+      ),
       payload,
-      { app: true, creator: true }
+      { id: memberId, app: true, creator: true }
     )
 
     return memberId

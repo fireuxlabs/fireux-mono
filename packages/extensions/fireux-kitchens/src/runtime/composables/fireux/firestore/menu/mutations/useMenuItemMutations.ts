@@ -1,7 +1,8 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { unref, type Ref } from 'vue'
 import {
@@ -65,7 +66,7 @@ const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
 
 export function useMenuItemMutations(options: Options = {}) {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
-  const { createDocument } = useFirestoreCreate({ databaseId: options.databaseId })
+  const create = useFirestoreClientCreate()
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
   const { appId } = useFireUXConfig()
 
@@ -92,8 +93,11 @@ export function useMenuItemMutations(options: Options = {}) {
     if (!collectionPath) throw new Error('Missing section')
     if (!dishId) throw new Error('Menu item requires a dish')
 
-    return createDocument(
-      collectionPath,
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-menu-items',
+        collectionPath
+      ),
       {
         ...MenuItemModel,
         kitchen_id: clean(input.kitchenId),

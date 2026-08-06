@@ -1,6 +1,7 @@
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   type Translation,
   type TranslationCreateInput,
@@ -14,7 +15,7 @@ import {
 export function useTranslationMutations(options: {
   collectionPath?: string
 } = {}) {
-  const { setDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const { updateDocument } = useFirestoreUpdate()
   const { deleteDocument } = useFirestoreDelete()
 
@@ -35,14 +36,16 @@ export function useTranslationMutations(options: {
       throw new Error('[fireux-sproochli] language code is required.')
     }
 
-    await setDocument<Partial<Translation>>(
-      collectionPath,
-      languageCode,
+    await create(
+      defineRuntimeClientCreateTarget(
+        'project.translations',
+        collectionPath
+      ),
       {
         ...input,
         language_code: languageCode,
       },
-      { app: true, creator: true }
+      { id: languageCode, app: true, creator: true }
     )
 
     return languageCode

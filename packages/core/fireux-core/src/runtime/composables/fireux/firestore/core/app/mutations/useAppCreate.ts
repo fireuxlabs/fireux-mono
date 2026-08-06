@@ -6,7 +6,8 @@ import {
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { normalizeString } from '../../../../../../utils/string'
 import { useFirestore } from '../../../vuefire'
-import { useFirestoreCreate } from '../../../operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from '../../../mutations/useFirestoreClientCreate'
+import { defineRuntimeClientCreateTarget } from '../../../../../../utils/firestore-mutations/targets'
 import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
 import { useEcosystemCreate } from '../../ecosystem/mutations/useEcosystemCreate'
 import {
@@ -33,7 +34,7 @@ export function useAppCreate(options: AppCreateOptions = {}) {
 
   async function createApp(input?: AppCreateInput): Promise<AppCreateResult> {
     const db = useFirestore()
-    const { setDocument } = useFirestoreCreate()
+    const create = useFirestoreClientCreate()
     const { updateDocument } = useFirestoreUpdate()
     const { createEcosystem } = useEcosystemCreate()
     const fireux = useFireUXConfig()
@@ -65,9 +66,11 @@ export function useAppCreate(options: AppCreateOptions = {}) {
       return { created: false, id: resolvedId }
     }
 
-    await setDocument(collectionPath, resolvedId, payload, {
-      creator: true,
-    })
+    await create(
+      defineRuntimeClientCreateTarget('project.apps', collectionPath),
+      payload,
+      { id: resolvedId, creator: true }
+    )
 
     return { created: true, id: resolvedId }
   }

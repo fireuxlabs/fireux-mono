@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-20 16:15 CEST — Console Spine pass: require Portfolio operator access for compliance creation.
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   requirePortfolioConsoleWrite,
   useActivePortfolio,
@@ -12,7 +13,7 @@ import {
 } from '../../../../../../../models/compliance-record.model'
 
 export function useComplianceRecordCreate(runtimePortfolio = useActivePortfolio()) {
-  const { createDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const collectionPath = usePortfolioConsoleChildPath(
     runtimePortfolio,
     ComplianceRecordStorage.collection
@@ -35,11 +36,14 @@ export function useComplianceRecordCreate(runtimePortfolio = useActivePortfolio(
       portfolio_id: portfolioId,
     }
 
-    return createDocument<Partial<ComplianceRecord>>(collectionPath.value, payload, {
-      stamp: true,
-      creator: true,
-      app: true,
-    })
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.portfolio.compliance-records',
+        collectionPath.value
+      ),
+      payload,
+      { stamp: true, creator: true, app: true }
+    )
   }
 
   return {

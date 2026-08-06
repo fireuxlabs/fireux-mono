@@ -57,7 +57,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useAppPublicSettings } from '../../composables/fireux/app/useAppPublicSettings'
-import { useFirestoreCreate } from '../../composables/fireux/firestore/operations/useFirestoreCreate'
 
 const props = withDefaults(defineProps<{
   field: `featured_${string}_slugs`
@@ -69,8 +68,7 @@ const props = withDefaults(defineProps<{
   placeholder: 'slug-one, slug-two',
 })
 
-const { collectionPath, settings } = useAppPublicSettings()
-const { setDocument } = useFirestoreCreate()
+const { settings, updateFeaturedSlugs } = useAppPublicSettings()
 const draft = ref('')
 const saving = ref(false)
 
@@ -111,10 +109,7 @@ function reset() {
 async function save() {
   saving.value = true
   try {
-    await setDocument(collectionPath, 'public', {
-      ...(settings.value ?? {}),
-      [props.field]: slugs.value,
-    })
+    await updateFeaturedSlugs(props.field, slugs.value)
   } finally {
     saving.value = false
   }

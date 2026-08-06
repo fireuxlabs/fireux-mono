@@ -9,8 +9,9 @@ import type {
 } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import {
   PropertyManualStorage,
@@ -37,7 +38,7 @@ export type PropertyCreateModeOptions = {
 export function usePropertyCreate() {
   const db = useFirestore()
   const { appId } = useFireUXConfig()
-  const { setDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
 
   async function createPropertyRootResult(
     input: PropertyCreateInput
@@ -60,10 +61,14 @@ export function usePropertyCreate() {
       return { id, created: false }
     }
 
-    await setDocument(PropertyStorage.rootCollection, id, plan.payload, {
-      creator: true,
-      app: true,
-    })
+    await create(
+      defineRuntimeClientCreateTarget(
+        'project.properties',
+        PropertyStorage.rootCollection
+      ),
+      plan.payload,
+      { id, creator: true, app: true }
+    )
 
     return { id, created: true }
   }
@@ -148,11 +153,17 @@ export function usePropertyCreate() {
     )
     if ((await getDoc(manualRef)).exists()) return false
 
-    await setDocument(
-      manualCollection,
-      PropertyManualStorage.documentId,
+    await create(
+      defineRuntimeClientCreateTarget(
+        'project.app-property-manuals',
+        manualCollection
+      ),
       manual,
-      { creator: true, app: true }
+      {
+        id: PropertyManualStorage.documentId,
+        creator: true,
+        app: true,
+      }
     )
     return true
   }

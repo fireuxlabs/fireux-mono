@@ -1,4 +1,5 @@
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   requirePortfolioConsoleWrite,
   useActivePortfolio,
@@ -13,7 +14,7 @@ import {
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 
 export function useClientCreate(runtimePortfolio = useActivePortfolio()) {
-  const { createDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const collectionPath = usePortfolioConsoleChildPath(
     runtimePortfolio,
     ClientStorage.collection
@@ -40,11 +41,14 @@ export function useClientCreate(runtimePortfolio = useActivePortfolio()) {
       display_name: displayName,
     }
 
-    return createDocument<Partial<Client>>(collectionPath.value, payload, {
-      stamp: true,
-      creator: true,
-      app: true,
-    })
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.portfolio.clients',
+        collectionPath.value
+      ),
+      payload,
+      { stamp: true, creator: true, app: true }
+    )
   }
 
   return {

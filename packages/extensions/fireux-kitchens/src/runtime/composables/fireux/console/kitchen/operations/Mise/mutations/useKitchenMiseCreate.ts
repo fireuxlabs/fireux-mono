@@ -1,6 +1,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useFirestoreCreate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCreate'
+import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
+import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenMiseTaskStorage,
@@ -69,7 +70,7 @@ const buildMisePayload = (kitchenId: string, draft: KitchenMiseCreateDraft): Kit
 
 export function useKitchenMiseCreate() {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
-  const { createDocument } = useFirestoreCreate()
+  const create = useFirestoreClientCreate()
   const { appId } = useFireUXConfig()
 
   const createKitchenMiseTask = async (
@@ -92,8 +93,11 @@ export function useKitchenMiseCreate() {
       resolvedKitchenId
     )
 
-    return createDocument<KitchenMiseTaskDoc>(
-      collectionPath,
+    return create(
+      defineRuntimeClientCreateTarget(
+        'project.kitchen-mise-tasks',
+        collectionPath
+      ),
       payload,
       { app: true, creator: true }
     )

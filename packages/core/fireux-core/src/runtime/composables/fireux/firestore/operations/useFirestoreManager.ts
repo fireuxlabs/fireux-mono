@@ -1,5 +1,4 @@
 import { useFirestoreRead } from './useFirestoreRead'
-import { useFirestoreCreate } from './useFirestoreCreate'
 import { useFirestoreUpdate } from './useFirestoreUpdate'
 import { useFirestoreDelete } from './useFirestoreDelete'
 import { useFirestoreUtils } from '../utils/useFirestoreUtils'
@@ -10,14 +9,12 @@ import { useFirestoreUtils } from '../utils/useFirestoreUtils'
  */
 export function useFirestoreManager() {
   const read = useFirestoreRead()
-  const create = useFirestoreCreate()
   const update = useFirestoreUpdate()
   const deletion = useFirestoreDelete()
   const utils = useFirestoreUtils()
 
   return {
     ...read,
-    ...create,
     ...update,
     ...deletion,
     ...utils,
