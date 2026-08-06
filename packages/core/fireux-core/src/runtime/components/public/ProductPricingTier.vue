@@ -91,6 +91,13 @@
     />
 
     <template #actions>
+      <UButton
+        v-if="tier.id === 'your-app'"
+        to="/apps/create"
+        icon="i-lucide-app-window"
+      >
+        Create app
+      </UButton>
       <UButton :href="contactHref" icon="i-lucide-mail"
         >Ask about {{ tier.title }}</UButton
       >
