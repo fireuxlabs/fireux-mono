@@ -1,92 +1,47 @@
 import {
-  AppJoinRequestStorage,
-  AppMembershipBlockStorage,
-} from '../../../models/operations/app-membership'
-import { UserStorage } from '../../../models/core/user.model'
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppJoinRequestsTarget,
+  serverAppMembershipBlocksTarget,
+  serverAppUsersTarget,
+} from '../../../utils/firestore-mutations/targets'
 import { requireFirestoreDocumentId } from '../ids/path'
 import {
   appGovernancePatch,
+  forbidden,
   initialMembership,
   requireAdmin,
-  requireIdentityUser,
   roleFrom,
-  updateIdentityMirror,
   type MembershipTransactionState,
-  type MirrorMode,
   type TransactionOutcome,
 } from './mutation-contract'
 
 export async function handleReviewJoin(
-  state: MembershipTransactionState
+  state: MembershipTransactionState,
+  crossDatabaseUserVerified: boolean
 ): Promise<TransactionOutcome> {
-  const {
-    context,
-    transaction,
-    appDb,
-    identityDb,
-    sameDatabase,
-    crossDatabaseUserVerified,
-    appRef,
-    membershipCollection,
-    appData,
-    actorMembership,
-  } = state
+  const { context, mutations, actorMembership } = state
   const { actorUid, appId, input } = context
-  if (input.action !== 'review-join') {
-    throw new Error('Review-join action is required.')
-  }
-
+  if (input.action !== 'review-join')
+    return forbidden(400, 'Review-join action is required.')
   requireAdmin(actorMembership)
   const userId = requireFirestoreDocumentId(input.userId, 'User id')
-  const targetMembershipRef = membershipCollection.doc(userId)
-  const targetJoinRequestRef = appRef
-    .collection(AppJoinRequestStorage.collection)
-    .doc(userId)
-  const targetMembershipBlockRef = appRef
-    .collection(AppMembershipBlockStorage.collection)
-    .doc(userId)
-  const targetMembershipSnapshot = await transaction.get(targetMembershipRef)
+  const memberships = serverAppUsersTarget(appId)
+  const target = await mutations.read(memberships, userId)
   let created = false
-  let mirror: MirrorMode = null
-  
   if (input.approve) {
-    const userRef = (sameDatabase ? appDb : identityDb)
-      .collection(UserStorage.collection)
-      .doc(userId)
-    await requireIdentityUser(
-      transaction,
-      userRef,
-      crossDatabaseUserVerified
-    )
-    created = !targetMembershipSnapshot.exists
-    if (created) {
-      transaction.create(
-        targetMembershipRef,
-        initialMembership(appId, actorUid, 'user')
-      )
-    }
-    if (sameDatabase) {
-      updateIdentityMirror(transaction, userRef, appId, actorUid, 'add')
-    } else {
-      mirror = 'add'
-    }
-    transaction.delete(targetMembershipBlockRef)
+    if (!crossDatabaseUserVerified &&
+        !(await mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeUsers, userId)).exists)
+      forbidden(409, 'The public User record does not exist.')
+    created = !target.exists
+    if (created)
+      mutations.create(memberships, userId, initialMembership(appId, actorUid, 'user'))
+    const blocks = serverAppMembershipBlocksTarget(appId)
+    if ((await mutations.read(blocks, userId)).exists) mutations.delete(blocks, userId)
   }
-  
-  transaction.update(
-    appRef,
-    appGovernancePatch(appData, actorUid, {
-      countDelta: created ? 1 : 0,
-    })
-  )
-  transaction.delete(targetJoinRequestRef)
-  return {
-    ok: true,
-    action: input.action,
-    appId,
-    userId,
-    created,
-    role: input.approve ? roleFrom(targetMembershipSnapshot.data()) ?? 'user' : undefined,
-    identityMirror: mirror,
-  }
+  mutations.update(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId,
+    appGovernancePatch(actorUid))
+  const joins = serverAppJoinRequestsTarget(appId)
+  if ((await mutations.read(joins, userId)).exists) mutations.delete(joins, userId)
+  return { ok: true, action: input.action, appId, userId, created,
+    role: input.approve ? roleFrom(target.data) ?? 'user' : undefined }
 }

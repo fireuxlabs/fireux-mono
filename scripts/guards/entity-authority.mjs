@@ -178,7 +178,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(ecosystemModel, /^  (apps|team|source_url|slug):/m)
 
   assert.match(projectModel, /shape:\s*'root-and-app-support'/)
-  assert.match(projectModel, /scope:\s*'apps\/\{appId\}\/projects\/\{projectId\}'/)
+  assert.match(
+    projectModel,
+    /scope:\s*'apps\/\{appId\}\/projects\/\{projectId\}'/
+  )
   assert.match(
     projectModel,
     /ProjectMetaStorage[\s\S]*database:\s*['"]\(default\)['"][\s\S]*path:\s*['"]project\/\{projectId\}['"]/
@@ -239,7 +242,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     profileProvisioner,
-    /function runtimeDatabaseContext\(definition:[\s\S]*isRuntimeProfileEnabled\(fireux\?\.profiles, definition\.id\)[\s\S]*getRuntimeFirestore/
+    /function runtimeDatabaseContext\(definition:[\s\S]*isRuntimeProfileEnabled\(fireux\?\.profiles, definition\.id\)[\s\S]*runGuardedServerTransaction/
+  )
+  assert.doesNotMatch(
+    profileProvisioner,
+    /\.runTransaction\(|transaction\.(?:create|set|update|delete)\(/
   )
   assert.doesNotMatch(profileProvisioner, /arrayUnion\(definition\.id\)/)
   const profileCreate = read(
@@ -545,9 +552,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/core/fireux-core/src/runtime/server/utils/events/publishAppUserJoinedEvent.ts'
   )
   assert.doesNotMatch(appUserJoinedPublisher, /app\.ecosystem_id/)
-  assert.match(appUserJoinedPublisher, /UserNotificationStorage/)
-  assert.match(appUserJoinedPublisher, /\.where\('role', '==', 'admin'\)/)
-  assert.match(appUserJoinedPublisher, /\.doc\(eventId\)/)
+  assert.match(appUserJoinedPublisher, /serverUserNotificationsTarget/)
+  assert.match(appUserJoinedPublisher, /mutations\.query<AppUser>/)
+  assert.match(appUserJoinedPublisher, /mutations\.create\(events, eventId/)
   assert.match(appUserJoinedPublisher, /New user joined/)
   for (const notificationClient of [
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserNotifications.ts',
@@ -612,14 +619,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  for (const page of [
-    'index',
-    'overview',
-    'identity',
-    'apps',
-    'ecosystem',
-    'users',
-  ]) {
+  for (const page of ['index', 'overview', 'identity', 'apps', 'ecosystem']) {
     const source = read(
       repoRoot,
       `projects/fireux/fireux-app/app/pages/console/project/${page}.vue`
@@ -655,39 +655,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(projectControlApi, /project_ids/)
   assert.match(projectControlApi, /ProjectStorage\.rootCollection/)
   assert.doesNotMatch(projectControlApi, /operator_ids|team_ids/)
-
-  const projectUserJoinPage = read(
-    repoRoot,
-    'projects/fireux/fireux-app/app/pages/console/project/users.vue'
-  )
-  const projectUserJoinReceiver = read(
-    repoRoot,
-    'projects/fireux/fireux-app/server/api/internal/control/user-joins/publications.post.ts'
-  )
-  const projectUserJoinFeed = read(
-    repoRoot,
-    'projects/fireux/fireux-app/server/api/internal/control/user-joins/index.get.ts'
-  )
-  const projectUserJoinPublisher = read(
-    repoRoot,
-    'packages/core/fireux-core/src/runtime/server/utils/project-user-join/publish.ts'
-  )
-  assert.match(projectUserJoinPage, /\/api\/internal\/control\/user-joins/)
-  assert.match(projectUserJoinPage, /requiresSelection:\s*false/)
-  assert.match(projectUserJoinReceiver, /verifyServiceAccountOidc/)
-  assert.match(projectUserJoinReceiver, /sourceScopeAllows/)
-  assert.match(projectUserJoinReceiver, /ProjectUserJoinStorage\.collection/)
-  assert.match(projectUserJoinReceiver, /transaction\.set/)
-  assert.match(projectUserJoinReceiver, /ProjectUserJoinStorage\.maxItems/)
-  assert.doesNotMatch(projectUserJoinReceiver, /transaction\.(?:update|delete)/)
-  assert.match(projectUserJoinFeed, /requireFireuxAppAdmin/)
-  assert.match(projectUserJoinFeed, /ProjectUserJoinStorage\.document/)
-  assert.doesNotMatch(
-    projectUserJoinFeed,
-    /\.collectionGroup\(|\.where\(|\.orderBy\(/
-  )
-  assert.match(projectUserJoinPublisher, /getIdTokenClient/)
-  assert.match(projectUserJoinPublisher, /AbortSignal\.timeout/)
 
   for (const method of ['get', 'post']) {
     const registrySource = read(
@@ -751,15 +718,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
   )
+  const placeMutationAuthority = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/server/place/mutation-authority.ts'
+  )
 
   assert.match(
-    placeMediaMutation,
+    placeMutationAuthority,
     /Object\.hasOwn\(kitchen,\s*['"]app_scope_state['"]\)/
   )
   assert.match(
-    placeMediaMutation,
+    placeMutationAuthority,
     /Object\.hasOwn\(kitchen,\s*['"]app_scope_app_id['"]\)/
   )
+  assert.match(placeMediaMutation, /readRootKitchenAppScope\(rootKitchen\)/)
   assert.match(
     placeMediaMutation,
     /rootKitchenScope\?\.appId\s*===\s*kitchenAuthority\.appId/
@@ -769,7 +741,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /kitchenAuthority\.appId\s*!==\s*runtimeAppId/
   )
   assert.doesNotMatch(
-    placeMediaMutation,
+    placeMutationAuthority,
     /appScope\.app_id\s*\|\|\s*kitchen\.app_scope_app_id/
   )
 
@@ -1055,11 +1027,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(canonicalCompany, /hasExactKeys\(stamp,\s*\['at'\]\)/)
   assert.match(
     companyMaterializer,
-    /projectPublicPlace\(id,\s*placeSnapshot\.data\(\) \|\| \{\}\)/
+    /projectPublicPlace\(id,\s*placeSnapshot\.data \|\| \{\}\)/
   )
   assert.match(
     companyMaterializer,
-    /canonicalCompanyRole\(id,\s*companySnapshot\.data\(\)\)/
+    /canonicalCompanyRole\(id,\s*companySnapshot\.data\)/
   )
   assert.match(
     publicCompanyModel,

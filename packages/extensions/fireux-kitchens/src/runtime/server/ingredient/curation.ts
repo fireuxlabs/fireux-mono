@@ -1,8 +1,14 @@
 import { createError, type H3Event } from 'h3'
+import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type {
   IngredientCreateInput,
   IngredientUpdateInput,
@@ -36,32 +42,44 @@ export async function createIngredient(
   if (!isFirestoreDocumentId(id)) badRequest('Unable to resolve Ingredient id.')
 
   const context = await curatorContext(event)
-  const db = getRuntimeFirestore()
-  const ref = db.doc(`ingredients/${id}`)
-  const membershipRef = db.doc(`apps/${context.appId}/users/${context.uid}`)
+  const ingredients = FIRESTORE_MUTATION_TARGETS.ingredients
+  const memberships = serverAppUsersTarget(context.appId)
 
-  const result = await db.runTransaction(async (transaction) => {
-    const [existing, membership] = await Promise.all([
-      transaction.get(ref),
-      transaction.get(membershipRef),
-    ])
-    assertCurator(membership, context.isDeveloper)
-    if (existing.exists) {
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'Ingredient already exists.',
-      })
+  const result = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) => {
+      const [existing, membership] = await Promise.all([
+        mutations.read(ingredients, id),
+        mutations.read(memberships, context.uid),
+      ])
+      assertCurator(membership.data, context.isDeveloper)
+      if (existing.exists) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'Ingredient already exists.',
+        })
+      }
+
+      const payload = canonicalStoredIngredient(
+        id,
+        { slug: id, name },
+        source,
+        {
+          created: serverAuditStamp({ by: context.uid, appId: context.appId }),
+          updated: serverAuditStamp({ by: context.uid }),
+        }
+      )
+      await assertUniqueActiveIngredientIdentity(
+        mutations,
+        ingredients,
+        id,
+        payload
+      )
+      await assertReferencedIngredients(mutations, ingredients, id, payload)
+      mutations.create(ingredients, id, payload)
+      return payload
     }
-
-    const payload = canonicalStoredIngredient(id, { slug: id, name }, source, {
-      created: serverAuditStamp({ by: context.uid, appId: context.appId }),
-      updated: serverAuditStamp({ by: context.uid }),
-    })
-    await assertUniqueActiveIngredientIdentity(transaction, id, payload)
-    await assertReferencedIngredients(transaction, id, payload)
-    transaction.create(ref, payload)
-    return payload
-  })
+  )
 
   const projected = projectPublicIngredient({ id, data: () => result })
   if (!projected) throw new Error('Created Ingredient projection is invalid.')
@@ -79,34 +97,46 @@ export async function updateIngredient(
   if (!Object.keys(patch).length) badRequest('Ingredient patch is empty.')
 
   const context = await curatorContext(event)
-  const db = getRuntimeFirestore()
-  const ref = db.doc(`ingredients/${id}`)
-  const membershipRef = db.doc(`apps/${context.appId}/users/${context.uid}`)
+  const ingredients = FIRESTORE_MUTATION_TARGETS.ingredients
+  const memberships = serverAppUsersTarget(context.appId)
 
-  const result = await db.runTransaction(async (transaction) => {
-    const [existing, membership] = await Promise.all([
-      transaction.get(ref),
-      transaction.get(membershipRef),
-    ])
-    assertCurator(membership, context.isDeveloper)
-    if (!existing.exists) {
-      throw createError({
-        statusCode: 404,
-        statusMessage: 'Ingredient not found.',
-      })
+  const result = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) => {
+      const [existing, membership] = await Promise.all([
+        mutations.read<DocumentData>(ingredients, id),
+        mutations.read(memberships, context.uid),
+      ])
+      assertCurator(membership.data, context.isDeveloper)
+      if (!existing.exists) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: 'Ingredient not found.',
+        })
+      }
+
+      const payload = canonicalStoredIngredient(
+        id,
+        record(existing.data),
+        patch,
+        { updated: serverAuditStamp({ by: context.uid }) }
+      )
+      await assertUniqueActiveIngredientIdentity(
+        mutations,
+        ingredients,
+        id,
+        payload
+      )
+      await assertReferencedIngredients(mutations, ingredients, id, payload)
+      const replacement: DocumentData = { ...payload }
+      for (const field of Object.keys(existing.data || {})) {
+        if (!Object.hasOwn(payload, field))
+          replacement[field] = FieldValue.delete()
+      }
+      mutations.update<DocumentData>(ingredients, id, replacement)
+      return payload
     }
-
-    const payload = canonicalStoredIngredient(
-      id,
-      record(existing.data()),
-      patch,
-      { updated: serverAuditStamp({ by: context.uid }) }
-    )
-    await assertUniqueActiveIngredientIdentity(transaction, id, payload)
-    await assertReferencedIngredients(transaction, id, payload)
-    transaction.set(ref, payload)
-    return payload
-  })
+  )
 
   const projected = projectPublicIngredient({ id, data: () => result })
   if (!projected) throw new Error('Updated Ingredient projection is invalid.')
@@ -121,7 +151,7 @@ export async function listIngredientsForCurator(
   const membership = await db
     .doc(`apps/${context.appId}/users/${context.uid}`)
     .get()
-  assertCurator(membership, context.isDeveloper)
+  assertCurator(membership.data(), context.isDeveloper)
 
   const snapshot = await db
     .collection('ingredients')

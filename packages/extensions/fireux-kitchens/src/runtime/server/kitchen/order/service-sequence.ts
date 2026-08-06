@@ -1,11 +1,15 @@
-import {
-  Timestamp,
-  type DocumentData,
-  type Firestore,
-  type Transaction,
-} from 'firebase-admin/firestore'
+import { Timestamp, type DocumentData } from 'firebase-admin/firestore'
 import { randomUUID } from 'node:crypto'
 import { createError } from 'h3'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  serverCustomerOrdersTarget,
+  serverKitchenOrderServiceTarget,
+  serverKitchenOrdersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 export type KitchenOrderServiceSequence = {
   id: string
@@ -13,7 +17,8 @@ export type KitchenOrderServiceSequence = {
 }
 
 export type KitchenOrderLinkedRecord = {
-  path: string
+  customerUid: string
+  orderId: string
   payload: Record<string, unknown>
 }
 
@@ -25,27 +30,29 @@ export const kitchenOrderServiceStatePath = (input: {
 }) => `apps/${input.appId}/kitchens/${input.kitchenId}/order-service/current`
 
 export async function nextKitchenOrderServiceSequence(
-  transaction: Transaction,
-  db: Firestore,
+  mutations: GuardedServerTransaction,
   input: {
     appId: string
     kitchenId: string
     now: Timestamp
   }
 ): Promise<KitchenOrderServiceSequence> {
-  const ref = db.doc(kitchenOrderServiceStatePath(input))
-  const snap = await transaction.get(ref)
-  const current = snap.data() || {}
+  const services = serverKitchenOrderServiceTarget(input.appId, input.kitchenId)
+  const snap = await mutations.read(services, 'current')
+  const current = snap.data || {}
   const id = text(current.service_id) || `service-${input.now.toMillis()}`
-  const number = Math.max(0, Math.floor(Number(current.last_order_number) || 0)) + 1
+  const number =
+    Math.max(0, Math.floor(Number(current.last_order_number) || 0)) + 1
 
-  transaction.set(ref, {
+  const data = {
     id: 'current',
     service_id: id,
     last_order_number: number,
     started_at: current.started_at || input.now,
     updated_at: input.now,
-  })
+  }
+  if (snap.exists) mutations.update(services, 'current', data)
+  else mutations.create(services, 'current', data)
 
   return { id, number }
 }
@@ -98,20 +105,17 @@ export function applyKitchenOrderServiceSequenceToResponse<
 
 export async function commitKitchenOrderWithServiceSequence<
   TResponse extends Record<string, unknown>,
->(
-  db: Firestore,
-  input: {
-    appId: string
-    kitchenId: string
-    orderPath: string
-    payload: Record<string, unknown>
-    response: TResponse
-    linkedRecord?: KitchenOrderLinkedRecord
-  }
-) {
-  return db.runTransaction(async (transaction) => {
+>(input: {
+  appId: string
+  kitchenId: string
+  orderId: string
+  payload: Record<string, unknown>
+  response: TResponse
+  linkedRecord?: KitchenOrderLinkedRecord
+}) {
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const now = Timestamp.now()
-    const sequence = await nextKitchenOrderServiceSequence(transaction, db, {
+    const sequence = await nextKitchenOrderServiceSequence(mutations, {
       appId: input.appId,
       kitchenId: input.kitchenId,
       now,
@@ -121,10 +125,15 @@ export async function commitKitchenOrderWithServiceSequence<
       response: input.response,
       sequence,
     })
-    transaction.create(db.doc(input.orderPath), numbered.payload)
+    mutations.create(
+      serverKitchenOrdersTarget(input.appId, input.kitchenId),
+      input.orderId,
+      numbered.payload
+    )
     if (input.linkedRecord) {
-      transaction.create(
-        db.doc(input.linkedRecord.path),
+      mutations.create(
+        serverCustomerOrdersTarget(input.linkedRecord.customerUid),
+        input.linkedRecord.orderId,
         input.linkedRecord.payload
       )
     }
@@ -133,38 +142,31 @@ export async function commitKitchenOrderWithServiceSequence<
   })
 }
 
-export async function endKitchenOrderService(
-  db: Firestore,
-  input: {
-    actorId: string
-    appId: string
-    kitchenId: string
-  }
-) {
-  const ref = db.doc(kitchenOrderServiceStatePath(input))
-  const activeOrders = db
-    .collection(`apps/${input.appId}/kitchens/${input.kitchenId}/orders`)
-    .where('status', 'in', [
-      'pending_payment',
-      'pending_acceptance',
-      'accepted',
-      'ready',
+export async function endKitchenOrderService(input: {
+  actorId: string
+  appId: string
+  kitchenId: string
+}) {
+  const services = serverKitchenOrderServiceTarget(input.appId, input.kitchenId)
+  const orders = serverKitchenOrdersTarget(input.appId, input.kitchenId)
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const [snap, activeOrders] = await Promise.all([
+      mutations.read(services, 'current'),
+      mutations.query(orders, {
+        field: 'status',
+        op: 'in',
+        value: ['pending_payment', 'pending_acceptance', 'accepted', 'ready'],
+        limit: 1,
+      }),
     ])
-    .limit(1)
-
-  return db.runTransaction(async (transaction) => {
-    const [snap, activeOrdersSnap] = await Promise.all([
-      transaction.get(ref),
-      transaction.get(activeOrders),
-    ])
-    if (!activeOrdersSnap.empty) {
+    if (activeOrders.length) {
       throw createError({
         statusCode: 409,
         statusMessage: 'Finish active orders before ending service.',
       })
     }
 
-    const current = snap.data() || {}
+    const current = snap.data || {}
     const now = Timestamp.now()
     const nextServiceId = `service-${randomUUID()}`
     const previousServiceId = text(current.service_id)
@@ -173,7 +175,7 @@ export async function endKitchenOrderService(
       Math.floor(Number(current.last_order_number) || 0)
     )
 
-    transaction.set(ref, {
+    const data = {
       id: 'current',
       service_id: nextServiceId,
       last_order_number: 0,
@@ -183,7 +185,9 @@ export async function endKitchenOrderService(
       previous_ended_by: input.actorId,
       previous_service_id: previousServiceId,
       previous_order_count: previousOrderCount,
-    })
+    }
+    if (snap.exists) mutations.update(services, 'current', data)
+    else mutations.create(services, 'current', data)
 
     return {
       service_id: nextServiceId,
@@ -195,6 +199,6 @@ export async function endKitchenOrderService(
 
 function record(value: unknown): DocumentData {
   return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as DocumentData
+    ? (value as DocumentData)
     : {}
 }

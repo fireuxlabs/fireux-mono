@@ -174,7 +174,6 @@ export async function run({ repoRoot }) {
     'projects/fireux/fireux-app/app/pages/solutions/fireux-template.vue',
     'projects/fireux/fireux-app/app/pages/operations/apps.vue',
     'projects/fireux/fireux-app/app/pages/operations/ecosystem.vue',
-    'projects/fireux/fireux-app/app/pages/operations/users.vue',
   ]
   for (const relative of fireuxPublicOverrides) {
     const source = read(repoRoot, relative)
@@ -188,7 +187,7 @@ export async function run({ repoRoot }) {
 
   const fireuxDirectoryReader = read(
     repoRoot,
-    'projects/fireux/fireux-app/server/utils/platform-directory.ts'
+    'projects/fireux/fireux-app/server/utils/default-directory.ts'
   )
   const fireuxDirectoryApi = read(
     repoRoot,

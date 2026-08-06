@@ -12,6 +12,12 @@ import {
   getRuntimeFirestore,
   getRuntimeIdentityFirestore,
 } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  serverAppDriversTarget,
+  serverAppUsersTarget,
+  serverKitchenOrdersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { AppDriverStorage } from '../../models/driver.model.ts'
 import {
   DriverDispatchVisibleStatuses,
@@ -39,22 +45,26 @@ function fail(statusCode: number, statusMessage: string): never {
 }
 
 function text(value: unknown, max = 1_500) {
-  return String(value ?? '').trim().slice(0, max)
+  return String(value ?? '')
+    .trim()
+    .slice(0, max)
 }
 
 function record(value: unknown): Record<string, unknown> {
   return value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 }
 
 function stringList(value: unknown, max = MAX_ACTIVE_KITCHENS) {
   if (!Array.isArray(value)) return []
-  return [...new Set(
-    value
-      .map((entry) => text(entry))
-      .filter((entry) => entry && !entry.includes('/'))
-  )].slice(0, max)
+  return [
+    ...new Set(
+      value
+        .map((entry) => text(entry))
+        .filter((entry) => entry && !entry.includes('/'))
+    ),
+  ].slice(0, max)
 }
 
 function quantity(value: unknown) {
@@ -103,9 +113,7 @@ function activeKitchenLinks(driver: DocumentData, appId: string) {
   return links
 }
 
-async function requireDriver(
-  context: DriverDispatchContext
-) {
+async function requireDriver(context: DriverDispatchContext) {
   const db = getRuntimeFirestore(context.databaseId)
   const appRef = db.collection(AppStorage.collection).doc(context.appId)
   const membershipRef = appRef
@@ -136,7 +144,10 @@ function dispatchBeacon(
   orderId: string,
   order: DocumentData
 ): DriverDispatchBeacon | null {
-  if (order.order_type !== 'delivery' || !isDriverDispatchVisibleStatus(order.status)) {
+  if (
+    order.order_type !== 'delivery' ||
+    !isDriverDispatchVisibleStatus(order.status)
+  ) {
     return null
   }
   const responses = record(order.driver_responses)
@@ -197,7 +208,9 @@ export async function listDriverDispatches(
   const items = pages
     .flat()
     .sort((left, right) =>
-      String(right.created_at || '').localeCompare(String(left.created_at || ''))
+      String(right.created_at || '').localeCompare(
+        String(left.created_at || '')
+      )
     )
     .slice(0, MAX_DISPATCHES)
   return { items }
@@ -207,7 +220,7 @@ export async function watchDriverDispatch(
   context: DriverDispatchContext,
   input: DriverDispatchWatchInput
 ): Promise<DriverDispatchWatchResult> {
-  const { db, appRef, driverRef } = await requireDriver(context)
+  await requireDriver(context)
   const userSnapshot = await getRuntimeIdentityFirestore()
     .collection(UserStorage.collection)
     .doc(context.actorUid)
@@ -216,32 +229,34 @@ export async function watchDriverDispatch(
     fail(409, 'Create the canonical User before watching Driver dispatches.')
   }
   const user = userSnapshot.data() ?? {}
-  const orderRef = appRef
-    .collection(KitchenStorage.scopeCollection)
-    .doc(input.kitchen_id)
-    .collection('orders')
-    .doc(input.order_id)
+  const memberships = serverAppUsersTarget(context.appId)
+  const drivers = serverAppDriversTarget(context.appId)
+  const orders = serverKitchenOrdersTarget(context.appId, input.kitchen_id)
 
-  return db.runTransaction(async (transaction) => {
-    const membershipRef = appRef
-      .collection(AppUserStorage.collection)
-      .doc(context.actorUid)
-    const membershipSnapshot = await transaction.get(membershipRef)
-    const driverSnapshot = await transaction.get(driverRef)
-    const orderSnapshot = await transaction.get(orderRef)
-    if (!membershipSnapshot.exists || !isMembership(membershipSnapshot.data())) {
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const membershipSnapshot = await mutations.read(
+      memberships,
+      context.actorUid
+    )
+    const driverSnapshot = await mutations.read(drivers, context.actorUid)
+    const orderSnapshot = await mutations.read(orders, input.order_id)
+    if (!membershipSnapshot.exists || !isMembership(membershipSnapshot.data)) {
       fail(403, 'App membership is required for Driver dispatches.')
     }
     if (!driverSnapshot.exists) fail(409, 'The Driver profile does not exist.')
-    if (!orderSnapshot.exists) fail(404, 'The delivery dispatch does not exist.')
+    if (!orderSnapshot.exists)
+      fail(404, 'The delivery dispatch does not exist.')
 
-    const driver = driverSnapshot.data() ?? {}
+    const driver = driverSnapshot.data ?? {}
     const links = activeKitchenLinks(driver, context.appId)
     if (!links.has(input.kitchen_id)) {
       fail(403, 'An active Driver Kitchen grant is required.')
     }
-    const order = orderSnapshot.data() ?? {}
-    if (order.order_type !== 'delivery' || !isDriverDispatchVisibleStatus(order.status)) {
+    const order = orderSnapshot.data ?? {}
+    if (
+      order.order_type !== 'delivery' ||
+      !isDriverDispatchVisibleStatus(order.status)
+    ) {
       fail(409, 'This delivery is not open for Driver interest.')
     }
 
@@ -262,7 +277,7 @@ export async function watchDriverDispatch(
       fail(409, 'This delivery has reached its Driver response limit.')
     }
 
-    transaction.update(orderRef, {
+    mutations.update<DocumentData>(orders, input.order_id, {
       driver_responses: {
         ...responses,
         [context.actorUid]: {

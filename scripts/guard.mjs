@@ -51,8 +51,6 @@ import { run as runEntityMatrix } from './guards/entity-matrix.mjs'
 import { run as runEntityAuthority } from './guards/entity-authority.mjs'
 import { run as runRootAppSupportAuthority } from './guards/root-app-support-authority.mjs'
 import { run as runAppUserAccess } from './guards/user-app-access.mjs'
-import { run as runDirectoryReconciliation } from './guards/directory-reconciliation.mjs'
-import { run as runDirectoryPublication } from './guards/directory-publication.mjs'
 import { run as runKitchenPublicProjection } from './guards/kitchen-public-projection.mjs'
 import { run as runIngredientAuthority } from './guards/ingredient-authority.mjs'
 import { run as runBlogAuthority } from './guards/blog-authority.mjs'
@@ -61,6 +59,7 @@ import { run as runProjects } from './guards/projects.mjs'
 import { run as runPrivacyMeasurement } from './guards/privacy-measurement.mjs'
 import { run as runReservationAuthority } from './guards/reservation-authority.mjs'
 import { run as runSeoSpine } from './guards/seo-spine.mjs'
+import { run as runFirestoreMutations } from './guards/firestore-mutations.mjs'
 
 const repoRoot = process.cwd()
 
@@ -104,8 +103,6 @@ const guards = [
   { key: 'entity-authority', run: runEntityAuthority },
   { key: 'root-app-support-authority', run: runRootAppSupportAuthority },
   { key: 'user-app-access', run: runAppUserAccess },
-  { key: 'directory-reconciliation', run: runDirectoryReconciliation },
-  { key: 'directory-publication', run: runDirectoryPublication },
   { key: 'kitchen-public-projection', run: runKitchenPublicProjection },
   { key: 'ingredient-authority', run: runIngredientAuthority },
   { key: 'blog-authority', run: runBlogAuthority },
@@ -114,6 +111,7 @@ const guards = [
   { key: 'privacy-measurement', run: runPrivacyMeasurement },
   { key: 'reservation-authority', run: runReservationAuthority },
   { key: 'seo-spine', run: runSeoSpine },
+  { key: 'firestore-mutations', run: runFirestoreMutations },
 ]
 
 const errors = []
@@ -139,7 +137,8 @@ if (errors.length) {
   for (const e of errors) {
     console.error(`--- ${e.guard.toUpperCase()} ---`)
     console.error(e.message.trimEnd())
-    const sourceKey = e.guard === 'app-user-access' ? 'user-app-access' : e.guard
+    const sourceKey =
+      e.guard === 'app-user-access' ? 'user-app-access' : e.guard
     const source = `scripts/guards/${sourceKey}.mjs`
     if (existsSync(join(repoRoot, source))) {
       console.error(`\nOwner: ${source}`)

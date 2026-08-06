@@ -1,9 +1,11 @@
 import { createError, defineEventHandler, readBody, type H3Event } from 'h3'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-update'
 import { requirePathSegment } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import { readString } from 'fireux-core/runtime/server/utils/records/read'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { serverKitchenMenuUploadsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { writeKitchenMenuDraft } from '../../../../menu/draft/write'
 import { compareKitchenMenuDraftToCurrent } from '../../../../menu/draft/comparison'
 import { readKitchenMenuCurrentShape } from '../../../../menu/draft/current'
@@ -18,17 +20,17 @@ import {
   kitchenMenuUploadPath,
   requireKitchenMenuUploadUser,
 } from '../../../../menu/source/uploads'
-import {
-  importKitchenMenuCacheUnits,
-} from '../../../../menu/sproochli/cache-import'
+import { importKitchenMenuCacheUnits } from '../../../../menu/sproochli/cache-import'
 
-type ConfirmMenuBody = Partial<Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>> & {
+type ConfirmMenuBody = Partial<
+  Record<'appId' | 'kitchenId' | 'menuId' | 'uploadId', string>
+> & {
   confirmDishes?: boolean
 }
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const destructiveOptionFlagCodes = new Set([
   'variants-missing-in-extraction',
@@ -73,7 +75,9 @@ export default defineEventHandler(async (event: H3Event) => {
 
   const source = record(sourceSnap.data() || {})
   const aiDraft = record(source.ai_draft)
-  const sections = normalizeKitchenMenuDraftSections({ sections: aiDraft.sections })
+  const sections = normalizeKitchenMenuDraftSections({
+    sections: aiDraft.sections,
+  })
 
   if (!sections.length || !countKitchenMenuDraftItems(sections)) {
     throw createError({
@@ -86,17 +90,20 @@ export default defineEventHandler(async (event: H3Event) => {
     section.items
       .filter((item) => {
         const addOns = item.add_ons.map(record)
-        return hasDuplicates(item.price_options.map((option) => record(option).label)) ||
+        return (
+          hasDuplicates(
+            item.price_options.map((option) => record(option).label)
+          ) ||
           hasDuplicates(addOns.map((option) => option.id)) ||
           hasDuplicates(addOns.map((option) => option.label))
+        )
       })
       .map((item) => item.name)
   )
   if (duplicateOptionItems.length) {
     throw createError({
       statusCode: 400,
-      statusMessage:
-        `Confirm blocked because option labels or identifiers are duplicated: ${duplicateOptionItems.join(', ')}.`,
+      statusMessage: `Confirm blocked because option labels or identifiers are duplicated: ${duplicateOptionItems.join(', ')}.`,
     })
   }
 
@@ -109,8 +116,7 @@ export default defineEventHandler(async (event: H3Event) => {
   if (optionLoss.length) {
     throw createError({
       statusCode: 409,
-      statusMessage:
-        `Confirm blocked because the draft would remove existing variants or add-ons. Review: ${optionLoss.map((flag) => flag.item || flag.section || flag.code).join(', ')}.`,
+      statusMessage: `Confirm blocked because the draft would remove existing variants or add-ons. Review: ${optionLoss.map((flag) => flag.item || flag.section || flag.code).join(', ')}.`,
     })
   }
 
@@ -123,10 +129,7 @@ export default defineEventHandler(async (event: H3Event) => {
     uid,
     sections,
   })
-  const {
-    sproochliCacheUnits,
-    ...write
-  } = writeResult
+  const { sproochliCacheUnits, ...write } = writeResult
   const provenance = record(aiDraft.provenance)
   let cacheImport:
     | Awaited<ReturnType<typeof importKitchenMenuCacheUnits>>
@@ -142,8 +145,7 @@ export default defineEventHandler(async (event: H3Event) => {
     cacheImport = await importKitchenMenuCacheUnits({
       appId,
       uploadId,
-      provider:
-        readString(provenance.provider) || 'fireux-ai-menu-extraction',
+      provider: readString(provenance.provider) || 'fireux-ai-menu-extraction',
       model: readString(provenance.model),
       units: sproochliCacheUnits,
     })
@@ -154,13 +156,17 @@ export default defineEventHandler(async (event: H3Event) => {
       writes: 0,
       existing: 0,
       reason:
-        (cause instanceof Error ? cause.message : String(cause))
-          .slice(0, 300) || 'Sproochli Menu cache import failed.',
+        (cause instanceof Error ? cause.message : String(cause)).slice(
+          0,
+          300
+        ) || 'Sproochli Menu cache import failed.',
     }
   }
   const stamp = serverAuditStamp({ by: uid, appId })
 
-  await sourceRef.set(
+  await serverUpdate(
+    serverKitchenMenuUploadsTarget(appId, kitchenId),
+    uploadId,
     {
       status: write.status === 'published' ? 'published' : 'draft',
       menu_id: menuId,
@@ -177,8 +183,7 @@ export default defineEventHandler(async (event: H3Event) => {
         },
       },
       updated: stamp,
-    },
-    { merge: true }
+    }
   )
 
   return {
@@ -187,6 +192,7 @@ export default defineEventHandler(async (event: H3Event) => {
     uploadId,
     write,
     cacheImport,
-    message: 'Menu draft confirmed. Dishes, sections, and menu items were created.',
+    message:
+      'Menu draft confirmed. Dishes, sections, and menu items were created.',
   }
 })

@@ -2,9 +2,13 @@
 
 import { createError } from 'h3'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
-import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppDriversTarget,
+  serverAppKitchensTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type { DriverKitchenLink } from '../../models/driver.model.ts'
 import {
   DRIVER_KITCHEN_LINK_LIMIT,
@@ -12,8 +16,6 @@ import {
   type DriverKitchenAccessRelation,
   type DriverKitchenAccessResult,
 } from '../../models/driver/kitchen-access.ts'
-import { AppDriverStorage } from '../../models/driver.model.ts'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
 
 type DriverKitchenAccessContext = {
   actorUid: string
@@ -27,7 +29,9 @@ function fail(statusCode: number, statusMessage: string): never {
 }
 
 function text(value: unknown, max = 1_500) {
-  return String(value ?? '').trim().slice(0, max)
+  return String(value ?? '')
+    .trim()
+    .slice(0, max)
 }
 
 function strings(value: unknown) {
@@ -36,9 +40,7 @@ function strings(value: unknown) {
 }
 
 function relation(value: unknown): DriverKitchenAccessRelation {
-  return value === 'exclusive' || value === 'preferred'
-    ? value
-    : 'available'
+  return value === 'exclusive' || value === 'preferred' ? value : 'available'
 }
 
 function normalizeLinks(value: unknown, appId: string) {
@@ -65,8 +67,10 @@ function normalizeLinks(value: unknown, appId: string) {
 
 function kitchenPresentation(data: DocumentData) {
   const identity =
-    data.identity && typeof data.identity === 'object' && !Array.isArray(data.identity)
-      ? data.identity as Record<string, unknown>
+    data.identity &&
+    typeof data.identity === 'object' &&
+    !Array.isArray(data.identity)
+      ? (data.identity as Record<string, unknown>)
       : {}
   return {
     slug: text(data.slug, 200),
@@ -81,55 +85,48 @@ function sameValue(left: unknown, right: unknown) {
 export async function mutateDriverKitchenAccess(
   context: DriverKitchenAccessContext
 ): Promise<DriverKitchenAccessResult> {
-  const { actorUid, appId, databaseId, input } = context
-  const db = getRuntimeFirestore(databaseId)
-  const appRef = db.collection(AppStorage.collection).doc(appId)
-  const actorMembershipRef = appRef
-    .collection(AppUserStorage.collection)
-    .doc(actorUid)
-  const targetMembershipRef = appRef
-    .collection(AppUserStorage.collection)
-    .doc(input.driver_id)
-  const kitchenRef = appRef
-    .collection(KitchenStorage.scopeCollection)
-    .doc(input.kitchen_id)
-  const rootKitchenRef = db
-    .collection(KitchenStorage.rootCollection)
-    .doc(input.kitchen_id)
-  const driverRef = appRef
-    .collection(AppDriverStorage.collection)
-    .doc(input.driver_id)
+  const { actorUid, appId, input } = context
+  void context.databaseId
+  const memberships = serverAppUsersTarget(appId)
+  const kitchens = serverAppKitchensTarget(appId)
+  const drivers = serverAppDriversTarget(appId)
 
-  return db.runTransaction(async (transaction) => {
-    const appSnapshot = await transaction.get(appRef)
-    const actorMembershipSnapshot = await transaction.get(actorMembershipRef)
-    const targetMembershipSnapshot = await transaction.get(targetMembershipRef)
-    const kitchenSnapshot = await transaction.get(kitchenRef)
-    const rootKitchenSnapshot = await transaction.get(rootKitchenRef)
-    const driverSnapshot = await transaction.get(driverRef)
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const [
+      appSnapshot,
+      actorMembershipSnapshot,
+      targetMembershipSnapshot,
+      kitchenSnapshot,
+      rootKitchenSnapshot,
+      driverSnapshot,
+    ] = await Promise.all([
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId),
+      mutations.read(memberships, actorUid),
+      mutations.read(memberships, input.driver_id),
+      mutations.read(kitchens, input.kitchen_id),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchen_id),
+      mutations.read(drivers, input.driver_id),
+    ])
 
     if (!appSnapshot.exists) fail(409, 'The runtime App record does not exist.')
     if (!kitchenSnapshot.exists || !rootKitchenSnapshot.exists) {
       fail(404, 'The Kitchen does not exist in this App.')
     }
 
-    const actorMembership = actorMembershipSnapshot.data() ?? {}
+    const actorMembership = actorMembershipSnapshot.data ?? {}
     const actorRole = text(actorMembership.role, 20)
     const actorIsMember =
       actorMembershipSnapshot.exists &&
       (actorRole === 'admin' || actorRole === 'user')
     const actorIsAdmin = actorRole === 'admin'
     const actorIsKitchenOperator = strings(
-      kitchenSnapshot.get('operator_ids')
+      kitchenSnapshot.data?.operator_ids
     ).includes(actorUid)
     if (!actorIsMember || (!actorIsAdmin && !actorIsKitchenOperator)) {
       fail(403, 'App admin or Kitchen operator access is required.')
     }
 
-    const targetMembershipRole = text(
-      targetMembershipSnapshot.get('role'),
-      20
-    )
+    const targetMembershipRole = text(targetMembershipSnapshot.data?.role, 20)
     if (
       !targetMembershipSnapshot.exists ||
       (targetMembershipRole !== 'admin' && targetMembershipRole !== 'user')
@@ -140,7 +137,7 @@ export async function mutateDriverKitchenAccess(
       fail(409, 'The target Driver profile does not exist in this App.')
     }
 
-    const driver = driverSnapshot.data() ?? {}
+    const driver = driverSnapshot.data ?? {}
     const rawLinks = Array.isArray(driver.kitchen_links)
       ? driver.kitchen_links
       : []
@@ -154,7 +151,7 @@ export async function mutateDriverKitchenAccess(
       if (!current && links.size >= DRIVER_KITCHEN_LINK_LIMIT) {
         fail(409, 'The Driver Kitchen link limit has been reached.')
       }
-      const presentation = kitchenPresentation(rootKitchenSnapshot.data() ?? {})
+      const presentation = kitchenPresentation(rootKitchenSnapshot.data ?? {})
       links.set(input.kitchen_id, {
         app_id: appId,
         kitchen_id: input.kitchen_id,
@@ -181,7 +178,7 @@ export async function mutateDriverKitchenAccess(
       !sameValue(currentActiveKitchenIds, activeKitchenIds)
 
     if (changed) {
-      transaction.update(driverRef, {
+      mutations.update(drivers, input.driver_id, {
         kitchen_links: nextLinks,
         active_kitchen_ids: activeKitchenIds,
         updated: {

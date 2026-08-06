@@ -1,18 +1,17 @@
 import { FieldValue } from 'firebase-admin/firestore'
-import { AppStorage } from '../../../models/core/app.model'
 import {
   AppEventNames,
-  AppEventStorage,
   appUserJoinedEventId,
   type AppEvent,
 } from '../../../models/operations/event'
+import type { AppUser } from '../../../models/core/user.model'
+import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
 import {
-  AppUserStorage,
-  UserStorage,
-  type AppUser,
-} from '../../../models/core/user.model'
-import { UserNotificationStorage } from '../../../models/operations/user-notification.model'
-import { getRuntimeFirestore } from '../getRuntimeFirestore'
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppEventsTarget,
+  serverAppUsersTarget,
+  serverUserNotificationsTarget,
+} from '../../../utils/firestore-mutations/targets'
 
 export type PublishAppUserJoinedEventInput = {
   appId: string
@@ -74,95 +73,91 @@ function timestampIso(value: unknown): string {
 export async function publishAppUserJoinedEvent(
   input: PublishAppUserJoinedEventInput
 ): Promise<PublishAppUserJoinedEventResult> {
-  const db = getRuntimeFirestore()
-  const appRef = db.collection(AppStorage.collection).doc(input.appId)
-  const membershipRef = appRef
-    .collection(AppUserStorage.collection)
-    .doc(input.userId)
+  const apps = FIRESTORE_MUTATION_TARGETS.runtimeApps
+  const memberships = serverAppUsersTarget(input.appId)
+  const events = serverAppEventsTarget(input.appId)
   let eventId = ''
   let membershipRole: 'admin' | 'user' = 'user'
   let occurredAt = ''
 
-  const created = await db.runTransaction(async (transaction) => {
-    const [appSnapshot, membershipSnapshot] = await Promise.all([
-      transaction.get(appRef),
-      transaction.get(membershipRef),
-    ])
+  const created = await runGuardedServerTransaction(
+    apps.database,
+    async (mutations) => {
+      const [appSnapshot, membershipSnapshot] = await Promise.all([
+        mutations.read<Record<string, unknown>>(apps, input.appId),
+        mutations.read<AppUser>(memberships, input.userId),
+      ])
 
-    if (!appSnapshot.exists) {
-      throw new Error('The runtime app does not exist.')
-    }
-    if (!membershipSnapshot.exists) {
-      throw new Error('The authenticated user is not a member of this app.')
-    }
+      if (!appSnapshot.exists) {
+        throw new Error('The runtime app does not exist.')
+      }
+      if (!membershipSnapshot.exists) {
+        throw new Error('The authenticated user is not a member of this app.')
+      }
 
-    const membership = membershipSnapshot.data() as AppUser
-    const membershipCreatedAt = membership?.created?.at
-    membershipRole = membership.role === 'admin' ? 'admin' : 'user'
-    occurredAt = timestampIso(membershipCreatedAt)
-    eventId = appUserJoinedEventId(
-      input.userId,
-      timestampOccurrenceKey(membershipCreatedAt)
-    )
-    const eventRef = appRef.collection(AppEventStorage.collection).doc(eventId)
-    const adminsQuery = appRef
-      .collection(AppUserStorage.collection)
-      .where('role', '==', 'admin')
-      .limit(32)
-    const [eventSnapshot, adminsSnapshot] = await Promise.all([
-      transaction.get(eventRef),
-      transaction.get(adminsQuery),
-    ])
-    if (eventSnapshot.exists) return false
+      const membership = membershipSnapshot.data as AppUser
+      const membershipCreatedAt = membership?.created?.at
+      membershipRole = membership.role === 'admin' ? 'admin' : 'user'
+      occurredAt = timestampIso(membershipCreatedAt)
+      eventId = appUserJoinedEventId(
+        input.userId,
+        timestampOccurrenceKey(membershipCreatedAt)
+      )
+      const [eventSnapshot, admins] = await Promise.all([
+        mutations.read(events, eventId),
+        mutations.query<AppUser>(memberships, {
+          field: 'role',
+          op: '==',
+          value: 'admin',
+          limit: 32,
+        }),
+      ])
+      if (eventSnapshot.exists) return false
 
-    const ecosystemId = String(input.ecosystemId || '').trim()
-    const appName =
-      String(appSnapshot.data()?.app_name || '').trim() || input.appId
+      const ecosystemId = String(input.ecosystemId || '').trim()
+      const appName =
+        String(appSnapshot.data?.app_name || '').trim() || input.appId
 
-    transaction.create(eventRef, {
-      id: eventId,
-      name: AppEventNames.userJoined,
-      version: 1,
-      app_id: input.appId,
-      ecosystem_id: ecosystemId,
-      source: 'identity',
-      subject: {
-        kind: 'user',
-        id: input.userId,
-      },
-      actor: {
-        kind: 'user',
-        id: input.userId,
-      },
-      payload: {
-        user_id: input.userId,
-        membership_role: membershipRole,
-      },
-      occurred_at: membershipCreatedAt || FieldValue.serverTimestamp(),
-      published_at: FieldValue.serverTimestamp(),
-    } as unknown as AppEvent)
-
-    for (const admin of adminsSnapshot.docs) {
-      if (admin.id === input.userId) continue
-
-      const notificationRef = db
-        .collection(UserStorage.collection)
-        .doc(admin.id)
-        .collection(UserNotificationStorage.collection)
-        .doc(eventId)
-      transaction.create(notificationRef, {
-        message: `New user joined ${appName}.`,
-        scope: 'app',
-        created: {
-          at: FieldValue.serverTimestamp(),
-          app_id: input.appId,
+      mutations.create(events, eventId, {
+        id: eventId,
+        name: AppEventNames.userJoined,
+        version: 1,
+        app_id: input.appId,
+        ecosystem_id: ecosystemId,
+        source: 'identity',
+        subject: {
+          kind: 'user',
+          id: input.userId,
         },
-        read: false,
-      })
-    }
+        actor: {
+          kind: 'user',
+          id: input.userId,
+        },
+        payload: {
+          user_id: input.userId,
+          membership_role: membershipRole,
+        },
+        occurred_at: membershipCreatedAt || FieldValue.serverTimestamp(),
+        published_at: FieldValue.serverTimestamp(),
+      } as unknown as AppEvent)
 
-    return true
-  })
+      for (const admin of admins) {
+        if (admin.id === input.userId) continue
+
+        mutations.create(serverUserNotificationsTarget(admin.id), eventId, {
+          message: `New user joined ${appName}.`,
+          scope: 'app',
+          created: {
+            at: FieldValue.serverTimestamp(),
+            app_id: input.appId,
+          },
+          read: false,
+        })
+      }
+
+      return true
+    }
+  )
 
   return { created, eventId, membershipRole, occurredAt }
 }

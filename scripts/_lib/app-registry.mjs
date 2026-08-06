@@ -88,7 +88,6 @@ export const APP_REGISTRY = {
       '/console/project/apps',
       '/console/project/ecosystem',
       '/console/project/ignitions',
-      '/console/project/users',
     ],
     httpContracts: [
       seoPageContract('/', {

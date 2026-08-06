@@ -1,4 +1,6 @@
 import { FieldValue } from 'firebase-admin/firestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   TranslationMemoryStorage,
   type TranslationMemoryProvenanceKind,
@@ -90,9 +92,11 @@ function normalizeCandidate(
 function usableMemoryRecord(
   storage: SproochliHostStorage,
   candidate: SproochliTranslationMemoryCandidate,
-  value: (Partial<TranslationMemoryRecord> & {
-    storage?: unknown
-  }) | undefined
+  value:
+    | (Partial<TranslationMemoryRecord> & {
+        storage?: unknown
+      })
+    | undefined
 ): SproochliTranslationMemoryHit | null {
   const normalized = normalizeCandidate(candidate)
   const translatedText = text(value?.translated_text)
@@ -125,8 +129,9 @@ export async function readSproochliTranslationMemory(
   const normalizedById = new Map(
     candidates
       .map(normalizeCandidate)
-      .map(candidate =>
-        [sproochliTranslationMemoryId(candidate), candidate] as const
+      .map(
+        (candidate) =>
+          [sproochliTranslationMemoryId(candidate), candidate] as const
       )
       .filter(([id]) => id)
   )
@@ -166,70 +171,74 @@ export async function writeSproochliTranslationMemory(
 ) {
   const normalizedById = new Map(
     values
-      .map(value => ({
+      .map((value) => ({
         ...normalizeCandidate(value),
         provider: text(value.provider),
         translatedText: text(value.translatedText),
         provenance: value.provenance,
       }))
-      .map(value => [sproochliTranslationMemoryId(value), value] as const)
-      .filter((entry): entry is [string, typeof entry[1]] =>
+      .map((value) => [sproochliTranslationMemoryId(value), value] as const)
+      .filter((entry): entry is [string, (typeof entry)[1]] =>
         Boolean(entry[0] && entry[1].provider && entry[1].translatedText)
       )
   )
   if (!normalizedById.size) return 0
 
   let writes = 0
+  const target = FIRESTORE_MUTATION_TARGETS.sproochliTranslationMemory
   for (const group of chunks([...normalizedById.entries()], WRITE_BATCH_SIZE)) {
-    writes += await storage.db.runTransaction(async transaction => {
-      const refs = group.map(([id]) =>
-        storage.db.collection(TranslationMemoryStorage.collection).doc(id)
-      )
-      const snapshots = await transaction.getAll(...refs)
-      let groupWrites = 0
+    writes += await runGuardedServerTransaction(
+      target.database,
+      async (mutations) => {
+        const snapshots = await mutations.readMany(
+          target,
+          group.map(([id]) => id)
+        )
+        let groupWrites = 0
 
-      snapshots.forEach((snapshot, index) => {
-        if (snapshot.exists) return
-        const [id, value] = group[index]!
-        const provenance = value.provenance
-        transaction.create(snapshot.ref, {
-          id,
-          cache_version: value.cacheVersion,
-          domain: value.domain,
-          field_kind: value.fieldKind,
-          field_id: value.fieldId,
-          source_language: value.sourceLanguage,
-          source_text: value.sourceText,
-          source_hash: value.sourceHash,
-          target_language: value.targetLanguage,
-          translated_text: value.translatedText,
-          glossary_version: value.glossaryVersion,
-          provider: value.provider,
-          review_status: 'unreviewed',
-          storage: sproochliStorageMetadata(storage.target),
-          provenance: {
-            kind: provenance?.kind || provenanceKind(value.provider),
-            provider: text(provenance?.provider) || value.provider,
-            generated_by:
-              provenance?.generatedBy || 'sproochli-menu-translate',
-            ...(text(provenance?.sourceAppId)
-              ? { source_app_id: text(provenance?.sourceAppId) }
-              : {}),
-            ...(text(provenance?.sourceDocumentId)
-              ? { source_document_id: text(provenance?.sourceDocumentId) }
-              : {}),
-            ...(text(provenance?.sourceModel)
-              ? { source_model: text(provenance?.sourceModel) }
-              : {}),
-            generated_at: FieldValue.serverTimestamp(),
-          },
-          updated_at: FieldValue.serverTimestamp(),
+        snapshots.forEach((snapshot, index) => {
+          if (snapshot.exists) return
+          const [id, value] = group[index]!
+          const provenance = value.provenance
+          mutations.create(target, id, {
+            id,
+            cache_version: value.cacheVersion,
+            domain: value.domain,
+            field_kind: value.fieldKind,
+            field_id: value.fieldId,
+            source_language: value.sourceLanguage,
+            source_text: value.sourceText,
+            source_hash: value.sourceHash,
+            target_language: value.targetLanguage,
+            translated_text: value.translatedText,
+            glossary_version: value.glossaryVersion,
+            provider: value.provider,
+            review_status: 'unreviewed',
+            storage: sproochliStorageMetadata(storage.target),
+            provenance: {
+              kind: provenance?.kind || provenanceKind(value.provider),
+              provider: text(provenance?.provider) || value.provider,
+              generated_by:
+                provenance?.generatedBy || 'sproochli-menu-translate',
+              ...(text(provenance?.sourceAppId)
+                ? { source_app_id: text(provenance?.sourceAppId) }
+                : {}),
+              ...(text(provenance?.sourceDocumentId)
+                ? { source_document_id: text(provenance?.sourceDocumentId) }
+                : {}),
+              ...(text(provenance?.sourceModel)
+                ? { source_model: text(provenance?.sourceModel) }
+                : {}),
+              generated_at: FieldValue.serverTimestamp(),
+            },
+            updated_at: FieldValue.serverTimestamp(),
+          })
+          groupWrites += 1
         })
-        groupWrites += 1
-      })
 
-      return groupWrites
-    })
+        return groupWrites
+      }
+    )
   }
 
   return writes

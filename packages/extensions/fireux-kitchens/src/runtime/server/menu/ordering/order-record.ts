@@ -14,11 +14,7 @@ import type { MenuOrderTypeStrategy } from './order-type.ts'
 import { menuOrderTypeStrategy } from './order-types/index.ts'
 import { createMenuOrderCapability } from './order-capability.ts'
 import { createKitchenOrderPricing } from '../../kitchen/order/pricing.ts'
-import {
-  numberValue,
-  orderId,
-  orderNumber,
-} from './order-request.ts'
+import { numberValue, orderId, orderNumber } from './order-request.ts'
 
 export type MenuOrderRecordIdentity = {
   capabilityHash: string
@@ -85,12 +81,7 @@ export function assembleMenuOrderRecord(input: {
   items: ResolvedMenuOrderItem[]
   subtotal: number
 }) {
-  const {
-    command,
-    context,
-    fulfilment,
-    identity,
-  } = input
+  const { command, context, fulfilment, identity } = input
   const strategy = menuOrderTypeStrategy(command.orderType)
   const pricing = createKitchenOrderPricing({
     currencyCode: input.currencyCode,
@@ -98,19 +89,17 @@ export function assembleMenuOrderRecord(input: {
     deliveryFee: fulfilment.deliveryFee,
     total: fulfilment.total,
   })
-  const fulfilmentMatch = fulfilment.matchSnapshot || simpleFulfilmentMatch(
-    command,
-    strategy,
-    identity
-  )
-  const whatsappRecipient = command.orderType === 'pre_order' &&
+  const fulfilmentMatch =
+    fulfilment.matchSnapshot ||
+    simpleFulfilmentMatch(command, strategy, identity)
+  const whatsappRecipient =
+    command.orderType === 'pre_order' &&
     command.orderTypeConfig?.notifications?.whatsapp?.enabled === true
-    ? normalizeMenuOrderWhatsAppPhone(
-        command.orderTypeConfig.notifications.whatsapp.recipient_phone
-      )
-    : ''
-  const path =
-    `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${identity.id}`
+      ? normalizeMenuOrderWhatsAppPhone(
+          command.orderTypeConfig.notifications.whatsapp.recipient_phone
+        )
+      : ''
+  const path = `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${identity.id}`
   const receiptItems = input.items.map((item) => ({
     id: item.id,
     source_item_id: item.source_item_id,
@@ -141,17 +130,13 @@ export function assembleMenuOrderRecord(input: {
       : {}),
     ...(command.collection ? { collection: command.collection } : {}),
     ...(command.table ? { table: command.table } : {}),
-    ...(command.roomService
-      ? { room_service: command.roomService }
-      : {}),
+    ...(command.roomService ? { room_service: command.roomService } : {}),
     estimated_ready_minutes: 0,
     estimated_ready_at: '',
     ...(Object.keys(fulfilment.customer).length
       ? { customer: fulfilment.customer }
       : {}),
-    ...(fulfilmentMatch
-      ? { fulfilment_match: fulfilmentMatch }
-      : {}),
+    ...(fulfilmentMatch ? { fulfilment_match: fulfilmentMatch } : {}),
     ...(fulfilment.policySnapshot
       ? { fulfilment_policy: fulfilment.policySnapshot }
       : {}),
@@ -184,7 +169,8 @@ export function assembleMenuOrderRecord(input: {
   }
   const customerOrderLink = command.customerUid
     ? {
-        path: `customers/${command.customerUid}/orders/${identity.id}`,
+        customerUid: command.customerUid,
+        orderId: identity.id,
         payload: {
           id: identity.id,
           order_path: path,
@@ -192,15 +178,17 @@ export function assembleMenuOrderRecord(input: {
           kitchen_id: context.kitchenId,
           kitchen_name: context.kitchenName || '',
           menu_id: context.menuId,
-          menu_name: readRecordString(context.menuData, 'name') || context.menuId,
+          menu_name:
+            readRecordString(context.menuData, 'name') || context.menuId,
           menu_path: menuRoutePath({
             scope: context.routeScope,
             menuId: context.routeMenuId,
-            context: command.orderType === 'delivery' ||
+            context:
+              command.orderType === 'delivery' ||
               command.orderType === 'collection' ||
               command.orderType === 'pre_order'
-              ? command.orderType
-              : 'generic',
+                ? command.orderType
+                : 'generic',
           }),
           created_at: identity.timestamp,
         },
@@ -218,9 +206,7 @@ export function assembleMenuOrderRecord(input: {
     channel: command.channel,
     ...(command.collection ? { collection: command.collection } : {}),
     ...(command.table ? { table: command.table } : {}),
-    ...(command.roomService
-      ? { room_service: command.roomService }
-      : {}),
+    ...(command.roomService ? { room_service: command.roomService } : {}),
     ...(fulfilmentMatch ? { fulfilment_match: fulfilmentMatch } : {}),
     receipt: {
       id: identity.id,
@@ -234,9 +220,7 @@ export function assembleMenuOrderRecord(input: {
         : {}),
       ...(command.collection ? { collection: command.collection } : {}),
       ...(command.table ? { table: command.table } : {}),
-      ...(command.roomService
-        ? { room_service: command.roomService }
-        : {}),
+      ...(command.roomService ? { room_service: command.roomService } : {}),
       ...(fulfilmentMatch ? { fulfilment_match: fulfilmentMatch } : {}),
       currency: input.currencyCode,
       subtotal_chf: input.subtotal,

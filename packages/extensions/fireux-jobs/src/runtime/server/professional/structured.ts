@@ -1,16 +1,15 @@
 import { useRuntimeConfig } from '#imports'
+import type { DocumentData, UpdateData } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import {
-  getRuntimeFirestore,
-  getRuntimeIdentityFirestore,
-} from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   AppProfessionalStorage,
   ProfessionalConstraints,
-  ProfessionalStorage,
 } from '../../models/profiles/Professional/Professional.model.ts'
 import {
   assertProfessionalStructuredKeys,
@@ -26,10 +25,8 @@ export type { ProfessionalStructuredField } from './structured-input.ts'
 function runtimeDatabases(event: H3Event) {
   const runtime = useRuntimeConfig(event)
   const fireux = (runtime.public?.fireux ?? {}) as Record<string, unknown>
-  const firebase = (runtime.public?.firebaseEcosystem?.firebase ?? {}) as Record<
-    string,
-    unknown
-  >
+  const firebase = (runtime.public?.firebaseEcosystem?.firebase ??
+    {}) as Record<string, unknown>
   const appId = String(fireux.id ?? '').trim()
   const appDatabaseId = String(firebase.databaseId ?? '').trim()
   const identityDatabaseId = String(
@@ -37,14 +34,12 @@ function runtimeDatabases(event: H3Event) {
   ).trim()
   const profiles = new Set(
     Array.isArray(fireux.profiles)
-      ? fireux.profiles.map((value) => String(value ?? '').trim()).filter(Boolean)
+      ? fireux.profiles
+          .map((value) => String(value ?? '').trim())
+          .filter(Boolean)
       : []
   )
-  if (
-    !isFirestoreDocumentId(appId) ||
-    !appDatabaseId ||
-    !identityDatabaseId
-  ) {
+  if (!isFirestoreDocumentId(appId) || !appDatabaseId || !identityDatabaseId) {
     throw createError({
       statusCode: 500,
       statusMessage: 'Professional runtime authority is not configured.',
@@ -59,7 +54,6 @@ function runtimeDatabases(event: H3Event) {
   return {
     appId,
     appDb: getRuntimeFirestore(appDatabaseId),
-    identityDb: getRuntimeIdentityFirestore(identityDatabaseId),
   }
 }
 
@@ -104,7 +98,7 @@ export async function updateProfessionalStructuredField(
     failProfessionalStructuredInput('Professional structured field is invalid.')
   }
   const normalized = normalizeProfessionalStructuredInput(field, body.items)
-  const { appId, appDb, identityDb } = runtimeDatabases(event)
+  const { appId, appDb } = runtimeDatabases(event)
   const checks = [
     appDb.doc(`apps/${appId}`),
     appDb.doc(`apps/${appId}/users/${uid}`),
@@ -117,21 +111,23 @@ export async function updateProfessionalStructuredField(
     (_, index) => !snapshots[index + 3]?.exists
   )
   if (missingReference) {
-    failProfessionalStructuredInput(`${missingReference.label} is not available.`)
+    failProfessionalStructuredInput(
+      `${missingReference.label} is not available.`
+    )
   }
 
-  const profileRef = identityDb
-    .collection(ProfessionalStorage.rootCollection)
-    .doc(uid)
-  await identityDb.runTransaction(async (transaction) => {
-    const snapshot = await transaction.get(profileRef)
+  await runGuardedServerTransaction({ kind: 'identity' }, async (mutations) => {
+    const snapshot = await mutations.read(
+      FIRESTORE_MUTATION_TARGETS.identityProfessionals,
+      uid
+    )
     if (!snapshot.exists) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Professional profile not found.',
       })
     }
-    const current = snapshot.data() ?? {}
+    const current = snapshot.data ?? {}
     const total = [...PROFESSIONAL_STRUCTURED_FIELDS].reduce(
       (count, key) =>
         count +
@@ -147,10 +143,15 @@ export async function updateProfessionalStructuredField(
         `Professional details support at most ${ProfessionalConstraints.structuredTotal} structured items in total.`
       )
     }
-    transaction.update(profileRef, {
+    const patch: UpdateData<DocumentData> = {
       [field]: normalized.items,
       updated: serverAuditStamp({ by: uid }),
-    })
+    }
+    mutations.update(
+      FIRESTORE_MUTATION_TARGETS.identityProfessionals,
+      uid,
+      patch
+    )
   })
   return { updated: true, field, count: normalized.items.length }
 }

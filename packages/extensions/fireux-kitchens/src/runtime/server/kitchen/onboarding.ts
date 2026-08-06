@@ -9,8 +9,14 @@ import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-polic
 import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppKitchensTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   compactBrandPalette,
   parseBrandPalette,
@@ -233,28 +239,21 @@ export async function completeKitchenOnboarding(
   if ('error' in requestedPalette) fail(400, requestedPalette.error)
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
-  const rootRef = current.db
-    .collection(KitchenStorage.rootCollection)
-    .doc(locator.kitchenId)
-  const placeRef = current.db
-    .collection(PlaceStorage.collection)
-    .doc(locator.placeId)
-  const supportRef = current.db.doc(
-    `apps/${current.appId}/${KitchenStorage.scopeCollection}/${locator.kitchenId}`
-  )
+  const memberships = serverAppUsersTarget(current.appId)
+  const supports = serverAppKitchensTarget(current.appId)
 
-  return current.db.runTransaction(async (transaction) => {
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const [membership, place, root, support] = await Promise.all([
-      transaction.get(current.membershipRef),
-      transaction.get(placeRef),
-      transaction.get(rootRef),
-      transaction.get(supportRef),
+      mutations.read(memberships, current.uid),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
+      mutations.read(supports, locator.kitchenId),
     ])
-    const role = memberRole(membership.exists, membership.get('role'))
+    const role = memberRole(membership.exists, membership.data?.role)
     if (!place.exists) fail(409, 'The linked Place no longer exists.')
-    assertKitchenOnboardingPlaceDefaults(place.data() || {})
+    assertKitchenOnboardingPlaceDefaults(place.data || {})
 
-    const rootData = root.exists ? root.data() || {} : null
+    const rootData = root.exists ? root.data || {} : null
     if (rootData) {
       if (text(rootData.place_id) !== locator.placeId) {
         fail(409, 'Kitchen and Place no longer match.')
@@ -264,7 +263,7 @@ export async function completeKitchenOnboarding(
       fail(403, 'Kitchen creation is disabled for this App.')
     }
 
-    const supportData = support.exists ? support.data() || {} : null
+    const supportData = support.exists ? support.data || {} : null
     if (!rootData && supportData) {
       fail(409, 'Kitchen access exists without its canonical root.')
     }
@@ -285,9 +284,9 @@ export async function completeKitchenOnboarding(
 
     const createdRoot = !root.exists
     const createdAppSupport = !support.exists
-    const placeName = text(place.get('name'))
+    const placeName = text(place.data?.name)
     const slug = text(rootData?.slug)
-    const placePalette = readBrandPalette(place.get('brand_palette'))
+    const placePalette = readBrandPalette(place.data?.brand_palette)
     const paletteOverride = compactBrandPalette(
       requestedPalette.value,
       placePalette
@@ -298,7 +297,7 @@ export async function completeKitchenOnboarding(
     }
 
     if (createdRoot) {
-      transaction.create(rootRef, {
+      mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         place_id: locator.placeId,
         app_scope: {
           state: current.appScopeState,
@@ -329,7 +328,7 @@ export async function completeKitchenOnboarding(
     }
 
     if (createdAppSupport) {
-      transaction.create(supportRef, {
+      mutations.create(supports, locator.kitchenId, {
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
@@ -337,14 +336,14 @@ export async function completeKitchenOnboarding(
         updated: serverAuditStamp({ by: current.uid }),
       })
     } else if (role === 'admin') {
-      transaction.update(supportRef, {
+      mutations.update(supports, locator.kitchenId, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
         updated: serverAuditStamp({ by: current.uid }),
       })
     }
 
-    transaction.update(current.membershipRef, {
+    mutations.update(memberships, current.uid, {
       console_enabled: true,
       updated: serverAuditStamp({ by: current.uid }),
     })

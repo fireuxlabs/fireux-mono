@@ -6,12 +6,17 @@ import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppKitchensTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   requireFirebaseStorageDownloadUrl,
   runtimeStorageBucketName,
@@ -20,8 +25,11 @@ import {
   normalizeHexColor,
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
-import { PlaceStorage } from '../../models/place.model'
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
+import {
+  placeAuthorityIds,
+  readRootKitchenAppScope,
+} from './mutation-authority'
 
 type PlacePatchRequest = {
   app_id?: unknown
@@ -32,10 +40,8 @@ type PlacePatchRequest = {
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
-const ids = (value: unknown) =>
-  Array.isArray(value) ? value.map(text).filter(Boolean) : []
 
 const optionalTextFields = new Map<string, number>([
   ['short_name', 120],
@@ -79,7 +85,8 @@ function badRequest(statusMessage: string): never {
 function deleteOrText(value: unknown, maxLength: number) {
   const next = text(value)
   if (!next) return FieldValue.delete()
-  if (next.length > maxLength) badRequest(`Value exceeds ${maxLength} characters.`)
+  if (next.length > maxLength)
+    badRequest(`Value exceeds ${maxLength} characters.`)
   return next
 }
 
@@ -97,7 +104,9 @@ function normalizedTimezone(value: unknown) {
 
 function normalizedSocialLinks(value: unknown) {
   const source = record(value)
-  const unknownKeys = Object.keys(source).filter(key => !allowedSocialKeys.has(key))
+  const unknownKeys = Object.keys(source).filter(
+    (key) => !allowedSocialKeys.has(key)
+  )
   if (unknownKeys.length) badRequest('Social links contain unsupported fields.')
 
   const links = Object.fromEntries(
@@ -122,11 +131,11 @@ function normalizedGallery(
 
   const images = Array.from(new Set(value.map(text).filter(Boolean)))
   if (images.length > 24) badRequest('Gallery images are limited to 24 items.')
-  if (images.some(image => image.length > 2_048)) {
+  if (images.some((image) => image.length > 2_048)) {
     badRequest('A gallery image URL is too long.')
   }
   return images.length
-    ? images.map(image =>
+    ? images.map((image) =>
         requireFirebaseStorageDownloadUrl(image, {
           bucketName: target.bucketName,
           objectPrefix: `places/${target.placeId}/gallery/`,
@@ -158,8 +167,9 @@ function normalizePatch(
   if (!keys.length) badRequest('Place patch is required.')
   if (keys.length > 24) badRequest('Place patch is too large.')
 
-  const unsupported = keys.filter(key => !allowedPatchKeys.has(key))
-  if (unsupported.length) badRequest(`Unsupported Place field: ${unsupported[0]}.`)
+  const unsupported = keys.filter((key) => !allowedPatchKeys.has(key))
+  if (unsupported.length)
+    badRequest(`Unsupported Place field: ${unsupported[0]}.`)
 
   const patch: Record<string, unknown> = {}
   for (const [key, value] of Object.entries(source)) {
@@ -222,7 +232,8 @@ function normalizePatch(
       continue
     }
     if (key === 'business_hours') {
-      patch.business_hours = normalizePlaceBusinessHours(value) || FieldValue.delete()
+      patch.business_hours =
+        normalizePlaceBusinessHours(value) || FieldValue.delete()
       continue
     }
     if (key === 'brand_palette') {
@@ -238,32 +249,6 @@ function normalizePatch(
   return patch
 }
 
-function readRootKitchenAppScope(value: unknown) {
-  const kitchen = record(value)
-  if (
-    Object.hasOwn(kitchen, 'app_scope_state') ||
-    Object.hasOwn(kitchen, 'app_scope_app_id')
-  ) {
-    return null
-  }
-
-  const appScope = record(kitchen.app_scope)
-  const keys = Object.keys(appScope).sort()
-  const state = text(appScope.state)
-  const appId = text(appScope.app_id)
-  if (
-    keys.length !== 2 ||
-    keys[0] !== 'app_id' ||
-    keys[1] !== 'state' ||
-    (state !== 'parent_app' && state !== 'tenant_app') ||
-    !isFirestoreDocumentId(appId)
-  ) {
-    return null
-  }
-
-  return { appId, state }
-}
-
 export async function mutatePlace(
   event: H3Event,
   placeId: string,
@@ -272,79 +257,90 @@ export async function mutatePlace(
   const id = requireFirestoreDocumentId(placeId, 'Place id')
 
   const { uid } = await requireFirebaseBearerUser(event)
-  const db = getRuntimeFirestore()
-  const placeRef = db.collection(PlaceStorage.collection).doc(id)
   const requestedPatch = record(input.patch)
   const requestedAppId = text(input.app_id)
   const requestedKitchenId = text(input.kitchen_id)
   if (Boolean(requestedAppId) !== Boolean(requestedKitchenId)) {
     badRequest('Kitchen Place authority requires both App and Kitchen ids.')
   }
-  const kitchenAuthority = requestedAppId && requestedKitchenId
-    ? {
-        appId: requireFirestoreDocumentId(requestedAppId, 'App id'),
-        kitchenId: requireFirestoreDocumentId(requestedKitchenId, 'Kitchen id'),
-      }
-    : null
+  const kitchenAuthority =
+    requestedAppId && requestedKitchenId
+      ? {
+          appId: requireFirestoreDocumentId(requestedAppId, 'App id'),
+          kitchenId: requireFirestoreDocumentId(
+            requestedKitchenId,
+            'Kitchen id'
+          ),
+        }
+      : null
   const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
   const storageBucket = runtimeStorageBucketName()
   if (
     kitchenAuthority &&
-    (
-      !isFirestoreDocumentId(runtimeAppId) ||
-      kitchenAuthority.appId !== runtimeAppId
-    )
+    (!isFirestoreDocumentId(runtimeAppId) ||
+      kitchenAuthority.appId !== runtimeAppId)
   ) {
     throw createError({
       statusCode: 403,
       statusMessage: 'Kitchen Place authority must belong to the current App.',
     })
   }
-  const runtimeMembershipRef = isFirestoreDocumentId(runtimeAppId)
-    ? db.doc(`apps/${runtimeAppId}/users/${uid}`)
+  const places = FIRESTORE_MUTATION_TARGETS.places
+  const memberships = isFirestoreDocumentId(runtimeAppId)
+    ? serverAppUsersTarget(runtimeAppId)
     : null
-  const rootKitchenRef = kitchenAuthority
-    ? db.doc(`kitchens/${kitchenAuthority.kitchenId}`)
-    : null
-  const scopedKitchenRef = kitchenAuthority
-    ? db.doc(
-        `apps/${kitchenAuthority.appId}/kitchens/${kitchenAuthority.kitchenId}`
-      )
+  const kitchens = FIRESTORE_MUTATION_TARGETS.kitchens
+  const kitchenSupports = kitchenAuthority
+    ? serverAppKitchensTarget(kitchenAuthority.appId)
     : null
 
-  await db.runTransaction(async transaction => {
-    const placeSnapshot = await transaction.get(placeRef)
-    const runtimeMembershipSnapshot = runtimeMembershipRef
-      ? await transaction.get(runtimeMembershipRef)
-      : null
-    const rootKitchenSnapshot = rootKitchenRef
-      ? await transaction.get(rootKitchenRef)
-      : null
-    const scopedKitchenSnapshot = scopedKitchenRef
-      ? await transaction.get(scopedKitchenRef)
-      : null
+  await runGuardedServerTransaction(places.database, async (mutations) => {
+    const [
+      placeSnapshot,
+      runtimeMembershipSnapshot,
+      rootKitchenSnapshot,
+      scopedKitchenSnapshot,
+    ] = await Promise.all([
+      mutations.read<Record<string, unknown>>(places, id),
+      memberships
+        ? mutations.read<Record<string, unknown>>(memberships, uid)
+        : Promise.resolve(null),
+      kitchenAuthority
+        ? mutations.read<Record<string, unknown>>(
+            kitchens,
+            kitchenAuthority.kitchenId
+          )
+        : Promise.resolve(null),
+      kitchenAuthority && kitchenSupports
+        ? mutations.read<Record<string, unknown>>(
+            kitchenSupports,
+            kitchenAuthority.kitchenId
+          )
+        : Promise.resolve(null),
+    ])
 
     if (!placeSnapshot.exists) {
       throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
     }
 
-    const place = placeSnapshot.data() || {}
-    const runtimeAdmin = runtimeMembershipSnapshot?.data()?.role === 'admin'
-    const rootKitchen = rootKitchenSnapshot?.data() || {}
+    const place = placeSnapshot.data || {}
+    const runtimeAdmin = runtimeMembershipSnapshot?.data?.role === 'admin'
+    const rootKitchen = rootKitchenSnapshot?.data || {}
     const rootKitchenScope = readRootKitchenAppScope(rootKitchen)
-    const scopedKitchen = scopedKitchenSnapshot?.data() || {}
+    const scopedKitchen = scopedKitchenSnapshot?.data || {}
     const kitchenAccess = Boolean(
       kitchenAuthority &&
-      rootKitchenSnapshot?.exists &&
-      scopedKitchenSnapshot?.exists &&
-      text(rootKitchen.place_id) === id &&
-      rootKitchenScope?.appId === kitchenAuthority.appId &&
-      ids(scopedKitchen.operator_ids).includes(uid)
+        rootKitchenSnapshot?.exists &&
+        scopedKitchenSnapshot?.exists &&
+        text(rootKitchen.place_id) === id &&
+        rootKitchenScope?.appId === kitchenAuthority.appId &&
+        placeAuthorityIds(scopedKitchen.operator_ids).includes(uid)
     )
     if (!runtimeAdmin && !kitchenAccess) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'App admin or linked Kitchen operator access is required.',
+        statusMessage:
+          'App admin or linked Kitchen operator access is required.',
       })
     }
 
@@ -374,9 +370,12 @@ export async function mutatePlace(
       patch.business_hours = FieldValue.delete()
     }
 
-    transaction.update(placeRef, {
+    mutations.update(places, id, {
       ...patch,
-      updated: serverAuditStamp({ by: uid, ...(runtimeAppId ? { appId: runtimeAppId } : {}) }),
+      updated: serverAuditStamp({
+        by: uid,
+        ...(runtimeAppId ? { appId: runtimeAppId } : {}),
+      }),
     })
   })
 

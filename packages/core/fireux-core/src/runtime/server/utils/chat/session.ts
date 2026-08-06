@@ -1,6 +1,11 @@
-import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
+import {
+  createHash,
+  randomBytes,
+  randomUUID,
+  timingSafeEqual,
+} from 'node:crypto'
 import { FieldValue, Timestamp } from 'firebase-admin/firestore'
-import { createError, getRequestIP, setHeader, type H3Event } from 'h3'
+import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../models/core/app.model'
 import { AppUserStorage } from '../../../models/core/user.model'
@@ -13,17 +18,16 @@ import {
 import { firebaseBearerUser } from '../auth/bearer'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
 import { requireFirestoreDocumentId } from '../ids/path'
+import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
+import {
+  serverAppConversationsTarget,
+  serverConversationMessagesTarget,
+  serverConversationPrivateTarget,
+} from '../../../utils/firestore-mutations/targets'
+import { requireChatStartBudget } from './start-rate-limit'
 
 const SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000
 const MAX_MESSAGES = 200
-const CHAT_START_WINDOW_MS = 10 * 60 * 1000
-const MAX_CHAT_STARTS_PER_WINDOW = 6
-const MAX_RATE_LIMIT_KEYS = 2_000
-const rateLimitSalt = randomBytes(32)
-const chatStartWindows = new Map<
-  string,
-  { count: number; resetAt: number }
->()
 
 type StartChatInput = {
   body?: unknown
@@ -78,38 +82,6 @@ function tokenHash(value: string) {
   return createHash('sha256').update(value, 'utf8').digest()
 }
 
-function requireChatStartBudget(event: H3Event, appId: string) {
-  const now = Date.now()
-  const ip = getRequestIP(event) || 'unknown'
-  const key = createHash('sha256')
-    .update(rateLimitSalt)
-    .update(appId)
-    .update('\0')
-    .update(ip)
-    .digest('hex')
-  const current = chatStartWindows.get(key)
-  if (!current || current.resetAt <= now) {
-    if (chatStartWindows.size >= MAX_RATE_LIMIT_KEYS) {
-      const oldestKey = chatStartWindows.keys().next().value
-      if (typeof oldestKey === 'string') chatStartWindows.delete(oldestKey)
-    }
-    chatStartWindows.set(key, {
-      count: 1,
-      resetAt: now + CHAT_START_WINDOW_MS,
-    })
-    return
-  }
-  if (current.count >= MAX_CHAT_STARTS_PER_WINDOW) {
-    const retryAfter = Math.max(1, Math.ceil((current.resetAt - now) / 1000))
-    setHeader(event, 'Retry-After', retryAfter)
-    throw createError({
-      statusCode: 429,
-      statusMessage: 'Too many new chats. Please try again later.',
-    })
-  }
-  current.count += 1
-}
-
 function storedTokenMatches(value: unknown, token: string) {
   if (typeof value !== 'string' || !/^[a-f0-9]{64}$/.test(value)) return false
   const stored = Buffer.from(value, 'hex')
@@ -137,8 +109,7 @@ async function actorFor(event: H3Event, appId: string) {
   const isAdmin = membership.exists && membership.data()?.role === 'admin'
   return {
     id: user.uid,
-    name:
-      typeof user.decoded.name === 'string' ? user.decoded.name.trim() : '',
+    name: typeof user.decoded.name === 'string' ? user.decoded.name.trim() : '',
     type: (isAdmin ? 'admin' : 'user') as ConversationParticipantType,
     isAdmin,
   }
@@ -165,14 +136,21 @@ function assertLiveAccess(
 ) {
   const expiresAt = access?.expires_at
   const expiresMillis =
-    expiresAt && typeof (expiresAt as { toMillis?: unknown }).toMillis === 'function'
+    expiresAt &&
+    typeof (expiresAt as { toMillis?: unknown }).toMillis === 'function'
       ? (expiresAt as Timestamp).toMillis()
       : 0
   if (!expiresMillis || expiresMillis <= Date.now()) {
-    throw createError({ statusCode: 410, statusMessage: 'This chat session has expired.' })
+    throw createError({
+      statusCode: 410,
+      statusMessage: 'This chat session has expired.',
+    })
   }
   if (!isAdmin && !storedTokenMatches(access?.token_hash, token)) {
-    throw createError({ statusCode: 404, statusMessage: 'Chat session not found.' })
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Chat session not found.',
+    })
   }
 }
 
@@ -184,25 +162,14 @@ export async function startChatSession(event: H3Event, input: StartChatInput) {
   const body = requiredText(input.body, 'Message', 4000)
   const sourceRoute = optionalText(input.source_route, 'Source route', 500)
   const actor = await actorFor(event, appId)
-  const db = getRuntimeFirestore()
-  const conversationRef = db
-    .collection(AppStorage.collection)
-    .doc(appId)
-    .collection(ConversationStorage.collection)
-    .doc()
-  const messageRef = conversationRef
-    .collection(ConversationMessageStorage.collection)
-    .doc()
+  const conversationId = randomUUID()
+  const messageId = randomUUID()
   const token = randomBytes(32).toString('base64url')
   const expiresAt = Timestamp.fromMillis(Date.now() + SESSION_LIFETIME_MS)
-  const accessRef = conversationRef
-    .collection(ConversationAccessStorage.collection)
-    .doc(ConversationAccessStorage.document)
   const senderName = actor.name || name
 
-  await db.runTransaction(async (transaction) => {
-    transaction.create(conversationRef, {
-      id: conversationRef.id,
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    mutations.create(serverAppConversationsTarget(appId), conversationId, {
       app_id: appId,
       kind: 'general',
       status: 'open',
@@ -239,34 +206,41 @@ export async function startChatSession(event: H3Event, input: StartChatInput) {
         ...(actor.id ? { by: actor.id } : {}),
       },
     })
-    transaction.create(messageRef, {
-      id: messageRef.id,
-      conversation_id: conversationRef.id,
-      sender_id: actor.id,
-      sender_type: actor.type,
-      sender_name: senderName,
-      body,
-      read_by: actor.id ? [actor.id] : [],
-      created: {
-        at: FieldValue.serverTimestamp(),
-        ...(actor.id ? { by: actor.id } : {}),
-        app_id: appId,
-      },
-      updated: {
-        at: FieldValue.serverTimestamp(),
-        ...(actor.id ? { by: actor.id } : {}),
-      },
-    })
-    transaction.create(accessRef, {
-      token_hash: tokenHash(token).toString('hex'),
-      expires_at: expiresAt,
-      created_at: FieldValue.serverTimestamp(),
-    })
+    mutations.create(
+      serverConversationMessagesTarget(appId, conversationId),
+      messageId,
+      {
+        conversation_id: conversationId,
+        sender_id: actor.id,
+        sender_type: actor.type,
+        sender_name: senderName,
+        body,
+        read_by: actor.id ? [actor.id] : [],
+        created: {
+          at: FieldValue.serverTimestamp(),
+          ...(actor.id ? { by: actor.id } : {}),
+          app_id: appId,
+        },
+        updated: {
+          at: FieldValue.serverTimestamp(),
+          ...(actor.id ? { by: actor.id } : {}),
+        },
+      }
+    )
+    mutations.create(
+      serverConversationPrivateTarget(appId, conversationId),
+      ConversationAccessStorage.document,
+      {
+        token_hash: tokenHash(token).toString('hex'),
+        expires_at: expiresAt,
+        created_at: FieldValue.serverTimestamp(),
+      }
+    )
   })
 
   return {
     ok: true as const,
-    conversation_id: conversationRef.id,
+    conversation_id: conversationId,
     token,
     expires_at: expiresAt.toDate().toISOString(),
   }
@@ -279,14 +253,19 @@ export async function readChatSession(event: H3Event, input: ChatSessionInput) {
     'Conversation id'
   )
   const actor = await actorFor(event, appId)
-  const token = actor.isAdmin ? optionalText(input.token, 'Chat recovery token', 128) : accessToken(input.token)
+  const token = actor.isAdmin
+    ? optionalText(input.token, 'Chat recovery token', 128)
+    : accessToken(input.token)
   const { conversationRef, accessRef } = sessionRefs(appId, conversationId)
   const [conversation, access] = await Promise.all([
     conversationRef.get(),
     accessRef.get(),
   ])
   if (!conversation.exists || !access.exists) {
-    throw createError({ statusCode: 404, statusMessage: 'Chat session not found.' })
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Chat session not found.',
+    })
   }
   assertLiveAccess(access.data(), token, actor.isAdmin)
   const messages = await conversationRef
@@ -304,7 +283,8 @@ export async function readChatSession(event: H3Event, input: ChatSessionInput) {
       return {
         id: message.id,
         body: typeof data.body === 'string' ? data.body : '',
-        sender_name: typeof data.sender_name === 'string' ? data.sender_name : '',
+        sender_name:
+          typeof data.sender_name === 'string' ? data.sender_name : '',
         sender_type: data.sender_type,
         created_at:
           typeof data.created?.at?.toDate === 'function'
@@ -316,7 +296,10 @@ export async function readChatSession(event: H3Event, input: ChatSessionInput) {
   }
 }
 
-export async function sendChatMessage(event: H3Event, input: SendChatMessageInput) {
+export async function sendChatMessage(
+  event: H3Event,
+  input: SendChatMessageInput
+) {
   const { appId } = useFireUXConfig(event)
   const conversationId = requireFirestoreDocumentId(
     input.conversation_id,
@@ -324,25 +307,35 @@ export async function sendChatMessage(event: H3Event, input: SendChatMessageInpu
   )
   const body = requiredText(input.body, 'Message', 4000)
   const actor = await actorFor(event, appId)
-  const token = actor.isAdmin ? optionalText(input.token, 'Chat recovery token', 128) : accessToken(input.token)
-  const db = getRuntimeFirestore()
-  const { conversationRef, accessRef } = sessionRefs(appId, conversationId)
-  const messageRef = conversationRef
-    .collection(ConversationMessageStorage.collection)
-    .doc()
+  const token = actor.isAdmin
+    ? optionalText(input.token, 'Chat recovery token', 128)
+    : accessToken(input.token)
+  const messageId = randomUUID()
 
-  await db.runTransaction(async (transaction) => {
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
     const [conversation, access] = await Promise.all([
-      transaction.get(conversationRef),
-      transaction.get(accessRef),
+      mutations.read(serverAppConversationsTarget(appId), conversationId),
+      mutations.read(
+        serverConversationPrivateTarget(appId, conversationId),
+        ConversationAccessStorage.document
+      ),
     ])
     if (!conversation.exists || !access.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Chat session not found.' })
+      throw createError({
+        statusCode: 404,
+        statusMessage: 'Chat session not found.',
+      })
     }
-    assertLiveAccess(access.data(), token, actor.isAdmin)
-    const conversationData = conversation.data() || {}
-    if (conversationData.status === 'closed' || conversationData.status === 'archived') {
-      throw createError({ statusCode: 409, statusMessage: 'This chat is closed.' })
+    assertLiveAccess(access.data, token, actor.isAdmin)
+    const conversationData = conversation.data || {}
+    if (
+      conversationData.status === 'closed' ||
+      conversationData.status === 'archived'
+    ) {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'This chat is closed.',
+      })
     }
     const guestName =
       typeof conversationData.guest_contact?.name === 'string'
@@ -353,18 +346,21 @@ export async function sendChatMessage(event: H3Event, input: SendChatMessageInpu
       at: FieldValue.serverTimestamp(),
       ...(actor.id ? { by: actor.id } : {}),
     }
-    transaction.create(messageRef, {
-      id: messageRef.id,
-      conversation_id: conversationId,
-      sender_id: actor.id,
-      sender_type: actor.type,
-      sender_name: senderName,
-      body,
-      read_by: actor.id ? [actor.id] : [],
-      created: { ...stamp, app_id: appId },
-      updated: stamp,
-    })
-    transaction.update(conversationRef, {
+    mutations.create(
+      serverConversationMessagesTarget(appId, conversationId),
+      messageId,
+      {
+        conversation_id: conversationId,
+        sender_id: actor.id,
+        sender_type: actor.type,
+        sender_name: senderName,
+        body,
+        read_by: actor.id ? [actor.id] : [],
+        created: { ...stamp, app_id: appId },
+        updated: stamp,
+      }
+    )
+    mutations.update(serverAppConversationsTarget(appId), conversationId, {
       last_message: {
         body,
         sender_id: actor.id,
@@ -376,5 +372,5 @@ export async function sendChatMessage(event: H3Event, input: SendChatMessageInpu
     })
   })
 
-  return { ok: true as const, message_id: messageRef.id }
+  return { ok: true as const, message_id: messageId }
 }

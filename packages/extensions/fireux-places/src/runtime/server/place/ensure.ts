@@ -4,9 +4,14 @@ import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { PlaceStorage } from '../../models/place.model'
 import { fetchVerifiedGooglePlacePayload } from './google-details'
 
@@ -25,10 +30,7 @@ function record(value: unknown): Record<string, unknown> {
   return value as Record<string, unknown>
 }
 
-function requireCurrentAppMembership(
-  exists: boolean,
-  role: unknown
-) {
+function requireCurrentAppMembership(exists: boolean, role: unknown) {
   if (!exists || !['admin', 'user'].includes(String(role || ''))) {
     throw createError({
       statusCode: 403,
@@ -40,9 +42,11 @@ function requireCurrentAppMembership(
 export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
   const { uid } = await requireFirebaseBearerUser(event)
   const body = record(input)
-  const unsupported = Object.keys(body).find(key => key !== 'id')
+  const unsupported = Object.keys(body).find((key) => key !== 'id')
   if (unsupported) {
-    badRequest(`Place ensure request contains unsupported field: ${unsupported}.`)
+    badRequest(
+      `Place ensure request contains unsupported field: ${unsupported}.`
+    )
   }
 
   const id = requireFirestoreDocumentId(body.id, 'Place id')
@@ -70,25 +74,32 @@ export async function ensurePlace(event: H3Event, input: PlaceEnsureRequest) {
   if (placeSnapshot.exists) return { ok: true, id, created: false }
 
   const payload = await fetchVerifiedGooglePlacePayload(event, id)
-  const created = await db.runTransaction(async transaction => {
-    const liveMembership = await transaction.get(membershipRef)
-    const livePlace = await transaction.get(placeRef)
-    requireCurrentAppMembership(
-      liveMembership.exists,
-      liveMembership.get('role')
-    )
-    if (livePlace.exists) return false
+  const memberships = serverAppUsersTarget(runtimeAppId)
+  const places = FIRESTORE_MUTATION_TARGETS.places
+  const created = await runGuardedServerTransaction(
+    places.database,
+    async (mutations) => {
+      const [liveMembership, livePlace] = await Promise.all([
+        mutations.read<Record<string, unknown>>(memberships, uid),
+        mutations.read<Record<string, unknown>>(places, id),
+      ])
+      requireCurrentAppMembership(
+        liveMembership.exists,
+        liveMembership.data?.role
+      )
+      if (livePlace.exists) return false
 
-    transaction.create(placeRef, {
-      ...payload,
-      created: serverAuditStamp({
-        by: uid,
-        appId: runtimeAppId,
-      }),
-      updated: serverAuditStamp({ by: uid }),
-    })
-    return true
-  })
+      mutations.create(places, id, {
+        ...payload,
+        created: serverAuditStamp({
+          by: uid,
+          appId: runtimeAppId,
+        }),
+        updated: serverAuditStamp({ by: uid }),
+      })
+      return true
+    }
+  )
 
   return { ok: true, id, created }
 }

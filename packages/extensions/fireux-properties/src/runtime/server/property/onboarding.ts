@@ -6,22 +6,24 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppPropertiesTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { canonicalPropertyRoot } from '../../composables/fireux/firestore/property/utils/view/usePropertyInterface.ts'
 import type { PropertyOnboardingCompleteResult } from '../../models/property-onboarding.model.ts'
-import {
-  PropertyStorage,
-  type Property,
-  type PropertyCreateInput,
+import type {
+  Property,
+  PropertyCreateInput,
 } from '../../models/property.model.ts'
 import { buildPropertyCreateRoot } from '../../utils/property-create.ts'
 
-type Firestore = ReturnType<typeof getRuntimeFirestore>
 type MemberRole = 'admin' | 'user'
 
 type RuntimePolicy = {
@@ -34,8 +36,6 @@ type RuntimePolicy = {
 
 type Actor = RuntimePolicy & {
   uid: string
-  db: Firestore
-  membershipRef: ReturnType<Firestore['doc']>
 }
 
 const text = (value: unknown) => String(value ?? '').trim()
@@ -133,15 +133,7 @@ function readSupport(value: Record<string, unknown> | null) {
 async function actor(event: H3Event): Promise<Actor> {
   const { uid } = await requireFirebaseBearerUser(event)
   const policy = runtimePolicy(event)
-  const db = getRuntimeFirestore()
-  return {
-    ...policy,
-    uid,
-    db,
-    membershipRef: db.doc(
-      `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
-    ),
-  }
+  return { ...policy, uid }
 }
 
 function rootPlan(body: Record<string, unknown>, current: RuntimePolicy) {
@@ -180,34 +172,35 @@ export async function completePropertyOnboarding(
     ? requireFirestoreDocumentId(requestedPropertyId, 'Property id')
     : plan!.id
 
-  const rootRef = current.db
-    .collection(PropertyStorage.rootCollection)
-    .doc(propertyId)
-  const supportRef = current.db.doc(
-    `apps/${current.appId}/${PropertyStorage.appSupportCollection}/${propertyId}`
-  )
-  const operatorQuery = current.db
-    .collection(`apps/${current.appId}/${PropertyStorage.appSupportCollection}`)
-    .where('operator_ids', 'array-contains', current.uid)
-    .limit(2)
+  const memberships = serverAppUsersTarget(current.appId)
+  const properties = FIRESTORE_MUTATION_TARGETS.properties
+  const supports = serverAppPropertiesTarget(current.appId)
 
-  return current.db.runTransaction(async (transaction) => {
-    const membership = await transaction.get(current.membershipRef)
-    const role = requireMemberRole(membership.exists, membership.get('role'))
-    const membershipData = membership.data() || {}
+  return runGuardedServerTransaction(properties.database, async (mutations) => {
+    const membership = await mutations.read<Record<string, unknown>>(
+      memberships,
+      current.uid
+    )
+    const role = requireMemberRole(membership.exists, membership.data?.role)
+    const membershipData = membership.data || {}
     const [root, support, currentOperatorSupports] = await Promise.all([
-      transaction.get(rootRef),
-      transaction.get(supportRef),
+      mutations.read<Record<string, unknown>>(properties, propertyId),
+      mutations.read<Record<string, unknown>>(supports, propertyId),
       hasAppUserPremiumAccess(membershipData, {
         isConfiguredDeveloper:
           Boolean(current.developerId) && current.uid === current.developerId,
       })
         ? Promise.resolve(null)
-        : transaction.get(operatorQuery),
+        : mutations.query<Record<string, unknown>>(supports, {
+            field: 'operator_ids',
+            op: 'array-contains',
+            value: current.uid,
+            limit: 2,
+          }),
     ])
 
     if (currentOperatorSupports) {
-      const otherProperty = currentOperatorSupports.docs.find(
+      const otherProperty = currentOperatorSupports.find(
         (document) => document.id !== propertyId
       )
       if (otherProperty) {
@@ -225,7 +218,7 @@ export async function completePropertyOnboarding(
       fail(409, 'Property access exists without its canonical root.')
     }
 
-    const rootData = root.exists ? root.data() || {} : null
+    const rootData = root.exists ? root.data || {} : null
     const canonicalRoot = rootData
       ? canonicalPropertyRoot({
           ...(rootData as Property),
@@ -243,7 +236,7 @@ export async function completePropertyOnboarding(
       fail(409, 'This Property is already attached to another App.')
     }
 
-    const supportData = support.exists ? support.data() || {} : null
+    const supportData = support.exists ? support.data || {} : null
     const supportAuthority = readSupport(supportData)
     const isOperator =
       supportAuthority?.operatorIds.includes(current.uid) === true
@@ -298,13 +291,13 @@ export async function completePropertyOnboarding(
       if (!canonicalPayload || canonicalPayload.id !== propertyId) {
         fail(500, 'Canonical Property creation produced an invalid root.')
       }
-      transaction.create(rootRef, payload)
+      mutations.create(properties, propertyId, payload)
     } else if (
       canonicalRoot &&
       (canonicalRoot.app_scope_state !== current.appScopeState ||
         canonicalRoot.app_scope_app_id !== current.appId)
     ) {
-      transaction.update(rootRef, {
+      mutations.update(properties, propertyId, {
         app_scope_state: current.appScopeState,
         app_scope_app_id: current.appId,
         updated: serverAuditStamp({ by: current.uid }),
@@ -312,7 +305,7 @@ export async function completePropertyOnboarding(
     }
 
     if (creatingSupport) {
-      transaction.create(supportRef, {
+      mutations.create(supports, propertyId, {
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
@@ -320,14 +313,14 @@ export async function completePropertyOnboarding(
         updated: serverAuditStamp({ by: current.uid }),
       })
     } else {
-      transaction.update(supportRef, {
+      mutations.update(supports, propertyId, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
         updated: serverAuditStamp({ by: current.uid }),
       })
     }
 
-    transaction.update(current.membershipRef, {
+    mutations.update(memberships, current.uid, {
       console_enabled: true,
       updated: serverAuditStamp({ by: current.uid }),
     })

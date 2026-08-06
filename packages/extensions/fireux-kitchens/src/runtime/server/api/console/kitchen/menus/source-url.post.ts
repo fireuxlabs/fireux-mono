@@ -1,6 +1,10 @@
 import { defineEventHandler, type H3Event } from 'h3'
+import { FieldValue } from 'firebase-admin/firestore'
 import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { serverCreate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-create'
+import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-update'
+import { serverKitchenMenuUploadsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   assertKitchenMenuUploadAccess,
   assertKitchenMenuUploadAvailable,
@@ -31,14 +35,15 @@ export default defineEventHandler(async (event: H3Event) => {
     )
   }
 
-  const uploadRef = getRuntimeFirestore()
-    .doc(kitchenMenuUploadPath(request.appId, request.kitchenId, request.uploadId))
+  const uploadRef = getRuntimeFirestore().doc(
+    kitchenMenuUploadPath(request.appId, request.kitchenId, request.uploadId)
+  )
   const existingSnap = request.replaceExisting ? await uploadRef.get() : null
   const existingStoragePaths = existingSnap?.exists
     ? storagePathsFromMenuUpload(existingSnap.data())
     : []
 
-  if (request.replaceExisting) {
+  if (request.replaceExisting && existingSnap?.exists) {
     await Promise.all(
       existingStoragePaths.map((objectPath) =>
         deleteStorageFileIfExists({ objectPath })
@@ -47,10 +52,18 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const record = kitchenMenuUrlSourceRecord(request, uid)
-  if (request.replaceExisting) {
-    await uploadRef.set(record)
+  const uploads = serverKitchenMenuUploadsTarget(
+    request.appId,
+    request.kitchenId
+  )
+  if (request.replaceExisting && existingSnap?.exists) {
+    await serverUpdate(uploads, request.uploadId, {
+      ...record,
+      ai_draft: FieldValue.delete(),
+      menu_id: FieldValue.delete(),
+    })
   } else {
-    await uploadRef.create(record)
+    await serverCreate(uploads, request.uploadId, record)
   }
 
   return {

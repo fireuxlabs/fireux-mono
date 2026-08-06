@@ -61,8 +61,6 @@ Map how FireUX authors and releases main-database Firestore Security Rules.
   merged.
 - Werkbox: legacy physical Firebase project `cleanbox-f15bc`; databases
   `cleanbox` and `cleanbox-simulation`.
-- Directory-publication server-only databases separately reuse the exact
-  deny-all `scripts/firebase/directory-publication/server-only.rules` source.
 
 ## Working rule
 

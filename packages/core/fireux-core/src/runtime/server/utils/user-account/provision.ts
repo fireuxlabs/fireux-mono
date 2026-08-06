@@ -3,16 +3,19 @@
 
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
+import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverUserAccountTarget,
+} from '../../../utils/firestore-mutations/targets'
 import {
   UserAccountModel,
   UserAccountStorage,
 } from '../../../models/operations/user-account.model'
-import { UserStorage } from '../../../models/core/user.model'
 import {
   FIREUX_ACCOUNT_TERMS_VERSION,
   type UserAccountProvisioningResult,
 } from '../../../models/operations/user-account-provisioning'
-import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
 
 type ProvisionUserAccountInput = {
   uid: string
@@ -24,18 +27,20 @@ type ProvisionUserAccountInput = {
 export async function provisionUserAccount(
   input: ProvisionUserAccountInput
 ): Promise<UserAccountProvisioningResult> {
-  const db = getRuntimeIdentityFirestore()
-  const userRef = db.collection(UserStorage.collection).doc(input.uid)
-  const ref = db
-    .collection(UserStorage.collection)
-    .doc(input.uid)
-    .collection(UserAccountStorage.collection)
-    .doc(UserAccountStorage.document)
+  const users = FIRESTORE_MUTATION_TARGETS.users
+  const accounts = serverUserAccountTarget(input.uid)
 
-  return db.runTransaction(async (transaction) => {
-    const [userSnapshot, snapshot] = await transaction.getAll(userRef, ref)
+  return runGuardedServerTransaction(accounts.database, async (mutations) => {
+    const [userSnapshot, snapshot] = await Promise.all([
+      mutations.read(users, input.uid),
+      mutations.read<Record<string, unknown>>(
+        accounts,
+        UserAccountStorage.document
+      ),
+    ])
     if (snapshot.exists) {
-      const terms = snapshot.get('terms') as Record<string, unknown> | undefined
+      const data = snapshot.data ?? {}
+      const terms = data.terms as Record<string, unknown> | undefined
       const recordedVersion =
         typeof terms?.version === 'string' ? terms.version.trim() : ''
       const currentTermsRecorded =
@@ -46,8 +51,7 @@ export async function provisionUserAccount(
       const shouldRecordCurrentTerms =
         input.termsVersion === FIREUX_ACCOUNT_TERMS_VERSION && termsUnrecorded
       const emailChanged =
-        input.emailVerified &&
-        String(snapshot.get('email') || '').trim() !== input.email
+        input.emailVerified && String(data.email || '').trim() !== input.email
 
       if (!currentTermsRecorded && !termsUnrecorded) {
         throw createError({
@@ -70,7 +74,7 @@ export async function provisionUserAccount(
       }
 
       if (shouldRecordCurrentTerms || emailChanged) {
-        transaction.update(ref, {
+        mutations.update(accounts, UserAccountStorage.document, {
           ...(emailChanged ? { email: input.email } : {}),
           ...(shouldRecordCurrentTerms
             ? {
@@ -106,7 +110,7 @@ export async function provisionUserAccount(
       at: FieldValue.serverTimestamp(),
       by: input.uid,
     }
-    transaction.create(ref, {
+    mutations.create(accounts, UserAccountStorage.document, {
       email: input.email,
       preferences: { ...UserAccountModel.preferences },
       terms: input.termsVersion

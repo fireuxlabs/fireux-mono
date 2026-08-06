@@ -67,7 +67,8 @@ export default defineEventHandler(async (event) => {
   if (!currencyCode) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Kitchen currency code is required before creating orders.',
+      statusMessage:
+        'Kitchen currency code is required before creating orders.',
     })
   }
   const ordering = readMenuOrderingConfig(
@@ -76,16 +77,16 @@ export default defineEventHandler(async (event) => {
     context.operationHours
   )
   const selection = readMenuOrderSelection(body, ordering)
-  const customerUser = selection.channel === 'menu'
-    ? await firebaseBearerUser(event)
-    : null
-  const actorId = selection.channel === 'staff_pos'
-    ? await requireKitchenOperator(
-        event,
-        context,
-        'Sign in before using Staff POS.'
-      )
-    : 'menu'
+  const customerUser =
+    selection.channel === 'menu' ? await firebaseBearerUser(event) : null
+  const actorId =
+    selection.channel === 'staff_pos'
+      ? await requireKitchenOperator(
+          event,
+          context,
+          'Sign in before using Staff POS.'
+        )
+      : 'menu'
   const command = prepareMenuOrderCommand({
     actorId,
     customerUid: customerUser?.uid,
@@ -109,7 +110,7 @@ export default defineEventHandler(async (event) => {
       request: idempotencyRequest,
     })
     if (replay) {
-      await dispatchOrderWhatsApp(db, context, replay)
+      await dispatchOrderWhatsApp(context, replay)
       return replay
     }
   }
@@ -135,12 +136,10 @@ export default defineEventHandler(async (event) => {
     items: pricing.items,
     subtotal: pricing.subtotal,
   })
-  const reservationResponse = menuOrderReservationResponse(
-    assembled.response
-  )
+  const reservationResponse = menuOrderReservationResponse(assembled.response)
 
   if (idempotencyKey) {
-    const committed = await commitMenuOrderIdempotently(db, {
+    const committed = await commitMenuOrderIdempotently({
       appId: context.appId,
       kitchenId: context.kitchenId,
       menuId: context.menuId,
@@ -154,30 +153,29 @@ export default defineEventHandler(async (event) => {
       linkedRecord: assembled.customerOrderLink,
     })
 
-    await dispatchOrderWhatsApp(db, context, committed.response)
+    await dispatchOrderWhatsApp(context, committed.response)
     return committed.response
   }
 
-  const committed = await commitKitchenOrderWithServiceSequence(db, {
+  const committed = await commitKitchenOrderWithServiceSequence({
     appId: context.appId,
     kitchenId: context.kitchenId,
-    orderPath: assembled.path,
+    orderId: assembled.id,
     payload: assembled.payload,
     response: assembled.response,
     linkedRecord: assembled.customerOrderLink,
   })
-  await dispatchOrderWhatsApp(db, context, committed)
+  await dispatchOrderWhatsApp(context, committed)
   return committed
 })
 
 async function dispatchOrderWhatsApp(
-  db: ReturnType<typeof getRuntimeFirestore>,
   context: Awaited<ReturnType<typeof readMenuOrderContext>>,
   response: Record<string, unknown>
 ) {
   if (text(response.order_type) !== 'pre_order') return
 
-  await dispatchPreOrderWhatsApp(db, {
+  await dispatchPreOrderWhatsApp({
     appId: context.appId,
     kitchenId: context.kitchenId,
     orderId: text(response.id),

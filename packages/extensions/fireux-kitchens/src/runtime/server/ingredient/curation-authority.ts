@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import type { DocumentSnapshot } from 'firebase-admin/firestore'
+import type { DocumentData } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
@@ -27,11 +27,11 @@ export async function curatorContext(event: H3Event) {
   }
 }
 
-export function assertCurator(membership: DocumentSnapshot, isDeveloper: boolean) {
-  if (
-    !isDeveloper &&
-    (!membership.exists || text(membership.get('role')) !== 'admin')
-  ) {
+export function assertCurator(
+  membership: DocumentData | undefined,
+  isDeveloper: boolean
+) {
+  if (!isDeveloper && text(membership?.role) !== 'admin') {
     throw createError({
       statusCode: 403,
       statusMessage:

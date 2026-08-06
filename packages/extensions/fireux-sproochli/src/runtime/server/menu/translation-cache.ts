@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type { SproochliHostStorage } from './storage'
 import {
   matchesSproochliStorageMetadata,
@@ -34,7 +36,7 @@ export type SproochliMenuTranslationCacheInput =
 
 type NormalizedScope = {
   source: SproochliMenuTranslationCacheSource
-  fields: Array<{ id: string, source_hash: string }>
+  fields: Array<{ id: string; source_hash: string }>
   fingerprint: string
 }
 
@@ -51,16 +53,17 @@ function normalizeScope(
   input: SproochliMenuTranslationCacheScope
 ): NormalizedScope | null {
   const fields = input.fields
-    .map(field => ({
+    .map((field) => ({
       id: text(field.id),
       source_hash: makeSproochliSourceHash(text(field.sourceText)),
     }))
-    .filter(field => field.id && field.source_hash)
+    .filter((field) => field.id && field.source_hash)
     .sort((left, right) => left.id.localeCompare(right.id))
   if (
     !fields.length ||
-    new Set(fields.map(field => field.id)).size !== fields.length
-  ) return null
+    new Set(fields.map((field) => field.id)).size !== fields.length
+  )
+    return null
 
   const source = {
     appId: text(input.source.appId),
@@ -102,7 +105,8 @@ function translationsFromData(
     data.fingerprint !== normalized.fingerprint ||
     data.target_language !== normalized.targetLanguage ||
     !Array.isArray(data.fields)
-  ) return null
+  )
+    return null
 
   const translations = new Map<string, string>()
   for (const field of data.fields) {
@@ -112,13 +116,11 @@ function translationsFromData(
     const sourceHash = text(record.source_hash)
     const translatedText = text(record.translated_text)
     if (!id || !sourceHash || !translatedText) return null
-    const expected = normalized.fields.find(candidate => candidate.id === id)
+    const expected = normalized.fields.find((candidate) => candidate.id === id)
     if (!expected || expected.source_hash !== sourceHash) return null
     translations.set(id, translatedText)
   }
-  return translations.size === normalized.fields.length
-    ? translations
-    : null
+  return translations.size === normalized.fields.length ? translations : null
 }
 
 export async function readSproochliMenuTranslationCache(
@@ -131,9 +133,7 @@ export async function readSproochliMenuTranslationCache(
     .doc(normalized.id)
     .get()
   const data = snapshot.data() || {}
-  return snapshot.exists
-    ? translationsFromData(input, normalized, data)
-    : null
+  return snapshot.exists ? translationsFromData(input, normalized, data) : null
 }
 
 export async function readSproochliMenuTranslationCacheLanguages(
@@ -167,25 +167,19 @@ export async function writeSproochliMenuTranslationCache(input: {
   translations: Map<string, string>
 }) {
   const normalized = normalize(input.cache)
-  if (
-    !normalized ||
-    input.translations.size !== normalized.fields.length
-  ) return false
-  const fields = normalized.fields.map(field => {
+  if (!normalized || input.translations.size !== normalized.fields.length)
+    return false
+  const fields = normalized.fields.map((field) => {
     const translatedText = text(input.translations.get(field.id))
-    return translatedText
-      ? { ...field, translated_text: translatedText }
-      : null
+    return translatedText ? { ...field, translated_text: translatedText } : null
   })
-  if (fields.some(field => !field)) return false
+  if (fields.some((field) => !field)) return false
 
-  const ref = input.cache.storage.db
-    .collection(SPROOCHLI_MENU_TRANSLATION_CACHE_COLLECTION)
-    .doc(normalized.id)
-  await input.cache.storage.db.runTransaction(async transaction => {
-    const existing = await transaction.get(ref)
+  const target = FIRESTORE_MUTATION_TARGETS.sproochliMenuTranslationCaches
+  await runGuardedServerTransaction(target.database, async (mutations) => {
+    const existing = await mutations.read(target, normalized.id)
     if (existing.exists) return
-    transaction.create(ref, {
+    mutations.create(target, normalized.id, {
       id: normalized.id,
       version: 1,
       complete: true,

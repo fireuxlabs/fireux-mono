@@ -68,6 +68,17 @@ export function canonicalStore(snapshot: DocumentSnapshot): MarketplaceStore {
   }
 }
 
+export function canonicalGuardedStore(
+  id: string,
+  snapshot: { exists: boolean; data: Record<string, unknown> | undefined }
+) {
+  return canonicalStore({
+    id,
+    exists: snapshot.exists,
+    data: () => snapshot.data,
+  } as DocumentSnapshot)
+}
+
 export function canonicalOffer(snapshot: DocumentSnapshot): MarketplaceOffer {
   if (!snapshot.exists) {
     throw createError({ statusCode: 404, statusMessage: 'Offer not found.' })

@@ -7,18 +7,21 @@ import {
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/utils/app-scope-state'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppSuppliersTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   SupplierOnboardingAction,
   SupplierOnboardingCompleteResult,
 } from '../../models/supplier/supplier-onboarding.model.ts'
-import { SupplierStorage } from '../../models/supplier/Supplier.model.ts'
 
 type MemberRole = 'admin' | 'user'
 
@@ -218,7 +221,6 @@ export async function completeSupplierOnboarding(
   const body = request(input)
   const { uid } = await requireFirebaseBearerUser(event)
   const policy = runtimePolicy(event)
-  const db = getRuntimeFirestore()
   const requestedSupplierId = text(body.supplier_id)
   const organizationName = text(body.organization_name)
   if (requestedSupplierId && organizationName) {
@@ -234,22 +236,18 @@ export async function completeSupplierOnboarding(
     ? requireFirestoreDocumentId(requestedSupplierId, 'Supplier id')
     : requireFirestoreDocumentId(normalizeSlug(organizationName), 'Supplier id')
 
-  const rootRef = db.collection(SupplierStorage.rootCollection).doc(supplierId)
-  const supportRef = db.doc(
-    `apps/${policy.appId}/${SupplierStorage.appSupportCollection}/${supplierId}`
-  )
-  const membershipRef = db.doc(
-    `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
-  )
+  const memberships = serverAppUsersTarget(policy.appId)
+  const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
+  const supports = serverAppSuppliersTarget(policy.appId)
 
-  return db.runTransaction(async (transaction) => {
+  return runGuardedServerTransaction(suppliers.database, async (mutations) => {
     const [membership, root, support] = await Promise.all([
-      transaction.get(membershipRef),
-      transaction.get(rootRef),
-      transaction.get(supportRef),
+      mutations.read<Record<string, unknown>>(memberships, uid),
+      mutations.read<Record<string, unknown>>(suppliers, supplierId),
+      mutations.read<Record<string, unknown>>(supports, supplierId),
     ])
-    const role = memberRole(membership.exists, membership.get('role'))
-    const membershipData = membership.data() || {}
+    const role = memberRole(membership.exists, membership.data?.role)
+    const membershipData = membership.data || {}
     if (requestedSupplierId && !root.exists) {
       fail(404, 'Supplier not found.')
     }
@@ -260,10 +258,8 @@ export async function completeSupplierOnboarding(
       fail(409, 'Supplier access exists without its canonical root.')
     }
 
-    const rootData = root.exists ? root.data() || {} : null
-    const supportData = support.exists
-      ? readSupport(support.data() || {})
-      : null
+    const rootData = root.exists ? root.data || {} : null
+    const supportData = support.exists ? readSupport(support.data || {}) : null
     const action = resolveAction({
       root: rootData,
       support: supportData,
@@ -283,15 +279,16 @@ export async function completeSupplierOnboarding(
           Boolean(policy.developerId) && uid === policy.developerId,
       })
     ) {
-      const operatorSupports = await transaction.get(
-        db
-          .collection(
-            `apps/${policy.appId}/${SupplierStorage.appSupportCollection}`
-          )
-          .where('operator_ids', 'array-contains', uid)
-          .limit(1)
+      const operatorSupports = await mutations.query<Record<string, unknown>>(
+        supports,
+        {
+          field: 'operator_ids',
+          op: 'array-contains',
+          value: uid,
+          limit: 1,
+        }
       )
-      if (!operatorSupports.empty) {
+      if (operatorSupports.length) {
         fail(
           403,
           'Standard users can only be on one live supplier team per app. Premium unlocks multiple.'
@@ -303,8 +300,9 @@ export async function completeSupplierOnboarding(
     const createdAppSupport = !support.exists
 
     if (createdRoot) {
-      transaction.create(
-        rootRef,
+      mutations.create(
+        suppliers,
+        supplierId,
         newSupplierRoot(policy, uid, supplierId, organizationName)
       )
     } else {
@@ -313,7 +311,7 @@ export async function completeSupplierOnboarding(
         scope.state !== policy.appScopeState ||
         scope.appId !== policy.appId
       ) {
-        transaction.update(rootRef, {
+        mutations.update(suppliers, supplierId, {
           app_scope_state: policy.appScopeState,
           app_scope_app_id: policy.appId,
           updated: serverAuditStamp({ by: uid }),
@@ -322,7 +320,7 @@ export async function completeSupplierOnboarding(
     }
 
     if (createdAppSupport) {
-      transaction.create(supportRef, {
+      mutations.create(supports, supplierId, {
         operator_ids: [uid],
         team_ids: [uid],
         join_requests: [],
@@ -330,14 +328,14 @@ export async function completeSupplierOnboarding(
         updated: serverAuditStamp({ by: uid }),
       })
     } else if (role === 'admin') {
-      transaction.update(supportRef, {
+      mutations.update(supports, supplierId, {
         operator_ids: FieldValue.arrayUnion(uid),
         team_ids: FieldValue.arrayUnion(uid),
         updated: serverAuditStamp({ by: uid }),
       })
     }
 
-    transaction.update(membershipRef, {
+    mutations.update(memberships, uid, {
       console_enabled: true,
       updated: serverAuditStamp({ by: uid }),
     })

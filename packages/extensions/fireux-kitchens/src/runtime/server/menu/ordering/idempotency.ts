@@ -1,9 +1,12 @@
 import { createHash } from 'node:crypto'
-import {
-  Timestamp,
-  type Firestore,
-} from 'firebase-admin/firestore'
+import { Timestamp, type Firestore } from 'firebase-admin/firestore'
 import { createError } from 'h3'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  serverCustomerOrdersTarget,
+  serverKitchenOrderIdempotencyTarget,
+  serverKitchenOrdersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   applyKitchenOrderServiceSequence,
   applyKitchenOrderServiceSequenceToResponse,
@@ -48,28 +51,28 @@ const canonicalValue = (value: unknown): unknown => {
   )
 }
 
-const reservationId = (
-  scope: MenuOrderIdempotencyScope,
-  key: string
-) => digest(JSON.stringify(canonicalValue({
-  kind: 'menu-order',
-  app_id: scope.appId,
-  kitchen_id: scope.kitchenId,
-  menu_id: scope.menuId,
-  key,
-})))
+const reservationId = (scope: MenuOrderIdempotencyScope, key: string) =>
+  digest(
+    JSON.stringify(
+      canonicalValue({
+        kind: 'menu-order',
+        app_id: scope.appId,
+        kitchen_id: scope.kitchenId,
+        menu_id: scope.menuId,
+        key,
+      })
+    )
+  )
 
-const reservationPath = (
-  scope: MenuOrderIdempotencyScope,
-  key: string
-) => [
-  'apps',
-  scope.appId,
-  'kitchens',
-  scope.kitchenId,
-  'order-idempotency',
-  reservationId(scope, key),
-].join('/')
+const reservationPath = (scope: MenuOrderIdempotencyScope, key: string) =>
+  [
+    'apps',
+    scope.appId,
+    'kitchens',
+    scope.kitchenId,
+    'order-idempotency',
+    reservationId(scope, key),
+  ].join('/')
 
 const timestampMillis = (value: unknown) => {
   if (!value || typeof value !== 'object') return 0
@@ -95,7 +98,8 @@ const replayResponse = <TResponse extends Record<string, unknown>>(
   if (stored.request_hash !== requestHash) {
     throw createError({
       statusCode: 409,
-      statusMessage: 'Order idempotency key was already used for another request.',
+      statusMessage:
+        'Order idempotency key was already used for another request.',
     })
   }
 
@@ -133,16 +137,23 @@ export const readMenuOrderIdempotencyKey = (value: unknown) => {
 export const menuOrderRequestHash = (
   scope: MenuOrderIdempotencyScope,
   request: unknown
-) => digest(JSON.stringify(canonicalValue({
-  app_id: scope.appId,
-  kitchen_id: scope.kitchenId,
-  menu_id: scope.menuId,
-  request,
-})))
+) =>
+  digest(
+    JSON.stringify(
+      canonicalValue({
+        app_id: scope.appId,
+        kitchen_id: scope.kitchenId,
+        menu_id: scope.menuId,
+        request,
+      })
+    )
+  )
 
 export const menuOrderReservationResponse = <
   TResponse extends Record<string, unknown>,
->(response: TResponse): TResponse => {
+>(
+  response: TResponse
+): TResponse => {
   const receipt = response.receipt
   if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt)) {
     return response
@@ -169,17 +180,12 @@ export const readMenuOrderIdempotentResponse = async <
   const snap = await db.doc(reservationPath(input, input.key)).get()
   if (!snap.exists) return null
 
-  return replayResponse<TResponse>(
-    snap.data() || {},
-    requestHash,
-    Date.now()
-  )
+  return replayResponse<TResponse>(snap.data() || {}, requestHash, Date.now())
 }
 
 export const commitMenuOrderIdempotently = async <
   TResponse extends Record<string, unknown>,
 >(
-  db: Firestore,
   input: CommitMenuOrderIdempotentlyInput<TResponse>
 ) => {
   const scope = {
@@ -189,13 +195,16 @@ export const commitMenuOrderIdempotently = async <
   }
   const requestHash = menuOrderRequestHash(scope, input.request)
   const id = reservationId(scope, input.key)
-  const reservationRef = db.doc(reservationPath(scope, input.key))
-  const orderRef = db.doc(input.orderPath)
+  const reservations = serverKitchenOrderIdempotencyTarget(
+    input.appId,
+    input.kitchenId
+  )
+  const orders = serverKitchenOrdersTarget(input.appId, input.kitchenId)
   const nowMs = Date.now()
-  return db.runTransaction(async (transaction) => {
-    const reservationSnap = await transaction.get(reservationRef)
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const reservationSnap = await mutations.read(reservations, id)
     if (reservationSnap.exists) {
-      const stored = reservationSnap.data() || {}
+      const stored = reservationSnap.data || {}
       const response = replayResponse<TResponse>(stored, requestHash, nowMs)
       if (response) {
         return {
@@ -206,7 +215,7 @@ export const commitMenuOrderIdempotently = async <
     }
 
     const now = Timestamp.fromMillis(nowMs)
-    const sequence = await nextKitchenOrderServiceSequence(transaction, db, {
+    const sequence = await nextKitchenOrderServiceSequence(mutations, {
       appId: input.appId,
       kitchenId: input.kitchenId,
       now,
@@ -232,17 +241,18 @@ export const commitMenuOrderIdempotently = async <
       expires_at: Timestamp.fromMillis(nowMs + IDEMPOTENCY_WINDOW_MS),
     }
 
-    transaction.create(orderRef, numbered.payload)
+    mutations.create(orders, input.orderId, numbered.payload)
     if (input.linkedRecord) {
-      transaction.create(
-        db.doc(input.linkedRecord.path),
+      mutations.create(
+        serverCustomerOrdersTarget(input.linkedRecord.customerUid),
+        input.linkedRecord.orderId,
         input.linkedRecord.payload
       )
     }
     if (reservationSnap.exists) {
-      transaction.set(reservationRef, reservation)
+      mutations.update<Record<string, unknown>>(reservations, id, reservation)
     } else {
-      transaction.create(reservationRef, reservation)
+      mutations.create(reservations, id, reservation)
     }
 
     return {

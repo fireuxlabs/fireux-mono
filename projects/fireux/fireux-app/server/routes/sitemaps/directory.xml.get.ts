@@ -9,7 +9,7 @@ import {
   isDirectoryAppIndexable,
   isDirectoryEcosystemIndexable,
   readPlatformDirectory,
-} from '../../utils/platform-directory'
+} from '../../utils/default-directory'
 
 export default defineEventHandler(async (event) => {
   const { siteUrl } = readRuntimeSeoSitemaps()

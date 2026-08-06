@@ -81,7 +81,15 @@ async function updateFileHash(hash, relativePath) {
 }
 
 const changedPaths = new Set([
-  ...gitPaths(['diff', '--name-only', '-z', '--no-ext-diff', 'HEAD', '--']),
+  ...gitPaths([
+    'diff',
+    '--name-only',
+    '--no-renames',
+    '-z',
+    '--no-ext-diff',
+    'HEAD',
+    '--',
+  ]),
   ...gitPaths(['ls-files', '--others', '--exclude-standard', '-z']),
 ])
 const hash = createHash('sha256')

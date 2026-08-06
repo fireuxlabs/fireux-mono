@@ -4,13 +4,14 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
-import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection'
-import { CompanyStorage } from '../../models/company.model'
 import { canonicalCompanyRole } from './canonical'
 
 type CompanyMaterializeRequest = {
@@ -34,63 +35,67 @@ export async function materializeCompany(
 ) {
   const { uid } = await requireFirebaseBearerUser(event)
   const body = record(input)
-  const unsupported = Object.keys(body).find(key => key !== 'id')
+  const unsupported = Object.keys(body).find((key) => key !== 'id')
   if (unsupported) {
-    badRequest(`Company materialization contains unsupported field: ${unsupported}.`)
+    badRequest(
+      `Company materialization contains unsupported field: ${unsupported}.`
+    )
   }
 
   const id = requireFirestoreDocumentId(body.id, 'Company id')
-  const db = getRuntimeFirestore()
   const runtimeAppId = requireFirestoreDocumentId(
     useRuntimeConfig(event).public?.fireux?.id,
     'Runtime App id'
   )
-  const membershipRef = db.doc(
-    `apps/${runtimeAppId}/${AppUserStorage.collection}/${uid}`
-  )
-  const placeRef = db.collection(PlaceStorage.collection).doc(id)
-  const companyRef = db.collection(CompanyStorage.collection).doc(id)
-
-  const created = await db.runTransaction(async transaction => {
-    const membershipSnapshot = await transaction.get(membershipRef)
-    if (
-      !membershipSnapshot.exists ||
-      !['admin', 'user'].includes(String(membershipSnapshot.get('role') || ''))
-    ) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Current App membership is required to materialize a Company.',
-      })
-    }
-    const placeSnapshot = await transaction.get(placeRef)
-    const companySnapshot = await transaction.get(companyRef)
-    if (
-      !placeSnapshot.exists ||
-      !projectPublicPlace(id, placeSnapshot.data() || {})
-    ) {
-      throw createError({
-        statusCode: 409,
-        statusMessage:
-          'Create a valid canonical Place before materializing its Company.',
-      })
-    }
-    if (companySnapshot.exists) {
-      if (!canonicalCompanyRole(id, companySnapshot.data())) {
+  const created = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) => {
+      const membershipSnapshot = await mutations.read(
+        serverAppUsersTarget(runtimeAppId),
+        uid
+      )
+      if (
+        !membershipSnapshot.exists ||
+        !['admin', 'user'].includes(String(membershipSnapshot.data?.role || ''))
+      ) {
+        throw createError({
+          statusCode: 403,
+          statusMessage:
+            'Current App membership is required to materialize a Company.',
+        })
+      }
+      const [placeSnapshot, companySnapshot] = await Promise.all([
+        mutations.read(FIRESTORE_MUTATION_TARGETS.places, id),
+        mutations.read(FIRESTORE_MUTATION_TARGETS.companies, id),
+      ])
+      if (
+        !placeSnapshot.exists ||
+        !projectPublicPlace(id, placeSnapshot.data || {})
+      ) {
         throw createError({
           statusCode: 409,
           statusMessage:
-            'The existing Company role record is malformed and cannot be reused.',
+            'Create a valid canonical Place before materializing its Company.',
         })
       }
-      return false
-    }
+      if (companySnapshot.exists) {
+        if (!canonicalCompanyRole(id, companySnapshot.data)) {
+          throw createError({
+            statusCode: 409,
+            statusMessage:
+              'The existing Company role record is malformed and cannot be reused.',
+          })
+        }
+        return false
+      }
 
-    transaction.create(companyRef, {
-      created: { at: FieldValue.serverTimestamp() },
-      updated: { at: FieldValue.serverTimestamp() },
-    })
-    return true
-  })
+      mutations.create(FIRESTORE_MUTATION_TARGETS.companies, id, {
+        created: { at: FieldValue.serverTimestamp() },
+        updated: { at: FieldValue.serverTimestamp() },
+      })
+      return true
+    }
+  )
 
   return { ok: true, id, created }
 }

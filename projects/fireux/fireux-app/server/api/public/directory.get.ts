@@ -5,7 +5,7 @@ import {
   setResponseHeaders,
   type H3Event,
 } from 'h3'
-import { readPlatformDirectory } from '../../utils/platform-directory'
+import { readPlatformDirectory } from '../../utils/default-directory'
 
 export default defineEventHandler(async (event: H3Event) => {
   setResponseHeaders(event, {

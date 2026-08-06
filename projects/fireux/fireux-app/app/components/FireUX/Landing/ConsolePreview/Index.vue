@@ -41,9 +41,14 @@
       :error="Boolean(productDemoError)"
     />
     <FireUXLandingConsolePreviewPrivateState
-      v-else-if="selectedSurface && privateState"
-      :key="selectedSurface.id"
-      v-bind="privateState"
+      v-else
+      :key="selectedSurface?.id || 'project.private'"
+      :title="selectedSurface?.title || 'Private Project operation'"
+      :description="
+        selectedSurface?.description ||
+        'Open the Project Console to manage this private operation.'
+      "
+      :icon="selectedSurface?.icon || 'i-lucide-lock-keyhole'"
     />
   </LandingConsolePreviewFrame>
 </template>
@@ -84,19 +89,6 @@ const selectedSurface = computed(
 const projectPill = computed<ProjectInterfaceCard | null>(
   () => productDemo.value?.console.projectPill ?? null
 )
-
-const privateState = computed(() => {
-  if (selectedSurface.value?.id === 'project.users') {
-    return {
-      title: 'User activity stays private',
-      description:
-        'Open the authenticated Project Console to review the bounded cross-App signup feed.',
-      icon: 'i-lucide-shield-check',
-    }
-  }
-
-  return null
-})
 
 const openFullProjectConsole = async (event: MouseEvent) => {
   event.preventDefault()

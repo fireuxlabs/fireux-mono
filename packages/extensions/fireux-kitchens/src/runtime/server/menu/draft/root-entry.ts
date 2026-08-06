@@ -1,6 +1,13 @@
 // Concurrent edit — 2026-07-20 21:19 CEST — Place-root authority pass: delete stale root Menu description projections under merge.
-import { FieldValue, type Firestore } from 'firebase-admin/firestore'
+import {
+  FieldValue,
+  type DocumentData,
+  type Firestore,
+} from 'firebase-admin/firestore'
+import { serverCreate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-create'
+import { serverUpdate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-update'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { KitchenStorage } from '../../../models/kitchen.model'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
@@ -16,14 +23,12 @@ type RootMenuEntryInput = {
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 
 const text = (value: unknown) => String(value ?? '').trim()
 
-const readFirst = (
-  ...values: unknown[]
-) => values.map(text).find(Boolean) || ''
+const readFirst = (...values: unknown[]) => values.map(text).find(Boolean) || ''
 
 const rootDocMatchesSource = (
   data: Record<string, unknown>,
@@ -31,9 +36,11 @@ const rootDocMatchesSource = (
 ) => {
   const source = record(data.source)
 
-  return readRecordString(source, 'app_id') === input.appId &&
+  return (
+    readRecordString(source, 'app_id') === input.appId &&
     readRecordString(source, 'kitchen_id') === input.kitchenId &&
     readRecordString(source, 'menu_id') === input.menuId
+  )
 }
 
 const kitchenIdentity = (
@@ -50,11 +57,9 @@ const kitchenIdentity = (
     rootKitchen.display_name,
     rootKitchen.name
   )
-  const slug = normalizeSlug(readFirst(
-    scopedKitchen.slug,
-    rootKitchen.slug,
-    name
-  ))
+  const slug = normalizeSlug(
+    readFirst(scopedKitchen.slug, rootKitchen.slug, name)
+  )
   const imageUrl = readFirst(
     scopedIdentity.image_url,
     scopedKitchen.display_image_url,
@@ -101,10 +106,7 @@ async function availableRootMenuId(
   const menuId = normalizeSlug(input.menuId)
   const prefixed = normalizeSlug(`${kitchenSlug}-${menuId}`)
   const firstCandidate = menuId === 'main' && prefixed ? prefixed : menuId
-  const candidates = [
-    firstCandidate,
-    prefixed,
-  ].filter(Boolean)
+  const candidates = [firstCandidate, prefixed].filter(Boolean)
   let fallbackIndex = 2
 
   while (candidates.length < 20 && prefixed) {
@@ -113,7 +115,10 @@ async function availableRootMenuId(
   }
 
   for (const candidate of Array.from(new Set(candidates))) {
-    const snap = await db.collection(MenuStorage.rootCollection).doc(candidate).get()
+    const snap = await db
+      .collection(MenuStorage.rootCollection)
+      .doc(candidate)
+      .get()
     if (!snap.exists || rootDocMatchesSource(snap.data() || {}, input)) {
       return candidate
     }
@@ -137,14 +142,14 @@ export async function ensureKitchenMenuRootEntry(
     rootKitchenSnap.data() || {}
   )
   const existingRootId = await readExistingRootMenuId(db, input)
-  const rootId = existingRootId ||
-    await availableRootMenuId(db, input, identity.slug)
+  const rootId =
+    existingRootId || (await availableRootMenuId(db, input, identity.slug))
   const rootRef = db.collection(MenuStorage.rootCollection).doc(rootId)
   const rootSnap = await rootRef.get()
   const rootData = rootSnap.data() || {}
 
   const description = readRecordString(input.menuData, 'description')
-  await rootRef.set({
+  const rootPatch = {
     id: rootId,
     kind: 'menu',
     status: readRecordString(input.menuData, 'status') || 'draft',
@@ -161,7 +166,20 @@ export async function ensureKitchenMenuRootEntry(
     },
     created: record(rootData.created).at ? rootData.created : input.stamp,
     updated: input.stamp,
-  }, { merge: true })
+  }
+  if (rootSnap.exists) {
+    await serverUpdate<DocumentData>(
+      FIRESTORE_MUTATION_TARGETS.menus,
+      rootId,
+      rootPatch
+    )
+  } else {
+    await serverCreate<DocumentData>(
+      FIRESTORE_MUTATION_TARGETS.menus,
+      rootId,
+      rootPatch
+    )
+  }
 
   return {
     id: rootId,

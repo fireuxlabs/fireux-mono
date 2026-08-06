@@ -21,6 +21,7 @@ Current scoped context entrypoints:
 - Identity and product literature: `docs/ai/identity-literature-context.md`
 - Misebox: `docs/ai/misebox-context.md`
 - Werkbox: `docs/ai/werkbox-context.md`
+- Firestore mutations: `docs/ai/firestore-mutations-context.md`
 
 Use `docs/concepts/*.md` for topic maps and `scripts/guards/*` for executable
 shape rules. Do not copy implementation details into AI context when current
@@ -390,12 +391,9 @@ Before each task:
   Both the event and notification projection are App-database facts; User
   identity remains in the identity database, but notification clients must not
   cross that boundary to find an App-owned projection.
-- A configured source SSR runtime may publish the minimal join projection to
-  the FireUX control plane over fixed-audience Google OIDC. FireUX accepts only
-  exact service-account source scopes and exposes a bounded feed derived from
-  immutable local events through its App-admin Project Users API; browsers
-  never query tenant databases directly. See
-  `docs/concepts/project-user-monitor.md`.
+- Cross-Project signup replication is retired. App membership events remain in
+  their owning Project database; the control plane does not mirror them into a
+  directory, monitor, or user index.
 - AppUser persists orthogonal App authority and lifecycle: `role` remains
   `user | admin`, `is_premium` remains the explicit entitlement, and
   `onboarding_status` remains `pending | completed | skipped`. The shared

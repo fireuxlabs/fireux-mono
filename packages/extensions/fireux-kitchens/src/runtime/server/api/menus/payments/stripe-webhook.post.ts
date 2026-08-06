@@ -6,7 +6,8 @@ import {
   type H3Event,
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   isKitchenOrderPostPaymentStatus,
   isKitchenOrderStatus,
@@ -28,9 +29,7 @@ const safeSegment = (value: string) =>
 const amountMinor = (value: unknown) => {
   const amount = Number(value)
 
-  return Number.isFinite(amount) && amount > 0
-    ? Math.round(amount * 100)
-    : 0
+  return Number.isFinite(amount) && amount > 0 ? Math.round(amount * 100) : 0
 }
 
 function readKitchenOrderPaymentMetadata(session: any) {
@@ -43,14 +42,19 @@ function readKitchenOrderPaymentMetadata(session: any) {
   const checkoutSessionId = text(session?.id)
 
   if (flow !== 'kitchen_order_payment') return null
-  if (![appId, kitchenId, menuId, orderId, checkoutSessionId].every(safeSegment)) {
-    console.warn('[fireux-kitchens] Ignoring Stripe payment webhook with invalid metadata', {
-      appId,
-      kitchenId,
-      menuId,
-      orderId,
-      checkoutSessionId,
-    })
+  if (
+    ![appId, kitchenId, menuId, orderId, checkoutSessionId].every(safeSegment)
+  ) {
+    console.warn(
+      '[fireux-kitchens] Ignoring Stripe payment webhook with invalid metadata',
+      {
+        appId,
+        kitchenId,
+        menuId,
+        orderId,
+        checkoutSessionId,
+      }
+    )
     return null
   }
 
@@ -68,7 +72,10 @@ export default defineEventHandler(async (event: H3Event) => {
   const stripe = getMenuStripe()
   const rawBody = await readRawBody(event)
   if (!rawBody) {
-    throw createError({ statusCode: 400, statusMessage: 'Missing webhook body' })
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Missing webhook body',
+    })
   }
 
   const signature = getHeader(event, 'stripe-signature')
@@ -82,12 +89,17 @@ export default defineEventHandler(async (event: H3Event) => {
         statusMessage: 'Missing stripe-signature header',
       })
     }
-    stripeEvent = stripe.webhooks.constructEvent(rawBody, signature, webhookSecret)
+    stripeEvent = stripe.webhooks.constructEvent(
+      rawBody,
+      signature,
+      webhookSecret
+    )
   } else {
     if (!allowUnsignedStripeWebhook()) {
       throw createError({
         statusCode: 403,
-        statusMessage: 'Stripe webhook signature verification is not configured',
+        statusMessage:
+          'Stripe webhook signature verification is not configured',
       })
     }
 
@@ -102,81 +114,93 @@ export default defineEventHandler(async (event: H3Event) => {
   const metadata = readKitchenOrderPaymentMetadata(session)
   if (!metadata) return { received: true }
 
-  const db = getRuntimeFirestore()
-  const orderRef = db.doc(
-    `apps/${metadata.appId}/kitchens/${metadata.kitchenId}/orders/${metadata.orderId}`
-  )
   const receivedAmount = Number(session?.amount_total)
   const receivedCurrency = text(session?.currency).toLowerCase()
   const paymentStatus = text(session?.payment_status).toLowerCase()
-  const outcome = await db.runTransaction(async (transaction) => {
-    const orderSnap = await transaction.get(orderRef)
-    if (!orderSnap.exists) return { verified: false, notifyPreOrder: false }
+  const orders = serverKitchenOrdersTarget(metadata.appId, metadata.kitchenId)
+  const outcome = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) => {
+      const orderSnapshot = await mutations.read(orders, metadata.orderId)
+      if (!orderSnapshot.exists)
+        return { verified: false, notifyPreOrder: false }
 
-    const order = orderSnap.data() || {}
-    const payment = (order.payment && typeof order.payment === 'object')
-      ? order.payment as Record<string, unknown>
-      : {}
-    const expectedSessionId = text(payment.stripe_checkout_session_id)
-    const expectedAmount = amountMinor(payment.amount_chf)
-    const expectedCurrency = text(payment.currency_code).toLowerCase()
-    if (
-      text(order.menu_id) !== metadata.menuId ||
-      paymentStatus !== 'paid' ||
-      !expectedSessionId ||
-      expectedSessionId !== metadata.checkoutSessionId ||
-      expectedAmount <= 0 ||
-      receivedAmount !== expectedAmount ||
-      !expectedCurrency ||
-      receivedCurrency !== expectedCurrency
-    ) {
-      console.warn('[fireux-kitchens] Ignoring unverified Stripe payment completion', {
-        orderId: metadata.orderId,
-        paymentStatus,
-        sessionMatches: expectedSessionId === metadata.checkoutSessionId,
-        amountMatches: receivedAmount === expectedAmount,
-        currencyMatches: receivedCurrency === expectedCurrency,
-        menuMatches: text(order.menu_id) === metadata.menuId,
-      })
-      return { verified: false, notifyPreOrder: false }
-    }
-
-    const orderType = text(order.order_type)
-    const currentStatus = text(order.status).toLowerCase()
-    if (!isKitchenOrderType(orderType) || !isKitchenOrderStatus(currentStatus)) {
-      console.warn('[fireux-kitchens] Ignoring Stripe payment with invalid Order lifecycle', {
-        orderId: metadata.orderId,
-        orderType,
-        currentStatus,
-      })
-      return { verified: false, notifyPreOrder: false }
-    }
-
-    const resumeStatus = text(payment.resume_status)
-    if (resumeStatus && !isKitchenOrderPostPaymentStatus(resumeStatus)) {
-      console.warn('[fireux-kitchens] Ignoring Stripe payment with invalid resume state', {
-        orderId: metadata.orderId,
-        resumeStatus,
-      })
-      return { verified: false, notifyPreOrder: false }
-    }
-
-    if (text(payment.status).toLowerCase() === 'paid') {
-      return {
-        verified: true,
-        notifyPreOrder: orderType === 'pre_order',
+      const order = orderSnapshot.data || {}
+      const payment =
+        order.payment && typeof order.payment === 'object'
+          ? (order.payment as Record<string, unknown>)
+          : {}
+      const expectedSessionId = text(payment.stripe_checkout_session_id)
+      const expectedAmount = amountMinor(payment.amount_chf)
+      const expectedCurrency = text(payment.currency_code).toLowerCase()
+      if (
+        text(order.menu_id) !== metadata.menuId ||
+        paymentStatus !== 'paid' ||
+        !expectedSessionId ||
+        expectedSessionId !== metadata.checkoutSessionId ||
+        expectedAmount <= 0 ||
+        receivedAmount !== expectedAmount ||
+        !expectedCurrency ||
+        receivedCurrency !== expectedCurrency
+      ) {
+        console.warn(
+          '[fireux-kitchens] Ignoring unverified Stripe payment completion',
+          {
+            orderId: metadata.orderId,
+            paymentStatus,
+            sessionMatches: expectedSessionId === metadata.checkoutSessionId,
+            amountMatches: receivedAmount === expectedAmount,
+            currencyMatches: receivedCurrency === expectedCurrency,
+            menuMatches: text(order.menu_id) === metadata.menuId,
+          }
+        )
+        return { verified: false, notifyPreOrder: false }
       }
-    }
 
-    const paidStatus = currentStatus === 'pending_payment'
-      ? isKitchenOrderPostPaymentStatus(resumeStatus)
-        ? resumeStatus
-        : statusAfterPayment(orderType)
-      : currentStatus
-    const now = FieldValue.serverTimestamp()
-    transaction.set(
-      orderRef,
-      {
+      const orderType = text(order.order_type)
+      const currentStatus = text(order.status).toLowerCase()
+      if (
+        !isKitchenOrderType(orderType) ||
+        !isKitchenOrderStatus(currentStatus)
+      ) {
+        console.warn(
+          '[fireux-kitchens] Ignoring Stripe payment with invalid Order lifecycle',
+          {
+            orderId: metadata.orderId,
+            orderType,
+            currentStatus,
+          }
+        )
+        return { verified: false, notifyPreOrder: false }
+      }
+
+      const resumeStatus = text(payment.resume_status)
+      if (resumeStatus && !isKitchenOrderPostPaymentStatus(resumeStatus)) {
+        console.warn(
+          '[fireux-kitchens] Ignoring Stripe payment with invalid resume state',
+          {
+            orderId: metadata.orderId,
+            resumeStatus,
+          }
+        )
+        return { verified: false, notifyPreOrder: false }
+      }
+
+      if (text(payment.status).toLowerCase() === 'paid') {
+        return {
+          verified: true,
+          notifyPreOrder: orderType === 'pre_order',
+        }
+      }
+
+      const paidStatus =
+        currentStatus === 'pending_payment'
+          ? isKitchenOrderPostPaymentStatus(resumeStatus)
+            ? resumeStatus
+            : statusAfterPayment(orderType)
+          : currentStatus
+      const now = FieldValue.serverTimestamp()
+      mutations.update<Record<string, unknown>>(orders, metadata.orderId, {
         status: paidStatus,
         payment: {
           ...payment,
@@ -192,19 +216,18 @@ export default defineEventHandler(async (event: H3Event) => {
           at: now,
           by: 'stripe-webhook',
         },
-      },
-      { merge: true }
-    )
+      })
 
-    return {
-      verified: true,
-      notifyPreOrder:
-        orderType === 'pre_order' && currentStatus === 'pending_payment',
+      return {
+        verified: true,
+        notifyPreOrder:
+          orderType === 'pre_order' && currentStatus === 'pending_payment',
+      }
     }
-  })
+  )
 
   if (outcome.notifyPreOrder) {
-    await dispatchPreOrderWhatsApp(db, {
+    await dispatchPreOrderWhatsApp({
       appId: metadata.appId,
       kitchenId: metadata.kitchenId,
       orderId: metadata.orderId,

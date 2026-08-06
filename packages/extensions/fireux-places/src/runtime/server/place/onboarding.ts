@@ -1,5 +1,10 @@
 import { createError, type H3Event } from 'h3'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type {
   PlaceOnboardingCompleteResult,
   PlaceOnboardingPreview,
@@ -86,12 +91,15 @@ export async function completePlaceOnboarding(
     ? null
     : await fetchVerifiedGooglePlacePayload(event, requested.id)
 
-  return actor.db.runTransaction(async (transaction) => {
+  const memberships = serverAppUsersTarget(actor.runtimeAppId)
+  const places = FIRESTORE_MUTATION_TARGETS.places
+
+  return runGuardedServerTransaction(places.database, async (mutations) => {
     const [membership, snapshot] = await Promise.all([
-      transaction.get(actor.membershipRef),
-      transaction.get(actor.placeRef),
+      mutations.read<Record<string, unknown>>(memberships, actor.uid),
+      mutations.read<Record<string, unknown>>(places, requested.id),
     ])
-    const role = requireMemberRole(membership.exists, membership.get('role'))
+    const role = requireMemberRole(membership.exists, membership.data?.role)
 
     if (!snapshot.exists) {
       if (!provider) {
@@ -100,7 +108,7 @@ export async function completePlaceOnboarding(
           statusMessage: 'Place changed during onboarding. Please try again.',
         })
       }
-      transaction.create(actor.placeRef, {
+      mutations.create(places, requested.id, {
         ...provider,
         ...requested.defaults,
         ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
@@ -126,7 +134,7 @@ export async function completePlaceOnboarding(
       }
     }
 
-    const place = snapshot.data() || {}
+    const place = snapshot.data || {}
     const current = currentDefaults(place)
     const storedImage = storedHttpsImage(place.image_url)
     const currentBrandPalette = storedBrandPalette(place)
@@ -156,7 +164,7 @@ export async function completePlaceOnboarding(
             'This existing Place requires an App admin to finish its shared defaults and branding.',
         })
       }
-      transaction.update(actor.placeRef, {
+      mutations.update(places, requested.id, {
         ...patch,
         updated: serverAuditStamp({
           by: actor.uid,

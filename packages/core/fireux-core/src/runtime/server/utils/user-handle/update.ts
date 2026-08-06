@@ -3,10 +3,7 @@
 import { useRuntimeConfig } from '#imports'
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import {
-  USER_ECOSYSTEM_AVATAR_SRC,
-  UserStorage,
-} from '../../../models/core/user.model'
+import { USER_ECOSYSTEM_AVATAR_SRC } from '../../../models/core/user.model'
 import { UserAccountStorage } from '../../../models/operations/user-account.model'
 import {
   type UserHandleInput,
@@ -16,7 +13,11 @@ import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/operations/user-ac
 import { resolveUserAvatarSource } from '../../../utils/user-avatar.ts'
 import { readHttpsUrl } from '../../../utils/httpsUrl'
 import { validatePublicSlug } from '../../../utils/slug/validatePublicSlug'
-import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverUserAccountTarget,
+} from '../../../utils/firestore-mutations/targets'
+import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
 
 function fail(statusCode: number, statusMessage: string): never {
   throw createError({ statusCode, statusMessage })
@@ -63,8 +64,11 @@ function normalizeCreation(value: UserHandleInput['create']) {
   return { displayName, avatar }
 }
 
-function isCurrentTermsAccount(snapshot: FirebaseFirestore.DocumentSnapshot) {
-  const terms = snapshot.get('terms') as Record<string, unknown> | undefined
+function isCurrentTermsAccount(snapshot: {
+  exists: boolean
+  data: Record<string, unknown> | undefined
+}) {
+  const terms = snapshot.data?.terms as Record<string, unknown> | undefined
   return (
     snapshot.exists &&
     terms?.version === FIREUX_ACCOUNT_TERMS_VERSION &&
@@ -88,30 +92,32 @@ export async function updateUserHandle(input: {
 
   const requestedHandle = requireHandle(input.payload?.handle)
   const creation = normalizeCreation(input.payload?.create)
-  const db = getRuntimeIdentityFirestore()
-  const users = db.collection(UserStorage.collection)
-  const userRef = users.doc(uid)
-  const accountRef = userRef
-    .collection(UserAccountStorage.collection)
-    .doc(UserAccountStorage.document)
+  const users = FIRESTORE_MUTATION_TARGETS.users
+  const accounts = serverUserAccountTarget(uid)
 
-  return db.runTransaction(async (transaction) => {
-    const [userSnapshot, accountSnapshot] = await transaction.getAll(
-      userRef,
-      accountRef
-    )
+  return runGuardedServerTransaction(users.database, async (mutations) => {
+    const [userSnapshot, accountSnapshot] = await Promise.all([
+      mutations.read<Record<string, unknown>>(users, uid),
+      mutations.read<Record<string, unknown>>(
+        accounts,
+        UserAccountStorage.document
+      ),
+    ])
 
     const storedHandle = userSnapshot.exists
-      ? String(userSnapshot.get('handle') || '').trim()
+      ? String(userSnapshot.data?.handle || '').trim()
       : ''
     const currentHandle = canonicalExistingHandle(storedHandle)
     // Initial provisioning is idempotent: an existing identity keeps its
     // canonical handle instead of being renamed from mutable Auth data.
     const handle = creation && currentHandle ? currentHandle : requestedHandle
-    const conflicts = await transaction.get(
-      users.where('handle', '==', handle).limit(2)
-    )
-    if (conflicts.docs.some((row) => row.id !== uid)) {
+    const conflicts = await mutations.query(users, {
+      field: 'handle',
+      op: '==',
+      value: handle,
+      limit: 2,
+    })
+    if (conflicts.some((row) => row.id !== uid)) {
       fail(409, 'This handle is already in use.')
     }
 
@@ -130,7 +136,7 @@ export async function updateUserHandle(input: {
         )
       }
 
-      transaction.create(userRef, {
+      mutations.create(users, uid, {
         display_name: creation.displayName,
         bio: '',
         avatar: creation.avatar,
@@ -150,7 +156,7 @@ export async function updateUserHandle(input: {
 
     const changed = storedHandle !== handle
     if (changed) {
-      transaction.update(userRef, {
+      mutations.update(users, uid, {
         handle,
         updated: {
           at: FieldValue.serverTimestamp(),

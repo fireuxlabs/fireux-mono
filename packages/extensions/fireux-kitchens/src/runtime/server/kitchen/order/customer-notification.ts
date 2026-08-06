@@ -1,9 +1,8 @@
 // Concurrent edit — 2026-07-20 15:27 CEST — Customer order notification pass: publish accepted Kitchen Orders to canonical User notifications.
 import { createHash } from 'node:crypto'
 import { Timestamp } from 'firebase-admin/firestore'
-import { getRuntimeIdentityFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
-import { UserStorage } from 'fireux-core/runtime/models/core/user.model'
-import { UserNotificationStorage } from 'fireux-core/runtime/models/operations/user-notification.model'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { serverIdentityUserNotificationsTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type { KitchenOrderType } from '../../../models/kitchen/order.model.ts'
 
 type AcceptedOrderCustomerNotificationInput = {
@@ -43,26 +42,24 @@ function notificationMessage(
 export async function publishAcceptedOrderCustomerNotification(
   input: AcceptedOrderCustomerNotificationInput
 ) {
-  const identityDb = getRuntimeIdentityFirestore()
-  const ref = identityDb
-    .collection(UserStorage.collection)
-    .doc(input.customerUid)
-    .collection(UserNotificationStorage.collection)
-    .doc(notificationId(input))
+  const notifications = serverIdentityUserNotificationsTarget(input.customerUid)
+  const id = notificationId(input)
+  return await runGuardedServerTransaction(
+    { kind: 'identity' },
+    async (mutations) => {
+      const existing = await mutations.read(notifications, id)
+      if (existing.exists) return false
 
-  return await identityDb.runTransaction(async (transaction) => {
-    const existing = await transaction.get(ref)
-    if (existing.exists) return false
-
-    transaction.create(ref, {
-      message: notificationMessage(input.orderNumber, input.orderType),
-      scope: 'app',
-      created: {
-        at: Timestamp.now(),
-        app_id: input.appId,
-      },
-      read: false,
-    })
-    return true
-  })
+      mutations.create(notifications, id, {
+        message: notificationMessage(input.orderNumber, input.orderType),
+        scope: 'app',
+        created: {
+          at: Timestamp.now(),
+          app_id: input.appId,
+        },
+        read: false,
+      })
+      return true
+    }
+  )
 }

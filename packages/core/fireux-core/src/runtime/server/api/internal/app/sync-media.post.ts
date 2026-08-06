@@ -3,11 +3,15 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { extname, join, resolve as pathResolve } from 'node:path'
-import { FieldValue } from 'firebase-admin/firestore'
+import {
+  FieldValue,
+  type DocumentData,
+  type UpdateData,
+} from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import imageSize from 'image-size'
-import { AppStorage } from '../../../../models/core/app.model'
-import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
+import { FIRESTORE_MUTATION_TARGETS } from '../../../../utils/firestore-mutations/targets'
+import { serverUpdate } from '../../../utils/firestore-mutations/server-update'
 import { getAdminApp } from '../../../utils/getAdmin'
 import {
   APP_IMAGE_SYNC_KINDS,
@@ -71,7 +75,11 @@ function cacheBust(url: string): string {
   return url.includes('?') ? `${url}&v=${stamp}` : `${url}?v=${stamp}`
 }
 
-function createLocalAssetResolver(repoRoot: string, ecosystem: string, appId: string) {
+function createLocalAssetResolver(
+  repoRoot: string,
+  ecosystem: string,
+  appId: string
+) {
   const candidates = [
     join(process.cwd(), 'public'),
     join(repoRoot, 'projects', ecosystem, appId, 'public'),
@@ -160,9 +168,7 @@ export default defineEventHandler(async (event) => {
   const runtime = useRuntimeConfig()
   const body = await readBody<{ appId?: string }>(event)
 
-  const appId = String(
-    body?.appId || runtime.public?.fireux?.id || ''
-  ).trim()
+  const appId = String(body?.appId || runtime.public?.fireux?.id || '').trim()
   const ecosystem = String(runtime.public?.fireux?.ecosystem || '').trim()
   const configuredBucket = normalizeBucketName(
     runtime.public?.firebaseEcosystem?.firebase?.storageBucket
@@ -213,7 +219,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const patch: Record<string, unknown> = {
+  const patch: UpdateData<DocumentData> = {
     wordmark_url: FieldValue.delete(),
     avatar_url: FieldValue.delete(),
   }
@@ -226,8 +232,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (Object.keys(patch).length > 2) {
-    const db = getRuntimeFirestore()
-    await db.collection(AppStorage.collection).doc(appId).update(patch)
+    await serverUpdate(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId, patch)
   }
 
   return {

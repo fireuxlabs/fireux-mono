@@ -23,6 +23,8 @@ import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import { getAdminApp } from 'fireux-core/runtime/server/utils/getAdmin'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { serverCreate } from 'fireux-core/runtime/server/utils/firestore-mutations/server-create'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model.ts'
 
 const maxFileSizeMb = 10
@@ -133,7 +135,7 @@ export default defineEventHandler(async (event) => {
     contentType: file.contentType,
   })
 
-  await menuRef.set({
+  await serverCreate(FIRESTORE_MUTATION_TARGETS.menus, slug, {
     id: slug,
     slug,
     kind: 'doc',

@@ -1,6 +1,6 @@
-import type { Transaction } from 'firebase-admin/firestore'
 import { createError } from 'h3'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import type { FirestoreMutationTarget } from 'fireux-core/runtime/types/firestore-mutations'
 import {
   INGREDIENT_CATEGORIES,
   INGREDIENT_KINDS,
@@ -102,18 +102,15 @@ export function canonicalStoredIngredient(
 }
 
 export async function assertUniqueActiveIngredientIdentity(
-  transaction: Transaction,
+  mutations: GuardedServerTransaction,
+  ingredients: FirestoreMutationTarget<string, 'server'>,
   id: string,
   payload: StoredRecord
 ) {
   if (text(payload.status) !== 'active') return
 
-  const snapshot = await transaction.get(
-    getRuntimeFirestore()
-      .collection('ingredients')
-      .limit(MAX_LIBRARY_SIZE + 1)
-  )
-  if (snapshot.size > MAX_LIBRARY_SIZE) {
+  const documents = await mutations.readAll(ingredients, MAX_LIBRARY_SIZE + 1)
+  if (documents.length > MAX_LIBRARY_SIZE) {
     throw createError({
       statusCode: 503,
       statusMessage: 'Ingredient library exceeds the bounded curator check.',
@@ -126,9 +123,12 @@ export async function assertUniqueActiveIngredientIdentity(
   ])
   candidateTerms.delete('')
 
-  for (const document of snapshot.docs) {
+  for (const document of documents) {
     if (document.id === id) continue
-    const ingredient = projectPublicIngredient(document)
+    const ingredient = projectPublicIngredient({
+      id: document.id,
+      data: () => document.data,
+    })
     if (!ingredient || ingredient.status !== 'active') continue
 
     const conflictingTerm = [ingredient.name, ...ingredient.aliases]
@@ -144,17 +144,18 @@ export async function assertUniqueActiveIngredientIdentity(
 }
 
 export async function assertReferencedIngredients(
-  transaction: Transaction,
+  mutations: GuardedServerTransaction,
+  ingredients: FirestoreMutationTarget<string, 'server'>,
   id: string,
   payload: StoredRecord
 ) {
-  const db = getRuntimeFirestore()
   const replacementId = text(payload.replaced_by_ingredient_id)
   if (replacementId) {
-    const snapshot = await transaction.get(
-      db.doc(`ingredients/${replacementId}`)
-    )
-    const projected = projectPublicIngredient(snapshot)
+    const snapshot = await mutations.read(ingredients, replacementId)
+    const projected = projectPublicIngredient({
+      id: replacementId,
+      data: () => snapshot.data,
+    })
     if (!projected || projected.status !== 'active') {
       throw createError({
         statusCode: 409,
@@ -173,8 +174,11 @@ export async function assertReferencedIngredients(
       })
     }
     visited.add(parentId)
-    const snapshot = await transaction.get(db.doc(`ingredients/${parentId}`))
-    const projected = projectPublicIngredient(snapshot)
+    const snapshot = await mutations.read(ingredients, parentId)
+    const projected = projectPublicIngredient({
+      id: parentId,
+      data: () => snapshot.data,
+    })
     if (!projected || projected.status !== 'active') {
       throw createError({
         statusCode: 409,

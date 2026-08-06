@@ -8,8 +8,9 @@ import {
   readBody,
 } from 'h3'
 import { FieldValue } from 'firebase-admin/firestore'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
+import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,
@@ -37,62 +38,74 @@ export default defineEventHandler(async (event) => {
   const body = (await readBody(event)) as CustomerOrderResponseBody | null
   const action = body?.action
   if (!menuId || !orderId) {
-    throw createError({ statusCode: 400, statusMessage: 'Order path is required.' })
+    throw createError({
+      statusCode: 400,
+      statusMessage: 'Order path is required.',
+    })
   }
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const access = await readMenuOrderCustomerAccess(event)
-  const db = getRuntimeFirestore()
-  const orderRef = db.doc(
-    `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${orderId}`
-  )
-  const result = await db.runTransaction(async (transaction) => {
-    const snap = await transaction.get(orderRef)
-    if (!snap.exists) {
-      throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
-    }
+  const orders = serverKitchenOrdersTarget(context.appId, context.kitchenId)
+  const result = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) => {
+      const orderSnapshot = await mutations.read(orders, orderId)
+      if (!orderSnapshot.exists) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: 'Order not found.',
+        })
+      }
 
-    const order = snap.data() || {}
-    if (
-      text(order.menu_id) !== context.menuId ||
-      text(order.channel) !== 'menu'
-    ) {
-      throw createError({ statusCode: 404, statusMessage: 'Order not found.' })
-    }
-    const { actorId } = requireMenuOrderCustomerAccess(access, order)
-    if (action !== 'amend' && action !== 'cancel') {
-      throw createError({ statusCode: 400, statusMessage: 'Choose how to respond.' })
-    }
-    if (text(order.status) !== 'changes_requested') {
-      throw createError({
-        statusCode: 409,
-        statusMessage: 'This order is no longer waiting for your response.',
+      const order = orderSnapshot.data || {}
+      if (
+        text(order.menu_id) !== context.menuId ||
+        text(order.channel) !== 'menu'
+      ) {
+        throw createError({
+          statusCode: 404,
+          statusMessage: 'Order not found.',
+        })
+      }
+      const { actorId } = requireMenuOrderCustomerAccess(access, order)
+      if (action !== 'amend' && action !== 'cancel') {
+        throw createError({
+          statusCode: 400,
+          statusMessage: 'Choose how to respond.',
+        })
+      }
+      if (text(order.status) !== 'changes_requested') {
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'This order is no longer waiting for your response.',
+        })
+      }
+
+      const now = FieldValue.serverTimestamp()
+      const customerResponse = {
+        action,
+        at: now,
+        by: actorId,
+        ...(text(order.kitchen_note)
+          ? { kitchen_note: text(order.kitchen_note) }
+          : {}),
+      }
+      const patch = {
+        status: 'cancelled' as const,
+        customer_response: customerResponse,
+      }
+
+      mutations.update<Record<string, unknown>>(orders, orderId, {
+        ...patch,
+        updated: { at: now, by: actorId },
       })
-    }
 
-    const now = FieldValue.serverTimestamp()
-    const customerResponse = {
-      action,
-      at: now,
-      by: actorId,
-      ...(text(order.kitchen_note)
-        ? { kitchen_note: text(order.kitchen_note) }
-        : {}),
+      return {
+        id: orderId,
+        status: patch.status,
+      }
     }
-    const patch = {
-      status: 'cancelled' as const,
-      customer_response: customerResponse,
-    }
-
-    transaction.set(orderRef, {
-      ...patch,
-      updated: { at: now, by: actorId },
-    }, { merge: true })
-
-    return {
-      id: orderId,
-      status: patch.status,
-    }
-  })
+  )
 
   return { ok: true, order: result }
 })

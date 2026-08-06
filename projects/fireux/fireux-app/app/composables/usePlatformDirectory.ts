@@ -12,7 +12,7 @@ import { RETIRED_PUBLIC_ECOSYSTEM_IDS } from '../utils/directorySearchPolicy'
 
 export function usePlatformDirectory() {
   return useAsyncData<PlatformDirectoryResponse>(
-    'fireux-platform-directory',
+    'fireux-default-directory',
     () => $fetch('/api/public/directory'),
     { server: true, lazy: false }
   )

@@ -1,21 +1,15 @@
-// Concurrent edit — 2026-07-20 18:25 CEST — Repo Efficiency Pass 2 of 6: provision App-enabled profiles and ordered indexes through one trusted transaction seam.
-
 import { useRuntimeConfig } from '#imports'
-import {
-  type DocumentReference,
-  type Firestore,
-} from 'firebase-admin/firestore'
 import { createError, defineEventHandler } from 'h3'
-import { AppStorage } from '../../../models/core/app.model'
 import type { ProfileProvisionResult } from '../../../models/operations/profile-provisioning'
-import { AppUserStorage, UserStorage } from '../../../models/core/user.model'
 import { isRuntimeProfileEnabled } from '../../../utils/profile-index'
-import { requireFirebaseBearerUser } from '../auth/bearer'
 import {
-  getRuntimeFirestore,
-  getRuntimeIdentityFirestore,
-} from '../getRuntimeFirestore'
-
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppProfileTarget,
+  serverAppUsersTarget,
+  serverRootProfileTarget,
+} from '../../../utils/firestore-mutations/targets'
+import { requireFirebaseBearerUser } from '../auth/bearer'
+import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
 import {
   buildAppProfileProvisionData as appProfileData,
   assertProfileProvisionDefinition as assertDefinition,
@@ -35,6 +29,9 @@ export type {
   ProfileProvisionContractSeed as ProfileProvisionSeed,
 } from './profile-provision-contract'
 
+type RootProfileId = 'agent' | 'chef' | 'driver' | 'professional'
+type AppProfileId = RootProfileId | 'customer'
+
 function runtimeDatabaseContext(definition: ProfileProvisionDefinition) {
   const runtime = useRuntimeConfig()
   const fireux = runtime.public?.fireux as Record<string, unknown> | undefined
@@ -48,47 +45,19 @@ function runtimeDatabaseContext(definition: ProfileProvisionDefinition) {
   }
 
   const appDatabaseId = String(firebase?.databaseId ?? '').trim()
-  const configuredIdentityDatabaseId = String(
-    firebase?.identityDatabaseId ?? ''
-  ).trim()
-  const identityDatabaseId = configuredIdentityDatabaseId || appDatabaseId
-  const canonicalAppDatabaseId =
-    appDatabaseId === '(default)' ? '' : appDatabaseId
-  const canonicalIdentityDatabaseId =
-    identityDatabaseId === '(default)' ? '' : identityDatabaseId
-
+  const identityDatabaseId =
+    String(firebase?.identityDatabaseId ?? '').trim() || appDatabaseId
+  const canonical = (value: string) => (value === '(default)' ? '' : value)
   return {
     appId,
-    appDatabaseId,
-    identityDatabaseId,
-    appDb: getRuntimeFirestore(appDatabaseId),
-    identityDb: getRuntimeIdentityFirestore(identityDatabaseId),
-    sameDatabase: canonicalAppDatabaseId === canonicalIdentityDatabaseId,
+    sameDatabase: canonical(appDatabaseId) === canonical(identityDatabaseId),
   }
 }
 
-function profileRefs(
-  definition: ProfileProvisionDefinition,
-  uid: string,
-  appId: string,
-  identityDb: Firestore,
-  appDb: Firestore
-) {
+function ids(definition: ProfileProvisionDefinition) {
   return {
-    user: identityDb.collection(UserStorage.collection).doc(uid),
-    root: definition.root
-      ? identityDb.collection(definition.root.collection).doc(uid)
-      : null,
-    membership: appDb
-      .collection(AppStorage.collection)
-      .doc(appId)
-      .collection(AppUserStorage.collection)
-      .doc(uid),
-    app: appDb
-      .collection(AppStorage.collection)
-      .doc(appId)
-      .collection(definition.app.collection)
-      .doc(uid),
+    app: definition.id as AppProfileId,
+    root: definition.root ? (definition.id as RootProfileId) : null,
   }
 }
 
@@ -96,85 +65,79 @@ async function provisionSingleDatabase(
   definition: ProfileProvisionDefinition,
   uid: string,
   appId: string,
-  db: Firestore,
   rootSeed: ProfileProvisionSeed | null,
   appSeed: ProfileProvisionSeed
 ): Promise<ProfileTransactionOutcome> {
-  const refs = profileRefs(definition, uid, appId, db, db)
+  const profileIds = ids(definition)
+  const users = FIRESTORE_MUTATION_TARGETS.runtimeUsers
+  const memberships = serverAppUsersTarget(appId)
+  const appProfiles = serverAppProfileTarget(appId, profileIds.app)
+  const rootProfiles = profileIds.root
+    ? serverRootProfileTarget(profileIds.root, 'runtime')
+    : null
 
-  return db.runTransaction(async (transaction) => {
-    const reads: DocumentReference[] = [refs.user, refs.membership]
-    if (refs.root) reads.push(refs.root)
-    reads.push(refs.app)
-    const snapshots = await transaction.getAll(...reads)
-    let cursor = 0
-    const userSnapshot = snapshots[cursor++]!
-    const membershipSnapshot = snapshots[cursor++]!
-    const rootSnapshot = refs.root ? snapshots[cursor++]! : null
-    const appSnapshot = snapshots[cursor]!
-    requireCanonicalUser(userSnapshot)
-    requireAppMembership(membershipSnapshot)
-    const createdCore = Boolean(
-      refs.root && rootSnapshot && !rootSnapshot.exists
-    )
-    const createdApp = !appSnapshot.exists
-
-    if (refs.root && rootSnapshot && !rootSnapshot.exists) {
-      transaction.create(refs.root, rootProfileData(rootSeed ?? {}, uid))
+  return runGuardedServerTransaction(users.database, async (mutations) => {
+    const [user, membership, root, app] = await Promise.all([
+      mutations.read(users, uid),
+      mutations.read(memberships, uid),
+      rootProfiles ? mutations.read(rootProfiles, uid) : Promise.resolve(null),
+      mutations.read(appProfiles, uid),
+    ])
+    requireCanonicalUser(user)
+    requireAppMembership(membership)
+    const createdCore = Boolean(rootProfiles && root && !root.exists)
+    const createdApp = !app.exists
+    if (rootProfiles && root && !root.exists) {
+      mutations.create(rootProfiles, uid, rootProfileData(rootSeed ?? {}, uid))
     }
-    if (!appSnapshot.exists) {
-      transaction.create(refs.app, appProfileData(appSeed, uid, appId))
+    if (createdApp) {
+      mutations.create(appProfiles, uid, appProfileData(appSeed, uid, appId))
     }
-
     return { createdCore, createdApp }
   })
 }
 
 async function provisionIdentityPhase(
+  profileId: RootProfileId,
   uid: string,
-  db: Firestore,
-  userRef: DocumentReference,
-  rootRef: DocumentReference,
   rootSeed: ProfileProvisionSeed
 ) {
-  return db.runTransaction(async (transaction) => {
-    const [userSnapshot, rootSnapshot] = await transaction.getAll(
-      userRef,
-      rootRef
-    )
-    requireCanonicalUser(userSnapshot)
-    const createdCore = !rootSnapshot.exists
-
-    if (createdCore) {
-      transaction.create(rootRef, rootProfileData(rootSeed, uid))
-    }
-
-    return createdCore
+  const users = FIRESTORE_MUTATION_TARGETS.users
+  const roots = serverRootProfileTarget(profileId, 'identity')
+  return runGuardedServerTransaction(users.database, async (mutations) => {
+    const [user, root] = await Promise.all([
+      mutations.read(users, uid),
+      mutations.read(roots, uid),
+    ])
+    requireCanonicalUser(user)
+    if (!root.exists)
+      mutations.create(roots, uid, rootProfileData(rootSeed, uid))
+    return !root.exists
   })
 }
 
 async function provisionAppPhase(
+  profileId: AppProfileId,
   uid: string,
   appId: string,
-  db: Firestore,
-  membershipRef: DocumentReference,
-  appRef: DocumentReference,
   appSeed: ProfileProvisionSeed
 ) {
-  return db.runTransaction(async (transaction) => {
-    const [membershipSnapshot, appSnapshot] = await transaction.getAll(
-      membershipRef,
-      appRef
-    )
-    requireAppMembership(membershipSnapshot)
-    const createdApp = !appSnapshot.exists
-
-    if (createdApp) {
-      transaction.create(appRef, appProfileData(appSeed, uid, appId))
+  const memberships = serverAppUsersTarget(appId)
+  const profiles = serverAppProfileTarget(appId, profileId)
+  return runGuardedServerTransaction(
+    memberships.database,
+    async (mutations) => {
+      const [membership, profile] = await Promise.all([
+        mutations.read(memberships, uid),
+        mutations.read(profiles, uid),
+      ])
+      requireAppMembership(membership)
+      if (!profile.exists) {
+        mutations.create(profiles, uid, appProfileData(appSeed, uid, appId))
+      }
+      return !profile.exists
     }
-
-    return createdApp
-  })
+  )
 }
 
 export async function provisionRuntimeProfile(
@@ -184,6 +147,7 @@ export async function provisionRuntimeProfile(
   assertDefinition(definition)
   const uid = configuredSegment(actorUid, 'Authenticated User id')
   const context = runtimeDatabaseContext(definition)
+  const profileIds = ids(definition)
   const rootSeed = definition.root
     ? assertSeed(definition.root.seed(), `${definition.label} root seed`)
     : null
@@ -197,7 +161,6 @@ export async function provisionRuntimeProfile(
       definition,
       uid,
       context.appId,
-      context.appDb,
       rootSeed,
       appSeed
     )
@@ -210,39 +173,17 @@ export async function provisionRuntimeProfile(
     }
   }
 
-  const refs = profileRefs(
-    definition,
-    uid,
-    context.appId,
-    context.identityDb,
-    context.appDb
-  )
-  const [userSnapshot, membershipSnapshot] = await Promise.all([
-    refs.user.get(),
-    refs.membership.get(),
-  ])
-  requireCanonicalUser(userSnapshot)
-  requireAppMembership(membershipSnapshot)
-
   let createdCore = false
-  if (definition.root && refs.root && rootSeed) {
-    createdCore = await provisionIdentityPhase(
-      uid,
-      context.identityDb,
-      refs.user,
-      refs.root,
-      rootSeed
-    )
+  if (profileIds.root && rootSeed) {
+    createdCore = await provisionIdentityPhase(profileIds.root, uid, rootSeed)
   }
 
   let createdApp: boolean
   try {
     createdApp = await provisionAppPhase(
+      profileIds.app,
       uid,
       context.appId,
-      context.appDb,
-      refs.membership,
-      refs.app,
       appSeed
     )
   } catch (cause) {

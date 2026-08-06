@@ -1,9 +1,7 @@
-import {
-  type DocumentData,
-  type DocumentSnapshot,
-} from 'firebase-admin/firestore'
+import type { DocumentData } from 'firebase-admin/firestore'
 import { createError } from 'h3'
 import { serverAuditStamp } from '../records/stamps'
+import { profileCollectionForTarget } from '../../../utils/firestore-mutations/targets'
 
 export type ProfileProvisionContractSeed = Readonly<Record<string, unknown>>
 
@@ -84,6 +82,12 @@ export function assertProfileProvisionDefinition(
       `The ${definition.label} App profile is not supported.`
     )
   }
+  if (definition.app.collection !== profileCollectionForTarget('app', id)) {
+    failProfileProvision(
+      500,
+      `${definition.label} App profile collection is not canonical.`
+    )
+  }
   if (definition.root) {
     requireProfileProvisionSegment(
       definition.root.collection,
@@ -93,6 +97,12 @@ export function assertProfileProvisionDefinition(
       failProfileProvision(
         500,
         `The ${definition.label} root profile is not supported.`
+      )
+    }
+    if (definition.root.collection !== profileCollectionForTarget('root', id)) {
+      failProfileProvision(
+        500,
+        `${definition.label} root profile collection is not canonical.`
       )
     }
   }
@@ -115,9 +125,9 @@ export function assertProfileProvisionSeed(
   return seed
 }
 
-export function requireProfileProvisionCanonicalUser(
-  snapshot: DocumentSnapshot
-) {
+export function requireProfileProvisionCanonicalUser(snapshot: {
+  exists: boolean
+}) {
   if (!snapshot.exists) {
     failProfileProvision(
       409,
@@ -126,18 +136,18 @@ export function requireProfileProvisionCanonicalUser(
   }
 }
 
-export function requireProfileProvisionAppMembership(
-  snapshot: DocumentSnapshot
-) {
+export function requireProfileProvisionAppMembership(snapshot: {
+  exists: boolean
+  data: DocumentData | undefined
+}) {
   if (!snapshot.exists) {
     failProfileProvision(403, 'Join this App before creating an App profile.')
   }
 
-  const data = snapshot.data() as DocumentData
+  const data = snapshot.data ?? {}
   if (data.role !== 'user' && data.role !== 'admin') {
     failProfileProvision(409, 'The App membership is invalid.')
   }
-
 }
 
 export function buildRootProfileProvisionData(

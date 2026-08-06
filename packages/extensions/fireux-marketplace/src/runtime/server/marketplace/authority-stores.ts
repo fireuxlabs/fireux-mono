@@ -1,6 +1,8 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { serverAppMarketplaceStoresTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type { MarketplaceStore } from '../../models/marketplace.model'
 import type { MarketplaceMutationResponse } from '../../models/marketplace-api.model'
 import {
@@ -11,6 +13,7 @@ import {
 import {
   assertCanManageStore,
   badRequest,
+  canonicalGuardedStore,
   canonicalStore,
   readStoreOffers,
   requireMarketplaceAdmin,
@@ -26,15 +29,16 @@ export async function createMarketplaceStore(
   const current = await requireMarketplaceAdmin(event)
   const intent = badRequest(() => normalizeMarketplaceStoreCreate(input))
   const ref = storeRef(current.db, current.appId, intent.slug)
-  await current.db.runTransaction(async (transaction) => {
-    const existing = await transaction.get(ref)
+  const stores = serverAppMarketplaceStoresTarget(current.appId)
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const existing = await mutations.read(stores, intent.slug)
     if (existing.exists) {
       throw createError({
         statusCode: 409,
         statusMessage: 'That Store slug is already in use.',
       })
     }
-    transaction.create(ref, {
+    mutations.create(stores, intent.slug, {
       id: intent.slug,
       app_id: current.appId,
       ...intent,
@@ -64,6 +68,7 @@ export async function patchMarketplaceStore(
   )
   const patch = badRequest(() => normalizeMarketplaceStorePatch(input))
   const ref = storeRef(current.db, current.appId, storeId)
+  const stores = serverAppMarketplaceStoresTarget(current.appId)
   if (patch.fulfilment_methods) {
     const existing = canonicalStore(await ref.get())
     assertCanManageStore(existing, current)
@@ -82,8 +87,9 @@ export async function patchMarketplaceStore(
       )
     )
   }
-  await current.db.runTransaction(async (transaction) => {
-    const store = canonicalStore(await transaction.get(ref))
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const snapshot = await mutations.read(stores, storeId)
+    const store = canonicalGuardedStore(storeId, snapshot)
     assertCanManageStore(store, current)
     if (store.publication_state === 'pending_review') {
       throw createError({
@@ -91,7 +97,7 @@ export async function patchMarketplaceStore(
         statusMessage: 'A Store under review must be returned before editing.',
       })
     }
-    transaction.update(ref, {
+    mutations.update(stores, storeId, {
       ...patch,
       updated: serverAuditStamp({ by: current.uid }),
     })
@@ -108,8 +114,10 @@ export async function submitMarketplaceStore(
     marketplaceDocumentId(rawStoreId, 'Store id')
   )
   const ref = storeRef(current.db, current.appId, storeId)
-  await current.db.runTransaction(async (transaction) => {
-    const store = canonicalStore(await transaction.get(ref))
+  const stores = serverAppMarketplaceStoresTarget(current.appId)
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const snapshot = await mutations.read(stores, storeId)
+    const store = canonicalGuardedStore(storeId, snapshot)
     assertCanManageStore(store, current)
     if (store.publication_state !== 'draft') {
       throw createError({
@@ -131,7 +139,7 @@ export async function submitMarketplaceStore(
           'Assign at least one existing App member as Store owner before review.',
       })
     }
-    transaction.update(ref, {
+    mutations.update(stores, storeId, {
       publication_state: 'pending_review',
       submitted_at: FieldValue.serverTimestamp(),
       updated: serverAuditStamp({ by: current.uid }),

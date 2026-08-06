@@ -1,10 +1,8 @@
 // Concurrent edit — 2026-07-19 22:12 CEST — Pre-order WhatsApp test pass: share provider delivery with an authenticated console test.
 // Concurrent edit — 2026-07-20 15:19 CEST — Pre-order WhatsApp console-link pass: require the global confirmation route in every provider template.
-import {
-  Timestamp,
-  type DocumentData,
-  type Firestore,
-} from 'firebase-admin/firestore'
+import { Timestamp, type DocumentData } from 'firebase-admin/firestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeMenuOrderWhatsAppPhone } from '../../../utils/menu-order-whatsapp.ts'
 
 type DispatchPreOrderWhatsAppInput = {
@@ -33,7 +31,7 @@ const preOrderConsolePath = '/console/kitchen/orders/pre-orders'
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const numberValue = (value: unknown) => {
   const number = Number(value)
@@ -44,33 +42,31 @@ const safeSegment = (value: string) =>
   Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
 
 export async function dispatchPreOrderWhatsApp(
-  db: Firestore,
   input: DispatchPreOrderWhatsAppInput
 ) {
   if (![input.appId, input.kitchenId, input.orderId].every(safeSegment)) {
     return { state: 'skipped' as const }
   }
 
-  const orderPath = `apps/${input.appId}/kitchens/${input.kitchenId}/orders/${input.orderId}`
-  const orderRef = db.doc(orderPath)
-  const claim = await claimDelivery(db, orderRef)
+  const orders = serverKitchenOrdersTarget(input.appId, input.kitchenId)
+  const claim = await claimDelivery(orders, input.orderId)
   if (!claim) return { state: 'skipped' as const }
 
   try {
     const providerMessageId = await sendTemplate(claim)
-    await finishDelivery(db, orderRef, claim.attempt, {
+    await finishDelivery(orders, input.orderId, claim.attempt, {
       state: 'sent',
       provider_message_id: providerMessageId,
     })
     return { state: 'sent' as const, providerMessageId }
   } catch (error) {
     const message = menuPreOrderWhatsAppErrorMessage(error)
-    await finishDelivery(db, orderRef, claim.attempt, {
+    await finishDelivery(orders, input.orderId, claim.attempt, {
       state: 'failed',
       error: message,
     })
     console.warn('[fireux-kitchens] Pre-order WhatsApp alert failed', {
-      orderPath,
+      orderId: input.orderId,
       error: message,
     })
     return { state: 'failed' as const }
@@ -94,17 +90,18 @@ export async function sendPreOrderWhatsAppTest(recipientValue: unknown) {
 }
 
 async function claimDelivery(
-  db: Firestore,
-  orderRef: FirebaseFirestore.DocumentReference
+  orders: ReturnType<typeof serverKitchenOrdersTarget>,
+  orderId: string
 ): Promise<ClaimedPreOrderWhatsApp | null> {
-  return db.runTransaction(async (transaction) => {
-    const snap = await transaction.get(orderRef)
-    if (!snap.exists) return null
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const snapshot = await mutations.read(orders, orderId)
+    if (!snapshot.exists) return null
 
-    const order = snap.data() || {}
+    const order = snapshot.data || {}
     if (text(order.order_type) !== 'pre_order') return null
     if (text(order.status) === 'pending_payment') return null
-    if (['cancelled', 'completed', 'trashed'].includes(text(order.status))) return null
+    if (['cancelled', 'completed', 'trashed'].includes(text(order.status)))
+      return null
 
     const notifications = record(order.notifications)
     const current = record(notifications.whatsapp)
@@ -114,11 +111,12 @@ async function claimDelivery(
     if (!recipientPhone || text(current.state) === 'sent') return null
 
     const leaseUntil = timestampMillis(current.lease_until)
-    if (text(current.state) === 'sending' && leaseUntil > Date.now()) return null
+    if (text(current.state) === 'sending' && leaseUntil > Date.now())
+      return null
 
     const attempt = Math.max(0, Math.floor(numberValue(current.attempts))) + 1
     const now = Timestamp.now()
-    transaction.update(orderRef, {
+    mutations.update(orders, orderId, {
       'notifications.whatsapp': {
         ...current,
         recipient_phone: recipientPhone,
@@ -134,23 +132,24 @@ async function claimDelivery(
 }
 
 async function finishDelivery(
-  db: Firestore,
-  orderRef: FirebaseFirestore.DocumentReference,
+  orders: ReturnType<typeof serverKitchenOrdersTarget>,
+  orderId: string,
   attempt: number,
   result: Record<string, unknown>
 ) {
-  await db.runTransaction(async (transaction) => {
-    const snap = await transaction.get(orderRef)
-    if (!snap.exists) return
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const snapshot = await mutations.read(orders, orderId)
+    if (!snapshot.exists) return
 
-    const order = snap.data() || {}
+    const order = snapshot.data || {}
     const current = record(record(order.notifications).whatsapp)
     if (
       text(current.state) !== 'sending' ||
       Math.floor(numberValue(current.attempts)) !== attempt
-    ) return
+    )
+      return
 
-    transaction.update(orderRef, {
+    mutations.update(orders, orderId, {
       'notifications.whatsapp': {
         ...current,
         ...result,
@@ -189,23 +188,29 @@ async function sendTemplateMessage(
         template: {
           name: config.templateName,
           language: { code: config.languageCode },
-          components: [{
-            type: 'body',
-            parameters: [...parameters, config.consoleUrl].map(value => ({
-              type: 'text',
-              text: value,
-            })),
-          }],
+          components: [
+            {
+              type: 'body',
+              parameters: [...parameters, config.consoleUrl].map((value) => ({
+                type: 'text',
+                text: value,
+              })),
+            },
+          ],
         },
       }),
       signal: AbortSignal.timeout(10_000),
     }
   )
-  const body = await response.json().catch(() => ({})) as Record<string, unknown>
+  const body = (await response.json().catch(() => ({}))) as Record<
+    string,
+    unknown
+  >
   if (!response.ok) {
     const providerError = record(body.error)
     throw new Error(
-      text(providerError.message) || `WhatsApp returned HTTP ${response.status}.`
+      text(providerError.message) ||
+        `WhatsApp returned HTTP ${response.status}.`
     )
   }
 
@@ -258,7 +263,8 @@ function normalizePreOrderConsoleUrl(value: unknown) {
       url.search ||
       url.hash ||
       pathname !== preOrderConsolePath
-    ) return ''
+    )
+      return ''
 
     url.pathname = preOrderConsolePath
     return url.toString()
@@ -277,12 +283,17 @@ function templateParameters(order: DocumentData) {
   }
   const total = items.reduce((sum, value) => {
     const item = record(value)
-    return sum + numberValue(item.unit_price) * Math.max(1, numberValue(item.quantity))
+    return (
+      sum +
+      numberValue(item.unit_price) * Math.max(1, numberValue(item.quantity))
+    )
   }, 0)
-  const itemSummary = items.map((value) => {
-    const item = record(value)
-    return `${Math.max(1, Math.floor(numberValue(item.quantity)))}× ${text(item.name) || text(item.label) || 'Item'}`
-  }).join(', ')
+  const itemSummary = items
+    .map((value) => {
+      const item = record(value)
+      return `${Math.max(1, Math.floor(numberValue(item.quantity)))}× ${text(item.name) || text(item.label) || 'Item'}`
+    })
+    .join(', ')
 
   return [
     text(order.order_number) || text(order.id),
@@ -293,7 +304,7 @@ function templateParameters(order: DocumentData) {
       style: 'currency',
       currency,
     }).format(total),
-  ].map(value => limitText(value, 1024))
+  ].map((value) => limitText(value, 1024))
 }
 
 function requestedTimeLabel(value: unknown) {
@@ -305,9 +316,10 @@ function requestedTimeLabel(value: unknown) {
 }
 
 function timestampMillis(value: unknown) {
-  const source = value && typeof value === 'object'
-    ? value as { toMillis?: () => number, seconds?: number }
-    : {}
+  const source =
+    value && typeof value === 'object'
+      ? (value as { toMillis?: () => number; seconds?: number })
+      : {}
   if (typeof source.toMillis === 'function') return source.toMillis()
 
   return numberValue(source.seconds) * 1000
@@ -318,7 +330,8 @@ function limitText(value: string, maximum: number) {
 }
 
 export function menuPreOrderWhatsAppErrorMessage(error: unknown) {
-  const message = error instanceof Error ? error.message : 'WhatsApp delivery failed.'
+  const message =
+    error instanceof Error ? error.message : 'WhatsApp delivery failed.'
 
   return limitText(message.replace(/[\r\n]+/g, ' ').trim(), 240)
 }

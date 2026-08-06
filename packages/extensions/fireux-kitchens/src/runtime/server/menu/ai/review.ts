@@ -292,13 +292,10 @@ export async function processKitchenMenuAiReview(
     : 'AI processing finished, but no review draft was saved.'
   const stamp = serverAuditStamp({ by: input.uid, appId: input.appId })
   const billing = await writeKitchenMenuAiUsage({
-    sourceRef: sourceSnap.ref,
-    kitchenPath,
     appId: input.appId,
     kitchenId: input.kitchenId,
     menuId: input.menuId,
     uploadId: input.uploadId,
-    uid: input.uid,
     quality,
     provider: extraction.provider,
     model,

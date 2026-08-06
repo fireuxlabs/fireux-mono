@@ -987,7 +987,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   }
   assert.match(translationMemory, /SproochliHostStorage/)
   assert.match(translationMemory, /storage\.db\.getAll\(/)
-  assert.match(translationMemory, /storage\.db\.runTransaction\(/)
+  assert.match(translationMemory, /runGuardedServerTransaction\(/)
+  assert.match(
+    translationMemory,
+    /FIRESTORE_MUTATION_TARGETS\.sproochliTranslationMemory/
+  )
   assert.match(
     translationMemory,
     /matchesSproochliStorageMetadata\(value\?\.storage, storage\.target\)/
@@ -997,8 +1001,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /storage: sproochliStorageMetadata\(storage\.target\)/
   )
   assert.match(translationMemory, /review_status:\s*'unreviewed'/)
-  assert.match(translationMemory, /transaction\.getAll\(\.\.\.refs\)/)
-  assert.match(translationMemory, /transaction\.create\(snapshot\.ref/)
+  assert.match(translationMemory, /mutations\.readMany\(/)
+  assert.match(translationMemory, /mutations\.create\(target, id/)
   assert.doesNotMatch(
     translationMemory,
     /getRuntimeFirestore|batch\.set|transaction\.set/
@@ -1008,6 +1012,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(menuCompleteCache, /fingerprint/)
   assert.match(menuCompleteCache, /SproochliHostStorage/)
   assert.match(menuCompleteCache, /input\.storage\.db/)
+  assert.match(menuCompleteCache, /runGuardedServerTransaction\(/)
+  assert.match(
+    menuCompleteCache,
+    /FIRESTORE_MUTATION_TARGETS\.sproochliMenuTranslationCaches/
+  )
   assert.match(
     menuCompleteCache,
     /matchesSproochliStorageMetadata\(data\.storage, input\.storage\.target\)/

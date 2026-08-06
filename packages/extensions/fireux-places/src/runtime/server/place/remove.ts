@@ -2,13 +2,16 @@
 import { useRuntimeConfig } from '#imports'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   isFirestoreDocumentId,
   requireFirestoreDocumentId,
 } from 'fireux-core/runtime/server/utils/ids/path'
 import { deleteStorageFileIfExists } from 'fireux-core/runtime/server/utils/uploads/storage'
-import { PlaceStorage } from '../../models/place.model'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -28,24 +31,26 @@ export async function removePlace(event: H3Event, placeId: string) {
   const runtime = useRuntimeConfig(event)
   const runtimeAppId = text(runtime.public?.fireux?.id)
   const developerId = text(runtime.public?.fireux?.developerId)
-  const db = getRuntimeFirestore()
-  const placeRef = db.collection(PlaceStorage.collection).doc(id)
-  const membershipRef = isFirestoreDocumentId(runtimeAppId)
-    ? db.doc(`apps/${runtimeAppId}/users/${uid}`)
+  const places = FIRESTORE_MUTATION_TARGETS.places
+  const memberships = isFirestoreDocumentId(runtimeAppId)
+    ? serverAppUsersTarget(runtimeAppId)
     : null
 
-  await db.runTransaction(async transaction => {
-    const placeSnapshot = await transaction.get(placeRef)
-    const membershipSnapshot = membershipRef
-      ? await transaction.get(membershipRef)
-      : null
+  await runGuardedServerTransaction(places.database, async (mutations) => {
+    const [placeSnapshot, membershipSnapshot] = await Promise.all([
+      mutations.read<Record<string, unknown>>(places, id),
+      memberships
+        ? mutations.read<Record<string, unknown>>(memberships, uid)
+        : Promise.resolve(null),
+    ])
 
     if (!placeSnapshot.exists) {
       throw createError({ statusCode: 404, statusMessage: 'Place not found.' })
     }
 
-    const isDeveloper = import.meta.dev && Boolean(developerId) && uid === developerId
-    const isAdmin = membershipSnapshot?.data()?.role === 'admin'
+    const isDeveloper =
+      import.meta.dev && Boolean(developerId) && uid === developerId
+    const isAdmin = membershipSnapshot?.data?.role === 'admin'
     if (!isDeveloper && !isAdmin) {
       throw createError({
         statusCode: 403,
@@ -54,16 +59,34 @@ export async function removePlace(event: H3Event, placeId: string) {
     }
 
     const references = await Promise.all([
-      transaction.get(db.collection('companies').doc(id)),
-      transaction.get(db.collection('kitchens').where('place_id', '==', id).limit(1)),
-      transaction.get(db.collection('properties').where('place_id', '==', id).limit(1)),
-      transaction.get(db.collection('jobs').where('place_id', '==', id).limit(1)),
+      mutations.read<Record<string, unknown>>(
+        FIRESTORE_MUTATION_TARGETS.companies,
+        id
+      ),
+      mutations.query(FIRESTORE_MUTATION_TARGETS.kitchens, {
+        field: 'place_id',
+        op: '==',
+        value: id,
+        limit: 1,
+      }),
+      mutations.query(FIRESTORE_MUTATION_TARGETS.properties, {
+        field: 'place_id',
+        op: '==',
+        value: id,
+        limit: 1,
+      }),
+      mutations.query(FIRESTORE_MUTATION_TARGETS.jobs, {
+        field: 'place_id',
+        op: '==',
+        value: id,
+        limit: 1,
+      }),
     ])
     const blockers = [
       references[0].exists ? 'companies' : '',
-      references[1].empty ? '' : 'kitchens',
-      references[2].empty ? '' : 'properties',
-      references[3].empty ? '' : 'jobs',
+      references[1].length ? 'kitchens' : '',
+      references[2].length ? 'properties' : '',
+      references[3].length ? 'jobs' : '',
     ].filter(Boolean)
 
     if (blockers.length) {
@@ -74,15 +97,20 @@ export async function removePlace(event: H3Event, placeId: string) {
       })
     }
 
-    transaction.delete(placeRef)
+    mutations.delete(places, id)
   })
 
-  await deleteStorageFileIfExists({ objectPath: `places/${id}/avatar` }).catch(error => {
-    console.warn('[places/delete] Place removed but its avatar could not be cleaned up.', {
-      placeId: id,
-      error: error instanceof Error ? error.message : String(error),
-    })
-  })
+  await deleteStorageFileIfExists({ objectPath: `places/${id}/avatar` }).catch(
+    (error) => {
+      console.warn(
+        '[places/delete] Place removed but its avatar could not be cleaned up.',
+        {
+          placeId: id,
+          error: error instanceof Error ? error.message : String(error),
+        }
+      )
+    }
+  )
 
   return { id, deleted: true }
 }

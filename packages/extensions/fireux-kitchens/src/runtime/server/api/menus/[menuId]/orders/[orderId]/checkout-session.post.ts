@@ -9,6 +9,8 @@ import {
 import { createHash } from 'node:crypto'
 import { FieldValue } from 'firebase-admin/firestore'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
 import {
   isKitchenOrderPostPaymentStatus,
@@ -21,12 +23,8 @@ import {
 } from '../../../../../menu/ordering/order-capability.ts'
 import { statusAfterPayment } from '../../../../../menu/ordering/payment.ts'
 import { getMenuStripe } from '../../../../../menu/ordering/stripe.ts'
-import {
-  menuChoiceContextForOrderType,
-} from '../../../../../../utils/menu-context.ts'
-import {
-  menuRoutePath,
-} from '../../../../../../utils/kitchen-menu-route.ts'
+import { menuChoiceContextForOrderType } from '../../../../../../utils/menu-context.ts'
+import { menuRoutePath } from '../../../../../../utils/kitchen-menu-route.ts'
 import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../utils/menu-order-capability.ts'
 
 // Concurrent edit — 2026-07-20 15:37 CEST — Anonymous Order capability pass: restrict checkout creation to the customer UID or opaque same-device capability.
@@ -35,16 +33,14 @@ import { MENU_ORDER_CAPABILITY_HEADER } from '../../../../../../utils/menu-order
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
-    ? value as Record<string, unknown>
+    ? (value as Record<string, unknown>)
     : {}
 const safeSegment = (value: string) =>
   Boolean(value && !value.includes('/') && value !== '.' && value !== '..')
 const amountMinor = (value: unknown) => {
   const amount = Number(value)
 
-  return Number.isFinite(amount) && amount > 0
-    ? Math.round(amount * 100)
-    : 0
+  return Number.isFinite(amount) && amount > 0 ? Math.round(amount * 100) : 0
 }
 const checkoutIdempotencyKey = (input: {
   appId: string
@@ -52,9 +48,10 @@ const checkoutIdempotencyKey = (input: {
   orderId: string
   amountMinor: number
   currencyCode: string
-}) => `menu-order-checkout-${createHash('sha256')
-  .update(JSON.stringify(input))
-  .digest('hex')}`
+}) =>
+  `menu-order-checkout-${createHash('sha256')
+    .update(JSON.stringify(input))
+    .digest('hex')}`
 const baseUrlFromEvent = (event: H3Event) => {
   const configured = process.env.APP_DOMAIN?.trim()
   const url = getRequestURL(event)
@@ -86,7 +83,9 @@ export default defineEventHandler(async (event) => {
   const context = await readMenuOrderContext(menuId, kitchenSlug)
   const access = await readMenuOrderCustomerAccess(event)
   const db = getRuntimeFirestore()
-  const orderRef = db.doc(`apps/${context.appId}/kitchens/${context.kitchenId}/orders/${orderId}`)
+  const orderRef = db.doc(
+    `apps/${context.appId}/kitchens/${context.kitchenId}/orders/${orderId}`
+  )
   const orderSnap = await orderRef.get()
   if (!orderSnap.exists) {
     throw createError({
@@ -115,7 +114,9 @@ export default defineEventHandler(async (event) => {
   const orderStatus = text(order.status).toLowerCase()
   const paymentStatus = text(payment.status).toLowerCase()
   if (
-    ['changes_requested', 'cancelled', 'completed', 'trashed'].includes(orderStatus) ||
+    ['changes_requested', 'cancelled', 'completed', 'trashed'].includes(
+      orderStatus
+    ) ||
     paymentStatus === 'refunded'
   ) {
     throw createError({
@@ -158,8 +159,8 @@ export default defineEventHandler(async (event) => {
   }
   const orderNumber = text(order.order_number) || orderId
   const reason = text(payment.reason) || 'Kitchen order payment'
-  const resumeStatus = text(payment.resume_status) ||
-    statusAfterPayment(orderType)
+  const resumeStatus =
+    text(payment.resume_status) || statusAfterPayment(orderType)
   const paymentCurrencyCode = text(payment.currency_code).toLowerCase()
   if (!paymentCurrencyCode) {
     throw createError({
@@ -224,16 +225,17 @@ export default defineEventHandler(async (event) => {
     }
   )
 
-  await db.runTransaction(async (transaction) => {
-    const latestSnap = await transaction.get(orderRef)
-    if (!latestSnap.exists) {
+  const orders = serverKitchenOrdersTarget(context.appId, context.kitchenId)
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const latest = await mutations.read(orders, orderId)
+    if (!latest.exists) {
       throw createError({
         statusCode: 409,
         statusMessage: 'Order changed while payment was prepared.',
       })
     }
 
-    const latestOrder = latestSnap.data() || {}
+    const latestOrder = latest.data || {}
     const latestPayment = record(latestOrder.payment)
     const latestOrderStatus = text(latestOrder.status).toLowerCase()
     const latestPaymentStatus = text(latestPayment.status).toLowerCase()
@@ -276,23 +278,19 @@ export default defineEventHandler(async (event) => {
       })
     }
 
-    transaction.set(
-      orderRef,
-      {
-        status: 'pending_payment',
-        payment: {
-          ...latestPayment,
-          status: 'pending',
-          resume_status: resumeStatus,
-          stripe_checkout_session_id: session.id,
-        },
-        updated: {
-          at: FieldValue.serverTimestamp(),
-          by: 'stripe-checkout',
-        },
+    mutations.update<Record<string, unknown>>(orders, orderId, {
+      status: 'pending_payment',
+      payment: {
+        ...latestPayment,
+        status: 'pending',
+        resume_status: resumeStatus,
+        stripe_checkout_session_id: session.id,
       },
-      { merge: true }
-    )
+      updated: {
+        at: FieldValue.serverTimestamp(),
+        by: 'stripe-checkout',
+      },
+    })
   })
 
   return {

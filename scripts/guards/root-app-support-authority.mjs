@@ -163,6 +163,7 @@ const assertAtomicConsoleOnboarding = ({
   onboardingSource,
   serverConfigSource,
   handlerPath,
+  rootTarget,
 }) => {
   const clientOnboarding = functionBlock(clientSource, clientFunction)
   const endpointPattern = new RegExp(`['\"]${escapeRegex(route)}['\"]`)
@@ -206,33 +207,62 @@ const assertAtomicConsoleOnboarding = ({
   )
 
   assert.match(onboardingSource, /requireFirebaseBearerUser\(event\)/)
-  assert.match(onboardingSource, /getRuntimeFirestore\(\)/)
-  const transactions = callBlocks(onboardingSource, 'runTransaction')
+  const guarded = onboardingSource.includes('runGuardedServerTransaction')
+  if (guarded) {
+    assert.match(onboardingSource, /runGuardedServerTransaction/)
+  } else {
+    assert.match(onboardingSource, /getRuntimeFirestore\(\)/)
+  }
+  const transactions = callBlocks(
+    onboardingSource,
+    guarded ? 'runGuardedServerTransaction' : 'runTransaction'
+  )
   assert.equal(
     transactions.length,
     1,
     `${name} onboarding must use exactly one Firestore transaction.`
   )
   const transactionSource = transactions[0]
-  assert.match(
-    transactionSource,
-    /^runTransaction\s*\(\s*async\s+\(?transaction\)?\s*=>/
-  )
-  assert.match(
-    transactionSource,
-    /transaction\.get\([^\n]*(?:membershipRef|current\.membershipRef)/,
-    `${name} onboarding must read current AppUser authority inside the transaction.`
-  )
-  assert.match(
-    transactionSource,
-    /transaction\.create\(\s*rootRef,/,
-    `${name} onboarding must create its canonical root inside the transaction.`
-  )
-  assert.match(
-    transactionSource,
-    /transaction\.create\(supportRef,[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
-    `${name} onboarding must create a complete same-id App support record inside the transaction.`
-  )
+  if (guarded) {
+    assert.match(transactionSource, /async\s+\(?mutations\)?\s*=>/)
+    assert.match(
+      transactionSource,
+      /mutations\.read[^\n(]*\(\s*memberships,\s*(?:current\.uid|uid)\s*\)/,
+      `${name} onboarding must read current AppUser authority inside the transaction.`
+    )
+    assert.match(
+      transactionSource,
+      new RegExp(
+        `mutations\\.create\\(\\s*(?:FIRESTORE_MUTATION_TARGETS\\.)?${escapeRegex(rootTarget)},`
+      ),
+      `${name} onboarding must create its canonical root inside the transaction.`
+    )
+    assert.match(
+      transactionSource,
+      /mutations\.create\(supports,[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
+      `${name} onboarding must create a complete same-id App support record inside the transaction.`
+    )
+  } else {
+    assert.match(
+      transactionSource,
+      /^runTransaction\s*\(\s*async\s+\(?transaction\)?\s*=>/
+    )
+    assert.match(
+      transactionSource,
+      /transaction\.get\([^\n]*(?:membershipRef|current\.membershipRef)/,
+      `${name} onboarding must read current AppUser authority inside the transaction.`
+    )
+    assert.match(
+      transactionSource,
+      /transaction\.create\(\s*rootRef,/,
+      `${name} onboarding must create its canonical root inside the transaction.`
+    )
+    assert.match(
+      transactionSource,
+      /transaction\.create\(supportRef,[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
+      `${name} onboarding must create a complete same-id App support record inside the transaction.`
+    )
+  }
   if (!serverConfigSource) return
   assert.match(
     serverConfigSource,
@@ -777,6 +807,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     onboardingSource: source.kitchenOnboarding,
     serverConfigSource: source.kitchenServerConfig,
     handlerPath: './runtime/server/api/kitchens/onboarding/complete.post',
+    rootTarget: 'kitchens',
   })
   assertAtomicConsoleOnboarding({
     name: 'Supplier',
@@ -788,6 +819,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     onboardingSource: source.supplierOnboarding,
     serverConfigSource: source.supplierServerConfig,
     handlerPath: './runtime/server/api/suppliers/onboarding/complete.post',
+    rootTarget: 'suppliers',
   })
   assertAtomicConsoleOnboarding({
     name: 'Portfolio',
@@ -799,6 +831,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     onboardingSource: source.portfolioOnboarding,
     serverConfigSource: source.propertyServerConfig,
     handlerPath: './runtime/server/api/portfolios/onboarding/complete.post',
+    rootTarget: 'portfolios',
   })
   assertAtomicConsoleOnboarding({
     name: 'Property',
@@ -810,6 +843,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     onboardingSource: source.propertyOnboarding,
     serverConfigSource: source.propertyServerConfig,
     handlerPath: './runtime/server/api/properties/onboarding/complete.post',
+    rootTarget: 'properties',
   })
 
   const blankRootType = source.blankModel.slice(
@@ -1005,7 +1039,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenOnboarding,
-    /transaction\.create\(supportRef,[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
+    /(?:transaction\.create\(supportRef|mutations\.create\(supports),[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
     'Trusted Kitchen onboarding must seed every AppKitchen authority array.'
   )
   assert.doesNotMatch(

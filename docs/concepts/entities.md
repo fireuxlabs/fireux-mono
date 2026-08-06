@@ -267,8 +267,6 @@ Public Index and Public Detail family maps.
 1. Extend the matrix only after models, authority, and public behavior agree.
 2. Add guard semantics only for repeated classification failures, not
    unresolved product decisions.
-3. Create a focused directory-publication family map only if that mechanism
-   remains a recurring cross-package concern.
 
 ## Guardrails
 

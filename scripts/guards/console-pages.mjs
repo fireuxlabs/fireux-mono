@@ -50,7 +50,7 @@ const ROUTE_ONLY_META_KEYS = [
 const CONSOLE_OPERATION_CONTRACTS = {
   project: {
     catalogue: 'projects/fireux/fireux-app/app/meta.ts',
-    operations: ['identity', 'apps', 'ecosystem', 'users'],
+    operations: ['identity', 'apps', 'ecosystem'],
     routeRoot: 'projects/fireux/fireux-app/app/pages/console/project',
   },
   kitchen: {

@@ -5,11 +5,8 @@ import {
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/utils/app-scope-state'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { boundedIds, fail, text, type MemberRole } from './onboarding-input'
-
-export type Firestore = ReturnType<typeof getRuntimeFirestore>
 
 export type RuntimePolicy = {
   appId: string
@@ -21,8 +18,6 @@ export type RuntimePolicy = {
 
 export type Actor = RuntimePolicy & {
   uid: string
-  db: Firestore
-  membershipRef: ReturnType<Firestore['doc']>
 }
 
 export function runtimePolicy(event: H3Event): RuntimePolicy {

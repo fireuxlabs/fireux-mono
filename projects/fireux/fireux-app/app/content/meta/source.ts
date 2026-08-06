@@ -4,7 +4,7 @@ export const fireuxOffer = {
   heroBullets: [
     'Send an App request through Ignition',
     'Review Project Apps and Ecosystems',
-    'Monitor new App users',
+    'Review Project Apps and Ecosystems',
     'Browse public Apps, Solutions, Operations, and Modules',
   ],
   entry: {
@@ -12,7 +12,8 @@ export const fireuxOffer = {
       'Request a FireUX App through Ignition, or explore an Ecosystem that already covers your work.',
     request: {
       title: 'Request a FireUX App',
-      description: 'Send an Ignition request. We review the scope before work starts.',
+      description:
+        'Send an Ignition request. We review the scope before work starts.',
       actionLabel: 'Request an App',
     },
     ecosystems: {
@@ -59,7 +60,8 @@ export const sourceMeta = {
     rightPanelItems: [
       {
         title: 'Ignition',
-        description: 'Capture an App request and work through its launch checklist.',
+        description:
+          'Capture an App request and work through its launch checklist.',
         icon: 'i-lucide-rocket',
       },
       {
@@ -117,19 +119,23 @@ export const sourceMeta = {
     keyConcepts: [
       {
         title: 'Project',
-        description: 'A Project is the control-plane record that connects its Apps and Ecosystem.',
+        description:
+          'A Project is the control-plane record that connects its Apps and Ecosystem.',
       },
       {
         title: 'App',
-        description: 'An App is a branded product surface connected to a Project and Ecosystem.',
+        description:
+          'An App is a branded product surface connected to a Project and Ecosystem.',
       },
       {
         title: 'Ecosystem',
-        description: 'An Ecosystem groups Apps around one product or domain and owns their shared configuration.',
+        description:
+          'An Ecosystem groups Apps around one product or domain and owns their shared configuration.',
       },
       {
         title: 'Module',
-        description: 'A Module is reusable, source-controlled capability explicitly composed into an App.',
+        description:
+          'A Module is reusable, source-controlled capability explicitly composed into an App.',
       },
       {
         title: 'User',
@@ -137,19 +143,23 @@ export const sourceMeta = {
       },
       {
         title: 'Console',
-        description: 'A Console is the authenticated workspace for a selected Project, App, or Ecosystem.',
+        description:
+          'A Console is the authenticated workspace for a selected Project, App, or Ecosystem.',
       },
       {
         title: 'Operation',
-        description: 'An Operation names work performed inside a Console and links to its working route.',
+        description:
+          'An Operation names work performed inside a Console and links to its working route.',
       },
       {
         title: 'Solution',
-        description: 'A Solution explains a proven FireUX capability in the language someone searches for.',
+        description:
+          'A Solution explains a proven FireUX capability in the language someone searches for.',
       },
       {
         title: 'Public directory',
-        description: 'Public Apps and Ecosystems are safe projections of their canonical records.',
+        description:
+          'Public Apps and Ecosystems are safe projections of their canonical records.',
       },
     ],
     appSpec: {
@@ -160,22 +170,30 @@ export const sourceMeta = {
       modules: [
         {
           name: 'FireUX Core',
-          summary: 'Shared App shell, accounts, public directory components, and Console contracts.',
+          summary:
+            'Shared App shell, accounts, public directory components, and Console contracts.',
           entities: ['App', 'Ecosystem', 'User'],
         },
         {
           name: 'Project Console',
-          summary: 'The Project workspace for Ignition, Apps, Ecosystem, and Users.',
+          summary:
+            'The Project workspace for Ignition, Apps, Ecosystem, and Users.',
           entities: ['Project', 'Ignition request', 'App', 'Ecosystem', 'User'],
         },
         {
           name: 'Public catalogues',
-          summary: 'Public routes for Apps, Ecosystems, Modules, Solutions, and Operations.',
-          entities: ['App directory entry', 'Ecosystem directory entry', 'Module package manifest'],
+          summary:
+            'Public routes for Apps, Ecosystems, Modules, Solutions, and Operations.',
+          entities: [
+            'App directory entry',
+            'Ecosystem directory entry',
+            'Module package manifest',
+          ],
         },
         {
           name: 'Extension Modules',
-          summary: 'Reusable domain capability explicitly composed into FireUX Apps.',
+          summary:
+            'Reusable domain capability explicitly composed into FireUX Apps.',
           entities: ['Module package manifest'],
         },
       ],
@@ -188,8 +206,16 @@ export const sourceMeta = {
         },
         {
           name: 'App',
-          purpose: 'Canonical App identity connected to a Project and Ecosystem.',
-          keyFields: ['id', 'name', 'project_id', 'ecosystem_id', 'role', 'status'],
+          purpose:
+            'Canonical App identity connected to a Project and Ecosystem.',
+          keyFields: [
+            'id',
+            'name',
+            'project_id',
+            'ecosystem_id',
+            'role',
+            'status',
+          ],
           linksTo: ['Project', 'Ecosystem', 'User'],
         },
         {
@@ -212,7 +238,8 @@ export const sourceMeta = {
         },
         {
           name: 'Module package manifest',
-          purpose: 'Source-controlled package metadata used to compose App capability.',
+          purpose:
+            'Source-controlled package metadata used to compose App capability.',
           keyFields: ['type', 'id', 'name', 'team'],
           linksTo: ['App'],
         },
@@ -227,10 +254,21 @@ export const sourceMeta = {
         { label: 'Ecosystems', path: '/ecosystems', kind: 'public' },
         { label: 'Console Entry', path: '/console', kind: 'console' },
         { label: 'Project Console', path: '/console/project', kind: 'console' },
-        { label: 'Project Ignition', path: '/console/project/ignitions', kind: 'console' },
-        { label: 'Project Ecosystem', path: '/console/project/ecosystem', kind: 'console' },
-        { label: 'Project Apps', path: '/console/project/apps', kind: 'console' },
-        { label: 'Project Users', path: '/console/project/users', kind: 'console' },
+        {
+          label: 'Project Ignition',
+          path: '/console/project/ignitions',
+          kind: 'console',
+        },
+        {
+          label: 'Project Ecosystem',
+          path: '/console/project/ecosystem',
+          kind: 'console',
+        },
+        {
+          label: 'Project Apps',
+          path: '/console/project/apps',
+          kind: 'console',
+        },
       ],
     },
     relationshipMap: `

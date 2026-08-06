@@ -1,6 +1,11 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
+import {
+  serverAppMarketplaceStoresTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type { MarketplaceStore } from '../../models/marketplace.model'
 import type {
   MarketplaceAdminStoresResponse,
@@ -13,7 +18,7 @@ import {
   STORE_LIMIT,
   badRequest,
   canonicalStore,
-  membershipRef,
+  canonicalGuardedStore,
   privateRead,
   readStoreOffers,
   requireMarketplaceAdmin,
@@ -21,7 +26,6 @@ import {
   storeRef,
   storesRef,
   text,
-  validMemberRole,
 } from './authority-common'
 import { assertOfferMethods } from './authority-offers'
 
@@ -86,15 +90,17 @@ export async function moderateMarketplaceStore(
       publishedOffers.forEach((offer) => assertOfferMethods(store, offer))
     }
   }
-  await current.db.runTransaction(async (transaction) => {
-    const store = canonicalStore(await transaction.get(ref))
+  const stores = serverAppMarketplaceStoresTarget(current.appId)
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const snapshot = await mutations.read(stores, storeId)
+    const store = canonicalGuardedStore(storeId, snapshot)
     if (store.publication_state !== transition.from) {
       throw createError({
         statusCode: 409,
         statusMessage: `Store cannot be moderated from ${store.publication_state}.`,
       })
     }
-    transaction.update(ref, {
+    mutations.update(stores, storeId, {
       publication_state: transition.to,
       ...(transition.to === 'published'
         ? { published_at: FieldValue.serverTimestamp() }
@@ -127,14 +133,15 @@ export async function mutateMarketplaceStoreMember(
     })
   }
   const ref = storeRef(current.db, current.appId, storeId)
-  const targetMembership = membershipRef(current.db, current.appId, uid)
-  await current.db.runTransaction(async (transaction) => {
-    const [storeSnapshot, membershipSnapshot] = await transaction.getAll(
-      ref,
-      targetMembership
-    )
-    const store = canonicalStore(storeSnapshot)
-    if (!validMemberRole(membershipSnapshot)) {
+  const stores = serverAppMarketplaceStoresTarget(current.appId)
+  const memberships = serverAppUsersTarget(current.appId)
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const [storeSnapshot, membershipSnapshot] = await Promise.all([
+      mutations.read(stores, storeId),
+      mutations.read(memberships, uid),
+    ])
+    const store = canonicalGuardedStore(storeId, storeSnapshot)
+    if (!['admin', 'user'].includes(text(membershipSnapshot.data?.role))) {
       throw createError({
         statusCode: 400,
         statusMessage: 'Store member must already belong to the current App.',
@@ -173,7 +180,7 @@ export async function mutateMarketplaceStoreMember(
         statusMessage: 'Store membership limits would be violated.',
       })
     }
-    transaction.update(ref, {
+    mutations.update(stores, storeId, {
       owner_ids: Array.from(owners),
       editor_ids: Array.from(editors),
       updated: serverAuditStamp({ by: current.uid }),

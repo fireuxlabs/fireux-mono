@@ -120,7 +120,7 @@ definePageMeta({
 
 const routeId = useRouteParam('id')
 const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
-  'fireux-platform-directory',
+  'fireux-default-directory',
   () => $fetch('/api/public/directory'),
   { server: true, lazy: false }
 )

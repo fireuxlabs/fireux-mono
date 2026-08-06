@@ -1,12 +1,15 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import type { H3Event } from 'h3'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { PortfolioStorage } from '../../models/portfolio.model.ts'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppPortfoliosTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   assertOnboardingAuthority,
   assertScope,
@@ -29,16 +32,7 @@ export type { PortfolioOnboardingCompleteResult } from './onboarding-input'
 async function actor(event: H3Event): Promise<Actor> {
   const { uid } = await requireFirebaseBearerUser(event)
   const policy = runtimePolicy(event)
-  const db = getRuntimeFirestore()
-
-  return {
-    ...policy,
-    uid,
-    db,
-    membershipRef: db.doc(
-      `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
-    ),
-  }
+  return { ...policy, uid }
 }
 
 export async function completePortfolioOnboarding(
@@ -60,32 +54,30 @@ export async function completePortfolioOnboarding(
     : draft!.slug
   const current = await actor(event)
 
-  const rootRef = current.db
-    .collection(PortfolioStorage.rootCollection)
-    .doc(portfolioId)
-  const supportCollection = current.db.collection(
-    `apps/${current.appId}/${PortfolioStorage.appSupportCollection}`
-  )
-  const supportRef = supportCollection.doc(portfolioId)
-  const currentOperatorSupports = supportCollection
-    .where('operator_ids', 'array-contains', current.uid)
-    .limit(2)
+  const memberships = serverAppUsersTarget(current.appId)
+  const portfolios = FIRESTORE_MUTATION_TARGETS.portfolios
+  const supports = serverAppPortfoliosTarget(current.appId)
 
-  return current.db.runTransaction(async (transaction) => {
+  return runGuardedServerTransaction(portfolios.database, async (mutations) => {
     const [membership, root, support, operatorSupports] = await Promise.all([
-      transaction.get(current.membershipRef),
-      transaction.get(rootRef),
-      transaction.get(supportRef),
-      transaction.get(currentOperatorSupports),
+      mutations.read<Record<string, unknown>>(memberships, current.uid),
+      mutations.read<Record<string, unknown>>(portfolios, portfolioId),
+      mutations.read<Record<string, unknown>>(supports, portfolioId),
+      mutations.query<Record<string, unknown>>(supports, {
+        field: 'operator_ids',
+        op: 'array-contains',
+        value: current.uid,
+        limit: 2,
+      }),
     ])
-    const membershipData = membership.exists ? membership.data() || {} : {}
-    const role = requireMemberRole(membership.exists, membership.get('role'))
-    const rootData = root.exists ? root.data() || {} : null
+    const membershipData = membership.exists ? membership.data || {} : {}
+    const role = requireMemberRole(membership.exists, membership.data?.role)
+    const rootData = root.exists ? root.data || {} : null
     if (existingRootId && !rootData) {
       fail(404, 'Portfolio not found.')
     }
     const scope = rootData ? assertScope(rootData, current.appId) : null
-    const supportData = support.exists ? support.data() || {} : null
+    const supportData = support.exists ? support.data || {} : null
     if (!rootData && supportData) {
       fail(409, 'Portfolio access exists without its canonical root.')
     }
@@ -108,7 +100,7 @@ export async function completePortfolioOnboarding(
           Boolean(current.developerId) && current.uid === current.developerId,
       })
     ) {
-      const otherPortfolio = operatorSupports.docs.find(
+      const otherPortfolio = operatorSupports.find(
         (snapshot) => snapshot.id !== portfolioId
       )
       if (otherPortfolio) {
@@ -125,7 +117,7 @@ export async function completePortfolioOnboarding(
     if (createdRoot) {
       if (!draft)
         fail(409, 'Portfolio creation input changed during onboarding.')
-      transaction.create(rootRef, {
+      mutations.create(portfolios, portfolioId, {
         app_scope_state: current.appScopeState,
         app_scope_app_id: current.appId,
         name: draft.name,
@@ -146,7 +138,7 @@ export async function completePortfolioOnboarding(
         scope.state !== current.appScopeState ||
         scope.appId !== current.appId
       ) {
-        transaction.update(rootRef, {
+        mutations.update(portfolios, portfolioId, {
           app_scope_state: current.appScopeState,
           app_scope_app_id: current.appId,
           updated: serverAuditStamp({ by: current.uid }),
@@ -155,7 +147,7 @@ export async function completePortfolioOnboarding(
     }
 
     if (createdAppSupport) {
-      transaction.create(supportRef, {
+      mutations.create(supports, portfolioId, {
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
@@ -163,14 +155,14 @@ export async function completePortfolioOnboarding(
         updated: serverAuditStamp({ by: current.uid }),
       })
     } else {
-      transaction.update(supportRef, {
+      mutations.update(supports, portfolioId, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
         updated: serverAuditStamp({ by: current.uid }),
       })
     }
 
-    transaction.update(current.membershipRef, {
+    mutations.update(memberships, current.uid, {
       console_enabled: true,
       updated: serverAuditStamp({ by: current.uid }),
     })

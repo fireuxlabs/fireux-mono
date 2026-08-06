@@ -167,19 +167,6 @@ export const metaContent = defineFireuxMeta({
       },
       icon: 'i-lucide-orbit',
     },
-    {
-      id: 'project.users',
-      slug: 'users',
-      title: 'Users',
-      description: 'Monitor new users across your projects and apps.',
-      to: '/console/project/users',
-      console: {
-        id: 'project',
-        name: 'Project console',
-        to: '/console/project',
-      },
-      icon: 'i-lucide-users',
-    },
   ],
   solutions: fireuxSolutions,
   entities: appMeta.entities.map((entity) => ({

@@ -1,17 +1,27 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
   FieldValue,
-  type Transaction,
+  type DocumentData,
+  type UpdateData,
 } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import {
+  runGuardedServerTransaction,
+  type GuardedServerTransaction,
+} from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   requireFirebaseStorageDownloadUrl,
   runtimeStorageBucketName,
 } from 'fireux-core/runtime/server/utils/uploads/storage'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppKitchensTarget,
+  serverAppUsersTarget,
+} from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import type {
   KitchenPublicIdentityEdit,
   KitchenPublicIdentityEditResponse,
@@ -35,11 +45,7 @@ function invalid(statusMessage: string): never {
   throw createError({ statusCode: 400, statusMessage })
 }
 
-function boundedText(
-  value: unknown,
-  label: string,
-  maxLength: number
-) {
+function boundedText(value: unknown, label: string, maxLength: number) {
   if (typeof value !== 'string') invalid(`${label} must be text.`)
   const normalized = value.trim()
   if (normalized.length > maxLength) {
@@ -59,7 +65,7 @@ function identityInput(value: unknown): KitchenPublicIdentityEdit {
     'card_image_url',
     'logo_image_url',
   ])
-  const unsupported = Object.keys(source).find(key => !allowed.has(key))
+  const unsupported = Object.keys(source).find((key) => !allowed.has(key))
   if (unsupported) {
     invalid(`Kitchen identity contains unsupported field: ${unsupported}.`)
   }
@@ -101,7 +107,9 @@ function canonicalIdentityMedia(
   }
 }
 
-function identityEdit(data: Record<string, unknown>): KitchenPublicIdentityEdit {
+function identityEdit(
+  data: Record<string, unknown>
+): KitchenPublicIdentityEdit {
   const identity = readKitchenIdentity(data)
   return {
     display_name: identity.displayName,
@@ -157,13 +165,10 @@ async function assertAuthority(
   db: RuntimeFirestore,
   context: Awaited<ReturnType<typeof requestAuthority>>,
   kitchenId: string,
-  expectedSlug: string,
-  transaction?: Transaction
+  expectedSlug: string
 ) {
   const rootRef = db.collection(KitchenStorage.rootCollection).doc(kitchenId)
-  const root = transaction
-    ? await transaction.get(rootRef)
-    : await rootRef.get()
+  const root = await rootRef.get()
   if (!root.exists || text(root.get('slug')).toLowerCase() !== expectedSlug) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
@@ -188,14 +193,15 @@ async function assertAuthority(
   const authorityRefs = [
     db.doc(`apps/${context.runtimeAppId}/users/${context.uid}`),
     db.doc(`apps/${scope.appId}`),
-    db.doc(`apps/${scope.appId}/${KitchenStorage.scopeCollection}/${kitchenId}`),
+    db.doc(
+      `apps/${scope.appId}/${KitchenStorage.scopeCollection}/${kitchenId}`
+    ),
   ] as const
-  const [runtimeMembership, ownerApp, support] = transaction
-    ? await transaction.getAll(...authorityRefs)
-    : await db.getAll(...authorityRefs)
+  const [runtimeMembership, ownerApp, support] = await db.getAll(
+    ...authorityRefs
+  )
   const isAdmin =
-    runtimeMembership.exists &&
-    text(runtimeMembership.get('role')) === 'admin'
+    runtimeMembership.exists && text(runtimeMembership.get('role')) === 'admin'
   if (!isAdmin && !context.isDeveloper) {
     forbidden('Current App admin access is required.')
   }
@@ -206,7 +212,10 @@ async function assertAuthority(
     forbidden('This Kitchen is outside the current ecosystem.')
   }
   try {
-    if (!support.exists || !readKitchenOnboardingSupport(support.data() || {})) {
+    if (
+      !support.exists ||
+      !readKitchenOnboardingSupport(support.data() || {})
+    ) {
       throw new Error('invalid')
     }
   } catch {
@@ -216,7 +225,70 @@ async function assertAuthority(
     })
   }
 
-  return { rootRef, root, ownerAppId: scope.appId }
+  return { root, ownerAppId: scope.appId }
+}
+
+async function assertTransactionAuthority(
+  transaction: GuardedServerTransaction,
+  context: Awaited<ReturnType<typeof requestAuthority>>,
+  kitchenId: string,
+  expectedSlug: string
+) {
+  const memberships = serverAppUsersTarget(context.runtimeAppId)
+  const root = await transaction.read(
+    FIRESTORE_MUTATION_TARGETS.kitchens,
+    kitchenId
+  )
+  const rootData = root.data || {}
+  if (!root.exists || text(rootData.slug).toLowerCase() !== expectedSlug) {
+    throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
+  }
+
+  const scope = readKitchenOnboardingScope(rootData)
+  if (
+    (scope.state !== 'parent_app' && scope.state !== 'tenant_app') ||
+    !isFirestoreDocumentId(scope.appId)
+  ) {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'The Kitchen App scope is invalid.',
+    })
+  }
+  if (
+    context.runtimeRole !== 'global' &&
+    scope.appId !== context.runtimeAppId
+  ) {
+    forbidden('This Kitchen belongs to another App.')
+  }
+
+  const [runtimeMembership, ownerApp, support] = await Promise.all([
+    transaction.read(memberships, context.uid),
+    transaction.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, scope.appId),
+    transaction.read(serverAppKitchensTarget(scope.appId), kitchenId),
+  ])
+  const isAdmin =
+    runtimeMembership.exists && text(runtimeMembership.data?.role) === 'admin'
+  if (!isAdmin && !context.isDeveloper) {
+    forbidden('Current App admin access is required.')
+  }
+  if (
+    !ownerApp.exists ||
+    text(ownerApp.data?.ecosystem_id) !== context.ecosystemId
+  ) {
+    forbidden('This Kitchen is outside the current ecosystem.')
+  }
+  try {
+    if (!support.exists || !readKitchenOnboardingSupport(support.data || {})) {
+      throw new Error('invalid')
+    }
+  } catch {
+    throw createError({
+      statusCode: 409,
+      statusMessage: 'Kitchen App support is incomplete.',
+    })
+  }
+
+  return { ownerAppId: scope.appId }
 }
 
 export async function readKitchenPublicIdentity(
@@ -226,12 +298,7 @@ export async function readKitchenPublicIdentity(
   const context = await requestAuthority(event)
   const db = getRuntimeFirestore()
   const kitchen = await kitchenBySlug(db, slug)
-  const { root } = await assertAuthority(
-    db,
-    context,
-    kitchen.id,
-    kitchen.slug
-  )
+  const { root } = await assertAuthority(db, context, kitchen.id, kitchen.slug)
   return {
     ok: true,
     kitchen_id: kitchen.id,
@@ -250,17 +317,15 @@ export async function updateKitchenPublicIdentity(
   const kitchen = await kitchenBySlug(db, slug)
   const requested = canonicalIdentityMedia(requestedInput, kitchen.id)
 
-  await db.runTransaction(async transaction => {
-    const authority = await assertAuthority(
-      db,
+  await runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    const authority = await assertTransactionAuthority(
+      mutations,
       context,
       kitchen.id,
-      kitchen.slug,
-      transaction
+      kitchen.slug
     )
-    const patch: Record<string, unknown> = {
-      'identity.display_name':
-        requested.display_name || FieldValue.delete(),
+    const patch: UpdateData<DocumentData> = {
+      'identity.display_name': requested.display_name || FieldValue.delete(),
       'identity.tagline': requested.tagline || FieldValue.delete(),
       'identity.card_image_url':
         requested.card_image_url || FieldValue.delete(),
@@ -271,7 +336,7 @@ export async function updateKitchenPublicIdentity(
         appId: authority.ownerAppId,
       }),
     }
-    transaction.update(authority.rootRef, patch)
+    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, kitchen.id, patch)
   })
 
   return {

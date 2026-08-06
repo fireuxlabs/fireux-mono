@@ -288,27 +288,39 @@ export async function run({ repoRoot }) {
     ),
     'utf8'
   )
+  const chatRateLimit = readFileSync(
+    join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/server/utils/chat/start-rate-limit.ts'
+    ),
+    'utf8'
+  )
+  const chatBoundary = `${chatSession}\n${chatRateLimit}`
   for (const required of [
     'randomBytes(32)',
     "createHash('sha256')",
     'timingSafeEqual',
     'token_hash',
-    'runTransaction',
+    'runGuardedServerTransaction',
     'SESSION_LIFETIME_MS = 30 * 24 * 60 * 60 * 1000',
     'MAX_CHAT_STARTS_PER_WINDOW',
     'getRequestIP',
     'rateLimitSalt',
   ]) {
-    if (!chatSession.includes(required)) {
+    if (!chatBoundary.includes(required)) {
       violations.push(
         `Chat recovery boundary is missing ${required}; keep secrets unguessable, hashed at rest, constant-time checked, atomic, and time-bounded.`
       )
     }
   }
 
-  if (!storagePolicy.mechanisms.some((entry) =>
-    entry.key === 'fireux:*:admin-chat' && entry.lifetime === 'At most 30 days'
-  )) {
+  if (
+    !storagePolicy.mechanisms.some(
+      (entry) =>
+        entry.key === 'fireux:*:admin-chat' &&
+        entry.lifetime === 'At most 30 days'
+    )
+  ) {
     violations.push(
       'Core browser-storage policy must declare the exact fireux:*:admin-chat recovery key and its 30-day maximum lifetime.'
     )
