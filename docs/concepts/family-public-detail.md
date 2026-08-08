@@ -1,7 +1,7 @@
 # Public detail family
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-08
+Ref: d4506e91b
 Role: map, not canon
 
 ## Purpose
@@ -32,13 +32,20 @@ Every public detail route should:
 - Keep operator/private actions separate from the public identity and content.
 - Expose one useful dev debug surface only when needed, with fetched objects
   separated from derived route/render state.
+- Keep pending/ready/missing/error state in the owning entity reader. Do not
+  create a cross-entity detail engine solely to remove a small repeated state
+  machine.
+- Keep the page DTO shape as `objects`, `derived`, and `page`; presentation
+  receives the complete bounded entity DTO instead of a page-maintained list of
+  copied scalar props.
 - Agent, Chef, Driver, and Professional details share Core
   `PublicProfileDetailSurface`, `PublicProfileHero`, and
   `PublicProfileSection` presentation. Their named `X/Cards/Profile` roots own
   domain content, icons, and section presence; profile tone is presentation
   only and never changes identity, transport, publication, or authority.
-- Canonical User detail reuses the shared profile hero and Nuxt UI page cards
-  for specialist doorways instead of maintaining a parallel profile shell.
+- Canonical User detail reuses the shared profile hero and Nuxt UI page cards.
+  Specialist profile pages remain with their owning domains and are not
+  inferred or registered through the User page.
 - Public venue and operation details compose Core `PublicEntityHero` through
   their named domain detail surfaces. Place and Kitchen are the proving
   siblings: cover failure, identity media, title/action geometry, sparse
@@ -91,6 +98,7 @@ review.
 | Delta                                                                  | State       | Why it exists                                                                                                                                                                                                 |
 | ---------------------------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Profile details join canonical User presentation by uid                | `accepted`  | Domain profile roots remain owner/private authority and do not duplicate public User identity; public Agent, Chef, Driver, and Professional routes resolve the User handle at the trusted projection boundary |
+| FireUX App detail uses its platform directory                          | `accepted`  | FireUX owns the platform relationship, Ignition action, search policy, and directory reader; the Core App detail remains the aligned Ecosystem-local sibling rather than a generic runtime-composed page      |
 | Legacy profile uid URLs redirect permanently to the User-handle URL    | `migration` | Stored links remain usable during the route cutover while every new card, canonical tag, and share path uses the handle                                                                                       |
 | Job detail exact-loads the same bounded DTO as Job index               | `accepted`  | Category, tenant, publication, Company, and Place joins are server-owned                                                                                                                                      |
 | Kitchen detail can expose public KitchenMenus                          | `accepted`  | Kitchen is a public console entity with scoped published children; its public identity shares the Core entity hero without moving Kitchen content or authority into Core                                      |

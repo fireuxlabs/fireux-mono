@@ -102,8 +102,11 @@ export function projectPublicApp(
     ecosystem_id: asTrimmedString(source.ecosystem_id),
     slug: asTrimmedString(source.slug),
     status: asAppStatus(source.status),
-    app_name: asTrimmedString(source.app_name),
-    app_short_name: asTrimmedString(source.app_short_name),
+    app_name:
+      asTrimmedString(source.name) || asTrimmedString(source.app_name),
+    app_short_name:
+      asTrimmedString(source.short_name) ||
+      asTrimmedString(source.app_short_name),
     role: asAppRole(source.role),
     tagline: asTrimmedString(source.tagline),
     description: asTrimmedString(source.description),

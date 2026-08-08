@@ -117,6 +117,27 @@ Before each task:
 - Start at `packages/core/fireux-core/src/config/app/nuxt-baseline.ts` and
   `scripts/guards/css-system.mjs` when this contract changes.
 
+## Entity detail pages
+
+- Build detail pages as explicit entity-owned layers. User owns its reader,
+  page facts, permissions, and profile presentation; App owns the equivalent
+  App family. Do not introduce a cross-entity detail engine merely to remove
+  repeated pending, missing, failure, status, or SEO lines.
+- Align sibling pages by contract and anatomy: one bounded object, derived
+  facts, route facts, truthful HTTP status, semantic theme tokens, and named
+  entity presentation. Small readable duplication is preferable to runtime
+  registries, generic page metadata, component-path configuration, or
+  environment branches in Core.
+- A project may own a detail page when its authority or product composition is
+  genuinely different. FireUX owns its platform-directory App detail; ordinary
+  ecosystem Apps inherit the Core App detail. Keep the two aligned as siblings
+  without pretending that their readers and page responsibilities are equal.
+- Use `Public` only where it names a real publication, DTO, endpoint, Rules, or
+  privacy boundary. Ordinary components, composables, and page variables use
+  the entity name; protected material is named `Private` explicitly.
+- Start at `docs/concepts/family-public-detail.md` and the nearest entity page,
+  reader, projection, and presentation before changing this family.
+
 ## Public route identity
 
 - Each public entity family declares one exact route key. When that key is the

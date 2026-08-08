@@ -108,11 +108,10 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const response: PublicDetailResponse<PublicUserDto> & { user: PublicUserDto } = {
+  const response: PublicDetailResponse<PublicUserDto> = {
     ok: true,
     generatedAt: new Date().toISOString(),
     item: user,
-    user,
   }
 
   return response
