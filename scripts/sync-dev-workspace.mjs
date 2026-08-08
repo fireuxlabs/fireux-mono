@@ -31,6 +31,7 @@ const backgroundMatcher = {
   },
   background: {
     activeOnStart: true,
+    beginsPattern: '^\\[dev\\] Starting .*$',
     endsPattern: '^\\[dev\\] .* ready$',
   },
 }

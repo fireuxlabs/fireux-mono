@@ -38,7 +38,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 // typed lane; additions fail the guard. This turns the pre-spine writers into a
 // bounded, executable remaining-file inventory instead of an expanding allowlist.
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
-  'a600747c11b4a7498952ce087e7f0a18b14633f4cbcc09518e1567a7be45aca2'
+  'df0b210b149eab688f510e70c98d9c465d61a2d9e5ebe8b887bbd449c2826cda'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
   'bda76e185e9be6e3cf978e8d2e494c3d24cd1cbd789aab845b6691cdc20a5b76'
 

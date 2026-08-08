@@ -170,7 +170,9 @@ export function useAuth() {
   }
 
   const uid = computed<string | null>(() => currentUser.value?.uid ?? null)
-  const isAuthenticated = computed(() => !!uid.value)
+  const isAuthenticated = computed(() =>
+    !!currentUser.value && !currentUser.value.isAnonymous
+  )
   const authState = computed(() =>
     currentUser.value && !currentUser.value.isAnonymous
       ? 'AUTHENTICATED'
@@ -231,7 +233,7 @@ export function useAuth() {
   // ─────────────────────────────────────────────
   // Auth actions (no-op safely until ready)
   // ─────────────────────────────────────────────
-  const signInWithGoogle = (termsVersion: string) =>
+  const signInWithGoogle = (termsVersion?: string) =>
     signInWithGoogleAuth(auth, termsVersion, ensureSignedInUser)
 
   const signInWithEmailPassword = async (email: string, password: string) => {
@@ -246,11 +248,10 @@ export function useAuth() {
   const signUpWithEmailPassword = async (
     email: string,
     password: string,
-    termsVersion: string,
     displayName?: string
   ) => {
     if (!auth.value) return null
-    rememberPendingAccountConsent(termsVersion)
+    clearPendingAccountConsent()
     const result = await createUserWithEmailAndPassword(
       auth.value,
       email,
@@ -264,7 +265,8 @@ export function useAuth() {
     if (normalizedDisplayName) {
       await updateProfile(result.user, { displayName: normalizedDisplayName })
     }
-    return await ensureSignedInUser(result.user, termsVersion)
+    currentUser.value = result.user
+    return result.user
   }
 
   const signOutUser = async (redirectTo: string = '/') => {

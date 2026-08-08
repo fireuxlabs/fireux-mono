@@ -57,13 +57,16 @@ export async function resolveClientAuthState(
         (user) => {
           unsubscribe()
           const uid = user?.uid ?? currentUid
-          resolve({ uid, isAuthenticated: Boolean(uid) })
+          resolve({
+            uid,
+            isAuthenticated: Boolean(uid && !user?.isAnonymous),
+          })
         },
         () => {
           unsubscribe()
           resolve({
             uid: currentUid,
-            isAuthenticated: Boolean(currentUid),
+            isAuthenticated: Boolean(currentUid && !auth.currentUser?.isAnonymous),
           })
         }
       )
@@ -71,7 +74,7 @@ export async function resolveClientAuthState(
     timeoutMs,
     {
       uid: currentUid,
-      isAuthenticated: Boolean(currentUid),
+      isAuthenticated: Boolean(currentUid && !auth.currentUser?.isAnonymous),
     }
   )
 }

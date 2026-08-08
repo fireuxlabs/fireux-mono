@@ -6,7 +6,7 @@
 <template>
   <UPage>
     <UPageBody class="pagebody">
-      <div v-if="pending && !displayProfile" class="space-y-4">
+      <div v-if="pending && !user" class="space-y-4">
         <USkeleton class="h-48 rounded-3xl" />
         <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <USkeleton v-for="index in 4" :key="index" class="h-36 rounded-2xl" />
@@ -14,16 +14,17 @@
       </div>
 
       <UserPublicProfile
-        v-else-if="displayProfile"
-        :user-id="displayProfile.id"
+        v-else-if="user"
+        :user-id="user.id"
         :avatar-url="
-          String(displayProfile.avatar || displayProfile.image || '').trim()
+          String(user.avatar || user.image || '').trim()
         "
         :display-name="pageTitle"
         :handle="pageHeadline"
-        :bio="String(displayProfile.bio || '').trim()"
+        :bio="String(user.bio || '').trim()"
         :profiles="[]"
         :is-self="isSelf"
+        :can-edit="canEdit"
         :access-tier="isSelf ? accessTier : null"
       />
 
@@ -95,8 +96,6 @@ type PublicUserDto = {
   displayName: string
   bio: string
   avatar?: string
-  apps?: string[]
-  profiles?: string[]
   title: string
   description: string
   path: string
@@ -120,7 +119,7 @@ const { data, pending, error } = await useAsyncData(
   }
 )
 
-const profile = computed<PublicUserDto | null>(() => {
+const user = computed<PublicUserDto | null>(() => {
   const payload = data.value
   if (payload?.user) return payload.user
   if (payload?.item) return payload.item
@@ -128,47 +127,17 @@ const profile = computed<PublicUserDto | null>(() => {
 })
 
 const { user: sessionUser, accessTier } = useUser()
-const liveSelfProfile = computed<PublicUserDto | null>(() => {
-  const user = sessionUser.value
-  if (!user) return null
-
-  const userHandle = String(user.handle || '')
-    .trim()
-    .toLowerCase()
-  if (!userHandle || userHandle !== handle.value) return null
-
-  const displayName = String(user.display_name || '').trim() || `@${userHandle}`
-  const avatar = String(user.avatar || '').trim()
-  const bio = String(user.bio || '').trim()
-
-  // Public detail family: SSR uses the public DTO; a signed-in user can then
-  // hydrate their own profile from the live auth-bound User document.
-  return {
-    id: String(user.id || '').trim(),
-    handle: userHandle,
-    displayName,
-    bio,
-    avatar,
-    title: displayName,
-    description: bio || `Public profile for ${displayName}.`,
-    path: `/users/${encodeURIComponent(userHandle)}`,
-    image: avatar || undefined,
-    updatedAt: '',
-    isPublic: true,
-  }
-})
-const displayProfile = computed(() => liveSelfProfile.value ?? profile.value)
 const devJsonData = computed(() => ({
   objects: {
-    endpointProfile: profile.value,
-    liveSelfProfile: liveSelfProfile.value,
-    displayProfile: displayProfile.value,
+    user: user.value,
   },
   derived: {
-    source: liveSelfProfile.value ? 'live-self-user-doc' : 'public-user-api',
-    handle: handle.value,
-    isSelf: isSelf.value,
+    isOwnProfile: isOwnProfile.value,
+    canEdit: canEdit.value,
     accessTier: isSelf.value ? accessTier.value : null,
+  },
+  page: {
+    handle: handle.value,
   },
 }))
 const statusCode = computed(() =>
@@ -182,7 +151,7 @@ const statusCode = computed(() =>
 const missing = computed(
   () =>
     statusCode.value === 404 ||
-    (!pending.value && !error.value && !profile.value)
+    (!pending.value && !error.value && !user.value)
 )
 const fetchFailed = computed(
   () => Boolean(error.value) && statusCode.value !== 404
@@ -196,12 +165,16 @@ if (import.meta.server) {
   }
 }
 
-const isSelf = computed(() =>
-  Boolean(handle.value && sessionUser.value?.handle === handle.value)
+const isOwnProfile = computed(() =>
+  Boolean(user.value?.id && sessionUser.value?.id === user.value.id)
 )
+const isSelf = isOwnProfile
+// The current mutation seam is self-only. Extend this flag to App admins and
+// the configured developer only when a trusted target-User writer exists.
+const canEdit = computed(() => isOwnProfile.value)
 
 const displayName = computed(
-  () => displayProfile.value?.displayName || displayProfile.value?.title || null
+  () => user.value?.displayName || user.value?.title || null
 )
 const pageTitle = computed(
   () => displayName.value ?? (handle.value ? `@${handle.value}` : 'User')
@@ -211,7 +184,7 @@ const pageHeadline = computed(() =>
 )
 const pageDescription = computed(
   () =>
-    displayProfile.value?.description ||
+    user.value?.description ||
     (displayName.value ? `Profile for ${displayName.value}.` : 'User profile.')
 )
 
@@ -240,7 +213,7 @@ const siteUrl = computed(() => {
 })
 const canonicalPath = computed(() =>
   String(
-    displayProfile.value?.path ||
+    user.value?.path ||
       `/users/${encodeURIComponent(handle.value || '')}`
   ).trim()
 )

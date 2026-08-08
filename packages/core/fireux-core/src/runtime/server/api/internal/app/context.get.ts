@@ -26,31 +26,51 @@ function membershipDto(
   isConfiguredDeveloper: boolean,
   profiles: string[]
 ): CurrentAppMembershipDto {
-  const role = value.role
-  if (role !== 'admin' && role !== 'user') {
-    conflict('Current App membership has an invalid role.')
+  const role = value.role === 'admin' || value.role === 'user' ? value.role : 'user'
+  if (value.role !== 'admin' && value.role !== 'user') {
+    console.warn('[app/context] coalescing legacy membership role', {
+      appId: value.app_id,
+      userId: id,
+    })
   }
+  const isPremium = value.is_premium === true
   if (typeof value.is_premium !== 'boolean') {
-    conflict('Current App membership has invalid capability fields.')
+    console.warn('[app/context] coalescing legacy premium flag', {
+      appId: value.app_id,
+      userId: id,
+    })
   }
   const onboardingStatus =
-    value.onboarding_status === undefined ? 'pending' : value.onboarding_status
+    value.onboarding_status === 'completed' || value.onboarding_status === 'skipped'
+      ? value.onboarding_status
+      : 'pending'
   if (
-    onboardingStatus !== 'pending' &&
-    onboardingStatus !== 'completed' &&
-    onboardingStatus !== 'skipped'
+    value.onboarding_status !== undefined &&
+    value.onboarding_status !== 'pending' &&
+    value.onboarding_status !== 'completed' &&
+    value.onboarding_status !== 'skipped'
   ) {
-    conflict('Current App membership has an invalid onboarding status.')
+    console.warn('[app/context] coalescing legacy onboarding status', {
+      appId: value.app_id,
+      userId: id,
+      value: value.onboarding_status,
+    })
+  }
+  const normalizedMembership = {
+    ...value,
+    role,
+    is_premium: isPremium,
+    onboarding_status: onboardingStatus,
   }
   const access = resolveAppUserAccess({
-    membership: value,
+    membership: normalizedMembership,
     isConfiguredDeveloper,
   })
 
   return {
     id,
     role,
-    is_premium: value.is_premium,
+    is_premium: isPremium,
     access_tier: access.tier ?? 'free',
     has_premium_access: access.hasPremiumAccess,
     console_enabled: access.hasAdminAuthority || isConfiguredDeveloper,

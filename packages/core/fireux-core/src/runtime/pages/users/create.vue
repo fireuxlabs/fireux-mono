@@ -1,11 +1,5 @@
 <template>
   <UPage>
-    <UPageHeader
-      class="pageheader"
-      title="Set Up Your Account"
-      description="Sign in, restore a missing user record, or re-ensure your active app membership safely."
-    />
-
     <UPageBody class="pagebody">
       <UserCreateSystem />
     </UPageBody>
@@ -18,8 +12,8 @@ import UserCreateSystem from '../../components/User/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
-  title: 'Set Up Your Account',
-  description: 'Create or repair the active user record and app membership safely.',
+  title: 'Create Your User',
+  description: 'Create your public FireUX identity and connect it to this App.',
   nav: {
     key: 'users-create',
     label: 'Create user',
@@ -31,5 +25,5 @@ definePageMeta({
   name: 'UsersCreatePage',
 })
 
-useHead({ title: 'Set Up Your Account' })
+useHead({ title: 'Create Your User' })
 </script>

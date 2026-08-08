@@ -5,15 +5,16 @@
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography through the canonical public User updater.
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../../vuefire'
 import {
-  USER_ECOSYSTEM_AVATAR_SRC,
   UserStorage,
   type User,
 } from '../../../../../../../models/core/user.model'
 import { useImageStorage } from '../../../../../firebase/useImageStorage'
 import { useFirestoreUpdate } from '../../../../operations/useFirestoreUpdate'
+import { ensureAvatarUrl } from '../../../../utils/useEnsureCommon'
 import type { UserRefs } from '../../fetch/useUserFetch'
 import { useUserHandleUpdate } from '../../mutations/useUserHandleUpdate'
 import { useUserFormattingAndValidation } from '../validation/useUserFormatting'
+import { USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE } from '../../../../../../../utils/user-avatar'
 
 function avatarFileExtension(source: File | Blob): string {
   const name =
@@ -89,8 +90,18 @@ export function useCoreUserUpdate(user: UserRefs) {
         url ?? '',
         'Invalid avatar URL'
       )
+      const resolved = formatted
+        ? formatted
+        : await ensureAvatarUrl(
+            `${UserStorage.collection}/${requireCoreId()}/avatar/current`,
+            [USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE],
+            true,
+            {
+              fallback: USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE,
+            }
+          )
       await updateCorePublicIdentity({
-        avatar: formatted || USER_ECOSYSTEM_AVATAR_SRC,
+        avatar: resolved,
       })
     },
     uploadAvatar: async (source: File | Blob) => {

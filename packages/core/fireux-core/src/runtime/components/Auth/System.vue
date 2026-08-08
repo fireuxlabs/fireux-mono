@@ -28,42 +28,15 @@
               title="Account setup incomplete"
               :description="accountProvisionErrorMessage"
             />
-            <div
-              v-if="accountRecoveryConsentRequired"
-              class="flex items-start gap-2"
-            >
-              <UCheckbox
-                v-model="accountRecoveryConsentAcknowledged"
-                :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy for account recovery`"
-                :disabled="creatingUser"
-              />
-              <p class="text-sm text-muted">
-                I accept the
-                <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
-                and acknowledge the
-                <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
-                <span class="block">
-                  Terms and Privacy version {{ FIREUX_ACCOUNT_TERMS_VERSION }}.
-                </span>
-              </p>
-            </div>
             <UButton
               v-if="accountProvisionErrorMessage"
               block
               color="primary"
               variant="soft"
               :loading="creatingUser"
-              :disabled="
-                accountRecoveryConsentRequired &&
-                !accountRecoveryConsentAcknowledged
-              "
-              @click="handleAccountRetry"
+              @click="handleAccountRecovery"
             >
-              {{
-                accountRecoveryConsentRequired
-                  ? 'Complete account setup'
-                  : 'Retry account setup'
-              }}
+              Complete account setup
             </UButton>
             <UserCardsPill
               v-else-if="currentUserPill"
@@ -81,7 +54,7 @@
                 "
                 @click="goToCompletion"
               >
-                Open Dashboard
+                {{ authActionLabel }}
               </UButton>
               <UButton
                 block
@@ -96,29 +69,12 @@
         </template>
 
         <template v-else>
-          <div class="flex items-start gap-2">
-            <UCheckbox
-              v-model="googleConsentAcknowledged"
-              :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy for Google sign-in`"
-              :disabled="providerLoading"
-            />
-            <p class="text-sm text-muted">
-              I accept the
-              <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
-              and acknowledge the
-              <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
-              <span class="block">
-                Terms and Privacy version {{ FIREUX_ACCOUNT_TERMS_VERSION }}.
-              </span>
-            </p>
-          </div>
-
           <UButton
             block
             color="neutral"
             variant="subtle"
             :loading="providerLoading"
-            :disabled="providerLoading || !googleConsentAcknowledged"
+            :disabled="providerLoading"
             icon="i-logos-google-icon"
             @click="handleGoogle"
           >
@@ -151,30 +107,22 @@ import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
 import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
-import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/operations/user-account-provisioning'
 
 const router = useRouter()
 const route = useRoute()
-const {
-  authState,
-  hasAuthState,
-  signOutUser,
-  signInWithGoogle,
-  creating: creatingUser,
-  lastAccountProvisionError,
-  retryAccountProvisioning,
-} = useAuth()
+  const {
+    authState,
+    hasAuthState,
+    signOutUser,
+    signInWithGoogle,
+    creating: creatingUser,
+    lastAccountProvisionError,
+  } = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
 const providerError = ref('')
 const navigationInFlight = ref(false)
-const googleConsentAcknowledged = ref(false)
-const accountRecoveryConsentAcknowledged = ref(false)
-const ACCOUNT_RECOVERY_CONSENT_MESSAGES = [
-  'Accept the current Terms of Service and acknowledge the Privacy Policy to recover this incomplete account.',
-  'Accept the current Terms of Service and acknowledge the Privacy Policy for a new account.',
-] as const
 const accountProvisionErrorMessage = computed(() => {
   const error = lastAccountProvisionError.value
   if (!error) return ''
@@ -186,11 +134,6 @@ const accountProvisionErrorMessage = computed(() => {
 
   return message || 'Your signed-in account could not be prepared.'
 })
-const accountRecoveryConsentRequired = computed(() =>
-  ACCOUNT_RECOVERY_CONSENT_MESSAGES.some((message) =>
-    accountProvisionErrorMessage.value.includes(message)
-  )
-)
 
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
@@ -221,8 +164,15 @@ function sanitizeRedirect(value: unknown): string | null {
 const authMode = computed(() =>
   route.query.mode === 'sign-up' ? 'sign-up' : 'sign-in'
 )
-const resolvedPostAuthPath = computed(
-  () => sanitizeRedirect(route.query.redirect) ?? '/dashboard'
+const resolvedPostAuthPath = computed(() => {
+  const redirect = sanitizeRedirect(route.query.redirect)
+  if (redirect) return redirect
+  if (route.path === '/auth') return '/dashboard'
+  return route.fullPath || '/dashboard'
+})
+
+const authActionLabel = computed(() =>
+  route.path === '/apps/create' ? 'Continue onboarding' : 'Open Dashboard'
 )
 
 async function completeAuthNavigation(target: string) {
@@ -272,29 +222,26 @@ const handleSignOut = async () => {
   }
 }
 
-const handleAccountRetry = async () => {
-  if (
-    accountRecoveryConsentRequired.value &&
-    !accountRecoveryConsentAcknowledged.value
-  ) return
-  await retryAccountProvisioning(
-    accountRecoveryConsentRequired.value
-      ? FIREUX_ACCOUNT_TERMS_VERSION
-      : undefined
-  ).catch(() => {})
+const handleAccountRecovery = async () => {
+  await router.push('/users/create').catch(() => {})
 }
 
 const handleGoogle = async () => {
-  if (providerLoading.value || !googleConsentAcknowledged.value) return
+  if (providerLoading.value) return
   providerError.value = ''
   providerLoading.value = true
   try {
-    await signInWithGoogle(FIREUX_ACCOUNT_TERMS_VERSION)
+    await signInWithGoogle()
   } catch (error) {
-    providerError.value =
-      error instanceof Error && error.message.trim()
-        ? error.message
-        : 'Your signed-in account could not be prepared.'
+    const message = error instanceof Error ? error.message.trim() : ''
+    if (message.includes('Accept the current Terms of Service')) {
+      await router.push({
+        path: '/users/create',
+        query: { redirect: resolvedPostAuthPath.value },
+      })
+      return
+    }
+    providerError.value = message || 'Your signed-in account could not be prepared.'
   } finally {
     providerLoading.value = false
   }

@@ -6,7 +6,7 @@
     <UAuthForm
       class="w-full"
       :fields="fields"
-      :submit="{ label: submitLabel, disabled: signupConsentRequired }"
+      :submit="{ label: submitLabel }"
       :loading="formLoading"
       @submit="handleEmailSubmit"
     >
@@ -17,23 +17,6 @@
             :label="emailModeLabel"
             :disabled="formLoading"
           />
-
-          <div v-if="isSignUp" class="flex items-start gap-2">
-            <UCheckbox
-              v-model="signupConsentAcknowledged"
-              :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy for account creation`"
-              :disabled="formLoading"
-            />
-            <p class="text-sm text-muted">
-              I accept the
-              <NuxtLink to="/legal/terms">Terms of Service</NuxtLink>
-              and acknowledge the
-              <NuxtLink to="/legal/privacy">Privacy Policy</NuxtLink>.
-              <span class="block">
-                Terms and Privacy version {{ FIREUX_ACCOUNT_TERMS_VERSION }}.
-              </span>
-            </p>
-          </div>
 
           <UAlert
             v-if="error"
@@ -52,9 +35,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useRoute, useRouter } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../models/operations/user-account-provisioning'
 
 type AuthMode = 'sign-in' | 'sign-up'
 
@@ -70,11 +52,12 @@ const props = defineProps<{
 }>()
 
 const { signInWithEmailPassword, signUpWithEmailPassword } = useAuth()
+const route = useRoute()
+const router = useRouter()
 
 const isSignUp = ref(props.defaultMode === 'sign-up')
 const formLoading = ref(false)
 const error = ref<AuthError>(null)
-const signupConsentAcknowledged = ref(false)
 
 const submitLabel = computed(() =>
   isSignUp.value ? 'Create account' : 'Continue'
@@ -90,9 +73,6 @@ const passwordAutocomplete = computed(() =>
 )
 const emailModeLabel = computed(() =>
   isSignUp.value ? 'Creating a new account' : 'Using an existing account'
-)
-const signupConsentRequired = computed(
-  () => isSignUp.value && !signupConsentAcknowledged.value
 )
 const fields = computed(() => [
   ...(isSignUp.value
@@ -174,15 +154,6 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
     }
     return
   }
-  if (mode === 'sign-up' && !signupConsentAcknowledged.value) {
-    error.value = {
-      title: 'Acceptance required',
-      description:
-        'Accept the Terms of Service and acknowledge the Privacy Policy before creating an account.',
-    }
-    return
-  }
-
   error.value = null
   formLoading.value = true
 
@@ -193,7 +164,6 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
         ? await signUpWithEmailPassword(
             email,
             password,
-            FIREUX_ACCOUNT_TERMS_VERSION,
             name
           )
         : await signInWithEmailPassword(email, password)
@@ -209,7 +179,15 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
     formLoading.value = false
   }
 
-  if (result?.uid) return
+  if (result?.uid) {
+    if (mode === 'sign-up') {
+      const redirect = typeof route.query.redirect === 'string'
+        ? route.query.redirect
+        : '/dashboard'
+      await router.push({ path: '/users/create', query: { redirect } })
+    }
+    return
+  }
   if (error.value) return
   setEmailError(mode)
 }

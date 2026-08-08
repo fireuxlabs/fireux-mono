@@ -12,7 +12,37 @@
     entity="user overview"
     kind="document"
     state="error"
-  />
+    title="Unable to load your user overview"
+    description="Your authentication works, but your account profile could not be loaded from Firestore right now."
+  >
+    <template #default>
+      <p class="text-xs text-dimmed">
+        This is usually a permissions or setup issue in the active identity doc.
+      </p>
+      <div class="mt-3 flex justify-center gap-2">
+        <UButton
+          to="/users/create"
+          label="Review user setup"
+          icon="i-lucide-user-round-plus"
+          size="sm"
+        />
+        <UButton
+          to="/auth"
+          label="Sign in again"
+          icon="i-lucide-refresh-cw"
+          size="sm"
+          color="neutral"
+          variant="soft"
+        />
+      </div>
+      <details v-if="isDev" class="mt-4 text-left">
+        <summary class="cursor-pointer text-xs text-dimmed">
+          Debug details (dev only)
+        </summary>
+        <pre class="mt-2 max-h-48 overflow-auto rounded border p-3 text-xs">{{ coreErrorDebug }}</pre>
+      </details>
+    </template>
+  </MoleculesStateCard>
 
   <template v-else-if="coreUser && userCard">
     <div class="space-y-4">
@@ -85,7 +115,9 @@ import { useConsoleEntryCta } from '../../composables/fireux/app/ui/nav/useConso
 import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
 import { useAppInterface } from '../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
 import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useAuth } from '../../composables/fireux/firebase/useAuth'
 import { USER_ECOSYSTEM_AVATAR_SRC } from '../../models/core/user.model'
+import { readRuntimeIdentityFirestoreDatabaseId } from '../../composables/fireux/firestore/vuefire'
 import DashboardOverviewApp from './Overview/App.vue'
 import DashboardOverviewEcosystem from './Overview/Ecosystem.vue'
 import DashboardOverviewUser from './Overview/User.vue'
@@ -95,7 +127,9 @@ import type {
 } from './Overview/types'
 
 const fireux = useFireUXConfig()
+const isDev = computed(() => import.meta.dev)
 const userApi = useUser()
+const { uid } = useAuth()
 const appContext = useCurrentAppContext()
 const { profile: appToCard } = useAppInterface()
 const runtimeConfig = useRuntimeConfig()
@@ -130,6 +164,42 @@ const coreIsLoading = computed(
 const coreIsError = computed(
   () => coreOutcome.value === 'error' || Boolean(coreError.value)
 )
+const identityDatabaseId = computed(() => {
+  return readRuntimeIdentityFirestoreDatabaseId() || '(default)'
+})
+const coreErrorDebug = computed(() => {
+  const value = coreError.value
+  if (!value || typeof value !== 'object') {
+    return JSON.stringify(
+      {
+        message: String(value || ''),
+        authUid: uid.value || '',
+        identityDatabaseId: identityDatabaseId.value,
+      },
+      null,
+      2
+    )
+  }
+
+  const record = value as {
+    code?: unknown
+    message?: unknown
+    name?: unknown
+    stack?: unknown
+  }
+  return JSON.stringify(
+    {
+      code: String(record.code ?? ''),
+      name: String(record.name ?? ''),
+      message: String(record.message ?? ''),
+      stack: typeof record.stack === 'string' ? record.stack : undefined,
+      authUid: uid.value || '',
+      identityDatabaseId: identityDatabaseId.value,
+    },
+    null,
+    2
+  )
+})
 const coreIsMissing = computed(
   () => coreOutcome.value === 'missing' || coreUser.value === null
 )

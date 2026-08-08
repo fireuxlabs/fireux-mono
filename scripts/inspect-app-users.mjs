@@ -88,17 +88,59 @@ const [usersSnap, appUsersSnap] = await Promise.all([
   db.collection('apps').doc(appId).collection('users').limit(limit).get(),
 ])
 
-const users = usersSnap.docs.map((doc) => ({
-  id: doc.id,
-  display_name: doc.get('display_name') || '',
-  email: doc.get('email') || '',
-  handle: doc.get('handle') || '',
+const users = await Promise.all(usersSnap.docs.map(async (doc) => {
+  const account = await doc.ref.collection('private').doc('account').get()
+  const avatar = String(doc.get('avatar') || '').trim()
+  const displayName = String(doc.get('display_name') || '').trim()
+  const handle = String(doc.get('handle') || '').trim()
+  const bio = doc.get('bio')
+  const termsVersion = account.exists
+    ? String(account.get('terms.version') || '').trim()
+    : ''
+
+  return {
+    id: doc.id,
+    display_name: displayName,
+    handle,
+    contract: {
+      bio_is_string: typeof bio === 'string',
+      avatar_kind: avatar.startsWith('https://firebasestorage.googleapis.com/')
+        ? avatar.includes(`users%2F${encodeURIComponent(doc.id)}%2Favatar%2Fcurrent`)
+          ? 'user-storage'
+          : 'other-storage'
+        : avatar.startsWith('https://')
+          ? 'external-https'
+          : avatar.startsWith('/')
+            ? 'local-path'
+            : avatar
+              ? 'invalid'
+              : 'missing',
+      avatar_is_storage_url:
+        avatar.startsWith('https://firebasestorage.googleapis.com/') &&
+        avatar.includes(
+          `users%2F${encodeURIComponent(doc.id)}%2Favatar%2Fcurrent`
+        ),
+      created_stamp_present: Boolean(doc.get('created.at')),
+      updated_stamp_present: Boolean(doc.get('updated.at')),
+      private_account_present: account.exists,
+      terms_version: termsVersion,
+      terms_accepted: Boolean(account.get('terms.accepted_at')),
+    },
+  }
 }))
 
 const appUsers = appUsersSnap.docs.map((doc) => ({
   id: doc.id,
   role: doc.get('role') || '',
   is_premium: doc.get('is_premium') === true,
+}))
+
+const membershipIds = new Set(appUsers.map((membership) => membership.id))
+const onboardingAudit = users.map((user) => ({
+  id: user.id,
+  handle: user.handle,
+  app_membership_present: membershipIds.has(user.id),
+  ...user.contract,
 }))
 
 console.log(
@@ -109,6 +151,7 @@ console.log(
       appId,
       users,
       appUsers,
+      onboardingAudit,
     },
     null,
     2

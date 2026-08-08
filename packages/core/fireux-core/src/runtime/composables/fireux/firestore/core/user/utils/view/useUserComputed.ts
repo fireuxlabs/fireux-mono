@@ -27,10 +27,10 @@ type UserCta = {
 const CTA_SIGN_IN: UserCta = { key: 'sign-in', label: 'Sign in', to: '/auth' }
 const CTA_CREATE_CORE: UserCta = {
   key: 'create-core-user',
-  label: 'Create core user',
+  label: 'Create my User',
   to: '',
 }
-const CTA_JOIN_APP: UserCta = { key: 'join-app', label: 'Sync app membership', to: '' }
+const CTA_JOIN_APP: UserCta = { key: 'join-app', label: 'Connect to App', to: '' }
 const CTA_AVATAR: UserCta = { key: 'avatar', label: '', to: '' }
 
 export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {

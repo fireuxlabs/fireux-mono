@@ -10,7 +10,6 @@ import {
   getDocs,
   query,
   serverTimestamp,
-  setDoc,
   where,
 } from 'firebase/firestore'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
@@ -25,6 +24,8 @@ import { useFirestoreClientCreate } from '../../../mutations/useFirestoreClientC
 import { useFirestore } from '../../../vuefire'
 import { useAuth } from '../../../../firebase/useAuth'
 import { defineRuntimeClientCreateTarget } from '../../../../../../utils/firestore-mutations/targets'
+import { useFirestoreClientUpdate } from '../../../operations/useFirestoreClientUpdate'
+import { defineFirestoreMutationTarget } from '../../../../../../utils/firestore-mutations/targets'
 
 export type ConsoleEntityType =
   | 'kitchen'
@@ -87,6 +88,25 @@ export function useConsoleCreate() {
   const create = useFirestoreClientCreate()
   const { appId, developerId, role } = useFireUXConfig()
   const { uid } = useAuth()
+  const { updateDocument } = useFirestoreClientUpdate()
+
+  const appSupportTarget = (appId: string, collectionName: string) =>
+    defineFirestoreMutationTarget({
+      key: 'project.app-support',
+      lane: 'client',
+      verbs: ['update'],
+      database: { kind: 'runtime' },
+      collectionPath: `${AppStorage.collection}/${appId}/${collectionName}`,
+    })
+
+  const appTarget = (collectionName: string) =>
+    defineFirestoreMutationTarget({
+      key: `project.${collectionName}`,
+      lane: 'client',
+      verbs: ['update'],
+      database: { kind: 'runtime' },
+      collectionPath: collectionName,
+    })
 
   async function assertCanCreateAdditionalConsole(
     type: ConsoleEntityType,
@@ -270,19 +290,16 @@ export function useConsoleCreate() {
 
     const currentUid = normalizeId(uid.value)
     if (currentUid) {
-      await setDoc(
-        appSupportRef,
+      await updateDocument(
+        appSupportTarget(currentAppId, collectionName),
+        id,
         {
           operator_ids: arrayUnion(currentUid),
           team_ids: arrayUnion(currentUid),
-          updated: {
-            at: serverTimestamp(),
-            by: currentUid,
-          },
-        },
-        { merge: true }
+          'updated.at': serverTimestamp(),
+          ...(currentUid ? { 'updated.by': currentUid } : {}),
+        }
       )
-
     }
 
     const rootRef = doc(db, collectionName, id)
@@ -302,26 +319,25 @@ export function useConsoleCreate() {
           typeof rootData.app_scope === 'object' &&
           !Array.isArray(rootData.app_scope)
         )
-        await setDoc(
-          rootRef,
-          {
-            ...(usesNestedAppScope
-              ? {
-                  app_scope: {
-                    state: appScopeState,
-                    app_id: appScopeAppId,
-                  },
-                }
-              : {
-                  app_scope_state: appScopeState,
-                  app_scope_app_id: appScopeAppId,
-                }),
-            updated: {
-              at: serverTimestamp(),
-              ...(currentUid ? { by: currentUid } : {}),
-            },
-          },
-          { merge: true }
+        const scopePatch: Record<string, unknown> = {}
+
+        if (usesNestedAppScope) {
+          scopePatch['app_scope.state'] = appScopeState
+          scopePatch['app_scope.app_id'] = appScopeAppId
+        } else {
+          scopePatch['app_scope_state'] = appScopeState
+          scopePatch['app_scope_app_id'] = appScopeAppId
+        }
+
+        scopePatch['updated.at'] = serverTimestamp()
+        if (currentUid) {
+          scopePatch['updated.by'] = currentUid
+        }
+
+        await updateDocument(
+          appTarget(collectionName),
+          id,
+          scopePatch
         )
       }
     }

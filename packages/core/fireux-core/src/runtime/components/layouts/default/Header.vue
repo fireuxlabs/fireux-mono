@@ -129,6 +129,7 @@ const headerAvatarName = computed(() =>
     currentUser.value?.display_name || authUser.value?.displayName || ''
   ).trim()
 )
+
 const headerAvatarText = computed(() => {
   const name = headerAvatarName.value
   if (!name) return 'U'

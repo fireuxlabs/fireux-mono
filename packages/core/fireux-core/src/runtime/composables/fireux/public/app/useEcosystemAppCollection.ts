@@ -8,13 +8,56 @@ import type {
 } from '../../../../types/directory-controller.types'
 import type { PublicCollectionResponse } from '../../../../server/utils/public-projection/public-dto.types'
 
+type UnknownError = {
+  status?: unknown
+  statusCode?: unknown
+  response?: {
+    status?: unknown
+  }
+}
+
+function statusCode(error: unknown) {
+  if (!error || typeof error !== 'object') return 0
+
+  const candidate = error as UnknownError
+  return Number(
+    candidate.statusCode ?? candidate.status ?? candidate.response?.status ?? 0
+  )
+}
+
 /** Read the current owning Ecosystem's allowlisted public App projection. */
 export function useEcosystemAppCollection(): AppDirectoryController {
   const { ecosystemId } = useFireUXConfig()
   const key = `ecosystem-app-directory-${ecosystemId || 'none'}`
   const { data, pending, error, refresh } = useAsyncData(
     key,
-    () => $fetch<PublicCollectionResponse<AppDirectoryEntry>>('/api/public/apps'),
+    async () => {
+      try {
+        return await $fetch<PublicCollectionResponse<AppDirectoryEntry>>(
+          '/api/public/apps'
+        )
+      } catch (cause) {
+        if (statusCode(cause) === 404) {
+          return {
+            ok: true,
+            count: 0,
+            generatedAt: new Date().toISOString(),
+            items: [],
+          } as const
+        }
+
+        if (statusCode(cause) === 401 || statusCode(cause) === 403) {
+          return {
+            ok: false,
+            count: 0,
+            generatedAt: new Date().toISOString(),
+            items: [],
+          } as const
+        }
+
+        throw cause
+      }
+    },
     { server: true, lazy: false }
   )
 

@@ -1,177 +1,209 @@
 <template>
-  <UContainer>
-    <div class="space-y-4 py-4">
-      <div class="space-y-1">
-        <h2 class="text-base font-semibold">{{ title }}</h2>
-        <p class="text-sm text-muted">{{ description }}</p>
-      </div>
-
-      <div class="flex">
-        <UButton
-          v-if="primary.kind === 'link'"
-          color="primary"
-          size="lg"
-          :to="primary.to"
-        >
-          {{ primary.label }}
-        </UButton>
-
-        <UButton
-          v-else-if="primary.kind === 'action'"
-          color="primary"
-          size="lg"
-          :loading="primary.loading"
-          :disabled="primary.disabled"
-          @click="primary.onClick"
-        >
-          {{ primary.label }}
-        </UButton>
-
-        <UButton v-else color="neutral" size="lg" disabled>
-          {{ primary.label }}
-        </UButton>
-      </div>
-
-      <p v-if="error" class="text-sm text-error">
-        {{ error }}
-      </p>
+  <div class="mx-auto w-full max-w-4xl py-6 sm:py-10">
+    <div class="mb-6 flex items-center justify-center gap-2" aria-label="Account setup progress">
+      <template v-for="(step, index) in steps" :key="step.label">
+        <div class="flex items-center gap-2">
+          <span
+            class="flex size-8 items-center justify-center rounded-full border text-sm font-semibold"
+            :class="stepClass(index)"
+          >
+            <UIcon v-if="index < activeStep" name="i-lucide-check" class="size-4" />
+            <span v-else>{{ index + 1 }}</span>
+          </span>
+          <span class="hidden text-sm font-medium sm:inline" :class="index <= activeStep ? 'text-highlighted' : 'text-muted'">
+            {{ step.label }}
+          </span>
+        </div>
+        <span v-if="index < steps.length - 1" class="h-px w-8 bg-border sm:w-14" />
+      </template>
     </div>
-  </UContainer>
+
+    <UCard :ui="{ body: 'p-0 sm:p-0' }">
+      <div class="grid lg:grid-cols-[0.85fr_1.15fr]">
+        <aside class="border-b border-default bg-elevated/50 p-6 sm:p-8 lg:border-e lg:border-b-0">
+          <AppBrandLogo size="large" :alt="`${appLabel} logo`" class="mb-6 size-14 rounded-xl object-contain" />
+          <p class="text-sm font-semibold text-primary">{{ ecosystemLabel }}</p>
+          <h1 class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl">
+            Set up your profile
+          </h1>
+          <p class="mt-3 text-sm leading-6 text-muted">
+            Your profile shows people who you are in {{ appLabel }} and the other Apps you join.
+          </p>
+
+          <ul class="mt-7 space-y-4" aria-label="What account setup creates">
+            <li v-for="benefit in benefits" :key="benefit.label" class="flex gap-3">
+              <span class="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <UIcon :name="benefit.icon" class="size-4" />
+              </span>
+              <div>
+                <p class="text-sm font-medium text-highlighted">{{ benefit.label }}</p>
+                <p class="mt-0.5 text-xs leading-5 text-muted">{{ benefit.description }}</p>
+              </div>
+            </li>
+          </ul>
+        </aside>
+
+        <main class="p-6 sm:p-8">
+          <template v-if="isLoading">
+            <div class="flex min-h-72 flex-col items-center justify-center text-center">
+              <UIcon name="i-lucide-loader-circle" class="size-8 animate-spin text-primary" />
+              <h2 class="mt-4 text-lg font-semibold">Checking your account</h2>
+              <p class="mt-1 text-sm text-muted">Loading your identity and App access.</p>
+            </div>
+          </template>
+
+          <template v-else-if="isSignIn">
+            <p class="text-sm font-medium text-primary">Step 1 of 3</p>
+            <h2 class="mt-2 text-2xl font-semibold">Sign in to begin</h2>
+            <p class="mt-2 text-sm leading-6 text-muted">
+              Your login protects the User you create next.
+            </p>
+            <UButton class="mt-8" size="lg" block :to="signInTarget" icon="i-lucide-log-in">
+              Continue to sign in
+            </UButton>
+          </template>
+
+          <template v-else-if="requiresCore">
+            <p class="text-sm font-medium text-primary">Step 2 of 3</p>
+            <h2 class="mt-2 text-2xl font-semibold">Meet your new User</h2>
+            <p class="mt-2 text-sm leading-6 text-muted">
+              This is how you’ll appear in {{ appLabel }}. You can edit your profile after setup.
+            </p>
+
+            <div class="mt-6 flex items-center gap-4 rounded-xl border border-default bg-elevated/40 p-4">
+              <UAvatar :src="authAvatar || undefined" :alt="displayName" size="xl" />
+              <div class="min-w-0">
+                <p class="truncate font-semibold text-highlighted">{{ displayName }}</p>
+                <p class="truncate text-sm text-muted">{{ authEmail }}</p>
+                <UBadge class="mt-2" color="neutral" variant="soft" size="sm">Public profile</UBadge>
+              </div>
+            </div>
+
+            <div class="mt-6 rounded-xl border border-default p-4">
+              <UCheckbox
+                v-model="onboardingConsentAcknowledged"
+                :disabled="isEnsuring"
+                :aria-label="`Accept Terms of Service version ${FIREUX_ACCOUNT_TERMS_VERSION} and acknowledge Privacy Policy`"
+              >
+                <template #label>
+                  <span class="text-sm leading-6 text-muted">
+                    I accept the <NuxtLink class="font-medium text-primary hover:underline" to="/legal/terms" target="_blank">Terms of Service</NuxtLink>
+                    and acknowledge the <NuxtLink class="font-medium text-primary hover:underline" to="/legal/privacy" target="_blank">Privacy Policy</NuxtLink>.
+                  </span>
+                </template>
+              </UCheckbox>
+              <p class="mt-2 pl-7 text-xs text-dimmed">Version {{ FIREUX_ACCOUNT_TERMS_VERSION }}</p>
+            </div>
+
+            <UAlert v-if="error" class="mt-4" color="error" variant="subtle" icon="i-lucide-circle-alert" title="We couldn’t create your User" :description="error" />
+
+            <UButton
+              class="mt-6"
+              size="lg"
+              block
+              icon="i-lucide-arrow-right"
+              trailing
+              :loading="isEnsuring"
+              :disabled="isEnsuring || !onboardingConsentAcknowledged"
+              @click="handleEnsure"
+            >
+              {{ isEnsuring ? 'Creating your User…' : 'Create my User' }}
+            </UButton>
+            <p class="mt-3 text-center text-xs text-dimmed">Your default avatar is saved securely to your Firebase Storage profile.</p>
+          </template>
+
+          <template v-else-if="requiresApp">
+            <p class="text-sm font-medium text-primary">Step 3 of 3</p>
+            <h2 class="mt-2 text-2xl font-semibold">Connect to {{ appLabel }}</h2>
+            <p class="mt-2 text-sm leading-6 text-muted">
+              Your User is ready. Complete this App’s membership to open its available features.
+            </p>
+            <UAlert v-if="error" class="mt-6" color="error" variant="subtle" title="We couldn’t connect this App" :description="error" />
+            <UButton class="mt-8" size="lg" block icon="i-lucide-link" :loading="isEnsuring" :disabled="isEnsuring" @click="handleEnsure">
+              Connect to {{ appLabel }}
+            </UButton>
+          </template>
+
+          <template v-else>
+            <div class="flex min-h-72 flex-col items-center justify-center text-center">
+              <span class="flex size-14 items-center justify-center rounded-full bg-success/10 text-success">
+                <UIcon name="i-lucide-check" class="size-7" />
+              </span>
+              <h2 class="mt-4 text-2xl font-semibold">You’re ready</h2>
+              <p class="mt-2 text-sm text-muted">Your User is connected to {{ appLabel }}.</p>
+              <UButton class="mt-6" size="lg" :to="returnTarget" trailing-icon="i-lucide-arrow-right">Continue</UButton>
+            </div>
+          </template>
+        </main>
+      </div>
+    </UCard>
+  </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, useRoute, useRouter } from '#imports'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
+import { FIREUX_ACCOUNT_TERMS_VERSION } from '../../../models/operations/user-account-provisioning'
 
-type PrimaryAction =
-  | {
-      kind: 'link'
-      label: string
-      to: string
-      loading: boolean
-      disabled: boolean
-    }
-  | {
-      kind: 'action'
-      label: string
-      onClick: () => Promise<void>
-      loading: boolean
-      disabled: boolean
-    }
-  | {
-      kind: 'none'
-      label: string
-      loading: boolean
-      disabled: boolean
-    }
-
+const route = useRoute()
+const router = useRouter()
 const { appName, ecosystem } = useFireUXConfig()
 const { cta, createUser, isLoading } = useUser()
+const { currentUser: authUser, retryAccountProvisioning } = useAuth()
 
 const error = ref<string | null>(null)
 const isEnsuring = ref(false)
+const onboardingConsentAcknowledged = ref(false)
+const steps = [{ label: 'Sign in' }, { label: 'Create User' }, { label: 'Connect' }]
+const benefits = [
+  { icon: 'i-lucide-contact', label: 'Public profile', description: 'People can see your name, handle, avatar, and public bio.' },
+  { icon: 'i-lucide-shield-check', label: 'Private account', description: 'Your email, sign-in, preferences, and consent remain private.' },
+  { icon: 'i-lucide-blocks', label: 'Apps you join', description: 'The same profile identifies you in each App.' },
+]
 
 const ctaKey = computed(() => cta.value?.key ?? 'avatar')
-const shouldRender = computed(() => ctaKey.value !== 'avatar')
-
 const isSignIn = computed(() => ctaKey.value === 'sign-in')
 const requiresCore = computed(() => ctaKey.value === 'create-core-user')
 const requiresApp = computed(() => ctaKey.value === 'join-app')
-
-const appLabel = computed(() => appName ?? 'this workspace')
-const ecosystemLabel = computed(() => ecosystem ?? 'FireUX')
-
-const title = computed(() => {
-  if (isLoading.value) return 'Loading user'
-  if (isSignIn.value) return 'Sign in to continue'
-  if (requiresCore.value) return 'Create your core user'
-  if (requiresApp.value) return `Sync ${appLabel.value} membership`
-  return 'Update your profile'
+const appLabel = computed(() => appName || 'this App')
+const ecosystemLabel = computed(() => ecosystem === 'misebox' ? 'Misebox' : ecosystem || 'FireUX')
+const authEmail = computed(() => authUser.value?.email || 'Signed-in account')
+const authAvatar = computed(() => authUser.value?.photoURL || '')
+const displayName = computed(() => authUser.value?.displayName?.trim() || authEmail.value.split('@')[0] || 'New User')
+const activeStep = computed(() => isSignIn.value ? 0 : requiresCore.value ? 1 : 2)
+const signInTarget = computed(() => `/auth?redirect=${encodeURIComponent(route.fullPath)}`)
+const returnTarget = computed(() => {
+  const redirect = route.query.redirect
+  if (typeof redirect !== 'string') return '/dashboard'
+  const value = redirect.trim()
+  return value.startsWith('/') && !value.startsWith('//') ? value : '/dashboard'
 })
 
-const description = computed(() => {
-  if (isLoading.value) return 'Resolving your user record and memberships.'
-  if (isSignIn.value)
-    return 'Authenticate to load your user details and continue setup.'
-  if (requiresCore.value)
-    return `Provision your ${ecosystemLabel.value} profile so apps can recognize you.`
-  if (requiresApp.value)
-    return `Create or repair your app member record inside ${appLabel.value}.`
-  return 'Update your profile to keep your information in sync.'
-})
+function stepClass(index: number) {
+  if (index < activeStep.value) return 'border-success bg-success text-inverted'
+  if (index === activeStep.value) return 'border-primary bg-primary text-inverted'
+  return 'border-default bg-default text-muted'
+}
 
-const buttonLabel = computed(() => cta.value?.label ?? 'Continue')
-const linkTarget = computed(() => (isSignIn.value ? cta.value?.to ?? '/auth' : ''))
-
-const canTriggerAction = computed(() => requiresCore.value || requiresApp.value)
-
-const handleEnsure = async () => {
-  if (!canTriggerAction.value || isEnsuring.value) return
-
+async function handleEnsure() {
+  if (isEnsuring.value) return
   error.value = null
   isEnsuring.value = true
-
   try {
-    if (requiresCore.value || requiresApp.value) {
+    if (requiresCore.value) {
+      if (!onboardingConsentAcknowledged.value) throw new Error('Accept the Terms of Service and acknowledge the Privacy Policy to continue.')
+      const provisioned = await retryAccountProvisioning(FIREUX_ACCOUNT_TERMS_VERSION)
+      if (!provisioned) throw new Error('Your User could not be created. Please try again.')
+    } else if (requiresApp.value) {
       await createUser()
     }
-
-  } catch (e) {
-    const message =
-      e instanceof Error
-        ? e.message
-        : 'Unable to update your profile. Please try again.'
-    error.value = message
+    await router.replace(returnTarget.value)
+  } catch (cause) {
+    error.value = cause instanceof Error ? cause.message : 'Unable to complete setup. Please try again.'
   } finally {
     isEnsuring.value = false
   }
 }
-
-const primary = computed<PrimaryAction>(() => {
-  if (isLoading.value) {
-    return {
-      kind: 'none',
-      label: 'Loading…',
-      loading: false,
-      disabled: true,
-    }
-  }
-
-  if (!shouldRender.value) {
-    return {
-      kind: 'none',
-      label: buttonLabel.value,
-      loading: false,
-      disabled: true,
-    }
-  }
-
-  if (linkTarget.value) {
-    return {
-      kind: 'link',
-      label: buttonLabel.value,
-      to: linkTarget.value,
-      loading: false,
-      disabled: false,
-    }
-  }
-
-  if (canTriggerAction.value) {
-    return {
-      kind: 'action',
-      label: buttonLabel.value,
-      onClick: handleEnsure,
-      loading: isEnsuring.value,
-      disabled: isEnsuring.value,
-    }
-  }
-
-  return {
-    kind: 'none',
-    label: buttonLabel.value,
-    loading: false,
-    disabled: true,
-  }
-})
 </script>

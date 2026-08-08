@@ -57,10 +57,11 @@ export async function resolveGoogleRedirectAuthResult(
 
 export async function signInWithGoogleAuth(
   auth: Ref<Auth | null>,
-  termsVersion: string,
+  termsVersion: string | undefined,
   ensureSignedInUser: EnsureSignedInUser
 ) {
-  rememberPendingAccountConsent(termsVersion)
+  if (termsVersion) rememberPendingAccountConsent(termsVersion)
+  else clearPendingAccountConsent()
   if (signInFlight) return signInFlight
   const run = async () => {
     if (!auth.value) {

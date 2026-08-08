@@ -212,12 +212,13 @@ function checkFireuxCoreContracts(pkgPath) {
     }
   }
   if (
-    !authSystem.includes('accountRecoveryConsentRequired') ||
-    !authSystem.includes("'Complete account setup'") ||
-    !authSystem.includes('FIREUX_ACCOUNT_TERMS_VERSION')
+    !authSystem.includes('handleAccountRecovery') ||
+    !authSystem.includes("router.push('/users/create')") ||
+    !authSystem.includes('Complete account setup') ||
+    !authSystem.includes('accountProvisionErrorMessage')
   ) {
     violations.push(
-      'Auth System must retain the shared explicit-consent recovery path for signed-in identities missing canonical account evidence.'
+      'Auth System must send signed-in identities missing canonical account evidence to the shared User onboarding journey.'
     )
   }
 

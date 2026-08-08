@@ -5,13 +5,13 @@
     data-public-profile="user"
   >
     <PublicProfileHero
-      kind-label="Profile"
-      icon="i-lucide-badge-check"
-      tone="secondary"
+      kind-label="User"
+      icon="i-lucide-user-round"
+      tone="primary"
       :avatar-url="avatarUrl"
       :display-name="displayName"
       :handle="handle"
-      :summary="heroSummary"
+      summary=""
       :stats="profileStats"
       :show-user-profile-link="false"
     >
@@ -27,16 +27,57 @@
           :icon="primaryProfile.icon"
           trailing-icon="i-lucide-arrow-up-right"
         />
+        <div
+          v-if="canEdit"
+          class="inline-flex items-center rounded-md border border-default bg-default p-0.5"
+          aria-label="Profile mode"
+        >
+          <UButton
+            label="Browse"
+            icon="i-lucide-eye"
+            color="primary"
+            variant="soft"
+            size="sm"
+            disabled
+          />
+          <UButton
+            to="/dashboard/user-profile"
+            label="Edit"
+            icon="i-lucide-pencil"
+            color="neutral"
+            variant="outline"
+            size="sm"
+          />
+        </div>
+      </template>
+    </PublicProfileHero>
+
+    <UPageCard
+      as="section"
+      variant="subtle"
+      class="rounded-3xl"
+      :ui="{ container: 'p-5 sm:p-7' }"
+    >
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div class="max-w-2xl">
+          <div class="flex items-center gap-2">
+            <UIcon name="i-lucide-align-left" class="size-4 text-primary" />
+            <h2 class="font-semibold text-highlighted">About</h2>
+          </div>
+          <p class="mt-3 whitespace-pre-line text-sm leading-6 text-muted">
+            {{ bioText }}
+          </p>
+        </div>
         <UButton
-          v-if="isSelf"
+          v-if="canEdit && !hasBio"
           to="/dashboard/user-profile"
-          label="Edit profile"
+          label="Add bio"
           icon="i-lucide-pencil"
           color="neutral"
           variant="soft"
         />
-      </template>
-    </PublicProfileHero>
+      </div>
+    </UPageCard>
 
     <UPageCard
       v-if="profileLinks.length"
@@ -96,6 +137,7 @@ const props = withDefaults(
     bio?: string
     profiles?: string[]
     isSelf?: boolean
+    canEdit?: boolean
     accessTier?: UserAccessTier | null
   }>(),
   {
@@ -104,6 +146,7 @@ const props = withDefaults(
     bio: '',
     profiles: () => [],
     isSelf: false,
+    canEdit: false,
     accessTier: null,
   }
 )
@@ -112,10 +155,10 @@ const firstName = computed(
   () => props.displayName.trim().split(/\s+/u)[0] || 'this person'
 )
 
-const heroSummary = computed(
-  () =>
-    String(props.bio || '').trim() ||
-    'Explore the specialist profiles below for experience, credentials, and work.'
+const normalizedBio = computed(() => String(props.bio || '').trim())
+const hasBio = computed(() => Boolean(normalizedBio.value))
+const bioText = computed(() =>
+  normalizedBio.value || `${props.displayName} hasn’t added a bio yet.`
 )
 
 const profileDefinitions = {

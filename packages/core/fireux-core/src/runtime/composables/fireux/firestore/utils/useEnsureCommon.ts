@@ -82,10 +82,11 @@ function normalizeAvatarCandidates(
 export async function ensureAvatarUrl(
   destPath: string,
   candidates: Array<string | null | undefined>,
-  upload = true
+  upload = true,
+  options: { fallback?: string } = {}
 ): Promise<string> {
   const { uploadImage, getDefaultImageUrl } = useImageStorage()
-  const fallback = getDefaultImageUrl()
+  const fallback = options.fallback ?? getDefaultImageUrl()
   const normalized = normalizeAvatarCandidates(candidates, fallback)
 
   if (!upload) {

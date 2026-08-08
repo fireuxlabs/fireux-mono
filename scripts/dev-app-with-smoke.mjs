@@ -74,6 +74,7 @@ function collectPassthroughArgs(argv) {
       passthrough.push(token)
       continue
     }
+    if (token === '--') continue
 
     const [rawKey, rawValue] = token.split('=')
     const key = rawKey.slice(2)
@@ -327,10 +328,13 @@ if (goQrProvider) {
 ensureFireuxCoreConfigHelpers()
 
 console.log(`[dev] Starting ${app.name} on ${app.baseUrl}`)
-const child = spawnPnpm(['--filter', app.filter, 'dev', ...passthroughArgs], {
-  stdio: 'inherit',
-  env: devEnv,
-})
+const child = spawnPnpm(
+  ['--filter', app.filter, 'dev', '--', ...passthroughArgs],
+  {
+    stdio: 'inherit',
+    env: devEnv,
+  }
+)
 
 function shutdown(signal) {
   if (!child.killed) child.kill(signal)

@@ -23,6 +23,7 @@ import { resolveUserAvatarSource } from '../../../../../../utils/user-avatar'
 import type { CurrentAppMembershipDto } from '../../../../../../server/utils/public-projection/public-dto.types'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/useCurrentAppContext'
+import { usePublicUserIdentity } from '../../../../public/user/usePublicUserIdentity'
 
 export type UserFetchOutcome =
   | 'idle'
@@ -173,12 +174,6 @@ export function useUserFetch(
 
   const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
 
-  const coreDoc = computed(() =>
-    uid.value
-      ? (doc(identityDb, UserStorage.collection, uid.value) as any)
-      : null
-  )
-
   const privateDoc = computed(() =>
     uid.value && includePrivate
       ? (doc(
@@ -191,19 +186,17 @@ export function useUserFetch(
       : null
   )
 
-  const coreState = useDocument<User | undefined>(
-    coreDoc as any,
-    {
-      ssrKey: 'user-fetch-core',
-    } as any
-  )
+  // Canonical User identity is public data, but active-user surfaces should
+  // consume the same bounded server projection as every other User surface.
+  // This avoids coupling dashboard/header availability to raw client Rules.
+  const coreState = usePublicUserIdentity(uid)
   const privateState = useDocument<UserAccount | undefined>(
     privateDoc as any,
     {
       ssrKey: 'user-fetch-private',
     } as any
   )
-  const coreUserRef = coreState.data
+  const coreUserRef = coreState.user
   const corePending = coreState.pending
   const coreError = coreState.error
   const privateUserRef = privateState.data
@@ -237,10 +230,6 @@ export function useUserFetch(
     if (!appScopeRequested.value || !appContext) return null
     return appIdentityError.value || appContext.error.value || null
   })
-  guardDocumentPromise(
-    coreState as any,
-    () => `${UserStorage.collection}/${uid.value ?? ''}`
-  )
   guardDocumentPromise(
     privateState as any,
     () =>

@@ -1,8 +1,11 @@
 <template>
   <UContainer>
     <!-- 1) Auth -->
-    <template v-if="!coreUser">
+    <template v-if="!coreUser && !isAuthenticated">
       <AuthSystem />
+    </template>
+    <template v-else-if="!coreUser">
+      <UserCreateSystem />
     </template>
 
     <!-- 2) Env check + proceed -->
@@ -64,11 +67,14 @@
 <script setup lang="ts">
 import type { AppOnboardingState } from '../../../composables/fireux/app/utils/useAppOnboarding'
 import { useAppOnboarding } from '../../../composables/fireux/app/utils/useAppOnboarding'
+import UserCreateSystem from '../../User/Create/System.vue'
+import { useAuth } from '../../../composables/fireux/firebase/useAuth'
 
 const props = defineProps<{
   state?: AppOnboardingState | null
 }>()
 
+const { isAuthenticated } = useAuth()
 const {
   coreUser,
   env,
