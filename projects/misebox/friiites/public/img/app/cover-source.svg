@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title description">
+  <title id="title">Friiites</title>
+  <desc id="description">A bold red Friiites carton filled with golden fries.</desc>
+  <rect width="1600" height="900" fill="#fff7e8"/>
+  <circle cx="1260" cy="80" r="430" fill="#f7c84a"/>
+  <text x="110" y="250" fill="#df382f" font-family="Arial Black, Arial, sans-serif" font-size="224" font-weight="900" letter-spacing="-19">Friiites</text>
+  <text x="122" y="344" fill="#2b1711" font-family="Arial, sans-serif" font-size="49" font-weight="700">HAND-CUT · BRINED · TRIPLE-FRIED</text>
+  <g transform="translate(1040 70) rotate(4) scale(.86)">
+    <g fill="#e3a32b">
+      <rect x="70" y="0" width="70" height="510" rx="18" transform="rotate(-16 105 420)"/>
+      <rect x="155" y="0" width="70" height="520" rx="18" transform="rotate(-8 190 420)"/>
+      <rect x="240" y="0" width="70" height="530" rx="18"/>
+      <rect x="325" y="0" width="70" height="520" rx="18" transform="rotate(8 360 420)"/>
+      <rect x="410" y="0" width="70" height="510" rx="18" transform="rotate(16 445 420)"/>
+    </g>
+    <path d="M5 350h535l-65 500H70z" fill="#df382f"/>
+    <text x="270" y="645" fill="#fff7e8" font-family="Arial Black, Arial, sans-serif" font-size="116" font-weight="900" text-anchor="middle" letter-spacing="-10">Friiites</text>
+  </g>
+  <rect x="120" y="640" width="680" height="4" fill="#2b1711"/>
+  <text x="120" y="720" fill="#2b1711" font-family="Arial, sans-serif" font-size="42">Developed in Switzerland.</text>
+  <text x="120" y="780" fill="#2b1711" font-family="Arial, sans-serif" font-size="42">Fried in beef tallow.</text>
+</svg>

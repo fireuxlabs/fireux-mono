@@ -263,6 +263,17 @@
       }
     },
     {
+      "name": "Friiites dev (3033)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm dev:friiites",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 19
+      }
+    },
+    {
       "name": "AUSFinn Apartments dev (3029)",
       "type": "node-terminal",
       "request": "launch",
@@ -505,6 +516,17 @@
       }
     },
     {
+      "name": "Kill Friiites dev (3033)",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "pnpm kill:friiites",
+      "cwd": "${workspaceFolder}",
+      "presentation": {
+        "group": "Dev Servers",
+        "order": 119
+      }
+    },
+    {
       "name": "Kill AUSFinn Apartments dev (3029)",
       "type": "node-terminal",
       "request": "launch",
@@ -558,6 +580,7 @@
         "Bären Ringgenberg dev (3017)",
         "Interlaken Essen dev (3026)",
         "Book with Nats dev (3028)",
+        "Friiites dev (3033)",
         "AUSFinn Apartments dev (3029)"
       ]
     }

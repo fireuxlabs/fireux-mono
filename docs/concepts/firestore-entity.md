@@ -6,6 +6,11 @@ Role: map, not canon
 ## Purpose
 Map the stored access/composable shape for FireUX entities.
 
+The Firestore stack is one storage slice of the wider entity capability family.
+The entity family also owns route identity, bounded server projections,
+lifecycle policy, events, interface projection, and its page, Console, Tool,
+and operator adapters. It is not merely a CRUD wrapper around a collection.
+
 ## Vertical links
 - Parent: entities.md
 - Parent: composables.md
@@ -18,6 +23,8 @@ Map the stored access/composable shape for FireUX entities.
 
 ## Allowed entity stack
 - `composables/fireux/firestore/<entity>`
+- `composables/fireux/firestore/core/<entity>` for Core User, App, and
+  Ecosystem storage adapters
 - `fetch`
 - `mutations`
 - `seo`
@@ -44,7 +51,28 @@ Example Firestore stack names, not automatic entity proof:
 - Stored entity stacks should be boring and predictable.
 - Fetch and collection concerns belong in `fetch`.
 - Writes belong in `mutations`.
-- UI mapping belongs in `utils/view` when present.
+- Firestore normalization and storage-specific validation belong in `utils`.
+- Entity-facing computed state, permissions, interfaces, and profile views
+  belong in `composables/fireux/<entity>`. Older `utils/view` locations are
+  migration debt, not the target for new families.
+- A bounded route reader belongs in `composables/fireux/<entity>` as
+  `useXDetail`; it does not move the public DTO into the Firestore stack.
+- An entity exposes only supported capabilities. Read-only or server-owned
+  entities do not receive placeholder client mutations for structural parity.
+
+## Mutation lanes
+
+- Firestore has Client, Server, and MCP/Skill mutation lanes. Each lane exposes
+  only Create, Update, and Delete through typed mutation targets.
+- The lane selects transport and authority; the entity owns payload validation,
+  permissions, lifecycle transitions, transactions, and resulting events.
+- MCP/Skill is the operator lane used by Tools, agents, scripts, and CLI. It
+  consumes the same typed target and entity command contracts instead of
+  accepting arbitrary databases, collection paths, or raw writes.
+- A page, Console, Tool, or operator adapter orchestrates entity capabilities;
+  it does not become another storage or mutation lane.
+- Current authority: `docs/ai/firestore-mutations-context.md` and
+  `scripts/guards/firestore-mutations.mjs`.
 
 ## Read-state contract
 - `useFirestoreRead` is the shared reactive read authority. Its collection and
@@ -166,6 +194,7 @@ Example Firestore stack names, not automatic entity proof:
 | Supplier and Portfolio do not exact-validate every root field | `migration` | Reconcile live data first, then add validators without relabelling read errors as missing |
 | Root profile models and grouped `firestore/profiles/<Profile>` composables use different organizational spines | `to-confirm` | Realign only after a package-wide profile storage decision; current path difference does not alter identity |
 | Some folders exist because a thing is stored, not because entity-ness was confirmed | `drift` | Check `entities.md` and the executable entity matrix before adding root entity ceremony |
+| Older entity-facing view helpers remain inside Firestore stacks | `migration` | Move one entity and all of its consumers together; User and App are the proving siblings |
 | Project direct-read Rules are outside the currently tested repository contract | `to-confirm` | Identify and verify the deployed Rules owner before claiming end-to-end control-plane denial |
 
 ## Do not

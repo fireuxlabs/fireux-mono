@@ -299,6 +299,19 @@ const apps = [
     tooltip: 'Start Interlaken Essen dev (port 3026)',
     url: 'http://localhost:3026',
   },
+  {
+    key: 'friiites',
+    ecosystem: 'misebox',
+    name: 'Friiites',
+    icon: '$(server-process)',
+    port: 3033,
+    commandId: 'fireuxToolbar.startFriiites',
+    taskLabel: 'pnpm dev:friiites',
+    terminalName: 'Friiites (3033)',
+    pnpmCommand: 'pnpm dev:friiites --host',
+    tooltip: 'Start Friiites dev (port 3033)',
+    url: 'http://localhost:3033',
+  },
 ]
 
 module.exports = { apps }

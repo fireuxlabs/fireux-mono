@@ -95,7 +95,7 @@ import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import { useUserInterface, type UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserInterface, type UserCard } from '../../../composables/fireux/user/useUserInterface'
 import type { AppModel } from '../../../models/core/app.model'
 import type { PublicUserIdentityDto } from '../../../server/utils/public-projection/public-dto.types'
 

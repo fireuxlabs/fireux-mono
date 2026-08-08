@@ -69,16 +69,16 @@ Core owns the shared visual foundation for those variants:
 ## Installed Cards audit
 
 This table classifies every component under the audited Core, Places,
-Companies, Kitchens, Suppliers, and Jobs `Cards` trees after the 2026-07-27
-alignment: 54 canonical variants, 17 legacy Profile compositions, and 3 Place
-dropdown support components.
+Companies, Kitchens, Suppliers, and Jobs `Cards` trees after the User/App
+entity-family alignment: 54 canonical variants, 15 legacy Profile
+compositions, and 3 Place dropdown support components.
 
 | Owner                        | Canonical dumb variants   | Profile/detail migration | Card support                                              |
 | ---------------------------- | ------------------------- | ------------------------ | --------------------------------------------------------- |
-| Core App                     | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Core App                     | `Cell`, `Pill`, `Preview` | —                        | —                                                         |
 | Core Ecosystem               | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
 | Core Project                 | `Cell`, `Pill`            | —                        | —                                                         |
-| Core User                    | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
+| Core User                    | `Cell`, `Pill`, `Preview` | —                        | —                                                         |
 | Company                      | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
 | Agent                        | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
 | Job                          | `Cell`, `Pill`, `Preview` | `Profile`                | —                                                         |
@@ -110,6 +110,9 @@ dropdown support components.
   for current consumers. Add no new member. Move each to its owning
   `Profile`/`Detail` family when that surface is materially changed and its
   consumers can migrate together.
+- `completed`: Core App profile presentation now lives at `App/Profile.vue`;
+  the active User summary lives at `User/IdentitySummary.vue`, while the
+  bounded route profile remains `User/Profile.vue`.
 - `completed`: Kitchen Order Ticket moved to
   `Console/Kitchen/Operations/Orders/Ticket/*`.
 - `completed`: Supplier Catalogue moved to

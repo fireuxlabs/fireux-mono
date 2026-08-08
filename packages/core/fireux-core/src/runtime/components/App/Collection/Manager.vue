@@ -101,7 +101,7 @@ import { computed } from 'vue'
 import {
   useAppInterface,
   type AppViewSource,
-} from '../../../composables/fireux/firestore/core/app/utils/view/useAppInterface'
+} from '../../../composables/fireux/app/useAppInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import type { AppDirectoryController } from '../../../types/directory-controller.types'

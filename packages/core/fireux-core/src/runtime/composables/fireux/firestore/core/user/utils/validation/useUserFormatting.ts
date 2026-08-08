@@ -1,4 +1,4 @@
-// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/useUserFormattingAndValidation.ts
+// FILE: packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/validation/useUserFormatting.ts
 // Concurrent edit — 2026-07-20 19:14 CEST — Repo Efficiency Pass 2 of 6: accept only HTTPS public avatar input.
 import {
   normalizeHttpsUrlInput,

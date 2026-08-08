@@ -60,9 +60,9 @@ import { computed } from 'vue'
 import {
   useUser,
   useUserInterface,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+} from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useEcosystemAppDetail } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppDetail'
+import { useAppDetail } from 'fireux-core/runtime/composables/fireux/app/useAppDetail'
 import { useKitchenConsoleSelection } from '../../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
 import { useKitchenConsoleTargetCollection } from '../../../composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
@@ -82,7 +82,7 @@ const operatorAppId = computed(() =>
 const isTenantConsoleHandoff = computed(() =>
   Boolean(operatorAppId.value && operatorAppId.value !== currentAppId.value)
 )
-const { app: operatorApp } = useEcosystemAppDetail(operatorAppId)
+const { app: operatorApp } = useAppDetail(operatorAppId)
 const kitchenId = computed(() => String(props.kitchen?.id ?? '').trim())
 const { kitchens: consoleTargets } = useKitchenConsoleTargetCollection()
 const consoleKitchen = computed(() =>

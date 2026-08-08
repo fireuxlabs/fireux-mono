@@ -1,11 +1,11 @@
 import { computed, type Ref } from 'vue'
-import type { UserCard } from '../../../user/utils/view/useUserInterface'
+import { formatFirestoreTimestamp } from '../../../utils/formatTimestamp'
+import type { UserCard } from '../user/useUserInterface'
 import {
   useAppInterface,
   type AppCard,
   type AppViewSource,
 } from './useAppInterface'
-import { formatFirestoreTimestamp } from '../../../../../../../utils/formatTimestamp'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 

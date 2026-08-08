@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserAccessTier } from '../../composables/fireux/firestore/core/user/utils/view/useUserPermissions'
+import type { UserAccessTier } from '../../composables/fireux/user/useUserPermissions'
 import type { PublicUserDto } from '../../server/utils/public-projection/public-dto.types'
 
 const props = withDefaults(

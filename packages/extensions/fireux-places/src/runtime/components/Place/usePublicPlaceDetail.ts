@@ -1,4 +1,4 @@
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, resolveComponent } from 'vue'
 import {
   usePlaceFetch,

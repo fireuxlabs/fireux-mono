@@ -263,7 +263,7 @@
 <script setup lang="ts">
 import { computed, definePageMeta, useHead } from '#imports'
 import { useDashboardNav } from '../../composables/fireux/app/ui/nav/useDashboardNav'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useUser } from '../../composables/fireux/user/useUser'
 import { formatFirestoreTimestamp } from '../../utils/formatTimestamp'
 
 definePageMeta({

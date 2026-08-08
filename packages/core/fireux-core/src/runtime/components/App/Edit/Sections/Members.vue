@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import type { UserCard } from '../../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { UserCard } from '../../../../composables/fireux/user/useUserInterface'
 
 type MemberRow = {
   id: string

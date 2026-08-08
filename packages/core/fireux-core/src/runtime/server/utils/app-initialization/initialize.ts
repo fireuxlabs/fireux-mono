@@ -1,0 +1,155 @@
+import { createError } from 'h3'
+import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
+import type { FireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
+import { UserStorage } from '../../../models/core/user.model'
+import type { AppInitializationResult } from '../../../models/operations/app-initialization'
+import {
+  FIRESTORE_MUTATION_TARGETS,
+  serverAppUsersTarget,
+} from '../../../utils/firestore-mutations/targets'
+import { getRuntimeIdentityFirestore } from '../getRuntimeFirestore'
+import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
+import {
+  countTransactionAdmins,
+  initialMembership,
+  isAdminMembership,
+  membershipRepairPatch,
+  stamp,
+} from '../app-membership/mutation-contract'
+
+type InitializeRuntimeAppInput = {
+  uid: string
+  config: Readonly<FireUXConfig>
+  appDatabaseId: string
+  identityDatabaseId: string
+}
+
+function conflict(statusMessage: string): never {
+  throw createError({ statusCode: 409, statusMessage })
+}
+
+function appPayload(config: Readonly<FireUXConfig>, uid: string): DocumentData {
+  const now = FieldValue.serverTimestamp()
+  return {
+    project_id: config.projectId,
+    ...(config.ecosystemId ? { ecosystem_id: config.ecosystemId } : {}),
+    role: config.role,
+    status: 'active',
+    name: config.appName,
+    short_name: config.appShortName,
+    description: '',
+    media: {
+      thumbnail_url: '',
+      logo_url: '',
+      wordmark_light_url: '',
+      wordmark_dark_url: '',
+      cover_url: '',
+    },
+    self_join_enabled: config.selfJoinEnabled,
+    created: { at: now, by: uid },
+    updated: { at: now, by: uid },
+  }
+}
+
+function assertExistingAppMatchesRuntime(
+  data: Record<string, unknown>,
+  config: Readonly<FireUXConfig>
+) {
+  const checks = [
+    ['project_id', config.projectId],
+    ['ecosystem_id', config.ecosystemId || ''],
+    ['role', config.role],
+  ] as const
+
+  for (const [field, expected] of checks) {
+    if (String(data[field] || '').trim() !== expected) {
+      conflict(`The existing App does not match runtime ${field}.`)
+    }
+  }
+}
+
+export async function initializeRuntimeApp(
+  input: InitializeRuntimeAppInput
+): Promise<AppInitializationResult> {
+  const { uid, config } = input
+  const sameDatabase = input.appDatabaseId === input.identityDatabaseId
+
+  if (!sameDatabase) {
+    const identityUser = await getRuntimeIdentityFirestore(
+      input.identityDatabaseId
+    )
+      .collection(UserStorage.collection)
+      .doc(uid)
+      .get()
+    if (!identityUser.exists) conflict('The User record does not exist.')
+  }
+
+  const apps = FIRESTORE_MUTATION_TARGETS.runtimeApps
+  const memberships = serverAppUsersTarget(config.appId)
+
+  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
+    if (sameDatabase) {
+      const user = await mutations.read(
+        FIRESTORE_MUTATION_TARGETS.runtimeUsers,
+        uid
+      )
+      if (!user.exists) conflict('The User record does not exist.')
+    }
+
+    const app = await mutations.read<Record<string, unknown>>(
+      apps,
+      config.appId
+    )
+    const membership = await mutations.read<Record<string, unknown>>(
+      memberships,
+      uid
+    )
+
+    if (!app.exists && membership.exists) {
+      conflict('An App membership exists without its canonical App record.')
+    }
+
+    if (app.exists) {
+      assertExistingAppMatchesRuntime(app.data ?? {}, config)
+    }
+
+    if (!isAdminMembership(membership.data)) {
+      const adminCount = await countTransactionAdmins(mutations, config.appId)
+      if (adminCount > 0) {
+        conflict('This App already has an administrator.')
+      }
+    }
+
+    if (!app.exists) {
+      mutations.create(apps, config.appId, appPayload(config, uid))
+    }
+
+    if (!membership.exists) {
+      mutations.create(
+        memberships,
+        uid,
+        initialMembership(config.appId, uid, 'admin')
+      )
+    } else if (!isAdminMembership(membership.data)) {
+      mutations.update(memberships, uid, {
+        ...membershipRepairPatch(membership.data ?? {}, uid),
+        role: 'admin',
+        updated: stamp(uid),
+      })
+    }
+
+    if (app.exists && !isAdminMembership(membership.data)) {
+      mutations.update(apps, config.appId, { updated: stamp(uid) })
+    }
+
+    return {
+      ok: true,
+      appId: config.appId,
+      userId: uid,
+      appCreated: !app.exists,
+      membershipCreated: !membership.exists,
+      membershipUpdated:
+        membership.exists && !isAdminMembership(membership.data),
+    }
+  })
+}

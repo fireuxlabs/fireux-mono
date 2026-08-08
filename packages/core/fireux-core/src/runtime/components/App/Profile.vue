@@ -194,8 +194,8 @@ import { computed } from '#imports'
 import {
   useSocialLinks,
   type SocialLinks,
-} from '../../../composables/fireux/app/ui/useSocialLinks'
-import type { AppProfileViewModel } from '../../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
+} from '../../composables/fireux/app/ui/useSocialLinks'
+import type { AppProfileViewModel } from '../../composables/fireux/app/useAppProfileView'
 
 const props = withDefaults(
   defineProps<{

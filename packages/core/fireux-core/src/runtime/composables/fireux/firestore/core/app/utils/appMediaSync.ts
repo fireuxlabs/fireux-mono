@@ -1,25 +1,17 @@
-import { useFireUXConfig } from '../../../../app/FireUXConfig'
-import { normalizeString } from '../../../../../../utils/string'
+import { useRequireUser } from '../../../../firebase/useRequireUser'
 import type { AppMediaSyncResponse } from './appMedia'
 
-export async function syncAppMediaToStorage(
-  appId?: string
-): Promise<AppMediaSyncResponse> {
-  const fireux = useFireUXConfig()
-  const targetAppId = normalizeString(appId || fireux.appId)
-  if (!targetAppId) {
-    throw new Error('[useAppCreate] Missing appId for media sync')
-  }
-
+export async function syncAppMediaToStorage(): Promise<AppMediaSyncResponse> {
+  const user = await useRequireUser()
+  const token = await user.getIdToken()
   const response = await fetch('/api/internal/app/sync-media', {
     method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ appId: targetAppId }),
+    headers: { authorization: `Bearer ${token}` },
   })
 
   if (!response.ok) {
-    throw new Error(`[useAppCreate] Media sync failed (${response.status})`)
+    throw new Error(`App media sync failed (${response.status}).`)
   }
 
-  return await response.json() as AppMediaSyncResponse
+  return (await response.json()) as AppMediaSyncResponse
 }

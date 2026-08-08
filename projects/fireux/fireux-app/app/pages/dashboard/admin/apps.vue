@@ -84,7 +84,7 @@ import AdminFeaturedSlugsSelection from 'fireux-core/runtime/components/Admin/Fe
 import {
   useAppInterface,
   type AppCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
+} from 'fireux-core/runtime/composables/fireux/app/useAppInterface'
 import { usePlatformAppDirectory } from '../../../composables/usePlatformDirectory'
 
 const { apps, outcome: directoryOutcome } = usePlatformAppDirectory()

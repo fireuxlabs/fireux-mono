@@ -1,4 +1,3 @@
-<!-- Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: hide private creator identity on public App detail. -->
 <template>
   <UPage>
     <UPageHeader :title="pageTitle" :description="pageDescription" />
@@ -19,7 +18,7 @@
       <UPageCard
         v-else-if="missing"
         title="App not found"
-        description="No published app exists for this id or slug."
+        description="No published app exists for this id."
         variant="subtle"
       >
         <UButton to="/apps" variant="soft" class="w-fit">
@@ -33,7 +32,7 @@
         data-app-projection="detail"
         :data-app-id="app.id"
       >
-        <AppCardsProfile
+        <AppProfile
           v-if="appProfileModel"
           :model="appProfileModel"
           :show-people="false"
@@ -44,13 +43,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, setResponseStatus, useAsyncData, useHead } from '#imports'
-import { useAppProfileView } from '../../composables/fireux/firestore/core/app/utils/view/useAppProfileView'
+import { computed, setResponseStatus, useHead } from '#imports'
+import { useAppDetail } from '../../composables/fireux/app/useAppDetail'
+import { useAppProfileView } from '../../composables/fireux/app/useAppProfileView'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
-import type {
-  PublicAppDto,
-  PublicDetailResponse,
-} from '../../server/utils/public-projection/public-dto.types'
 
 definePageMeta({
   layout: 'default',
@@ -61,36 +57,10 @@ definePageMeta({
 })
 
 const appId = useRouteParam('id')
-const { data, pending, error } = await useAsyncData(
-  () => `public-app-${appId.value || 'unknown'}`,
-  async () => {
-    if (!appId.value) return null
-    return $fetch<PublicDetailResponse<PublicAppDto>>(
-      `/api/public/apps/${encodeURIComponent(appId.value)}`
-    )
-  },
-  {
-    server: true,
-    watch: [appId],
-  }
-)
+const { app, ready, pending, statusCode, missing, failed } =
+  useAppDetail(appId)
 
-const app = computed<PublicAppDto | null>(() => {
-  return data.value?.item ?? null
-})
-const statusCode = computed(() =>
-  Number(
-    (error.value as any)?.statusCode ||
-      (error.value as any)?.status ||
-      (error.value as any)?.response?.status ||
-      0
-  )
-)
-const missing = computed(
-  () =>
-    statusCode.value === 404 || (!pending.value && !error.value && !app.value)
-)
-const failed = computed(() => Boolean(error.value) && statusCode.value !== 404)
+await ready
 
 if (import.meta.server) {
   if (missing.value) {

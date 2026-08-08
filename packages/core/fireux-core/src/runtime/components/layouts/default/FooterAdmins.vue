@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import type { UserCard } from '../../../composables/fireux/user/useUserInterface'
 
 type PublicAppAdmin = {
   id: string

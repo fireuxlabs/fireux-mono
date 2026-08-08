@@ -8,7 +8,7 @@ import { AppJoinRequestStorage } from '../../../../../../models/operations/app-m
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useAuth } from '../../../../firebase/useAuth'
 import { useDocument, useFirestore } from '../../../vuefire'
-import { useUser } from '../../user/useUser'
+import { useUser } from '../../../../user/useUser'
 import { mutateAppMembership } from '../../user/utils/appMembershipMutation'
 
 const text = (value: unknown) => String(value ?? '').trim()

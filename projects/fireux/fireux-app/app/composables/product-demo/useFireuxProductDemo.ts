@@ -2,7 +2,7 @@ import { useAsyncData } from '#imports'
 import {
   useAppInterface,
   type AppCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppInterface'
+} from 'fireux-core/runtime/composables/fireux/app/useAppInterface'
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,

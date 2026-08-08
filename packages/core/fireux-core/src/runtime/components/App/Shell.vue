@@ -113,7 +113,7 @@
         description="This app needs to be initialized."
       >
         <template #body>
-          <AppCreateSystem :state="onboarding" />
+          <AppInitializeSystem :state="initialization" />
         </template>
       </UModal>
     </ClientOnly>
@@ -127,7 +127,8 @@ import { useFetch, useHead, useRuntimeConfig } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
-import { useAppOnboarding } from '../../composables/fireux/app/utils/useAppOnboarding'
+import AppInitializeSystem from './Initialize/System.vue'
+import { useAppInitialization } from '../../composables/fireux/app/utils/useAppInitialization'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev
@@ -173,8 +174,8 @@ const isInitialized = computed(
 const showOnboardingModal = computed(
   () => isResolved.value && !isInitialized.value
 )
-const onboarding = import.meta.client
-  ? useAppOnboarding({ onInitialized: refreshAppStatus })
+const initialization = import.meta.client
+  ? useAppInitialization({ onInitialized: refreshAppStatus })
   : null
 
 useHead({

@@ -61,7 +61,9 @@ export function useEcosystemAppCollection(): AppDirectoryController {
     { server: true, lazy: false }
   )
 
-  const apps = computed(() => data.value?.items ?? [])
+  const apps = computed<AppDirectoryEntry[]>(() => [
+    ...(data.value?.items ?? []),
+  ])
   const count = computed(() => apps.value.length)
   const outcome = computed<DirectoryOutcome>(() => {
     if (pending.value) return 'pending'

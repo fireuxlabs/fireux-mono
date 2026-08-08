@@ -3,7 +3,7 @@ import { doc, setDoc } from 'firebase/firestore'
 import { computed } from 'vue'
 import { useFireUXConfig } from './FireUXConfig'
 import { useFirestoreRead } from '../firestore/operations/useFirestoreRead'
-import { useUser } from '../firestore/core/user/useUser'
+import { useUser } from '../user/useUser'
 import { useFirestoreResolver } from '../firestore/vuefire'
 
 export type AppFeaturedSlugField = `featured_${string}_slugs`

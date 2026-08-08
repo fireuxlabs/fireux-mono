@@ -2,7 +2,7 @@
 // Profile family canon: docs/concepts/entities.md
 import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { customerConfig } from './config/customerConfig'
 import type {
   AppCustomer,

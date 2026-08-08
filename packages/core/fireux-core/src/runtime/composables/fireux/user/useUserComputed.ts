@@ -1,12 +1,12 @@
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: resolve public and app-private profile membership.
 // Concurrent edit — 2026-07-20 23:18 CEST — Active User Outcome fix: keep auth, read error, and missing states distinct.
 import { computed } from '#imports'
-import type { User } from '../../../../../../../models/core/user.model'
-import type { CurrentAppMembershipDto } from '../../../../../../../server/utils/public-projection/public-dto.types'
-import { useFireUXConfig } from '../../../../../app/FireUXConfig'
-import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
-import { useAuth } from '../../../../../firebase/useAuth'
-import type { UserRefs } from '../../fetch/useUserFetch'
+import type { User } from '../../../models/core/user.model'
+import type { CurrentAppMembershipDto } from '../../../server/utils/public-projection/public-dto.types'
+import { useFireUXConfig } from '../app/FireUXConfig'
+import { useAvatarProxy } from '../app/ui/useAvatarProxy'
+import { useAuth } from '../firebase/useAuth'
+import type { UserRefs } from '../firestore/core/user/fetch/useUserFetch'
 import { useUserPermissions } from './useUserPermissions'
 
 export type ActiveUserOutcome =
@@ -45,15 +45,25 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
     hasAuthState,
     currentUser: authUserRef,
   } = useAuth()
-  const { appId } = useFireUXConfig()
+  const { appId, selfJoinEnabled } = useFireUXConfig()
   const { getProxiedAvatarUrl } = useAvatarProxy()
   const permissions = useUserPermissions(user)
-  const requiresAppMembership = computed(() => Boolean(String(appId || '').trim()))
+  // User setup may create an App membership only where the current App owns a
+  // self-service join policy. Invite-only Apps must not leave an otherwise
+  // valid User in an onboarding loop they cannot complete.
+  const requiresAppMembership = computed(
+    () => Boolean(String(appId || '').trim()) && selfJoinEnabled
+  )
   const coreOutcome = user.coreOutcome
   const coreError = user.coreError
   const appError = user.appError
 
-  const isPending = computed(() => Boolean(pending?.value))
+  const isPending = computed(
+    () =>
+      coreOutcome.value === 'pending' ||
+      (requiresAppMembership.value && Boolean(user.appPending.value)) ||
+      Boolean(pending?.value && coreOutcome.value === 'idle')
+  )
   const error = computed<unknown>(() =>
     coreError.value ||
     (requiresAppMembership.value ? appError.value : null) ||

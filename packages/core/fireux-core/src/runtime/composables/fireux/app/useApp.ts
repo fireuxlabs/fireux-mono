@@ -1,13 +1,10 @@
 // Concurrent edit — 2026-07-20 15:44 CEST — Repo Efficiency Pass 1 of 6: preserve canonical App read errors and outcomes.
-import { useFireUXConfig } from '../../../app/FireUXConfig'
-import { useAppFetch } from './fetch/useAppFetch'
-import { useAppCreate } from './mutations/useAppCreate'
-import { useAppDelete } from './mutations/useAppDelete'
-import { useAppUpdate } from './mutations/useAppUpdate'
-import { useAppComputed } from './utils/view/useAppComputed'
-import { useAppInterface } from './utils/view/useAppInterface'
+import { useAppFetch } from '../firestore/core/app/fetch/useAppFetch'
+import { useFireUXConfig } from './FireUXConfig'
+import { useAppComputed } from './useAppComputed'
+import { useAppInterface } from './useAppInterface'
 
-export type { App } from '../../../../../models/core/app.model'
+export type { App } from '../../../models/core/app.model'
 
 /**
  * FireUX stack family: System root entity + active runtime singleton.
@@ -16,10 +13,13 @@ export type { App } from '../../../../../models/core/app.model'
  * App stored truth lives at apps/{appId}. This file selects the current root
  * App through FireUXConfig.appId.
  * Project/App console surfaces may manage App through a facade; they do not create a separate App identity.
- * `fireux/app` remains app shell/context/orchestration space, not App entity storage.
- * Direct Project Apps and Ecosystem Apps use the same root entity type. For any
+ * `fireux/app` owns App runtime orchestration, not App entity storage.
+ * Direct Project Apps and Ecosystem Apps use the same root entity type.
  * For an authorized canonical App read, use useAppFetch(appId). Public and
  * cross-App presentation must use the allowlisted App detail transport.
+ * Entity commands remain explicit imports; configured-runtime initialization
+ * is a trusted Server operation rather than a browser App-create command.
+ * This active-App aggregate owns read and view context only.
  */
 export function useApp() {
   const { appId } = useFireUXConfig()
@@ -32,8 +32,5 @@ export function useApp() {
     outcome,
     ...useAppComputed(app, pending),
     ...useAppInterface(app),
-    ...useAppCreate(),
-    ...useAppUpdate(app),
-    ...useAppDelete(),
   }
 }

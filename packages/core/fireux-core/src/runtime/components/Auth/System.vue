@@ -21,25 +21,8 @@
 
         <template v-if="isAuthenticated">
           <div class="w-full space-y-4">
-            <UAlert
-              v-if="accountProvisionErrorMessage"
-              color="error"
-              variant="subtle"
-              title="Account setup incomplete"
-              :description="accountProvisionErrorMessage"
-            />
-            <UButton
-              v-if="accountProvisionErrorMessage"
-              block
-              color="primary"
-              variant="soft"
-              :loading="creatingUser"
-              @click="handleAccountRecovery"
-            >
-              Complete account setup
-            </UButton>
             <UserCardsPill
-              v-else-if="currentUserPill"
+              v-if="currentUserPill"
               v-bind="currentUserPill"
               :link="Boolean(currentUserPill && currentUserPill.to)"
               :show-badges="false"
@@ -49,9 +32,6 @@
               <UButton
                 block
                 color="primary"
-                :disabled="
-                  creatingUser || Boolean(accountProvisionErrorMessage)
-                "
                 @click="goToCompletion"
               >
                 {{ authActionLabel }}
@@ -85,7 +65,7 @@
             v-if="providerError"
             color="error"
             variant="subtle"
-            title="Account setup incomplete"
+            title="Unable to sign in"
             :description="providerError"
           />
 
@@ -105,36 +85,26 @@
 import { computed, ref, useRoute, useRouter, watch } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
-import { useUserInterface } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUser } from '../../composables/fireux/user/useUser'
+import { useUserInterface } from '../../composables/fireux/user/useUserInterface'
+import {
+  resolveInternalRedirect,
+  userOnboardingPath,
+} from '../../utils/onboarding-route'
 
 const router = useRouter()
 const route = useRoute()
-  const {
-    authState,
-    hasAuthState,
-    signOutUser,
-    signInWithGoogle,
-    creating: creatingUser,
-    lastAccountProvisionError,
-  } = useAuth()
+const {
+  authState,
+  hasAuthState,
+  signOutUser,
+  signInWithGoogle,
+} = useAuth()
 const isAuthenticated = computed(() => authState.value === 'AUTHENTICATED')
 const signOutLoading = ref(false)
 const providerLoading = ref(false)
 const providerError = ref('')
 const navigationInFlight = ref(false)
-const accountProvisionErrorMessage = computed(() => {
-  const error = lastAccountProvisionError.value
-  if (!error) return ''
-
-  const message = error instanceof Error ? error.message.trim() : String(error)
-  if (message.includes('canonical backfill')) {
-    return 'We’re getting your account ready. Your login details are safe — please try again shortly.'
-  }
-
-  return message || 'Your signed-in account could not be prepared.'
-})
-
 const config = useFireUXConfig()
 const ecosystemLabel = config.ecosystem
 const isTenantApp = computed(() => config.isTenant)
@@ -152,21 +122,13 @@ const { pill: userInterface } = useUserInterface()
 const currentUserPill = computed(() =>
   currentUser.value ? userInterface(currentUser.value) : null
 )
-function sanitizeRedirect(value: unknown): string | null {
-  const raw = Array.isArray(value) ? value[0] : value
-  if (typeof raw !== 'string') return null
-  const trimmed = raw.trim()
-  if (!trimmed.startsWith('/')) return null
-  if (trimmed.startsWith('//')) return null
-  return trimmed
-}
-
 const authMode = computed(() =>
   route.query.mode === 'sign-up' ? 'sign-up' : 'sign-in'
 )
 const resolvedPostAuthPath = computed(() => {
-  const redirect = sanitizeRedirect(route.query.redirect)
-  if (redirect) return redirect
+  const redirect = resolveInternalRedirect(route.query.redirect)
+  if (authMode.value === 'sign-up') return userOnboardingPath(redirect)
+  if (route.query.redirect != null) return redirect
   if (route.path === '/auth') return '/dashboard'
   return route.fullPath || '/dashboard'
 })
@@ -188,21 +150,17 @@ watch(
       hasAuthState.value,
       isAuthenticated.value,
       resolvedPostAuthPath.value,
-      creatingUser.value,
-      lastAccountProvisionError.value,
     ] as const,
-  async ([
-    path,
-    authReady,
-    authenticated,
-    target,
-    creating,
-    accountError,
-  ]: readonly [string, boolean, boolean, string, boolean, unknown]) => {
+  async (
+    [path, authReady, authenticated, target]: readonly [
+      string,
+      boolean,
+      boolean,
+      string,
+    ]
+  ) => {
     if (path !== '/auth') return
     if (!authReady || !authenticated) return
-    if (creating) return
-    if (accountError) return
     await completeAuthNavigation(target)
   },
   { immediate: true }
@@ -222,26 +180,18 @@ const handleSignOut = async () => {
   }
 }
 
-const handleAccountRecovery = async () => {
-  await router.push('/users/create').catch(() => {})
-}
-
 const handleGoogle = async () => {
   if (providerLoading.value) return
   providerError.value = ''
   providerLoading.value = true
   try {
-    await signInWithGoogle()
+    const user = await signInWithGoogle()
+    if (user?.uid && authMode.value === 'sign-up') {
+      await completeAuthNavigation(resolvedPostAuthPath.value)
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message.trim() : ''
-    if (message.includes('Accept the current Terms of Service')) {
-      await router.push({
-        path: '/users/create',
-        query: { redirect: resolvedPostAuthPath.value },
-      })
-      return
-    }
-    providerError.value = message || 'Your signed-in account could not be prepared.'
+    providerError.value = message || 'Sign-in could not be completed.'
   } finally {
     providerLoading.value = false
   }

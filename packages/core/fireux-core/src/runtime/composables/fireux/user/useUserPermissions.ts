@@ -3,10 +3,10 @@ import { computed } from '#imports'
 import {
   resolveAppUserAccess,
   type AppUserAccessTier,
-} from '../../../../../../../utils/app-user-access'
-import type { CurrentAppMembershipDto } from '../../../../../../../server/utils/public-projection/public-dto.types'
-import { useDeveloperAccess } from '../../../../../app/useDeveloperAccess'
-import type { UserRefs } from '../../fetch/useUserFetch'
+} from '../../../utils/app-user-access'
+import type { CurrentAppMembershipDto } from '../../../server/utils/public-projection/public-dto.types'
+import { useDeveloperAccess } from '../app/useDeveloperAccess'
+import type { UserRefs } from '../firestore/core/user/fetch/useUserFetch'
 
 export type UserAccessTier = AppUserAccessTier
 

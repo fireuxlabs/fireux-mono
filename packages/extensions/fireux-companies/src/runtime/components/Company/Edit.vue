@@ -20,7 +20,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import {
   PlaceModel,
   type Place,

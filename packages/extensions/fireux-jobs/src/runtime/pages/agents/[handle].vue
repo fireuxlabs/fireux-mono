@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import { navigateTo, setResponseStatus } from '#imports'
 import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/public/profile/usePublicProfileDetail'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
 import { useAgentSeo } from '../../composables/fireux/firestore/profiles/Agent/utils/useAgentSeo'

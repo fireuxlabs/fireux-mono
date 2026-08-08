@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">Friiites</title>
+  <rect width="512" height="512" rx="112" fill="#df382f"/>
+  <g fill="#f7c84a">
+    <rect x="118" y="78" width="54" height="238" rx="14" transform="rotate(-13 145 197)"/>
+    <rect x="186" y="58" width="54" height="260" rx="14" transform="rotate(-5 213 188)"/>
+    <rect x="258" y="58" width="54" height="260" rx="14" transform="rotate(5 285 188)"/>
+    <rect x="330" y="78" width="54" height="238" rx="14" transform="rotate(13 357 197)"/>
+  </g>
+  <path d="M92 244h328l-42 196H134z" fill="#fff7e8"/>
+  <text x="256" y="373" fill="#df382f" font-family="Arial Black, Arial, sans-serif" font-size="86" font-weight="900" text-anchor="middle" letter-spacing="-8">Fiii</text>
+</svg>

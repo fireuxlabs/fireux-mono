@@ -102,8 +102,8 @@
 import { useFetch } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
-import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUser } from '../../../composables/fireux/user/useUser'
+import { useUserInterface } from '../../../composables/fireux/user/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
 import {

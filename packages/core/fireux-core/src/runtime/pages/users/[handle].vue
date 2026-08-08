@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { computed, setResponseStatus } from '#imports'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useUser } from '../../composables/fireux/user/useUser'
 import { useSeo } from '../../composables/fireux/seo/useSeo'
 import { useUserDetail } from '../../composables/fireux/user/useUserDetail'
 import { useRouteParam } from '../../composables/shared/useRouteParam'
@@ -68,8 +68,10 @@ import { useRouteParam } from '../../composables/shared/useRouteParam'
 const { appName } = useFireUXConfig()
 const routeHandle = useRouteParam('handle')
 const handle = computed(() => routeHandle.value.toLowerCase())
-const { user, pending, statusCode, missing, failed } =
-  await useUserDetail(handle)
+const { user, ready, pending, statusCode, missing, failed } =
+  useUserDetail(handle)
+
+await ready
 
 if (import.meta.server) {
   if (missing.value) setResponseStatus(404)

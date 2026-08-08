@@ -41,7 +41,7 @@
         description="No published App directory entry matches this id or slug."
       />
 
-      <AppCardsProfile
+      <AppProfile
         v-else-if="profile"
         :model="profile"
         :show-details="false"
@@ -99,7 +99,7 @@
 import { computed } from 'vue'
 import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useAppProfileView } from 'fireux-core/runtime/composables/fireux/firestore/core/app/utils/view/useAppProfileView'
+import { useAppProfileView } from 'fireux-core/runtime/composables/fireux/app/useAppProfileView'
 import {
   buildPublicPageJsonLd,
   useSeo,

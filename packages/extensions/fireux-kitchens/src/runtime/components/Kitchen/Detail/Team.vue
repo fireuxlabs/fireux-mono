@@ -101,7 +101,7 @@ import { useUserHydration } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   useUserInterface,
   type UserCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
+} from 'fireux-core/runtime/composables/fireux/user/useUserInterface'
 import { useKitchenFetch } from '../../../composables/fireux/firestore/kitchen/useKitchen'
 import { useKitchenChildCollection } from '../../../composables/fireux/firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {

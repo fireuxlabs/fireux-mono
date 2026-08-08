@@ -1,11 +1,20 @@
-# User onboarding journey
+# Entity onboarding journeys
 
-This is the practical playbook for the shared Core User onboarding journey.
+This is the practical playbook for the shared Core User and App onboarding
+journeys.
 
 ## Experience contract
 
-- `/users/create` is a deliberate three-stage journey: sign in, create the
-  canonical User, then connect that User to the active App when allowed.
+- `/users/create` is the explicit User provisioning journey. When entered by a
+  signed-out person it first passes through `/auth`, then returns with the
+  original destination intact.
+- `/auth` establishes the Firebase identity only. Routine sign-in never
+  creates or repairs Firestore records, uploads an avatar, or accepts legal
+  terms on the person's behalf.
+- User onboarding creates the canonical User and account, then creates the
+  active App membership only when that App permits self-service joining.
+  Invite-only Apps finish User setup without advertising a connection the
+  person cannot complete.
 - The final User-creation action previews the authenticated name, email, and
   avatar before asking for legal acceptance.
 - Product copy says `User`, `public identity`, and `App connection`. Internal
@@ -20,23 +29,32 @@ This is the practical playbook for the shared Core User onboarding journey.
   new authenticated identity continues to `/users/create`, where the explicit
   final action supplies the current version to trusted account provisioning.
 - Success returns to a valid `?redirect=` destination or `/dashboard`.
+- `/users/create` and `/apps/create` are protected doorways. Their client auth
+  guard sends guests to `/auth?redirect=<full doorway>` and returns them to the
+  same journey after authentication.
 
 ## Current journey paths
 
-- Dashboard notices missing user profile and sends users to:
-  - `/users/create`
+- Dashboard notices a missing User and sends the authenticated person to
+  `/users/create`.
+- A protected entity doorway such as `/apps/create` first returns through
+  `/users/create` when the authenticated identity has no canonical User.
 - Primary onboarding action is now on:
   - `UserCreateSystem` (`packages/core/fireux-core/src/runtime/components/User/Create/System.vue`)
 - Legal acceptance is collected in onboarding only (not on `/auth`), in line with the cleaner sign-in flow.
 
-## What “Create core user” should do now
+## What `Create my User` does
 
-1. User lands on `/users/create`.
-2. If no core user exists, they see:
+1. A guest requesting `/users/create` is sent to `/auth` and returned after
+   sign-in. A signed-in identity stays on `/users/create`.
+2. If no canonical User exists, they see:
    - checkbox: “I accept the Terms of Service … Privacy Policy”
-   - primary action: `Create core user`
+   - primary action: `Create my User`
 3. On click:
-   - the onboarding action runs provisioning
+   - the onboarding action provisions the private account, canonical User, and
+     User-owned avatar
+   - a self-service App membership is created only when the active App permits
+     it
    - on success, user is sent to:
      - `?redirect=` target if present and valid, otherwise `/dashboard`
 
@@ -55,6 +73,10 @@ This is the practical playbook for the shared Core User onboarding journey.
   - whether provisioning stays in `pending` without transition
 - There is an alias route for the dashboard-style location:
   - `/dashboard/user/create` -> redirects to `/users/create`
+- Redirect resolution is owned by
+  `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`; nested
+  onboarding redirects collapse to the original destination and unsafe
+  external-looking paths fall back to `/dashboard`.
 
 ## Did `testude` get onboarded correctly?
 
@@ -62,6 +84,7 @@ You provided a public users projection snapshot in this thread. I don’t see
 `testudo` in that payload, so it’s not currently in that public projection snapshot.
 
 What this usually means:
+
 - Your email (`testudo@test.com`) is your auth identity, while the public route uses a **handle**.
 - The handle shown (`@testo70lp9ma`) is valid and expected if the user was created with
   the display name “Test” and a generated handle.
@@ -94,8 +117,8 @@ Successful User onboarding creates or confirms these owned records:
    acceptance evidence.
 3. `users/{uid}/avatar/current` — the User-owned Storage object when the
    default avatar is used.
-4. `apps/{appId}/users/{uid}` — only when the active App permits or requires
-   the corresponding membership.
+4. `apps/{appId}/users/{uid}` — only when the active App permits self-service
+   membership or a separate authorized App action creates it.
 
 The public `/users/[handle]` page exposes one bounded `objects.user` DTO from
 the public User endpoint. Session comparisons such as `isOwnProfile` belong in
@@ -118,9 +141,14 @@ their presence follows the active App's membership policy.
 
 Quick in-app checks:
 
+- Signed-out visits to `/users/create` and `/apps/create` should move to
+  `/auth` with the complete doorway in `redirect`.
 - After sign-in, visiting `/dashboard/user/create` should redirect to `/users/create`.
-- Clicking `Create core user` should move forward to `/dashboard` (or the active `redirect`
+- Clicking `Create my User` should move forward to `/dashboard` (or the active `redirect`
   target), not stop on the same screen.
+- On an invite-only App, a valid User should finish without entering a false
+  `Connect` step. On a self-join App, the membership step must create the
+  current AppUser before completion.
 - In Dashboard:
   - `Finish your User setup` should clear to normal overview only when all required
     records exist.
@@ -132,5 +160,52 @@ Quick in-app checks:
 - `packages/core/fireux-core/src/runtime/components/User/Create/System.vue`
 - `packages/core/fireux-core/src/runtime/pages/users/create.vue`
 - `packages/core/fireux-core/src/runtime/pages/dashboard/user/create.vue`
-- `packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/view/useUserComputed.ts`
+- `packages/core/fireux-core/src/runtime/composables/fireux/user/useUserComputed.ts`
 - `packages/core/fireux-core/src/runtime/composables/fireux/firebase/useAuth.ts`
+- `packages/core/fireux-core/src/runtime/utils/onboarding-route.ts`
+
+## App onboarding
+
+`/apps/create` always describes a new App. The App hosting the route supplies
+authentication and placement policy; its existing runtime configuration must
+never prefill the new App identity or make the create journey appear complete.
+
+The shared Core surface behaves according to its current environment:
+
+- an ecosystem Main App offers a tenant App in that ecosystem and derives the
+  ecosystem relationship;
+- FireUX may offer a FireUX tenant, a standalone App, or the separate new
+  ecosystem path;
+- tenant and standalone Apps do not offer child-App creation unless a future
+  explicit capability permits it.
+
+The browser draft contains only user-owned intent such as name, slug, and
+description. Role, project, ecosystem, database, and infrastructure placement
+are derived by trusted policy. Firebase credentials are never browser form
+fields.
+
+App creation is a provider/provision workflow, not a raw client Firestore
+create. Source shape, registry, assets, configuration, Firebase resources, and
+auth domains must satisfy their guards before the canonical App is saved. A
+Codex task or future Skill/MCP may legitimately invoke this Operator lane; it
+must follow the same contract rather than becoming another mutation lane.
+
+Runtime initialization remains a separate internal recovery operation. The
+App Shell mounts `AppInitializeSystem` only when the App declared by runtime
+configuration lacks its canonical record. Its green environment checks mean
+“this configured App is ready to initialize”; they are never progress for a
+new App. Initialization authenticates the configured developer and atomically
+creates the fixed runtime App plus its first App-admin membership through the
+Server mutation lane. The browser cannot choose an App id, database, or path,
+and Firestore Rules do not need to grant tenant-App creation to clients.
+
+### App source anchors
+
+- `packages/core/fireux-core/src/runtime/pages/apps/create.vue`
+- `packages/core/fireux-core/src/runtime/components/App/Create/System.vue`
+- `packages/core/fireux-core/src/runtime/components/App/Initialize/System.vue`
+- `packages/core/fireux-core/src/runtime/composables/fireux/app/utils/useAppInitialization.ts`
+- `packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts`
+- `packages/core/fireux-core/src/runtime/server/utils/app-initialization/initialize.ts`
+- `packages/core/fireux-core/src/runtime/models/operations/app-onboarding.ts`
+- `packages/core/fireux-core/src/runtime/utils/app-onboarding-policy.ts`

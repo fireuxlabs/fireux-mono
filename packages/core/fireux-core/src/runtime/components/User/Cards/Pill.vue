@@ -34,7 +34,7 @@ import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProx
 import {
   USER_AVATAR_FALLBACK_SRC,
   type UserCard,
-} from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+} from '../../../composables/fireux/user/useUserInterface'
 
 type PillProps = Partial<Pick<
   UserCard.Card,

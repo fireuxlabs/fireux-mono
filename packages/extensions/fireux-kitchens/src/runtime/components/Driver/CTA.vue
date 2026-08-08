@@ -31,7 +31,7 @@
 <script setup lang="ts">
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: pass canonical User separately from Driver storage.
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, ref } from 'vue'
 import { useDriver } from '../../composables/fireux/firestore/profiles/Driver/useDriver'
 import { useDriverInterface } from '../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'

@@ -2,18 +2,15 @@
 // Concurrent edit — 2026-07-20 13:40 CEST — User boundary pass: describe AppUser as governance/capability state, not another private-content bucket.
 // Concurrent edit — 2026-07-21 14:45 CEST — Dashboard Overview pass: expose independent public, private-account, and App-membership read states.
 // Concurrent edit — 2026-07-21 15:03 CEST — Werkbox Rules migration: point cross-user display reads at the bounded public projection.
-import { useAuth } from '../../../firebase/useAuth'
-import { useUserFetch } from './fetch/useUserFetch'
-import { useUserCreate } from './mutations/useUserCreate'
-import { useUserDelete } from './mutations/useUserDelete'
-import { useUserUpdate } from './mutations/useUserUpdate'
-import { useUserComputed } from './utils/view/useUserComputed'
-import { useUserInterface } from './utils/view/useUserInterface'
+import { useAuth } from '../firebase/useAuth'
+import { useUserFetch } from '../firestore/core/user/fetch/useUserFetch'
+import { useUserComputed } from './useUserComputed'
+import { useUserInterface } from './useUserInterface'
 
-export type { User, AppUser } from '../../../../../models/core/user.model'
-export type { UserAccount } from '../../../../../models/operations/user-account.model'
-export { useUserFetch } from './fetch/useUserFetch'
-export { useUserInterface } from './utils/view/useUserInterface'
+export type { User, AppUser } from '../../../models/core/user.model'
+export type { UserAccount } from '../../../models/operations/user-account.model'
+export { useUserFetch } from '../firestore/core/user/fetch/useUserFetch'
+export { useUserInterface } from './useUserInterface'
 
 /**
  * FireUX stack family: Active identity + app membership.
@@ -25,6 +22,8 @@ export { useUserInterface } from './utils/view/useUserInterface'
  * app's membership, authorization, and capability record.
  * For cross-user display reads, use usePublicUserIdentity so callers receive
  * only the bounded public projection instead of a raw User document.
+ * Entity commands remain explicit `useUserCreate/Update/Delete` imports; this
+ * active-session aggregate does not advertise unsupported lifecycle parity.
  */
 export function useUser() {
   const { uid } = useAuth()
@@ -34,8 +33,5 @@ export function useUser() {
     ...refs,
     ...useUserComputed(refs, refs.pending),
     ...useUserInterface(refs.user),
-    ...useUserCreate(),
-    ...useUserUpdate(refs, 'useUser'),
-    ...useUserDelete(refs),
   }
 }

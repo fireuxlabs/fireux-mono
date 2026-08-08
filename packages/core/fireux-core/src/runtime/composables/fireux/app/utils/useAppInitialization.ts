@@ -2,15 +2,15 @@ import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import { useFireUXConfig } from '../FireUXConfig'
 import { useToastify } from '../ui/useToastify'
-import { useAuth } from '../../firebase/useAuth'
-import { useUser } from '../../firestore/core/user/useUser'
-import { useAppCreate } from '../../firestore/core/app/mutations/useAppCreate'
-import { bootstrapAppUserAdmin } from '../../firestore/core/user/utils/createHelpers'
+import { useUser } from '../../user/useUser'
+import { syncAppMediaToStorage } from '../../firestore/core/app/utils/appMediaSync'
 import type { EnvCheckResponse } from './env-check.types'
+import { initializeConfiguredApp } from './initializeConfiguredApp'
 import { useAppEnvCheck } from './useAppEnvCheck'
 
-export interface AppOnboardingState {
+export interface AppInitializationState {
   coreUser: Ref<ReturnType<typeof useUser>['coreUser']['value'] | null>
+  userPending: Ref<boolean>
   env: Ref<EnvCheckResponse | null>
   envError: Ref<string | null>
   pending: Ref<boolean>
@@ -22,13 +22,16 @@ export interface AppOnboardingState {
   onProceed: () => Promise<void>
 }
 
-export function useAppOnboarding(
+/**
+ * Initialize or repair the App declared by the current runtime. This is not
+ * new-App onboarding and must not be mounted on `/apps/create`.
+ */
+export function useAppInitialization(
   options: { onInitialized?: () => void | Promise<void> } = {}
-): AppOnboardingState {
-  const { appId, devMode } = useFireUXConfig()
+): AppInitializationState {
+  const { devMode } = useFireUXConfig()
 
-  const { uid } = useAuth()
-  const { coreUser: coreUserRef } = useUser()
+  const { coreUser: coreUserRef, isLoading: userPending } = useUser()
   const coreUser = computed(() => coreUserRef.value ?? null)
   const toast = useToastify()
 
@@ -46,11 +49,12 @@ export function useAppOnboarding(
 
   const envPending = computed(() => Boolean(pending.value))
   const canProceed = computed(
-    () => Boolean(env.value?.isValid) || Boolean(devMode)
+    () =>
+      Boolean(env.value) && (Boolean(env.value?.isValid) || Boolean(devMode))
   )
-  const bypassWarning = computed(() => !env.value?.isValid && Boolean(devMode))
-
-  const { createApp, syncAppMedia } = useAppCreate()
+  const bypassWarning = computed(
+    () => Boolean(env.value) && !env.value?.isValid && Boolean(devMode)
+  )
 
   const onRefreshEnv = () => {
     void refreshEnv()
@@ -61,21 +65,10 @@ export function useAppOnboarding(
     actionPending.value = true
     proceedError.value = null
     try {
-      const created = await createApp()
-      console.log('[proceed] createApp result', created)
-
-      // The server verifies the authenticated uid against the configured
-      // developer and refuses bootstrap once another canonical App admin exists.
-      const currentUid = String(uid.value ?? coreUser.value?.id ?? '').trim()
-      if (!currentUid || !appId) {
-        throw new Error(
-          'Authenticated user is not ready yet. Please try again.'
-        )
-      }
-      await bootstrapAppUserAdmin(appId, currentUid)
+      const result = await initializeConfiguredApp()
       await options.onInitialized?.()
 
-      const syncResult = await syncAppMedia(created.id)
+      const syncResult = await syncAppMediaToStorage()
       await refreshEnv()
 
       if (syncResult.failed.length) {
@@ -85,16 +78,22 @@ export function useAppOnboarding(
         proceedError.value = `App initialized, but some brand assets failed to sync to Storage. ${detail}`
         toast.warn(proceedError.value)
       } else {
-        toast.success(created.created ? 'App initialized.' : 'App repaired.')
+        toast.success(
+          result.appCreated
+            ? 'App initialized.'
+            : result.membershipCreated || result.membershipUpdated
+              ? 'App access repaired.'
+              : 'App is ready.'
+        )
       }
     } catch (e) {
       const message =
         e instanceof Error && e.message.trim()
           ? e.message.trim()
-          : 'Failed to continue onboarding.'
+          : 'Failed to initialize App.'
       proceedError.value = message
       toast.error(message)
-      console.error('[proceed] createApp failed', e)
+      console.error('[useAppInitialization] failed', e)
     } finally {
       actionPending.value = false
     }
@@ -102,6 +101,7 @@ export function useAppOnboarding(
 
   return {
     coreUser,
+    userPending,
     env,
     envError,
     pending: envPending,

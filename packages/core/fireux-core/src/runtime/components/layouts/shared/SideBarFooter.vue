@@ -35,8 +35,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useFireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
 import { useAuth } from '../../../composables/fireux/firebase/useAuth'
-import { useUser } from '../../../composables/fireux/firestore/core/user/useUser'
-import type { UserCard } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUser } from '../../../composables/fireux/user/useUser'
+import type { UserCard } from '../../../composables/fireux/user/useUserInterface'
 
 const props = withDefaults(
   defineProps<{

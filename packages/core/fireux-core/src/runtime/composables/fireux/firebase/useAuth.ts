@@ -62,7 +62,10 @@ export function useAuth() {
 
   // “stable” refs we always return (never throw)
   const auth = useState<Auth | null>('fireux_auth_instance', () => null)
-  const currentUser = useState<User | null>('fireux_auth_current_user', () => null) as Ref<User | null>
+  const currentUser = useState<User | null>(
+    'fireux_auth_current_user',
+    () => null
+  ) as Ref<User | null>
   const isReady = useState('fireux_auth_ready', () => false)
   const hasAuthState = useState('fireux_auth_has_auth_state', () => false)
   const lastBindError = useState<unknown>('fireux_auth_bind_error', () => null)
@@ -80,7 +83,8 @@ export function useAuth() {
     if (hasAuthState.value) return
     if (authStateUnsubscribe) return
 
-    const authInstance: Auth | null = auth.value || (getApps().length ? getAuth() : null)
+    const authInstance: Auth | null =
+      auth.value || (getApps().length ? getAuth() : null)
     if (!authInstance) return
 
     // Resolve exactly once: this flips true when Firebase has finished
@@ -131,11 +135,9 @@ export function useAuth() {
       auth.value = bound.auth
       currentUser.value = bound.currentUser.value
       // keep it live
-      watch(
-        bound.currentUser,
-        (v: User | null) => (currentUser.value = v),
-        { immediate: true }
-      )
+      watch(bound.currentUser, (v: User | null) => (currentUser.value = v), {
+        immediate: true,
+      })
       isReady.value = true
       armAuthStateResolution()
       lastBindError.value = null
@@ -170,8 +172,8 @@ export function useAuth() {
   }
 
   const uid = computed<string | null>(() => currentUser.value?.uid ?? null)
-  const isAuthenticated = computed(() =>
-    !!currentUser.value && !currentUser.value.isAnonymous
+  const isAuthenticated = computed(
+    () => !!currentUser.value && !currentUser.value.isAnonymous
   )
   const authState = computed(() =>
     currentUser.value && !currentUser.value.isAnonymous
@@ -179,17 +181,15 @@ export function useAuth() {
       : 'NOT_AUTHENTICATED'
   )
 
-
-  // ─────────────────────────────────────────────
-  // Create FireUX user document when auth exists but Firestore does not.
-  // ─────────────────────────────────────────────
+  // Account and canonical User provisioning is an explicit onboarding action.
+  // Auth establishes the Firebase identity only; it must not turn a routine
+  // sign-in into a hidden Firestore or Storage mutation.
   // IMPORTANT: composables like `useRouter()` / `useNuxtApp()` must be called
   // while a component instance exists (i.e. during setup). We create the
   // user-create composable once here, then call its methods later.
   const userCreate = import.meta.client ? useUserCreate() : null
 
   const {
-    createOnce,
     retry: retryProvisioning,
     reset: resetAccountProvisioning,
     creating,
@@ -206,24 +206,10 @@ export function useAuth() {
     return await retryProvisioning()
   }
 
-  async function ensureSignedInUser(
-    user: User | null,
-    termsVersion?: string
-  ) {
+  async function ensureSignedInUser(user: User | null, _termsVersion?: string) {
     if (!user?.uid) return user
-    if (termsVersion) rememberPendingAccountConsent(termsVersion)
     currentUser.value = user
-    if (user.isAnonymous) return user
-    await createOnce(user.uid)
     return user
-  }
-
-  if (import.meta.client) {
-    watch(
-      uid,
-      (nextUid: string | null) => void createOnce(nextUid).catch(() => {}),
-      { immediate: true }
-    )
   }
 
   function resolveGoogleRedirectResult() {
@@ -239,9 +225,11 @@ export function useAuth() {
   const signInWithEmailPassword = async (email: string, password: string) => {
     if (!auth.value) return null
     clearPendingAccountConsent()
-    const result = await signInWithEmailAndPassword(auth.value, email, password).catch(
-      () => null
-    )
+    const result = await signInWithEmailAndPassword(
+      auth.value,
+      email,
+      password
+    ).catch(() => null)
     return await ensureSignedInUser(result?.user ?? null)
   }
 

@@ -1,16 +1,16 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: keep public User surfaces on canonical root identity.
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: accept minimal allowlisted User identity on public and admin cards.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: map optional biography into shared User cards.
-import { safeString } from '../../../../../../shared/useInterfaceUtils'
+import { safeString } from '../../shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import {
   USER_ECOSYSTEM_AVATAR_SRC,
   UserStorage,
   type User,
-} from '../../../../../../../models/core/user.model'
-import { resolveUserAvatarSource } from '../../../../../../../utils/user-avatar'
-import { useAvatarProxy } from '../../../../../app/ui/useAvatarProxy'
-import { normalizeUserHandle } from '../identity/useUserHandleIdentity'
+} from '../../../models/core/user.model'
+import { resolveUserAvatarSource } from '../../../utils/user-avatar'
+import { useAvatarProxy } from '../app/ui/useAvatarProxy'
+import { normalizeUserHandle } from '../firestore/core/user/utils/identity/useUserHandleIdentity'
 
 export namespace UserCard {
   export type Card = {

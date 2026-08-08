@@ -131,6 +131,14 @@ function checkFireuxCoreContracts(pkgPath) {
   const metaContent = source('src/config/app/meta-content.ts')
   const metaContentLoader = source('src/config/app/meta-content-loader.ts')
   const authSystem = source('src/runtime/components/Auth/System.vue')
+  const authComposable = source(
+    'src/runtime/composables/fireux/firebase/useAuth.ts'
+  )
+  const userOnboarding = source(
+    'src/runtime/components/User/Create/System.vue'
+  )
+  const userCreatePage = source('src/runtime/pages/users/create.vue')
+  const appCreatePage = source('src/runtime/pages/apps/create.vue')
   const defaultHeader = source(
     'src/runtime/components/layouts/default/Header.vue'
   )
@@ -211,15 +219,42 @@ function checkFireuxCoreContracts(pkgPath) {
       )
     }
   }
+  if (!authSystem.includes('userOnboardingPath')) {
+    violations.push(
+      'Auth System must send explicit sign-up journeys to shared User onboarding.'
+    )
+  }
   if (
-    !authSystem.includes('handleAccountRecovery') ||
-    !authSystem.includes("router.push('/users/create')") ||
-    !authSystem.includes('Complete account setup') ||
-    !authSystem.includes('accountProvisionErrorMessage')
+    /retryAccountProvisioning|accountProvisionErrorMessage|handleAccountRecovery/.test(
+      authSystem
+    )
   ) {
     violations.push(
-      'Auth System must send signed-in identities missing canonical account evidence to the shared User onboarding journey.'
+      'Auth System must establish identity only; explicit User onboarding owns account provisioning and recovery.'
     )
+  }
+  if (
+    !userOnboarding.includes('retryAccountProvisioning') ||
+    !userOnboarding.includes('FIREUX_ACCOUNT_TERMS_VERSION')
+  ) {
+    violations.push(
+      'User onboarding must own explicit account provisioning with current legal acceptance.'
+    )
+  }
+  if (/watch\(\s*uid,[\s\S]*createOnce\(/.test(authComposable)) {
+    violations.push(
+      'Routine auth-state changes must not automatically provision User or account records.'
+    )
+  }
+  for (const [route, contents] of [
+    ['/users/create', userCreatePage],
+    ['/apps/create', appCreatePage],
+  ]) {
+    if (!/\brequiresAuth\s*:\s*true\b/.test(contents)) {
+      violations.push(
+        `${route} must remain a protected onboarding doorway so Auth can preserve the requested destination.`
+      )
+    }
   }
 
   return violations

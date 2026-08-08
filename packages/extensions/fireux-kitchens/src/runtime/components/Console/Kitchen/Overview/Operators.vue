@@ -38,7 +38,7 @@ import { useUserHydration } from 'fireux-core/runtime/composables/fireux/firesto
 import {
   useUserInterface,
   type UserCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/user/utils/view/useUserInterface'
+} from 'fireux-core/runtime/composables/fireux/user/useUserInterface'
 
 const props = defineProps<{
   operatorIds?: string[]

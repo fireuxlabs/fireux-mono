@@ -6,7 +6,7 @@ import type {
   AppAdminJoinRequestDto,
   PublicUserIdentityDto,
 } from '../../../../../../server/utils/public-projection/public-dto.types'
-import type { UserCard } from '../../user/utils/view/useUserInterface'
+import type { UserCard } from '../../../../user/useUserInterface'
 
 type JoinRequestItem = {
   id: string

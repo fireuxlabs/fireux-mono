@@ -1,12 +1,12 @@
-import { safeString } from '../../../../../../shared/useInterfaceUtils'
+import { safeString } from '../../shared/useInterfaceUtils'
 import type { Ref } from 'vue'
 import {
   AppStorage,
   type App,
-} from '../../../../../../../models/core/app.model'
-import type { AppSocialLinks } from '../../../../../../../models/core/app.model'
-import { useResolvedColorMode } from '../../../../../app/useColorMode'
-import { resolveAppMediaForView } from '../appMedia'
+} from '../../../models/core/app.model'
+import type { AppSocialLinks } from '../../../models/core/app.model'
+import { resolveAppMediaForView } from '../firestore/core/app/utils/appMedia'
+import { useResolvedColorMode } from './useColorMode'
 
 export namespace AppCard {
   export type Card = {

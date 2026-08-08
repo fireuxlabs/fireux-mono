@@ -1,5 +1,5 @@
 import { useRuntimeConfig } from '#imports'
-import { createError, defineEventHandler, readBody } from 'h3'
+import { createError, defineEventHandler } from 'h3'
 import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { extname, join, resolve as pathResolve } from 'node:path'
@@ -12,7 +12,9 @@ import { getStorage } from 'firebase-admin/storage'
 import imageSize from 'image-size'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../../utils/firestore-mutations/targets'
 import { serverUpdate } from '../../../utils/firestore-mutations/server-update'
+import { requireDevDeveloper } from '../../../utils/auth/developer'
 import { getAdminApp } from '../../../utils/getAdmin'
+import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import {
   APP_IMAGE_SYNC_KINDS,
   appImageFirestoreField,
@@ -158,18 +160,11 @@ async function uploadLocalAsset(
 }
 
 export default defineEventHandler(async (event) => {
-  if (!import.meta.dev) {
-    throw createError({
-      statusCode: 403,
-      statusMessage: 'App media sync is only available in dev.',
-    })
-  }
-
-  const runtime = useRuntimeConfig()
-  const body = await readBody<{ appId?: string }>(event)
-
-  const appId = String(body?.appId || runtime.public?.fireux?.id || '').trim()
-  const ecosystem = String(runtime.public?.fireux?.ecosystem || '').trim()
+  await requireDevDeveloper(event)
+  const runtime = useRuntimeConfig(event)
+  const fireux = useFireUXConfig(event)
+  const appId = fireux.appId
+  const ecosystem = fireux.ecosystem
   const configuredBucket = normalizeBucketName(
     runtime.public?.firebaseEcosystem?.firebase?.storageBucket
   )

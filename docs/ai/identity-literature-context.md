@@ -65,6 +65,10 @@ shared public-language or pricing seam applies to them.
 - FireUX owns standalone App creation and the separate product for creating an
   ecosystem. Other Main Apps may offer a branded App inside their existing
   ecosystem; they do not offer ecosystem creation.
+- Core owns one blank new-App onboarding surface. The current Main App derives
+  the allowed placement but never supplies the new App identity. Runtime App
+  initialization and repair remain an internal shell operation and must not be
+  presented as `/apps/create`.
 - An Operation changes or manages an owned product object through a Console. A
   public directory or navigation link does not become an Operation merely
   because it appears in the landing rail.

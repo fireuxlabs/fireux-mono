@@ -33,9 +33,7 @@ const RELATIVE_IMPORT_RE =
   /(?:from\s+|import\s*\(\s*)(["'])(\.{1,2}\/[^"']+)\1/g
 const CARD_VARIANT_NAMES = new Set(['Cell.vue', 'Pill.vue', 'Preview.vue'])
 const LEGACY_CARD_PROFILE_PATHS = new Set([
-  'packages/core/fireux-core/src/runtime/components/App/Cards/Profile.vue',
   'packages/core/fireux-core/src/runtime/components/Ecosystem/Cards/Profile.vue',
-  'packages/core/fireux-core/src/runtime/components/User/Cards/Profile.vue',
   'packages/extensions/fireux-blogs/src/runtime/components/Blog/Cards/Profile.vue',
   'packages/extensions/fireux-companies/src/runtime/components/Company/Cards/Profile.vue',
   'packages/extensions/fireux-jobs/src/runtime/components/Agent/Cards/Profile.vue',

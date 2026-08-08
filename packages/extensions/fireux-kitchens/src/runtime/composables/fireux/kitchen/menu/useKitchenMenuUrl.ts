@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-20 16:21 CEST — Repo Efficiency Pass 1 of 6: resolve ecosystem App routing through the DTO boundary and fail closed across ecosystems.
 import { computed, unref, type ComputedRef, type Ref } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useEcosystemAppDetail } from 'fireux-core/runtime/composables/fireux/public/app/useEcosystemAppDetail'
+import { useAppDetail } from 'fireux-core/runtime/composables/fireux/app/useAppDetail'
 import type { MenuRouteContext } from '../../../../models/kitchen/menu/menu-context.model'
 import {
   directoryMenuRouteScope,
@@ -23,7 +23,7 @@ export function useKitchenMenuUrl(options: {
   const fireux = useFireUXConfig()
   const appId = computed(() => text(unref(options.appId)))
   const kitchenSlug = computed(() => text(unref(options.kitchenSlug)))
-  const { app, pending } = useEcosystemAppDetail(appId)
+  const { app, pending } = useAppDetail(appId)
   const isCurrentApp = computed(() => appId.value === fireux.appId)
   const appRecord = computed<Record<string, unknown>>(() =>
     app.value && typeof app.value === 'object'

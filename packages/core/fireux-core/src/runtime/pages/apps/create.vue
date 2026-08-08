@@ -2,8 +2,8 @@
   <UPage>
     <UPageHeader
       class="pageheader"
-      title="Initialize App"
-      description="Bootstrap or restore the current app record from runtime config and re-run onboarding safely."
+      title="Create an App"
+      description="Define a new App. The App hosting this page is the starting point, not the App being created."
     />
 
     <UPageBody class="pagebody">
@@ -18,9 +18,11 @@ import AppCreateSystem from '../../components/App/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
+  requiresAuth: true,
   tenant: 'global',
-  title: 'Initialize App',
-  description: 'Create or repair the current app record safely from runtime config.',
+  title: 'Create an App',
+  description:
+    'Start a new App with placement derived from the current environment.',
   nav: {
     key: 'apps-create',
     label: 'Create app',
@@ -32,5 +34,5 @@ definePageMeta({
   name: 'AppsCreatePage',
 })
 
-useHead({ title: 'Initialize App' })
+useHead({ title: 'Create an App' })
 </script>

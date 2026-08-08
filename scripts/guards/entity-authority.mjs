@@ -498,11 +498,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   const userProfile = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/components/User/Cards/Profile.vue'
+    'packages/core/fireux-core/src/runtime/components/User/IdentitySummary.vue'
   )
   const appProfileView = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/view/useAppProfileView.ts'
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/useAppProfileView.ts'
   )
   assert.doesNotMatch(userProfile, /useAppCollection/)
   assert.doesNotMatch(appProfileView, /useAppUserCollection|useUserFetch/)
@@ -536,17 +536,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(platformAppDetailPage, /PlatformDirectoryResponse/)
   assert.match(platformAppDetailPage, /show-people="false"/)
 
-  const appCreate = read(
+  const appInitialization = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppCreate.ts'
+    'packages/core/fireux-core/src/runtime/server/utils/app-initialization/initialize.ts'
   )
-  assert.doesNotMatch(appCreate, /ProjectBootstrap|createProjectDoc/)
-  const appEnsurePayload = read(
+  const appInitializationEndpoint = read(
     repoRoot,
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/appEnsurePayload.ts'
+    'packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts'
   )
-  assert.match(appEnsurePayload, /patch\.ecosystem_id = deleteField\(\)/)
-  assert.match(appEnsurePayload, /\['ecosystem', 'team'\]/)
+  assert.match(appInitialization, /runGuardedServerTransaction/)
+  assert.match(appInitialization, /FIRESTORE_MUTATION_TARGETS\.runtimeApps/)
+  assert.match(appInitialization, /serverAppUsersTarget/)
+  assert.match(appInitializationEndpoint, /requireDevDeveloper\(event\)/)
   const appUserJoinedPublisher = read(
     repoRoot,
     'packages/core/fireux-core/src/runtime/server/utils/events/publishAppUserJoinedEvent.ts'

@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import { useRoute } from '#imports'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, ref } from 'vue'
 import { useIngredientSeo } from '../../composables/fireux/firestore/ingredient/utils/useIngredientSeo'
 import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'

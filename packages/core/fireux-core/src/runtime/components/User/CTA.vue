@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useUser } from '../../composables/fireux/user/useUser'
 
 const { currentUser, appUser } = useUser()
 </script>

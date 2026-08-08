@@ -1,11 +1,34 @@
 import { useAsyncData } from '#imports'
-import { computed, unref, type MaybeRef } from 'vue'
+import type { AsyncData, NuxtError } from 'nuxt/app'
+import {
+  computed,
+  unref,
+  type ComputedRef,
+  type MaybeRef,
+} from 'vue'
+import { useFireUXConfig } from '../app/FireUXConfig'
 import type {
   PublicDetailResponse,
   PublicUserDto,
 } from '../../../server/utils/public-projection/public-dto.types'
 
-function statusCode(error: unknown): number {
+export type UserDetailOutcome = 'pending' | 'ready' | 'missing' | 'error'
+
+type UserDetailControls = Pick<
+  AsyncData<unknown, NuxtError<unknown>>,
+  'pending' | 'error' | 'refresh'
+>
+
+export type UseUserDetailReturn = UserDetailControls & {
+  user: ComputedRef<PublicUserDto | null>
+  ready: Promise<void>
+  statusCode: ComputedRef<number>
+  missing: ComputedRef<boolean>
+  failed: ComputedRef<boolean>
+  outcome: ComputedRef<UserDetailOutcome>
+}
+
+function readStatusCode(error: unknown): number {
   if (!error || typeof error !== 'object') return 0
   const candidate = error as {
     status?: unknown
@@ -18,16 +41,21 @@ function statusCode(error: unknown): number {
 }
 
 /** Resolve one User page through its bounded endpoint. */
-export async function useUserDetail(
+export function useUserDetail(
   routeHandle: MaybeRef<string | null | undefined>
-) {
+): UseUserDetailReturn {
+  const fireux = useFireUXConfig()
   const handle = computed(() =>
     String(unref(routeHandle) ?? '')
       .trim()
       .toLowerCase()
   )
-  const { data, pending, error, refresh } = await useAsyncData(
-    () => `user-detail-${handle.value || 'none'}`,
+  const state = useAsyncData<PublicDetailResponse<PublicUserDto> | null>(
+    () => [
+      'user-detail',
+      fireux.appId,
+      handle.value || 'none',
+    ].join('|'),
     async () => {
       if (!handle.value) return null
       return $fetch<PublicDetailResponse<PublicUserDto>>(
@@ -37,23 +65,35 @@ export async function useUserDetail(
     { server: true, watch: [handle] }
   )
 
-  const user = computed(() => {
-    const item = data.value?.item ?? null
-    return item?.handle === handle.value ? item : null
+  const user = computed<PublicUserDto | null>(() => {
+    const item = state.data.value?.item ?? null
+    return item?.handle === handle.value && !state.pending.value ? item : null
   })
-  const code = computed(() => statusCode(error.value))
+  const statusCode = computed(() => readStatusCode(state.error.value))
   const missing = computed(
-    () => code.value === 404 || (!pending.value && !error.value && !user.value)
+    () =>
+      statusCode.value === 404 ||
+      (!state.pending.value && !state.error.value && !user.value)
   )
-  const failed = computed(() => Boolean(error.value) && code.value !== 404)
+  const failed = computed(
+    () => Boolean(state.error.value) && statusCode.value !== 404
+  )
+  const outcome = computed<UserDetailOutcome>(() => {
+    if (state.pending.value) return 'pending'
+    if (failed.value) return 'error'
+    if (missing.value) return 'missing'
+    return 'ready'
+  })
 
   return {
     user,
-    pending,
-    error,
-    refresh,
-    statusCode: code,
+    ready: state.then(() => undefined),
+    pending: state.pending,
+    error: state.error,
+    refresh: state.refresh,
+    statusCode,
     missing,
     failed,
+    outcome,
   }
 }

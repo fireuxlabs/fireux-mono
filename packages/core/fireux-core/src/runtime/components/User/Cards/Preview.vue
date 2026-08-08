@@ -44,7 +44,7 @@
 
 <script setup lang="ts">
 import { useAvatarProxy } from '../../../composables/fireux/app/ui/useAvatarProxy'
-import { USER_AVATAR_FALLBACK_SRC } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { USER_AVATAR_FALLBACK_SRC } from '../../../composables/fireux/user/useUserInterface'
 
 type Props = {
   avatarUrl?: string

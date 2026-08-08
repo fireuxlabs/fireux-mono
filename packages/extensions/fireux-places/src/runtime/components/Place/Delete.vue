@@ -22,7 +22,7 @@
 import { navigateTo } from '#imports'
 import { useDeveloperAccess } from 'fireux-core/runtime/composables/fireux/app/useDeveloperAccess'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, ref } from 'vue'
 import type { Place } from '../../models/place.model'
 import { usePlaceDelete } from '../../composables/fireux/firestore/place/mutations/usePlaceDelete'

@@ -138,6 +138,38 @@ Before each task:
 - Start at `docs/concepts/family-public-detail.md` and the nearest entity page,
   reader, projection, and presentation before changing this family.
 
+## Entity capability families
+
+- An entity family owns the complete boundary for one entity: canonical model
+  and identity, authorized reads, bounded projections, lifecycle commands,
+  validation and policy, derived facts, view projections, events, and the
+  page, Console, or Tool adapters that consume those capabilities. It is not
+  one umbrella composable and it is not CRUD symmetry for its own sake.
+- Use responsibility names consistently: `useXDetail` for one routable bounded
+  object, `useXFetch` for an authorized canonical or operational read,
+  `useXCollection` for a list, `useXCreate/Update/Delete` for commands, and
+  `useXInterface` for presentation projection. A family exposes only the seams
+  it genuinely supports.
+- `useXDetail` owns `ready`, `pending`, `error`, `refresh`, `statusCode`,
+  `missing`, `failed`, and `outcome`, while returning the entity under its real
+  name. Align this vocabulary across entities without introducing a generic
+  cross-entity detail engine.
+- Reserve an unqualified `useX()` aggregate for a real active read/view
+  context, such as the authenticated User. Keep commands explicitly imported;
+  do not spread fetch, collection, mutations, computed state, interface
+  mapping, and SEO into an umbrella merely to make a nominal entity entrypoint.
+- Firestore mutations have Client, Server, and MCP/Skill lanes. Those are
+  transports into the same entity-owned commands and typed targets; scripts,
+  CLI, agents, and Tools do not receive raw collection or database authority.
+- Start at `docs/concepts/composables.md`, `docs/concepts/firestore-entity.md`,
+  and the entity's current model, endpoint, composables, and guards.
+- Core User and App are the filesystem proving siblings: canonical records
+  remain flat in `models/core`, entity-facing read/view composables live under
+  `composables/fireux/user` and `composables/fireux/app`, raw adapters remain
+  under `composables/fireux/firestore/core/<entity>`, and Profile compositions
+  live directly under `components/User` and `components/App` rather than
+  `Cards`.
+
 ## Public route identity
 
 - Each public entity family declares one exact route key. When that key is the
@@ -399,12 +431,18 @@ Before each task:
 
 ## Console target and onboarding authority
 
-- FireUX Core owns the single `/auth` route and its sign-in, registration,
-  account-provisioning, and authenticated redirect behavior for every App.
+- FireUX Core owns the single `/auth` route and its sign-in, registration, and
+  authenticated redirect behavior for every App. Core User onboarding owns
+  account provisioning.
   Entry links may declare `mode=sign-up` and a same-origin `redirect`; the
   destination owns any domain onboarding after authentication. Project Apps
   supply identity and branding through shared assets; they do not add local
   `/auth`, `/login`, or `/register` pages or auth presentation in App config.
+- `/auth` establishes Firebase identity only. Routine auth-state changes never
+  provision or repair a User, UserAccount, AppUser, or avatar. The protected
+  `/users/create` doorway owns explicit current legal acceptance and User
+  provisioning, preserves its original same-origin destination, and creates
+  the current AppUser only when that App permits self-service joining.
 - A newly created App membership publishes one deterministic
   `app.user.joined` event under that App. The event is the durable signup log
   and atomically creates an owner-only in-app notification for each existing

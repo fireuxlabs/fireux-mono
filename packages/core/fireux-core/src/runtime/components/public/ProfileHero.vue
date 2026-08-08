@@ -115,7 +115,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useAvatarProxy } from '../../composables/fireux/app/ui/useAvatarProxy'
-import { USER_AVATAR_FALLBACK_SRC } from '../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { USER_AVATAR_FALLBACK_SRC } from '../../composables/fireux/user/useUserInterface'
 
 defineOptions({ name: 'PublicProfileHero' })
 

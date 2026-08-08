@@ -87,7 +87,7 @@
 import { useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed } from 'vue'
 import { useCompanyFetch } from '../../../composables/fireux/firestore/company/fetch/useCompanyFetch'
 import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'

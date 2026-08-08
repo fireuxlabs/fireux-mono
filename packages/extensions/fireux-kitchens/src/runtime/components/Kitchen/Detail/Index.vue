@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { useFetch } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useUser } from 'fireux-core/runtime/composables/fireux/firestore/core/user/useUser'
+import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, ref, watch } from 'vue'
 import type { KitchenSurface } from '../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenFulfilmentConfig } from '../../../models/kitchen.model'

@@ -16,7 +16,7 @@
       v-bind="userInterface(currentUser)"
     />
 
-    <UserCardsProfile
+    <UserIdentitySummary
       v-else
       v-bind="userInterface(currentUser)"
       :user="currentUser"
@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import type { User } from '../../../models/core/user.model'
-import { useUserInterface } from '../../../composables/fireux/firestore/core/user/utils/view/useUserInterface'
+import { useUserInterface } from '../../../composables/fireux/user/useUserInterface'
 import { useCardViewToggle } from '../../../composables/shared/useCardViewToggle'
 
 const props = defineProps<{

@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { UserAccessTier } from '../../composables/fireux/firestore/core/user/utils/view/useUserPermissions'
+import type { UserAccessTier } from '../../composables/fireux/user/useUserPermissions'
 
 const props = withDefaults(
   defineProps<{

@@ -68,8 +68,8 @@
 import { definePageMeta, useHead } from '#imports'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
-import { useApp } from '../../composables/fireux/firestore/core/app/useApp'
-import { useUser } from '../../composables/fireux/firestore/core/user/useUser'
+import { useApp } from '../../composables/fireux/app/useApp'
+import { useUser } from '../../composables/fireux/user/useUser'
 
 const fireux = useFireUXConfig()
 const { app, outcome: appOutcome } = useApp()

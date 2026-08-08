@@ -37,6 +37,7 @@
 <script setup lang="ts">
 import { computed, ref, useRoute, useRouter } from '#imports'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
+import { resolveUserOnboardingDestination } from '../../utils/onboarding-route'
 
 type AuthMode = 'sign-in' | 'sign-up'
 
@@ -181,9 +182,7 @@ const handleEmailSubmit = async (event?: AuthFormSubmitLike) => {
 
   if (result?.uid) {
     if (mode === 'sign-up') {
-      const redirect = typeof route.query.redirect === 'string'
-        ? route.query.redirect
-        : '/dashboard'
+      const redirect = resolveUserOnboardingDestination(route.query.redirect)
       await router.push({ path: '/users/create', query: { redirect } })
     }
     return

@@ -349,7 +349,7 @@ const contractSolutions = [
             <div class="profile__section">
               <span class="profile__label">Responsibility</span>
               <span class="profile__value">
-                Named Cards/Profile components own the actual content.
+                Named Profile and Detail components own the actual content.
               </span>
             </div>
           </div>

@@ -12,6 +12,7 @@ import UserCreateSystem from '../../components/User/Create/System.vue'
 
 definePageMeta({
   layout: 'default',
+  requiresAuth: true,
   title: 'Create Your User',
   description: 'Create your public FireUX identity and connect it to this App.',
   nav: {
