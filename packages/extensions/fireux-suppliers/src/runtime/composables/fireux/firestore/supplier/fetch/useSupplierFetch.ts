@@ -25,7 +25,7 @@ type UseSupplierFetchOptions = {
   key?: SupplierFetchKey | Ref<SupplierFetchKey>
 }
 
-const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
+const DEFAULT_COLLECTION_PATH = SupplierStorage.collection
 const UNSUPPORTED_TEST_SOURCE_MESSAGE =
   '[fireux-suppliers] Supplier Test source is unsupported: no canonical simulation producer exists.'
 const normalizeString = (value: unknown) => String(value ?? '').trim()

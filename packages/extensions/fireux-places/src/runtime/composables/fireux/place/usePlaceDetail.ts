@@ -3,13 +3,13 @@ import { computed, resolveComponent } from 'vue'
 import {
   usePlaceFetch,
   usePlaceSeo,
-} from '../../composables/fireux/firestore/place/usePlace'
+} from '../firestore/place/usePlace'
 import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
-} from '../../models/place.model'
+} from '../../../models/place.model'
 
-export function usePublicPlaceDetail(props: { locator: string }) {
+export function usePlaceDetail(props: { locator: string }) {
   const locator = computed(() => String(props.locator || '').trim())
   const { place, outcome, statusCode, missing, failed, refresh, ready } =
     usePlaceFetch(locator)

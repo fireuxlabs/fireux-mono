@@ -44,17 +44,18 @@ type WidenLiteral<T> =
  * - If that changes later, update the models README first, then this file.
  */
 export const SupplierStorage = {
-  shape: 'root-and-app-support',
-  root: 'suppliers/{supplierId}',
-  appSupport: 'apps/{appId}/suppliers/{supplierId}',
-  rootCollection: 'suppliers',
-  appSupportCollection: 'suppliers',
+  shape: 'root',
+  path: 'suppliers/{supplierId}',
+  collection: 'suppliers',
   idParam: 'supplierId',
-  children: {
-    catalogues: 'suppliers/{supplierId}/catalogues/{catalogueId}',
-    ingredients: 'suppliers/{supplierId}/ingredients/{ingredientId}',
-    items: 'suppliers/{supplierId}/items/{supplierItemId}',
-  },
+} as const
+
+export const AppSupplierStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/suppliers/{supplierId}',
+  collection: 'suppliers',
+  parent: 'app',
+  idParam: 'supplierId',
 } as const
 
 export const SupplierEntity = defineFireuxEntity({
@@ -67,19 +68,11 @@ export const SupplierEntity = defineFireuxEntity({
   publicRead: 'to-confirm',
   status: 'confirmed',
   console: true,
-  root: SupplierStorage.root,
-  appSupportPath: SupplierStorage.appSupport,
+  root: SupplierStorage.path,
+  appSupportPath: AppSupplierStorage.path,
 })
 
-export const AppSupplierStorage = {
-  shape: 'scoped',
-  path: 'apps/{appId}/suppliers/{supplierId}',
-  collection: 'suppliers',
-  parent: 'app',
-  idParam: 'supplierId',
-} as const
-
-export const SupplierModel = {
+export const SupplierDefaults = {
   id: '',
   ...FireuxAppScope,
   company_id: '',
@@ -110,9 +103,9 @@ export const SupplierModel = {
   },
 } as const
 
-export type Supplier = WidenLiteral<typeof SupplierModel>
+export type Supplier = WidenLiteral<typeof SupplierDefaults>
 
-export const AppSupplierModel = {
+export const AppSupplierDefaults = {
   ...FireuxAppAccessRecordModel,
 } as const
 
@@ -170,7 +163,7 @@ export const SupplierIngredientStorage = {
   idParam: 'ingredientId',
 } as const
 
-export const SupplierIngredientModel = {
+export const SupplierIngredientDefaults = {
   id: '',
   supplier_id: '',
   ingredient_id: '',
@@ -191,7 +184,7 @@ export const SupplierIngredientModel = {
   },
 } as const
 
-export type SupplierIngredient = WidenLiteral<typeof SupplierIngredientModel>
+export type SupplierIngredient = WidenLiteral<typeof SupplierIngredientDefaults>
 
 export type SupplierIngredientCreateInput = Omit<
   SupplierIngredient,
@@ -227,7 +220,7 @@ export const SupplierItemStorage = {
   idParam: 'supplierItemId',
 } as const
 
-export const SupplierItemModel = {
+export const SupplierItemDefaults = {
   id: '',
   supplier_id: '',
   product_id: '',
@@ -261,9 +254,9 @@ export const SupplierItemModel = {
   },
 } as const
 
-type SupplierItemModelShape = WidenLiteral<typeof SupplierItemModel>
+type SupplierItemDefaultsShape = WidenLiteral<typeof SupplierItemDefaults>
 
-export type SupplierItem = Omit<SupplierItemModelShape, 'ingredient_id'> & {
+export type SupplierItem = Omit<SupplierItemDefaultsShape, 'ingredient_id'> & {
   ingredient_id?: string
 }
 
@@ -311,7 +304,7 @@ export const SupplierCatalogueStorage = {
   idParam: 'catalogueId',
 } as const
 
-export const SupplierCatalogueModel = {
+export const SupplierCatalogueDefaults = {
   id: '',
   supplier_id: '',
   name: '',
@@ -331,7 +324,7 @@ export const SupplierCatalogueModel = {
   },
 } as const
 
-export type SupplierCatalogue = WidenLiteral<typeof SupplierCatalogueModel>
+export type SupplierCatalogue = WidenLiteral<typeof SupplierCatalogueDefaults>
 
 export type SupplierCatalogueCreateInput = Omit<
   SupplierCatalogue,

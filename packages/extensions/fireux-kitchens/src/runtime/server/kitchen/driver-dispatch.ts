@@ -27,7 +27,7 @@ import {
   type DriverDispatchWatchInput,
   type DriverDispatchWatchResult,
 } from '../../models/driver/dispatch.ts'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
+import { AppKitchenStorage } from '../../models/kitchen.model.ts'
 
 const MAX_ACTIVE_KITCHENS = 50
 const MAX_ORDERS_PER_KITCHEN = 20
@@ -185,7 +185,7 @@ export async function listDriverDispatches(
   const pages = await Promise.all(
     [...kitchens.keys()].map(async (kitchenId) => {
       const page = await appRef
-        .collection(KitchenStorage.scopeCollection)
+        .collection(AppKitchenStorage.collection)
         .doc(kitchenId)
         .collection('orders')
         .where('order_type', '==', 'delivery')

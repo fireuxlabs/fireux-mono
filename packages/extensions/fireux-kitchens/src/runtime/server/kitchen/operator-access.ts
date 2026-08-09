@@ -7,7 +7,7 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
+import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model.ts'
 import {
   readKitchenOnboardingScope,
   readKitchenOnboardingSupport,
@@ -94,10 +94,10 @@ export async function requireKitchenWriter(
     .collection(AppUserStorage.collection)
     .doc(user.uid)
   const kitchenRef = appRef
-    .collection(KitchenStorage.scopeCollection)
+    .collection(AppKitchenStorage.collection)
     .doc(input.kitchenId)
   const rootKitchenRef = db
-    .collection(KitchenStorage.rootCollection)
+    .collection(KitchenStorage.collection)
     .doc(input.kitchenId)
   const [membershipSnapshot, kitchenSnapshot, rootKitchenSnapshot] = await db.getAll(
     membershipRef,

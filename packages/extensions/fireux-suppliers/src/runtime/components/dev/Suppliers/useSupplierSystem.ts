@@ -4,7 +4,7 @@ import {
   type SupplierCollectionSource,
 } from '../../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
 import type { Supplier } from '../../../models/supplier/Supplier.model'
-import { SupplierModel as SupplierModelRuntime } from '../../../models/supplier/Supplier.model'
+import { SupplierDefaults as SupplierModelRuntime } from '../../../models/supplier/Supplier.model'
 
 export function useSupplierSystem() {
   type SupplierDevRecord = Partial<Supplier> & {

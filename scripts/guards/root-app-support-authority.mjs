@@ -282,6 +282,8 @@ const files = {
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate.ts',
   entityModel:
     'packages/core/fireux-core/src/runtime/models/utils/entity.model.ts',
+  placeModel:
+    'packages/extensions/fireux-places/src/runtime/models/place.model.ts',
   supplierModel:
     'packages/extensions/fireux-suppliers/src/runtime/models/supplier/Supplier.model.ts',
   supplierCollection:
@@ -432,8 +434,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       ])
   )
 
+  assert.match(source.placeModel, /export const PlaceStorage = \{[\s\S]*shape:\s*'public\/root'[\s\S]*path:\s*'places\/\{placeId\}'/)
+  assert.match(source.placeModel, /export const PlaceDefaults = \{/)
+  assert.doesNotMatch(source.placeModel, /export const PlaceModel = \{/)
+
+  assert.match(source.kitchenModel, /export const KitchenStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'kitchens\/\{kitchenId\}'/)
+  assert.match(source.kitchenModel, /export const AppKitchenStorage = \{[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}'/)
+  assert.match(source.kitchenModel, /export const KitchenDefaults = \{/)
+  assert.match(source.kitchenModel, /export const AppKitchenDefaults:\s*AppKitchen = \{/)
+
   for (const [name, modelSource, modelName] of [
-    ['Supplier', source.supplierModel, 'SupplierModel'],
     ['Portfolio', source.portfolioModel, 'PortfolioModel'],
     ['Property', source.propertyModel, 'PropertyModel'],
   ]) {
@@ -457,7 +467,20 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     )
   }
 
-  assert.match(source.supplierModel, /export const AppSupplierModel/)
+  const supplierRoot = constBlock(source.supplierModel, 'SupplierDefaults')
+  assert.match(
+    source.supplierModel,
+    /identity:\s*'root'[\s\S]*appSupport:\s*'access-record'/,
+    'Supplier must remain a root entity with an App access-support record.'
+  )
+  assert.doesNotMatch(
+    supplierRoot,
+    /FireuxConsoleAccessModel|operator_ids|team_ids|join_requests/,
+    'Supplier root must not contain App access fields.'
+  )
+  assert.match(source.supplierModel, /export const SupplierStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'suppliers\/\{supplierId\}'/)
+  assert.match(source.supplierModel, /export const AppSupplierStorage = \{[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/suppliers\/\{supplierId\}'/)
+  assert.match(source.supplierModel, /export const AppSupplierDefaults/)
   assert.match(source.portfolioModel, /export const AppPortfolioModel/)
   assert.match(
     source.consoleEntityModel,

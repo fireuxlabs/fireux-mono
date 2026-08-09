@@ -275,10 +275,10 @@
 
 <script setup lang="ts">
 import { setResponseStatus } from '#imports'
-import { usePublicPlaceDetail } from './usePublicPlaceDetail'
+import { usePlaceDetail } from '../../composables/fireux/place/usePlaceDetail'
 
 const props = defineProps<{ locator: string }>()
-const detail = usePublicPlaceDetail(props)
+const detail = usePlaceDetail(props)
 
 await detail.ready
 if (import.meta.server && detail.missing.value) {

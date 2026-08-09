@@ -104,7 +104,7 @@ export function useSupplierConsole(
 
   const entity = useConsoleEntityRuntime<SupplierSurface>({
     family: 'supplier',
-    storageFamily: SupplierStorage.rootCollection,
+    storageFamily: SupplierStorage.collection,
     targetData,
     targetOutcome: targetsOutcome,
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),

@@ -146,7 +146,7 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed, reactive, ref, watch } from 'vue'
 import { useSupplierCollection } from '../../composables/fireux/firestore/supplier/fetch/useSupplierCollection'
 import type { AppSupplier, Supplier } from '../../models/supplier/Supplier.model'
-import { SupplierModel as SupplierModelRuntime } from '../../models/supplier/Supplier.model'
+import { SupplierDefaults as SupplierModelRuntime } from '../../models/supplier/Supplier.model'
 
 definePageMeta({
   layout: 'dev',

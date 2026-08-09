@@ -13,7 +13,7 @@ import {
 import type { PublicCompanyProjection } from 'fireux-companies/runtime/models/company-public.model'
 import type { Ref } from 'vue'
 
-const supplierCollection = SupplierStorage.rootCollection
+const supplierCollection = SupplierStorage.collection
 
 type SupplierRootAndAppSupport = {
   coreSupplier: Ref<Supplier | null | undefined>

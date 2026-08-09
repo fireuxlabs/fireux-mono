@@ -27,7 +27,7 @@ import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
 } from '../../models/kitchen-onboarding.model'
-import { KitchenStorage } from '../../models/kitchen.model'
+import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model'
 import {
   assertKitchenOnboardingPlaceDefaults,
   assertKitchenOnboardingScope,
@@ -110,7 +110,7 @@ async function kitchenForPlace(
   db: Firestore,
   placeId: string
 ): Promise<Locator> {
-  const collection = db.collection(KitchenStorage.rootCollection)
+  const collection = db.collection(KitchenStorage.collection)
   const exact = await collection.doc(placeId).get()
   const exactData = exact.exists ? exact.data() || {} : null
   if (exactData && text(exactData.place_id) === placeId) {
@@ -145,7 +145,7 @@ async function resolveLocator(
       'Kitchen id'
     )
     const snapshot = await db
-      .collection(KitchenStorage.rootCollection)
+      .collection(KitchenStorage.collection)
       .doc(kitchenId)
       .get()
     if (!snapshot.exists) fail(404, 'Kitchen not found.')
@@ -179,7 +179,7 @@ export async function previewKitchenOnboarding(
     current.db.collection(PlaceStorage.collection).doc(locator.placeId).get(),
     current.db
       .doc(
-        `apps/${current.appId}/${KitchenStorage.scopeCollection}/${locator.kitchenId}`
+        `apps/${current.appId}/${AppKitchenStorage.collection}/${locator.kitchenId}`
       )
       .get(),
   ])

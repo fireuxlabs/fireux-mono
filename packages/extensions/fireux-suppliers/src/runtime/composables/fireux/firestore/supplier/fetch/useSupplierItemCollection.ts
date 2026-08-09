@@ -7,7 +7,7 @@ import {
   type SupplierItem,
 } from '../../../../../models/supplier/Supplier.model'
 
-const DEFAULT_SUPPLIER_COLLECTION_PATH: string = SupplierStorage.rootCollection
+const DEFAULT_SUPPLIER_COLLECTION_PATH: string = SupplierStorage.collection
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
 

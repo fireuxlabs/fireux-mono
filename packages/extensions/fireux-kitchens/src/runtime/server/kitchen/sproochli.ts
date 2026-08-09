@@ -9,7 +9,7 @@ import {
   readSproochliAttachmentConfig,
   type SproochliDefaultLanguage,
 } from 'fireux-sproochli/runtime/sproochli'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
+import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model.ts'
 import {
   readKitchenOnboardingScope,
   readKitchenOnboardingSupport,
@@ -84,7 +84,7 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
   )
   const db = getRuntimeFirestore()
   const rootRef = db
-    .collection(KitchenStorage.rootCollection)
+    .collection(KitchenStorage.collection)
     .doc(requested.kitchenId)
   const runtimeMembershipRef = db.doc(`apps/${runtimeAppId}/users/${uid}`)
 
@@ -128,7 +128,7 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
     )
     const ownerMembershipRef = db.doc(`apps/${ownerAppId}/users/${uid}`)
     const supportRef = db.doc(
-      `apps/${ownerAppId}/${KitchenStorage.scopeCollection}/${requested.kitchenId}`
+      `apps/${ownerAppId}/${AppKitchenStorage.collection}/${requested.kitchenId}`
     )
     const [ownerMembership, support] = await Promise.all([
       ownerMembershipRef.path === runtimeMembershipRef.path

@@ -249,7 +249,7 @@ const formatSlugField = (value: string) =>
 const validateSlugField = (value: string) => {
   const validation = validateSlug(formatSlugField(value), {
     label: 'Kitchen slug',
-    namespace: KitchenStorage.rootCollection,
+    namespace: KitchenStorage.collection,
     reservedScope: 'root',
     maxLength: 80,
   })

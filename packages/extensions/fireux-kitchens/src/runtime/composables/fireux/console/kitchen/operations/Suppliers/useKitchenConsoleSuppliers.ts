@@ -53,7 +53,7 @@ export function useKitchenConsoleSuppliers() {
       : fetchedCollectionPath.value
   )
   const page = useKitchenConsoleReadPage<SupplierSurface>({
-    collectionName: SupplierStorage.rootCollection,
+    collectionName: SupplierStorage.collection,
     selectedKitchen,
     kitchenId,
     items: typedSuppliers,

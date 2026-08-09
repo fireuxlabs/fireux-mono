@@ -56,21 +56,26 @@
     <MoleculesOnboardingSystem
       v-else-if="preview"
       family="kitchen"
-      :step-id="activeStepId"
-      :title="currentStep?.label || 'Add a Kitchen'"
-      :step-number="stepNumber"
-      :step-count="stepCount"
-      :progress="progress"
-      :error="error"
-      :pending="pending"
-      :show-back="!isFirstStep || canChangePlace || !preview.can_complete"
-      :back-label="backLabel"
-      :continue-label="continueLabel"
-      :continue-icon="isLastStep ? completionIcon : 'i-lucide-arrow-right'"
-      :continue-disabled="continueDisabled"
-      @back="onBack"
-      @continue="onContinue"
+      :stage="shellStage"
     >
+      <template #intro>
+        <span
+          class="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary"
+        >
+          <UIcon name="i-lucide-cooking-pot" class="size-6" />
+        </span>
+        <p class="mt-6 text-sm font-semibold text-primary">Kitchen setup</p>
+        <h1
+          class="mt-2 text-2xl font-semibold tracking-tight text-highlighted sm:text-3xl"
+        >
+          Add a Kitchen
+        </h1>
+        <p class="mt-3 text-sm leading-6 text-muted">
+          Connect the Kitchen to its Place, confirm its identity, and review
+          access before creation.
+        </p>
+      </template>
+
       <div v-if="!preview.can_complete" class="form-stack-sm">
         <UAlert
           color="warning"
@@ -117,6 +122,31 @@
         :editable="canEditPalette"
         @update:model-value="setPaletteOverride"
       />
+
+      <template #footer>
+        <div class="flex items-center justify-between gap-3">
+          <UButton
+            type="button"
+            color="neutral"
+            variant="soft"
+            icon="i-lucide-arrow-left"
+            :disabled="pending"
+            @click="onBack"
+          >
+            {{ backLabel }}
+          </UButton>
+          <UButton
+            type="button"
+            color="primary"
+            :icon="isLastStep ? completionIcon : 'i-lucide-arrow-right'"
+            :loading="pending"
+            :disabled="continueDisabled"
+            @click="onContinue"
+          >
+            {{ continueLabel }}
+          </UButton>
+        </div>
+      </template>
     </MoleculesOnboardingSystem>
   </section>
 </template>
@@ -183,6 +213,15 @@ const {
   stepCount,
   stepNumber,
 } = useKitchenOnboarding()
+
+const shellStage = computed(() => ({
+  id: activeStepId.value,
+  title: currentStep.value?.label || 'Add a Kitchen',
+  number: stepNumber.value,
+  count: stepCount.value,
+  progress: progress.value,
+  error: error.value,
+}))
 
 const initialLoaded = ref(false)
 const existingRootId = computed(() =>

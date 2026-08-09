@@ -54,7 +54,7 @@ export function useSupplierUpdate() {
     const resolvedId = resolveId(options.id)
 
     await updateDocument<Supplier>(
-      SupplierStorage.rootCollection,
+      SupplierStorage.collection,
       resolvedId,
       pruneUndefined(patch)
     )

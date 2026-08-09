@@ -54,7 +54,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const placeDetail = readFamily(repoRoot, [
     'packages/extensions/fireux-places/src/runtime/components/Place/PublicDetail.vue',
-    'packages/extensions/fireux-places/src/runtime/components/Place/usePublicPlaceDetail.ts',
+    'packages/extensions/fireux-places/src/runtime/composables/fireux/place/usePlaceDetail.ts',
   ])
 
   assert.equal(

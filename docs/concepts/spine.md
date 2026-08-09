@@ -1,7 +1,7 @@
 # Spine
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-09
+Ref: 5b5de1c1c
 Role: map, not canon
 
 ## Purpose
@@ -75,6 +75,7 @@ contract.
 | Debug                         | `debug.md`                  | `DevJson` and `DevFireuxDebugPanel`                                                              | Two distinct surfaces are accepted; a third generic panel is drift                                                                                  |
 | Privacy-first measurement     | `privacy-measurement.md`    | Shared legal surface plus `scripts/guards/privacy-measurement.mjs`                               | No tracking is active; the bounded aggregate server/admin family must land before collection begins                                                 |
 | Repository performance        | `repository-performance.md` | `scripts/measure-workspace.mjs` and the root verification commands                               | Measurement is reproducible; timing budgets remain to-confirm until repeated reference-environment evidence exists                                  |
+| Lasagne architecture          | `lasagne.md`                | Entity composables, domain controllers, Console providers, and structural shells                 | Dependency direction is defined; touched prop-relay workflows should move toward domain-owned controllers without a universal entity framework      |
 
 ## Stop signals
 

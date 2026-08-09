@@ -34,7 +34,7 @@ export function useSupplierSeo(supplier: MaybeRefOrGetter<Partial<Supplier> | nu
     description: computed(() => excerpt(entry.value?.supplier_headline || entry.value?.summary || entry.value?.supplier_bio || 'Supplier details.')),
     image: computed(() => clean(entry.value?.supplier_image)),
     path: computed(() =>
-      slug.value ? `/${SupplierStorage.rootCollection}/${encodeURIComponent(slug.value)}` : ''
+      slug.value ? `/${SupplierStorage.collection}/${encodeURIComponent(slug.value)}` : ''
     ),
     robots: computed(() => (isPublic.value ? 'index, follow' : 'noindex, nofollow')),
     jsonLd: computed(() => buildSupplierJsonLd(entry.value)),

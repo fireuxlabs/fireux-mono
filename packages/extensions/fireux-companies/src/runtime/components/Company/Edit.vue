@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import {
-  PlaceModel,
+  PlaceDefaults,
   type Place,
 } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
@@ -37,6 +37,6 @@ const canEdit = computed(() => {
   return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
 })
 const placeForEdit = computed<Place | null>(() =>
-  company.value ? { ...PlaceModel, ...company.value } : null
+  company.value ? { ...PlaceDefaults, ...company.value } : null
 )
 </script>

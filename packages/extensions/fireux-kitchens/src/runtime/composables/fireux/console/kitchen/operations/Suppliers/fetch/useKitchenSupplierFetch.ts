@@ -8,7 +8,7 @@ import { computed, unref } from 'vue'
 import { resolveKitchenChildCollectionBasePath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
-  `${basePath}/${kitchenId}/${SupplierStorage.rootCollection}`
+  `${basePath}/${kitchenId}/${SupplierStorage.collection}`
 
 type SupplierDoc = Record<string, unknown>
 
@@ -57,7 +57,7 @@ export function useKitchenSupplierFetch(
   const kitchenCollectionPath = computed(() =>
     resolveKitchenChildCollectionBasePath({
       kitchenCollectionPath: unref(options.kitchenCollectionPath),
-      collectionName: SupplierStorage.rootCollection,
+      collectionName: SupplierStorage.collection,
       appId,
     })
   )

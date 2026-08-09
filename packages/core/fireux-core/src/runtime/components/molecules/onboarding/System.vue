@@ -1,92 +1,67 @@
-<!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: provide one quiet staged-flow shell for domain funnels. -->
+<!-- Concurrent edit — 2026-08-09 — Onboarding shell: own structure while each entity owns its journey. -->
 <template>
   <section
+    class="mx-auto w-full max-w-5xl py-4 sm:py-8"
     :data-onboarding-family="family"
-    :data-onboarding-step="stepId || undefined"
+    :data-onboarding-step="stage.id || undefined"
   >
-    <MoleculesCreateCard>
-      <template #header>
-        <div class="form-stack-sm">
-          <div>
-            <div>
-              <UBadge color="neutral" variant="soft">
-                {{ stepNumber }} of {{ stepCount }}
-              </UBadge>
-            </div>
-            <div><strong>{{ title }}</strong></div>
+    <UCard :ui="{ body: 'p-0 sm:p-0' }">
+      <div class="grid min-h-[30rem] lg:grid-cols-[0.8fr_1.2fr]">
+        <aside
+          class="border-b border-default bg-elevated/40 p-6 sm:p-8 lg:border-e lg:border-b-0"
+        >
+          <slot name="intro" />
+        </aside>
+
+        <main class="flex min-w-0 flex-col p-6 sm:p-8">
+          <header class="mb-7">
+            <p class="text-sm font-medium text-primary">
+              Step {{ stage.number }} of {{ stage.count }}
+            </p>
+            <h2 class="mt-2 text-2xl font-semibold text-highlighted">
+              {{ stage.title }}
+            </h2>
+            <UProgress class="mt-4" :model-value="stage.progress" :max="100" />
+          </header>
+
+          <div class="min-w-0 flex-1">
+            <slot />
           </div>
-          <UProgress :model-value="progress" :max="100" />
-        </div>
-      </template>
 
-      <slot />
-
-      <UAlert
-        v-if="error"
-        color="error"
-        variant="soft"
-        icon="i-lucide-triangle-alert"
-        title="Unable to continue"
-        :description="error"
-      />
-
-      <template #footer>
-        <UFieldGroup>
-          <UButton
-            v-if="showBack"
-            type="button"
-            color="neutral"
+          <UAlert
+            v-if="stage.error"
+            class="mt-6"
+            color="error"
             variant="soft"
-            icon="i-lucide-arrow-left"
-            :disabled="pending"
-            @click="emit('back')"
+            icon="i-lucide-triangle-alert"
+            title="Unable to continue"
+            :description="stage.error"
+          />
+
+          <footer
+            v-if="$slots.footer"
+            class="mt-8 border-t border-default pt-6"
           >
-            {{ backLabel }}
-          </UButton>
-          <UButton
-            type="button"
-            color="primary"
-            :icon="continueIcon"
-            :loading="pending"
-            :disabled="continueDisabled"
-            @click="emit('continue')"
-          >
-            {{ continueLabel }}
-          </UButton>
-        </UFieldGroup>
-      </template>
-    </MoleculesCreateCard>
+            <slot name="footer" />
+          </footer>
+        </main>
+      </div>
+    </UCard>
   </section>
 </template>
 
 <script setup lang="ts">
-withDefaults(defineProps<{
-  family: string
-  stepId?: string | null
+export type OnboardingShellStage = {
+  id: string | null
   title: string
-  stepNumber: number
-  stepCount: number
+  number: number
+  count: number
   progress: number
-  error?: string
-  pending?: boolean
-  showBack?: boolean
-  backLabel?: string
-  continueLabel?: string
-  continueIcon?: string
-  continueDisabled?: boolean
-}>(), {
-  stepId: null,
-  error: '',
-  pending: false,
-  showBack: false,
-  backLabel: 'Back',
-  continueLabel: 'Continue',
-  continueIcon: 'i-lucide-arrow-right',
-  continueDisabled: false,
-})
+  error: string
+}
 
-const emit = defineEmits<{
-  back: []
-  continue: []
+defineProps<{
+  family: string
+  stage: OnboardingShellStage
 }>()
 </script>

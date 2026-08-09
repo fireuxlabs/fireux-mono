@@ -46,11 +46,9 @@ type WidenLiteral<T> =
  * - If that rule changes later, update the models README first, then this file.
  */
 export const KitchenStorage = {
-  shape: 'root-and-app-support',
-  root: 'kitchens/{kitchenId}',
-  scope: 'apps/{appId}/kitchens/{kitchenId}',
-  rootCollection: 'kitchens',
-  scopeCollection: 'kitchens',
+  shape: 'root',
+  path: 'kitchens/{kitchenId}',
+  collection: 'kitchens',
   idParam: 'kitchenId',
   operationsRoot: 'apps/{appId}/kitchens/{kitchenId}',
   operations: [
@@ -68,6 +66,14 @@ export const KitchenStorage = {
     'orders',
     'devices',
   ],
+} as const
+
+export const AppKitchenStorage = {
+  shape: 'scoped',
+  path: 'apps/{appId}/kitchens/{kitchenId}',
+  collection: 'kitchens',
+  parent: 'app',
+  idParam: 'kitchenId',
 } as const
 
 export type KitchenOperationKey = typeof KitchenStorage.operations[number]
@@ -161,11 +167,11 @@ export const KitchenEntity = defineFireuxEntity({
   publicRead: 'projection',
   status: 'confirmed',
   console: true,
-  root: KitchenStorage.root,
-  appSupportPath: KitchenStorage.scope,
+  root: KitchenStorage.path,
+  appSupportPath: AppKitchenStorage.path,
 })
 
-export const KitchenModel = {
+export const KitchenDefaults = {
   id: '',
   place_id: '',
   slug: '',
@@ -241,7 +247,7 @@ export const KitchenModel = {
 } as const
 
 export type Kitchen = Omit<
-  WidenLiteral<typeof KitchenModel>,
+  WidenLiteral<typeof KitchenDefaults>,
   'app_scope' | 'menus' | 'fulfilment'
 > &
   {
@@ -281,6 +287,22 @@ export type AppKitchen = {
   join_requests: string[]
   created: FireuxStamped['created']
   updated: FireuxStamped['updated']
+}
+
+export const AppKitchenDefaults: AppKitchen = {
+  id: '',
+  operator_ids: [],
+  team_ids: [],
+  join_requests: [],
+  created: {
+    at: {} as FirebaseTimestamp,
+    by: undefined,
+    app_id: undefined,
+  },
+  updated: {
+    at: {} as FirebaseTimestamp,
+    by: undefined,
+  },
 }
 
 export type KitchenCreateInput = Partial<

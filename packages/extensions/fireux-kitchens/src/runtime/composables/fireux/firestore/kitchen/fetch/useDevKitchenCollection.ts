@@ -20,7 +20,7 @@ import {
   readRuntimeSimulationFirestoreDatabaseId,
   useFirestore,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { AppKitchenStorage, KitchenStorage } from '../../../../../models/kitchen.model'
 import type { KitchenSurface } from '../utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 import type { KitchenFetchSource } from './useKitchenFetch'
@@ -96,14 +96,14 @@ export function useDevKitchenCollection(
   )
   const rootCollectionPath = computed(() =>
     sourceRef.value === 'live' && !hasIdFilter.value && !hasOperatorFilter.value
-      ? KitchenStorage.rootCollection
+      ? KitchenStorage.collection
       : ''
   )
   const testCollectionPath = computed(() =>
     sourceRef.value === 'test' &&
       !hasIdFilter.value &&
       simulationDatabaseId.value
-      ? KitchenStorage.rootCollection
+      ? KitchenStorage.collection
       : ''
   )
   const rootSource = liveRead.firestoreFetchCollection<KitchenCollectionDoc>(
@@ -114,7 +114,7 @@ export function useDevKitchenCollection(
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
     return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, KitchenStorage.scopeCollection),
+      collection(db, AppStorage.collection, resolvedAppId.value, AppKitchenStorage.collection),
       where('operator_ids', 'array-contains', filterOperatorId.value)
     ) as Query<KitchenCollectionDoc>
   })
@@ -123,7 +123,7 @@ export function useDevKitchenCollection(
     if (!hasOperatorFilter.value || !filterOperatorId.value) return null
 
     return fsq(
-      collection(db, AppStorage.collection, resolvedAppId.value, KitchenStorage.scopeCollection),
+      collection(db, AppStorage.collection, resolvedAppId.value, AppKitchenStorage.collection),
       where('team_ids', 'array-contains', filterOperatorId.value)
     ) as Query<KitchenCollectionDoc>
   })
@@ -132,7 +132,7 @@ export function useDevKitchenCollection(
     undefined,
     computed(() =>
       resolvedAppId.value
-        ? `${AppStorage.collection}/${resolvedAppId.value}/${KitchenStorage.scopeCollection}`
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${AppKitchenStorage.collection}`
         : ''
     )
   )
@@ -141,7 +141,7 @@ export function useDevKitchenCollection(
     undefined,
     computed(() =>
       resolvedAppId.value
-        ? `${AppStorage.collection}/${resolvedAppId.value}/${KitchenStorage.scopeCollection}`
+        ? `${AppStorage.collection}/${resolvedAppId.value}/${AppKitchenStorage.collection}`
         : ''
     )
   )
@@ -166,7 +166,7 @@ export function useDevKitchenCollection(
   const exactRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
     collectionPath: computed(() =>
       sourceRef.value === 'live' && hasIdFilter.value
-        ? KitchenStorage.rootCollection
+        ? KitchenStorage.collection
         : ''
     ),
     ids: idList,
@@ -174,7 +174,7 @@ export function useDevKitchenCollection(
   const appSupportRootSource = liveRead.firestoreLoadDocsByIds<KitchenCollectionDoc>({
     collectionPath: computed(() =>
       sourceRef.value === 'live' && hasOperatorFilter.value
-        ? KitchenStorage.rootCollection
+        ? KitchenStorage.collection
         : ''
     ),
     ids: allowedKitchenIds,
@@ -187,7 +187,7 @@ export function useDevKitchenCollection(
       sourceRef.value === 'test' &&
         hasIdFilter.value &&
         simulationDatabaseId.value
-        ? KitchenStorage.rootCollection
+        ? KitchenStorage.collection
         : ''
     ),
     ids: idList,

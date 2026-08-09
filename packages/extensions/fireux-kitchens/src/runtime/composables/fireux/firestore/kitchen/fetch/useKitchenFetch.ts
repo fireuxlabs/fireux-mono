@@ -30,7 +30,7 @@ type UseKitchenFetchOptions = {
   hydrate?: boolean
 }
 
-const DEFAULT_COLLECTION_PATH = KitchenStorage.rootCollection
+const DEFAULT_COLLECTION_PATH = KitchenStorage.collection
 const requireSimulationDatabaseId = () => {
   const databaseId = readRuntimeSimulationFirestoreDatabaseId()
   if (!databaseId) {

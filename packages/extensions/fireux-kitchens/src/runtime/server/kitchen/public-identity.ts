@@ -26,7 +26,7 @@ import type {
   KitchenPublicIdentityEdit,
   KitchenPublicIdentityEditResponse,
 } from '../../models/kitchen/kitchen-index.model.ts'
-import { KitchenStorage } from '../../models/kitchen.model.ts'
+import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model.ts'
 import { readKitchenIdentity } from '../../utils/kitchen-spine.ts'
 import {
   readKitchenOnboardingScope,
@@ -123,7 +123,7 @@ async function kitchenBySlug(db: RuntimeFirestore, slug: string) {
   const normalized = text(slug).toLowerCase()
   if (!normalized) invalid('Kitchen slug is required.')
   const snapshot = await db
-    .collection(KitchenStorage.rootCollection)
+    .collection(KitchenStorage.collection)
     .doc(normalized)
     .get()
   if (!snapshot.exists) {
@@ -167,7 +167,7 @@ async function assertAuthority(
   kitchenId: string,
   expectedSlug: string
 ) {
-  const rootRef = db.collection(KitchenStorage.rootCollection).doc(kitchenId)
+  const rootRef = db.collection(KitchenStorage.collection).doc(kitchenId)
   const root = await rootRef.get()
   if (!root.exists || text(root.get('slug')).toLowerCase() !== expectedSlug) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
@@ -194,7 +194,7 @@ async function assertAuthority(
     db.doc(`apps/${context.runtimeAppId}/users/${context.uid}`),
     db.doc(`apps/${scope.appId}`),
     db.doc(
-      `apps/${scope.appId}/${KitchenStorage.scopeCollection}/${kitchenId}`
+      `apps/${scope.appId}/${AppKitchenStorage.collection}/${kitchenId}`
     ),
   ] as const
   const [runtimeMembership, ownerApp, support] = await db.getAll(

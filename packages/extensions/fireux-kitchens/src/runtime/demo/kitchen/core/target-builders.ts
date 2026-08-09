@@ -1,12 +1,12 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import {
-  PlaceModel,
+  PlaceDefaults,
   type Place,
 } from 'fireux-places/runtime/models/place.model'
 import type { PublicPlaceProjection } from 'fireux-places/runtime/models/place-public.model'
 import { normalizePublicPlaceProjection } from 'fireux-places/runtime/utils/public-place-projection'
 import {
-  KitchenModel,
+  KitchenDefaults,
   type AppKitchen,
   type Kitchen,
   type KitchenFulfilmentPaymentPolicy,
@@ -59,7 +59,7 @@ export type DemoPlaceInput = {
 }
 
 export const kitchen = (input: DemoKitchenInput): Kitchen => ({
-  ...KitchenModel,
+  ...KitchenDefaults,
   id: input.identity.kitchenId,
   place_id: input.identity.placeId,
   slug: input.identity.kitchenSlug,
@@ -104,7 +104,7 @@ export const kitchen = (input: DemoKitchenInput): Kitchen => ({
 })
 
 export const place = (input: DemoPlaceInput): Place => ({
-  ...PlaceModel,
+  ...PlaceDefaults,
   id: input.identity.placeId,
   name: input.name,
   short_name: input.shortName,

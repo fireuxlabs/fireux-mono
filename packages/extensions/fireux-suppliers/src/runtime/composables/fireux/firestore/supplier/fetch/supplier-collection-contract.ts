@@ -18,7 +18,7 @@ export type AppSupplierRecord = Partial<AppSupplier> & {
   id?: string
 }
 
-export const DEFAULT_COLLECTION_PATH = SupplierStorage.rootCollection
+export const DEFAULT_COLLECTION_PATH = SupplierStorage.collection
 
 export const UNSUPPORTED_TEST_SOURCE_MESSAGE =
   '[fireux-suppliers] Supplier Test source is unsupported: no canonical simulation producer exists.'

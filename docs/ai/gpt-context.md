@@ -1,7 +1,7 @@
 # FireUX GPT Context
 
-Updated: 2026-08-08
-Ref: 1d6857c57
+Updated: 2026-08-09
+Ref: 5b5de1c1c
 Role: living context
 Scope: repo-wide
 
@@ -22,6 +22,12 @@ Current scoped context entrypoints:
 - Misebox: `docs/ai/misebox-context.md`
 - Werkbox: `docs/ai/werkbox-context.md`
 - Firestore mutations: `docs/ai/firestore-mutations-context.md`
+
+Cross-family composition follows the one-way, domain-owned layers in
+`docs/concepts/lasagne.md`. Treat that map as the extraction test for entity
+composables, provided workflow contexts, and structural shells; do not infer a
+universal `useX` umbrella or a universal entity component API from visual
+similarity.
 
 Use `docs/concepts/*.md` for topic maps and `scripts/guards/*` for executable
 shape rules. Do not copy implementation details into AI context when current
@@ -256,6 +262,11 @@ Before each task:
 - A canonical Live model owns each root or parent-scoped entity contract.
   Demo and Test roots use that same model contract; fixture wrappers and public
   DTOs never become alternate entity authority.
+- Runtime seed objects are named `*Defaults`, not `*Model`. Entity files keep
+  root and App-support storage declarations separate, and entity-facing
+  `useXDetail`/`useXInterface` composables sit above Firestore adapters. The
+  executable detail is maintained in `docs/concepts/firestore-entity.md` and
+  the relevant authority guards.
 - Canonical User identity has one root, `users/{uid}`. The Firebase Auth UID is
   the stable document id and the public handle is an editable field on that
   User. Do not create parallel `handles`, `user-handles`, or

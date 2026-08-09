@@ -134,7 +134,7 @@ export async function ensureKitchenMenuRootEntry(
   // Root menus are route/list projections; scoped kitchen menus remain the content authority.
   const scopedKitchenSnap = await db.doc(input.kitchenPath).get()
   const rootKitchenSnap = await db
-    .collection(KitchenStorage.rootCollection)
+    .collection(KitchenStorage.collection)
     .doc(input.kitchenId)
     .get()
   const identity = kitchenIdentity(

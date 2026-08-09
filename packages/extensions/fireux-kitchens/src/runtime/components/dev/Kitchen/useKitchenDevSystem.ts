@@ -16,7 +16,7 @@ import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
 import { RecipeStorage } from '../../../models/kitchen/recipe.model'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import {
-  KitchenModel as KitchenModelRuntime,
+  KitchenDefaults as KitchenModelRuntime,
   KitchenStorage,
 } from '../../../models/kitchen.model'
 
@@ -27,7 +27,7 @@ export function useKitchenDevSystem() {
   
   const { appId } = useFireUXConfig()
   
-  const kitchensCollection = firestoreFetchCollection<Kitchen>(KitchenStorage.rootCollection)
+  const kitchensCollection = firestoreFetchCollection<Kitchen>(KitchenStorage.collection)
   
   const placesCollection = firestoreFetchCollection<Place>(PlaceStorage.collection)
   
@@ -124,7 +124,7 @@ export function useKitchenDevSystem() {
   
   const kitchensDriftCopyPayload = buildKitchensCopyPayload({
     modelPath: 'packages/extensions/fireux-kitchens/src/runtime/models/kitchen.model.ts',
-    itemsKey: KitchenStorage.rootCollection,
+    itemsKey: KitchenStorage.collection,
     items: filteredKitchensDriftPayload,
     total: computed(() => kitchensCollectionValue.value.length),
   })

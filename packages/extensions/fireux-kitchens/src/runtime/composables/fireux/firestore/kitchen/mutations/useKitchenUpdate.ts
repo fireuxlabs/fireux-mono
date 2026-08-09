@@ -13,7 +13,7 @@ type UseKitchenUpdateOptions = {
   databaseId?: MaybeRef<string | null | undefined>
 }
 
-const COLLECTION_PATH = KitchenStorage.rootCollection
+const COLLECTION_PATH = KitchenStorage.collection
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const isRecord = (value: unknown): value is Record<string, unknown> =>
@@ -229,7 +229,7 @@ export function useKitchenUpdate(options: UseKitchenUpdateOptions = {}) {
   const resolveSlugUpdate = async (kitchenId: string, value: unknown) => {
     const validation = validateSlug(value, {
       label: 'Kitchen slug',
-      namespace: KitchenStorage.rootCollection,
+      namespace: KitchenStorage.collection,
       reservedScope: 'root',
       maxLength: 80,
     })

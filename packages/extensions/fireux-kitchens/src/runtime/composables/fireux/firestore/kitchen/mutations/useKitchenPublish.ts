@@ -45,7 +45,7 @@ export function useKitchenPublish() {
 
   async function publishKitchen(input: KitchenPublishInput) {
     const ready = assertKitchenPublishReady(input)
-    const routePath = `/${KitchenStorage.rootCollection}/${encodeURIComponent(ready.slug)}`
+    const routePath = `/${KitchenStorage.collection}/${encodeURIComponent(ready.slug)}`
 
     await updateKitchen(ready.id, {
       slug: ready.slug,

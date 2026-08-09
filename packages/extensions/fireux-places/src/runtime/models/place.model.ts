@@ -98,7 +98,7 @@ export type PlaceBusinessHours = {
 }
 
 /** Resolved runtime defaults. Firestore Place documents remain sparse. */
-export const PlaceModel = {
+export const PlaceDefaults = {
   id: '' as string,
 
   // Primary identity
@@ -187,7 +187,7 @@ export const PlaceModel = {
 } as const
 
 export type Place = {
-  [K in keyof typeof PlaceModel]: (typeof PlaceModel)[K]
+  [K in keyof typeof PlaceDefaults]: (typeof PlaceDefaults)[K]
 }
 
 /** Base shared by Google and Firestore. */

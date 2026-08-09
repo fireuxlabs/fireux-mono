@@ -1,7 +1,7 @@
 # Components spine map
 
-Updated: 2026-08-04
-Ref: d232cc731
+Updated: 2026-08-09
+Ref: 5b5de1c1c
 Role: map, not canon
 
 ## Purpose
@@ -20,6 +20,7 @@ Map component folder and naming conventions.
 
 - pages.md
 - composables.md
+- lasagne.md
 - debug.md
 
 ## Package components
@@ -281,10 +282,11 @@ Map component folder and naming conventions.
 - Let child components own local presentation when it reduces parent script weight.
 - Keep Nuxt UI as the default chrome layer.
 - Staged entity onboarding uses the small shared
-  `MoleculesOnboardingSystem` shell for progress, navigation, pending, and
-  errors. Each domain retains its own `XOnboarding` root and one
+  `MoleculesOnboardingSystem` shell for structure, stage progress, error
+  placement, and slots. Each domain retains its own `XOnboarding` root and one
   `XOnboarding<Stage>` component per visible decision; domain copy, drafts,
-  validation, and creation never move into the shared shell.
+  validation, actions, navigation, and creation never move into the shared
+  shell. See `lasagne.md` for the dependency rule.
 - Nuxt UI owns the ordinary global visual baseline, including `--ui-radius`.
   FireUX consumes that value but does not redeclare the installed default.
 - Purely aesthetic global behavior is not part of the current system baseline:

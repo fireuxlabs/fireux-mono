@@ -10,7 +10,7 @@ export function useKitchenDelete() {
     const id = clean(kitchenId)
     if (!id) throw new Error('Kitchen id is required')
 
-    await deleteDocument(KitchenStorage.rootCollection, id)
+    await deleteDocument(KitchenStorage.collection, id)
   }
 
   return {

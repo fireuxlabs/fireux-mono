@@ -23,7 +23,7 @@ import {
   readRuntimeFirestoreDatabaseId,
   readRuntimeSimulationFirestoreDatabaseId,
 } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
-import { KitchenStorage } from '../../../../../models/kitchen.model'
+import { AppKitchenStorage, KitchenStorage } from '../../../../../models/kitchen.model'
 import { composeKitchenScopedSurface } from '../../../../../utils/kitchen-spine'
 import {
   useKitchenFetch,
@@ -222,12 +222,12 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
       : readRuntimeFirestoreDatabaseId() || ''
   )
   const firestore = useConsoleEntityFirestore({
-    family: KitchenStorage.scopeCollection,
+    family: AppKitchenStorage.collection,
     target: selectedPublicKitchen,
     appId: scopedAppId,
     mode: dataType,
     active: computed(() => Boolean(dataType.value)),
-    testCollectionPath: KitchenStorage.rootCollection,
+    testCollectionPath: KitchenStorage.collection,
     useAppSupport: computed(
       () => dataType.value === 'live' && Boolean(scopedAppId.value)
     ),

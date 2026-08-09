@@ -42,9 +42,9 @@
 <script setup lang="ts">
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import { useSupplierFetch } from '../../composables/fireux/firestore/supplier/fetch/useSupplierFetch'
+import { useSupplierDetail } from '../../composables/fireux/supplier/useSupplierDetail'
 import { useSupplierSeo } from '../../composables/fireux/firestore/supplier/utils/useSupplierSeo'
-import { useSupplierInterface } from '../../composables/fireux/firestore/supplier/utils/view/useSupplierInterface'
+import { useSupplierInterface } from '../../composables/fireux/supplier/useSupplierInterface'
 
 definePageMeta({
   layout: 'default',
@@ -55,7 +55,7 @@ definePageMeta({
 
 const routeKey = useRouteParam('slug')
 
-const { supplier: supplierRecord, pending } = useSupplierFetch(routeKey, {
+const { supplier: supplierRecord, pending } = useSupplierDetail(routeKey, {
   key: 'slug',
 })
 const { profile } = useSupplierInterface()

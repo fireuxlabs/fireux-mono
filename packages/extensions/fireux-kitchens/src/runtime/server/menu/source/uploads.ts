@@ -21,7 +21,7 @@ import {
 import { saveStorageFileWithDownloadToken } from 'fireux-core/runtime/server/utils/uploads/storage'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
-import { KitchenStorage } from '../../../models/kitchen.model'
+import { AppKitchenStorage, KitchenStorage } from '../../../models/kitchen.model'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import { MenuSourceUploadStorage } from '../../../models/kitchen/menu/menu-source-upload.model'
@@ -160,7 +160,7 @@ export function readKitchenMenuUploadAvailabilityRequest(event: H3Event) {
 }
 
 export function kitchenMenuUploadKitchenPath(appId: string, kitchenId: string) {
-  return `${AppStorage.collection}/${appId}/${KitchenStorage.scopeCollection}/${kitchenId}`
+  return `${AppStorage.collection}/${appId}/${AppKitchenStorage.collection}/${kitchenId}`
 }
 
 export function kitchenMenuUploadPath(
@@ -206,7 +206,7 @@ export async function assertKitchenMenuCurrencyCode(
 ) {
   const db = getRuntimeFirestore()
   const rootSnap = await db
-    .doc(`${KitchenStorage.rootCollection}/${kitchenId}`)
+    .doc(`${KitchenStorage.collection}/${kitchenId}`)
     .get()
   const placeId = text(rootSnap.data()?.place_id)
   if (!placeId) {

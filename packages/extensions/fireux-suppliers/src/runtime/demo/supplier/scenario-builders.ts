@@ -1,10 +1,10 @@
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import {
-  AppSupplierModel,
-  SupplierCatalogueModel,
-  SupplierIngredientModel,
-  SupplierItemModel,
-  SupplierModel,
+  AppSupplierDefaults,
+  SupplierCatalogueDefaults,
+  SupplierIngredientDefaults,
+  SupplierItemDefaults,
+  SupplierDefaults,
   type AppSupplier,
   type Supplier,
   type SupplierCatalogue,
@@ -41,7 +41,7 @@ export const supplierItem = (
   supplierId: string,
   input: SupplierDemoOfferSeed
 ): SupplierItem => ({
-  ...SupplierItemModel,
+  ...SupplierItemDefaults,
   id: input.itemId || `${supplierId}-${input.ingredientId}`,
   supplier_id: supplierId,
   product_id: input.productId || `${input.ingredientId}-foodservice`,
@@ -66,7 +66,7 @@ export const supplierIngredient = (
   supplierId: string,
   supplierOffer: SupplierItem
 ): SupplierIngredient => ({
-  ...SupplierIngredientModel,
+  ...SupplierIngredientDefaults,
   id: String(supplierOffer.ingredient_id || '').trim(),
   supplier_id: supplierId,
   ingredient_id: String(supplierOffer.ingredient_id || '').trim(),
@@ -82,7 +82,7 @@ export const supplierRoot = (
   ingredients: SupplierIngredient[],
   appId: string
 ): Supplier => ({
-  ...SupplierModel,
+  ...SupplierDefaults,
   id: input.id,
   app_scope_state: 'parent_app',
   app_scope_app_id: appId,
@@ -110,7 +110,7 @@ export const supplierAppSupport = (
   supplierId: string,
   appId: string
 ): AppSupplier => ({
-  ...AppSupplierModel,
+  ...AppSupplierDefaults,
   id: supplierId,
   operator_ids: [],
   team_ids: [],
@@ -128,7 +128,7 @@ export const supplierCatalogue = (
   offers: SupplierDemoOfferSeed[],
   items: SupplierItem[]
 ): SupplierCatalogue => ({
-  ...SupplierCatalogueModel,
+  ...SupplierCatalogueDefaults,
   id: input.id,
   supplier_id: supplierId,
   name: input.name,

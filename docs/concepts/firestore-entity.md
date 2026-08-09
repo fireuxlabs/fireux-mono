@@ -143,6 +143,19 @@ Example Firestore stack names, not automatic entity proof:
 - The root owns identity, lifecycle, domain truth, and child-owned relationship
   ids. It does not contain App access arrays. Property root also excludes its
   guest manual and references Place and optional Portfolio by id.
+
+## Model source contract
+
+- Entity model files read in one order: vocabulary and canonical types;
+  supporting-record types; one storage declaration per stored record; the
+  entity declaration; `*Defaults` runtime seeds; then create/update inputs.
+- `*Defaults` means a runtime seed or resolved display default. A stored record
+  remains sparse unless its write contract explicitly requires every field.
+- Root and App-support records never share a combined storage object. Use
+  `XStorage` for the entity root and `AppXStorage` for its App support record.
+- Entity-facing composables live at `composables/fireux/<entity>/useXDetail.ts`
+  and `useXInterface.ts`. Firestore reads and writes remain adapters beneath
+  `composables/fireux/firestore/<entity>/`.
 - The App document owns bounded access and only its declared non-secret delta.
   Collection adapters type it as the named `App<Entity>` record, require the
   root, and project allowlisted fields instead of spreading it over identity.

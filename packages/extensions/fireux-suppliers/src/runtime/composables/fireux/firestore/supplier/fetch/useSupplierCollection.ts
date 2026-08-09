@@ -9,7 +9,7 @@ import {
   readConsoleTargetAuthority,
   targetHasConsoleAccess,
 } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import { SupplierStorage } from '../../../../../models/supplier/Supplier.model'
+import { AppSupplierStorage } from '../../../../../models/supplier/Supplier.model'
 import { useSupplierInterface } from '../utils/view/useSupplierInterface'
 import {
   DEFAULT_COLLECTION_PATH,
@@ -64,7 +64,7 @@ export function useSupplierCollection(
   const resolvedAppId = computed(() => normalizeString(appId))
   const appSupportCollectionPath = computed(() =>
     resolvedAppId.value
-      ? `${AppStorage.collection}/${resolvedAppId.value}/${SupplierStorage.appSupportCollection}`
+      ? `${AppStorage.collection}/${resolvedAppId.value}/${AppSupplierStorage.collection}`
       : ''
   )
   const targetedAppSupportCollectionPath = computed(() =>
@@ -87,7 +87,7 @@ export function useSupplierCollection(
           db,
           AppStorage.collection,
           resolvedAppId.value,
-          SupplierStorage.appSupportCollection
+          AppSupplierStorage.collection
         ),
         where('operator_ids', 'array-contains', filterOperatorId.value)
       ) as Query<AppSupplierRecord>
@@ -103,7 +103,7 @@ export function useSupplierCollection(
         db,
         AppStorage.collection,
         resolvedAppId.value,
-        SupplierStorage.appSupportCollection
+        AppSupplierStorage.collection
       ),
       where('team_ids', 'array-contains', filterOperatorId.value)
     ) as Query<AppSupplierRecord>

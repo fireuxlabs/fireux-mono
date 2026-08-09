@@ -2,12 +2,6 @@
 <!-- Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: route Place creation through the named domain funnel. -->
 <template>
   <UPage>
-    <UPageHeader
-      class="pageheader"
-      title="Add a Place"
-      description="Find your place and add the details you want to use."
-    />
-
     <UPageBody class="pagebody">
       <PlaceOnboarding @created="onCreated" />
     </UPageBody>

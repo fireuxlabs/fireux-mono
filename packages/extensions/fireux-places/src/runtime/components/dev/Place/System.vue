@@ -45,7 +45,7 @@
 <script setup lang="ts">
 import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
 import { usePlace } from '../../../composables/fireux/firestore/place/usePlace'
-import { PlaceModel as PlaceModelRuntime } from '../../../models/place.model'
+import { PlaceDefaults as PlaceModelRuntime } from '../../../models/place.model'
 
 defineOptions({ name: 'DevPlaceSystem' })
 

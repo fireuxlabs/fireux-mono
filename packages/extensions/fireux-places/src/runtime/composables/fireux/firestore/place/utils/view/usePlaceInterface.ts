@@ -5,7 +5,7 @@ import {
 import type {
   BasePlace,
   PlaceImageShade,
-  Place as PlaceModel,
+  Place as PlaceShape,
   PlaceSocialLinks,
   PlaceSource,
 } from '../../../../../../models/place.model'
@@ -30,7 +30,7 @@ export namespace PlaceCard {
   }
 }
 
-type PlaceExtras = Partial<PlaceModel>
+type PlaceExtras = Partial<PlaceShape>
 type PlacePill = PlaceCard.Card
 type PlaceCellResolved = Pick<
   PlaceCard.Card,

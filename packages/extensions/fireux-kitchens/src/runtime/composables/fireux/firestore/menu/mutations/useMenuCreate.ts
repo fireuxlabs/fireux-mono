@@ -122,7 +122,7 @@ export function useMenuCreate(
 
   async function requireLinkedPlaceCurrency(kitchenId: string) {
     const kitchenSnap = await getDoc(
-      doc(db, KitchenStorage.rootCollection, kitchenId)
+      doc(db, KitchenStorage.collection, kitchenId)
     )
     if (!kitchenSnap.exists()) throw new Error('Kitchen not found.')
 

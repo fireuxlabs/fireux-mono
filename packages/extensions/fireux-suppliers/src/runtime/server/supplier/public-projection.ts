@@ -7,7 +7,10 @@ import type {
   PublicSupplierIndex,
   PublicSupplierItem,
 } from '../../models/supplier/supplier-public.model.ts'
-import { SupplierStorage } from '../../models/supplier/Supplier.model.ts'
+import {
+  SupplierItemStorage,
+  SupplierStorage,
+} from '../../models/supplier/Supplier.model.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const strings = (value: unknown) =>
@@ -61,7 +64,7 @@ function projectItem(supplierId: string, id: string, value: Record<string, unkno
 
 export async function readPublicSupplierIndex(): Promise<PublicSupplierIndex> {
   const snapshot = await getRuntimeFirestore()
-    .collection(SupplierStorage.rootCollection).limit(100).get()
+    .collection(SupplierStorage.collection).limit(100).get()
   return {
     suppliers: snapshot.docs
       .map(doc => projectSupplier(doc.id, doc.data()))
@@ -73,10 +76,10 @@ export async function readPublicSupplierIndex(): Promise<PublicSupplierIndex> {
 export async function readPublicSupplierDetail(idValue: unknown): Promise<PublicSupplierDetail> {
   const id = requireFirestoreDocumentId(idValue, 'Supplier id')
   const db = getRuntimeFirestore()
-  const ref = db.collection(SupplierStorage.rootCollection).doc(id)
+  const ref = db.collection(SupplierStorage.collection).doc(id)
   const [root, items] = await Promise.all([
     ref.get(),
-    ref.collection(SupplierStorage.children.items.split('/').at(-2) || 'items')
+    ref.collection(SupplierItemStorage.collection)
       .limit(200).get(),
   ])
   const supplier = root.exists ? projectSupplier(root.id, root.data() || {}) : null
