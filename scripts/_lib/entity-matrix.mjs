@@ -417,6 +417,26 @@ export const entityMatrix = [
     },
   },
   {
+    id: 'kitchen/station',
+    state: 'declared',
+    owner: 'fireux-kitchens',
+    source:
+      'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/station.model.ts',
+    export: 'KitchenStationRecord',
+    classification: {
+      kind: 'record',
+      name: 'KitchenStation',
+      family: ['kitchen', 'support'],
+      identity: 'parent-scoped',
+      authority: 'parent',
+      appSupport: 'none',
+      publicRead: 'none',
+      status: 'confirmed',
+      console: false,
+      parent: 'Kitchen',
+    },
+  },
+  {
     id: 'identity/customer-order-link',
     state: 'declared',
     owner: 'fireux-kitchens',

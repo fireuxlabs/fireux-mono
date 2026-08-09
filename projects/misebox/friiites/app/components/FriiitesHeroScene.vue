@@ -7,26 +7,40 @@
   >
     <div aria-hidden="true" data-scene-layer="background" />
     <div class="friiites-scene-content" data-scene-layer="content">
-      <div class="friiites-hero-copy">
-        <p class="friiites-kicker">Developed in Switzerland</p>
+      <div class="friiites-hero-brand">
         <h1 id="friiites-title" class="sr-only">Friiites</h1>
         <img
           class="friiites-wordmark"
           src="/img/app/wordmark-dark.png"
           alt="Friiites"
         />
+      </div>
+      <div class="friiites-hero-copy">
         <p class="friiites-lede">
-          Hand-cut. Brined.<br />Triple-fried in beef tallow.
+          <span>Hand-cut.</span>
+          <span>Brined.</span>
+          <span>Triple-fried</span>
+          <span>in beef tallow.</span>
         </p>
         <div class="friiites-actions">
-          <a class="friiites-button" href="#method">See the method</a>
-          <a class="friiites-text-link" href="#product">
-            Why Friiites
-            <UIcon name="i-lucide-arrow-down-right" aria-hidden="true" />
+          <a class="friiites-button" href="#ordering">
+            Order now
+            <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
           </a>
         </div>
       </div>
     </div>
-    <div aria-hidden="true" data-scene-layer="foreground" />
+    <div
+      class="friiites-hero-foreground"
+      aria-hidden="true"
+      data-scene-layer="foreground"
+    >
+      <img
+        src="/img/app/hero/carton-fries.webp"
+        alt=""
+        width="1024"
+        height="1536"
+      />
+    </div>
   </section>
 </template>

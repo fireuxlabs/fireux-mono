@@ -179,10 +179,12 @@ Recipe and Dish have independent lifecycles inside their owning Kitchen, so
 they are parent-scoped Entities rather than root identities. Recipe owns
 authored preparation content. Dish owns reusable food identity and media.
 
-MenuSection and MenuItem can have stable document ids without independent
-Entity lifecycle. Kitchen team join requests, document links, financial facts,
-and similar parent-owned support should remain Records unless product behavior
-proves otherwise.
+MenuSection, MenuItem, and KitchenStation can have stable document ids without
+independent Entity lifecycle. Kitchen team join requests, document links,
+financial facts, and similar parent-owned support should remain Records unless
+product behavior proves otherwise. KitchenStation is owned below the same-id
+AppKitchen support record; its stable local id lets Team and Mise records refer
+to it without turning it into independent identity or access authority.
 
 ### Public projections
 
@@ -205,7 +207,7 @@ projection; it does not establish raw root-read authority.
 
 The repository contains domain concepts whose models, routes, or collections
 predate executable entity declarations. Examples include remaining profile
-roots outside the confirmed Chef and Driver records, Station, Task, and Blog
+roots outside the confirmed Chef and Driver records, Task, and Blog
 content.
 
 Their existence is real; their FireUX Entity classification is not yet declared
@@ -223,6 +225,11 @@ preparation content; Dish owns reusable food identity and media. MenuItem is a
 MenuSection-owned placement Record and must reference a Dish from the same
 Kitchen. Run `scripts/audit-misebox-recipe-dish-menu-items.mjs` to verify those
 scope fields and relationships in Misebox without writing data.
+
+KitchenStation is a confirmed Kitchen-owned operational Record at
+`apps/{appId}/kitchens/{kitchenId}/stations/{stationId}`. Run
+`scripts/audit-misebox-kitchen-stations.mjs` to verify its AppKitchen parent,
+scope, required fields, ordering, and Station references without writing data.
 
 KitchenOrder is a confirmed Kitchen-scoped Entity with a trusted lifecycle.
 Completing a ready Order atomically creates its same-id immutable KitchenSale

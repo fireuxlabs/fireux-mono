@@ -39,7 +39,47 @@
 }
 
 .friiites-scene--hero {
+  box-sizing: border-box;
   min-height: 100svh;
+  padding-top: max(calc(var(--spacing) * 28), 12svh);
+  padding-bottom: clamp(calc(var(--spacing) * 8), 5svh, calc(var(--spacing) * 16));
+}
+
+.friiites-scene--hero .friiites-scene-content {
+  width: 100%;
+  max-width: none;
+  min-height: calc(100svh - max(calc(var(--spacing) * 28), 12svh) - clamp(calc(var(--spacing) * 8), 5svh, calc(var(--spacing) * 16)));
+  align-content: start;
+}
+
+.friiites-scene--hero > [data-scene-layer='background'] {
+  background:
+    radial-gradient(circle at 52% 44%, rgb(var(--brand-accent-rgb) / 8%), transparent 32%),
+    radial-gradient(circle at 50% 100%, rgb(255 255 255 / 4%), transparent 34%),
+    linear-gradient(90deg, rgb(255 255 255 / 2%), transparent 28%, transparent 74%, rgb(0 0 0 / 22%));
+}
+
+.friiites-hero-brand {
+  position: absolute;
+  top: clamp(1.5rem, 5svh, 3rem);
+  right: 0;
+  left: 0;
+  z-index: 0;
+}
+
+.friiites-hero-copy {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 24rem);
+  margin-top: clamp(calc(var(--spacing) * 44), 25svh, calc(var(--spacing) * 52));
+}
+
+.friiites-hero-foreground img {
+  position: absolute;
+  right: -22vw;
+  bottom: -20%;
+  width: min(88vw, 36rem);
+  height: auto;
 }
 
 .friiites-scene--ordering {
@@ -76,7 +116,9 @@
 }
 
 .friiites-wordmark {
-  width: min(100%, 46rem);
+  width: 100%;
+  height: auto;
+  mix-blend-mode: lighten;
 }
 
 .friiites-lede,
@@ -88,6 +130,20 @@
   line-height: 0.95;
 }
 
+.friiites-scene--hero .friiites-lede {
+  display: grid;
+  gap: 0.08em;
+  max-width: none;
+  font-size: clamp(2rem, 9vw, 3.25rem);
+  letter-spacing: -0.035em;
+  line-height: 0.92;
+  text-transform: uppercase;
+}
+
+.friiites-scene--hero .friiites-lede span:last-child {
+  color: var(--friiites-gold);
+}
+
 .friiites-actions {
   display: flex;
   flex-wrap: wrap;
@@ -96,6 +152,10 @@
 }
 
 .friiites-button {
+  display: inline-flex;
+  gap: calc(var(--spacing) * 6);
+  align-items: center;
+  justify-content: space-between;
   padding: calc(var(--spacing) * 4) calc(var(--spacing) * 6);
   color: var(--friiites-black);
   background: var(--friiites-gold);
@@ -132,7 +192,37 @@
     padding: calc(var(--spacing) * 28) clamp(calc(var(--spacing) * 10), 6vw, calc(var(--spacing) * 28));
   }
 
+  .friiites-scene--hero {
+    padding-top: max(calc(var(--spacing) * 28), 12svh);
+    padding-right: 7.5vw;
+    padding-bottom: clamp(calc(var(--spacing) * 8), 5svh, calc(var(--spacing) * 16));
+    padding-left: 7.5vw;
+  }
+
+  .friiites-scene--hero .friiites-scene-content {
+    align-content: end;
+  }
+
+  .friiites-hero-copy {
+    margin-bottom: calc(var(--spacing) * 32);
+    margin-top: 0;
+  }
+
+  .friiites-hero-brand {
+    top: clamp(calc(var(--spacing) * 12), 7.5svh, calc(var(--spacing) * 24));
+  }
+
   .friiites-scene ol {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .friiites-hero-foreground img {
+    right: 22vw;
+    bottom: -7%;
+    width: min(31vw, 31rem);
+  }
+
+  .friiites-scene--hero .friiites-lede {
+    font-size: clamp(2rem, 3.2vw, 3.25rem);
   }
 }

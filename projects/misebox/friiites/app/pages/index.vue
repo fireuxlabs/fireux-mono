@@ -15,7 +15,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'landing',
+  layout: 'friiites',
   nav: {
     key: 'home',
     label: 'Home',

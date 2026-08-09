@@ -1,5 +1,6 @@
 <template>
   <section
+    id="journey"
     class="friiites-scene friiites-scene--journey"
     aria-labelledby="journey-title"
     data-landing-scene="order-journey"

@@ -23,14 +23,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/menu/menu-item.model.ts'
   )
+  const stationModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/station.model.ts'
+  )
   const menuItemWriter = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/mutations/useMenuItemMutations.ts'
   )
-  const rules = read(
-    repoRoot,
-    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules'
-  )
+  const rules = [
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/identity-validation.rules',
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules',
+  ].map(relativePath => read(repoRoot, relativePath)).join('\n')
 
   assert.match(recipeModel, /export const RecipeEntity\s*=\s*defineFireuxEntity/)
   assert.match(recipeModel, /identity:\s*'parent-scoped'/)
@@ -42,10 +46,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(dishModel, /export const DishDefaults\b/)
   assert.match(menuItemModel, /export const MenuItemDefaults\b/)
   assert.match(menuItemModel, /parent:\s*'MenuSection'/)
+  assert.match(stationModel, /export const KitchenStationRecord\s*=\s*defineFireuxEntity/)
+  assert.match(stationModel, /kind:\s*'record'/)
+  assert.match(stationModel, /parent:\s*'Kitchen'/)
+  assert.match(stationModel, /export const KitchenStationDefaults\b/)
+  assert.match(
+    stationModel,
+    /path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}\/stations\/\{stationId\}'/
+  )
   assert.match(menuItemWriter, /Select a Dish from this Kitchen/)
   assert.match(menuItemWriter, /Menu Item identity and relationships cannot be changed/)
   assert.match(rules, /match \/dishes\/\{dishId\}/)
   assert.match(rules, /match \/recipes\/\{recipeId\}/)
+  assert.match(rules, /match \/stations\/\{stationId\}/)
+  assert.match(rules, /function isValidKitchenStation\(data, kitchenId\)/)
+  assert.match(
+    rules,
+    /request\.resource\.data\.diff\(resource\.data\)\.affectedKeys\(\)\.hasOnly\(\[[\s\S]*'sort_order'[\s\S]*'updated'/
+  )
   assert.match(rules, /match \/items\/\{itemId\}/)
   assert.match(rules, /exists\([\s\S]*\/dishes\/\$\(data\.dish_id\)/)
 

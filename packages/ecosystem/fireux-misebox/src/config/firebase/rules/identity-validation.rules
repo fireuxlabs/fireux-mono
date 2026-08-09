@@ -359,3 +359,21 @@
           (value.by is string && value.by.size() <= 1500));
     }
 
+    function isValidKitchenStation(data, kitchenId) {
+      return data is map &&
+        data.keys().hasAll([
+          'kitchen_id', 'name', 'description', 'active', 'sort_order',
+          'created', 'updated'
+        ]) &&
+        data.keys().hasOnly([
+          'kitchen_id', 'name', 'description', 'active', 'sort_order',
+          'created', 'updated'
+        ]) &&
+        data.kitchen_id == kitchenId &&
+        data.name is string && data.name.size() > 0 && data.name.size() <= 120 &&
+        data.description is string && data.description.size() <= 2000 &&
+        data.active is bool &&
+        data.sort_order is int && data.sort_order >= 0 && data.sort_order <= 10000 &&
+        validCreatedStamp(data.created) &&
+        validUpdatedStamp(data.updated);
+    }

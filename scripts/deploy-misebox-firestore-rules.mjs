@@ -724,7 +724,6 @@ async function buildSecurityTests() {
   const appDocument = await firestoreGet('apps/misebox-app')
   for (const [label, value] of Object.entries({
     publicUserId,
-    ecosystemAvatarUserId,
     adminId,
     regularId,
     customerId,
@@ -1362,6 +1361,17 @@ async function buildSecurityTests() {
   const kitchenChildProbeData = {
     display_name: 'Rules Team Member',
     active: true,
+  }
+  const kitchenStationProbePath =
+    'apps/misebox-app/kitchens/security-rules-probe/stations/grill'
+  const kitchenStationProbeData = {
+    kitchen_id: 'security-rules-probe',
+    name: 'Grill',
+    description: 'Hot line',
+    active: true,
+    sort_order: 1,
+    created: { at: writeTime, by: regularId, app_id: 'misebox-app' },
+    updated: { at: writeTime, by: regularId },
   }
   const activeIngredientId = 'security-rules-active-ingredient'
   const inactiveIngredientId = 'security-rules-inactive-ingredient'
@@ -2263,6 +2273,8 @@ async function buildSecurityTests() {
       appData,
       {
         ...appData,
+        app_name: 'Misebox',
+        app_short_name: 'Misebox',
         tagline: 'Rules contract probe',
         updated: { at: updateTime, by: adminId },
       },
@@ -2702,6 +2714,149 @@ async function buildSecurityTests() {
       { note: 'forged' },
       writeTime,
       kitchenOperatorMocks(regularId, path)
+    ),
+    readResource(
+      'Kitchen team member can read a Station from their Kitchen',
+      'ALLOW',
+      kitchenStationProbePath,
+      regularId,
+      kitchenStationProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    allowedCreate(
+      'Kitchen operator can create a valid Station',
+      kitchenStationProbePath,
+      regularId,
+      kitchenStationProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    ...[
+      ['schema pollution', { ...kitchenStationProbeData, forged: true }],
+      ['oversized description', { ...kitchenStationProbeData, description: 'x'.repeat(2001) }],
+      ['invalid sort type', { ...kitchenStationProbeData, sort_order: '1' }],
+      ['forged Kitchen scope', { ...kitchenStationProbeData, kitchen_id: 'another-kitchen' }],
+      ['forged create time', {
+        ...kitchenStationProbeData,
+        created: { ...kitchenStationProbeData.created, at: updateTime },
+      }],
+    ].map(([label, data]) => deniedCreate(
+      `Kitchen operator cannot create a Station with ${label}`,
+      `${kitchenStationProbePath}-${String(label).replaceAll(' ', '-')}`,
+      regularId,
+      data,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    )),
+    deniedCreate(
+      'Kitchen team member cannot create a Station',
+      `${kitchenStationProbePath}-team`,
+      regularId,
+      kitchenStationProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedCreate(
+      'Kitchen operator cannot create a Station below a missing AppKitchen',
+      `${kitchenStationProbePath}-orphan`,
+      regularId,
+      kitchenStationProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+        supportExists: false,
+      })
+    ),
+    allowedUpdate(
+      'Kitchen operator can update mutable Station fields',
+      kitchenStationProbePath,
+      regularId,
+      kitchenStationProbeData,
+      {
+        ...kitchenStationProbeData,
+        name: 'Main grill',
+        updated: { at: updateTime, by: regularId },
+      },
+      updateTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    ...[
+      ['created stamp', {
+        ...kitchenStationProbeData,
+        created: { ...kitchenStationProbeData.created, by: strangerId },
+        updated: { at: updateTime, by: regularId },
+      }],
+      ['schema pollution', {
+        ...kitchenStationProbeData,
+        forged: true,
+        updated: { at: updateTime, by: regularId },
+      }],
+      ['oversized name', {
+        ...kitchenStationProbeData,
+        name: 'x'.repeat(121),
+        updated: { at: updateTime, by: regularId },
+      }],
+    ].map(([label, data]) => deniedUpdate(
+      `Kitchen operator cannot update Station ${label}`,
+      kitchenStationProbePath,
+      regularId,
+      kitchenStationProbeData,
+      data,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    )),
+    allowedDelete(
+      'Kitchen operator can delete a Station from their Kitchen',
+      kitchenStationProbePath,
+      regularId,
+      kitchenStationProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        teamIds: [],
+      })
+    ),
+    deniedDelete(
+      'Kitchen team member cannot delete a Station',
+      kitchenStationProbePath,
+      regularId,
+      kitchenStationProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
     ),
     readResource(
       'Kitchen team member can read ordinary Kitchen child data',
@@ -3413,7 +3568,9 @@ async function buildSecurityTests() {
       persistedUserEcosystemAvatar: {
         avatar: ECOSYSTEM_AVATAR,
         matchingDocuments: ecosystemAvatarUserCount,
-        fixturePathSha256: sha256(`users/${ecosystemAvatarUserId}`),
+        fixturePathSha256: ecosystemAvatarUserId
+          ? sha256(`users/${ecosystemAvatarUserId}`)
+          : null,
       },
     },
   }
@@ -3427,19 +3584,18 @@ async function executeSecurityTests(testTarget, includeSource) {
     (_, index) =>
       securityTests.slice(index * batchSize, (index + 1) * batchSize)
   )
-  const batchResults = await Promise.all(
-    batches.map((batch) =>
-      api(`${testTarget}:test`, {
-        method: 'POST',
-        body: {
-          ...(includeSource ? { source } : {}),
-          testSuite: {
-            testCases: batch.map(({ testCase }) => testCase),
-          },
+  const batchResults = []
+  for (const batch of batches) {
+    batchResults.push(await api(`${testTarget}:test`, {
+      method: 'POST',
+      body: {
+        ...(includeSource ? { source } : {}),
+        testSuite: {
+          testCases: batch.map(({ testCase }) => testCase),
         },
-      })
-    )
-  )
+      },
+    }))
+  }
   const issues = batchResults.flatMap((result) => result.issues || [])
   const rawResults = batchResults.flatMap((result) => result.testResults || [])
   const testResults = securityTests.map((test, index) => {

@@ -1,5 +1,5 @@
 import {
-  KitchenStationModel,
+  KitchenStationDefaults,
   type KitchenStation,
 } from '../../../models/kitchen/station.model'
 import {
@@ -15,7 +15,7 @@ export const station = (
   description: string,
   sortOrder: number
 ): KitchenStation => ({
-  ...KitchenStationModel,
+  ...KitchenStationDefaults,
   id,
   kitchen_id: identity.kitchenId,
   name,
@@ -24,4 +24,3 @@ export const station = (
   created: kitchenDemoCreated(identity),
   updated: kitchenDemoUpdated(),
 })
-

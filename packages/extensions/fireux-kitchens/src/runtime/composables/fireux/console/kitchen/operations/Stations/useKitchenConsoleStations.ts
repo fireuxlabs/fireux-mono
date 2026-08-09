@@ -1,6 +1,5 @@
 // Concurrent edit — 2026-07-22 13:15 CEST — Demo World pass: project read-only Demo Stations without Firestore access.
 import { computed } from 'vue'
-import { useKitchenChildCollection } from '../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenStationStorage,
   type KitchenStation,
@@ -11,6 +10,7 @@ import {
   findKitchenConsoleDemoScenario,
   useKitchenConsoleDemoData,
 } from '../../core/useKitchenConsoleDemoData'
+import { useKitchenStationCollection } from './fetch/useKitchenStationCollection'
 
 export function useKitchenConsoleStations() {
   const {
@@ -34,11 +34,10 @@ export function useKitchenConsoleStations() {
     rootCollection.value && kitchenId.value ? kitchenId.value : ''
   )
   const {
-    items: fetchedStations,
+    kitchenStations: fetchedStations,
     pending: stationsPending,
     collectionPath: fetchedCollectionPath,
-  } = useKitchenChildCollection<KitchenStation>(
-    KitchenStationStorage.collection,
+  } = useKitchenStationCollection(
     fetchKitchenId,
     {
       kitchenCollectionPath: rootCollection,

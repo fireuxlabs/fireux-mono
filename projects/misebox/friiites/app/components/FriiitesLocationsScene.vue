@@ -1,5 +1,6 @@
 <template>
   <section
+    id="locations"
     class="friiites-scene friiites-scene--locations"
     aria-labelledby="locations-title"
     data-landing-scene="locations"
