@@ -11,6 +11,9 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, '..')
 const SEARCH_ROOTS = ['packages', 'projects']
 const SELF_PATH = 'scripts/check-slug-canon.mjs'
+const CANONICAL_SLUG_QUERY_FILES = new Set([
+  'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/route-identity.ts',
+])
 const SKIP_DIRS = new Set([
   '.git',
   '.nuxt',
@@ -120,6 +123,10 @@ for (const file of files) {
   lines.forEach((line, index) => {
     for (const rule of rules) {
       if (!rule.patterns.some((pattern) => pattern.test(line))) continue
+      if (
+        rule.id === 'slug-field-query' &&
+        CANONICAL_SLUG_QUERY_FILES.has(rel)
+      ) continue
       const finding = {
         rule: rule.id,
         message: rule.message,

@@ -1,7 +1,7 @@
 {
   "name": "fireux-slap",
   "version": "0.1.0",
-  "description": "FireUX Slap - Lifestyle-commerce ecosystem for culture-led brands",
+  "description": "Apps That Slap ecosystem identity and shared presentation contracts",
   "private": true,
   "type": "module",
   "main": "./src/module.ts",

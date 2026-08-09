@@ -64,7 +64,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DriverCard } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
+import type { DriverCard } from '../../../composables/fireux/driver/useDriverInterface'
 import type { PublicDriverProfile } from '../../../models/driver.model'
 
 const props = defineProps<{

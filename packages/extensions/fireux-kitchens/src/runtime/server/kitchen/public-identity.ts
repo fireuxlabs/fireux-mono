@@ -32,6 +32,7 @@ import {
   readKitchenOnboardingScope,
   readKitchenOnboardingSupport,
 } from './onboarding-policy.ts'
+import { readKitchenByRouteSlug } from './route-identity.ts'
 
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
 
@@ -122,15 +123,12 @@ function identityEdit(
 async function kitchenBySlug(db: RuntimeFirestore, slug: string) {
   const normalized = text(slug).toLowerCase()
   if (!normalized) invalid('Kitchen slug is required.')
-  const snapshot = await db
-    .collection(KitchenStorage.collection)
-    .doc(normalized)
-    .get()
-  if (!snapshot.exists) {
+  const kitchen = await readKitchenByRouteSlug(db, normalized)
+  if (!kitchen) {
     throw createError({ statusCode: 404, statusMessage: 'Kitchen not found.' })
   }
   return {
-    id: snapshot.id,
+    id: kitchen.id,
     slug: normalized,
   }
 }

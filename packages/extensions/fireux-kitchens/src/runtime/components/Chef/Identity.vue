@@ -45,7 +45,7 @@
 import { useProfileCreate } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/mutations/useProfileCreate'
 import { chefConfig } from '../../composables/fireux/firestore/profiles/Chef/config/chefConfig'
 import { computed, ref } from 'vue'
-import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useChef } from '../../composables/fireux/chef/useChef'
 
 const { coreProfile, profile: chefCardFromProfile } = useChef()
 const { createProfile: createProfileRecord } = useProfileCreate(chefConfig)

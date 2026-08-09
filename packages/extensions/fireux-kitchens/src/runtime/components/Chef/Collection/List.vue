@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface';
+import type { ChefCard } from '../../../composables/fireux/chef/useChefInterface'
 
 withDefaults(
   defineProps<{

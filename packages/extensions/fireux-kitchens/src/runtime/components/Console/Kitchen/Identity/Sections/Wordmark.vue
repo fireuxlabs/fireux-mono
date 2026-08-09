@@ -90,11 +90,8 @@ const props = defineProps<{
   canWrite: boolean
 }>()
 
-const collectionPath = computed(() => props.collectionPath)
 const toast = useToastify()
-const { pending, uploadKitchenWordmark } = useKitchenWordmarkUpdate({
-  collectionPath,
-})
+const { pending, uploadKitchenWordmark } = useKitchenWordmarkUpdate()
 const wordmarkInput = ref<HTMLInputElement | null>(null)
 const wordmarkUploadKind = ref<KitchenWordmarkKind>('no-logo')
 

@@ -10,8 +10,7 @@ export const configureRuntimeConfig = (nuxt: Nuxt) => {
   const slapDefaults = {
     enabled: true,
     branding: {
-      label: 'Slap',
-      tagline: 'Make it hit.',
+      label: 'Apps That Slap',
     },
     commerceLanguage: {
       products: 'Drops',

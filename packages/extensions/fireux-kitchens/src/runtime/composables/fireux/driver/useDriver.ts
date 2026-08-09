@@ -2,13 +2,13 @@
 import { computed } from 'vue'
 import { useProfile } from 'fireux-core/runtime/composables/fireux/firestore/core/profile/useProfile'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
-import { driverConfig } from './config/driverConfig'
+import { driverConfig } from '../firestore/profiles/Driver/config/driverConfig'
 import type {
   AppDriver,
   Driver,
-} from '../../../../../models/driver.model'
-import { useDriverCreate } from './mutations/useDriverCreate'
-import { useDriverUpdate } from './mutations/useDriverUpdate'
+} from '../../../models/driver.model'
+import { useDriverCreate } from '../firestore/profiles/Driver/mutations/useDriverCreate'
+import { useDriverUpdate } from '../firestore/profiles/Driver/mutations/useDriverUpdate'
 
 export type { AppDriver, Driver }
 

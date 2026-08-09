@@ -384,12 +384,22 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/targets.get.ts',
   kitchenPublicProjection:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/public-projection.ts',
+  kitchenRouteIdentity:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/route-identity.ts',
+  kitchenPublicDetail:
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/[slug].get.ts',
   kitchenTargetResolver:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/console-targets.ts',
   kitchenCreate:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenCreate.ts',
   kitchenUpdate:
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/kitchen/mutations/useKitchenUpdate.ts',
+  kitchenUpdateInput:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/update-input.ts',
+  kitchenUpdateServer:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/update.ts',
+  kitchenMutationAuthority:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/mutation-authority.ts',
   kitchenOnboardingHandler:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
@@ -951,10 +961,36 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /cardImageUrl\s*\|\|\s*parts\.place\.coverImage\s*\|\|\s*parts\.place\.imageUrl/,
     'The public Kitchen directory must resolve the Kitchen card override, then Place cover, then Place image.'
   )
-  assert.match(
+  assert.match(source.kitchenRouteIdentity, /where\('slug', '==', slug\)/)
+  assert.match(source.kitchenRouteIdentity, /limit\(2\)/)
+  assert.match(source.kitchenRouteIdentity, /matches\.size > 1/)
+  assert.match(source.kitchenPublicDetail, /readKitchenByRouteSlug\(db, slug\)/)
+  assert.doesNotMatch(
+    source.kitchenPublicDetail,
+    /\.doc\(slug\)/,
+    'Kitchen public detail must resolve its authored route slug without treating it as root identity.'
+  )
+  assert.match(source.kitchenUpdate, /\/api\/console\/kitchen\/update/)
+  assert.match(source.kitchenUpdate, /getIdToken\(\)/)
+  assert.doesNotMatch(
     source.kitchenUpdate,
-    /moveString\('identity\.card_image_url', 'identity\.card_image_url'\)/,
+    /firebase\/firestore|useFirestoreUpdate|updateDoc|collectionPath|databaseId/,
+    'Kitchen root edits must use the fixed trusted server seam.'
+  )
+  assert.match(
+    source.kitchenUpdateInput,
+    /identity\.card_image_url[\s\S]*FieldValue\.delete\(\)/,
     'An empty Kitchen card-image override must delete itself so the card inherits Place again.'
+  )
+  assert.match(source.kitchenUpdateServer, /runGuardedServerTransaction/)
+  assert.match(source.kitchenUpdateServer, /requireKitchenMutationAuthority/)
+  assert.match(source.kitchenUpdateServer, /readKitchenByRouteSlug/)
+  assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingScope/)
+  assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingSupport/)
+  assert.match(source.kitchenMutationAuthority, /resolveKitchenConsoleTargetIds/)
+  assert.match(
+    source.kitchenServerConfig,
+    /route:\s*'\/api\/console\/kitchen\/update'[\s\S]*method:\s*'patch'[\s\S]*runtime\/server\/api\/console\/kitchen\/update\.patch/
   )
   assert.doesNotMatch(
     source.kitchenSpine,

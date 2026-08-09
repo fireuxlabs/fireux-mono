@@ -4,7 +4,27 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
 import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+
+export type ChefGalleryItem = {
+  name: string
+  image_url: string
+}
+
+export type Chef = FireuxStamped & {
+  id: string
+  title: string
+  summary: string
+  chef_bio: string
+  chef_image: string
+  chef_signature_dishes: string[]
+  chef_gallery: ChefGalleryItem[]
+  kitchen_ids: string[]
+  chef_organization_name: string
+}
+
+export type AppChef = AppProfileBase
 
 /**
  * Runtime models canon: docs/ai/gpt-context.md
@@ -36,15 +56,43 @@ export const AppChefStorage = {
   idParam: 'userId',
 } as const
 
-export type ChefGalleryItem = {
-  name: string
-  image_url: string
-}
-
 /** Product cap mirrored by the authoritative Firestore Rules validator. */
 export const CHEF_GALLERY_MAX_ITEMS = 6
 
-export const ChefModel = {
+export const ChefProfileRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'ChefProfile',
+  family: ['identity', 'profile', 'kitchen'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'projection',
+  status: 'confirmed',
+  console: false,
+  parent: 'User',
+  scoped: ChefStorage.root,
+  notes: [
+    'User owns person identity; ChefProfile owns only Chef capability and presentation.',
+    'The same uid joins User and ChefProfile.',
+  ],
+})
+
+export const AppChefProfileRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'AppChefProfile',
+  family: ['identity', 'profile', 'kitchen'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'User',
+  scoped: AppChefStorage.path,
+  notes: ['AppChefProfile is a non-identity App delta for one ChefProfile uid.'],
+})
+
+export const ChefDefaults = {
   id: '' as string,
 
   // Chef (scoped, v1)
@@ -70,11 +118,7 @@ export const ChefModel = {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['updated']['by'],
   },
-} as const
-
-export type Chef = {
-  [K in keyof typeof ChefModel]: (typeof ChefModel)[K]
-}
+} as const satisfies Chef
 
 export type PublicChefProfile = Omit<Chef, 'created' | 'updated'>
 export type PublicChefProfilePayload = Omit<PublicChefProfile, 'id'>
@@ -85,27 +129,25 @@ export type PublicChefDirectoryProfilePayload = Pick<
 export type PublicChefDirectoryProfile = PublicChefDirectoryProfilePayload &
   Pick<PublicChefProfile, 'id'>
 
-export const AppChefModel = {
+export const AppChefDefaults = {
   id: '' as string,
 
   // Stamps
   ...AppProfileStamps,
-} as const
-
-export type AppChef = AppProfileBase
+} as const satisfies AppChef
 
 export type ChefCreateInput = Omit<Chef, 'id' | 'created' | 'updated'>
 export type ChefUpdateInput = Partial<Omit<Chef, 'id' | 'created' | 'updated'>>
 
 export function createChefProfileSeed(): ChefCreateInput {
   return {
-    title: ChefModel.title,
-    summary: ChefModel.summary,
-    chef_bio: ChefModel.chef_bio,
-    chef_image: ChefModel.chef_image,
-    chef_signature_dishes: [...ChefModel.chef_signature_dishes],
-    chef_gallery: [...ChefModel.chef_gallery],
-    kitchen_ids: [...ChefModel.kitchen_ids],
-    chef_organization_name: ChefModel.chef_organization_name,
+    title: ChefDefaults.title,
+    summary: ChefDefaults.summary,
+    chef_bio: ChefDefaults.chef_bio,
+    chef_image: ChefDefaults.chef_image,
+    chef_signature_dishes: [...ChefDefaults.chef_signature_dishes],
+    chef_gallery: [...ChefDefaults.chef_gallery],
+    kitchen_ids: [...ChefDefaults.kitchen_ids],
+    chef_organization_name: ChefDefaults.chef_organization_name,
   }
 }

@@ -53,10 +53,7 @@ const {
   tableCount,
   canWrite,
 } = useKitchenConsoleTables()
-const { updateKitchen } = useKitchenUpdate({
-  collectionPath: rootCollection,
-  databaseId,
-})
+const { updateKitchen } = useKitchenUpdate()
 const toast = useToastify()
 const draftTableCount = ref('0')
 const saving = ref(false)

@@ -30,7 +30,7 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed } from 'vue'
-import { useChef } from '../../composables/fireux/firestore/profiles/Chef/useChef'
+import { useChef } from '../../composables/fireux/chef/useChef'
 
 const { appName } = useFireUXConfig()
 const { currentUser } = useUser()

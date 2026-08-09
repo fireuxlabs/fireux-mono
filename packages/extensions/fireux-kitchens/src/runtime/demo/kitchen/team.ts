@@ -1,5 +1,5 @@
 import {
-  KitchenTeamMemberModel,
+  KitchenTeamMemberDefaults,
   type KitchenTeamMember,
 } from '../../models/kitchen/team.model'
 import {
@@ -17,7 +17,7 @@ const member = (
   stationIds: string[],
   sortOrder: number
 ): KitchenDemoTeamMember => ({
-  ...KitchenTeamMemberModel,
+  ...KitchenTeamMemberDefaults,
   id,
   kitchen_id: deanosKitchenDemoIdentity.kitchenId,
   name,

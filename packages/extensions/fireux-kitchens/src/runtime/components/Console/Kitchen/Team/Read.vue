@@ -61,7 +61,7 @@ const sortOrder = (member: KitchenTeamMember) => {
 }
 const sortedMembers = computed(() =>
   teamMembers.value
-    .filter((member) => (member as Record<string, unknown>).active !== false)
+    .filter((member) => member.active !== false)
     .sort((left, right) => {
       const byOrder = sortOrder(left) - sortOrder(right)
       if (byOrder) return byOrder

@@ -205,7 +205,8 @@ projection; it does not establish raw root-read authority.
 
 The repository contains domain concepts whose models, routes, or collections
 predate executable entity declarations. Examples include remaining profile
-roots, Station, Task, and Blog content.
+roots outside the confirmed Chef and Driver records, Station, Task, and Blog
+content.
 
 Their existence is real; their FireUX Entity classification is not yet declared
 by the matrix. Treat each as `to-confirm` for classification work. Do not
@@ -233,6 +234,15 @@ check. Legacy root links are planned by
 `scripts/migrate-misebox-customer-order-links.mjs` and require an explicit
 confirmation hash plus protected preimage before application.
 
+ChefProfile and DriverProfile are confirmed User-backed Records. Their root
+document id is the User uid; public profile reads join the canonical User
+rather than copying person identity. Their App documents are non-identity
+profile deltas. KitchenTeamMember and KitchenTeamJoinRequest are Kitchen-owned
+operational Records. Neither record grants Console authority: AppKitchen
+operator and team ids remain the access seam. Run
+`scripts/audit-misebox-chef-driver-kitchen-team.mjs` to verify these profile,
+membership, Kitchen, and workflow joins without writing data.
+
 Product is a declared commercial root owned by `fireux-products`. It has an
 independent lifecycle, route identity, pricing children, authorship, and
 provider identity. Supplier Item is a Supplier-owned scoped Record: it must
@@ -246,6 +256,14 @@ an inactive provider-imported Product that has no public route.
 Run `scripts/audit-misebox-product-supplier-items.mjs` to verify Product,
 Ingredient, Supplier, Supplier Ingredient, and Supplier Item links in the
 Misebox owner database without writing data.
+
+Kitchen root identity, its required Place, same-id AppKitchen access, and User
+Console target pointers are verified by
+`scripts/audit-misebox-kitchen-authority.mjs`. Kitchen root IDs remain stable
+operational identity; authored public slugs resolve through the bounded Kitchen
+server route seam. Confirmed inert AppKitchen access ids are planned and
+preimage-protected by `scripts/migrate-misebox-kitchen-authority.mjs`; the
+script requires an explicit confirmation hash before changing data.
 
 ## Storage and route implications
 

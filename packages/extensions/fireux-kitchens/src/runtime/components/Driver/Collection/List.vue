@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DriverCard } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
+import type { DriverCard } from '../../../composables/fireux/driver/useDriverInterface'
 
 withDefaults(
   defineProps<{

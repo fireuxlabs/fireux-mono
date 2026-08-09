@@ -37,7 +37,7 @@ type WidenLiteral<T> =
  * Child scope: /apps/<appId>/kitchens/<kitchenId>/<childCollection>/<childId>
  *
  * Decision note:
- * - Kitchen is one domain entity with a root public entity and an app-hosted scoped record.
+ * - Kitchen is one domain entity with a canonical root and an App-hosted access record.
  * - The root record stays thin and canonical; the app-scoped record carries governance and private operational state.
  * - Public facade depth can vary by family; Kitchen is expected to have a richer public face than some other app-scoped entities.
  * - If Kitchen needs a richer public or operational read shape, that should be built in fetch/runtime/interface layers, not by complicating the stored model file.
@@ -317,4 +317,29 @@ export type KitchenCreateInput = Partial<
   >
 >
 
-export type KitchenUpdateInput = Partial<Kitchen> & Record<string, unknown>
+export type KitchenUpdateInput = Partial<
+  Pick<
+    Kitchen,
+    'slug' | 'identity' | 'menus' | 'orders' | 'tables' | 'fulfilment' | 'visibility'
+  >
+> & {
+  'identity.display_name'?: string
+  'identity.tagline'?: string
+  'identity.card_image_url'?: string
+  'identity.logo_image_url'?: string
+  'identity.wordmark_no_logo_image_url'?: string
+  'identity.wordmark_image_url'?: string
+  'identity.media_backdrop_color'?: string
+  'menus.currency_format'?: CurrencyDisplayFormat
+  'menus.show_currency'?: boolean
+  'menus.available'?: boolean
+  'visibility.show'?: boolean
+  'visibility.active'?: boolean
+  'visibility.is_test'?: boolean
+  'orders.modes'?: string[]
+  'orders.default_lead_time_minutes'?: number
+  'orders.acceptance_required'?: boolean
+  'orders.operation_hours'?: WeekdayTimeWindowsConfig | null
+  'orders.printing'?: KitchenOrdersConfig['printing'] | null
+  'tables.count'?: number
+}

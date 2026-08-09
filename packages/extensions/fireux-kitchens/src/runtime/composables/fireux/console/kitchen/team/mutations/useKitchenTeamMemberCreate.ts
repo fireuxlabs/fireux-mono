@@ -3,7 +3,7 @@ import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   KitchenTeamMemberStorage,
-  KitchenTeamMemberModel,
+  KitchenTeamMemberDefaults,
   type KitchenTeamMember,
 } from '../../../../../../models/kitchen/team.model'
 
@@ -49,7 +49,7 @@ export function useKitchenTeamMemberCreate() {
 
     const sortOrder = Number(input.sortOrder)
     const payload: KitchenTeamMember = {
-      ...KitchenTeamMemberModel,
+      ...KitchenTeamMemberDefaults,
       kitchen_id: kitchenId,
       name,
       display_name: name,

@@ -33,8 +33,8 @@
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, ref } from 'vue'
-import { useDriver } from '../../composables/fireux/firestore/profiles/Driver/useDriver'
-import { useDriverInterface } from '../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
+import { useDriver } from '../../composables/fireux/driver/useDriver'
+import { useDriverInterface } from '../../composables/fireux/driver/useDriverInterface'
 
 const { appName } = useFireUXConfig()
 const { currentUser } = useUser()

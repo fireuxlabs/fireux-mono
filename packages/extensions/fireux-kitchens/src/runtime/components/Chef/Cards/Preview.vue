@@ -19,7 +19,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import type { ChefCard } from '../../../composables/fireux/chef/useChefInterface'
 
 type Props = Partial<
   Pick<

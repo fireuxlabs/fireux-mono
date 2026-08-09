@@ -1,25 +1,17 @@
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
-import { computed, ref, unref, type Ref } from 'vue'
+import { ref } from 'vue'
 import type { KitchenMediaBackdropColor } from '../../../../../models/kitchen.model'
 import { useKitchenUpdate } from './useKitchenUpdate'
 
-type MaybeRef<T> = T | Ref<T>
-type UseKitchenLogoUpdateOptions = {
-  collectionPath?: MaybeRef<string | null | undefined>
-}
-
 const clean = (value: unknown) => String(value ?? '').trim()
 
-export function useKitchenLogoUpdate(
-  options: UseKitchenLogoUpdateOptions = {}
-) {
-  const collectionPath = computed(() => clean(unref(options.collectionPath)))
+export function useKitchenLogoUpdate() {
   const { selectedId } = useConsoleSelection('kitchen')
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { uploadImage } = useImageStorage()
-  const { updateKitchen } = useKitchenUpdate({ collectionPath })
+  const { updateKitchen } = useKitchenUpdate()
   const pending = ref(false)
 
   const requireSelectedKitchen = (kitchenId: string) => {

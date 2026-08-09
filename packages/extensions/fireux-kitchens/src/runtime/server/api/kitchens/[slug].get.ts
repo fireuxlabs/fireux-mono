@@ -16,6 +16,7 @@ import {
   projectPublicKitchenDetail,
   type KitchenPublicDirectoryScope,
 } from '../../kitchen/public-projection.ts'
+import { readKitchenByRouteSlug } from '../../kitchen/route-identity.ts'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -36,18 +37,15 @@ export default defineEventHandler(
     }
 
     const db = getRuntimeFirestore()
-    const kitchenSnapshot = await db
-      .collection('kitchens')
-      .doc(slug)
-      .get()
+    const kitchen = await readKitchenByRouteSlug(db, slug)
       .catch(() => {
         throw createError({
           statusCode: 503,
           statusMessage: 'Kitchen could not be read.',
         })
       })
-    const data = kitchenSnapshot.data() || {}
-    if (!kitchenSnapshot.exists || !isRoutableKitchen(data)) {
+    const data = kitchen?.data || {}
+    if (!kitchen || !isRoutableKitchen(data)) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Kitchen not found.',
@@ -55,7 +53,7 @@ export default defineEventHandler(
     }
 
     const document = {
-      id: kitchenSnapshot.id,
+      id: kitchen.id,
       data,
     }
     const dataByPath = await hydrateKitchenPublicDocuments(db, [document])

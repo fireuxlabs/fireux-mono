@@ -116,7 +116,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ChefCard } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import type { ChefCard } from '../../../composables/fireux/chef/useChefInterface'
 import type { PublicChefProfile } from '../../../models/chef.model'
 
 const props = withDefaults(

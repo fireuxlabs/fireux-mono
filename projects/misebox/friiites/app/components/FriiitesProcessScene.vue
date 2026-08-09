@@ -1,19 +1,13 @@
 <template>
   <section
     id="method"
-    class="friiites-method"
+    class="friiites-scene friiites-scene--process"
     aria-labelledby="method-title"
+    data-landing-scene="process"
     data-friiites-scene="process"
   >
-    <div class="friiites-marquee" aria-label="Friiites method summary">
-      <p>
-        <span>Hand-cut</span><i aria-hidden="true" />
-        <span>Brined</span><i aria-hidden="true" />
-        <span>Triple-fried</span><i aria-hidden="true" />
-        <span>Beef tallow</span>
-      </p>
-    </div>
-    <div class="friiites-method-body">
+    <div aria-hidden="true" data-scene-layer="background" />
+    <div class="friiites-scene-content" data-scene-layer="content">
       <header>
         <div class="friiites-section-label"><span>01</span><p>The method</p></div>
         <div>
@@ -27,5 +21,6 @@
         <li><span>03</span><strong>Triple-fried</strong><p>Three cooks in beef tallow build the finished fry.</p></li>
       </ol>
     </div>
+    <div aria-hidden="true" data-scene-layer="foreground" />
   </section>
 </template>

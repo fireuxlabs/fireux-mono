@@ -21,6 +21,6 @@ export const configurePublicAssets = (resolver: Resolver, nuxt: Nuxt) => {
   const ecoDirs = (fireuxDev.ecosystemPublicDirs ||= []) as Array<any>
   const alreadyDev = ecoDirs.some((e) => e?.dir === publicDir)
   if (!alreadyDev) {
-    ecoDirs.push({ key: 'slap', title: 'Slap ecosystem images', dir: publicDir })
+    ecoDirs.push({ key: 'slap', title: 'Apps That Slap ecosystem images', dir: publicDir })
   }
 }

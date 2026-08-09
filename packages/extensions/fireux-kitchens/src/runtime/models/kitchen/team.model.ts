@@ -1,15 +1,48 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen/team.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
+
+export type KitchenTeamStatus = 'active' | 'inactive'
+export type KitchenTeamJoinRequestStatus = 'pending' | 'approved' | 'rejected'
+
+export interface KitchenTeamMember extends FireuxStamped {
+  id: string
+  kitchen_id: string
+  user_id: string
+  chef_profile_id: string
+  name: string
+  display_name: string
+  role: string
+  station_ids: string[]
+  active: boolean
+  sort_order: number
+  status: KitchenTeamStatus
+  station: string
+  shift_label: string
+  hourly_rate: number
+  currency: string
+  certifications: string[]
+  notes: string
+}
+
+export interface KitchenTeamJoinRequest extends FireuxStamped {
+  id: string
+  kitchen_id: string
+  user_id: string
+  name: string
+  message: string
+  status: KitchenTeamJoinRequestStatus
+}
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
  * Family: Kitchen-scoped
  * Storage: scoped operational record
- * Path: /kitchens/<kitchenId>/team/<memberId>
- * Owner app scope: Kitchen
+ * Path: /apps/<appId>/kitchens/<kitchenId>/team/<memberId>
+ * Owner: Kitchen through its same-id AppKitchen support record
  *
  * Decision note:
  * - Team membership is operational kitchen state even when it links back to root user or chef identities.
@@ -18,7 +51,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenTeamMemberStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/team/{memberId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/team/{memberId}',
   collection: 'team',
   parent: 'kitchen',
   idParam: 'memberId',
@@ -26,16 +59,48 @@ export const KitchenTeamMemberStorage = {
 
 export const KitchenTeamJoinRequestStorage = {
   shape: 'scoped',
-  path: 'kitchens/{kitchenId}/team-join-requests/{requestId}',
+  path: 'apps/{appId}/kitchens/{kitchenId}/team-join-requests/{requestId}',
   collection: 'team-join-requests',
   parent: 'kitchen',
   idParam: 'requestId',
 } as const
 
-export type KitchenTeamStatus = 'active' | 'inactive'
-export type KitchenTeamJoinRequestStatus = 'pending' | 'approved' | 'rejected'
+export const KitchenTeamMemberRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'KitchenTeamMember',
+  family: ['kitchen', 'support'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'Kitchen',
+  scoped: KitchenTeamMemberStorage.path,
+  notes: [
+    'Kitchen owns operational team state.',
+    'A member may reference a User or ChefProfile but never grants Console authority.',
+  ],
+})
 
-export const KitchenTeamMemberModel = {
+export const KitchenTeamJoinRequestRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'KitchenTeamJoinRequest',
+  family: ['kitchen', 'support'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'Kitchen',
+  scoped: KitchenTeamJoinRequestStorage.path,
+  notes: [
+    'A join request is workflow state, not membership or access authority.',
+  ],
+})
+
+export const KitchenTeamMemberDefaults = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -67,18 +132,14 @@ export const KitchenTeamMemberModel = {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],
   },
-} as const
-
-export type KitchenTeamMember = {
-  [K in keyof typeof KitchenTeamMemberModel]: (typeof KitchenTeamMemberModel)[K]
-}
+} as const satisfies KitchenTeamMember
 
 export type KitchenTeamMemberCreateInput = Omit<KitchenTeamMember, 'created' | 'updated'>
 export type KitchenTeamMemberUpdateInput = Partial<
   Omit<KitchenTeamMember, 'id' | 'created' | 'updated' | 'kitchen_id'>
 >
 
-export const KitchenTeamJoinRequestModel = {
+export const KitchenTeamJoinRequestDefaults = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -96,8 +157,15 @@ export const KitchenTeamJoinRequestModel = {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],
   },
-} as const
+} as const satisfies KitchenTeamJoinRequest
 
-export type KitchenTeamJoinRequest = {
-  [K in keyof typeof KitchenTeamJoinRequestModel]: (typeof KitchenTeamJoinRequestModel)[K]
-}
+export type KitchenTeamJoinRequestCreateInput = Omit<
+  KitchenTeamJoinRequest,
+  'created' | 'updated'
+>
+export type KitchenTeamJoinRequestUpdateInput = Partial<
+  Omit<
+    KitchenTeamJoinRequest,
+    'id' | 'created' | 'updated' | 'kitchen_id' | 'user_id'
+  >
+>

@@ -118,9 +118,10 @@ Example Firestore stack names, not automatic entity proof:
   `AppUser.profiles`. Root-backed profiles separately retain their public root
   record and `User.profiles` id.
 - Model placement and Firestore composable placement are related but not identical.
-- Root profile models with App delta records can live on the root model spine
-  while current Firestore composables remain grouped under
-  `firestore/profiles/<Profile>` until that stack is deliberately realigned.
+- Root profile models with App delta records keep raw reads, writes, and config
+  under `firestore/profiles/<Profile>`. Chef and Driver prove the aligned
+  consumer seam: state, interface, and SEO live under
+  `composables/fireux/<profile>`.
 - Project/Ecosystem/App hierarchy uses root documents plus child-owned relation
   ids, not nested storage: `Ecosystem.project_id`, `App.project_id`, and optional
   `App.ecosystem_id`.
@@ -206,7 +207,7 @@ Example Firestore stack names, not automatic entity proof:
 | Difference | State | Required direction |
 | --- | --- | --- |
 | Supplier and Portfolio do not exact-validate every root field | `migration` | Reconcile live data first, then add validators without relabelling read errors as missing |
-| Root profile models and grouped `firestore/profiles/<Profile>` composables use different organizational spines | `to-confirm` | Realign only after a package-wide profile storage decision; current path difference does not alter identity |
+| Remaining profile consumers below `firestore/profiles/<Profile>` use the old organizational spine | `migration` | Follow the Chef/Driver split when each complete profile family is aligned; do not move raw adapters out of Firestore |
 | Some folders exist because a thing is stored, not because entity-ness was confirmed | `drift` | Check `entities.md` and the executable entity matrix before adding root entity ceremony |
 | Older entity-facing view helpers remain inside Firestore stacks | `migration` | Move one entity and all of its consumers together; User and App are the proving siblings |
 | Project direct-read Rules are outside the currently tested repository contract | `to-confirm` | Identify and verify the deployed Rules owner before claiming end-to-end control-plane denial |

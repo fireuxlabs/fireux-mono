@@ -38,8 +38,8 @@ import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/p
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import { useChefSeo } from '../../composables/fireux/firestore/profiles/Chef/utils/useChefSeo'
-import { useChefInterface } from '../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import { useChefSeo } from '../../composables/fireux/chef/useChefSeo'
+import { useChefInterface } from '../../composables/fireux/chef/useChefInterface'
 import type { PublicChefProfilePayload } from '../../models/chef.model'
 
 definePageMeta({

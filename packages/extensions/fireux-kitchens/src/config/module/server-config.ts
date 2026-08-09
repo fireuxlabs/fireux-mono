@@ -141,6 +141,11 @@ const baseServerHandlers = [
     handler: './runtime/server/api/console/kitchen/theme.post',
   },
   {
+    route: '/api/console/kitchen/update',
+    method: 'patch',
+    handler: './runtime/server/api/console/kitchen/update.patch',
+  },
+  {
     route: '/api/console/kitchen/reports/gross-sales',
     method: 'get',
     handler:

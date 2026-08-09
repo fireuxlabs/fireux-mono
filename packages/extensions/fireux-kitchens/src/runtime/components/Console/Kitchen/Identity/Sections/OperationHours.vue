@@ -171,7 +171,6 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { deleteField } from 'firebase/firestore'
 import { readPlaceBusinessHours } from 'fireux-places/runtime/utils/place-spine'
 import { computed, ref } from 'vue'
 import { useKitchenConsolePlace } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenConsolePlace'
@@ -200,9 +199,8 @@ const props = defineProps<{
   canWrite: boolean
 }>()
 
-const collectionPath = computed(() => props.collectionPath)
 const { place } = useKitchenConsolePlace()
-const { updateKitchen } = useKitchenUpdate({ collectionPath })
+const { updateKitchen } = useKitchenUpdate()
 const toast = useToastify()
 const error = ref('')
 const saving = ref(false)
@@ -333,7 +331,7 @@ async function saveWindows(items: unknown[]) {
             timezone: hours.value.timezone,
             windows,
           } satisfies WeekdayTimeWindowsConfig
-        : deleteField() as never,
+        : null as never,
     })
     customEditorOpen.value = windows.length > 0
     toast.add({
@@ -371,7 +369,7 @@ async function saveSource(source: WeekdayTimeWindowsSource) {
   saving.value = true
   try {
     await updateKitchen(props.kitchenId, {
-      'orders.operation_hours': deleteField() as never,
+      'orders.operation_hours': null as never,
     })
     customEditorOpen.value = false
     toast.add({

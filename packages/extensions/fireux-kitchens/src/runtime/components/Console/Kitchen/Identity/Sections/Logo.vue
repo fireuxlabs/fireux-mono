@@ -125,9 +125,7 @@ const {
   pending: logoUploading,
   uploadKitchenLogo,
   updateKitchenMediaBackdropColor,
-} = useKitchenLogoUpdate({
-  collectionPath: computed(() => props.collectionPath),
-})
+} = useKitchenLogoUpdate()
 const placeBackdropColor = computed(() =>
   String((props.kitchen as any)?.media_backdrop_color || '').trim()
 )

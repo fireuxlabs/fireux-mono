@@ -4,7 +4,7 @@ export const ecosystemConfig = {
   id: 'fireux-slap',
   name: 'slap',
   description:
-    'FireUX Slap - Lifestyle-commerce ecosystem for culture-led brands',
+    'Apps That Slap - independent Apps whose branded digital experience is the product',
 
   firebase: {
     apiKey: 'AIzaSyAFrIqgvbr3f3eK5JVOuDSFvATSuZCh_Cc',

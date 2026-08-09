@@ -82,8 +82,7 @@ Index outcome contract.
 | Property lacks an explicit standalone Identity/Create decision                             | `to-confirm` | Decide whether Property owns those sheets or deliberately enters through Portfolio; document and guard the result                      |
 | Team access presentation does not yet hydrate polished people consistently outside Kitchen | `drift`      | Keep raw authority ids factual for now; add one shared bounded people projection only when the privacy and source contract is agreed   |
 | Console operation child matrix is not complete                                             | `drift`      | Inventory visible routes against owning operation components/composables and remove parked or fake operations                          |
-| Kitchen live Console creation does not currently satisfy the trusted-onboarding guard      | `drift`      | Route live creation through the fixed-runtime authenticated Kitchen onboarding endpoint before treating Kitchen create as aligned      |
-| Kitchen server target code still uses the forbidden `RuntimeKitchen` name                  | `drift`      | Rename the projection by its actual job, such as Console target or projected Kitchen, without creating another Kitchen identity bucket |
+| Kitchen authored route slug differs from stable root identity                              | `accepted`   | Resolve the slug through the bounded Kitchen route resolver while Console and operation relationships retain the stable root ID        |
 
 ## Component and composable naming
 
@@ -122,8 +121,8 @@ composition delta, not permission to fork the Console Index spine.
 
 - Keep Kitchen root + required Place + access-only AppKitchen composition
   guarded across Live, Demo, and Test sources.
-- Restore Kitchen live Create to the trusted onboarding endpoint and remove the
-  forbidden `RuntimeKitchen` naming flagged by `pnpm guard`.
+- Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep
+  AppKitchen access support payload-free.
 - Resolve Property's standalone Identity/Create lifecycle.
 - Reconcile Supplier and Portfolio root validation before confirming public
   projections.

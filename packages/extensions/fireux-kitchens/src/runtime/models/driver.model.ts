@@ -5,6 +5,7 @@
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
 import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type DriverKitchenLink = {
@@ -18,6 +19,23 @@ export type DriverKitchenLink = {
 
 export type DriverCoverage = {
   radius_m: number
+}
+
+export type Driver = FireuxStamped & {
+  id: string
+  title: string
+  subtitle: string
+  tagline: string
+  tags: string[]
+  coverage: DriverCoverage
+}
+
+export type AppDriver = AppProfileBase & {
+  driver_phone: string
+  accepts_weak_pings: boolean
+  accepts_delivery_tenders: boolean
+  active_kitchen_ids: string[]
+  kitchen_links: DriverKitchenLink[]
 }
 
 /**
@@ -44,7 +62,41 @@ export const AppDriverStorage = {
   idParam: 'userId',
 } as const
 
-export const DriverModel = {
+export const DriverProfileRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'DriverProfile',
+  family: ['identity', 'profile', 'kitchen'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'projection',
+  status: 'confirmed',
+  console: false,
+  parent: 'User',
+  scoped: DriverStorage.root,
+  notes: [
+    'User owns person identity; DriverProfile owns delivery capability.',
+  ],
+})
+
+export const AppDriverProfileRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'AppDriverProfile',
+  family: ['identity', 'profile', 'kitchen'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'User',
+  scoped: AppDriverStorage.path,
+  notes: [
+    'AppDriverProfile owns App-specific contact, tender, and Kitchen relationship state.',
+  ],
+})
+
+export const DriverDefaults = {
   id: '' as string,
   title: '' as string,
   subtitle: '' as string,
@@ -62,11 +114,7 @@ export const DriverModel = {
     at: {} as FirebaseTimestamp,
     by: undefined as FireuxStamped['updated']['by'],
   },
-} as const
-
-export type Driver = {
-  [K in keyof typeof DriverModel]: (typeof DriverModel)[K]
-}
+} as const satisfies Driver
 
 export type PublicDriverProfilePayload = Pick<
   Driver,
@@ -76,7 +124,7 @@ export type PublicDriverProfile = PublicDriverProfilePayload &
   Pick<Driver, 'id'>
 export type PublicDriverDirectoryProfile = PublicDriverProfile
 
-export const AppDriverModel = {
+export const AppDriverDefaults = {
   id: '' as string,
   driver_phone: '' as string,
   accepts_weak_pings: true as boolean,
@@ -85,15 +133,7 @@ export const AppDriverModel = {
   active_kitchen_ids: [] as string[],
   kitchen_links: [] as DriverKitchenLink[],
   ...AppProfileStamps,
-} as const
-
-export type AppDriver = AppProfileBase & {
-  driver_phone: string
-  accepts_weak_pings: boolean
-  accepts_delivery_tenders: boolean
-  active_kitchen_ids: string[]
-  kitchen_links: DriverKitchenLink[]
-}
+} as const satisfies AppDriver
 
 export type DriverCreateInput = Omit<Driver, 'id' | 'created' | 'updated'>
 export type DriverUpdateInput = Partial<
@@ -102,11 +142,11 @@ export type DriverUpdateInput = Partial<
 
 export function createDriverProfileSeed(): DriverCreateInput {
   return {
-    title: DriverModel.title,
-    subtitle: DriverModel.subtitle,
-    tagline: DriverModel.tagline,
-    tags: [...DriverModel.tags],
-    coverage: { ...DriverModel.coverage },
+    title: DriverDefaults.title,
+    subtitle: DriverDefaults.subtitle,
+    tagline: DriverDefaults.tagline,
+    tags: [...DriverDefaults.tags],
+    coverage: { ...DriverDefaults.coverage },
   }
 }
 
@@ -115,10 +155,10 @@ export function createAppDriverProfileSeed(): Omit<
   'id' | 'created' | 'updated'
 > {
   return {
-    driver_phone: AppDriverModel.driver_phone,
-    accepts_weak_pings: AppDriverModel.accepts_weak_pings,
-    accepts_delivery_tenders: AppDriverModel.accepts_delivery_tenders,
-    active_kitchen_ids: [...AppDriverModel.active_kitchen_ids],
-    kitchen_links: [...AppDriverModel.kitchen_links],
+    driver_phone: AppDriverDefaults.driver_phone,
+    accepts_weak_pings: AppDriverDefaults.accepts_weak_pings,
+    accepts_delivery_tenders: AppDriverDefaults.accepts_delivery_tenders,
+    active_kitchen_ids: [...AppDriverDefaults.active_kitchen_ids],
+    kitchen_links: [...AppDriverDefaults.kitchen_links],
   }
 }

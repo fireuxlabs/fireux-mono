@@ -96,7 +96,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 // Concurrent edit — 2026-07-20 13:29 CEST — Root profile identity cutover: render Driver rows with canonical User joins.
 import { computed } from 'vue'
 import { useDriverFetch } from '../../../composables/fireux/firestore/profiles/Driver/fetch/useDriverFetch'
-import { useDriverInterface } from '../../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
+import { useDriverInterface } from '../../../composables/fireux/driver/useDriverInterface'
 import type { PublicDriverDirectoryProfile } from '../../../models/driver.model'
 
 type DriverEntry = PublicDriverDirectoryProfile

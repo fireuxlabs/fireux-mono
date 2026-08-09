@@ -134,8 +134,7 @@ const props = defineProps<{
   canWrite: boolean
 }>()
 
-const collectionPath = computed(() => props.collectionPath)
-const { updateKitchen } = useKitchenUpdate({ collectionPath })
+const { updateKitchen } = useKitchenUpdate()
 const { appId } = useFireUXConfig()
 const { updateCoverImage } = usePlaceUpdate({
   authority: () => ({ appId, kitchenId: props.kitchenId }),

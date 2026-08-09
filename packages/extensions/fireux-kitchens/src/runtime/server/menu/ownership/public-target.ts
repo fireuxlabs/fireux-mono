@@ -177,10 +177,7 @@ const requireRootMenuKitchen = async (
   const db = getRuntimeFirestore()
   const rootKitchen = source.kitchen_id
     ? await db.collection('kitchens').doc(source.kitchen_id).get()
-    : await db
-        .collection('kitchens')
-        .doc(String(source.kitchen_slug).toLowerCase())
-        .get()
+    : (await readMenuKitchenBySlug(String(source.kitchen_slug)))?.snapshot
 
   if (!rootKitchen?.exists) {
     throw configurationError('Root menu Kitchen source was not found.')

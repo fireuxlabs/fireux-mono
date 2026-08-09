@@ -1,9 +1,13 @@
-# TODO
+# Apps That Slap ecosystem package
 
-Updated: 2026-06-17
-Ref: 37fb262f0
-Role: guard-required placeholder, not canon
+`fireux-slap` is the stable package and Firebase binding key for Apps That
+Slap. It owns ecosystem identity, configuration, and opt-in presentation
+contracts for independent Apps whose branded digital experience is the
+product.
 
-TODO: Rebuild this README only after the concept maps and package contracts are settled.
+App ownership is decided by product domain, not by which presentation contract
+an App consumes. Domain Apps remain in their real ecosystem when they import
+`fireux-slap/runtime/presentation/apps-that-slap`.
 
-Start at `AGENTS.md`, `docs/ai/gpt-context.md`, and the relevant `docs/concepts/*.md`.
+Start at `docs/ai/apps-that-slap-context.md` and
+`docs/concepts/apps-that-slap.md`. Current source and guards remain authority.

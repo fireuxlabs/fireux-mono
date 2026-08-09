@@ -137,11 +137,12 @@ and authored App configuration; neither becomes an alternate App identity.
   stable while `handle` is an editable User field; no parallel handle lookup,
   reservation, migration-state, fallback-read, or duplicate-write collection
   is part of the canonical family.
-- Kitchen currently exposes its document ID as the public slug and direct-reads
-  that document. The existing mutation path that can write a different stored
-  slug is migration debt; it does not establish an independently mutable
-  Kitchen route key. User handles and other reviewed authored route keys retain
-  their own explicit family contracts.
+- Kitchen root IDs are stable operational identity and currently follow the
+  linked Place ID. The authored Kitchen slug is the public route key; one
+  Kitchen-owned bounded server resolver maps it to the root and rejects
+  duplicates. Internal relationships use the root ID, never the route slug.
+  User handles and other reviewed authored route keys retain their own explicit
+  family contracts.
 - `AppUser` owns App membership, role, premium entitlement, and onboarding.
   Console target access belongs to each Console Entity's App-support record.
 - Nuxt config selects and composes an App; it must not silently become another

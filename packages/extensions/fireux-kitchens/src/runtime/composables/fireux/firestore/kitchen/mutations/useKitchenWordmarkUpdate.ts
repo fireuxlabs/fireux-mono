@@ -1,14 +1,10 @@
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { useConsoleSelection } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleSelection'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
-import { computed, ref, unref, type Ref } from 'vue'
+import { ref } from 'vue'
 import { useKitchenUpdate } from './useKitchenUpdate'
 
-type MaybeRef<T> = T | Ref<T>
 export type KitchenWordmarkKind = 'no-logo' | 'standard'
-type UseKitchenWordmarkUpdateOptions = {
-  collectionPath?: MaybeRef<string | null | undefined>
-}
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const storageSegment = (kind: KitchenWordmarkKind) =>
@@ -18,14 +14,11 @@ const identityField = (kind: KitchenWordmarkKind) =>
     ? 'identity.wordmark_no_logo_image_url'
     : 'identity.wordmark_image_url'
 
-export function useKitchenWordmarkUpdate(
-  options: UseKitchenWordmarkUpdateOptions = {}
-) {
-  const collectionPath = computed(() => clean(unref(options.collectionPath)))
+export function useKitchenWordmarkUpdate() {
   const { selectedId } = useConsoleSelection('kitchen')
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const { uploadImage } = useImageStorage()
-  const { updateKitchen } = useKitchenUpdate({ collectionPath })
+  const { updateKitchen } = useKitchenUpdate()
   const pending = ref(false)
 
   const uploadKitchenWordmark = async (

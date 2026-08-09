@@ -1,8 +1,6 @@
 // Concurrent edit — 2026-07-22 12:41 CEST — Canonical Kitchen theme write: revalidate fixed-runtime target and root ownership in one transaction.
-import { useRuntimeConfig } from '#imports'
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -11,17 +9,12 @@ import {
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
-  serverAppUsersTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { parseMenuPageStyleInput } from '../menu/payload/page-style.ts'
 import {
-  readKitchenOnboardingScope,
-  readKitchenOnboardingSupport,
-} from './onboarding-policy.ts'
-import { resolveKitchenConsoleTargetIds } from './console-targets.ts'
+  readKitchenMutationActor,
+  requireKitchenMutationAuthority,
+} from './mutation-authority.ts'
 
 const record = (value: unknown): Record<string, unknown> =>
   value && typeof value === 'object' && !Array.isArray(value)
@@ -49,18 +42,6 @@ function request(value: unknown) {
   }
 }
 
-function memberRole(
-  exists: boolean,
-  value: unknown,
-  statusMessage: string
-): 'admin' | 'user' {
-  const role = String(value ?? '').trim()
-  if (!exists || (role !== 'admin' && role !== 'user')) {
-    throw createError({ statusCode: 403, statusMessage })
-  }
-  return role
-}
-
 function compactRootStyle(
   style: Partial<PageStyle>,
   placePalette: unknown
@@ -81,106 +62,17 @@ function compactRootStyle(
 
 export async function updateKitchenTheme(event: H3Event, input: unknown) {
   const requested = request(input)
-  const runtimeAppId = requireFirestoreDocumentId(
-    useRuntimeConfig(event).public?.fireux?.id,
-    'Runtime App id'
-  )
-  const { uid } = await requireFirebaseBearerUser(
-    event,
-    'Sign in to manage this Kitchen.'
-  )
+  const actor = await readKitchenMutationActor(event)
   const result = await runGuardedServerTransaction(
     { kind: 'runtime' },
     async (mutations) => {
-      const runtimeMemberships = serverAppUsersTarget(runtimeAppId)
-      const [root, runtimeMembership] = await Promise.all([
-        mutations.read(
-          FIRESTORE_MUTATION_TARGETS.kitchens,
-          requested.kitchenId
-        ),
-        mutations.read(runtimeMemberships, uid),
-      ])
-      if (!root.exists) {
-        throw createError({
-          statusCode: 404,
-          statusMessage: 'Kitchen not found.',
-        })
-      }
-      memberRole(
-        runtimeMembership.exists,
-        runtimeMembership.data?.role,
-        'Current App membership is required to manage this Kitchen.'
+      const current = await requireKitchenMutationAuthority(
+        mutations,
+        actor,
+        requested.kitchenId
       )
-      const runtimeTargetIds = await resolveKitchenConsoleTargetIds(
-        uid,
-        runtimeMembership.data || {}
-      )
-      if (!runtimeTargetIds.includes(requested.kitchenId)) {
-        throw createError({
-          statusCode: 403,
-          statusMessage: 'This Kitchen is not an available Console target.',
-        })
-      }
 
-      const rootData = root.data || {}
-      const scope = readKitchenOnboardingScope(rootData)
-      if (scope.state !== 'parent_app' && scope.state !== 'tenant_app') {
-        throw createError({
-          statusCode: 409,
-          statusMessage: 'The Kitchen is not attached to an App.',
-        })
-      }
-      const ownerAppId = requireFirestoreDocumentId(
-        scope.appId,
-        'Kitchen owner App id'
-      )
-      const ownerMemberships = serverAppUsersTarget(ownerAppId)
-      const supports = serverAppKitchensTarget(ownerAppId)
-      const [ownerMembership, support] = await Promise.all([
-        ownerAppId === runtimeAppId
-          ? Promise.resolve(runtimeMembership)
-          : mutations.read(ownerMemberships, uid),
-        mutations.read(supports, requested.kitchenId),
-      ])
-      const ownerRole = memberRole(
-        ownerMembership.exists,
-        ownerMembership.data?.role,
-        'Kitchen owner App membership is required.'
-      )
-      if (!support.exists) {
-        throw createError({
-          statusCode: 404,
-          statusMessage: 'Kitchen not found.',
-        })
-      }
-      const supportData = support.data || {}
-      const authority = readKitchenOnboardingSupport(supportData)
-      if (
-        !authority ||
-        (ownerRole !== 'admin' && !authority.operatorIds.includes(uid))
-      ) {
-        throw createError({
-          statusCode: 403,
-          statusMessage: 'App admin or Kitchen operator access is required.',
-        })
-      }
-
-      const placeId = requireFirestoreDocumentId(
-        rootData.place_id,
-        'Kitchen Place id'
-      )
-      const place = await mutations.read(
-        FIRESTORE_MUTATION_TARGETS.places,
-        placeId
-      )
-      if (!place.exists) {
-        throw createError({
-          statusCode: 409,
-          statusMessage: 'The linked Place does not exist.',
-        })
-      }
-
-      const placePalette = parseBrandPalette(place.data?.brand_palette)
+      const placePalette = parseBrandPalette(current.placeData.brand_palette)
       if (!placePalette.ok) {
         throw createError({
           statusCode: 409,
@@ -192,9 +84,12 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
         'menus.style': Object.keys(compact).length
           ? compact
           : FieldValue.delete(),
-        updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
+        updated: serverAuditStamp({
+          by: actor.uid,
+          appId: current.ownerAppId,
+        }),
       }
-      if (Object.hasOwn(rootData, 'menu_style')) {
+      if (Object.hasOwn(current.rootData, 'menu_style')) {
         rootPatch.menu_style = FieldValue.delete()
       }
       mutations.update<DocumentData>(
@@ -203,21 +98,24 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
         rootPatch
       )
 
-      const supportMenus = record(supportData.menus)
+      const supportMenus = record(current.supportData.menus)
       const supportPatch: Record<string, unknown> = {}
       if (Object.hasOwn(supportMenus, 'style')) {
         supportPatch['menus.style'] = FieldValue.delete()
       }
-      if (Object.hasOwn(supportData, 'menu_style')) {
+      if (Object.hasOwn(current.supportData, 'menu_style')) {
         supportPatch.menu_style = FieldValue.delete()
       }
       if (Object.keys(supportPatch).length) {
-        mutations.update(supports, requested.kitchenId, {
+        mutations.update(current.supports, requested.kitchenId, {
           ...supportPatch,
-          updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
+          updated: serverAuditStamp({
+            by: actor.uid,
+            appId: current.ownerAppId,
+          }),
         })
       }
-      return { appId: ownerAppId, style: compact }
+      return { appId: current.ownerAppId, style: compact }
     }
   )
 

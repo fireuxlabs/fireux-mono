@@ -89,7 +89,7 @@
 import { ref, watch } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useDriverDispatches } from '../../composables/fireux/driver/useDriverDispatches'
-import { useDriver } from '../../composables/fireux/firestore/profiles/Driver/useDriver'
+import { useDriver } from '../../composables/fireux/driver/useDriver'
 import type { DriverDispatchBeacon } from '../../models/driver/dispatch'
 
 const { appProfile } = useDriver()

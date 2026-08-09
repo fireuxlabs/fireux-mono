@@ -17,6 +17,7 @@ chats.
 
 Current scoped context entrypoints:
 
+- Apps That Slap: `docs/ai/apps-that-slap-context.md`
 - BuenoHost: `docs/ai/buenohost-context.md`
 - Identity and product literature: `docs/ai/identity-literature-context.md`
 - Misebox: `docs/ai/misebox-context.md`
@@ -186,11 +187,11 @@ Before each task:
 - Each public entity family declares one exact route key. When that key is the
   Firestore document ID, resolve it with a direct document read; do not query a
   second field or fall back between `slug` and `id` in route construction.
-- Kitchen currently uses its slug as its Firestore document ID. A stored
-  Kitchen slug that diverges from that ID is migration debt, not a second
-  supported route identity. Other families may deliberately use a reviewed
-  handle or authored slug only when their owning source and family map define
-  that boundary.
+- Kitchen root IDs are stable operational identity and currently follow the
+  linked Place ID. Its authored `slug` is the reviewed public route key and is
+  resolved only by the Kitchen-owned bounded server resolver, which rejects
+  duplicates. Internal Kitchen, Menu, Order, and Console relationships keep
+  using the stable root ID; they never substitute the route slug.
 - Presentation may fall back between display labels, but display fallback must
   never select storage or route identity.
 - `scripts/check-slug-canon.mjs`, registered by `pnpm guard`, enforces this

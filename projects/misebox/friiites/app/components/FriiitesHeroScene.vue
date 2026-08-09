@@ -1,17 +1,12 @@
 <template>
-  <div data-friiites-scene="hero">
-    <header class="friiites-sitebar">
-      <a class="friiites-sitebar-mark" href="#top" aria-label="Friiites home">
-        <img src="/img/app/mark.png" alt="" />
-      </a>
-      <nav aria-label="Main navigation">
-        <a href="#product">The concept</a>
-        <a href="#method">The method</a>
-        <a href="#system">The system</a>
-      </nav>
-    </header>
-
-    <section class="friiites-hero" aria-labelledby="friiites-title">
+  <section
+    class="friiites-scene friiites-scene--hero"
+    aria-labelledby="friiites-title"
+    data-landing-scene="hero"
+    data-friiites-scene="hero"
+  >
+    <div aria-hidden="true" data-scene-layer="background" />
+    <div class="friiites-scene-content" data-scene-layer="content">
       <div class="friiites-hero-copy">
         <p class="friiites-kicker">Developed in Switzerland</p>
         <h1 id="friiites-title" class="sr-only">Friiites</h1>
@@ -31,17 +26,7 @@
           </a>
         </div>
       </div>
-
-      <div class="friiites-product" aria-label="The Friiites classic portion">
-        <div class="friiites-fries" aria-hidden="true">
-          <span v-for="index in 11" :key="index" />
-        </div>
-        <div class="friiites-carton">
-          <img src="/img/app/mark.png" alt="" />
-          <p>The classic</p>
-        </div>
-        <span class="friiites-product-number">01</span>
-      </div>
-    </section>
-  </div>
+    </div>
+    <div aria-hidden="true" data-scene-layer="foreground" />
+  </section>
 </template>

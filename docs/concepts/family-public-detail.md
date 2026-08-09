@@ -79,7 +79,7 @@ repository-wide template rewrite.
 | --------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | User                              | handle            | `accepted`: public human identity is the route contract                                                                                                                                |
 | Blog                              | slug              | `accepted`: authored content owns a stable public slug                                                                                                                                 |
-| Kitchen                           | slug/document ID  | `accepted`: the current public reader direct-loads the slug as the canonical Kitchen document ID and verifies the stored slug matches                                                  |
+| Kitchen                           | authored slug     | `accepted`: one bounded Kitchen server resolver maps the unique public slug to the stable Place-linked Kitchen root ID                                                                |
 | Supplier                          | slug              | `accepted`: supplier identity is company-style and public-facing                                                                                                                       |
 | Product                           | slug              | `accepted`: catalogue identity is public and human-readable                                                                                                                            |
 | Menu                              | menu route id     | `accepted`: the id participates in root, kitchen-directory, tenant, and contextual route grammar; see `family-menu.md`                                                                 |
@@ -116,7 +116,7 @@ review.
 | Several current id routes have no recorded long-term route-identity decision | `to-confirm` | Decide per entity from public identity and redirect requirements, not visual preference                                                                                                   |
 | Supplier and Portfolio public DTO declarations are incomplete                | `to-confirm` | Confirm bounded projections before promising detail parity                                                                                                                                |
 | Property public detail is partly app-specific today                          | `migration`  | Move reusable bounded detail behavior to the owning package while preserving tenant presentation deltas                                                                                   |
-| Kitchen update can persist a slug that differs from its document ID          | `migration`  | Keep current public reads on the document ID; either reject divergent writes or perform a bounded document/links/redirect migration before treating Kitchen slug as independently mutable |
+| Kitchen route slug and stable root ID have different jobs                    | `accepted`   | Resolve the authored route key only at the bounded server boundary; keep operational relationships on the stable root ID                                                                |
 
 ## Alignment roadmap
 

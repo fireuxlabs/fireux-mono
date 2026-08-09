@@ -26,6 +26,7 @@ import type { WeekdayTimeWindowsConfig } from '../../../models/shared/weekday-ti
 import type { CurrencyDisplayFormat } from '../../../models/shared/currency-display.model'
 import { menuSourceFromData } from '../payload/source.ts'
 import { resolveMenuPageStyle } from '../payload/page-style.ts'
+import { readKitchenByRouteSlug } from '../../kitchen/route-identity.ts'
 
 export type MenuKitchenScope = {
   kitchenId?: string
@@ -144,15 +145,16 @@ export function menuKitchenOperationHours(
 }
 
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
-  const snap = await getRuntimeFirestore()
-    .collection('kitchens')
-    .doc(kitchenSlug.toLowerCase())
-    .get()
-  if (!snap.exists) return null
+  const kitchen = await readKitchenByRouteSlug(
+    getRuntimeFirestore(),
+    kitchenSlug
+  )
+  if (!kitchen) return null
 
   return {
-    id: snap.id,
-    data: snap.data() || {},
+    id: kitchen.id,
+    data: kitchen.data,
+    snapshot: kitchen.snapshot,
   }
 }
 
@@ -166,12 +168,12 @@ export async function readRootMenuKitchenScope(
   if (!kitchenId && !kitchenSlug) return {}
 
   const db = getRuntimeFirestore()
-  const snap = kitchenId
+  const snapshot = kitchenId
     ? await db.collection('kitchens').doc(kitchenId).get()
-    : await db.collection('kitchens').doc(kitchenSlug.toLowerCase()).get()
+    : (await readKitchenByRouteSlug(db, kitchenSlug))?.snapshot
 
-  const kitchenData = snap?.exists ? snap.data() || {} : {}
-  const resolvedKitchenId = snap?.exists ? snap.id : kitchenId
+  const kitchenData = snapshot?.exists ? snapshot.data() || {} : {}
+  const resolvedKitchenId = snapshot?.exists ? snapshot.id : kitchenId
   const resolvedKitchenSlug = readRecordString(kitchenData, 'slug') || kitchenSlug
   const kitchenAppId =
     source.app_id ||

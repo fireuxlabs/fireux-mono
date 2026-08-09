@@ -127,7 +127,7 @@ const groups: PaymentGroup[] = [
 ]
 
 const collectionPath = computed(() => props.collectionPath)
-const { updateKitchen } = useKitchenUpdate({ collectionPath })
+const { updateKitchen } = useKitchenUpdate()
 const fulfilment = computed(() => readKitchenFulfilmentConfig(props.kitchen))
 
 const methodsFor = (orderTypes: KitchenOrderType[]) =>

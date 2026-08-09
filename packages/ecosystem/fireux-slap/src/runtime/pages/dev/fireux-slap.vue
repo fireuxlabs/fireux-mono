@@ -1,8 +1,8 @@
 <template>
   <UPage>
     <UPageHeader
-      title="Dev · Slap"
-      description="Slap ecosystem overview for the active runtime."
+      title="Dev · Apps That Slap"
+      description="Apps That Slap ecosystem overview for the active runtime."
     />
 
     <UPageBody class="pagebody space-y-6">
@@ -11,7 +11,7 @@
           <div class="flex flex-col gap-1">
             <h2 class="text-base font-semibold">Ecosystem status</h2>
             <p class="text-sm text-muted">
-              Slap is configured as an ecosystem package for this runtime.
+              Apps That Slap is configured as an ecosystem package for this runtime.
             </p>
           </div>
         </template>
@@ -46,7 +46,7 @@ definePageMeta({
   layout: 'dev',
   nav: {
     key: 'dev-tenant-slap',
-    label: 'Slap',
+    label: 'Apps That Slap',
     icon: 'i-lucide-store',
     desktop: true,
     group: 'slap',

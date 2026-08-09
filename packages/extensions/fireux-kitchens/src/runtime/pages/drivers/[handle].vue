@@ -38,8 +38,8 @@ import { usePublicProfileDetail } from 'fireux-core/runtime/composables/fireux/p
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import { useDriverSeo } from '../../composables/fireux/firestore/profiles/Driver/utils/useDriverSeo'
-import { useDriverInterface } from '../../composables/fireux/firestore/profiles/Driver/utils/view/useDriverInterface'
+import { useDriverSeo } from '../../composables/fireux/driver/useDriverSeo'
+import { useDriverInterface } from '../../composables/fireux/driver/useDriverInterface'
 import type { PublicDriverProfilePayload } from '../../models/driver.model'
 
 definePageMeta({

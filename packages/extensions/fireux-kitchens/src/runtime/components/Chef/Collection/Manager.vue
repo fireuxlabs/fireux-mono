@@ -99,7 +99,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 // Concurrent edit — 2026-07-20 20:14 CEST — Repo Efficiency Pass 2 of 6: consume the exact Chef directory projection without storage-model casts.
 import { computed } from 'vue'
 import { useChefFetch } from '../../../composables/fireux/firestore/profiles/Chef/fetch/useChefFetch'
-import { useChefInterface } from '../../../composables/fireux/firestore/profiles/Chef/utils/view/useChefInterface'
+import { useChefInterface } from '../../../composables/fireux/chef/useChefInterface'
 import type { PublicChefDirectoryProfile } from '../../../models/chef.model'
 
 type ChefEntry = PublicChefDirectoryProfile

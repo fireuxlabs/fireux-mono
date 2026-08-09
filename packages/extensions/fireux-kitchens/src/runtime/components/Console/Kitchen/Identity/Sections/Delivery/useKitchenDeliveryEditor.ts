@@ -47,7 +47,7 @@ export function useKitchenDeliveryEditor(props: {
 
   const collectionPath = computed(() => props.collectionPath)
 
-  const { updateKitchen } = useKitchenUpdate({ collectionPath })
+  const { updateKitchen } = useKitchenUpdate()
 
   const { place, currencyCode } = useKitchenConsolePlace()
 
