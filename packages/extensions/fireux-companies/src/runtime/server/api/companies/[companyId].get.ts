@@ -11,7 +11,7 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type { PublicCompanyDetailResponse } from '../../../models/company-public.model'
 import { CompanyStorage } from '../../../models/company.model'
-import { projectPublicCompany } from '../../company/public-projection'
+import { projectPublicCompanyDetail } from '../../company/public-projection'
 
 export default defineEventHandler(async (event): Promise<PublicCompanyDetailResponse> => {
   const id = requireFirestoreDocumentId(getRouterParam(event, 'companyId'), 'Company id')
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event): Promise<PublicCompanyDetailResp
     throw createError({ statusCode: 503, statusMessage: 'Company could not be read.' })
   })
   const item = company.exists && place.exists
-    ? projectPublicCompany(id, company.data() || {}, place.data() || {})
+    ? projectPublicCompanyDetail(id, company.data() || {}, place.data() || {})
     : null
   if (!item) throw createError({ statusCode: 404, statusMessage: 'Company not found.' })
   setResponseHeaders(event, {

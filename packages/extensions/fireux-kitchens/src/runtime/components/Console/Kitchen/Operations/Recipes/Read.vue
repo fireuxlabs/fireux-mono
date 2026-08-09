@@ -57,7 +57,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRecipeInterface } from '../../../../../composables/fireux/firestore/recipe/utils/view/useRecipeInterface'
+import { useRecipeInterface } from '../../../../../composables/fireux/recipe/useRecipeInterface'
 import { useKitchenRecipesWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Recipes/useKitchenRecipesWorkspace'
 
 const {

@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CompanyCard } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyCard } from '../../../composables/fireux/company/useCompanyInterface'
 
 withDefaults(
   defineProps<{

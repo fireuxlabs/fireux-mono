@@ -32,12 +32,14 @@
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { useCustomer } from '../../composables/fireux/firestore/profiles/Customer/useCustomer'
-import { useCustomerInterface } from '../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
+import { useCustomer } from '../../composables/fireux/customer/useCustomer'
+import { useCustomerInterface } from '../../composables/fireux/customer/useCustomerInterface'
+import { useCustomerCreate } from '../../composables/fireux/firestore/profiles/Customer/mutations/useCustomerCreate'
 
 const { appName } = useFireUXConfig()
 const { currentUser } = useUser()
-const { appProfile, createCustomerProfile } = useCustomer()
+const { appProfile } = useCustomer()
+const { createCustomerProfile } = useCustomerCreate()
 const { cell } = useCustomerInterface()
 const creating = ref(false)
 

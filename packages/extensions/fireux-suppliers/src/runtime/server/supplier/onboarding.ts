@@ -18,6 +18,8 @@ import {
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { canonicalCompanyRole } from 'fireux-companies/runtime/server/company/canonical'
+import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection'
 import type {
   SupplierOnboardingAction,
   SupplierOnboardingCompleteResult,
@@ -45,7 +47,7 @@ function request(value: unknown) {
   }
 
   const source = value as Record<string, unknown>
-  const supported = new Set(['supplier_id', 'organization_name'])
+  const supported = new Set(['supplier_id', 'organization_name', 'company_id'])
   const unsupported = Object.keys(source).find((key) => !supported.has(key))
   if (unsupported) {
     fail(400, `Supplier onboarding contains unsupported field: ${unsupported}.`)
@@ -190,12 +192,13 @@ function newSupplierRoot(
   policy: RuntimePolicy,
   uid: string,
   supplierId: string,
-  organizationName: string
+  organizationName: string,
+  companyId: string
 ): Record<string, unknown> {
   return {
     app_scope_state: policy.appScopeState,
     app_scope_app_id: policy.appId,
-    company_id: '',
+    company_id: companyId,
     slug: supplierId,
     supplier_organization_name: organizationName,
     tagline: '',
@@ -223,6 +226,7 @@ export async function completeSupplierOnboarding(
   const policy = runtimePolicy(event)
   const requestedSupplierId = text(body.supplier_id)
   const organizationName = text(body.organization_name)
+  const requestedCompanyId = text(body.company_id)
   if (requestedSupplierId && organizationName) {
     fail(400, 'Choose either an existing Supplier or a new organization name.')
   }
@@ -232,6 +236,12 @@ export async function completeSupplierOnboarding(
   if (organizationName.length > 120) {
     fail(400, 'Organization name must contain at most 120 characters.')
   }
+  if (requestedSupplierId && requestedCompanyId) {
+    fail(400, 'An existing Supplier keeps its stored Company relationship.')
+  }
+  const newCompanyId = requestedSupplierId
+    ? ''
+    : requireFirestoreDocumentId(requestedCompanyId, 'Company id')
   const supplierId = requestedSupplierId
     ? requireFirestoreDocumentId(requestedSupplierId, 'Supplier id')
     : requireFirestoreDocumentId(normalizeSlug(organizationName), 'Supplier id')
@@ -259,6 +269,27 @@ export async function completeSupplierOnboarding(
     }
 
     const rootData = root.exists ? root.data || {} : null
+    const companyId = rootData
+      ? requireFirestoreDocumentId(rootData.company_id, 'Stored Supplier Company id')
+      : newCompanyId
+    const [company, place] = await Promise.all([
+      mutations.read<Record<string, unknown>>(
+        FIRESTORE_MUTATION_TARGETS.companies,
+        companyId
+      ),
+      mutations.read<Record<string, unknown>>(
+        FIRESTORE_MUTATION_TARGETS.places,
+        companyId
+      ),
+    ])
+    if (
+      !company.exists ||
+      !canonicalCompanyRole(companyId, company.data) ||
+      !place.exists ||
+      !projectPublicPlace(companyId, place.data || {})
+    ) {
+      fail(409, 'Supplier onboarding requires a valid Company and same-ID Place.')
+    }
     const supportData = support.exists ? readSupport(support.data || {}) : null
     const action = resolveAction({
       root: rootData,
@@ -303,7 +334,7 @@ export async function completeSupplierOnboarding(
       mutations.create(
         suppliers,
         supplierId,
-        newSupplierRoot(policy, uid, supplierId, organizationName)
+        newSupplierRoot(policy, uid, supplierId, organizationName, companyId)
       )
     } else {
       const scope = readRootScope(rootData || {})

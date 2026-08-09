@@ -364,7 +364,7 @@ async function ensureCollectionRecord(
   place: PlaceUpsertInput
 ) {
   if (collection === CompanyStorage.collection) {
-    await createCompany({ id: placeId, place })
+    await createCompany({ id: placeId })
     return
   }
 

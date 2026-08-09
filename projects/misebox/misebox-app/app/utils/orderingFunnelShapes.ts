@@ -18,7 +18,7 @@ import type {
   KitchenOrderType,
 } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 import {
-  KitchenOrderModel,
+  KitchenOrderDefaults,
   resolveKitchenOrderIntakeStatus,
 } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 
@@ -161,7 +161,7 @@ function createKitchenReceiving(
     paymentPending: payment.required && payment.status !== 'paid',
   })
   const order: KitchenOrder = {
-    ...KitchenOrderModel,
+    ...KitchenOrderDefaults,
     id: intake.submission.id,
     kitchen_id: intake.submission.kitchen_id,
     menu_id: intake.submission.menu_id,

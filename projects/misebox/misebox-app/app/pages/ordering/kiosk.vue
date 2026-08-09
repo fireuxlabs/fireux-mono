@@ -107,7 +107,7 @@ import {
 } from 'vue'
 import { useMenuThemeSurface } from 'fireux-kitchens/runtime/composables/fireux/menu/useMenuThemeSurface'
 import {
-  KitchenOrderModel,
+  KitchenOrderDefaults,
   type KitchenOrder,
 } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 import type {
@@ -325,7 +325,7 @@ const screenShapes = computed(() => {
   }
 })
 const kioskTicket = computed<KitchenOrder>(() => ({
-  ...KitchenOrderModel,
+  ...KitchenOrderDefaults,
   id: kioskProcessing.order_id,
   kitchen_id: 'ChIJE-GP3-Kjj0cRzAv0WviwcsY',
   menu_id: kioskOrder.menuId,

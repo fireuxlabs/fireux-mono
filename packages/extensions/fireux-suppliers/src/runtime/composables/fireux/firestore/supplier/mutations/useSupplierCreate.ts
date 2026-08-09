@@ -23,6 +23,7 @@ export type SupplierCreateModeOptions = {
   mode?: ConsoleCreateMode
   existingRootId?: string | null
   organizationName?: string | null
+  companyId?: string | null
 }
 
 type SupplierTestCreateInput = {
@@ -61,6 +62,7 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
     requireCanonicalWriteSource()
     const supplierId = normalizeString(options.existingRootId)
     const organizationName = normalizeString(options.organizationName)
+    const companyId = normalizeString(options.companyId)
     const user = await useRequireUser()
     const token = await user.getIdToken()
     const result = await $fetch<SupplierOnboardingCompleteResult>(
@@ -70,7 +72,10 @@ export function useSupplierCreate(options: SupplierCreateOptions = {}) {
         headers: { Authorization: `Bearer ${token}` },
         body: supplierId
           ? { supplier_id: supplierId }
-          : { organization_name: organizationName },
+          : {
+              organization_name: organizationName,
+              company_id: companyId,
+            },
       }
     )
     if (result?.ok !== true || !normalizeString(result.supplier_id)) {

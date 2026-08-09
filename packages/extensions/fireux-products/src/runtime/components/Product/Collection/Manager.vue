@@ -104,7 +104,7 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
 import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
-import { useProductInterface } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
+import { useProductInterface } from '../../../composables/fireux/product/useProductInterface'
 import type { FirebaseProduct } from '../../../models/product.model'
 
 const props = withDefaults(

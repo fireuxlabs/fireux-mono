@@ -1,6 +1,6 @@
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { computed } from 'vue'
-import type { IngredientInterfaceItem } from '../../../../firestore/ingredient/utils/view/useIngredientInterface'
+import type { IngredientInterfaceItem } from '../../../../ingredient/useIngredientInterface'
 import { useKitchenConsoleIngredients } from './useKitchenConsoleIngredients'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

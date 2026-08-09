@@ -12,6 +12,16 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 export type SupplierState = 'official' | 'public'
 export type SupplierCatalogueState = 'integrated' | 'public_only'
 
+export {
+  SupplierItemDefaults,
+  SupplierItemRecord,
+  SupplierItemStorage,
+  type SupplierItem,
+  type SupplierItemAvailabilityState,
+  type SupplierItemCreateInput,
+  type SupplierItemUpdateInput,
+} from './supplier-item.model'
+
 type WidenLiteral<T> =
   T extends string ? string
   : T extends number ? number
@@ -193,80 +203,6 @@ export type SupplierIngredientCreateInput = Omit<
 
 export type SupplierIngredientUpdateInput = Partial<
   Omit<SupplierIngredient, 'id' | 'supplier_id' | 'ingredient_id' | 'created' | 'updated'>
->
-
-export type SupplierItemAvailabilityState =
-  | 'available'
-  | 'limited'
-  | 'unavailable'
-  | string
-
-/**
- * Family: Supplier-scoped
- * Storage: supplier-owned sale/procurement wrapper over canonical Product
- * Path: /suppliers/<supplierId>/items/<supplierItemId>
- *
- * Decision note:
- * - SupplierItem is not a replacement for Product.
- * - Keep `product_id` as the required link to commercial identity.
- * - Keep `ingredient_id` optional because only some supplier items map to kitchen stock/use items.
- * - Supplier-specific packaging, SKU, availability, and procurement cost live here.
- */
-export const SupplierItemStorage = {
-  shape: 'scoped',
-  path: 'suppliers/{supplierId}/items/{supplierItemId}',
-  collection: 'items',
-  parent: 'supplier',
-  idParam: 'supplierItemId',
-} as const
-
-export const SupplierItemDefaults = {
-  id: '',
-  supplier_id: '',
-  product_id: '',
-  ingredient_id: '',
-
-  name_override: '',
-  description_override: '',
-  image_override: '',
-
-  pack_size_label: '',
-  supplier_sku: '',
-  unit: '',
-  quantity_per_pack: null as number | null,
-  order_unit: '',
-  pack_cost_minor: null as number | null,
-  currency_code: '',
-  availability_state: 'available' as SupplierItemAvailabilityState,
-  lead_time_days: null as number | null,
-  min_order_quantity: null as number | null,
-  active: true as boolean,
-  metadata: {} as Record<string, any>,
-
-  created: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['created']['by'],
-    app_id: undefined as FireuxStamped['created']['app_id'],
-  },
-  updated: {
-    at: {} as FirebaseTimestamp,
-    by: undefined as FireuxStamped['updated']['by'],
-  },
-} as const
-
-type SupplierItemDefaultsShape = WidenLiteral<typeof SupplierItemDefaults>
-
-export type SupplierItem = Omit<SupplierItemDefaultsShape, 'ingredient_id'> & {
-  ingredient_id?: string
-}
-
-export type SupplierItemCreateInput = Omit<
-  SupplierItem,
-  'id' | 'created' | 'updated'
->
-
-export type SupplierItemUpdateInput = Partial<
-  Omit<SupplierItem, 'id' | 'supplier_id' | 'product_id' | 'created' | 'updated'>
 >
 
 export type SupplierCatalogueItem = {

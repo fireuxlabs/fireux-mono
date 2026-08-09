@@ -44,11 +44,13 @@
 import { computed, ref } from 'vue'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { customerConfig } from '../../composables/fireux/firestore/profiles/Customer/config/customerConfig'
-import { useCustomer } from '../../composables/fireux/firestore/profiles/Customer/useCustomer'
-import { useCustomerInterface } from '../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
+import { useCustomer } from '../../composables/fireux/customer/useCustomer'
+import { useCustomerInterface } from '../../composables/fireux/customer/useCustomerInterface'
+import { useCustomerCreate } from '../../composables/fireux/firestore/profiles/Customer/mutations/useCustomerCreate'
 
 const { coreUser } = useUser()
-const { appProfile, createCustomerProfile, pending } = useCustomer()
+const { appProfile, pending } = useCustomer()
+const { createCustomerProfile } = useCustomerCreate()
 const { cell: customerCardFromProfile } = useCustomerInterface()
 
 const isCreating = ref(false)

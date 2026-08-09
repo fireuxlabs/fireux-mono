@@ -101,7 +101,7 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useImageStorage } from 'fireux-core/runtime/composables/fireux/firebase/useImageStorage'
 import { computed, reactive, ref, watchEffect } from 'vue'
-import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
+import { useIngredientUpdate } from '../../composables/fireux/firestore/ingredient/mutations/useIngredientUpdate'
 import {
   INGREDIENT_CATEGORY_OPTIONS,
   INGREDIENT_KIND_OPTIONS,
@@ -118,7 +118,7 @@ const props = defineProps<{
   ingredient: PublicIngredient
 }>()
 
-const { updateIngredient } = useIngredient()
+const { updateIngredient } = useIngredientUpdate()
 const { uploadImage } = useImageStorage()
 const toast = useToastify()
 

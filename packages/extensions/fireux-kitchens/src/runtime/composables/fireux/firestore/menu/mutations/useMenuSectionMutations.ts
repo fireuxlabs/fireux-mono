@@ -72,6 +72,10 @@ export function useMenuSectionMutations(options: Options = {}) {
     const collectionPath = path(kitchenId, menuId)
     const id = clean(sectionId)
     if (!collectionPath || !id) throw new Error('Missing section')
+    const immutable = ['id', 'kitchen_id', 'menu_id', 'created']
+    if (immutable.some(key => Object.hasOwn(patch, key))) {
+      throw new Error('Menu Section identity and relationships cannot be changed.')
+    }
     await updateDocument<MenuSection>(collectionPath, id, patch)
   }
 

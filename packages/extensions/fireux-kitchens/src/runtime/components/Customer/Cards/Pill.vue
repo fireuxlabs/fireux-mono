@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CustomerCard } from '../../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
+import type { CustomerCard } from '../../../composables/fireux/customer/useCustomerInterface'
 
 defineProps<
   Pick<

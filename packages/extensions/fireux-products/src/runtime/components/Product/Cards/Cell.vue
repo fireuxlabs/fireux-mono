@@ -47,7 +47,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { ProductCard } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
+import type { ProductCard } from '../../../composables/fireux/product/useProductInterface'
 
 type Props = Partial<ProductCard.Card> & {
   card?: ProductCard.Card

@@ -169,7 +169,7 @@
 <script setup lang="ts">
 import {
   deriveKitchenOrderBoardStage,
-  KitchenOrderModel,
+  KitchenOrderDefaults,
   resolveKitchenOrderIntakeStatus,
   type KitchenOrder,
 } from 'fireux-kitchens/runtime/models/kitchen/order.model'
@@ -231,7 +231,7 @@ const automaticTickets = [
     handoff: 'table service',
     origins: ['table_qr', 'staff_pos'],
     order: {
-      ...KitchenOrderModel,
+      ...KitchenOrderDefaults,
       id: 'ticket-table-12',
       kitchen_id: 'garden-room',
       menu_id: 'garden-room-main',
@@ -282,7 +282,7 @@ const automaticTickets = [
     handoff: 'tray',
     origins: ['kiosk', 'staff_pos'],
     order: {
-      ...KitchenOrderModel,
+      ...KitchenOrderDefaults,
       id: 'ticket-kiosk-eat-in',
       kitchen_id: 'garden-room',
       menu_id: 'garden-room-main',

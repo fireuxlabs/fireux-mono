@@ -124,6 +124,13 @@ export const FIRESTORE_MUTATION_TARGETS = Object.freeze({
     database: { kind: 'runtime' },
     collectionPath: 'ingredients',
   }),
+  products: defineFirestoreMutationTarget({
+    key: 'project.products',
+    lane: 'server',
+    verbs: allVerbs,
+    database: { kind: 'runtime' },
+    collectionPath: 'products',
+  }),
   menus: defineFirestoreMutationTarget({
     key: 'project.menus',
     lane: 'server',

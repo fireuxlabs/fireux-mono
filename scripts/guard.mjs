@@ -53,6 +53,9 @@ import { run as runRootAppSupportAuthority } from './guards/root-app-support-aut
 import { run as runAppUserAccess } from './guards/user-app-access.mjs'
 import { run as runKitchenPublicProjection } from './guards/kitchen-public-projection.mjs'
 import { run as runIngredientAuthority } from './guards/ingredient-authority.mjs'
+import { run as runSupplyChainAuthority } from './guards/supply-chain-authority.mjs'
+import { run as runKitchenFoodAuthority } from './guards/kitchen-food-authority.mjs'
+import { run as runOrderSaleCustomerAuthority } from './guards/order-sale-customer-authority.mjs'
 import { run as runBlogAuthority } from './guards/blog-authority.mjs'
 import { run as runSproochliCopy } from './guards/sproochli-copy.mjs'
 import { run as runProjects } from './guards/projects.mjs'
@@ -105,6 +108,9 @@ const guards = [
   { key: 'user-app-access', run: runAppUserAccess },
   { key: 'kitchen-public-projection', run: runKitchenPublicProjection },
   { key: 'ingredient-authority', run: runIngredientAuthority },
+  { key: 'supply-chain-authority', run: runSupplyChainAuthority },
+  { key: 'kitchen-food-authority', run: runKitchenFoodAuthority },
+  { key: 'order-sale-customer-authority', run: runOrderSaleCustomerAuthority },
   { key: 'blog-authority', run: runBlogAuthority },
   { key: 'sproochli-copy', run: runSproochliCopy },
   { key: 'projects', run: runProjects },

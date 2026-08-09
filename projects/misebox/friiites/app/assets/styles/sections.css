@@ -1,0 +1,296 @@
+.friiites-concept,
+.friiites-system,
+.friiites-bridge,
+.friiites-locations {
+  padding: calc(var(--spacing) * 20) calc(var(--spacing) * 5);
+}
+
+.friiites-section-label {
+  display: flex;
+  gap: 0.8rem;
+  align-items: baseline;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.friiites-section-label span {
+  color: var(--friiites-gold);
+}
+
+.friiites-concept {
+  display: grid;
+  gap: calc(var(--spacing) * 14);
+  min-height: 86svh;
+  align-items: center;
+}
+
+.friiites-concept-copy h2,
+.friiites-method h2,
+.friiites-system h2,
+.friiites-bridge h2,
+.friiites-locations h2 {
+  max-width: 12ch;
+  margin-top: 0.9rem;
+  font-size: clamp(var(--text-5xl), 11vw, 7.5rem);
+  font-weight: 880;
+  letter-spacing: -0.075em;
+  line-height: 0.88;
+}
+
+.friiites-concept-copy > p:last-child,
+.friiites-system-copy > p,
+.friiites-bridge > div:last-child > p:last-child {
+  max-width: 36rem;
+  margin-top: calc(var(--spacing) * 8);
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+  line-height: 1.65;
+}
+
+.friiites-concept-mark {
+  width: min(17rem, 58vw);
+  justify-self: center;
+  mix-blend-mode: multiply;
+}
+
+.friiites-method {
+  color: var(--friiites-cream);
+  background: var(--friiites-black);
+}
+
+.friiites-method-body {
+  padding: calc(var(--spacing) * 20) calc(var(--spacing) * 5);
+}
+
+.friiites-method header {
+  display: grid;
+  gap: calc(var(--spacing) * 14);
+}
+
+.friiites-method ol {
+  display: grid;
+  gap: 1px;
+  margin: calc(var(--spacing) * 16) 0 0;
+  padding: 1px;
+  list-style: none;
+  background: rgba(243, 233, 210, 0.2);
+}
+
+.friiites-method li {
+  min-height: 18rem;
+  padding: calc(var(--spacing) * 8);
+  background: var(--friiites-black);
+}
+
+.friiites-method li > span {
+  color: var(--friiites-gold);
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.friiites-method li strong {
+  display: block;
+  margin-top: calc(var(--spacing) * 20);
+  font-size: clamp(1.8rem, 5vw, var(--text-5xl));
+  letter-spacing: var(--tracking-tighter);
+}
+
+.friiites-method li p {
+  max-width: 22rem;
+  margin-top: calc(var(--spacing) * 4);
+  color: rgba(243, 233, 210, 0.68);
+  line-height: 1.55;
+}
+
+.friiites-bridge {
+  display: grid;
+  gap: calc(var(--spacing) * 12);
+  min-height: 66svh;
+  align-items: center;
+}
+
+.friiites-bridge-light {
+  background: var(--friiites-light-surface);
+}
+
+.friiites-bridge-kraft {
+  background: var(--friiites-material);
+}
+
+.friiites-bridge-kraft .friiites-section-label span,
+.friiites-bridge-kraft .friiites-kicker {
+  color: var(--friiites-black);
+}
+
+.friiites-system {
+  position: relative;
+  display: grid;
+  gap: calc(var(--spacing) * 16);
+  color: var(--friiites-cream);
+  background-color: var(--friiites-black);
+  background-image: url('/img/app/patterns/iii-pattern.svg');
+  background-size: 15rem;
+  overflow: hidden;
+}
+
+.friiites-system::before {
+  position: absolute;
+  inset: 0;
+  background: rgba(11, 11, 10, 0.88);
+  content: '';
+}
+
+.friiites-system-copy,
+.friiites-system-mark {
+  position: relative;
+  z-index: 1;
+}
+
+.friiites-system-copy .friiites-kicker {
+  margin-top: calc(var(--spacing) * 16);
+}
+
+.friiites-system-copy .friiites-text-link {
+  margin-top: calc(var(--spacing) * 9);
+  color: var(--friiites-gold);
+}
+
+.friiites-system-mark {
+  display: grid;
+  place-items: center;
+  min-height: 25rem;
+  border: 1px solid rgba(217, 154, 34, 0.55);
+  background: var(--friiites-black);
+}
+
+.friiites-system-mark img {
+  width: min(15rem, 52vw);
+}
+
+.friiites-system-mark p {
+  position: absolute;
+  right: 1.5rem;
+  bottom: 1.5rem;
+  font-size: 0.68rem;
+  font-weight: 850;
+  letter-spacing: 0.11em;
+  line-height: 1.45;
+  text-align: right;
+  text-transform: uppercase;
+}
+
+.friiites-locations {
+  display: grid;
+  gap: calc(var(--spacing) * 10);
+  min-height: 52svh;
+  align-content: center;
+  background: var(--friiites-cream);
+}
+
+.friiites-locations h2 {
+  max-width: 10ch;
+}
+
+.friiites-footer {
+  display: grid;
+  gap: calc(var(--spacing) * 5);
+  padding: calc(var(--spacing) * 16) calc(var(--spacing) * 5) calc(var(--spacing) * 8);
+  color: var(--friiites-cream);
+  background: var(--friiites-black);
+}
+
+.friiites-footer img {
+  width: min(22rem, 70vw);
+}
+
+.friiites-footer p {
+  font-size: 0.82rem;
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+}
+
+.friiites-footer span {
+  color: rgba(243, 233, 210, 0.52);
+  font-size: 0.68rem;
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+@media (min-width: 48rem) {
+  .friiites-hero {
+    grid-template-columns: minmax(0, 1.2fr) minmax(22rem, 0.8fr);
+    gap: calc(var(--spacing) * 16);
+    padding: calc(var(--spacing) * 32) clamp(calc(var(--spacing) * 10), 6vw, calc(var(--spacing) * 28)) calc(var(--spacing) * 20);
+  }
+
+  .friiites-product {
+    align-self: center;
+    width: min(25rem, 34vw);
+    height: 34rem;
+    margin: calc(var(--spacing) * 8) auto 0;
+  }
+
+  .friiites-fries span {
+    bottom: 12rem;
+    height: 21rem;
+  }
+
+  .friiites-carton {
+    height: 17rem;
+  }
+
+  .friiites-concept,
+  .friiites-method-body,
+  .friiites-system,
+  .friiites-bridge,
+  .friiites-locations {
+    padding: calc(var(--spacing) * 28) clamp(calc(var(--spacing) * 10), 6vw, calc(var(--spacing) * 28));
+  }
+
+  .friiites-concept {
+    grid-template-columns: 10rem minmax(0, 1fr) minmax(15rem, 0.45fr);
+  }
+
+  .friiites-method header {
+    grid-template-columns: 10rem minmax(0, 1fr);
+  }
+
+  .friiites-bridge,
+  .friiites-locations {
+    grid-template-columns: 10rem minmax(0, 1fr);
+  }
+
+  .friiites-method ol {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-left: calc(var(--spacing) * 40);
+  }
+
+  .friiites-system {
+    grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.7fr);
+    min-height: 90svh;
+    align-items: center;
+  }
+
+  .friiites-footer {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    padding: calc(var(--spacing) * 20) clamp(calc(var(--spacing) * 10), 6vw, calc(var(--spacing) * 28)) calc(var(--spacing) * 10);
+  }
+
+  .friiites-footer p {
+    grid-column: 1;
+  }
+
+  .friiites-footer span {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}

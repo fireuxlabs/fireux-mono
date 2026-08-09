@@ -72,7 +72,7 @@ async function onPlaceConfirmed(payload: {
   if (!placeExists) {
     throw new Error('The selected Company Place could not be materialized.')
   }
-  await createCompany({ id, place })
+  await createCompany({ id })
 
   form.value = { ...form.value, company_id: id }
   chosenPlace.value = place

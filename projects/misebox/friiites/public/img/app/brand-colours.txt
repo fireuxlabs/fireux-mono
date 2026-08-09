@@ -4,20 +4,29 @@ Source of truth: public/img/app
 
 Near Black
 #0B0B0A
+Primary background, packaging, and interiors.
 
 Warm Cream
 #F3E9D2
+Primary text and wordmark on dark.
 
 Fry Gold
 #D99A22
+III mark, accents, calls to action, and highlights.
 
 Kraft Brown
 #B98C5A
+Packaging and natural or material elements.
 
 Warm White
 #FFF9EE
+Light backgrounds and secondary light surfaces.
 
 Brand rule:
+- Near Black and Warm Cream dominate.
+- Fry Gold is the only signature accent and UI primary.
+- Kraft Brown and Warm White are supporting colours, not additional primaries.
+- Food, timber, tallow, kraft paper, and photography provide natural tonal variation.
 - III always contains exactly 3 strikes.
 - Wordmark: FR + III mark + TES.
 - Core identity assets are code-owned in public/img/app.

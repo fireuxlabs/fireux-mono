@@ -132,7 +132,7 @@ export async function commitKitchenOrderWithServiceSequence<
     )
     if (input.linkedRecord) {
       mutations.create(
-        serverCustomerOrdersTarget(input.linkedRecord.customerUid),
+        serverCustomerOrdersTarget(input.appId, input.linkedRecord.customerUid),
         input.linkedRecord.orderId,
         input.linkedRecord.payload
       )

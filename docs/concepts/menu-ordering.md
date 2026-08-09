@@ -165,8 +165,10 @@ parent and infer from a grandparent.
   not lifecycle authority and does not persist basket or customer form data.
 - The ordering allergy acknowledgement is a transient submission gate. It is
   not a second public notice and does not become KitchenOrder truth.
-- A signed-in customer may receive a lightweight customer-owned link to the
-  KitchenOrder; that link must not duplicate mutable order status.
+- A signed-in customer may receive a lightweight User-owned link at
+  `apps/{appId}/customers/{userId}/orders/{orderId}`. It points to the
+  KitchenOrder in that same App and must not duplicate mutable Order status;
+  it does not require the optional CustomerProfile preferences record.
 - Anonymous orders are not silently attached to an account later.
 
 The detailed state machine and operator transitions live in

@@ -20,6 +20,11 @@ upsert, write, arbitrary collection strings, and caller-selected database ids
 are not consumer APIs. Domain transactions use the guarded Server transaction
 interface.
 
+Customer Order links follow their Customer profile scope at
+`apps/{appId}/customers/{userId}/orders/{orderId}`. Their Server target derives
+the App and User ids explicitly; a root `customers/{userId}/orders` bucket is
+not another supported write target.
+
 Typed mutation targets own database placement, collection path, allowed verbs,
 and access lane. `(default)` contains only the bounded metadata projections
 `project`, `ecosystem`, and `apps` and is never client-writable. Canonical

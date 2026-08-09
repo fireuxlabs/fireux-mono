@@ -27,7 +27,7 @@ import type {
  * - If that rule changes later, update the models README first, then this file.
  */
 export const IngredientStorage = {
-  shape: 'public/root',
+  shape: 'root',
   path: 'ingredients/{ingredientId}',
   collection: 'ingredients',
   idParam: 'ingredientId',
@@ -46,7 +46,7 @@ export const IngredientEntity = defineFireuxEntity({
   root: IngredientStorage.path,
 })
 
-export const IngredientModel = {
+export const IngredientDefaults = {
   id: '' as string,
   schema_version: 2 as const,
   name: '' as string,
@@ -71,7 +71,7 @@ export const IngredientModel = {
 } as const
 
 export type Ingredient = {
-  [K in keyof typeof IngredientModel]: (typeof IngredientModel)[K]
+  [K in keyof typeof IngredientDefaults]: (typeof IngredientDefaults)[K]
 }
 
 export type IngredientCreateInput = Omit<

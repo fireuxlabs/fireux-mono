@@ -42,16 +42,16 @@ import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDri
 import { computed } from 'vue'
 import { useProductCollection } from '../../../composables/fireux/firestore/product/fetch/useProductCollection'
 import {
-  FirebaseProduct as ProductModelRuntime,
-  type FirebaseProduct,
+  ProductDefaults,
+  type Product,
 } from '../../../models/product.model'
 
 defineOptions({ name: 'DevProductSystem' })
 
-const productModelRuntime = ProductModelRuntime
+const productModelRuntime = ProductDefaults
 const { products } = useProductCollection()
 
-const productsCollection = computed<FirebaseProduct[]>(() => products.value ?? [])
+const productsCollection = computed<Product[]>(() => products.value ?? [])
 
 const {
   driftKind,
@@ -66,7 +66,6 @@ const {
   collection: productsCollection,
   runtimeModel: productModelRuntime,
   driftMode: 'extras-only',
-  requiredPaths: ['slug'],
 })
 
 const filteredDriftPayload = buildDriftPayload({

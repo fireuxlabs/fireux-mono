@@ -81,7 +81,7 @@
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 
-import type { SupplierItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierItemInterface'
+import type { SupplierItemCard } from '../../../../composables/fireux/supplier-item/useSupplierItemInterface'
 
 type Props = Partial<SupplierItemCard.Card> & {
   card?: SupplierItemCard.Card

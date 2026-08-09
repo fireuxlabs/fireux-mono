@@ -1,51 +1,36 @@
-import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
-import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import {
   SupplierItemStorage,
-  type SupplierItem,
   type SupplierItemCreateInput,
-} from '../../../../../models/supplier/Supplier.model'
-import { resolveSupplierItemCollectionPath } from '../fetch/useSupplierItemCollection'
+} from '../../../../../models/supplier/supplier-item.model'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
+const text = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierItemCreate(options: {
-  supplierCollectionPath?: string
-} = {}) {
-  const create = useFirestoreClientCreate()
-
+export function useSupplierItemCreate() {
   async function createSupplierItem(
     supplierId: string,
     input: SupplierItemCreateInput
   ): Promise<string> {
-    const resolvedSupplierId = normalizeString(supplierId)
-    if (!resolvedSupplierId) {
-      throw new Error('[fireux-suppliers] supplier id is required.')
-    }
-
-    const productId = normalizeString(input.product_id)
-    if (!productId) {
+    const id = text(supplierId)
+    if (!id) throw new Error('[fireux-suppliers] supplier id is required.')
+    if (!text(input.product_id)) {
       throw new Error('[fireux-suppliers] product_id is required.')
     }
-
-    const collectionPath = resolveSupplierItemCollectionPath(
-      resolvedSupplierId,
-      options.supplierCollectionPath
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    const result = await $fetch<{ ok: true; supplier_item_id: string }>(
+      `/api/suppliers/${encodeURIComponent(id)}/items`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: input,
+      }
     )
-    const payload: Partial<SupplierItem> = {
-      ...input,
-      supplier_id: resolvedSupplierId,
-      product_id: productId,
+    const supplierItemId = text(result.supplier_item_id)
+    if (!result.ok || !supplierItemId) {
+      throw new Error('[fireux-suppliers] Supplier Item creation was invalid.')
     }
-
-    return create(
-      defineRuntimeClientCreateTarget(
-        'project.supplier-items',
-        collectionPath
-      ),
-      payload,
-      { stamp: true, creator: true, app: true }
-    )
+    return supplierItemId
   }
 
   return {

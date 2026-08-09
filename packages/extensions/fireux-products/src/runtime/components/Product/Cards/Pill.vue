@@ -61,7 +61,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 
-import type { ProductCard } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
+import type { ProductCard } from '../../../composables/fireux/product/useProductInterface'
 
 type PillProps = Pick<ProductCard.Card, 'to' | 'avatarUrl' | 'title' | 'subtitle' | 'badges'> & {
   showSubtitle?: boolean

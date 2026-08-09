@@ -80,7 +80,8 @@
 import { computed, ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDish'
-import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
+import { useDishImageUpload } from '../../../../../composables/fireux/firestore/dish/mutations/useDishImageUpload'
+import { useDishUpdate } from '../../../../../composables/fireux/firestore/dish/mutations/useDishUpdate'
 import type { DishUpdateInput } from '../../../../../models/kitchen/dish.model'
 
 const {
@@ -93,10 +94,11 @@ const {
 } = useKitchenConsoleDish()
 
 const toast = useToastify()
-const { updateDish, uploadDishImage } = useDish({
+const { updateDish } = useDishUpdate({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
+const { uploadDishImage } = useDishImageUpload()
 const imageUploading = ref(false)
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()

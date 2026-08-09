@@ -169,14 +169,15 @@ export const serverKitchenOrderIdempotencyTarget = (
   })
 }
 
-export const serverCustomerOrdersTarget = (customerId: string) => {
+export const serverCustomerOrdersTarget = (appId: string, customerId: string) => {
+  const app = segment(appId, 'appId')
   const customer = segment(customerId, 'customerId')
   return defineFirestoreMutationTarget({
     key: 'customers.orders',
     lane: 'server',
     verbs,
     database: { kind: 'runtime' },
-    collectionPath: `customers/${customer}/orders`,
+    collectionPath: `apps/${app}/customers/${customer}/orders`,
   })
 }
 
@@ -234,6 +235,16 @@ export const serverAppPortfoliosTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.portfolios', 'portfolios')
 export const serverAppSuppliersTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.suppliers', 'suppliers')
+export const serverSupplierItemsTarget = (supplierId: string) => {
+  const supplier = segment(supplierId, 'supplierId')
+  return defineFirestoreMutationTarget({
+    key: 'suppliers.items',
+    lane: 'server',
+    verbs,
+    database: { kind: 'runtime' },
+    collectionPath: `suppliers/${supplier}/items`,
+  })
+}
 export const serverAppProjectsTarget = (appId: string) =>
   serverAppChildTarget(appId, 'apps.projects', 'projects')
 

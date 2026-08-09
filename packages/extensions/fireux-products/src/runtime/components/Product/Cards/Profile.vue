@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ProductCard } from '../../../composables/fireux/firestore/product/utils/view/useProductInterface'
+import type { ProductCard } from '../../../composables/fireux/product/useProductInterface'
 import type { FirebaseProduct } from '../../../models/product.model'
 
 const props = defineProps<{

@@ -13,7 +13,7 @@ import {
 import type { MenuSection } from '../../../../../../models/kitchen/menu/menu-section.model'
 import { useKitchenConsoleDishes } from '../Dishes/useKitchenConsoleDishes'
 import { useKitchenConsoleMenu } from './useKitchenConsoleMenu'
-import { useDish } from '../../../../firestore/dish/useDish'
+import { useDishUpdate } from '../../../../firestore/dish/mutations/useDishUpdate'
 import { useMenuItemCollection } from '../../../../firestore/menu/fetch/useMenuItemCollection'
 import { useMenuItemMutations } from '../../../../firestore/menu/mutations/useMenuItemMutations'
 import {
@@ -70,7 +70,7 @@ export function useKitchenConsoleMenuSection() {
     kitchenCollectionPath: menuState.rootCollection,
     databaseId: menuState.databaseId,
   })
-  const dishMutations = useDish({
+  const dishMutations = useDishUpdate({
     kitchenCollectionPath: menuState.rootCollection,
     databaseId: menuState.databaseId,
   })

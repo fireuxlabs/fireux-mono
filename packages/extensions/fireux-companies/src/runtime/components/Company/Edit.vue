@@ -12,7 +12,7 @@
           color="warning"
           variant="soft"
           title="Editing locked"
-          description="Only the claiming user or an admin can edit this company record."
+          description="Company editing is currently available to administrators."
         />
       </div>
     </ClientOnly>
@@ -26,16 +26,12 @@ import {
   type Place,
 } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
-import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
+import type { PublicCompanyDetailProjection } from '../../models/company-public.model'
 
-const props = defineProps<{ company: CompanyHydrated | null }>()
+const props = defineProps<{ company: PublicCompanyDetailProjection | null }>()
 const company = computed(() => props.company)
-const { currentUser, isAdmin } = useUser()
-const claimedBy = computed(() => String(company.value?.claimed_by ?? '').trim())
-const canEdit = computed(() => {
-  if (!claimedBy.value) return Boolean(isAdmin.value)
-  return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
-})
+const { isAdmin } = useUser()
+const canEdit = computed(() => Boolean(isAdmin.value))
 const placeForEdit = computed<Place | null>(() =>
   company.value ? { ...PlaceDefaults, ...company.value } : null
 )

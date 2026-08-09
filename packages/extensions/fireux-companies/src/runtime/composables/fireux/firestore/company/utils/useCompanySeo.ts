@@ -1,12 +1,12 @@
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
 import { computed, toValue, type MaybeRefOrGetter } from 'vue'
 import { CompanyStorage } from '../../../../../models/company.model'
-import type { CompanyHydrated } from '../fetch/types'
+import type { CompanyView } from '../../../../../models/company-public.model'
 
 const clean = (value: unknown) => String(value ?? '').trim()
 const excerpt = (value: unknown) => clean(value).replace(/\s+/g, ' ').slice(0, 180)
 
-export function buildCompanyJsonLd(company: Partial<CompanyHydrated> | null | undefined) {
+export function buildCompanyJsonLd(company: Partial<CompanyView> | null | undefined) {
   const name = clean(company?.name)
   const id = clean(company?.id)
   if (!name || !id || (company as any)?.verified !== true) return null
@@ -15,22 +15,22 @@ export function buildCompanyJsonLd(company: Partial<CompanyHydrated> | null | un
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name,
-    description: excerpt((company as any)?.about || (company as any)?.brand_tagline || company?.formatted_address),
-    image: clean((company as any)?.image_url || (company as any)?.cover_image) || undefined,
-    address: clean(company?.formatted_address) || undefined,
-    url: clean((company as any)?.website) || undefined,
+    description: excerpt(company?.about || company?.brand_tagline || company?.short_address),
+    image: clean(company?.image_url || company?.cover_image) || undefined,
+    address: clean(company?.short_address) || undefined,
+    url: clean(company?.website) || undefined,
   }
 }
 
-export function useCompanySeo(company: MaybeRefOrGetter<Partial<CompanyHydrated> | null | undefined>) {
+export function useCompanySeo(company: MaybeRefOrGetter<Partial<CompanyView> | null | undefined>) {
   const entry = computed(() => toValue(company))
   const id = computed(() => clean(entry.value?.id))
   const isPublic = computed(() => Boolean((entry.value as any)?.verified === true && id.value))
 
   return useSeo({
     title: computed(() => clean(entry.value?.name) || 'Company'),
-    description: computed(() => excerpt((entry.value as any)?.about || (entry.value as any)?.brand_tagline || entry.value?.formatted_address || (entry.value as any)?.website || 'Company details.')),
-    image: computed(() => clean((entry.value as any)?.image_url || (entry.value as any)?.cover_image)),
+    description: computed(() => excerpt(entry.value?.about || entry.value?.brand_tagline || entry.value?.short_address || entry.value?.website || 'Company details.')),
+    image: computed(() => clean(entry.value?.image_url || entry.value?.cover_image)),
     path: computed(() =>
       id.value ? `/${CompanyStorage.collection}/${encodeURIComponent(id.value)}` : ''
     ),

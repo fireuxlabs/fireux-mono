@@ -18,6 +18,7 @@ the boundary that lets genuinely branded Apps carry a different identity.
 
 - `app-config.md`
 - `components.md`
+- Designer handoff: `../assets.md`
 
 ## Current source
 
@@ -51,6 +52,15 @@ configuration does not declare artwork ownership or approval state. Explicit
 Core and ecosystem render/projection declarations name their canonical source
 and targets; all other Apps carry their artwork directly in their standard
 runtime family. Never loan another App's export to pass a check.
+
+The required runtime wordmark family is raster: `wordmark.png`,
+`wordmark-light.png`, and `wordmark-dark.png`. An App may additionally provide
+SVG wordmarks only when they preserve the approved geometry as outlined paths
+or come from another reviewed vector master. Format never authorizes a new
+typeface, spacing, proportion, or composition. Do not rebuild an approved
+raster wordmark with `<text>`, a substitute font, or a visually approximate
+trace merely to satisfy the runtime family. Until a faithful vector master
+exists, omit the SVG and use the approved PNG.
 
 FireUX Core owns the default FireUX platform mark, light and dark wordmarks,
 app icon, PWA icons, favicon, thumbnail, and social cover. The
@@ -126,11 +136,13 @@ their own complete identity.
 | Difference                                           | State       | Reason or alignment trigger                                                                |
 | ---------------------------------------------------- | ----------- | ------------------------------------------------------------------------------------------ |
 | Branded child Apps own different marks and wordmarks | `accepted`  | Product identity is an App-level presentation delta                                        |
+| An App has approved PNG wordmarks but no faithful SVG | `accepted`  | PNG is the runtime authority until an outlined vector master preserves the same geometry   |
 | FireUX ecosystem PNG paths mirror Core assets        | `accepted`  | Existing runtime consumers require ecosystem-local public paths; the projection is guarded |
 | FireUX parent App paths mirror Core assets           | `accepted`  | The App media contract requires `/img/app`; the projection is guarded                      |
 | An unguarded duplicate of FireUX platform identity   | `drift`     | Add a projection target or consume the Core fallback directly                              |
 | Light and dark wordmarks carry the same text colour  | `drift`     | Surface semantics must remain visible and distinct                                         |
 | App identity is borrowed from an unrelated App       | `drift`     | Restore the App's real standard asset family or a named projection                         |
+| PNG and SVG wordmarks change geometry or typeface     | `drift`     | Formats must project one identity; remove the false SVG or replace it with faithful paths  |
 | App identity is awaiting approval                    | `migration` | Track that work in its owning product/design source, not Nuxt runtime config               |
 
 ## Verification and maintenance

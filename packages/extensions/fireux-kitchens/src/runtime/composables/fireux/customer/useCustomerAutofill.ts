@@ -1,7 +1,7 @@
 // Concurrent edit — 2026-07-19 16:58 CEST — Delivery pass: move shared customer autofill out of the alternate funnel tree.
 // Concurrent edit — 2026-07-19 17:35 CEST — Profile privacy pass: autofill from app-private Customer data only.
 import { computed } from 'vue'
-import { useCustomer as useCustomerProfile } from '../firestore/profiles/Customer/useCustomer'
+import { useCustomer as useCustomerProfile } from './useCustomer'
 import type {
   CustomerPrivate,
   CustomerSavedAddress,

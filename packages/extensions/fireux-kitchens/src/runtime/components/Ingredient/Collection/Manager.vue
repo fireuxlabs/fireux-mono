@@ -135,7 +135,7 @@ import { useIngredientCollection } from '../../../composables/fireux/firestore/i
 import {
   useIngredientInterface,
   type IngredientInterfaceItem,
-} from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+} from '../../../composables/fireux/ingredient/useIngredientInterface'
 import {
   INGREDIENT_CATEGORY_OPTIONS,
   INGREDIENT_KIND_OPTIONS,

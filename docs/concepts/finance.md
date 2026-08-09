@@ -69,6 +69,9 @@ reports into one generic Finance console.
 - Orders created before the pricing snapshot cannot be completed through this
   producer without a separately reviewed migration; the runtime fails closed
   instead of guessing from line sums or payment deposits.
+- Completed Orders retained from before this producer are historical Order
+  evidence. Do not fabricate zero-value Sales or FinancialFacts when their
+  canonical pricing cannot be reconstructed.
 
 ## Not producers yet
 

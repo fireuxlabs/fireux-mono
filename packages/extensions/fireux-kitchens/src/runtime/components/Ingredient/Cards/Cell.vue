@@ -155,7 +155,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { IngredientCard } from '../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import type { IngredientCard } from '../../../composables/fireux/ingredient/useIngredientInterface'
 
 type Props = Partial<Pick<
   IngredientCard.Card,

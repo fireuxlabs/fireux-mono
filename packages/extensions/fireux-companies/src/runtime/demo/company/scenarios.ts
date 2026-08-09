@@ -5,7 +5,7 @@ import {
   hasExactPublicPlaceProjectionShape,
   normalizePublicPlaceProjection,
 } from 'fireux-places/runtime/utils/public-place-projection'
-import { CompanyModel, type Company } from '../../models/company.model'
+import { CompanyDefaults, type Company } from '../../models/company.model'
 import type { PublicCompanyProjection } from '../../models/company-public.model'
 
 const stamp: FirebaseTimestamp = {
@@ -75,7 +75,7 @@ const target = (seed: CompanyDemoSeed): CompanyDemoTarget => {
 
   return {
     company: {
-      ...CompanyModel,
+      ...CompanyDefaults,
       id: seed.id,
       created: { at: stamp },
       updated: { at: stamp },

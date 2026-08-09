@@ -763,6 +763,10 @@ Found` page. An app may pass `--verify-text` for one public source-defined
   rejects drift.
 - `wordmark-light` means a wordmark for a light surface; `wordmark-dark` means
   one for a dark surface.
+- The required App wordmark runtime is the PNG family. SVG wordmarks are
+  optional and valid only when an outlined or reviewed vector master preserves
+  the approved geometry exactly. Never reconstruct an approved raster
+  wordmark with `<text>` or substitute typography merely to provide SVG.
 - Explicit projection scripts may keep a Core or ecosystem source family
   byte-identical with named App targets. A genuinely branded child App keeps
   its complete family locally. Do not borrow another App's identity or weaken

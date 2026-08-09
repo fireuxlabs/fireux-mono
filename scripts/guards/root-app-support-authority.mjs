@@ -840,6 +840,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerPath: './runtime/server/api/suppliers/onboarding/complete.post',
     rootTarget: 'suppliers',
   })
+  assert.match(
+    source.supplierOnboarding,
+    /company_id:\s*companyId/,
+    'Supplier creation must persist its validated Company relationship.'
+  )
+  assert.match(
+    source.supplierOnboarding,
+    /canonicalCompanyRole\(companyId,\s*company\.data\)/,
+    'Supplier onboarding must validate the linked Company role.'
+  )
+  assert.match(
+    source.supplierOnboarding,
+    /projectPublicPlace\(companyId,\s*place\.data \|\| \{\}\)/,
+    'Supplier onboarding must validate the Company same-ID Place.'
+  )
+  assert.doesNotMatch(
+    source.supplierOnboarding,
+    /company_id:\s*['"]['"]/,
+    'Supplier onboarding must never create an empty Company relationship.'
+  )
   assertAtomicConsoleOnboarding({
     name: 'Portfolio',
     clientSource: source.portfolioCreate,

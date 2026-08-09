@@ -2,15 +2,19 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useFirestoreClientCreate } from 'fireux-core/runtime/composables/fireux/firestore/mutations/useFirestoreClientCreate'
 import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
+import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { doc, getDoc } from 'firebase/firestore'
 import { unref, type Ref } from 'vue'
 import {
-  MenuItemModel,
+  MenuItemDefaults,
   normalizeMenuItemAddOns,
   normalizeMenuItemPriceOptions,
   type MenuItem,
 } from '../../../../../models/kitchen/menu/menu-item.model'
+import { DishStorage } from '../../../../../models/kitchen/dish.model'
+import { resolveKitchenScopeCollectionPath } from '../../kitchen/utils/paths/useKitchenChildCollection'
 import { menuItemsPath } from '../utils/paths'
 
 type Options = {
@@ -24,6 +28,10 @@ const unique = (values: string[]) => new Set(values).size === values.length
 const optionKey = (value: unknown) => normalizeSlug(value)
 
 const normalizeItemPatch = (patch: Partial<MenuItem>): Partial<MenuItem> => {
+  const immutable = ['id', 'kitchen_id', 'menu_id', 'section_id', 'dish_id', 'created']
+  if (immutable.some(key => Object.hasOwn(patch, key))) {
+    throw new Error('Menu Item identity and relationships cannot be changed.')
+  }
   if (
     'image' in patch ||
     'image_url' in patch ||
@@ -68,6 +76,7 @@ export function useMenuItemMutations(options: Options = {}) {
   const { requireWritableData } = useConsoleWriteGuard('kitchen')
   const create = useFirestoreClientCreate()
   const { updateDocument } = useFirestoreUpdate({ databaseId: options.databaseId })
+  const db = useFirestore(options.databaseId)
   const { appId } = useFireUXConfig()
 
   const path = (kitchenId: string, menuId: string, sectionId: string) =>
@@ -93,13 +102,22 @@ export function useMenuItemMutations(options: Options = {}) {
     if (!collectionPath) throw new Error('Missing section')
     if (!dishId) throw new Error('Menu item requires a dish')
 
+    const kitchenCollectionPath = optionPath(options.kitchenCollectionPath) ||
+      resolveKitchenScopeCollectionPath(appId)
+    const dishSnap = await getDoc(doc(
+      db,
+      `${kitchenCollectionPath}/${clean(input.kitchenId)}/${DishStorage.collection}`,
+      dishId
+    ))
+    if (!dishSnap.exists()) throw new Error('Select a Dish from this Kitchen.')
+
     return create(
       defineRuntimeClientCreateTarget(
         'project.kitchen-menu-items',
         collectionPath
       ),
       {
-        ...MenuItemModel,
+        ...MenuItemDefaults,
         kitchen_id: clean(input.kitchenId),
         menu_id: clean(input.menuId),
         section_id: clean(input.sectionId),

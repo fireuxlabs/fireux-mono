@@ -1,6 +1,6 @@
 import type { DishItemKind } from '../../../models/kitchen/dish.model'
 import {
-  KitchenOrderModel,
+  KitchenOrderDefaults,
   type KitchenOrder,
   type KitchenOrderChannel,
   type KitchenOrderItem,
@@ -86,7 +86,7 @@ export const makeOrder = (input: DemoOrderInput): KitchenOrder => {
       : 'Collect from the counter.'
 
   return {
-    ...KitchenOrderModel,
+    ...KitchenOrderDefaults,
     id: input.id ?? `${input.identity.kitchenId}-demo-order-${reference}`,
     kitchen_id: input.identity.kitchenId,
     menu_id: input.identity.menuId,
@@ -155,4 +155,3 @@ export const makeOrder = (input: DemoOrderInput): KitchenOrder => {
     ),
   }
 }
-

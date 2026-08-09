@@ -138,7 +138,7 @@
 import { computed, ref } from 'vue'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
 import { useProductCollection } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductCollection'
-import { useProductInterface } from 'fireux-products/runtime/composables/fireux/firestore/product/utils/view/useProductInterface'
+import { useProductInterface } from 'fireux-products/runtime/composables/fireux/product/useProductInterface'
 import type { FirebaseProduct } from 'fireux-products/runtime/models/product.model'
 import { roadmapBySlug } from '../../content/module-roadmaps'
 

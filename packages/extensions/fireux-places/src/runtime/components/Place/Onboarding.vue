@@ -71,7 +71,7 @@
           variant="soft"
           icon="i-lucide-arrow-left"
           :disabled="pending"
-          @click="back"
+          @click="onBack"
         >
           Back
         </UButton>
@@ -134,6 +134,10 @@ const {
   stepNumber,
   timezone,
 } = usePlaceOnboarding()
+
+function onBack(): void {
+  back()
+}
 
 const shellStage = computed(() => ({
   id: activeStepId.value,

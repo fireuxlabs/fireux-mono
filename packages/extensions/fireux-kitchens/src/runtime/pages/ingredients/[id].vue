@@ -73,8 +73,9 @@
 import { useRoute } from '#imports'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, ref } from 'vue'
+import { useIngredientDetail } from '../../composables/fireux/ingredient/useIngredientDetail'
+import { useIngredientInterface } from '../../composables/fireux/ingredient/useIngredientInterface'
 import { useIngredientSeo } from '../../composables/fireux/firestore/ingredient/utils/useIngredientSeo'
-import { useIngredient } from '../../composables/fireux/firestore/ingredient/useIngredient'
 
 definePageMeta({
   layout: 'default',
@@ -86,16 +87,13 @@ const route = useRoute()
 const raw = route.params.id
 const docId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const {
-  fetchIngredient,
-  profile,
-} = useIngredient()
+const { profile } = useIngredientInterface()
 const { isAdmin } = useUser()
 
-const fetchedIngredient = fetchIngredient(docId)
-const ingredient = fetchedIngredient.ingredient
-const loading = fetchedIngredient.pending
-const fetchError = fetchedIngredient.error
+const detail = useIngredientDetail(docId)
+const ingredient = detail.ingredient
+const loading = detail.pending
+const fetchError = detail.error
 
 const ingredientProfile = computed(() => profile(ingredient.value))
 

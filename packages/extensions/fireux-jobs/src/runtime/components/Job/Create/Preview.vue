@@ -93,8 +93,8 @@
 </template>
 
 <script setup lang="ts">
-import { useCompanyFetch } from 'fireux-companies/runtime/composables/fireux/firestore/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import { useCompanyDetail } from 'fireux-companies/runtime/composables/fireux/company/useCompanyDetail'
+import { useCompanyInterface } from 'fireux-companies/runtime/composables/fireux/company/useCompanyInterface'
 import { usePlaceFetch } from 'fireux-places/runtime/composables/fireux/firestore/place/fetch/usePlaceFetch'
 import { usePlaceInterface } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/usePlaceInterface'
 import { computed, defineComponent } from 'vue'
@@ -113,7 +113,7 @@ const CompanyPill = defineComponent({
   props: { id: String },
   setup(props) {
     const companyId = computed(() => String(props.id || '').trim())
-    const { company: companyData } = useCompanyFetch(companyId)
+    const { company: companyData } = useCompanyDetail(companyId)
     const companyInterface = useCompanyInterface()
     const companyCard = computed(() => companyInterface.pill(companyData.value))
     return { companyCard }

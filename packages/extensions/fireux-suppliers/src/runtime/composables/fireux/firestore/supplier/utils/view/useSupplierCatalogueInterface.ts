@@ -3,7 +3,7 @@ import type {
   SupplierCatalogue,
   SupplierItem,
 } from '../../../../../../models/supplier/Supplier.model'
-import { useSupplierItemInterface } from './useSupplierItemInterface'
+import { useSupplierItemInterface } from '../../../../supplier-item/useSupplierItemInterface'
 
 export type SupplierCatalogueInterfaceItem = Partial<SupplierCatalogue> &
   Pick<SupplierCatalogue, 'id' | 'supplier_id'> & {

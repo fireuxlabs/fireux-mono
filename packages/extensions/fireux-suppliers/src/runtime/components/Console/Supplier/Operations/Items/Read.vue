@@ -50,7 +50,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSupplierConsoleItems } from '../../../../../composables/fireux/console/supplier/operations/Items/useSupplierConsoleItems'
-import { useSupplierItemInterface } from '../../../../../composables/fireux/firestore/supplier/utils/view/useSupplierItemInterface'
+import { useSupplierItemInterface } from '../../../../../composables/fireux/supplier-item/useSupplierItemInterface'
 
 const {
   supplierItems,

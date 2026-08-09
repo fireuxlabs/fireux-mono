@@ -93,7 +93,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useIngredientInterface } from '../../../../../composables/fireux/firestore/ingredient/utils/view/useIngredientInterface'
+import { useIngredientInterface } from '../../../../../composables/fireux/ingredient/useIngredientInterface'
 import { useKitchenIngredientsWorkspace } from '../../../../../composables/fireux/console/kitchen/operations/Ingredients/useKitchenIngredientsWorkspace'
 import {
   INGREDIENT_FOOD_GROUP_OPTIONS,

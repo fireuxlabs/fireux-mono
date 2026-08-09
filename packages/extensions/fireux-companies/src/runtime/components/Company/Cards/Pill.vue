@@ -64,7 +64,7 @@
 import { navigateTo } from '#imports'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { computed } from 'vue'
-import type { CompanyCard } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyCard } from '../../../composables/fireux/company/useCompanyInterface'
 
 type PillProps = Pick<CompanyCard.Card, 'to' | 'imageUrl' | 'title' | 'subtitle' | 'badges'> & {
   imageShade?: PlaceImageShade

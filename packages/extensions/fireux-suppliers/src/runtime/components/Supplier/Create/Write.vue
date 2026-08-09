@@ -1,7 +1,32 @@
 <template>
   <div class="space-y-6">
+    <div v-if="!create" class="space-y-3">
+      <CompanyCreateSystem
+        v-if="!companyId"
+        @created="onCompanyReady"
+      />
+      <UAlert
+        v-else
+        color="success"
+        variant="soft"
+        title="Company ready"
+        :description="companyId"
+      >
+        <template #actions>
+          <UButton
+            size="xs"
+            color="neutral"
+            variant="soft"
+            @click="companyId = ''"
+          >
+            Choose another
+          </UButton>
+        </template>
+      </UAlert>
+    </div>
+
     <UFormField
-      v-if="isConsoleMode && !create"
+      v-if="!create && companyId"
       label="Organization name"
       description="This becomes the Supplier identity and public web address."
       required
@@ -38,7 +63,7 @@
           size="lg"
           class="min-w-60"
           :loading="isCreating"
-          :disabled="isCreating"
+          :disabled="isCreating || (!create && !companyId)"
           @click="handleCreate"
         >
           {{ isCreating ? 'Creating…' : 'Create Supplier Console' }}
@@ -87,13 +112,22 @@ const { setSupplierConsoleSelection } = useSupplierConsoleSelection()
 const isCreating = ref(false)
 const errorMessage = ref<string | null>(null)
 const organizationName = ref('')
+const companyId = ref('')
 const cancelTo = computed(() => String(props.cancelTo || '').trim())
 const resolvedMode = computed<ConsoleCreateMode>(() => props.mode ?? 'console')
 const isConsoleMode = computed(() => resolvedMode.value === 'console')
 
+function onCompanyReady(payload: { id: string }) {
+  companyId.value = String(payload.id || '').trim()
+}
+
 const handleCreate = async () => {
   if (isCreating.value) return
-  if (isConsoleMode.value && !props.create && organizationName.value.trim().length < 2) {
+  if (!props.create && !companyId.value) {
+    errorMessage.value = 'Choose the Company this Supplier belongs to.'
+    return
+  }
+  if (!props.create && organizationName.value.trim().length < 2) {
     errorMessage.value = 'Enter the supplier organization name.'
     return
   }
@@ -108,8 +142,14 @@ const handleCreate = async () => {
     const result = props.create
       ? await create()
       : isConsoleMode.value
-        ? await createSupplierConsole({ organizationName: organizationName.value })
-        : await createSupplier()
+        ? await createSupplierConsole({
+            organizationName: organizationName.value,
+            companyId: companyId.value,
+          })
+        : await createSupplier({
+            organizationName: organizationName.value,
+            companyId: companyId.value,
+          })
     if (isConsoleMode.value) {
       setSupplierConsoleSelection({ supplierId: result.id })
     }

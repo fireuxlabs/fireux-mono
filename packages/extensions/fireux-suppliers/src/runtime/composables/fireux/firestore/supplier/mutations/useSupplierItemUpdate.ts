@@ -1,44 +1,29 @@
-import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreUpdate'
-import {
-  type SupplierItem,
-  type SupplierItemUpdateInput,
-} from '../../../../../models/supplier/Supplier.model'
-import { resolveSupplierItemCollectionPath } from '../fetch/useSupplierItemCollection'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import type { SupplierItemUpdateInput } from '../../../../../models/supplier/supplier-item.model'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
+const text = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierItemUpdate(options: {
-  supplierCollectionPath?: string
-} = {}) {
-  const { updateDocument } = useFirestoreUpdate()
-
+export function useSupplierItemUpdate() {
   async function updateSupplierItem(
     supplierId: string,
     supplierItemId: string,
     patch: SupplierItemUpdateInput
   ): Promise<void> {
-    const resolvedSupplierId = normalizeString(supplierId)
-    const resolvedSupplierItemId = normalizeString(supplierItemId)
-    if (!resolvedSupplierId) {
-      throw new Error('[fireux-suppliers] supplier id is required.')
-    }
-    if (!resolvedSupplierItemId) {
-      throw new Error('[fireux-suppliers] supplier item id is required.')
-    }
-
-    const collectionPath = resolveSupplierItemCollectionPath(
-      resolvedSupplierId,
-      options.supplierCollectionPath
-    )
-
-    await updateDocument<SupplierItem>(
-      collectionPath,
-      resolvedSupplierItemId,
-      patch
+    const id = text(supplierId)
+    const itemId = text(supplierItemId)
+    if (!id) throw new Error('[fireux-suppliers] supplier id is required.')
+    if (!itemId) throw new Error('[fireux-suppliers] supplier item id is required.')
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    await $fetch(
+      `/api/suppliers/${encodeURIComponent(id)}/items/${encodeURIComponent(itemId)}`,
+      {
+        method: 'PATCH',
+        headers: { Authorization: `Bearer ${token}` },
+        body: patch,
+      }
     )
   }
 
-  return {
-    updateSupplierItem,
-  }
+  return { updateSupplierItem }
 }

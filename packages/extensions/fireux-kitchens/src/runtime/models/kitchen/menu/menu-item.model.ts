@@ -117,7 +117,7 @@ export function normalizeMenuItemAddOns(value: unknown): MenuItemAddOnOption[] {
     .filter((option) => option.id && option.label && option.price >= 0)
 }
 
-export const MenuItemModel = {
+export const MenuItemDefaults = {
   id: '' as string,
   kitchen_id: '' as string,
   menu_id: '' as string,
@@ -143,12 +143,18 @@ type MutableModel<T> = {
   -readonly [K in keyof T]: T[K]
 }
 
-export type MenuItem = MutableModel<typeof MenuItemModel>
+export type MenuItem = MutableModel<typeof MenuItemDefaults>
 
 export type MenuItemCreateInput = Omit<MenuItem, 'created' | 'updated'>
 export type MenuItemUpdateInput = Partial<
   Omit<
     MenuItem,
-    'id' | 'created' | 'updated' | 'kitchen_id' | 'menu_id' | 'section_id'
+    | 'id'
+    | 'created'
+    | 'updated'
+    | 'kitchen_id'
+    | 'menu_id'
+    | 'section_id'
+    | 'dish_id'
   >
 >

@@ -118,9 +118,9 @@ import { useCollectionSearch } from 'fireux-core/runtime/composables/shared/useC
 // Concurrent edit — 2026-07-19 15:47 CEST — Repo Efficiency Pass 4: shared pill/cell card mechanics; domain manager retained.
 import { useCollectionVariantCards } from 'fireux-core/runtime/composables/shared/useCollectionVariantCards'
 import { computed } from 'vue'
-import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types'
-import { useCompanyCollection } from '../../../composables/fireux/firestore/company/fetch/useCompanyCollection'
-import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { PublicCompanyProjection } from '../../../models/company-public.model'
+import { useCompanyCollection } from '../../../composables/fireux/company/useCompanyCollection'
+import { useCompanyInterface } from '../../../composables/fireux/company/useCompanyInterface'
 
 const props = withDefaults(
   defineProps<{
@@ -145,8 +145,8 @@ const props = withDefaults(
   }
 )
 
-const fetched = useCompanyCollection<CompanyHydrated>()
-const collection = computed<CompanyHydrated[]>(
+const fetched = useCompanyCollection<PublicCompanyProjection>()
+const collection = computed<PublicCompanyProjection[]>(
   () => fetched.collection.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
@@ -181,11 +181,11 @@ const {
 
 const { query, variant, toggleVariant, visibleItems, visibleCount } =
   useCollectionSearch<
-    CompanyHydrated,
+    PublicCompanyProjection,
     NonNullable<ReturnType<typeof makeCard>>
   >({
     items: collection,
-    makeCard: (company: CompanyHydrated) => makeCard(company),
+    makeCard: (company: PublicCompanyProjection) => makeCard(company),
     initialVariant: props.initialVariant,
   })
 

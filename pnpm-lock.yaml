@@ -641,6 +641,9 @@ importers:
       fireux-demo:
         specifier: workspace:*
         version: link:../fireux-demo
+      fireux-places:
+        specifier: workspace:*
+        version: link:../fireux-places
     devDependencies:
       '@nuxt/module-builder':
         specifier: ^1.0.2
@@ -697,9 +700,15 @@ importers:
       fireux-bringli:
         specifier: workspace:*
         version: link:../../../packages/ecosystem/fireux-bringli
+      fireux-companies:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-companies
       fireux-core:
         specifier: workspace:*
         version: link:../../../packages/core/fireux-core
+      fireux-places:
+        specifier: workspace:*
+        version: link:../../../packages/extensions/fireux-places
       fireux-suppliers:
         specifier: workspace:*
         version: link:../../../packages/extensions/fireux-suppliers

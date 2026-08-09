@@ -71,7 +71,8 @@
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, onBeforeUnmount, ref } from 'vue'
 import { useKitchenConsoleDishes } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDishes'
-import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
+import { useDishCreate } from '../../../../../composables/fireux/firestore/dish/mutations/useDishCreate'
+import { useDishImageUpload } from '../../../../../composables/fireux/firestore/dish/mutations/useDishImageUpload'
 
 const {
   kitchenId,
@@ -79,10 +80,11 @@ const {
   databaseId,
   canWrite,
 } = useKitchenConsoleDishes({ resolveMenuSections: false })
-const { createDish, uploadDishImage } = useDish({
+const { createDish } = useDishCreate({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })
+const { uploadDishImage } = useDishImageUpload()
 const toast = useToastify()
 
 const name = ref('')

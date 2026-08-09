@@ -1400,10 +1400,162 @@ service cloud.firestore {
           allow create, update, delete: if false;
         }
 
+        match /dishes/{dishId} {
+          function isValidDish(data) {
+            return data is map &&
+              data.keys().size() <= 20 &&
+              data.kitchen_id == kitchenId &&
+              data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+              data.slug is string && data.slug.size() <= 200 &&
+              data.description is string && data.description.size() <= 5000 &&
+              data.item_kind in ['food', 'drink'] &&
+              data.is_deal is bool &&
+              data.image is string && data.image.size() <= 2000 &&
+              validCreatedStamp(data.created) &&
+              validUpdatedStamp(data.updated);
+          }
+
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetMember(appId, 'kitchens', kitchenId);
+          allow create: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidDish(request.resource.data) &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.created.app_id == appId &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidDish(request.resource.data) &&
+            request.resource.data.kitchen_id == resource.data.kitchen_id &&
+            request.resource.data.created == resource.data.created &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'name', 'slug', 'description', 'updated'
+            ]) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow delete: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+        }
+
+        match /recipes/{recipeId} {
+          function isValidRecipe(data) {
+            return data is map &&
+              data.keys().size() <= 20 &&
+              data.kitchen_id == kitchenId &&
+              data.name is string && data.name.size() > 0 && data.name.size() <= 200 &&
+              data.slug is string && data.slug.size() <= 200 &&
+              data.description is string && data.description.size() <= 10000 &&
+              data.source_language is string && data.source_language.size() <= 35 &&
+              data.names is map && data.names.size() <= 30 &&
+              data.descriptions is map && data.descriptions.size() <= 30 &&
+              validCreatedStamp(data.created) &&
+              validUpdatedStamp(data.updated);
+          }
+
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetMember(appId, 'kitchens', kitchenId);
+          allow create: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidRecipe(request.resource.data) &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.created.app_id == appId &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidRecipe(request.resource.data) &&
+            request.resource.data.kitchen_id == resource.data.kitchen_id &&
+            request.resource.data.created == resource.data.created &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'name', 'slug', 'description', 'source_language', 'names',
+              'descriptions', 'updated'
+            ]) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow delete: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+        }
+
+        match /menus/{menuId} {
+          allow get, list: if isAppAdmin(appId) ||
+            isTargetMember(appId, 'kitchens', kitchenId);
+          allow create, update: if (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            request.resource.data.keys().size() <= 100 &&
+            request.resource.data.kitchen_id == kitchenId;
+          allow delete: if isAppAdmin(appId) ||
+            isTargetOperator(appId, 'kitchens', kitchenId);
+
+          match /sections/{sectionId} {
+            function hasValidMenuSectionScope(data) {
+              return data is map &&
+                data.keys().size() <= 20 &&
+                data.kitchen_id == kitchenId &&
+                data.menu_id == menuId;
+            }
+
+            allow get, list: if isAppAdmin(appId) ||
+              isTargetMember(appId, 'kitchens', kitchenId);
+            allow create: if (isAppAdmin(appId) ||
+                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              hasValidMenuSectionScope(request.resource.data);
+            allow update: if (isAppAdmin(appId) ||
+                isTargetOperator(appId, 'kitchens', kitchenId)) &&
+              hasValidMenuSectionScope(request.resource.data) &&
+              request.resource.data.kitchen_id == resource.data.kitchen_id &&
+              request.resource.data.menu_id == resource.data.menu_id;
+            allow delete: if isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId);
+
+            match /items/{itemId} {
+              function hasValidMenuItemScope(data) {
+                return data is map &&
+                  data.keys().size() <= 20 &&
+                  data.kitchen_id == kitchenId &&
+                  data.menu_id == menuId &&
+                  data.section_id == sectionId &&
+                  isValidFirestoreDocumentId(data.dish_id) &&
+                  exists(
+                    /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)/dishes/$(data.dish_id)
+                  );
+              }
+
+              allow get, list: if isAppAdmin(appId) ||
+                isTargetMember(appId, 'kitchens', kitchenId);
+              allow create: if (isAppAdmin(appId) ||
+                  isTargetOperator(appId, 'kitchens', kitchenId)) &&
+                hasValidMenuItemScope(request.resource.data);
+              allow update: if (isAppAdmin(appId) ||
+                  isTargetOperator(appId, 'kitchens', kitchenId)) &&
+                hasValidMenuItemScope(request.resource.data) &&
+                request.resource.data.kitchen_id == resource.data.kitchen_id &&
+                request.resource.data.menu_id == resource.data.menu_id &&
+                request.resource.data.section_id == resource.data.section_id &&
+                request.resource.data.dish_id == resource.data.dish_id;
+              allow delete: if isAppAdmin(appId) ||
+                isTargetOperator(appId, 'kitchens', kitchenId);
+            }
+
+            match /{nested=**} {
+              allow get, list, create, update, delete: if false;
+            }
+          }
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
+        }
+
         match /{childCollection}/{childId} {
           function isGenericKitchenChildCollection() {
             return !(childCollection in [
               'ingredients',
+              'dishes',
+              'recipes',
+              'menus',
               'orders',
               'sales'
             ]);
@@ -1505,7 +1657,6 @@ service cloud.firestore {
         }
       }
     }
-
     // ===============================================================
     // Public Driver capability
     // ===============================================================

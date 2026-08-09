@@ -3,12 +3,8 @@ import {
   sanitizeShortAddress,
   stripLocationFromTitle,
 } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type {
-  PlaceImageShade,
-  PlaceSocialLinks,
-  PlaceSource,
-} from 'fireux-places/runtime/models/place.model'
-import type { CompanyHydrated } from '../../fetch/types'
+import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import type { CompanyView } from '../../../../../../models/company-public.model'
 import { CompanyStorage } from '../../../../../../models/company.model'
 
 export namespace CompanyCard {
@@ -34,9 +30,6 @@ export namespace CompanyCard {
     // Image tone metadata
     imageShade?: PlaceImageShade
 
-    // Source metadata
-    source?: PlaceSource
-
     // Search collection (optional)
     collection?: string
 
@@ -56,12 +49,10 @@ export type CompanyProfile = {
   address?: string
   phone?: string
   email?: string
-  socialLinks?: Partial<PlaceSocialLinks>
   coverImage?: string
   galleryImages?: string[]
   about?: string
   verified?: boolean
-  source?: PlaceSource
 }
 
 export function useCompanyInterface() {
@@ -70,30 +61,26 @@ export function useCompanyInterface() {
   type CompanyCell = Pick<
     CompanyCard.Card,
     'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'
-  > & {
-    source?: PlaceSource
-    prop?: string
-  }
+  > & { prop?: string }
 
   type CompanyPreview = {
     imageUrl: string
     imageShade?: PlaceImageShade
     name: string
     formattedAddress: string
-    source?: PlaceSource
     prop?: string
   }
 
-  function map(company: CompanyHydrated): CompanyCard.Card {
+  function map(company: CompanyView): CompanyCard.Card {
     const id = safeString(company.id).trim()
     const name = safeString(company.name)
-    const shortName = safeString((company as any)?.short_name)
-    const shortAddress = sanitizeShortAddress((company as any)?.short_address)
-    const formattedAddress = safeString((company as any)?.formatted_address)
+    const shortName = safeString(company.short_name)
+    const shortAddress = sanitizeShortAddress(company.short_address)
+    const formattedAddress = shortAddress
     const displayTitle =
       shortName ||
       stripLocationFromTitle(name, shortAddress || formattedAddress)
-    const imageUrl = safeString((company as any)?.image_url)
+    const imageUrl = safeString(company.image_url)
 
     return {
       id,
@@ -111,16 +98,13 @@ export function useCompanyInterface() {
 
       imageUrl,
 
-      imageShade: (company as any)?.image_shade ?? 'none',
-
-      source: (company as any)?.source,
-
-      claimedBy: safeString((company as any)?.claimed_by),
+      imageShade: company.image_shade ?? 'none',
+      claimedBy: '',
     }
   }
 
   function buildInterface(
-    target?: CompanyHydrated | null | undefined
+    target?: CompanyView | null | undefined
   ): CompanyCard.Card | null {
     if (!target) return null
     const mapped = map(target)
@@ -130,7 +114,7 @@ export function useCompanyInterface() {
   const toInterface = buildInterface
 
   function pill(
-    target?: CompanyHydrated | null | undefined
+    target?: CompanyView | null | undefined
   ): CompanyPill | null {
     const base = buildInterface(target)
     if (!base) return null
@@ -142,7 +126,7 @@ export function useCompanyInterface() {
   }
 
   function cell(
-    target?: CompanyHydrated | null | undefined
+    target?: CompanyView | null | undefined
   ): CompanyCell | null {
     const base = buildInterface(target)
     if (!base || !target) return null
@@ -153,13 +137,12 @@ export function useCompanyInterface() {
       formattedAddress: base.formattedAddress,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      source: (target as any)?.source,
-      prop: (target as any)?.brand_tagline,
+      prop: target.brand_tagline,
     }
   }
 
   function preview(
-    target?: CompanyHydrated | null | undefined
+    target?: CompanyView | null | undefined
   ): CompanyPreview | null {
     const base = buildInterface(target)
     if (!base || !target) return null
@@ -168,13 +151,12 @@ export function useCompanyInterface() {
       imageShade: base.imageShade,
       name: base.name,
       formattedAddress: base.formattedAddress,
-      source: (target as any)?.source as PlaceSource | undefined,
-      prop: (target as any)?.brand_tagline,
+      prop: target.brand_tagline,
     }
   }
 
   function profile(
-    target?: CompanyHydrated | null | undefined
+    target?: CompanyView | null | undefined
   ): CompanyProfile | null {
     const base = buildInterface(target)
     if (!base || !target) return null
@@ -185,20 +167,13 @@ export function useCompanyInterface() {
       subtitle: base.subtitle,
       imageUrl: base.imageUrl,
       imageShade: base.imageShade,
-      prop: (target as any)?.brand_tagline,
-      website: (target as any)?.website,
+      prop: target.brand_tagline,
+      website: target.website,
       address,
-      phone: (target as any)?.phone,
-      socialLinks: (target as any)?.social_links as
-        | Partial<PlaceSocialLinks>
-        | undefined,
-      coverImage: (target as any)?.cover_image,
-      galleryImages: (
-        (target as any)?.gallery_images as string[] | undefined
-      )?.slice(0, 3),
-      about: (target as any)?.about,
-      verified: (target as any)?.verified,
-      source: (target as any)?.source as PlaceSource | undefined,
+      coverImage: target.cover_image,
+      galleryImages: target.gallery_images?.slice(0, 3),
+      about: target.about,
+      verified: target.verified,
     }
   }
 

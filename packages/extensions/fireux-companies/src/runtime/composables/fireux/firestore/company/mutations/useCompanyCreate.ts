@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-21 14:08 CEST — Werkbox Firebase hardening: route Company materialization through its authenticated server boundary.
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type { CompanyCreateInput } from '../../../../../models/company.model'
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 
 export const CompanyPayload = {
   id: '',
@@ -12,9 +11,7 @@ export const CompanyStampOptions = {
 } as const
 
 export function useCompanyCreate() {
-  async function createCompany(
-    input: CompanyCreateInput & { place?: PlaceUpsertInput }
-  ): Promise<string> {
+  async function createCompany(input: CompanyCreateInput): Promise<string> {
     if (!input?.id) {
       throw new Error('Company id is required')
     }

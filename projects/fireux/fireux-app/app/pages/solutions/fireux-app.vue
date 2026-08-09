@@ -99,7 +99,8 @@ import type {
   FirebaseProduct,
   Price,
 } from 'fireux-products/runtime/models/product.model'
-import { useProduct } from 'fireux-products/runtime/composables/fireux/firestore/product/useProduct'
+import { useProductFetch } from 'fireux-products/runtime/composables/fireux/firestore/product/fetch/useProductFetch'
+import { useProductPrices } from 'fireux-products/runtime/composables/fireux/firestore/product/price/fetch/useProductPrices'
 import {
   buildPublicPageJsonLd,
   useSeo,
@@ -125,7 +126,8 @@ useSeo({
     }),
 })
 
-const { fetchProductBySlug, fetchProductPrices } = useProduct()
+const { fetchProductBySlug } = useProductFetch()
+const { fetchProductPrices } = useProductPrices()
 
 const productSource = fetchProductBySlug('fireux-app')
 const productPrices = ref<Price[]>([])

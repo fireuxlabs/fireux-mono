@@ -1195,6 +1195,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(companyModel, /kind:\s*'record'/)
   assert.match(companyModel, /parent:\s*'Place'/)
   assert.match(companyModel, /root:\s*CompanyStorage\.path/)
+  assert.match(companyModel, /export const CompanyDefaults\s*=/)
+  assert.doesNotMatch(companyModel, /export const CompanyModel\s*=/)
+  assert.doesNotMatch(companyModel, /CompanyUpdateInput/)
   assert.match(
     canonicalCompany,
     /hasExactKeys\(company,\s*\['created', 'updated'\]\)/
@@ -1213,8 +1216,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /export type PublicCompanyProjection = PublicPlaceProjection/
   )
   assert.match(
+    publicCompanyModel,
+    /export type PublicCompanyDetailProjection = PublicPlaceDetailProjection/
+  )
+  assert.match(
     publicCompanyProjection,
     /canonicalCompanyRole\(id,\s*companyValue\)/
+  )
+  assert.match(
+    publicCompanyProjection,
+    /projectPublicCompanyDetail[\s\S]*projectPublicPlaceDetail\(id,\s*placeValue\)/
   )
   assert.match(publicCompanyProjection, /return place/)
   assert.doesNotMatch(

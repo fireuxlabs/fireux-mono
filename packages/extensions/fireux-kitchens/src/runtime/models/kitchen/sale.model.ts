@@ -1,5 +1,6 @@
 // Concurrent edit — 2026-07-21 16:16 CEST — FireUX Finance pass: define the Kitchen-owned immutable Sale record.
 // Concurrent edit — 2026-07-21 17:04 CEST — Kitchen Finance surface: keep Finance model types resolvable in consuming Nuxt apps.
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
 import type {
@@ -22,6 +23,24 @@ export const KitchenSaleStorage = {
   parent: 'kitchen',
   idParam: 'saleId',
 } as const
+
+export const KitchenSaleRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'KitchenSale',
+  family: ['kitchen', 'commerce'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'KitchenOrder',
+  scoped: KitchenSaleStorage.path,
+  notes: [
+    'KitchenSale is the immutable one-to-one result of a completed KitchenOrder.',
+    'Its document id equals the source KitchenOrder id.',
+  ],
+})
 
 export const KitchenSaleSchemaVersion = 1 as const
 

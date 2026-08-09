@@ -95,16 +95,20 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useCustomer } from '../../../composables/fireux/firestore/profiles/Customer/useCustomer'
+import { useCustomer } from '../../../composables/fireux/customer/useCustomer'
+import { useCustomerUpdate } from '../../../composables/fireux/firestore/profiles/Customer/mutations/useCustomerUpdate'
 import { useCustomerDeliveryAddressAutocomplete } from '../../../composables/fireux/customer/useCustomerDeliveryAddressAutocomplete'
 
 const {
   appProfile,
+  profileRefs,
+} = useCustomer()
+const {
   updateCustomerName,
   updateCustomerPhone,
   updateAllergyNote,
   updateDefaultDeliveryAddress,
-} = useCustomer()
+} = useCustomerUpdate(profileRefs)
 const toast = useToastify()
 type InlineField = 'phone' | 'address'
 const phoneDraft = ref('')

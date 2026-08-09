@@ -50,8 +50,8 @@
             v-if="!canEdit"
             color="warning"
             variant="soft"
-            title="Claim required"
-            description="You can only edit companies backed by places you’ve claimed. Ask an admin or claim the underlying business first."
+            title="Administrator access required"
+            description="Company editing is currently available to administrators."
           >
             <template #actions>
               <UButton
@@ -71,7 +71,7 @@
             color="warning"
             variant="soft"
             title="Editing locked"
-            description="Only the claiming user or an admin can edit this company record."
+            description="Company editing is currently available to administrators."
           />
         </div>
 
@@ -84,14 +84,13 @@
 </template>
 
 <script setup lang="ts">
-import { useHead, useRoute } from '#imports'
+import { setResponseStatus, useHead, useRoute } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed } from 'vue'
-import { useCompanyFetch } from '../../../composables/fireux/firestore/company/fetch/useCompanyFetch'
-import { useCompanyInterface } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
-import type { CompanyHydrated } from '../../../composables/fireux/firestore/company/fetch/types'
+import { useCompanyDetail } from '../../../composables/fireux/company/useCompanyDetail'
+import { useCompanyInterface } from '../../../composables/fireux/company/useCompanyInterface'
 
 definePageMeta({
   layout: 'default',
@@ -108,18 +107,18 @@ const route = useRoute()
 const raw = route.params.id
 const companyId = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '')
 
-const { company: fetchCompany } = useCompanyFetch()
-const docRef = companyId ? fetchCompany(companyId) : null
+const { company, ready, pending: loading, missing, failed, statusCode } =
+  useCompanyDetail(companyId)
 
-const company = computed<CompanyHydrated | null>(() => docRef?.value ?? null)
-const loading = computed(() => Boolean(companyId) && docRef?.value === undefined)
+await ready
+if (import.meta.server && missing.value) {
+  setResponseStatus(404)
+} else if (import.meta.server && failed.value) {
+  setResponseStatus(statusCode.value || 503)
+}
 
-const { currentUser, isAdmin } = useUser()
-const claimedBy = computed(() => String(company.value?.claimed_by ?? '').trim())
-const canEdit = computed(() => {
-  if (!claimedBy.value) return Boolean(isAdmin.value)
-  return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
-})
+const { isAdmin } = useUser()
+const canEdit = computed(() => Boolean(isAdmin.value))
 
 const { preview } = useCompanyInterface()
 const companyPreview = computed(() => preview(company.value))
@@ -133,7 +132,6 @@ const companyPreviewDetails = computed(() => {
     { label: 'About', value: (v as any).about ?? '' },
     { label: 'Phone', value: v.phone ?? '' },
     { label: 'Website', value: v.website ?? '' },
-    { label: 'Claimed by', value: v.claimed_by ?? '' },
     { label: 'Verified', value: v.verified ? 'Yes' : '' },
   ]
 

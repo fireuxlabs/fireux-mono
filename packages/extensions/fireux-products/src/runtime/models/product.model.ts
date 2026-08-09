@@ -1,5 +1,6 @@
 // FILE: packages/extensions/fireux-products/src/runtime/models/product.model.ts
 
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import { FireuxRootScope } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -29,7 +30,7 @@ type WidenLiteral<T> =
  * - If that changes, update the models README first, then this file.
  */
 export const ProductStorage = {
-  shape: 'public/root',
+  shape: 'root',
   path: 'products/{productId}',
   collection: 'products',
   idParam: 'productId',
@@ -37,6 +38,24 @@ export const ProductStorage = {
     prices: 'products/{productId}/prices/{priceId}',
   },
 } as const
+
+export const ProductEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Product',
+  family: 'commerce',
+  identity: 'root',
+  authority: 'owning-app-database',
+  appSupport: 'none',
+  publicRead: 'projection',
+  status: 'confirmed',
+  console: false,
+  root: ProductStorage.path,
+  notes: [
+    'Product owns commercial identity and its ProductPrice children.',
+    'SupplierItem is a Supplier-owned offer that links to Product by product_id.',
+    'Kitchen and marketplace records reference Product rather than duplicating Product identity.',
+  ],
+})
 
 export interface ProductFeature {
   title: string
@@ -74,7 +93,7 @@ export const ProductPriceStorage = {
   idParam: 'priceId',
 } as const
 
-export const ProductPriceModel = {
+export const ProductPriceDefaults = {
   id: '',
   product_id: '',
   label: '',
@@ -115,8 +134,8 @@ export interface ProductPrice {
   provider?: ProductPriceProvider
   provider_price_id?: string
   metadata?: Record<string, any>
-  created?: typeof ProductPriceModel.created
-  updated?: typeof ProductPriceModel.updated
+  created?: typeof ProductPriceDefaults.created
+  updated?: typeof ProductPriceDefaults.updated
 }
 export type ProductPriceCreateInput = Omit<ProductPrice, 'id' | 'created' | 'updated'>
 export type ProductPriceUpdateInput = Partial<
@@ -143,7 +162,7 @@ export interface StripePriceInput {
 }
 
 export type ProductType = string
-export const ProductModel = {
+export const ProductDefaults = {
   id: '',
   ...FireuxRootScope,
   name: '',
@@ -181,15 +200,12 @@ export const ProductModel = {
   },
 } as const
 
-export const Product = ProductModel
-
-export type Product = WidenLiteral<typeof ProductModel>
+export type Product = WidenLiteral<typeof ProductDefaults>
 
 export type ProductCreateInput = Omit<Product, 'id' | 'created' | 'updated'>
 export type ProductUpdateInput = Partial<
   Omit<Product, 'id' | 'created' | 'updated'>
 >
 
-// Compatibility alias kept while product runtime migrates away from implementation-first naming.
-export const FirebaseProduct = Product
+// Compatibility type kept while consumers migrate from implementation-first naming.
 export type FirebaseProduct = Product

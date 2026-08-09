@@ -197,7 +197,8 @@ Example Firestore stack names, not automatic entity proof:
   the browser never binds raw Property roots. Creation defaults publication to
   `draft`, and the projection emits only active, explicitly `published` roots.
   Browse cards stay unlinked until a bounded public detail read exists.
-- Current source: Supplier, Portfolio, and Property model/fetch/mutation stacks.
+- Current source: Supplier, Supplier Item, Product, Ingredient, Portfolio, and
+  Property model/fetch/mutation stacks.
   Shape guard: `scripts/guards/root-app-support-authority.mjs`.
 
 ## Migration and drift register

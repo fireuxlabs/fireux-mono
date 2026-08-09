@@ -25,14 +25,19 @@ Kitchen-scoped structured content, public route projections, or ordering.
 | Menu | Entity | Root | Globally addressable public doorway; owns public identity, publication, and either a document source or a pointer to KitchenMenu |
 | KitchenMenu | Entity | Kitchen-scoped | Structured sections/items and Kitchen operational policy |
 | MenuSection | Record | KitchenMenu-scoped | Groups MenuItem records; no independent lifecycle |
-| MenuItem | Record | MenuSection-scoped | Menu presentation/price row, optionally referencing Dish |
+| MenuItem | Record | MenuSection-scoped | Menu placement, price, options, and order; always references a Dish |
 | MenuSourceUpload | Record | Kitchen-scoped | Source file or URL awaiting Kitchen menu processing |
-| Dish | Kitchen-scoped entity | Kitchen-scoped | Reusable food identity and guest-facing food image |
+| Dish | Entity | Kitchen-scoped | Reusable food identity and food image |
 
 Menu and KitchenMenu are distinct confirmed entities. A root Menu may stand
 alone as a photo/PDF/document doorway or point to a KitchenMenu. A KitchenMenu
 may exist without a root Menu. Publishing or migration may connect them; it
 must not copy the whole scoped menu into the root doorway.
+
+Dish is a confirmed parent-scoped Entity: it has its own lifecycle inside one
+Kitchen, but no root identity. MenuItem is a MenuSection-owned placement Record
+and must reference a Dish from that same Kitchen. Dish owns food copy and media;
+MenuItem owns price, variants, add-ons, availability, and order.
 
 ## Shared spine
 

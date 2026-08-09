@@ -97,7 +97,7 @@
 <script setup lang="ts">
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
-import type { CompanyCard } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyCard } from '../../../composables/fireux/company/useCompanyInterface'
 
 type Props = Pick<CompanyCard.Card, 'id' | 'to' | 'name' | 'formattedAddress' | 'imageUrl' | 'imageShade'> & {
   source?: 'google' | 'fireux' | 'manual'

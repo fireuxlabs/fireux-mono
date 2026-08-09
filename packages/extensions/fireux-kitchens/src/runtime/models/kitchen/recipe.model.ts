@@ -1,16 +1,17 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
  * Runtime models canon: packages/core/fireux-docs/src/runtime/models/README.md
  *
- * Family: Kitchen-scoped publishable child
- * Storage: selected-kitchen/app-scoped operational recipe card
+ * Family: Kitchen-scoped Entity
+ * Storage: Kitchen-owned authored recipe content
  * Path: apps/{appId}/kitchens/{kitchenId}/recipes/{recipeId}
  * Owner app scope: Kitchen
  *
- * Recipe is authored kitchen content. It is private/operational by default;
- * public /recipes surfaces are future/deferred projection/search surfaces.
+ * Recipe has its own lifecycle inside one Kitchen. It is not a root identity;
+ * any future discovery surface must project it without moving its authority.
  * Steps, costing, allergens, method, ingredient lines, yield, and service
  * workflow are not active on the current model yet.
  */
@@ -22,9 +23,23 @@ export const RecipeStorage = {
   idParam: 'recipeId',
 } as const
 
+export const RecipeEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'Recipe',
+  family: ['kitchen'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'Kitchen',
+  scoped: RecipeStorage.path,
+})
+
 export type RecipeTranslatedText = Partial<Record<string, string>>
 
-export const RecipeModel = {
+export const RecipeDefaults = {
   id: '' as string,
   name: '' as string,
   slug: '' as string,
@@ -45,7 +60,7 @@ export const RecipeModel = {
 } as const
 
 export type Recipe = {
-  -readonly [K in keyof typeof RecipeModel]: (typeof RecipeModel)[K]
+  -readonly [K in keyof typeof RecipeDefaults]: (typeof RecipeDefaults)[K]
 }
 
 export type RecipeCreateInput = Omit<Recipe, 'created' | 'updated'>
@@ -77,13 +92,13 @@ export function normalizeRecipe(value: unknown): Recipe {
   const source = value && typeof value === 'object' ? (value as Record<string, unknown>) : {}
   const created = source.created && typeof source.created === 'object'
     ? (source.created as Recipe['created'])
-    : RecipeModel.created
+    : RecipeDefaults.created
   const updated = source.updated && typeof source.updated === 'object'
     ? (source.updated as Recipe['updated'])
-    : RecipeModel.updated
+    : RecipeDefaults.updated
 
   return {
-    ...RecipeModel,
+    ...RecipeDefaults,
     id: pickString(source.id),
     name: pickString(source.name),
     slug: pickString(source.slug),

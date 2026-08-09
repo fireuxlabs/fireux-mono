@@ -142,7 +142,7 @@
 </template>
 
 <script setup lang="ts">
-import type { CompanyCard } from 'fireux-companies/runtime/composables/fireux/firestore/company/utils/view/useCompanyInterface'
+import type { CompanyCard } from 'fireux-companies/runtime/composables/fireux/company/useCompanyInterface'
 import { computed } from 'vue'
 import type {
   JobCard,

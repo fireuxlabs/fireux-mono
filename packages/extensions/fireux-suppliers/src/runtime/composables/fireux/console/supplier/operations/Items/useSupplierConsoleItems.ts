@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useSupplierConsole } from '../../core/useSupplierConsole'
 import { useSupplierItemCollection } from '../../../../firestore/supplier/fetch/useSupplierItemCollection'
-import type { SupplierItemSurface } from '../../../../firestore/supplier/utils/view/useSupplierItemInterface'
+import type { SupplierItemSurface } from '../../../../supplier-item/useSupplierItemInterface'
 import {
   findSupplierConsoleDemoScenario,
   useSupplierConsoleDemoData,

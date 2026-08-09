@@ -1,11 +1,11 @@
-import { DishModel, type Dish } from '../../../../models/kitchen/dish.model'
+import { DishDefaults, type Dish } from '../../../../models/kitchen/dish.model'
 import {
   KitchenMenuModel,
   type KitchenMenu,
   type MenuOrderTypeConfig,
 } from '../../../../models/kitchen/menu/kitchen-menu.model'
 import {
-  MenuItemModel,
+  MenuItemDefaults,
   type MenuItem,
 } from '../../../../models/kitchen/menu/menu-item.model'
 import {
@@ -33,7 +33,7 @@ export const dishes = (
   definitions: DishDefinition[]
 ): Dish[] =>
   definitions.map((definition) => ({
-    ...DishModel,
+    ...DishDefaults,
     ...definition,
     slug: definition.id,
     is_deal: definition.is_deal ?? false,
@@ -103,7 +103,7 @@ export const menuItem = (
   identity: KitchenDemoIdentity,
   input: MenuItemInput
 ): MenuItem => ({
-  ...MenuItemModel,
+  ...MenuItemDefaults,
   ...input,
   kitchen_id: identity.kitchenId,
   menu_id: identity.menuId,

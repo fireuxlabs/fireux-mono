@@ -10,5 +10,5 @@ export default defineFireuxConfig({
   role: 'global',
   consoles: ['supplier'],
   domains: ['suppliers'],
-  modules: ['fireux-suppliers'],
+  modules: ['fireux-places', 'fireux-companies', 'fireux-suppliers'],
 })

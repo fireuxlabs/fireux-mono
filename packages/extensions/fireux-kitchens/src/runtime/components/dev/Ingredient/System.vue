@@ -48,13 +48,13 @@ import { computed } from 'vue'
 import { useIngredientCollection } from '../../../composables/fireux/firestore/ingredient/fetch/useIngredientCollection'
 import {
   IngredientStorage,
-  IngredientModel as IngredientModelRuntime,
+  IngredientDefaults,
 } from '../../../models/ingredient.model'
 import type { PublicIngredient } from '../../../models/ingredient-public.model'
 
 defineOptions({ name: 'DevIngredientSystem' })
 
-const ingredientModelRuntime = IngredientModelRuntime
+const ingredientModelRuntime = IngredientDefaults
 
 const { ingredients } = useIngredientCollection()
 const ingredientsCollection = computed<PublicIngredient[]>(

@@ -107,6 +107,9 @@ Before each task:
   Demo is read-only, not root-only.
   Supplier location follows a different owner contract:
   `Supplier.company_id -> Company`, with Company as a same-id role over Place.
+  Supplier onboarding requires that complete relationship and validates both
+  records inside the trusted creation transaction; an empty `company_id` is
+  not a valid Supplier root.
   The shared Supplier surface projector keeps the Supplier-owned logo separate
   from the bounded Company/Place location projection. Current Demo scenarios
   prove that chain and resolve Place imagery at read time; they never add

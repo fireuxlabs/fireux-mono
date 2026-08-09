@@ -2,6 +2,7 @@
 // Profile family canon: docs/concepts/entities.md
 // Concurrent edit — 2026-07-20 18:00 CEST — Repo Efficiency Pass 2 of 6: own a server-loadable exact private Customer provisioning seed.
 import type { AppProfileBase } from 'fireux-core/runtime/models/utils/profile.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import { AppProfileStamps } from 'fireux-core/runtime/models/utils/profile.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
@@ -17,6 +18,24 @@ export const CustomerStorage = {
   parent: 'app',
   idParam: 'userId',
 } as const
+
+export const CustomerProfileRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'CustomerProfile',
+  family: ['identity', 'commerce'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'User',
+  scoped: CustomerStorage.path,
+  notes: [
+    'CustomerProfile stores App-scoped ordering preferences for one User.',
+    'User owns person identity; CustomerProfile never becomes another User root.',
+  ],
+})
 
 export const AppCustomerStorage = CustomerStorage
 
@@ -48,7 +67,7 @@ export type CustomerPrivate = {
   order_history: CustomerOrderHistoryItem[]
 }
 
-export const CustomerPrivateModel = {
+export const CustomerPrivateDefaults = {
   name: '' as string,
   phone: '' as string,
   allergy_note: '' as string,
@@ -57,11 +76,11 @@ export const CustomerPrivateModel = {
   order_history: [] as CustomerOrderHistoryItem[],
 } as const satisfies CustomerPrivate
 
-export const CustomerModel = {
+export const CustomerDefaults = {
   id: '' as string,
   // This whole record is app-private; the nested shape keeps ordering fields
   // out of generic identity/card projections.
-  private: { ...CustomerPrivateModel } as CustomerPrivate,
+  private: { ...CustomerPrivateDefaults } as CustomerPrivate,
   ...AppProfileStamps,
 } as const
 
@@ -69,7 +88,7 @@ export type Customer = AppProfileBase & {
   private: CustomerPrivate
 }
 
-export const AppCustomerModel = CustomerModel
+export const AppCustomerDefaults = CustomerDefaults
 
 export type AppCustomer = Customer
 
@@ -81,12 +100,12 @@ export type CustomerUpdateInput = Partial<
 export function createAppCustomerProfileSeed(): CustomerCreateInput {
   return {
     private: {
-      name: CustomerPrivateModel.name,
-      phone: CustomerPrivateModel.phone,
-      allergy_note: CustomerPrivateModel.allergy_note,
-      default_delivery_address: CustomerPrivateModel.default_delivery_address,
-      saved_addresses: [...CustomerPrivateModel.saved_addresses],
-      order_history: [...CustomerPrivateModel.order_history],
+      name: CustomerPrivateDefaults.name,
+      phone: CustomerPrivateDefaults.phone,
+      allergy_note: CustomerPrivateDefaults.allergy_note,
+      default_delivery_address: CustomerPrivateDefaults.default_delivery_address,
+      saved_addresses: [...CustomerPrivateDefaults.saved_addresses],
+      order_history: [...CustomerPrivateDefaults.order_history],
     },
   }
 }

@@ -27,15 +27,6 @@
             >
               Verified
             </UBadge>
-            <UBadge
-              v-if="sourceLabel"
-              size="xs"
-              variant="soft"
-              color="neutral"
-              class="fx-card__badge fx-card__badge--overlay"
-            >
-              {{ sourceLabel }}
-            </UBadge>
           </div>
         </div>
       </div>
@@ -58,7 +49,6 @@
             </div>
             <div class="fx-card__badges">
               <UBadge v-if="model.verified" size="xs" variant="soft" color="success">Verified</UBadge>
-              <UBadge v-if="sourceLabel" size="xs" variant="soft" color="neutral">{{ sourceLabel }}</UBadge>
             </div>
           </div>
         </div>
@@ -113,20 +103,6 @@
         </UButton>
       </div>
 
-      <div v-if="socialItems.length" class="fx-card__actions fx-card__actions--tight">
-        <UButton
-          v-for="item in socialItems"
-          :key="item.key"
-          :icon="item.icon"
-          variant="ghost"
-          color="neutral"
-          size="xs"
-          :to="item.url"
-          target="_blank"
-          :aria-label="item.label"
-        />
-      </div>
-
       <div v-if="model.galleryImages?.length" class="fx-card__gallery">
         <img
           v-for="image in model.galleryImages"
@@ -170,8 +146,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import type { CompanyProfile } from '../../../composables/fireux/firestore/company/utils/view/useCompanyInterface';
+import { computed } from 'vue'
+import type { CompanyProfile } from '../../../composables/fireux/company/useCompanyInterface'
 
 const props = defineProps<{ model: CompanyProfile }>()
 
@@ -183,32 +159,11 @@ const avatarShadeClass = computed(() => {
   return ''
 })
 
-const sourceLabel = computed(() =>
-  props.model.source === 'fireux'
-    ? 'FireUX'
-    : props.model.source === 'manual'
-      ? 'Manual'
-      : props.model.source === 'google'
-        ? 'Google'
-        : ''
-)
-
 const websiteLabel = computed(() => {
   const raw = String(props.model.website ?? '').trim()
   if (!raw) return ''
   return raw.replace(/^https?:\/\//, '').replace(/\/$/, '')
 })
-
-const socialItems = computed(() =>
-  [
-    { key: 'website', label: 'Website', icon: 'i-lucide-globe', url: props.model.socialLinks?.website ?? '' },
-    { key: 'instagram', label: 'Instagram', icon: 'i-logos-instagram', url: props.model.socialLinks?.instagram ?? '' },
-    { key: 'facebook', label: 'Facebook', icon: 'i-logos-facebook', url: props.model.socialLinks?.facebook ?? '' },
-    { key: 'tiktok', label: 'TikTok', icon: 'i-logos-tiktok-icon', url: props.model.socialLinks?.tiktok ?? '' },
-    { key: 'linkedin', label: 'LinkedIn', icon: 'i-logos-linkedin-icon', url: props.model.socialLinks?.linkedin ?? '' },
-    { key: 'youtube', label: 'YouTube', icon: 'i-logos-youtube-icon', url: props.model.socialLinks?.youtube ?? '' },
-  ].filter((item) => item.url)
-)
 
 const contactItems = computed(() =>
   [

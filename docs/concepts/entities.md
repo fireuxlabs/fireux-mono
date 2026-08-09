@@ -83,6 +83,9 @@ The current declared Entities are:
 | MarketplaceStore | commerce                  | App-scoped     | parent                      | none              | projection  | no      |
 | Kitchen          | kitchen, console entity   | root           | owning App database         | access record     | projection  | yes     |
 | KitchenMenu      | menu, kitchen             | Kitchen-scoped | parent                      | none              | projection  | no      |
+| Recipe           | kitchen                   | Kitchen-scoped | parent                      | none              | none        | no      |
+| Dish             | kitchen, menu             | Kitchen-scoped | parent                      | none              | none        | no      |
+| KitchenOrder     | kitchen, ordering         | Kitchen-scoped | parent                      | none              | none        | no      |
 | Menu             | menu                      | root           | owning App database         | none              | projection  | no      |
 | Supplier         | supplier, console entity  | root           | owning App database         | access record     | to-confirm  | yes     |
 | Portfolio        | portfolio, console entity | root           | owning App database         | access record     | to-confirm  | yes     |
@@ -96,6 +99,9 @@ The current declared Records are:
 | MenuSourceUpload | Kitchen          | none        | It is source material for a Kitchen workflow                               |
 | MenuSection      | KitchenMenu      | none        | It groups MenuItem records inside one Menu                                 |
 | MenuItem         | MenuSection      | none        | It is one parent-owned catalogue row                                       |
+| KitchenSale      | KitchenOrder     | none        | It is the immutable one-to-one result of Order completion                  |
+| CustomerProfile  | User             | none        | It stores App-scoped ordering preferences, not another person identity     |
+| CustomerOrderLink | User            | none        | It points to an Order without copying mutable Order lifecycle state         |
 | MarketplaceOffer | MarketplaceStore | projection  | It has no lifecycle outside its Store                                      |
 | MarketplaceOrder | MarketplaceStore | none        | It is private operational fulfilment truth for one Store                   |
 
@@ -135,6 +141,9 @@ replaceable Places. Supplier currently links through `company_id` to this
 Company role and then to the same-id Place; Supplier does not add a synonymous
 `place_id`.
 
+Run `scripts/audit-place-company-supplier.mjs` against an owning ecosystem
+database to verify the complete relationship without writing data.
+
 ### Identity plus membership
 
 User is public identity. AppUser is App-owned membership/entitlement and
@@ -166,6 +175,10 @@ not turn them into one identity or justify copying the scoped tree into root.
 
 ### Parent-owned records
 
+Recipe and Dish have independent lifecycles inside their owning Kitchen, so
+they are parent-scoped Entities rather than root identities. Recipe owns
+authored preparation content. Dish owns reusable food identity and media.
+
 MenuSection and MenuItem can have stable document ids without independent
 Entity lifecycle. Kitchen team join requests, document links, financial facts,
 and similar parent-owned support should remain Records unless product behavior
@@ -191,25 +204,48 @@ projection; it does not establish raw root-read authority.
 ## Coverage boundary
 
 The repository contains domain concepts whose models, routes, or collections
-predate executable entity declarations. Examples include profile roots, Dish,
-KitchenOrder, Customer, Station, Task, and Blog content.
+predate executable entity declarations. Examples include remaining profile
+roots, Station, Task, and Blog content.
 
 Their existence is real; their FireUX Entity classification is not yet declared
 by the matrix. Treat each as `to-confirm` for classification work. Do not
 bulk-promote them from route or folder symmetry.
-
-The matrix already records these explicit questions:
-
-| Concept | State        | Question                                                               |
-| ------- | ------------ | ---------------------------------------------------------------------- |
-| Recipe  | `to-confirm` | Does it remain Kitchen-scoped operational truth or gain root identity? |
-| Product | `to-confirm` | Is it root identity with Supplier and Kitchen wrappers?                |
 
 Ingredient is now a declared shared culinary root owned by
 `fireux-kitchens`. Kitchen and Supplier operational records reference its
 stable document id and hydrate only the bounded public projection. Its
 canonical `name` is the popular name used by the shared world; language and
 translation state are not Ingredient identity.
+
+Recipe and Dish are confirmed Kitchen-scoped Entities. Recipe owns authored
+preparation content; Dish owns reusable food identity and media. MenuItem is a
+MenuSection-owned placement Record and must reference a Dish from the same
+Kitchen. Run `scripts/audit-misebox-recipe-dish-menu-items.mjs` to verify those
+scope fields and relationships in Misebox without writing data.
+
+KitchenOrder is a confirmed Kitchen-scoped Entity with a trusted lifecycle.
+Completing a ready Order atomically creates its same-id immutable KitchenSale
+and FinancialFact. CustomerProfile is an optional App-scoped User profile
+Record; CustomerOrderLink is a User-owned, App-scoped pointer that can exist
+without that preferences record. Run
+`scripts/audit-misebox-orders-sales-customers.mjs` for the read-only integrity
+check. Legacy root links are planned by
+`scripts/migrate-misebox-customer-order-links.mjs` and require an explicit
+confirmation hash plus protected preimage before application.
+
+Product is a declared commercial root owned by `fireux-products`. It has an
+independent lifecycle, route identity, pricing children, authorship, and
+provider identity. Supplier Item is a Supplier-owned scoped Record: it must
+link to Product with `product_id`, owns the Supplier's offer/SKU/packaging and
+procurement terms, and may link to Ingredient when the offer represents
+culinary stock. Neither wrapper copies Product or Ingredient identity.
+Product document ids are hydrated by Firestore readers and need not be copied
+into sparse stored records. A slug is required by a published doorway, not by
+an inactive provider-imported Product that has no public route.
+
+Run `scripts/audit-misebox-product-supplier-items.mjs` to verify Product,
+Ingredient, Supplier, Supplier Ingredient, and Supplier Item links in the
+Misebox owner database without writing data.
 
 ## Storage and route implications
 
@@ -237,10 +273,10 @@ Public Index and Public Detail family maps.
 | Place plus same-id Company role                                | `accepted`   | Place owns shared location identity; Company remains an exact stamps-only role marker and public reads reuse the Place projection                                   |
 | Kitchen root + Place + App support composition                 | `accepted`   | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration, Place owns location presentation, and App support owns access only        |
 | Supplier and Portfolio public-read contracts are unresolved    | `to-confirm` | Define bounded public DTOs before claiming public family parity                                                                                                     |
-| Recipe independent identity is unresolved                      | `to-confirm` | Keep it Kitchen-scoped until an independent lifecycle is proved                                                                                                     |
-| Product wrapper relationship is unresolved                     | `to-confirm` | Confirm root Product before formalizing Supplier Item or Kitchen Dish relationships around it                                                                       |
+| Recipe and Dish Kitchen ownership                              | `accepted`   | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                  |
+| Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; App-scoped Customer links point to Orders without duplicating their status                         |
+| Product root plus Supplier Item relationship                   | `accepted`   | Product owns commercial identity and ProductPrice children; Supplier Item is a Supplier-owned offer Record with required `product_id` and optional `ingredient_id`   |
 | Supplier location chain                                        | `accepted`   | Use Supplier → Company → same-id Place. A future depot or dispatch-site relationship must be proved separately rather than adding a synonymous Supplier `place_id`. |
-| Supplier creation may leave `company_id` empty                 | `drift`      | Reconcile onboarding and existing roots before enforcing the accepted Company/Place chain in production reads and writes.                                           |
 | Directory publication implementation history lived in this map | `drift`      | Keep entity classification here and move current publication mechanics to source, guards, or a focused directory map if it becomes a recurring family               |
 
 ## Alignment roadmap
@@ -256,11 +292,7 @@ Public Index and Public Detail family maps.
 
 1. Reconcile existing undeclared domain concepts one owning package at a time.
 2. Complete the Kitchen root/App-support identity migration.
-3. Resolve Recipe and Product from product behavior rather than folder
-   symmetry.
-4. Reconcile Supplier onboarding and existing roots with the accepted
-   Supplier → Company → same-id Place relationship.
-5. Define Supplier and Portfolio bounded public-read contracts.
+3. Define Supplier and Portfolio bounded read contracts.
 
 ### Later
 

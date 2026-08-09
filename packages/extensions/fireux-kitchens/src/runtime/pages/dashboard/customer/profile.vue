@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { useCustomer } from '../../../composables/fireux/firestore/profiles/Customer/useCustomer'
+import { useCustomer } from '../../../composables/fireux/customer/useCustomer'
 
 const { appProfile } = useCustomer()
 

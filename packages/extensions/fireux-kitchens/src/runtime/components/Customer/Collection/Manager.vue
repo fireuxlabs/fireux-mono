@@ -92,7 +92,7 @@ import { useCollectionVariantCards } from 'fireux-core/runtime/composables/share
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: adapt profile entries to shared card mechanics.
 import { computed } from 'vue'
 import { useCustomerFetch } from '../../../composables/fireux/firestore/profiles/Customer/fetch/useCustomerFetch'
-import { useCustomerInterface } from '../../../composables/fireux/firestore/profiles/Customer/utils/view/useCustomerInterface'
+import { useCustomerInterface } from '../../../composables/fireux/customer/useCustomerInterface'
 import type { Customer } from '../../../models/customer.model'
 
 type CustomerEntry = Partial<Customer> & { id: string, user?: unknown }

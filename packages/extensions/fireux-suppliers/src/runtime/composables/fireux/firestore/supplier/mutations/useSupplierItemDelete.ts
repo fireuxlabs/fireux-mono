@@ -1,35 +1,26 @@
-import { useFirestoreDelete } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreDelete'
-import { resolveSupplierItemCollectionPath } from '../fetch/useSupplierItemCollection'
+import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 
-const normalizeString = (value: unknown) => String(value ?? '').trim()
+const text = (value: unknown) => String(value ?? '').trim()
 
-export function useSupplierItemDelete(options: {
-  supplierCollectionPath?: string
-} = {}) {
-  const { deleteDocument } = useFirestoreDelete()
-
+export function useSupplierItemDelete() {
   async function deleteSupplierItem(
     supplierId: string,
     supplierItemId: string
   ): Promise<void> {
-    const resolvedSupplierId = normalizeString(supplierId)
-    const resolvedSupplierItemId = normalizeString(supplierItemId)
-    if (!resolvedSupplierId) {
-      throw new Error('[fireux-suppliers] supplier id is required.')
-    }
-    if (!resolvedSupplierItemId) {
-      throw new Error('[fireux-suppliers] supplier item id is required.')
-    }
-
-    const collectionPath = resolveSupplierItemCollectionPath(
-      resolvedSupplierId,
-      options.supplierCollectionPath
+    const id = text(supplierId)
+    const itemId = text(supplierItemId)
+    if (!id) throw new Error('[fireux-suppliers] supplier id is required.')
+    if (!itemId) throw new Error('[fireux-suppliers] supplier item id is required.')
+    const user = await useRequireUser()
+    const token = await user.getIdToken()
+    await $fetch(
+      `/api/suppliers/${encodeURIComponent(id)}/items/${encodeURIComponent(itemId)}`,
+      {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      }
     )
-
-    await deleteDocument(collectionPath, resolvedSupplierItemId)
   }
 
-  return {
-    deleteSupplierItem,
-  }
+  return { deleteSupplierItem }
 }

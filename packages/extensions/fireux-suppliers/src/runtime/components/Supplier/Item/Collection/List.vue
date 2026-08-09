@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import type { SupplierItemCard } from '../../../../composables/fireux/firestore/supplier/utils/view/useSupplierItemInterface'
+import type { SupplierItemCard } from '../../../../composables/fireux/supplier-item/useSupplierItemInterface'
 
 withDefaults(
   defineProps<{

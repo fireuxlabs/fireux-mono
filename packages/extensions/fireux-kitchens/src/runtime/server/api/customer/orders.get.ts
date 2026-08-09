@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: join the concrete Place runtime model and omit absent customer Order values.
 import { defineEventHandler, getQuery } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
@@ -41,7 +42,8 @@ const paymentStatuses = new Set<KitchenOrderPaymentStatus>([
 export default defineEventHandler(async (event): Promise<CustomerOrderPage> => {
   const { uid } = await requireFirebaseBearerUser(event)
   const db = getRuntimeFirestore()
-  const links = db.collection(`customers/${uid}/orders`)
+  const { appId } = useFireUXConfig()
+  const links = db.collection(`apps/${appId}/customers/${uid}/orders`)
   const cursor = text(getQuery(event).cursor)
   let query = links.orderBy('created_at', 'desc').limit(PAGE_SIZE)
 
@@ -55,7 +57,7 @@ export default defineEventHandler(async (event): Promise<CustomerOrderPage> => {
     const link = linkSnap.data()
     const orderPath = text(link.order_path)
     const match = orderPath.match(ORDER_PATH)
-    if (!match || match[3] !== linkSnap.id) return []
+    if (!match || match[1] !== appId || match[3] !== linkSnap.id) return []
 
     return [{
       linkId: linkSnap.id,

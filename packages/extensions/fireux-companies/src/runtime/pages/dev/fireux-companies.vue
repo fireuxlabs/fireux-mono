@@ -1,81 +1,39 @@
-<!-- Concurrent edit — 2026-07-20 17:17 CEST — Demo Data Spine pass: cull ad-hoc Company fixture surfaces. -->
 <template>
   <UPage>
     <UPageHeader
-      title="Dev · Companies (Ext)"
-      description="Model shape for Companies collection."
+      title="Dev · Companies"
+      description="Inspect the immutable Company role contract and its Place-backed projections."
     />
 
     <UPageBody class="pagebody">
       <div class="space-y-4">
         <UCard>
           <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Model</div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('model')"
-            >
-              {{ openSections.model ? 'Hide' : 'Show' }}
+            <div class="text-sm font-semibold">Role defaults</div>
+            <UButton variant="ghost" size="xs" @click="modelOpen = !modelOpen">
+              {{ modelOpen ? 'Hide' : 'Show' }}
             </UButton>
           </div>
-          <div v-show="openSections.model" class="mt-4">
-            <DevModel
-              :title="'Companies · Model'"
-              :model="companyModelRuntime"
-            />
-          </div>
+          <DevModel
+            v-if="modelOpen"
+            class="mt-4"
+            title="Company · defaults"
+            :model="CompanyDefaults"
+          />
         </UCard>
 
-        <UCard>
-          <div class="flex items-center justify-between gap-3">
-            <div class="text-sm font-semibold">Collection</div>
-            <UButton
-              variant="ghost"
-              size="xs"
-              @click="toggleSection('collection')"
-            >
-              {{ openSections.collection ? 'Hide' : 'Show' }}
-            </UButton>
-          </div>
-          <div v-show="openSections.collection" class="mt-4">
-            <UCard>
-              <template #header>
-                <div class="space-y-3">
-                  <p class="text-sm font-semibold text-highlighted">
-                    Companies collection
-                  </p>
-                  <p class="text-xs text-muted">
-                    Inspect model drift separately from the public companies collection manager.
-                  </p>
-                  <DevDriftToolbar
-                    :drift-kind="companiesDriftKind"
-                    :selected-field="companiesSelectedField"
-                    :filter-options="companiesFilterOptions"
-                    :copy-label="'Copy drift · Companies'"
-                    :copy-payload="companiesDriftCopyPayload"
-                    @update:drift-kind="setCompaniesDriftKind"
-                    @update:selected-field="updateCompaniesSelectedField"
-                  />
-                </div>
-              </template>
-            </UCard>
-
-            <CompanyCollectionManager />
-          </div>
-        </UCard>
+        <CompanyCollectionManager
+          title="Companies"
+          description="Valid Company roles joined to their same-ID Place projections."
+        />
       </div>
     </UPageBody>
   </UPage>
 </template>
 
 <script setup lang="ts">
-import { useDevDriftFilter } from 'fireux-core/runtime/composables/dev/useDevDriftFilter'
-import { computed, reactive } from 'vue'
-import type { CompanyHydrated } from '../../composables/fireux/firestore/company/fetch/types'
-import { useCompany } from '../../composables/fireux/firestore/company/useCompany'
-import type { Company } from '../../models/company.model'
-import { CompanyModel as CompanyModelRuntime } from '../../models/company.model'
+import { ref } from 'vue'
+import { CompanyDefaults } from '../../models/company.model'
 
 definePageMeta({
   layout: 'dev',
@@ -89,63 +47,5 @@ definePageMeta({
   },
 })
 
-const openSections = reactive({
-  model: false,
-  collection: false,
-})
-
-const toggleSection = (key: keyof typeof openSections) => {
-  openSections[key] = !openSections[key]
-}
-
-const companyModelRuntime = CompanyModelRuntime
-
-const { collection, companies: hydratedCompanies } = useCompany<Company>()
-
-const companiesCollection = computed(() => collection.value ?? [])
-
-const {
-  driftKind: companiesDriftKind,
-  setDriftKind: setCompaniesDriftKind,
-  selectedField: companiesSelectedField,
-  driftById: companiesDriftById,
-  filterOptions: companiesFilterOptions,
-  filteredCollection: filteredCompanies,
-} = useDevDriftFilter({
-  collection: companiesCollection,
-  runtimeModel: companyModelRuntime,
-})
-
-
-const hydratedById = computed(() => {
-  const map = new Map<string, CompanyHydrated>()
-  for (const company of hydratedCompanies.value ?? []) {
-    if (company?.id) map.set(String(company.id), company)
-  }
-  return map
-})
-
-const filteredCompaniesDriftPayload = computed(() =>
-  filteredCompanies.value.map((company) => {
-    const drift = companiesDriftById.value.get(company.id) ?? { missing: [], extra: [] }
-    const hydrated = hydratedById.value.get(company.id)
-    return {
-      id: company.id,
-      name: hydrated?.name ?? '',
-      drift,
-    }
-  })
-)
-
-const companiesDriftCopyPayload = computed(() => ({
-  modelPath: 'packages/extensions/fireux-companies/src/runtime/models/company.model.ts',
-  driftKind: companiesDriftKind.value,
-  selectedField: companiesSelectedField.value || null,
-  totalCompanies: filteredCompanies.value.length,
-  companies: filteredCompaniesDriftPayload.value,
-}))
-
-const updateCompaniesSelectedField = (value: string) => {
-  companiesSelectedField.value = value
-}
+const modelOpen = ref(false)
 </script>

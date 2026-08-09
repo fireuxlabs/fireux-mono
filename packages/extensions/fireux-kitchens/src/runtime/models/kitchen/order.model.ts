@@ -1,3 +1,4 @@
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { FinancialMoney } from 'fireux-finance/runtime/models/money.model'
@@ -28,6 +29,20 @@ export const KitchenOrderStorage = {
   parent: 'kitchen',
   idParam: 'orderId',
 } as const
+
+export const KitchenOrderEntity = defineFireuxEntity({
+  kind: 'entity',
+  name: 'KitchenOrder',
+  family: ['kitchen', 'commerce'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'Kitchen',
+  scoped: KitchenOrderStorage.path,
+})
 
 export type KitchenOrderItem = {
   id: string
@@ -124,7 +139,7 @@ export type KitchenOrderFulfilmentMatch = Record<string, unknown> & {
   handoff?: 'table_service' | 'tray' | 'bag'
 }
 
-export const KitchenOrderModel = {
+export const KitchenOrderDefaults = {
   id: '' as string,
   kitchen_id: '' as string,
   menu_id: '' as string,
@@ -177,7 +192,7 @@ export const KitchenOrderModel = {
 } as const
 
 export type KitchenOrder = {
-  [K in keyof typeof KitchenOrderModel]: (typeof KitchenOrderModel)[K]
+  [K in keyof typeof KitchenOrderDefaults]: (typeof KitchenOrderDefaults)[K]
 } & {
   customer_capability_hash?: string
   customer_uid?: string

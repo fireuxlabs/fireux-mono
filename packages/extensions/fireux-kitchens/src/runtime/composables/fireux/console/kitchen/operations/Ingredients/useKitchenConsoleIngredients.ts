@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { IngredientStorage } from '../../../../../../models/ingredient.model'
-import type { IngredientInterfaceItem } from '../../../../firestore/ingredient/utils/view/useIngredientInterface'
+import type { IngredientInterfaceItem } from '../../../../ingredient/useIngredientInterface'
 import type { KitchenDemoDishComponent } from '../../../../../../demo/kitchen/production'
 import { useKitchenIngredients } from './fetch/useKitchenIngredients'
 import { useKitchenConsole } from '../../core/useKitchenConsole'

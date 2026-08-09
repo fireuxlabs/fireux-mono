@@ -41,7 +41,7 @@ export const CompanyRoleRecord = defineFireuxEntity({
   ],
 })
 
-export const CompanyModel = {
+export const CompanyDefaults = {
   id: '' as string,
   created: {
     at: {} as FirebaseTimestamp,
@@ -52,8 +52,7 @@ export const CompanyModel = {
 } as const
 
 export type Company = {
-  [K in keyof typeof CompanyModel]: (typeof CompanyModel)[K]
+  [K in keyof typeof CompanyDefaults]: (typeof CompanyDefaults)[K]
 }
 
 export type CompanyCreateInput = Omit<Company, 'created' | 'updated'>
-export type CompanyUpdateInput = Partial<Omit<Company, 'id' | 'created' | 'updated'>>

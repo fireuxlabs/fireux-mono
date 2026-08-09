@@ -31,7 +31,7 @@ import { navigateTo } from '#imports'
 import { ref } from 'vue'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useKitchenConsoleDish } from '../../../../../composables/fireux/console/kitchen/operations/Dishes/useKitchenConsoleDish'
-import { useDish } from '../../../../../composables/fireux/firestore/dish/useDish'
+import { useDishDelete } from '../../../../../composables/fireux/firestore/dish/mutations/useDishDelete'
 
 const {
   dish,
@@ -43,7 +43,7 @@ const {
 } = useKitchenConsoleDish()
 
 const toast = useToastify()
-const { deleteDish } = useDish({
+const { deleteDish } = useDishDelete({
   kitchenCollectionPath: rootCollection,
   databaseId,
 })

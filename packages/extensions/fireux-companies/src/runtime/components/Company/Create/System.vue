@@ -25,29 +25,27 @@
 
 <script setup lang="ts">
 // Concurrent edit — 2026-07-21 14:30 CEST — Company public projection: trust idempotent server materialization without a raw existence probe.
-import type { PlaceUpsertInput } from 'fireux-places/runtime/models/place.model'
 import { ref } from 'vue'
 import { useCompanyCreate } from '../../../composables/fireux/firestore/company/mutations/useCompanyCreate'
 
 const { createCompany } = useCompanyCreate()
+const emit = defineEmits<{
+  (e: 'created', payload: { id: string }): void
+}>()
 
 const error = ref<string | null>(null)
 const successId = ref<string | null>(null)
 
-async function onPlaceConfirmed(payload: { placeId: string; place: PlaceUpsertInput }) {
+async function onPlaceConfirmed(payload: { placeId: string }) {
   error.value = null
   successId.value = null
 
   try {
     const id = payload.placeId
-    const place = payload.place
-
-    const createdId = await createCompany({
-      id,
-      place,
-    })
+    const createdId = await createCompany({ id })
 
     successId.value = createdId
+    emit('created', { id: createdId })
   } catch (e) {
     error.value = e instanceof Error ? e.message : 'Unable to create company'
   }
