@@ -2,23 +2,29 @@
   <section class="fireux-ecosystems" aria-labelledby="fireux-ecosystems-title">
     <div class="fireux-ecosystems__heading">
       <div>
-        <h2 id="fireux-ecosystems-title">FireUX's Ecosystems</h2>
+        <p class="fx-type-headline">Product families</p>
+        <h2 id="fireux-ecosystems-title">Explore the Ecosystems</h2>
       </div>
 
       <div>
+        <p>
+          Each Ecosystem groups Apps around a product area and owns its
+          identity, presentation, and operations.
+        </p>
         <UButton
           to="/ecosystems"
           color="neutral"
           variant="soft"
           trailing-icon="i-lucide-arrow-right"
         >
-          Explore all ecosystems
+          Explore all Ecosystems
         </UButton>
       </div>
     </div>
 
     <div
       v-if="outcome === 'pending'"
+      key="ecosystems-loading"
       class="fireux-ecosystems__rail"
       aria-label="Loading ecosystems"
     >
@@ -53,6 +59,7 @@
 
     <div
       v-else-if="ecosystems.length"
+      key="ecosystems-ready"
       class="fireux-ecosystems__rail"
       aria-label="FireUX ecosystems"
     >
@@ -64,13 +71,24 @@
         class="fireux-ecosystems__card"
       >
         <div class="fireux-ecosystems__identity">
-          <UAvatar
-            :src="ecosystem.image_url"
-            :alt="ecosystem.name"
-            :text="ecosystem.name"
-            size="2xl"
-            class="rounded-2xl"
-          />
+          <div class="fireux-ecosystems__logo">
+            <UIcon
+              v-if="!loadedImageIds.has(ecosystem.id)"
+              name="i-lucide-orbit"
+              aria-hidden="true"
+            />
+            <img
+              v-if="ecosystem.image_url"
+              :src="ecosystem.image_url"
+              :alt="`${ecosystem.name} logo`"
+              width="56"
+              height="56"
+              loading="lazy"
+              :data-ecosystem-logo="ecosystem.id"
+              :class="loadedImageIds.has(ecosystem.id) ? 'is-loaded' : ''"
+              @load="markImageLoaded(ecosystem.id)"
+            />
+          </div>
           <UBadge color="neutral" variant="soft">
             {{ appCountLabel(ecosystem.app_count) }}
           </UBadge>
@@ -80,7 +98,7 @@
           <h3>{{ ecosystem.name }}</h3>
           <p>{{ ecosystem.description }}</p>
           <span>
-            Explore ecosystem
+            Explore {{ ecosystem.name }}
             <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
           </span>
         </div>
@@ -99,18 +117,41 @@
 </template>
 
 <script setup lang="ts">
+import { nextTick, onMounted, ref } from 'vue'
 import { usePublishedPlatformEcosystemDirectory } from '../../composables/usePlatformDirectory'
 
 const ecosystemsController = usePublishedPlatformEcosystemDirectory()
 const { ecosystems, outcome } = ecosystemsController
+const loadedImageIds = ref(new Set<string>())
 
 async function refreshEcosystems(): Promise<void> {
   await ecosystemsController.refresh?.()
 }
 
 function appCountLabel(count: number): string {
-  return `${count} ${count === 1 ? 'app' : 'apps'}`
+  return `${count} ${count === 1 ? 'App' : 'Apps'}`
 }
+
+function markImageLoaded(ecosystemId: string): void {
+  loadedImageIds.value = new Set([...loadedImageIds.value, ecosystemId])
+}
+
+onMounted(async () => {
+  await nextTick()
+  for (const image of document.querySelectorAll<HTMLImageElement>(
+    '.fireux-ecosystems [data-ecosystem-logo]'
+  )) {
+    const ecosystemId = image.dataset.ecosystemLogo
+    if (!ecosystemId) continue
+    if (image.complete && image.naturalWidth > 0) {
+      markImageLoaded(ecosystemId)
+      continue
+    }
+    image.addEventListener('load', () => markImageLoaded(ecosystemId), {
+      once: true,
+    })
+  }
+})
 </script>
 
 <style scoped>
@@ -134,6 +175,10 @@ function appCountLabel(count: number): string {
 .fireux-ecosystems__heading > div {
   display: grid;
   gap: calc(var(--spacing) * 3);
+}
+
+.fireux-ecosystems__heading > div:first-child > p {
+  color: var(--ui-primary);
 }
 
 .fireux-ecosystems__heading h2 {
@@ -194,6 +239,37 @@ function appCountLabel(count: number): string {
   padding: calc(var(--spacing) * 5);
   border-radius: calc(var(--ui-radius) * 6);
   background: var(--ui-bg-elevated);
+}
+
+.fireux-ecosystems__logo {
+  position: relative;
+  display: grid;
+  width: 3.5rem;
+  height: 3.5rem;
+  overflow: hidden;
+  place-items: center;
+  border-radius: calc(var(--ui-radius) * 4);
+  background: var(--ui-bg-muted);
+  color: var(--ui-text-muted);
+}
+
+.fireux-ecosystems__logo > :deep(.iconify) {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.fireux-ecosystems__logo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0;
+  transition: opacity 160ms ease;
+}
+
+.fireux-ecosystems__logo img.is-loaded {
+  opacity: 1;
 }
 
 .fireux-ecosystems__body {

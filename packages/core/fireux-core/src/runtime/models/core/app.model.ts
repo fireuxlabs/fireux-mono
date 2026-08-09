@@ -56,23 +56,10 @@ export interface AppPresentation {
   media: AppMedia
 }
 
-/**
- * Canonical App identity and operational policy.
- *
- * Storage: `apps/{appId}` in the App's owning named database.
- */
 export interface App extends FireuxStamped, AppIdentity, AppPresentation {
   self_join_enabled: boolean
 }
 
-/**
- * Bounded local registry projection for an App hosted by one Firebase project.
- *
- * Storage: `(default)/apps/{appId}`.
- * Authority remains the canonical App and authored App configuration; this
- * record contains only what the local project directory and Console need to
- * discover, present, and route to that App.
- */
 export interface AppMeta
   extends AppIdentity,
     AppPresentation,
@@ -111,7 +98,7 @@ export const AppEntity = defineFireuxEntity({
   root: AppStorage.path,
 })
 
-export const AppIdentityModel: AppIdentity = {
+export const AppIdentityDefaults: AppIdentity = {
   id: '',
   project_id: '',
   ecosystem_id: '',
@@ -119,7 +106,7 @@ export const AppIdentityModel: AppIdentity = {
   status: 'draft',
 }
 
-export const AppPresentationModel: AppPresentation = {
+export const AppPresentationDefaults: AppPresentation = {
   name: '',
   short_name: '',
   description: '',
@@ -132,10 +119,9 @@ export const AppPresentationModel: AppPresentation = {
   },
 }
 
-export const AppModel: App = {
-  ...AppIdentityModel,
-  ...AppPresentationModel,
-  status: 'active',
+export const AppDefaults: App = {
+  ...AppIdentityDefaults,
+  ...AppPresentationDefaults,
   self_join_enabled: false,
   created: {
     at: {} as FirebaseTimestamp,
@@ -148,9 +134,9 @@ export const AppModel: App = {
   },
 }
 
-export const AppMetaModel: AppMeta = {
-  ...AppIdentityModel,
-  ...AppPresentationModel,
+export const AppMetaDefaults: AppMeta = {
+  ...AppIdentityDefaults,
+  ...AppPresentationDefaults,
   database_id: '',
   website_url: '',
   console_families: [],
@@ -159,9 +145,6 @@ export const AppMetaModel: AppMeta = {
     by: undefined,
   },
 }
-
-/** Existing consumers use `AppModel` as both the default value and its type. */
-export type AppModel = App
 
 export type AppCreateInput = Omit<App, 'created' | 'updated'>
 export type AppUpdateInput = Partial<Omit<App, 'id' | 'created' | 'updated'>>

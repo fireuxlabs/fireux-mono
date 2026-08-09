@@ -4,9 +4,7 @@
       <div class="section__header">
         <div class="section__copy">
           <h3>Public Profile</h3>
-          <p>
-            Edit the copy people see on public app surfaces.
-          </p>
+          <p>Edit the copy people see on public app surfaces.</p>
         </div>
       </div>
     </template>
@@ -22,15 +20,14 @@
         :update-function="handleDescriptionUpdate"
       />
     </div>
-
   </UCard>
 </template>
 
 <script setup lang="ts">
-import type { AppModel } from '../../../../models/core/app.model';
+import type { App } from '../../../../models/core/app.model'
 
 defineProps<{
-  app: AppModel
+  app: App
   handleDescriptionUpdate: (value: string) => Promise<unknown>
 }>()
 </script>

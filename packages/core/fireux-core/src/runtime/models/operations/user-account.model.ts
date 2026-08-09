@@ -54,3 +54,8 @@ export type UserAccountCreateInput = Omit<
   'id' | 'created' | 'updated'
 >
 export type UserAccountUpdateInput = Partial<UserAccountCreateInput>
+
+export type CurrentUserAccountResponse = {
+  ok: true
+  account: UserAccount | null
+}

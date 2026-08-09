@@ -16,8 +16,7 @@
               {{ item.name }}
             </div>
             <div class="preview__subtitle">
-              <span v-if="item.slug">{{ item.slug }}</span>
-              <span v-else class="italic">missing slug</span>
+              {{ item.id }}
             </div>
           </div>
 
@@ -50,7 +49,6 @@ import { computed } from '#imports'
 
 type EcosystemPreviewItem = {
   id?: string
-  slug?: string
   name?: string
   description?: string
   status?: string
@@ -63,7 +61,6 @@ const props = withDefaults(defineProps<{
 }>(), {
   item: () => ({
     id: '',
-    slug: '',
     name: '',
     description: '',
     status: '',
@@ -74,7 +71,6 @@ const props = withDefaults(defineProps<{
 
 const item = computed(() => ({
   id: props.item?.id || '',
-  slug: props.item?.slug || '',
   name: props.item?.name || '',
   description: props.item?.description || '',
   status: props.item?.status || '',

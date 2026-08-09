@@ -17,22 +17,11 @@ export interface EcosystemPresentation {
   website_url: string
 }
 
-/**
- * Canonical Ecosystem identity.
- *
- * Storage: `ecosystems/{ecosystemId}` in the Ecosystem's named database.
- */
 export interface Ecosystem
   extends FireuxStamped,
     EcosystemIdentity,
     EcosystemPresentation {}
 
-/**
- * Bounded local registry projection for the Ecosystem hosted by one Firebase
- * project.
- *
- * Storage: `(default)/ecosystem/{ecosystemId}`.
- */
 export interface EcosystemMeta
   extends EcosystemIdentity,
     EcosystemPresentation,
@@ -69,23 +58,22 @@ export const EcosystemEntity = defineFireuxEntity({
   root: EcosystemStorage.path,
 })
 
-export const EcosystemIdentityModel: EcosystemIdentity = {
+export const EcosystemIdentityDefaults: EcosystemIdentity = {
   id: '',
   project_id: '',
   status: 'draft',
 }
 
-export const EcosystemPresentationModel: EcosystemPresentation = {
+export const EcosystemPresentationDefaults: EcosystemPresentation = {
   name: '',
   description: '',
   image_url: '',
   website_url: '',
 }
 
-export const EcosystemModel: Ecosystem = {
-  ...EcosystemIdentityModel,
-  ...EcosystemPresentationModel,
-  status: 'active',
+export const EcosystemDefaults: Ecosystem = {
+  ...EcosystemIdentityDefaults,
+  ...EcosystemPresentationDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -97,9 +85,9 @@ export const EcosystemModel: Ecosystem = {
   },
 }
 
-export const EcosystemMetaModel: EcosystemMeta = {
-  ...EcosystemIdentityModel,
-  ...EcosystemPresentationModel,
+export const EcosystemMetaDefaults: EcosystemMeta = {
+  ...EcosystemIdentityDefaults,
+  ...EcosystemPresentationDefaults,
   database_id: '',
   updated: {
     at: {} as FirebaseTimestamp,

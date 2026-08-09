@@ -12,8 +12,14 @@ export type AdminAuthStatus = {
     FIREBASE_PRIVATE_KEY: boolean
   }
   file?: boolean
-  /** Explicit credential env detected; standard ADC is not probed here. */
+  /** Explicit credential env or file detected; Storage status probes active ADC. */
   configured: boolean
+}
+
+export type StorageAccessStatus = {
+  configured: boolean
+  reachable: boolean
+  issue: string
 }
 
 export type BrandAssetCheck = {
@@ -31,7 +37,10 @@ export interface EnvCheckResponse {
   required: EnvVarEntry[]
   optionalClient: EnvVarEntry[]
   optional?: EnvVarEntry[]
-  server: { adminAuth: AdminAuthStatus }
+  server: {
+    adminAuth: AdminAuthStatus
+    storage: StorageAccessStatus
+  }
   missingRequired: string[]
   summary: {
     required: string

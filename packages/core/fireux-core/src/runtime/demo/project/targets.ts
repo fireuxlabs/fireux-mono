@@ -1,6 +1,6 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import {
-  ProjectModel,
+  ProjectDefaults,
   type Project,
 } from '../../models/system/project.model'
 
@@ -21,7 +21,7 @@ export const projectDemoUpdated = {
 }
 
 export const fireuxDemoProject: Project = {
-  ...ProjectModel,
+  ...ProjectDefaults,
   id: 'fireux-demo-project',
   name: 'FireUX Demo Project',
   description: 'A deterministic read-only control-plane project.',
@@ -30,6 +30,4 @@ export const fireuxDemoProject: Project = {
   updated: projectDemoUpdated,
 }
 
-export const projectDemoTargets: readonly Project[] = [
-  fireuxDemoProject,
-]
+export const projectDemoTargets: readonly Project[] = [fireuxDemoProject]

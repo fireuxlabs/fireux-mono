@@ -103,7 +103,7 @@ import { useCollectionVariantCards } from '../../../composables/shared/useCollec
 import {
   useEcosystemInterface,
   type EcosystemInterfaceInput,
-} from '../../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+} from '../../../composables/fireux/ecosystem/useEcosystemInterface'
 import type { EcosystemDirectoryController } from '../../../types/directory-controller.types'
 
 const props = withDefaults(

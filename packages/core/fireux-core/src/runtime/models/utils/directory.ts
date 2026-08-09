@@ -37,7 +37,6 @@ export type AppDirectoryEntry = {
 
 export type EcosystemDirectoryEntry = {
   id: string
-  slug: string
   status: EcosystemStatus
   name: string
   description: string

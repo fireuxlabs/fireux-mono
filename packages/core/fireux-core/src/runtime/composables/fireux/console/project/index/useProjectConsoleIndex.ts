@@ -2,12 +2,15 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: identify authoritative Project targets.
 import { computed, type Ref } from 'vue'
 import { useConsoleIndex } from '../../../app/console/useConsoleIndex'
-import type { ProjectCollectionFilter } from '../../../firestore/core/project/fetch/useProjectCollection'
-import type { ProjectSurface } from '../../../firestore/core/project/utils/view/useProjectInterface'
+import type { ProjectCollectionFilter } from '../../../project/useProjectCollection'
+import type { ProjectSurface } from '../../../project/useProjectInterface'
 import { useProjectConsole } from '../core/useProjectConsole'
 
 type UseProjectConsoleIndexOptions = {
-  filter?: ProjectCollectionFilter | Ref<ProjectCollectionFilter | null | undefined> | null
+  filter?:
+    | ProjectCollectionFilter
+    | Ref<ProjectCollectionFilter | null | undefined>
+    | null
 }
 
 export function useProjectConsoleIndex(

@@ -142,7 +142,7 @@ import {
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+} from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
 import {
   usePlatformDirectory,
   usePublishedPlatformEcosystemDirectory,

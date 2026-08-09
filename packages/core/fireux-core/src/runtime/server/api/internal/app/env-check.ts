@@ -9,15 +9,12 @@ import {
   setHeader,
   type H3Event,
 } from 'h3'
-import {
-  join,
-  isAbsolute,
-  relative,
-  dirname,
-} from 'node:path'
+import { join, isAbsolute, relative, dirname } from 'node:path'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
+import { getStorage } from 'firebase-admin/storage'
 import { requireDevDeveloper } from '../../../utils/auth/developer'
+import { getAdminApp } from '../../../utils/getAdmin'
 import {
   checkCurrentAppBrandAssets,
   findRepoRoot,
@@ -96,8 +93,13 @@ interface AdminAuthStatus {
     FIREBASE_PRIVATE_KEY: boolean
   }
   file: boolean
-  /** Explicit credential env detected; standard ADC is not probed here. */
+  /** Explicit credential env or file detected; Storage status probes active ADC. */
   configured: boolean
+}
+interface StorageAccessStatus {
+  configured: boolean
+  reachable: boolean
+  issue: string
 }
 const hasText = (value: unknown): boolean =>
   typeof value === 'string' && value.trim().length > 0
@@ -105,7 +107,8 @@ const hasText = (value: unknown): boolean =>
 /**
  * NOTE:
  * - `role` is enforced via Nuxt config, not env; we do NOT check it here.
- * - This route only validates process.env presence/shape and brand asset existence.
+ * - This route validates runtime config, App-owned brand assets, and live
+ *   Firebase Storage reachability with the active Admin credentials.
  */
 interface EnvCheckResponse {
   isValid: boolean
@@ -113,6 +116,7 @@ interface EnvCheckResponse {
   optionalClient: EnvVarEntry[]
   server: {
     adminAuth: AdminAuthStatus
+    storage: StorageAccessStatus
   }
   missingRequired: string[]
   summary: {
@@ -125,201 +129,243 @@ interface EnvCheckResponse {
   brandAssets: BrandAssetCheck[]
 }
 
-export default defineEventHandler(async (event: H3Event): Promise<EnvCheckResponse> => {
-  await assertDevOrInternalAccess(event)
-  setHeader(event, 'Cache-Control', 'private, no-store')
-  setHeader(event, 'Vary', 'Authorization')
+export default defineEventHandler(
+  async (event: H3Event): Promise<EnvCheckResponse> => {
+    await assertDevOrInternalAccess(event)
+    setHeader(event, 'Cache-Control', 'private, no-store')
+    setHeader(event, 'Vary', 'Authorization')
 
-  const env = process.env as Record<string, string | undefined>
-  const runtimeConfig = useRuntimeConfig(event)
-  const appConfig = useAppConfig() as Record<string, any>
-  const publicRuntime = (runtimeConfig?.public ?? {}) as Record<string, any>
-  const fireux = (publicRuntime.fireux ?? {}) as Record<string, any>
-  const firebaseEcosystem = (publicRuntime.firebaseEcosystem?.firebase ?? {}) as Record<
-    string,
-    any
-  >
-  const firebaseApp = (publicRuntime.firebaseApp ?? {}) as Record<string, any>
-  const appConfigColors = (appConfig?.ui?.colors ?? {}) as Record<string, any>
-  const here = dirname(fileURLToPath(import.meta.url))
-  const repoRoot = findRepoRoot(here)
+    const env = process.env as Record<string, string | undefined>
+    const runtimeConfig = useRuntimeConfig(event)
+    const appConfig = useAppConfig() as Record<string, any>
+    const publicRuntime = (runtimeConfig?.public ?? {}) as Record<string, any>
+    const fireux = (publicRuntime.fireux ?? {}) as Record<string, any>
+    const firebaseEcosystem = (publicRuntime.firebaseEcosystem?.firebase ??
+      {}) as Record<string, any>
+    const firebaseApp = (publicRuntime.firebaseApp ?? {}) as Record<string, any>
+    const appConfigColors = (appConfig?.ui?.colors ?? {}) as Record<string, any>
+    const here = dirname(fileURLToPath(import.meta.url))
+    const repoRoot = findRepoRoot(here)
 
-  const requiredClient = [
-    {
-      key: 'firebaseEcosystem.apiKey',
-      present: hasText(firebaseEcosystem.apiKey),
-    },
-    {
-      key: 'firebaseEcosystem.authDomain',
-      present: hasText(firebaseEcosystem.authDomain),
-    },
-    {
-      key: 'firebaseEcosystem.projectId',
-      present: hasText(firebaseEcosystem.projectId),
-    },
-    {
-      key: 'firebaseEcosystem.storageBucket',
-      present: hasText(firebaseEcosystem.storageBucket),
-    },
-    {
-      key: 'firebaseEcosystem.messagingSenderId',
-      present: hasText(firebaseEcosystem.messagingSenderId),
-    },
-    {
-      key: 'firebaseApp.appId',
-      present: hasText(firebaseApp.appId),
-    },
-    {
-      key: 'fireux.id',
-      present: hasText(fireux.id),
-    },
-    {
-      key: 'fireux.name',
-      present: hasText(fireux.name),
-    },
-    {
-      key: 'fireux.shortName',
-      present: hasText(fireux.shortName),
-    },
-    {
-      key: 'fireux.domain',
-      present: hasText(fireux.domain),
-    },
-  ]
+    const requiredClient = [
+      {
+        key: 'firebaseEcosystem.apiKey',
+        present: hasText(firebaseEcosystem.apiKey),
+      },
+      {
+        key: 'firebaseEcosystem.authDomain',
+        present: hasText(firebaseEcosystem.authDomain),
+      },
+      {
+        key: 'firebaseEcosystem.projectId',
+        present: hasText(firebaseEcosystem.projectId),
+      },
+      {
+        key: 'firebaseEcosystem.storageBucket',
+        present: hasText(firebaseEcosystem.storageBucket),
+      },
+      {
+        key: 'firebaseEcosystem.messagingSenderId',
+        present: hasText(firebaseEcosystem.messagingSenderId),
+      },
+      {
+        key: 'firebaseApp.appId',
+        present: hasText(firebaseApp.appId),
+      },
+      {
+        key: 'fireux.id',
+        present: hasText(fireux.id),
+      },
+      {
+        key: 'fireux.name',
+        present: hasText(fireux.name),
+      },
+      {
+        key: 'fireux.shortName',
+        present: hasText(fireux.shortName),
+      },
+      {
+        key: 'fireux.domain',
+        present: hasText(fireux.domain),
+      },
+    ]
 
-  const optionalClient = [
-    {
-      key: 'fireux.primaryColor',
-      present:
-        hasText(fireux.primaryColor) ||
-        hasText(publicRuntime.primaryColor) ||
-        hasText(appConfigColors.primary),
-    },
-    {
-      key: 'fireux.neutralColor',
-      present:
-        hasText(fireux.neutralColor) ||
-        hasText(publicRuntime.neutralColor) ||
-        hasText(appConfigColors.neutral),
-    },
-    {
-      key: 'fireux.secondaryColor',
-      present:
-        hasText(fireux.secondaryColor) ||
-        hasText(publicRuntime.secondaryColor) ||
-        hasText(appConfigColors.secondary),
-    },
-  ]
+    const optionalClient = [
+      {
+        key: 'fireux.primaryColor',
+        present:
+          hasText(fireux.primaryColor) ||
+          hasText(publicRuntime.primaryColor) ||
+          hasText(appConfigColors.primary),
+      },
+      {
+        key: 'fireux.neutralColor',
+        present:
+          hasText(fireux.neutralColor) ||
+          hasText(publicRuntime.neutralColor) ||
+          hasText(appConfigColors.neutral),
+      },
+      {
+        key: 'fireux.secondaryColor',
+        present:
+          hasText(fireux.secondaryColor) ||
+          hasText(publicRuntime.secondaryColor) ||
+          hasText(appConfigColors.secondary),
+      },
+    ]
 
-  // Detect explicit Admin credential configuration only. Standard ADC can be
-  // available without env vars and is resolved when the Admin SDK initializes.
-  const serverAuthJson = !!env.FIREBASE_SERVICE_ACCOUNT
-  const serverAuthSplit =
-    !!env.FIREBASE_PROJECT_ID &&
-    !!env.FIREBASE_CLIENT_EMAIL &&
-    !!env.FIREBASE_PRIVATE_KEY
-  const serviceAccountPaths = new Set<string>()
-  if (env.FIREBASE_SERVICE_ACCOUNT_FILE) {
-    serviceAccountPaths.add(env.FIREBASE_SERVICE_ACCOUNT_FILE)
-  }
-  if (env.GOOGLE_APPLICATION_CREDENTIALS) {
-    serviceAccountPaths.add(env.GOOGLE_APPLICATION_CREDENTIALS)
-  }
-  let detectedServiceAccountPath: string | undefined
-  const serverAuthFile = Array.from(serviceAccountPaths).some((candidate) => {
-    if (!candidate) return false
-    const possibilities = isAbsolute(candidate)
-      ? [candidate]
-      : [candidate, join(repoRoot, candidate)]
+    // Detect explicit Admin credential configuration only. Standard ADC can be
+    // available without env vars and is resolved when the Admin SDK initializes.
+    const serverAuthJson = !!env.FIREBASE_SERVICE_ACCOUNT
+    const serverAuthSplit =
+      !!env.FIREBASE_PROJECT_ID &&
+      !!env.FIREBASE_CLIENT_EMAIL &&
+      !!env.FIREBASE_PRIVATE_KEY
+    const serviceAccountPaths = new Set<string>()
+    if (env.FIREBASE_SERVICE_ACCOUNT_FILE) {
+      serviceAccountPaths.add(env.FIREBASE_SERVICE_ACCOUNT_FILE)
+    }
+    if (env.GOOGLE_APPLICATION_CREDENTIALS) {
+      serviceAccountPaths.add(env.GOOGLE_APPLICATION_CREDENTIALS)
+    }
+    let detectedServiceAccountPath: string | undefined
+    const serverAuthFile = Array.from(serviceAccountPaths).some((candidate) => {
+      if (!candidate) return false
+      const possibilities = isAbsolute(candidate)
+        ? [candidate]
+        : [candidate, join(repoRoot, candidate)]
 
-    for (const possible of possibilities) {
-      if (existsSync(possible)) {
-        if (!detectedServiceAccountPath) {
-          const relativePath = relative(repoRoot, possible)
-          detectedServiceAccountPath = relativePath || possible
+      for (const possible of possibilities) {
+        if (existsSync(possible)) {
+          if (!detectedServiceAccountPath) {
+            const relativePath = relative(repoRoot, possible)
+            detectedServiceAccountPath = relativePath || possible
+          }
+          return true
         }
-        return true
+      }
+
+      return false
+    })
+
+    const explicitAdminAuthConfigured =
+      serverAuthJson || serverAuthSplit || serverAuthFile
+
+    const storageBucket = firstString(firebaseEcosystem.storageBucket).replace(
+      /^gs:\/\//,
+      ''
+    )
+    const storage: StorageAccessStatus = {
+      configured: Boolean(storageBucket),
+      reachable: false,
+      issue: '',
+    }
+    if (!storageBucket) {
+      storage.issue = 'Firebase Storage bucket is not configured.'
+    } else {
+      try {
+        const [exists] = await getStorage(getAdminApp())
+          .bucket(storageBucket)
+          .exists()
+        storage.reachable = exists
+        if (!exists) {
+          storage.issue =
+            'The configured Firebase Storage bucket does not exist.'
+        }
+      } catch (error) {
+        const message = error instanceof Error ? error.message : ''
+        storage.issue = /permission|forbidden|denied|403/i.test(message)
+          ? 'Firebase Admin cannot access the configured Storage bucket.'
+          : /not exist|not found|404/i.test(message)
+            ? 'The configured Firebase Storage bucket does not exist.'
+            : 'Firebase Storage could not be reached with the active Admin credentials.'
       }
     }
 
-    return false
-  })
-
-  const explicitAdminAuthConfigured =
-    serverAuthJson || serverAuthSplit || serverAuthFile
-
-  // Compute presence
-  const missingRequired = requiredClient
-    .filter((entry) => !entry.present)
-    .map((entry) => entry.key)
-  const presentOptionalClient = optionalClient.filter((entry) => entry.present)
-
-  const brandAssets = checkCurrentAppBrandAssets()
-
-  const passedBrandCount = brandAssets.filter((b) => b.ok).length
-
-  // Build warnings
-  const warnings: string[] = []
-  if (!explicitAdminAuthConfigured) {
-    warnings.push(
-      'No explicit Firebase Admin credential env was detected. Standard ADC is not probed by this check and may still initialize Admin at runtime.'
+    // Compute presence
+    const missingRequired = requiredClient
+      .filter((entry) => !entry.present)
+      .map((entry) => entry.key)
+    const presentOptionalClient = optionalClient.filter(
+      (entry) => entry.present
     )
-  }
-  // Stripe warnings removed for core onboarding; handled in products module.
 
-  // Helpers to render masked entries
-  const mask = (entry: EnvVarEntry): EnvVarEntry => ({
-    key: entry.key,
-    present: entry.present,
-    value: entry.present ? '***' : undefined,
-  })
+    const brandAssets = checkCurrentAppBrandAssets()
 
-  const isValid =
-    missingRequired.length === 0 &&
-    passedBrandCount === brandAssets.length
+    const passedBrandCount = brandAssets.filter((b) => b.ok).length
 
-  return {
-    isValid,
+    // Build warnings
+    const warnings: string[] = []
+    if (!explicitAdminAuthConfigured) {
+      warnings.push(
+        storage.reachable
+          ? 'No explicit Firebase Admin credential env was detected; the active standard ADC can reach Firebase Storage.'
+          : 'No explicit Firebase Admin credential env was detected, and the active Admin credentials cannot reach Firebase Storage.'
+      )
+    }
+    // Stripe warnings removed for core onboarding; handled in products module.
 
-    required: requiredClient.map(mask),
-    optionalClient: optionalClient.map(mask),
+    // Helpers to render masked entries
+    const mask = (entry: EnvVarEntry): EnvVarEntry => ({
+      key: entry.key,
+      present: entry.present,
+      value: entry.present ? '***' : undefined,
+    })
 
-    server: {
-      adminAuth: {
-        json: serverAuthJson,
-        splitKeys: {
-          FIREBASE_PROJECT_ID: !!env.FIREBASE_PROJECT_ID,
-          FIREBASE_CLIENT_EMAIL: !!env.FIREBASE_CLIENT_EMAIL,
-          FIREBASE_PRIVATE_KEY: !!env.FIREBASE_PRIVATE_KEY,
+    const isValid =
+      missingRequired.length === 0 &&
+      passedBrandCount === brandAssets.length &&
+      storage.reachable
+
+    return {
+      isValid,
+
+      required: requiredClient.map(mask),
+      optionalClient: optionalClient.map(mask),
+
+      server: {
+        adminAuth: {
+          json: serverAuthJson,
+          splitKeys: {
+            FIREBASE_PROJECT_ID: !!env.FIREBASE_PROJECT_ID,
+            FIREBASE_CLIENT_EMAIL: !!env.FIREBASE_CLIENT_EMAIL,
+            FIREBASE_PRIVATE_KEY: !!env.FIREBASE_PRIVATE_KEY,
+          },
+          file: serverAuthFile,
+          configured: explicitAdminAuthConfigured,
         },
-        file: serverAuthFile,
-        configured: explicitAdminAuthConfigured,
+        storage,
       },
-    },
 
-    missingRequired,
+      missingRequired,
 
-    summary: {
-      required: `${requiredClient.length - missingRequired.length}/${
-        requiredClient.length
-      }`,
-      optionalClient: `${presentOptionalClient.length}/${optionalClient.length}`,
-      brandAssets: `${passedBrandCount}/${brandAssets.length}`,
-    },
+      summary: {
+        required: `${requiredClient.length - missingRequired.length}/${
+          requiredClient.length
+        }`,
+        optionalClient: `${presentOptionalClient.length}/${optionalClient.length}`,
+        brandAssets: `${passedBrandCount}/${brandAssets.length}`,
+      },
 
-    warnings,
+      warnings,
 
-    notes: [
-      'Role is enforced by Nuxt config (createFireuxConfig) and is not checked here.',
-      'Runtime config and env values are fixed and non-editable via UI.',
-      'Brand asset validation checks this app only: public/img/app/. Shared core or ecosystem assets do not count.',
-      ...(detectedServiceAccountPath
-        ? [`Explicit credential file detected at ${detectedServiceAccountPath}.`]
-        : [
-            'Admin SDK detection checks only explicit credential env vars. Standard ADC may exist without env vars and is resolved only when the Admin SDK initializes.',
-          ]),
-    ],
+      notes: [
+        'Role is enforced by Nuxt config (createFireuxConfig) and is not checked here.',
+        'Runtime config and env values are fixed and non-editable via UI.',
+        'Brand asset validation checks this app only: public/img/app/. Shared core or ecosystem assets do not count.',
+        storage.reachable
+          ? 'The configured Firebase Storage bucket is reachable with the active Admin credentials.'
+          : storage.issue,
+        ...(detectedServiceAccountPath
+          ? [
+              `Explicit credential file detected at ${detectedServiceAccountPath}.`,
+            ]
+          : [
+              'Explicit credential detection checks env vars and files; live Storage reachability also verifies the active standard ADC when present.',
+            ]),
+      ],
 
-    brandAssets,
+      brandAssets,
+    }
   }
-})
+)

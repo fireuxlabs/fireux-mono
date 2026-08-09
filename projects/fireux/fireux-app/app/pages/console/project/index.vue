@@ -9,7 +9,6 @@
       <template #body>
         <section class="space-y-4">
           <ConsoleProjectIndex />
-          <ProjectMutationPanel />
         </section>
       </template>
     </UDashboardPanel>

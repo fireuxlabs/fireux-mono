@@ -1,6 +1,6 @@
 # Firestore mutation GPT context
 
-Updated: 2026-08-05
+Updated: 2026-08-09
 Ref: 1fca9417e
 Role: living context
 Scope: Firestore writes across runtime packages, projects, scripts, CLI, Codex skills, and MCP
@@ -34,8 +34,18 @@ source-only; Test and simulation storage are retired.
 
 Directory publication, cross-Project signup replication, and their receiver,
 outbox, reconciliation, provisioning, and user-monitor source are retired.
-Public App and Ecosystem directory presentation reads the canonical `(default)`
-records directly; it is not a separate database authority.
+The Firebase-project directory and FireUX platform aggregation read canonical
+`(default)` metadata records directly. An owning ecosystem's local public App
+collection may read its canonical named-database Apps. Neither read path
+creates another database authority.
+
+AppMeta supports two transports into the same App-owned projection contract:
+the MCP/Skill lane provisions or aligns registered Apps, and the authenticated
+runtime Server lane maintains the current AppMeta after App initialization,
+media synchronization, or App-admin presentation edits. `(default)` remains
+closed to Client writes. The Server path derives its fixed App id, database,
+Project, Ecosystem, and role from runtime configuration and the canonical App;
+the browser never selects those targets.
 
 The permanently rejected names are `directory-outbox`, `platform-directory`,
 `registry`, every `*-simulation`, `test`, every `test-*`, every `seo_index_*`,
@@ -53,8 +63,17 @@ The permanently rejected names are `directory-outbox`, `platform-directory`,
   and the remaining Update/Delete migration touchpoints in that directory
 - Server touchpoints and guarded transactions:
   `packages/core/fireux-core/src/runtime/server/utils/firestore-mutations/`
+- Current-App projection maintenance:
+  `packages/core/fireux-core/src/runtime/server/utils/app-projection/ensure.ts`
+- FireUX platform aggregation targets and direct metadata reader:
+  `projects/fireux/fireux-app/server/config/platform-directory-targets.ts` and
+  `projects/fireux/fireux-app/server/utils/default-directory.ts`
 - MCP/Skill touchpoints:
   `scripts/_lib/firestore-mutations/mcp-skill-{create,update,delete}.mjs`
+- Auditable onboarding projection alignment:
+  `scripts/align-user-app-onboarding.mjs`; its `project` family aligns existing
+  canonical Projects with their local ProjectMeta records through a dry-run
+  plan, confirmation hash, protected pre-image, and post-write verification.
 - Executable enforcement and the frozen pre-spine debt inventory:
   `scripts/guards/firestore-mutations.mjs`
 

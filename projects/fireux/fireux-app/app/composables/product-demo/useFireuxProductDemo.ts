@@ -6,11 +6,11 @@ import {
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+} from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
 import {
   useProjectInterface,
   type ProjectInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+} from 'fireux-core/runtime/composables/fireux/project/useProjectInterface'
 
 const productDemoSurface = 'project-console' as const
 const productDemoDataSource = 'demo' as const

@@ -1,11 +1,13 @@
 import { computed, unref, type MaybeRef } from 'vue'
-import { EcosystemStorage } from '../../../../../../models/core/ecosystem.model'
-import type { EcosystemSurface } from '../utils/view/useEcosystemInterface'
+import {
+  EcosystemStorage,
+  type Ecosystem,
+} from '../../../../../../models/core/ecosystem.model'
 import { useFirestoreCollectionState } from '../../../operations/useFirestoreCollection'
 import { useFirestoreRead } from '../../../operations/useFirestoreRead'
 import { readRuntimeIdentityFirestoreDatabaseId } from '../../../vuefire'
 
-type EcosystemCollectionDoc = EcosystemSurface
+type EcosystemCollectionDoc = Ecosystem
 const DEFAULT_COLLECTION_PATH = EcosystemStorage.collection
 
 export function useEcosystemCollection(

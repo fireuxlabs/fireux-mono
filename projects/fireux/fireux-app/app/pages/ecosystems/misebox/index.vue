@@ -193,8 +193,7 @@ const ecosystem = computed(
   () =>
     data.value?.ecosystems.find(
       (entry: EcosystemDirectoryEntry) =>
-        entry.status === 'active' &&
-        (entry.id === 'misebox' || entry.slug === 'misebox')
+        entry.status === 'active' && entry.id === 'misebox'
     ) ?? null
 )
 const publishedApps = computed<AppDirectoryEntry[]>(() =>

@@ -154,10 +154,22 @@ export async function updateUserHandle(input: {
       return { uid, handle, created: true, changed: true }
     }
 
-    const changed = storedHandle !== handle
+    const data = userSnapshot.data ?? {}
+    const patch: Record<string, unknown> = {}
+    if (storedHandle !== handle) patch.handle = handle
+    if (creation) {
+      if (typeof data.display_name !== 'string' || !data.display_name.trim()) {
+        patch.display_name = creation.displayName
+      }
+      if (typeof data.bio !== 'string') patch.bio = ''
+      if (!readHttpsUrl(data.avatar)) patch.avatar = creation.avatar
+      if ('displayName' in data) patch.displayName = FieldValue.delete()
+      if ('id' in data) patch.id = FieldValue.delete()
+    }
+    const changed = Object.keys(patch).length > 0
     if (changed) {
       mutations.update(users, uid, {
-        handle,
+        ...patch,
         updated: {
           at: FieldValue.serverTimestamp(),
           by: uid,

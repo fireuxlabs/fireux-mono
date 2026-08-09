@@ -55,6 +55,8 @@
     "gitsave": "bash scripts/gitsave.sh",
     "audit:scripts": "node scripts/audit-script-usage.mjs",
     "audit:app-media": "node scripts/audit-app-media.mjs",
+    "align:onboarding": "node scripts/align-user-app-onboarding.mjs",
+    "align:user-avatars": "node scripts/align-user-avatars.mjs",
     "interlaken:menu-audit": "node scripts/interlaken-menu-audit.mjs",
     "interlaken:images": "node scripts/interlaken-menu-audit.mjs --images",
     "interlaken:images:import": "node scripts/interlaken-menu-import.mjs",

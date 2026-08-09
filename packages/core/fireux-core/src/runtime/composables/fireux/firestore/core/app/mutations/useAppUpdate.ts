@@ -1,19 +1,17 @@
 // Concurrent edit — 2026-07-20 11:52 CEST — Security spine: route App-admin membership and entitlement changes through the trusted server transaction.
 // Concurrent edit — 2026-07-21 15:25 CEST — Dashboard SSR repair: defer App Firestore and Storage clients until an administrator action.
 
-import { deleteField } from 'firebase/firestore'
 import type { Ref } from 'vue'
-import { AppStorage, type App } from '../../../../../../models/core/app.model'
+import type { App } from '../../../../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../../../../models/core/app.model'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useImageStorage } from '../../../../firebase/useImageStorage'
-import { useFirestoreUpdate } from '../../../operations/useFirestoreUpdate'
+import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { mutateAppMembership } from '../../user/utils/appMembershipMutation'
 import {
   appImageRequirement,
   appImageFirestoreField,
   appImageStoragePath,
-  isWordmarkKind,
   validateAppAssetDimensions,
   type AppImageKind,
 } from '../utils/appMedia'
@@ -27,12 +25,28 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return id
   }
 
-  const updateApp = (data: Partial<App> | Record<string, any>) =>
-    useFirestoreUpdate().updateDocument<any>(
-      AppStorage.collection,
-      ensureAppId(),
-      data as any
-    )
+  const updateApp = async (data: Partial<App> | Record<string, unknown>) => {
+    ensureAppId()
+    const user = await useRequireUser()
+    const response = await fetch('/api/internal/app/settings', {
+      method: 'PATCH',
+      headers: {
+        authorization: `Bearer ${await user.getIdToken()}`,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    })
+    const payload = (await response.json().catch(() => null)) as Record<
+      string,
+      unknown
+    > | null
+    if (!response.ok) {
+      const message = String(
+        payload?.statusMessage || payload?.message || 'App update failed.'
+      ).trim()
+      throw new Error(message)
+    }
+  }
 
   const text = (raw: unknown, max: number) =>
     String(raw ?? '')
@@ -145,8 +159,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const next = cacheBust(url)
 
     const field = appImageFirestoreField(kind)
-    const patch: Record<string, any> = { [field]: next }
-    if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
+    const patch: Record<string, unknown> = { [field]: next }
     await updateApp(patch)
     return next
   }
@@ -185,7 +198,10 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     )
   }
 
-  async function readValidatedLocalAppImage(kind: AppImageKind, localPath: string) {
+  async function readValidatedLocalAppImage(
+    kind: AppImageKind,
+    localPath: string
+  ) {
     const response = await fetch(localPath, { cache: 'no-store' })
     if (!response.ok) {
       throw new Error(`Missing local asset: ${localPath}`)
@@ -210,7 +226,10 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     return blob
   }
 
-  async function overwriteImageFromLocal(kind: AppImageKind, localPath: string) {
+  async function overwriteImageFromLocal(
+    kind: AppImageKind,
+    localPath: string
+  ) {
     if (!localPath || !localPath.startsWith('/')) {
       throw new Error('Local image path must start with /')
     }
@@ -223,8 +242,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const next = cacheBust(url)
 
     const field = appImageFirestoreField(kind)
-    const patch: Record<string, any> = { [field]: next }
-    if (isWordmarkKind(kind)) patch.wordmark_url = deleteField()
+    const patch: Record<string, unknown> = { [field]: next }
     await updateApp(patch)
     return next
   }

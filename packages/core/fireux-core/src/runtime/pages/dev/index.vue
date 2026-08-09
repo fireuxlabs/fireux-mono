@@ -26,6 +26,36 @@
 
     <DevBinding :app="bindingApp" :apps="bindingApps" />
 
+    <UCard>
+      <template #header>
+        <div class="flex flex-wrap items-start justify-between gap-3">
+          <div class="space-y-1">
+            <h2>App media</h2>
+            <p class="text-sm text-muted">
+              Publish this App's image family to its configured Firebase
+              Storage bucket.
+            </p>
+          </div>
+          <UButton
+            size="sm"
+            icon="i-lucide-cloud-upload"
+            :loading="mediaSyncPending"
+            :disabled="mediaSyncPending"
+            @click="syncRuntimeMedia"
+          >
+            Sync App media
+          </UButton>
+        </div>
+      </template>
+
+      <p v-if="mediaSyncMessage" class="text-sm text-toned">
+        {{ mediaSyncMessage }}
+      </p>
+      <p v-if="mediaSyncError" class="text-sm text-error">
+        {{ mediaSyncError }}
+      </p>
+    </UCard>
+
     <!-- Runtime Summary -->
     <UCard>
       <template #header>
@@ -231,6 +261,7 @@ import { computed, ref } from 'vue'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
+import { syncAppMediaToStorage } from '../../composables/fireux/firestore/core/app/utils/appMediaSync'
 
 definePageMeta({
   title: 'Dev · Overview',
@@ -252,6 +283,9 @@ if (!cfg.ecosystem || !cfg.ecosystem.trim()) {
   throw new Error('[dev] FireUX config missing ecosystem name')
 }
 const showRuntimeJson = ref(false)
+const mediaSyncPending = ref(false)
+const mediaSyncMessage = ref('')
+const mediaSyncError = ref('')
 
 const { apps } = useDevAppCollection()
 const bindingApps = computed(() =>
@@ -319,6 +353,32 @@ const adminStatus = computed(() => {
 
 const refreshEnvCheck = () => {
   void refreshEnv()
+}
+
+const syncRuntimeMedia = async () => {
+  if (mediaSyncPending.value) return
+
+  mediaSyncPending.value = true
+  mediaSyncMessage.value = ''
+  mediaSyncError.value = ''
+
+  try {
+    const result = await syncAppMediaToStorage()
+    const uploadedCount = Object.values(result.uploaded).filter(Boolean).length
+    mediaSyncMessage.value = `${uploadedCount} asset(s) published for ${result.appId}.`
+    if (result.failed.length) {
+      mediaSyncError.value = result.failed
+        .map((entry) => `${entry.kind}: ${entry.message}`)
+        .join(' | ')
+    }
+  } catch (error) {
+    mediaSyncError.value =
+      error instanceof Error && error.message.trim()
+        ? error.message.trim()
+        : 'App media sync failed.'
+  } finally {
+    mediaSyncPending.value = false
+  }
 }
 
 const copyRuntime = () => {

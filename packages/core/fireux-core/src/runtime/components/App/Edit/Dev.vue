@@ -21,7 +21,9 @@
               :key="row.label"
               class="grid gap-1 py-3 first:pt-0 last:pb-0"
             >
-              <dt class="text-xs font-medium uppercase tracking-wide text-dimmed">
+              <dt
+                class="text-xs font-medium uppercase tracking-wide text-dimmed"
+              >
                 {{ row.label }}
               </dt>
               <dd class="break-words font-mono text-sm text-highlighted">
@@ -53,7 +55,9 @@
                 :key="section.key"
                 class="grid gap-2 py-4 first:pt-0 last:pb-0 sm:grid-cols-[8rem_minmax(0,1fr)]"
               >
-                <div class="flex items-center gap-2 font-medium text-highlighted">
+                <div
+                  class="flex items-center gap-2 font-medium text-highlighted"
+                >
                   <UIcon :name="section.icon" class="size-4 text-primary" />
                   <span>{{ section.label }}</span>
                 </div>
@@ -91,9 +95,9 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppModel } from '../../../models/core/app.model'
+import type { App } from '../../../models/core/app.model'
 
-const props = defineProps<{ app: AppModel }>()
+const props = defineProps<{ app: App }>()
 const app = computed(() => props.app)
 
 const display = (value: unknown) => {
@@ -102,9 +106,7 @@ const display = (value: unknown) => {
 }
 
 const appFieldGroups = {
-  developer: [
-    'media',
-  ],
+  developer: ['media'],
   control: [
     'project_id',
     'ecosystem_id',
@@ -135,7 +137,8 @@ const ownershipSections = [
   {
     key: 'developer',
     label: 'Developer',
-    description: 'Builds and checks App media, database binding and repo metadata.',
+    description:
+      'Builds and checks App media, database binding and repo metadata.',
     icon: 'i-lucide-code-xml',
     fields: appFieldGroups.developer,
   },

@@ -57,7 +57,7 @@
 import { navigateTo } from '#imports'
 import { computed } from 'vue'
 import { useProjectConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/project/core/useProjectConsoleSelection'
-import type { ProjectInterfaceCard } from 'fireux-core/runtime/composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import type { ProjectInterfaceCard } from 'fireux-core/runtime/composables/fireux/project/useProjectInterface'
 import type { LandingConsolePreviewItem } from 'fireux-core/types/landing-product'
 import { useFireuxProductDemo } from '~/composables/product-demo/useFireuxProductDemo'
 

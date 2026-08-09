@@ -16,7 +16,8 @@ export default defineEventHandler(async (event: H3Event) => {
 
   try {
     return await readPlatformDirectory()
-  } catch {
+  } catch (error) {
+    console.error('[platform-directory] Read failed.', error)
     throw createError({
       statusCode: 503,
       statusMessage: 'Platform directory is temporarily unavailable.',

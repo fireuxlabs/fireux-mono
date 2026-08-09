@@ -21,15 +21,21 @@ function toPublicDisplayNameSeed(
 ): string {
   const primary = String(displayName ?? '').trim()
   if (primary) {
-    return looksLikeEmail(primary) ? primary.split('@')[0]?.trim() || '' : primary
+    return looksLikeEmail(primary)
+      ? primary.split('@')[0]?.trim() || ''
+      : primary
   }
 
   const fallback = String(email ?? '').trim()
   if (!fallback) {
-    const suffix = String(uid ?? '').trim().slice(0, 6)
+    const suffix = String(uid ?? '')
+      .trim()
+      .slice(0, 6)
     return isAnonymous && suffix ? `Guest ${suffix}` : ''
   }
-  return looksLikeEmail(fallback) ? fallback.split('@')[0]?.trim() || '' : fallback
+  return looksLikeEmail(fallback)
+    ? fallback.split('@')[0]?.trim() || ''
+    : fallback
 }
 
 async function isRuntimeAppInitialized(appId: string): Promise<boolean> {
@@ -41,7 +47,7 @@ async function isRuntimeAppInitialized(appId: string): Promise<boolean> {
     throw new Error(`App status check failed (${response.status}).`)
   }
 
-  const payload = await response.json() as {
+  const payload = (await response.json()) as {
     appId?: unknown
     initialized?: unknown
   }
@@ -71,7 +77,7 @@ export function useUserCreate() {
           throw new Error(`Event endpoint returned ${response.status}`)
         }
 
-        const payload = await response.json() as {
+        const payload = (await response.json()) as {
           event?: { created?: boolean }
         }
         return {
@@ -111,7 +117,7 @@ export function useUserCreate() {
 
     // Sign-in should not mutate existing membership/admin roles.
     // Only create app membership when the app-scoped overlay is missing.
-    let shouldCreateMembership = false
+    let shouldEnsureMembership = false
     const appContext = await fetchCurrentAppContext(auth)
     if (appContext.appId !== appId) {
       throw new Error(
@@ -124,17 +130,21 @@ export function useUserCreate() {
     // self_join_enabled field remains the trusted server enforcement policy.
     // Before that App exists, core account creation must still complete so the
     // developer can initialize it and bootstrap the first administrator.
-    if (!membershipExists && fireux.selfJoinEnabled) {
-      shouldCreateMembership = await isRuntimeAppInitialized(appId)
+    if (fireux.selfJoinEnabled) {
+      shouldEnsureMembership = await isRuntimeAppInitialized(appId)
     }
 
-    const membership = shouldCreateMembership
+    // `ensure-self` is also the canonical repair path for legacy memberships.
+    // Re-running onboarding keeps the existing role while filling required
+    // lifecycle fields such as onboarding_status.
+    const membership = shouldEnsureMembership
       ? await createAppUserMembership(appId, uid, 'user')
       : { created: false }
 
-    const event = membershipExists || membership.created
-      ? await ensureAppUserJoinedEvent(auth)
-      : { created: false, ready: false }
+    const event =
+      membershipExists || membership.created
+        ? await ensureAppUserJoinedEvent(auth)
+        : { created: false, ready: false }
 
     return {
       createdCore: core.created,

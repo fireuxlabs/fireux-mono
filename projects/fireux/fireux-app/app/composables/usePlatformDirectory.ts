@@ -8,7 +8,6 @@ import type {
   EcosystemDirectoryEntry,
   PlatformDirectoryResponse,
 } from 'fireux-core/runtime/models/utils/directory'
-import { RETIRED_PUBLIC_ECOSYSTEM_IDS } from '../utils/directorySearchPolicy'
 
 export function usePlatformDirectory() {
   return useAsyncData<PlatformDirectoryResponse>(
@@ -64,9 +63,7 @@ export function usePublishedPlatformEcosystemDirectory(): EcosystemDirectoryCont
   const { data, pending, error, refresh } = usePlatformDirectory()
   const ecosystems = computed(() =>
     (data.value?.ecosystems ?? []).filter(
-      (ecosystem: EcosystemDirectoryEntry) =>
-        ecosystem.status === 'active' &&
-        !RETIRED_PUBLIC_ECOSYSTEM_IDS.has(ecosystem.id)
+      (ecosystem: EcosystemDirectoryEntry) => ecosystem.status === 'active'
     )
   )
   const count = computed(() => ecosystems.value.length)

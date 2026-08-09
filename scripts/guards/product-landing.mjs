@@ -1994,7 +1994,10 @@ export async function run(ctx) {
     )
   }
 
-  if (!fireuxEcosystems.includes("FireUX's Ecosystems")) {
+  if (
+    !fireuxEcosystems.includes('Product families') ||
+    !fireuxEcosystems.includes('Explore the Ecosystems')
+  ) {
     violations.push(
       `${FIREUX_ECOSYSTEMS_PATH}: platform Ecosystems section must use the canonical heading`
     )
@@ -2238,7 +2241,8 @@ export async function run(ctx) {
         ':copy="projectConsoleCopy"',
         ':operations="consoleOperations"',
         '<LandingAppCollection',
-        'title="FireUX\'s Apps"',
+        'title="Apps built with FireUX"',
+        'eyebrow="App directory"',
         '<LandingProductCatalogue',
         "import { fireuxOffer, metaContent } from '../../../meta'",
         'metaContent.operations',

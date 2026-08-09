@@ -14,6 +14,9 @@ export type PublicUserIdentityOutcome =
   | 'missing'
   | 'error'
 
+export const publicUserIdentityAsyncDataKey = (id: string) =>
+  `public-user-identity-${id || 'none'}`
+
 type PublicUserIdentityControls = Pick<
   AsyncData<unknown, NuxtError<unknown>>,
   'pending' | 'error' | 'refresh'
@@ -41,7 +44,7 @@ export function usePublicUserIdentity(
 ): UsePublicUserIdentityReturn {
   const id = computed(() => String(unref(userId) ?? '').trim())
   const state = useAsyncData(
-    () => `public-user-identity-${id.value || 'none'}`,
+    () => publicUserIdentityAsyncDataKey(id.value),
     async () => {
       if (!id.value) return null
       try {

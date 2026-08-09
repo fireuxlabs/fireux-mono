@@ -13,7 +13,8 @@
           <div>
             <p class="text-sm font-medium text-highlighted">Storage status</p>
             <p class="mt-0.5 text-xs text-muted">
-              {{ syncedCount }} of {{ syncableItems.length }} media assets are available.
+              {{ syncedCount }} of {{ syncableItems.length }} media assets are
+              available.
             </p>
           </div>
           <UBadge
@@ -24,7 +25,9 @@
           </UBadge>
         </div>
 
-        <div class="overflow-hidden rounded-lg border border-default bg-default">
+        <div
+          class="overflow-hidden rounded-lg border border-default bg-default"
+        >
           <div class="divide-y divide-default">
             <div
               v-for="item in syncableItems"
@@ -102,7 +105,9 @@
           icon="i-lucide-monitor-down"
           :default-open="false"
         >
-          <div class="mt-3 overflow-hidden rounded-lg border border-default bg-default">
+          <div
+            class="mt-3 overflow-hidden rounded-lg border border-default bg-default"
+          >
             <div class="divide-y divide-default">
               <div
                 v-for="item in requiredOnlyItems"
@@ -122,7 +127,10 @@
 
                   <div class="min-w-0">
                     <div class="text-sm font-medium">{{ item.label }}</div>
-                    <div class="text-xs text-dimmed" v-html="item.requirements" />
+                    <div
+                      class="text-xs text-dimmed"
+                      v-html="item.requirements"
+                    />
                   </div>
                 </div>
 
@@ -160,9 +168,9 @@ import {
   appPublicAssetRequirement,
   type AppImageKind,
 } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
-import type { AppModel } from '../../../../models/core/app.model'
+import type { App } from '../../../../models/core/app.model'
 
-const props = withDefaults(defineProps<{ app?: AppModel | null }>(), { app: null })
+const props = withDefaults(defineProps<{ app?: App | null }>(), { app: null })
 const appRef = computed(() => props.app)
 
 const toast = import.meta.client ? useToastify() : null
@@ -278,7 +286,7 @@ const kindLabel: Record<SyncedImageKind, string> = {
   cover: 'cover',
 }
 
-function mediaUrlForKind(value: AppModel | null | undefined, kind: AppImageKind) {
+function mediaUrlForKind(value: App | null | undefined, kind: AppImageKind) {
   switch (kind) {
     case 'thumbnail':
       return value?.media?.thumbnail_url || ''
@@ -305,7 +313,9 @@ const syncableItems = computed<ResolvedSyncedImageItem[]>(() => {
 const syncedCount = computed(
   () => syncableItems.value.filter((item) => Boolean(item.url)).length
 )
-const missingCount = computed(() => syncableItems.value.length - syncedCount.value)
+const missingCount = computed(
+  () => syncableItems.value.length - syncedCount.value
+)
 const allMediaSynced = computed(
   () => syncableItems.value.length > 0 && missingCount.value === 0
 )

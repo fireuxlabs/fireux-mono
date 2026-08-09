@@ -51,14 +51,14 @@ Every public entity index should:
 
 ## Current presentation classes
 
-| Class                            | Current members                                                 | Reason and status                                                                                                                                            |
-| -------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| Discovery index                  | User, Kitchen, Place, Job, Chef, Driver, Agent, Professional    | `accepted`: these are primary public discovery surfaces and use `PublicIndexSurface` with browse content first and an optional secondary domain doorway      |
-| Editorial index                  | Blog                                                            | `accepted`: an editorial masthead and story hierarchy serve media discovery while the Blogs extension retains one endpoint-first composition for every app  |
-| Controller-owned authority index | App, Ecosystem                                                  | `accepted`: the page chooses an explicit ecosystem/platform controller; the manager must not infer authority                                                 |
-| Route-policy index               | Menu                                                            | `accepted`: `MenuIndex` owns root, kitchen-directory, and tenant outcomes including bounded redirect policy; the route page stays a thin controller consumer |
-| Utility directory                | Ingredient                                                      | `accepted`: browse-only vocabulary surface with no proven public creation CTA                                                                                |
-| Basic root directory             | Company, Product, Supplier, Portfolio and Property              | `to-confirm`: current pages use the smaller `UPage` shell; keep that shape until product intent says whether each is a primary discovery surface             |
+| Class                            | Current members                                              | Reason and status                                                                                                                                            |
+| -------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Discovery index                  | User, Kitchen, Place, Job, Chef, Driver, Agent, Professional | `accepted`: these are primary public discovery surfaces and use `PublicIndexSurface` with browse content first and an optional secondary domain doorway      |
+| Editorial index                  | Blog                                                         | `accepted`: an editorial masthead and story hierarchy serve media discovery while the Blogs extension retains one endpoint-first composition for every app   |
+| Controller-owned authority index | App, Ecosystem                                               | `accepted`: the page chooses an explicit ecosystem/platform controller; the manager must not infer authority                                                 |
+| Route-policy index               | Menu                                                         | `accepted`: `MenuIndex` owns root, kitchen-directory, and tenant outcomes including bounded redirect policy; the route page stays a thin controller consumer |
+| Utility directory                | Ingredient                                                   | `accepted`: browse-only vocabulary surface with no proven public creation CTA                                                                                |
+| Basic root directory             | Company, Product, Supplier, Portfolio and Property           | `to-confirm`: current pages use the smaller `UPage` shell; keep that shape until product intent says whether each is a primary discovery surface             |
 
 `PublicIndexSurface` versus `UPage` is a product-presentation decision, not a
 data-source decision. Do not switch shells merely to make files textually
@@ -66,25 +66,25 @@ identical.
 
 ## Data-authority classes
 
-| Class                | Members                                                                                                       | Required behavior                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Root Simple          | Menu doorway rows, Place, Product, plus currently direct Supplier/Portfolio/Property browse                   | Manager consumes self-contained bounded rows without client N+1 hydration            |
-| Root Projected       | App, Ecosystem, User, Kitchen, Ingredient, Blog, Company, Job, Chef, Driver, Agent, Professional              | Server projection owns allowlists, publication, joins, and safe DTO shape            |
-| Scoped surface       | Dish, Recipe, Station, Team, Kitchen Supplier, Supplier Item/Ingredient/Catalogue and operations              | Never masquerades as a root collection manager just to reuse UI                      |
+| Class          | Members                                                                                                   | Required behavior                                                         |
+| -------------- | --------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Root Simple    | Menu doorway rows, Place, Product, plus currently direct Supplier/Portfolio/Property browse               | Manager consumes self-contained bounded rows without client N+1 hydration |
+| Root Projected | App, Ecosystem, Project, User, Kitchen, Ingredient, Blog, Company, Job, Chef, Driver, Agent, Professional | Server projection owns allowlists, publication, joins, and safe DTO shape |
+| Scoped surface | Dish, Recipe, Station, Team, Kitchen Supplier, Supplier Item/Ingredient/Catalogue and operations          | Never masquerades as a root collection manager just to reuse UI           |
 
 The detailed manager matrix lives in `collection-manager.md`.
 
 ## Accepted deltas
 
-| Delta                                                                | State      | Why it exists                                                                                          |
-| -------------------------------------------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------ |
-| Public profile indexes join canonical User identity server-side      | `accepted` | Raw profile and User roots are not the public list transport                                           |
+| Delta                                                                | State      | Why it exists                                                                                                                                                                                                              |
+| -------------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Public profile indexes join canonical User identity server-side      | `accepted` | Raw profile and User roots are not the public list transport                                                                                                                                                               |
 | Kitchen directory joins Place and App scope through `/api/kitchens`  | `accepted` | Kitchen cards inherit bounded Place photography without copied identity in the order Kitchen card override, Place cover, then Place image; the projection declares whether the chosen asset is photographic or brand media |
-| Kitchen supports an explicit authenticated admin/developer preview   | `accepted` | Operators need to inspect canonical unpublished targets without weakening the default public directory |
-| Job directory applies category, publication, and tenant source scope | `accepted` | One Job entity serves multiple products while each App exposes only its configured public catalogue    |
-| Menu index may include upload/tool behavior                          | `accepted` | A root quick Menu can begin without a Kitchen; KitchenMenu remains a different scoped entity           |
-| Blog uses an editorial presentation over a bounded public projection | `accepted` | Media hierarchy is a product delta; publication filtering, a content-free index DTO, and pagination remain server-owned while article content stays detail-only |
-| Some indexes are hidden from navigation                              | `accepted` | Route availability and navigation prominence are separate concerns                                     |
+| Kitchen supports an explicit authenticated admin/developer preview   | `accepted` | Operators need to inspect canonical unpublished targets without weakening the default public directory                                                                                                                     |
+| Job directory applies category, publication, and tenant source scope | `accepted` | One Job entity serves multiple products while each App exposes only its configured public catalogue                                                                                                                        |
+| Menu index may include upload/tool behavior                          | `accepted` | A root quick Menu can begin without a Kitchen; KitchenMenu remains a different scoped entity                                                                                                                               |
+| Blog uses an editorial presentation over a bounded public projection | `accepted` | Media hierarchy is a product delta; publication filtering, a content-free index DTO, and pagination remain server-owned while article content stays detail-only                                                            |
+| Some indexes are hidden from navigation                              | `accepted` | Route availability and navigation prominence are separate concerns                                                                                                                                                         |
 
 Kitchen private preview remains fail-closed: it is non-cacheable, labels
 hidden/test rows, and only returns strict Kitchen/App-support pairs in the

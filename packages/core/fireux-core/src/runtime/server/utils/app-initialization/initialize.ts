@@ -16,6 +16,7 @@ import {
   membershipRepairPatch,
   stamp,
 } from '../app-membership/mutation-contract'
+import { ensureRuntimeAppMeta } from '../app-projection/ensure'
 
 type InitializeRuntimeAppInput = {
   uid: string
@@ -87,69 +88,82 @@ export async function initializeRuntimeApp(
   const apps = FIRESTORE_MUTATION_TARGETS.runtimeApps
   const memberships = serverAppUsersTarget(config.appId)
 
-  return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    if (sameDatabase) {
-      const user = await mutations.read(
-        FIRESTORE_MUTATION_TARGETS.runtimeUsers,
+  const result = await runGuardedServerTransaction(
+    { kind: 'runtime' },
+    async (mutations) => {
+      if (sameDatabase) {
+        const user = await mutations.read(
+          FIRESTORE_MUTATION_TARGETS.runtimeUsers,
+          uid
+        )
+        if (!user.exists) conflict('The User record does not exist.')
+      }
+
+      const app = await mutations.read<Record<string, unknown>>(
+        apps,
+        config.appId
+      )
+      const membership = await mutations.read<Record<string, unknown>>(
+        memberships,
         uid
       )
-      if (!user.exists) conflict('The User record does not exist.')
-    }
 
-    const app = await mutations.read<Record<string, unknown>>(
-      apps,
-      config.appId
-    )
-    const membership = await mutations.read<Record<string, unknown>>(
-      memberships,
-      uid
-    )
+      if (!app.exists && membership.exists) {
+        conflict('An App membership exists without its canonical App record.')
+      }
 
-    if (!app.exists && membership.exists) {
-      conflict('An App membership exists without its canonical App record.')
-    }
+      if (app.exists) {
+        assertExistingAppMatchesRuntime(app.data ?? {}, config)
+      }
 
-    if (app.exists) {
-      assertExistingAppMatchesRuntime(app.data ?? {}, config)
-    }
+      if (!isAdminMembership(membership.data)) {
+        const adminCount = await countTransactionAdmins(mutations, config.appId)
+        if (adminCount > 0) {
+          conflict('This App already has an administrator.')
+        }
+      }
 
-    if (!isAdminMembership(membership.data)) {
-      const adminCount = await countTransactionAdmins(mutations, config.appId)
-      if (adminCount > 0) {
-        conflict('This App already has an administrator.')
+      if (!app.exists) {
+        mutations.create(apps, config.appId, appPayload(config, uid))
+      }
+
+      if (!membership.exists) {
+        mutations.create(
+          memberships,
+          uid,
+          initialMembership(config.appId, uid, 'admin')
+        )
+      } else if (!isAdminMembership(membership.data)) {
+        mutations.update(memberships, uid, {
+          ...membershipRepairPatch(membership.data ?? {}, uid),
+          role: 'admin',
+          updated: stamp(uid),
+        })
+      }
+
+      if (app.exists && !isAdminMembership(membership.data)) {
+        mutations.update(apps, config.appId, { updated: stamp(uid) })
+      }
+
+      return {
+        ok: true as const,
+        appId: config.appId,
+        userId: uid,
+        appCreated: !app.exists,
+        membershipCreated: !membership.exists,
+        membershipUpdated:
+          membership.exists && !isAdminMembership(membership.data),
       }
     }
-
-    if (!app.exists) {
-      mutations.create(apps, config.appId, appPayload(config, uid))
-    }
-
-    if (!membership.exists) {
-      mutations.create(
-        memberships,
-        uid,
-        initialMembership(config.appId, uid, 'admin')
-      )
-    } else if (!isAdminMembership(membership.data)) {
-      mutations.update(memberships, uid, {
-        ...membershipRepairPatch(membership.data ?? {}, uid),
-        role: 'admin',
-        updated: stamp(uid),
-      })
-    }
-
-    if (app.exists && !isAdminMembership(membership.data)) {
-      mutations.update(apps, config.appId, { updated: stamp(uid) })
-    }
-
-    return {
-      ok: true,
-      appId: config.appId,
-      userId: uid,
-      appCreated: !app.exists,
-      membershipCreated: !membership.exists,
-      membershipUpdated:
-        membership.exists && !isAdminMembership(membership.data),
-    }
+  )
+  const projection = await ensureRuntimeAppMeta({
+    actorUid: uid,
+    appDatabaseId: input.appDatabaseId,
+    config,
   })
+  return {
+    ...result,
+    appMetaCreated: projection.created,
+    appMetaUpdated: projection.updated,
+  }
 }

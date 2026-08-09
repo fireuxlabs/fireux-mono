@@ -25,7 +25,8 @@
     </div>
 
     <div
-      v-if="outcome === 'pending'"
+      v-show="outcome === 'pending'"
+      key="apps-loading"
       class="landing-app-collection__rail"
       aria-label="Loading apps"
     >
@@ -42,7 +43,7 @@
     </div>
 
     <UAlert
-      v-else-if="outcome === 'error'"
+      v-if="outcome === 'error'"
       color="error"
       variant="subtle"
       icon="i-lucide-triangle-alert"
@@ -59,7 +60,8 @@
     />
 
     <div
-      v-else-if="apps.length"
+      v-show="outcome === 'ready' && apps.length"
+      key="apps-ready"
       class="landing-app-collection__rail"
       aria-label="Apps"
     >
@@ -105,9 +107,6 @@
               :alt="displayName(app)"
               size="lg"
             />
-            <UBadge color="neutral" variant="solid" size="sm">
-              Live app
-            </UBadge>
           </div>
         </div>
 
@@ -116,9 +115,9 @@
             <p>{{ roleLabel(app) }}</p>
             <h3>{{ displayName(app) }}</h3>
           </div>
-          <p>{{ app.description }}</p>
+          <p>{{ appSummary(app) }}</p>
           <span>
-            View app
+            Explore {{ displayName(app) }}
             <UIcon name="i-lucide-arrow-up-right" aria-hidden="true" />
           </span>
         </div>
@@ -126,7 +125,7 @@
     </div>
 
     <MoleculesStateCard
-      v-else
+      v-if="outcome === 'empty' || (outcome === 'ready' && !apps.length)"
       entity="apps"
       state="empty"
       surface="bare"
@@ -203,8 +202,14 @@ function displayName(app: AppDirectoryEntry): string {
 }
 
 function roleLabel(app: AppDirectoryEntry): string {
-  if (app.role === 'global') return 'Platform app'
-  return props.controller.source === 'platform' ? 'Ecosystem app' : 'App'
+  if (app.role === 'global') return 'Ecosystem App'
+  if (app.role === 'tenant') return 'Tenant App'
+  if (app.role === 'standalone') return 'Standalone App'
+  return 'App'
+}
+
+function appSummary(app: AppDirectoryEntry): string {
+  return app.tagline || app.short_bio || app.description
 }
 
 function portableMediaUrl(value: unknown): string {

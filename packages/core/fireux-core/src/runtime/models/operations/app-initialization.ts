@@ -5,4 +5,6 @@ export type AppInitializationResult = {
   appCreated: boolean
   membershipCreated: boolean
   membershipUpdated: boolean
+  appMetaCreated: boolean
+  appMetaUpdated: boolean
 }

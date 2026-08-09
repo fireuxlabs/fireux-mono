@@ -3,7 +3,6 @@ import { useRuntimeConfig } from '#imports'
 import {
   createError,
   defineEventHandler,
-  getQuery,
   setResponseHeaders,
   type H3Event,
 } from 'h3'
@@ -41,7 +40,10 @@ export default defineEventHandler(async (event: H3Event) => {
     appRef.get(),
     appRef.collection(AppUserStorage.collection).doc(uid).get(),
   ])
-  const membership = (membershipSnapshot.data() || {}) as Record<string, unknown>
+  const membership = (membershipSnapshot.data() || {}) as Record<
+    string,
+    unknown
+  >
   const hasMembership =
     text(membership.role) === 'admin' || text(membership.role) === 'user'
 
@@ -52,30 +54,18 @@ export default defineEventHandler(async (event: H3Event) => {
     })
   }
 
-  const requestedSource = text(getQuery(event).source)
-  if (requestedSource === 'test' && !import.meta.dev) {
-    throw createError({
-      statusCode: 400,
-      statusMessage: 'Test Project data is unavailable in production.',
-    })
-  }
-  const documents =
-    requestedSource === 'test'
-      ? (await db.collection('test-projects').get()).docs
-      : await (async () => {
-          const targets = await db.doc(`users/${uid}/private/targets`).get()
-          const rawIds = targets.data()?.project_ids
-          const ids = Array.isArray(rawIds)
-            ? [...new Set(rawIds.map(text).filter(id => id && !id.includes('/')))]
-            : []
-          if (ids.length === 0) return []
-          const roots = await db.getAll(
-            ...ids.map(id =>
-              db.collection(ProjectStorage.rootCollection).doc(id)
-            )
-          )
-          return roots.filter(document => document.exists)
-        })()
+  const targets = await db.doc(`users/${uid}/private/targets`).get()
+  const rawIds = targets.data()?.project_ids
+  const ids = Array.isArray(rawIds)
+    ? [...new Set(rawIds.map(text).filter((id) => id && !id.includes('/')))]
+    : []
+  const documents = ids.length
+    ? (
+        await db.getAll(
+          ...ids.map((id) => db.collection(ProjectStorage.collection).doc(id))
+        )
+      ).filter((document) => document.exists)
+    : []
   const items = documents
     .map((document) => {
       const source = (document.data() || {}) as Record<string, unknown>
@@ -83,7 +73,6 @@ export default defineEventHandler(async (event: H3Event) => {
       return {
         id: document.id,
         name: text(source.name),
-        slug: text(source.slug),
         description: text(source.description),
         image_url: text(source.image_url),
         status: PROJECT_STATUSES.has(rawStatus) ? rawStatus : 'draft',

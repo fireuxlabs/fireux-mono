@@ -3,7 +3,7 @@ import { useConsoleDemoData } from '../../../app/console/useConsoleDemoData'
 import {
   useProjectInterface,
   type ProjectSurface,
-} from '../../../firestore/core/project/utils/view/useProjectInterface'
+} from '../../../project/useProjectInterface'
 
 export type ProjectConsoleDemoTargets = {
   projects: ProjectSurface[]
@@ -26,6 +26,6 @@ export function useProjectConsoleDemoTargets(
       })
       return { projects }
     },
-    isEmpty: value => value.projects.length === 0,
+    isEmpty: (value) => value.projects.length === 0,
   })
 }

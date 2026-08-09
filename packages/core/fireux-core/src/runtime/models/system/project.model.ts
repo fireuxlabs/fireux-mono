@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: declare private Project control-plane authority.
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../utils/entity.model'
 import type { FireuxStamped } from '../utils/stamps.model'
@@ -33,34 +32,12 @@ export interface ProjectMeta
   database_id: string
 }
 
-/**
- * Entity map: docs/concepts/entities.md
- *
- * Family: FireUX control-plane root entity
- * Storage: private control-plane root plus FireUX App access support
- * Root path: /projects/<projectId>
- * App path: /apps/<appId>/projects/<projectId>
- * Management surface: /console/project in fireux-app
- *
- * Decision note:
- * - Project is canonical only in the FireUX control plane. It is not a public
- *   directory entity and is not bootstrapped into every ecosystem database.
- * - App and Ecosystem records point to their parent with `project_id`.
- * - Project does not store inverse `app_id`, `ecosystem_id`, or access lists.
- * - The root owns Project identity and control-plane configuration.
- * - The AppProject record determines which Projects are attached to the
- *   FireUX App Console and owns only access/support fields.
- * - The Project console may manage related App and Ecosystem surfaces, but those surfaces edit each entity's own stored truth.
- * - A Project management surface must not invent separate App or Ecosystem stored identities unless the model docs say so.
- * - If this decision changes, update the entity map and this source together.
- */
+export type AppProject = FireuxAppAccessRecord
+
 export const ProjectStorage = {
-  shape: 'root-and-app-support',
+  shape: 'root',
   database: 'named',
-  root: 'projects/{projectId}',
-  scope: 'apps/{appId}/projects/{projectId}',
-  rootCollection: 'projects',
-  scopeCollection: 'projects',
+  path: 'projects/{projectId}',
   collection: 'projects',
   idParam: 'projectId',
 } as const
@@ -74,6 +51,15 @@ export const ProjectMetaStorage = {
   authority: 'canonical-project-and-source-config',
 } as const
 
+export const AppProjectStorage = {
+  shape: 'scoped',
+  database: 'named',
+  path: 'apps/{appId}/projects/{projectId}',
+  collection: 'projects',
+  parent: 'app',
+  idParam: 'projectId',
+} as const
+
 export const ProjectEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Project',
@@ -81,28 +67,27 @@ export const ProjectEntity = defineFireuxEntity({
   identity: 'root',
   authority: 'fireux-control-plane',
   appSupport: 'access-record',
-  publicRead: 'none',
+  publicRead: 'projection',
   status: 'confirmed',
   console: true,
-  root: ProjectStorage.root,
-  appSupportPath: ProjectStorage.scope,
+  root: ProjectStorage.path,
+  appSupportPath: AppProjectStorage.path,
 })
 
-export const ProjectIdentityModel: ProjectIdentity = {
+export const ProjectIdentityDefaults: ProjectIdentity = {
   id: '',
   status: 'draft',
 }
 
-export const ProjectPresentationModel: ProjectPresentation = {
+export const ProjectPresentationDefaults: ProjectPresentation = {
   name: '',
   description: '',
   image_url: '',
 }
 
-export const ProjectModel: Project = {
-  ...ProjectIdentityModel,
-  ...ProjectPresentationModel,
-  status: 'active',
+export const ProjectDefaults: Project = {
+  ...ProjectIdentityDefaults,
+  ...ProjectPresentationDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -114,9 +99,9 @@ export const ProjectModel: Project = {
   },
 }
 
-export const ProjectMetaModel: ProjectMeta = {
-  ...ProjectIdentityModel,
-  ...ProjectPresentationModel,
+export const ProjectMetaDefaults: ProjectMeta = {
+  ...ProjectIdentityDefaults,
+  ...ProjectPresentationDefaults,
   database_id: '',
   updated: {
     at: {} as FirebaseTimestamp,
@@ -124,11 +109,9 @@ export const ProjectMetaModel: ProjectMeta = {
   },
 }
 
-export const AppProjectModel = {
+export const AppProjectDefaults: AppProject = {
   ...FireuxAppAccessRecordModel,
-} as const
-
-export type AppProject = FireuxAppAccessRecord
+}
 
 export type ProjectCreateInput = Pick<Project, 'id' | 'name'> &
   Partial<Pick<Project, 'description' | 'image_url' | 'status'>>

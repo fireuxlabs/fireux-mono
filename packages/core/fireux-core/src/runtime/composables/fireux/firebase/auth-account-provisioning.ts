@@ -1,3 +1,4 @@
+import { refreshNuxtData } from '#imports'
 import { computed, type Ref } from 'vue'
 import type { User } from 'firebase/auth'
 import {
@@ -5,6 +6,7 @@ import {
   readPendingAccountConsent,
 } from './account-consent'
 import { provisionSignedInUserAccount } from './userAccountProvisioning'
+import { CURRENT_USER_ACCOUNT_ASYNC_DATA_KEY } from '../user/currentUserAccount'
 
 export type AccountProvisionState = {
   uid: string | null
@@ -67,6 +69,7 @@ export function createAuthAccountProvisioner(options: AccountProvisionerOptions)
         if (!signedInUser || signedInUser.uid !== nextUid) return
         const termsVersion = readPendingAccountConsent() ?? undefined
         await provisionSignedInUserAccount(signedInUser, termsVersion)
+        await refreshNuxtData(CURRENT_USER_ACCOUNT_ASYNC_DATA_KEY)
         if (termsVersion) clearPendingAccountConsent()
         await userCreate.createUser()
         const nextState = state.value

@@ -16,9 +16,7 @@
           size="sm"
           color="neutral"
           variant="ghost"
-          :icon="
-            variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'
-          "
+          :icon="variant === 'pill' ? 'i-lucide-layout-grid' : 'i-lucide-list'"
           :aria-label="
             variant === 'pill'
               ? 'Switch to card view'
@@ -80,9 +78,11 @@
       v-else
       icon="i-lucide-users-round"
       :title="query ? 'No matching users' : 'No users yet'"
-      :description="query
-        ? 'Try a different search term.'
-        : 'Users will appear here once they are available.'"
+      :description="
+        query
+          ? 'Try a different search term.'
+          : 'Users will appear here once they are available.'
+      "
     />
 
     <div>
@@ -106,10 +106,7 @@ import { useUser } from '../../../composables/fireux/user/useUser'
 import { useUserInterface } from '../../../composables/fireux/user/useUserInterface'
 import { useCollectionSearch } from '../../../composables/shared/useCollectionSearch'
 import { useCollectionVariantCards } from '../../../composables/shared/useCollectionVariantCards'
-import {
-  UserModel,
-  type User,
-} from '../../../models/core/user.model'
+import { UserDefaults, type User } from '../../../models/core/user.model'
 
 type PublicUserDto = {
   id: string
@@ -164,27 +161,20 @@ const fetched = useFetch<PublicUsersResponse>('/api/public/users', {
   key: `public-users-index-${isTenant ? appId : 'global'}`,
   query: { limit: 200 },
 })
-const {
-  user: currentUser,
-  appUser,
-  appOutcome,
-} = useUser()
+const { user: currentUser, appUser, appOutcome } = useUser()
 const liveSelfUser = computed<PublicUserDto | null>(() => {
   const user = currentUser.value
   if (!user) return null
-  if (
-    isTenant &&
-    (appOutcome.value !== 'ready' || !appUser.value)
-  ) {
+  if (isTenant && (appOutcome.value !== 'ready' || !appUser.value)) {
     return null
   }
 
-  const handle = String(user.handle || '').trim().toLowerCase()
+  const handle = String(user.handle || '')
+    .trim()
+    .toLowerCase()
   if (!handle) return null
 
-  const displayName =
-    String(user.display_name || '').trim() ||
-    `@${handle}`
+  const displayName = String(user.display_name || '').trim() || `@${handle}`
   const avatar = String(user.avatar || '').trim()
 
   return {
@@ -224,7 +214,7 @@ const publicUsers = computed<PublicUserDto[]>(() => {
 })
 const collection = computed<User[]>(() =>
   publicUsers.value.map((user) => ({
-    ...UserModel,
+    ...UserDefaults,
     id: user.id,
     display_name: user.displayName,
     bio: user.bio,
@@ -234,7 +224,9 @@ const collection = computed<User[]>(() =>
 )
 const title = computed(() => String(props.title || 'Users'))
 const description = computed(() =>
-  String(props.description || 'Open a user profile to see where someone contributes.')
+  String(
+    props.description || 'Open a user profile to see where someone contributes.'
+  )
 )
 const linkEnabled = computed(() => props.link !== false)
 const searchPlaceholder = computed(() =>
@@ -253,8 +245,8 @@ const outcome = computed<UserCollectionOutcome>(() => {
   if (fetched.error.value) return 'error'
   return totalCount.value > 0 ? 'ready' : 'empty'
 })
-const isSettled = computed(() =>
-  outcome.value === 'ready' || outcome.value === 'empty'
+const isSettled = computed(
+  () => outcome.value === 'ready' || outcome.value === 'empty'
 )
 const {
   interface: makeCard,

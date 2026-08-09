@@ -4,21 +4,17 @@
       <div class="section__header">
         <div class="section__copy">
           <h3>App info</h3>
-          <p>
-            View the basic details for this app.
-          </p>
+          <p>View the basic details for this app.</p>
         </div>
       </div>
     </template>
 
-    <div
-      v-for="row in infoRows"
-      :key="row.label"
-      class="section__item"
-    >
+    <div v-for="row in infoRows" :key="row.label" class="section__item">
       <dl>
         <dt class="mb-1 text-sm font-medium text-default">{{ row.label }}</dt>
-        <dd class="min-h-9 rounded-md bg-muted/30 px-3 py-2 text-sm text-default">
+        <dd
+          class="min-h-9 rounded-md bg-muted/30 px-3 py-2 text-sm text-default"
+        >
           {{ row.value }}
         </dd>
       </dl>
@@ -28,10 +24,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { AppModel } from '../../../../models/core/app.model'
+import type { App } from '../../../../models/core/app.model'
 
 const props = defineProps<{
-  app: AppModel
+  app: App
 }>()
 
 const fallback = 'Not set'

@@ -5,7 +5,7 @@ import type { Ecosystem } from '../../../../../models/core/ecosystem.model'
 import {
   useProjectInterface,
   type ProjectSurface,
-} from '../../../firestore/core/project/utils/view/useProjectInterface'
+} from '../../../project/useProjectInterface'
 
 export type ProjectConsoleDemoScenario = {
   project: ProjectSurface

@@ -1,5 +1,5 @@
 // @fireux-script
-// last_used: 2026-08-05
+// last_used: 2026-08-09
 // usage_note: run through pnpm guard; enforces the three-lane Firestore mutation spine.
 
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
@@ -38,7 +38,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
 // typed lane; additions fail the guard. This turns the pre-spine writers into a
 // bounded, executable remaining-file inventory instead of an expanding allowlist.
 const LEGACY_CLIENT_WRITER_FINGERPRINT =
-  'df0b210b149eab688f510e70c98d9c465d61a2d9e5ebe8b887bbd449c2826cda'
+  '41d9bcfae9b30f8938da437128bf140fd402c739b72a6762b96f098ab75274dd'
 const LEGACY_ADMIN_WRITER_FINGERPRINT =
   'bda76e185e9be6e3cf978e8d2e494c3d24cd1cbd789aab845b6691cdc20a5b76'
 
@@ -124,6 +124,11 @@ export function run({ repoRoot }) {
   )
   assert.match(
     targetsSource,
+    /runtimeAppMeta:[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'default' \}[\s\S]*collectionPath:\s*'apps'/,
+    'The authenticated runtime App writer must maintain its local AppMeta projection through the Server lane.'
+  )
+  assert.match(
+    targetsSource,
     /fireuxProjects:[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'named', databaseId:\s*'fireux' \}[\s\S]*collectionPath:\s*'projects'/,
     'The canonical Project Console Entity target must remain Server-owned at fireux/projects.'
   )
@@ -131,6 +136,19 @@ export function run({ repoRoot }) {
     targetsSource,
     /database:\s*\{ kind:\s*'default' \}[\s\S]{0,100}collectionPath:\s*'projects'/,
     'The canonical projects collection must never be placed in (default).'
+  )
+  const appUpdateSource = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/mutations/useAppUpdate.ts'
+    ),
+    'utf8'
+  )
+  assert.match(appUpdateSource, /\/api\/internal\/app\/settings/)
+  assert.doesNotMatch(
+    appUpdateSource,
+    /useFirestoreUpdate|updateDocument/,
+    'Canonical App edits must use the trusted writer that also maintains AppMeta.'
   )
   assert.match(
     serverTargetsSource,
@@ -403,22 +421,15 @@ export function run({ repoRoot }) {
     /FIRESTORE_MUTATION_TARGETS\.(?:projectMeta|ecosystemMeta|appMeta)/,
     'Project Console mutations must not write default metadata projections.'
   )
-  const projectMutationPanel = readFileSync(
-    path.join(
-      repoRoot,
-      'projects/fireux/fireux-app/app/components/Project/MutationPanel.vue'
+  assert.equal(
+    existsSync(
+      path.join(
+        repoRoot,
+        'projects/fireux/fireux-app/app/components/Project/MutationPanel.vue'
+      )
     ),
-    'utf8'
-  )
-  assert.match(
-    projectMutationPanel,
-    /\/api\/internal\/control\/projects[\s\S]*method:\s*'POST'/
-  )
-  assert.match(projectMutationPanel, /method:\s*'PATCH'/)
-  assert.match(projectMutationPanel, /method:\s*'DELETE'/)
-  assert.match(
-    projectMutationPanel,
-    /deleteConfirmation\.value !== projectId\.value/
+    false,
+    'The read-only Project Console must not expose canonical mutations that omit ProjectMeta synchronization.'
   )
   const placeMutationFiles = [
     ['ensure.ts', /mutations\.create\(places,\s*id,/],

@@ -1,7 +1,28 @@
 # Entity onboarding journeys
 
-This is the practical playbook for the shared Core User and App onboarding
-journeys.
+This is the practical playbook for shared Core entity onboarding journeys.
+
+## Project onboarding boundary
+
+- Project is a FireUX control-plane entity. `/projects` publishes only active
+  identity and presentation; its private operational entry point is the
+  admin-only `/console/project`.
+- Canonical `fireux/projects/{projectId}` owns Project identity and
+  presentation. Each Firebase host keeps one bounded
+  `(default)/project/{projectId}` ProjectMeta routing projection.
+- The Console is read-only. Canonical creation and changes are trusted
+  provisioning operations and must synchronize the local ProjectMeta; the
+  browser does not write either record.
+- The minimal Console operations are Identity, Apps, Ecosystem, and Team. Team
+  reads the existing FireUX `AppProject` access record; it is not a duplicate
+  membership store. Do not add Project notifications until the notification
+  model has a real Project-scoped emitter and User-owned delivery lifecycle.
+- Audit existing Projects with
+  `pnpm align:onboarding -- --all --family project --summary`. Any apply must
+  use the reported plan hash, a new protected backup path under `/private/tmp`,
+  and the command's post-write verification.
+- Project images persisted across databases must be deployable HTTPS URLs.
+  Repo-local `/img/...` paths are reported but never propagated.
 
 ## Experience contract
 
@@ -53,6 +74,10 @@ journeys.
 3. On click:
    - the onboarding action provisions the private account, canonical User, and
      User-owned avatar
+   - private account state is read through authenticated
+     `/api/internal/user/account`, and avatar bytes are saved through
+     authenticated `/api/internal/user/avatar`; the journey does not require
+     browser Firestore or Storage write permission
    - a self-service App membership is created only when the active App permits
      it
    - on success, user is sent to:
@@ -98,8 +123,8 @@ What to verify next (in order):
    - `displayName` should match what you set (or sensible fallback from auth)
    - `avatar` should be a real URL (not missing/empty)
 2. `users/{uid}` canonical record
-   - should exist in Firestore identity database
-   - `isPublic` should be `true`
+   - should exist in the Firestore identity database
+   - should contain `handle`, `display_name`, `bio`, `avatar`, and stamps
 3. `users/{uid}/private/account`
    - should contain term acceptance + preferences record after onboarding
 4. App membership (for current app only)
@@ -115,8 +140,8 @@ Successful User onboarding creates or confirms these owned records:
 1. `users/{uid}` — the canonical public User identity.
 2. `users/{uid}/private/account` — private preferences and current legal
    acceptance evidence.
-3. `users/{uid}/avatar/current` — the User-owned Storage object when the
-   default avatar is used.
+3. `users/{uid}/avatar/current` — the User-owned Storage object for either the
+   supplied avatar or the default.
 4. `apps/{appId}/users/{uid}` — only when the active App permits self-service
    membership or a separate authorized App action creates it.
 
@@ -138,6 +163,17 @@ User-owned Storage path and update the canonical User URL. Legal evidence must
 never be synthesized by migration: an account without current acceptance must
 return to explicit account setup. AppUser records are also not bulk-created;
 their presence follows the active App's membership policy.
+
+The guarded fleet tools are:
+
+- `pnpm align:onboarding -- --all --summary` for non-destructive User,
+  AppUser, Ecosystem, Project, App, and local metadata projection planning;
+- `pnpm align:user-avatars -- --all --summary` for owned-avatar Storage
+  planning.
+
+Both default to read-only, require exact plan confirmation plus a protected
+preimage for apply, and verify every result. Neither tool creates acceptance,
+Users, memberships, Apps, Auth identities, or admin roles.
 
 Quick in-app checks:
 
@@ -195,9 +231,22 @@ App Shell mounts `AppInitializeSystem` only when the App declared by runtime
 configuration lacks its canonical record. Its green environment checks mean
 “this configured App is ready to initialize”; they are never progress for a
 new App. Initialization authenticates the configured developer and atomically
-creates the fixed runtime App plus its first App-admin membership through the
-Server mutation lane. The browser cannot choose an App id, database, or path,
-and Firestore Rules do not need to grant tenant-App creation to clients.
+creates the fixed runtime App plus its first App-admin membership in the named
+database through the Server mutation lane. It then idempotently creates or
+updates that App's bounded `(default)` AppMeta projection. App media sync and
+App-admin identity edits maintain both records through the same projection
+seam. The browser cannot choose an App id, database, or path, and Firestore
+Rules do not need to grant tenant-App creation to clients.
+
+Initialization requires a fully valid environment check in every mode. Dev
+mode does not bypass required Firebase configuration, live Storage
+reachability, or the App-owned media contract; fix the reported requirement
+before creating the canonical App and first administrator membership.
+
+`pnpm audit:app-media -- --all` audits every registered App against the same
+five-asset source, Storage, URL, and dimension contract. It records unavailable
+ecosystems as blockers, continues through the fleet, and exits unsuccessfully
+while any App is warning, failing, or blocked.
 
 ### App source anchors
 
@@ -207,5 +256,7 @@ and Firestore Rules do not need to grant tenant-App creation to clients.
 - `packages/core/fireux-core/src/runtime/composables/fireux/app/utils/useAppInitialization.ts`
 - `packages/core/fireux-core/src/runtime/server/api/internal/app/initialize.post.ts`
 - `packages/core/fireux-core/src/runtime/server/utils/app-initialization/initialize.ts`
+- `packages/core/fireux-core/src/runtime/server/utils/app-projection/ensure.ts`
+- `packages/core/fireux-core/src/runtime/server/api/internal/app/settings.patch.ts`
 - `packages/core/fireux-core/src/runtime/models/operations/app-onboarding.ts`
 - `packages/core/fireux-core/src/runtime/utils/app-onboarding-policy.ts`

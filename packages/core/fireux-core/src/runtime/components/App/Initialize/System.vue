@@ -62,9 +62,6 @@
             >
               Fix required environment variables to enable this action.
             </p>
-            <p v-else-if="bypassWarning" class="mt-2 text-xs text-warning">
-              Continuing in dev mode without required environment variables.
-            </p>
             <p v-if="proceedError" class="mt-2 text-xs text-error">
               {{ proceedError }}
             </p>
@@ -106,7 +103,6 @@ const {
   pending,
   actionPending,
   canProceed,
-  bypassWarning,
   proceedError,
   onRefreshEnv,
   onProceed,

@@ -89,13 +89,13 @@ export async function run({ repoRoot }) {
     repoRoot,
     'packages/core/fireux-core/src/runtime/models/core/user.model.ts'
   )
-  const modelStart = model.indexOf('export const AppUserModel: AppUser = {')
+  const modelStart = model.indexOf('export const AppUserDefaults: AppUser = {')
   const modelEnd = model.indexOf(
     '\n}\n\nexport type UserCreateInput',
     modelStart
   )
-  assert.notEqual(modelStart, -1, 'AppUserModel must remain canonical.')
-  assert.notEqual(modelEnd, -1, 'AppUserModel must remain a bounded model.')
+  assert.notEqual(modelStart, -1, 'AppUserDefaults must remain canonical.')
+  assert.notEqual(modelEnd, -1, 'AppUserDefaults must remain bounded.')
   const userAppModel = model.slice(modelStart, modelEnd)
   assert.doesNotMatch(
     userAppModel,
@@ -147,10 +147,11 @@ export async function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/fetch/useUserFetch.ts'
   )
   assert.match(activeUserFetch, /useCurrentAppContext/)
+  assert.match(activeUserFetch, /useCurrentUserAccount/)
   assert.doesNotMatch(
     activeUserFetch,
-    /\b(?:AppStorage|AppUserStorage|normalizeAppUser)\b/,
-    'Active User membership must use the bounded current-App server projection.'
+    /\b(?:AppStorage|AppUserStorage|normalizeAppUser|useDocument|useFirestore)\b/,
+    'Active User and account state must use bounded server projections.'
   )
 
   const consoleTargets = read(
@@ -180,10 +181,23 @@ export async function run({ repoRoot }) {
     'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/mutations/useUserCreate.ts'
   )
   assert.match(userCreate, /fetchCurrentAppContext/)
+  assert.match(userCreate, /shouldEnsureMembership/)
+  assert.match(userCreate, /createAppUserMembership\(appId, uid, 'user'\)/)
   assert.doesNotMatch(
     userCreate,
     /\b(?:getDoc|AppUserStorage)\b/,
     'User provisioning must not inspect App membership through browser Firestore.'
+  )
+
+  const userCreateHelpers = read(
+    repoRoot,
+    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/user/utils/createHelpers.ts'
+  )
+  assert.match(userCreateHelpers, /provisionSignedInUserAvatar/)
+  assert.doesNotMatch(
+    userCreateHelpers,
+    /ensureAvatarUrl|useImageStorage/,
+    'User onboarding avatars must use the authenticated server Storage boundary.'
   )
 
   const membershipMutation = read(
@@ -196,6 +210,36 @@ export async function run({ repoRoot }) {
     'Membership mutations must refresh the bounded current-App projection.'
   )
 
+  const devLauncher = read(repoRoot, 'scripts/dev-app-with-smoke.mjs')
+  const developerIdentityStart = devLauncher.indexOf(
+    'const inheritedDeveloperIdentityKeys = ['
+  )
+  const developerIdentityEnd = devLauncher.indexOf(
+    'const goQrProvider',
+    developerIdentityStart
+  )
+  assert.notEqual(
+    developerIdentityStart,
+    -1,
+    'The dev launcher must own an inherited developer-identity boundary.'
+  )
+  const developerIdentityBoundary = devLauncher.slice(
+    developerIdentityStart,
+    developerIdentityEnd
+  )
+  for (const key of [
+    'DEVELOPER_ID',
+    'DEVELOPER_UID',
+    'NUXT_PUBLIC_DEVELOPER_ID',
+  ]) {
+    assert.match(
+      developerIdentityBoundary,
+      new RegExp(`'${key}'`),
+      `${key} must not leak from the parent shell into another App.`
+    )
+  }
+  assert.match(developerIdentityBoundary, /delete devEnv\[key\]/)
+
   for (const relativePath of [
     'packages/ecosystem/fireux-misebox/src/config/firebase/firestore.template.rules',
     'packages/ecosystem/fireux-werkbox/src/config/firebase/firestore.template.rules',
@@ -203,7 +247,10 @@ export async function run({ repoRoot }) {
     const rules = await expandFirestoreRulesTemplate(
       read(repoRoot, relativePath)
     )
-    assert.match(rules, /match \/private\/targets[\s\S]*allow get, list, create, update, delete: if false;/)
+    assert.match(
+      rules,
+      /match \/private\/targets[\s\S]*allow get, list, create, update, delete: if false;/
+    )
     assert.doesNotMatch(rules, /data\.profiles|data\.app_ids/)
     assert.doesNotMatch(rules, /console_targets/)
     assert.match(rules, /'pending'[\s\S]*'completed'[\s\S]*'skipped'/)

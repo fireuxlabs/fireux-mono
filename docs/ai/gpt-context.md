@@ -1,6 +1,6 @@
 # FireUX GPT Context
 
-Updated: 2026-08-04
+Updated: 2026-08-08
 Ref: 1d6857c57
 Role: living context
 Scope: repo-wide
@@ -99,6 +99,10 @@ Before each task:
   `--host` requests normal terminal ownership: the dev wrapper replaces any
   same-checkout listener and starts a fresh network-visible server rather than
   silently reusing it.
+- Developer identity is Firebase-project-specific. The shared dev launcher
+  removes inherited `DEVELOPER_ID`, `DEVELOPER_UID`, and
+  `NUXT_PUBLIC_DEVELOPER_ID` values before Nuxt loads the selected App's local
+  `.env`; never copy one ecosystem's Auth UID into another ecosystem.
 
 ## Shared page navigation
 
@@ -163,9 +167,10 @@ Before each task:
   CLI, agents, and Tools do not receive raw collection or database authority.
 - Start at `docs/concepts/composables.md`, `docs/concepts/firestore-entity.md`,
   and the entity's current model, endpoint, composables, and guards.
-- Core User and App are the filesystem proving siblings: canonical records
+- Core User, App, and Ecosystem are the filesystem proving siblings: canonical records
   remain flat in `models/core`, entity-facing read/view composables live under
-  `composables/fireux/user` and `composables/fireux/app`, raw adapters remain
+  `composables/fireux/user`, `composables/fireux/app`, and
+  `composables/fireux/ecosystem`, raw adapters remain
   under `composables/fireux/firestore/core/<entity>`, and Profile compositions
   live directly under `components/User` and `components/App` rather than
   `Cards`.
@@ -443,6 +448,9 @@ Before each task:
   `/users/create` doorway owns explicit current legal acceptance and User
   provisioning, preserves its original same-origin destination, and creates
   the current AppUser only when that App permits self-service joining.
+  Re-entering that explicit journey may idempotently repair required fields on
+  an existing User or current AppUser without changing its handle, role,
+  entitlement, onboarding completion, or legal evidence.
 - A newly created App membership publishes one deterministic
   `app.user.joined` event under that App. The event is the durable signup log
   and atomically creates an owner-only in-app notification for each existing
@@ -474,6 +482,14 @@ Before each task:
   membership through a bounded server projection. They do not raw-read private
   App or App-user authority from browser Firestore merely to render overview
   state.
+- The signed-in User's owner-only `private/account` state follows the same
+  boundary through `/api/internal/user/account`; onboarding and dashboard
+  availability must not depend on browser Firestore Rules permitting that
+  private read.
+- User onboarding copies the supplied avatar or ecosystem default through the
+  authenticated `/api/internal/user/avatar` server Storage boundary before it
+  writes the canonical User. Browser Storage Rules are not the provisioning
+  path, and a local `/img/...` placeholder is never the persisted avatar.
 - Live root/App-support families query bounded entity App-support authority and
   expose no partial pair when a root, same-id support record,
   App scope, stored authority shape, or caller access is invalid.
@@ -561,6 +577,14 @@ Before each task:
 - App initialization is protected by authenticated server UID authorization
   and existing-admin checks. Do not recreate a cosmetic client developer PIN
   or present one as a security boundary.
+- App initialization creates or verifies the canonical named-database App and
+  first Admin membership, then idempotently maintains the matching local
+  `(default)` AppMeta projection. App media sync and App-admin presentation
+  edits use the same projection seam. The second database write is retryable,
+  not falsely described as part of the named-database transaction.
+- App initialization requires a fully valid environment, live Firebase
+  Storage reachability, and App-owned media check. Dev mode is not authority to
+  bypass required configuration, infrastructure, or asset validation.
 
 ## Financial fact ownership
 
@@ -820,6 +844,10 @@ Do not add per-app MCP configuration files merely to expose Firebase to Codex.
   status, public presentation, assets, and Console-family discovery. It never
   contains memberships, User ids, counts, moderation state, repository paths,
   build state, or operational content.
+- The Firebase-project directory and FireUX platform aggregation consume these
+  AppMeta records. An ecosystem's local `/api/public/apps` collection reads
+  its canonical active Apps from the owning named database; that owner-local
+  read does not make AppMeta optional during onboarding.
 - Every production `standalone` App selects a dedicated named database in each
   Firebase project that hosts its local outputs. Global and tenant Apps use
   their ecosystem's named database. A development harness must be classified

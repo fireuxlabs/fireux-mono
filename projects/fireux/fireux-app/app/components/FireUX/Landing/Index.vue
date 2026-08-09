@@ -37,8 +37,10 @@
       <template #apps>
         <LandingAppCollection
           :controller="appsController"
-          title="FireUX's Apps"
-          action-label="Explore all apps"
+          eyebrow="App directory"
+          title="Apps built with FireUX"
+          description="Browse active Apps across FireUX and its Ecosystems."
+          action-label="Explore all Apps"
           action-to="/apps"
           :limit="6"
         />

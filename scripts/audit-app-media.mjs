@@ -1,16 +1,18 @@
 #!/usr/bin/env node
 // @fireux-script
-// last_used: 2026-07-20
+// last_used: 2026-08-08
 // usage_note: read-only audit of canonical App media objects and stored URLs for an explicit registry scope.
 // Concurrent edit — 2026-07-20 22:12 CEST — Repo Efficiency Pass 4 of 6: resolve exact registry targets and audit canonical media efficiently.
 
 import fs from 'node:fs'
+import { createHash } from 'node:crypto'
 import path from 'node:path'
 import process from 'node:process'
 
 import { deleteApp, initializeApp } from 'firebase-admin/app'
 import { getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
+import sharp from 'sharp'
 
 import { APP_REGISTRY } from './_lib/app-registry.mjs'
 import { parseArgs } from './_lib/args.mjs'
@@ -24,26 +26,36 @@ const EXPECTED_MEDIA = [
     kind: 'thumbnail',
     objectName: 'thumbnail',
     field: 'thumbnail_url',
+    dimensions: { requiredWidth: 1200, requiredHeight: 630 },
   },
   {
     kind: 'logo',
     objectName: 'logo',
     field: 'logo_url',
+    dimensions: { requiredWidth: 512, requiredHeight: 512 },
   },
   {
     kind: 'wordmarkLight',
     objectName: 'wordmark-light',
     field: 'wordmark_light_url',
+    dimensions: { minWidth: 256, minHeight: 64, minAspect: 3 },
   },
   {
     kind: 'wordmarkDark',
     objectName: 'wordmark-dark',
     field: 'wordmark_dark_url',
+    dimensions: { minWidth: 256, minHeight: 64, minAspect: 3 },
   },
   {
     kind: 'cover',
     objectName: 'cover',
     field: 'cover_url',
+    dimensions: {
+      minWidth: 1280,
+      minHeight: 720,
+      aspectRatio: 16 / 9,
+      aspectTolerance: 0.01,
+    },
   },
 ]
 
@@ -265,6 +277,77 @@ function objectPathFor(appId, objectName) {
   return `apps/${appId}/media/${objectName}`
 }
 
+function localAssetPathFor(target, objectName) {
+  return path.resolve(
+    repoRoot(),
+    target.workspace,
+    'public',
+    'img',
+    'app',
+    `${objectName}.png`
+  )
+}
+
+function sha256(buffer) {
+  return createHash('sha256').update(buffer).digest('hex')
+}
+
+function validateDimensions(metadata, constraints) {
+  const width = metadata.width ?? 0
+  const height = metadata.height ?? 0
+
+  if (metadata.format !== 'png') {
+    return `Must be PNG (got ${metadata.format || 'unknown'})`
+  }
+  if (constraints.requiredWidth && constraints.requiredHeight) {
+    return width === constraints.requiredWidth &&
+      height === constraints.requiredHeight
+      ? ''
+      : `Must be exactly ${constraints.requiredWidth}x${constraints.requiredHeight} (got ${width}x${height})`
+  }
+  if (constraints.minWidth && width < constraints.minWidth) {
+    return `Must be at least ${constraints.minWidth}px wide (got ${width}px)`
+  }
+  if (constraints.minHeight && height < constraints.minHeight) {
+    return `Must be at least ${constraints.minHeight}px tall (got ${height}px)`
+  }
+
+  const aspect = height > 0 ? width / height : 0
+  if (
+    constraints.aspectRatio &&
+    Math.abs(aspect - constraints.aspectRatio) >
+      (constraints.aspectTolerance ?? 0)
+  ) {
+    return `Must use ${constraints.aspectRatio.toFixed(2)}:1 aspect (got ${width}x${height})`
+  }
+  if (constraints.minAspect && aspect < constraints.minAspect) {
+    return `Must use aspect at least ${constraints.minAspect}:1 (got ${width}x${height})`
+  }
+  return ''
+}
+
+async function inspectImage(buffer, constraints) {
+  try {
+    const metadata = await sharp(buffer).metadata()
+    return {
+      width: metadata.width ?? 0,
+      height: metadata.height ?? 0,
+      format: metadata.format ?? '',
+      issue: validateDimensions(metadata, constraints),
+    }
+  } catch (error) {
+    return {
+      width: 0,
+      height: 0,
+      format: '',
+      issue:
+        error instanceof Error && error.message.trim()
+          ? `Unreadable image: ${error.message.trim()}`
+          : 'Unreadable image',
+    }
+  }
+}
+
 function parseFirebaseStorageDownloadUrl(value) {
   try {
     const url = new URL(value)
@@ -353,6 +436,9 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
   ])
 
   const listedObjects = storageResult[0].map((file) => file.name).sort()
+  const storageFilesByName = new Map(
+    storageResult[0].map((file) => [file.name, file])
+  )
   const listedObjectSet = new Set(listedObjects)
   const expectedObjectSet = new Set(
     EXPECTED_MEDIA.map((media) => objectPathFor(target.appId, media.objectName))
@@ -377,12 +463,45 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
     const storedValue =
       typeof media[expected.field] === 'string' ? media[expected.field] : ''
     const url = validateStoredUrl(storedValue, target.storageBucket, objectPath)
+    const localAssetPath = localAssetPathFor(target, expected.objectName)
+    const localExists = fs.existsSync(localAssetPath)
+    const localBuffer = localExists ? fs.readFileSync(localAssetPath) : null
+    const localImage = localBuffer
+      ? await inspectImage(localBuffer, expected.dimensions)
+      : null
+    const storageBuffer = storageExists
+      ? (await storageFilesByName.get(objectPath).download())[0]
+      : null
+    const storageImage = storageBuffer
+      ? await inspectImage(storageBuffer, expected.dimensions)
+      : null
+    const sourceMatchesStorage = Boolean(
+      localBuffer &&
+        storageBuffer &&
+        sha256(localBuffer) === sha256(storageBuffer)
+    )
     let checkStatus = 'ok'
     const checkIssues = []
 
+    if (!localExists) {
+      checkStatus = 'error'
+      checkIssues.push('Missing App-owned source asset')
+    } else if (localImage?.issue) {
+      checkStatus = 'error'
+      checkIssues.push(`Invalid App-owned source asset: ${localImage.issue}`)
+    }
     if (!storageExists) {
       checkStatus = 'error'
       checkIssues.push('Missing storage object')
+    } else if (storageImage?.issue) {
+      checkStatus = 'error'
+      checkIssues.push(`Invalid storage object: ${storageImage.issue}`)
+    }
+    if (localBuffer && storageBuffer && !sourceMatchesStorage) {
+      checkStatus = 'error'
+      checkIssues.push(
+        'Storage object does not match the App-owned source asset'
+      )
     }
     if (!url.hasUrl) {
       checkStatus = elevateStatus(
@@ -401,8 +520,13 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
       firestoreField: `media.${expected.field}`,
       firestoreHasUrl: url.hasUrl,
       firestoreUrl: url.hasUrl ? storedValue : '',
+      localAssetPath: path.relative(repoRoot(), localAssetPath),
+      localExists,
+      localImage,
       storageObjectPath: objectPath,
       storageExists,
+      storageImage,
+      sourceMatchesStorage,
       urlMatchesExpectedTarget: url.matchesTarget,
       status: checkStatus,
       issues: checkIssues,
@@ -447,7 +571,9 @@ Checks each selected registry App in its canonical database against:
 - apps/{appId}/media/cover
 
 Only nested media.* fields are canonical. The audit also reports legacy root
-fields and unexpected objects, but never mutates Firestore or Storage.
+fields and unexpected objects. Every stored object must be a valid canonical
+PNG and byte-for-byte match its App-owned public/img/app source. The audit never
+mutates Firestore or Storage.
 
 Options:
 - --ecosystem: APP_REGISTRY ecosystem key, for example misebox or fireux
@@ -506,39 +632,42 @@ async function main() {
       ok: 0,
       warn: 0,
       error: 0,
+      blockedEcosystems: 0,
     },
   }
 
   for (const target of targets) {
-    const auth = await resolveFirebaseAdminCredential({
-      args,
-      scope: target.ecosystemId || target.projectId,
+    let adminApp = null
+    const ecosystemResult = {
+      ecosystemKey: target.ecosystemKey,
+      ecosystemId: target.ecosystemId,
+      ecosystemName: target.ecosystemName,
       projectId: target.projectId,
-    })
-
-    const adminApp = initializeApp(
-      {
-        credential: auth.credential,
-        projectId: target.projectId,
-        storageBucket: target.storageBucket,
-      },
-      `audit-app-media:${target.ecosystemKey}`
-    )
+      configDatabaseId: target.configDatabaseId || '(default)',
+      bucket: target.storageBucket,
+      sourceFile: target.sourceFile,
+      appCount: target.apps.length,
+      apps: {},
+      totals: { ok: 0, warn: 0, error: 0 },
+      blocker: null,
+    }
 
     try {
-      const bucket = getStorage(adminApp).bucket(target.storageBucket)
-      const ecosystemResult = {
-        ecosystemKey: target.ecosystemKey,
-        ecosystemId: target.ecosystemId,
-        ecosystemName: target.ecosystemName,
+      const auth = await resolveFirebaseAdminCredential({
+        args,
+        scope: target.ecosystemId || target.projectId,
         projectId: target.projectId,
-        configDatabaseId: target.configDatabaseId || '(default)',
-        bucket: target.storageBucket,
-        sourceFile: target.sourceFile,
-        appCount: target.apps.length,
-        apps: {},
-        totals: { ok: 0, warn: 0, error: 0 },
-      }
+      })
+
+      adminApp = initializeApp(
+        {
+          credential: auth.credential,
+          projectId: target.projectId,
+          storageBucket: target.storageBucket,
+        },
+        `audit-app-media:${target.ecosystemKey}`
+      )
+      const bucket = getStorage(adminApp).bucket(target.storageBucket)
 
       for (const appTarget of target.apps) {
         const result = await auditRegistryApp({
@@ -552,15 +681,44 @@ async function main() {
         ecosystemResult.apps[appTarget.appKey] = result
         ecosystemResult.totals[result.status] += 1
       }
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message.trim()
+          ? error.message.trim()
+          : 'Ecosystem App media audit failed.'
+      const code = /bucket does not exist/i.test(message)
+        ? 'STORAGE_BUCKET_REQUIRED'
+        : 'ECOSYSTEM_AUDIT_FAILED'
+      ecosystemResult.blocker = { code, message }
 
-      report.ecosystems[target.ecosystemKey] = ecosystemResult
-      report.totals.apps += ecosystemResult.appCount
-      report.totals.ok += ecosystemResult.totals.ok
-      report.totals.warn += ecosystemResult.totals.warn
-      report.totals.error += ecosystemResult.totals.error
+      for (const appTarget of target.apps) {
+        if (ecosystemResult.apps[appTarget.appKey]) continue
+        ecosystemResult.apps[appTarget.appKey] = {
+          appKey: appTarget.appKey,
+          id: appTarget.appId,
+          databaseId: appTarget.databaseId,
+          workspace: appTarget.workspace,
+          documentExists: null,
+          ok: false,
+          status: 'error',
+          issues: [`Ecosystem media audit blocked: ${message}`],
+          checks: [],
+          listedObjects: [],
+          unexpectedObjects: [],
+          legacyFields: [],
+        }
+        ecosystemResult.totals.error += 1
+      }
     } finally {
-      await deleteApp(adminApp)
+      if (adminApp) await deleteApp(adminApp)
     }
+
+    report.ecosystems[target.ecosystemKey] = ecosystemResult
+    report.totals.apps += ecosystemResult.appCount
+    report.totals.ok += ecosystemResult.totals.ok
+    report.totals.warn += ecosystemResult.totals.warn
+    report.totals.error += ecosystemResult.totals.error
+    if (ecosystemResult.blocker) report.totals.blockedEcosystems += 1
   }
 
   const outPath = path.resolve(out || 'temp/app-media-audit.json')
@@ -573,6 +731,14 @@ async function main() {
   console.log(
     `OK: ${report.totals.ok}  WARN: ${report.totals.warn}  ERROR: ${report.totals.error}`
   )
+  console.log(`Blocked ecosystems: ${report.totals.blockedEcosystems}`)
+  if (
+    report.totals.warn > 0 ||
+    report.totals.error > 0 ||
+    report.totals.blockedEcosystems > 0
+  ) {
+    process.exitCode = 1
+  }
 }
 
 main().catch((error) => {

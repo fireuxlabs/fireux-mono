@@ -1,6 +1,6 @@
-import { AppModel, type App } from '../../models/core/app.model'
+import { AppDefaults, type App } from '../../models/core/app.model'
 import {
-  EcosystemModel,
+  EcosystemDefaults,
   type Ecosystem,
 } from '../../models/core/ecosystem.model'
 import type { Project } from '../../models/system/project.model'
@@ -23,7 +23,7 @@ export const projectDemoScenarios: ProjectDemoScenario[] = [
     project: fireuxDemoProject,
     apps: [
       {
-        ...AppModel,
+        ...AppDefaults,
         id: 'fireux-demo-app',
         project_id: fireuxDemoProject.id,
         ecosystem_id: 'fireux-demo-ecosystem',
@@ -36,7 +36,7 @@ export const projectDemoScenarios: ProjectDemoScenario[] = [
     ],
     ecosystems: [
       {
-        ...EcosystemModel,
+        ...EcosystemDefaults,
         id: 'fireux-demo-ecosystem',
         project_id: fireuxDemoProject.id,
         name: 'FireUX Demo Ecosystem',
@@ -57,12 +57,14 @@ for (const scenario of projectDemoScenarios) {
   )
 
   if (
-    !appId
-    || !projectId
-    || ecosystemIds.has('')
-    || scenario.project.created.app_id !== appId
+    !appId ||
+    !projectId ||
+    ecosystemIds.has('') ||
+    scenario.project.created.app_id !== appId
   ) {
-    throw new Error('Every Project Demo scenario requires stable root identities.')
+    throw new Error(
+      'Every Project Demo scenario requires stable root identities.'
+    )
   }
 
   for (const ecosystem of scenario.ecosystems) {

@@ -1,17 +1,14 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: adopt authoritative target outcomes.
 import { computed } from 'vue'
 import { normalizeString } from '../../../../../utils/string'
-import {
-  useConsole,
-  type ConsoleSource,
-} from '../../../app/console/useConsole'
+import { useConsole, type ConsoleSource } from '../../../app/console/useConsole'
 import { consoleData } from '../../../app/console/useConsoleData'
 import { useConsoleEntityRuntime } from '../../../app/console/useConsoleEntityRuntime'
 import {
   useProjectCollection,
   type ProjectCollectionFilter,
-} from '../../../firestore/core/project/fetch/useProjectCollection'
-import { type ProjectSurface } from '../../../firestore/core/project/utils/view/useProjectInterface'
+} from '../../../project/useProjectCollection'
+import type { ProjectSurface } from '../../../project/useProjectInterface'
 import { ProjectStorage } from '../../../../../models/system/project.model'
 import type { Ref } from 'vue'
 import { useProjectConsoleDemoTargets } from './useProjectConsoleDemoTargets'
@@ -59,7 +56,7 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
         : consoleRoot.source.value === 'test'
           ? 'test'
           : 'live'
-    return targetProjects.value.map(project => consoleData(type, project))
+    return targetProjects.value.map((project) => consoleData(type, project))
   })
   const targetsPending = computed(() =>
     consoleRoot.source.value === 'demo'

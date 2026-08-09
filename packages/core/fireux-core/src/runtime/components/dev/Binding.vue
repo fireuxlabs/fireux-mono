@@ -20,9 +20,7 @@
         <span class="font-mono">admins</span>: {{ bindingAdminIdsCount }}
       </div>
 
-      <div v-if="isPending" class="text-xs text-muted">
-        Checking…
-      </div>
+      <div v-if="isPending" class="text-xs text-muted">Checking…</div>
 
       <div v-else-if="bindingError" class="text-sm text-warning">
         Binding check unavailable. App admin access is required.
@@ -55,9 +53,9 @@
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppUserCollection } from '../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import type { AppModel } from '../../models/core/app.model'
+import type { App } from '../../models/core/app.model'
 
-defineProps<{ app?: AppModel | null; apps?: AppModel[] | null }>()
+defineProps<{ app?: App | null; apps?: App[] | null }>()
 
 const { appId: bindingAppId } = useFireUXConfig()
 const {
@@ -78,7 +76,8 @@ const binding = computed(() => ({
 }))
 const bindingAppUsersCount = computed(() => memberships.value.length)
 const bindingAdminIdsCount = computed(
-  () => memberships.value.filter((membership) => membership.role === 'admin').length
+  () =>
+    memberships.value.filter((membership) => membership.role === 'admin').length
 )
 const bindingTotal = computed(() => binding.value.missingCore.length)
 </script>

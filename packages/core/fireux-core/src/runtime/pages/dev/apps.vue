@@ -17,10 +17,7 @@
 
       <DevBinding :app="bindingApp" :apps="appCollection" />
 
-      <DevModel
-        :title="'Apps · Model'"
-        :model="appModelRuntime"
-      />
+      <DevModel :title="'Apps · Model'" :model="appModelRuntime" />
 
       <UCard>
         <template #header>
@@ -29,7 +26,8 @@
               Apps collection
             </p>
             <p class="text-xs text-muted">
-              Inspect model drift separately from the public apps collection manager.
+              Inspect model drift separately from the public apps collection
+              manager.
             </p>
             <DevDriftToolbar
               :drift-kind="appsDriftKind"
@@ -59,7 +57,7 @@ import { useDevDriftFilter } from '../../composables/dev/useDevDriftFilter'
 import { computed } from 'vue'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useEcosystemAppCollection } from '../../composables/fireux/public/app/useEcosystemAppCollection'
-import { AppModel as AppModelRuntime } from '../../models/core/app.model'
+import { AppDefaults } from '../../models/core/app.model'
 
 definePageMeta({
   layout: 'dev',
@@ -76,7 +74,7 @@ definePageMeta({
   description: 'Developer view for Apps (collection-first).',
 })
 
-const appModelRuntime = AppModelRuntime
+const appModelRuntime = AppDefaults
 const publicAppsController = useEcosystemAppCollection()
 
 const { apps } = useDevAppCollection()
@@ -85,7 +83,7 @@ const { appId: configAppId, isTenant, role } = useFireUXConfig()
 const appCollection = computed(() =>
   isTenant
     ? apps.value.filter((app) => app.id === configAppId)
-    : apps.value ?? []
+    : (apps.value ?? [])
 )
 const modeLabel = computed(() => {
   if (role === 'tenant') return 'tenant (single app)'
@@ -94,8 +92,9 @@ const modeLabel = computed(() => {
 })
 
 const bindingAppId = computed(() => configAppId ?? '')
-const bindingApp = computed(() =>
-  appCollection.value.find((item) => item?.id === bindingAppId.value) ?? null
+const bindingApp = computed(
+  () =>
+    appCollection.value.find((item) => item?.id === bindingAppId.value) ?? null
 )
 
 const {

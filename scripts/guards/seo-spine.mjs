@@ -165,7 +165,7 @@ export async function run({ repoRoot }) {
     'projects/fireux/fireux-app/app/pages/apps/index.vue',
     'projects/fireux/fireux-app/app/pages/apps/[id].vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/index.vue',
-    'projects/fireux/fireux-app/app/pages/ecosystems/[slug].vue',
+    'projects/fireux/fireux-app/app/pages/ecosystems/[id].vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/misebox/index.vue',
     'projects/fireux/fireux-app/app/pages/ecosystems/werkbox/index.vue',
     'projects/fireux/fireux-app/app/pages/solutions/index.vue',
@@ -201,6 +201,10 @@ export async function run({ repoRoot }) {
     repoRoot,
     'projects/fireux/fireux-app/app/utils/directorySearchPolicy.ts'
   )
+  const fireuxDirectoryTargets = read(
+    repoRoot,
+    'projects/fireux/fireux-app/server/config/platform-directory-targets.ts'
+  )
   const fireuxAppDetail = read(
     repoRoot,
     'projects/fireux/fireux-app/app/pages/apps/[id].vue'
@@ -214,8 +218,10 @@ export async function run({ repoRoot }) {
     }
   }
   for (const marker of [
+    'PLATFORM_DIRECTORY_TARGETS',
+    'getFirestoreProjectDb(target.projectId)',
+    "db.collection('ecosystem').doc(target.ecosystemId)",
     "fetchCollection(db, 'apps')",
-    "fetchCollection(db, 'ecosystems')",
     'projectPublicApp',
     'projectEcosystemDirectoryEntry',
   ]) {
@@ -223,13 +229,33 @@ export async function run({ repoRoot }) {
       violations.push(`FireUX directory reader must retain ${marker}.`)
     }
   }
-  for (const marker of [
-    "NON_INDEXABLE_DIRECTORY_APP_IDS = new Set(['fireux-blank'])",
-    "RETIRED_PUBLIC_ECOSYSTEM_IDS = new Set(['cleanbox'])",
-  ]) {
+  for (const marker of ["NON_INDEXABLE_DIRECTORY_APP_IDS = new Set(['fireux-blank'])"]) {
     if (!fireuxDirectoryPolicy.includes(marker)) {
       violations.push(`FireUX directory search policy must retain ${marker}.`)
     }
+  }
+  for (const [projectId, ecosystemId] of [
+    ['bringli-b0517', 'bringli'],
+    ['buenohost-ecosystem', 'buenohost'],
+    ['cleanbox-f15bc', 'cleanbox'],
+    ['fireux-2005', 'fireux'],
+    ['granite-ecosystem', 'granite'],
+    ['misebox-78f9c', 'misebox'],
+    ['slap-45389', 'slap'],
+  ]) {
+    if (
+      !fireuxDirectoryTargets.includes(`projectId: '${projectId}'`) ||
+      !fireuxDirectoryTargets.includes(`ecosystemId: '${ecosystemId}'`)
+    ) {
+      violations.push(
+        `FireUX platform directory targets must retain ${projectId}/${ecosystemId}.`
+      )
+    }
+  }
+  if (!fireuxDirectoryTargets.includes("detailPath: '/ecosystems/werkbox'")) {
+    violations.push(
+      'FireUX platform directory must route the stored Cleanbox ecosystem identity to the Werkbox product page.'
+    )
   }
   for (const marker of [
     'isDirectoryAppIndexable',

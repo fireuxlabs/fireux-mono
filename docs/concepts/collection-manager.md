@@ -5,6 +5,7 @@ Ref: 796952bf0
 Role: map, not canon
 
 ## Purpose
+
 Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 ## Vertical links
@@ -174,7 +175,8 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 ## Current source-mode snapshot
 
 - Root index manager today: `App`, `Ecosystem`, `User`, `Kitchen`, `Menu`, `Place`, `Portfolio`, `Property`, `Supplier`, `Blog`, `Company`, `Job`, `Product`, `Ingredient`, `Chef`, `Driver`, `Agent`, `Professional`.
-- Project is a private FireUX console target, not a public collection manager.
+- Project has a bounded public collection of active identity and presentation;
+  selection, access, and operations remain private FireUX Console concerns.
 - Scoped surfaces today: `Dish`, `Recipe`, `Station`, `Kitchen.Supplier`, `Team`, `Supplier.Catalogue`, `Supplier.Ingredient`, `Supplier.Item`, `Orders`.
 - Custom-derived surfaces today: `Blank`, `Console.Kitchen.Operations.Mise`, `Console.Portfolio.Operations.Clients`.
 
@@ -216,31 +218,31 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
 
 Root Simple Collection Managers
 
-| Manager      | Snapshot source                     | Direction         | Current note                                                                                                                                            |
-| ------------ | ----------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Menu`       | Route-owned `/api/menus` controller | Self              | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
-| `Place`      | None in manager                     | Self              | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                            |
-| `Product`    | None in manager                     | Self              | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                        |
-| `Supplier`   | None for root browse                | Self/App support  | Root browse fetches Suppliers. Operator-filtered console/access flows may join same-id App support records.                                             |
-| `Portfolio`  | None for root browse                | Self/App support  | Root browse fetches Portfolios. Operator-filtered console/access flows may join same-id App support records.                                            |
-| `Property`   | None for root browse                | Self/App support  | Root browse fetches Properties. The `root-with-app-support` read shape is explicit via options.                                                         |
+| Manager     | Snapshot source                     | Direction        | Current note                                                                                                                                            |
+| ----------- | ----------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Menu`      | Route-owned `/api/menus` controller | Self             | Root index manager renders bounded public root doorway pages; the same controller owns tenant index policy, cursor pagination, and no detail hydration. |
+| `Place`     | None in manager                     | Self             | Root index manager fetches places; Place can be source truth for synced snapshots elsewhere.                                                            |
+| `Product`   | None in manager                     | Self             | Root index manager fetches products; Product can be source truth for synced snapshots elsewhere.                                                        |
+| `Supplier`  | None for root browse                | Self/App support | Root browse fetches Suppliers. Operator-filtered console/access flows may join same-id App support records.                                             |
+| `Portfolio` | None for root browse                | Self/App support | Root browse fetches Portfolios. Operator-filtered console/access flows may join same-id App support records.                                            |
+| `Property`  | None for root browse                | Self/App support | Root browse fetches Properties. The `root-with-app-support` read shape is explicit via options.                                                         |
 
 Root Projected Collection Managers
 
-| Manager        | Projection source                                    | Direction                 | Current note                                                                                                                |
-| -------------- | ---------------------------------------------------- | ------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join explicit `place_id` and canonical App scope without copied snapshots or client N+1 reads. |
-| `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests hydrate Kitchen and Supplier links without exposing raw root documents. |
-| `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                     |
-| `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                    |
-| `User`         | `/api/public/users`                                  | Server projection         | Public users index gets safe user DTOs, then maps them through `useUserInterface()`.                                        |
+| Manager        | Projection source                                    | Direction                 | Current note                                                                                                                                 |
+| -------------- | ---------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join explicit `place_id` and canonical App scope without copied snapshots or client N+1 reads.                  |
+| `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests hydrate Kitchen and Supplier links without exposing raw root documents.                 |
+| `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                                      |
+| `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                     |
+| `User`         | `/api/public/users`                                  | Server projection         | Public users index gets safe user DTOs, then maps them through `useUserInterface()`.                                                         |
 | `Blog`         | `/api/public/blogs`                                  | Server projection         | The public editorial manager uses a content-free index DTO and endpoint-owned cursor pagination; admin/dev retain their scoped root manager. |
-| `Chef`         | `/api/public/chefs`                                  | Server profile/User join  | Kitchen-owned allowlist joins canonical User by matching uid.                                                               |
-| `Driver`       | `/api/public/drivers`                                | Server profile/User join  | Kitchen-owned allowlist excludes AppDriver contact, tender, and Kitchen grant state.                                        |
-| `Agent`        | `/api/public/agents`                                 | Server profile/User join  | Jobs-owned allowlist includes deliberate public business contacts only.                                                     |
-| `Professional` | `/api/public/professionals`                          | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                |
-| `Job`          | `/api/public/jobs`                                   | Server Company/Place join | Exact open/public roots join bounded employer and work-location display truth; raw ids, owner, source, and stamps stay private. |
-| `Company`      | `/api/companies`                                     | Server Place join         | Exact stamps-only Company roots join the same-id canonical Place; Place display fields are never copied onto Company.       |
+| `Chef`         | `/api/public/chefs`                                  | Server profile/User join  | Kitchen-owned allowlist joins canonical User by matching uid.                                                                                |
+| `Driver`       | `/api/public/drivers`                                | Server profile/User join  | Kitchen-owned allowlist excludes AppDriver contact, tender, and Kitchen grant state.                                                         |
+| `Agent`        | `/api/public/agents`                                 | Server profile/User join  | Jobs-owned allowlist includes deliberate public business contacts only.                                                                      |
+| `Professional` | `/api/public/professionals`                          | Server profile/User join  | Jobs-owned allowlist keeps resume data explicit and bounded.                                                                                 |
+| `Job`          | `/api/public/jobs`                                   | Server Company/Place join | Exact open/public roots join bounded employer and work-location display truth; raw ids, owner, source, and stamps stay private.              |
+| `Company`      | `/api/companies`                                     | Server Place join         | Exact stamps-only Company roots join the same-id canonical Place; Place display fields are never copied onto Company.                        |
 
 Scoped/provided collection surfaces
 
@@ -266,18 +268,18 @@ Custom-derived surfaces
 
 ## Delta register
 
-| Difference | State | Reason or direction |
-| --- | --- | --- |
-| Root Simple, Synced Snapshot, and Projected managers fetch differently | `accepted` | Privacy and read-model authority differ; every manager still owns one bounded source outcome |
-| Scoped operations do not use `XCollectionManager` | `accepted` | Parent scope is required input, so they need named scoped surfaces rather than a root-manager override prop |
-| App and Ecosystem managers receive named controllers | `accepted` | The page must choose ecosystem/platform authority explicitly |
-| Kitchen/Menu/User established shared directory header/state presentation before older managers | `migration` | Converge other root managers through the small core seams when touched |
-| Blog has separate public-editorial and authenticated-root managers | `accepted` | Public projection and draft administration have different authority; both remain Blogs-extension-owned and share the interface mapper |
-| Orders and some Console operation lists are custom-derived | `to-confirm` | Keep named domain surfaces until a repeated collection contract is proved |
-| Client-side search is hidden before all bounded pages are loaded | `accepted` | It must not claim absence from an incomplete catalogue; large search becomes server-owned |
-| Snapshot propagation is currently a guarded manual script | `to-confirm` | Move a snapshot to a trigger only after write volume, failure recovery, and source ownership justify continuous sync |
-| Some authority-sensitive roots use public APIs while simple roots read collections | `accepted` | Privacy, publication, and server-only joins determine transport; the manager still consumes one bounded source outcome |
-| App-support joins remain options on several domain reads | `to-confirm` | Graduate a join into a named scoped surface when it gains independent permissions, UI, or reuse |
+| Difference                                                                                     | State        | Reason or direction                                                                                                                   |
+| ---------------------------------------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| Root Simple, Synced Snapshot, and Projected managers fetch differently                         | `accepted`   | Privacy and read-model authority differ; every manager still owns one bounded source outcome                                          |
+| Scoped operations do not use `XCollectionManager`                                              | `accepted`   | Parent scope is required input, so they need named scoped surfaces rather than a root-manager override prop                           |
+| App and Ecosystem managers receive named controllers                                           | `accepted`   | The page must choose ecosystem/platform authority explicitly                                                                          |
+| Kitchen/Menu/User established shared directory header/state presentation before older managers | `migration`  | Converge other root managers through the small core seams when touched                                                                |
+| Blog has separate public-editorial and authenticated-root managers                             | `accepted`   | Public projection and draft administration have different authority; both remain Blogs-extension-owned and share the interface mapper |
+| Orders and some Console operation lists are custom-derived                                     | `to-confirm` | Keep named domain surfaces until a repeated collection contract is proved                                                             |
+| Client-side search is hidden before all bounded pages are loaded                               | `accepted`   | It must not claim absence from an incomplete catalogue; large search becomes server-owned                                             |
+| Snapshot propagation is currently a guarded manual script                                      | `to-confirm` | Move a snapshot to a trigger only after write volume, failure recovery, and source ownership justify continuous sync                  |
+| Some authority-sensitive roots use public APIs while simple roots read collections             | `accepted`   | Privacy, publication, and server-only joins determine transport; the manager still consumes one bounded source outcome                |
+| App-support joins remain options on several domain reads                                       | `to-confirm` | Graduate a join into a named scoped surface when it gains independent permissions, UI, or reuse                                       |
 
 ## Alignment roadmap
 

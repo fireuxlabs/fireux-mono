@@ -18,10 +18,8 @@ export interface UserPresentation {
   avatar: string
 }
 
-/** Canonical person identity stored at `users/{userId}`. */
 export interface User extends FireuxStamped, UserIdentity, UserPresentation {}
 
-/** One User's membership and capability state inside one App. */
 export interface AppUser extends FireuxStamped {
   id: string
   role: AppUserRole
@@ -29,7 +27,7 @@ export interface AppUser extends FireuxStamped {
   onboarding_status: AppUserOnboardingStatus
 }
 
-/** Private console-target ids owned by one User; never part of public User. */
+/** Console targets assigned to one User. */
 export interface UserTargets {
   project_ids: string[]
   kitchen_ids: string[]
@@ -73,20 +71,20 @@ export const UserEntity = defineFireuxEntity({
   appSupportPath: AppUserStorage.path,
 })
 
-export const UserIdentityModel: UserIdentity = {
+export const UserIdentityDefaults: UserIdentity = {
   id: '',
   handle: '',
 }
 
-export const UserPresentationModel: UserPresentation = {
+export const UserPresentationDefaults: UserPresentation = {
   display_name: '',
   bio: '',
   avatar: USER_ECOSYSTEM_AVATAR_SRC,
 }
 
-export const UserModel: User = {
-  ...UserIdentityModel,
-  ...UserPresentationModel,
+export const UserDefaults: User = {
+  ...UserIdentityDefaults,
+  ...UserPresentationDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -97,7 +95,7 @@ export const UserModel: User = {
   },
 }
 
-export const AppUserModel: AppUser = {
+export const AppUserDefaults: AppUser = {
   id: '',
   role: 'user',
   is_premium: false,
@@ -113,7 +111,7 @@ export const AppUserModel: AppUser = {
   },
 }
 
-export const UserTargetsModel: UserTargets = {
+export const UserTargetsDefaults: UserTargets = {
   project_ids: [],
   kitchen_ids: [],
 }

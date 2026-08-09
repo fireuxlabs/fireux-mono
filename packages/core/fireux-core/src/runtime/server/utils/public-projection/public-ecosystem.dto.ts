@@ -1,6 +1,7 @@
 import type { EcosystemStatus } from '../../../models/core/ecosystem.model'
 import type { EcosystemDirectoryEntry } from '../../../models/utils/directory'
 import { asTrimmedString } from './public-dto.helpers'
+import type { PublicEcosystemDto } from './public-dto.types'
 
 const ECOSYSTEM_STATUSES = new Set<EcosystemStatus>([
   'draft',
@@ -26,20 +27,34 @@ export function projectEcosystemDirectoryEntry(
 ): EcosystemDirectoryEntry | null {
   const source = asRecord(raw)
   const id = asTrimmedString(options.id)
-  const slug = asTrimmedString(source.slug) || id
-  if (!id || !slug) return null
+  if (!id) return null
+  const ecosystem = projectPublicEcosystem(source, { id })
+  if (!ecosystem) return null
+
+  return {
+    ...ecosystem,
+    detail_url: `/ecosystems/${encodeURIComponent(id)}`,
+    app_count: Math.max(0, Math.trunc(Number(options.appCount) || 0)),
+  }
+}
+
+/** Pure, bounded projection from Ecosystem or EcosystemMeta storage. */
+export function projectPublicEcosystem(
+  raw: unknown,
+  options: { id: string }
+): PublicEcosystemDto | null {
+  const source = asRecord(raw)
+  const id = asTrimmedString(options.id)
+  if (!id) return null
 
   return {
     id,
-    slug,
     status: asStatus(source.status),
     name: asTrimmedString(source.name) || id,
     description: asTrimmedString(source.description),
     image_url: asTrimmedString(source.image_url),
-    // Narrow legacy adapter: old canonical rows used source_url.
+    // Temporary read-only migration adapter. New writes use website_url.
     website_url:
       asTrimmedString(source.website_url) || asTrimmedString(source.source_url),
-    detail_url: `/ecosystems/${encodeURIComponent(slug)}`,
-    app_count: Math.max(0, Math.trunc(Number(options.appCount) || 0)),
   }
 }

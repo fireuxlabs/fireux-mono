@@ -1,6 +1,6 @@
 # Core Models
 
-Updated: 2026-08-04
+Updated: 2026-08-09
 Ref: d232cc731
 Role: map, not canon
 
@@ -38,11 +38,21 @@ project. Those safe routing and presentation records
 are not canonical identity or operational storage; canonical App membership
 and domain state remain in the owning named database.
 
+The FireUX platform directory reads those local projections directly from each
+registered Firebase project through one trusted server boundary. Its guarded
+target registry is infrastructure routing, not another stored directory or
+identity authority. A missing target or projection fails explicitly instead of
+silently publishing an incomplete platform directory.
+
 `AppMeta` is part of the App family but is not another Entity. It keeps only
 the local Project/Ecosystem/database pointers, App role and status, public
 identity and media, website route, Console-family discovery, and projection
 update stamp. It excludes membership, User ids and counts, moderation,
 repository/build metadata, join policy, and operational content.
+The trusted runtime initialization, media, and App-settings writers maintain
+the current App's projection idempotently. Operator migrations and App
+scaffolding use the MCP/Skill lane for the same projection contract; Client
+code never writes `(default)`.
 
 App role has exactly three product meanings: `global`, `tenant`, and
 `standalone`. Ecosystem identity is represented by `Ecosystem`, while internal
@@ -53,10 +63,34 @@ identity, presentation, and stamps in its named database; the local meta adds
 only the named `database_id` needed for routing. Ecosystem document ID is route
 identity, so no duplicate stored slug exists in either shape.
 
+The entity-facing Ecosystem read/view stack lives under
+`composables/fireux/ecosystem`: `useEcosystemDetail` resolves one bounded DTO,
+`useEcosystemInterface` maps presentation, and `useEcosystemSeo` owns metadata.
+Raw identity-database collection adapters remain under
+`composables/fireux/firestore/core/ecosystem`. Ecosystem creation and publishing
+are trusted provisioning operations; no client mutation or umbrella
+`useEcosystem()` entrypoint owns them.
+
 `ProjectMeta` follows the same local-registry boundary. Canonical Projects stay
 in the FireUX control-plane named database, `AppProject` owns FireUX Console
 access, and the local meta adds only its named `database_id`. Project document
 ID is route identity, so neither Project shape stores a duplicate slug.
+
+The entity-facing Project stack lives under `composables/fireux/project`.
+`useProjectCollection` reads the caller's target-bounded control-plane endpoint,
+`useProjectDetail` selects one Project from that bounded result, and
+`useProjectInterface` maps presentation. `/projects` is the public collection of
+active Project identity and presentation DTOs. It never exposes access,
+database credentials, team, or operational state. There is no public Project
+detail route and no browser Firestore read or mutation entrypoint; private
+selection and operations remain under `/console/project`.
+
+The read-only Project Console may expose operations backed by existing
+authority. Its Team operation reads the selected Project's `AppProject`
+operator/team ids through an admin-only server endpoint and resolves their
+canonical User presentation. It does not create a second Project membership
+model. Project notifications remain undefined until a real Project-scoped
+emitter and User-owned delivery contract exist.
 
 The FireUX control-plane named database keeps canonical `projects/{projectId}`
 roots for every Project added to the Console. Its
@@ -79,6 +113,15 @@ stamps, and entity declarations are shared model utilities, not core records.
 | `runtime/utils`                  | Derived runtime behavior such as access, avatar, and scope normalization                                                                                        | Canonical stored shape                                  |
 | `config/app`                     | Authored App composition and literature contracts                                                                                                               | Firestore records                                       |
 | Extension-owned models and utils | Domain policy proved by that extension, such as Kitchen currency display                                                                                        | Generic Core vocabulary without another domain consumer |
+
+## Entity model file shape
+
+Core entity model files use one order: vocabulary, canonical entity,
+supporting records, storage declarations, entity declaration, defaults, then
+command inputs. Runtime seed objects use the `Defaults` suffix; `Model` is not
+used for a value or as an alias for the entity type. Each stored record has its
+own storage declaration, so an App support record never shares a combined
+storage object with its canonical root.
 
 Module composition is source controlled through extension packages and App
 configuration. There is deliberately no generic Firestore `Module` model.
@@ -140,6 +183,10 @@ cleanup: migrate readers, writers, Rules, guards, and stored records together.
    `App.derived.user_count` independently.
 5. Collapse App database metadata to one infrastructure source and remove
    stored-id/slug duplication only after route and data migrations are proven.
+
+`pnpm align:onboarding` now audits Ecosystem/EcosystemMeta alongside User and
+App. Its default is a dry run; an apply requires the exact plan hash and a
+protected preimage backup under `/private/tmp`.
 
 Each migration is a separate bounded pass. Passing TypeScript does not prove a
 stored-data migration is complete.

@@ -24,10 +24,7 @@
         </div>
       </UCard>
 
-      <DevModel
-        :title="'Projects · Model'"
-        :model="projectModelRuntime"
-      />
+      <DevModel :title="'Projects · Model'" :model="projectModelRuntime" />
 
       <UCard>
         <template #header>
@@ -55,12 +52,8 @@
             <UBadge variant="soft">
               root doc: {{ selectedRootProject ? 'yes' : 'no' }}
             </UBadge>
-            <UBadge variant="soft">
-              storage: root only
-            </UBadge>
-            <UBadge variant="soft">
-              child families: none defined
-            </UBadge>
+            <UBadge variant="soft"> storage: root only </UBadge>
+            <UBadge variant="soft"> child families: none defined </UBadge>
           </div>
 
           <UAlert
@@ -87,9 +80,9 @@
 import { computed, ref, watch } from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useProjectConsoleSelection } from 'fireux-core/runtime/composables/fireux/console/project/core/useProjectConsoleSelection'
-import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/firestore/core/project/fetch/useProjectCollection'
+import { useProjectCollection } from 'fireux-core/runtime/composables/fireux/project/useProjectCollection'
 import type { Project } from 'fireux-core/runtime/models/system/project.model'
-import { ProjectModel as ProjectModelRuntime } from 'fireux-core/runtime/models/system/project.model'
+import { ProjectDefaults } from 'fireux-core/runtime/models/system/project.model'
 
 definePageMeta({
   layout: 'dev',
@@ -107,7 +100,10 @@ definePageMeta({
   },
 })
 
-const projectModelRuntime = ProjectModelRuntime as unknown as Record<string, unknown>
+const projectModelRuntime = ProjectDefaults as unknown as Record<
+  string,
+  unknown
+>
 const { appId } = useFireUXConfig()
 const { selectedId } = useProjectConsoleSelection()
 const resolvedAppId = computed(() => String(appId || '').trim())
@@ -126,7 +122,7 @@ const rootProjectById = computed(() => {
 
 const selectedProjectId = ref('')
 
-const projectOptions = computed<{ label: string, value: string }[]>(() =>
+const projectOptions = computed<{ label: string; value: string }[]>(() =>
   (projects.value ?? []).map((project) => {
     const id = String(project?.id || '').trim()
     const labelBase = String(project?.name || id).trim() || id
@@ -139,13 +135,15 @@ const projectOptions = computed<{ label: string, value: string }[]>(() =>
 
 watch(
   projectOptions,
-  (options: { label: string, value: string }[]) => {
+  (options: { label: string; value: string }[]) => {
     if (!options.length) {
       selectedProjectId.value = ''
       return
     }
 
-    const stillExists = options.some((option) => option.value === selectedProjectId.value)
+    const stillExists = options.some(
+      (option) => option.value === selectedProjectId.value
+    )
     if (!stillExists) {
       selectedProjectId.value = String(options[0]?.value || '')
     }
@@ -153,7 +151,9 @@ watch(
   { immediate: true }
 )
 
-const selectedRootProject = computed(() => rootProjectById.value.get(selectedProjectId.value) ?? null)
+const selectedRootProject = computed(
+  () => rootProjectById.value.get(selectedProjectId.value) ?? null
+)
 
 const projectStorageJson = computed(() => ({
   currentAppId: resolvedAppId.value || null,
@@ -162,7 +162,9 @@ const projectStorageJson = computed(() => ({
   storage: 'root',
   paths: {
     rootProjectCollection: 'projects',
-    selectedRootProjectDoc: selectedProjectId.value ? `projects/${selectedProjectId.value}` : null,
+    selectedRootProjectDoc: selectedProjectId.value
+      ? `projects/${selectedProjectId.value}`
+      : null,
   },
   rootProject: selectedRootProject.value,
   childCollections: [],

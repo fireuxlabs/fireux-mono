@@ -84,7 +84,7 @@ import AdminFeaturedSlugsSelection from 'fireux-core/runtime/components/Admin/Fe
 import {
   useEcosystemInterface,
   type EcosystemInterfaceCard,
-} from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+} from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
 import { usePlatformEcosystemDirectory } from '../../../composables/usePlatformDirectory'
 
 const { ecosystems, outcome: directoryOutcome } =
@@ -97,7 +97,7 @@ const selectableRows = computed<
 >(() =>
   ecosystems.value
     .map((ecosystem) => {
-      const slug = clean(ecosystem.slug)
+      const slug = clean(ecosystem.id)
       const card = ecosystemCell({
         ...ecosystem,
         href: ecosystem.detail_url,

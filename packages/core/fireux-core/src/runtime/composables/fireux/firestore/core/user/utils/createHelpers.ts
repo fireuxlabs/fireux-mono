@@ -6,9 +6,8 @@ import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useUserHandleUpdate } from '../mutations/useUserHandleUpdate'
 import { mutateAppMembership } from './appMembershipMutation'
-import { UserStorage } from '../../../../../../models/core/user.model'
-import { ensureAvatarUrl } from '../../../utils/useEnsureCommon'
 import { USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE } from '../../../../../../utils/user-avatar'
+import { provisionSignedInUserAvatar } from '../../../../firebase/userAvatarProvisioning'
 
 export type CreateCoreOptions = {
   displayName?: string
@@ -39,13 +38,8 @@ export async function createCoreUserDocument(
     throw new Error('[createCoreUserDocument] Missing displayName')
   }
   const handle = makeHandle(displayName, uid)
-  const avatar = await ensureAvatarUrl(
-    `${UserStorage.collection}/${uid}/avatar/current`,
-    [String(options.avatar || '').trim(), USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE],
-    true,
-    {
-      fallback: USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE,
-    }
+  const avatar = await provisionSignedInUserAvatar(
+    String(options.avatar || '').trim() || USER_ECOSYSTEM_AVATAR_FALLBACK_SOURCE
   )
   const { updateHandle } = useUserHandleUpdate()
   const result = await updateHandle(uid, handle, {

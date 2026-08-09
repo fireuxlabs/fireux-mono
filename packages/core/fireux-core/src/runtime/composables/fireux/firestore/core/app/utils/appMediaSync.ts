@@ -10,7 +10,17 @@ export async function syncAppMediaToStorage(): Promise<AppMediaSyncResponse> {
   })
 
   if (!response.ok) {
-    throw new Error(`App media sync failed (${response.status}).`)
+    const errorPayload = await response
+      .json()
+      .catch(() => null) as { message?: unknown; statusMessage?: unknown } | null
+    const detail = String(
+      errorPayload?.statusMessage || errorPayload?.message || ''
+    ).trim()
+    throw new Error(
+      detail
+        ? `App media sync failed (${response.status}): ${detail}`
+        : `App media sync failed (${response.status}).`
+    )
   }
 
   return (await response.json()) as AppMediaSyncResponse

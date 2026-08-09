@@ -38,6 +38,19 @@
                 />
               </UTooltip>
 
+              <UTooltip :text="mediaSyncTooltip" :popper="{ placement: 'top' }">
+                <UButton
+                  aria-label="Sync App media"
+                  size="xs"
+                  variant="ghost"
+                  :color="mediaSyncColor"
+                  :icon="mediaSyncIcon"
+                  :loading="mediaSyncPending"
+                  :disabled="mediaSyncPending"
+                  @click="syncRuntimeMedia()"
+                />
+              </UTooltip>
+
               <UTooltip
                 :text="supportsInlineNotes ? (notesVisible ? 'Hide developer notes' : 'Show developer notes') : 'No developer notes on this page yet'"
                 :popper="{ placement: 'top' }"
@@ -129,6 +142,7 @@ import { useColorMode } from '../../composables/fireux/app/useColorMode'
 import { useDevUi } from '../../composables/fireux/app/ui/useDevUi'
 import AppInitializeSystem from './Initialize/System.vue'
 import { useAppInitialization } from '../../composables/fireux/app/utils/useAppInitialization'
+import { syncAppMediaToStorage } from '../../composables/fireux/firestore/core/app/utils/appMediaSync'
 import { withBuildVersion } from '../../utils/buildVersionUrl'
 
 const isDev = import.meta.dev
@@ -143,6 +157,24 @@ const manifestHref = withBuildVersion(
 useColorMode()
 const { panelOpen, notesVisible, supportsInlineNotes, toggleNotes, togglePanel } = useDevUi()
 const copiedNotes = ref(false)
+const mediaSyncPending = ref(false)
+const mediaSyncState = ref<'idle' | 'success' | 'error'>('idle')
+const mediaSyncTooltip = computed(() => {
+  if (mediaSyncPending.value) return 'Syncing App media'
+  if (mediaSyncState.value === 'success') return 'App media synced'
+  if (mediaSyncState.value === 'error') return 'App media sync failed'
+  return 'Sync App media'
+})
+const mediaSyncColor = computed(() => {
+  if (mediaSyncState.value === 'success') return 'success' as const
+  if (mediaSyncState.value === 'error') return 'error' as const
+  return 'neutral' as const
+})
+const mediaSyncIcon = computed(() => {
+  if (mediaSyncState.value === 'success') return 'i-lucide-check'
+  if (mediaSyncState.value === 'error') return 'i-lucide-triangle-alert'
+  return 'i-lucide-cloud-upload'
+})
 const canCopyNotes = computed(() => supportsInlineNotes.value && notesVisible.value)
 const devDockShellStyle: CSSProperties = {
   position: 'fixed',
@@ -187,6 +219,25 @@ useHead({
 
 function goToDev() {
   router.push('/dev')
+}
+
+async function syncRuntimeMedia() {
+  if (mediaSyncPending.value) return
+
+  mediaSyncPending.value = true
+  mediaSyncState.value = 'idle'
+  try {
+    const result = await syncAppMediaToStorage()
+    mediaSyncState.value = result.failed.length ? 'error' : 'success'
+    if (result.failed.length) {
+      console.error('[AppShell] App media sync failed', result.failed)
+    }
+  } catch (error) {
+    mediaSyncState.value = 'error'
+    console.error('[AppShell] App media sync failed', error)
+  } finally {
+    mediaSyncPending.value = false
+  }
 }
 
 async function copyVisibleNotes() {

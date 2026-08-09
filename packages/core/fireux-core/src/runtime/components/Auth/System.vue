@@ -196,4 +196,5 @@ const handleGoogle = async () => {
     providerLoading.value = false
   }
 }
+
 </script>

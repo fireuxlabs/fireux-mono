@@ -16,8 +16,7 @@
               {{ item.name }}
             </div>
             <div class="truncate text-xs text-dimmed">
-              <span v-if="item.slug">{{ item.slug }}</span>
-              <span v-else class="italic">missing slug</span>
+              {{ item.id }}
             </div>
           </div>
         </div>
@@ -52,14 +51,6 @@
         </div>
 
         <div class="space-y-1">
-          <div class="fx-type-label">Slug</div>
-          <div class="text-sm text-default">
-            <span v-if="item.slug">{{ item.slug }}</span>
-            <span v-else class="italic text-dimmed">missing</span>
-          </div>
-        </div>
-
-        <div class="space-y-1">
           <div class="fx-type-label">Website</div>
           <div class="text-sm text-default">
             <UButton
@@ -85,7 +76,6 @@ import { computed } from '#imports'
 
 type EcosystemProfileItem = {
   id?: string
-  slug?: string
   name?: string
   description?: string
   status?: string
@@ -99,7 +89,6 @@ const props = withDefaults(defineProps<{
 }>(), {
   item: () => ({
     id: '',
-    slug: '',
     name: '',
     description: '',
     status: '',
@@ -111,7 +100,6 @@ const props = withDefaults(defineProps<{
 
 const item = computed(() => ({
   id: props.item?.id || '',
-  slug: props.item?.slug || '',
   name: props.item?.name || '',
   description: props.item?.description || '',
   status: props.item?.status || '',

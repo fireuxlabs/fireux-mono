@@ -1,6 +1,5 @@
 import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
-import { useFireUXConfig } from '../FireUXConfig'
 import { useToastify } from '../ui/useToastify'
 import { useUser } from '../../user/useUser'
 import { syncAppMediaToStorage } from '../../firestore/core/app/utils/appMediaSync'
@@ -16,7 +15,6 @@ export interface AppInitializationState {
   pending: Ref<boolean>
   actionPending: Ref<boolean>
   canProceed: Ref<boolean>
-  bypassWarning: Ref<boolean>
   proceedError: Ref<string | null>
   onRefreshEnv: () => void
   onProceed: () => Promise<void>
@@ -29,8 +27,6 @@ export interface AppInitializationState {
 export function useAppInitialization(
   options: { onInitialized?: () => void | Promise<void> } = {}
 ): AppInitializationState {
-  const { devMode } = useFireUXConfig()
-
   const { coreUser: coreUserRef, isLoading: userPending } = useUser()
   const coreUser = computed(() => coreUserRef.value ?? null)
   const toast = useToastify()
@@ -48,13 +44,7 @@ export function useAppInitialization(
   })
 
   const envPending = computed(() => Boolean(pending.value))
-  const canProceed = computed(
-    () =>
-      Boolean(env.value) && (Boolean(env.value?.isValid) || Boolean(devMode))
-  )
-  const bypassWarning = computed(
-    () => Boolean(env.value) && !env.value?.isValid && Boolean(devMode)
-  )
+  const canProceed = computed(() => Boolean(env.value?.isValid))
 
   const onRefreshEnv = () => {
     void refreshEnv()
@@ -107,7 +97,6 @@ export function useAppInitialization(
     pending: envPending,
     actionPending,
     canProceed,
-    bypassWarning,
     proceedError,
     onRefreshEnv,
     onProceed,

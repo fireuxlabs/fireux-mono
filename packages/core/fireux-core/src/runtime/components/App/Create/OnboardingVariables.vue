@@ -27,14 +27,24 @@
         </UBadge>
         <UBadge :color="adminBadgeColor" variant="soft">
           Explicit Admin auth:
-          {{
-            envData.server?.adminAuth?.configured ? 'detected' : 'ADC unprobed'
-          }}
+          {{ envData.server?.adminAuth?.configured ? 'detected' : 'not set' }}
         </UBadge>
         <UBadge :color="brandBadgeColor" variant="soft">
           Brand assets: {{ summaryBrand }}
         </UBadge>
+        <UBadge :color="storageBadgeColor" variant="soft">
+          Storage: {{ storageReady ? 'ready' : 'blocked' }}
+        </UBadge>
       </div>
+
+      <UAlert
+        v-if="storageIssue"
+        color="error"
+        variant="soft"
+        icon="i-lucide-database-zap"
+        title="Firebase Storage unavailable"
+        :description="storageIssue"
+      />
 
       <UCard v-if="requiredVars.length">
         <template #header>
@@ -277,12 +287,11 @@ const hasRequiredIssues = computed(() => missingRequiredCount.value > 0)
 const hasBrandIssues = computed(() =>
   brandAssets.value.some((asset) => asset.ok === false)
 )
-const explicitAdminConfigured = computed(
-  () => envData.value?.server?.adminAuth?.configured ?? false
+const storageReady = computed(
+  () => envData.value?.server?.storage?.reachable ?? false
 )
-const overallValid = computed(
-  () => !hasRequiredIssues.value && !hasBrandIssues.value
-)
+const storageIssue = computed(() => envData.value?.server?.storage?.issue ?? '')
+const overallValid = computed(() => Boolean(envData.value?.isValid))
 
 const status = computed(() => {
   if (hasRequiredIssues.value) {
@@ -307,12 +316,21 @@ const status = computed(() => {
     }
   }
 
+  if (!storageReady.value) {
+    return {
+      color: 'error' as const,
+      icon: 'i-lucide-database-zap',
+      title: 'Firebase Storage unavailable',
+      description: storageIssue.value || 'Check the configured Storage bucket.',
+    }
+  }
+
   return {
     color: 'success' as const,
     icon: 'i-ph-check-circle',
     title: 'Configuration checks passed',
     description:
-      'Required variables and assets look good. ADC is resolved only when Firebase Admin initializes.',
+      'Required variables, App-owned assets and Firebase Storage are ready.',
   }
 })
 
@@ -323,7 +341,10 @@ const brandBadgeColor = computed(() =>
   hasBrandIssues.value ? 'error' : 'success'
 )
 const adminBadgeColor = computed(() =>
-  explicitAdminConfigured.value ? 'success' : 'neutral'
+  envData.value?.server?.adminAuth?.configured ? 'success' : 'neutral'
+)
+const storageBadgeColor = computed(() =>
+  storageReady.value ? 'success' : 'error'
 )
 
 const assetPreviewSrc = (asset: { path: string }) => {

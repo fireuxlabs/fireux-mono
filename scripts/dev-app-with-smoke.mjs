@@ -313,6 +313,16 @@ if (shouldPrepare) {
 }
 
 const devEnv = { ...process.env }
+const inheritedDeveloperIdentityKeys = [
+  'DEVELOPER_ID',
+  'DEVELOPER_UID',
+  'NUXT_PUBLIC_DEVELOPER_ID',
+]
+
+// Developer identity is Firebase-project-specific. A shell-level value copied
+// from another App must never outrank the selected App workspace's `.env`.
+for (const key of inheritedDeveloperIdentityKeys) delete devEnv[key]
+
 const goQrProvider = await chooseGoQrProvider(app)
 
 if (goQrProvider) {

@@ -30,7 +30,8 @@
           class="flex flex-wrap gap-2"
         >
           <UBadge color="neutral" variant="soft">
-            {{ membershipCount }} {{ membershipCount === 1 ? 'member' : 'members' }}
+            {{ membershipCount }}
+            {{ membershipCount === 1 ? 'member' : 'members' }}
           </UBadge>
           <UBadge
             :color="joinRequestItems.length ? 'warning' : 'neutral'"
@@ -95,11 +96,14 @@ import { useToastify } from '../../../composables/fireux/app/ui/useToastify'
 import { useAppUpdate } from '../../../composables/fireux/firestore/core/app/mutations/useAppUpdate'
 import { useAppJoinRequests } from '../../../composables/fireux/firestore/core/app/utils/useAppJoinRequests'
 import { useAppUserCollection } from '../../../composables/fireux/firestore/core/user/fetch/useAppUserCollection'
-import { useUserInterface, type UserCard } from '../../../composables/fireux/user/useUserInterface'
-import type { AppModel } from '../../../models/core/app.model'
+import {
+  useUserInterface,
+  type UserCard,
+} from '../../../composables/fireux/user/useUserInterface'
+import type { App } from '../../../models/core/app.model'
 import type { PublicUserIdentityDto } from '../../../server/utils/public-projection/public-dto.types'
 
-const props = defineProps<{ app: AppModel }>()
+const props = defineProps<{ app: App }>()
 const appRef = computed(() => props.app)
 const app = computed(() => props.app)
 
@@ -126,13 +130,14 @@ const {
 const { pill: userCard } = useUserInterface()
 
 const withToast =
-  <T>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
+  <T,>(operation: (value: T) => Promise<unknown>, ok: string, fail: string) =>
   async (value: T) => {
     try {
       await operation(value)
       toast.success(ok)
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Please try again.'
+      const message =
+        error instanceof Error ? error.message : 'Please try again.'
       toast.error(`${fail}: ${message}`)
       throw error
     }
@@ -184,7 +189,9 @@ const teamRows = computed(() => {
       }
     })
     .filter(
-      (row): row is {
+      (
+        row
+      ): row is {
         id: string
         role: 'admin' | 'user'
         display_name: string
@@ -192,7 +199,9 @@ const teamRows = computed(() => {
     )
 })
 
-const adminRows = computed(() => teamRows.value.filter((row) => row.role === 'admin'))
+const adminRows = computed(() =>
+  teamRows.value.filter((row) => row.role === 'admin')
+)
 
 const fallbackUserCard = (options: {
   id: string

@@ -2,17 +2,11 @@
 import { computed } from 'vue'
 import { normalizeString } from '../../../../../utils/string'
 import { useConsoleOverview } from '../../../app/console/useConsoleOverview'
-import { type ProjectSurface } from '../../../firestore/core/project/utils/view/useProjectInterface'
+import type { ProjectSurface } from '../../../project/useProjectInterface'
 import { useProjectConsole } from '../core/useProjectConsole'
 
 export function useProjectConsoleOverview() {
-  const {
-    projects,
-    selection,
-    runtime,
-    actions,
-  } =
-    useProjectConsole()
+  const { projects, selection, runtime, actions } = useProjectConsole()
 
   const overview = useConsoleOverview<ProjectSurface>({
     selectedEntity: selection.project,
@@ -28,7 +22,9 @@ export function useProjectConsoleOverview() {
     focus: overview.focus.value,
     multiple: {
       count: overview.multiple.value.count,
-      ids: overview.multiple.value.items.map((item) => normalizeString(item?.id)),
+      ids: overview.multiple.value.items.map((item) =>
+        normalizeString(item?.id)
+      ),
     },
   }))
 

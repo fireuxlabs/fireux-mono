@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-21 14:52 CEST — Werkbox User projection: define the minimal public identity and App-admin people transport.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: expose biography only on full public User transport.
 import type { AppStatus } from '../../../models/core/app.model'
+import type { EcosystemStatus } from '../../../models/core/ecosystem.model'
 import type {
   AppDerived,
   AppMedia,
@@ -117,6 +118,16 @@ export type PublicAppDto = {
   derived: AppDerived
   media: AppMedia
   created?: { at: FirebaseTimestamp }
+}
+
+/** Explicit allowlist for one published Ecosystem. */
+export type PublicEcosystemDto = {
+  id: string
+  status: EcosystemStatus
+  name: string
+  description: string
+  image_url: string
+  website_url: string
 }
 
 export type PublicCollectionResponse<T> = {

@@ -43,7 +43,7 @@
         color="warning"
         variant="soft"
         title="Ecosystem not found"
-        description="No published Ecosystem projection matches this slug."
+        description="No Ecosystem matches this ID."
       />
 
       <EcosystemCardsProfile v-else-if="profile" :item="profile" />
@@ -79,7 +79,8 @@
 import { computed } from 'vue'
 import { setResponseStatus, useAsyncData } from '#imports'
 import { useRouteParam } from 'fireux-core/runtime/composables/shared/useRouteParam'
-import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+import { useEcosystemDetail } from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemDetail'
+import { useEcosystemInterface } from 'fireux-core/runtime/composables/fireux/ecosystem/useEcosystemInterface'
 import {
   buildPublicPageJsonLd,
   useSeo,
@@ -97,33 +98,34 @@ definePageMeta({
   name: 'FireuxEcosystemDetailPage',
 })
 
-const routeSlug = useRouteParam('slug')
+const routeId = useRouteParam('id')
 
-if (routeSlug.value === 'cleanbox') {
+if (routeId.value === 'cleanbox') {
   await navigateTo('/ecosystems/werkbox', {
     redirectCode: 301,
     replace: true,
   })
 }
 
-const { data, pending, error } = await useAsyncData<PlatformDirectoryResponse>(
+const detail = useEcosystemDetail(routeId)
+await detail.ready
+const { data: directory } = await useAsyncData<PlatformDirectoryResponse>(
   'fireux-default-directory',
   () => $fetch('/api/public/directory'),
   { server: true, lazy: false }
 )
-const ecosystems = computed(() => data.value?.ecosystems ?? [])
 const { profile: makeProfile } = useEcosystemInterface()
-const ecosystem = computed(
+const ecosystem = detail.ecosystem
+const directoryEntry = computed<EcosystemDirectoryEntry | null>(
   () =>
-    ecosystems.value.find(
-      (entry: EcosystemDirectoryEntry) =>
-        entry.slug === routeSlug.value || entry.id === routeSlug.value
+    directory.value?.ecosystems.find(
+      (entry: EcosystemDirectoryEntry) => entry.id === routeId.value
     ) ?? null
 )
 const ecosystemApps = computed<AppDirectoryEntry[]>(() => {
   const ecosystemId = ecosystem.value?.id
   if (!ecosystemId) return []
-  return (data.value?.apps ?? [])
+  return (directory.value?.apps ?? [])
     .filter(
       (entry: AppDirectoryEntry) =>
         entry.status === 'active' && entry.ecosystem_id === ecosystemId
@@ -134,24 +136,14 @@ const ecosystemApps = computed<AppDirectoryEntry[]>(() => {
       return left.app_name.localeCompare(right.app_name)
     })
 })
-const statusCode = computed(() =>
-  Number(
-    (error.value as any)?.statusCode ||
-      (error.value as any)?.status ||
-      (error.value as any)?.response?.status ||
-      0
-  )
-)
-const missing = computed(
-  () => !pending.value && !error.value && !ecosystem.value
-)
-const failed = computed(() => Boolean(error.value))
+const pending = detail.pending
+const failed = detail.failed
 
 if (import.meta.server) {
-  if (missing.value) {
+  if (detail.missing.value) {
     setResponseStatus(404)
   } else if (failed.value) {
-    setResponseStatus(statusCode.value >= 500 ? statusCode.value : 503)
+    setResponseStatus(detail.statusCode.value >= 500 ? detail.statusCode.value : 503)
   }
 }
 const profile = computed(() => {
@@ -159,8 +151,8 @@ const profile = computed(() => {
   if (!entry) return null
   return makeProfile({
     ...entry,
-    appCount: entry.app_count,
-    href: entry.detail_url,
+    appCount: directoryEntry.value?.app_count ?? 0,
+    href: `/ecosystems/${encodeURIComponent(entry.id)}`,
   })
 })
 const pageTitle = computed(() => ecosystem.value?.name || 'Ecosystem')
@@ -168,7 +160,7 @@ const pageDescription = computed(
   () => ecosystem.value?.description || 'Published FireUX Ecosystem projection.'
 )
 const canonicalPath = computed(
-  () => ecosystem.value?.detail_url || `/ecosystems/${routeSlug.value}`
+  () => `/ecosystems/${encodeURIComponent(routeId.value)}`
 )
 const appSummary = (app: AppDirectoryEntry) =>
   app.tagline ||

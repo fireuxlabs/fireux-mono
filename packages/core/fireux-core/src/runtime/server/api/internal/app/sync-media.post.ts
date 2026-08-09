@@ -26,6 +26,7 @@ import {
   type AppMediaSyncFailure,
   type AppMediaSyncResponse,
 } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+import { ensureRuntimeAppMeta } from '../../../utils/app-projection/ensure'
 
 function findRepoRoot(start: string): string {
   let current = start
@@ -160,7 +161,7 @@ async function uploadLocalAsset(
 }
 
 export default defineEventHandler(async (event) => {
-  await requireDevDeveloper(event)
+  const { uid } = await requireDevDeveloper(event)
   const runtime = useRuntimeConfig(event)
   const fireux = useFireUXConfig(event)
   const appId = fireux.appId
@@ -228,6 +229,14 @@ export default defineEventHandler(async (event) => {
 
   if (Object.keys(patch).length > 2) {
     await serverUpdate(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId, patch)
+    const appDatabaseId = String(
+      runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
+    ).trim()
+    await ensureRuntimeAppMeta({
+      actorUid: uid,
+      appDatabaseId,
+      config: fireux,
+    })
   }
 
   return {

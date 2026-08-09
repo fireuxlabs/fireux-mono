@@ -1,11 +1,13 @@
 // User handle writes use the trusted User endpoint instead of client writes.
 
+import { refreshNuxtData } from '#imports'
 import type {
   UserHandleInput,
   UserHandleResult,
 } from '../../../../../../models/operations/user-handle'
 import { useRequireUser } from '../../../../firebase/useRequireUser'
 import { validateUserHandleForPublicRoute } from '../utils/identity/useUserHandleIdentity'
+import { publicUserIdentityAsyncDataKey } from '../../../../public/user/usePublicUserIdentity'
 
 function responseMessage(payload: unknown, fallback: string) {
   if (!payload || typeof payload !== 'object' || Array.isArray(payload)) {
@@ -55,6 +57,8 @@ export function useUserHandleUpdate() {
         responseMessage(payload, `Handle update failed (${response.status}).`)
       )
     }
+
+    await refreshNuxtData(publicUserIdentityAsyncDataKey(normalizedUid))
 
     return payload as UserHandleResult
   }

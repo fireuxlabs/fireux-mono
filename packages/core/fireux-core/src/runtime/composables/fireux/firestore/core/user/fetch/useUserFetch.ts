@@ -4,26 +4,19 @@
 // Concurrent edit — 2026-07-20 23:21 CEST — Active User Outcome fix: preserve canonical User read outcomes.
 // Concurrent edit — 2026-07-21 15:58 CEST — User bio pass: normalize optional stored biography into the shared User runtime.
 // Concurrent edit — 2026-07-21 16:58 CEST — Dashboard Family pass: expose independent App-membership and private-account outcomes.
-import { doc } from 'firebase/firestore'
-import {
-  readRuntimeIdentityFirestoreDatabaseId,
-  useDocument,
-  useFirestore,
-} from '../../../vuefire'
 import type { Ref } from 'vue'
-import { computed, isRef, watch } from 'vue'
+import { computed, isRef } from 'vue'
 import type { User } from '../../../../../../models/core/user.model'
-import { UserStorage } from '../../../../../../models/core/user.model'
 import {
   type UserAccount,
   UserAccountModel,
-  UserAccountStorage,
 } from '../../../../../../models/operations/user-account.model'
 import { resolveUserAvatarSource } from '../../../../../../utils/user-avatar'
 import type { CurrentAppMembershipDto } from '../../../../../../server/utils/public-projection/public-dto.types'
 import { useFireUXConfig } from '../../../../app/FireUXConfig'
 import { useCurrentAppContext } from '../../../../app/useCurrentAppContext'
 import { usePublicUserIdentity } from '../../../../public/user/usePublicUserIdentity'
+import { useCurrentUserAccount } from '../../../../user/useCurrentUserAccount'
 
 export type UserFetchOutcome =
   | 'idle'
@@ -82,47 +75,6 @@ function normalizeUserAccount(
   }
 }
 
-function isOfflineFirestoreError(error: unknown): boolean {
-  const code =
-    typeof (error as any)?.code === 'string' ? (error as any).code : ''
-  const message = String((error as any)?.message ?? '').toLowerCase()
-  return code === 'unavailable' || message.includes('client is offline')
-}
-
-function guardDocumentPromise(
-  state: {
-    error?: Ref<unknown | undefined>
-    promise?: Ref<Promise<unknown> | undefined>
-  },
-  context: () => string
-) {
-  const handled = new WeakSet<Promise<unknown>>()
-
-  watch(
-    () => state.promise?.value,
-    (promise: Promise<unknown> | undefined) => {
-      if (!promise || typeof promise.catch !== 'function') return
-      if (handled.has(promise)) return
-      handled.add(promise)
-      if (state.error) state.error.value = undefined
-      const promiseContext = context()
-
-      promise.catch((error: unknown) => {
-        if (!import.meta.dev) return
-        if (isOfflineFirestoreError(error)) {
-          console.warn(
-            `[useUserFetch] offline read ignored (${promiseContext})`,
-            error
-          )
-          return
-        }
-        console.error(`[useUserFetch] read failed (${promiseContext})`, error)
-      })
-    },
-    { immediate: true, flush: 'sync' }
-  )
-}
-
 /**
  * Arbitrary User reads are public-only. The optional App scope resolves only
  * the signed-in user's bounded membership projection.
@@ -172,36 +124,25 @@ export function useUserFetch(
     }
   }
 
-  const identityDb = useFirestore(readRuntimeIdentityFirestoreDatabaseId())
-
-  const privateDoc = computed(() =>
-    uid.value && includePrivate
-      ? (doc(
-          identityDb,
-          UserStorage.collection,
-          uid.value,
-          UserAccountStorage.collection,
-          UserAccountStorage.document
-        ) as any)
-      : null
+  const privateScopeRequested = computed(() =>
+    Boolean(uid.value && includePrivate)
   )
 
   // Canonical User identity is public data, but active-user surfaces should
   // consume the same bounded server projection as every other User surface.
   // This avoids coupling dashboard/header availability to raw client Rules.
   const coreState = usePublicUserIdentity(uid)
-  const privateState = useDocument<UserAccount | undefined>(
-    privateDoc as any,
-    {
-      ssrKey: 'user-fetch-private',
-    } as any
-  )
+  const privateState = includePrivate ? useCurrentUserAccount() : null
   const coreUserRef = coreState.user
   const corePending = coreState.pending
   const coreError = coreState.error
-  const privateUserRef = privateState.data
-  const privatePending = privateState.pending
-  const privateError = privateState.error
+  const privateUserRef = computed(() => privateState?.account.value ?? null)
+  const privatePending = computed(() =>
+    privateScopeRequested.value ? Boolean(privateState?.pending.value) : false
+  )
+  const privateError = computed<unknown>(() =>
+    privateScopeRequested.value ? privateState?.error.value ?? null : null
+  )
   const appContext = includeApp ? useCurrentAppContext() : null
   const appScopeRequested = computed(() =>
     Boolean(includeApp && uid.value && appId)
@@ -230,12 +171,6 @@ export function useUserFetch(
     if (!appScopeRequested.value || !appContext) return null
     return appIdentityError.value || appContext.error.value || null
   })
-  guardDocumentPromise(
-    privateState as any,
-    () =>
-      `${UserStorage.collection}/${uid.value ?? ''}/${UserAccountStorage.collection}/${UserAccountStorage.document}`
-  )
-
   const coreUser = computed<User | null | undefined>(() => {
     if (corePending.value) return undefined
     if (coreError.value) return undefined
@@ -255,7 +190,7 @@ export function useUserFetch(
   })
 
   const privateUser = computed<UserAccount | null | undefined>(() => {
-    if (!privateDoc.value) return null
+    if (!privateScopeRequested.value) return null
     if (privatePending.value) return undefined
     const raw = privateUserRef.value
     if (!raw) return null
@@ -277,7 +212,7 @@ export function useUserFetch(
   })
 
   const privateOutcome = computed<UserFetchOutcome>(() => {
-    if (!includePrivate || !uid.value) return 'idle'
+    if (!privateScopeRequested.value) return 'idle'
     if (privatePending.value) return 'pending'
     if (privateError.value) return 'error'
     return privateUser.value ? 'ready' : 'missing'

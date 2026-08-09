@@ -12,7 +12,8 @@
             <div class="space-y-1">
               <h2 class="text-base font-semibold">Firestore app images</h2>
               <p class="text-sm text-muted">
-                Shows canonical image URLs stored on <span class="font-mono">apps</span> docs.
+                Shows canonical image URLs stored on
+                <span class="font-mono">apps</span> docs.
               </p>
             </div>
           </template>
@@ -23,7 +24,8 @@
 
           <template v-else-if="!firestoreAppGroups.length">
             <p class="text-sm text-muted">
-              No app images found (or you don’t have access to read the <span class="font-mono">apps</span> collection).
+              No app images found (or you don’t have access to read the
+              <span class="font-mono">apps</span> collection).
             </p>
           </template>
 
@@ -95,7 +97,8 @@
         </template>
         <template v-else>
           <p class="text-sm text-muted">
-            No images found under <span class="font-mono">{{ group.rootDir }}/img</span>.
+            No images found under
+            <span class="font-mono">{{ group.rootDir }}/img</span>.
           </p>
         </template>
       </UCard>
@@ -109,7 +112,7 @@ import { useAsyncData } from '#imports'
 import { computed } from 'vue'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useAuth } from '../../composables/fireux/firebase/useAuth'
-import type { AppModel } from '../../models/core/app.model'
+import type { App } from '../../models/core/app.model'
 
 type ImageEntry = {
   urlPath: string
@@ -150,12 +153,16 @@ function toPublicRelativePath(urlPath: string): string {
 }
 
 type FirestoreAppImage = { key: string; label: string; url: string }
-type FirestoreAppGroup = { id: string; name: string; images: FirestoreAppImage[] }
+type FirestoreAppGroup = {
+  id: string
+  name: string
+  images: FirestoreAppImage[]
+}
 
 const { apps, pending: firestorePending } = useDevAppCollection()
 
 function collectFirestoreImages(
-  app: AppModel & Record<string, any>
+  app: App & Record<string, any>
 ): FirestoreAppImage[] {
   const entries: FirestoreAppImage[] = []
 
@@ -167,10 +174,22 @@ function collectFirestoreImages(
   }
 
   // Canonical fields used across the app
-  push('media.thumbnail_url', 'Thumbnail (media.thumbnail_url)', (app as any)?.media?.thumbnail_url)
+  push(
+    'media.thumbnail_url',
+    'Thumbnail (media.thumbnail_url)',
+    (app as any)?.media?.thumbnail_url
+  )
   push('media.logo_url', 'Logo (media.logo_url)', (app as any)?.media?.logo_url)
-  push('media.wordmark_light_url', 'Wordmark (light)', (app as any)?.media?.wordmark_light_url)
-  push('media.wordmark_dark_url', 'Wordmark (dark)', (app as any)?.media?.wordmark_dark_url)
+  push(
+    'media.wordmark_light_url',
+    'Wordmark (light)',
+    (app as any)?.media?.wordmark_light_url
+  )
+  push(
+    'media.wordmark_dark_url',
+    'Wordmark (dark)',
+    (app as any)?.media?.wordmark_dark_url
+  )
 
   // De-dupe by url, keep first label
   const seen = new Set<string>()
@@ -183,7 +202,7 @@ function collectFirestoreImages(
 
 const firestoreAppGroups = computed<FirestoreAppGroup[]>(() => {
   if (!import.meta.client) return []
-  const records = apps.value as Array<AppModel & Record<string, any>>
+  const records = apps.value as Array<App & Record<string, any>>
   return records
     .map((app) => {
       const images = collectFirestoreImages(app)
@@ -250,11 +269,16 @@ definePageMeta({
 }
 
 .dev-image-chip.dev-image-panel--checker {
-  background-image: linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
+  background-image:
+    linear-gradient(45deg, #f1f5f9 25%, transparent 25%),
     linear-gradient(-45deg, #f1f5f9 25%, transparent 25%),
     linear-gradient(45deg, transparent 75%, #f1f5f9 75%),
     linear-gradient(-45deg, transparent 75%, #f1f5f9 75%);
   background-size: 12px 12px;
-  background-position: 0 0, 0 6px, 6px -6px, -6px 0;
+  background-position:
+    0 0,
+    0 6px,
+    6px -6px,
+    -6px 0;
 }
 </style>

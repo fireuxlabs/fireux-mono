@@ -34,7 +34,7 @@
                 {{ ecosystem.name }}
               </h3>
               <p class="truncate text-sm text-muted">
-                {{ ecosystem.slug }}
+                {{ ecosystem.id }}
               </p>
             </div>
 
@@ -88,7 +88,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { EcosystemInterfaceInput } from '../../composables/fireux/firestore/core/ecosystem/utils/view/useEcosystemInterface'
+import type { EcosystemInterfaceInput } from '../../composables/fireux/ecosystem/useEcosystemInterface'
 
 const props = withDefaults(defineProps<{
   collection?: EcosystemInterfaceInput[]
@@ -109,25 +109,23 @@ const featured = computed(() =>
     .map((slug) => clean(slug))
     .filter(Boolean)
     .map((slug) =>
-      props.collection.find((entry) => clean(entry.slug) === slug)
+      props.collection.find((entry) => clean(entry.id) === slug)
     )
     .filter((entry): entry is EcosystemInterfaceInput => Boolean(entry))
     .filter((entry) => clean(entry.status) === 'active')
     .map((entry) => {
       const id = clean(entry.id)
-      const slug = clean(entry.slug)
 
       return {
         id,
-        slug,
         name: clean(entry.name) || id,
         description: clean(entry.description),
         imageUrl: clean(entry.image_url || entry.src),
-        sourceUrl: clean(entry.website_url || entry.source_url),
+        sourceUrl: clean(entry.website_url),
         appCount: countApps(entry.appCount),
-        to: slug ? `/ecosystems/${encodeURIComponent(slug)}` : '',
+        to: id ? `/ecosystems/${encodeURIComponent(id)}` : '',
       }
     })
-    .filter((entry) => entry.id && entry.slug)
+    .filter((entry) => entry.id)
 )
 </script>

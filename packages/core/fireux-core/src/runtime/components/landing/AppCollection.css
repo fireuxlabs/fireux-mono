@@ -91,7 +91,7 @@
   bottom: calc(var(--spacing) * 3);
   left: calc(var(--spacing) * 3);
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: calc(var(--spacing) * 3);
   align-items: end;
 }

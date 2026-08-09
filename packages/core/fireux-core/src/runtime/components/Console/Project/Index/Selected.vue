@@ -11,7 +11,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ProjectSurface } from '../../../../composables/fireux/firestore/core/project/utils/view/useProjectInterface'
+import type { ProjectSurface } from '../../../../composables/fireux/project/useProjectInterface'
 
 const props = defineProps<{
   project?: ProjectSurface | null
