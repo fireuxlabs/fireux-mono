@@ -9,37 +9,25 @@
     <div class="friiites-scene-content" data-scene-layer="content">
       <div class="friiites-hero-brand">
         <h1 id="friiites-title" class="sr-only">Friiites</h1>
-        <img
+        <AppBrandWordmark
           class="friiites-wordmark"
-          src="/img/app/wordmark-dark.png"
+          light-src="/img/app/wordmark-light.png"
+          dark-src="/img/app/wordmark-dark.png"
           alt="Friiites"
+          size="hero"
         />
-      </div>
-      <div class="friiites-hero-copy">
-        <p class="friiites-lede">
-          <span>Hand-cut.</span>
-          <span>Brined.</span>
-          <span>Triple-fried</span>
-          <span>in beef tallow.</span>
-        </p>
-        <div class="friiites-actions">
-          <a class="friiites-button" href="#ordering">
-            Order now
-            <UIcon name="i-lucide-arrow-right" aria-hidden="true" />
-          </a>
-        </div>
       </div>
     </div>
     <div
-      class="friiites-hero-foreground"
+      class="friiites-hero-foreground friiites-hero-foreground--draft"
       aria-hidden="true"
       data-scene-layer="foreground"
     >
       <img
-        src="/img/app/hero/carton-fries.webp"
+        src="/img/app/hero/drafts/carton-wide.png"
         alt=""
-        width="1024"
-        height="1536"
+        width="1536"
+        height="1024"
       />
     </div>
   </section>

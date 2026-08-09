@@ -2,11 +2,11 @@
   <header class="friiites-header" data-friiites-header>
     <div class="friiites-header__inner">
       <NuxtLink class="friiites-header__brand" to="/" aria-label="Friiites home">
-        <img
-          src="/img/app/wordmark-dark.png"
+        <AppBrandWordmark
+          light-src="/img/app/wordmark-light.png"
+          dark-src="/img/app/wordmark-dark.png"
           alt="Friiites"
-          width="1600"
-          height="500"
+          size="medium"
         />
       </NuxtLink>
 
@@ -55,9 +55,9 @@ const menuItems = [
   position: absolute;
   inset: 0 0 auto;
   z-index: 30;
-  color: var(--friiites-cream);
+  color: var(--ui-text-highlighted);
   background: transparent;
-  border-bottom: 1px solid color-mix(in srgb, var(--friiites-cream) 18%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent);
 }
 
 .friiites-header__inner {
@@ -76,9 +76,10 @@ const menuItems = [
   min-width: 0;
 }
 
-.friiites-header__brand img {
+.friiites-header__brand :deep(.fx-brand-wordmark.fx-brand-wordmark) {
   display: block;
   width: 100%;
+  max-width: none;
   height: auto;
 }
 
@@ -99,7 +100,7 @@ const menuItems = [
 }
 
 .friiites-header__sign-in {
-  color: color-mix(in srgb, var(--friiites-cream) 78%, transparent);
+  color: color-mix(in srgb, currentColor 78%, transparent);
 }
 
 .friiites-header__order {

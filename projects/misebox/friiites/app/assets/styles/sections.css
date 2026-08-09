@@ -45,6 +45,15 @@
   padding-bottom: clamp(calc(var(--spacing) * 8), 5svh, calc(var(--spacing) * 16));
 }
 
+html:not(.dark) .friiites-scene--hero {
+  color: var(--friiites-black);
+  background: var(--friiites-cream);
+}
+
+html.dark .friiites-scene--hero {
+  background: #000;
+}
+
 .friiites-scene--hero .friiites-scene-content {
   width: 100%;
   max-width: none;
@@ -82,6 +91,12 @@
   height: auto;
 }
 
+.friiites-hero-foreground--draft img {
+  right: -24vw;
+  bottom: -8%;
+  width: min(112vw, 48rem);
+}
+
 .friiites-scene--ordering {
   background: var(--friiites-warm-white);
 }
@@ -115,10 +130,10 @@
   align-items: baseline;
 }
 
-.friiites-wordmark {
+.friiites-hero-brand .friiites-wordmark.fx-brand-wordmark {
   width: 100%;
+  max-width: none;
   height: auto;
-  mix-blend-mode: lighten;
 }
 
 .friiites-lede,
@@ -220,6 +235,12 @@
     right: 22vw;
     bottom: -7%;
     width: min(31vw, 31rem);
+  }
+
+  .friiites-hero-foreground--draft img {
+    right: 0;
+    bottom: -4%;
+    width: min(62vw, 62rem);
   }
 
   .friiites-scene--hero .friiites-lede {
