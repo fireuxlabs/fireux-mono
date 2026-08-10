@@ -25,6 +25,7 @@ Kitchen pretend to be an independent brand.
 - App runtime configuration: `app-config.md`
 - Menu ownership: `family-menu.md`
 - Product language: `product-language.md`
+- Landing templates: `landing-templates.md`
 
 ## Current source
 
@@ -41,11 +42,18 @@ Kitchen pretend to be an independent brand.
 - App runtime asset contract: each project's `public/img/app/*`
 - Brand asset verification: `scripts/guards/fireux-brand-assets.mjs`
 - Entity and media ownership verification: `scripts/guards/entity-authority.mjs`
+- Canonical catalogue and injection contract:
+  `projects/fireux/fireux-app/app/pages/templates/*` and
+  `projects/fireux/fireux-app/app/{types,content,components}/`
+- Misebox seller doorway:
+  `projects/misebox/misebox-app/app/pages/templates/index.vue`
+- Template verification: `scripts/guards/landing-templates.mjs`
 
 The current source proves shared tokens, App runtime identity assets, and
-Kitchen theme overrides. It does not yet prove a canonical stored App-brand
-catalogue, packaging model, Dish blueprint family, or operational landing
-template entity. Those remain design work rather than implied storage canon.
+Kitchen theme overrides. It also proves one code-owned landing-template
+catalogue and bounded preview injection contract. It does not yet prove a
+canonical stored App-brand catalogue, packaging model, Dish blueprint family,
+theme-specific SKU, entitlement, or automated installation.
 
 ## Vocabulary
 
@@ -66,6 +74,11 @@ App. `Brand` without an owner is too vague; name the owning App.
 
 An App brand is not established merely because a Kitchen uploads a logo. A
 Kitchen without its own App continues to use the ordinary Kitchen theme family.
+
+Transparent entity identity media has one backdrop authority chain: the
+entity's explicit `media_backdrop_color`, then its secondary brand colour,
+then its primary brand colour. With no owned colour it remains transparent;
+semantic application surfaces never supply a substitute brand backdrop.
 
 ### Kitchen theme
 
@@ -100,6 +113,14 @@ prices, or operational records into a flattened second source of truth.
 evidence for this proposed operational presentation-template family. The two
 meanings of template must remain explicit until source gives the operational
 family a distinct durable name.
+
+A brand injection is preview/configuration data: approved tokens, type intent,
+copy, links, and media references. It does not create a tenant App, production
+record, or second media authority, and it never duplicates template markup or
+CSS. FireUX owns the canonical `/templates` catalogue and preview anatomy.
+FireUX and Misebox may both offer the same theme; Misebox owns its hospitality
+seller doorway and links to the canonical preview rather than copying the
+template implementation.
 
 ## Composition order
 
@@ -160,39 +181,41 @@ and billing source define it.
 
 ## Operational template direction
 
-The intended operational surface is one shared template family projected into
-the current App context:
+The implemented public surface is one shared template family projected through
+bounded brand injections:
 
-- A platform or Misebox context may catalogue templates and compare controlled
-  brand injections.
-- A tenant App context may preview the same template with that App brand,
-  entities, and operational data.
+- FireUX catalogues templates and compares controlled brand injections.
+- Misebox exposes `/templates` as a hospitality seller doorway to that canonical
+  preview.
 - A Kitchen without a tenant App receives the bounded ordinary-Kitchen
   presentation rather than a fabricated App-brand catalogue.
 
-The route, storage model, authoring authority, publication lifecycle, and name
-of this family are `to-confirm`. Do not infer them from a currently responding
-`/templates` URL or implement the family inside Friiites alone.
+The route and code ownership are now proven. Storage, authoring authority,
+publication lifecycle, theme-specific product records, entitlements, and
+automated installation remain `to-confirm`.
 
 ## Delta register
 
-| Difference | State | Reason or alignment trigger |
-| --- | --- | --- |
-| Apps expose one standard `/img/app/*` identity family | `accepted` | Runtime consumers need a stable App identity contract |
-| Kitchens inherit Place palette and may store sparse presentation overrides | `accepted` | Operational presentation is Kitchen-owned without requiring a tenant App brand |
-| A tenant App owns richer packaging and product-presentation artwork | `to-confirm` | Friiites proves the need, but the canonical catalogue and storage seam do not exist yet |
-| Templates compose referenced owned media rather than copying it | `to-confirm` | Adopt when the operational presentation-template family is implemented |
-| Flattened landing mockups remain temporary design references | `migration` | Retire each mockup only after its reconstructed scene matches the approved composition |
-| A fictional storefront is stored as a real Place gallery image | `drift` | Keep concept artwork App/presentation-owned until it depicts a real Place |
-| Every Ingredient receives media before a consumer exists | `drift` | Add independent media only when product behavior requires it |
-| An ordinary Kitchen is promoted to an App brand because it has a logo | `drift` | Kitchen identity and tenant App-brand authority are different layers |
+| Difference                                                                 | State        | Reason or alignment trigger                                                             |
+| -------------------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------- |
+| Apps expose one standard `/img/app/*` identity family                      | `accepted`   | Runtime consumers need a stable App identity contract                                   |
+| Kitchens inherit Place palette and may store sparse presentation overrides | `accepted`   | Operational presentation is Kitchen-owned without requiring a tenant App brand          |
+| A tenant App owns richer packaging and product-presentation artwork        | `to-confirm` | Friiites proves the need, but the canonical catalogue and storage seam do not exist yet |
+| Templates compose referenced owned media rather than copying it            | `accepted`   | Scene One and its typed injections implement this boundary                              |
+| FireUX and Misebox both offer one theme family                             | `accepted`   | Seller ownership differs while canonical anatomy remains in FireUX                      |
+| Theme-specific SKU, entitlement, or automated installation                 | `to-confirm` | Product, Billing, and provisioning source do not define them                            |
+| Flattened landing mockups remain temporary design references               | `migration`  | Retire each mockup only after its reconstructed scene matches the approved composition  |
+| A fictional storefront is stored as a real Place gallery image             | `drift`      | Keep concept artwork App/presentation-owned until it depicts a real Place               |
+| Every Ingredient receives media before a consumer exists                   | `drift`      | Add independent media only when product behavior requires it                            |
+| An ordinary Kitchen is promoted to an App brand because it has a logo      | `drift`      | Kitchen identity and tenant App-brand authority are different layers                    |
 
 ## Verification and maintenance
 
-When implementation begins, first name the family, nearest working sibling,
+When this family changes, first name the family, nearest working sibling,
 storage owner, projection boundary, mutation authority, and guard. Verify
 light/dark rendering, ordinary-Kitchen fallback, tenant App injection, entity
-ownership, responsive template behavior, and absence of copied media.
+ownership, responsive template behavior, both seller routes, and absence of
+copied media.
 
 Run focused checks while iterating and `pnpm guard` before handoff. Update this
 map when source establishes the operational template family or an App-brand

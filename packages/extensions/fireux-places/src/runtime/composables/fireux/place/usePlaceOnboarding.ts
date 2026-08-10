@@ -208,7 +208,7 @@ export function usePlaceOnboarding() {
 
         if (imageFile.value) {
           const imageUrl = await uploadImage(
-            `places/${id}/avatar`,
+            `places/${id}/image`,
             imageFile.value
           )
           await completePlaceOnboarding({

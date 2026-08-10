@@ -32,7 +32,7 @@
           <div>
             <h3 class="text-sm font-medium text-highlighted">Cover image</h3>
             <p class="mt-1 text-xs text-muted">
-              Current Place cover. Recommended: 1280 × 720 px.
+              Current Place cover. Use 16:9 at 1280 × 720 px or larger.
             </p>
           </div>
           <div class="flex flex-wrap gap-2">
@@ -86,8 +86,8 @@
           <div>
             <h3 class="text-sm font-medium text-highlighted">Gallery</h3>
             <p class="mt-1 text-xs text-muted">
-              Current Place gallery. Up to 24 images; recommended:
-              1200 × 1200 px.
+              Current Place gallery. Up to 24 square images at
+              1200 × 1200 px or larger.
             </p>
           </div>
           <UButton

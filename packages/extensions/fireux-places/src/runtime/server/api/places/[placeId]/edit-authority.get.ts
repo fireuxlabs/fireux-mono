@@ -9,11 +9,14 @@ import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { createdByCurrentApp } from '../../../place/onboarding-context'
+import type { PlaceEditProjection } from '../../../../models/place-edit.model'
+import { projectPlaceEdit } from '../../../place/edit-projection'
 
 export type PlaceEditAuthorityResponse = {
   ok: true
   can_edit: boolean
   authority: 'creator' | 'app_admin' | null
+  item?: PlaceEditProjection
 }
 
 export default defineEventHandler(
@@ -45,6 +48,9 @@ export default defineEventHandler(
       ok: true,
       can_edit: isAdmin || isCreator,
       authority: isAdmin ? 'app_admin' : isCreator ? 'creator' : null,
+      ...(isAdmin || isCreator
+        ? { item: projectPlaceEdit(placeId, place.data() || {}) }
+        : {}),
     }
   }
 )

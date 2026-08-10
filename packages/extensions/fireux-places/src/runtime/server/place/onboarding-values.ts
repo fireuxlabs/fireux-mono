@@ -70,7 +70,7 @@ export function httpsImage(value: unknown, placeId: string) {
   if (candidate.length > 2_048) badRequest('Place logo URL is too long.')
   return requireFirebaseStorageDownloadUrl(candidate, {
     bucketName: runtimeStorageBucketName(),
-    objectPath: `places/${placeId}/avatar`,
+    objectPath: `places/${placeId}/image`,
     label: 'Place logo',
   })
 }

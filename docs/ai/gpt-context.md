@@ -20,6 +20,7 @@ Current scoped context entrypoints:
 - Apps That Slap: `docs/ai/apps-that-slap-context.md`
 - BuenoHost: `docs/ai/buenohost-context.md`
 - Identity and product literature: `docs/ai/identity-literature-context.md`
+- Landing templates: `docs/ai/templates-context.md`
 - Misebox: `docs/ai/misebox-context.md`
 - Werkbox: `docs/ai/werkbox-context.md`
 - Firestore mutations: `docs/ai/firestore-mutations-context.md`

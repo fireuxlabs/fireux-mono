@@ -98,7 +98,7 @@
 				</p>
 				<p v-else-if="canEditImage" class="text-xs text-dimmed">
 					{{ hasImage ? 'Current Place image.' : 'No Place image yet.' }}
-					Recommended: 1024 × 1024 px, transparent PNG for logos.
+					Use a square Place image at least 1024 × 1024 px.
 				</p>
 				<p v-else-if="!canEditImage" class="text-xs text-warning">
 					Only admins or the claimant can change this image.
@@ -191,7 +191,7 @@ async function handleAvatarUpload(file: File) {
 	if (!placeId.value) return
 	avatarUploading.value = true
 	try {
-		const url = await uploadImage(`places/${placeId.value}/avatar`, file)
+		const url = await uploadImage(`places/${placeId.value}/image`, file)
 		await updatePlaceImage(url, { id: placeId.value })
 		toast.success('Image updated')
 	} catch (error) {

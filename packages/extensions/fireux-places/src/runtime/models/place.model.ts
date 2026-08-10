@@ -97,6 +97,21 @@ export type PlaceBusinessHours = {
   windows: PlaceBusinessHoursWindow[]
 }
 
+/** Place-owned base identity inherited by dependent domain entities. */
+export type PlaceIdentity = {
+  logo_image_url: string
+  wordmark_image_url: string
+}
+
+/** Canonical Place-owned media. Browser projections may flatten these roles. */
+export type PlaceAssets = {
+  image_url: string
+  cover_image: string
+  gallery_images: string[]
+  identity: PlaceIdentity
+  media_backdrop_color: MediaBackdropColor | ''
+}
+
 /** Resolved runtime defaults. Firestore Place documents remain sparse. */
 export const PlaceDefaults = {
   id: '' as string,
@@ -121,10 +136,31 @@ export const PlaceDefaults = {
   lng: 0 as number,
   timezone: '' as string,
 
-  // Media
+  // Entity-owned assets
+  assets: {
+    image_url: '',
+    cover_image: '',
+    gallery_images: [],
+    identity: {
+      logo_image_url: '',
+      wordmark_image_url: '',
+    },
+    media_backdrop_color: '',
+  } as PlaceAssets,
+
+  // Read-only runtime aliases for legacy records and flat browser DTOs.
+  /** @deprecated Canonical storage is assets.image_url. */
   image_url: '' as string,
+  /** @deprecated Canonical storage is assets.cover_image. */
   cover_image: '' as string,
+  /** @deprecated Canonical storage is assets.gallery_images. */
   gallery_images: [] as string[],
+  /** @deprecated Canonical storage is assets.identity. */
+  identity: {
+    logo_image_url: '',
+    wordmark_image_url: '',
+  } as PlaceIdentity,
+  /** @deprecated Canonical storage is assets.media_backdrop_color. */
   media_backdrop_color: '' as MediaBackdropColor | '',
   /** @deprecated Never write; migrate to media_backdrop_color. */
   image_shade: 'none' as PlaceImageShade,

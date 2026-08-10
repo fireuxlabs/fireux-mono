@@ -182,6 +182,12 @@
   gap: calc(var(--spacing) * 3);
 }
 
+.place-public__socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--spacing) * 2);
+}
+
 .place-public__facts > div,
 .place-public__hours > div {
   display: grid;
@@ -264,4 +270,26 @@
     border-left: 1px solid
       color-mix(in srgb, var(--ui-primary) 14%, var(--ui-border));
   }
+}
+.place-public__brand {
+  display: flex;
+  min-height: calc(var(--spacing) * 24);
+  align-items: center;
+  justify-content: center;
+  padding: calc(var(--spacing) * 6);
+  border: 1px solid var(--ui-border);
+  border-radius: calc(var(--ui-radius) * 3);
+  background: var(--fx-place-identity-backdrop, transparent);
+}
+
+.place-public__logo {
+  width: min(8rem, 30vw);
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.place-public__wordmark {
+  width: min(32rem, 85vw);
+  max-height: 8rem;
+  object-fit: contain;
 }

@@ -34,6 +34,7 @@ import {
   dependentAppKitchenTarget,
   dependentKitchenRootTarget,
 } from './dependent-targets'
+import { normalizePlaceIdentityPatch } from './identity-media'
 
 type PlacePatchRequest = {
   app_id?: unknown
@@ -80,6 +81,7 @@ const allowedPatchKeys = new Set([
   'timezone',
   'business_hours',
   'brand_palette',
+  'identity',
 ])
 
 function badRequest(statusMessage: string): never {
@@ -186,21 +188,20 @@ function normalizePatch(
     }
     if (optionalTextFields.has(key)) {
       const normalized = deleteOrText(value, optionalTextFields.get(key) || 240)
-      if (
-        (key === 'image_url' || key === 'cover_image') &&
-        typeof normalized === 'string'
-      ) {
-        patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
+      const mediaKey = key === 'image_url' || key === 'cover_image'
+      if (mediaKey && typeof normalized === 'string') {
+        patch[`assets.${key}`] = requireFirebaseStorageDownloadUrl(normalized, {
           bucketName: target.bucketName,
           objectPath:
             key === 'image_url'
-              ? `places/${target.placeId}/avatar`
+              ? `places/${target.placeId}/image`
               : `places/${target.placeId}/cover`,
           label: key === 'image_url' ? 'Place image' : 'Place cover',
         })
       } else {
-        patch[key] = normalized
+        patch[mediaKey ? `assets.${key}` : key] = normalized
       }
+      if (mediaKey) patch[key] = FieldValue.delete()
       continue
     }
     if (key === 'lat' || key === 'lng') {
@@ -209,14 +210,14 @@ function normalizePatch(
     }
     if (key === 'media_backdrop_color') {
       const color = normalizeHexColor(value)
-      if (color === null) {
-        badRequest('Media backdrop must be a 6-digit hex colour.')
-      }
-      patch.media_backdrop_color = color || FieldValue.delete()
+      if (color === null) badRequest('Media backdrop must be a 6-digit hex colour.')
+      patch['assets.media_backdrop_color'] = color || FieldValue.delete()
+      patch.media_backdrop_color = FieldValue.delete()
       continue
     }
     if (key === 'gallery_images') {
-      patch.gallery_images = normalizedGallery(value, target)
+      patch['assets.gallery_images'] = normalizedGallery(value, target)
+      patch.gallery_images = FieldValue.delete()
       continue
     }
     if (key === 'social_links') {
@@ -246,6 +247,11 @@ function normalizePatch(
       patch.brand_palette = Object.keys(result.value).length
         ? result.value
         : FieldValue.delete()
+      continue
+    }
+    if (key === 'identity') {
+      patch['assets.identity'] = normalizePlaceIdentityPatch(value, target)
+      patch.identity = FieldValue.delete()
       continue
     }
   }

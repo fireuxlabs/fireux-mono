@@ -161,7 +161,7 @@ if (import.meta.dev && props.type === 'kitchen') {
     console.log('[kitchens][search] status', { isSearching: value })
   })
 
-  watch(results, (value: BasePlace[]) => {
+  watch(results, (value) => {
     console.log('[kitchens][search] results', {
       count: Array.isArray(value) ? value.length : 0,
       ids: Array.isArray(value) ? value.map((row) => row.id) : [],

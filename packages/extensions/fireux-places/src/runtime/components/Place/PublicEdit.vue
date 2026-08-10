@@ -1,29 +1,41 @@
 <template>
   <!-- Concurrent edit — 2026-07-20 21:17 CEST — Place-root authority pass: deep-compact editable Place debug truth without dropping valid zero coordinates. -->
   <UPage class="page edit-page">
-    <UPageHeader :title="pageTitle" :description="pageSubtitle">
-      <template #ctas>
+    <UPageBody class="pagebody place-editor">
+      <nav class="place-editor__toolbar" aria-label="Place editing">
         <UButton
-          size="xs"
+          size="sm"
           variant="ghost"
+          color="neutral"
           icon="i-lucide-arrow-left"
           :to="backTo"
         >
           Back to details
         </UButton>
-        <UButton
-          size="xs"
-          variant="ghost"
-          color="neutral"
-          icon="i-lucide-copy"
-          :disabled="!placeId"
-          aria-label="Copy place id"
-          @click="onCopyPlaceId"
-        />
-      </template>
-    </UPageHeader>
+        <div class="place-editor__toolbar-actions">
+          <UButton
+            size="sm"
+            variant="ghost"
+            color="neutral"
+            icon="i-lucide-copy"
+            :disabled="!placeId"
+            aria-label="Copy place id"
+            @click="onCopyPlaceId"
+          >
+            Copy ID
+          </UButton>
+          <UButton
+            size="sm"
+            variant="soft"
+            color="neutral"
+            icon="i-lucide-eye"
+            :to="backTo"
+          >
+            View public page
+          </UButton>
+        </div>
+      </nav>
 
-    <UPageBody class="pagebody">
       <ClientOnly>
         <UPageCard v-if="loading" variant="subtle">
           <p class="text-sm text-dimmed">Loading place…</p>
@@ -37,37 +49,40 @@
           description="We could not find this place. Return to the places list and try again."
         />
 
-        <div v-else class="space-y-6">
-          <UPageCard variant="subtle">
-            <div
-              class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        <div v-else class="place-editor__workspace">
+          <header class="place-editor__masthead">
+            <img
+              v-if="place.cover_image"
+              :src="place.cover_image"
+              alt=""
+              class="place-editor__cover"
             >
-              <div class="space-y-2">
-                <p
-                  class="text-xs font-medium uppercase tracking-wide text-dimmed"
-                >
-                  Editing place
-                </p>
-                <PlaceCardsPill
-                  v-if="placePill"
-                  v-bind="placePill"
-                  :show-badges="false"
-                  :link="false"
-                />
+            <div class="place-editor__masthead-shade" aria-hidden="true" />
+            <div class="place-editor__identity">
+              <div class="place-editor__avatar" :style="avatarStyle">
+                <img v-if="place.image_url" :src="place.image_url" alt="">
+                <span v-else>{{ initials }}</span>
               </div>
-
-              <UButton
-                size="xs"
-                variant="soft"
-                color="neutral"
-                icon="i-lucide-eye"
-                :to="backTo"
-              >
-                View public page
-              </UButton>
+              <div class="place-editor__identity-copy">
+                <div class="place-editor__badges">
+                  <UBadge color="primary" variant="soft">Editing Place</UBadge>
+                  <UBadge color="neutral" variant="soft">
+                    {{ place.place_type === 'non_physical' ? 'Non-physical' : 'Physical' }}
+                  </UBadge>
+                </div>
+                <h1>{{ pageTitle }}</h1>
+                <p>{{ pageSubtitle }}</p>
+                <p v-if="editablePlace?.slug" class="place-editor__slug">
+                  /places/{{ editablePlace.slug }}
+                </p>
+              </div>
             </div>
-          </UPageCard>
+          </header>
 
+          <PlaceEditCompleteness
+            v-if="canEdit && editablePlace"
+            :place="editablePlace"
+          />
           <PlaceEdit v-if="canEdit" :place="place" />
           <UAlert
             v-else
@@ -100,10 +115,8 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed } from 'vue'
-import {
-  usePlaceFetch,
-  usePlaceInterface,
-} from '../../composables/fireux/firestore/place/usePlace'
+import type { PlaceEditProjection } from '../../models/place-edit.model'
+import { usePlaceFetch } from '../../composables/fireux/firestore/place/usePlace'
 
 const props = defineProps<{
   locator: string
@@ -113,9 +126,8 @@ const { appId, appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Place` })
 
 const locator = computed(() => String(props.locator || '').trim())
-const { place, pending } = usePlaceFetch(locator)
-const loading = computed(() => pending.value)
-const placeId = computed(() => place.value?.id ?? '')
+const { place: publicPlace, pending } = usePlaceFetch(locator)
+const placeId = computed(() => publicPlace.value?.id ?? '')
 const backTo = computed(() =>
   locator.value ? `/places/${encodeURIComponent(locator.value)}` : '/places'
 )
@@ -126,7 +138,11 @@ const editAuthority = useAsyncData(
   async () => {
     const user = currentUser.value
     if (!import.meta.client || !user || !placeId.value) return null
-    return $fetch<{ ok: true; can_edit: boolean }>(
+    return $fetch<{
+      ok: true
+      can_edit: boolean
+      item?: PlaceEditProjection
+    }>(
       `/api/places/${encodeURIComponent(placeId.value)}/edit-authority`,
       { headers: { Authorization: `Bearer ${await user.getIdToken()}` } }
     )
@@ -134,9 +150,13 @@ const editAuthority = useAsyncData(
   { server: false, lazy: true, watch: [placeId, uid] }
 )
 const canEdit = computed(() => editAuthority.data.value?.can_edit === true)
-
-const { pill } = usePlaceInterface()
-const placePill = computed(() => pill(place.value))
+const editablePlace = computed(() => editAuthority.data.value?.item || null)
+const place = computed(() =>
+  editablePlace.value || publicPlace.value
+)
+const loading = computed(() =>
+  pending.value || Boolean(currentUser.value && placeId.value && editAuthority.pending.value)
+)
 
 const toast = useToastify()
 
@@ -161,6 +181,17 @@ const pageSubtitle = computed(
     place.value?.formatted_address ||
     'Public place details and owner-added content.'
 )
+const initials = computed(() =>
+  String(place.value?.name || 'P')
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part[0]?.toUpperCase())
+    .join('')
+)
+const avatarStyle = computed(() => ({
+  background: editablePlace.value?.media_backdrop_color || 'var(--ui-bg-accented)',
+}))
 
 const compactValue = (value: unknown): unknown => {
   if (typeof value === 'string') return value.trim() || undefined
@@ -181,38 +212,31 @@ const compact = (source: Record<string, unknown>) =>
   compactValue(source) as Record<string, unknown>
 
 const editableFields = computed(() => {
-  const v = place.value
-  if (!v) return null
-  const base = compact({
-    id: v.id,
-    image_url: v.image_url ?? (v as any).place_image,
-    image_shade: v.image_shade === 'none' ? undefined : v.image_shade,
-    short_name: v.short_name,
-    brand_tagline: v.brand_tagline,
-    about: v.about,
-    cover_image: v.cover_image,
-    gallery_images: v.gallery_images,
-    phone: v.phone,
-    email: v.email,
-    website: v.website,
-    social_links: v.social_links,
-    default_currency_code: v.default_currency_code,
-    timezone: v.timezone,
-    business_hours: v.business_hours,
-    claimed_by: v.claimed_by,
-  })
-
-  if (v.source === 'manual') {
-    return compact({
-      ...base,
-      name: v.name,
-      formatted_address: v.formatted_address,
-      search_term: v.search_term,
-      lat: v.lat,
-      lng: v.lng,
-    })
-  }
-
-  return base
+  const item = editAuthority.data.value?.item
+  return item ? compact(item as unknown as Record<string, unknown>) : null
 })
 </script>
+
+<style scoped>
+.place-editor { display: grid; gap: clamp(calc(var(--spacing) * 5), 4vw, calc(var(--spacing) * 9)); padding-bottom: calc(var(--spacing) * 16); }
+.place-editor__toolbar, .place-editor__toolbar-actions { display: flex; align-items: center; justify-content: space-between; gap: calc(var(--spacing) * 2); }
+.place-editor__workspace { display: grid; gap: calc(var(--spacing) * 6); }
+.place-editor__masthead { position: relative; min-height: clamp(18rem, 35vw, 27rem); overflow: hidden; border: 1px solid var(--ui-border); border-radius: calc(var(--ui-radius) * 4); background: var(--ui-bg-elevated); }
+.place-editor__cover, .place-editor__masthead-shade { position: absolute; inset: 0; width: 100%; height: 100%; }
+.place-editor__cover { object-fit: cover; }
+.place-editor__masthead-shade { background: linear-gradient(90deg, color-mix(in srgb, var(--ui-bg) 94%, transparent) 0%, color-mix(in srgb, var(--ui-bg) 76%, transparent) 55%, color-mix(in srgb, var(--ui-bg) 35%, transparent) 100%); }
+.place-editor__identity { position: relative; z-index: 1; display: flex; min-height: inherit; align-items: flex-end; gap: clamp(calc(var(--spacing) * 4), 4vw, calc(var(--spacing) * 8)); padding: clamp(calc(var(--spacing) * 6), 5vw, calc(var(--spacing) * 12)); }
+.place-editor__avatar { display: grid; width: clamp(5rem, 10vw, 8rem); aspect-ratio: 1; flex: 0 0 auto; place-items: center; overflow: hidden; border: 1px solid color-mix(in srgb, var(--ui-primary) 24%, var(--ui-border)); border-radius: calc(var(--ui-radius) * 4); color: var(--ui-text-muted); font-size: clamp(var(--text-xl), 4vw, var(--text-4xl)); font-weight: var(--font-weight-semibold); }
+.place-editor__avatar img { width: 100%; height: 100%; object-fit: contain; }
+.place-editor__identity-copy { display: grid; max-width: 52rem; gap: calc(var(--spacing) * 2); }
+.place-editor__badges { display: flex; flex-wrap: wrap; gap: calc(var(--spacing) * 2); }
+.place-editor__identity h1 { margin: 0; color: var(--ui-text-highlighted); font-size: clamp(var(--text-3xl), 5vw, var(--text-6xl)); line-height: .95; letter-spacing: -.04em; }
+.place-editor__identity p { margin: 0; color: var(--ui-text-muted); }
+.place-editor__slug { font-family: var(--font-mono); font-size: var(--text-xs); }
+@media (max-width: 39.99rem) {
+  .place-editor__toolbar { align-items: flex-start; }
+  .place-editor__toolbar-actions { justify-content: flex-end; }
+  .place-editor__toolbar-actions > :first-child { display: none; }
+  .place-editor__identity { flex-direction: column; align-items: flex-start; justify-content: flex-end; }
+}
+</style>

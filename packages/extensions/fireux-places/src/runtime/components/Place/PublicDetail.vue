@@ -110,6 +110,25 @@
           </template>
         </PublicEntityHero>
 
+        <section
+          v-if="place.identity?.logo_image_url || place.identity?.wordmark_image_url"
+          class="place-public__brand"
+          aria-label="Place identity"
+        >
+          <img
+            v-if="place.identity.wordmark_image_url"
+            :src="place.identity.wordmark_image_url"
+            :alt="`${place.name} wordmark`"
+            class="place-public__wordmark"
+          >
+          <img
+            v-else-if="place.identity.logo_image_url"
+            :src="place.identity.logo_image_url"
+            :alt="`${place.name} logo`"
+            class="place-public__logo"
+          >
+        </section>
+
         <div
           class="place-public__content"
           :class="{ 'place-public__content--utilities': !hasEditorialContent }"
@@ -247,6 +266,32 @@
                     </div>
                   </dl>
                 </section>
+
+                <section v-if="socialActions.length" class="place-public__info-section">
+                  <div class="place-public__utility-heading">
+                    <span>
+                      <UIcon name="i-lucide-at-sign" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <p class="fx-type-label">Around the web</p>
+                      <h2 class="fx-type-card-heading">Follow this place</h2>
+                    </div>
+                  </div>
+
+                  <div class="place-public__socials">
+                    <UButton
+                      v-for="social in socialActions"
+                      :key="social.key"
+                      :label="social.label"
+                      :to="social.to"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      color="neutral"
+                      variant="soft"
+                      size="sm"
+                    />
+                  </div>
+                </section>
               </div>
             </UCard>
           </aside>
@@ -257,6 +302,11 @@
           v-if="relatedOperationsComponent"
           :place-id="place.id"
           :place-name="place.name"
+        />
+
+        <PlaceAssetsLibrary
+          v-if="isAdmin || showDebug"
+          :place="place"
         />
 
         <PlaceDelete :place="place" />
@@ -290,7 +340,6 @@ if (import.meta.server && detail.missing.value) {
 }
 
 const {
-  locator,
   place,
   outcome,
   refresh,
@@ -300,11 +349,11 @@ const {
   initials,
   detailStyle,
   placeTypeLabel,
-  mapUrl,
   primaryActions,
   websiteLabel,
   hasVisitDetails,
   facts,
+  socialActions,
   hoursRows,
   hasEditorialContent,
   editTo,

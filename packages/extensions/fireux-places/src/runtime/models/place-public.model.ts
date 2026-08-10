@@ -7,6 +7,8 @@ import type {
   MediaBackdropColor,
   PlaceBusinessHours,
   PlaceImageShade,
+  PlaceIdentity,
+  PlaceSocialLinks,
   PlaceType,
 } from './place.model'
 
@@ -64,9 +66,11 @@ export type PublicPlaceDetailProjection = PublicPlaceProjection & {
   about?: string
   cover_image?: string
   gallery_images?: string[]
+  identity?: Partial<PlaceIdentity>
   business_hours?: PlaceBusinessHours
   website?: string
   google_maps_url?: string
+  social_links?: Partial<PlaceSocialLinks>
 }
 
 export type PublicPlaceDetailResponse = {

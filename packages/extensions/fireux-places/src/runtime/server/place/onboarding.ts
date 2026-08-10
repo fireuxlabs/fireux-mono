@@ -1,4 +1,5 @@
 import { createError, type H3Event } from 'h3'
+import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
@@ -9,6 +10,7 @@ import type {
   PlaceOnboardingCompleteResult,
   PlaceOnboardingPreview,
 } from '../../models/place-onboarding.model'
+import { readPlaceAssets } from '../../utils/place-spine'
 import {
   canConfigure,
   context,
@@ -49,7 +51,7 @@ export async function previewPlaceOnboarding(
     const current = currentDefaults(place)
     const timezone = current.timezone || (await resolveTimezone(event, place))
     const suggested = suggestions(place, timezone)
-    const imageUrl = storedHttpsImage(place.image_url)
+    const imageUrl = storedHttpsImage(readPlaceAssets(place).image_url)
     const brandPalette = storedBrandPalette(place)
     return {
       id: actor.placeRef.id,
@@ -111,7 +113,9 @@ export async function completePlaceOnboarding(
       mutations.create(places, requested.id, {
         ...provider,
         ...requested.defaults,
-        ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
+        ...('imageUrl' in requested
+          ? { assets: { image_url: requested.imageUrl } }
+          : {}),
         ...('brandPalette' in requested
           ? { brand_palette: requested.brandPalette }
           : {}),
@@ -136,7 +140,7 @@ export async function completePlaceOnboarding(
 
     const place = snapshot.data || {}
     const current = currentDefaults(place)
-    const storedImage = storedHttpsImage(place.image_url)
+    const storedImage = storedHttpsImage(readPlaceAssets(place).image_url)
     const currentBrandPalette = storedBrandPalette(place)
     const patch: Record<string, unknown> = {}
     if (!current.default_currency_code) {
@@ -144,7 +148,8 @@ export async function completePlaceOnboarding(
     }
     if (!current.timezone) patch.timezone = requested.defaults.timezone
     if (!storedImage && 'imageUrl' in requested) {
-      patch.image_url = requested.imageUrl
+      patch['assets.image_url'] = requested.imageUrl
+      patch.image_url = FieldValue.delete()
     }
     if (
       !Object.keys(currentBrandPalette).length &&

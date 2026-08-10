@@ -893,6 +893,18 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/server/place/mutate.ts'
   )
+  const placeSpine = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/utils/place-spine.ts'
+  )
+  const placeAssetRequirements = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/models/place-assets.model.ts'
+  )
+  const placeAssetLibrary = read(
+    repoRoot,
+    'packages/extensions/fireux-places/src/runtime/components/Place/AssetsLibrary.vue'
+  )
   const placeMutationAuthority = read(
     repoRoot,
     'packages/extensions/fireux-places/src/runtime/server/place/mutation-authority.ts'
@@ -907,6 +919,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /Object\.hasOwn\(kitchen,\s*['"]app_scope_app_id['"]\)/
   )
   assert.match(placeMediaMutation, /readRootKitchenAppScope\(rootKitchen\)/)
+  assert.match(placeModel, /export type PlaceAssets\s*=\s*\{/)
+  assert.match(placeModel, /assets:\s*\{[\s\S]*image_url:[\s\S]*identity:/)
+  assert.match(placeSpine, /export const readPlaceAssets\s*=/)
+  for (const target of [
+    'places/{placeId}/image',
+    'places/{placeId}/cover',
+    'places/{placeId}/gallery/{imageId}',
+    'places/{placeId}/identity/logo',
+    'places/{placeId}/identity/wordmark',
+  ]) {
+    assert.ok(placeAssetRequirements.includes(target))
+  }
+  assert.match(placeAssetLibrary, /PLACE_ASSET_REQUIREMENTS/)
+  assert.match(placeAssetLibrary, /Storage path/)
+  assert.match(placeAssetLibrary, /Matches criteria/)
+  assert.match(placeMediaMutation, /patch\[`assets\.\$\{key\}`\]/)
+  assert.match(placeMediaMutation, /patch\[['"]assets\.gallery_images['"]\]/)
+  assert.match(placeMediaMutation, /patch\[['"]assets\.identity['"]\]/)
   assert.match(
     placeMediaMutation,
     /rootKitchenScope\?\.appId\s*===\s*kitchenAuthority\.appId/
@@ -1130,7 +1160,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /Cover image URL|Gallery image URL|type="url"/
   )
   assert.match(placeMediaMutation, /requireFirebaseStorageDownloadUrl/)
-  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/avatar/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/image/)
   assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/cover/)
   assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/gallery\//)
   assert.deepEqual(typeFields(publicPlaceModel, 'PublicPlaceProjection'), [

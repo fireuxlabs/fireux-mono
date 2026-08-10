@@ -44,6 +44,7 @@ import { run as runExtensions } from './guards/extensions.mjs'
 import { run as runAuthoredSourceSize } from './guards/authored-source-size.mjs'
 import { run as runMenuRouteContract } from './guards/menu-route-contract.mjs'
 import { run as runProductLanding } from './guards/product-landing.mjs'
+import { run as runLandingTemplates } from './guards/landing-templates.mjs'
 import { run as runFinance } from './guards/finance.mjs'
 import { run as runFireuxBrandAssets } from './guards/fireux-brand-assets.mjs'
 import { run as runBuenoHostBrandAssets } from './guards/buenohost-brand-assets.mjs'
@@ -99,6 +100,7 @@ const guards = [
   { key: 'authored-source-size', run: runAuthoredSourceSize },
   { key: 'menu-route-contract', run: runMenuRouteContract },
   { key: 'product-landing', run: runProductLanding },
+  { key: 'landing-templates', run: runLandingTemplates },
   { key: 'finance', run: runFinance },
   { key: 'fireux-brand-assets', run: runFireuxBrandAssets },
   { key: 'buenohost-brand-assets', run: runBuenoHostBrandAssets },

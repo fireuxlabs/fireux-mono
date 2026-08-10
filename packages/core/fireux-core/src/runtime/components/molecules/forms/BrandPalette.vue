@@ -31,7 +31,7 @@
           color="neutral"
           variant="soft"
           icon="i-lucide-rotate-ccw"
-          :aria-label="`Use inherited ${field.label.toLowerCase()}`"
+          :aria-label="`${resetLabel} ${field.label.toLowerCase()}`"
           @click="resetColor(field.key)"
         />
       </UFieldGroup>
@@ -52,11 +52,13 @@ const props = withDefaults(defineProps<{
   disabled?: boolean
   activeLabel?: string
   inheritLabel?: string
+  resetLabel?: string
 }>(), {
   inherited: () => ({}),
   disabled: false,
   activeLabel: 'Selected',
   inheritLabel: 'Inherited',
+  resetLabel: 'Use inherited',
 })
 
 const emit = defineEmits<{

@@ -9,6 +9,7 @@ import type {
   PlaceBusinessHours,
   PlaceSocialLinks,
 } from '../../../../../models/place.model'
+import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { normalizePlaceBusinessHours } from '../../../../../utils/place-spine'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
 
@@ -202,6 +203,10 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     })
   }
 
+  async function updateBrandPalette(value: SparseBrandPalette, ctx: UpdateCtx) {
+    await update(reqId(ctx), { brand_palette: value })
+  }
+
   async function updateClaimedBy(_value: string, _ctx: UpdateCtx): Promise<never> {
     throw new Error(
       'Place claiming requires a verified ownership workflow and is not currently available.'
@@ -229,6 +234,7 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
     updateCoverImage,
     updateGalleryImages,
     updateSocialLinks,
+    updateBrandPalette,
     updateClaimedBy,
   }
 }

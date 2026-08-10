@@ -13,7 +13,7 @@ import {
   normalizePlaceBusinessHours,
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
-  readMediaBackdropColor,
+  readPlaceAssets,
 } from '../../utils/place-spine'
 import { normalizePublicPlaceProjection } from '../../utils/public-place-projection'
 
@@ -64,6 +64,7 @@ export function projectPublicPlace(
   const name = text(value.name, 240)
   const placeType = text(value.place_type, 40) as PlaceType
   if (!name || !placeTypes.has(placeType)) return null
+  const assets = readPlaceAssets(value)
 
   const result = normalizePublicPlaceProjection({
     id,
@@ -73,11 +74,8 @@ export function projectPublicPlace(
     brand_tagline: text(value.brand_tagline, 240),
     short_address:
       text(value.short_address, 240) || coarseAddress(value.address),
-    image_url: httpsUrl(value.image_url),
-    media_backdrop_color: readMediaBackdropColor(
-      value.media_backdrop_color,
-      value.image_shade
-    ),
+    image_url: httpsUrl(assets.image_url),
+    media_backdrop_color: assets.media_backdrop_color,
     image_shade: text(value.image_shade, 10) === 'light'
       ? 'light'
       : text(value.image_shade, 10) === 'dark'
@@ -104,17 +102,24 @@ export function projectPublicPlaceDetail(
   const timezone = normalizePlaceTimezone(value.timezone)
   const brandPalette = readBrandPalette(value.brand_palette)
   const about = text(value.about, 10_000)
-  const coverImage = httpsUrl(value.cover_image)
-  const galleryImages = Array.isArray(value.gallery_images)
-    ? Array.from(new Set(
-        value.gallery_images
-          .map(httpsUrl)
-          .filter(Boolean)
-      )).slice(0, 24)
-    : []
+  const assets = readPlaceAssets(value)
+  const coverImage = httpsUrl(assets.cover_image)
+  const galleryImages = Array.from(new Set(
+    assets.gallery_images.map(httpsUrl).filter(Boolean)
+  )).slice(0, 24)
+  const identity = {
+    logo_image_url: httpsUrl(assets.identity.logo_image_url),
+    wordmark_image_url: httpsUrl(assets.identity.wordmark_image_url),
+  }
   const businessHours = normalizePlaceBusinessHours(value.business_hours)
   const website = httpsUrl(value.website)
   const googleMapsUrl = httpsUrl(value.google_maps_url)
+  const socialLinks = Object.fromEntries(
+    Object.entries(record(value.social_links))
+      .filter(([key]) => ['instagram', 'facebook', 'tiktok', 'linkedin', 'youtube'].includes(key))
+      .map(([key, link]) => [key, httpsUrl(link)] as const)
+      .filter(([, link]) => Boolean(link))
+  )
   return {
     ...place,
     ...(currency ? { default_currency_code: currency } : {}),
@@ -125,8 +130,12 @@ export function projectPublicPlaceDetail(
     ...(about ? { about } : {}),
     ...(coverImage ? { cover_image: coverImage } : {}),
     ...(galleryImages.length ? { gallery_images: galleryImages } : {}),
+    ...(identity.logo_image_url || identity.wordmark_image_url
+      ? { identity: Object.fromEntries(Object.entries(identity).filter(([, url]) => Boolean(url))) }
+      : {}),
     ...(businessHours ? { business_hours: businessHours } : {}),
     ...(website ? { website } : {}),
     ...(googleMapsUrl ? { google_maps_url: googleMapsUrl } : {}),
+    ...(Object.keys(socialLinks).length ? { social_links: socialLinks } : {}),
   }
 }

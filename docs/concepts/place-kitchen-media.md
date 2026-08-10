@@ -1,16 +1,17 @@
 # Place and Kitchen media
 
-Updated: 2026-08-04
+Updated: 2026-08-10
 Ref: d232cc731
 Role: map, not canon
 
 ## Ownership
 
-Place is the physical venue and owns location photography: `image_url`,
-`cover_image`, and `gallery_images`. Kitchen is the food operation at that
-Place and owns `identity.logo_image_url`, `identity.wordmark_image_url`,
-`identity.wordmark_no_logo_image_url`, and the optional
-`identity.card_image_url`.
+Place is the physical venue and owns its base identity and location media:
+`assets.image_url`, `assets.cover_image`, `assets.gallery_images`,
+`assets.identity.logo_image_url`, and `assets.identity.wordmark_image_url`.
+Kitchen is the food operation at that Place and
+may own sparse identity overrides only when its operational identity genuinely
+differs from the Place base.
 
 Kitchen cards resolve the Kitchen card override, then Place cover, then Place
 image. They never copy Place media into Kitchen.
@@ -29,7 +30,7 @@ guess from file names, aspect ratios, colours, or individual records.
 
 ## Transparent-media backdrop
 
-`Place.media_backdrop_color` is an optional validated six-digit hex base for
+`Place.assets.media_backdrop_color` is an optional validated six-digit hex base for
 transparent brand media used by Place-backed children. A Kitchen persists
 `identity.media_backdrop_color` only when it needs a different colour.
 Resolution is Kitchen override, then Place base, then unset.
@@ -41,12 +42,17 @@ media.
 
 Writers accept files and persist canonical Firebase Storage download URLs for
 the exact entity-owned targets. Colour writers accept only `#rrggbb`.
+`place-assets.model.ts` owns the Place asset labels, Storage paths, and
+optimized source dimensions shown by the operator asset library. App runtime
+asset requirements remain a separate App-owned family.
 
 ## Compatibility and migration
 
-The pre-release `image_shade` values remain read-only compatibility input:
+Pre-release flat Place media fields and `image_shade` remain read-only
+compatibility input. Bounded browser DTOs stay flat, while trusted writers
+persist Place-owned media only below `assets`. The old shade values resolve as:
 `light` resolves to `#111827`, `dark` to `#ffffff`, and `none` to unset. New
-writes use only `media_backdrop_color`. Run
+writes use only `assets.media_backdrop_color`. Run
 `scripts/audit-place-kitchen-media-backdrops.mjs` to produce the bounded Live
 checklist. Asset-specific review annotations live in
 `scripts/data/misebox-media-backdrop-audit.json`; they may mark an opaque asset

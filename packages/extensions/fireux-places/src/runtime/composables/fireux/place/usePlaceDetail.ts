@@ -1,9 +1,6 @@
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed, resolveComponent } from 'vue'
-import {
-  usePlaceFetch,
-  usePlaceSeo,
-} from '../firestore/place/usePlace'
+import { usePlaceFetch, usePlaceSeo } from '../firestore/place/usePlace'
 import type {
   PlaceBusinessHoursDay,
   PlaceBusinessHoursWindow,
@@ -37,6 +34,11 @@ export function usePlaceDetail(props: { locator: string }) {
     return {
       '--fx-public-entity-accent':
         palette?.primary_color || 'var(--ui-primary)',
+      '--fx-place-identity-backdrop':
+        place.value?.media_backdrop_color ||
+        palette?.secondary_color ||
+        palette?.primary_color ||
+        'transparent',
     }
   })
   const placeTypeLabel = computed(() =>
@@ -120,6 +122,22 @@ export function usePlaceDetail(props: { locator: string }) {
           : null,
       ].filter(Boolean) as Array<{ label: string; value: string }>
   )
+  const socialActions = computed(() => {
+    const labels = {
+      instagram: 'Instagram',
+      facebook: 'Facebook',
+      tiktok: 'TikTok',
+      linkedin: 'LinkedIn',
+      youtube: 'YouTube',
+    } as const
+    return Object.entries(place.value?.social_links || {})
+      .filter(([key, value]) => key in labels && Boolean(value))
+      .map(([key, value]) => ({
+        key,
+        label: labels[key as keyof typeof labels],
+        to: String(value),
+      }))
+  })
 
   const orderedDays = [
     'monday',
@@ -204,6 +222,7 @@ export function usePlaceDetail(props: { locator: string }) {
     websiteLabel,
     hasVisitDetails,
     facts,
+    socialActions,
     hoursRows,
     hasEditorialContent,
     editTo,
