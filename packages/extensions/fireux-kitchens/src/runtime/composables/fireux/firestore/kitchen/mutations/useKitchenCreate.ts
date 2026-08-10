@@ -14,6 +14,7 @@ import type {
 import type {
   KitchenOnboardingCompleteInput,
   KitchenOnboardingCompleteResult,
+  KitchenOnboardingPlacesResult,
   KitchenOnboardingPreview,
 } from '../../../../../models/kitchen-onboarding.model'
 
@@ -69,6 +70,14 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
       throw new Error('Kitchen onboarding preview was invalid.')
     }
     return result
+  }
+
+  async function listKitchenOnboardingPlaces() {
+    const result = await $fetch<KitchenOnboardingPlacesResult>(
+      '/api/kitchens/onboarding/places',
+      { headers: await authHeaders() }
+    )
+    return Array.isArray(result?.items) ? result.items : []
   }
 
   async function completeKitchenOnboarding(
@@ -131,6 +140,7 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     createPlan: KitchenCreatePlan,
     createKitchen,
     createKitchenConsole,
+    listKitchenOnboardingPlaces,
     previewKitchenOnboarding,
   }
 }

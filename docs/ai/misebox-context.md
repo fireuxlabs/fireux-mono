@@ -62,11 +62,25 @@ Before each task:
   Place-owned facts/media and Menu operations remain in their owning Console
   surfaces; public detail never restores a raw browser Kitchen-root write.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It composes the
-  Place package's canonical onboarding, then atomically creates or connects the
-  sparse Kitchen root and Misebox App-support authority. Misebox
-  apps configure whether creation is available and tenant Apps remain bounded
-  to persisted AppKitchen support. A current App admin creates or attaches
-  the root; apps do not recreate the funnel or copy Place defaults into Kitchen.
+  Place package's canonical onboarding without making App identity a
+  prerequisite. Creating a Place is the secondary path when none is suitable,
+  and an explicit `placeId` may preselect without writing. Base completion
+  creates an independently valid same-id Kitchen root; when unattached its
+  canonical scope is `root_only` with an empty App id. A later App-context
+  attachment transaction changes scope, creates App support, grants operator
+  authority, and adds the User Kitchen target. One Place cannot create a second
+  Kitchen, and the canonical Kitchen root id is exactly its linked Place id.
+  Creation also allocates a unique canonical Kitchen route slug while
+  leaving publication disabled, so authorized collection projections can see
+  the new root immediately. Misebox
+  apps may configure whether attachment is available and tenant Apps remain
+  bounded to persisted AppKitchen support. Apps do not own base Place/Kitchen
+  identity, recreate the funnel, or copy Place defaults into Kitchen.
+  Sparse creation must lead into ownership-correct editing: linked Place
+  identity, address, contact, and media stay editable on the Place; Kitchen
+  route, identity overrides, visibility, media overrides, and operations stay
+  editable on Kitchen surfaces. Completeness prompts belong to the Entity
+  Editing System rather than expanding the create payload.
   Place onboarding explicitly offers provider search or trusted manual entry;
   both paths produce the same canonical Place used by Kitchen and other
   Place-backed roles. Place onboarding may establish sparse primary/secondary brand colours. New

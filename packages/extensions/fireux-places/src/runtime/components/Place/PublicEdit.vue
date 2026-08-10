@@ -74,7 +74,7 @@
             color="warning"
             variant="soft"
             title="Edit access required"
-            description="Claim this place from the public page, or use an admin account when maintaining FireUX data."
+            :description="`This Place can be edited by its creator or a ${appName} admin.`"
           />
         </div>
 
@@ -95,11 +95,10 @@
 </template>
 
 <script setup lang="ts">
-import { useHead } from '#imports'
+import { useAsyncData, useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
-import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed } from 'vue'
 import {
   usePlaceFetch,
@@ -121,22 +120,20 @@ const backTo = computed(() =>
   locator.value ? `/places/${encodeURIComponent(locator.value)}` : '/places'
 )
 const showDebug = import.meta.dev
-const { currentUser, isAdmin } = useUser()
-const { uid } = useAuth()
-const claimedBy = computed(() => place.value?.claimed_by ?? '')
-const isCreator = computed(() => {
-  const created = place.value?.created
-  return Boolean(
-    uid.value && created?.by === uid.value && created?.app_id === appId
-  )
-})
-const canEdit = computed(() =>
-  Boolean(
-    isAdmin.value ||
-      isCreator.value ||
-      (claimedBy.value && currentUser.value?.id === claimedBy.value)
-  )
+const { currentUser, uid } = useAuth()
+const editAuthority = useAsyncData(
+  () => `place-edit-authority-${appId}-${placeId.value}-${uid.value}`,
+  async () => {
+    const user = currentUser.value
+    if (!import.meta.client || !user || !placeId.value) return null
+    return $fetch<{ ok: true; can_edit: boolean }>(
+      `/api/places/${encodeURIComponent(placeId.value)}/edit-authority`,
+      { headers: { Authorization: `Bearer ${await user.getIdToken()}` } }
+    )
+  },
+  { server: false, lazy: true, watch: [placeId, uid] }
 )
+const canEdit = computed(() => editAuthority.data.value?.can_edit === true)
 
 const { pill } = usePlaceInterface()
 const placePill = computed(() => pill(place.value))

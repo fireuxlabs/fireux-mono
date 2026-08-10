@@ -11,6 +11,7 @@ import { parseBrandPalette } from 'fireux-core/runtime/utils/brand-palette'
 import { computed, ref } from 'vue'
 import type {
   KitchenOnboardingCompleteResult,
+  KitchenOnboardingPlaceOption,
   KitchenOnboardingPreview,
 } from '../../../models/kitchen-onboarding.model'
 import { useKitchenCreate } from '../firestore/kitchen/mutations/useKitchenCreate'
@@ -45,11 +46,28 @@ export function useKitchenOnboarding() {
   const selectionPending = ref(false)
   const selectionError = ref('')
   const completion = ref<KitchenOnboardingCompleteResult | null>(null)
+  const placeOptions = ref<KitchenOnboardingPlaceOption[]>([])
+  const placeOptionsPending = ref(false)
+  const placeOptionsError = ref('')
   let selectionSequence = 0
   const {
     completeKitchenOnboarding,
+    listKitchenOnboardingPlaces,
     previewKitchenOnboarding,
   } = useKitchenCreate()
+
+  async function loadPlaceOptions() {
+    placeOptionsPending.value = true
+    placeOptionsError.value = ''
+    try {
+      placeOptions.value = await listKitchenOnboardingPlaces()
+    } catch (error) {
+      placeOptions.value = []
+      placeOptionsError.value = errorMessage(error)
+    } finally {
+      placeOptionsPending.value = false
+    }
+  }
 
   const canEditIdentity = computed(() => preview.value?.existing !== true)
   const effectiveName = computed(() =>
@@ -238,7 +256,11 @@ export function useKitchenOnboarding() {
     displayName,
     effectiveName,
     inheritedPalette,
+    loadPlaceOptions,
     place,
+    placeOptions,
+    placeOptionsError,
+    placeOptionsPending,
     paletteOverride,
     preview,
     selectKitchen,

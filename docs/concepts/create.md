@@ -250,12 +250,39 @@ the final mutation, and completion routing.
 
 - Public and Console create routes compose the same Kitchen create system;
   route mode changes chrome and destination, not entity truth.
-- Kitchen onboarding reuses canonical Place identity, then owns only Kitchen
-  draft decisions and the trusted root/App-support/AppUser transaction.
+- Base Kitchen onboarding begins by selecting or creating an eligible
+  canonical Place without requiring App ownership. `placeId` route state may
+  preselect one without completing any write. When Kitchen composes manual
+  Place creation, currency and timezone become required because the dependent
+  Kitchen consumes them; ordinary standalone Place creation may keep those
+  defaults sparse. An App-context surface may narrow choices as a convenience,
+  but that is not root identity authority.
+- Kitchen onboarding reuses canonical Place identity and creates the same-id
+  Kitchen root as independently valid domain truth. A basic unattached Kitchen
+  uses `app_scope: { state: 'root_only', app_id: '' }`. App attachment is a
+  separate trusted transaction that changes scope, creates same-id AppKitchen
+  support, gives operator authority, and adds the Kitchen to Console targets.
+  An App-context convenience may orchestrate root creation followed by
+  attachment, but support never substitutes for the root.
 - New Kitchen roots stay sparse and unpublished. Place fields, Menu content,
   ordering, payment, profiles, and publication are not create side effects.
-- Tenant onboarding is bounded by persisted App support and membership authority, and route query state
-  never mutates an existing Kitchen automatically.
+  Completion allocates a canonical unique Kitchen route slug from the Place
+  name so the unpublished root remains available to authorized collection
+  projections.
+- Sparse onboarding must not strand optional profile data. Place-owned name,
+  address, short name, story, contact, and media remain editable through the
+  linked Place editor. Kitchen-owned route, identity overrides, media,
+  visibility, and operational settings remain editable through Kitchen
+  identity/edit surfaces. The Entity Editing System owns completeness cues and
+  edit parity; create does not copy Place fields into Kitchen to fill a card.
+- One Place resolves to at most one Kitchen. Preview and completion both reject
+  a conflicting root or duplicate Place relationship instead of creating a
+  second Kitchen. The Kitchen root id is exactly the linked Place id; a legacy
+  different-id relationship requires an explicit migration rather than an
+  onboarding repair.
+- Tenant attachment is bounded by persisted App support and membership
+  authority. Route query state never attaches or mutates an existing Kitchen
+  automatically.
 
 ## Current create plan primitive
 
@@ -322,7 +349,7 @@ that distinction inside the create family.
 | Difference                                                                                         | State        | Reason or alignment trigger                                                                                             |
 | -------------------------------------------------------------------------------------------------- | ------------ | ----------------------------------------------------------------------------------------------------------------------- |
 | Client entity, server transaction, provider/provision, and ensure creates use different transports | `accepted`   | Irreversible work and credential authority differ; all must still expose one named create boundary                      |
-| Console-target create may write root identity plus App support                                     | `accepted`   | Console entities require both canonical identity and app-scoped access; `useConsoleCreate` owns the shared support step |
+| An App-context convenience may sequence root creation and App attachment                           | `accepted`   | Canonical root creation remains independently valid; Console selection begins only after the domain-owned attachment transaction completes |
 | Place and Kitchen use staged onboarding rather than a one-step form                                | `accepted`   | Provider confirmation, inherited defaults, and access review require explicit stages                                    |
 | `createStrategy.ts` is implemented by only a subset of create families                             | `to-confirm` | Keep it as descriptive metadata until at least one guard or consumer proves registry value                              |
 | Product uses `useCreateProductState` rather than `useProductDraftState`                            | `migration`  | Rename when Product Create is next changed; do not add the older ordering to new families                               |

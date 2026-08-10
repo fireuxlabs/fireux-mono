@@ -30,6 +30,12 @@ composables, provided workflow contexts, and structural shells; do not infer a
 universal `useX` umbrella or a universal entity component API from visual
 similarity.
 
+Theming and branded presentation start at `docs/concepts/theming.md`. Keep
+generic FireUX theme primitives, ordinary Kitchen theming, tenant App-brand
+systems, entity-owned media, and presentation templates as distinct ownership
+layers; do not infer a stored App-brand catalogue or operational template
+entity before current source establishes one.
+
 Use `docs/concepts/*.md` for topic maps and `scripts/guards/*` for executable
 shape rules. Do not copy implementation details into AI context when current
 source or a guard is the better reference.
@@ -502,14 +508,19 @@ Before each task:
   authenticated `/api/internal/user/avatar` server Storage boundary before it
   writes the canonical User. Browser Storage Rules are not the provisioning
   path, and a local `/img/...` placeholder is never the persisted avatar.
-- Live root/App-support families query bounded entity App-support authority and
-  expose no partial pair when a root, same-id support record,
-  App scope, stored authority shape, or caller access is invalid.
-- Production onboarding for those families is a fixed-runtime authenticated
-  domain endpoint. One trusted transaction creates or attaches the canonical
-  root and completes the same-id App support record with the caller's
-  operator/team authority. Operators may mutate; team members have target/read
-  membership only; current App admins are the explicit override.
+- A canonical domain root is independently valid before App attachment.
+  Root/App-support families may use `root_only` scope with no App support until
+  an explicit attachment workflow runs; App support never substitutes for or
+  relocates root truth.
+- Live App Console projections query bounded entity App-support authority and
+  expose no partial attached pair when a root, same-id support record, App
+  scope, stored authority shape, or caller access is invalid.
+- Production App attachment for those families is a fixed-runtime
+  authenticated domain endpoint. One trusted transaction changes the root App
+  scope and completes same-id App support with the caller's operator/team
+  authority. A convenience funnel may create a missing root first, but base
+  root creation remains App-ignorant. Operators may mutate; team members have
+  target/read membership only; current App admins are the explicit override.
 - Kitchen retains Place and live/Demo composition, Blank remains the small
   harness, and Project remains a read-only control-plane family. Those are
   domain deltas, not alternate target or onboarding spines.

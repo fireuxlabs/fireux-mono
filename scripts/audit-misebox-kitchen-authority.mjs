@@ -134,6 +134,9 @@ for (const [kitchenId, kitchen] of kitchens) {
   if (!placeId || !places.has(placeId)) {
     issue('missing_kitchen_place', { ...context, place_id: placeId })
   } else {
+    if (kitchenId !== placeId) {
+      issue('kitchen_place_id_mismatch', { ...context, place_id: placeId })
+    }
     const placeIds = kitchensByPlace.get(placeId) || []
     placeIds.push(kitchenId)
     kitchensByPlace.set(placeId, placeIds)

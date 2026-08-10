@@ -274,6 +274,14 @@ export function serverUserTargetsTarget(userId: string) {
     collectionPath: `users/${id}/private`,
   })
 }
+export const serverRuntimeUserTargetsTarget = (userId: string) =>
+  defineFirestoreMutationTarget({
+    key: 'runtime.users.private.targets',
+    lane: 'server',
+    verbs,
+    database: { kind: 'runtime' },
+    collectionPath: `users/${segment(userId, 'userId')}/private`,
+  })
 
 export function serverAppAuthorityTargets(appId: string) {
   return Object.entries(APP_AUTHORITY_COLLECTIONS).map(

@@ -161,6 +161,7 @@ const assertAtomicConsoleOnboarding = ({
   handlerSource,
   completionFunction,
   onboardingSource,
+  authSource = onboardingSource,
   serverConfigSource,
   handlerPath,
   rootTarget,
@@ -206,7 +207,7 @@ const assertAtomicConsoleOnboarding = ({
     `${name} onboarding route must delegate to its trusted transaction.`
   )
 
-  assert.match(onboardingSource, /requireFirebaseBearerUser\(event\)/)
+  assert.match(authSource, /requireFirebaseBearerUser\(event\)/)
   const guarded = onboardingSource.includes('runGuardedServerTransaction')
   if (guarded) {
     assert.match(onboardingSource, /runGuardedServerTransaction/)
@@ -404,6 +405,10 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding.ts',
+  kitchenOnboardingComponent:
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Onboarding.vue',
+  kitchenOnboardingContext:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-context.ts',
   kitchenOnboardingPolicy:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding-policy.ts',
   kitchenServerConfig:
@@ -835,6 +840,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     handlerSource: source.kitchenOnboardingHandler,
     completionFunction: 'completeKitchenOnboarding',
     onboardingSource: source.kitchenOnboarding,
+    authSource: source.kitchenOnboardingContext,
     serverConfigSource: source.kitchenServerConfig,
     handlerPath: './runtime/server/api/kitchens/onboarding/complete.post',
     rootTarget: 'kitchens',
@@ -1122,6 +1128,31 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.kitchenOnboarding,
     /(?:transaction\.create\(supportRef|mutations\.create\(supports),[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
     'Trusted Kitchen onboarding must seed every AppKitchen authority array.'
+  )
+  assert.match(
+    source.kitchenOnboarding,
+    /serverRuntimeUserTargetsTarget\(current\.uid\)[\s\S]*mutations\.read\(userTargets, 'targets'\)[\s\S]*kitchen_ids:\s*FieldValue\.arrayUnion\(locator\.kitchenId\)/,
+    'Trusted Kitchen onboarding must atomically maintain the creator Console target index.'
+  )
+  assert.match(
+    source.kitchenOnboarding,
+    /kitchenOnboardingSlugCandidates\([\s\S]*mutations\.query<Record<string, unknown>>\([\s\S]*field:\s*'slug'[\s\S]*slug:\s*createdSlug/,
+    'Trusted Kitchen onboarding must allocate a unique route slug before creating the root.'
+  )
+  assert.match(
+    source.kitchenOnboarding,
+    /must be migrated to the linked Place id/,
+    'Kitchen onboarding must reject a legacy root whose id differs from its linked Place.'
+  )
+  assert.match(
+    source.kitchenOnboardingComponent,
+    /<PlaceOnboarding\s+require-defaults/,
+    'Kitchen-owned Place creation must require the local defaults Kitchen creation consumes.'
+  )
+  assert.match(
+    source.kitchenOnboardingPolicy,
+    /validatePublicSlug\([\s\S]*reservedScope:\s*'entity'/,
+    'Kitchen onboarding route candidates must use the canonical public-slug policy.'
   )
   assert.doesNotMatch(
     source.kitchenOnboarding,

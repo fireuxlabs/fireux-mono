@@ -155,6 +155,11 @@ export function run({ repoRoot }) {
     /serverKitchenMenuUploadsTarget[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'runtime' \}[\s\S]*menu-uploads/,
     'Kitchen Menu uploads must use their runtime Server target.'
   )
+  assert.match(
+    serverTargetsSource,
+    /serverRuntimeUserTargetsTarget[\s\S]*key:\s*'runtime\.users\.private\.targets'[\s\S]*database:\s*\{ kind:\s*'runtime' \}[\s\S]*users\/\$\{segment\(userId, 'userId'\)\}\/private/,
+    'Runtime Console target indexes must use the current named database Server target.'
+  )
   for (const file of ['upload.post.ts', 'source-url.post.ts']) {
     const source = readFileSync(
       path.join(

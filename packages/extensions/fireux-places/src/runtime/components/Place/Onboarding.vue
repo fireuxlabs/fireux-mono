@@ -45,6 +45,7 @@
 
     <PlaceOnboardingManual
       v-else
+      :require-defaults="requireDefaults"
       @back="resetEntryMethod"
       @created="emit('created', $event)"
     />
@@ -117,6 +118,14 @@ import {
   usePlaceOnboarding,
   type PlaceOnboardingResult,
 } from '../../composables/fireux/place/usePlaceOnboarding'
+
+const props = withDefaults(defineProps<{
+  requireDefaults?: boolean
+}>(), {
+  requireDefaults: false,
+})
+
+const requireDefaults = computed(() => props.requireDefaults === true)
 
 const emit = defineEmits<{
   (event: 'created', result: PlaceOnboardingResult): void

@@ -54,9 +54,11 @@ Every Console Entity must share these rules:
 - `operator_ids` grants mutation authority. `team_ids` grants target/read
   membership only. Current App admins are the explicit override.
 - Visible `canWrite` state never replaces server or Rules enforcement.
-- Root + App-support onboarding uses a fixed-runtime authenticated family
-  endpoint and one trusted transaction for root, same-id App support, and the
-  caller's operator/team authority.
+- Canonical root creation is independently valid and may remain `root_only`.
+  Explicit App attachment uses a fixed-runtime authenticated family endpoint
+  and one trusted transaction for root scope, same-id App support, and the
+  caller's operator/team authority. A convenience funnel may sequence root
+  creation then attachment, but support never substitutes for the root.
 - Index, Overview, Identity, Team, and Operations remain separate concerns.
   A family adds only sheets backed by a real lifecycle.
 

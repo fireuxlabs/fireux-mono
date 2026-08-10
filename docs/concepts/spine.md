@@ -16,6 +16,10 @@ shape is visible.
 The Place/Kitchen media ownership and transparent-brand backdrop spine is
 mapped in `docs/concepts/place-kitchen-media.md`.
 
+The boundary between shared theme primitives, ordinary Kitchen theming,
+tenant App brands, entity-owned media, and presentation templates is mapped in
+`docs/concepts/theming.md`.
+
 ## Before editing
 
 1. Name the family.
@@ -72,6 +76,7 @@ contract.
 | Runtime package               | `runtime-package.md`        | Module wiring and package guards                                                                 | Registration spine is shared; package lanes own deliberate deltas                                                                                   |
 | App config                    | `app-config.md`             | `defineFireuxConfig`, Nuxt overrides, and `FireUXConfig`                                         | Runtime role is explicit; repeated project defaults are drift                                                                                       |
 | Brand assets                  | `brand-assets.md`           | Core source family plus `scripts/guards/fireux-brand-assets.mjs`                                 | FireUX identity is Core-owned; parent ecosystem and App projections are guarded                                                                     |
+| Theming and branded presentation | `theming.md`             | Shared style models, Kitchen theme mutation, App runtime assets, and entity media ownership      | Existing primitives are mapped; App-brand catalogues and operational templates remain to-confirm                                                     |
 | Layout                        | `layouts.md`                | `AppShell` and current runtime layouts                                                           | Ownership is clear; slot versus direct route rendering is `to-confirm`                                                                              |
 | Debug                         | `debug.md`                  | `DevJson` and `DevFireuxDebugPanel`                                                              | Two distinct surfaces are accepted; a third generic panel is drift                                                                                  |
 | Privacy-first measurement     | `privacy-measurement.md`    | Shared legal surface plus `scripts/guards/privacy-measurement.mjs`                               | No tracking is active; the bounded aggregate server/admin family must land before collection begins                                                 |

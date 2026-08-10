@@ -1,14 +1,8 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: atomically bind Place, Kitchen root, and App access.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: require exact root scope and access-only App support.
 // Concurrent edit — 2026-07-22 12:13 CEST — Kitchen palette onboarding: persist only root colours differing from the linked Place.
-import { FieldValue } from 'firebase-admin/firestore'
+import { FieldValue, type Firestore } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
-import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
-import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
-import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
-import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
-import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
@@ -16,6 +10,7 @@ import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppKitchensTarget,
   serverAppUsersTarget,
+  serverRuntimeUserTargetsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   compactBrandPalette,
@@ -27,34 +22,22 @@ import type {
   KitchenOnboardingCompleteResult,
   KitchenOnboardingPreview,
 } from '../../models/kitchen-onboarding.model'
+import { KITCHEN_CONSOLE_TARGET_LIMIT } from '../../models/kitchen/kitchen-index.model'
 import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model'
 import {
   assertKitchenOnboardingPlaceDefaults,
   assertKitchenOnboardingScope,
   assertKitchenOnboardingSupportCapacity,
   kitchenOnboardingAccessDecision,
+  isKitchenOnboardingPlaceOwnedByApp,
+  kitchenOnboardingSlugCandidates,
   onboardingRecord as record,
   onboardingText as text,
   readKitchenOnboardingScope,
   readKitchenOnboardingSupport,
   requireOnboardingMemberRole as memberRole,
-  type KitchenOnboardingMemberRole as MemberRole,
 } from './onboarding-policy'
-
-type Firestore = ReturnType<typeof getRuntimeFirestore>
-
-type RuntimePolicy = {
-  appId: string
-  appRole: string
-  appScopeState: 'parent_app' | 'tenant_app'
-  canCreate: boolean
-}
-
-type Actor = RuntimePolicy & {
-  uid: string
-  db: Firestore
-  membershipRef: ReturnType<Firestore['doc']>
-}
+import { resolveKitchenOnboardingActor } from './onboarding-context'
 
 type Locator = {
   placeId: string
@@ -79,33 +62,6 @@ function request(value: unknown, allowed: readonly string[]) {
   return source
 }
 
-function runtimePolicy(event: H3Event): RuntimePolicy {
-  const fireux = useFireUXConfig(event)
-  const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
-  const appRole = fireux.role
-  const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
-  if (!appScopeState) fail(403, 'This App cannot own a Kitchen console.')
-
-  const canCreate = resolveConsoleCanCreate(
-    appRole,
-    fireux.consoleConfig,
-    'kitchen'
-  )
-  return { appId, appRole, appScopeState, canCreate }
-}
-
-async function actor(event: H3Event): Promise<Actor & { role: MemberRole }> {
-  const { uid } = await requireFirebaseBearerUser(event)
-  const policy = runtimePolicy(event)
-  const db = getRuntimeFirestore()
-  const membershipRef = db.doc(
-    `apps/${policy.appId}/${AppUserStorage.collection}/${uid}`
-  )
-  const membership = await membershipRef.get()
-  const role = memberRole(membership.exists, membership.get('role'))
-  return { ...policy, uid, db, membershipRef, role }
-}
-
 async function kitchenForPlace(
   db: Firestore,
   placeId: string
@@ -126,7 +82,10 @@ async function kitchenForPlace(
   }
   if (matches.size === 1) {
     const match = matches.docs[0]!
-    return { placeId, kitchenId: match.id, kitchen: match.data() || {} }
+    fail(
+      409,
+      `Kitchen ${match.id} must be migrated to the linked Place id ${placeId}.`
+    )
   }
   if (exactData) {
     fail(409, 'The deterministic Kitchen id belongs to another Place.')
@@ -170,7 +129,7 @@ export async function previewKitchenOnboarding(
   input: unknown
 ): Promise<KitchenOnboardingPreview> {
   const body = request(input, ['place_id', 'kitchen_id'])
-  const current = await actor(event)
+  const current = await resolveKitchenOnboardingActor(event)
   const locator = await resolveLocator(current.db, body)
   if (locator.kitchen)
     assertKitchenOnboardingScope(locator.kitchen, current.appId)
@@ -184,6 +143,12 @@ export async function previewKitchenOnboarding(
       .get(),
   ])
   if (!place.exists) fail(409, 'The linked Place does not exist.')
+  if (
+    !locator.kitchen && current.role !== 'admin' &&
+    !isKitchenOnboardingPlaceOwnedByApp(place.data() || {}, current.appId)
+  ) {
+    fail(403, 'Choose a Place owned by this App.')
+  }
   assertKitchenOnboardingPlaceDefaults(place.data() || {})
   if (!locator.kitchen && support.exists) {
     fail(409, 'Kitchen access exists without its canonical root.')
@@ -237,20 +202,28 @@ export async function completeKitchenOnboarding(
   if (displayName.length > 120) fail(400, 'Kitchen name is too long.')
   const requestedPalette = parseBrandPalette(body.palette_override)
   if ('error' in requestedPalette) fail(400, requestedPalette.error)
-  const current = await actor(event)
+  const current = await resolveKitchenOnboardingActor(event)
   const locator = await resolveLocator(current.db, body)
   const memberships = serverAppUsersTarget(current.appId)
   const supports = serverAppKitchensTarget(current.appId)
+  const userTargets = serverRuntimeUserTargetsTarget(current.uid)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, place, root, support] = await Promise.all([
+    const [membership, place, root, support, targets] = await Promise.all([
       mutations.read(memberships, current.uid),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
       mutations.read(supports, locator.kitchenId),
+      mutations.read(userTargets, 'targets'),
     ])
     const role = memberRole(membership.exists, membership.data?.role)
     if (!place.exists) fail(409, 'The linked Place no longer exists.')
+    if (
+      !root.exists && role !== 'admin' &&
+      !isKitchenOnboardingPlaceOwnedByApp(place.data || {}, current.appId)
+    ) {
+      fail(403, 'Choose a Place owned by this App.')
+    }
     assertKitchenOnboardingPlaceDefaults(place.data || {})
 
     const rootData = root.exists ? root.data || {} : null
@@ -291,6 +264,26 @@ export async function completeKitchenOnboarding(
       requestedPalette.value,
       placePalette
     )
+    let createdSlug = ''
+
+    if (createdRoot) {
+      const candidates = kitchenOnboardingSlugCandidates(
+        placeName,
+        locator.kitchenId
+      )
+      const matches = await mutations.query<Record<string, unknown>>(
+        FIRESTORE_MUTATION_TARGETS.kitchens,
+        {
+          field: 'slug',
+          op: candidates.length === 1 ? '==' : 'in',
+          value: candidates.length === 1 ? candidates[0] : candidates,
+          limit: candidates.length,
+        }
+      )
+      const used = new Set(matches.map(match => text(match.data.slug)))
+      createdSlug = candidates.find(candidate => !used.has(candidate)) || ''
+      if (!createdSlug) fail(409, 'No unique Kitchen route is available.')
+    }
 
     if (!createdRoot && Object.keys(requestedPalette.value).length) {
       fail(409, 'Existing Kitchen colours are preserved during onboarding.')
@@ -299,6 +292,7 @@ export async function completeKitchenOnboarding(
     if (createdRoot) {
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         place_id: locator.placeId,
+        slug: createdSlug,
         app_scope: {
           state: current.appScopeState,
           app_id: current.appId,
@@ -340,6 +334,31 @@ export async function completeKitchenOnboarding(
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
         updated: serverAuditStamp({ by: current.uid }),
+      })
+    }
+
+    const currentKitchenIds = targets.exists
+      ? targets.data?.kitchen_ids
+      : []
+    if (
+      !Array.isArray(currentKitchenIds) ||
+      currentKitchenIds.some(id => !text(id) || text(id).includes('/'))
+    ) {
+      fail(409, 'Kitchen target index has an invalid stored shape.')
+    }
+    const nextKitchenIds = new Set(currentKitchenIds.map(text))
+    nextKitchenIds.add(locator.kitchenId)
+    if (nextKitchenIds.size > KITCHEN_CONSOLE_TARGET_LIMIT) {
+      fail(409, 'Kitchen console targets exceed the supported limit.')
+    }
+    if (targets.exists) {
+      mutations.update(userTargets, 'targets', {
+        kitchen_ids: FieldValue.arrayUnion(locator.kitchenId),
+      })
+    } else {
+      mutations.create(userTargets, 'targets', {
+        project_ids: [],
+        kitchen_ids: [locator.kitchenId],
       })
     }
 

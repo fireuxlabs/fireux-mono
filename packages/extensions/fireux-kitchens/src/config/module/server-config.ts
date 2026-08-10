@@ -56,6 +56,11 @@ const baseServerHandlers = [
     handler: './runtime/server/sitemaps/kitchens.xml.get',
   },
   {
+    route: '/api/kitchens/onboarding/places',
+    method: 'get',
+    handler: './runtime/server/api/kitchens/onboarding/places.get',
+  },
+  {
     route: '/api/kitchens/onboarding/preview',
     method: 'post',
     handler: './runtime/server/api/kitchens/onboarding/preview.post',

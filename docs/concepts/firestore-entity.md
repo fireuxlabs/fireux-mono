@@ -230,7 +230,9 @@ Example Firestore stack names, not automatic entity proof:
 
 - Keep ordinary entity stacks boring: root seam plus `fetch`, `mutations`,
   `seo`, and `utils` only when used.
-- Preserve explicit read outcomes and complete root/App-support pairs.
+- Preserve explicit read outcomes. App Console projections require complete
+  root/App-support pairs; an unattached canonical root remains independently
+  valid outside that projection.
 
 ### Next
 

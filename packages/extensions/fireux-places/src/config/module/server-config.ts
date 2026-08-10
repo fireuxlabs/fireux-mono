@@ -56,6 +56,11 @@ const serverHandlers = [
     handler: './runtime/server/api/places/[placeId].get',
   },
   {
+    route: '/api/places/:placeId/edit-authority',
+    method: 'get',
+    handler: './runtime/server/api/places/[placeId]/edit-authority.get',
+  },
+  {
     route: '/api/places/:placeId',
     method: 'patch',
     handler: './runtime/server/api/places/[placeId].patch',

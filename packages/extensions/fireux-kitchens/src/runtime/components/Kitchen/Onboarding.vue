@@ -31,7 +31,29 @@
     </div>
 
     <div v-else-if="!place" class="form-stack">
-      <PlaceOnboarding @created="onPlaceReady" />
+      <KitchenOnboardingPlace
+        v-if="!addingPlace"
+        :options="placeOptions"
+        :pending="placeOptionsPending"
+        :error="placeOptionsError"
+        @add="addingPlace = true"
+        @refresh="loadPlaceOptions"
+        @select="selectPlace"
+      />
+
+      <template v-else>
+        <PlaceOnboarding require-defaults @created="onPlaceReady" />
+
+        <UButton
+          type="button"
+          color="neutral"
+          variant="ghost"
+          icon="i-lucide-arrow-left"
+          @click="showPlaceChoices"
+        >
+          Back to available Places
+        </UButton>
+      </template>
 
       <UButton
         v-if="resolvedCancelTo"
@@ -198,9 +220,13 @@ const {
   isFirstStep,
   isLastStep,
   inheritedPalette,
+  loadPlaceOptions,
   next,
   pending,
   place,
+  placeOptions,
+  placeOptionsError,
+  placeOptionsPending,
   paletteOverride,
   preview,
   progress,
@@ -224,6 +250,7 @@ const shellStage = computed(() => ({
 }))
 
 const initialLoaded = ref(false)
+const addingPlace = ref(false)
 const existingRootId = computed(() =>
   String(props.existingRootId || route.query.existingRootId || '').trim()
 )
@@ -277,7 +304,13 @@ const backLabel = computed(() => {
 })
 
 async function onPlaceReady(result: PlaceOnboardingResult) {
+  addingPlace.value = false
   await selectPlace(result.id)
+}
+
+async function showPlaceChoices() {
+  addingPlace.value = false
+  await loadPlaceOptions()
 }
 
 async function onBack() {
@@ -287,6 +320,7 @@ async function onBack() {
   }
   if (canChangePlace.value) {
     clearSelection()
+    await loadPlaceOptions()
     return
   }
   await router.push(resolvedCancelTo.value)
@@ -309,6 +343,7 @@ async function loadRouteSelection() {
     await selectPlace(initialPlaceId.value)
   } else {
     clearSelection()
+    await loadPlaceOptions()
   }
 }
 

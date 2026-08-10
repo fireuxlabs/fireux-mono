@@ -48,7 +48,7 @@
           class="w-full"
         />
       </UFormField>
-      <UFormField label="Currency">
+      <UFormField label="Currency" :required="requireDefaults">
         <UInput
           v-model="form.default_currency_code"
           maxlength="3"
@@ -56,7 +56,7 @@
           class="w-full"
         />
       </UFormField>
-      <UFormField label="Timezone">
+      <UFormField label="Timezone" :required="requireDefaults">
         <UInput
           v-model="form.timezone"
           placeholder="Europe/Zurich"
@@ -98,9 +98,21 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { usePlaceCreate } from '../../../composables/fireux/firestore/place/mutations/usePlaceCreate'
 import type { PlaceOnboardingResult } from '../../../composables/fireux/place/usePlaceOnboarding'
+import {
+  normalizePlaceCurrencyCode,
+  normalizePlaceTimezone,
+} from '../../../utils/place-spine'
+
+const props = withDefaults(defineProps<{
+  requireDefaults?: boolean
+}>(), {
+  requireDefaults: false,
+})
+
+const requireDefaults = computed(() => props.requireDefaults === true)
 
 const emit = defineEmits<{
   (event: 'back'): void
@@ -136,8 +148,18 @@ function message(value: unknown) {
 }
 
 async function submit() {
-  pending.value = true
   error.value = ''
+  const currency = normalizePlaceCurrencyCode(form.default_currency_code)
+  const timezone = normalizePlaceTimezone(form.timezone)
+  if (requireDefaults.value && !currency) {
+    error.value = 'Confirm a valid 3-letter currency code for this Kitchen.'
+    return
+  }
+  if (requireDefaults.value && !timezone) {
+    error.value = 'Confirm a valid IANA timezone for this Kitchen.'
+    return
+  }
+  pending.value = true
   try {
     const { lat, lng, ...details } = form
     const result = await createManualPlace({
@@ -145,7 +167,8 @@ async function submit() {
       ...(lat ? { lat: Number(lat) } : {}),
       ...(lng ? { lng: Number(lng) } : {}),
       country_code: form.country_code.toUpperCase(),
-      default_currency_code: form.default_currency_code.toUpperCase(),
+      default_currency_code: currency,
+      timezone,
     })
     emit('created', {
       id: result.id,

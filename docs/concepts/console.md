@@ -166,14 +166,15 @@ Map the shared console system and domain adapters.
   its explicit `idle`, `pending`, `error`, `empty`, or `ready` outcome feeds the
   same index contract as a live read.
 
-## Production onboarding
+## Production attachment
 
-- A root/App-support console family creates or attaches through its own
-  fixed-runtime authenticated server endpoint. The caller cannot choose the
+- A canonical root may be created independently and remain `root_only` without
+  an App Console target. App attachment runs through the family's own
+  fixed-runtime authenticated server endpoint; the caller cannot choose the
   App, database, collection path, or App-support id.
-- One Firestore transaction owns the root scope, same-id complete App support,
-  and caller operator/team authority. Missing or conflicting halves fail before a
-  partial chooser row can be created.
+- One attachment transaction owns the root scope change, same-id complete App
+  support, and caller operator/team authority. Missing or conflicting halves
+  fail before a partial chooser row can be created.
 - `operator_ids` is mutation authority. `team_ids` is target/read membership,
   not write authority. Current App admins remain the explicit administrative
   override; UI `canWrite` still does not replace server or Rules enforcement.

@@ -77,7 +77,7 @@ HTTP handler rather than hiding it in another generic layer.
 | Public list/detail | Bounded projection for public pages | Pagination, joins, and publication filters differ by entity authority |
 | Internal | Authenticated owner/member/admin work | Required role and fixed domain scope differ |
 | Console | Selected-target commands and projections | Target family and operation differ; selection alone never grants authority |
-| Onboarding | Idempotent root/support creation or attachment | Domain seed and validation differ; transaction shape remains fixed-runtime |
+| Onboarding | Base root creation or explicit App attachment | Domain seed and validation differ; App attachment remains fixed-runtime and never substitutes support for root truth |
 | Upload | Multipart validation, Storage write, and metadata transaction | Accepted files and storage owner differ |
 | Tool provider | Return or execute a reusable provider contract | Tool payload differs; provider never steals consumer data ownership |
 | Webhook/callback | Verify provider signature and advance trusted state | Signature and event vocabulary are provider-specific |

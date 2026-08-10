@@ -2,6 +2,8 @@
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
+import { validatePublicSlug } from 'fireux-core/runtime/utils/slug/validatePublicSlug'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
@@ -88,12 +90,52 @@ export function assertKitchenOnboardingScope(
 export function assertKitchenOnboardingPlaceDefaults(
   place: Record<string, unknown>
 ) {
-  if (
-    !normalizePlaceCurrencyCode(place.default_currency_code) ||
-    !normalizePlaceTimezone(place.timezone)
-  ) {
+  if (!isKitchenOnboardingPlaceReady(place)) {
     fail(409, 'Finish the Place currency and timezone before adding a Kitchen.')
   }
+}
+
+export function isKitchenOnboardingPlaceReady(
+  place: Record<string, unknown>
+) {
+  return Boolean(
+    normalizePlaceCurrencyCode(place.default_currency_code) &&
+    normalizePlaceTimezone(place.timezone)
+  )
+}
+
+export function isKitchenOnboardingPlaceOwnedByApp(
+  place: Record<string, unknown>,
+  appId: string
+) {
+  return onboardingText(onboardingRecord(place.created).app_id) === appId
+}
+
+export function kitchenOnboardingSlugCandidates(
+  placeName: string,
+  kitchenId: string
+) {
+  const base = normalizeSlug(placeName, { maxLength: 60 })
+  const suffix = normalizeSlug(kitchenId, { maxLength: 40 })
+  const candidates = [
+    base,
+    `${base}-${suffix.slice(0, 8)}`,
+    `${base}-${suffix}`,
+  ]
+  const unique = new Set<string>()
+
+  for (const candidate of candidates) {
+    const result = validatePublicSlug(candidate, {
+      label: 'Kitchen slug',
+      namespace: 'Kitchens',
+      reservedScope: 'entity',
+      minLength: 2,
+      maxLength: 120,
+    })
+    if (result.isValid && result.slug) unique.add(result.slug)
+  }
+  if (!unique.size) fail(409, 'The Place name cannot create a Kitchen route.')
+  return [...unique]
 }
 
 export function readKitchenOnboardingSupport(
