@@ -219,9 +219,37 @@ export default defineEventHandler(
       })
     }
 
-    const targetIds = await resolveKitchenConsoleTargetIds(
+    const indexedTargetIds = await resolveKitchenConsoleTargetIds(
       uid,
       currentMembership
+    )
+    if (!indexedTargetIds.length) {
+      setResponseHeaders(event, {
+        'Content-Type': 'application/json; charset=utf-8',
+        'Cache-Control': 'private, no-store',
+      })
+      return { ok: true, appId, items: [] }
+    }
+
+    const rootSnapshots = await db.getAll(
+      ...indexedTargetIds.map(id => db.doc(`kitchens/${id}`))
+    )
+    const roots = new Map(
+      rootSnapshots.map(snapshot => [snapshot.id, snapshot])
+    )
+    const scopes = new Map<string, CanonicalKitchenScope>()
+    for (const id of indexedTargetIds) {
+      const rootSnapshot = roots.get(id)
+      if (!rootSnapshot?.exists) {
+        conflict(`Kitchen target ${id} is missing its canonical root.`)
+      }
+      const root = rootSnapshot.data() || {}
+      const scope = readCanonicalKitchenScope(id, root)
+      scopes.set(id, scope)
+    }
+
+    const targetIds = indexedTargetIds.filter(
+      id => scopes.get(id)?.app_id === appId
     )
     if (!targetIds.length) {
       setResponseHeaders(event, {
@@ -231,28 +259,15 @@ export default defineEventHandler(
       return { ok: true, appId, items: [] }
     }
 
-    const rootSnapshots = await db.getAll(
-      ...targetIds.map(id => db.doc(`kitchens/${id}`))
-    )
-    const roots = new Map(
-      rootSnapshots.map(snapshot => [snapshot.id, snapshot])
-    )
-    const scopes = new Map<string, CanonicalKitchenScope>()
     const relatedRefs = new Map<string, ReturnType<typeof db.doc>>()
-
     for (const id of targetIds) {
-      const rootSnapshot = roots.get(id)
-      if (!rootSnapshot?.exists) {
-        conflict(`Kitchen target ${id} is missing its canonical root.`)
-      }
-      const root = rootSnapshot.data() || {}
-      const scope = readCanonicalKitchenScope(id, root)
+      const root = roots.get(id)!.data() || {}
+      const scope = scopes.get(id)!
       const placeId = readRecordString(root, 'place_id')
       if (!isFirestoreDocumentId(placeId)) {
         conflict(`Kitchen ${id} has an invalid canonical Place reference.`)
       }
 
-      scopes.set(id, scope)
       for (const ref of [
         db.doc(`apps/${scope.app_id}/kitchens/${id}`),
         db.doc(`apps/${scope.app_id}/users/${uid}`),

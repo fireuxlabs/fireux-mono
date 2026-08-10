@@ -4,9 +4,10 @@
       <NuxtLink class="friiites-header__brand" to="/" aria-label="Friiites home">
         <AppBrandWordmark
           light-src="/img/app/wordmark-light.png"
-          dark-src="/img/app/wordmark-dark.png"
+          dark-src="/img/app/brand/wordmark-dark-transparent.png"
           alt="Friiites"
           size="medium"
+          loading="eager"
         />
       </NuxtLink>
 
@@ -15,7 +16,7 @@
           Sign in
         </NuxtLink>
 
-        <NuxtLink class="friiites-header__order" to="/#ordering">
+        <NuxtLink class="friiites-header__order" to="/#menu">
           <span class="friiites-header__order-desktop">Order now</span>
           <span class="friiites-header__order-mobile">Order</span>
         </NuxtLink>
@@ -41,12 +42,14 @@
 
 <script setup lang="ts">
 const menuItems = [
-  { label: 'Our method', to: '/#method' },
-  { label: 'The product', to: '/#product' },
-  { label: 'Ordering', to: '/#ordering' },
-  { label: 'Order journey', to: '/#journey' },
-  { label: 'Franchise', to: '/#system' },
-  { label: 'Locations', to: '/#locations' },
+  { label: '02 Menu', to: '/#menu' },
+  { label: '03 Locations', to: '/#locations' },
+  { label: '04 Method', to: '/#method' },
+  { label: '05 Classic', to: '/#classic' },
+  { label: '06 Next level', to: '/#next-level' },
+  { label: '07 Order now', to: '/#order-now' },
+  { label: '08 Franchise', to: '/#franchise' },
+  { label: '09 Misebox', to: '/#misebox' },
 ] as const
 </script>
 
@@ -57,7 +60,7 @@ const menuItems = [
   z-index: 30;
   color: var(--ui-text-highlighted);
   background: transparent;
-  border-bottom: 1px solid color-mix(in srgb, currentColor 18%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
 .friiites-header__inner {
@@ -104,9 +107,21 @@ const menuItems = [
 }
 
 .friiites-header__order {
-  padding: calc(var(--spacing) * 3.4) calc(var(--spacing) * 5);
-  color: var(--friiites-black);
-  background: var(--friiites-gold);
+  padding: calc(var(--spacing) * 3.4) calc(var(--spacing) * 7);
+  color: var(--friiites-gold);
+  border: 1px solid var(--friiites-gold);
+}
+
+.friiites-header__order,
+.friiites-header__menu summary {
+  background-color: color-mix(in srgb, var(--friiites-black) 88%, transparent);
+  background-image:
+    linear-gradient(rgb(var(--brand-accent-rgb) / 7%), rgb(0 0 0 / 8%)),
+    url('/img/app/hero/charcoal-texture.webp');
+  background-position: center;
+  background-size: auto, 16rem;
+  background-blend-mode: normal, soft-light;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 2%);
 }
 
 .friiites-header__order-mobile {
@@ -123,6 +138,9 @@ const menuItems = [
   height: 2.75rem;
   cursor: pointer;
   list-style: none;
+  color: var(--friiites-gold);
+  border: 1px solid currentColor;
+  border-radius: 9999px;
   place-items: center;
 }
 
@@ -133,6 +151,11 @@ const menuItems = [
 .friiites-header__menu summary :deep(svg) {
   width: 1.5rem;
   height: 1.5rem;
+}
+
+.friiites-header__order:hover,
+.friiites-header__menu summary:hover {
+  background-color: color-mix(in srgb, var(--friiites-gold) 14%, var(--friiites-black));
 }
 
 .friiites-header__menu nav {

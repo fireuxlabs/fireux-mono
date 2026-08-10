@@ -5,12 +5,14 @@ import { defineRuntimeClientCreateTarget } from 'fireux-core/runtime/utils/fires
 import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenMiseTaskStorage,
-  KitchenMiseTaskModel,
+  KitchenMiseTaskDefaults,
   normalizeKitchenMisePriority,
   normalizeKitchenMiseStatus,
+  normalizeKitchenMiseWorkflowStage,
   type KitchenMiseChecklistItem,
   type KitchenMisePriority,
   type KitchenMiseStatus,
+  type KitchenMiseWorkflowStage,
   type KitchenMiseTask as KitchenMiseTaskDoc,
 } from '../../../../../../../models/kitchen/mise.model'
 const resolveKitchenCollectionPath = (basePath: string, kitchenId: string) =>
@@ -22,12 +24,13 @@ type KitchenMiseCreateDraft = {
   title: string
   description?: string
   station?: string
+  workflow_stage?: KitchenMiseWorkflowStage | ''
   service_date?: string
   status?: KitchenMiseStatus
   priority?: KitchenMisePriority
   estimated_minutes?: number
   ingredient_ids?: string[]
-  mise_ids?: string[]
+  prep_item_ids?: string[]
   menu_id?: string
   assignee_ids?: string[]
   checklist?: KitchenMiseChecklistItem[]
@@ -50,17 +53,18 @@ const toStringArray = (value: unknown) =>
   )
 
 const buildMisePayload = (kitchenId: string, draft: KitchenMiseCreateDraft): KitchenMiseTaskDoc => ({
-  ...KitchenMiseTaskModel,
+  ...KitchenMiseTaskDefaults,
   kitchen_id: kitchenId,
   title: normalizeString(draft.title),
   description: normalizeString(draft.description),
   station: normalizeString(draft.station),
+  workflow_stage: normalizeKitchenMiseWorkflowStage(draft.workflow_stage),
   service_date: normalizeString(draft.service_date),
   status: normalizeKitchenMiseStatus(draft.status),
   priority: normalizeKitchenMisePriority(draft.priority),
   estimated_minutes: toSafeNumber(draft.estimated_minutes),
   ingredient_ids: toStringArray(draft.ingredient_ids),
-  mise_ids: toStringArray(draft.mise_ids),
+  prep_item_ids: toStringArray(draft.prep_item_ids),
   menu_id: normalizeString(draft.menu_id),
   assignee_ids: toStringArray(draft.assignee_ids),
   checklist: Array.isArray(draft.checklist) ? draft.checklist : [],

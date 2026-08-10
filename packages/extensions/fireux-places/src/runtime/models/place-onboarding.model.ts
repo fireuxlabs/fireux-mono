@@ -33,3 +33,20 @@ export type PlaceOnboardingCompleteInput = PlaceOnboardingDefaults & {
   image_url?: string
   brand_palette?: SparseBrandPalette
 }
+
+export type PlaceManualCreateInput = Partial<PlaceOnboardingDefaults> & {
+  name: string
+  street?: string
+  city?: string
+  region?: string
+  postal_code?: string
+  country_code?: string
+  lat?: number
+  lng?: number
+}
+
+export type PlaceManualCreateResult = {
+  ok: true
+  id: string
+  created: true
+}

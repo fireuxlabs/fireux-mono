@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-04
+Updated: 2026-08-09
 Ref: d232cc731
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -67,7 +67,9 @@ Before each task:
   apps configure whether creation is available and tenant Apps remain bounded
   to persisted AppKitchen support. A current App admin creates or attaches
   the root; apps do not recreate the funnel or copy Place defaults into Kitchen.
-  Place onboarding may establish sparse primary/secondary brand colours. New
+  Place onboarding explicitly offers provider search or trusted manual entry;
+  both paths produce the same canonical Place used by Kitchen and other
+  Place-backed roles. Place onboarding may establish sparse primary/secondary brand colours. New
   Kitchens inherit them and persist only differing colours on the canonical
   Kitchen root; Misebox app chrome and AppKitchen access records own neither.
   A Kitchen logo is owned only by
@@ -121,6 +123,10 @@ Before each task:
   AppKitchen access records require bounded `operator_ids`, `team_ids`, and
   `join_requests` arrays. The authenticated Kitchen target endpoint validates
   that exact support shape and remains the sole live Console target outcome.
+  It intersects the User's server-owned Kitchen target index with the current
+  App's canonical Kitchen scope, so a tenant Console never lists Kitchens
+  associated with another App. A tenant with one resulting Live Kitchen uses
+  the shared Console single-target auto-selection and hides the chooser.
   Missing, malformed, or payload-bearing AppKitchen records fail closed;
   pre-release code does not carry legacy repair or fallback paths.
   `operator_ids` grants Kitchen mutation authority; `team_ids` grants Kitchen
@@ -322,6 +328,17 @@ Before each task:
   clean, Cut & portion, Make, Cook & chill, Set stations, and Final checks;
   status, priority, station, and checklist progress remain orthogonal task
   metadata, while unclassified legacy records remain visible under Unsorted.
+  Live task storage is the dedicated Kitchen-owned
+  `apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}` collection. The older
+  `mise` collections contain legacy Prep Item documents and must not be read,
+  normalized, secured, or migrated as Mise tasks. Canonical Prep Items are
+  Kitchen-scoped Entities at
+  `apps/{appId}/kitchens/{kitchenId}/prep-items/{prepItemId}` and own inputs,
+  yield, method, and presentation. A task links them explicitly through
+  `prep_item_ids`; it never treats those ids as task dependencies. The
+  protected legacy migration is complete. Do not restore `mise` documents or
+  move Prep Items through browser code; use the read-only Prep Item audit to
+  detect regression and retain the migration script as operational evidence.
   The Product Demo names that operation projection `console.miseTasks`;
   Dish-level `mise` remains the derived production-requirement graph. The
   operation-level preview does not substitute those requirements for tasks.

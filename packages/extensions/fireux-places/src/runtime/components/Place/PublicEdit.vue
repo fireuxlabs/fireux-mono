@@ -39,9 +39,13 @@
 
         <div v-else class="space-y-6">
           <UPageCard variant="subtle">
-            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div
+              class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+            >
               <div class="space-y-2">
-                <p class="text-xs font-medium uppercase tracking-wide text-dimmed">
+                <p
+                  class="text-xs font-medium uppercase tracking-wide text-dimmed"
+                >
                   Editing place
                 </p>
                 <PlaceCardsPill
@@ -93,6 +97,7 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useUser } from 'fireux-core/runtime/composables/fireux/user/useUser'
 import { computed } from 'vue'
@@ -105,7 +110,7 @@ const props = defineProps<{
   locator: string
 }>()
 
-const { appName } = useFireUXConfig()
+const { appId, appName } = useFireUXConfig()
 useHead({ title: `${appName} | Edit Place` })
 
 const locator = computed(() => String(props.locator || '').trim())
@@ -117,9 +122,20 @@ const backTo = computed(() =>
 )
 const showDebug = import.meta.dev
 const { currentUser, isAdmin } = useUser()
+const { uid } = useAuth()
 const claimedBy = computed(() => place.value?.claimed_by ?? '')
+const isCreator = computed(() => {
+  const created = place.value?.created
+  return Boolean(
+    uid.value && created?.by === uid.value && created?.app_id === appId
+  )
+})
 const canEdit = computed(() =>
-  Boolean(isAdmin.value || (claimedBy.value && currentUser.value?.id === claimedBy.value))
+  Boolean(
+    isAdmin.value ||
+      isCreator.value ||
+      (claimedBy.value && currentUser.value?.id === claimedBy.value)
+  )
 )
 
 const { pill } = usePlaceInterface()
@@ -143,16 +159,16 @@ async function onCopyPlaceId() {
 const pageTitle = computed(() =>
   place.value?.name ? `Edit ${place.value.name}` : 'Edit place'
 )
-const pageSubtitle = computed(() =>
-  place.value?.formatted_address || 'Public place details and owner-added content.'
+const pageSubtitle = computed(
+  () =>
+    place.value?.formatted_address ||
+    'Public place details and owner-added content.'
 )
 
 const compactValue = (value: unknown): unknown => {
   if (typeof value === 'string') return value.trim() || undefined
   if (Array.isArray(value)) {
-    const items = value
-      .map(compactValue)
-      .filter(item => item !== undefined)
+    const items = value.map(compactValue).filter((item) => item !== undefined)
     return items.length ? items : undefined
   }
   if (value && typeof value === 'object') {

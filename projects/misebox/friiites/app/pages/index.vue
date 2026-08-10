@@ -2,18 +2,23 @@
   <UPage class="friiites-page">
     <main id="top">
       <FriiitesHeroScene />
-      <FriiitesProcessScene />
-      <FriiitesProductScene />
-      <FriiitesOrderingSurfacesScene />
-      <FriiitesOrderJourneyScene />
-      <FriiitesFranchiseScene />
+      <FriiitesMenuScene />
       <FriiitesLocationsScene />
+      <FriiitesMethodScene />
+      <FriiitesClassicScene />
+      <FriiitesNextLevelScene />
+      <FriiitesOrderNowScene />
+      <FriiitesFranchiseScene />
+      <FriiitesMiseboxScene />
       <FriiitesFooterScene />
     </main>
   </UPage>
 </template>
 
 <script setup lang="ts">
+import FriiitesMiseboxScene from '~/components/FriiitesMiseboxScene.vue'
+import FriiitesOrderNowScene from '~/components/FriiitesOrderNowScene.vue'
+
 definePageMeta({
   layout: 'friiites',
   nav: {

@@ -230,8 +230,17 @@ the final mutation, and completion routing.
 
 #### Place reference
 
-- Place onboarding confirms provider identity and user-owned local defaults
-  before one authenticated completion transaction.
+- Place onboarding begins with an explicit choice between searching for an
+  existing FireUX/provider Place and entering a not-yet-listed Place manually.
+  Search confirms provider identity; manual creation validates user-authored
+  facts through its own trusted command and permits a name-only prototype when
+  its address and map position are not known yet. Both paths create the same
+  canonical Place family before downstream roles link to it. Optional manual
+  facts remain sparse, including inside the address object; the bounded public
+  projection may still normalize absent card fields for its fixed DTO shape.
+  The authenticated creator retains sparse edit authority while operating in
+  the App recorded by the Place creation stamp; App admins and explicitly
+  linked Kitchen operators remain the other trusted mutation authorities.
 - Provider identity remains server-verified; optional image and brand values
   stay sparse and do not overwrite existing truth.
 - `POST /api/places/ensure` remains the narrow idempotent identity seam for

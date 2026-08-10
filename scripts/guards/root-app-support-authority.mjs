@@ -431,6 +431,7 @@ const sourceFamilies = {
   miseboxRules: [
     files.miseboxRules,
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules',
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-workflow.rules',
   ],
 }
 
@@ -1077,6 +1078,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /ids\.length > KITCHEN_CONSOLE_TARGET_LIMIT/
   )
   assert.match(source.kitchenTargetApi, /readCanonicalKitchenScope/)
+  assert.match(
+    source.kitchenTargetApi,
+    /indexedTargetIds\.filter\(\s*id => scopes\.get\(id\)\?\.app_id === appId\s*\)/,
+    'Kitchen target projection must restrict the global User target index to the current App.'
+  )
   assert.match(source.kitchenTargetApi, /keys\.length !== 2/)
   assert.match(source.kitchenTargetApi, /state !== 'parent_app'/)
   assert.match(source.kitchenTargetApi, /state !== 'tenant_app'/)

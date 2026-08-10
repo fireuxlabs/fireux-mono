@@ -15,21 +15,42 @@
         Add a Place
       </h1>
       <p class="mt-3 text-sm leading-6 text-muted">
-        Find the location, confirm its defaults, and review the Place before it
-        is added.
+        Search for an existing location or enter a new Place manually.
       </p>
     </template>
 
-    <PlaceOnboardingFind
-      v-show="activeStepId === 'find'"
-      :pending="selectionPending"
-      :error="selectionError"
-      @selected="selectPlace"
-      @cleared="clearSelection"
+    <PlaceOnboardingChoose v-if="!entryMethod" @choose="entryMethod = $event" />
+
+    <template v-else-if="entryMethod === 'search'">
+      <UButton
+        v-if="activeStepId === 'find'"
+        type="button"
+        color="neutral"
+        variant="ghost"
+        icon="i-lucide-arrow-left"
+        class="mb-4"
+        @click="resetEntryMethod"
+      >
+        Change method
+      </UButton>
+      <PlaceOnboardingFind
+        v-show="activeStepId === 'find'"
+        :pending="selectionPending"
+        :error="selectionError"
+        @selected="selectPlace"
+        @cleared="clearSelection"
+        @manual="openManualEntry"
+      />
+    </template>
+
+    <PlaceOnboardingManual
+      v-else
+      @back="resetEntryMethod"
+      @created="emit('created', $event)"
     />
 
     <PlaceOnboardingDefaults
-      v-if="activeStepId === 'defaults' && draft"
+      v-if="entryMethod === 'search' && activeStepId === 'defaults' && draft"
       :currency-code="currencyCode"
       :timezone="timezone"
       :locked="!canConfigure"
@@ -38,7 +59,7 @@
     />
 
     <PlaceOnboardingBrand
-      v-if="activeStepId === 'brand' && draft"
+      v-if="entryMethod === 'search' && activeStepId === 'brand' && draft"
       :place-name="draft.name"
       :image-url="draft.image_url || ''"
       :image-file="imageFile"
@@ -51,7 +72,7 @@
     />
 
     <PlaceOnboardingReview
-      v-if="activeStepId === 'review' && draft"
+      v-if="entryMethod === 'search' && activeStepId === 'review' && draft"
       :place="draft"
       :currency-code="currencyCode"
       :timezone="timezone"
@@ -59,7 +80,7 @@
       :brand-palette="brandPalette"
     />
 
-    <template #footer>
+    <template v-if="entryMethod === 'search'" #footer>
       <div
         class="flex items-center gap-3"
         :class="isFirstStep ? 'justify-end' : 'justify-between'"
@@ -91,7 +112,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   usePlaceOnboarding,
   type PlaceOnboardingResult,
@@ -100,6 +121,8 @@ import {
 const emit = defineEmits<{
   (event: 'created', result: PlaceOnboardingResult): void
 }>()
+
+const entryMethod = ref<'search' | 'manual' | null>(null)
 
 const {
   activeStepId,
@@ -139,12 +162,24 @@ function onBack(): void {
   back()
 }
 
+function resetEntryMethod(): void {
+  clearSelection()
+  entryMethod.value = null
+}
+
+function openManualEntry(): void {
+  clearSelection()
+  entryMethod.value = 'manual'
+}
+
 const shellStage = computed(() => ({
-  id: activeStepId.value,
-  title: currentStep.value?.label || 'Add a Place',
-  number: stepNumber.value,
-  count: stepCount.value,
-  progress: progress.value,
+  id: entryMethod.value ? activeStepId.value : 'method',
+  title: entryMethod.value
+    ? currentStep.value?.label || 'Add a Place'
+    : 'Choose a method',
+  number: entryMethod.value ? stepNumber.value : 1,
+  count: entryMethod.value ? stepCount.value : 1,
+  progress: entryMethod.value ? progress.value : 100,
   error: error.value,
 }))
 

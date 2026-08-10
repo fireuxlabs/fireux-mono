@@ -1373,6 +1373,55 @@ async function buildSecurityTests() {
     created: { at: writeTime, by: regularId, app_id: 'misebox-app' },
     updated: { at: writeTime, by: regularId },
   }
+  const kitchenMiseProbePath =
+    'apps/misebox-app/kitchens/security-rules-probe/mise-tasks/prep-onions'
+  const legacyKitchenMiseProbePath =
+    'apps/misebox-app/kitchens/security-rules-probe/mise/legacy-prep'
+  const kitchenPrepItemProbePath =
+    'apps/misebox-app/kitchens/security-rules-probe/prep-items/prep-onions'
+  const kitchenPrepItemProbeData = {
+    kitchen_id: 'security-rules-probe',
+    name: 'Prepared onions',
+    slug: 'prep-onions',
+    description: 'Peeled and diced onions.',
+    source_language: 'en',
+    names: { en: 'Prepared onions' },
+    descriptions: { en: 'Peeled and diced onions.' },
+    station: 'prep',
+    inputs: [{
+      ingredient_id: 'onion',
+      quantity: 1000,
+      unit: 'g',
+      preparation: 'peeled',
+    }],
+    recipe_id: '',
+    yield: { quantity: 850, unit: 'g' },
+    method: ['Peel the onions.', 'Dice evenly.'],
+    created: { at: writeTime, by: regularId, app_id: 'misebox-app' },
+    updated: { at: writeTime, by: regularId },
+  }
+  const kitchenMiseProbeData = {
+    kitchen_id: 'security-rules-probe',
+    title: 'Prepare onions',
+    description: 'Peel and dice for service.',
+    station: '',
+    workflow_stage: 'cut_portion',
+    service_date: '2026-08-09',
+    status: 'todo',
+    priority: 'normal',
+    estimated_minutes: 20,
+    ingredient_ids: [],
+    prep_item_ids: [],
+    menu_id: '',
+    recipe_id: '',
+    assignee_ids: [],
+    checklist: [{ id: 'peel', label: 'Peel onions', done: false }],
+    due_at: {},
+    completed_at: {},
+    notes: '',
+    created: { at: writeTime, by: regularId, app_id: 'misebox-app' },
+    updated: { at: writeTime, by: regularId },
+  }
   const activeIngredientId = 'security-rules-active-ingredient'
   const inactiveIngredientId = 'security-rules-inactive-ingredient'
   const rootIngredientProbeData = {
@@ -2856,6 +2905,350 @@ async function buildSecurityTests() {
         appId: 'misebox-app',
         kitchenId: 'security-rules-probe',
         teamIds: [regularId],
+      })
+    ),
+    readResource(
+      'Kitchen team member can read a Prep Item from their Kitchen',
+      'ALLOW',
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    allowedCreate(
+      'Kitchen operator can create a valid Prep Item',
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    ...[
+      ['schema pollution', { ...kitchenPrepItemProbeData, forged: true }],
+      ['missing slug', Object.fromEntries(
+        Object.entries(kitchenPrepItemProbeData).filter(([field]) => field !== 'slug')
+      )],
+      ['forged Kitchen scope', {
+        ...kitchenPrepItemProbeData,
+        kitchen_id: 'another-kitchen',
+      }],
+      ['malformed input', {
+        ...kitchenPrepItemProbeData,
+        inputs: [{ ingredient_id: 'onion', quantity: -1, unit: 'g', preparation: '' }],
+      }],
+      ['invalid input unit', {
+        ...kitchenPrepItemProbeData,
+        inputs: [{ ingredient_id: 'onion', quantity: 1, unit: 'kg', preparation: '' }],
+      }],
+      ['too many inputs', {
+        ...kitchenPrepItemProbeData,
+        inputs: Array.from({ length: 13 }, (_, index) => ({
+          ingredient_id: `ingredient-${index}`,
+          quantity: 1,
+          unit: 'g',
+          preparation: '',
+        })),
+      }],
+      ['malformed yield', {
+        ...kitchenPrepItemProbeData,
+        yield: { quantity: '850', unit: 'g' },
+      }],
+      ['oversized method', {
+        ...kitchenPrepItemProbeData,
+        method: Array.from({ length: 21 }, () => 'Prepare safely.'),
+      }],
+      ['empty method step', {
+        ...kitchenPrepItemProbeData,
+        method: [''],
+      }],
+      ['forged create time', {
+        ...kitchenPrepItemProbeData,
+        created: { ...kitchenPrepItemProbeData.created, at: updateTime },
+      }],
+    ].map(([label, data]) => deniedCreate(
+      `Kitchen operator cannot create a Prep Item with ${label}`,
+      kitchenPrepItemProbePath,
+      regularId,
+      data,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    )),
+    deniedCreate(
+      'Kitchen team member cannot create a Prep Item',
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedCreate(
+      'Kitchen operator cannot create a Prep Item below a missing AppKitchen',
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        supportExists: false,
+      })
+    ),
+    allowedUpdate(
+      'Kitchen operator can update mutable Prep Item fields',
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      {
+        ...kitchenPrepItemProbeData,
+        method: [...kitchenPrepItemProbeData.method, 'Hold chilled.'],
+        updated: { at: updateTime, by: regularId },
+      },
+      updateTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    ...[
+      ['created stamp', {
+        ...kitchenPrepItemProbeData,
+        created: { ...kitchenPrepItemProbeData.created, by: strangerId },
+        updated: { at: updateTime, by: regularId },
+      }],
+      ['schema pollution', {
+        ...kitchenPrepItemProbeData,
+        forged: true,
+        updated: { at: updateTime, by: regularId },
+      }],
+    ].map(([label, data]) => deniedUpdate(
+      `Kitchen operator cannot update Prep Item ${label}`,
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      data,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    )),
+    allowedDelete(
+      'Kitchen operator can delete a Prep Item from their Kitchen',
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    deniedDelete(
+      'Kitchen team member cannot delete a Prep Item',
+      kitchenPrepItemProbePath,
+      regularId,
+      kitchenPrepItemProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    read(
+      'Prep Item nested documents are denied',
+      'DENY',
+      `${kitchenPrepItemProbePath}/private/secret`,
+      regularId
+    ),
+    readResource(
+      'Kitchen team member can read a Mise task from their Kitchen',
+      'ALLOW',
+      kitchenMiseProbePath,
+      regularId,
+      kitchenMiseProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    allowedCreate(
+      'Kitchen operator can create a valid Mise task',
+      kitchenMiseProbePath,
+      regularId,
+      kitchenMiseProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    ...[
+      ['schema pollution', { ...kitchenMiseProbeData, forged: true }],
+      ['missing workflow stage', Object.fromEntries(
+        Object.entries(kitchenMiseProbeData)
+          .filter(([field]) => field !== 'workflow_stage')
+      )],
+      ['forged Kitchen scope', {
+        ...kitchenMiseProbeData,
+        kitchen_id: 'another-kitchen',
+      }],
+      ['invalid status', { ...kitchenMiseProbeData, status: 'complete' }],
+      ['invalid priority', { ...kitchenMiseProbeData, priority: 'critical' }],
+      ['invalid estimate type', {
+        ...kitchenMiseProbeData,
+        estimated_minutes: '20',
+      }],
+      ['oversized notes', {
+        ...kitchenMiseProbeData,
+        notes: 'x'.repeat(10001),
+      }],
+      ['malformed checklist', {
+        ...kitchenMiseProbeData,
+        checklist: [{ id: 'peel', label: 'Peel onions', done: 'yes' }],
+      }],
+      ['forged create time', {
+        ...kitchenMiseProbeData,
+        created: { ...kitchenMiseProbeData.created, at: updateTime },
+      }],
+    ].map(([label, data]) => deniedCreate(
+      `Kitchen operator cannot create a Mise task with ${label}`,
+      `${kitchenMiseProbePath}-${String(label).replaceAll(' ', '-')}`,
+      regularId,
+      data,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    )),
+    deniedCreate(
+      'Kitchen team member cannot create a Mise task',
+      `${kitchenMiseProbePath}-team`,
+      regularId,
+      kitchenMiseProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedCreate(
+      'Kitchen operator cannot create a Mise task below a missing AppKitchen',
+      `${kitchenMiseProbePath}-orphan`,
+      regularId,
+      kitchenMiseProbeData,
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+        supportExists: false,
+      })
+    ),
+    allowedUpdate(
+      'Kitchen operator can update mutable Mise task fields',
+      kitchenMiseProbePath,
+      regularId,
+      kitchenMiseProbeData,
+      {
+        ...kitchenMiseProbeData,
+        status: 'in_progress',
+        updated: { at: updateTime, by: regularId },
+      },
+      updateTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    ...[
+      ['created stamp', {
+        ...kitchenMiseProbeData,
+        created: { ...kitchenMiseProbeData.created, by: strangerId },
+        updated: { at: updateTime, by: regularId },
+      }],
+      ['Kitchen scope', {
+        ...kitchenMiseProbeData,
+        kitchen_id: 'another-kitchen',
+        updated: { at: updateTime, by: regularId },
+      }],
+      ['schema pollution', {
+        ...kitchenMiseProbeData,
+        forged: true,
+        updated: { at: updateTime, by: regularId },
+      }],
+      ['invalid checklist', {
+        ...kitchenMiseProbeData,
+        checklist: [{ id: '', label: 'Missing id', done: false }],
+        updated: { at: updateTime, by: regularId },
+      }],
+    ].map(([label, data]) => deniedUpdate(
+      `Kitchen operator cannot update Mise task ${label}`,
+      kitchenMiseProbePath,
+      regularId,
+      kitchenMiseProbeData,
+      data,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    )),
+    allowedDelete(
+      'Kitchen operator can delete a Mise task from their Kitchen',
+      kitchenMiseProbePath,
+      regularId,
+      kitchenMiseProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
+      })
+    ),
+    deniedDelete(
+      'Kitchen team member cannot delete a Mise task',
+      kitchenMiseProbePath,
+      regularId,
+      kitchenMiseProbeData,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        teamIds: [regularId],
+      })
+    ),
+    deniedCreate(
+      'Kitchen operator cannot create a legacy Mise prep document',
+      legacyKitchenMiseProbePath,
+      regularId,
+      { name: 'Legacy prep' },
+      writeTime,
+      scopedKitchenAuthorityMocks(regularId, path, {
+        appId: 'misebox-app',
+        kitchenId: 'security-rules-probe',
+        operatorIds: [regularId],
       })
     ),
     readResource(

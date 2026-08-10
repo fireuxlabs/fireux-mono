@@ -182,42 +182,6 @@
             isTargetOperator(appId, 'kitchens', kitchenId);
         }
 
-        match /stations/{stationId} {
-          function hasStationParent() {
-            return exists(
-              /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
-            );
-          }
-
-          allow get, list: if hasStationParent() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
-          allow create: if hasStationParent() &&
-            isValidFirestoreDocumentId(stationId) &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
-            isValidKitchenStation(request.resource.data, kitchenId) &&
-            request.resource.data.created.at == request.time &&
-            request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
-            request.resource.data.updated.at == request.time &&
-            request.resource.data.updated.by == request.auth.uid;
-          allow update: if hasStationParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
-            isValidKitchenStation(request.resource.data, kitchenId) &&
-            request.resource.data.kitchen_id == resource.data.kitchen_id &&
-            request.resource.data.created == resource.data.created &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-              'name', 'description', 'active', 'sort_order', 'updated'
-            ]) &&
-            request.resource.data.updated.at == request.time &&
-            request.resource.data.updated.by == request.auth.uid;
-          allow delete: if hasStationParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
-        }
-
         match /menus/{menuId} {
           allow get, list: if isAppAdmin(appId) ||
             isTargetMember(appId, 'kitchens', kitchenId);
@@ -294,7 +258,10 @@
               'ingredients',
               'dishes',
               'recipes',
+              'prep-items',
               'stations',
+              'mise',
+              'mise-tasks',
               'menus',
               'orders',
               'sales'
@@ -396,4 +363,3 @@
           }
         }
       }
-    }

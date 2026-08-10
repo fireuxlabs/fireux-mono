@@ -14,12 +14,12 @@ import { DishStorage } from '../../../models/kitchen/dish.model'
 import { IngredientStorage } from '../../../models/ingredient.model'
 import { MenuStorage } from '../../../models/kitchen/menu/menu.model'
 import { RecipeStorage } from '../../../models/kitchen/recipe.model'
+import { KitchenPrepItemStorage } from '../../../models/kitchen/prep-item.model'
 import type { AppKitchen, Kitchen } from '../../../models/kitchen.model'
 import {
   KitchenDefaults as KitchenModelRuntime,
   KitchenStorage,
 } from '../../../models/kitchen.model'
-
 export function useKitchenDevSystem() {
   const kitchenModelRuntime = KitchenModelRuntime
   
@@ -202,6 +202,10 @@ export function useKitchenDevSystem() {
   const appMise = useKitchenChildCollection<Record<string, unknown>>('mise', selectedKitchenId, {
     kitchenCollectionPath: appSupportKitchenCollectionPath,
   })
+
+  const appPrepItems = useKitchenChildCollection<Record<string, unknown>>(KitchenPrepItemStorage.collection, selectedKitchenId, {
+    kitchenCollectionPath: appSupportKitchenCollectionPath,
+  })
   
   const rootIngredients = useKitchenChildCollection<Record<string, unknown>>(IngredientStorage.collection, selectedKitchenId, {
     kitchenCollectionPath: rootKitchenCollectionPath,
@@ -252,9 +256,16 @@ export function useKitchenDevSystem() {
       root: buildCollectionSnapshot(rootRecipes.collectionPath.value, rootRecipes.items.value),
       app: buildCollectionSnapshot(appRecipes.collectionPath.value, appRecipes.items.value),
     },
-    mise: {
+    legacyMise: {
       root: buildCollectionSnapshot(rootMise.collectionPath.value, rootMise.items.value),
       app: buildCollectionSnapshot(appMise.collectionPath.value, appMise.items.value),
+    },
+    prepItems: {
+      root: buildCollectionSnapshot(
+        `${rootKitchenCollectionPath.value}/${selectedKitchenId.value}/${KitchenPrepItemStorage.collection}`,
+        []
+      ),
+      app: buildCollectionSnapshot(appPrepItems.collectionPath.value, appPrepItems.items.value),
     },
     ingredients: {
       root: buildCollectionSnapshot(rootIngredients.collectionPath.value, rootIngredients.items.value),
@@ -374,6 +385,7 @@ export function useKitchenDevSystem() {
     appRecipes,
     rootMise,
     appMise,
+    appPrepItems,
     rootIngredients,
     appIngredients,
     rootOrders,

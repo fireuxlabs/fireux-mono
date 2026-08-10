@@ -7,7 +7,7 @@
       :alt="alt"
       class="fx-brand-wordmark"
       :class="`fx-brand-wordmark--${size}`"
-      loading="lazy"
+      :loading="loading"
       decoding="async"
       @error="handleError"
     />
@@ -27,14 +27,17 @@ type Props = {
   lightSrc?: string
   darkSrc?: string
   alt?: string
+  loading?: 'eager' | 'lazy'
 }
 
 const props = withDefaults(defineProps<Props>(), {
   size: 'medium',
   alt: 'App logo',
+  loading: 'lazy',
 })
 
 const size = computed<BrandSize>(() => props.size)
+const loading = computed(() => props.loading)
 
 const resolvedMode = useResolvedColorMode()
 const brandAssets = useAssets()

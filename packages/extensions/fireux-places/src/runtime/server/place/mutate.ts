@@ -30,6 +30,7 @@ import {
   placeAuthorityIds,
   readRootKitchenAppScope,
 } from './mutation-authority'
+import { createdByCurrentApp } from './onboarding-context'
 
 type PlacePatchRequest = {
   app_id?: unknown
@@ -325,6 +326,9 @@ export async function mutatePlace(
 
     const place = placeSnapshot.data || {}
     const runtimeAdmin = runtimeMembershipSnapshot?.data?.role === 'admin'
+    const creatorAccess = Boolean(
+      runtimeAppId && createdByCurrentApp(place, uid, runtimeAppId)
+    )
     const rootKitchen = rootKitchenSnapshot?.data || {}
     const rootKitchenScope = readRootKitchenAppScope(rootKitchen)
     const scopedKitchen = scopedKitchenSnapshot?.data || {}
@@ -336,11 +340,11 @@ export async function mutatePlace(
         rootKitchenScope?.appId === kitchenAuthority.appId &&
         placeAuthorityIds(scopedKitchen.operator_ids).includes(uid)
     )
-    if (!runtimeAdmin && !kitchenAccess) {
+    if (!runtimeAdmin && !creatorAccess && !kitchenAccess) {
       throw createError({
         statusCode: 403,
         statusMessage:
-          'App admin or linked Kitchen operator access is required.',
+          'Creating App user, App admin, or linked Kitchen operator access is required.',
       })
     }
 

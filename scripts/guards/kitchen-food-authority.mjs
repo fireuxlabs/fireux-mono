@@ -1,6 +1,6 @@
 // @fireux-script
 // last_used: 2026-08-09
-// usage_note: run through pnpm guard; locks Recipe, Dish, and Menu Item ownership and capability boundaries.
+// usage_note: run through pnpm guard; locks Recipe, Prep Item, Dish, and Menu Item ownership and capability boundaries.
 
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
@@ -27,6 +27,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/station.model.ts'
   )
+  const miseModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise.model.ts'
+  )
+  const prepItemModel = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/models/kitchen/prep-item.model.ts'
+  )
   const menuItemWriter = read(
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/mutations/useMenuItemMutations.ts'
@@ -34,6 +42,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   const rules = [
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/identity-validation.rules',
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules',
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-workflow.rules',
   ].map(relativePath => read(repoRoot, relativePath)).join('\n')
 
   assert.match(recipeModel, /export const RecipeEntity\s*=\s*defineFireuxEntity/)
@@ -54,12 +63,32 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     stationModel,
     /path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}\/stations\/\{stationId\}'/
   )
+  assert.match(miseModel, /export const KitchenMiseTaskRecord\s*=\s*defineFireuxEntity/)
+  assert.match(miseModel, /kind:\s*'record'/)
+  assert.match(miseModel, /parent:\s*'Kitchen'/)
+  assert.match(miseModel, /export const KitchenMiseTaskDefaults\b/)
+  assert.match(
+    miseModel,
+    /path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}\/mise-tasks\/\{taskId\}'/
+  )
+  assert.match(prepItemModel, /export const KitchenPrepItemEntity\s*=\s*defineFireuxEntity/)
+  assert.match(prepItemModel, /kind:\s*'entity'/)
+  assert.match(prepItemModel, /parent:\s*'Kitchen'/)
+  assert.match(prepItemModel, /export const KitchenPrepItemDefaults\b/)
+  assert.match(
+    prepItemModel,
+    /path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}\/prep-items\/\{prepItemId\}'/
+  )
   assert.match(menuItemWriter, /Select a Dish from this Kitchen/)
   assert.match(menuItemWriter, /Menu Item identity and relationships cannot be changed/)
   assert.match(rules, /match \/dishes\/\{dishId\}/)
   assert.match(rules, /match \/recipes\/\{recipeId\}/)
   assert.match(rules, /match \/stations\/\{stationId\}/)
   assert.match(rules, /function isValidKitchenStation\(data, kitchenId\)/)
+  assert.match(rules, /match \/mise-tasks\/\{taskId\}/)
+  assert.match(rules, /function isValidKitchenMiseTask\(data\)/)
+  assert.match(rules, /match \/prep-items\/\{prepItemId\}/)
+  assert.match(rules, /function isValidKitchenPrepItem\(data\)/)
   assert.match(
     rules,
     /request\.resource\.data\.diff\(resource\.data\)\.affectedKeys\(\)\.hasOnly\(\[[\s\S]*'sort_order'[\s\S]*'updated'/
