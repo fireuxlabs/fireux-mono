@@ -10,6 +10,7 @@ import { configureRuntimeDefaults } from 'fireux-core/config/module/runtime-conf
 import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'
 import { configureServer } from './config/module/server-config'
+import { registerFireuxConsole } from 'fireux-core/config/module/runtime-config'
 
 export interface ModuleOptions {
   enabled?: boolean
@@ -36,6 +37,18 @@ export default defineNuxtModule<ModuleOptions>({
   },
   setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    registerFireuxConsole(nuxt, {
+      family: 'property',
+      rootCollection: 'properties',
+      appSupportCollection: 'properties',
+      supportsInlineNotes: true,
+    })
+    registerFireuxConsole(nuxt, {
+      family: 'portfolio',
+      rootCollection: 'portfolios',
+      appSupportCollection: 'portfolios',
+      supportsInlineNotes: true,
+    })
     registerReservedRootRouteKeys(['portfolios', 'properties'])
     nuxt.hook('fireux:seo:extend' as any, (ctx: FireuxSeoExtendContext) => {
       ctx.addHub('/portfolios')

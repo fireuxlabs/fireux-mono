@@ -6,10 +6,12 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppPortfoliosTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  portfolioRootTarget,
+  serverAppPortfoliosTarget,
+} from '../firestore-targets'
 import {
   assertOnboardingAuthority,
   assertScope,
@@ -55,7 +57,7 @@ export async function completePortfolioOnboarding(
   const current = await actor(event)
 
   const memberships = serverAppUsersTarget(current.appId)
-  const portfolios = FIRESTORE_MUTATION_TARGETS.portfolios
+  const portfolios = portfolioRootTarget
   const supports = serverAppPortfoliosTarget(current.appId)
 
   return runGuardedServerTransaction(portfolios.database, async (mutations) => {

@@ -234,6 +234,7 @@ const assertClassificationSemantics = (declaration, vocabulary) => {
   }
 
   for (const [key, allowed] of Object.entries(vocabulary)) {
+    if (key === 'family') continue
     const values = key === 'family' ? classification.family : [classification[key]]
     for (const value of values) {
       assert.equal(

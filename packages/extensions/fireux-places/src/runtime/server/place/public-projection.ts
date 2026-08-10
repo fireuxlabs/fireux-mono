@@ -71,7 +71,8 @@ export function projectPublicPlace(
     place_type: placeType,
     short_name: text(value.short_name, 120),
     brand_tagline: text(value.brand_tagline, 240),
-    short_address: coarseAddress(value.address),
+    short_address:
+      text(value.short_address, 240) || coarseAddress(value.address),
     image_url: httpsUrl(value.image_url),
     media_backdrop_color: readMediaBackdropColor(
       value.media_backdrop_color,

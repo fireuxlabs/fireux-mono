@@ -5,10 +5,13 @@ import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppDriversTarget,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  kitchenRootTarget,
+  serverAppDriversTarget,
+  serverAppKitchensTarget,
+} from './firestore-targets'
 import type { DriverKitchenLink } from '../../models/driver.model.ts'
 import {
   DRIVER_KITCHEN_LINK_LIMIT,
@@ -104,7 +107,7 @@ export async function mutateDriverKitchenAccess(
       mutations.read(memberships, actorUid),
       mutations.read(memberships, input.driver_id),
       mutations.read(kitchens, input.kitchen_id),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, input.kitchen_id),
+      mutations.read(kitchenRootTarget, input.kitchen_id),
       mutations.read(drivers, input.driver_id),
     ])
 

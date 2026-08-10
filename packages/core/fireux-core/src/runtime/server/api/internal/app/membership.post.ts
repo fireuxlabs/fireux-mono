@@ -19,6 +19,40 @@ export default defineEventHandler(async (event) => {
     firebase?.identityDatabaseId || appDatabaseId
   ).trim()
   const developerUid = String(fireux?.developerId || '').trim()
+  const consoles = Array.isArray(fireux?.consoles)
+    ? fireux.consoles.map(value => String(value || '').trim()).filter(Boolean)
+    : []
+  const consoleRegistry = Array.isArray(fireux?.consoleRegistry)
+    ? fireux.consoleRegistry
+    : []
+  const authorityCollections = consoleRegistry.flatMap((value: unknown) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return []
+    const registration = value as Record<string, unknown>
+    const family = String(registration.family || '').trim()
+    const collection = String(registration.appSupportCollection || '').trim()
+    return family && consoles.includes(family) && collection ? [collection] : []
+  })
+  const membershipCleanupRegistry = Array.isArray(
+    fireux?.membershipCleanupRegistry
+  )
+    ? fireux.membershipCleanupRegistry.flatMap((value: unknown) => {
+        if (!value || typeof value !== 'object' || Array.isArray(value)) return []
+        const registration = value as Record<string, unknown>
+        const collection = String(registration.collection || '').trim()
+        if (!collection) return []
+        const strings = (candidate: unknown) =>
+          Array.isArray(candidate)
+            ? candidate.map(item => String(item || '').trim()).filter(Boolean)
+            : []
+        return [{
+          collection,
+          clearArrayFields: strings(registration.clearArrayFields),
+          deactivateArrayObjectFields: strings(
+            registration.deactivateArrayObjectFields
+          ),
+        }]
+      })
+    : []
   const body = await readBody(event)
 
   if (!appId) {
@@ -40,6 +74,8 @@ export default defineEventHandler(async (event) => {
     developerUid,
     appDatabaseId,
     identityDatabaseId,
+    authorityCollections,
+    membershipCleanupRegistry,
     input: body as AppMembershipMutationInput,
   })
 })

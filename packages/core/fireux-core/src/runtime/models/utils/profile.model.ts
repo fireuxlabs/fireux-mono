@@ -83,7 +83,7 @@ export type AppProfileBase = FireuxStamped & ProfileRecord
  * Config describing how a profile collection behaves.
  */
 export interface ProfileConfig {
-  /** Lowercase identifier like 'chef', 'supplier', 'agent', 'professional' */
+  /** Lowercase extension-owned profile identifier. */
   id: string
 
   /** Firestore collection name */

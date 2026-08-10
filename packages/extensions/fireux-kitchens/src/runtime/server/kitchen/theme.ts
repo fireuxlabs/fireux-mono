@@ -9,7 +9,7 @@ import {
   parseBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { kitchenRootTarget } from './firestore-targets'
 import { parseMenuPageStyleInput } from '../menu/payload/page-style.ts'
 import {
   readKitchenMutationActor,
@@ -93,7 +93,7 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
         rootPatch.menu_style = FieldValue.delete()
       }
       mutations.update<DocumentData>(
-        FIRESTORE_MUTATION_TARGETS.kitchens,
+        kitchenRootTarget,
         requested.kitchenId,
         rootPatch
       )

@@ -71,6 +71,11 @@ const baseServerHandlers = [
     handler: './runtime/server/api/kitchens/onboarding/complete.post',
   },
   {
+    route: '/api/kitchens/onboarding/root/complete',
+    method: 'post',
+    handler: './runtime/server/api/kitchens/onboarding/root/complete.post',
+  },
+  {
     route: '/api/internal/profiles/chef',
     method: 'post',
     handler: './runtime/server/api/internal/profiles/chef.post',

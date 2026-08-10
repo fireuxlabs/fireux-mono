@@ -9,6 +9,26 @@ export type FireuxConsoleFamilyConfig = {
   canCreate?: boolean
 }
 
+export type FireuxConsoleRegistration = {
+  family: string
+  rootCollection: string
+  appSupportCollection?: string
+  supportsInlineNotes?: boolean
+  /** Extension-owned App creation hand-off. Core treats family and route as opaque. */
+  appOnboarding?: {
+    label: string
+    description: string
+    primaryEntity: 'required'
+    rootOnboardingPath: string
+  }
+}
+
+export type FireuxMembershipCleanupRegistration = {
+  collection: string
+  clearArrayFields?: string[]
+  deactivateArrayObjectFields?: string[]
+}
+
 export type FireuxConsoleConfig = Record<string, FireuxConsoleFamilyConfig>
 
 export type FireuxNavOverride = {

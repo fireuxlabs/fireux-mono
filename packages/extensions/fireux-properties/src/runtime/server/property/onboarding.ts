@@ -12,10 +12,12 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
-  FIRESTORE_MUTATION_TARGETS,
-  serverAppPropertiesTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  propertyRootTarget,
+  serverAppPropertiesTarget,
+} from '../firestore-targets'
 import { canonicalPropertyRoot } from '../../composables/fireux/firestore/property/utils/view/usePropertyInterface.ts'
 import type { PropertyOnboardingCompleteResult } from '../../models/property-onboarding.model.ts'
 import type {
@@ -173,7 +175,7 @@ export async function completePropertyOnboarding(
     : plan!.id
 
   const memberships = serverAppUsersTarget(current.appId)
-  const properties = FIRESTORE_MUTATION_TARGETS.properties
+  const properties = propertyRootTarget
   const supports = serverAppPropertiesTarget(current.appId)
 
   return runGuardedServerTransaction(properties.database, async (mutations) => {

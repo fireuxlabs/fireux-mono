@@ -174,7 +174,7 @@ const baseForPlatform = (platform: SocialPlatform): string => {
   return socialItems.find((x) => x.platform === platform)?.base || ''
 }
 
-// Computed properties
+// Derived values
 const hasData = computed(() => {
   const src = props.firebaseValue || {}
   for (const platform of platforms.value) {

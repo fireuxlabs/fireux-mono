@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette onboarding: define one shared sparse brand-palette contract.
+// Shared sparse brand-palette contract.
 /**
  * Runtime models canon: docs/ai/gpt-context.md
  *

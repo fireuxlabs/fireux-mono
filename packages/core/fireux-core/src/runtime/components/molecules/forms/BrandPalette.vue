@@ -1,5 +1,5 @@
 <template>
-  <!-- Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette onboarding: provide one sparse inherited colour control. -->
+  <!-- Shared sparse inherited colour control. -->
   <!-- Concurrent edit — 2026-07-22 13:22 CEST — Shared palette picker: replace native colour inputs with the Nuxt UI chooser. -->
   <section class="form-stack-sm">
     <UFormField

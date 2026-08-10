@@ -1,9 +1,6 @@
 import { FieldValue, type DocumentData } from 'firebase-admin/firestore'
 import type { FireUXConfig } from '../../../composables/fireux/app/FireUXConfig'
-import {
-  APP_CONSOLE_FAMILIES,
-  type AppConsoleFamily,
-} from '../../../models/core/app.model'
+import type { AppConsoleFamily } from '../../../models/core/app.model'
 import { FIRESTORE_MUTATION_TARGETS } from '../../../utils/firestore-mutations/targets'
 import { getRuntimeFirestore } from '../getRuntimeFirestore'
 import { runGuardedServerTransaction } from '../firestore-mutations/server-transaction'
@@ -38,13 +35,12 @@ function media(value: unknown) {
 }
 
 function consoleFamilies(config: Readonly<FireUXConfig>): AppConsoleFamily[] {
-  const allowed = new Set<string>(APP_CONSOLE_FAMILIES)
-  const families = [...new Set(config.consoles)]
-  const unknown = families.filter((family) => !allowed.has(family))
-  if (unknown.length) {
-    throw new Error(`Unknown App console families: ${unknown.join(', ')}`)
+  const families = [...new Set(config.consoles.map(family => family.trim().toLowerCase()))]
+  const invalid = families.filter(family => !/^[a-z][a-z0-9-]{0,62}$/.test(family))
+  if (invalid.length) {
+    throw new Error(`Invalid App console families: ${invalid.join(', ')}`)
   }
-  return families.sort() as AppConsoleFamily[]
+  return families.sort()
 }
 
 function projectionPayload(

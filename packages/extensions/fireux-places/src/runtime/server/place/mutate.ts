@@ -14,7 +14,6 @@ import {
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
@@ -31,6 +30,10 @@ import {
   readRootKitchenAppScope,
 } from './mutation-authority'
 import { createdByCurrentApp } from './onboarding-context'
+import {
+  dependentAppKitchenTarget,
+  dependentKitchenRootTarget,
+} from './dependent-targets'
 
 type PlacePatchRequest = {
   app_id?: unknown
@@ -290,9 +293,9 @@ export async function mutatePlace(
   const memberships = isFirestoreDocumentId(runtimeAppId)
     ? serverAppUsersTarget(runtimeAppId)
     : null
-  const kitchens = FIRESTORE_MUTATION_TARGETS.kitchens
+  const kitchens = dependentKitchenRootTarget
   const kitchenSupports = kitchenAuthority
-    ? serverAppKitchensTarget(kitchenAuthority.appId)
+    ? dependentAppKitchenTarget(kitchenAuthority.appId)
     : null
 
   await runGuardedServerTransaction(places.database, async (mutations) => {

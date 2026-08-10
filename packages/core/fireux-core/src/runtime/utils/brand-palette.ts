@@ -1,4 +1,4 @@
-// Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette onboarding: validate, inherit, and compact portable brand colours.
+// Shared sparse brand palette validation and compaction.
 import {
   BRAND_PALETTE_KEYS,
   type SparseBrandPalette,

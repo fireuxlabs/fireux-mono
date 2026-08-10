@@ -284,6 +284,26 @@ the final mutation, and completion routing.
   authority. Route query state never attaches or mutates an existing Kitchen
   automatically.
 
+#### App reference
+
+- App creation asks for placement and App type separately. A General App has
+  no required primary domain entity. A typed App cannot reach review until its
+  extension-owned canonical root id is present.
+- Extensions opt into typed App creation through the generic Console runtime
+  registration. The registration provides opaque family metadata and a root
+  onboarding hand-off; Core never enumerates domain families or their
+  dependency graphs.
+- The App stores only an opaque `{ family, id }` relationship. The owning
+  extension validates that root and performs App attachment; browser route or
+  query state is never attachment authority.
+- Kitchen proves the sequence: public Kitchen onboarding creates the same-id
+  root with `root_only` scope and no App support. Console convenience may then
+  invoke the existing attachment command, which rejects a missing root. If
+  attachment fails, the independently valid root remains.
+- Do not advertise another family in App creation until that family has an
+  independently valid root onboarding command. Supplier therefore retains its
+  current domain-owned transaction but is not yet a typed App-creation option.
+
 ## Current create plan primitive
 
 `createStrategy.ts` currently exposes:

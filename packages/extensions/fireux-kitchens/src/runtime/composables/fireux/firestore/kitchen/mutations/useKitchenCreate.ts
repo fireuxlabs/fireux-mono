@@ -97,6 +97,23 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
     return result
   }
 
+  async function completeKitchenRootOnboarding(
+    input: KitchenOnboardingCompleteInput
+  ) {
+    const result = await $fetch<KitchenOnboardingCompleteResult>(
+      '/api/kitchens/onboarding/root/complete',
+      {
+        method: 'POST',
+        headers: await authHeaders(),
+        body: input,
+      }
+    )
+    if (result?.ok !== true || !normalizeString(result.kitchen_id)) {
+      throw new Error('Kitchen root onboarding completion was invalid.')
+    }
+    return result
+  }
+
   async function createKitchen(
     input: KitchenCreateDraft = {},
     createOptions: KitchenCreateModeOptions = {}
@@ -137,6 +154,7 @@ export function useKitchenCreate(_options: KitchenCreateOptions = {}) {
 
   return {
     completeKitchenOnboarding,
+    completeKitchenRootOnboarding,
     createPlan: KitchenCreatePlan,
     createKitchen,
     createKitchenConsole,

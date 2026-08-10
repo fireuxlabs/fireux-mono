@@ -145,6 +145,25 @@ function checkFireuxCoreContracts(pkgPath) {
   const landingHero = source(
     'src/runtime/components/landing/LandingHeroSection.vue'
   )
+  const extensionFamilyPattern =
+    /\b(?:kitchen|kitchens|property|properties|supplier|suppliers|portfolio|portfolios)\b/i
+  const pending = [path.join(pkgPath, 'src')]
+  while (pending.length) {
+    const current = pending.pop()
+    for (const entry of readdirSync(current, { withFileTypes: true })) {
+      const absolute = path.join(current, entry.name)
+      if (entry.isDirectory()) pending.push(absolute)
+      else if (
+        entry.isFile() &&
+        /\.(?:ts|vue|scss|css)$/.test(entry.name) &&
+        extensionFamilyPattern.test(readFileSync(absolute, 'utf8'))
+      ) {
+        violations.push(
+          `${path.relative(pkgPath, absolute)} enumerates an extension-owned entity family.`
+        )
+      }
+    }
+  }
 
   if (!runtimeType.includes('Omit<FireuxAppConfig, RuntimeNormalizedFields>')) {
     violations.push('RuntimeApp must derive from the authored FireuxAppConfig.')
@@ -153,7 +172,8 @@ function checkFireuxCoreContracts(pkgPath) {
     !runtimeView.includes('consoles: toStringArray(fireux.consoles)') ||
     !runtimeView.includes(
       'consoleConfig: toConsoleConfig(fireux.consoleConfig)'
-    )
+    ) ||
+    !runtimeView.includes('consoleRegistry: toRegistrationArray')
   ) {
     violations.push(
       'FireUXConfig must normalize Console families and config once for runtime consumers.'

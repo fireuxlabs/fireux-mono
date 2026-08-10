@@ -30,16 +30,8 @@ export interface AppDerived {
   user_count: number
 }
 
-export const APP_CONSOLE_FAMILIES = [
-  'blank',
-  'kitchen',
-  'portfolio',
-  'project',
-  'property',
-  'supplier',
-] as const
-
-export type AppConsoleFamily = (typeof APP_CONSOLE_FAMILIES)[number]
+/** Extension-owned Console identifier projected from runtime registration. */
+export type AppConsoleFamily = string
 
 export interface AppIdentity {
   id: string
@@ -47,6 +39,12 @@ export interface AppIdentity {
   ecosystem_id?: string
   role: AppRole
   status: AppStatus
+}
+
+/** Opaque extension-owned root relationship; Core never enumerates families. */
+export interface AppPrimaryEntityReference {
+  family: string
+  id: string
 }
 
 export interface AppPresentation {
@@ -58,6 +56,7 @@ export interface AppPresentation {
 
 export interface App extends FireuxStamped, AppIdentity, AppPresentation {
   self_join_enabled: boolean
+  primary_entity?: AppPrimaryEntityReference
 }
 
 export interface AppMeta

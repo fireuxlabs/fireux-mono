@@ -12,6 +12,10 @@ import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  dependentKitchenRootTarget,
+  dependentPropertyRootTarget,
+} from './dependent-targets'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -63,13 +67,13 @@ export async function removePlace(event: H3Event, placeId: string) {
         FIRESTORE_MUTATION_TARGETS.companies,
         id
       ),
-      mutations.query(FIRESTORE_MUTATION_TARGETS.kitchens, {
+      mutations.query(dependentKitchenRootTarget, {
         field: 'place_id',
         op: '==',
         value: id,
         limit: 1,
       }),
-      mutations.query(FIRESTORE_MUTATION_TARGETS.properties, {
+      mutations.query(dependentPropertyRootTarget, {
         field: 'place_id',
         op: '==',
         value: id,

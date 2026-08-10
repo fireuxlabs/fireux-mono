@@ -107,6 +107,13 @@ export function run({ repoRoot }) {
     ),
     'utf8'
   )
+  const kitchenServerTargetsSource = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/firestore-targets.ts'
+    ),
+    'utf8'
+  )
   assert.match(
     targetsSource,
     /projectMeta:[\s\S]*lane:\s*'mcp-skill'[\s\S]*database:\s*\{ kind:\s*'default' \}[\s\S]*collectionPath:\s*'project'/,
@@ -151,9 +158,13 @@ export function run({ repoRoot }) {
     'Canonical App edits must use the trusted writer that also maintains AppMeta.'
   )
   assert.match(
-    serverTargetsSource,
-    /serverKitchenMenuUploadsTarget[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'runtime' \}[\s\S]*menu-uploads/,
+    kitchenServerTargetsSource,
+    /function nestedTarget[\s\S]*lane:\s*'server'[\s\S]*database:\s*\{ kind:\s*'runtime' \}/,
     'Kitchen Menu uploads must use their runtime Server target.'
+  )
+  assert.match(
+    kitchenServerTargetsSource,
+    /serverKitchenMenuUploadsTarget[\s\S]*menu-uploads/
   )
   assert.match(
     serverTargetsSource,

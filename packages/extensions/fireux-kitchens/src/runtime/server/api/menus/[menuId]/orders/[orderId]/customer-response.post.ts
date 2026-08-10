@@ -10,7 +10,7 @@ import {
 import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { setCorsHeaders } from 'fireux-core/runtime/server/utils/http/cors'
-import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenOrdersTarget } from '../../../../../kitchen/firestore-targets'
 import { readMenuOrderContext } from '../../../../../menu/ordering/context.ts'
 import {
   readMenuOrderCustomerAccess,

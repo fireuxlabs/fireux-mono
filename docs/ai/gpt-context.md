@@ -597,6 +597,13 @@ Before each task:
   server consumers do not reparse raw Console config, and Core does not cache a
   partially compared App shape globally. Core `resolveConsoleCanCreate` owns
   the shared explicit override and non-tenant fallback.
+- Core never enumerates extension-owned entity or Console families. Each
+  extension registers its family, root/App-support collections, developer-note
+  support, optional App-onboarding hand-off, and any declarative membership
+  cleanup through the generic runtime registration seam. Core consumes those
+  registrations for routing and authority cleanup without importing domain
+  models or collection names. An App primary-entity reference is an opaque
+  `{ family, id }` pair; the extension owns root validation and attachment.
 - App initialization is protected by authenticated server UID authorization
   and existing-admin checks. Do not recreate a cosmetic client developer PIN
   or present one as a security boundary.

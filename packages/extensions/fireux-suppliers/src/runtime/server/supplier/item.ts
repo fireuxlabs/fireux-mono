@@ -10,10 +10,13 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppSuppliersTarget,
   serverAppUsersTarget,
-  serverSupplierItemsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  supplierRootTarget,
+  serverAppSuppliersTarget,
+  serverSupplierItemsTarget,
+} from './firestore-targets'
 
 type SupplierItemAction = 'create' | 'update' | 'delete'
 
@@ -73,7 +76,7 @@ async function authority(event: H3Event, supplierId: string) {
   const { uid } = await requireFirebaseBearerUser(event)
   const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
-  const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
+  const suppliers = supplierRootTarget
   const supports = serverAppSuppliersTarget(appId)
   const memberships = serverAppUsersTarget(appId)
   const items = serverSupplierItemsTarget(supplierId)

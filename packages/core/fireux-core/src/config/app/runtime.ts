@@ -5,6 +5,8 @@ import type { FireuxMetaContent } from './meta-content'
 import type {
   FireuxAppConfig,
   FireuxConsoleConfig,
+  FireuxConsoleRegistration,
+  FireuxMembershipCleanupRegistration,
   FireuxNavOverrides,
 } from './types'
 
@@ -13,6 +15,8 @@ type RuntimeNormalizedFields =
   | 'modules'
   | 'consoles'
   | 'consoleConfig'
+  | 'consoleRegistry'
+  | 'membershipCleanupRegistry'
   | 'domains'
   | 'profiles'
   | 'selfJoinEnabled'
@@ -30,6 +34,8 @@ export type RuntimeApp = Omit<FireuxAppConfig, RuntimeNormalizedFields> & {
   modules: readonly string[]
   consoles: readonly string[]
   consoleConfig: FireuxConsoleConfig
+  consoleRegistry: readonly FireuxConsoleRegistration[]
+  membershipCleanupRegistry: readonly FireuxMembershipCleanupRegistration[]
   domains: readonly string[]
   profiles: readonly string[]
   selfJoinEnabled: boolean

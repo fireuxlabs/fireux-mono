@@ -30,7 +30,7 @@ export interface AppUser extends FireuxStamped {
 /** Console targets assigned to one User. */
 export interface UserTargets {
   project_ids: string[]
-  kitchen_ids: string[]
+  [targetIds: string]: string[]
 }
 
 export const UserStorage = {
@@ -113,7 +113,6 @@ export const AppUserDefaults: AppUser = {
 
 export const UserTargetsDefaults: UserTargets = {
   project_ids: [],
-  kitchen_ids: [],
 }
 
 export type UserCreateInput = Omit<User, 'id' | 'created' | 'updated'>

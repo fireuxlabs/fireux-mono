@@ -1,4 +1,3 @@
-// Concurrent edit — 2026-07-20 23:00 CEST — Both-Entity Authority: classify independent Property entities without folding them into Portfolio.
 // Concurrent edit — 2026-07-20 23:40 CEST — Entity Vocabulary + Matrix Pass: separate identity, authority, App support, and public-read contracts.
 export type FireuxEntityKind =
   | 'entity'
@@ -43,15 +42,12 @@ export type FireuxEntityFamily =
   | 'console-entity'
   | 'content'
   | 'commerce'
-  | 'kitchen'
   | 'menu'
   | 'place'
-  | 'supplier'
-  | 'property'
-  | 'portfolio'
   | 'profile'
   | 'support'
   | 'to-confirm'
+  | (string & {})
 
 export type FireuxEntityStatus = 'confirmed' | 'to-confirm'
 

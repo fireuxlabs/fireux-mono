@@ -14,9 +14,12 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppSuppliersTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  supplierRootTarget,
+  serverAppSuppliersTarget,
+} from './firestore-targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import { canonicalCompanyRole } from 'fireux-companies/runtime/server/company/canonical'
 import { projectPublicPlace } from 'fireux-places/runtime/server/place/public-projection'
@@ -247,7 +250,7 @@ export async function completeSupplierOnboarding(
     : requireFirestoreDocumentId(normalizeSlug(organizationName), 'Supplier id')
 
   const memberships = serverAppUsersTarget(policy.appId)
-  const suppliers = FIRESTORE_MUTATION_TARGETS.suppliers
+  const suppliers = supplierRootTarget
   const supports = serverAppSuppliersTarget(policy.appId)
 
   return runGuardedServerTransaction(suppliers.database, async (mutations) => {

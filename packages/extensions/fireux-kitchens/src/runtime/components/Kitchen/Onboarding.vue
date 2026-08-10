@@ -94,7 +94,7 @@
         </h1>
         <p class="mt-3 text-sm leading-6 text-muted">
           Connect the Kitchen to its Place, confirm its identity, and review
-          access before creation.
+          the canonical root before creation.
         </p>
       </template>
 
@@ -238,7 +238,7 @@ const {
   setPaletteOverride,
   stepCount,
   stepNumber,
-} = useKitchenOnboarding()
+} = useKitchenOnboarding({ rootOnly: props.mode === 'public' })
 
 const shellStage = computed(() => ({
   id: activeStepId.value,
@@ -329,10 +329,22 @@ async function onBack() {
 async function onContinue() {
   const advanced = await next()
   if (!advanced || !completion.value) return
-  setKitchenConsoleSelection({ kitchenId: completion.value.kitchen_id })
+  if (props.mode === 'console') {
+    setKitchenConsoleSelection({ kitchenId: completion.value.kitchen_id })
+  }
   emit('created', completion.value)
-  if (route.path !== resolvedReturnTo.value) {
-    await router.push(resolvedReturnTo.value)
+  const returnFamily = String(route.query.returnEntityFamily || '').trim()
+  const destination = returnFamily
+    ? {
+        path: resolvedReturnTo.value,
+        query: {
+          primaryEntityFamily: returnFamily,
+          primaryEntityId: completion.value.kitchen_id,
+        },
+      }
+    : resolvedReturnTo.value
+  if (route.path !== resolvedReturnTo.value || returnFamily) {
+    await router.push(destination)
   }
 }
 

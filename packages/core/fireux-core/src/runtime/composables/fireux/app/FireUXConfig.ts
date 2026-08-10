@@ -4,6 +4,8 @@ import type { RuntimeApp } from '../../../../config/app/runtime'
 import type {
   FireuxAppRole,
   FireuxConsoleConfig,
+  FireuxConsoleRegistration,
+  FireuxMembershipCleanupRegistration,
 } from '../../../../config/app/types'
 
 export type FireUXRole = FireuxAppRole
@@ -85,6 +87,19 @@ function toConsoleConfig(v: unknown): FireuxConsoleConfig {
   )
 }
 
+function toRegistrationArray<T extends Record<string, unknown>>(
+  value: unknown,
+  fields: readonly string[]
+): T[] {
+  if (!Array.isArray(value)) return []
+  return value.flatMap((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) return []
+    const source = entry as AnyRecord
+    if (fields.some(field => !isNonEmptyString(source[field]))) return []
+    return [{ ...source } as T]
+  })
+}
+
 function reqRole(src: AnyRecord): FireUXRole {
   const raw = reqString(src, 'role').toLowerCase()
   if (raw !== 'global' && raw !== 'tenant' && raw !== 'standalone') {
@@ -124,6 +139,15 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     modules: toStringArray(fireux.modules),
     consoles: toStringArray(fireux.consoles),
     consoleConfig: toConsoleConfig(fireux.consoleConfig),
+    consoleRegistry: toRegistrationArray<FireuxConsoleRegistration>(
+      fireux.consoleRegistry,
+      ['family', 'rootCollection']
+    ),
+    membershipCleanupRegistry:
+      toRegistrationArray<FireuxMembershipCleanupRegistration>(
+        fireux.membershipCleanupRegistry,
+        ['collection']
+      ),
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,

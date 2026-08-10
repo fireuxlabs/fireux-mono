@@ -3,7 +3,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
-import { FIRESTORE_MUTATION_TARGETS } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { kitchenRootTarget } from './firestore-targets'
 import { readKitchenByRouteSlug } from './route-identity.ts'
 import {
   readKitchenMutationActor,
@@ -49,7 +49,7 @@ export async function updateKitchen(event: H3Event, input: unknown) {
       actor,
       requested.kitchenId
     )
-    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
+    mutations.update(kitchenRootTarget, requested.kitchenId, {
       ...requested.patch,
       updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
     })

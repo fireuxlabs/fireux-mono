@@ -5,9 +5,12 @@ import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  kitchenRootTarget,
+  serverAppKitchensTarget,
+} from './firestore-targets'
 import {
   readKitchenOnboardingScope,
   readKitchenOnboardingSupport,
@@ -41,7 +44,7 @@ export async function requireKitchenMutationAuthority(
 ) {
   const runtimeMemberships = serverAppUsersTarget(actor.runtimeAppId)
   const [root, runtimeMembership] = await Promise.all([
-    mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, kitchenId),
+    mutations.read(kitchenRootTarget, kitchenId),
     mutations.read(runtimeMemberships, actor.uid),
   ])
   if (!root.exists) {

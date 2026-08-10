@@ -12,8 +12,16 @@ export type AppOnboardingPolicy = {
   host_app_id: string
   host_app_name: string
   options: AppOnboardingPlacementOption[]
+  primary_entity_options: AppOnboardingPrimaryEntityOption[]
   locked_placement?: AppOnboardingPlacement
   unavailable_reason?: string
+}
+
+export type AppOnboardingPrimaryEntityOption = {
+  family: string
+  label: string
+  description: string
+  root_onboarding_path: string
 }
 
 /**
@@ -25,4 +33,6 @@ export type AppOnboardingDraft = {
   slug: string
   description: string
   placement: AppOnboardingPlacement | ''
+  primary_entity_family: string
+  primary_entity_id: string
 }

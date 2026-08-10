@@ -9,6 +9,7 @@ import type {
   AppMembershipMutationResult,
 } from '../../../models/operations/app-membership'
 import type { AppUserRole } from '../../../models/core/user.model'
+import type { FireuxMembershipCleanupRegistration } from '../../../../config/app/types'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppAuthorityTargets,
@@ -25,6 +26,8 @@ export type MutationContext = {
   appDatabaseId: string
   identityDatabaseId: string
   input: AppMembershipMutationInput
+  authorityCollections: string[]
+  membershipCleanupRegistry: FireuxMembershipCleanupRegistration[]
 }
 
 export type TransactionOutcome = AppMembershipMutationResult
@@ -122,10 +125,11 @@ export type AuthorityRevocation = {
 export async function readTargetAuthorityRevocations(
   mutations: GuardedServerTransaction,
   appId: string,
-  userId: string
+  userId: string,
+  authorityCollections: readonly string[]
 ) {
   const refs = new Map<string, AuthorityRevocation>()
-  for (const { target } of serverAppAuthorityTargets(appId)) {
+  for (const { target } of serverAppAuthorityTargets(appId, authorityCollections)) {
     for (const field of ['operator_ids', 'team_ids']) {
       const rows = await mutations.query(target, {
         field, op: 'array-contains', value: userId, limit: 100,
@@ -138,11 +142,11 @@ export async function readTargetAuthorityRevocations(
   return [...refs.values()]
 }
 
-export function revokedDriverLinks(data: DocumentData) {
-  if (!Array.isArray(data.kitchen_links)) return []
-  return data.kitchen_links.slice(0, 50).flatMap((value: unknown) =>
-    value && typeof value === 'object' && !Array.isArray(value)
-      ? [{ ...(value as Record<string, unknown>), active: false }]
+export function deactivateArrayObjects(value: unknown) {
+  if (!Array.isArray(value)) return []
+  return value.slice(0, 50).flatMap((entry: unknown) =>
+    entry && typeof entry === 'object' && !Array.isArray(entry)
+      ? [{ ...(entry as Record<string, unknown>), active: false }]
       : []
   )
 }

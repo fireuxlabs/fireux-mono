@@ -38,7 +38,7 @@ function errorMessage(error: unknown) {
   return 'Unable to prepare this Kitchen right now.'
 }
 
-export function useKitchenOnboarding() {
+export function useKitchenOnboarding(options: { rootOnly?: boolean } = {}) {
   const place = ref<PublicPlaceDetailProjection | null>(null)
   const preview = ref<KitchenOnboardingPreview | null>(null)
   const displayName = ref('')
@@ -52,6 +52,7 @@ export function useKitchenOnboarding() {
   let selectionSequence = 0
   const {
     completeKitchenOnboarding,
+    completeKitchenRootOnboarding,
     listKitchenOnboardingPlaces,
     previewKitchenOnboarding,
   } = useKitchenCreate()
@@ -133,7 +134,7 @@ export function useKitchenOnboarding() {
     }
 
     try {
-      const result = await completeKitchenOnboarding({
+      const payload = {
             place_id: currentPreview.place_id,
             ...(currentPreview.existing
               ? { kitchen_id: currentPreview.kitchen_id }
@@ -144,7 +145,16 @@ export function useKitchenOnboarding() {
             ...(canEditPalette.value && Object.keys(paletteOverride.value).length
               ? { palette_override: paletteOverride.value }
               : {}),
-      })
+      }
+      const rootResult = !currentPreview.existing
+        ? await completeKitchenRootOnboarding(payload)
+        : null
+      const result = options.rootOnly
+        ? rootResult!
+        : await completeKitchenOnboarding({
+            place_id: currentPreview.place_id,
+            kitchen_id: rootResult?.kitchen_id || currentPreview.kitchen_id,
+          })
       if (
         result?.ok !== true ||
         result.kitchen_id !== currentPreview.kitchen_id ||
@@ -152,7 +162,9 @@ export function useKitchenOnboarding() {
       ) {
         throw new Error('Kitchen onboarding completion was invalid.')
       }
-      completion.value = result
+      completion.value = rootResult && !options.rootOnly
+        ? { ...result, created_root: true }
+        : result
       return true
     } catch (error) {
       throw new Error(errorMessage(error))

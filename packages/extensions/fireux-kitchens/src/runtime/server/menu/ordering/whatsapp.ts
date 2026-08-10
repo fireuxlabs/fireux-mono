@@ -2,7 +2,7 @@
 // Concurrent edit — 2026-07-20 15:19 CEST — Pre-order WhatsApp console-link pass: require the global confirmation route in every provider template.
 import { Timestamp, type DocumentData } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
-import { serverKitchenOrdersTarget } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import { serverKitchenOrdersTarget } from '../../kitchen/firestore-targets'
 import { normalizeMenuOrderWhatsAppPhone } from '../../../utils/menu-order-whatsapp.ts'
 
 type DispatchPreOrderWhatsAppInput = {

@@ -14,7 +14,7 @@ import {
   serverKitchenMenuItemsTarget,
   serverKitchenMenuSectionsTarget,
   serverKitchenMenusTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+} from '../../kitchen/firestore-targets'
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   KitchenMenuDraftTranslation,

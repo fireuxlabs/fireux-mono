@@ -99,6 +99,8 @@ export function defineFireuxConfig(app: FireuxAppConfig): NuxtConfig {
       modules: moduleNames,
       consoles: app.consoles || [],
       consoleConfig: app.consoleConfig || {},
+      consoleRegistry: [],
+      membershipCleanupRegistry: [],
       domains: app.domains || [],
       profiles: app.profiles || [],
       selfJoinEnabled: app.selfJoinEnabled === true,

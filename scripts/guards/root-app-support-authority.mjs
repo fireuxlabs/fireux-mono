@@ -405,6 +405,8 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/onboarding.ts',
+  kitchenRootOnboarding:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/root-onboarding.ts',
   kitchenOnboardingComponent:
     'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Onboarding.vue',
   kitchenOnboardingContext:
@@ -513,7 +515,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.propertyModel,
     /export const PropertyEntity = defineFireuxEntity/
   )
-  assert.match(source.entityModel, /\| 'property'/)
+  assert.match(
+    source.entityModel,
+    /export type FireuxEntityFamily =[\s\S]*\| \(string & \{\}\)/,
+    'Core entity vocabulary must remain open to extension-owned families.'
+  )
   assert.match(
     source.propertyModel,
     /family:\s*\['property',\s*'console-entity'\]/
@@ -781,17 +787,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /runtime\/server\/api\/properties\/index\.get/
   )
 
-  assert.match(
+  assert.match(source.sharedCreate, /Domain extensions own root validation/)
+  assert.doesNotMatch(
     source.sharedCreate,
-    /const rootResult = await options\.createRoot\(\)[\s\S]*const rootSnap = await getDoc\(rootRef\)[\s\S]*existingRootData = rootSnap\.data\(\)/,
-    'Console attachment must re-read the root returned by createRoot before ownership checks.'
+    /firebase\/firestore|createRoot|validateRoot|createAppSupport/,
+    'Core Console creation must remain transport-only; domain extensions own trusted root and App-support transactions.'
   )
-  assert.match(source.sharedCreate, /validateRoot\?:/)
-  assert.match(
-    source.sharedCreate,
-    /await options\.validateRoot\(id, existingRootData\)/
-  )
-  assert.match(source.sharedCreate, /createAppSupport\?:/)
   assert.match(source.sharedCreate, /createdAppSupport:/)
   assert.doesNotMatch(
     source.sharedCreate,
@@ -832,19 +833,27 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     completionFunction: 'completeBlankOnboarding',
     onboardingSource: source.blankOnboarding,
   })
-  assertAtomicConsoleOnboarding({
-    name: 'Kitchen',
-    clientSource: source.kitchenCreate,
-    clientFunction: 'createKitchenConsole',
-    route: '/api/kitchens/onboarding/complete',
-    handlerSource: source.kitchenOnboardingHandler,
-    completionFunction: 'completeKitchenOnboarding',
-    onboardingSource: source.kitchenOnboarding,
-    authSource: source.kitchenOnboardingContext,
-    serverConfigSource: source.kitchenServerConfig,
-    handlerPath: './runtime/server/api/kitchens/onboarding/complete.post',
-    rootTarget: 'kitchens',
-  })
+  assert.match(source.kitchenCreate, /\/api\/kitchens\/onboarding\/root\/complete/)
+  assert.match(
+    source.kitchenRootOnboarding,
+    /app_scope:\s*\{\s*state:\s*'root_only',\s*app_id:\s*''\s*\}/,
+    'Base Kitchen onboarding must create independently valid root-only truth.'
+  )
+  assert.doesNotMatch(
+    source.kitchenRootOnboarding,
+    /serverAppKitchensTarget|operator_ids|team_ids|join_requests|console_enabled/,
+    'Base Kitchen onboarding must not create App support or mutate App membership.'
+  )
+  assert.match(
+    source.kitchenOnboarding,
+    /if \(!rootData\)[\s\S]*Create the canonical Kitchen root before attaching it to an App/,
+    'Kitchen App attachment must reject support-only onboarding without a root.'
+  )
+  assert.match(
+    source.kitchenOnboarding,
+    /scope\.state === 'root_only'[\s\S]*mutations\.update\(kitchenRootTarget,[\s\S]*state:\s*current\.appScopeState[\s\S]*app_id:\s*current\.appId/,
+    'Kitchen App attachment must explicitly move a root-only root into the current App scope.'
+  )
   assertAtomicConsoleOnboarding({
     name: 'Supplier',
     clientSource: source.supplierCreate,
@@ -1130,13 +1139,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Trusted Kitchen onboarding must seed every AppKitchen authority array.'
   )
   assert.match(
-    source.kitchenOnboarding,
-    /serverRuntimeUserTargetsTarget\(current\.uid\)[\s\S]*mutations\.read\(userTargets, 'targets'\)[\s\S]*kitchen_ids:\s*FieldValue\.arrayUnion\(locator\.kitchenId\)/,
+    source.kitchenRootOnboarding,
+    /serverRuntimeUserTargetsTarget\(uid\)[\s\S]*mutations\.read\(userTargets, 'targets'\)[\s\S]*kitchen_ids:\s*FieldValue\.arrayUnion\(placeId\)/,
     'Trusted Kitchen onboarding must atomically maintain the creator Console target index.'
   )
   assert.match(
-    source.kitchenOnboarding,
-    /kitchenOnboardingSlugCandidates\([\s\S]*mutations\.query<Record<string, unknown>>\([\s\S]*field:\s*'slug'[\s\S]*slug:\s*createdSlug/,
+    source.kitchenRootOnboarding,
+    /kitchenOnboardingSlugCandidates\([\s\S]*mutations\.query<Record<string, unknown>>\([\s\S]*field:\s*'slug'[\s\S]*const slug =/,
     'Trusted Kitchen onboarding must allocate a unique route slug before creating the root.'
   )
   assert.match(

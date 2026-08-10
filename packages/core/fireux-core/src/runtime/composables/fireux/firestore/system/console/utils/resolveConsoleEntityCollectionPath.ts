@@ -5,13 +5,7 @@ import type { FireuxAppScopeState } from '../../../../../../models/utils/scope.m
 
 export type ConsoleEntityRuntimeMode = ConsoleSource
 
-export type ConsoleEntityCollectionFamily =
-  | 'kitchens'
-  | 'portfolios'
-  | 'projects'
-  | 'suppliers'
-  | 'profiles'
-  | (string & {})
+export type ConsoleEntityCollectionFamily = string
 
 export type ResolveConsoleEntityCollectionPathOptions = {
   family: ConsoleEntityCollectionFamily

@@ -4,7 +4,7 @@ import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/fi
 import {
   serverKitchenAiUsageTarget,
   serverKitchenMenuUploadsTarget,
-} from 'fireux-core/runtime/utils/firestore-mutations/targets'
+} from '../../kitchen/firestore-targets'
 
 export async function writeKitchenMenuAiUsage(input: {
   sourceUpdate: UpdateData<DocumentData>

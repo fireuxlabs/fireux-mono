@@ -19,9 +19,12 @@ import {
 } from 'fireux-core/runtime/server/utils/uploads/storage'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  kitchenRootTarget,
+  serverAppKitchensTarget,
+} from './firestore-targets'
 import type {
   KitchenPublicIdentityEdit,
   KitchenPublicIdentityEditResponse,
@@ -234,7 +237,7 @@ async function assertTransactionAuthority(
 ) {
   const memberships = serverAppUsersTarget(context.runtimeAppId)
   const root = await transaction.read(
-    FIRESTORE_MUTATION_TARGETS.kitchens,
+    kitchenRootTarget,
     kitchenId
   )
   const rootData = root.data || {}
@@ -334,7 +337,7 @@ export async function updateKitchenPublicIdentity(
         appId: authority.ownerAppId,
       }),
     }
-    mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, kitchen.id, patch)
+    mutations.update(kitchenRootTarget, kitchen.id, patch)
   })
 
   return {

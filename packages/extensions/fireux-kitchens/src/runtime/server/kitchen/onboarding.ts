@@ -8,10 +8,13 @@ import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
-  serverAppKitchensTarget,
   serverAppUsersTarget,
   serverRuntimeUserTargetsTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
+import {
+  kitchenRootTarget,
+  serverAppKitchensTarget,
+} from './firestore-targets'
 import {
   compactBrandPalette,
   parseBrandPalette,
@@ -212,7 +215,7 @@ export async function completeKitchenOnboarding(
     const [membership, place, root, support, targets] = await Promise.all([
       mutations.read(memberships, current.uid),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
-      mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
+      mutations.read(kitchenRootTarget, locator.kitchenId),
       mutations.read(supports, locator.kitchenId),
       mutations.read(userTargets, 'targets'),
     ])
@@ -227,6 +230,9 @@ export async function completeKitchenOnboarding(
     assertKitchenOnboardingPlaceDefaults(place.data || {})
 
     const rootData = root.exists ? root.data || {} : null
+    if (!rootData) {
+      fail(409, 'Create the canonical Kitchen root before attaching it to an App.')
+    }
     if (rootData) {
       if (text(rootData.place_id) !== locator.placeId) {
         fail(409, 'Kitchen and Place no longer match.')
@@ -272,7 +278,7 @@ export async function completeKitchenOnboarding(
         locator.kitchenId
       )
       const matches = await mutations.query<Record<string, unknown>>(
-        FIRESTORE_MUTATION_TARGETS.kitchens,
+        kitchenRootTarget,
         {
           field: 'slug',
           op: candidates.length === 1 ? '==' : 'in',
@@ -290,7 +296,7 @@ export async function completeKitchenOnboarding(
     }
 
     if (createdRoot) {
-      mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
+      mutations.create(kitchenRootTarget, locator.kitchenId, {
         place_id: locator.placeId,
         slug: createdSlug,
         app_scope: {
@@ -313,9 +319,16 @@ export async function completeKitchenOnboarding(
       })
     } else {
       const scope = readKitchenOnboardingScope(rootData || {})
-      if (
-        scope.state !== current.appScopeState ||
-        scope.appId !== current.appId
+      if (scope.state === 'root_only') {
+        mutations.update(kitchenRootTarget, locator.kitchenId, {
+          app_scope: {
+            state: current.appScopeState,
+            app_id: current.appId,
+          },
+          updated: serverAuditStamp({ by: current.uid }),
+        })
+      } else if (
+        scope.state !== current.appScopeState || scope.appId !== current.appId
       ) {
         fail(409, 'Kitchen App scope does not match this App.')
       }

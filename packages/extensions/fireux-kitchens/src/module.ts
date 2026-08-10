@@ -16,6 +16,10 @@ import { configureComponents } from './config/module/components-config'
 import { configurePages } from './config/module/pages-config'
 import { configureAssets } from './config/module/assets-config'
 import { configureServer } from './config/module/server-config'
+import {
+  registerFireuxConsole,
+  registerFireuxMembershipCleanup,
+} from 'fireux-core/config/module/runtime-config'
 
 export interface ModuleOptions {
   prefix?: string
@@ -46,6 +50,23 @@ export default defineNuxtModule<ModuleOptions>({
   },
   async setup(options, nuxt) {
     const resolver = createResolver(import.meta.url)
+    registerFireuxConsole(nuxt, {
+      family: 'kitchen',
+      rootCollection: 'kitchens',
+      appSupportCollection: 'kitchens',
+      supportsInlineNotes: true,
+      appOnboarding: {
+        label: 'Kitchen App',
+        description: 'An App attached to one existing canonical Kitchen.',
+        primaryEntity: 'required',
+        rootOnboardingPath: '/kitchens/create',
+      },
+    })
+    registerFireuxMembershipCleanup(nuxt, {
+      collection: 'drivers',
+      clearArrayFields: ['active_kitchen_ids'],
+      deactivateArrayObjectFields: ['kitchen_links'],
+    })
     nuxt.hook('prepare:types', ({ references }) => {
       references.push({
         path: resolver.resolve('./runtime/types/pdf-worker.types.ts'),

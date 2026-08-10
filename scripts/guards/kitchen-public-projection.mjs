@@ -119,7 +119,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(publicIdentity, /runtimeRole !== 'global'/)
   assert.match(publicIdentity, /readKitchenOnboardingSupport/)
   assert.match(publicIdentity, /runGuardedServerTransaction/)
-  assert.match(publicIdentity, /FIRESTORE_MUTATION_TARGETS\.kitchens/)
+  assert.match(publicIdentity, /kitchenRootTarget/)
   assert.match(publicIdentity, /mutations\.update\(/)
   assert.doesNotMatch(publicIdentity, /\.runTransaction\(/)
   assert.doesNotMatch(publicIdentity, /menus|menu_id|menuId/)
