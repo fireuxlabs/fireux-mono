@@ -4,7 +4,7 @@ import type { KitchenMiseTaskSummary } from 'fireux-kitchens/runtime/models/kitc
 import type { MenuManifest } from 'fireux-kitchens/runtime/models/kitchen/menu/menu-detail.model'
 import type { KitchenOrder } from 'fireux-kitchens/runtime/models/kitchen/order.model'
 import type { KitchenDemoMenuMode } from 'fireux-kitchens/runtime/utils/kitchen/demo-menu-cascade'
-import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import type { KitchenImageShade } from 'fireux-kitchens/runtime/models/kitchen.model'
 
 export type MiseboxProductDemoExperienceModel = {
   to: '/demo/menu' | '/demo/kiosk' | '/demo/service'
@@ -41,7 +41,7 @@ export type MiseboxProductDemoModel = {
       title: string
       subtitle: string
       imageUrl: string
-      imageShade?: PlaceImageShade
+      imageShade?: KitchenImageShade
     }
     dishes: {
       id: string

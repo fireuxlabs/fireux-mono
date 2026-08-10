@@ -15,7 +15,7 @@
         <p class="text-sm text-dimmed">
           Canonical Ecosystem documents are projected into an allowlisted
           directory shape:
-          <code>{ id, slug, status, name, description, image_url, website_url, app_count }</code>.
+          <code>{ id, slug, status, name, description, assets, website_url, app_count }</code>.
         </p>
       </UCard>
 

@@ -66,7 +66,7 @@ export default defineEventHandler(async (event: H3Event) => {
     .get()
     .catch(() => null)
   const appData = appDoc?.exists ? (appDoc.data() as Record<string, unknown>) : {}
-  const media = isRecord(appData.media) ? appData.media : {}
+  const assets = isRecord(appData.assets) ? appData.assets : {}
   const siteOrigin =
     normalizeSiteUrl(runtimeConfig.public?.fireux?.siteUrl) ||
     normalizeSiteUrl(cfg.siteUrl) ||
@@ -74,8 +74,8 @@ export default defineEventHandler(async (event: H3Event) => {
       (runtimeConfig.public?.fireux as Record<string, unknown> | undefined)?.domain
     )
   const socialImageUrl =
-    toAbsoluteUrl(media.thumbnail_url, siteOrigin) ||
-    toAbsoluteUrl(media.logo_url, siteOrigin) ||
+    toAbsoluteUrl(assets.thumbnail, siteOrigin) ||
+    toAbsoluteUrl(assets.logo, siteOrigin) ||
     toAbsoluteUrl(brandAssets.thumbnail, siteOrigin) ||
     toAbsoluteUrl(brandAssets.logo, siteOrigin)
 

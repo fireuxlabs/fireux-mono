@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 import { deleteApp, initializeApp } from 'firebase-admin/app'
-import { getFirestore } from 'firebase-admin/firestore'
+import { FieldValue, getFirestore } from 'firebase-admin/firestore'
 import { getStorage } from 'firebase-admin/storage'
 import sharp from 'sharp'
 import { APP_REGISTRY } from './_lib/app-registry.mjs'
@@ -44,7 +44,7 @@ for (const key of Object.keys(args)) {
 }
 if (args.help) {
   console.log(`
-Copy legacy User avatars to users/{uid}/avatar/current.
+Move existing User avatars to users/{uid}/avatar and assets.avatar.
 
 Dry run:
   pnpm align:user-avatars -- --all --summary
@@ -205,7 +205,7 @@ function canonicalAvatarOwned(value, uid) {
   const avatar = text(value)
   if (!avatar.startsWith('https://')) return false
   try {
-    return decodeURIComponent(avatar).includes(`users/${uid}/avatar/current`)
+    return decodeURIComponent(avatar).includes(`users/${uid}/avatar`)
   } catch {
     return false
   }
@@ -267,7 +267,7 @@ async function buildPlan(sessions) {
       .collection('users')
       .get()
     for (const user of users.docs) {
-      const avatar = text(user.get('avatar'))
+      const avatar = text(user.get('assets.avatar')) || text(user.get('avatar'))
       if (canonicalAvatarOwned(avatar, user.id)) continue
       const key = `${session.projectId}/${user.id}`
       if (!bucketExists) {
@@ -289,7 +289,7 @@ async function buildPlan(sessions) {
           storageBucket: session.storageBucket,
           userId: user.id,
           userPath: user.ref.path,
-          objectPath: `users/${user.id}/avatar/current`,
+          objectPath: `users/${user.id}/avatar`,
           sourceKind: source.kind,
           sourceSha256: sha256(source.bytes),
           sourceBytes: source.bytes.length,
@@ -431,7 +431,12 @@ async function applyOperations(sessions, operations, sources) {
         },
       })
     await mcpSkillUpdate(session.app, userTarget(operation), operation.userId, {
-      avatar: downloadUrl(operation.storageBucket, operation.objectPath, token),
+      'assets.avatar': downloadUrl(
+        operation.storageBucket,
+        operation.objectPath,
+        token
+      ),
+      avatar: FieldValue.delete(),
     })
   }
 }
@@ -449,7 +454,7 @@ async function verifyOperations(sessions, operations) {
       .file(operation.objectPath)
     const bytes = (await file.download())[0]
     if (
-      !canonicalAvatarOwned(user.get('avatar'), operation.userId) ||
+      !canonicalAvatarOwned(user.get('assets.avatar'), operation.userId) ||
       sha256(bytes) !== operation.sourceSha256
     ) {
       failures.push(operation.userPath)

@@ -163,10 +163,10 @@ const props = defineProps<{
   mutationAuthority?: PlaceMutationAuthority | null
 }>()
 const placeId = computed(() => String(props.place?.id || '').trim())
-const coverImage = computed(() => String(props.place?.cover_image || '').trim())
+const coverImage = computed(() => String(props.place?.assets.cover || '').trim())
 const galleryImages = computed(() =>
-  Array.isArray(props.place?.gallery_images)
-    ? props.place.gallery_images.map(image => String(image || '').trim()).filter(Boolean)
+  Array.isArray(props.place?.assets.gallery)
+    ? props.place.assets.gallery.map(image => String(image || '').trim()).filter(Boolean)
     : []
 )
 const toast = useToastify()

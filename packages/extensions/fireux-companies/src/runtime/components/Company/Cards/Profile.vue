@@ -38,7 +38,6 @@
           class="fx-card__avatar"
           size="md"
           icon="i-lucide-image"
-          :class="avatarShadeClass"
         />
         <div class="fx-card__content fx-card__stack fx-card__stack--tight">
           <div class="fx-card__header">
@@ -150,14 +149,6 @@ import { computed } from 'vue'
 import type { CompanyProfile } from '../../../composables/fireux/company/useCompanyInterface'
 
 const props = defineProps<{ model: CompanyProfile }>()
-
-const avatarShadeClass = computed(() => {
-  const shade = props.model.imageShade
-  if (!shade) return ''
-  if (shade === 'light') return 'fx-avatar-shade--light'
-  if (shade === 'dark') return 'fx-avatar-shade--dark'
-  return ''
-})
 
 const websiteLabel = computed(() => {
   const raw = String(props.model.website ?? '').trim()

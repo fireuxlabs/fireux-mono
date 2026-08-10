@@ -20,17 +20,18 @@ function text(value: unknown): string {
   return typeof value === 'string' ? value.trim() : ''
 }
 
-function media(value: unknown) {
+function assets(value: unknown) {
   const source =
     value && typeof value === 'object' && !Array.isArray(value)
       ? (value as Record<string, unknown>)
       : {}
   return {
-    thumbnail_url: text(source.thumbnail_url),
-    logo_url: text(source.logo_url),
-    wordmark_light_url: text(source.wordmark_light_url),
-    wordmark_dark_url: text(source.wordmark_dark_url),
-    cover_url: text(source.cover_url),
+    thumbnail: text(source.thumbnail),
+    logo: text(source.logo),
+    wordmark: text(source.wordmark),
+    wordmark_light: text(source.wordmark_light),
+    wordmark_dark: text(source.wordmark_dark),
+    cover: text(source.cover),
   }
 }
 
@@ -78,7 +79,7 @@ function projectionPayload(
     name,
     short_name: shortName,
     description: text(app.description),
-    media: media(app.media),
+    assets: assets(app.assets),
     database_id: input.appDatabaseId,
     website_url: websiteUrl,
     console_families: consoleFamilies(config),

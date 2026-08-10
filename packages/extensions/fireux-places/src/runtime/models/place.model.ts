@@ -58,8 +58,6 @@ export type PlaceType = 'physical' | 'non_physical'
 
 /** Explicit backdrop behind transparent entity-owned brand media. */
 export type MediaBackdropColor = `#${string}`
-/** @deprecated Read-only compatibility for unmigrated records and consumers. */
-export type PlaceImageShade = 'light' | 'dark' | 'none'
 
 export type PlaceSocialLinks = {
   website: string
@@ -97,19 +95,14 @@ export type PlaceBusinessHours = {
   windows: PlaceBusinessHoursWindow[]
 }
 
-/** Place-owned base identity inherited by dependent domain entities. */
-export type PlaceIdentity = {
-  logo_image_url: string
-  wordmark_image_url: string
-}
-
-/** Canonical Place-owned media. Browser projections may flatten these roles. */
+/** Canonical Place-owned assets. Each key names the same role in Storage. */
 export type PlaceAssets = {
-  image_url: string
-  cover_image: string
-  gallery_images: string[]
-  identity: PlaceIdentity
-  media_backdrop_color: MediaBackdropColor | ''
+  image: string
+  cover: string
+  gallery: string[]
+  logo: string
+  wordmark: string
+  backdrop_color: MediaBackdropColor | ''
 }
 
 /** Resolved runtime defaults. Firestore Place documents remain sparse. */
@@ -138,32 +131,13 @@ export const PlaceDefaults = {
 
   // Entity-owned assets
   assets: {
-    image_url: '',
-    cover_image: '',
-    gallery_images: [],
-    identity: {
-      logo_image_url: '',
-      wordmark_image_url: '',
-    },
-    media_backdrop_color: '',
+    image: '',
+    cover: '',
+    gallery: [],
+    logo: '',
+    wordmark: '',
+    backdrop_color: '',
   } as PlaceAssets,
-
-  // Read-only runtime aliases for legacy records and flat browser DTOs.
-  /** @deprecated Canonical storage is assets.image_url. */
-  image_url: '' as string,
-  /** @deprecated Canonical storage is assets.cover_image. */
-  cover_image: '' as string,
-  /** @deprecated Canonical storage is assets.gallery_images. */
-  gallery_images: [] as string[],
-  /** @deprecated Canonical storage is assets.identity. */
-  identity: {
-    logo_image_url: '',
-    wordmark_image_url: '',
-  } as PlaceIdentity,
-  /** @deprecated Canonical storage is assets.media_backdrop_color. */
-  media_backdrop_color: '' as MediaBackdropColor | '',
-  /** @deprecated Never write; migrate to media_backdrop_color. */
-  image_shade: 'none' as PlaceImageShade,
 
   // Portable brand colours inherited by Place-backed roles.
   brand_palette: {} as SparseBrandPalette,
@@ -237,8 +211,7 @@ export type BasePlace = Pick<
   | 'short_address'
   | 'lat'
   | 'lng'
-  | 'image_url'
-  | 'image_shade'
+  | 'assets'
   | 'claimed_by'
   | 'source'
   | 'slug'

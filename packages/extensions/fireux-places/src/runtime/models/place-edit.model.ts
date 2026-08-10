@@ -1,8 +1,7 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type {
-  MediaBackdropColor,
+  PlaceAssets,
   PlaceBusinessHours,
-  PlaceIdentity,
   PlaceSocialLinks,
   PlaceSource,
   PlaceType,
@@ -24,11 +23,7 @@ export type PlaceEditProjection = {
   search_term: string
   lat: number | null
   lng: number | null
-  image_url: string
-  cover_image: string
-  gallery_images: string[]
-  identity: PlaceIdentity
-  media_backdrop_color: MediaBackdropColor | ''
+  assets: PlaceAssets
   brand_palette: SparseBrandPalette
   phone: string
   email: string

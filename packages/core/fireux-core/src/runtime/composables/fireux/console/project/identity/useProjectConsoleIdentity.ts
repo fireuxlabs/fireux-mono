@@ -13,7 +13,9 @@ export function useProjectConsoleIdentity() {
   const description = computed(() =>
     normalizeString(selection.project.value?.description)
   )
-  const imageUrl = computed(() => normalizeString(selection.project.value?.image_url))
+  const imageUrl = computed(() =>
+    normalizeString(selection.project.value?.assets?.image)
+  )
   const debug = computed(() => ({
     projectId: selection.projectId.value,
     rootCollection: runtime.rootCollection.value,

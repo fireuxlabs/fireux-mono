@@ -179,8 +179,7 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
     wordmarkNoLogoImageUrl: text(identity.wordmark_no_logo_image_url),
     wordmarkImageUrl: text(identity.wordmark_image_url),
     mediaBackdropColor: readMediaBackdropColor(
-      identity.media_backdrop_color,
-      identity.image_shade
+      identity.media_backdrop_color
     ) as KitchenMediaBackdropColor | '',
     /** @deprecated Compatibility projection only. */
     imageShade: (text(identity.image_shade).toLowerCase() === 'light'

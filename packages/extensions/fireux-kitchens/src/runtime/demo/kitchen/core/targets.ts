@@ -108,7 +108,6 @@ export const deanosKitchenDemoTarget = target(
     imageUrl: deanosProfileImage,
     coverImage: deanosCoverImage,
     galleryImages: deanosGalleryImages,
-    imageShade: 'none',
     businessHours: {
       windows: [
         {
@@ -260,9 +259,9 @@ for (const item of kitchenDemoTargets) {
     item.kitchen.identity.logo_image_url ?? ''
   ).trim()
   const placeMedia = [
-    item.place.image_url,
-    item.place.cover_image,
-    ...item.place.gallery_images,
+    item.place.assets.image,
+    item.place.assets.cover,
+    ...item.place.assets.gallery,
   ]
     .map(value => String(value ?? '').trim())
     .filter(Boolean)

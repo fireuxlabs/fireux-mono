@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // last_used: 2026-08-08
-// usage_note: read-only audit of canonical App media objects and stored URLs for an explicit registry scope.
-// Concurrent edit — 2026-07-20 22:12 CEST — Repo Efficiency Pass 4 of 6: resolve exact registry targets and audit canonical media efficiently.
+// usage_note: read-only audit of canonical App asset objects and stored URLs for an explicit registry scope.
 
 import fs from 'node:fs'
 import { createHash } from 'node:crypto'
@@ -21,35 +20,41 @@ import {
   resolveFirebaseAdminCredential,
 } from './_lib/firebase-admin-credentials.mjs'
 
-const EXPECTED_MEDIA = [
+const EXPECTED_ASSETS = [
   {
     kind: 'thumbnail',
     objectName: 'thumbnail',
-    field: 'thumbnail_url',
+    field: 'thumbnail',
     dimensions: { requiredWidth: 1200, requiredHeight: 630 },
   },
   {
     kind: 'logo',
     objectName: 'logo',
-    field: 'logo_url',
+    field: 'logo',
     dimensions: { requiredWidth: 512, requiredHeight: 512 },
+  },
+  {
+    kind: 'wordmark',
+    objectName: 'wordmark',
+    field: 'wordmark',
+    dimensions: { minWidth: 256, minHeight: 64, minAspect: 3 },
   },
   {
     kind: 'wordmarkLight',
     objectName: 'wordmark-light',
-    field: 'wordmark_light_url',
+    field: 'wordmark_light',
     dimensions: { minWidth: 256, minHeight: 64, minAspect: 3 },
   },
   {
     kind: 'wordmarkDark',
     objectName: 'wordmark-dark',
-    field: 'wordmark_dark_url',
+    field: 'wordmark_dark',
     dimensions: { minWidth: 256, minHeight: 64, minAspect: 3 },
   },
   {
     kind: 'cover',
     objectName: 'cover',
-    field: 'cover_url',
+    field: 'cover',
     dimensions: {
       minWidth: 1280,
       minHeight: 720,
@@ -59,7 +64,8 @@ const EXPECTED_MEDIA = [
   },
 ]
 
-const LEGACY_MEDIA_FIELDS = [
+const FORBIDDEN_APP_ASSET_FIELDS = [
+  'media',
   'thumbnail_url',
   'logo_url',
   'wordmark_light_url',
@@ -274,7 +280,7 @@ function buildTargetPlan({ configs, requestedApp, requestedEcosystem }) {
 }
 
 function objectPathFor(appId, objectName) {
-  return `apps/${appId}/media/${objectName}`
+  return `apps/${appId}/${objectName}`
 }
 
 function localAssetPathFor(target, objectName) {
@@ -429,7 +435,7 @@ function elevateStatus(current, next) {
 
 async function auditRegistryApp({ adminApp, bucket, target }) {
   const database = getFirestore(adminApp, target.databaseId)
-  const prefix = `apps/${target.appId}/media/`
+  const prefix = `apps/${target.appId}/`
   const [document, storageResult] = await Promise.all([
     database.collection('apps').doc(target.appId).get(),
     bucket.getFiles({ prefix }),
@@ -441,15 +447,15 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
   )
   const listedObjectSet = new Set(listedObjects)
   const expectedObjectSet = new Set(
-    EXPECTED_MEDIA.map((media) => objectPathFor(target.appId, media.objectName))
+    EXPECTED_ASSETS.map((asset) => objectPathFor(target.appId, asset.objectName))
   )
   const unexpectedObjects = listedObjects.filter(
     (objectPath) => !expectedObjectSet.has(objectPath)
   )
 
   const data = document.exists ? document.data() || {} : {}
-  const media = recordObject(data.media)
-  const legacyFields = LEGACY_MEDIA_FIELDS.filter((field) =>
+  const assets = recordObject(data.assets)
+  const forbiddenFields = FORBIDDEN_APP_ASSET_FIELDS.filter((field) =>
     Object.prototype.hasOwnProperty.call(data, field)
   )
 
@@ -457,11 +463,11 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
   const issues = document.exists ? [] : ['Missing canonical App document']
   const checks = []
 
-  for (const expected of EXPECTED_MEDIA) {
+  for (const expected of EXPECTED_ASSETS) {
     const objectPath = objectPathFor(target.appId, expected.objectName)
     const storageExists = listedObjectSet.has(objectPath)
     const storedValue =
-      typeof media[expected.field] === 'string' ? media[expected.field] : ''
+      typeof assets[expected.field] === 'string' ? assets[expected.field] : ''
     const url = validateStoredUrl(storedValue, target.storageBucket, objectPath)
     const localAssetPath = localAssetPathFor(target, expected.objectName)
     const localExists = fs.existsSync(localAssetPath)
@@ -517,7 +523,7 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
     status = elevateStatus(status, checkStatus)
     checks.push({
       kind: expected.kind,
-      firestoreField: `media.${expected.field}`,
+      firestoreField: `assets.${expected.field}`,
       firestoreHasUrl: url.hasUrl,
       firestoreUrl: url.hasUrl ? storedValue : '',
       localAssetPath: path.relative(repoRoot(), localAssetPath),
@@ -535,11 +541,11 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
 
   if (unexpectedObjects.length) {
     status = elevateStatus(status, 'warn')
-    issues.push('Unexpected objects exist under the canonical media prefix')
+    issues.push('Unexpected objects exist under the canonical App asset root')
   }
-  if (legacyFields.length) {
-    status = elevateStatus(status, 'warn')
-    issues.push('Legacy root media fields remain on the App document')
+  if (forbiddenFields.length) {
+    status = elevateStatus(status, 'error')
+    issues.push('Unsupported App asset fields remain on the App document')
   }
 
   return {
@@ -554,23 +560,24 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
     checks,
     listedObjects,
     unexpectedObjects,
-    legacyFields,
+    forbiddenFields,
   }
 }
 
 function printUsage() {
   console.log(`Usage:
-  pnpm audit:app-media -- (--ecosystem <registry-key> | --all) [--app <registry-key>] [--out <path>]
-  pnpm audit:app-media -- (--ecosystem <registry-key> | --all) [--app <registry-key>] --targets
+  pnpm audit:app-assets -- (--ecosystem <registry-key> | --all) [--app <registry-key>] [--out <path>]
+  pnpm audit:app-assets -- (--ecosystem <registry-key> | --all) [--app <registry-key>] --targets
 
 Checks each selected registry App in its canonical database against:
-- apps/{appId}/media/thumbnail
-- apps/{appId}/media/logo
-- apps/{appId}/media/wordmark-light
-- apps/{appId}/media/wordmark-dark
-- apps/{appId}/media/cover
+- apps/{appId}/thumbnail
+- apps/{appId}/logo
+- apps/{appId}/wordmark
+- apps/{appId}/wordmark-light
+- apps/{appId}/wordmark-dark
+- apps/{appId}/cover
 
-Only nested media.* fields are canonical. The audit also reports legacy root
+Only nested assets.* fields are canonical. The audit also reports unsupported
 fields and unexpected objects. Every stored object must be a valid canonical
 PNG and byte-for-byte match its App-owned public/img/app source. The audit never
 mutates Firestore or Storage.
@@ -580,7 +587,7 @@ Options:
 - --app: APP_REGISTRY app key, for example la-tap-berne or find-my-seo
 - --all: explicitly audit every registry ecosystem
 - --targets: print the deterministic resolved target plan without credentials or network access
-- --out: output JSON path (default: temp/app-media-audit.json)
+- --out: output JSON path (default: temp/app-assets-audit.json)
 
 Credential sources, in precedence order:
 ${firebaseAdminCredentialHelp()
@@ -665,7 +672,7 @@ async function main() {
           projectId: target.projectId,
           storageBucket: target.storageBucket,
         },
-        `audit-app-media:${target.ecosystemKey}`
+        `audit-app-assets:${target.ecosystemKey}`
       )
       const bucket = getStorage(adminApp).bucket(target.storageBucket)
 
@@ -685,7 +692,7 @@ async function main() {
       const message =
         error instanceof Error && error.message.trim()
           ? error.message.trim()
-          : 'Ecosystem App media audit failed.'
+          : 'Ecosystem App asset audit failed.'
       const code = /bucket does not exist/i.test(message)
         ? 'STORAGE_BUCKET_REQUIRED'
         : 'ECOSYSTEM_AUDIT_FAILED'
@@ -701,11 +708,11 @@ async function main() {
           documentExists: null,
           ok: false,
           status: 'error',
-          issues: [`Ecosystem media audit blocked: ${message}`],
+          issues: [`Ecosystem asset audit blocked: ${message}`],
           checks: [],
           listedObjects: [],
           unexpectedObjects: [],
-          legacyFields: [],
+          forbiddenFields: [],
         }
         ecosystemResult.totals.error += 1
       }
@@ -721,7 +728,7 @@ async function main() {
     if (ecosystemResult.blocker) report.totals.blockedEcosystems += 1
   }
 
-  const outPath = path.resolve(out || 'temp/app-media-audit.json')
+  const outPath = path.resolve(out || 'temp/app-assets-audit.json')
   fs.mkdirSync(path.dirname(outPath), { recursive: true })
   fs.writeFileSync(outPath, `${JSON.stringify(report, null, 2)}\n`, 'utf8')
 

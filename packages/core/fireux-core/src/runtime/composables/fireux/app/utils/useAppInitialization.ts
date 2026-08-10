@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import type { Ref } from 'vue'
 import { useToastify } from '../ui/useToastify'
 import { useUser } from '../../user/useUser'
-import { syncAppMediaToStorage } from '../../firestore/core/app/utils/appMediaSync'
+import { syncAppAssetsToStorage } from '../../firestore/core/app/utils/appAssetsSync'
 import type { EnvCheckResponse } from './env-check.types'
 import { initializeConfiguredApp } from './initializeConfiguredApp'
 import { useAppEnvCheck } from './useAppEnvCheck'
@@ -58,7 +58,7 @@ export function useAppInitialization(
       const result = await initializeConfiguredApp()
       await options.onInitialized?.()
 
-      const syncResult = await syncAppMediaToStorage()
+      const syncResult = await syncAppAssetsToStorage()
       await refreshEnv()
 
       if (syncResult.failed.length) {

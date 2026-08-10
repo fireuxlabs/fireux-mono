@@ -1,14 +1,15 @@
-// Canonical app media naming:
-// - Local files: public/img/app/{thumbnail|logo|wordmark-light|wordmark-dark|cover}.*
-// - Browser URLs: /img/app/{thumbnail|logo|wordmark-light|wordmark-dark|cover}.*
-// - Storage objects: apps/<appId>/media/{thumbnail|logo|wordmark-light|wordmark-dark|cover}
-// - Firestore fields:
-//   {media.thumbnail_url|media.logo_url|media.wordmark_light_url|media.wordmark_dark_url|media.cover_url}
+// Canonical App asset naming:
+// - Local files: public/img/app/{thumbnail|logo|wordmark|wordmark-light|wordmark-dark|cover}.*
+// - Browser URLs: /img/app/{thumbnail|logo|wordmark|wordmark-light|wordmark-dark|cover}.*
+// - Storage objects: apps/<appId>/{thumbnail|logo|wordmark|wordmark-light|wordmark-dark|cover}
+// - Firestore fields: assets.{thumbnail|logo|wordmark|wordmark_light|wordmark_dark|cover}
 import { normalizePublicImgAsset } from '../../../../../../../utils/brandAssets'
+import { AppAssetsStorage } from '../../../../../../models/core/app.model'
 
 export type AppImageKind =
   | 'thumbnail'
   | 'logo'
+  | 'wordmark'
   | 'wordmarkLight'
   | 'wordmarkDark'
   | 'cover'
@@ -19,36 +20,39 @@ export type AppPublicAssetKind = AppImageKind | AppLocalOnlyAssetKind
 export const APP_IMAGE_SYNC_KINDS = [
   'thumbnail',
   'logo',
+  'wordmark',
   'wordmarkLight',
   'wordmarkDark',
   'cover',
 ] as const satisfies readonly AppImageKind[]
 
-export type AppMediaSyncFailure = {
+export type AppAssetSyncFailure = {
   kind: AppImageKind
   message: string
 }
 
-export type AppMediaSyncResponse = {
+export type AppAssetSyncResponse = {
   appId: string
   uploaded: Partial<Record<AppImageKind, string>>
-  failed: AppMediaSyncFailure[]
+  failed: AppAssetSyncFailure[]
 }
 
-type AppMediaRecordLike = {
-  thumbnail_url?: string
-  logo_url?: string
-  wordmark_light_url?: string
-  wordmark_dark_url?: string
-  cover_url?: string
+type AppAssetsRecordLike = {
+  thumbnail?: string
+  logo?: string
+  wordmark?: string
+  wordmark_light?: string
+  wordmark_dark?: string
+  cover?: string
 }
 
 export type AppImageFirestoreField =
-  | 'media.thumbnail_url'
-  | 'media.logo_url'
-  | 'media.wordmark_light_url'
-  | 'media.wordmark_dark_url'
-  | 'media.cover_url'
+  | 'assets.thumbnail'
+  | 'assets.logo'
+  | 'assets.wordmark'
+  | 'assets.wordmark_light'
+  | 'assets.wordmark_dark'
+  | 'assets.cover'
 
 export type AppAssetDimensions = {
   width?: number
@@ -86,20 +90,20 @@ import {
   APP_IMAGE_STORAGE_OBJECT_NAMES,
   APP_PUBLIC_ASSET_REQUIREMENTS,
   APP_SYNCABLE_IMAGE_REQUIREMENTS,
-} from './app-media-requirements'
+} from './app-asset-requirements'
 
 export {
   APP_LOCAL_ONLY_ASSET_REQUIREMENTS,
   APP_PUBLIC_ASSET_REQUIREMENTS,
   APP_SYNCABLE_IMAGE_REQUIREMENTS,
-} from './app-media-requirements'
+} from './app-asset-requirements'
 
 export function appImageRequirement(kind: AppImageKind): AppPublicAssetRequirement {
   const requirement = APP_SYNCABLE_IMAGE_REQUIREMENTS.find(
     (asset) => asset.syncKind === kind
   )
   if (!requirement) {
-    throw new Error(`[appMedia] Missing syncable app image requirement: ${kind}`)
+    throw new Error(`[appAssets] Missing syncable App image requirement: ${kind}`)
   }
   return requirement
 }
@@ -111,7 +115,7 @@ export function appPublicAssetRequirement(
     (asset) => asset.key === kind
   )
   if (!requirement) {
-    throw new Error(`[appMedia] Missing app asset requirement: ${kind}`)
+    throw new Error(`[appAssets] Missing App asset requirement: ${kind}`)
   }
   return requirement
 }
@@ -176,7 +180,7 @@ export function validateAppAssetDimensions(
 export function appImageStoragePath(appId: string, kind: AppImageKind): string {
   // "Public bucket" convention: a stable object path that can be overwritten.
   // The UI refresh resolves the current download URL and saves it to Firestore.
-  return `apps/${appId}/media/${APP_IMAGE_STORAGE_OBJECT_NAMES[kind]}`
+  return AppAssetsStorage[kind].replace('{appId}', appId)
 }
 
 export function appImageLocalPublicPath(kind: AppImageKind): string {
@@ -188,7 +192,7 @@ export function appImageFirestoreField(kind: AppImageKind): AppImageFirestoreFie
 }
 
 export function isWordmarkKind(kind: AppImageKind): boolean {
-  return kind === 'wordmarkLight' || kind === 'wordmarkDark'
+  return kind === 'wordmark' || kind === 'wordmarkLight' || kind === 'wordmarkDark'
 }
 
 function safeUrl(value: unknown): string {
@@ -198,11 +202,11 @@ function safeUrl(value: unknown): string {
 /**
  * Dev-only visual backup:
  * - Canonical record and storage paths remain Firestore + Storage based.
- * - When an app is new and media has not been synced yet, local public assets can
+ * - When an App is new and assets have not been synced yet, local public files can
  *   be rendered for development surfaces without rewriting canonical data.
  */
-export function resolveAppMediaForView(
-  media: AppMediaRecordLike | null | undefined,
+export function resolveAppAssetsForView(
+  assets: AppAssetsRecordLike | null | undefined,
   options?: {
     devLocalFallback?: boolean
   }
@@ -210,23 +214,23 @@ export function resolveAppMediaForView(
   const devLocalFallback = Boolean(options?.devLocalFallback)
 
   const thumbnailUrl =
-    safeUrl(media?.thumbnail_url) ||
+    safeUrl(assets?.thumbnail) ||
     (devLocalFallback ? appImageLocalPublicPath('thumbnail') : '')
 
   const logoUrl =
-    safeUrl(media?.logo_url) ||
+    safeUrl(assets?.logo) ||
     (devLocalFallback ? appImageLocalPublicPath('logo') : '')
 
   const wordmarkLightUrl =
-    safeUrl(media?.wordmark_light_url) ||
+    safeUrl(assets?.wordmark_light) ||
     (devLocalFallback ? appImageLocalPublicPath('wordmarkLight') : '')
 
   const wordmarkDarkUrl =
-    safeUrl(media?.wordmark_dark_url) ||
+    safeUrl(assets?.wordmark_dark) ||
     (devLocalFallback ? appImageLocalPublicPath('wordmarkDark') : '')
 
   const coverUrl =
-    safeUrl(media?.cover_url) ||
+    safeUrl(assets?.cover) ||
     (devLocalFallback ? appImageLocalPublicPath('cover') : '')
 
   return {

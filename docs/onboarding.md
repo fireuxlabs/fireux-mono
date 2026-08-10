@@ -233,7 +233,7 @@ configuration lacks its canonical record. Its green environment checks mean
 new App. Initialization authenticates the configured developer and atomically
 creates the fixed runtime App plus its first App-admin membership in the named
 database through the Server mutation lane. It then idempotently creates or
-updates that App's bounded `(default)` AppMeta projection. App media sync and
+updates that App's bounded `(default)` AppMeta projection. App asset sync and
 App-admin identity edits maintain both records through the same projection
 seam. The browser cannot choose an App id, database, or path, and Firestore
 Rules do not need to grant tenant-App creation to clients.
@@ -243,7 +243,7 @@ mode does not bypass required Firebase configuration, live Storage
 reachability, or the App-owned media contract; fix the reported requirement
 before creating the canonical App and first administrator membership.
 
-`pnpm audit:app-media -- --all` audits every registered App against the same
+`pnpm audit:app-assets -- --all` audits every registered App against the same
 five-asset source, Storage, URL, and dimension contract. It records unavailable
 ecosystems as blockers, continues through the fleet, and exits unsuccessfully
 while any App is warning, failing, or blocked.

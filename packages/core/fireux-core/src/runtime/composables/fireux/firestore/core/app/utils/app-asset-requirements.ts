@@ -3,11 +3,12 @@ import type {
   AppImageFirestoreField,
   AppLocalOnlyAssetKind,
   AppPublicAssetRequirement,
-} from './appMedia'
+} from './appAssets'
 
 export const APP_IMAGE_STORAGE_OBJECT_NAMES = {
   thumbnail: 'thumbnail',
   logo: 'logo',
+  wordmark: 'wordmark',
   wordmarkLight: 'wordmark-light',
   wordmarkDark: 'wordmark-dark',
   cover: 'cover',
@@ -16,6 +17,7 @@ export const APP_IMAGE_STORAGE_OBJECT_NAMES = {
 export const APP_IMAGE_LOCAL_PUBLIC_PATHS = {
   thumbnail: '/img/app/thumbnail.png',
   logo: '/img/app/logo.png',
+  wordmark: '/img/app/wordmark.png',
   wordmarkLight: '/img/app/wordmark-light.png',
   wordmarkDark: '/img/app/wordmark-dark.png',
   cover: '/img/app/cover.png',
@@ -28,11 +30,12 @@ export const APP_LOCAL_ONLY_PUBLIC_PATHS = {
 } as const satisfies Record<AppLocalOnlyAssetKind, string>
 
 export const APP_IMAGE_FIRESTORE_FIELDS = {
-  thumbnail: 'media.thumbnail_url',
-  logo: 'media.logo_url',
-  wordmarkLight: 'media.wordmark_light_url',
-  wordmarkDark: 'media.wordmark_dark_url',
-  cover: 'media.cover_url',
+  thumbnail: 'assets.thumbnail',
+  logo: 'assets.logo',
+  wordmark: 'assets.wordmark',
+  wordmarkLight: 'assets.wordmark_light',
+  wordmarkDark: 'assets.wordmark_dark',
+  cover: 'assets.cover',
 } as const satisfies Record<AppImageKind, AppImageFirestoreField>
 
 const relativePath = (publicPath: string) => publicPath.replace(/^\/+/, '')
@@ -54,6 +57,24 @@ export const APP_SYNCABLE_IMAGE_REQUIREMENTS = [
     syncKind: 'logo',
     storageObjectName: APP_IMAGE_STORAGE_OBJECT_NAMES.logo,
     firestoreField: APP_IMAGE_FIRESTORE_FIELDS.logo,
+  },
+  {
+    key: 'wordmark',
+    label: 'Wordmark',
+    localPublicPath: APP_IMAGE_LOCAL_PUBLIC_PATHS.wordmark,
+    localRelativePath: relativePath(APP_IMAGE_LOCAL_PUBLIC_PATHS.wordmark),
+    requirementsText: 'Required. PNG, at least 256x64, aspect at least 3:1.',
+    requirementsHtml:
+      'Required. PNG, at least <span class="font-mono">256&times;64</span> with aspect <span class="font-mono">&ge;3:1</span>.',
+    dimensions: {
+      minWidth: 256,
+      minHeight: 64,
+      minAspect: 3,
+      acceptedTypes: ['png'],
+    },
+    syncKind: 'wordmark',
+    storageObjectName: APP_IMAGE_STORAGE_OBJECT_NAMES.wordmark,
+    firestoreField: APP_IMAGE_FIRESTORE_FIELDS.wordmark,
   },
   {
     key: 'wordmarkLight',
@@ -180,4 +201,3 @@ export const APP_PUBLIC_ASSET_REQUIREMENTS = [
   ...APP_SYNCABLE_IMAGE_REQUIREMENTS,
   ...APP_LOCAL_ONLY_ASSET_REQUIREMENTS,
 ] as const satisfies readonly AppPublicAssetRequirement[]
-

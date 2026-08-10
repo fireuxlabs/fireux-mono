@@ -87,12 +87,12 @@ Before each task:
   Kitchens inherit them and persist only differing colours on the canonical
   Kitchen root; Misebox app chrome and AppKitchen access records own neither.
   A Place owns its media below `assets`, including base
-  `assets.identity.logo_image_url` and `assets.identity.wordmark_image_url`;
-  bounded Place DTOs flatten those roles for consumers. A Kitchen may persist sparse identity
+  `assets.logo` and `assets.wordmark`; bounded Place DTOs retain that same
+  object and role vocabulary. A Kitchen may persist sparse identity
   overrides only when its operational identity genuinely differs. Kitchen
   cards resolve the
   sparse `Kitchen.identity.card_image_url` override first, then the linked
-  `Place.assets.cover_image`, with `Place.assets.image_url` only as the final fallback when
+  `Place.assets.cover`, with `Place.assets.image` only as the final fallback when
   no cover exists. This lets a restaurant inside a hotel provide its own square
   Kitchen crop while ordinary Kitchens reuse their Place cover at read time;
   no Place media is copied into the Kitchen root. Console target selection is
@@ -100,7 +100,7 @@ Before each task:
   and shows the neutral Kitchen fallback when that logo is absent. Demo
   Kitchens obey the same split and cannot reuse their Place photograph as
   their Kitchen logo.
-  Place optionally owns the validated six-digit `assets.media_backdrop_color` base
+  Place optionally owns the validated six-digit `assets.backdrop_color` base
   inherited by Place-backed children. Kitchen persists the sparse
   `identity.media_backdrop_color` override only when its transparent logo,
   either wordmark (including `wordmark_no_logo_image_url`), or transparent
@@ -258,7 +258,7 @@ Before each task:
   cross owner paths.
   Fixture and Product Demo modules import no Firebase or Storage SDK/API;
   browser image GETs do not turn the data envelope into a remote provider.
-  Canonical Ingredient and App media stay outside Demo, and Live media stays
+  Canonical Ingredient and App assets stay outside Demo, and Live media stays
   in its owning Live path. Remote audit and any create-only upload from an
   explicit external source directory use
   `scripts/publish-misebox-demo-media.mjs`, never a Console or runtime

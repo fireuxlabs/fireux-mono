@@ -4,7 +4,7 @@
       kind-label="User"
       icon="i-lucide-user-round"
       tone="primary"
-      :avatar-url="user.avatar || user.image || ''"
+      :avatar-url="user.assets.avatar || user.image || ''"
       :display-name="user.displayName"
       :handle="`@${user.handle}`"
       summary=""

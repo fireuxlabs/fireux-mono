@@ -113,7 +113,7 @@ type PublicUserDto = {
   handle: string
   displayName: string
   bio: string
-  avatar: string
+  assets: { avatar: string }
   apps: string[]
   profiles: string[]
   path: string
@@ -175,14 +175,14 @@ const liveSelfUser = computed<PublicUserDto | null>(() => {
   if (!handle) return null
 
   const displayName = String(user.display_name || '').trim() || `@${handle}`
-  const avatar = String(user.avatar || '').trim()
+  const avatar = String(user.assets.avatar || '').trim()
 
   return {
     id: String(user.id || '').trim(),
     handle,
     displayName,
     bio: String(user.bio || '').trim(),
-    avatar,
+    assets: { avatar },
     apps: [],
     profiles: [],
     path: `/users/${encodeURIComponent(handle)}`,
@@ -218,7 +218,7 @@ const collection = computed<User[]>(() =>
     id: user.id,
     display_name: user.displayName,
     bio: user.bio,
-    avatar: user.avatar,
+    assets: user.assets,
     handle: user.handle,
   }))
 )

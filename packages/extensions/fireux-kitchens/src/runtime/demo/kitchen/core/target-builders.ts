@@ -54,7 +54,6 @@ export type DemoPlaceInput = {
   imageUrl?: string
   coverImage?: string
   galleryImages?: string[]
-  imageShade?: Place['image_shade']
   businessHours?: Place['business_hours']
 }
 
@@ -123,10 +122,14 @@ export const place = (input: DemoPlaceInput): Place => ({
   lat: input.lat,
   lng: input.lng,
   timezone: 'Europe/Zurich',
-  image_url: input.imageUrl ?? '',
-  cover_image: input.coverImage ?? '',
-  gallery_images: input.galleryImages ?? [],
-  image_shade: input.imageShade ?? 'none',
+  assets: {
+    image: input.imageUrl ?? '',
+    cover: input.coverImage ?? '',
+    gallery: input.galleryImages ?? [],
+    logo: '',
+    wordmark: '',
+    backdrop_color: '',
+  },
   brand_palette: input.palette,
   types: ['restaurant'],
   tags: ['demo', 'restaurant'],

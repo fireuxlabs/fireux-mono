@@ -16,19 +16,25 @@ export interface ProjectIdentity {
 export interface ProjectPresentation {
   name: string
   description: string
-  image_url: string
+}
+
+export interface ProjectAssets {
+  image: string
 }
 
 export interface Project
   extends FireuxStamped,
     ProjectIdentity,
-    ProjectPresentation {}
+    ProjectPresentation {
+  assets: ProjectAssets
+}
 
 /** Local `(default)` projection for this Firebase project's Project. */
 export interface ProjectMeta
   extends ProjectIdentity,
     ProjectPresentation,
     Pick<FireuxStamped, 'updated'> {
+  assets: ProjectAssets
   database_id: string
 }
 
@@ -40,6 +46,12 @@ export const ProjectStorage = {
   path: 'projects/{projectId}',
   collection: 'projects',
   idParam: 'projectId',
+} as const
+
+export const ProjectAssetsStorage = {
+  shape: 'entity-assets',
+  root: 'projects/{projectId}',
+  image: 'projects/{projectId}/image',
 } as const
 
 export const ProjectMetaStorage = {
@@ -82,12 +94,16 @@ export const ProjectIdentityDefaults: ProjectIdentity = {
 export const ProjectPresentationDefaults: ProjectPresentation = {
   name: '',
   description: '',
-  image_url: '',
+}
+
+export const ProjectAssetsDefaults: ProjectAssets = {
+  image: '',
 }
 
 export const ProjectDefaults: Project = {
   ...ProjectIdentityDefaults,
   ...ProjectPresentationDefaults,
+  assets: ProjectAssetsDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -102,6 +118,7 @@ export const ProjectDefaults: Project = {
 export const ProjectMetaDefaults: ProjectMeta = {
   ...ProjectIdentityDefaults,
   ...ProjectPresentationDefaults,
+  assets: ProjectAssetsDefaults,
   database_id: '',
   updated: {
     at: {} as FirebaseTimestamp,
@@ -114,8 +131,8 @@ export const AppProjectDefaults: AppProject = {
 }
 
 export type ProjectCreateInput = Pick<Project, 'id' | 'name'> &
-  Partial<Pick<Project, 'description' | 'image_url' | 'status'>>
+  Partial<Pick<Project, 'description' | 'assets' | 'status'>>
 export type ProjectUpdateInput = Partial<
-  Pick<Project, 'name' | 'description' | 'image_url' | 'status'>
+  Pick<Project, 'name' | 'description' | 'assets' | 'status'>
 >
 export type ProjectMetaInput = Omit<ProjectMeta, 'updated'>

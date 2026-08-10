@@ -139,7 +139,7 @@ export async function updateUserHandle(input: {
       mutations.create(users, uid, {
         display_name: creation.displayName,
         bio: '',
-        avatar: creation.avatar,
+        assets: { avatar: creation.avatar },
         handle,
         created: {
           at: FieldValue.serverTimestamp(),
@@ -162,7 +162,10 @@ export async function updateUserHandle(input: {
         patch.display_name = creation.displayName
       }
       if (typeof data.bio !== 'string') patch.bio = ''
-      if (!readHttpsUrl(data.avatar)) patch.avatar = creation.avatar
+      const assets = data.assets as Record<string, unknown> | undefined
+      if (!readHttpsUrl(assets?.avatar)) {
+        patch['assets.avatar'] = creation.avatar
+      }
       if ('displayName' in data) patch.displayName = FieldValue.delete()
       if ('id' in data) patch.id = FieldValue.delete()
     }

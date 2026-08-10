@@ -105,4 +105,4 @@ Before delivery, confirm:
 - extras and rejected alternatives cannot be mistaken for runtime assets.
 
 Repository authority and implementation details remain in
-`docs/concepts/brand-assets.md` and the current App media requirements source.
+`docs/concepts/brand-assets.md` and the current App asset requirements source.

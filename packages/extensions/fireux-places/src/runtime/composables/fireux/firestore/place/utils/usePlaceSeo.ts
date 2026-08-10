@@ -18,7 +18,7 @@ export function buildPlaceJsonLd(
     '@type': 'Place',
     name,
     description: excerpt(place?.about || place?.brand_tagline || place?.short_address),
-    image: clean(place?.cover_image || place?.image_url) || undefined,
+    image: clean(place?.assets.cover || place?.assets.image) || undefined,
     address: clean(place?.short_address) || undefined,
     url: clean(place?.website) || undefined,
   }
@@ -34,7 +34,7 @@ export function usePlaceSeo(
   return useSeo({
     title: computed(() => clean(entry.value?.name) || 'Place'),
     description: computed(() => excerpt(entry.value?.about || entry.value?.brand_tagline || entry.value?.short_address || 'Place details.')),
-    image: computed(() => clean(entry.value?.cover_image || entry.value?.image_url)),
+    image: computed(() => clean(entry.value?.assets.cover || entry.value?.assets.image)),
     path: computed(() =>
       id.value ? `/${PlaceStorage.collection}/${encodeURIComponent(id.value)}` : ''
     ),

@@ -84,15 +84,11 @@ const measurements = ref<Record<string, AssetMeasurement[]>>({})
 let inspectionToken = 0
 
 const currentUrls = computed<Record<string, string[]>>(() => ({
-  image: props.place.image_url ? [props.place.image_url] : [],
-  cover: props.place.cover_image ? [props.place.cover_image] : [],
-  gallery: props.place.gallery_images || [],
-  logo: props.place.identity?.logo_image_url
-    ? [props.place.identity.logo_image_url]
-    : [],
-  wordmark: props.place.identity?.wordmark_image_url
-    ? [props.place.identity.wordmark_image_url]
-    : [],
+  image: props.place.assets.image ? [props.place.assets.image] : [],
+  cover: props.place.assets.cover ? [props.place.assets.cover] : [],
+  gallery: props.place.assets.gallery,
+  logo: props.place.assets.logo ? [props.place.assets.logo] : [],
+  wordmark: props.place.assets.wordmark ? [props.place.assets.wordmark] : [],
 }))
 
 function measureImage(url: string) {
@@ -130,15 +126,15 @@ const assets = computed(() =>
     const matches = Boolean(
       results?.length &&
       results.length === urls.length &&
-      results.every((result) =>
+      results.every((result: AssetMeasurement) =>
         !result.failed &&
         matchesPlaceAssetDimensions(requirement, result.width, result.height)
       )
     )
     const dimensions = Array.from(new Set(
       (results || [])
-        .filter(result => !result.failed)
-        .map(result => `${result.width} × ${result.height} px`)
+        .filter((result: AssetMeasurement) => !result.failed)
+        .map((result: AssetMeasurement) => `${result.width} × ${result.height} px`)
     ))
     return {
       ...requirement,
@@ -156,7 +152,7 @@ const assets = computed(() =>
         : matches
           ? 'success' as const
           : 'warning' as const,
-      dimensionSummary: results?.some(result => result.failed)
+      dimensionSummary: results?.some((result: AssetMeasurement) => result.failed)
         ? 'Could not read every image.'
         : requirement.multiple
           ? `${urls.length} image${urls.length === 1 ? '' : 's'} · ${dimensions.join(', ')}`

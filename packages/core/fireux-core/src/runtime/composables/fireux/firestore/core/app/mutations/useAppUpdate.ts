@@ -14,7 +14,7 @@ import {
   appImageStoragePath,
   validateAppAssetDimensions,
   type AppImageKind,
-} from '../utils/appMedia'
+} from '../utils/appAssets'
 
 export function useAppUpdate(appRef: Ref<App | null | undefined>) {
   const cfg = useFireUXConfig()
@@ -126,7 +126,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
 
   async function updateAvatarUrl(url: string | null) {
     const value = sanitizeThumbnailUrl(url)
-    await updateApp({ 'media.thumbnail_url': value })
+    await updateApp({ 'assets.thumbnail': value })
   }
 
   async function updateThumbnailUrl(url: string | null) {
@@ -138,7 +138,7 @@ export function useAppUpdate(appRef: Ref<App | null | undefined>) {
     const path = appImageStoragePath(id, 'thumbnail')
     const { uploadImage } = useImageStorage()
     const url = await uploadImage(path, source)
-    await updateApp({ 'media.thumbnail_url': cacheBust(url) })
+    await updateApp({ 'assets.thumbnail': cacheBust(url) })
     return url
   }
 

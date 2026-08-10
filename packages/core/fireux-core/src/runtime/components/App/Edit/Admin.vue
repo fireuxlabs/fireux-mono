@@ -248,8 +248,8 @@ const cardForUser = (
 
   return {
     ...fallbackUserCard({ id, displayName, handle }),
-    avatarUrl: target?.avatar ?? '',
-    imageUrl: target?.avatar ?? '',
+    avatarUrl: target?.assets.avatar ?? '',
+    imageUrl: target?.assets.avatar ?? '',
     title: '',
     summary: '',
     bio: '',

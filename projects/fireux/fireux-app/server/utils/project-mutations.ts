@@ -90,7 +90,7 @@ function accessIds(data: Record<string, unknown> | undefined) {
 
 export async function createProject(event: H3Event, input: unknown) {
   const body = record(input, 'Project create request')
-  const allowed = new Set(['id', 'name', 'description', 'image_url', 'status'])
+  const allowed = new Set(['id', 'name', 'description', 'assets', 'status'])
   const unsupported = Object.keys(body).find((key) => !allowed.has(key))
   if (unsupported)
     fail(400, `Project create contains unsupported field: ${unsupported}.`)
@@ -99,7 +99,13 @@ export async function createProject(event: H3Event, input: unknown) {
     id,
     name: boundedText(body.name, 'Project name', 120),
     description: optionalText(body.description, 'Project description', 2000),
-    image_url: optionalText(body.image_url, 'Project image URL', 2000),
+    assets: {
+      image: optionalText(
+        record(body.assets ?? {}, 'Project assets').image,
+        'Project image URL',
+        2000
+      ),
+    },
     status: status(body.status, 'draft'),
   }
   const current = await authority(event)
@@ -153,7 +159,7 @@ export async function updateProject(
 ) {
   const id = requireFirestoreDocumentId(projectId, 'Project id')
   const body = record(input, 'Project update request')
-  const allowed = new Set(['name', 'description', 'image_url', 'status'])
+  const allowed = new Set(['name', 'description', 'assets', 'status'])
   const unsupported = Object.keys(body).find((key) => !allowed.has(key))
   if (unsupported)
     fail(400, `Project update contains unsupported field: ${unsupported}.`)
@@ -165,8 +171,16 @@ export async function updateProject(
       'Project description',
       2000
     )
-  if ('image_url' in body)
-    patch.image_url = optionalText(body.image_url, 'Project image URL', 2000)
+  if ('assets' in body) {
+    const assets = record(body.assets, 'Project assets')
+    const unsupportedAsset = Object.keys(assets).find((key) => key !== 'image')
+    if (unsupportedAsset) {
+      fail(400, `Project assets contain unsupported field: ${unsupportedAsset}.`)
+    }
+    patch.assets = {
+      image: optionalText(assets.image, 'Project image URL', 2000),
+    }
+  }
   if ('status' in body) patch.status = status(body.status)
   if (!Object.keys(patch).length)
     fail(400, 'Project update has no supported fields.')

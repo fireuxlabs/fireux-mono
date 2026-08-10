@@ -3,7 +3,7 @@ import {
   type PublicPlaceProjection,
 } from '../models/place-public.model'
 import type { PlaceType } from '../models/place.model'
-import { readMediaBackdropColor } from './place-spine'
+import { readPlaceAssets } from './place-spine'
 
 const text = (value: unknown) => String(value ?? '').trim()
 
@@ -29,16 +29,7 @@ export function normalizePublicPlaceProjection(
     short_name: text(value.short_name),
     brand_tagline: text(value.brand_tagline),
     short_address: text(value.short_address),
-    image_url: text(value.image_url),
-    media_backdrop_color: readMediaBackdropColor(
-      value.media_backdrop_color,
-      value.image_shade
-    ),
-    image_shade: text(value.image_shade) === 'light'
-      ? 'light'
-      : text(value.image_shade) === 'dark'
-        ? 'dark'
-        : 'none',
+    assets: readPlaceAssets(value),
     verified: value.verified === true,
     slug: text(value.slug),
   }

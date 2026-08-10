@@ -96,8 +96,8 @@
         <UCard v-for="app in publishedApps" :key="app.id" variant="subtle">
           <div class="flex items-start gap-4">
             <img
-              v-if="app.media.logo_url"
-              :src="app.media.logo_url"
+              v-if="app.assets.logo"
+              :src="app.assets.logo"
               :alt="`${app.app_name} logo`"
               width="48"
               height="48"
@@ -250,7 +250,7 @@ useSeo({
   title: miseboxEcosystemProfile.seo.title,
   description: miseboxEcosystemProfile.seo.description,
   path: '/ecosystems/misebox',
-  image: computed(() => ecosystem.value?.image_url || '/img/app/cover.png'),
+  image: computed(() => ecosystem.value?.assets.image || '/img/app/cover.png'),
   robots: computed(() =>
     ecosystem.value ? 'index, follow' : 'noindex, nofollow'
   ),

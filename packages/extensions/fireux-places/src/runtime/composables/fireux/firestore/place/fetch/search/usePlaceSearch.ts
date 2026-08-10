@@ -1,6 +1,6 @@
 // Concurrent edit — 2026-07-21 14:30 CEST — Place public projection: search projected Places without browser Firestore access.
 import { ref, watch } from 'vue'
-import { type BasePlace, type PlaceImageShade, type PlaceSource } from '../../../../../../models/place.model'
+import { type BasePlace, type PlaceSource } from '../../../../../../models/place.model'
 import { mapPlaceToBasePlace } from '../../utils/view/mapPlaceToBasePlace'
 import { canonicalPlaceId } from '../google/usePlacesGoogle'
 import { normalizeQuery } from './normalizeQuery'
@@ -30,8 +30,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
     const shortName = String((base as any)?.short_name ?? '').trim()
     const formattedAddress = String((base as any)?.formatted_address ?? '').trim()
     const shortAddress = String((base as any)?.short_address ?? '').trim()
-    const imageUrl = String((base as any)?.image_url ?? '').trim()
-    const imageShade = (base as any)?.image_shade as PlaceImageShade | undefined
+    const imageUrl = String((base as any)?.assets?.image ?? '').trim()
     const source = (base as any)?.source as PlaceSource | undefined
     const claimedBy = String((base as any)?.claimed_by ?? '').trim()
     const collection = String((base as any)?.collection ?? '').trim() || undefined
@@ -44,7 +43,6 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
       formattedAddress,
       shortAddress,
       imageUrl,
-      imageShade,
       source,
       claimedBy,
       collection,
@@ -156,7 +154,7 @@ export function usePlaceSearch(options: UsePlaceSearchOptions = {}) {
       ...(Number.isFinite(lat) ? { lat } : {}),
       ...(Number.isFinite(lng) ? { lng } : {}),
       source: (place as any)?.source as any,
-      image_url: String((place as any)?.image_url ?? ''),
+      assets: (place as any)?.assets,
       claimed_by: String((place as any)?.claimed_by ?? ''),
       collection: (place as any)?.collection,
     } as any
@@ -178,7 +176,6 @@ export type PlaceSearchCell = {
   formattedAddress: string
   shortAddress: string
   imageUrl: string
-  imageShade?: PlaceImageShade
   source?: PlaceSource
   claimedBy?: string
   collection?: string

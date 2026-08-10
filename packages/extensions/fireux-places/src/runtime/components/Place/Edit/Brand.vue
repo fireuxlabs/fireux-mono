@@ -58,7 +58,7 @@ const { updateBrandPalette } = usePlaceUpdate({
   authority: () => props.mutationAuthority,
 })
 
-watch(source, value => {
+watch(source, (value: SparseBrandPalette) => {
   if (!saving.value) draft.value = { ...value }
 })
 

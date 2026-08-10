@@ -5,7 +5,7 @@ import {
   type App,
 } from '../../../models/core/app.model'
 import type { AppSocialLinks } from '../../../models/core/app.model'
-import { resolveAppMediaForView } from '../firestore/core/app/utils/appMedia'
+import { resolveAppAssetsForView } from '../firestore/core/app/utils/appAssets'
 import { useResolvedColorMode } from './useColorMode'
 
 export namespace AppCard {
@@ -70,14 +70,15 @@ export type AppViewSource = Partial<Omit<App, 'role' | 'status'>> & {
   derived?: { user_count?: number }
 }
 
-function safeMedia(app: AppViewSource) {
+function safeAssets(app: AppViewSource) {
   return (
-    app.media ?? {
-      thumbnail_url: '',
-      logo_url: '',
-      wordmark_light_url: '',
-      wordmark_dark_url: '',
-      cover_url: '',
+    app.assets ?? {
+      thumbnail: '',
+      logo: '',
+      wordmark: '',
+      wordmark_light: '',
+      wordmark_dark: '',
+      cover: '',
     }
   )
 }
@@ -121,7 +122,7 @@ export function useAppInterface(
   }
 
   function resolveWordmarkUrl(app: AppViewSource): string {
-    const media = resolveAppMediaForView(safeMedia(app), {
+    const media = resolveAppAssetsForView(safeAssets(app), {
       devLocalFallback: false,
     })
     return resolvedMode.value === 'dark'
@@ -130,7 +131,7 @@ export function useAppInterface(
   }
 
   function map(app: AppViewSource): AppCard.Card {
-    const media = resolveAppMediaForView(safeMedia(app), {
+    const media = resolveAppAssetsForView(safeAssets(app), {
       devLocalFallback: false,
     })
     const id = safeString(app.id).trim()

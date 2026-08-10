@@ -92,7 +92,7 @@ export function projectPublicApp(
   if (!id) return null
 
   const source = asRecord(raw)
-  const media = asRecord(source.media)
+  const assets = asRecord(source.assets)
   const derived = asRecord(source.derived)
   const created = asRecord(source.created)
   const createdAt = asTimestamp(created.at)
@@ -116,12 +116,13 @@ export function projectPublicApp(
     derived: {
       user_count: asNonNegativeInt(derived.user_count),
     },
-    media: {
-      thumbnail_url: asTrimmedString(media.thumbnail_url),
-      logo_url: asTrimmedString(media.logo_url),
-      wordmark_light_url: asTrimmedString(media.wordmark_light_url),
-      wordmark_dark_url: asTrimmedString(media.wordmark_dark_url),
-      cover_url: asTrimmedString(media.cover_url),
+    assets: {
+      thumbnail: asTrimmedString(assets.thumbnail),
+      logo: asTrimmedString(assets.logo),
+      wordmark: asTrimmedString(assets.wordmark),
+      wordmark_light: asTrimmedString(assets.wordmark_light),
+      wordmark_dark: asTrimmedString(assets.wordmark_dark),
+      cover: asTrimmedString(assets.cover),
     },
     ...(createdAt
       ? {
@@ -151,12 +152,6 @@ export function toAppDirectoryEntry(app: PublicAppDto): AppDirectoryEntry {
     derived: {
       user_count: app.derived.user_count,
     },
-    media: {
-      logo_url: app.media.logo_url,
-      thumbnail_url: app.media.thumbnail_url,
-      wordmark_light_url: app.media.wordmark_light_url,
-      wordmark_dark_url: app.media.wordmark_dark_url,
-      cover_url: app.media.cover_url,
-    },
+    assets: app.assets,
   }
 }

@@ -3784,7 +3784,7 @@ async function buildSecurityTests() {
       strangerId,
       {
         display_name: 'Attacker',
-        avatar: '/img/ecosystem/avatar.png',
+        assets: { avatar: '/img/ecosystem/avatar.png' },
         handle: 'security-rules-attacker',
         created: {},
         updated: {},
@@ -3797,7 +3797,10 @@ async function buildSecurityTests() {
       publicUserData,
       {
         ...publicUserData,
-        avatar: 'https://example.invalid/avatars/rules-user.jpg',
+        assets: {
+          ...publicUserData.assets,
+          avatar: 'https://example.invalid/avatars/rules-user.jpg',
+        },
         updated: { at: updateTime, by: publicUserId },
       },
       updateTime
@@ -3814,7 +3817,7 @@ async function buildSecurityTests() {
         publicUserData,
         {
           ...publicUserData,
-          avatar,
+          assets: { ...publicUserData.assets, avatar },
           updated: { at: updateTime, by: publicUserId },
         }
       )

@@ -104,7 +104,12 @@ export async function removePlace(event: H3Event, placeId: string) {
     mutations.delete(places, id)
   })
 
-  for (const objectPath of [`places/${id}/image`, `places/${id}/avatar`]) {
+  for (const objectPath of [
+    `places/${id}/image`,
+    `places/${id}/cover`,
+    `places/${id}/logo`,
+    `places/${id}/wordmark`,
+  ]) {
     await deleteStorageFileIfExists({ objectPath }).catch((error) => {
       console.warn('[places/delete] Place removed but an image could not be cleaned up.', {
         placeId: id,

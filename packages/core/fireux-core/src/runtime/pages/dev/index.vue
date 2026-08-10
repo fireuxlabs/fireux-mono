@@ -30,7 +30,7 @@
       <template #header>
         <div class="flex flex-wrap items-start justify-between gap-3">
           <div class="space-y-1">
-            <h2>App media</h2>
+            <h2>App assets</h2>
             <p class="text-sm text-muted">
               Publish this App's image family to its configured Firebase
               Storage bucket.
@@ -43,7 +43,7 @@
             :disabled="mediaSyncPending"
             @click="syncRuntimeMedia"
           >
-            Sync App media
+            Sync App assets
           </UButton>
         </div>
       </template>
@@ -261,7 +261,7 @@ import { computed, ref } from 'vue'
 import { useDevAppCollection } from '../../composables/dev/useDevAppCollection'
 import { useFireUXConfig } from '../../composables/fireux/app/FireUXConfig'
 import { useAppEnvCheck } from '../../composables/fireux/app/utils/useAppEnvCheck'
-import { syncAppMediaToStorage } from '../../composables/fireux/firestore/core/app/utils/appMediaSync'
+import { syncAppAssetsToStorage } from '../../composables/fireux/firestore/core/app/utils/appAssetsSync'
 
 definePageMeta({
   title: 'Dev · Overview',
@@ -363,7 +363,7 @@ const syncRuntimeMedia = async () => {
   mediaSyncError.value = ''
 
   try {
-    const result = await syncAppMediaToStorage()
+    const result = await syncAppAssetsToStorage()
     const uploadedCount = Object.values(result.uploaded).filter(Boolean).length
     mediaSyncMessage.value = `${uploadedCount} asset(s) published for ${result.appId}.`
     if (result.failed.length) {
@@ -375,7 +375,7 @@ const syncRuntimeMedia = async () => {
     mediaSyncError.value =
       error instanceof Error && error.message.trim()
         ? error.message.trim()
-        : 'App media sync failed.'
+        : 'App asset sync failed.'
   } finally {
     mediaSyncPending.value = false
   }

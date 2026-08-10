@@ -605,7 +605,7 @@ service cloud.firestore {
     function isValidUser(data) {
       return data.keys().hasAll([
           'display_name',
-          'avatar',
+          'assets',
           'handle',
           'created',
           'updated'
@@ -613,14 +613,17 @@ service cloud.firestore {
         data.keys().hasOnly([
           'display_name',
           'bio',
-          'avatar',
+          'assets',
           'handle',
           'created',
           'updated'
         ]) &&
         validRequiredText(data, 'display_name', 1, 120) &&
         validOptionalText(data, 'bio', 280) &&
-        isValidUserAvatar(data.avatar) &&
+        data.assets is map &&
+        data.assets.keys().hasAll(['avatar']) &&
+        data.assets.keys().hasOnly(['avatar']) &&
+        isValidUserAvatar(data.assets.avatar) &&
         data.handle is string &&
         data.handle.matches('^[a-z0-9][a-z0-9-]{2,29}$') &&
         validCreatedStamp(data.created) &&
@@ -655,7 +658,7 @@ service cloud.firestore {
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'display_name',
           'bio',
-          'avatar',
+          'assets',
           'updated'
         ]) &&
         validOwnerUpdateStamp(request.resource.data, userId);
@@ -909,20 +912,26 @@ service cloud.firestore {
         validOptionalText(value, 'email', 320);
     }
 
-    function isValidAppMedia(value) {
+    function isValidAppAssets(value) {
       return value is map &&
         value.keys().hasOnly([
-          'thumbnail_url',
-          'logo_url',
-          'wordmark_light_url',
-          'wordmark_dark_url',
-          'cover_url'
+          'thumbnail',
+          'logo',
+          'wordmark',
+          'wordmark_light',
+          'wordmark_dark',
+          'cover'
         ]) &&
-        validOptionalText(value, 'thumbnail_url', 2048) &&
-        validOptionalText(value, 'logo_url', 2048) &&
-        validOptionalText(value, 'wordmark_light_url', 2048) &&
-        validOptionalText(value, 'wordmark_dark_url', 2048) &&
-        validOptionalText(value, 'cover_url', 2048);
+        (!('thumbnail' in value) ||
+          isValidHttpsUrl(value.thumbnail, 2048)) &&
+        (!('logo' in value) || isValidHttpsUrl(value.logo, 2048)) &&
+        (!('wordmark' in value) ||
+          isValidHttpsUrl(value.wordmark, 2048)) &&
+        (!('wordmark_light' in value) ||
+          isValidHttpsUrl(value.wordmark_light, 2048)) &&
+        (!('wordmark_dark' in value) ||
+          isValidHttpsUrl(value.wordmark_dark, 2048)) &&
+        (!('cover' in value) || isValidHttpsUrl(value.cover, 2048));
     }
 
     function isValidFireuxRepo(value) {
@@ -988,7 +997,7 @@ service cloud.firestore {
           'long_bio',
           'social_links',
           'derived',
-          'media',
+          'assets',
           'fireux_native',
           'fireux_size',
           'fireux_repo',
@@ -1017,7 +1026,7 @@ service cloud.firestore {
         data.derived.user_count is int &&
         data.derived.user_count >= 0 &&
         data.derived.user_count <= 10000000 &&
-        (!('media' in data) || isValidAppMedia(data.media)) &&
+        (!('assets' in data) || isValidAppAssets(data.assets)) &&
         (!('fireux_native' in data) || data.fireux_native is bool) &&
         (!('fireux_size' in data) || data.fireux_size in ['big', 'small']) &&
         (!('fireux_repo' in data) || isValidFireuxRepo(data.fireux_repo)) &&
@@ -1030,14 +1039,15 @@ service cloud.firestore {
     }
 
     function isValidAppAdminUpdate(data) {
-      return validRequiredText(data, 'app_name', 1, 60) &&
+      return !('media' in data) &&
+        validRequiredText(data, 'app_name', 1, 60) &&
         validRequiredText(data, 'app_short_name', 1, 40) &&
         validOptionalText(data, 'tagline', 120) &&
         validOptionalText(data, 'description', 500) &&
         validOptionalText(data, 'short_bio', 240) &&
         validOptionalText(data, 'long_bio', 4000) &&
         (!('social_links' in data) || isValidAppSocialLinks(data.social_links)) &&
-        (!('media' in data) || isValidAppMedia(data.media));
+        (!('assets' in data) || isValidAppAssets(data.assets));
     }
 
     match /apps/{appId} {
@@ -1071,7 +1081,7 @@ service cloud.firestore {
           'short_bio',
           'long_bio',
           'social_links',
-          'media',
+          'assets',
           'updated'
         ]) &&
         request.resource.data.created == resource.data.created &&

@@ -59,7 +59,7 @@ export default defineEventHandler(async (event: H3Event) => {
   }
 
   const saved = await saveStorageFileWithDownloadToken({
-    objectPath: `users/${uid}/avatar/current`,
+    objectPath: `users/${uid}/avatar`,
     data: avatar.data,
     contentType,
     cacheControl: 'public,max-age=31536000,immutable',

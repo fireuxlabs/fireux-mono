@@ -55,9 +55,9 @@ const recommended = computed(() => [
   !present(props.place.short_name) ? 'Short name' : '',
   !present(props.place.brand_tagline) ? 'Brand tagline' : '',
   !present(props.place.about) ? 'About' : '',
-  !present(props.place.image_url) ? 'Place image' : '',
-  !present(props.place.cover_image) ? 'Cover image' : '',
-  !props.place.gallery_images.length ? 'Gallery' : '',
+  !present(props.place.assets.image) ? 'Place image' : '',
+  !present(props.place.assets.cover) ? 'Cover image' : '',
+  !props.place.assets.gallery.length ? 'Gallery' : '',
   !present(props.place.website) ? 'Website' : '',
   !props.place.business_hours.windows.length ? 'Opening hours' : '',
   props.place.source === 'manual' && !present(props.place.formatted_address)

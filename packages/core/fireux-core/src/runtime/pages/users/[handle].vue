@@ -100,7 +100,7 @@ useSeo({
   title,
   description,
   path,
-  image: computed(() => user.value?.image || user.value?.avatar),
+  image: computed(() => user.value?.image || user.value?.assets.avatar),
   robots: computed(() =>
     missing.value ? 'noindex, nofollow' : 'index, follow'
   ),

@@ -49,7 +49,7 @@ export type UserSurfaceParts<TUser extends object = Partial<User>> = {
 
 export type UserIdentitySurface = Pick<
   User,
-  'id' | 'display_name' | 'avatar' | 'handle'
+  'id' | 'display_name' | 'assets' | 'handle'
 > &
   Partial<Pick<User, 'bio'>>
 
@@ -82,7 +82,7 @@ export function useUserInterface(
   }
 
   function resolveAvatarUrl(user: UserIdentitySurface): string {
-    return getProxiedAvatarUrl(resolveUserAvatarSource(user.avatar))
+    return getProxiedAvatarUrl(resolveUserAvatarSource(user.assets.avatar))
   }
 
   function map(user: UserIdentitySurface): UserCard.Card {

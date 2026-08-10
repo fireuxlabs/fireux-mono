@@ -63,16 +63,10 @@ const stringArray = (value: unknown) =>
     : []
 
 export const readMediaBackdropColor = (
-  value: unknown,
-  legacyShade?: unknown
+  value: unknown
 ): MediaBackdropColor | '' => {
   const color = normalizeHexColor(value)
-  if (color) return color as MediaBackdropColor
-  // Read-only compatibility until the bounded audit/migration is approved.
-  const shade = text(legacyShade).toLowerCase()
-  if (shade === 'light') return '#111827'
-  if (shade === 'dark') return '#ffffff'
-  return ''
+  return color ? color as MediaBackdropColor : ''
 }
 
 const time = (value: unknown) => {
@@ -151,34 +145,17 @@ export const readPlaceBusinessHours = (value: unknown) => {
     : null
 }
 
-/**
- * Resolve canonical Place assets while old flat Firestore records are migrated.
- * New nested values win; legacy leaves are read-only compatibility.
- */
+/** Read the one canonical Place asset shape. */
 export const readPlaceAssets = (value: unknown): PlaceAssets => {
-  const source = record(value)
-  const assets = record(source.assets)
-  const canonicalIdentity = record(assets.identity)
-  const legacyIdentity = record(source.identity)
+  const assets = record(record(value).assets)
 
   return {
-    image_url: text(assets.image_url) || text(source.image_url),
-    cover_image: text(assets.cover_image) || text(source.cover_image),
-    gallery_images: stringArray(assets.gallery_images).length
-      ? stringArray(assets.gallery_images)
-      : stringArray(source.gallery_images),
-    identity: {
-      logo_image_url:
-        text(canonicalIdentity.logo_image_url) ||
-        text(legacyIdentity.logo_image_url),
-      wordmark_image_url:
-        text(canonicalIdentity.wordmark_image_url) ||
-        text(legacyIdentity.wordmark_image_url),
-    },
-    media_backdrop_color: readMediaBackdropColor(
-      assets.media_backdrop_color || source.media_backdrop_color,
-      source.image_shade
-    ),
+    image: text(assets.image),
+    cover: text(assets.cover),
+    gallery: stringArray(assets.gallery),
+    logo: text(assets.logo),
+    wordmark: text(assets.wordmark),
+    backdrop_color: readMediaBackdropColor(assets.backdrop_color),
   }
 }
 
@@ -197,16 +174,12 @@ export const readPlacePresentation = (value: unknown) => {
     about: text(source.about),
     formattedAddress: text(source.formatted_address),
     shortAddress: text(source.short_address),
-    imageUrl: assets.image_url,
-    coverImage: assets.cover_image,
-    gallery: assets.gallery_images,
-    mediaBackdropColor: assets.media_backdrop_color,
-    /** @deprecated Compatibility projection only. */
-    imageShade: text(source.image_shade).toLowerCase() === 'light'
-      ? 'light'
-      : text(source.image_shade).toLowerCase() === 'dark'
-        ? 'dark'
-        : 'none',
+    imageUrl: assets.image,
+    coverImage: assets.cover,
+    gallery: assets.gallery,
+    logoUrl: assets.logo,
+    wordmarkUrl: assets.wordmark,
+    mediaBackdropColor: assets.backdrop_color,
     phone: text(source.phone),
     website: text(source.website),
     googleMapsUrl: text(source.google_maps_url),

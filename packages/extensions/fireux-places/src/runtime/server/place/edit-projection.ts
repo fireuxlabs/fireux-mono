@@ -64,16 +64,16 @@ export function projectPlaceEdit(
     search_term: text(value.search_term, 1_000),
     lat: coordinate(value.lat, -90, 90),
     lng: coordinate(value.lng, -180, 180),
-    image_url: url(assets.image_url),
-    cover_image: url(assets.cover_image),
-    gallery_images: Array.from(new Set(
-      assets.gallery_images.map(url).filter(Boolean)
-    )).slice(0, 24),
-    identity: {
-      logo_image_url: url(assets.identity.logo_image_url),
-      wordmark_image_url: url(assets.identity.wordmark_image_url),
+    assets: {
+      image: url(assets.image),
+      cover: url(assets.cover),
+      gallery: Array.from(new Set(
+        assets.gallery.map(url).filter(Boolean)
+      )).slice(0, 24),
+      logo: url(assets.logo),
+      wordmark: url(assets.wordmark),
+      backdrop_color: assets.backdrop_color,
     },
-    media_backdrop_color: assets.media_backdrop_color,
     brand_palette: readBrandPalette(value.brand_palette),
     phone: text(value.phone, 120),
     email: text(value.email, 320),

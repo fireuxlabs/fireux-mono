@@ -23,6 +23,11 @@ const PROJECT_STATUSES = new Set<ProjectStatus>([
 ])
 
 const text = (value: unknown) => String(value ?? '').trim()
+const record = (value: unknown): Record<string, unknown> =>
+  value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {}
+
 export default defineEventHandler(async (event: H3Event) => {
   const { uid } = await requireFirebaseBearerUser(event)
   const runtime = useRuntimeConfig()
@@ -74,7 +79,7 @@ export default defineEventHandler(async (event: H3Event) => {
         id: document.id,
         name: text(source.name),
         description: text(source.description),
-        image_url: text(source.image_url),
+        assets: { image: text(record(source.assets).image) },
         status: PROJECT_STATUSES.has(rawStatus) ? rawStatus : 'draft',
       }
     })

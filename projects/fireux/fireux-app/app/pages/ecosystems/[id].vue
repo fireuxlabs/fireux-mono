@@ -176,7 +176,7 @@ useSeo({
   ),
   description: pageDescription,
   path: canonicalPath,
-  image: computed(() => ecosystem.value?.image_url || '/img/app/cover.png'),
+  image: computed(() => ecosystem.value?.assets.image || '/img/app/cover.png'),
   robots: computed(() =>
     ecosystem.value ? 'index, follow' : 'noindex, nofollow'
   ),

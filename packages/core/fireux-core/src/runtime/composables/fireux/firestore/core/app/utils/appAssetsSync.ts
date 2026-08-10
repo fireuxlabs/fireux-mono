@@ -1,10 +1,10 @@
 import { useRequireUser } from '../../../../firebase/useRequireUser'
-import type { AppMediaSyncResponse } from './appMedia'
+import type { AppAssetSyncResponse } from './appAssets'
 
-export async function syncAppMediaToStorage(): Promise<AppMediaSyncResponse> {
+export async function syncAppAssetsToStorage(): Promise<AppAssetSyncResponse> {
   const user = await useRequireUser()
   const token = await user.getIdToken()
-  const response = await fetch('/api/internal/app/sync-media', {
+  const response = await fetch('/api/internal/app/sync-assets', {
     method: 'POST',
     headers: { authorization: `Bearer ${token}` },
   })
@@ -18,10 +18,10 @@ export async function syncAppMediaToStorage(): Promise<AppMediaSyncResponse> {
     ).trim()
     throw new Error(
       detail
-        ? `App media sync failed (${response.status}): ${detail}`
-        : `App media sync failed (${response.status}).`
+        ? `App asset sync failed (${response.status}): ${detail}`
+        : `App asset sync failed (${response.status}).`
     )
   }
 
-  return (await response.json()) as AppMediaSyncResponse
+  return (await response.json()) as AppAssetSyncResponse
 }

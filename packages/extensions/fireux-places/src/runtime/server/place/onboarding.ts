@@ -1,5 +1,4 @@
 import { createError, type H3Event } from 'h3'
-import { FieldValue } from 'firebase-admin/firestore'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
@@ -51,7 +50,7 @@ export async function previewPlaceOnboarding(
     const current = currentDefaults(place)
     const timezone = current.timezone || (await resolveTimezone(event, place))
     const suggested = suggestions(place, timezone)
-    const imageUrl = storedHttpsImage(readPlaceAssets(place).image_url)
+    const image = storedHttpsImage(readPlaceAssets(place).image)
     const brandPalette = storedBrandPalette(place)
     return {
       id: actor.placeRef.id,
@@ -60,7 +59,7 @@ export async function previewPlaceOnboarding(
       requires_defaults: !current.default_currency_code || !current.timezone,
       ...(Object.keys(current).length ? { current } : {}),
       ...(Object.keys(suggested).length ? { suggestions: suggested } : {}),
-      ...(imageUrl ? { image_url: imageUrl } : {}),
+      ...(image ? { assets: { image } } : {}),
       ...(Object.keys(brandPalette).length
         ? { brand_palette: brandPalette }
         : {}),
@@ -113,8 +112,8 @@ export async function completePlaceOnboarding(
       mutations.create(places, requested.id, {
         ...provider,
         ...requested.defaults,
-        ...('imageUrl' in requested
-          ? { assets: { image_url: requested.imageUrl } }
+        ...('assets' in requested
+          ? { assets: requested.assets }
           : {}),
         ...('brandPalette' in requested
           ? { brand_palette: requested.brandPalette }
@@ -131,7 +130,7 @@ export async function completePlaceOnboarding(
         created: true,
         configured: true,
         defaults: requested.defaults,
-        ...('imageUrl' in requested ? { image_url: requested.imageUrl } : {}),
+        ...('assets' in requested ? { assets: requested.assets } : {}),
         ...('brandPalette' in requested
           ? { brand_palette: requested.brandPalette }
           : {}),
@@ -140,16 +139,15 @@ export async function completePlaceOnboarding(
 
     const place = snapshot.data || {}
     const current = currentDefaults(place)
-    const storedImage = storedHttpsImage(readPlaceAssets(place).image_url)
+    const storedImage = storedHttpsImage(readPlaceAssets(place).image)
     const currentBrandPalette = storedBrandPalette(place)
     const patch: Record<string, unknown> = {}
     if (!current.default_currency_code) {
       patch.default_currency_code = requested.defaults.default_currency_code
     }
     if (!current.timezone) patch.timezone = requested.defaults.timezone
-    if (!storedImage && 'imageUrl' in requested) {
-      patch['assets.image_url'] = requested.imageUrl
-      patch.image_url = FieldValue.delete()
+    if (!storedImage && 'assets' in requested) {
+      patch['assets.image'] = requested.assets?.image
     }
     if (
       !Object.keys(currentBrandPalette).length &&
@@ -190,9 +188,9 @@ export async function completePlaceOnboarding(
         timezone: current.timezone || requested.defaults.timezone,
       },
       ...(storedImage
-        ? { image_url: storedImage }
-        : 'imageUrl' in requested
-          ? { image_url: requested.imageUrl }
+        ? { assets: { image: storedImage } }
+        : 'assets' in requested
+          ? { assets: requested.assets }
           : {}),
       ...(Object.keys(currentBrandPalette).length
         ? { brand_palette: currentBrandPalette }

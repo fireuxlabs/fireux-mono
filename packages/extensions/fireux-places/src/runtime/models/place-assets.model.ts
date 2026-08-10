@@ -64,7 +64,7 @@ export const PLACE_ASSET_REQUIREMENTS = [
   {
     key: 'logo',
     label: 'Logo',
-    storagePath: 'places/{placeId}/identity/logo',
+    storagePath: 'places/{placeId}/logo',
     requirements: 'Exactly 512 × 512 px (1:1). Transparent PNG.',
     aspectRatio: 'square',
     multiple: false,
@@ -78,7 +78,7 @@ export const PLACE_ASSET_REQUIREMENTS = [
   {
     key: 'wordmark',
     label: 'Wordmark',
-    storagePath: 'places/{placeId}/identity/wordmark',
+    storagePath: 'places/{placeId}/wordmark',
     requirements:
       'At least 256 × 64 px with an aspect ratio of at least 3:1. Transparent PNG.',
     aspectRatio: 'wordmark',

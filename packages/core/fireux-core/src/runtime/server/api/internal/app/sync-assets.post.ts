@@ -4,7 +4,6 @@ import { randomUUID } from 'node:crypto'
 import { existsSync, readFileSync } from 'node:fs'
 import { extname, join, resolve as pathResolve } from 'node:path'
 import {
-  FieldValue,
   type DocumentData,
   type UpdateData,
 } from 'firebase-admin/firestore'
@@ -23,9 +22,9 @@ import {
   appImageStoragePath,
   validateAppAssetDimensions,
   type AppImageKind,
-  type AppMediaSyncFailure,
-  type AppMediaSyncResponse,
-} from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+  type AppAssetSyncFailure,
+  type AppAssetSyncResponse,
+} from '../../../../composables/fireux/firestore/core/app/utils/appAssets'
 import { ensureRuntimeAppMeta } from '../../../utils/app-projection/ensure'
 
 function findRepoRoot(start: string): string {
@@ -173,14 +172,14 @@ export default defineEventHandler(async (event) => {
   if (!appId) {
     throw createError({
       statusCode: 400,
-      statusMessage: 'Missing appId for media sync.',
+      statusMessage: 'Missing appId for asset sync.',
     })
   }
 
   if (!ecosystem) {
     throw createError({
       statusCode: 500,
-      statusMessage: 'Missing runtime ecosystem for media sync.',
+      statusMessage: 'Missing runtime ecosystem for asset sync.',
     })
   }
 
@@ -193,8 +192,8 @@ export default defineEventHandler(async (event) => {
 
   const repoRoot = findRepoRoot(process.cwd())
   const resolveLocalAsset = createLocalAssetResolver(repoRoot, ecosystem, appId)
-  const uploaded: AppMediaSyncResponse['uploaded'] = {}
-  const failed: AppMediaSyncFailure[] = []
+  const uploaded: AppAssetSyncResponse['uploaded'] = {}
+  const failed: AppAssetSyncFailure[] = []
 
   for (const kind of APP_IMAGE_SYNC_KINDS) {
     try {
@@ -215,10 +214,7 @@ export default defineEventHandler(async (event) => {
     }
   }
 
-  const patch: UpdateData<DocumentData> = {
-    wordmark_url: FieldValue.delete(),
-    avatar_url: FieldValue.delete(),
-  }
+  const patch: UpdateData<DocumentData> = {}
 
   for (const [kind, url] of Object.entries(uploaded) as Array<
     [AppImageKind, string | undefined]
@@ -227,7 +223,7 @@ export default defineEventHandler(async (event) => {
     patch[appImageFirestoreField(kind)] = url
   }
 
-  if (Object.keys(patch).length > 2) {
+  if (Object.keys(patch).length) {
     await serverUpdate(FIRESTORE_MUTATION_TARGETS.runtimeApps, appId, patch)
     const appDatabaseId = String(
       runtime.public?.firebaseEcosystem?.firebase?.databaseId || ''
@@ -243,5 +239,5 @@ export default defineEventHandler(async (event) => {
     appId,
     uploaded,
     failed,
-  } satisfies AppMediaSyncResponse
+  } satisfies AppAssetSyncResponse
 })

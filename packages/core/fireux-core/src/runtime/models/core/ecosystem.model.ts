@@ -13,19 +13,25 @@ export interface EcosystemIdentity {
 export interface EcosystemPresentation {
   name: string
   description: string
-  image_url: string
   website_url: string
+}
+
+export interface EcosystemAssets {
+  image: string
 }
 
 export interface Ecosystem
   extends FireuxStamped,
     EcosystemIdentity,
-    EcosystemPresentation {}
+    EcosystemPresentation {
+  assets: EcosystemAssets
+}
 
 export interface EcosystemMeta
   extends EcosystemIdentity,
     EcosystemPresentation,
     Pick<FireuxStamped, 'updated'> {
+  assets: EcosystemAssets
   database_id: string
 }
 
@@ -35,6 +41,12 @@ export const EcosystemStorage = {
   path: 'ecosystems/{ecosystemId}',
   collection: 'ecosystems',
   idParam: 'ecosystemId',
+} as const
+
+export const EcosystemAssetsStorage = {
+  shape: 'entity-assets',
+  root: 'ecosystems/{ecosystemId}',
+  image: 'ecosystems/{ecosystemId}/image',
 } as const
 
 export const EcosystemMetaStorage = {
@@ -67,13 +79,17 @@ export const EcosystemIdentityDefaults: EcosystemIdentity = {
 export const EcosystemPresentationDefaults: EcosystemPresentation = {
   name: '',
   description: '',
-  image_url: '',
   website_url: '',
+}
+
+export const EcosystemAssetsDefaults: EcosystemAssets = {
+  image: '',
 }
 
 export const EcosystemDefaults: Ecosystem = {
   ...EcosystemIdentityDefaults,
   ...EcosystemPresentationDefaults,
+  assets: EcosystemAssetsDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -88,6 +104,7 @@ export const EcosystemDefaults: Ecosystem = {
 export const EcosystemMetaDefaults: EcosystemMeta = {
   ...EcosystemIdentityDefaults,
   ...EcosystemPresentationDefaults,
+  assets: EcosystemAssetsDefaults,
   database_id: '',
   updated: {
     at: {} as FirebaseTimestamp,

@@ -86,8 +86,8 @@ export function useKitchenConsoleOverview() {
   )
   const identityImage = computed(() =>
     normalizeString(
-      place.value?.image_url ||
-        place.value?.cover_image ||
+      place.value?.assets.image ||
+        place.value?.assets.cover ||
         kitchenSource.value.display_image_url ||
         kitchenSource.value.image_url ||
         kitchenSource.value.identity?.image_url

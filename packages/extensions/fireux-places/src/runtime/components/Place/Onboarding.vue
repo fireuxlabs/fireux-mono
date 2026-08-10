@@ -62,7 +62,7 @@
     <PlaceOnboardingBrand
       v-if="entryMethod === 'search' && activeStepId === 'brand' && draft"
       :place-name="draft.name"
-      :image-url="draft.image_url || ''"
+      :image-url="draft.assets?.image || ''"
       :image-file="imageFile"
       :uploading="pending"
       :image-editable="canEditImage"

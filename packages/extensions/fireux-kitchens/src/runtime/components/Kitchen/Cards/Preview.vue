@@ -101,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import type { KitchenImageShade } from '../../../models/kitchen.model'
 import { computed } from 'vue'
 
 type KitchenPreviewDetail = {
@@ -111,7 +111,7 @@ type KitchenPreviewDetail = {
 
 type Props = {
   imageUrl: string
-  imageShade?: PlaceImageShade
+  imageShade?: KitchenImageShade
   name: string
   formattedAddress: string
   shortAddress?: string

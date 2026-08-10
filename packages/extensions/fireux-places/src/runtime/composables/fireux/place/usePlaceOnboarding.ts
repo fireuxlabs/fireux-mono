@@ -11,7 +11,7 @@ import {
   fetchPlaceDetails,
 } from '../firestore/place/fetch/google/usePlacesGoogle'
 import { usePlaceCreate } from '../firestore/place/mutations/usePlaceCreate'
-import type { PlaceUpsertInput } from '../../../models/place.model'
+import { PlaceDefaults, type PlaceUpsertInput } from '../../../models/place.model'
 import type { PlaceOnboardingPreview } from '../../../models/place-onboarding.model'
 import {
   normalizePlaceCurrencyCode,
@@ -87,13 +87,13 @@ export function usePlaceOnboarding() {
   const canAddBrand = computed(() => Boolean(
     preview.value &&
     canConfigure.value &&
-    (!preview.value.image_url || !preview.value.brand_palette)
+    (!preview.value.assets?.image || !preview.value.brand_palette)
   ))
   const needsEnrichment = computed(() => Boolean(
     needsDefaults.value || canAddBrand.value
   ))
   const canEditImage = computed(() => Boolean(
-    canAddBrand.value && !preview.value?.image_url
+    canAddBrand.value && !preview.value?.assets?.image
   ))
   const canEditBrandPalette = computed(() => Boolean(
     canAddBrand.value && !preview.value?.brand_palette
@@ -213,7 +213,7 @@ export function usePlaceOnboarding() {
           )
           await completePlaceOnboarding({
             ...defaults,
-            image_url: imageUrl,
+            assets: { image: imageUrl },
           })
         }
       }
@@ -291,8 +291,14 @@ export function usePlaceOnboarding() {
         ...(current.timezone || suggestions.timezone
           ? { timezone: current.timezone || suggestions.timezone }
           : {}),
-        ...(resolvedPreview.image_url
-          ? { image_url: resolvedPreview.image_url }
+        ...(resolvedPreview.assets?.image
+          ? {
+              assets: {
+                ...PlaceDefaults.assets,
+                ...draft.value?.assets,
+                image: resolvedPreview.assets.image,
+              },
+            }
           : {}),
         ...(resolvedPreview.brand_palette
           ? { brand_palette: resolvedPreview.brand_palette }

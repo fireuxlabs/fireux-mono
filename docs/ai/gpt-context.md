@@ -509,6 +509,11 @@ Before each task:
   authenticated `/api/internal/user/avatar` server Storage boundary before it
   writes the canonical User. Browser Storage Rules are not the provisioning
   path, and a local `/img/...` placeholder is never the persisted avatar.
+- Canonical asset-bearing roots isolate entity-owned file URLs beneath
+  `assets`: User uses `assets.avatar`; App uses `assets.thumbnail`, `logo`,
+  `wordmark`, `wordmark_light`, `wordmark_dark`, and `cover`; Ecosystem and
+  Project use `assets.image`. Storage uses the same roles directly beneath the
+  entity id, without `current`, `media`, or URL suffixes.
 - A canonical domain root is independently valid before App attachment.
   Root/App-support families may use `root_only` scope with no App support until
   an explicit attachment workflow runs; App support never substitutes for or
@@ -610,11 +615,11 @@ Before each task:
   or present one as a security boundary.
 - App initialization creates or verifies the canonical named-database App and
   first Admin membership, then idempotently maintains the matching local
-  `(default)` AppMeta projection. App media sync and App-admin presentation
+  `(default)` AppMeta projection. App asset sync and App-admin presentation
   edits use the same projection seam. The second database write is retryable,
   not falsely described as part of the named-database transaction.
 - App initialization requires a fully valid environment, live Firebase
-  Storage reachability, and App-owned media check. Dev mode is not authority to
+  Storage reachability, and App-owned asset check. Dev mode is not authority to
   bypass required configuration, infrastructure, or asset validation.
 
 ## Financial fact ownership

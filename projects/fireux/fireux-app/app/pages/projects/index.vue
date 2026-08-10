@@ -60,8 +60,8 @@
                 class="grid size-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-elevated text-muted"
               >
                 <img
-                  v-if="project.image_url"
-                  :src="project.image_url"
+                  v-if="project.assets.image"
+                  :src="project.assets.image"
                   :alt="`${project.name || project.id} logo`"
                   width="56"
                   height="56"

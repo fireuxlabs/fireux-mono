@@ -234,8 +234,7 @@ const kitchenPlaceCardSnapshot = (place) =>
     brand_tagline: text(place.brand_tagline),
     short_address: text(place.short_address),
     formatted_address: text(place.formatted_address),
-    image_url: text(place.image_url || place.cover_image),
-    image_shade: text(place.image_shade),
+    image_url: text(place.assets?.image || place.assets?.cover),
   })
 
 function kitchenName(kitchen) {

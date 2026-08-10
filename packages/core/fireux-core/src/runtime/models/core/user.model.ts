@@ -15,10 +15,18 @@ export interface UserIdentity {
 export interface UserPresentation {
   display_name: string
   bio: string
+}
+
+export interface UserAssets {
   avatar: string
 }
 
-export interface User extends FireuxStamped, UserIdentity, UserPresentation {}
+export interface User
+  extends FireuxStamped,
+    UserIdentity,
+    UserPresentation {
+  assets: UserAssets
+}
 
 export interface AppUser extends FireuxStamped {
   id: string
@@ -39,6 +47,12 @@ export const UserStorage = {
   path: 'users/{userId}',
   collection: 'users',
   idParam: 'userId',
+} as const
+
+export const UserAssetsStorage = {
+  shape: 'entity-assets',
+  root: 'users/{userId}',
+  avatar: 'users/{userId}/avatar',
 } as const
 
 export const AppUserStorage = {
@@ -79,12 +93,16 @@ export const UserIdentityDefaults: UserIdentity = {
 export const UserPresentationDefaults: UserPresentation = {
   display_name: '',
   bio: '',
+}
+
+export const UserAssetsDefaults: UserAssets = {
   avatar: USER_ECOSYSTEM_AVATAR_SRC,
 }
 
 export const UserDefaults: User = {
   ...UserIdentityDefaults,
   ...UserPresentationDefaults,
+  assets: UserAssetsDefaults,
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,

@@ -138,7 +138,7 @@ their own complete identity.
 | Branded child Apps own different marks and wordmarks | `accepted`  | Product identity is an App-level presentation delta                                        |
 | An App has approved PNG wordmarks but no faithful SVG | `accepted`  | PNG is the runtime authority until an outlined vector master preserves the same geometry   |
 | FireUX ecosystem PNG paths mirror Core assets        | `accepted`  | Existing runtime consumers require ecosystem-local public paths; the projection is guarded |
-| FireUX parent App paths mirror Core assets           | `accepted`  | The App media contract requires `/img/app`; the projection is guarded                      |
+| FireUX parent App paths mirror Core assets           | `accepted`  | The App asset contract requires `/img/app`; the projection is guarded                      |
 | An unguarded duplicate of FireUX platform identity   | `drift`     | Add a projection target or consume the Core fallback directly                              |
 | Light and dark wordmarks carry the same text colour  | `drift`     | Surface semantics must remain visible and distinct                                         |
 | App identity is borrowed from an unrelated App       | `drift`     | Restore the App's real standard asset family or a named projection                         |

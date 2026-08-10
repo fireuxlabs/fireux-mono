@@ -1,5 +1,5 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import type { KitchenImageShade } from '../../../../../../models/kitchen.model'
 import type { Menu } from '../../../../../../models/kitchen/menu/menu.model'
 import {
   menuRoutePath,
@@ -15,8 +15,8 @@ export type MenuInterfaceSource = Omit<Partial<Menu>, 'id' | 'status'> & {
   file_kind?: string
   image_url?: string
   imageUrl?: string
-  image_shade?: PlaceImageShade
-  imageShade?: PlaceImageShade
+  image_shade?: KitchenImageShade
+  imageShade?: KitchenImageShade
   source?: {
     app_id?: string
     kitchen_id?: string
@@ -32,7 +32,7 @@ export namespace MenuCard {
     id: string
     to: string
     imageUrl: string
-    imageShade?: PlaceImageShade
+    imageShade?: KitchenImageShade
     title: string
     subtitle: string
     meta: string
@@ -77,7 +77,7 @@ export function useMenuInterface() {
 
   type MenuPreview = {
     imageUrl: string
-    imageShade?: PlaceImageShade
+    imageShade?: KitchenImageShade
     title: string
     subtitle: string
     isActiveNow: boolean

@@ -65,7 +65,7 @@ const chosenPlaceCard = computed(() => {
     to: '',
     name: place.name ?? '',
     formattedAddress: place.formatted_address ?? '',
-    imageUrl: place.image_url ?? '',
+    imageUrl: place.assets?.image ?? '',
     source: (place.source as any) ?? 'fireux',
   }
 })

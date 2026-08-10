@@ -120,7 +120,7 @@ export function useUserComputed(user: UserRefs, pending?: { value?: boolean }) {
   }
 
   const avatarSrc = computed<string | undefined>(() => {
-    const raw = coreUser.value?.avatar || authUserRef.value?.photoURL
+    const raw = coreUser.value?.assets.avatar || authUserRef.value?.photoURL
     const normalized = typeof raw === 'string' ? raw.trim() : ''
     const proxied = getProxiedAvatarUrl(normalized || undefined)
     return proxied || undefined

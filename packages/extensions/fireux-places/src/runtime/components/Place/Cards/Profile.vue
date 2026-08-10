@@ -13,7 +13,7 @@
           <UAvatar
             :src="model.imageUrl || undefined"
             :alt="model.title"
-            :class="['fx-card__cover-avatar', avatarShadeClass]"
+            class="fx-card__cover-avatar"
             size="md"
           />
           <div class="fx-card__content">
@@ -45,7 +45,7 @@
         <UAvatar
           :src="model.imageUrl || undefined"
           :alt="model.title"
-          :class="['fx-card__avatar', avatarShadeClass]"
+          class="fx-card__avatar"
           size="md"
         />
         <div class="fx-card__content fx-card__stack fx-card__stack--tight">
@@ -222,13 +222,6 @@ const props = withDefaults(defineProps<{
   showGoogleHours: true,
 })
 const { model } = toRefs(props)
-
-const avatarShadeClass = computed(() => {
-  const shade = model.value.card.imageShade
-  if (shade === 'light') return 'fx-avatar-shade--light'
-  if (shade === 'dark') return 'fx-avatar-shade--dark'
-  return ''
-})
 
 const tagChips = computed(() =>
   [...(model.value.tags ?? []), ...(model.value.types ?? [])]

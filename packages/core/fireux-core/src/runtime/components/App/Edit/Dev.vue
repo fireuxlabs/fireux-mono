@@ -138,7 +138,7 @@ const ownershipSections = [
     key: 'developer',
     label: 'Developer',
     description:
-      'Builds and checks App media, database binding and repo metadata.',
+      'Builds and checks App assets, database binding and repo metadata.',
     icon: 'i-lucide-code-xml',
     fields: appFieldGroups.developer,
   },

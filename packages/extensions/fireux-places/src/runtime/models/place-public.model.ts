@@ -4,10 +4,8 @@
 // Concurrent edit — 2026-07-22 12:13 CEST — Place palette onboarding: expose validated public brand colours only on Place detail.
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import type {
-  MediaBackdropColor,
+  PlaceAssets,
   PlaceBusinessHours,
-  PlaceImageShade,
-  PlaceIdentity,
   PlaceSocialLinks,
   PlaceType,
 } from './place.model'
@@ -25,9 +23,7 @@ export const PUBLIC_PLACE_PROJECTION_KEYS = [
   'short_name',
   'brand_tagline',
   'short_address',
-  'image_url',
-  'media_backdrop_color',
-  'image_shade',
+  'assets',
   'verified',
   'slug',
 ] as const
@@ -46,10 +42,7 @@ export type PublicPlaceProjection = {
   short_name: string
   brand_tagline: string
   short_address: string
-  image_url: string
-  media_backdrop_color: MediaBackdropColor | ''
-  /** @deprecated Read-only compatibility during the bounded migration. */
-  image_shade: PlaceImageShade
+  assets: PlaceAssets
   verified: boolean
   slug: string
 }
@@ -64,9 +57,6 @@ export type PublicPlaceDetailProjection = PublicPlaceProjection & {
   timezone?: string
   brand_palette?: SparseBrandPalette
   about?: string
-  cover_image?: string
-  gallery_images?: string[]
-  identity?: Partial<PlaceIdentity>
   business_hours?: PlaceBusinessHours
   website?: string
   google_maps_url?: string

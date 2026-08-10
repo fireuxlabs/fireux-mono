@@ -5,7 +5,6 @@
   <section class="form-stack-sm">
     <PlaceCardsPreview
       :image-url="previewSource"
-      :image-shade="place.image_shade"
       :name="place.name"
       :formatted-address="address"
       :source="place.source"
@@ -59,7 +58,7 @@ const objectUrl = ref('')
 let previewedFile: File | null = null
 
 const previewSource = computed(
-  () => objectUrl.value || String(props.place.image_url || '').trim()
+  () => objectUrl.value || String(props.place.assets?.image || '').trim()
 )
 
 const address = computed(() =>
@@ -72,7 +71,7 @@ const address = computed(() =>
 
 const logoLabel = computed(() => {
   if (props.imageFile) return 'Ready to upload'
-  if (String(props.place.image_url || '').trim()) return 'Existing logo'
+  if (String(props.place.assets?.image || '').trim()) return 'Existing image'
   return 'Skipped for now'
 })
 

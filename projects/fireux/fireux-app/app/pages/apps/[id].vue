@@ -205,7 +205,7 @@ useSeo({
   path: canonicalPath,
   image: computed(
     () =>
-      app.value?.media.cover_url || app.value?.media.thumbnail_url || undefined
+      app.value?.assets.cover || app.value?.assets.thumbnail || undefined
   ),
   robots: computed(() =>
     isIndexable.value ? 'index, follow' : 'noindex, nofollow'

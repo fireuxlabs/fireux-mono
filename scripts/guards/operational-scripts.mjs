@@ -30,7 +30,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   await assertProtectedJsonArtifact()
   await assertRulesReleaseBackup(repoRoot)
   await assertWerkboxRulesSurface(repoRoot)
-  await assertAppMediaOperationalSurface(repoRoot)
+  await assertAppAssetsOperationalSurface(repoRoot)
   await assertSnapshotSyncSafety(repoRoot)
   await assertUserIdentityPlannerReadOnly(repoRoot)
   await assertFirebaseAuthDomainSync(repoRoot)
@@ -702,14 +702,14 @@ async function assertWerkboxRulesSurface(repoRoot) {
   )
 }
 
-async function assertAppMediaOperationalSurface(repoRoot) {
+async function assertAppAssetsOperationalSurface(repoRoot) {
   const packageJson = JSON.parse(
     await readFile(path.join(repoRoot, 'package.json'), 'utf8')
   )
   assert.equal(
-    packageJson.scripts?.['audit:app-media'],
-    'node scripts/audit-app-media.mjs',
-    'App media exposes one read-only operational audit.'
+    packageJson.scripts?.['audit:app-assets'],
+    'node scripts/audit-app-assets.mjs',
+    'App assets expose one read-only operational audit.'
   )
 
   const retired = [
@@ -722,7 +722,7 @@ async function assertAppMediaOperationalSurface(repoRoot) {
     await assert.rejects(
       access(path.join(repoRoot, 'scripts', file)),
       (error) => error?.code === 'ENOENT',
-      `${file} is retired; App media writes are runtime-owned.`
+      `${file} is retired; App asset writes are runtime-owned.`
     )
   }
 
@@ -735,22 +735,22 @@ async function assertAppMediaOperationalSurface(repoRoot) {
     assert.equal(
       packageJson.scripts?.[command],
       undefined,
-      `${command} must not restore a root App media writer.`
+      `${command} must not restore a root App asset writer.`
     )
   }
 
   const audit = await readFile(
-    path.join(repoRoot, 'scripts/audit-app-media.mjs'),
+    path.join(repoRoot, 'scripts/audit-app-assets.mjs'),
     'utf8'
   )
   for (const token of [
     'APP_REGISTRY',
     'parseFirebaseStorageDownloadUrl',
-    'const media = recordObject(data.media)',
+    'const assets = recordObject(data.assets)',
     'bucket.getFiles({ prefix })',
     'await deleteApp(adminApp)',
   ]) {
-    assert.ok(audit.includes(token), `App media audit must retain ${token}.`)
+    assert.ok(audit.includes(token), `App asset audit must retain ${token}.`)
   }
 }
 

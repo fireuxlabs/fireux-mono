@@ -5,7 +5,7 @@ export type PlaceOnboardingRequest = {
   id?: unknown
   default_currency_code?: unknown
   timezone?: unknown
-  image_url?: unknown
+  assets?: unknown
   brand_palette?: unknown
 }
 

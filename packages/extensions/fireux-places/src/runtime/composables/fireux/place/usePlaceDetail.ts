@@ -35,7 +35,7 @@ export function usePlaceDetail(props: { locator: string }) {
       '--fx-public-entity-accent':
         palette?.primary_color || 'var(--ui-primary)',
       '--fx-place-identity-backdrop':
-        place.value?.media_backdrop_color ||
+        place.value?.assets.backdrop_color ||
         palette?.secondary_color ||
         palette?.primary_color ||
         'transparent',
@@ -187,7 +187,7 @@ export function usePlaceDetail(props: { locator: string }) {
       .filter((row) => row.days)
   )
   const hasEditorialContent = computed(() =>
-    Boolean(place.value?.about || place.value?.gallery_images?.length)
+    Boolean(place.value?.about || place.value?.assets.gallery.length)
   )
   const editTo = computed(() =>
     locator.value

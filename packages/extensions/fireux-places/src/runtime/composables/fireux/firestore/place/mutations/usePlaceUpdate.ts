@@ -126,13 +126,13 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   async function updatePlaceImage(value: string, ctx: UpdateCtx) {
-    await update(reqId(ctx), { image_url: optionalString(value) })
+    await update(reqId(ctx), { assets: { image: optionalString(value) } })
   }
 
   async function updateMediaBackdropColor(value: string, ctx: UpdateCtx) {
     const color = normalizeHexColor(value)
     if (color === null) throw new Error('Use a 6-digit hex colour.')
-    await update(reqId(ctx), { media_backdrop_color: color || null })
+    await update(reqId(ctx), { assets: { backdrop_color: color || null } })
   }
 
   async function updatePhone(value: string, ctx: UpdateCtx) {
@@ -182,13 +182,13 @@ export function usePlaceUpdate(options: UsePlaceUpdateOptions = {}) {
   }
 
   async function updateCoverImage(value: string, ctx: UpdateCtx) {
-    await update(reqId(ctx), { cover_image: optionalString(value) })
+    await update(reqId(ctx), { assets: { cover: optionalString(value) } })
   }
 
   async function updateGalleryImages(value: string[], ctx: UpdateCtx) {
     const galleryImages = Array.from(new Set(value.map(sanitize).filter(Boolean)))
     await update(reqId(ctx), {
-      gallery_images: galleryImages.length ? galleryImages : null,
+      assets: { gallery: galleryImages.length ? galleryImages : null },
     })
   }
 

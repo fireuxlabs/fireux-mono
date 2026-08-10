@@ -175,20 +175,20 @@ function collectFirestoreImages(
 
   // Canonical fields used across the app
   push(
-    'media.thumbnail_url',
-    'Thumbnail (media.thumbnail_url)',
-    (app as any)?.media?.thumbnail_url
+    'assets.thumbnail',
+    'Thumbnail (assets.thumbnail)',
+    (app as any)?.assets?.thumbnail
   )
-  push('media.logo_url', 'Logo (media.logo_url)', (app as any)?.media?.logo_url)
+  push('assets.logo', 'Logo (assets.logo)', (app as any)?.assets?.logo)
   push(
-    'media.wordmark_light_url',
+    'assets.wordmark_light',
     'Wordmark (light)',
-    (app as any)?.media?.wordmark_light_url
+    (app as any)?.assets?.wordmark_light
   )
   push(
-    'media.wordmark_dark_url',
+    'assets.wordmark_dark',
     'Wordmark (dark)',
-    (app as any)?.media?.wordmark_dark_url
+    (app as any)?.assets?.wordmark_dark
   )
 
   // De-dupe by url, keep first label

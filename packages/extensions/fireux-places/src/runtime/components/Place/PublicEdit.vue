@@ -52,15 +52,15 @@
         <div v-else class="place-editor__workspace">
           <header class="place-editor__masthead">
             <img
-              v-if="place.cover_image"
-              :src="place.cover_image"
+              v-if="place.assets.cover"
+              :src="place.assets.cover"
               alt=""
               class="place-editor__cover"
             >
             <div class="place-editor__masthead-shade" aria-hidden="true" />
             <div class="place-editor__identity">
               <div class="place-editor__avatar" :style="avatarStyle">
-                <img v-if="place.image_url" :src="place.image_url" alt="">
+                <img v-if="place.assets.image" :src="place.assets.image" alt="">
                 <span v-else>{{ initials }}</span>
               </div>
               <div class="place-editor__identity-copy">
@@ -190,7 +190,7 @@ const initials = computed(() =>
     .join('')
 )
 const avatarStyle = computed(() => ({
-  background: editablePlace.value?.media_backdrop_color || 'var(--ui-bg-accented)',
+  background: editablePlace.value?.assets.backdrop_color || 'var(--ui-bg-accented)',
 }))
 
 const compactValue = (value: unknown): unknown => {

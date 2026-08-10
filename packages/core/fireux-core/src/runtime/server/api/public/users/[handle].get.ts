@@ -42,7 +42,8 @@ function mapUserDocToDto(
     asTrimmedString(data.display_name) ||
     asTrimmedString(data.displayName) ||
     `@${handle}`
-  const avatar = resolveUserAvatarSource(data.avatar)
+  const assets = data.assets as Record<string, unknown> | undefined
+  const avatar = resolveUserAvatarSource(assets?.avatar)
   const bio = asBoundedTrimmedString(data.bio, 280)
 
   return {
@@ -50,7 +51,7 @@ function mapUserDocToDto(
     handle,
     displayName,
     bio,
-    avatar,
+    assets: { avatar },
     title: displayName,
     description: resolvePublicDescription(
       bio,

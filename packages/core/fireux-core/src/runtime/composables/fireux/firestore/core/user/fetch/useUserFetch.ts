@@ -35,7 +35,9 @@ function normalizeCoreUser(raw: User, fallbackId: string): User {
       typeof anyRaw.bio === 'string' && anyRaw.bio.trim().length <= 280
         ? anyRaw.bio.trim()
         : '',
-    avatar: resolveUserAvatarSource((raw as any).avatar),
+    assets: {
+      avatar: resolveUserAvatarSource(anyRaw.assets?.avatar),
+    },
     handle: (raw as any).handle ?? '',
   }
 }

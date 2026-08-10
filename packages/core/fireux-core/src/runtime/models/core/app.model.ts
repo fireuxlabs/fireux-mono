@@ -5,12 +5,13 @@ import type { FireuxStamped } from '../utils/stamps.model'
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type AppRole = 'global' | 'tenant' | 'standalone'
 
-export interface AppMedia {
-  thumbnail_url: string
-  logo_url: string
-  wordmark_light_url: string
-  wordmark_dark_url: string
-  cover_url: string
+export interface AppAssets {
+  thumbnail: string
+  logo: string
+  wordmark: string
+  wordmark_light: string
+  wordmark_dark: string
+  cover: string
 }
 
 /** Directory transport metadata; not part of canonical App storage. */
@@ -51,10 +52,10 @@ export interface AppPresentation {
   name: string
   short_name: string
   description: string
-  media: AppMedia
 }
 
 export interface App extends FireuxStamped, AppIdentity, AppPresentation {
+  assets: AppAssets
   self_join_enabled: boolean
   primary_entity?: AppPrimaryEntityReference
 }
@@ -63,6 +64,7 @@ export interface AppMeta
   extends AppIdentity,
     AppPresentation,
     Pick<FireuxStamped, 'updated'> {
+  assets: AppAssets
   database_id: string
   website_url: string
   console_families: AppConsoleFamily[]
@@ -74,6 +76,17 @@ export const AppStorage = {
   path: 'apps/{appId}',
   collection: 'apps',
   idParam: 'appId',
+} as const
+
+export const AppAssetsStorage = {
+  shape: 'entity-assets',
+  root: 'apps/{appId}',
+  thumbnail: 'apps/{appId}/thumbnail',
+  logo: 'apps/{appId}/logo',
+  wordmark: 'apps/{appId}/wordmark',
+  wordmarkLight: 'apps/{appId}/wordmark-light',
+  wordmarkDark: 'apps/{appId}/wordmark-dark',
+  cover: 'apps/{appId}/cover',
 } as const
 
 export const AppMetaStorage = {
@@ -109,18 +122,21 @@ export const AppPresentationDefaults: AppPresentation = {
   name: '',
   short_name: '',
   description: '',
-  media: {
-    thumbnail_url: '',
-    logo_url: '',
-    wordmark_light_url: '',
-    wordmark_dark_url: '',
-    cover_url: '',
-  },
+}
+
+export const AppAssetsDefaults: AppAssets = {
+  thumbnail: '',
+  logo: '',
+  wordmark: '',
+  wordmark_light: '',
+  wordmark_dark: '',
+  cover: '',
 }
 
 export const AppDefaults: App = {
   ...AppIdentityDefaults,
   ...AppPresentationDefaults,
+  assets: AppAssetsDefaults,
   self_join_enabled: false,
   created: {
     at: {} as FirebaseTimestamp,
@@ -136,6 +152,7 @@ export const AppDefaults: App = {
 export const AppMetaDefaults: AppMeta = {
   ...AppIdentityDefaults,
   ...AppPresentationDefaults,
+  assets: AppAssetsDefaults,
   database_id: '',
   website_url: '',
   console_families: [],

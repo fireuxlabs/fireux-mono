@@ -1,9 +1,9 @@
-import type { Place, PlaceImageShade } from 'fireux-places/runtime/models/place.model'
+import type { Place } from 'fireux-places/runtime/models/place.model'
 import type { CurrencyDisplayFormat } from '../../../../../../models/shared/currency-display.model'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
-import type { Kitchen, KitchenMenusConfig } from '../../../../../../models/kitchen.model'
+import type { Kitchen, KitchenImageShade, KitchenMenusConfig } from '../../../../../../models/kitchen.model'
 import type { PublicKitchenImageKind } from '../../../../../../models/kitchen/kitchen-index.model'
 
 export namespace KitchenCard {
@@ -27,7 +27,7 @@ export namespace KitchenCard {
     imageUrl: string
 
     // Image tone metadata
-    imageShade?: PlaceImageShade
+    imageShade?: KitchenImageShade
     imageKind?: PublicKitchenImageKind
 
     // Search collection (optional)
@@ -79,7 +79,7 @@ export type KitchenSurface = {
   image_url?: string
   display_image_url?: string
   logo_image_url?: string
-  image_shade?: PlaceImageShade
+  image_shade?: KitchenImageShade
   image_kind?: PublicKitchenImageKind
   media_backdrop_color?: string
   claimed_by?: string
@@ -109,10 +109,7 @@ export type KitchenSurfaceParts<TKitchen extends object = Partial<Kitchen>> = {
     | 'lat'
     | 'lng'
     | 'timezone'
-    | 'image_url'
-    | 'cover_image'
-    | 'gallery_images'
-    | 'image_shade'
+    | 'assets'
     | 'phone'
     | 'email'
     | 'website'

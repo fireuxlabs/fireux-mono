@@ -21,20 +21,21 @@
         (!('email' in value) || isValidEmail(value.email, 320));
     }
 
-    function isValidAppMedia(value) {
+    function isValidAppAssets(value) {
       return value is map &&
         value.keys().hasOnly([
-          'thumbnail_url', 'logo_url', 'wordmark_light_url',
-          'wordmark_dark_url', 'cover_url'
+          'thumbnail', 'logo', 'wordmark', 'wordmark_light',
+          'wordmark_dark', 'cover'
         ]) &&
-        (!('thumbnail_url' in value) ||
-          isValidHttpsUrl(value.thumbnail_url, 2048)) &&
-        (!('logo_url' in value) || isValidHttpsUrl(value.logo_url, 2048)) &&
-        (!('wordmark_light_url' in value) ||
-          isValidHttpsUrl(value.wordmark_light_url, 2048)) &&
-        (!('wordmark_dark_url' in value) ||
-          isValidHttpsUrl(value.wordmark_dark_url, 2048)) &&
-        (!('cover_url' in value) || isValidHttpsUrl(value.cover_url, 2048));
+        (!('thumbnail' in value) ||
+          isValidHttpsUrl(value.thumbnail, 2048)) &&
+        (!('logo' in value) || isValidHttpsUrl(value.logo, 2048)) &&
+        (!('wordmark' in value) || isValidHttpsUrl(value.wordmark, 2048)) &&
+        (!('wordmark_light' in value) ||
+          isValidHttpsUrl(value.wordmark_light, 2048)) &&
+        (!('wordmark_dark' in value) ||
+          isValidHttpsUrl(value.wordmark_dark, 2048)) &&
+        (!('cover' in value) || isValidHttpsUrl(value.cover, 2048));
     }
 
     function isValidFireuxRepo(value) {
@@ -78,7 +79,7 @@
         data.keys().hasOnly([
           'project_id', 'ecosystem_id', 'database_id', 'slug', 'status',
           'app_name', 'app_short_name', 'role', 'tagline', 'description',
-          'short_bio', 'long_bio', 'social_links', 'derived', 'media',
+          'short_bio', 'long_bio', 'social_links', 'derived', 'assets',
           'fireux_native', 'fireux_size', 'fireux_repo', 'self_join_enabled',
           'moderation_state', 'ban_reasons', 'created', 'updated'
         ]) &&
@@ -96,7 +97,7 @@
         data.derived.keys().hasOnly(['user_count']) &&
         data.derived.user_count is int &&
         data.derived.user_count >= 0 && data.derived.user_count <= 10000000 &&
-        (!('media' in data) || isValidAppMedia(data.media)) &&
+        (!('assets' in data) || isValidAppAssets(data.assets)) &&
         (!('fireux_native' in data) || data.fireux_native is bool) &&
         (!('fireux_size' in data) || data.fireux_size in ['big', 'small']) &&
         (!('fireux_repo' in data) || isValidFireuxRepo(data.fireux_repo)) &&
@@ -114,7 +115,7 @@
         isValidApp(request.resource.data, appId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'tagline', 'description', 'short_bio', 'long_bio', 'social_links',
-          'media', 'updated'
+          'assets', 'updated'
         ]) &&
         request.resource.data.created == resource.data.created &&
         validOwnerUpdateStamp(request.resource.data, request.auth.uid);

@@ -105,7 +105,7 @@ export function completeInput(value: unknown) {
     'id',
     'default_currency_code',
     'timezone',
-    'image_url',
+    'assets',
     'brand_palette',
   ])
   const unsupported = Object.keys(source).find((key) => !allowed.has(key))
@@ -123,7 +123,10 @@ export function completeInput(value: unknown) {
   if (!timezone) {
     badRequest('Confirm a valid IANA timezone, such as Europe/Zurich.')
   }
-  const imageUrl = httpsImage(source.image_url, id)
+  const assetInput = record(source.assets)
+  const unsupportedAsset = Object.keys(assetInput).find(key => key !== 'image')
+  if (unsupportedAsset) badRequest(`Unsupported onboarding asset: ${unsupportedAsset}.`)
+  const image = httpsImage(assetInput.image, id)
   const brandPaletteResult = parseBrandPalette(source.brand_palette)
   if (!brandPaletteResult.ok) badRequest(brandPaletteResult.error)
   const brandPalette = brandPaletteResult.value
@@ -133,7 +136,7 @@ export function completeInput(value: unknown) {
       default_currency_code: defaultCurrencyCode,
       timezone,
     },
-    ...(imageUrl ? { imageUrl } : {}),
+    ...(image ? { assets: { image } } : {}),
     ...(Object.keys(brandPalette).length ? { brandPalette } : {}),
   }
 }

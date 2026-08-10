@@ -117,7 +117,7 @@ export function menuKitchenIdentity(
       explicitKitchenDisplayName(rootData) ||
       place.name,
     imageUrl: place.imageUrl,
-    imageShade: place.imageShade as KitchenImageShade,
+    imageShade: rootIdentity.imageShade as KitchenImageShade,
     logoImageUrl: rootIdentity.logoImageUrl,
     wordmarkImageUrl:
       rootIdentity.wordmarkNoLogoImageUrl ||

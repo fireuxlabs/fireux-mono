@@ -63,20 +63,26 @@
         validOptionalText(value, 'email', 320);
     }
 
-    function isValidAppMedia(value) {
+    function isValidAppAssets(value) {
       return value is map &&
         value.keys().hasOnly([
-          'thumbnail_url',
-          'logo_url',
-          'wordmark_light_url',
-          'wordmark_dark_url',
-          'cover_url'
+          'thumbnail',
+          'logo',
+          'wordmark',
+          'wordmark_light',
+          'wordmark_dark',
+          'cover'
         ]) &&
-        validOptionalText(value, 'thumbnail_url', 2048) &&
-        validOptionalText(value, 'logo_url', 2048) &&
-        validOptionalText(value, 'wordmark_light_url', 2048) &&
-        validOptionalText(value, 'wordmark_dark_url', 2048) &&
-        validOptionalText(value, 'cover_url', 2048);
+        (!('thumbnail' in value) ||
+          isValidHttpsUrl(value.thumbnail, 2048)) &&
+        (!('logo' in value) || isValidHttpsUrl(value.logo, 2048)) &&
+        (!('wordmark' in value) ||
+          isValidHttpsUrl(value.wordmark, 2048)) &&
+        (!('wordmark_light' in value) ||
+          isValidHttpsUrl(value.wordmark_light, 2048)) &&
+        (!('wordmark_dark' in value) ||
+          isValidHttpsUrl(value.wordmark_dark, 2048)) &&
+        (!('cover' in value) || isValidHttpsUrl(value.cover, 2048));
     }
 
     function isValidFireuxRepo(value) {
@@ -142,7 +148,7 @@
           'long_bio',
           'social_links',
           'derived',
-          'media',
+          'assets',
           'fireux_native',
           'fireux_size',
           'fireux_repo',
@@ -171,7 +177,7 @@
         data.derived.user_count is int &&
         data.derived.user_count >= 0 &&
         data.derived.user_count <= 10000000 &&
-        (!('media' in data) || isValidAppMedia(data.media)) &&
+        (!('assets' in data) || isValidAppAssets(data.assets)) &&
         (!('fireux_native' in data) || data.fireux_native is bool) &&
         (!('fireux_size' in data) || data.fireux_size in ['big', 'small']) &&
         (!('fireux_repo' in data) || isValidFireuxRepo(data.fireux_repo)) &&
@@ -184,14 +190,15 @@
     }
 
     function isValidAppAdminUpdate(data) {
-      return validRequiredText(data, 'app_name', 1, 60) &&
+      return !('media' in data) &&
+        validRequiredText(data, 'app_name', 1, 60) &&
         validRequiredText(data, 'app_short_name', 1, 40) &&
         validOptionalText(data, 'tagline', 120) &&
         validOptionalText(data, 'description', 500) &&
         validOptionalText(data, 'short_bio', 240) &&
         validOptionalText(data, 'long_bio', 4000) &&
         (!('social_links' in data) || isValidAppSocialLinks(data.social_links)) &&
-        (!('media' in data) || isValidAppMedia(data.media));
+        (!('assets' in data) || isValidAppAssets(data.assets));
     }
 
     match /apps/{appId} {
@@ -225,7 +232,7 @@
           'short_bio',
           'long_bio',
           'social_links',
-          'media',
+          'assets',
           'updated'
         ]) &&
         request.resource.data.created == resource.data.created &&

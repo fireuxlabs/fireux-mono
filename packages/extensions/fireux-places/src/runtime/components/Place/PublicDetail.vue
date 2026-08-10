@@ -70,9 +70,9 @@
         <PublicEntityHero
           :title="place.name"
           eyebrow="Place"
-          :cover-url="place.cover_image"
+          :cover-url="place.assets.cover"
           cover-alt=""
-          :image-url="place.image_url"
+          :image-url="place.assets.image"
           image-alt=""
           image-fit="cover"
           :initials="initials"
@@ -111,19 +111,19 @@
         </PublicEntityHero>
 
         <section
-          v-if="place.identity?.logo_image_url || place.identity?.wordmark_image_url"
+          v-if="place.assets.logo || place.assets.wordmark"
           class="place-public__brand"
           aria-label="Place identity"
         >
           <img
-            v-if="place.identity.wordmark_image_url"
-            :src="place.identity.wordmark_image_url"
+            v-if="place.assets.wordmark"
+            :src="place.assets.wordmark"
             :alt="`${place.name} wordmark`"
             class="place-public__wordmark"
           >
           <img
-            v-else-if="place.identity.logo_image_url"
-            :src="place.identity.logo_image_url"
+            v-else-if="place.assets.logo"
+            :src="place.assets.logo"
             :alt="`${place.name} logo`"
             class="place-public__logo"
           >
@@ -145,7 +145,7 @@
             </section>
 
             <section
-              v-if="place.gallery_images?.length"
+              v-if="place.assets.gallery.length"
               class="place-public__gallery-section"
               aria-labelledby="place-gallery-title"
             >
@@ -157,7 +157,7 @@
               </div>
               <div class="place-public__gallery">
                 <figure
-                  v-for="(image, index) in place.gallery_images"
+                  v-for="(image, index) in place.assets.gallery"
                   :key="image"
                 >
                   <div class="place-public__media-fallback" aria-hidden="true">

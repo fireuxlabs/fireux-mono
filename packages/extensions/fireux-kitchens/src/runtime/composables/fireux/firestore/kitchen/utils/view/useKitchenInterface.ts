@@ -1,8 +1,7 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
 import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
-import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
-import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
+import { readPlaceAssets, readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
 import {
   readKitchenAppScope,
@@ -49,7 +48,7 @@ export function useKitchenInterface() {
 
   type KitchenPreview = {
     imageUrl: string
-    imageShade?: PlaceImageShade
+    imageShade?: NonNullable<Kitchen['identity']['image_shade']>
     name: string
     formattedAddress: string
     shortAddress?: string
@@ -74,6 +73,7 @@ export function useKitchenInterface() {
     if (!kitchen) return null
 
     const place = meaningfulSurfaceDelta(parts.place)
+    const placeAssets = readPlaceAssets(parts.place)
     const kitchenDelta = meaningfulSurfaceDelta(kitchen)
     const scopeDelta = meaningfulSurfaceDelta(parts.scope)
     const merged = {
@@ -94,11 +94,11 @@ export function useKitchenInterface() {
     const identityDelta = {
       ...meaningfulSurfaceDelta(kitchenDelta.identity),
     }
-    if (Object.hasOwn(place, 'image_url')) {
+    if (placeAssets.image) {
       delete merged.display_image_url
       delete identityDelta.image_url
     }
-    if (Object.hasOwn(place, 'gallery_images')) {
+    if (placeAssets.gallery.length) {
       delete merged.food_gallery
       delete identityDelta.gallery
     }
@@ -107,8 +107,8 @@ export function useKitchenInterface() {
     } else {
       delete (merged as Record<string, unknown>).identity
     }
-    if (Array.isArray(place.gallery_images)) {
-      merged.food_gallery = place.gallery_images as string[]
+    if (placeAssets.gallery.length) {
+      merged.food_gallery = placeAssets.gallery
     }
     const placeCurrencyCode = readPlaceCurrencyCode(parts.place)
     delete merged.currency_code
@@ -133,11 +133,9 @@ export function useKitchenInterface() {
       is_test_kitchen: visibility.isTest,
       display_name: identity.displayName || safeString(place.name),
       tagline: identity.tagline || safeString(place.brand_tagline),
-      display_image_url: safeString(place.image_url),
+      display_image_url: safeString(placeAssets.image),
       image_shade: identity.imageShade || merged.image_shade,
-      food_gallery: Array.isArray(place.gallery_images)
-        ? place.gallery_images as string[]
-        : [],
+      food_gallery: placeAssets.gallery,
       menu_currency_format: menus.currencyFormat,
       menu_show_currency: menus.showCurrency,
       menu_style: menus.style,
