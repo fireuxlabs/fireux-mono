@@ -92,8 +92,7 @@ const alpineProperty: Property = {
   slug: 'alpine-residence',
   portfolio_id: 'alpine-portfolio',
   place_id: alpineResidencePlace.id,
-  app_scope_state: 'parent_app',
-  app_scope_app_id: graniteAppId,
+  management: { mode: 'console' },
   identity: {
     name: 'Alpine Residence',
     image_url: '',
@@ -119,8 +118,7 @@ const alpineStay: Property = {
   slug: 'alpine-stay',
   portfolio_id: '',
   place_id: alpineStayPlace.id,
-  app_scope_state: 'parent_app',
-  app_scope_app_id: buenohostAppId,
+  management: { mode: 'console' },
   identity: {
     name: 'Alpine Stay',
     image_url: '',
@@ -142,8 +140,7 @@ export const propertiesDemoScenarios: PropertiesDemoScenario[] = [
       portfolio: {
         ...PortfolioModel,
         id: 'alpine-portfolio',
-        app_scope_state: 'parent_app',
-        app_scope_app_id: graniteAppId,
+        management: { mode: 'console' },
         name: 'Alpine Residential Portfolio',
         tagline: 'A focused residential asset portfolio',
         slug: 'alpine-portfolio',
@@ -205,8 +202,7 @@ const validateSupport = (
 ) => {
   const keys = Object.keys(support).sort()
   if (
-    root.app_scope_state !== 'parent_app' ||
-    root.app_scope_app_id !== scenario.appId ||
+    root.management.mode !== 'console' ||
     root.created.app_id !== scenario.appId ||
     support.id !== root.id ||
     support.created.app_id !== scenario.appId ||

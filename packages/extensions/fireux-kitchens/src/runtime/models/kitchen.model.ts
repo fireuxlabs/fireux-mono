@@ -3,6 +3,8 @@
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Kitchen root identity and access-only App support.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { CurrencyDisplayFormat } from './shared/currency-display.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -72,13 +74,6 @@ export type KitchenOperationKey = typeof KitchenStorage.operations[number]
 export type KitchenMediaBackdropColor = `#${string}`
 /** @deprecated Read-only compatibility for unmigrated records and consumers. */
 export type KitchenImageShade = 'light' | 'dark' | 'none'
-
-export type KitchenStatus = 'active' | 'paused' | 'archived'
-
-export type KitchenConsoleAttachment = {
-  app_id: string
-  app_role: 'parent' | 'tenant'
-}
 
 export type KitchenIdentity = {
   /** Sparse override; empty means inherit the linked Place name. */
@@ -167,7 +162,6 @@ export const KitchenEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'access-record',
   publicRead: 'projection',
-  status: 'confirmed',
   console: true,
   root: KitchenStorage.path,
   appSupportPath: AppKitchenStorage.path,
@@ -175,10 +169,9 @@ export const KitchenEntity = defineFireuxEntity({
 
 export const KitchenDefaults = {
   id: '',
-  place_id: '',
   slug: '',
-  status: 'active' as KitchenStatus,
   visibility: false,
+  management: FireuxEntityManagementDefaults,
 
   identity: {
     name: '',
@@ -210,7 +203,7 @@ export type Kitchen = Omit<
   {
     identity: KitchenIdentity
     assets: KitchenAssets
-    console?: KitchenConsoleAttachment
+    management: FireuxEntityManagement
   }
 
 export type AppKitchen = {
@@ -244,17 +237,17 @@ export type KitchenCreateInput = Partial<
   Pick<
     Kitchen,
     | 'id'
-    | 'place_id'
     | 'slug'
     | 'identity'
     | 'assets'
+    | 'management'
   >
 >
 
 export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
-    'slug' | 'identity' | 'assets' | 'status' | 'visibility'
+    'slug' | 'identity' | 'assets' | 'visibility' | 'management'
   >
 > & {
   'identity.name'?: string

@@ -60,6 +60,11 @@ Every Console Entity must share these rules:
 - Root + App-support onboarding uses a fixed-runtime authenticated family
   endpoint and one trusted transaction for root, same-id App support, and the
   caller's operator/team authority.
+- Console-capable roots share one management ladder: `root`, `console`, or
+  `app`. `console` resolves by convention to the ecosystem App
+  (`<ecosystem>-app`); no configurable Console App id is stored. `app` alone
+  stores `app_id`. Domain packages own their transactions, so Core does not
+  enumerate present or future Console families.
 - Index, Overview, Identity, Team, and Operations remain separate concerns.
   A family adds only sheets backed by a real lifecycle.
 

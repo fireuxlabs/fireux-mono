@@ -6,20 +6,20 @@
   >
     <section>
       <header>
-        <p>Basic props</p>
+        <p>Root props</p>
         <span>{{ injection.tier }}</span>
       </header>
       <dl>
         <div>
           <dt>primary_color</dt>
-          <dd>{{ injection.basicProps.palette.primary_color }}</dd>
+          <dd>{{ injection.rootProps.palette.primary_color }}</dd>
         </div>
         <div>
           <dt>secondary_color</dt>
-          <dd>{{ injection.basicProps.palette.secondary_color }}</dd>
+          <dd>{{ injection.rootProps.palette.secondary_color }}</dd>
         </div>
       </dl>
-      <small>{{ injection.basicProps.source }}</small>
+      <small>{{ injection.rootProps.source }}</small>
     </section>
 
     <section>
@@ -33,7 +33,7 @@
         <small>{{ injection.consoleProps.source }}</small>
       </template>
       <p v-else class="empty">
-        This Kitchen is only Basic, so there are no Console props to display.
+        This Kitchen is Root-managed, so there are no Console props to display.
       </p>
     </section>
 
@@ -51,13 +51,13 @@
       </template>
       <p v-else class="empty">
         This Kitchen is only
-        {{ injection.tier === 'basic' ? 'Basic' : 'Console' }}, so there are no
+        {{ injection.tier === 'root' ? 'Root' : 'Console' }}, so there are no
         App props to display.
       </p>
     </section>
 
     <section>
-      <header><p>Basic atom</p></header>
+      <header><p>Root atom</p></header>
       <figure>
         <hr />
         <figcaption>{{ injection.atoms.rule.label }}</figcaption>
@@ -71,8 +71,8 @@ import { computed } from 'vue'
 import type { TemplateOneBrandInjection } from './template-one'
 const props = defineProps<{ injection: TemplateOneBrandInjection }>()
 const themeStyle = computed(() => ({
-  '--template-primary': props.injection.basicProps.palette.primary_color,
-  '--template-secondary': props.injection.basicProps.palette.secondary_color,
+  '--template-primary': props.injection.rootProps.palette.primary_color,
+  '--template-secondary': props.injection.rootProps.palette.secondary_color,
 }))
 </script>
 

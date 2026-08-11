@@ -1,4 +1,5 @@
 import { computed } from 'vue'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenInterface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from '../core/useKitchenConsole'
@@ -11,7 +12,7 @@ import { useKitchenConsoleRecipes } from '../operations/Recipes/useKitchenConsol
 import { useKitchenConsoleStations } from '../operations/Stations/useKitchenConsoleStations'
 import { useKitchenConsoleSuppliers } from '../operations/Suppliers/useKitchenConsoleSuppliers'
 import { useKitchenConsoleTables } from '../operations/Tables/useKitchenConsoleTables'
-import { readKitchenAppScope } from '../../../../../utils/kitchen-spine'
+import { readKitchenManagementTarget } from '../../../../../utils/kitchen-spine'
 import { useKitchenConsolePlace } from '../identity/useKitchenConsolePlace'
 
 type DetailItem = {
@@ -42,6 +43,7 @@ const count = (items: unknown) => Array.isArray(items) ? items.length : 0
 const identityTo = '/console/kitchen/identity'
 
 export function useKitchenConsoleOverview() {
+  const fireux = useFireUXConfig()
   // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
   const {
     selection,
@@ -107,16 +109,18 @@ export function useKitchenConsoleOverview() {
     normalizeString(place.value?.website) || normalizeString(kitchenSource.value.website)
   )
   const placeId = computed(() => normalizeString(kitchenSource.value.place_id))
-  const publicBadgeLabel = computed(() =>
-    kitchenSource.value.show === true ? 'Public' : 'Draft'
+  const visibilityBadgeLabel = computed(() =>
+    kitchenSource.value.visibility === true ? 'Visible' : 'Hidden'
   )
-  const publicBadgeColor = computed(() =>
-    kitchenSource.value.show === true ? 'success' as const : 'neutral' as const
+  const visibilityBadgeColor = computed(() =>
+    kitchenSource.value.visibility === true ? 'success' as const : 'neutral' as const
   )
-  const appScope = computed(() => readKitchenAppScope(kitchenSource.value))
-  const appScopeState = computed(() => appScope.value.state)
-  const appScopeAppId = computed(() => appScope.value.appId)
-  const hasTenantApp = computed(() => appScope.value.hasTenantApp)
+  const managementTarget = computed(() =>
+    readKitchenManagementTarget(kitchenSource.value, fireux.ecosystem)
+  )
+  const managementMode = computed(() => managementTarget.value.mode)
+  const managementAppId = computed(() => managementTarget.value.appId)
+  const hasDedicatedApp = computed(() => managementTarget.value.hasDedicatedApp)
   const operatorIds = computed(() =>
     Array.from(
       new Set(
@@ -314,10 +318,10 @@ export function useKitchenConsoleOverview() {
     rootCollection: runtime.rootCollection.value,
     readOnly: runtime.readOnly.value,
     canWrite: runtime.canWrite.value,
-    appScope: {
-      state: appScopeState.value,
-      appId: appScopeAppId.value,
-      hasTenantApp: hasTenantApp.value,
+    management: {
+      mode: managementMode.value,
+      appId: managementAppId.value,
+      hasDedicatedApp: hasDedicatedApp.value,
     },
     operators: {
       ids: operatorIds.value,
@@ -349,8 +353,8 @@ export function useKitchenConsoleOverview() {
     imageInitials,
     kitchenPill,
     detailItems,
-    publicBadgeLabel,
-    publicBadgeColor,
+    visibilityBadgeLabel,
+    visibilityBadgeColor,
     identityFields,
     completeIdentityCount,
     missingIdentityFields,

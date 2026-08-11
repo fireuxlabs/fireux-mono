@@ -47,7 +47,7 @@ export function run(ctx) {
   const violations = []
 
   for (const fixture of [
-    "id: 'basic-kitchen'",
+    "id: 'root-kitchen'",
     "id: 'pizza-the-action'",
     "id: 'friiites'",
     "id: 'deanos'",
@@ -55,7 +55,7 @@ export function run(ctx) {
     if (!fixtures.includes(fixture))
       violations.push(`missing Template One fixture ${fixture}`)
   for (const [id, tier] of [
-    ['basic-kitchen', 'basic'],
+    ['root-kitchen', 'root'],
     ['pizza-the-action', 'console'],
     ['friiites', 'app'],
     ['deanos', 'console'],
@@ -89,7 +89,7 @@ export function run(ctx) {
   for (const removedAtom of ['displayTitle', 'filledAction', 'mediaFrame'])
     if (atoms.includes(removedAtom))
       violations.push(`first slice must not render ${removedAtom}`)
-  if (!atoms.includes('<p>Basic atom</p>') || !atoms.includes('<hr />'))
+  if (!atoms.includes('<p>Root atom</p>') || !atoms.includes('<hr />'))
     violations.push('Rule must remain the one visible Template One atom')
   if (
     /data:image\/svg|wordmark-fallback|media-fallback/i.test(

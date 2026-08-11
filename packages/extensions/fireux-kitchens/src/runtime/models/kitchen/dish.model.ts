@@ -32,7 +32,6 @@ export const DishEntity = defineFireuxEntity({
   authority: 'parent',
   appSupport: 'none',
   publicRead: 'none',
-  status: 'confirmed',
   console: false,
   parent: 'Kitchen',
   scoped: DishStorage.path,

@@ -31,7 +31,6 @@ export const RecipeEntity = defineFireuxEntity({
   authority: 'parent',
   appSupport: 'none',
   publicRead: 'none',
-  status: 'confirmed',
   console: false,
   parent: 'Kitchen',
   scoped: RecipeStorage.path,

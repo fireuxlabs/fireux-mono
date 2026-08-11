@@ -54,7 +54,6 @@ export const EcosystemEntity = defineFireuxEntity({
   authority: 'ecosystem-identity-database',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   root: EcosystemStorage.path,
 })
 

@@ -19,12 +19,12 @@ scene markup and presentation CSS. An injection supplies identity data only.
 ## Current member
 
 Template One is the neutral family at `/templates/template-one`. Its first
-slice has one Kitchen toggle covering Basic, Console and App capability: the
-Basic remains an unassigned root-only model example because current source has
-no proven named Basic Kitchen fixture. Pizza the Action and Deano's Smash are
+slice has one Kitchen toggle covering Root, Console and App capability: Root
+remains an unassigned model example because current source has no proven named
+Root Kitchen fixture. Pizza the Action and Deano's Smash are
 Console Demos; Deano's also carries an explicitly incremental App-preview
 fixture. Friiites is the proven tenant App.
-Every selection shows Basic palette props; richer sections either show their
+Every selection shows Root palette props; richer sections either show their
 current evidence or state that the selected Kitchen has no such props. Rule is
 the one visible atom. Core `BrandPalette` is an input value object, not an atom.
 

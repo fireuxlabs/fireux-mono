@@ -5,7 +5,6 @@ export const ecosystemConfig = {
   name: 'slap',
   description:
     'Apps That Slap - independent Apps whose branded digital experience is the product',
-
   firebase: {
     apiKey: 'AIzaSyAFrIqgvbr3f3eK5JVOuDSFvATSuZCh_Cc',
     authDomain: 'slap-45389.firebaseapp.com',

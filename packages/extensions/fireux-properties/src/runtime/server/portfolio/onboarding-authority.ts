@@ -1,9 +1,11 @@
 import type { H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
-  normalizeFireuxAppScopeState,
-  resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/utils/app-scope-state'
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+  resolveFireuxEntityManagementForApp,
+} from 'fireux-core/runtime/utils/entity-management'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { boundedIds, fail, text, type MemberRole } from './onboarding-input'
@@ -12,7 +14,8 @@ export type RuntimePolicy = {
   appId: string
   appRole: string
   developerId: string
-  appScopeState: 'parent_app' | 'tenant_app'
+  ecosystem: string
+  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
 }
 
@@ -25,8 +28,15 @@ export function runtimePolicy(event: H3Event): RuntimePolicy {
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
   const appRole = fireux.role
   const developerId = fireux.developerId || ''
-  const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
-  if (!appScopeState) fail(403, 'This App cannot own a Portfolio console.')
+  const ecosystem = requireFirestoreDocumentId(
+    fireux.ecosystem,
+    'Ecosystem key'
+  )
+  const management = resolveFireuxEntityManagementForApp(
+    appRole,
+    appId,
+    ecosystem
+  )
 
   const canCreate = resolveConsoleCanCreate(
     appRole,
@@ -37,7 +47,8 @@ export function runtimePolicy(event: H3Event): RuntimePolicy {
     appId,
     appRole,
     developerId,
-    appScopeState,
+    ecosystem,
+    management,
     canCreate,
   }
 }
@@ -63,31 +74,32 @@ export function readSupport(value: Record<string, unknown> | null) {
   }
 }
 
-export function readScope(root: Record<string, unknown>) {
-  if (Object.prototype.hasOwnProperty.call(root, 'app_scope')) {
-    fail(409, 'Portfolio App scope uses a non-canonical stored shape.')
+export function readManagement(root: Record<string, unknown>) {
+  if (
+    Object.hasOwn(root, 'app_scope') ||
+    Object.hasOwn(root, 'app_scope_state') ||
+    Object.hasOwn(root, 'app_scope_app_id')
+  ) {
+    fail(409, 'Portfolio contains retired management fields.')
   }
-  const flatState = text(root.app_scope_state)
-  const flatAppId = text(root.app_scope_app_id)
-  const state = normalizeFireuxAppScopeState(flatState)
-
-  if (!state) fail(409, 'Portfolio App scope is missing or invalid.')
-  if (state === 'root_only' && flatAppId) {
-    fail(409, 'An unattached Portfolio cannot name an App.')
-  }
-  if (state !== 'root_only' && !flatAppId) {
-    fail(409, 'An attached Portfolio must name its App.')
-  }
-
-  return { state, appId: flatAppId }
+  const management = readFireuxEntityManagement(root.management)
+  if (!management) fail(409, 'Portfolio management is missing or invalid.')
+  return management
 }
 
-export function assertScope(root: Record<string, unknown>, appId: string) {
-  const scope = readScope(root)
-  if (scope.state !== 'root_only' && scope.appId !== appId) {
+export function assertManagement(
+  root: Record<string, unknown>,
+  appId: string,
+  ecosystem: string
+) {
+  const management = readManagement(root)
+  if (
+    management.mode !== 'root' &&
+    resolveFireuxEntityManagementAppId(management, ecosystem) !== appId
+  ) {
     fail(409, 'This Portfolio is already attached to another App.')
   }
-  return scope
+  return management
 }
 
 export function assertSupportCapacity(

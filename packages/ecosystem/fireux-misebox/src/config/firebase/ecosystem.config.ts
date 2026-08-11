@@ -4,7 +4,6 @@ export const ecosystemConfig = {
   id: 'fireux-misebox',
   name: 'misebox',
   description: 'FireUX Misebox ecosystem identity and Firebase binding',
-
   firebase: {
     apiKey: 'AIzaSyBkWm7VONGZRx74pg2vFbnFyDKjruEwg6M',
     authDomain: 'misebox-78f9c.firebaseapp.com',

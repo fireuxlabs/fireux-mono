@@ -158,7 +158,7 @@ Map the shared console system and domain adapters.
   collection outcome. Membership failure is `error`, never an empty target list.
 - Entity App-support operator/team records bound live reads. Exact
   root and same-id App-support reads must fail the complete outcome on a missing
-  half, wrong App scope, malformed support authority, or unauthorized indexed
+  half, wrong management host, malformed support authority, or unauthorized indexed
   id; they never leave an unused full-root listener behind client filtering.
 - Kitchen live targets use the canonical authenticated
   `/api/console/kitchen/targets`
@@ -179,7 +179,7 @@ Map the shared console system and domain adapters.
 - A root/App-support console family creates or attaches through its own
   fixed-runtime authenticated server endpoint. The caller cannot choose the
   App, database, collection path, or App-support id.
-- One Firestore transaction owns the root scope, same-id complete App support,
+- One Firestore transaction owns root management, same-id complete App support,
   and caller operator/team authority. Missing or conflicting halves fail before a
   partial chooser row can be created.
 - `operator_ids` is mutation authority. `team_ids` is target/read membership,
@@ -190,6 +190,10 @@ Map the shared console system and domain adapters.
   domain-owned root payloads and strict pair readers. Blank is the app-local
   minimal harness. Project deliberately remains a read-only control-plane
   family and has no root/App-support onboarding.
+- Console-capable roots use `management.mode`: `root` has no Console host;
+  `console` uses the ecosystem App by convention; `app` names its
+  dedicated Console App with `app_id`. Core resolves this vocabulary without
+  enumerating domain families.
 
 ## Operations
 

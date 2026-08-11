@@ -30,7 +30,7 @@ export default defineEventHandler(async event => {
   const scope = await resolveDirectoryPublicMenuScope(kitchenSlug)
   const [appKitchenData, placeData] = await Promise.all([
     readAppMenuKitchenData(scope.appId, scope.kitchenId),
-    readMenuKitchenPlaceData(scope.rootKitchenData),
+    readMenuKitchenPlaceData(scope.kitchenId),
   ])
   const identity = menuKitchenIdentity(
     scope.rootKitchenData,

@@ -61,17 +61,9 @@ export type DemoPlaceInput = {
 export const kitchen = (input: DemoKitchenInput): Kitchen => ({
   ...KitchenDefaults,
   id: input.identity.kitchenId,
-  place_id: input.identity.placeId,
   slug: input.identity.kitchenSlug,
-  app_scope: {
-    state: 'parent_app',
-    app_id: input.identity.appId,
-  },
-  visibility: {
-    show: true,
-    active: true,
-    is_test: false,
-  },
+  management: { mode: 'console' },
+  visibility: true,
   identity: {
     display_name: input.name,
     tagline: input.tagline,

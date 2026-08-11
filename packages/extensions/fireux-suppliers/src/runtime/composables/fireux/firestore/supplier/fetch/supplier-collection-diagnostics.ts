@@ -62,14 +62,17 @@ export function findRequestedTargetPairError(
 export function findRootScopeError(
   roots: SupplierRootDoc[],
   appSupportRecords: AppSupplierRecord[],
-  appId: string
+  appId: string,
+  ecosystem: string
 ) {
   const appSupportIds = new Set(
     appSupportRecords.map(resolveSupplierId).filter(Boolean)
   )
   const mismatches = roots
     .filter((supplier) => appSupportIds.has(resolveSupplierId(supplier)))
-    .filter((supplier) => !supplierRootBelongsToApp(supplier, appId))
+    .filter((supplier) =>
+      !supplierRootBelongsToApp(supplier, appId, ecosystem)
+    )
     .map(resolveSupplierId)
     .filter(Boolean)
 

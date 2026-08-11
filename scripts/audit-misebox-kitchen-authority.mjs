@@ -26,6 +26,7 @@ const app = initializeApp(
   `kitchen-authority-${ecosystem}-${databaseId}`
 )
 const db = getFirestore(app, databaseId)
+const ecosystemAppId = `${ecosystem}-app`
 
 const text = value => String(value ?? '').trim()
 const record = value =>
@@ -36,6 +37,26 @@ const exactKeys = (value, keys) => {
   return actual.length === expected.length &&
     actual.every((key, index) => key === expected[index])
 }
+const readManagement = value => {
+  const management = record(value)
+  if (!management) return null
+  if (
+    (management.mode === 'root' || management.mode === 'console') &&
+    exactKeys(management, ['mode'])
+  ) return management
+  if (
+    management.mode === 'app' &&
+    exactKeys(management, ['mode', 'app_id']) &&
+    text(management.app_id)
+  ) return management
+  return null
+}
+const managementAppId = management =>
+  management?.mode === 'console'
+    ? ecosystemAppId
+    : management?.mode === 'app'
+      ? text(management.app_id)
+      : ''
 const ids = (value, limit) => {
   if (!Array.isArray(value) || value.length > limit) return null
   const normalized = value.map(text)
@@ -76,7 +97,14 @@ for (const appDoc of appSnapshot.docs) {
       teamSnapshot.docs.map(member => text(member.data().user_id)).filter(Boolean)
     )
     if (
-      !exactKeys(data, ['operator_ids', 'team_ids', 'join_requests', 'created', 'updated']) ||
+      !exactKeys(data, [
+        'console',
+        'operator_ids',
+        'team_ids',
+        'join_requests',
+        'created',
+        'updated',
+      ]) ||
       !operatorIds || !teamIds || !joinRequests
     ) {
       issue('malformed_app_kitchen_support', {
@@ -103,48 +131,36 @@ for (const appDoc of appSnapshot.docs) {
   }
 }
 
-const kitchensByPlace = new Map()
 for (const [kitchenId, kitchen] of kitchens) {
   const context = { kitchen_id: kitchenId }
-  const placeId = text(kitchen.place_id)
-  const scope = record(kitchen.app_scope)
-  const state = text(scope?.state)
-  const appId = text(scope?.app_id)
-  const visibility = record(kitchen.visibility) || {}
-  const published = visibility.show === true && visibility.active !== false
+  const management = readManagement(kitchen.management)
+  const appId = managementAppId(management)
+  const published = kitchen.visibility === true
   const slug = text(kitchen.slug)
 
   if (
-    !scope ||
-    !exactKeys(scope, ['state', 'app_id']) ||
-    !['parent_app', 'tenant_app'].includes(state) ||
-    !appId ||
+    !management ||
+    Object.hasOwn(kitchen, 'app_scope') ||
     Object.hasOwn(kitchen, 'app_scope_state') ||
     Object.hasOwn(kitchen, 'app_scope_app_id') ||
-    Object.hasOwn(kitchen, 'app_id')
+    Object.hasOwn(kitchen, 'console')
   ) {
-    issue('invalid_kitchen_app_scope', {
+    issue('invalid_kitchen_management', {
       ...context,
-      app_scope: scope,
-      legacy_keys: ['app_scope_state', 'app_scope_app_id', 'app_id']
+      management,
+      retired_keys: ['app_scope', 'app_scope_state', 'app_scope_app_id', 'console']
         .filter(key => Object.hasOwn(kitchen, key)),
     })
   }
   if (appId && !apps.has(appId)) issue('missing_kitchen_app', { ...context, app_id: appId })
-  if (!placeId || !places.has(placeId)) {
-    issue('missing_kitchen_place', { ...context, place_id: placeId })
-  } else {
-    const placeIds = kitchensByPlace.get(placeId) || []
-    placeIds.push(kitchenId)
-    kitchensByPlace.set(placeId, placeIds)
-  }
+  if (!places.has(kitchenId)) issue('missing_same_id_kitchen_place', context)
   if (appId && !appSupports.has(`${appId}/${kitchenId}`)) {
     issue('missing_same_id_app_kitchen_support', { ...context, app_id: appId })
   }
   for (const supportKey of appSupports.keys()) {
     const [supportAppId, supportKitchenId] = supportKey.split('/')
-    if (supportKitchenId === kitchenId && appId && supportAppId !== appId) {
-      issue('app_kitchen_support_scope_mismatch', {
+    if (supportKitchenId === kitchenId && supportAppId !== appId) {
+      issue('app_kitchen_support_management_mismatch', {
         ...context,
         app_id: appId,
         support_app_id: supportAppId,
@@ -163,12 +179,6 @@ for (const [kitchenId, kitchen] of kitchens) {
     Object.hasOwn(kitchen, 'join_requests')
   ) {
     issue('kitchen_root_contains_access_authority', { ...context })
-  }
-}
-
-for (const [placeId, kitchenIds] of kitchensByPlace) {
-  if (kitchenIds.length > 1) {
-    issue('multiple_kitchens_for_place', { place_id: placeId, kitchen_ids: kitchenIds.sort() })
   }
 }
 
@@ -194,7 +204,7 @@ for (const userDoc of userSnapshot.docs) {
   kitchenTargetIds += targetIds.length
   for (const kitchenId of targetIds) {
     const kitchen = kitchens.get(kitchenId)
-    const appId = text(record(kitchen?.app_scope)?.app_id)
+    const appId = managementAppId(readManagement(kitchen?.management))
     const support = appSupports.get(`${appId}/${kitchenId}`)
     const authorized = new Set([
       ...(ids(support?.operator_ids, 50) || []),

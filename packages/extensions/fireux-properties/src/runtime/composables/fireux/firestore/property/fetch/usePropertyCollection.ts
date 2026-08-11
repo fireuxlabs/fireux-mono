@@ -4,13 +4,11 @@ import { useFirestoreRead } from 'fireux-core/runtime/composables/fireux/firesto
 import { useFirestoreCollectionState } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
 import { useFirestore } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import {
-  readConsoleTargetAuthority,
-  targetHasConsoleAccess,
-} from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
-import {
-  PropertyStorage,
-  type Property,
-} from '../../../../../models/property.model'
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
+import { readConsoleTargetAuthority, targetHasConsoleAccess } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleAccess'
+import { PropertyStorage, type Property } from '../../../../../models/property.model'
 import {
   canonicalPropertyRoot,
   type PropertySurface,
@@ -47,7 +45,7 @@ export function usePropertyCollection(
     hasOperatorFilter,
     filterIdSet,
   } = useTargetCollectionSelection(options, 'live')
-  const { appId } = useFireUXConfig()
+  const { appId, ecosystem } = useFireUXConfig()
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
     useFirestoreRead()
 
@@ -76,14 +74,16 @@ export function usePropertyCollection(
     root: Property,
     appSupport: AppPropertyRecord | undefined
   ) => {
+    const management = readFireuxEntityManagement(root.management)
     if (
       resolvedShape.value === 'root-with-app-support' &&
       (!appSupport ||
         !readConsoleTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
-        (root.app_scope_state !== 'parent_app' &&
-          root.app_scope_state !== 'tenant_app') ||
-        root.app_scope_app_id !== resolvedAppId.value)
+        !management ||
+        management.mode === 'root' ||
+        resolveFireuxEntityManagementAppId(management, ecosystem) !==
+          resolvedAppId.value)
     ) {
       return false
     }
@@ -315,12 +315,14 @@ export function usePropertyCollection(
       .map((property) => canonicalPropertyRoot(property as Property))
       .filter((property): property is Property => Boolean(property))
       .filter((property) => appSupportIds.has(resolvePropertyId(property)))
-      .filter(
-        (property) =>
-          (property.app_scope_state !== 'parent_app' &&
-            property.app_scope_state !== 'tenant_app') ||
-          property.app_scope_app_id !== resolvedAppId.value
-      )
+      .filter((property) => {
+        const management = readFireuxEntityManagement(property.management)
+        return (
+          !management ||
+          management.mode === 'root' ||
+          resolveFireuxEntityManagementAppId(management, ecosystem) !== resolvedAppId.value
+        )
+      })
       .map((property) => property.id)
     if (!mismatches.length) return undefined
 

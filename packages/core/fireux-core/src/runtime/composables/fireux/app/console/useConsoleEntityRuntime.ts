@@ -123,6 +123,7 @@ export function useConsoleEntityRuntime<TTarget extends object>(
     },
     runtime: {
       appId: firestore.appId,
+      ecosystem: computed(() => consoleRoot.ecosystem),
       canonicalRootCollection: firestore.rootCollection,
       collectionPath: firestore.collectionPath,
       isTenantOwned: firestore.isTenantOwned,

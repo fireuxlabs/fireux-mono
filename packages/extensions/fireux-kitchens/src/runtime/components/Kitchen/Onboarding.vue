@@ -153,7 +153,7 @@
 
 <script setup lang="ts">
 import { useRoute, useRouter } from '#imports'
-import type { ConsoleCreateMode } from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+import type { FireuxEntityCreateMode } from 'fireux-core/runtime/models/utils/entity-create.model'
 import type { PlaceOnboardingResult } from 'fireux-places/runtime/composables/fireux/place/usePlaceOnboarding'
 import { computed, onMounted, ref, watch } from 'vue'
 import { useKitchenConsoleSelection } from '../../composables/fireux/console/kitchen/core/useKitchenConsoleSelection'
@@ -162,7 +162,7 @@ import type { KitchenOnboardingCompleteResult } from '../../models/kitchen-onboa
 
 const props = withDefaults(
   defineProps<{
-    mode?: ConsoleCreateMode
+    mode?: FireuxEntityCreateMode
     existingRootId?: string
     placeId?: string
     returnTo?: string

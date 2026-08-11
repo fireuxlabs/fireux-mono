@@ -7,6 +7,10 @@ import {
   type GuardedServerTransaction,
 } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
 import {
   FIRESTORE_MUTATION_TARGETS,
@@ -78,7 +82,15 @@ async function authority(event: H3Event, supplierId: string) {
   const memberships = serverAppUsersTarget(appId)
   const items = serverSupplierItemsTarget(supplierId)
 
-  return { uid, appId, suppliers, supports, memberships, items }
+  return {
+    uid,
+    appId,
+    ecosystem: fireux.ecosystem,
+    suppliers,
+    supports,
+    memberships,
+    items,
+  }
 }
 
 async function assertOperator(
@@ -92,7 +104,11 @@ async function assertOperator(
     mutations.read<Record<string, unknown>>(context.memberships, context.uid),
   ])
   if (!supplier.exists || !support.exists) fail(404, 'Supplier not found.')
-  if (text(supplier.data?.app_scope_app_id) !== context.appId) {
+  const management = readFireuxEntityManagement(supplier.data?.management)
+  const managementAppId = management
+    ? resolveFireuxEntityManagementAppId(management, context.ecosystem)
+    : ''
+  if (management?.mode === 'root' || managementAppId !== context.appId) {
     fail(409, 'Supplier belongs to another App scope.')
   }
   const isAdmin = membership.exists && text(membership.data?.role) === 'admin'

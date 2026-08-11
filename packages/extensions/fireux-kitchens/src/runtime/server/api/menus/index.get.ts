@@ -183,10 +183,9 @@ const menuIndexHydration = async (
   const placeReferences = new Map<string, ReturnType<typeof db.doc>>()
   for (const { source } of sources) {
     if (!source.kitchen_id) continue
-    const rootData = dataByPath.get(`kitchens/${source.kitchen_id}`) || {}
-    const placeId = readRecordString(rootData, 'place_id')
-    if (!placeId) continue
-    const placeRef = db.collection(PlaceStorage.collection).doc(placeId)
+    const placeRef = db
+      .collection(PlaceStorage.collection)
+      .doc(source.kitchen_id)
     placeReferences.set(placeRef.path, placeRef)
   }
   if (placeReferences.size) {
@@ -210,10 +209,9 @@ const menuIndexHydration = async (
         ? `apps/${source.app_id}/kitchens/${source.kitchen_id}`
         : ''
       const rootData = dataByPath.get(rootPath) || {}
-      const placeId = readRecordString(rootData, 'place_id')
-      const placeData = placeId
-        ? dataByPath.get(`${PlaceStorage.collection}/${placeId}`) || {}
-        : {}
+      const placeData = dataByPath.get(
+        `${PlaceStorage.collection}/${source.kitchen_id}`
+      ) || {}
       const identity = menuKitchenIdentity(
         rootData,
         appPath ? dataByPath.get(appPath) || {} : {},
@@ -264,7 +262,7 @@ const scopedMenuIndexHydration = async (
 ): Promise<MenuIndexHydration> => {
   const [appKitchenSnap, placeData] = await Promise.all([
     db.collection(`apps/${scope.appId}/kitchens`).doc(scope.kitchenId).get(),
-    readMenuKitchenPlaceData(scope.rootKitchenData),
+    readMenuKitchenPlaceData(scope.kitchenId),
   ])
   const appKitchenData = appKitchenSnap.exists
     ? appKitchenSnap.data() || {}

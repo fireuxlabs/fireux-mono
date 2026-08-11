@@ -20,6 +20,10 @@ import {
 } from 'fireux-places/runtime/utils/place-spine'
 import type { KitchenOrderType } from '../models/kitchen/order.model'
 import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
+import {
   kitchenOrderTypes,
   readDeliveryZones,
 } from './menu-ordering-policy'
@@ -150,23 +154,20 @@ export const composeKitchenScopedSurface = (
   return composed
 }
 
-export const readKitchenAppScope = (
-  value: KitchenSpineRecord
+export const readKitchenManagementTarget = (
+  value: KitchenSpineRecord,
+  ecosystem = ''
 ) => {
   const source = record(value)
-  const console = record(source.console)
-  const appRole = text(console.app_role)
-  const state = appRole === 'tenant'
-    ? 'tenant_app'
-    : appRole === 'parent'
-      ? 'parent_app'
-      : 'root_only'
-  const appId = text(console.app_id)
+  const management = readFireuxEntityManagement(source.management) || {
+    mode: 'root' as const,
+  }
+  const appId = resolveFireuxEntityManagementAppId(management, ecosystem)
 
   return {
-    state,
+    mode: management.mode,
     appId,
-    hasTenantApp: state === 'tenant_app' && Boolean(appId),
+    hasDedicatedApp: management.mode === 'app',
   }
 }
 
@@ -192,11 +193,7 @@ export const readKitchenIdentity = (value: KitchenSpineRecord) => {
 
 export const readKitchenVisibility = (value: KitchenSpineRecord) => {
   const source = record(value)
-  return {
-    show: source.visibility === true,
-    active: text(source.status) !== 'paused' && text(source.status) !== 'archived',
-    isTest: false,
-  }
+  return source.visibility === true
 }
 
 export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {

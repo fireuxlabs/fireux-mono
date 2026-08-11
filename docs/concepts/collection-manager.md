@@ -231,7 +231,7 @@ Root Projected Collection Managers
 
 | Manager        | Projection source                                    | Direction                 | Current note                                                                                                                                 |
 | -------------- | ---------------------------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join explicit `place_id` and canonical App scope without copied snapshots or client N+1 reads.                  |
+| `Kitchen`      | `/api/kitchens`                                      | Server Place/App join     | Cursor-bounded Kitchen pages join the same-id Place and canonical App support without copied snapshots or client N+1 reads.                  |
 | `Ingredient`   | `/api/ingredients`                                   | Server projection         | Active roots power browse; bounded exact-id requests hydrate Kitchen and Supplier links without exposing raw root documents.                 |
 | `App`          | `/api/public/apps` or FireUX `/api/public/directory` | Owner/platform projection | Same cards and manager; page chooses the authority-explicit controller.                                                                      |
 | `Ecosystem`    | FireUX `/api/public/directory`                       | Platform projection       | App counts derive from active App projections, never `ecosystem.apps[]`.                                                                     |

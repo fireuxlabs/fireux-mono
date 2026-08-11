@@ -4,7 +4,8 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveFireuxEntityManagementForApp } from 'fireux-core/runtime/utils/entity-management'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
 import { AppUserStorage } from 'fireux-core/runtime/models/core/user.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -31,12 +32,12 @@ import type {
 import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model'
 import {
   assertKitchenOnboardingPlaceDefaults,
-  assertKitchenOnboardingScope,
+  assertKitchenOnboardingManagement,
   assertKitchenOnboardingSupportCapacity,
   kitchenOnboardingAccessDecision,
   onboardingRecord as record,
   onboardingText as text,
-  readKitchenOnboardingScope,
+  readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
   requireOnboardingMemberRole as memberRole,
   type KitchenOnboardingMemberRole as MemberRole,
@@ -47,7 +48,8 @@ type Firestore = ReturnType<typeof getRuntimeFirestore>
 type RuntimePolicy = {
   appId: string
   appRole: string
-  appScopeState: 'parent_app' | 'tenant_app'
+  ecosystem: string
+  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
 }
 
@@ -84,15 +86,22 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   const fireux = useFireUXConfig(event)
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
   const appRole = fireux.role
-  const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
-  if (!appScopeState) fail(403, 'This App cannot own a Kitchen console.')
+  const ecosystem = requireFirestoreDocumentId(
+    fireux.ecosystem,
+    'Ecosystem key'
+  )
+  const management = resolveFireuxEntityManagementForApp(
+    appRole,
+    appId,
+    ecosystem
+  )
 
   const canCreate = resolveConsoleCanCreate(
     appRole,
     fireux.consoleConfig,
     'kitchen'
   )
-  return { appId, appRole, appScopeState, canCreate }
+  return { appId, appRole, ecosystem, management, canCreate }
 }
 
 async function actor(event: H3Event): Promise<Actor & { role: MemberRole }> {
@@ -114,23 +123,8 @@ async function kitchenForPlace(
   const collection = db.collection(KitchenStorage.collection)
   const exact = await collection.doc(placeId).get()
   const exactData = exact.exists ? exact.data() || {} : null
-  if (exactData && text(exactData.place_id) === placeId) {
-    return { placeId, kitchenId: exact.id, kitchen: exactData }
-  }
-
-  const matches = await collection
-    .where('place_id', '==', placeId)
-    .limit(2)
-    .get()
-  if (matches.size > 1) {
-    fail(409, 'More than one Kitchen references this Place.')
-  }
-  if (matches.size === 1) {
-    const match = matches.docs[0]!
-    return { placeId, kitchenId: match.id, kitchen: match.data() || {} }
-  }
   if (exactData) {
-    fail(409, 'The deterministic Kitchen id belongs to another Place.')
+    return { placeId, kitchenId: exact.id, kitchen: exactData }
   }
   return { placeId, kitchenId: placeId, kitchen: null }
 }
@@ -151,10 +145,7 @@ async function resolveLocator(
       .get()
     if (!snapshot.exists) fail(404, 'Kitchen not found.')
     const kitchen = snapshot.data() || {}
-    const placeId = requireFirestoreDocumentId(
-      kitchen.place_id,
-      'Kitchen Place id'
-    )
+    const placeId = kitchenId
     const requestedPlaceId = text(value.place_id)
     if (requestedPlaceId && requestedPlaceId !== placeId) {
       fail(409, 'Kitchen and Place do not match.')
@@ -174,7 +165,11 @@ export async function previewKitchenOnboarding(
   const current = await actor(event)
   const locator = await resolveLocator(current.db, body)
   if (locator.kitchen)
-    assertKitchenOnboardingScope(locator.kitchen, current.appId)
+    assertKitchenOnboardingManagement(
+      locator.kitchen,
+      current.appId,
+      current.ecosystem
+    )
 
   const [place, support] = await Promise.all([
     current.db.collection(PlaceStorage.collection).doc(locator.placeId).get(),
@@ -251,10 +246,11 @@ export async function completeKitchenOnboarding(
 
     const rootData = root.exists ? root.data || {} : null
     if (rootData) {
-      if (text(rootData.place_id) !== locator.placeId) {
-        fail(409, 'Kitchen and Place no longer match.')
-      }
-      assertKitchenOnboardingScope(rootData, current.appId)
+      assertKitchenOnboardingManagement(
+        rootData,
+        current.appId,
+        current.ecosystem
+      )
     } else if (!current.canCreate) {
       fail(403, 'Kitchen creation is disabled for this App.')
     }
@@ -294,14 +290,9 @@ export async function completeKitchenOnboarding(
 
     if (createdRoot) {
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
-        place_id: locator.placeId,
         slug,
-        status: 'active',
         visibility: false,
-        console: {
-          app_id: current.appId,
-          app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
-        },
+        management: current.management,
         identity: {
           name: displayName && displayName !== placeName ? displayName : '',
           tagline: '',
@@ -319,12 +310,9 @@ export async function completeKitchenOnboarding(
         updated: serverAuditStamp({ by: current.uid }),
       })
     } else {
-      const scope = readKitchenOnboardingScope(rootData || {})
-      if (
-        scope.state !== current.appScopeState ||
-        scope.appId !== current.appId
-      ) {
-        fail(409, 'Kitchen App scope does not match this App.')
+      const management = readKitchenOnboardingManagement(rootData || {})
+      if (JSON.stringify(management) !== JSON.stringify(current.management)) {
+        fail(409, 'Kitchen management does not match this App.')
       }
     }
 

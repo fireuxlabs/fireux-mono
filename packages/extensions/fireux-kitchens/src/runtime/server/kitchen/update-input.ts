@@ -24,9 +24,7 @@ const allowed = new Set([
   'menus.currency_format',
   'menus.show_currency',
   'menus.available',
-  'visibility.show',
-  'visibility.active',
-  'visibility.is_test',
+  'visibility',
   'orders.modes',
   'orders.default_lead_time_minutes',
   'orders.acceptance_required',
@@ -35,7 +33,7 @@ const allowed = new Set([
   'tables.count',
   'fulfilment',
 ])
-const groups = new Set(['identity', 'menus', 'visibility', 'orders', 'tables'])
+const groups = new Set(['identity', 'menus', 'orders', 'tables'])
 
 function flatten(source: Record<string, unknown>) {
   const out: Record<string, unknown> = {}
@@ -112,10 +110,9 @@ export function parseKitchenUpdate(value: unknown) {
       out[key] = raw === true ? FieldValue.delete() : false
       continue
     }
-    if (key.startsWith('visibility.')) {
-      if (typeof raw !== 'boolean') fail(`${key} must be boolean.`)
-      const defaultValue = key === 'visibility.active'
-      out[key] = raw === defaultValue ? FieldValue.delete() : raw
+    if (key === 'visibility') {
+      if (typeof raw !== 'boolean') fail('Kitchen visibility must be boolean.')
+      out.visibility = raw
       continue
     }
     if (key === 'orders.modes') {

@@ -3,9 +3,13 @@
 import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+  resolveFireuxEntityManagementForApp,
+} from 'fireux-core/runtime/utils/entity-management'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
@@ -30,7 +34,8 @@ type RuntimePolicy = {
   appId: string
   appRole: string
   developerId: string
-  appScopeState: Exclude<FireuxAppScopeState, 'root_only'>
+  ecosystem: string
+  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
 }
 
@@ -75,8 +80,15 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
   const appRole = fireux.role
   const developerId = fireux.developerId || ''
-  const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
-  if (!appScopeState) fail(403, 'This App cannot own a Property console.')
+  const ecosystem = requireFirestoreDocumentId(
+    fireux.ecosystem,
+    'Ecosystem key'
+  )
+  const management = resolveFireuxEntityManagementForApp(
+    appRole,
+    appId,
+    ecosystem
+  )
 
   const canCreate = resolveConsoleCanCreate(
     appRole,
@@ -87,7 +99,8 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
     appId,
     appRole,
     developerId,
-    appScopeState,
+    ecosystem,
+    management,
     canCreate,
   }
 }
@@ -140,10 +153,7 @@ function rootPlan(body: Record<string, unknown>, current: RuntimePolicy) {
   try {
     const plan = buildPropertyCreateRoot(
       body as unknown as PropertyCreateInput,
-      {
-        app_scope_state: current.appScopeState,
-        app_scope_app_id: current.appId,
-      }
+      current.management
     )
     return {
       ...plan,
@@ -230,8 +240,11 @@ export async function completePropertyOnboarding(
     }
     if (
       canonicalRoot &&
-      canonicalRoot.app_scope_state !== 'root_only' &&
-      canonicalRoot.app_scope_app_id !== current.appId
+      canonicalRoot.management.mode !== 'root' &&
+      resolveFireuxEntityManagementAppId(
+        canonicalRoot.management,
+        current.ecosystem
+      ) !== current.appId
     ) {
       fail(409, 'This Property is already attached to another App.')
     }
@@ -242,7 +255,7 @@ export async function completePropertyOnboarding(
       supportAuthority?.operatorIds.includes(current.uid) === true
     const creatingRoot = !root.exists
     const creatingSupport = !support.exists
-    const connectingRoot = canonicalRoot?.app_scope_state === 'root_only'
+    const connectingRoot = canonicalRoot?.management.mode === 'root'
 
     if (creatingRoot && (!current.canCreate || role !== 'admin')) {
       fail(
@@ -294,12 +307,11 @@ export async function completePropertyOnboarding(
       mutations.create(properties, propertyId, payload)
     } else if (
       canonicalRoot &&
-      (canonicalRoot.app_scope_state !== current.appScopeState ||
-        canonicalRoot.app_scope_app_id !== current.appId)
+      JSON.stringify(canonicalRoot.management) !==
+        JSON.stringify(current.management)
     ) {
       mutations.update(properties, propertyId, {
-        app_scope_state: current.appScopeState,
-        app_scope_app_id: current.appId,
+        management: current.management,
         updated: serverAuditStamp({ by: current.uid }),
       })
     }

@@ -61,7 +61,6 @@ Every declaration made with `defineFireuxEntity()` answers these axes:
 | `authority`  | owning App database, identity database, ecosystem identity database, FireUX control plane, parent, to-confirm | Who owns lifecycle truth?                      |
 | `appSupport` | none, access record, membership record, operational record, profile delta, to-confirm                         | What non-identity App record may accompany it? |
 | `publicRead` | none, direct root, projection, to-confirm                                                                     | How, if at all, may public readers see it?     |
-| `status`     | confirmed, to-confirm                                                                                         | Has the current classification been reviewed?  |
 | `console`    | boolean                                                                                                       | Is it a Console Entity?                        |
 | `parent`     | optional Entity name                                                                                          | Which Entity owns a parent-scoped declaration? |
 
@@ -119,7 +118,8 @@ separate same-id App access record. The App record may contain bounded access
 such as `operator_ids`, `team_ids`, and join requests. It is not a second Entity
 identity and must not become a copied profile.
 
-Joined reads require both valid halves and correct App scope. Missing or
+Joined reads require both valid halves and a management relationship that
+resolves to the current App. Missing or
 mismatched support must fail closed rather than produce a selectable partial
 target.
 
@@ -303,6 +303,9 @@ script requires an explicit confirmation hash before changing data.
   not create ownership.
 - App support records must use declared support paths and contain only their
   allowed non-identity delta.
+- Console-capable roots store the generic `management` relationship, never a
+  domain-enumerated Core type: `root`, `console`, or `app` with `app_id` only
+  in the final mode. App support remains access/operations, not root identity.
 - Cross-root relationships prefer canonical ids over copied Entity objects or
   inverse child arrays unless a separate projection owns that optimization.
 

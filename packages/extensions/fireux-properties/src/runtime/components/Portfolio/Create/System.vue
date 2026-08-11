@@ -54,24 +54,24 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe Portfolio console creation as App support.
 import { computed } from 'vue'
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { useDevUi } from 'fireux-core/runtime/composables/fireux/app/ui/useDevUi'
 import PortfolioCreateWrite from './Write.vue'
 
 const props = defineProps<{
-  mode?: ConsoleCreateMode
+  mode?: FireuxEntityCreateMode
   returnTo?: string
   cancelTo?: string
 }>()
 
 defineEmits<{
-  (event: 'created', result: ConsoleCreateResult): void
+  (event: 'created', result: FireuxEntityCreateResult): void
 }>()
 
 const { notesVisible } = useDevUi()
-const resolvedMode = computed<ConsoleCreateMode>(() => props.mode ?? 'console')
+const resolvedMode = computed<FireuxEntityCreateMode>(() => props.mode ?? 'console')
 const isConsoleMode = computed(() => resolvedMode.value === 'console')
 const showDevNotes = computed(() => import.meta.dev && notesVisible.value)
 const developerNoteTitle = computed(() => 'Create Portfolio')

@@ -42,18 +42,22 @@ Before each task:
   explicitly `false` for ordinary visitors. A signed-in configured developer
   or current-App admin receives the same root collection with hidden rows
   included and labelled `Hidden`; App attachment and AppKitchen support never
-  decide collection membership. Each collection row joins its required Place
-  only to resolve Place-owned presentation. Kitchen detail resolves the same
-  root and Place by authored slug during SSR; browser code does not read raw
-  root or AppKitchen documents.
+  decide collection membership. The collection groups projected Kitchens by
+  canonical `management.mode`: Root, Console and App. Demo status never changes
+  that classification. Each collection row
+  joins its required Place only to resolve Place-owned presentation. Kitchen
+  detail resolves the same root and Place by authored slug during SSR; browser
+  code does not read raw root or AppKitchen documents.
 - Reusable Kitchen onboarding belongs to `fireux-kitchens`. It selects or
   creates the required Place first, then creates the same-id canonical Kitchen
-  root. App attachment is explicit: when present, the root's small `console`
-  reference names the App and role, while the same-id AppKitchen record owns
-  access and Console configuration. Neither record substitutes for the root.
-- A Kitchen root owns `place_id`, `slug`, `status`, boolean `visibility`, its
-  sparse `identity`, its `assets`, optional brand palette override, optional
-  Console attachment, and audit stamps. `identity` uses `name` and `tagline`;
+  root. Management is explicit: `root` has no Console, `console` resolves to
+  the Misebox ecosystem App (`misebox-app`), and `app` names a dedicated
+  App with `app_id`. The same-id AppKitchen record owns access and Console
+  configuration. Neither relationship nor support substitutes for the root.
+- A Kitchen root uses the same document ID as its required Place and owns
+  `slug`, boolean `visibility`, sparse `identity`, `assets`, optional brand
+  palette override, exact `management`, and audit stamps. It does not duplicate
+  a Place id or generic lifecycle status. `identity` uses `name` and `tagline`;
   `assets` uses `image`, `logo`, `wordmark`, and `backdrop_color`. Place owns
   location name/address, photography, gallery, contact details, currency,
   timezone, and business hours. Collection cards resolve a Kitchen image

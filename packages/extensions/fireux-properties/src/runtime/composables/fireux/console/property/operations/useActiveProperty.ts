@@ -10,7 +10,6 @@ export type ActivePropertyRuntime = {
   id: ComputedRef<string>
   entity: ComputedRef<PropertySurface | null>
   rootCollection: ComputedRef<string>
-  consoleAppId: ComputedRef<string>
   targetOutcome: Readonly<Ref<ConsoleTargetOutcome>>
   canRead: ComputedRef<boolean>
   canWrite: ComputedRef<boolean>
@@ -68,7 +67,6 @@ export function useActiveProperty(): ActivePropertyRuntime {
     id,
     entity: selection.property,
     rootCollection,
-    consoleAppId: runtime.appId,
     targetOutcome: properties.outcome,
     canRead,
     canWrite: runtime.canWrite,

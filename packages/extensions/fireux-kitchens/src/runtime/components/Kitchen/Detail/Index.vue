@@ -116,7 +116,7 @@ const { isAdmin, isDeveloper } = useUser()
 const canEditIdentity = computed(() =>
   Boolean(
     (isAdmin.value || isDeveloper.value) &&
-      (role === 'global' || props.kitchen?.app_scope_app_id === appId)
+      (role === 'global' || props.kitchen?.management_app_id === appId)
   )
 )
 const applyIdentity = (identity: KitchenPublicIdentityEdit) => {

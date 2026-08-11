@@ -34,8 +34,8 @@
                   <h2 class="text-xl font-semibold text-highlighted">
                     {{ kitchenTitle }}
                   </h2>
-                  <UBadge :color="publicBadgeColor" variant="soft">
-                    {{ publicBadgeLabel }}
+                  <UBadge :color="visibilityBadgeColor" variant="soft">
+                    {{ visibilityBadgeLabel }}
                   </UBadge>
                 </div>
                 <p v-if="kitchenSubtitle" class="mt-1 text-sm text-dimmed">
@@ -202,8 +202,8 @@ const {
   imageInitials,
   kitchenPill,
   detailItems,
-  publicBadgeLabel,
-  publicBadgeColor,
+  visibilityBadgeLabel,
+  visibilityBadgeColor,
   identityPercent,
   readOnly,
   missingIdentityFields,

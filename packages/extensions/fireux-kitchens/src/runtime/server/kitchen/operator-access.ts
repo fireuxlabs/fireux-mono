@@ -9,7 +9,7 @@ import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import { AppKitchenStorage, KitchenStorage } from '../../models/kitchen.model.ts'
 import {
-  readKitchenOnboardingScope,
+  readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
 } from './onboarding-policy.ts'
 
@@ -58,10 +58,7 @@ export async function requireKitchenReportReader(
     input,
     'Sign in to view Kitchen finance.'
   )
-  const placeId = linkedDocumentId(
-    access.rootKitchen.place_id,
-    'Kitchen Place link'
-  )
+  const placeId = linkedDocumentId(input.kitchenId, 'Kitchen id')
   const rootPlaceSnapshot = await access.db
     .collection(PlaceStorage.collection)
     .doc(placeId)
@@ -120,10 +117,10 @@ export async function requireKitchenWriter(
       statusMessage: 'The Kitchen does not exist in this App.',
     })
   }
-  const scope = readKitchenOnboardingScope(rootKitchenSnapshot.data() ?? {})
+  const management = readKitchenOnboardingManagement(rootKitchenSnapshot.data() ?? {})
   if (
-    (scope.state !== 'parent_app' && scope.state !== 'tenant_app') ||
-    scope.appId !== input.appId
+    management.mode === 'root' ||
+    (management.mode === 'app' && management.app_id !== input.appId)
   ) {
     throw createError({
       statusCode: 409,

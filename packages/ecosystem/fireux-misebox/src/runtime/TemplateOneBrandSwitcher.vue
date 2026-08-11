@@ -29,13 +29,12 @@ defineProps<{
 }>()
 
 const swatch = (brand: TemplateOneBrandInjection) => ({
-  '--swatch-canvas': brand.basicProps.palette.secondary_color,
-  '--swatch-accent': brand.basicProps.palette.primary_color,
+  '--swatch-canvas': brand.rootProps.palette.secondary_color,
+  '--swatch-accent': brand.rootProps.palette.primary_color,
 })
 
 const tierLabel = (brand: TemplateOneBrandInjection) => {
-  if (brand.tier === 'basic')
-    return 'Basic Kitchen · root only · unassigned example'
+  if (brand.tier === 'root') return 'Root Kitchen · unassigned example'
   if (brand.tier === 'console') {
     return brand.appProps
       ? 'Console Kitchen · Demo · App preview'

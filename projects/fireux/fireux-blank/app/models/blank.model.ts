@@ -2,7 +2,8 @@
 // Concurrent edit — 2026-07-21 23:22 CEST — Console family alignment: keep Blank access exclusively in same-id App support.
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
-import { FireuxAppScope } from 'fireux-core/runtime/models/utils/scope.model'
+import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 
 type WidenLiteral<T> =
   T extends string ? string
@@ -31,7 +32,7 @@ export const BlankStorage = {
  */
 export const BlankModel = {
   id: '',
-  ...FireuxAppScope,
+  management: FireuxEntityManagementDefaults,
   name: '',
   slug: '',
   status: 'active' as BlankStatus,
@@ -46,7 +47,9 @@ export const BlankModel = {
   },
 } as const
 
-export type Blank = WidenLiteral<typeof BlankModel>
+export type Blank = Omit<WidenLiteral<typeof BlankModel>, 'management'> & {
+  management: FireuxEntityManagement
+}
 
 export const AppBlankModel = {
   ...FireuxAppAccessRecordModel,

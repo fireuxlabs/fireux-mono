@@ -2,6 +2,7 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: hydrate sparse Menu baselines through concrete Place runtime imports.
 // Concurrent edit — 2026-07-22 12:13 CEST — Place/Kitchen palette inheritance: resolve Place base, migration fallback, then canonical root override.
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
+import { useRuntimeConfig } from '#imports'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import {
@@ -9,7 +10,7 @@ import {
   readPlacePresentation,
 } from 'fireux-places/runtime/utils/place-spine'
 import {
-  readKitchenAppScope,
+  readKitchenManagementTarget,
   readKitchenFulfilmentConfig,
   readKitchenIdentity,
   readKitchenMenusConfig,
@@ -58,7 +59,10 @@ const explicitKitchenDisplayName = (value: Record<string, unknown>) =>
 
 export const resolveSourceAppId = (
   kitchenData: Record<string, unknown>
-) => readKitchenAppScope(kitchenData).appId
+) => readKitchenManagementTarget(
+  kitchenData,
+  String(useRuntimeConfig().public?.fireux?.ecosystem ?? '').trim()
+).appId
 
 export async function readAppMenuKitchenData(
   appId: string,
@@ -75,14 +79,13 @@ export async function readAppMenuKitchenData(
 }
 
 export async function readMenuKitchenPlaceData(
-  rootData: Record<string, unknown>
+  kitchenId: string
 ) {
-  const placeId = readRecordString(rootData, 'place_id')
-  if (!placeId) return {}
+  if (!kitchenId) return {}
 
   const snap = await getRuntimeFirestore()
     .collection(PlaceStorage.collection)
-    .doc(placeId)
+    .doc(kitchenId)
     .get()
 
   return snap.exists ? snap.data() || {} : {}
@@ -181,10 +184,10 @@ export async function readRootMenuKitchenScope(
     resolveSourceAppId(kitchenData)
   const [appKitchenData, placeData] = await Promise.all([
     readAppMenuKitchenData(kitchenAppId, resolvedKitchenId),
-    readMenuKitchenPlaceData(kitchenData),
+    readMenuKitchenPlaceData(resolvedKitchenId),
   ])
   const identity = menuKitchenIdentity(kitchenData, appKitchenData, placeData)
-  const placeId = readRecordString(kitchenData, 'place_id')
+  const placeId = resolvedKitchenId
   const fulfilment = menuKitchenFulfilment(kitchenData, appKitchenData)
   const kitchenOperationHours = menuKitchenOperationHours(
     kitchenData,

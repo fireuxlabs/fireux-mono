@@ -10,6 +10,7 @@ import type {
   KitchenTablesConfig,
 } from '../kitchen.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 
 export const PUBLIC_KITCHEN_INDEX_PAGE_SIZE = 24
 export const PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE = 48
@@ -20,8 +21,8 @@ export type PublicKitchenIndexItem = {
   id: string
   name: string
   slug: string
-  publicly_visible: boolean
-  is_test_kitchen: boolean
+  visible: boolean
+  management_mode: FireuxEntityManagement['mode']
   short_name?: string
   brand_tagline?: string
   formatted_address?: string
@@ -38,7 +39,7 @@ export type PublicKitchenIndexPage = {
 }
 
 export type PublicKitchenDetail = PublicKitchenIndexItem & {
-  app_scope_app_id?: string
+  management_app_id?: string
   route_scope: 'live'
   display_name: string
   sproochli?: Pick<
@@ -81,17 +82,10 @@ export const KITCHEN_CONSOLE_TARGET_LIMIT = 50
 export type KitchenConsoleTargetItem = {
   id: string
   can_write: boolean
-  app_scope: {
-    state: 'parent_app' | 'tenant_app'
-    app_id: string
-  }
+  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   place_id: string
   slug: string
-  visibility: {
-    show: boolean
-    active: boolean
-    is_test: boolean
-  }
+  visibility: boolean
   identity: {
     display_name: string
     tagline: string
@@ -108,9 +102,6 @@ export type KitchenConsoleTargetItem = {
   tables?: KitchenTablesConfig
   fulfilment: KitchenFulfilmentConfig
   sproochli: SproochliAttachmentConfig
-  show: boolean
-  active: boolean
-  is_test_kitchen: boolean
   display_name: string
   name: string
   tagline?: string

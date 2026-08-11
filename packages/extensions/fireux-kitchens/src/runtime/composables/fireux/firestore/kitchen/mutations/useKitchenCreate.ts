@@ -3,9 +3,9 @@
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen atomic attachment: route Console creation through trusted onboarding.
 // Concurrent edit — 2026-07-22 13:21 CEST — Onboarding spine: own Kitchen preview and completion transport in the create seam.
 import type {
-  ConsoleCreateMode,
-  ConsoleCreateResult,
-} from 'fireux-core/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate'
+  FireuxEntityCreateMode,
+  FireuxEntityCreateResult,
+} from 'fireux-core/runtime/models/utils/entity-create.model'
 import { defineFireuxCreatePlan } from 'fireux-core/runtime/composables/fireux/firestore/operations/createStrategy'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import type {
@@ -29,7 +29,7 @@ type KitchenCreateDraft = KitchenCreateInput & {
   place?: KitchenPlaceDraft
 }
 
-export type KitchenCreateResult = ConsoleCreateResult & {
+export type KitchenCreateResult = FireuxEntityCreateResult & {
   slug?: string
 }
 export type KitchenCreateOptions = {
@@ -37,7 +37,7 @@ export type KitchenCreateOptions = {
 }
 
 export type KitchenCreateModeOptions = {
-  mode?: ConsoleCreateMode
+  mode?: FireuxEntityCreateMode
   existingRootId?: string | null
 }
 

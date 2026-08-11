@@ -13,7 +13,6 @@
 
       <div class="menu-order-dispatch__copy">
         <strong>{{ kitchen.title }}</strong>
-        <span>{{ kitchen.status }}</span>
       </div>
     </section>
 

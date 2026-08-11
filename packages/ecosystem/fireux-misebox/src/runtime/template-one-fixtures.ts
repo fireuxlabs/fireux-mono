@@ -1,6 +1,6 @@
 import type { TemplateOneBrandInjection } from './template-one'
 
-const basicProps = (
+const rootProps = (
   primary_color: string,
   secondary_color: string,
   source: string
@@ -15,11 +15,11 @@ const consoleValues = [
 
 export const landingTemplateBrands = [
   {
-    id: 'basic-kitchen',
-    name: 'Basic Kitchen',
-    tier: 'basic',
+    id: 'root-kitchen',
+    name: 'Root Kitchen',
+    tier: 'root',
     demo: false,
-    basicProps: basicProps(
+    rootProps: rootProps(
       '#2563eb',
       '#ffffff',
       'Unassigned root-only model example using the default Misebox blue'
@@ -31,7 +31,7 @@ export const landingTemplateBrands = [
     name: 'Pizza the Action',
     tier: 'console',
     demo: true,
-    basicProps: basicProps(
+    rootProps: rootProps(
       '#1f6b45',
       '#f2c94c',
       'Pizza the Action Demo Place BrandPalette'
@@ -47,7 +47,7 @@ export const landingTemplateBrands = [
     name: 'Friiites',
     tier: 'app',
     demo: false,
-    basicProps: basicProps(
+    rootProps: rootProps(
       '#d99a22',
       '#0b0b0a',
       'Friiites App identity projected as effective Kitchen palette'
@@ -69,7 +69,7 @@ export const landingTemplateBrands = [
     name: "Deano's Smash",
     tier: 'console',
     demo: true,
-    basicProps: basicProps(
+    rootProps: rootProps(
       '#ff4f2e',
       '#181817',
       "Deano's Demo Place BrandPalette"
@@ -92,10 +92,9 @@ export const landingTemplates = [
     slug: 'template-one',
     name: 'Template One',
     status: 'In development',
-    summary:
-      'Basic, Console and App Kitchen presentation through one template.',
+    summary: 'Root, Console and App Kitchen presentation through one template.',
     anatomy: ['Page', 'Scenes', 'Layers', 'Elements'],
-    features: ['Basic Kitchen palette', 'Console presentation', 'App template'],
+    features: ['Root Kitchen palette', 'Console presentation', 'App template'],
     purchaseOptions: [
       {
         seller: 'FireUX',

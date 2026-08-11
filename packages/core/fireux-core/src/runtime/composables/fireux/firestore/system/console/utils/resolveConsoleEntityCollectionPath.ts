@@ -1,17 +1,12 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: select App support paths without overlay terminology.
 import type { ConsoleSource } from '../../../../app/console/useConsole'
-import { normalizeFireuxAppScopeState } from '../../../../../../utils/app-scope-state'
-import type { FireuxAppScopeState } from '../../../../../../models/utils/scope.model'
+import { readFireuxEntityManagement } from '../../../../../../utils/entity-management'
+import type { FireuxEntityManagement } from '../../../../../../models/utils/scope.model'
 
 export type ConsoleEntityRuntimeMode = ConsoleSource
 
 export type ConsoleEntityCollectionFamily =
-  | 'kitchens'
-  | 'portfolios'
-  | 'projects'
-  | 'suppliers'
-  | 'profiles'
-  | (string & {})
+  string
 
 export type ResolveConsoleEntityCollectionPathOptions = {
   family: ConsoleEntityCollectionFamily
@@ -24,13 +19,9 @@ export type ResolveConsoleEntityCollectionPathOptions = {
 
 export type ConsoleEntityScopeState =
   | ''
-  | FireuxAppScopeState
+  | FireuxEntityManagement['mode']
 
-export type ConsoleEntityScopeTarget = {
-  app_scope?: unknown
-  app_scope_state?: unknown
-  app_scope_app_id?: unknown
-}
+export type ConsoleEntityScopeTarget = { management?: unknown }
 
 const normalizePathPart = (value: unknown) =>
   String(value ?? '')
@@ -48,30 +39,23 @@ export function resolveConsoleEntityAppId(
   target?: ConsoleEntityScopeTarget | null,
   fallbackAppId?: string | null
 ) {
-  const appScope = record(target?.app_scope)
-
-  return (
-    normalizePathPart(appScope.app_id) ||
-    normalizePathPart(target?.app_scope_app_id) ||
-    normalizePathPart(fallbackAppId)
-  )
+  const management = readFireuxEntityManagement(target?.management)
+  if (management?.mode === 'app') return normalizePathPart(management.app_id)
+  if (management?.mode === 'console') return normalizePathPart(fallbackAppId)
+  return ''
 }
 
 export function resolveConsoleEntityScopeState(
   target?: ConsoleEntityScopeTarget | null
 ): ConsoleEntityScopeState {
-  const appScope = record(target?.app_scope)
-  return normalizeFireuxAppScopeState(
-    normalizePathPart(appScope.state) ||
-      normalizePathPart(target?.app_scope_state)
-  )
+  return readFireuxEntityManagement(target?.management)?.mode || ''
 }
 
 export function consoleEntityUsesAppScope(
   target?: ConsoleEntityScopeTarget | null
 ) {
   const state = resolveConsoleEntityScopeState(target)
-  return state === 'parent_app' || state === 'tenant_app'
+  return state === 'console' || state === 'app'
 }
 
 export function resolveConsoleEntityCollectionPath(

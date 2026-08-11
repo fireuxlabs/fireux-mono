@@ -3,27 +3,29 @@ import { createError, type H3Event } from 'h3'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import type { GuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import { resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/utils/entity-management'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppKitchensTarget,
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
-  readKitchenOnboardingScope,
+  readKitchenOnboardingManagement,
   readKitchenOnboardingSupport,
 } from './onboarding-policy.ts'
 import { resolveKitchenConsoleTargetIds } from './console-targets.ts'
 
 export async function readKitchenMutationActor(event: H3Event) {
+  const fireux = useFireUXConfig(event)
   const runtimeAppId = requireFirestoreDocumentId(
-    useFireUXConfig(event).appId,
+    fireux.appId,
     'Runtime App id'
   )
   const { uid } = await requireFirebaseBearerUser(
     event,
     'Sign in to manage this Kitchen.'
   )
-  return { runtimeAppId, uid }
+  return { runtimeAppId, ecosystem: fireux.ecosystem, uid }
 }
 
 function requireMemberRole(exists: boolean, value: unknown, message: string) {
@@ -64,15 +66,15 @@ export async function requireKitchenMutationAuthority(
   }
 
   const rootData = root.data || {}
-  const scope = readKitchenOnboardingScope(rootData)
-  if (scope.state !== 'parent_app' && scope.state !== 'tenant_app') {
+  const management = readKitchenOnboardingManagement(rootData)
+  if (management.mode === 'root') {
     throw createError({
       statusCode: 409,
       statusMessage: 'The Kitchen is not attached to an App.',
     })
   }
   const ownerAppId = requireFirestoreDocumentId(
-    scope.appId,
+    resolveFireuxEntityManagementAppId(management, actor.ecosystem),
     'Kitchen owner App id'
   )
   const ownerMemberships = serverAppUsersTarget(ownerAppId)
@@ -101,11 +103,7 @@ export async function requireKitchenMutationAuthority(
     })
   }
 
-  const placeId = requireFirestoreDocumentId(
-    rootData.place_id,
-    'Kitchen Place id'
-  )
-  const place = await mutations.read(FIRESTORE_MUTATION_TARGETS.places, placeId)
+  const place = await mutations.read(FIRESTORE_MUTATION_TARGETS.places, kitchenId)
   if (!place.exists) {
     throw createError({
       statusCode: 409,

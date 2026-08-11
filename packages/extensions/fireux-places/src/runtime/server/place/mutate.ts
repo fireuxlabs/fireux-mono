@@ -28,7 +28,7 @@ import {
 import { normalizePlaceBusinessHours } from '../../utils/place-spine'
 import {
   placeAuthorityIds,
-  readRootKitchenAppScope,
+  readRootKitchenManagement,
 } from './mutation-authority'
 
 type PlacePatchRequest = {
@@ -274,6 +274,7 @@ export async function mutatePlace(
         }
       : null
   const runtimeAppId = text(useRuntimeConfig(event).public?.fireux?.id)
+  const ecosystem = text(useRuntimeConfig(event).public?.fireux?.ecosystem)
   const storageBucket = runtimeStorageBucketName()
   if (
     kitchenAuthority &&
@@ -326,14 +327,17 @@ export async function mutatePlace(
     const place = placeSnapshot.data || {}
     const runtimeAdmin = runtimeMembershipSnapshot?.data?.role === 'admin'
     const rootKitchen = rootKitchenSnapshot?.data || {}
-    const rootKitchenScope = readRootKitchenAppScope(rootKitchen)
+    const rootKitchenManagement = readRootKitchenManagement(
+      rootKitchen,
+      ecosystem
+    )
     const scopedKitchen = scopedKitchenSnapshot?.data || {}
     const kitchenAccess = Boolean(
       kitchenAuthority &&
         rootKitchenSnapshot?.exists &&
         scopedKitchenSnapshot?.exists &&
         text(rootKitchen.place_id) === id &&
-        rootKitchenScope?.appId === kitchenAuthority.appId &&
+        rootKitchenManagement?.appId === kitchenAuthority.appId &&
         placeAuthorityIds(scopedKitchen.operator_ids).includes(uid)
     )
     if (!runtimeAdmin && !kitchenAccess) {

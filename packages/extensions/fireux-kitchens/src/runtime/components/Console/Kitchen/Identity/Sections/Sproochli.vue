@@ -62,8 +62,13 @@
 
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import type {
   SproochliAttachmentConfig,
   SproochliDefaultLanguage,
@@ -88,6 +93,7 @@ const defaultLanguageOptions = [
 }>
 
 const toast = useToastify()
+const fireux = useFireUXConfig()
 const { refreshTargets } = useKitchenConsoleIdentity()
 const { requireWritableData } = useConsoleWriteGuard('kitchen')
 const saving = ref(false)
@@ -99,9 +105,9 @@ const defaultLanguage = computed<SproochliDefaultLanguage>(
   () => config.value.default_language || 'mixed'
 )
 const ownerAppId = computed(() => {
-  const scope = props.kitchen?.app_scope
-  return scope && typeof scope === 'object' && !Array.isArray(scope)
-    ? String((scope as Record<string, unknown>).app_id ?? '').trim()
+  const management = readFireuxEntityManagement(props.kitchen?.management)
+  return management
+    ? resolveFireuxEntityManagementAppId(management, fireux.ecosystem)
     : ''
 })
 

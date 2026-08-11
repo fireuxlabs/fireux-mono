@@ -26,7 +26,6 @@ const CLASSIFICATION_TYPES = {
   authority: 'FireuxEntityAuthority',
   appSupport: 'FireuxEntityAppSupport',
   publicRead: 'FireuxEntityPublicRead',
-  status: 'FireuxEntityStatus',
 }
 
 const CLASSIFICATION_KEYS = [
@@ -37,7 +36,6 @@ const CLASSIFICATION_KEYS = [
   'authority',
   'appSupport',
   'publicRead',
-  'status',
   'console',
   'parent',
 ]
@@ -213,7 +211,6 @@ const declarationsIn = (repoRoot, relativePath) => {
           scoped: properties.has('scoped'),
           appSupport: properties.has('appSupportPath'),
         },
-        hasNotes: properties.has('notes'),
       })
     }
   }
@@ -222,7 +219,7 @@ const declarationsIn = (repoRoot, relativePath) => {
 }
 
 const assertClassificationSemantics = (declaration, vocabulary) => {
-  const { classification, paths, hasNotes, source } = declaration
+  const { classification, paths, source } = declaration
   const label = `${source}:${declaration.export}`
 
   for (const key of CLASSIFICATION_KEYS.filter((key) => key !== 'parent')) {
@@ -242,10 +239,6 @@ const assertClassificationSemantics = (declaration, vocabulary) => {
         `${label} uses unsupported ${key} value: ${String(value)}.`
       )
     }
-  }
-
-  if (classification.status === 'to-confirm') {
-    assert.equal(hasNotes, true, `${label} must explain its unresolved classification.`)
   }
 
   if (classification.identity === 'root') {
@@ -279,12 +272,17 @@ const assertClassificationSemantics = (declaration, vocabulary) => {
 
   if (classification.console) {
     assert.equal(classification.kind, 'entity', `${label} console declarations must be entities.`)
-    assert.equal(classification.status, 'confirmed', `${label} console entities must be confirmed.`)
   }
 }
 
 export async function run({ repoRoot = process.cwd() } = {}) {
   const vocabulary = classificationVocabulary(repoRoot)
+  for (const row of entityMatrix) {
+    if (row.state !== 'declared') continue
+    for (const family of row.classification.family) {
+      vocabulary.family.add(family)
+    }
+  }
   const ids = new Set()
   const declarationKeys = new Set()
   const declaredNames = new Set()

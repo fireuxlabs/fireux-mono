@@ -12,7 +12,7 @@ import {
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
   assertOnboardingAuthority,
-  assertScope,
+  assertManagement,
   assertSupportCapacity,
   readSupport,
   requireMemberRole,
@@ -76,7 +76,9 @@ export async function completePortfolioOnboarding(
     if (existingRootId && !rootData) {
       fail(404, 'Portfolio not found.')
     }
-    const scope = rootData ? assertScope(rootData, current.appId) : null
+    const management = rootData
+      ? assertManagement(rootData, current.appId, current.ecosystem)
+      : null
     const supportData = support.exists ? support.data || {} : null
     if (!rootData && supportData) {
       fail(409, 'Portfolio access exists without its canonical root.')
@@ -118,8 +120,7 @@ export async function completePortfolioOnboarding(
       if (!draft)
         fail(409, 'Portfolio creation input changed during onboarding.')
       mutations.create(portfolios, portfolioId, {
-        app_scope_state: current.appScopeState,
-        app_scope_app_id: current.appId,
+        management: current.management,
         name: draft.name,
         tagline: draft.tagline,
         image_url: draft.imageUrl,
@@ -133,14 +134,12 @@ export async function completePortfolioOnboarding(
         updated: serverAuditStamp({ by: current.uid }),
       })
     } else {
-      if (!scope) fail(500, 'Portfolio scope validation did not complete.')
-      if (
-        scope.state !== current.appScopeState ||
-        scope.appId !== current.appId
-      ) {
+      if (!management) {
+        fail(500, 'Portfolio management validation did not complete.')
+      }
+      if (JSON.stringify(management) !== JSON.stringify(current.management)) {
         mutations.update(portfolios, portfolioId, {
-          app_scope_state: current.appScopeState,
-          app_scope_app_id: current.appId,
+          management: current.management,
           updated: serverAuditStamp({ by: current.uid }),
         })
       }

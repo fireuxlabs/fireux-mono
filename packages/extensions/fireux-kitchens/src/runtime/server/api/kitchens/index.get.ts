@@ -99,6 +99,7 @@ export default defineEventHandler(
       appId: fireux.appId,
       ecosystemId: text(fireux.ecosystemId || fireux.ecosystem),
       role: fireux.role,
+      ecosystem: fireux.ecosystem,
       includeHidden,
     }
     setResponseHeaders(event, {
@@ -134,7 +135,7 @@ export default defineEventHandler(
       )
       let kitchenQuery = requestedPlaceId
         ? collection
-            .where('place_id', '==', requestedPlaceId)
+            .where(FieldPath.documentId(), '==', requestedPlaceId)
             .orderBy(FieldPath.documentId())
             .limit(scanLimit)
         : collection.orderBy(FieldPath.documentId()).limit(scanLimit)
@@ -146,7 +147,11 @@ export default defineEventHandler(
         id: document.id,
         data: document.data() || {},
       }))
-      const dataByPath = await hydrateKitchenPublicDocuments(db, documents)
+      const dataByPath = await hydrateKitchenPublicDocuments(
+        db,
+        documents,
+        directoryScope
+      )
 
       for (const [index, document] of documents.entries()) {
         scanned += 1

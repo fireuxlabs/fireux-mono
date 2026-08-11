@@ -3,9 +3,11 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
-  normalizeFireuxAppScopeState,
-  resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/utils/app-scope-state'
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+  resolveFireuxEntityManagementForApp,
+} from 'fireux-core/runtime/utils/entity-management'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
 import { hasAppUserPremiumAccess } from 'fireux-core/runtime/utils/app-user-access'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
@@ -31,7 +33,8 @@ type RuntimePolicy = {
   appId: string
   appRole: string
   developerId: string
-  appScopeState: 'parent_app' | 'tenant_app'
+  ecosystem: string
+  management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
 }
 
@@ -60,8 +63,15 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
   const appId = requireFirestoreDocumentId(fireux.appId, 'Runtime App id')
   const appRole = fireux.role
   const developerId = fireux.developerId || ''
-  const appScopeState = resolveFireuxAppScopeStateForRole(appRole)
-  if (!appScopeState) fail(403, 'This App cannot own a Supplier console.')
+  const ecosystem = requireFirestoreDocumentId(
+    fireux.ecosystem,
+    'Ecosystem key'
+  )
+  const management = resolveFireuxEntityManagementForApp(
+    appRole,
+    appId,
+    ecosystem
+  )
 
   const canCreate = resolveConsoleCanCreate(
     appRole,
@@ -72,7 +82,8 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
     appId,
     appRole,
     developerId,
-    appScopeState,
+    ecosystem,
+    management,
     canCreate,
   }
 }
@@ -103,22 +114,17 @@ function boundedIds(value: unknown, max: number, label: string) {
   return ids
 }
 
-function readRootScope(value: Record<string, unknown>) {
-  if (Object.prototype.hasOwnProperty.call(value, 'app_scope')) {
-    fail(409, 'Supplier App scope uses a non-canonical stored shape.')
+function readRootManagement(value: Record<string, unknown>) {
+  if (
+    Object.hasOwn(value, 'app_scope') ||
+    Object.hasOwn(value, 'app_scope_state') ||
+    Object.hasOwn(value, 'app_scope_app_id')
+  ) {
+    fail(409, 'Supplier contains retired management fields.')
   }
-  const state = normalizeFireuxAppScopeState(value.app_scope_state)
-  const appId = text(value.app_scope_app_id)
-
-  if (!state) fail(409, 'Supplier App scope is missing or invalid.')
-  if (state === 'root_only' && appId) {
-    fail(409, 'An unattached Supplier cannot name an App.')
-  }
-  if (state !== 'root_only' && !appId) {
-    fail(409, 'An attached Supplier must name its App.')
-  }
-
-  return { state, appId }
+  const management = readFireuxEntityManagement(value.management)
+  if (!management) fail(409, 'Supplier management is missing or invalid.')
+  return management
 }
 
 function readSupport(value: Record<string, unknown>) {
@@ -152,6 +158,7 @@ function resolveAction(input: {
   role: MemberRole
   canCreate: boolean
   appId: string
+  ecosystem: string
 }): SupplierOnboardingAction {
   if (!input.root) {
     if (!input.canCreate) {
@@ -163,11 +170,15 @@ function resolveAction(input: {
     return 'create'
   }
 
-  const scope = readRootScope(input.root)
-  if (scope.state !== 'root_only' && scope.appId !== input.appId) {
+  const management = readRootManagement(input.root)
+  const managementAppId = resolveFireuxEntityManagementAppId(
+    management,
+    input.ecosystem
+  )
+  if (management.mode !== 'root' && managementAppId !== input.appId) {
     fail(409, 'This Supplier is already attached to another App.')
   }
-  if (scope.state === 'root_only' && input.support) {
+  if (management.mode === 'root' && input.support) {
     fail(409, 'Supplier access exists for an unattached canonical root.')
   }
 
@@ -196,8 +207,7 @@ function newSupplierRoot(
   companyId: string
 ): Record<string, unknown> {
   return {
-    app_scope_state: policy.appScopeState,
-    app_scope_app_id: policy.appId,
+    management: policy.management,
     company_id: companyId,
     slug: supplierId,
     supplier_organization_name: organizationName,
@@ -298,6 +308,7 @@ export async function completeSupplierOnboarding(
       role,
       canCreate: policy.canCreate,
       appId: policy.appId,
+      ecosystem: policy.ecosystem,
     })
     if (supportData && role === 'admin') {
       assertSupportCapacity(supportData, uid)
@@ -337,14 +348,10 @@ export async function completeSupplierOnboarding(
         newSupplierRoot(policy, uid, supplierId, organizationName, companyId)
       )
     } else {
-      const scope = readRootScope(rootData || {})
-      if (
-        scope.state !== policy.appScopeState ||
-        scope.appId !== policy.appId
-      ) {
+      const management = readRootManagement(rootData || {})
+      if (JSON.stringify(management) !== JSON.stringify(policy.management)) {
         mutations.update(suppliers, supplierId, {
-          app_scope_state: policy.appScopeState,
-          app_scope_app_id: policy.appId,
+          management: policy.management,
           updated: serverAuditStamp({ by: uid }),
         })
       }

@@ -211,7 +211,7 @@ export function useDevKitchenCollection(
   const testPlaceIds = computed(() =>
     sourceRef.value === 'test'
       ? rootDocs.value
-        .map(kitchen => normalize(kitchen.place_id))
+        .map(kitchen => normalize(kitchen.id))
         .filter(Boolean)
       : []
   )
@@ -239,7 +239,7 @@ export function useDevKitchenCollection(
       return undefined
     }
     const invalid = rootDocs.value.find(kitchen => {
-      const placeId = normalize(kitchen.place_id)
+      const placeId = normalize(kitchen.id)
       return !placeId || !testPlacesById.value.has(placeId)
     })
     return invalid
@@ -259,7 +259,7 @@ export function useDevKitchenCollection(
           if (!targetHasConsoleAccess(kitchen, filterOperatorId.value)) return null
         }
         const testPlace = sourceRef.value === 'test'
-          ? testPlacesById.value.get(normalize(kitchen.place_id)) ?? null
+          ? testPlacesById.value.get(normalize(kitchen.id)) ?? null
           : null
         if (sourceRef.value === 'test' && !testPlace) return null
 

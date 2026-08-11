@@ -76,6 +76,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.deepEqual(utilityModelFiles, [
     'console-entity.model.ts',
     'directory.ts',
+    'entity-create.model.ts',
     'entity.model.ts',
     'profile.model.ts',
     'scope.model.ts',
@@ -900,16 +901,16 @@ export async function run({ repoRoot = process.cwd() } = {}) {
 
   assert.match(
     placeMutationAuthority,
-    /Object\.hasOwn\(kitchen,\s*['"]app_scope_state['"]\)/
+    /readFireuxEntityManagement\(kitchen\.management\)/
   )
   assert.match(
     placeMutationAuthority,
-    /Object\.hasOwn\(kitchen,\s*['"]app_scope_app_id['"]\)/
+    /resolveFireuxEntityManagementAppId\(management, ecosystem\)/
   )
-  assert.match(placeMediaMutation, /readRootKitchenAppScope\(rootKitchen\)/)
+  assert.match(placeMediaMutation, /readRootKitchenManagement\(/)
   assert.match(
     placeMediaMutation,
-    /rootKitchenScope\?\.appId\s*===\s*kitchenAuthority\.appId/
+    /rootKitchenManagement\?\.appId\s*===\s*kitchenAuthority\.appId/
   )
   assert.match(
     placeMediaMutation,
@@ -917,7 +918,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(
     placeMutationAuthority,
-    /appScope\.app_id\s*\|\|\s*kitchen\.app_scope_app_id/
+    /app_scope|app_scope_state|app_scope_app_id/
   )
 
   assert.deepEqual(typeFields(jobModel, 'Job'), [

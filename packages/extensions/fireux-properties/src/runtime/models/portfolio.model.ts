@@ -5,7 +5,8 @@ import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.mode
 import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
-import { FireuxAppScope } from 'fireux-core/runtime/models/utils/scope.model'
+import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -57,7 +58,6 @@ export const PortfolioEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'access-record',
   publicRead: 'to-confirm',
-  status: 'confirmed',
   console: true,
   root: PortfolioStorage.root,
   appSupportPath: PortfolioStorage.appSupport,
@@ -74,7 +74,7 @@ export const AppPortfolioStorage = {
 export type PortfolioStatus = 'active' | 'archived'
 export const PortfolioModel = {
   id: '',
-  ...FireuxAppScope,
+  management: FireuxEntityManagementDefaults,
 
   name: '',
   tagline: '',
@@ -97,7 +97,10 @@ export const PortfolioModel = {
   },
 } as const
 
-export type Portfolio = WidenLiteral<typeof PortfolioModel>
+export type Portfolio = Omit<
+  WidenLiteral<typeof PortfolioModel>,
+  'management'
+> & { management: FireuxEntityManagement }
 
 export const AppPortfolioModel = {
   ...FireuxAppAccessRecordModel,
@@ -110,8 +113,7 @@ export type PortfolioCreateInput = Omit<
   | 'id'
   | 'created'
   | 'updated'
-  | 'app_scope_state'
-  | 'app_scope_app_id'
+  | 'management'
   | 'tagline'
   | 'image_url'
   | 'status'
@@ -133,7 +135,6 @@ export type PortfolioUpdateInput = Partial<
     | 'id'
     | 'created'
     | 'updated'
-    | 'app_scope_state'
-    | 'app_scope_app_id'
+    | 'management'
   >
 >

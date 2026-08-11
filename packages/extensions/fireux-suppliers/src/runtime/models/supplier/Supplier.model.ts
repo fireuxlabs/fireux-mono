@@ -6,7 +6,8 @@ import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.mode
 import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
 import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
-import { FireuxAppScope } from 'fireux-core/runtime/models/utils/scope.model'
+import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type SupplierState = 'official' | 'public'
@@ -76,7 +77,6 @@ export const SupplierEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'access-record',
   publicRead: 'to-confirm',
-  status: 'confirmed',
   console: true,
   root: SupplierStorage.path,
   appSupportPath: AppSupplierStorage.path,
@@ -84,7 +84,7 @@ export const SupplierEntity = defineFireuxEntity({
 
 export const SupplierDefaults = {
   id: '',
-  ...FireuxAppScope,
+  management: FireuxEntityManagementDefaults,
   company_id: '',
   slug: '',
 
@@ -113,7 +113,10 @@ export const SupplierDefaults = {
   },
 } as const
 
-export type Supplier = WidenLiteral<typeof SupplierDefaults>
+export type Supplier = Omit<
+  WidenLiteral<typeof SupplierDefaults>,
+  'management'
+> & { management: FireuxEntityManagement }
 
 export const AppSupplierDefaults = {
   ...FireuxAppAccessRecordModel,
@@ -126,8 +129,7 @@ export type SupplierCreateInput = Omit<
   | 'id'
   | 'created'
   | 'updated'
-  | 'app_scope_state'
-  | 'app_scope_app_id'
+  | 'management'
   | 'tagline'
   | 'slug'
 > &
@@ -144,8 +146,7 @@ export type SupplierUpdateInput = Partial<
     | 'id'
     | 'created'
     | 'updated'
-    | 'app_scope_state'
-    | 'app_scope_app_id'
+    | 'management'
   >
 >
 

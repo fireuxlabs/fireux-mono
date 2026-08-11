@@ -30,16 +30,7 @@ export interface AppDerived {
   user_count: number
 }
 
-export const APP_CONSOLE_FAMILIES = [
-  'blank',
-  'kitchen',
-  'portfolio',
-  'project',
-  'property',
-  'supplier',
-] as const
-
-export type AppConsoleFamily = (typeof APP_CONSOLE_FAMILIES)[number]
+export type AppConsoleFamily = string
 
 export interface AppIdentity {
   id: string
@@ -94,7 +85,6 @@ export const AppEntity = defineFireuxEntity({
   authority: 'owning-app-database',
   appSupport: 'none',
   publicRead: 'projection',
-  status: 'confirmed',
   root: AppStorage.path,
 })
 

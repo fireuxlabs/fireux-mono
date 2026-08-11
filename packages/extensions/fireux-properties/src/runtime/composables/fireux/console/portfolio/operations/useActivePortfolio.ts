@@ -22,7 +22,8 @@ export type ActivePortfolioRuntime = {
   id: ComputedRef<string>
   entity: ComputedRef<PortfolioConsoleEntity | null>
   rootCollection: ComputedRef<string>
-  consoleAppId: ComputedRef<string>
+  appId: ComputedRef<string>
+  ecosystem: ComputedRef<string>
   targetOutcome: Readonly<Ref<ConsoleTargetOutcome>>
   canRead: ComputedRef<boolean>
   canWrite: ComputedRef<boolean>
@@ -93,7 +94,8 @@ export function useActivePortfolio(): ActivePortfolioRuntime {
     id,
     entity: consoleSelection.portfolio,
     rootCollection: runtime.rootCollection,
-    consoleAppId: runtime.appId,
+    appId: runtime.appId,
+    ecosystem: runtime.ecosystem,
     targetOutcome,
     canRead,
     canWrite: runtime.canWrite,

@@ -1,15 +1,5 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
-import type { FireuxAppScopeState } from './scope.model'
 import type { FireuxStamped } from './stamps.model'
-
-export const FireuxConsoleEntityAppScopeModel = {
-  state: 'root_only' as FireuxAppScopeState,
-  app_id: '' as string,
-} as const
-
-export type FireuxConsoleEntityAppScope = {
-  [K in keyof typeof FireuxConsoleEntityAppScopeModel]: (typeof FireuxConsoleEntityAppScopeModel)[K]
-}
 
 export const FireuxConsoleEntityVisibilityModel = {
   show: false as boolean,

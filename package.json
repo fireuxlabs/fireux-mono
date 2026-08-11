@@ -56,6 +56,7 @@
     "audit:scripts": "node scripts/audit-script-usage.mjs",
     "audit:app-media": "node scripts/audit-app-media.mjs",
     "align:onboarding": "node scripts/align-user-app-onboarding.mjs",
+    "migrate:console-entity-management": "node scripts/migrate-console-entity-management.mjs",
     "align:user-avatars": "node scripts/align-user-avatars.mjs",
     "interlaken:menu-audit": "node scripts/interlaken-menu-audit.mjs",
     "interlaken:images": "node scripts/interlaken-menu-audit.mjs --images",

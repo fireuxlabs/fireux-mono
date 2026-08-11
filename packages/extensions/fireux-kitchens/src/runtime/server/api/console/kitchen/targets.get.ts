@@ -22,6 +22,10 @@ import type {
   KitchenTablesConfig,
 } from '../../../../models/kitchen.model.ts'
 import { readKitchenOnboardingSupport } from '../../../../server/kitchen/onboarding-policy.ts'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import { resolveKitchenConsoleTargetIds } from '../../../../server/kitchen/console-targets.ts'
 import { menuKitchenIdentity } from '../../../../server/menu/ownership/kitchen-scope.ts'
 import {
@@ -33,7 +37,10 @@ import {
 } from '../../../../utils/kitchen-spine.ts'
 
 type StoredRecord = Record<string, unknown>
-type CanonicalKitchenScope = KitchenConsoleTargetItem['app_scope']
+type CanonicalKitchenScope = {
+  management: KitchenConsoleTargetItem['management']
+  appId: string
+}
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): StoredRecord =>
@@ -47,33 +54,33 @@ function conflict(statusMessage: string): never {
 
 function readCanonicalKitchenScope(
   kitchenId: string,
-  data: StoredRecord
+  data: StoredRecord,
+  ecosystem: string
 ): CanonicalKitchenScope {
-  const console = record(data.console)
-  const keys = Object.keys(console).sort()
-  const appRole = console.app_role
-  const appId = text(console.app_id)
   const hasRetiredScope = [
     'app_scope',
     'app_scope_state',
     'app_scope_app_id',
     'app_id',
+    'console',
   ].some(key => Object.hasOwn(data, key))
+  const management = readFireuxEntityManagement(data.management)
+  const appId = management
+    ? resolveFireuxEntityManagementAppId(management, ecosystem)
+    : ''
 
   if (
     hasRetiredScope ||
-    keys.length !== 2 ||
-    keys[0] !== 'app_id' ||
-    keys[1] !== 'app_role' ||
-    (appRole !== 'parent' && appRole !== 'tenant') ||
+    !management ||
+    management.mode === 'root' ||
     !isFirestoreDocumentId(appId)
   ) {
     conflict(`Kitchen ${kitchenId} has an invalid canonical App scope.`)
   }
 
   return {
-    state: appRole === 'tenant' ? 'tenant_app' : 'parent_app',
-    app_id: appId,
+    management,
+    appId,
   }
 }
 
@@ -131,14 +138,10 @@ function projectKitchenTarget(input: {
   return {
     id: input.id,
     can_write: input.canWrite,
-    app_scope: input.scope,
-    place_id: readRecordString(input.root, 'place_id'),
+    management: input.scope.management,
+    place_id: input.id,
     slug: readRecordString(input.root, 'slug'),
-    visibility: {
-      show: visibility.show,
-      active: visibility.active,
-      is_test: visibility.isTest,
-    },
+    visibility,
     identity: {
       display_name: displayName,
       tagline,
@@ -173,9 +176,6 @@ function projectKitchenTarget(input: {
       : {}),
     fulfilment: readKitchenFulfilmentConfig(input.support),
     sproochli: readKitchenSproochliConfig(input.support),
-    show: visibility.show,
-    active: visibility.active,
-    is_test_kitchen: visibility.isTest,
     display_name: displayName,
     name: displayName,
     ...(tagline ? { tagline } : {}),
@@ -209,7 +209,7 @@ export default defineEventHandler(
       event,
       'Sign in to view Kitchen targets.'
     )
-    const { appId } = useFireUXConfig()
+    const { appId, ecosystem } = useFireUXConfig()
     const db = getRuntimeFirestore()
     const currentMembershipRef = db.doc(`apps/${appId}/users/${uid}`)
     const currentMembershipSnapshot = await currentMembershipRef.get()
@@ -252,17 +252,12 @@ export default defineEventHandler(
         conflict(`Kitchen target ${id} is missing its canonical root.`)
       }
       const root = rootSnapshot.data() || {}
-      const scope = readCanonicalKitchenScope(id, root)
-      const placeId = readRecordString(root, 'place_id')
-      if (!isFirestoreDocumentId(placeId)) {
-        conflict(`Kitchen ${id} has an invalid canonical Place reference.`)
-      }
-
+      const scope = readCanonicalKitchenScope(id, root, ecosystem)
       scopes.set(id, scope)
       for (const ref of [
-        db.doc(`apps/${scope.app_id}/kitchens/${id}`),
-        db.doc(`apps/${scope.app_id}/users/${uid}`),
-        db.doc(`${PlaceStorage.collection}/${placeId}`),
+        db.doc(`apps/${scope.appId}/kitchens/${id}`),
+        db.doc(`apps/${scope.appId}/users/${uid}`),
+        db.doc(`${PlaceStorage.collection}/${id}`),
       ]) {
         relatedRefs.set(ref.path, ref)
       }
@@ -276,9 +271,9 @@ export default defineEventHandler(
       const rootSnapshot = roots.get(id)!
       const root = rootSnapshot.data() || {}
       const scope = scopes.get(id)!
-      const supportPath = `apps/${scope.app_id}/kitchens/${id}`
-      const membershipPath = `apps/${scope.app_id}/users/${uid}`
-      const placeId = readRecordString(root, 'place_id')
+      const supportPath = `apps/${scope.appId}/kitchens/${id}`
+      const membershipPath = `apps/${scope.appId}/users/${uid}`
+      const placeId = id
       const placePath = `${PlaceStorage.collection}/${placeId}`
       const supportSnapshot = related.get(supportPath)
       const membershipSnapshot = related.get(membershipPath)

@@ -2,7 +2,7 @@
 <template>
   <MoleculesDisclosurePanel
     title="Directory"
-    description="Choose whether this Kitchen appears in the public Kitchen directory."
+    description="Choose whether this Kitchen appears in the Kitchen directory."
     icon="i-lucide-map"
   >
     <UPageCard
@@ -11,14 +11,14 @@
       variant="subtle"
     >
       <UButton
-        :color="isPublished ? 'neutral' : 'primary'"
-        :variant="isPublished ? 'soft' : 'solid'"
-        :icon="isPublished ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+        :color="isVisible ? 'neutral' : 'primary'"
+        :variant="isVisible ? 'soft' : 'solid'"
+        :icon="isVisible ? 'i-lucide-eye-off' : 'i-lucide-eye'"
         :loading="saving"
-        :disabled="!canWrite || saving || (!isPublished && !slug)"
+        :disabled="!canWrite || saving || (!isVisible && !slug)"
         @click="togglePublication"
       >
-        {{ isPublished ? 'Hide from directory' : 'Publish to directory' }}
+        {{ isVisible ? 'Hide from directory' : 'Show in directory' }}
       </UButton>
     </UPageCard>
   </MoleculesDisclosurePanel>
@@ -41,16 +41,16 @@ const { publishKitchen, unpublishKitchen } = useKitchenPublish()
 const saving = ref(false)
 const slug = computed(() => String(props.kitchen?.slug ?? '').trim())
 const displayName = computed(() => readKitchenIdentity(props.kitchen).displayName)
-const isPublished = computed(() => readKitchenVisibility(props.kitchen).show)
+const isVisible = computed(() => readKitchenVisibility(props.kitchen))
 const statusTitle = computed(() =>
-  isPublished.value ? 'Listed publicly' : 'Not listed'
+  isVisible.value ? 'Visible in directory' : 'Hidden from directory'
 )
 const statusDescription = computed(() => {
-  if (isPublished.value) {
-    return 'This Kitchen can appear in /kitchens and public discovery surfaces.'
+  if (isVisible.value) {
+    return 'This Kitchen appears in /kitchens and discovery surfaces.'
   }
-  if (!slug.value) return 'Set a Kitchen slug before publishing it.'
-  return 'Publish when the linked Place and Kitchen identity are ready.'
+  if (!slug.value) return 'Set a Kitchen slug before showing it.'
+  return 'Show the Kitchen when its linked Place and identity are ready.'
 })
 
 async function togglePublication() {
@@ -58,7 +58,7 @@ async function togglePublication() {
 
   saving.value = true
   try {
-    if (isPublished.value) {
+    if (isVisible.value) {
       await unpublishKitchen(props.kitchenId)
       toast.success('Kitchen hidden from the directory')
     } else {
@@ -67,7 +67,7 @@ async function togglePublication() {
         slug: slug.value,
         ...(displayName.value ? { displayName: displayName.value } : {}),
       })
-      toast.success('Kitchen published to the directory')
+      toast.success('Kitchen shown in the directory')
     }
   } catch (error) {
     toast.error(

@@ -1,4 +1,7 @@
-import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): Record<string, unknown> =>
@@ -9,28 +12,13 @@ const record = (value: unknown): Record<string, unknown> =>
 export const placeAuthorityIds = (value: unknown) =>
   Array.isArray(value) ? value.map(text).filter(Boolean) : []
 
-export function readRootKitchenAppScope(value: unknown) {
+export function readRootKitchenManagement(
+  value: unknown,
+  ecosystem: string
+) {
   const kitchen = record(value)
-  if (
-    Object.hasOwn(kitchen, 'app_scope_state') ||
-    Object.hasOwn(kitchen, 'app_scope_app_id')
-  ) {
-    return null
-  }
-
-  const appScope = record(kitchen.app_scope)
-  const keys = Object.keys(appScope).sort()
-  const state = text(appScope.state)
-  const appId = text(appScope.app_id)
-  if (
-    keys.length !== 2 ||
-    keys[0] !== 'app_id' ||
-    keys[1] !== 'state' ||
-    (state !== 'parent_app' && state !== 'tenant_app') ||
-    !isFirestoreDocumentId(appId)
-  ) {
-    return null
-  }
-
-  return { appId, state }
+  const management = readFireuxEntityManagement(kitchen.management)
+  if (!management || management.mode === 'root') return null
+  const appId = resolveFireuxEntityManagementAppId(management, ecosystem)
+  return appId ? { appId, mode: management.mode } : null
 }

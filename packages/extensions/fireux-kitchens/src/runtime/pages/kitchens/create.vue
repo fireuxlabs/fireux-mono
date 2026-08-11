@@ -8,7 +8,7 @@
     />
 
     <UPageBody class="pagebody">
-      <KitchenOnboarding mode="public" />
+      <KitchenOnboarding mode="root" />
     </UPageBody>
   </UPage>
 </template>

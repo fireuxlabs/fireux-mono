@@ -44,7 +44,7 @@ export function usePortfolioCollection(
   } = useTargetCollectionSelection(options, 'live')
   const { firestoreFetchCollection, firestoreLoadDocsByIds, firestoreQuery } =
     useFirestoreRead()
-  const { appId } = useFireUXConfig()
+  const { appId, ecosystem } = useFireUXConfig()
   const { surface } = usePortfolioInterface()
 
   const usesTargetedRootRead = computed(
@@ -69,7 +69,7 @@ export function usePortfolioCollection(
       !appSupport ||
       !readConsoleTargetAuthority(appSupport) ||
       !resolvedAppId.value ||
-      !portfolioRootBelongsToApp(root, resolvedAppId.value)
+      !portfolioRootBelongsToApp(root, resolvedAppId.value, ecosystem)
     ) {
       return false
     }
@@ -311,7 +311,11 @@ export function usePortfolioCollection(
       .filter((portfolio) => appSupportIds.has(resolvePortfolioId(portfolio)))
       .filter(
         (portfolio) =>
-          !portfolioRootBelongsToApp(portfolio, resolvedAppId.value)
+          !portfolioRootBelongsToApp(
+            portfolio,
+            resolvedAppId.value,
+            ecosystem
+          )
       )
       .map((portfolio) => resolvePortfolioId(portfolio))
       .filter(Boolean)

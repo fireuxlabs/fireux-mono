@@ -1,6 +1,6 @@
 import type { Place, PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import type { CurrencyDisplayFormat } from '../../../../../../models/shared/currency-display.model'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { Kitchen, KitchenMenusConfig } from '../../../../../../models/kitchen.model'
@@ -49,14 +49,12 @@ export type KitchenSurface = {
   // linked Place plus meaningful Kitchen/scoped deltas, never Kitchen authority.
   id?: string
   can_write?: boolean
-  app_scope_state?: FireuxAppScopeState
-  app_scope_app_id?: string
+  management?: FireuxEntityManagement
+  management_app_id?: string
   slug?: string
-  show?: boolean
-  publicly_visible?: boolean
-  active?: boolean
+  visibility?: boolean
+  visible?: boolean
   route_scope?: 'live' | 'demo' | 'test'
-  is_test_kitchen?: boolean
   place_id?: string
   created?: unknown
   updated?: unknown

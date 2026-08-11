@@ -19,13 +19,11 @@ export type FireuxRootScope = {
   [K in keyof typeof FireuxRootScope]: (typeof FireuxRootScope)[K]
 }
 
-export type FireuxAppScopeState = 'root_only' | 'parent_app' | 'tenant_app'
+export type FireuxEntityManagement =
+  | { mode: 'root' }
+  | { mode: 'console' }
+  | { mode: 'app'; app_id: string }
 
-export const FireuxAppScope = {
-  app_scope_state: 'root_only' as FireuxAppScopeState,
-  app_scope_app_id: '' as string,
-} as const
-
-export type FireuxAppScope = {
-  [K in keyof typeof FireuxAppScope]: (typeof FireuxAppScope)[K]
+export const FireuxEntityManagementDefaults: FireuxEntityManagement = {
+  mode: 'root',
 }

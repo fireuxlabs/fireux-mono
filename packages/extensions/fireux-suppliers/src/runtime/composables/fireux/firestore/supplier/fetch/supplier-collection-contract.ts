@@ -1,5 +1,8 @@
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import type { Ref } from 'vue'
 import {
   SupplierStorage,
@@ -54,11 +57,13 @@ export function resolveSupplierId(
 
 export function supplierRootBelongsToApp(
   supplier: SupplierRootDoc,
-  appId: string
+  appId: string,
+  ecosystem: string
 ) {
-  const state = normalizeFireuxAppScopeState(supplier.app_scope_state)
-  return (
-    (state === 'parent_app' || state === 'tenant_app') &&
-    normalizeString(supplier.app_scope_app_id) === appId
+  const management = readFireuxEntityManagement(supplier.management)
+  return Boolean(
+    management &&
+    management.mode !== 'root' &&
+    resolveFireuxEntityManagementAppId(management, ecosystem) === appId
   )
 }

@@ -9,12 +9,24 @@ import {
   type Property,
 } from '../../../../../../../models/property.model'
 import { canonicalPropertyRoot } from '../../../../../firestore/property/utils/view/usePropertyInterface'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const propertyBelongsToApp = (property: Property, appId: string) =>
-  (property.app_scope_state === 'parent_app' ||
-    property.app_scope_state === 'tenant_app') &&
-  property.app_scope_app_id === appId
+const propertyBelongsToApp = (
+  property: Property,
+  appId: string,
+  ecosystem: string
+) => {
+  const management = readFireuxEntityManagement(property.management)
+  return Boolean(
+    management &&
+    management.mode !== 'root' &&
+    resolveFireuxEntityManagementAppId(management, ecosystem) === appId
+  )
+}
 
 export function usePortfolioPropertyCollection(
   runtimePortfolio = useActivePortfolio()
@@ -22,8 +34,9 @@ export function usePortfolioPropertyCollection(
   const db = useFirestore()
   const { firestoreQuery } = useFirestoreRead()
   const portfolioId = computed(() => normalizeString(runtimePortfolio.id.value))
-  const consoleAppId = computed(() =>
-    normalizeString(runtimePortfolio.consoleAppId.value)
+  const appId = computed(() => normalizeString(runtimePortfolio.appId.value))
+  const ecosystem = computed(() =>
+    normalizeString(runtimePortfolio.ecosystem.value)
   )
   const authorizedPortfolioId = computed(() =>
     normalizeString(runtimePortfolio.entity.value?.id)
@@ -32,7 +45,8 @@ export function usePortfolioPropertyCollection(
     Boolean(
       runtimePortfolio.canRead.value &&
         portfolioId.value &&
-        consoleAppId.value &&
+        appId.value &&
+        ecosystem.value &&
         authorizedPortfolioId.value === portfolioId.value
     )
   )
@@ -45,8 +59,7 @@ export function usePortfolioPropertyCollection(
     if (!collectionPath.value) return null
     return query(
       collection(db, PropertyStorage.rootCollection),
-      where('portfolio_id', '==', portfolioId.value),
-      where('app_scope_app_id', '==', consoleAppId.value)
+      where('portfolio_id', '==', portfolioId.value)
     ) as Query<Property>
   })
   const source = firestoreQuery<Property>(
@@ -63,7 +76,7 @@ export function usePortfolioPropertyCollection(
 
     return (source.value ?? []).reduce<Property[]>((items, property) => {
       const root = canonicalPropertyRoot(property)
-      if (root && propertyBelongsToApp(root, consoleAppId.value))
+      if (root && propertyBelongsToApp(root, appId.value, ecosystem.value))
         items.push(root)
       return items
     }, [])
@@ -78,7 +91,7 @@ export function usePortfolioPropertyCollection(
   const invalidScopeIds = computed(() =>
     (source.value ?? []).reduce<string[]>((ids, property) => {
       const root = canonicalPropertyRoot(property)
-      if (!root || propertyBelongsToApp(root, consoleAppId.value)) return ids
+      if (!root || propertyBelongsToApp(root, appId.value, ecosystem.value)) return ids
       ids.push(root.id)
       return ids
     }, [])
@@ -107,7 +120,7 @@ export function usePortfolioPropertyCollection(
 
   return {
     portfolioId,
-    consoleAppId,
+    ecosystem,
     canRead,
     collectionPath,
     collection: properties,

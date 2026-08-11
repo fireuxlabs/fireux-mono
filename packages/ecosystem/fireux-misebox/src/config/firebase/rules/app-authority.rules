@@ -2,17 +2,32 @@
     match /kitchens/{kitchenId} {
       function isCanonicalAttachedKitchen(data) {
         return data is map &&
-          data.keys().hasAll(['app_scope']) &&
+          data.keys().hasAll(['management']) &&
           !data.keys().hasAny([
+            'app_scope',
             'app_scope_state',
             'app_scope_app_id',
             'app_id'
           ]) &&
-          data.app_scope is map &&
-          data.app_scope.keys().hasAll(['state', 'app_id']) &&
-          data.app_scope.keys().hasOnly(['state', 'app_id']) &&
-          data.app_scope.state in ['parent_app', 'tenant_app'] &&
-          isValidFirestoreDocumentId(data.app_scope.app_id);
+          data.management is map &&
+          (
+            (
+              data.management.keys().hasOnly(['mode']) &&
+              data.management.mode == 'console'
+            ) ||
+            (
+              data.management.keys().hasAll(['mode', 'app_id']) &&
+              data.management.keys().hasOnly(['mode', 'app_id']) &&
+              data.management.mode == 'app' &&
+              isValidFirestoreDocumentId(data.management.app_id)
+            )
+          );
+      }
+
+      function kitchenManagementAppId(data) {
+        return data.management.mode == 'console'
+          ? 'misebox-app'
+          : data.management.app_id;
       }
 
       function hasSameIdAppKitchenSupport(appId) {
@@ -26,11 +41,11 @@
       // support record prove current Console authority.
       allow get: if isAuthenticated() &&
         isCanonicalAttachedKitchen(resource.data) &&
-        hasSameIdAppKitchenSupport(resource.data.app_scope.app_id) &&
+        hasSameIdAppKitchenSupport(kitchenManagementAppId(resource.data)) &&
         (
-          isAppAdmin(resource.data.app_scope.app_id) ||
+          isAppAdmin(kitchenManagementAppId(resource.data)) ||
           isTargetMember(
-            resource.data.app_scope.app_id,
+            kitchenManagementAppId(resource.data),
             'kitchens',
             kitchenId
           )

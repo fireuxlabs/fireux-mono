@@ -5,20 +5,16 @@ import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 
-const file = (repoRoot, relativePath) =>
-  path.join(repoRoot, relativePath)
+const file = (repoRoot, relativePath) => path.join(repoRoot, relativePath)
 const read = (repoRoot, relativePath) =>
   readFileSync(file(repoRoot, relativePath), 'utf8')
 const readFamily = (repoRoot, relativePaths) =>
   relativePaths.map((relativePath) => read(repoRoot, relativePath)).join('\n')
 
 export async function run({ repoRoot = process.cwd() } = {}) {
-  const base =
-    'packages/extensions/fireux-kitchens/src/runtime/'
-  const canonicalCollectionPath =
-    `${base}composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts`
-  const legacyPublicCollectionPath =
-    `${base}composables/fireux/kitchen/usePublicKitchenIndex.ts`
+  const base = 'packages/extensions/fireux-kitchens/src/runtime/'
+  const canonicalCollectionPath = `${base}composables/fireux/firestore/kitchen/fetch/useKitchenCollection.ts`
+  const legacyPublicCollectionPath = `${base}composables/fireux/kitchen/usePublicKitchenIndex.ts`
   const manager = read(
     repoRoot,
     `${base}components/Kitchen/Collection/Manager.vue`
@@ -63,19 +59,31 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Kitchen must not restore a second public-index composable.'
   )
   assert.match(manager, /\buseKitchenCollection\s*\(/)
+  assert.match(manager, /Root kitchens/)
+  assert.match(manager, /Console kitchens/)
+  assert.match(manager, /App kitchens/)
   assert.doesNotMatch(manager, /useKitchenFetch|firebase\/firestore/)
   assert.match(collection, /\/api\/kitchens\?limit=/)
   assert.match(collection, /includeHidden=true/)
   assert.match(collection, /getIdToken\(\)/)
   assert.match(collection, /watch\(\s*\[hasAuthState,\s*uid\]/)
-  assert.doesNotMatch(collection, /requestPreview|privilegedPreview|firebase\/firestore/)
+  assert.doesNotMatch(
+    collection,
+    /requestPreview|privilegedPreview|firebase\/firestore/
+  )
   assert.match(indexApi, /db\.collection\('kitchens'\)/)
-  assert.match(indexApi, /document\.data\.visibility === false && !includeHidden/)
+  assert.match(
+    indexApi,
+    /document\.data\.visibility === false && !includeHidden/
+  )
   assert.match(indexApi, /requireFirebaseBearerUser/)
   assert.match(indexApi, /apps\/\$\{appId\}\/users\/\$\{uid\}/)
   assert.match(indexApi, /!isDeveloper && !isAdmin/)
   assert.match(indexApi, /projectPublicKitchenIndexItem/)
-  assert.match(indexApi, /where\('place_id', '==', requestedPlaceId\)/)
+  assert.match(
+    indexApi,
+    /where\(FieldPath\.documentId\(\), '==', requestedPlaceId\)/
+  )
   assert.match(detailApi, /projectPublicKitchenDetail/)
   assert.match(indexApi, /public-projection\.ts/)
   assert.match(detailApi, /public-projection\.ts/)
@@ -90,6 +98,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /cardImageUrl\s*\|\|\s*parts\.place\.coverImage\s*\|\|\s*parts\.place\.imageUrl/
   )
   assert.match(publicProjection, /image_kind:\s*imageKind/)
+  assert.match(
+    publicProjection,
+    /management_mode:\s*parts\.managementTarget\?\.mode\s*\|\|\s*['"]root['"]/
+  )
   assert.doesNotMatch(publicProjection, /profile_id/)
   assert.match(sproochli, /SproochliLanguageTrigger/)
   assert.match(sproochli, /resolveSproochliLanguageOptions/)
@@ -98,12 +110,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(placeOperations, /kitchenSlug:\s*kitchen\.slug/)
   assert.match(placeOperations, /\bmenuRoutePath\s*\(/)
   assert.doesNotMatch(placeOperations, /firebase\/firestore|collection\s*\(/)
-  assert.match(identityEditor, /\/api\/kitchens\/\$\{encodeURIComponent\(props\.kitchen\.slug\)\}\/identity/)
+  assert.match(
+    identityEditor,
+    /\/api\/kitchens\/\$\{encodeURIComponent\(props\.kitchen\.slug\)\}\/identity/
+  )
   assert.doesNotMatch(identityEditor, /firebase\/firestore|useKitchenUpdate/)
   assert.match(identityEditor, /\buseImageStorage\b/)
-  assert.match(identityEditor, /kitchens\/\$\{props\.kitchen\.id\}\/identity\/logo\/current/)
-  assert.match(identityEditor, /kitchens\/\$\{props\.kitchen\.id\}\/identity\/card\/current/)
-  assert.doesNotMatch(identityEditor, /type="url"|Logo image URL|Card image URL/)
+  assert.match(
+    identityEditor,
+    /kitchens\/\$\{props\.kitchen\.id\}\/identity\/logo\/current/
+  )
+  assert.match(
+    identityEditor,
+    /kitchens\/\$\{props\.kitchen\.id\}\/identity\/card\/current/
+  )
+  assert.doesNotMatch(
+    identityEditor,
+    /type="url"|Logo image URL|Card image URL/
+  )
   assert.match(publicIdentity, /requireFirebaseBearerUser/)
   assert.match(publicIdentity, /requireFirebaseStorageDownloadUrl/)
   assert.match(publicIdentity, /identity\/card\/current/)

@@ -278,8 +278,6 @@ const files = {
     'packages/core/fireux-core/src/runtime/models/utils/console-entity.model.ts',
   consoleAccess:
     'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleAccess.ts',
-  sharedCreate:
-    'packages/core/fireux-core/src/runtime/composables/fireux/firestore/system/console/mutations/useConsoleCreate.ts',
   entityModel:
     'packages/core/fireux-core/src/runtime/models/utils/entity.model.ts',
   placeModel:
@@ -508,7 +506,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.propertyModel,
     /export const PropertyEntity = defineFireuxEntity/
   )
-  assert.match(source.entityModel, /\| 'property'/)
+  assert.match(source.entityModel, /\| \(string & \{\}\)/)
+  assert.doesNotMatch(
+    source.entityModel,
+    /\| '(?:kitchen|property|supplier|portfolio)'/,
+    'Core entity vocabulary must remain extensible instead of registering extension-owned families.'
+  )
   assert.match(
     source.propertyModel,
     /family:\s*\['property',\s*'console-entity'\]/
@@ -597,7 +600,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.propertyCollection,
-    /resolvedShape\.value === 'root-with-app-support'[\s\S]*!appSupport[\s\S]*root\.app_scope_app_id !== resolvedAppId\.value/
+    /resolvedShape\.value === 'root-with-app-support'[\s\S]*!appSupport[\s\S]*readFireuxEntityManagement[\s\S]*resolveFireuxEntityManagementAppId/
   )
   assert.doesNotMatch(
     source.propertyCollection,
@@ -708,7 +711,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.portfolioPropertyCollection,
-    /where\('app_scope_app_id',\s*'=='/
+    /readFireuxEntityManagement[\s\S]*resolveFireuxEntityManagementAppId/
   )
   assert.match(
     source.portfolioPropertyCollection,
@@ -721,7 +724,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.portfolioPropertyCollection,
-    /runtimePortfolio\.consoleAppId\.value/
+    /runtimePortfolio\.ecosystem\.value/
   )
   assert.match(source.portfolioPropertyCollection, /propertyBelongsToApp/)
   assert.match(source.portfolioPropertyCollection, /root\/App scope mismatch/)
@@ -774,24 +777,6 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(
     source.propertyServerConfig,
     /runtime\/server\/api\/properties\/index\.get/
-  )
-
-  assert.match(
-    source.sharedCreate,
-    /const rootResult = await options\.createRoot\(\)[\s\S]*const rootSnap = await getDoc\(rootRef\)[\s\S]*existingRootData = rootSnap\.data\(\)/,
-    'Console attachment must re-read the root returned by createRoot before ownership checks.'
-  )
-  assert.match(source.sharedCreate, /validateRoot\?:/)
-  assert.match(
-    source.sharedCreate,
-    /await options\.validateRoot\(id, existingRootData\)/
-  )
-  assert.match(source.sharedCreate, /createAppSupport\?:/)
-  assert.match(source.sharedCreate, /createdAppSupport:/)
-  assert.doesNotMatch(
-    source.sharedCreate,
-    /createOverlay|createdOverlay|overlayId/,
-    'Console creation must use App support vocabulary and fixed same-id records.'
   )
 
   assert.match(
@@ -987,7 +972,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenUpdateServer, /runGuardedServerTransaction/)
   assert.match(source.kitchenUpdateServer, /requireKitchenMutationAuthority/)
   assert.match(source.kitchenUpdateServer, /readKitchenByRouteSlug/)
-  assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingScope/)
+  assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingManagement/)
   assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingSupport/)
   assert.match(source.kitchenMutationAuthority, /resolveKitchenConsoleTargetIds/)
   assert.match(
@@ -1001,7 +986,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenDemoTargets,
-    /app_scope:\s*\{\s*state:\s*'parent_app',\s*app_id:\s*input\.identity\.appId/,
+    /management:\s*\{\s*mode:\s*'console'\s*\}/,
     'Every Demo Kitchen must carry the same explicit App relationship as its access-only Demo support.'
   )
   assert.match(
@@ -1064,11 +1049,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /ids\.length > KITCHEN_CONSOLE_TARGET_LIMIT/
   )
   assert.match(source.kitchenTargetApi, /readCanonicalKitchenScope/)
-  assert.match(source.kitchenTargetApi, /keys\.length !== 2/)
-  assert.match(source.kitchenTargetApi, /appRole !== 'parent'/)
-  assert.match(source.kitchenTargetApi, /appRole !== 'tenant'/)
-  assert.match(source.kitchenTargetApi, /'app_scope_state'/)
-  assert.match(source.kitchenTargetApi, /'app_scope_app_id'/)
+  assert.match(source.kitchenTargetApi, /hasRetiredScope/)
+  assert.match(source.kitchenTargetApi, /readFireuxEntityManagement/)
+  assert.match(source.kitchenTargetApi, /management\.mode === 'root'/)
+  assert.match(source.kitchenTargetApi, /management:\s*input\.scope\.management/)
   assert.match(source.kitchenTargetApi, /db\.getAll/)
   assert.match(source.kitchenTargetApi, /readKitchenOnboardingSupport/)
   assert.match(

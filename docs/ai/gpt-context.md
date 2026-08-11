@@ -505,12 +505,18 @@ Before each task:
   path, and a local `/img/...` placeholder is never the persisted avatar.
 - Live root/App-support families query bounded entity App-support authority and
   expose no partial pair when a root, same-id support record,
-  App scope, stored authority shape, or caller access is invalid.
+  management host, stored authority shape, or caller access is invalid.
 - Production onboarding for those families is a fixed-runtime authenticated
   domain endpoint. One trusted transaction creates or attaches the canonical
   root and completes the same-id App support record with the caller's
   operator/team authority. Operators may mutate; team members have target/read
   membership only; current App admins are the explicit override.
+- Console-capable roots use the shared cumulative management contract:
+  `{ mode: 'root' }`, `{ mode: 'console' }`, or
+  `{ mode: 'app', app_id }`. `console` resolves through the ecosystem package's
+  conventional `<ecosystem>-app`, while only `app` stores an App id. Core must not
+  enumerate extension Console families or own a generic domain-root factory;
+  each domain owns validation and its trusted root/support transaction.
 - Kitchen retains Place and live/Demo composition, Blank remains the small
   harness, and Project remains a read-only control-plane family. Those are
   domain deltas, not alternate target or onboarding spines.

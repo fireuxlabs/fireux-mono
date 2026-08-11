@@ -43,17 +43,10 @@ export type FireuxEntityFamily =
   | 'console-entity'
   | 'content'
   | 'commerce'
-  | 'kitchen'
-  | 'menu'
-  | 'place'
-  | 'supplier'
-  | 'property'
-  | 'portfolio'
   | 'profile'
   | 'support'
   | 'to-confirm'
-
-export type FireuxEntityStatus = 'confirmed' | 'to-confirm'
+  | (string & {})
 
 export type FireuxEntityDefinition = {
   kind: FireuxEntityKind
@@ -63,7 +56,6 @@ export type FireuxEntityDefinition = {
   authority: FireuxEntityAuthority
   appSupport: FireuxEntityAppSupport
   publicRead: FireuxEntityPublicRead
-  status: FireuxEntityStatus
   console?: boolean
   root?: string
   scoped?: string

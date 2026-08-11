@@ -868,8 +868,7 @@ export async function run(ctx) {
       ],
       markers: [
         'appSupport: AppSupplier',
-        "app_scope_state: 'parent_app'",
-        'app_scope_app_id: appId',
+        "management: { mode: 'console' }",
         'company_id: input.companyId',
         'supplier_image: input.logoImageUrl',
         '!scenario.supplier.supplier_image',

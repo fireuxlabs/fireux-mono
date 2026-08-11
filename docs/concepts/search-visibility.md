@@ -152,10 +152,10 @@ provider.
   Company, and Place contract uses one projection-backed reader for the public
   JSON index and its extension-owned sitemap document. It must never fall back
   to the generic visibility-only root provider.
-- Kitchens follow the same transport rule with their own domain gates: public
-  JSON and XML share one reader that applies publication, Test exclusion, App
-  scope, AppKitchen support, Place linkage, and the bounded Kitchen DTO. A raw
-  `visibility.show` query is not sufficient sitemap authority.
+- Kitchens follow the same transport rule with their own domain gates: JSON
+  and XML share one reader that applies boolean root visibility, management,
+  AppKitchen support, the same-id Place relationship, and the bounded Kitchen
+  DTO. A raw root query is not sufficient sitemap authority.
 - Empty sitemap results and storage failures require observable verification;
   production must not silently present missing public inventory as success.
 

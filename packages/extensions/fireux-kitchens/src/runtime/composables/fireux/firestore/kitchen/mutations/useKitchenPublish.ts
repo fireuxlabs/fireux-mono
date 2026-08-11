@@ -49,7 +49,7 @@ export function useKitchenPublish() {
 
     await updateKitchen(ready.id, {
       slug: ready.slug,
-      'visibility.show': true,
+      visibility: true,
     })
 
     return { id: ready.id, routePath }
@@ -60,7 +60,7 @@ export function useKitchenPublish() {
     if (!id) throw new Error('Kitchen id is required before hiding it.')
 
     await updateKitchen(id, {
-      'visibility.show': false,
+      visibility: false,
     })
 
     return { id }

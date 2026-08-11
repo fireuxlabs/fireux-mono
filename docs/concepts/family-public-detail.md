@@ -53,8 +53,8 @@ Every public detail route should:
   story, gallery, and hours while Kitchen retains brand identity, menus, and
   operational children.
 - When the Kitchen capability is installed, Place detail composes the
-  Kitchen-owned `KitchenPlacePublicOperations` extension. It exact-filters
-  published Kitchens by canonical `Kitchen.place_id`, then resolves each
+  Kitchen-owned `KitchenPlacePublicOperations` extension. It exact-loads the
+  same-id Kitchen for the Place, then resolves each
   Kitchen's published Menu doorways through the existing Kitchen-scoped public
   Menu endpoint. Place owns neither the relationship copy nor a denormalized
   Kitchen/Menu list, and Apps do not add venue-specific exceptions.

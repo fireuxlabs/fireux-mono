@@ -1,12 +1,6 @@
 // Concurrent edit — 2026-07-20 23:46 CEST — App Support Vocabulary Pass: describe root/App support transfers without overlay language.
 import { AppStorage } from '../../../models/core/app.model'
-import type { FireuxAppScopeState } from '../../../models/utils/scope.model'
-
-export type AppScopeRepresentation = 'flat' | 'nested'
-export type AppScopeTransferDestinationState = Exclude<
-  FireuxAppScopeState,
-  'root_only'
->
+export type AppScopeTransferDestinationState = 'console' | 'app'
 
 export type AppScopeTransferPlanInput = {
   family: string
@@ -16,7 +10,6 @@ export type AppScopeTransferPlanInput = {
   sourceAppId: string
   destinationAppId: string
   destinationState: AppScopeTransferDestinationState
-  representation: AppScopeRepresentation
 }
 
 export type AppScopeTransferPlan = {
@@ -71,20 +64,8 @@ export function buildAppScopeTransferPlan(
     throw new Error('[app-scope-transfer] source and destination apps must differ')
   }
 
-  if (
-    input.destinationState !== 'parent_app' &&
-    input.destinationState !== 'tenant_app'
-  ) {
+  if (input.destinationState !== 'console' && input.destinationState !== 'app') {
     throw new Error('[app-scope-transfer] destination must own an App support record')
-  }
-
-  if (input.representation !== 'flat' && input.representation !== 'nested') {
-    throw new Error('[app-scope-transfer] representation must be flat or nested')
-  }
-
-  const ownership = {
-    state: input.destinationState,
-    app_id: destinationAppId,
   }
 
   return Object.freeze({
@@ -94,12 +75,11 @@ export function buildAppScopeTransferPlan(
     sourceAppSupportPath: `${AppStorage.collection}/${sourceAppId}/${appSupportCollection}/${rootId}`,
     destinationAppSupportPath: `${AppStorage.collection}/${destinationAppId}/${appSupportCollection}/${rootId}`,
     destinationState: input.destinationState,
-    rootPatch: input.representation === 'nested'
-      ? { app_scope: ownership }
-      : {
-          app_scope_state: ownership.state,
-          app_scope_app_id: ownership.app_id,
-        },
+    rootPatch: {
+      management: input.destinationState === 'console'
+        ? { mode: 'console' }
+        : { mode: 'app', app_id: destinationAppId },
+    },
     phases: [
       'inspect_source_tree',
       'copy_app_support_tree',

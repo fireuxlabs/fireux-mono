@@ -1,11 +1,11 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
+import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import type { PlaceImageShade } from 'fireux-places/runtime/models/place.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
 import { readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
 import type { Kitchen } from '../../../../../../models/kitchen.model'
 import {
-  readKitchenAppScope,
+  readKitchenManagementTarget,
   readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
@@ -29,6 +29,7 @@ export type {
 } from './kitchen-interface.types'
 
 export function useKitchenInterface() {
+  const fireux = useFireUXConfig()
   type KitchenIdentity = KitchenCard.Card
   type KitchenPill = KitchenCard.Card
   type KitchenProfile = KitchenCard.Profile
@@ -116,7 +117,7 @@ export function useKitchenInterface() {
     const id = safeString(merged.id).trim()
     if (!id) return null
     const identity = readKitchenIdentity(merged)
-    const appScope = readKitchenAppScope(merged)
+    const managementTarget = readKitchenManagementTarget(merged, fireux.ecosystem)
     const visibility = readKitchenVisibility(merged)
     const menus = readKitchenMenusConfig(merged)
     const sproochli = readKitchenSproochliConfig(merged)
@@ -124,13 +125,9 @@ export function useKitchenInterface() {
     return {
       ...merged,
       id,
-      app_scope_state: (appScope.state || undefined) as
-        | FireuxAppScopeState
-        | undefined,
-      app_scope_app_id: appScope.appId || undefined,
-      show: visibility.show,
-      active: visibility.active,
-      is_test_kitchen: visibility.isTest,
+      management: merged.management,
+      management_app_id: managementTarget.appId || undefined,
+      visibility,
       display_name: identity.displayName || safeString(place.name),
       tagline: identity.tagline || safeString(place.brand_tagline),
       display_image_url: safeString(place.image_url),
@@ -168,16 +165,14 @@ export function useKitchenInterface() {
         kitchen.logo_image_url
     )
 
-    const isPubliclyVisible = kitchen.publicly_visible !== false
-    const badges = isPubliclyVisible
+    const visible = kitchen.visible !== false
+    const badges = visible
       ? []
-      : [kitchen.is_test_kitchen ? 'Test' : 'Hidden']
+      : ['Hidden']
 
     return {
       id,
-      to: kitchen.is_test_kitchen
-        ? ''
-        : resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope }),
+      to: resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope }),
 
       title: name,
       subtitle: shortAddress,

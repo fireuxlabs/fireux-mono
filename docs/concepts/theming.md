@@ -1,6 +1,6 @@
 # Theming and branded presentation
 
-Updated: 2026-08-10
+Updated: 2026-08-11
 Ref: 93c271035
 Role: map, not canon
 
@@ -48,13 +48,17 @@ chrome remain outside scenes. `projects/templates/fireux-template` remains the
 guarded neutral Nuxt starter App; it is not the landing catalogue.
 
 Template One begins at `/templates/template-one` with a four-Kitchen toggle:
-one Basic Demo, one Console Demo, Friiites App and the incremental Deano's App
-preview Demo. It presents Basic, Console and App props in capability order and
-uses Rule as the first visible atom. Core `BrandPalette` stays a coherent theme
-value object, not a collection of colour atoms. Presentation resolves
-dynamically from defaults through Place and Kitchen before future Console and
-App-template layers; inherited values are not copied upward during onboarding.
-Current source models Place palette and Kitchen Menu PageStyle, but not separate
+one explicitly unassigned Root model example, the Pizza the Action Console
+Demo, the Friiites App Kitchen and the Deano's Console Demo with an incremental
+App preview. The public `/kitchens` collection classifies real Kitchen records
+directly from `Kitchen.management.mode`: Root, Console and App. Demo status
+never changes that capability classification. Template One presents Root,
+Console and App props in capability order and uses
+Rule as the first visible atom. Core `BrandPalette` stays a coherent theme value
+object, not a collection of colour atoms. Presentation resolves dynamically
+from defaults through Place and Kitchen before future Console and App-template
+layers; inherited values are not copied upward during onboarding. Current
+source models Place palette and Kitchen Menu PageStyle, but not separate
 Console-theme or App-template-override storage. Kitchen also currently owns
 sparse identity media overrides; that source-backed delta is not silently
 removed by the progressive model.
@@ -84,21 +88,24 @@ sources exist.
 - Kitchen theme mutation/editor:
   `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/theme.ts`
   and `components/Console/Kitchen/Identity/Theme.vue`
-- Canonical catalogue: `projects/fireux/fireux-app/app/pages/templates/*`
-- Injection/anatomy: `projects/fireux/fireux-app/app/{types,content,components}`
-- Misebox doorway:
-  `projects/misebox/misebox-app/app/pages/templates/index.vue`
+- Canonical catalogue: `projects/misebox/misebox-app/app/pages/templates/*`
+- Injection/anatomy: `packages/ecosystem/fireux-misebox/src/runtime/template-one*`
+  and `TemplateOne*.vue`
+- FireUX referral: `projects/fireux/fireux-app/app/pages/templates/*`
+- Kitchen capability projection and collection grouping:
+  `packages/extensions/fireux-kitchens/src/runtime/server/kitchen/public-projection.ts`
+  and `components/Kitchen/Collection/Manager.vue`
 - Guard: `scripts/guards/landing-templates.mjs`
 
 ## Delta register
 
-| Difference                                    | State      | Reason                                                       |
-| --------------------------------------------- | ---------- | ------------------------------------------------------------ |
-| FireUX owns canonical anatomy and previews    | accepted   | One implementation prevents seller-specific forks            |
-| FireUX and Misebox both offer the theme       | accepted   | Commercial doorway differs; template implementation does not |
-| Misebox repeats template markup or injections | drift      | Its route is a seller doorway into the canonical preview     |
-| Brand injection creates an App or record      | drift      | Preview identity is not operational ownership                |
-| Theme SKU, price or automated install         | to-confirm | Product, Billing and provisioning do not define them         |
+| Difference                                   | State      | Reason                                                       |
+| -------------------------------------------- | ---------- | ------------------------------------------------------------ |
+| Misebox owns canonical anatomy and previews  | accepted   | Kitchen presentation belongs to the Misebox ecosystem        |
+| FireUX and Misebox both offer the theme      | accepted   | Commercial doorway differs; template implementation does not |
+| FireUX repeats template markup or injections | drift      | FireUX refers to the canonical Misebox implementation        |
+| Brand injection creates an App or record     | drift      | Preview identity is not operational ownership                |
+| Theme SKU, price or automated install        | to-confirm | Product, Billing and provisioning do not define them         |
 
 ## Verification and maintenance
 

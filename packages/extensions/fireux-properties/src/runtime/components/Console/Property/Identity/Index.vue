@@ -19,7 +19,7 @@
         <h2 class="text-xl font-semibold text-highlighted">
           {{ selectedProperty.identity?.name || 'Untitled property' }}
         </h2>
-        <ConsoleAppScope :entity="selectedProperty" />
+        <ConsoleManagement :entity="selectedProperty" />
       </div>
     </UCard>
 

@@ -38,7 +38,7 @@ if (!template)
 const selectedKitchenId = computed<TemplateOneBrandInjection['id']>(() =>
   isLandingTemplateBrandId(String(route.query.brand || ''))
     ? (route.query.brand as TemplateOneBrandInjection['id'])
-    : 'basic-kitchen'
+    : 'root-kitchen'
 )
 const selectedKitchen = computed(
   () => findLandingTemplateBrand(selectedKitchenId.value) || template.brands[0]
@@ -48,7 +48,7 @@ definePageMeta({ layout: 'landing', name: 'MiseboxTemplateDetailPage' })
 useSeo({
   title: 'Template One · Misebox',
   description:
-    'Compare Basic, Console and App Kitchen presentation through Template One.',
+    'Compare Root, Console and App Kitchen presentation through Template One.',
   path: '/templates/template-one',
   image: '/img/app/cover.png',
 })

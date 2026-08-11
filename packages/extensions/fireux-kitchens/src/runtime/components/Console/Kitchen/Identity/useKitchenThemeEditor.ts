@@ -5,6 +5,7 @@ import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app
 import { useRequireUser } from 'fireux-core/runtime/composables/fireux/firebase/useRequireUser'
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { readFireuxEntityManagement, resolveFireuxEntityManagementAppId } from 'fireux-core/runtime/utils/entity-management'
 import { useKitchenConsoleIdentity } from '../../../../composables/fireux/console/kitchen/identity/useKitchenConsoleIdentity'
 import { useKitchenConsoleMenus } from '../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import { useMenu } from '../../../../composables/fireux/menu/useMenu'
@@ -35,9 +36,9 @@ export function useKitchenThemeEditor() {
   )
 
   const kitchenAppId = computed(() => {
-    const scope = kitchen.value?.app_scope
-    return scope && typeof scope === 'object' && !Array.isArray(scope)
-      ? normalizeString((scope as Record<string, unknown>).app_id)
+    const management = readFireuxEntityManagement(kitchen.value?.management)
+    return management
+      ? resolveFireuxEntityManagementAppId(management, fireux.ecosystem)
       : ''
   })
 
@@ -395,5 +396,3 @@ export function useKitchenThemeEditor() {
     flushThemeSave,
   }
 }
-
-

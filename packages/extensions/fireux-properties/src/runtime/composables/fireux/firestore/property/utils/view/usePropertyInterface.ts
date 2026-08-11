@@ -7,6 +7,7 @@ import {
   type Property,
   type PropertyManual,
 } from '../../../../../../models/property.model'
+import { readFireuxEntityManagement } from 'fireux-core/runtime/utils/entity-management'
 
 const safeString = (value: unknown) => String(value ?? '').trim()
 const defaultCurrency = 'GBP'
@@ -44,8 +45,7 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
     'slug',
     'portfolio_id',
     'place_id',
-    'app_scope_state',
-    'app_scope_app_id',
+    'management',
     'identity',
     'status',
     'publication_state',
@@ -57,22 +57,19 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
     typeof source.slug !== 'string' ||
     typeof source.portfolio_id !== 'string' ||
     typeof source.place_id !== 'string' ||
-    typeof source.app_scope_state !== 'string' ||
-    typeof source.app_scope_app_id !== 'string' ||
     typeof source.status !== 'string' ||
     typeof source.publication_state !== 'string'
   ) return null
   const id = source.id.trim()
   const slug = source.slug.trim()
   const placeId = source.place_id.trim()
-  const appScopeState = source.app_scope_state
-  const appScopeAppId = source.app_scope_app_id.trim()
+  const management = readFireuxEntityManagement(source.management)
   const identity = asRecord(source.identity)
   const propertyType = identity?.property_type
   const status = source.status
   const publicationState = source.publication_state
 
-  if (!id || !slug || !placeId || !identity) return null
+  if (!id || !slug || !placeId || !identity || !management) return null
   if (!hasOnlyKeys(identity, [
     'name',
     'image_url',
@@ -92,9 +89,6 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
   ) return null
   if (!validStamp(source.created, ['at', 'by', 'app_id'])) return null
   if (!validStamp(source.updated, ['at', 'by'])) return null
-  if (!['root_only', 'parent_app', 'tenant_app'].includes(appScopeState)) return null
-  if (appScopeState === 'root_only' && appScopeAppId) return null
-  if (appScopeState !== 'root_only' && !appScopeAppId) return null
   if (!['residential', 'commercial', 'mixed'].includes(propertyType)) return null
   if (status !== 'active' && status !== 'inactive') return null
   if (!['draft', 'published', 'retired'].includes(publicationState)) return null
@@ -109,8 +103,7 @@ export function canonicalPropertyRoot(source?: Property | null): Property | null
     slug,
     portfolio_id: source.portfolio_id.trim(),
     place_id: placeId,
-    app_scope_state: appScopeState as Property['app_scope_state'],
-    app_scope_app_id: appScopeAppId,
+    management,
     identity: {
       name: identity.name.trim(),
       image_url: identity.image_url.trim(),

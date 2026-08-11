@@ -1,7 +1,11 @@
 // Concurrent edit — 2026-07-21 17:30 CEST — Kitchen onboarding: centralize fail-closed scope, access, locale, and capacity policy.
 // Concurrent edit — 2026-07-28 18:10 CEST — Pre-release Kitchen spine: reject compatibility scope vocabulary and malformed support authority.
 import { createError } from 'h3'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import {
+  readFireuxEntityManagement,
+  resolveFireuxEntityManagementAppId,
+} from 'fireux-core/runtime/utils/entity-management'
 import {
   normalizePlaceCurrencyCode,
   normalizePlaceTimezone,
@@ -42,48 +46,37 @@ export function requireOnboardingMemberRole(
   return role
 }
 
-export function readKitchenOnboardingScope(value: Record<string, unknown>) {
+export function readKitchenOnboardingManagement(
+  value: Record<string, unknown>
+): FireuxEntityManagement {
   if (
     Object.hasOwn(value, 'app_scope') ||
     Object.hasOwn(value, 'app_scope_state') ||
     Object.hasOwn(value, 'app_scope_app_id') ||
-    Object.hasOwn(value, 'app_id')
+    Object.hasOwn(value, 'app_id') ||
+    Object.hasOwn(value, 'console')
   ) {
-    fail(409, 'Kitchen contains retired App scope fields.')
+    fail(409, 'Kitchen contains retired management fields.')
   }
-  if (!Object.hasOwn(value, 'console')) {
-    return { state: 'root_only' as FireuxAppScopeState, appId: '' }
-  }
-
-  const console = onboardingRecord(value.console)
-  const keys = Object.keys(console).sort()
-  const appId = onboardingText(console.app_id)
-  const appRole = onboardingText(console.app_role)
-  if (
-    keys.length !== 2 ||
-    keys[0] !== 'app_id' ||
-    keys[1] !== 'app_role' ||
-    !appId ||
-    (appRole !== 'parent' && appRole !== 'tenant')
-  ) {
-    fail(409, 'Kitchen Console attachment is missing or invalid.')
-  }
-
-  return {
-    state: (appRole === 'tenant' ? 'tenant_app' : 'parent_app') as FireuxAppScopeState,
-    appId,
-  }
+  const management = readFireuxEntityManagement(value.management)
+  if (!management) fail(409, 'Kitchen management is missing or invalid.')
+  return management
 }
 
-export function assertKitchenOnboardingScope(
+export function assertKitchenOnboardingManagement(
   kitchen: Record<string, unknown>,
-  appId: string
+  appId: string,
+  ecosystem: string
 ) {
-  const scope = readKitchenOnboardingScope(kitchen)
-  if (scope.state !== 'root_only' && scope.appId !== appId) {
+  const management = readKitchenOnboardingManagement(kitchen)
+  const managementAppId = resolveFireuxEntityManagementAppId(
+    management,
+    ecosystem
+  )
+  if (management.mode !== 'root' && managementAppId !== appId) {
     fail(409, 'This Kitchen is already attached to another App.')
   }
-  return scope
+  return management
 }
 
 export function assertKitchenOnboardingPlaceDefaults(
