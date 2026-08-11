@@ -1,5 +1,5 @@
 import { useCookie, useState } from '#imports'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { resolveConsoleCanCreate } from '../../../../utils/console-policy'
 import { normalizeString, uniqueStrings } from '../../../../utils/string'
 import type {
@@ -26,22 +26,19 @@ export function normalizeConsoleSource(value: unknown): ConsoleSource {
 export function useConsole(family = '') {
   const fireux = useFireUXConfig()
   const normalizedFamily = normalizeConsoleFamily(family)
+  const appScope = normalizeConsoleFamily(fireux.appId) || 'app'
   const sourceCookie = normalizedFamily
-    ? useCookie<ConsoleSource>(`fireux-console-${normalizedFamily}-source`, {
+    ? useCookie<ConsoleSource>(`fireux-console-${appScope}-${normalizedFamily}-source`, {
         default: () => 'live',
         sameSite: 'lax',
       })
     : ref<ConsoleSource>('live')
   const sourceState = normalizedFamily
     ? useState<ConsoleSource>(
-        `fireux-console-${normalizedFamily}-source-state`,
+        `fireux-console-${appScope}-${normalizedFamily}-source-state`,
         () => normalizeConsoleSource(sourceCookie.value)
       )
     : ref<ConsoleSource>('live')
-  watch(sourceCookie, (value: ConsoleSource | null | undefined) => {
-    const nextSource = normalizeConsoleSource(value)
-    if (sourceState.value !== nextSource) sourceState.value = nextSource
-  })
   const source = computed<ConsoleSource>(() =>
     normalizeConsoleSource(sourceState.value)
   )
@@ -66,6 +63,9 @@ export function useConsole(family = '') {
     return resolveConsoleCanCreate(fireux.role, config, targetFamily)
   }
 
+  const allowsDemo = (targetFamily = family) =>
+    configFor(targetFamily)?.allowDemo !== false
+
   const setSource = (value: ConsoleSource = 'live') => {
     const nextSource = normalizeConsoleSource(value)
     sourceState.value = nextSource
@@ -89,6 +89,7 @@ export function useConsole(family = '') {
     families,
     config,
     configFor,
+    allowsDemo,
     canCreateTarget,
     setSource,
     resetSource,

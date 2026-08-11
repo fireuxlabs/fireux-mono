@@ -48,10 +48,6 @@ export function usePortfolioConsoleIndex(
 
   return useConsoleIndex({
     selection,
-    selectedId: computed(() => consoleSelection.portfolioId.value),
-    autoSelectTargetId: computed(() =>
-      targeting.singleTargetId.value
-    ),
     runtime,
     targets: portfolios.targets,
     outcome: portfolios.outcome,

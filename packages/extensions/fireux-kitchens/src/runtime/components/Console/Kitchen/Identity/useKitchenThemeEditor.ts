@@ -35,7 +35,7 @@ export function useKitchenThemeEditor() {
   )
 
   const kitchenAppId = computed(() => {
-    const scope = kitchen.value?.app_scope
+    const scope = kitchen.value?.console
     return scope && typeof scope === 'object' && !Array.isArray(scope)
       ? normalizeString((scope as Record<string, unknown>).app_id)
       : ''
@@ -395,5 +395,4 @@ export function useKitchenThemeEditor() {
     flushThemeSave,
   }
 }
-
 

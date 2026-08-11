@@ -5,11 +5,13 @@
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: make the server projection the sole live authority.
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { KitchenFetchSource } from '../../../firestore/kitchen/fetch/useKitchenFetch'
 import { useKitchenConsole } from '../core/useKitchenConsole'
 import { useKitchenConsoleDemoData } from '../core/useKitchenConsoleDemoData'
 
 export function useKitchenConsoleIndex() {
+  const { currentUser, hasAuthState, isAuthenticated } = useAuth()
   const {
     targets: targetCollection,
     selection: consoleSelection,
@@ -18,16 +20,28 @@ export function useKitchenConsoleIndex() {
   } = useKitchenConsole({
     keepLiveTargetsAvailable: true,
   })
-  const demoCollection = useKitchenConsoleDemoData(true)
+  const demoCollection = useKitchenConsoleDemoData(
+    computed(() => consoleRuntime.allowDemo.value)
+  )
   const targetKitchens = computed(() => targetCollection.kitchens.value)
+  const kitchenApps = computed(() => targetCollection.apps.value)
   const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
   const targetOutcome = targetCollection.outcome
+  const isTenantSingleTarget = computed(
+    () =>
+      consoleRuntime.isTenant.value &&
+      !consoleRuntime.allowDemo.value &&
+      targetOutcome.value === 'ready' &&
+      targetKitchens.value.length === 1
+  )
   const selectedOutcome = computed(() =>
-    consoleSelection.hasSelection.value
-      ? 'ready'
-      : consoleSelection.kitchenSource.value === 'demo'
-        ? demoCollection.outcome.value
-        : targetOutcome.value
+    isTenantSingleTarget.value
+      ? targetOutcome.value
+      : consoleSelection.hasSelection.value
+        ? 'ready'
+        : consoleSelection.kitchenSource.value === 'demo'
+          ? demoCollection.outcome.value
+          : targetOutcome.value
   )
   const selection = computed(() => ({
     kitchen: consoleSelection.kitchen.value,
@@ -36,28 +50,7 @@ export function useKitchenConsoleIndex() {
     hasSelection: consoleSelection.hasSelection.value,
     outcome: selectedOutcome.value,
   }))
-  const isLiveSelection = computed(
-    () => consoleSelection.kitchenSource.value === 'live'
-  )
-  const isTenantSingleTarget = computed(
-    () =>
-      consoleRuntime.isTenant.value &&
-      isLiveSelection.value &&
-      targetOutcome.value === 'ready' &&
-      targetKitchens.value.length === 1 &&
-      Boolean(consoleSelection.kitchen.value)
-  )
-  const autoSelectTargetId = computed(() =>
-    consoleRuntime.isTenant.value &&
-    isLiveSelection.value &&
-    targetOutcome.value === 'ready' &&
-    targetKitchens.value.length === 1
-      ? String(targetKitchens.value[0]?.id ?? '').trim()
-      : ''
-  )
-  const showTargetChooser = computed(
-    () => !isTenantSingleTarget.value
-  )
+  const showTargetChooser = computed(() => true)
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
     source: consoleRuntime.source.value,
@@ -67,30 +60,85 @@ export function useKitchenConsoleIndex() {
     canWrite: consoleRuntime.canWrite.value,
     canCreate: consoleRuntime.canCreate.value,
   }))
-  const debug = computed(() => ({
-    kitchenId: consoleSelection.kitchenId.value,
-    kitchenSource: consoleSelection.kitchenSource.value,
-    activeKitchenAppId: consoleRuntime.appId.value,
-    source: consoleRuntime.source.value,
-    kitchenCollectionPath: consoleRuntime.kitchenCollectionPath.value,
-    rootCollection: consoleRuntime.rootCollection.value,
-    databaseId: consoleRuntime.databaseId.value,
-    readOnly: consoleRuntime.readOnly.value,
-    canWrite: consoleRuntime.canWrite.value,
-    selectedKitchen: consoleSelection.kitchen.value,
-    targetCount: targetKitchens.value.length,
-    demoTargetCount: demoKitchens.value.length,
-    targetSource: {
-      authority: 'authenticated-server-projection',
-      outcome: targetOutcome.value,
-    },
-    isTenantSingleTarget: isTenantSingleTarget.value,
-  }))
+  const debug = computed(() => {
+    const committedId = String(consoleSelection.kitchenId.value ?? '').trim()
+    const selectedKitchen = consoleSelection.kitchen.value
+    const selectedType = committedId
+      ? consoleSelection.kitchenSource.value
+      : null
+    const selectionStatus = selectedKitchen
+      ? 'selected'
+      : committedId
+        ? 'resolving'
+        : 'none'
+    const runtimeActive = Boolean(
+      selectedKitchen && consoleRuntime.dataType.value
+    )
+
+    return {
+      consoleKitchen: {
+        workspace: {
+          app: {
+            id: consoleRuntime.appId.value,
+            role: selectedKitchen?.console?.app_role ?? null,
+          },
+          collection: runtimeActive
+            ? {
+                root: consoleRuntime.canonicalRootCollection.value || null,
+                scoped:
+                  consoleRuntime.kitchenCollectionPath.value || null,
+              }
+            : null,
+        },
+        selectedKitchen: {
+          status: selectionStatus,
+          source: selectedType,
+          id: committedId || null,
+          slug: selectedKitchen?.slug ?? null,
+          name: selectedKitchen?.name ?? null,
+          userAccess: runtimeActive
+            ? {
+                canWrite: consoleRuntime.canWrite.value,
+              }
+            : null,
+        },
+        user: {
+          authentication: {
+            status: !hasAuthState.value
+              ? 'resolving'
+              : isAuthenticated.value
+                ? 'authenticated'
+                : 'unauthenticated',
+            id: currentUser.value?.uid ?? null,
+            displayName: currentUser.value?.displayName ?? null,
+          },
+        },
+        myKitchens: {
+          endpoint: '/api/console/kitchen/targets',
+          outcome: targetOutcome.value,
+          count: targetKitchens.value.length,
+          enforcedSingleTarget: isTenantSingleTarget.value,
+        },
+        demoKitchens: {
+          adapter: 'useKitchenConsoleDemoData',
+          owner: 'fireux-kitchens',
+          enabled: consoleRuntime.allowDemo.value,
+          count: demoKitchens.value.length,
+          outcome: demoCollection.outcome.value,
+        },
+        myKitchenApps: {
+          endpoint: '/api/console/kitchen/targets',
+          action: 'open-app',
+          route: '/apps/{appId}',
+          count: kitchenApps.value.length,
+          visible: consoleRuntime.isGlobal.value && kitchenApps.value.length > 0,
+        },
+      },
+    }
+  })
 
   const index = useConsoleIndex({
     selection,
-    selectedId: computed(() => consoleSelection.kitchenId.value),
-    autoSelectTargetId,
     runtime,
     targets: targetKitchens,
     outcome: targetOutcome,
@@ -101,17 +149,28 @@ export function useKitchenConsoleIndex() {
     },
     clearSelection: consoleActions.clearSelectedKitchen,
     debug,
+    includeCountsInDebug: false,
   })
   const sections = computed(() => ({
     ...index.sections.value,
+    locked: isTenantSingleTarget.value,
+    kitchenApps: {
+      show: consoleRuntime.isGlobal.value && kitchenApps.value.length > 0,
+      collection: kitchenApps.value,
+    },
     demoTargets: {
-      show: index.sections.value.targets.show,
+      show:
+        consoleRuntime.allowDemo.value &&
+        index.sections.value.targets.show,
       collection: demoKitchens.value,
       outcome: demoCollection.outcome.value,
     },
   }))
   const actions = {
     ...index.actions,
+    clear: () => {
+      if (!isTenantSingleTarget.value) index.actions.clear()
+    },
     selectTarget: (
       id: string,
       source: KitchenFetchSource = 'live'

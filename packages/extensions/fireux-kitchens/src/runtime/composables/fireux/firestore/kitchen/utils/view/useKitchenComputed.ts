@@ -22,7 +22,6 @@ export function useKitchenComputed(
   )
   const isPublic = computed(() => visibility.value.show === true)
   const isHidden = computed(() => visibility.value.show === false)
-  const isTestKitchen = computed(() => visibility.value.isTest === true)
   const displayStatus = computed(() =>
     isPublic.value ? 'Public' : isHidden.value ? 'Hidden' : 'Unknown'
   )
@@ -56,7 +55,6 @@ export function useKitchenComputed(
     hasMissingSlug,
     isPublic,
     isHidden,
-    isTestKitchen,
     displayStatus,
     displayName,
     displayImageUrl,

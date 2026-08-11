@@ -119,6 +119,7 @@ export function usePortfolioConsole(options: UsePortfolioConsoleOptions = {}) {
       normalizeString((portfolio as PortfolioConsoleEntity)?.id),
     mode: consoleRoot.source,
     userId: normalizedUid,
+    enforcedTargetId: consoleTargets.singleTargetId,
   })
 
   const selectedPortfolio = computed<PortfolioConsoleEntity | null>(

@@ -77,7 +77,7 @@ function kitchenPresentation(data: DocumentData) {
       : {}
   return {
     slug: text(data.slug, 200),
-    name: text(identity.display_name || data.display_name, 240),
+    name: text(identity.name || data.name, 240),
   }
 }
 

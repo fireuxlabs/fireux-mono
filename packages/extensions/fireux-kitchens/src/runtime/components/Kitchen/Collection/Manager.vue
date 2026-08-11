@@ -213,7 +213,7 @@ const title = computed(() => String(props.title || 'Kitchen directory'))
 const description = computed(() =>
   String(
     props.description || (fetched.privilegedPreview.value
-      ? 'Admin preview of all Kitchens. Hidden and test Kitchens are not public.'
+      ? 'Admin preview of all Kitchens. Hidden Kitchens are not listed publicly.'
       : 'Choose a kitchen to explore its public profile and menus.')
   ).trim()
 )

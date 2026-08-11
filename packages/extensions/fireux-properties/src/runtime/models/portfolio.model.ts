@@ -4,8 +4,7 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
-import { FireuxAppScope } from 'fireux-core/runtime/models/utils/scope.model'
+import { FireuxAppAccessRecordDefaults } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 type WidenLiteral<T> =
@@ -72,9 +71,13 @@ export const AppPortfolioStorage = {
 } as const
 
 export type PortfolioStatus = 'active' | 'archived'
+export type PortfolioConsoleAttachment = {
+  app_id: string
+  app_role: 'parent' | 'tenant'
+}
+
 export const PortfolioModel = {
   id: '',
-  ...FireuxAppScope,
 
   name: '',
   tagline: '',
@@ -97,10 +100,12 @@ export const PortfolioModel = {
   },
 } as const
 
-export type Portfolio = WidenLiteral<typeof PortfolioModel>
+export type Portfolio = WidenLiteral<typeof PortfolioModel> & {
+  console?: PortfolioConsoleAttachment
+}
 
-export const AppPortfolioModel = {
-  ...FireuxAppAccessRecordModel,
+export const AppPortfolioDefaults = {
+  ...FireuxAppAccessRecordDefaults,
 } as const
 
 export type AppPortfolio = FireuxAppAccessRecord
@@ -110,8 +115,7 @@ export type PortfolioCreateInput = Omit<
   | 'id'
   | 'created'
   | 'updated'
-  | 'app_scope_state'
-  | 'app_scope_app_id'
+  | 'console'
   | 'tagline'
   | 'image_url'
   | 'status'
@@ -133,7 +137,6 @@ export type PortfolioUpdateInput = Partial<
     | 'id'
     | 'created'
     | 'updated'
-    | 'app_scope_state'
-    | 'app_scope_app_id'
+    | 'console'
   >
 >

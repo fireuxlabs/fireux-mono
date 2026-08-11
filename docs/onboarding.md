@@ -86,8 +86,8 @@ This is the practical playbook for shared Core entity onboarding journeys.
 ### Avatar defaults
 
 - If the provisioning payload does not include an explicit avatar URL (or if the field is empty), the user creation flow now uploads the local default image (`/img/ecosystem/avatar.png`) into Firebase Storage at:
-  - `users/{uid}/avatar/current`
-- The saved Firebase Storage URL is then written to the canonical user document (`users/{uid}.avatar`).
+  - `users/{uid}/avatar`
+- The saved Firebase Storage URL is then written to the canonical User document (`users/{uid}.assets.avatar`).
 - If you clear/reset a user avatar in profile-edit flows, the same storage default is re-applied rather than writing the local `/img/...` fallback directly.
 
 ## Notes for next session
@@ -121,10 +121,10 @@ What to verify next (in order):
 1. `/users` collection public projection
    - `handle` should be present (`testudo` or similar)
    - `displayName` should match what you set (or sensible fallback from auth)
-   - `avatar` should be a real URL (not missing/empty)
+   - `assets.avatar` should be a real URL (not missing/empty)
 2. `users/{uid}` canonical record
    - should exist in the Firestore identity database
-   - should contain `handle`, `display_name`, `bio`, `avatar`, and stamps
+   - should contain `handle`, `display_name`, `bio`, `assets.avatar`, and stamps
 3. `users/{uid}/private/account`
    - should contain term acceptance + preferences record after onboarding
 4. App membership (for current app only)
@@ -140,7 +140,7 @@ Successful User onboarding creates or confirms these owned records:
 1. `users/{uid}` — the canonical public User identity.
 2. `users/{uid}/private/account` — private preferences and current legal
    acceptance evidence.
-3. `users/{uid}/avatar/current` — the User-owned Storage object for either the
+3. `users/{uid}/avatar` — the User-owned Storage object for either the
    supplied avatar or the default.
 4. `apps/{appId}/users/{uid}` — only when the active App permits self-service
    membership or a separate authorized App action creates it.

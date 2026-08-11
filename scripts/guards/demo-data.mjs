@@ -868,8 +868,7 @@ export async function run(ctx) {
       ],
       markers: [
         'appSupport: AppSupplier',
-        "app_scope_state: 'parent_app'",
-        'app_scope_app_id: appId',
+        "console: { app_id: appId, app_role: 'parent' }",
         'company_id: input.companyId',
         'supplier_image: input.logoImageUrl',
         '!scenario.supplier.supplier_image',
@@ -1335,7 +1334,7 @@ export async function run(ctx) {
         'for (const scenario of kitchenDemoScenarios) {',
         '  const kitchenId = String(scenario.kitchen.id || "")',
         '  const placeId = String(scenario.place.id || "")',
-        '  objectPath(scenario.kitchen.identity.logo_image_url, `kitchens/${kitchenId}/`)',
+        '  objectPath(scenario.kitchen.assets.logo, `kitchens/${kitchenId}/`)',
         '  for (const dish of scenario.dishes) objectPath(dish.image, `kitchens/${kitchenId}/`)',
         '  for (const value of [scenario.place.assets.image, scenario.place.assets.cover, ...(scenario.place.assets.gallery || [])].filter(Boolean)) objectPath(value, `places/${placeId}/`)',
         '}',

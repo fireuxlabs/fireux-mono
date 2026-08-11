@@ -80,7 +80,7 @@ export async function run(ctx) {
         '- Render selected state through ConsoleSelectedTarget and forward @clear="actions.clear".',
         '- Render target pending/error/ready/empty state only through ConsoleTargetCollection.',
         '- Resolve membership target IDs and outcomes once in the family core; index adapters only consume that authority.',
-        '- Bind Kitchen selection to its live/demo target items and outcome, with auto-selection left to useConsoleIndex.',
+        '- Bind Kitchen selection to its live/demo target items and outcome, with enforced selection committed by the family core.',
         '- Stamp selected-parent data at each provider boundary as { type, value }; persist and validate { id, type }.',
         '- Derive isDemo, readOnly, and canWrite from the selected typed data; missing or mismatched provenance stays read-only and inactive.',
         '- Keep operation/detail views source-ignorant and gate every mutation adapter before its first side effect.',
@@ -170,9 +170,23 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
     )
     assertMatch(
       selectionSource,
-      /const selectedId = computed\(\(\) =>[\s\S]{0,100}normalizeString\(state\.value\?\.id(?:\s*\?\?\s*state\.value\?\.selectedId)?\)/,
+      /const state = useState<ConsoleSelectionState \| null>\([\s\S]{0,180}\(\) => stateCookie\.value \?\? null\s*\)/,
       selectionRelative,
-      'selected id must prefer the canonical persisted id',
+      'the persistence cookie must hydrate shared selection state exactly once',
+      violations
+    )
+    assertMatch(
+      selectionSource,
+      /const selectedId = computed\(\(\) =>\s*normalizeString\(state\.value\?\.id \?\? state\.value\?\.selectedId\)\s*\)/,
+      selectionRelative,
+      'selected id must read only shared live state',
+      violations
+    )
+    assertNoMatch(
+      selectionSource,
+      /const selectedId = computed[\s\S]{0,260}stateCookie\.value/,
+      selectionRelative,
+      'selected id must not retain the persistence cookie as a second live authority',
       violations
     )
     assertMatch(
@@ -184,7 +198,7 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
     )
     assertMatch(
       selectionSource,
-      /state\.value = \{\s*id:\s*nextId,\s*type:\s*nextType,\s*\}/,
+      /commitSelection\(\{\s*id:\s*nextId,\s*type:\s*nextType,\s*\}\)/,
       selectionRelative,
       'selection writes must persist id and type together',
       violations
@@ -194,6 +208,18 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
       /getTargetId\(item\) === id[\s\S]{0,180}getTargetType\(item\) === selectedType\.value/,
       selectionRelative,
       'selected targets must match both persisted id and provider type',
+      violations
+    )
+    if (findCallSources(selectionSource, 'watch').length !== 1) {
+      violations.push(
+        `${selectionRelative} (selection hydration, enforcement, validation, and source normalization must use one ordered watcher)`
+      )
+    }
+    assertMatch(
+      selectionSource,
+      /const authoritative = outcome === ['"]ready['"] \|\| outcome === ['"]empty['"][\s\S]{0,900}if \(enforcedTarget\)[\s\S]{0,900}if \(authoritative && currentId && !currentTarget\)/,
+      selectionRelative,
+      'selection state machine must enforce a valid fixed target before invalidating a persisted selection',
       violations
     )
   }
@@ -211,6 +237,13 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
       /getId:\s*(?:\(\s*data\s*\)|data)\s*=>\s*options\.getId\(data\.value\),\s*getType:\s*(?:\(\s*data\s*\)|data)\s*=>\s*data\.type/,
       runtimeRelative,
       'entity runtime selection must bind envelope value and type together',
+      violations
+    )
+    assertMatch(
+      runtimeSource,
+      /enforcedTargetId:\s*options\.enforcedTargetId \?\? undefined/,
+      runtimeRelative,
+      'entity runtime must pass core-owned single-target enforcement into shared selection',
       violations
     )
     assertMatch(
@@ -395,9 +428,9 @@ function validateSharedConsoleSource({ repoRoot, violations }) {
   const source = readFileSync(fullPath, 'utf8')
   assertMatch(
     source,
-    /useState<ConsoleSource>\(\s*`fireux-console-\$\{normalizedFamily\}-source-state`/,
+    /useState<ConsoleSource>\(\s*`fireux-console-\$\{appScope\}-\$\{normalizedFamily\}-source-state`/,
     relative,
-    'Console source must use one family-keyed reactive state across composable instances',
+    'Console source must use one App-and-family-keyed reactive state across composable instances',
     violations
   )
   assertMatch(
@@ -495,6 +528,15 @@ function validateIndex({ fullPath, family, files, repoRoot, violations }) {
       'debug panel must receive the index debug state',
       violations
     )
+    if (family === 'Kitchen') {
+      assertMatch(
+        debugTag,
+        /:descriptions=["']debugDescriptions["']/,
+        relative,
+        'Kitchen debug must explain its page-level sections and workspace fields in the shared panel',
+        violations
+      )
+    }
   }
   const selectedPosition = source.indexOf(`<Console${family}IndexSelected`)
   const targetsPosition = source.indexOf(`<Console${family}IndexTargets`)
@@ -638,16 +680,86 @@ function validateComposable({ family, files, repoRoot, violations }) {
       }
       assertMatch(
         source,
-        /const showTargetChooser = computed\(\s*\(\) => !isTenantSingleTarget\.value\s*\)/,
+        /const showTargetChooser = computed\(\(\) => true\)/,
         relative,
-        'Kitchen target choosers must remain available except for the tenant single-target case',
+        'Kitchen selector pages must keep their authoritative target collection visible, including an enforced single target',
         violations
       )
       assertMatch(
         source,
-        /demoTargets:\s*\{\s*show:\s*index\.sections\.value\.targets\.show/,
+        /demoTargets:\s*\{\s*show:\s*consoleRuntime\.allowDemo\.value\s*&&\s*index\.sections\.value\.targets\.show/,
         relative,
-        'Kitchen Demo chooser visibility must follow the shared Live chooser',
+        'Kitchen Demo chooser visibility must follow the App policy and shared Live chooser',
+        violations
+      )
+      assertMatch(
+        source,
+        /consoleKitchen:\s*\{\s*workspace:\s*\{[\s\S]{0,700}selectedKitchen:\s*\{[\s\S]{0,1000}user:\s*\{[\s\S]{0,700}myKitchens:\s*\{[\s\S]{0,500}demoKitchens:\s*\{[\s\S]{0,500}myKitchenApps:\s*\{/,
+        relative,
+        'Kitchen debug must use one page-level object with workspace, user, and named target collections',
+        violations
+      )
+      assertMatch(
+        source,
+        /user:\s*\{\s*authentication:\s*\{\s*status:\s*!hasAuthState\.value[\s\S]{0,300}id:\s*currentUser\.value\?\.uid \?\? null,[\s\S]{0,180}displayName:\s*currentUser\.value\?\.displayName \?\? null/,
+        relative,
+        'Kitchen debug User block must identify the authenticated subject without adding another User authority fetch',
+        violations
+      )
+      assertMatch(
+        source,
+        /workspace:\s*\{\s*app:\s*\{\s*id:\s*consoleRuntime\.appId\.value,\s*role:\s*selectedKitchen\?\.console\?\.app_role \?\? null,\s*\},\s*collection:\s*runtimeActive[\s\S]{0,250}root:\s*consoleRuntime\.canonicalRootCollection\.value \|\| null,\s*scoped:\s*consoleRuntime\.kitchenCollectionPath\.value \|\| null[\s\S]{0,250}selectedKitchen:\s*\{\s*status:\s*selectionStatus,\s*source:\s*selectedType,\s*id:\s*committedId \|\| null,[\s\S]{0,400}userAccess:\s*runtimeActive/,
+        relative,
+        'Kitchen debug must keep App attachment and collection scope in workspace while selectedKitchen owns only selected identity and target-specific User access',
+        violations
+      )
+      assertNoMatch(
+        source,
+        /selectedKitchen:\s*\{[\s\S]{0,700}\b(?:committed|kitchen|placeId|entityStatus|visibility|console|scope|readOnly|rootCollection|kitchenCollectionPath):/,
+        relative,
+        'Kitchen debug selected identity must not retain redundant envelopes, public presentation state, workspace facts, inverse access flags, or misleading collection aliases',
+        violations
+      )
+      assertMatch(
+        source,
+        /const selectionStatus = selectedKitchen\s*\? ['"]selected['"]\s*:\s*committedId\s*\? ['"]resolving['"]\s*:\s*['"]none['"]/,
+        relative,
+        'Kitchen debug must distinguish no selection from a committed target still resolving',
+        violations
+      )
+      assertMatch(
+        source,
+        /selectedKitchen:\s*\{\s*status:\s*selectionStatus,\s*source:\s*selectedType/,
+        relative,
+        'selectedKitchen source must be null until a typed target is committed',
+        violations
+      )
+      assertMatch(
+        source,
+        /myKitchens:\s*\{\s*endpoint:\s*['"]\/api\/console\/kitchen\/targets['"][\s\S]{0,500}demoKitchens:\s*\{\s*adapter:\s*['"]useKitchenConsoleDemoData['"],\s*owner:\s*['"]fireux-kitchens['"][\s\S]{0,500}myKitchenApps:\s*\{\s*endpoint:\s*['"]\/api\/console\/kitchen\/targets['"],\s*action:\s*['"]open-app['"],\s*route:\s*['"]\/apps\/\{appId\}['"]/,
+        relative,
+        'Kitchen debug must name exact providers and keep App resources on an open-app route contract',
+        violations
+      )
+      assertNoMatch(
+        source,
+        /authority:\s*['"](?:authenticated-server-projection|package-owned-demo-world)['"]/,
+        relative,
+        'Kitchen debug must name its concrete endpoint or adapter instead of an opaque authority label',
+        violations
+      )
+      assertNoMatch(
+        source,
+        /const debug = computed\(\(\) => \(\{[\s\S]{0,300}\bkitchenId:/,
+        relative,
+        'Kitchen debug must not flatten catalogue source and selection identity into one payload',
+        violations
+      )
+      assertMatch(
+        source,
+        /includeCountsInDebug:\s*false/,
+        relative,
+        'Kitchen debug must keep collection counts inside its named page sections',
         violations
       )
     }
@@ -741,10 +853,17 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
       violations
     )
     assertMatch(
+      coreSource,
+      /enforcedTargetId:\s*consoleTargets\.singleTargetId/,
+      coreRelative,
+      'family core must commit its authoritative single target through shared selection',
+      violations
+    )
+    assertNoMatch(
       indexSource,
-      /\btargeting\b[\s\S]*targeting\.singleTargetId/,
+      /\b(?:autoSelectTargetId|singleTargetId)\b/,
       indexRelative,
-      'index adapter must consume core-owned target authority for single-target selection',
+      'index adapters must present committed selection, not initialize it',
       violations
     )
     return
@@ -771,6 +890,30 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
   if (findCallSources(coreSource, 'useKitchenConsoleTargetCollection').length !== 1) {
     violations.push(
       `${coreRelative} (Kitchen core must own exactly one authenticated live target collection)`
+    )
+  }
+  const targetCollectionPath = files.find(
+    (candidate) => path.basename(candidate) === 'useKitchenConsoleTargetCollection.ts'
+  )
+  if (!targetCollectionPath) {
+    violations.push(
+      'useKitchenConsoleTargetCollection.ts (missing authenticated Kitchen target projection)'
+    )
+  } else {
+    const targetCollectionSource = readFileSync(targetCollectionPath, 'utf8')
+    assertMatch(
+      targetCollectionSource,
+      /immediate:\s*false,[\s\S]{0,500}void state\.execute\(\)/,
+      relativePath(repoRoot, targetCollectionPath),
+      'Kitchen target projection must explicitly execute only after authenticated state is ready',
+      violations
+    )
+    assertMatch(
+      targetCollectionSource,
+      /const pending = computed\([\s\S]{0,350}state\.status\.value === ['"]idle['"][\s\S]{0,180}state\.pending\.value[\s\S]{0,180}!state\.error\.value && response\.value === null/,
+      relativePath(repoRoot, targetCollectionPath),
+      'Kitchen target projection must remain pending until the current response exists so route initialization cannot publish a false authoritative empty outcome',
+      violations
     )
   }
   assertMatch(
@@ -823,18 +966,25 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
       violations
     )
   }
-  assertNoMatch(
-    coreSource,
-    /\bautoSelectTargetId\b/,
+  assertMatch(
+    selectionCalls[0] ?? '',
+    /enforcedTargetId/,
     coreRelative,
-    'Kitchen core must leave auto-selection to the shared index adapter',
+    'Kitchen core must commit its policy-aware single target through shared selection',
     violations
   )
   assertMatch(
     indexSource,
-    /const autoSelectTargetId = computed\(\(\) =>\s*consoleRuntime\.isTenant\.value\s*&&\s*isLiveSelection\.value\s*&&\s*targetOutcome\.value === ['"]ready['"]\s*&&\s*targetKitchens\.value\.length === 1/,
+    /const isTenantSingleTarget = computed\(\s*\(\) =>\s*consoleRuntime\.isTenant\.value\s*&&\s*!consoleRuntime\.allowDemo\.value\s*&&\s*targetOutcome\.value === ['"]ready['"]\s*&&\s*targetKitchens\.value\.length === 1/,
     indexRelative,
-    'Kitchen single-target auto-selection must be tenant-only and Live-only so a Demo selection is not overwritten',
+    'Kitchen single-target mode must be tenant-only and limited to Apps that disable Demo targets',
+    violations
+  )
+  assertNoMatch(
+    indexSource,
+    /\bautoSelectTargetId\b/,
+    indexRelative,
+    'Kitchen index must present the core-committed selection rather than initialize it',
     violations
   )
   for (const watchSource of findCallSources(coreSource, 'watch')) {

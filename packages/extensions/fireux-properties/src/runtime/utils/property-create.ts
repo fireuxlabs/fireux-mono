@@ -2,6 +2,7 @@
 import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import type {
   Property,
+  PropertyConsoleAttachment,
   PropertyCreateInput,
   PropertyIdentity,
 } from '../models/property.model.ts'
@@ -41,10 +42,7 @@ export type PropertyCreateRootPlan = {
 
 export function buildPropertyCreateRoot(
   input: PropertyCreateInput,
-  scope: Pick<Property, 'app_scope_state' | 'app_scope_app_id'> = {
-    app_scope_state: 'root_only',
-    app_scope_app_id: '',
-  }
+  console?: PropertyConsoleAttachment
 ): PropertyCreateRootPlan {
   const identity = normalizeIdentity(input?.identity)
   const placeId = text(input?.place_id)
@@ -61,11 +59,8 @@ export function buildPropertyCreateRoot(
     throw new Error('[fireux-properties] property id and slug are required.')
   }
 
-  const appScopeAppId = text(scope.app_scope_app_id)
-  if (
-    (scope.app_scope_state === 'root_only' && appScopeAppId) ||
-    (scope.app_scope_state !== 'root_only' && !appScopeAppId)
-  ) {
+  if (console && (!text(console.app_id) ||
+    (console.app_role !== 'parent' && console.app_role !== 'tenant'))) {
     throw new Error('[fireux-properties] Property App scope is invalid.')
   }
 
@@ -75,8 +70,7 @@ export function buildPropertyCreateRoot(
       slug,
       portfolio_id: text(input?.portfolio_id),
       place_id: placeId,
-      app_scope_state: scope.app_scope_state,
-      app_scope_app_id: appScopeAppId,
+      ...(console ? { console: { ...console, app_id: text(console.app_id) } } : {}),
       identity,
       status: input?.status === 'inactive' ? 'inactive' : 'active',
       publication_state: 'draft',

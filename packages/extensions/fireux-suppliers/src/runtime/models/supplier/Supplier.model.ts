@@ -5,12 +5,15 @@
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FireuxAppAccessRecord } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import { FireuxAppAccessRecordModel } from 'fireux-core/runtime/models/utils/console-entity.model'
-import { FireuxAppScope } from 'fireux-core/runtime/models/utils/scope.model'
+import { FireuxAppAccessRecordDefaults } from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 export type SupplierState = 'official' | 'public'
 export type SupplierCatalogueState = 'integrated' | 'public_only'
+export type SupplierConsoleAttachment = {
+  app_id: string
+  app_role: 'parent' | 'tenant'
+}
 
 export {
   SupplierItemDefaults,
@@ -84,7 +87,6 @@ export const SupplierEntity = defineFireuxEntity({
 
 export const SupplierDefaults = {
   id: '',
-  ...FireuxAppScope,
   company_id: '',
   slug: '',
 
@@ -113,10 +115,12 @@ export const SupplierDefaults = {
   },
 } as const
 
-export type Supplier = WidenLiteral<typeof SupplierDefaults>
+export type Supplier = WidenLiteral<typeof SupplierDefaults> & {
+  console?: SupplierConsoleAttachment
+}
 
 export const AppSupplierDefaults = {
-  ...FireuxAppAccessRecordModel,
+  ...FireuxAppAccessRecordDefaults,
 } as const
 
 export type AppSupplier = FireuxAppAccessRecord
@@ -126,8 +130,7 @@ export type SupplierCreateInput = Omit<
   | 'id'
   | 'created'
   | 'updated'
-  | 'app_scope_state'
-  | 'app_scope_app_id'
+  | 'console'
   | 'tagline'
   | 'slug'
 > &
@@ -144,8 +147,7 @@ export type SupplierUpdateInput = Partial<
     | 'id'
     | 'created'
     | 'updated'
-    | 'app_scope_state'
-    | 'app_scope_app_id'
+    | 'console'
   >
 >
 

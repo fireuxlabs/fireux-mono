@@ -110,6 +110,7 @@ export function useSupplierConsole(
     getId: (supplier) => normalizeString((supplier as SupplierSurface)?.id),
     mode: consoleRoot.source,
     userId,
+    enforcedTargetId: consoleTargets.singleTargetId,
   })
 
   const selectedSupplier = computed<SupplierSurface | null>(

@@ -9,6 +9,7 @@ import {
   KitchenDefaults,
   type AppKitchen,
   type Kitchen,
+  type KitchenConsoleConfig,
   type KitchenFulfilmentPaymentPolicy,
   type KitchenOrdersConfig,
 } from '../../../models/kitchen.model'
@@ -32,11 +33,16 @@ export type DemoKitchenInput = {
   name: string
   tagline: string
   logoImageUrl: string
-  menuStyle: NonNullable<Kitchen['menus']['style']>
+  menuStyle: NonNullable<NonNullable<KitchenConsoleConfig['menus']>['style']>
   palette: SparseBrandPalette
   paymentMethods: KitchenFulfilmentPaymentPolicy[]
   tableCount: number
   operationHours?: KitchenOrdersConfig['operation_hours']
+}
+
+export type DemoKitchenBundle = {
+  root: Kitchen
+  console: KitchenConsoleConfig
 }
 
 export type DemoPlaceInput = {
@@ -57,49 +63,49 @@ export type DemoPlaceInput = {
   businessHours?: Place['business_hours']
 }
 
-export const kitchen = (input: DemoKitchenInput): Kitchen => ({
-  ...KitchenDefaults,
-  id: input.identity.kitchenId,
-  place_id: input.identity.placeId,
-  slug: input.identity.kitchenSlug,
-  app_scope: {
-    state: 'parent_app',
-    app_id: input.identity.appId,
+export const kitchen = (input: DemoKitchenInput): DemoKitchenBundle => ({
+  root: {
+    ...KitchenDefaults,
+    id: input.identity.kitchenId,
+    place_id: input.identity.placeId,
+    slug: input.identity.kitchenSlug,
+    console: {
+      app_id: input.identity.appId,
+      app_role: 'parent',
+    },
+    status: 'active',
+    visibility: true,
+    identity: {
+      name: input.name,
+      tagline: input.tagline,
+    },
+    assets: {
+      image: '',
+      logo: input.logoImageUrl,
+      wordmark: '',
+      backdrop_color: '',
+    },
+    brand_palette: input.palette,
+    created: kitchenDemoCreated(input.identity),
+    updated: kitchenDemoUpdated(),
   },
-  visibility: {
-    show: true,
-    active: true,
-    is_test: false,
-  },
-  identity: {
-    display_name: input.name,
-    tagline: input.tagline,
-    logo_image_url: input.logoImageUrl,
-    image_shade: 'none',
-    wordmark_no_logo_image_url: '',
-    wordmark_image_url: '',
-  },
-  menus: {
-    currency_format: 'dash',
-    show_currency: true,
-    available: true,
-    style: input.menuStyle,
-  },
-  orders: {
-    ...(input.operationHours ? { operation_hours: input.operationHours } : {}),
-    printing: {
-      ticket_device_id: '',
+  console: {
+    menus: {
+      currency_format: 'dash',
+      show_currency: true,
+      available: true,
+      style: input.menuStyle,
+    },
+    orders: {
+      ...(input.operationHours ? { operation_hours: input.operationHours } : {}),
+      printing: { ticket_device_id: '' },
+    },
+    tables: { count: input.tableCount },
+    fulfilment: {
+      delivery_zones: [],
+      payment_methods: input.paymentMethods,
     },
   },
-  tables: {
-    count: input.tableCount,
-  },
-  fulfilment: {
-    delivery_zones: [],
-    payment_methods: input.paymentMethods,
-  },
-  created: kitchenDemoCreated(input.identity),
-  updated: kitchenDemoUpdated(),
 })
 
 export const place = (input: DemoPlaceInput): Place => ({
@@ -166,7 +172,7 @@ export const place = (input: DemoPlaceInput): Place => ({
 
 export const target = (
   identity: KitchenDemoIdentity,
-  targetKitchen: Kitchen,
+  targetKitchen: DemoKitchenBundle,
   targetPlace: Place,
   access: {
     teamIds?: readonly string[]
@@ -187,11 +193,12 @@ export const target = (
       team_ids: [...(access.teamIds ?? [])],
       operator_ids: [...(access.operatorIds ?? [])],
       join_requests: [],
+      console: targetKitchen.console,
       created: kitchenDemoCreated(identity),
       updated: kitchenDemoUpdated(),
     },
     identity,
-    kitchen: targetKitchen,
+    kitchen: targetKitchen.root,
     place: targetPlace,
     publicPlace,
   }

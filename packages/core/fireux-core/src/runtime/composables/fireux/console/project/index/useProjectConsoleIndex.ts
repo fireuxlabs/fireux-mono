@@ -46,12 +46,6 @@ export function useProjectConsoleIndex(
 
   return useConsoleIndex({
     selection,
-    selectedId: computed(() => consoleSelection.projectId.value),
-    autoSelectTargetId: computed(() =>
-      projects.targets.value.length === 1
-        ? String(projects.targets.value[0]?.id || '').trim()
-        : ''
-    ),
     runtime,
     targets: projects.targets,
     outcome: projects.outcome,

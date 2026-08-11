@@ -42,10 +42,6 @@ export function useBlankConsoleIndex() {
 
   return useConsoleIndex({
     selection,
-    selectedId: computed(() => consoleSelection.blankId.value),
-    autoSelectTargetId: computed(() =>
-      targeting.singleTargetId.value
-    ),
     runtime,
     targets: blanks.targets,
     outcome: blanks.outcome,

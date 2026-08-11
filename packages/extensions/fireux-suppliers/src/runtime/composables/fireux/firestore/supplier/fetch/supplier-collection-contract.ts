@@ -1,5 +1,4 @@
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
 import type { Ref } from 'vue'
 import {
   SupplierStorage,
@@ -56,9 +55,5 @@ export function supplierRootBelongsToApp(
   supplier: SupplierRootDoc,
   appId: string
 ) {
-  const state = normalizeFireuxAppScopeState(supplier.app_scope_state)
-  return (
-    (state === 'parent_app' || state === 'tenant_app') &&
-    normalizeString(supplier.app_scope_app_id) === appId
-  )
+  return normalizeString(supplier.console?.app_id) === appId
 }

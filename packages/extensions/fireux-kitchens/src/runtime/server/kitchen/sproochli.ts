@@ -158,7 +158,9 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
       })
     }
 
-    const current = readSproochliAttachmentConfig(root.get('sproochli'))
+    const current = readSproochliAttachmentConfig(
+      support.get('console.integrations.sproochli')
+    )
     const sproochli = readSproochliAttachmentConfig(
       requested.enabled
         ? {
@@ -168,17 +170,12 @@ export async function updateKitchenSproochli(event: H3Event, input: unknown) {
           }
         : undefined
     )
-    transaction.update(rootRef, {
-      sproochli: requested.enabled ? sproochli : FieldValue.delete(),
+    transaction.update(supportRef, {
+      'console.integrations.sproochli': requested.enabled
+        ? sproochli
+        : FieldValue.delete(),
       updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
     })
-
-    if (Object.hasOwn(support.data() || {}, 'sproochli')) {
-      transaction.update(supportRef, {
-        sproochli: FieldValue.delete(),
-        updated: serverAuditStamp({ by: uid, appId: ownerAppId }),
-      })
-    }
 
     return { appId: ownerAppId, sproochli }
   })

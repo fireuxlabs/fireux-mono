@@ -73,8 +73,8 @@ const kitchenIndexApiContract = (route) => ({
   route,
   status: 200,
   contentType: 'application/json',
-  includes: ['"items"', '"publicly_visible": true'],
-  excludes: ['"publicly_visible": false', '"is_test_kitchen": true'],
+  includes: ['"items"', '"visibility": true'],
+  excludes: ['"visibility": false', '"is_test_kitchen"'],
 })
 
 const kitchenDetailApiContract = (route, slug) => ({
@@ -84,8 +84,8 @@ const kitchenDetailApiContract = (route, slug) => ({
   includes: [
     '"item"',
     `"slug": "${slug}"`,
-    '"publicly_visible": true',
-    '"route_scope": "live"',
+    '"visibility": true',
+    '"console": "live"',
   ],
   excludes: [
     '"claimed_by"',

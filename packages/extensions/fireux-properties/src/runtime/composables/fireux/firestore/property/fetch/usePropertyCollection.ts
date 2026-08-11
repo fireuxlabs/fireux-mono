@@ -22,6 +22,7 @@ import {
   DEFAULT_COLLECTION_PATH,
   UNSUPPORTED_TEST_SOURCE_MESSAGE,
   normalizeString,
+  propertyRootBelongsToApp,
   resolvePropertyCollectionShape,
   resolvePropertyId,
   type AppPropertyRecord,
@@ -81,9 +82,7 @@ export function usePropertyCollection(
       (!appSupport ||
         !readConsoleTargetAuthority(appSupport) ||
         !resolvedAppId.value ||
-        (root.app_scope_state !== 'parent_app' &&
-          root.app_scope_state !== 'tenant_app') ||
-        root.app_scope_app_id !== resolvedAppId.value)
+        !propertyRootBelongsToApp(root, resolvedAppId.value))
     ) {
       return false
     }
@@ -316,10 +315,7 @@ export function usePropertyCollection(
       .filter((property): property is Property => Boolean(property))
       .filter((property) => appSupportIds.has(resolvePropertyId(property)))
       .filter(
-        (property) =>
-          (property.app_scope_state !== 'parent_app' &&
-            property.app_scope_state !== 'tenant_app') ||
-          property.app_scope_app_id !== resolvedAppId.value
+        (property) => !propertyRootBelongsToApp(property, resolvedAppId.value)
       )
       .map((property) => property.id)
     if (!mismatches.length) return undefined

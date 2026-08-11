@@ -4,15 +4,7 @@ import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app
 import { ref } from 'vue'
 import { useKitchenUpdate } from './useKitchenUpdate'
 
-export type KitchenWordmarkKind = 'no-logo' | 'standard'
-
 const clean = (value: unknown) => String(value ?? '').trim()
-const storageSegment = (kind: KitchenWordmarkKind) =>
-  kind === 'no-logo' ? 'wordmark-no-logo' : 'wordmark'
-const identityField = (kind: KitchenWordmarkKind) =>
-  kind === 'no-logo'
-    ? 'identity.wordmark_no_logo_image_url'
-    : 'identity.wordmark_image_url'
 
 export function useKitchenWordmarkUpdate() {
   const { selectedId } = useConsoleSelection('kitchen')
@@ -23,8 +15,7 @@ export function useKitchenWordmarkUpdate() {
 
   const uploadKitchenWordmark = async (
     kitchenId: string,
-    file: File,
-    kind: KitchenWordmarkKind
+    file: File
   ) => {
     const id = clean(kitchenId)
     requireWritableData()
@@ -37,7 +28,7 @@ export function useKitchenWordmarkUpdate() {
     pending.value = true
     try {
       const url = await uploadImage(
-        `kitchens/${id}/identity/${storageSegment(kind)}/current`,
+        `kitchens/${id}/wordmark`,
         file
       )
 
@@ -46,7 +37,7 @@ export function useKitchenWordmarkUpdate() {
         throw new Error('The selected Kitchen changed before the wordmark could be saved.')
       }
       await updateKitchen(id, {
-        [identityField(kind)]: url,
+        'assets.wordmark': url,
       })
 
       return url

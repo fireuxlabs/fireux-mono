@@ -244,7 +244,7 @@ export function useDevKitchenCollection(
     })
     return invalid
       ? new Error(
-          `Test Kitchen ${normalize(invalid.id) || '(unknown)'} is missing its canonical Place.`
+          `Simulation Kitchen ${normalize(invalid.id) || '(unknown)'} is missing its canonical Place.`
         )
       : undefined
   })
@@ -269,10 +269,7 @@ export function useDevKitchenCollection(
             ...kitchen,
             id,
           },
-          routeScope:
-            sourceRef.value === 'demo' || sourceRef.value === 'test'
-              ? sourceRef.value
-              : kitchen.route_scope,
+          console: { mode: sourceRef.value === 'live' ? 'live' : 'demo' },
         })
       })
       .filter(Boolean) as KitchenCollectionDoc[]

@@ -81,6 +81,11 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
     getId: (project) => normalizeString(project?.id),
     mode: consoleRoot.source,
     readOnly: true,
+    enforcedTargetId: computed(() =>
+      targetsOutcome.value === 'ready' && targetProjects.value.length === 1
+        ? normalizeString(targetProjects.value[0]?.id)
+        : ''
+    ),
   })
   const selectedProject = computed<ProjectConsoleEntity | null>(
     () => entity.selection.selectedTarget.value

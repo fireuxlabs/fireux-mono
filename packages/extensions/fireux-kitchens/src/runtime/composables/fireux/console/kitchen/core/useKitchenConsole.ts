@@ -102,8 +102,11 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
    */
   const consoleRoot = useConsole('kitchen')
   const { uid } = useAuth()
+  const allowDemo = computed(() => consoleRoot.allowsDemo())
   const kitchenSource = computed<KitchenFetchSource>(() =>
-    normalizeSource(consoleRoot.source.value)
+    !allowDemo.value && normalizeSource(consoleRoot.source.value) === 'demo'
+      ? 'live'
+      : normalizeSource(consoleRoot.source.value)
   )
   const liveTargetCollection = useKitchenConsoleTargetCollection({
     enabled: computed(
@@ -113,7 +116,7 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
     ),
   })
   const demoTargets = useKitchenConsoleDemoTargets(
-    computed(() => kitchenSource.value === 'demo')
+    computed(() => allowDemo.value && kitchenSource.value === 'demo')
   )
   const liveTargetData = computed<Array<ConsoleData<KitchenSurface>>>(() =>
     liveTargetCollection.kitchens.value.map((kitchen) =>
@@ -141,6 +144,14 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
     if (kitchenSource.value === 'demo') return demoTargets.outcome.value
     return 'idle' as const
   })
+  const enforcedTargetId = computed(() =>
+    consoleRoot.isTenant &&
+    !allowDemo.value &&
+    selectionOutcome.value === 'ready' &&
+    liveTargetData.value.length === 1
+      ? normalizeString(liveTargetData.value[0]?.value.id)
+      : ''
+  )
   const {
     selectedId,
     selectedTarget: selectedData,
@@ -151,6 +162,7 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
     targetOutcome: selectionOutcome,
     getId: (data) => normalizeString(data.value.id),
     getType: (data) => data.type,
+    enforcedTargetId,
   })
   const kitchenId = computed(() => normalizeString(selectedId.value))
   const directFetchSource = computed<KitchenFetchSource>(() =>
@@ -262,7 +274,11 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
     kitchenId: string,
     source: KitchenFetchSource = 'live'
   ) => {
-    const resolvedSource = normalizeSource(source)
+    const requestedSource = normalizeSource(source)
+    const resolvedSource =
+      requestedSource === 'demo' && !allowDemo.value
+        ? 'live'
+        : requestedSource
     selectTarget(kitchenId, resolvedSource)
   }
   watch(
@@ -299,6 +315,8 @@ export function useKitchenConsole(options: UseKitchenConsoleOptions = {}) {
     writeCollection: firestore.writeCollection,
     databaseId,
     isTenant: computed(() => consoleRoot.isTenant),
+    isGlobal: computed(() => consoleRoot.isGlobal),
+    allowDemo,
     readOnly,
     canWrite,
     canCreate: computed(() => !isDemo.value && consoleRoot.canCreateTarget()),

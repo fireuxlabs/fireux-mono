@@ -237,7 +237,10 @@ const scopedTarget = async (
     appKitchenData,
     placeData
   )
-  const sproochli = readKitchenSproochliConfig(input.rootKitchenData)
+  const sproochli = readKitchenSproochliConfig({
+    ...input.rootKitchenData,
+    console: record(appKitchenData.console),
+  })
 
   return {
     kind,

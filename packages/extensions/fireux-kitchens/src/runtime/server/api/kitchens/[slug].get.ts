@@ -12,7 +12,6 @@ import type {
 } from '../../../models/kitchen/kitchen-index.model.ts'
 import {
   hydrateKitchenPublicDocuments,
-  isRoutableKitchen,
   projectPublicKitchenDetail,
   type KitchenPublicDirectoryScope,
 } from '../../kitchen/public-projection.ts'
@@ -44,8 +43,7 @@ export default defineEventHandler(
           statusMessage: 'Kitchen could not be read.',
         })
       })
-    const data = kitchen?.data || {}
-    if (!kitchen || !isRoutableKitchen(data)) {
+    if (!kitchen) {
       throw createError({
         statusCode: 404,
         statusMessage: 'Kitchen not found.',
@@ -54,7 +52,7 @@ export default defineEventHandler(
 
     const document = {
       id: kitchen.id,
-      data,
+      data: kitchen.data,
     }
     const dataByPath = await hydrateKitchenPublicDocuments(db, [document])
       .catch(() => {

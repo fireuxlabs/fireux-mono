@@ -18,19 +18,22 @@ export function readRootKitchenAppScope(value: unknown) {
     return null
   }
 
-  const appScope = record(kitchen.app_scope)
+  const appScope = record(kitchen.console)
   const keys = Object.keys(appScope).sort()
-  const state = text(appScope.state)
+  const appRole = text(appScope.app_role)
   const appId = text(appScope.app_id)
   if (
     keys.length !== 2 ||
     keys[0] !== 'app_id' ||
-    keys[1] !== 'state' ||
-    (state !== 'parent_app' && state !== 'tenant_app') ||
+    keys[1] !== 'app_role' ||
+    (appRole !== 'parent' && appRole !== 'tenant') ||
     !isFirestoreDocumentId(appId)
   ) {
     return null
   }
 
-  return { appId, state }
+  return {
+    appId,
+    state: appRole === 'tenant' ? 'tenant_app' : 'parent_app',
+  }
 }

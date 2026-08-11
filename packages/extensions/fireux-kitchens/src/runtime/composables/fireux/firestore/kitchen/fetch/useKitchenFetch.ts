@@ -20,7 +20,7 @@ import { useKitchenInterface } from '../utils/view/useKitchenInterface'
 
 export type KitchenFetchDoc = Partial<Kitchen> & {
   id?: string
-  route_scope?: 'live' | 'demo' | 'test'
+  console?: { mode: 'live' | 'demo' }
 }
 export type KitchenFetchSource = 'live' | 'test' | 'demo'
 
@@ -165,10 +165,7 @@ export function useKitchenFetch(
     return surface({
       place,
       kitchen: entry,
-      routeScope:
-        sourceRef.value === 'demo' || sourceRef.value === 'test'
-          ? sourceRef.value
-          : (entry as any)?.route_scope,
+      console: { mode: sourceRef.value === 'live' ? 'live' : 'demo' },
     }) as KitchenFetchDoc | null
   })
 

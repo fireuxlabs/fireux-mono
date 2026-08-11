@@ -115,17 +115,25 @@ export const kitchenPaymentMethodsForOrderType = (
   .filter(policy => policy.order_types.includes(orderType))
   .map(policy => policy.method)
 export const composeKitchenScopedSurface = (
-  publicKitchen: KitchenSpineRecord,
+  rootKitchen: KitchenSpineRecord,
   scopedKitchen: KitchenSpineRecord
 ) => {
-  const publicRecord = record(publicKitchen)
+  const rootRecord = record(rootKitchen)
   const scopedRecord = record(scopedKitchen)
 
-  if (!hasKeys(publicRecord)) return null
-  if (!hasKeys(scopedRecord)) return publicRecord
+  if (!hasKeys(rootRecord)) return null
+  if (!hasKeys(scopedRecord)) return rootRecord
+
+  const attachment = record(rootRecord.console)
+  const config = record(scopedRecord.console)
 
   const composed: Record<string, unknown> = {
-    ...publicRecord,
+    ...rootRecord,
+    console: {
+      ...attachment,
+      mode: 'live',
+      ...config,
+    },
     ...(Array.isArray(scopedRecord.operator_ids)
       ? { operator_ids: scopedRecord.operator_ids }
       : {}),
@@ -136,11 +144,6 @@ export const composeKitchenScopedSurface = (
       ? { join_requests: scopedRecord.join_requests }
       : {}),
   }
-  if (Object.hasOwn(publicRecord, 'sproochli')) {
-    composed.sproochli = readSproochliAttachmentConfig(publicRecord.sproochli)
-  } else {
-    delete composed.sproochli
-  }
 
   return composed
 }
@@ -149,15 +152,14 @@ export const readKitchenAppScope = (
   value: KitchenSpineRecord
 ) => {
   const source = record(value)
-  const appScope = record(source.app_scope)
-  const storedState = text(appScope.state)
-  const state =
-    storedState === 'root_only' ||
-    storedState === 'parent_app' ||
-    storedState === 'tenant_app'
-      ? storedState
-      : ''
-  const appId = text(appScope.app_id)
+  const console = record(source.console)
+  const appRole = text(console.app_role)
+  const state = appRole === 'tenant'
+    ? 'tenant_app'
+    : appRole === 'parent'
+      ? 'parent_app'
+      : 'root_only'
+  const appId = text(console.app_id)
 
   return {
     state,
@@ -169,41 +171,35 @@ export const readKitchenAppScope = (
 export const readKitchenIdentity = (value: KitchenSpineRecord) => {
   const source = record(value)
   const identity = record(source.identity)
+  const assets = record(source.assets)
 
   return {
-    displayName: text(identity.display_name),
+    displayName: text(identity.name),
     tagline: text(identity.tagline),
-    imageUrl: text(identity.image_url),
-    cardImageUrl: text(identity.card_image_url),
-    logoImageUrl: text(identity.logo_image_url),
-    wordmarkNoLogoImageUrl: text(identity.wordmark_no_logo_image_url),
-    wordmarkImageUrl: text(identity.wordmark_image_url),
+    imageUrl: text(assets.image),
+    cardImageUrl: text(assets.image),
+    logoImageUrl: text(assets.logo),
+    wordmarkNoLogoImageUrl: text(assets.wordmark),
+    wordmarkImageUrl: text(assets.wordmark),
     mediaBackdropColor: readMediaBackdropColor(
-      identity.media_backdrop_color
+      assets.backdrop_color
     ) as KitchenMediaBackdropColor | '',
-    /** @deprecated Compatibility projection only. */
-    imageShade: (text(identity.image_shade).toLowerCase() === 'light'
-      ? 'light'
-      : text(identity.image_shade).toLowerCase() === 'dark'
-        ? 'dark'
-        : 'none') as KitchenImageShade,
+    imageShade: 'none' as KitchenImageShade,
   }
 }
 
 export const readKitchenVisibility = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const visibility = record(source.visibility)
 
   return {
-    show: bool(visibility.show, false),
-    active: bool(visibility.active, true),
-    isTest: bool(visibility.is_test, false),
+    show: source.visibility === true,
+    active: text(source.status) === 'active',
   }
 }
 
 export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const menus = record(source.menus)
+  const menus = record(record(source.console).menus)
   const style = optionalRecord(menus.style)
 
   return {
@@ -219,7 +215,9 @@ export const readKitchenMenusConfig = (value: KitchenSpineRecord) => {
 export const readKitchenSproochliConfig = (
   value: KitchenSpineRecord
 ): SproochliAttachmentConfig =>
-  readSproochliAttachmentConfig(record(value).sproochli)
+  readSproochliAttachmentConfig(
+    record(record(record(value).console).integrations).sproochli
+  )
 
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
@@ -232,7 +230,7 @@ export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {
 }
 
 export const readKitchenTableCount = (value: KitchenSpineRecord) => {
-  const count = Number(record(value).tables && record(record(value).tables).count)
+  const count = Number(record(record(record(value).console).tables).count)
 
   return Number.isSafeInteger(count) && count > 0
     ? Math.min(count, 500)
@@ -243,7 +241,7 @@ export const readKitchenFulfilmentConfig = (
   value: KitchenSpineRecord
 ): KitchenFulfilmentConfig => {
   const source = record(value)
-  const fulfilment = record(source.fulfilment)
+  const fulfilment = record(record(source.console).fulfilment)
   const paymentPolicies = Array.isArray(fulfilment.payment_methods)
     ? fulfilment.payment_methods
       .map(readKitchenPaymentPolicy)
@@ -261,14 +259,14 @@ export const readKitchenFulfilmentConfig = (
 
 export const readKitchenOperationHours = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const orders = record(source.orders)
+  const orders = record(record(source.console).orders)
 
   return readWeekdayTimeWindowsConfig(orders.operation_hours)
 }
 
 export const hasKitchenOperationHours = (value: KitchenSpineRecord) => {
   const source = record(value)
-  const orders = record(source.orders)
+  const orders = record(record(source.console).orders)
 
   return hasKeys(record(orders.operation_hours))
 }

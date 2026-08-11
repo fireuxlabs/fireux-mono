@@ -46,10 +46,6 @@ export function usePropertyConsoleIndex(
 
   return useConsoleIndex({
     selection,
-    selectedId: computed(() => consoleSelection.propertyId.value),
-    autoSelectTargetId: computed(() =>
-      targeting.singleTargetId.value
-    ),
     runtime,
     targets: properties.targets,
     outcome: properties.outcome,

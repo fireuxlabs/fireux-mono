@@ -7,10 +7,12 @@ import {
   type H3Event,
 } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
+import { AppStorage } from 'fireux-core/runtime/models/core/app.model'
 import { requireFirebaseBearerUser } from 'fireux-core/runtime/server/utils/auth/bearer'
 import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntimeFirestore'
 import { isFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { readRecordString } from 'fireux-core/runtime/server/utils/records/read'
+import { projectPublicApp } from 'fireux-core/runtime/server/utils/public-projection/public-app.dto'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine'
 import {
@@ -18,6 +20,7 @@ import {
   type KitchenConsoleTargetsResponse,
 } from '../../../../models/kitchen/kitchen-index.model.ts'
 import type {
+  KitchenConsoleAttachment,
   KitchenOrdersConfig,
   KitchenTablesConfig,
 } from '../../../../models/kitchen.model.ts'
@@ -33,7 +36,7 @@ import {
 } from '../../../../utils/kitchen-spine.ts'
 
 type StoredRecord = Record<string, unknown>
-type CanonicalKitchenScope = KitchenConsoleTargetItem['app_scope']
+type CanonicalKitchenScope = KitchenConsoleAttachment
 
 const text = (value: unknown) => String(value ?? '').trim()
 const record = (value: unknown): StoredRecord =>
@@ -49,9 +52,9 @@ function readCanonicalKitchenScope(
   kitchenId: string,
   data: StoredRecord
 ): CanonicalKitchenScope {
-  const scope = record(data.app_scope)
+  const scope = record(data.console)
   const keys = Object.keys(scope).sort()
-  const state = scope.state
+  const appRole = scope.app_role
   const appId = text(scope.app_id)
   const hasLegacyScope = [
     'app_scope_state',
@@ -63,14 +66,14 @@ function readCanonicalKitchenScope(
     hasLegacyScope ||
     keys.length !== 2 ||
     keys[0] !== 'app_id' ||
-    keys[1] !== 'state' ||
-    (state !== 'parent_app' && state !== 'tenant_app') ||
+    keys[1] !== 'app_role' ||
+    (appRole !== 'parent' && appRole !== 'tenant') ||
     !isFirestoreDocumentId(appId)
   ) {
     conflict(`Kitchen ${kitchenId} has an invalid canonical App scope.`)
   }
 
-  return { state, app_id: appId }
+  return { app_role: appRole, app_id: appId }
 }
 
 const optionalNumber = (value: unknown) => {
@@ -84,6 +87,7 @@ function projectKitchenTarget(input: {
   canWrite: boolean
   root: StoredRecord
   place: StoredRecord
+  support: StoredRecord
   scope: CanonicalKitchenScope
 }): KitchenConsoleTargetItem {
   const rootIdentity = readKitchenIdentity(input.root)
@@ -99,14 +103,22 @@ function projectKitchenTarget(input: {
   }
 
   const visibility = readKitchenVisibility(input.root)
-  const menus = readKitchenMenusConfig(input.root)
+  const scopedSurface = {
+    ...input.root,
+    console: {
+      ...input.scope,
+      ...record(input.support.console),
+    },
+  }
+  const menus = readKitchenMenusConfig(scopedSurface)
   const resolvedMenuStyle = record(resolvedIdentity.page_style)
   const gallery = place.gallery
   const tagline =
     rootIdentity.tagline ||
     place.brandTagline
-  const orders = record(input.root.orders)
-  const tables = record(input.root.tables)
+  const consoleConfig = record(input.support.console)
+  const orders = record(consoleConfig.orders)
+  const tables = record(consoleConfig.tables)
   const shortName = place.shortName
   const brandTagline = place.brandTagline
   const formattedAddress = place.formattedAddress
@@ -118,6 +130,7 @@ function projectKitchenTarget(input: {
   const latitude = optionalNumber(input.place.lat)
   const longitude = optionalNumber(input.place.lng)
   const cardImageUrl = rootIdentity.cardImageUrl || resolvedIdentity.imageUrl
+  const logoImageUrl = rootIdentity.logoImageUrl || place.logoUrl
   const mediaBackdropColor =
     rootIdentity.mediaBackdropColor ||
     place.mediaBackdropColor
@@ -125,14 +138,10 @@ function projectKitchenTarget(input: {
   return {
     id: input.id,
     can_write: input.canWrite,
-    app_scope: input.scope,
     place_id: readRecordString(input.root, 'place_id'),
     slug: readRecordString(input.root, 'slug'),
-    visibility: {
-      show: visibility.show,
-      active: visibility.active,
-      is_test: visibility.isTest,
-    },
+    status: visibility.active ? 'active' : text(input.root.status) as 'paused' | 'archived',
+    visibility: visibility.show,
     identity: {
       display_name: displayName,
       tagline,
@@ -140,8 +149,8 @@ function projectKitchenTarget(input: {
       ...(rootIdentity.cardImageUrl
         ? { card_image_url: rootIdentity.cardImageUrl }
         : {}),
-      ...(rootIdentity.logoImageUrl
-        ? { logo_image_url: rootIdentity.logoImageUrl }
+      ...(logoImageUrl
+        ? { logo_image_url: logoImageUrl }
         : {}),
       ...(mediaBackdropColor
         ? { media_backdrop_color: mediaBackdropColor }
@@ -165,11 +174,10 @@ function projectKitchenTarget(input: {
     ...(Object.keys(tables).length
       ? { tables: tables as KitchenTablesConfig }
       : {}),
-    fulfilment: readKitchenFulfilmentConfig(input.root),
-    sproochli: readKitchenSproochliConfig(input.root),
+    fulfilment: readKitchenFulfilmentConfig(scopedSurface),
+    sproochli: readKitchenSproochliConfig(scopedSurface),
     show: visibility.show,
     active: visibility.active,
-    is_test_kitchen: visibility.isTest,
     display_name: displayName,
     name: displayName,
     ...(tagline ? { tagline } : {}),
@@ -180,6 +188,7 @@ function projectKitchenTarget(input: {
     ...(cardImageUrl
       ? { image_url: cardImageUrl }
       : {}),
+    ...(logoImageUrl ? { logo_image_url: logoImageUrl } : {}),
     ...(rootIdentity.cardImageUrl && mediaBackdropColor
       ? { media_backdrop_color: mediaBackdropColor }
       : {}),
@@ -193,7 +202,12 @@ function projectKitchenTarget(input: {
     ...(phone ? { phone } : {}),
     ...(latitude !== undefined ? { lat: latitude } : {}),
     ...(longitude !== undefined ? { lng: longitude } : {}),
-    route_scope: 'live',
+    console: {
+      ...consoleConfig,
+      mode: 'live',
+      app_id: input.scope.app_id,
+      app_role: input.scope.app_role,
+    },
   }
 }
 
@@ -203,7 +217,7 @@ export default defineEventHandler(
       event,
       'Sign in to view Kitchen targets.'
     )
-    const { appId } = useFireUXConfig()
+    const { appId, isGlobal } = useFireUXConfig()
     const db = getRuntimeFirestore()
     const currentMembershipRef = db.doc(`apps/${appId}/users/${uid}`)
     const currentMembershipSnapshot = await currentMembershipRef.get()
@@ -228,7 +242,7 @@ export default defineEventHandler(
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'private, no-store',
       })
-      return { ok: true, appId, items: [] }
+      return { ok: true, appId, items: [], appItems: [] }
     }
 
     const rootSnapshots = await db.getAll(
@@ -251,16 +265,20 @@ export default defineEventHandler(
     const targetIds = indexedTargetIds.filter(
       id => scopes.get(id)?.app_id === appId
     )
-    if (!targetIds.length) {
+    const appTargetIds = isGlobal
+      ? indexedTargetIds.filter(id => scopes.get(id)?.app_id !== appId)
+      : []
+    const authorizedTargetIds = [...targetIds, ...appTargetIds]
+    if (!authorizedTargetIds.length) {
       setResponseHeaders(event, {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'private, no-store',
       })
-      return { ok: true, appId, items: [] }
+      return { ok: true, appId, items: [], appItems: [] }
     }
 
     const relatedRefs = new Map<string, ReturnType<typeof db.doc>>()
-    for (const id of targetIds) {
+    for (const id of authorizedTargetIds) {
       const root = roots.get(id)!.data() || {}
       const scope = scopes.get(id)!
       const placeId = readRecordString(root, 'place_id')
@@ -271,6 +289,7 @@ export default defineEventHandler(
       for (const ref of [
         db.doc(`apps/${scope.app_id}/kitchens/${id}`),
         db.doc(`apps/${scope.app_id}/users/${uid}`),
+        db.doc(`${AppStorage.collection}/${scope.app_id}`),
         db.doc(`${PlaceStorage.collection}/${placeId}`),
       ]) {
         relatedRefs.set(ref.path, ref)
@@ -281,7 +300,7 @@ export default defineEventHandler(
     const related = new Map(
       relatedSnapshots.map(snapshot => [snapshot.ref.path, snapshot])
     )
-    const items = targetIds.map((id) => {
+    const projectedTargets = new Map(authorizedTargetIds.map((id) => {
       const rootSnapshot = roots.get(id)!
       const root = rootSnapshot.data() || {}
       const scope = scopes.get(id)!
@@ -325,20 +344,49 @@ export default defineEventHandler(
         })
       }
 
-      return projectKitchenTarget({
+      return [id, projectKitchenTarget({
         id,
         canWrite:
           scopedRole === 'admin' || authority.operatorIds.includes(uid),
         root,
         place: placeSnapshot.data() || {},
+        support,
         scope,
-      })
+      })] as const
+    }))
+    const items = targetIds.map(id => projectedTargets.get(id)!)
+    const appItems = Array.from(
+      new Set(appTargetIds.map(id => scopes.get(id)!.app_id))
+    ).map((targetAppId) => {
+      const appSnapshot = related.get(`${AppStorage.collection}/${targetAppId}`)
+      const app = appSnapshot?.exists
+        ? projectPublicApp(appSnapshot.data() || {}, { id: targetAppId })
+        : null
+      if (!app || app.role !== 'tenant') {
+        conflict(`Kitchen App ${targetAppId} has no valid tenant App projection.`)
+      }
+      return {
+        app,
+        kitchens: appTargetIds
+          .filter(id => scopes.get(id)?.app_id === targetAppId)
+          .map((id) => {
+            const kitchen = projectedTargets.get(id)!
+            return {
+              id: kitchen.id,
+              name: kitchen.name,
+              slug: kitchen.slug,
+              ...(kitchen.logo_image_url
+                ? { logo_image_url: kitchen.logo_image_url }
+                : {}),
+            }
+          }),
+      }
     })
 
     setResponseHeaders(event, {
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'private, no-store',
     })
-    return { ok: true, appId, items }
+    return { ok: true, appId, items, appItems }
   }
 )

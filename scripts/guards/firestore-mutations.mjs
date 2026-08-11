@@ -32,6 +32,7 @@ const APPROVED_ADMIN_IMPLEMENTATIONS = new Set([
   'scripts/_lib/firestore-mutations/mcp-skill-create.mjs',
   'scripts/_lib/firestore-mutations/mcp-skill-update.mjs',
   'scripts/_lib/firestore-mutations/mcp-skill-delete.mjs',
+  'scripts/_lib/firestore-mutations/mcp-skill-transaction.mjs',
 ])
 
 // Phase-one debt ledger. Entries may only be removed as consumers migrate to a

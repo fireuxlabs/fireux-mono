@@ -182,7 +182,7 @@ const updateKitchenField = async (
 
 const handleName = async (value: string) =>
   updateKitchenField(
-    { 'identity.display_name': value },
+    { 'identity.name': value },
     'Display name updated',
     'Failed to update display name'
   )

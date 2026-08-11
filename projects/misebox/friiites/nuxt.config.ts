@@ -15,6 +15,7 @@ export default defineFireuxConfig({
   consoleConfig: {
     kitchen: {
       canCreate: false,
+      allowDemo: false,
     },
   },
   navHiddenKeys: ['kitchens', 'places'],

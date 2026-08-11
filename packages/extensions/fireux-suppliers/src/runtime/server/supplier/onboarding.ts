@@ -3,7 +3,6 @@ import { FieldValue } from 'firebase-admin/firestore'
 import { createError, type H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import {
-  normalizeFireuxAppScopeState,
   resolveFireuxAppScopeStateForRole,
 } from 'fireux-core/runtime/utils/app-scope-state'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
@@ -107,21 +106,33 @@ function boundedIds(value: unknown, max: number, label: string) {
 }
 
 function readRootScope(value: Record<string, unknown>) {
-  if (Object.prototype.hasOwnProperty.call(value, 'app_scope')) {
-    fail(409, 'Supplier App scope uses a non-canonical stored shape.')
+  if (
+    Object.hasOwn(value, 'app_scope') ||
+    Object.hasOwn(value, 'app_scope_state') ||
+    Object.hasOwn(value, 'app_scope_app_id') ||
+    Object.hasOwn(value, 'app_id')
+  ) {
+    fail(409, 'Supplier contains retired App scope fields.')
   }
-  const state = normalizeFireuxAppScopeState(value.app_scope_state)
-  const appId = text(value.app_scope_app_id)
-
-  if (!state) fail(409, 'Supplier App scope is missing or invalid.')
-  if (state === 'root_only' && appId) {
-    fail(409, 'An unattached Supplier cannot name an App.')
+  if (!Object.hasOwn(value, 'console')) {
+    return { state: 'root_only' as const, appId: '' }
   }
-  if (state !== 'root_only' && !appId) {
-    fail(409, 'An attached Supplier must name its App.')
+  const console = value.console
+  if (!console || typeof console !== 'object' || Array.isArray(console)) {
+    fail(409, 'Supplier Console attachment is missing or invalid.')
   }
-
-  return { state, appId }
+  const source = console as Record<string, unknown>
+  const keys = Object.keys(source).sort()
+  const appId = text(source.app_id)
+  const appRole = text(source.app_role)
+  if (keys.length !== 2 || keys[0] !== 'app_id' || keys[1] !== 'app_role' ||
+    !appId || (appRole !== 'parent' && appRole !== 'tenant')) {
+    fail(409, 'Supplier Console attachment is missing or invalid.')
+  }
+  return {
+    state: appRole === 'tenant' ? 'tenant_app' as const : 'parent_app' as const,
+    appId,
+  }
 }
 
 function readSupport(value: Record<string, unknown>) {
@@ -199,8 +210,10 @@ function newSupplierRoot(
   companyId: string
 ): Record<string, unknown> {
   return {
-    app_scope_state: policy.appScopeState,
-    app_scope_app_id: policy.appId,
+    console: {
+      app_id: policy.appId,
+      app_role: policy.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
+    },
     company_id: companyId,
     slug: supplierId,
     supplier_organization_name: organizationName,
@@ -346,8 +359,10 @@ export async function completeSupplierOnboarding(
         scope.appId !== policy.appId
       ) {
         mutations.update(suppliers, supplierId, {
-          app_scope_state: policy.appScopeState,
-          app_scope_app_id: policy.appId,
+          console: {
+            app_id: policy.appId,
+            app_role: policy.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
+          },
           updated: serverAuditStamp({ by: uid }),
         })
       }

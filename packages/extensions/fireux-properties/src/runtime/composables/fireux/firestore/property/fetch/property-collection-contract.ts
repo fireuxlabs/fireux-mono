@@ -58,3 +58,10 @@ export function resolvePropertyId(
 ) {
   return normalizeString(property?.id)
 }
+
+export function propertyRootBelongsToApp(
+  property: PropertyCollectionDoc,
+  appId: string
+) {
+  return normalizeString(property.console?.app_id) === appId
+}

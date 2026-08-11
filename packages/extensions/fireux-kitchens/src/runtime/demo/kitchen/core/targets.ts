@@ -1,6 +1,6 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
 import { hasExactPublicPlaceProjectionShape } from 'fireux-places/runtime/utils/public-place-projection'
-import type { Kitchen } from '../../../models/kitchen.model'
+import type { KitchenConsoleConfig } from '../../../models/kitchen.model'
 import {
   deanosKitchenDemoIdentity,
   deanosKitchenDemoTeamMemberIds,
@@ -51,7 +51,7 @@ const deanosMenuStyle = {
   font_family: 'Inter',
   title_font_source: 'google',
   title_font_family: 'Space Grotesk',
-} satisfies NonNullable<Kitchen['menus']['style']>
+} satisfies NonNullable<NonNullable<KitchenConsoleConfig['menus']>['style']>
 
 export const deanosKitchenDemoTarget = target(
   deanosKitchenDemoIdentity,
@@ -149,7 +149,7 @@ const pizzaTheActionMenuStyle = {
   font_family: 'Inter',
   title_font_source: 'google',
   title_font_family: 'Montserrat',
-} satisfies NonNullable<Kitchen['menus']['style']>
+} satisfies NonNullable<NonNullable<KitchenConsoleConfig['menus']>['style']>
 
 export const pizzaTheActionKitchenDemoTarget = target(
   pizzaTheActionKitchenDemoIdentity,
@@ -207,7 +207,7 @@ const miseboxRestaurantMenuStyle = {
   font_family: 'Lora',
   title_font_source: 'google',
   title_font_family: 'Cormorant Garamond',
-} satisfies NonNullable<Kitchen['menus']['style']>
+} satisfies NonNullable<NonNullable<KitchenConsoleConfig['menus']>['style']>
 
 export const miseboxRestaurantKitchenDemoTarget = target(
   miseboxRestaurantKitchenDemoIdentity,
@@ -256,7 +256,7 @@ for (const item of kitchenDemoTargets) {
   const kitchenId = String(item.kitchen.id ?? '').trim()
   const placeId = String(item.place.id ?? '').trim()
   const logoImageUrl = String(
-    item.kitchen.identity.logo_image_url ?? ''
+    item.kitchen.assets.logo ?? ''
   ).trim()
   const placeMedia = [
     item.place.assets.image,
@@ -276,7 +276,7 @@ for (const item of kitchenDemoTargets) {
     item.kitchen.place_id !== placeId ||
     !item.place.entity_families.includes('kitchen') ||
     String(item.place.name ?? '').trim() !==
-      String(item.kitchen.identity.display_name ?? '').trim() ||
+      String(item.kitchen.identity.name ?? '').trim() ||
     item.appId !== item.identity.appId ||
     item.appSupport.id !== kitchenId ||
     item.publicPlace.id !== placeId ||

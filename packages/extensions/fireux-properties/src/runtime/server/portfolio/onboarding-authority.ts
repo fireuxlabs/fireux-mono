@@ -1,9 +1,6 @@
 import type { H3Event } from 'h3'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
-import {
-  normalizeFireuxAppScopeState,
-  resolveFireuxAppScopeStateForRole,
-} from 'fireux-core/runtime/utils/app-scope-state'
+import { resolveFireuxAppScopeStateForRole } from 'fireux-core/runtime/utils/app-scope-state'
 import { resolveConsoleCanCreate } from 'fireux-core/runtime/utils/console-policy'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { boundedIds, fail, text, type MemberRole } from './onboarding-input'
@@ -64,22 +61,33 @@ export function readSupport(value: Record<string, unknown> | null) {
 }
 
 export function readScope(root: Record<string, unknown>) {
-  if (Object.prototype.hasOwnProperty.call(root, 'app_scope')) {
-    fail(409, 'Portfolio App scope uses a non-canonical stored shape.')
+  if (
+    Object.hasOwn(root, 'app_scope') ||
+    Object.hasOwn(root, 'app_scope_state') ||
+    Object.hasOwn(root, 'app_scope_app_id') ||
+    Object.hasOwn(root, 'app_id')
+  ) {
+    fail(409, 'Portfolio contains retired App scope fields.')
   }
-  const flatState = text(root.app_scope_state)
-  const flatAppId = text(root.app_scope_app_id)
-  const state = normalizeFireuxAppScopeState(flatState)
-
-  if (!state) fail(409, 'Portfolio App scope is missing or invalid.')
-  if (state === 'root_only' && flatAppId) {
-    fail(409, 'An unattached Portfolio cannot name an App.')
+  if (!Object.hasOwn(root, 'console')) {
+    return { state: 'root_only' as const, appId: '' }
   }
-  if (state !== 'root_only' && !flatAppId) {
-    fail(409, 'An attached Portfolio must name its App.')
+  const console = root.console
+  if (!console || typeof console !== 'object' || Array.isArray(console)) {
+    fail(409, 'Portfolio Console attachment is missing or invalid.')
   }
-
-  return { state, appId: flatAppId }
+  const value = console as Record<string, unknown>
+  const keys = Object.keys(value).sort()
+  const appId = text(value.app_id)
+  const appRole = text(value.app_role)
+  if (keys.length !== 2 || keys[0] !== 'app_id' || keys[1] !== 'app_role' ||
+    !appId || (appRole !== 'parent' && appRole !== 'tenant')) {
+    fail(409, 'Portfolio Console attachment is missing or invalid.')
+  }
+  return {
+    state: appRole === 'tenant' ? 'tenant_app' as const : 'parent_app' as const,
+    appId,
+  }
 }
 
 export function assertScope(root: Record<string, unknown>, appId: string) {

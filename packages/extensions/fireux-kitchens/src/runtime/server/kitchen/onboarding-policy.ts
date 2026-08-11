@@ -45,35 +45,36 @@ export function requireOnboardingMemberRole(
 }
 
 export function readKitchenOnboardingScope(value: Record<string, unknown>) {
-  const nested = onboardingRecord(value.app_scope)
-  const nestedState = onboardingText(nested.state)
-  const nestedAppId = onboardingText(nested.app_id)
-  const keys = Object.keys(nested).sort()
-  const state: FireuxAppScopeState | '' =
-    nestedState === 'root_only' ||
-    nestedState === 'parent_app' ||
-    nestedState === 'tenant_app'
-      ? nestedState
-      : ''
-
   if (
+    Object.hasOwn(value, 'app_scope') ||
     Object.hasOwn(value, 'app_scope_state') ||
     Object.hasOwn(value, 'app_scope_app_id') ||
-    keys.length !== 2 ||
-    keys[0] !== 'app_id' ||
-    keys[1] !== 'state' ||
-    !state
+    Object.hasOwn(value, 'app_id')
   ) {
-    fail(409, 'Kitchen App scope is missing or invalid.')
+    fail(409, 'Kitchen contains retired App scope fields.')
   }
-  if (state === 'root_only' && nestedAppId) {
-    fail(409, 'An unattached Kitchen cannot name an App.')
-  }
-  if (state !== 'root_only' && !nestedAppId) {
-    fail(409, 'An attached Kitchen must name its App.')
+  if (!Object.hasOwn(value, 'console')) {
+    return { state: 'root_only' as FireuxAppScopeState, appId: '' }
   }
 
-  return { state: state as FireuxAppScopeState, appId: nestedAppId }
+  const console = onboardingRecord(value.console)
+  const keys = Object.keys(console).sort()
+  const appId = onboardingText(console.app_id)
+  const appRole = onboardingText(console.app_role)
+  if (
+    keys.length !== 2 ||
+    keys[0] !== 'app_id' ||
+    keys[1] !== 'app_role' ||
+    !appId ||
+    (appRole !== 'parent' && appRole !== 'tenant')
+  ) {
+    fail(409, 'Kitchen Console attachment is missing or invalid.')
+  }
+
+  return {
+    state: (appRole === 'tenant' ? 'tenant_app' : 'parent_app') as FireuxAppScopeState,
+    appId,
+  }
 }
 
 export function assertKitchenOnboardingScope(
@@ -146,12 +147,26 @@ export function readKitchenOnboardingSupport(
     'operator_ids',
     'team_ids',
     'join_requests',
+    'console',
     'created',
     'updated',
   ])
   const unsupported = Object.keys(value).find(key => !allowedKeys.has(key))
   if (unsupported) {
     fail(409, `Kitchen App support contains unsupported field: ${unsupported}.`)
+  }
+  const console = onboardingRecord(value.console)
+  const consoleKeys = new Set([
+    'menus',
+    'orders',
+    'tables',
+    'fulfilment',
+    'integrations',
+  ])
+  const unsupportedConsoleKey = Object.keys(console)
+    .find(key => !consoleKeys.has(key))
+  if (unsupportedConsoleKey) {
+    fail(409, `Kitchen Console contains unsupported field: ${unsupportedConsoleKey}.`)
   }
 
   return {
@@ -162,6 +177,7 @@ export function readKitchenOnboardingSupport(
       100,
       'Kitchen join requests'
     ),
+    console,
   }
 }
 

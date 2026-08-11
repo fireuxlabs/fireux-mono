@@ -143,8 +143,8 @@ function rootPlan(body: Record<string, unknown>, current: RuntimePolicy) {
     const plan = buildPropertyCreateRoot(
       body as unknown as PropertyCreateInput,
       {
-        app_scope_state: current.appScopeState,
-        app_scope_app_id: current.appId,
+        app_id: current.appId,
+        app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
       }
     )
     return {
@@ -232,8 +232,7 @@ export async function completePropertyOnboarding(
     }
     if (
       canonicalRoot &&
-      canonicalRoot.app_scope_state !== 'root_only' &&
-      canonicalRoot.app_scope_app_id !== current.appId
+      canonicalRoot.console && canonicalRoot.console.app_id !== current.appId
     ) {
       fail(409, 'This Property is already attached to another App.')
     }
@@ -244,7 +243,7 @@ export async function completePropertyOnboarding(
       supportAuthority?.operatorIds.includes(current.uid) === true
     const creatingRoot = !root.exists
     const creatingSupport = !support.exists
-    const connectingRoot = canonicalRoot?.app_scope_state === 'root_only'
+    const connectingRoot = !canonicalRoot?.console
 
     if (creatingRoot && (!current.canCreate || role !== 'admin')) {
       fail(
@@ -296,12 +295,16 @@ export async function completePropertyOnboarding(
       mutations.create(properties, propertyId, payload)
     } else if (
       canonicalRoot &&
-      (canonicalRoot.app_scope_state !== current.appScopeState ||
-        canonicalRoot.app_scope_app_id !== current.appId)
+      (!canonicalRoot.console ||
+        canonicalRoot.console.app_id !== current.appId ||
+        canonicalRoot.console.app_role !==
+          (current.appScopeState === 'tenant_app' ? 'tenant' : 'parent'))
     ) {
       mutations.update(properties, propertyId, {
-        app_scope_state: current.appScopeState,
-        app_scope_app_id: current.appId,
+        console: {
+          app_id: current.appId,
+          app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
+        },
         updated: serverAuditStamp({ by: current.uid }),
       })
     }

@@ -1,14 +1,23 @@
 // Concurrent edit — 2026-07-21 20:57 CEST — Kitchen Console targets: consume the authenticated bounded target projection.
 // Concurrent edit — 2026-07-21 21:41 CEST — Kitchen target outcome: defer duplicate keyed requests while one projection is in flight.
 import { useAsyncData } from '#imports'
-import { computed, toValue, type ComputedRef, type MaybeRefOrGetter } from 'vue'
+import {
+  computed,
+  toValue,
+  watch,
+  type ComputedRef,
+  type MaybeRefOrGetter,
+} from 'vue'
 import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/FireUXConfig'
 import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import {
   useFirestoreCollectionState,
   type FirestoreCollectionOutcome,
 } from 'fireux-core/runtime/composables/fireux/firestore/operations/useFirestoreCollection'
-import type { KitchenConsoleTargetsResponse } from '../../../../../models/kitchen/kitchen-index.model'
+import type {
+  KitchenConsoleAppTargetItem,
+  KitchenConsoleTargetsResponse,
+} from '../../../../../models/kitchen/kitchen-index.model'
 import type { KitchenSurface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenInterface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 
@@ -19,6 +28,7 @@ type KitchenConsoleTargetState = {
 
 export type UseKitchenConsoleTargetCollectionResult = {
   kitchens: ComputedRef<KitchenSurface[]>
+  apps: ComputedRef<KitchenConsoleAppTargetItem[]>
   count: ComputedRef<number>
   pending: ComputedRef<boolean>
   error: ComputedRef<unknown | undefined>
@@ -43,13 +53,7 @@ export function useKitchenConsoleTargetCollection(
     async () => {
       const user = currentUser.value
       const requestUid = uid.value
-      if (
-        !enabled.value ||
-        !import.meta.client ||
-        !hasAuthState.value ||
-        !user ||
-        user.uid !== requestUid
-      ) {
+      if (!user || user.uid !== requestUid) {
         return null
       }
 
@@ -69,10 +73,21 @@ export function useKitchenConsoleTargetCollection(
     },
     {
       server: false,
-      lazy: true,
+      immediate: false,
       dedupe: 'defer',
-      watch: [enabled, hasAuthState, uid],
     }
+  )
+  watch(
+    () => ({
+      enabled: enabled.value,
+      hasAuthState: hasAuthState.value,
+      uid: uid.value,
+    }),
+    ({ enabled: canLoad, hasAuthState: authReady, uid: requestUid }) => {
+      if (!canLoad || !authReady || !requestUid) return
+      void state.execute()
+    },
+    { immediate: true }
   )
   const response = computed<KitchenConsoleTargetsResponse | null>(() => {
     if (!enabled.value) return null
@@ -89,16 +104,21 @@ export function useKitchenConsoleTargetCollection(
   })
   const kitchens = computed<KitchenSurface[]>(() =>
     (response.value?.items ?? []).flatMap((target) => {
-      const kitchen = surface({ kitchen: target, routeScope: 'live' })
+      const kitchen = surface({ kitchen: target, console: { mode: 'live' } })
       return kitchen ? [kitchen] : []
     })
   )
   const count = computed(() => kitchens.value.length)
+  const apps = computed(() => response.value?.appItems ?? [])
   const active = computed(() => enabled.value && Boolean(uid.value))
   const pending = computed(
     () =>
       enabled.value &&
-      (!hasAuthState.value || (active.value && state.pending.value))
+      (!hasAuthState.value ||
+        (active.value &&
+          (state.status.value === 'idle' ||
+            state.pending.value ||
+            (!state.error.value && response.value === null))))
   )
   const error = computed<unknown | undefined>(() =>
     active.value ? (state.error.value ?? undefined) : undefined
@@ -112,6 +132,7 @@ export function useKitchenConsoleTargetCollection(
 
   return {
     kitchens,
+    apps,
     count,
     pending,
     error,

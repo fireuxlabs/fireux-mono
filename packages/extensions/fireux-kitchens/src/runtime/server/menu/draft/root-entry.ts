@@ -47,32 +47,21 @@ const kitchenIdentity = (
   scopedKitchen: Record<string, unknown>,
   rootKitchen: Record<string, unknown>
 ) => {
-  const scopedIdentity = record(scopedKitchen.identity)
   const rootIdentity = record(rootKitchen.identity)
+  const rootAssets = record(rootKitchen.assets)
   const name = readFirst(
-    scopedIdentity.display_name,
-    scopedKitchen.display_name,
-    scopedKitchen.name,
-    rootIdentity.display_name,
-    rootKitchen.display_name,
+    rootIdentity.name,
     rootKitchen.name
   )
   const slug = normalizeSlug(
     readFirst(scopedKitchen.slug, rootKitchen.slug, name)
   )
   const imageUrl = readFirst(
-    scopedIdentity.image_url,
-    scopedKitchen.display_image_url,
-    scopedKitchen.image_url,
-    rootIdentity.image_url,
-    rootKitchen.display_image_url,
-    rootKitchen.image_url
+    rootAssets.image,
+    rootAssets.logo
   )
   const imageShade = readFirst(
-    scopedIdentity.image_shade,
-    scopedKitchen.image_shade,
-    rootIdentity.image_shade,
-    rootKitchen.image_shade
+    'none'
   )
 
   return {

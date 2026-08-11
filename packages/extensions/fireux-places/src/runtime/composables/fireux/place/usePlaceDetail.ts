@@ -41,6 +41,26 @@ export function usePlaceDetail(props: { locator: string }) {
         'transparent',
     }
   })
+  const heroIdentityUrl = computed(() =>
+    place.value?.assets.logo || place.value?.assets.image || ''
+  )
+  const heroIdentityFit = computed(() =>
+    place.value?.assets.logo ? 'contain' as const : 'cover' as const
+  )
+  const heroIdentityAlt = computed(() => {
+    const name = String(place.value?.name || 'Place').trim()
+    return place.value?.assets.logo ? `${name} logo` : `${name} image`
+  })
+  const heroMediaBackground = computed(() => {
+    if (!place.value?.assets.logo) return ''
+    const palette = place.value.brand_palette
+    return (
+      place.value.assets.backdrop_color ||
+      palette?.secondary_color ||
+      palette?.primary_color ||
+      ''
+    )
+  })
   const placeTypeLabel = computed(() =>
     place.value?.place_type === 'non_physical'
       ? 'Non-physical place'
@@ -216,6 +236,10 @@ export function usePlaceDetail(props: { locator: string }) {
     relatedOperationsComponent,
     initials,
     detailStyle,
+    heroIdentityUrl,
+    heroIdentityFit,
+    heroIdentityAlt,
+    heroMediaBackground,
     placeTypeLabel,
     mapUrl,
     primaryActions,

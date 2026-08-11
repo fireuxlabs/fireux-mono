@@ -143,10 +143,13 @@ Map the shared console system and domain adapters.
   loaded target object decides whether target content is ready. A missing
   object while an ID exists is a loading state, never a false "select first"
   empty state.
-- A Console family has one family-keyed reactive source state shared by every
-  composable instance. Its cookie is persistence, not a second live source
-  authority; source changes update both together so source-aware selection
-  cannot race between `live`, `demo`, and `test`.
+- A Console family has one App-and-family-keyed reactive source and selection
+  state shared by every composable instance. Persistence keys include the App
+  id because browser cookies are shared across localhost ports; a Kitchen
+  selected in one tenant App must never hydrate another tenant App. Cookies
+  persist state, but are not a second live authority. Source changes update
+  state and persistence together so selection cannot race between `live`,
+  `demo`, and `test`.
 - Global target adapters compose AppUser membership pending/error with the
   collection outcome. Membership failure is `error`, never an empty target list.
 - Entity App-support operator/team records bound live reads. Exact
@@ -161,6 +164,12 @@ Map the shared console system and domain adapters.
   browser AppUser target read, and share the keyed request across selected/index
   consumers. Missing pairs and scope drift remain errors, never partial target
   lists.
+- On the global Misebox Kitchen index, `Your kitchens` remains the selector for
+  Kitchens attached to the current App. `My Kitchen Apps` is a separate doorway
+  collection: the server starts from the signed-in User's canonical Kitchen
+  target index, resolves each Kitchen's owning tenant App, and verifies that
+  App's scoped membership before projecting it. Tenant Kitchen Apps never leak
+  into or become selectable from the global Kitchen collection.
 - Demo target adapters use `useConsoleDemoData` and a dynamic import. The
   loader stays untouched while inactive, successful local data is cached, and
   its explicit `idle`, `pending`, `error`, `empty`, or `ready` outcome feeds the
@@ -168,11 +177,12 @@ Map the shared console system and domain adapters.
 
 ## Production attachment
 
-- A canonical root may be created independently and remain `root_only` without
-  an App Console target. App attachment runs through the family's own
+- A canonical root may be created independently with no `console` attachment
+  and no App Console target. App attachment runs through the family's own
   fixed-runtime authenticated server endpoint; the caller cannot choose the
   App, database, collection path, or App-support id.
-- One attachment transaction owns the root scope change, same-id complete App
+- One attachment transaction owns the root `console: { app_id, app_role }`
+  change, same-id complete App
   support, and caller operator/team authority. Missing or conflicting halves
   fail before a partial chooser row can be created.
 - `operator_ids` is mutation authority. `team_ids` is target/read membership,

@@ -183,7 +183,7 @@ Example Firestore stack names, not automatic entity proof:
   validation.
 - Root and App create/read seams have fixed paths and one shared id. Independent
   root/App deletes and generic App access mutation helpers are withheld until a
-  trusted lifecycle can maintain root scope and App-support access
+  trusted lifecycle can maintain the family-owned root Console attachment and App-support access
   indexes together.
 - Shared console attachment re-reads the root returned by an idempotent create
   before it checks App ownership. This closes accidental slug-collision attach
@@ -191,8 +191,8 @@ Example Firestore stack names, not automatic entity proof:
 - Property-to-Portfolio membership is `Property.portfolio_id`. The former
   nested full-Property reader under an App Portfolio is retired. The client
   query activates only after the selected Portfolio has been resolved through
-  its App access record, constrains `app_scope_app_id` to that App, and then
-  exact-validates the returned scope state; owner-database Rules still have to
+  its App access record, constrains `console.app_id` to that App, and then
+  exact-validates the returned Console attachment; owner-database Rules still have to
   enforce that inheritance contract.
 - Public Property browse uses the bounded server `/api/properties` projection;
   the browser never binds raw Property roots. Creation defaults publication to
@@ -201,6 +201,8 @@ Example Firestore stack names, not automatic entity proof:
 - Current source: Supplier, Supplier Item, Product, Ingredient, Portfolio, and
   Property model/fetch/mutation stacks.
   Shape guard: `scripts/guards/root-app-support-authority.mjs`.
+  Protected existing-root alignment:
+  `scripts/migrate-console-root-attachments.mjs`.
 
 ## Migration and drift register
 

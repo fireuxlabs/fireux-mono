@@ -77,7 +77,7 @@ const { currentUser, isAdmin } = useUser()
 const { appId } = useFireUXConfig()
 const currentAppId = computed(() => String(appId || '').trim())
 const operatorAppId = computed(() =>
-  String(props.kitchen?.app_scope_app_id || currentAppId.value).trim()
+  String(props.kitchen?.console?.app_id || currentAppId.value).trim()
 )
 const isTenantConsoleHandoff = computed(() =>
   Boolean(operatorAppId.value && operatorAppId.value !== currentAppId.value)

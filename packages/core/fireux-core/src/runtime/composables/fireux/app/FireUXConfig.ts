@@ -77,11 +77,19 @@ function toConsoleConfig(v: unknown): FireuxConsoleConfig {
           value && typeof value === 'object' && !Array.isArray(value)
             ? (value as AnyRecord)
             : {}
-        if (!key || typeof config.canCreate !== 'boolean') return null
-        return [key, { canCreate: config.canCreate }] as const
+        if (!key) return null
+        const familyConfig: FireuxConsoleFamilyConfig = {}
+        if (typeof config.canCreate === 'boolean') {
+          familyConfig.canCreate = config.canCreate
+        }
+        if (typeof config.allowDemo === 'boolean') {
+          familyConfig.allowDemo = config.allowDemo
+        }
+        if (Object.keys(familyConfig).length === 0) return null
+        return [key, familyConfig] as const
       })
       .filter(
-        (entry): entry is readonly [string, { canCreate: boolean }] =>
+        (entry): entry is readonly [string, FireuxConsoleFamilyConfig] =>
           entry !== null
       )
   )

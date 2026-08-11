@@ -42,22 +42,22 @@ function request(value: unknown) {
   }
 }
 
-function compactRootStyle(
+function splitKitchenTheme(
   style: Partial<PageStyle>,
   placePalette: unknown
-): Partial<PageStyle> {
-  const next = { ...style }
-  delete next.primary_color
-  delete next.secondary_color
-  Object.assign(next, compactBrandPalette(style, placePalette))
+): { brandPalette: Partial<PageStyle>; menuStyle: Partial<PageStyle> } {
+  const brandPalette = compactBrandPalette(style, placePalette)
+  const menuStyle = { ...style }
+  delete menuStyle.primary_color
+  delete menuStyle.secondary_color
 
-  if (next.font_source === 'system' && !next.font_family) {
-    delete next.font_source
+  if (menuStyle.font_source === 'system' && !menuStyle.font_family) {
+    delete menuStyle.font_source
   }
-  if (next.title_font_source === 'system' && !next.title_font_family) {
-    delete next.title_font_source
+  if (menuStyle.title_font_source === 'system' && !menuStyle.title_font_family) {
+    delete menuStyle.title_font_source
   }
-  return next
+  return { brandPalette, menuStyle }
 }
 
 export async function updateKitchenTheme(event: H3Event, input: unknown) {
@@ -79,18 +79,15 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
           statusMessage: 'The linked Place brand palette needs repair.',
         })
       }
-      const compact = compactRootStyle(requested.style, placePalette.value)
+      const theme = splitKitchenTheme(requested.style, placePalette.value)
       const rootPatch: Record<string, unknown> = {
-        'menus.style': Object.keys(compact).length
-          ? compact
+        brand_palette: Object.keys(theme.brandPalette).length
+          ? theme.brandPalette
           : FieldValue.delete(),
         updated: serverAuditStamp({
           by: actor.uid,
           appId: current.ownerAppId,
         }),
-      }
-      if (Object.hasOwn(current.rootData, 'menu_style')) {
-        rootPatch.menu_style = FieldValue.delete()
       }
       mutations.update<DocumentData>(
         kitchenRootTarget,
@@ -98,24 +95,19 @@ export async function updateKitchenTheme(event: H3Event, input: unknown) {
         rootPatch
       )
 
-      const supportMenus = record(current.supportData.menus)
-      const supportPatch: Record<string, unknown> = {}
-      if (Object.hasOwn(supportMenus, 'style')) {
-        supportPatch['menus.style'] = FieldValue.delete()
+      mutations.update(current.supports, requested.kitchenId, {
+        'console.menus.style': Object.keys(theme.menuStyle).length
+          ? theme.menuStyle
+          : FieldValue.delete(),
+        updated: serverAuditStamp({
+          by: actor.uid,
+          appId: current.ownerAppId,
+        }),
+      })
+      return {
+        appId: current.ownerAppId,
+        style: { ...theme.menuStyle, ...theme.brandPalette },
       }
-      if (Object.hasOwn(current.supportData, 'menu_style')) {
-        supportPatch.menu_style = FieldValue.delete()
-      }
-      if (Object.keys(supportPatch).length) {
-        mutations.update(current.supports, requested.kitchenId, {
-          ...supportPatch,
-          updated: serverAuditStamp({
-            by: actor.uid,
-            appId: current.ownerAppId,
-          }),
-        })
-      }
-      return { appId: current.ownerAppId, style: compact }
     }
   )
 

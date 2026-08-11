@@ -1,6 +1,5 @@
 import type { Ref } from 'vue'
 import type { ConsoleSource } from 'fireux-core/runtime/composables/fireux/app/console/useConsole'
-import { normalizeFireuxAppScopeState } from 'fireux-core/runtime/utils/app-scope-state'
 import {
   PortfolioStorage,
   type Portfolio,
@@ -48,9 +47,5 @@ export function portfolioRootBelongsToApp(
   portfolio: PortfolioCollectionDoc,
   appId: string
 ) {
-  const state = normalizeFireuxAppScopeState(portfolio.app_scope_state)
-  return (
-    (state === 'parent_app' || state === 'tenant_app') &&
-    normalizeString(portfolio.app_scope_app_id) === appId
-  )
+  return normalizeString(portfolio.console?.app_id) === appId
 }

@@ -21,7 +21,10 @@
       >
         <div
           class="place-assets__preview"
-          :class="`place-assets__preview--${asset.aspectRatio}`"
+          :class="[
+            `place-assets__preview--${asset.aspectRatio}`,
+            `place-assets__preview--${asset.key}`,
+          ]"
         >
           <img
             v-if="asset.preview"
@@ -196,7 +199,7 @@ const assets = computed(() =>
 
 .place-assets__grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
   gap: calc(var(--spacing) * 4);
 }
 
@@ -210,20 +213,11 @@ const assets = computed(() =>
 .place-assets__preview {
   position: relative;
   display: grid;
-  min-height: 11rem;
+  aspect-ratio: 4 / 3;
   place-items: center;
   overflow: hidden;
   background: var(--ui-bg-accented);
   color: var(--ui-text-dimmed);
-}
-
-.place-assets__preview--square {
-  aspect-ratio: 1;
-}
-
-.place-assets__preview--wide,
-.place-assets__preview--wordmark {
-  aspect-ratio: 16 / 9;
 }
 
 .place-assets__preview img {
@@ -232,9 +226,14 @@ const assets = computed(() =>
   object-fit: cover;
 }
 
+.place-assets__preview--logo img,
+.place-assets__preview--wordmark img {
+  object-fit: contain;
+}
+
+.place-assets__preview--logo img,
 .place-assets__preview--wordmark img {
   padding: calc(var(--spacing) * 6);
-  object-fit: contain;
 }
 
 .place-assets__preview > svg {

@@ -81,7 +81,7 @@ export async function readPublicKitchenIndexPage(
     : collection
         .where(
           Filter.or(
-            Filter.where('visibility.show', '==', true),
+            Filter.where('visibility', '==', true),
             Filter.where('show', '==', true)
           )
         )
@@ -115,9 +115,7 @@ export async function readPublicKitchenIndexPage(
     .map((document) =>
       projectPublicKitchenIndexItem(document, dataByPath, directoryScope)
     )
-    .filter((item): item is PublicKitchenIndexItem =>
-      Boolean(item?.publicly_visible && !item.is_test_kitchen)
-    )
+    .filter((item): item is PublicKitchenIndexItem => Boolean(item?.visibility))
   const nextCursor =
     hasMore && pageDocs.length
       ? encodeCursor(pageDocs[pageDocs.length - 1]?.id || '')

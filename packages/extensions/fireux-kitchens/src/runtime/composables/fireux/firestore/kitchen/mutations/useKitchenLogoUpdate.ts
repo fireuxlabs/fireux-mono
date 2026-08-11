@@ -31,12 +31,12 @@ export function useKitchenLogoUpdate() {
     pending.value = true
     try {
       const url = await uploadImage(
-        `kitchens/${id}/identity/logo/current`,
+        `kitchens/${id}/logo`,
         file
       )
       requireSelectedKitchen(id)
       await updateKitchen(id, {
-        'identity.logo_image_url': url,
+        'assets.logo': url,
       })
       return url
     } finally {
@@ -50,7 +50,7 @@ export function useKitchenLogoUpdate() {
   ) => {
     const id = requireSelectedKitchen(kitchenId)
     await updateKitchen(id, {
-      'identity.media_backdrop_color': color,
+      'assets.backdrop_color': color,
     })
   }
 

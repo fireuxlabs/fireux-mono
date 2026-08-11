@@ -9,13 +9,9 @@ import {
   type Property,
 } from '../../../../../../../models/property.model'
 import { canonicalPropertyRoot } from '../../../../../firestore/property/utils/view/usePropertyInterface'
+import { propertyRootBelongsToApp } from '../../../../../firestore/property/fetch/property-collection-contract'
 
 const normalizeString = (value: unknown) => String(value ?? '').trim()
-const propertyBelongsToApp = (property: Property, appId: string) =>
-  (property.app_scope_state === 'parent_app' ||
-    property.app_scope_state === 'tenant_app') &&
-  property.app_scope_app_id === appId
-
 export function usePortfolioPropertyCollection(
   runtimePortfolio = useActivePortfolio()
 ) {
@@ -46,7 +42,7 @@ export function usePortfolioPropertyCollection(
     return query(
       collection(db, PropertyStorage.rootCollection),
       where('portfolio_id', '==', portfolioId.value),
-      where('app_scope_app_id', '==', consoleAppId.value)
+      where('console.app_id', '==', consoleAppId.value)
     ) as Query<Property>
   })
   const source = firestoreQuery<Property>(
@@ -63,7 +59,7 @@ export function usePortfolioPropertyCollection(
 
     return (source.value ?? []).reduce<Property[]>((items, property) => {
       const root = canonicalPropertyRoot(property)
-      if (root && propertyBelongsToApp(root, consoleAppId.value))
+      if (root && propertyRootBelongsToApp(root, consoleAppId.value))
         items.push(root)
       return items
     }, [])
@@ -78,7 +74,7 @@ export function usePortfolioPropertyCollection(
   const invalidScopeIds = computed(() =>
     (source.value ?? []).reduce<string[]>((ids, property) => {
       const root = canonicalPropertyRoot(property)
-      if (!root || propertyBelongsToApp(root, consoleAppId.value)) return ids
+      if (!root || propertyRootBelongsToApp(root, consoleAppId.value)) return ids
       ids.push(root.id)
       return ids
     }, [])

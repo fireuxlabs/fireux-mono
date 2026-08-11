@@ -101,14 +101,19 @@ export async function completeKitchenRootOnboarding(
     mutations.create(kitchenRootTarget, placeId, {
       place_id: placeId,
       slug,
-      app_scope: { state: 'root_only', app_id: '' },
-      visibility: { show: false, active: true, is_test: false },
-      ...(displayName && displayName !== placeName
-        ? { identity: { display_name: displayName } }
-        : {}),
-      ...(Object.keys(paletteOverride).length
-        ? { menus: { style: paletteOverride } }
-        : {}),
+      status: 'active',
+      visibility: false,
+      identity: {
+        name: displayName && displayName !== placeName ? displayName : '',
+        tagline: '',
+      },
+      assets: {
+        image: '',
+        logo: '',
+        wordmark: '',
+        backdrop_color: '',
+      },
+      brand_palette: paletteOverride,
       created: serverAuditStamp({ by: uid }),
       updated: serverAuditStamp({ by: uid }),
     })

@@ -68,9 +68,10 @@ Compare all `*/Collection/Manager.vue` files by source mode and snapshot shape.
   Company root is a stamps-only same-id role marker; Place remains the display
   authority and no Place fields are copied onto Company.
 - `Kitchen` receives a bounded public Kitchen/Place projection. Raw Kitchen
-  rows stay sparse and no longer copy shared Place fields. Only published,
-  non-test Kitchens with a slug and an existing explicit Place reference enter
-  the projection; invalid App scope never selects an App support record.
+  rows stay sparse and no longer copy shared Place fields. Only published
+  Kitchens with a slug and an existing explicit Place reference enter the
+  projection; invalid App scope never selects an App support record. Kitchen
+  has no persisted test subtype or visibility flag.
 - `App` receives one named controller: owning Ecosystem projection or FireUX
   platform directory projection.
 - `Ecosystem` receives the FireUX platform directory controller.

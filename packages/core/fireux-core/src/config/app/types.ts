@@ -7,6 +7,8 @@ export type FireuxAppRole = 'global' | 'tenant' | 'standalone'
 
 export type FireuxConsoleFamilyConfig = {
   canCreate?: boolean
+  /** Whether this App exposes the shared Demo target catalogue for this Console. */
+  allowDemo?: boolean
 }
 
 export type FireuxConsoleRegistration = {

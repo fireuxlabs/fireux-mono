@@ -2,17 +2,17 @@
     match /kitchens/{kitchenId} {
       function isCanonicalAttachedKitchen(data) {
         return data is map &&
-          data.keys().hasAll(['app_scope']) &&
+          data.keys().hasAll(['console']) &&
           !data.keys().hasAny([
             'app_scope_state',
             'app_scope_app_id',
             'app_id'
           ]) &&
-          data.app_scope is map &&
-          data.app_scope.keys().hasAll(['state', 'app_id']) &&
-          data.app_scope.keys().hasOnly(['state', 'app_id']) &&
-          data.app_scope.state in ['parent_app', 'tenant_app'] &&
-          isValidFirestoreDocumentId(data.app_scope.app_id);
+          data.console is map &&
+          data.console.keys().hasAll(['app_id', 'app_role']) &&
+          data.console.keys().hasOnly(['app_id', 'app_role']) &&
+          data.console.app_role in ['parent', 'tenant'] &&
+          isValidFirestoreDocumentId(data.console.app_id);
       }
 
       function hasSameIdAppKitchenSupport(appId) {
@@ -21,16 +21,16 @@
         );
       }
 
-      // Public Kitchen cards/details use bounded server projections. The raw
-      // root is exact-readable only when its canonical App scope and same-id
+      // Kitchen cards/details use bounded server projections. The raw root is
+      // exact-readable only when its Console locator and same-id
       // support record prove current Console authority.
       allow get: if isAuthenticated() &&
         isCanonicalAttachedKitchen(resource.data) &&
-        hasSameIdAppKitchenSupport(resource.data.app_scope.app_id) &&
+        hasSameIdAppKitchenSupport(resource.data.console.app_id) &&
         (
-          isAppAdmin(resource.data.app_scope.app_id) ||
+          isAppAdmin(resource.data.console.app_id) ||
           isTargetMember(
-            resource.data.app_scope.app_id,
+            resource.data.console.app_id,
             'kitchens',
             kitchenId
           )

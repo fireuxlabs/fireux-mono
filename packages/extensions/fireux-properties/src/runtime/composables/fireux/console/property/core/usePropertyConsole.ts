@@ -109,6 +109,7 @@ export function usePropertyConsole(options: UsePropertyConsoleOptions = {}) {
     getId: (property) => normalizeString(property?.id),
     mode: consoleRoot.source,
     userId,
+    enforcedTargetId: consoleTargets.singleTargetId,
   })
 
   const selectedProperty = computed<PropertySurface | null>(

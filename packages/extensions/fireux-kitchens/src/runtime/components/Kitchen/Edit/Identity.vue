@@ -236,7 +236,7 @@ async function updateKitchenIdentity(
 
 async function handleDisplayName(value: string) {
   await updateKitchenIdentity(
-    { 'identity.display_name': clean(value) },
+    { 'identity.name': clean(value) },
     'Kitchen name updated',
     'Failed to update kitchen name'
   )

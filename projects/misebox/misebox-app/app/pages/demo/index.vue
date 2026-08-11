@@ -124,7 +124,7 @@
         <strong>A real interface over a fictional world</strong>
         <p>
           These demonstrations perform no Firestore writes, create no live
-          Orders and never borrow a user’s Test Kitchen.
+          Orders and never borrow a user’s Kitchen.
         </p>
       </div>
     </aside>

@@ -99,7 +99,7 @@ const defaultLanguage = computed<SproochliDefaultLanguage>(
   () => config.value.default_language || 'mixed'
 )
 const ownerAppId = computed(() => {
-  const scope = props.kitchen?.app_scope
+  const scope = props.kitchen?.console
   return scope && typeof scope === 'object' && !Array.isArray(scope)
     ? String((scope as Record<string, unknown>).app_id ?? '').trim()
     : ''

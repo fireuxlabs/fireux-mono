@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // manual_entrypoint: true
-// last_used: 2026-08-09
+// last_used: 2026-08-11
 // usage_note: plan or explicitly apply non-destructive canonical User, Ecosystem, Project, local metadata projection, AppUser, and App onboarding repairs across registered ecosystems.
 
 import { createHash } from 'node:crypto'
@@ -110,6 +110,8 @@ ProjectMeta and AppMeta projections, AppUser lifecycle defaults, and redundant l
 fields. The command never creates legal acceptance, Users, canonical
 Ecosystems, App memberships, canonical Apps, admin roles, Auth identities, or
 Storage objects.
+
+User avatar Storage ownership is audited separately by pnpm align:user-avatars.
 
 ${firebaseAdminCredentialHelp()}
 `)
@@ -295,16 +297,6 @@ function stableJson(value) {
 
 function sha256(value) {
   return createHash('sha256').update(stableJson(value)).digest('hex')
-}
-
-function canonicalAvatarOwned(avatar, uid) {
-  const value = text(avatar)
-  if (!value.startsWith('https://')) return false
-  try {
-    return decodeURIComponent(value).includes(`users/${uid}/avatar`)
-  } catch {
-    return false
-  }
 }
 
 function appSiteUrl(entry) {
@@ -564,7 +556,7 @@ async function planEcosystem(session, operations, issues, blockers) {
     }
   }
   const sourceImage = text(presentationSource.assets.image)
-  const storedImage = text(data.assets?.image)
+  const storedImage = text(set.assets?.image) || text(data.assets?.image)
   if (sourceImage && (!storedImage || (logicalRename && storedImage !== sourceImage))) {
     set.assets = { image: sourceImage }
   } else if (!storedImage) {
@@ -850,9 +842,6 @@ async function planUsers(session, operations, issues, blockers) {
       if (text(data.id) && text(data.id) !== user.id) {
         blockers.push(issue(session, 'USER_ID_CONFLICT', user.ref.path))
       } else deleteFields.push('id')
-    }
-    if (!canonicalAvatarOwned(data.assets?.avatar, user.id)) {
-      issues.push(issue(session, 'USER_AVATAR_REHOME_REQUIRED', user.ref.path))
     }
     const account = await user.ref.collection('private').doc('account').get()
     if (!account.exists) {

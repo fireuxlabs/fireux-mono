@@ -62,6 +62,7 @@ export function useBlankConsole() {
     getId: (target) => normalizeString(target?.id),
     mode: consoleRoot.source,
     readOnly: true,
+    enforcedTargetId: consoleTargets.singleTargetId,
   })
   const selectedBlank = computed<BlankSurface | null>(
     () => entity.selection.selectedTarget.value

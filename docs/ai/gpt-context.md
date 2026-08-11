@@ -515,15 +515,15 @@ Before each task:
   Project use `assets.image`. Storage uses the same roles directly beneath the
   entity id, without `current`, `media`, or URL suffixes.
 - A canonical domain root is independently valid before App attachment.
-  Root/App-support families may use `root_only` scope with no App support until
-  an explicit attachment workflow runs; App support never substitutes for or
-  relocates root truth.
+  Kitchen represents this by omitting its root `console` locator until an
+  explicit attachment workflow runs; other families retain their declared
+  equivalent. App support never substitutes for or relocates root truth.
 - Live App Console projections query bounded entity App-support authority and
   expose no partial attached pair when a root, same-id support record, App
-  scope, stored authority shape, or caller access is invalid.
+  attachment, stored authority shape, or caller access is invalid.
 - Production App attachment for those families is a fixed-runtime
-  authenticated domain endpoint. One trusted transaction changes the root App
-  scope and completes same-id App support with the caller's operator/team
+  authenticated domain endpoint. One trusted transaction records the root App
+  attachment and completes same-id App support with the caller's operator/team
   authority. A convenience funnel may create a missing root first, but base
   root creation remains App-ignorant. Operators may mutate; team members have
   target/read membership only; current App admins are the explicit override.

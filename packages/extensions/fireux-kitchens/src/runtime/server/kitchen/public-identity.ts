@@ -97,14 +97,14 @@ function canonicalIdentityMedia(
     card_image_url: identity.card_image_url
       ? requireFirebaseStorageDownloadUrl(identity.card_image_url, {
           bucketName,
-          objectPath: `kitchens/${kitchenId}/identity/card/current`,
+          objectPath: `kitchens/${kitchenId}/image`,
           label: 'Kitchen card image',
         })
       : '',
     logo_image_url: identity.logo_image_url
       ? requireFirebaseStorageDownloadUrl(identity.logo_image_url, {
           bucketName,
-          objectPath: `kitchens/${kitchenId}/identity/logo/current`,
+          objectPath: `kitchens/${kitchenId}/logo`,
           label: 'Kitchen logo',
         })
       : '',
@@ -326,11 +326,11 @@ export async function updateKitchenPublicIdentity(
       kitchen.slug
     )
     const patch: UpdateData<DocumentData> = {
-      'identity.display_name': requested.display_name || FieldValue.delete(),
+      'identity.name': requested.display_name || FieldValue.delete(),
       'identity.tagline': requested.tagline || FieldValue.delete(),
-      'identity.card_image_url':
+      'assets.image':
         requested.card_image_url || FieldValue.delete(),
-      'identity.logo_image_url':
+      'assets.logo':
         requested.logo_image_url || FieldValue.delete(),
       updated: serverAuditStamp({
         by: context.uid,

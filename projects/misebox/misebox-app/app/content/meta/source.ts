@@ -170,7 +170,7 @@ export const sourceMeta = {
         {
           name: 'Kitchen',
           purpose: 'Operational kitchen identity and runtime context.',
-          keyFields: ['id', 'name', 'short_address', 'image_url', 'is_test_kitchen'],
+          keyFields: ['id', 'name', 'short_address', 'image_url'],
           linksTo: [
             'Menu',
             'Dish',

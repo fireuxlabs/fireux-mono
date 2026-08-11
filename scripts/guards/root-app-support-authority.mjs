@@ -473,7 +473,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     const rootModel = constBlock(modelSource, modelName)
     assert.doesNotMatch(
       rootModel,
-      /FireuxConsoleAccessModel|operator_ids|team_ids|join_requests/,
+      /FireuxConsoleAccessDefaults|operator_ids|team_ids|join_requests/,
       `${name} root must not contain app access fields.`
     )
     assert.match(modelSource, /appSupport:\s*'apps\/\{appId\}\//)
@@ -493,18 +493,34 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.doesNotMatch(
     supplierRoot,
-    /FireuxConsoleAccessModel|operator_ids|team_ids|join_requests/,
+    /FireuxConsoleAccessDefaults|operator_ids|team_ids|join_requests/,
     'Supplier root must not contain App access fields.'
   )
   assert.match(source.supplierModel, /export const SupplierStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'suppliers\/\{supplierId\}'/)
   assert.match(source.supplierModel, /export const AppSupplierStorage = \{[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/suppliers\/\{supplierId\}'/)
   assert.match(source.supplierModel, /export const AppSupplierDefaults/)
-  assert.match(source.portfolioModel, /export const AppPortfolioModel/)
+  assert.match(source.portfolioModel, /export const AppPortfolioDefaults/)
+  for (const [name, modelSource, rootName] of [
+    ['Supplier', source.supplierModel, 'SupplierDefaults'],
+    ['Portfolio', source.portfolioModel, 'PortfolioModel'],
+    ['Property', source.propertyModel, 'PropertyModel'],
+  ]) {
+    assert.match(modelSource, new RegExp(`export type ${name}ConsoleAttachment`))
+    assert.match(modelSource, /console\?: [A-Za-z]+ConsoleAttachment/)
+    assert.doesNotMatch(
+      constBlock(modelSource, rootName),
+      /app_scope_state|app_scope_app_id|FireuxAppScope/,
+      `${name} root defaults must not retain generic flat App scope fields.`
+    )
+  }
   assert.match(
     source.consoleEntityModel,
-    /export const FireuxAppAccessRecordModel/
+    /export const FireuxAppAccessRecordDefaults/
   )
-  assert.match(source.consoleEntityModel, /export type FireuxAppAccessRecord/)
+  assert.match(
+    source.consoleEntityModel,
+    /export (?:interface|type) FireuxAppAccessRecord/
+  )
   assert.doesNotMatch(source.consoleEntityModel, /FireuxAppOverlay/)
   assert.match(
     source.consoleAccess,
@@ -524,7 +540,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.propertyModel,
     /family:\s*\['property',\s*'console-entity'\]/
   )
-  assert.match(source.propertyModel, /export const AppPropertyModel/)
+  assert.match(source.propertyModel, /export const AppPropertyDefaults/)
   assert.match(
     source.propertyModel,
     /export type AppProperty = FireuxAppAccessRecord/
@@ -608,7 +624,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.propertyCollection,
-    /resolvedShape\.value === 'root-with-app-support'[\s\S]*!appSupport[\s\S]*root\.app_scope_app_id !== resolvedAppId\.value/
+    /resolvedShape\.value === 'root-with-app-support'[\s\S]*!appSupport[\s\S]*propertyRootBelongsToApp\(root, resolvedAppId\.value\)/
   )
   assert.doesNotMatch(
     source.propertyCollection,
@@ -719,7 +735,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.portfolioPropertyCollection,
-    /where\('app_scope_app_id',\s*'=='/
+    /where\('console\.app_id',\s*'=='/
   )
   assert.match(
     source.portfolioPropertyCollection,
@@ -734,7 +750,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.portfolioPropertyCollection,
     /runtimePortfolio\.consoleAppId\.value/
   )
-  assert.match(source.portfolioPropertyCollection, /propertyBelongsToApp/)
+  assert.match(source.portfolioPropertyCollection, /propertyRootBelongsToApp/)
   assert.match(source.portfolioPropertyCollection, /root\/App scope mismatch/)
   assert.match(
     source.portfolioPropertyCollection,
@@ -836,9 +852,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenCreate, /\/api\/kitchens\/onboarding\/root\/complete/)
   assert.match(
     source.kitchenRootOnboarding,
-    /app_scope:\s*\{\s*state:\s*'root_only',\s*app_id:\s*''\s*\}/,
-    'Base Kitchen onboarding must create independently valid root-only truth.'
+    /status:\s*'active'[\s\S]*visibility:\s*false[\s\S]*identity:[\s\S]*assets:/,
+    'Base Kitchen onboarding must create independently valid root truth without an App attachment.'
   )
+  assert.doesNotMatch(source.kitchenRootOnboarding, /\bconsole:\s*\{\s*app_id/)
   assert.doesNotMatch(
     source.kitchenRootOnboarding,
     /serverAppKitchensTarget|operator_ids|team_ids|join_requests|console_enabled/,
@@ -851,8 +868,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenOnboarding,
-    /scope\.state === 'root_only'[\s\S]*mutations\.update\(kitchenRootTarget,[\s\S]*state:\s*current\.appScopeState[\s\S]*app_id:\s*current\.appId/,
-    'Kitchen App attachment must explicitly move a root-only root into the current App scope.'
+    /scope\.state === 'root_only'[\s\S]*mutations\.update\(kitchenRootTarget,[\s\S]*console:[\s\S]*app_id:\s*current\.appId[\s\S]*app_role:/,
+    'Kitchen App attachment must add the explicit Console locator to an independent root.'
   )
   assertAtomicConsoleOnboarding({
     name: 'Supplier',
@@ -945,6 +962,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   assert.deepEqual(directTypeFields(source.kitchenModel, 'AppKitchen'), [
+    'console',
     'created',
     'id',
     'join_requests',
@@ -952,16 +970,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'team_ids',
     'updated',
   ])
-  assert.match(
-    source.kitchenModel,
-    /Omit<[\s\S]*FireuxConsoleEntityIdentity,[\s\S]*'image_url' \| 'gallery'[\s\S]*>/,
-    'Kitchen identity must exclude Place-owned media.'
-  )
-  assert.match(
-    source.kitchenModel,
-    /card_image_url\?: string[\s\S]*card_image_url: ''/,
-    'Kitchen identity must declare one sparse card-image override without copying Place media.'
-  )
+  assert.match(source.kitchenModel, /type KitchenIdentity = \{[\s\S]*name: string[\s\S]*tagline: string/)
+  assert.match(source.kitchenModel, /type KitchenAssets = \{[\s\S]*image: string[\s\S]*logo: string[\s\S]*wordmark: string/)
+  assert.match(source.kitchenModel, /type KitchenConsoleConfig = \{[\s\S]*menus\?:[\s\S]*orders\?:[\s\S]*tables\?:[\s\S]*fulfilment\?:/)
   assert.match(
     source.kitchenInterface,
     /cardImageUrl = safeString\(identity\.cardImageUrl\)[\s\S]*cardImageUrl \|\|[\s\S]*placeImageUrl \|\|[\s\S]*identity\.logoImageUrl/,
@@ -995,8 +1006,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenUpdateInput,
-    /identity\.card_image_url[\s\S]*FieldValue\.delete\(\)/,
-    'An empty Kitchen card-image override must delete itself so the card inherits Place again.'
+    /assets\.image[\s\S]*FieldValue\.delete\(\)/,
+    'An empty Kitchen image override must delete itself so the card inherits Place again.'
   )
   assert.match(source.kitchenUpdateServer, /runGuardedServerTransaction/)
   assert.match(source.kitchenUpdateServer, /requireKitchenMutationAuthority/)
@@ -1015,8 +1026,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenDemoTargets,
-    /app_scope:\s*\{\s*state:\s*'parent_app',\s*app_id:\s*input\.identity\.appId/,
-    'Every Demo Kitchen must carry the same explicit App relationship as its access-only Demo support.'
+    /console:\s*\{\s*app_id:\s*input\.identity\.appId,\s*app_role:\s*'parent'/,
+    'Every Demo Kitchen must carry the same explicit Console locator as its Demo AppKitchen.'
   )
   assert.match(
     source.kitchenDemoTargets,
@@ -1099,8 +1110,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'Kitchen target projection must restrict the global User target index to the current App.'
   )
   assert.match(source.kitchenTargetApi, /keys\.length !== 2/)
-  assert.match(source.kitchenTargetApi, /state !== 'parent_app'/)
-  assert.match(source.kitchenTargetApi, /state !== 'tenant_app'/)
+  assert.match(source.kitchenTargetApi, /appRole !== 'parent'/)
+  assert.match(source.kitchenTargetApi, /appRole !== 'tenant'/)
   assert.match(source.kitchenTargetApi, /'app_scope_state'/)
   assert.match(source.kitchenTargetApi, /'app_scope_app_id'/)
   assert.match(source.kitchenTargetApi, /db\.getAll/)
@@ -1175,8 +1186,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenOnboardingPolicy,
-    /unsupported field:[\s\S]*boundedIds\(value\.operator_ids[\s\S]*boundedIds\(value\.team_ids[\s\S]*value\.join_requests/,
-    'AppKitchen support must reject domain payload and require the three access arrays.'
+    /unsupported field:[\s\S]*const console = onboardingRecord\(value\.console\)[\s\S]*boundedIds\(value\.operator_ids[\s\S]*boundedIds\(value\.team_ids[\s\S]*value\.join_requests/,
+    'AppKitchen must reject root payload and require access arrays plus bounded Console config.'
   )
   for (const [name, sources, retiredPath] of [
     [

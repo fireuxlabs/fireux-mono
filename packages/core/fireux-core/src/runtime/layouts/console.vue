@@ -90,7 +90,7 @@
         </template>
 
         <template #body>
-          <section class="flex min-h-[55vh] items-center">
+          <section class="flex min-h-[55vh] flex-col justify-center gap-4">
             <UAlert
               class="w-full max-w-2xl"
               color="neutral"
@@ -106,45 +106,55 @@
                 },
               ]"
             />
+
+            <DevFireuxDebugPanel
+              :title="`${familyLabel} Console debug`"
+              scope="console"
+              :data="consolePageDebug"
+              :descriptions="consolePageDebugDescriptions"
+              :default-open="true"
+            />
           </section>
         </template>
       </UDashboardPanel>
 
-      <NuxtErrorBoundary v-else :key="route.fullPath">
-        <slot />
+      <div v-show="!selectionBlocked" class="min-h-full">
+        <NuxtErrorBoundary :key="route.fullPath">
+          <slot />
 
-        <template #error="{ clearError: clearPageError }">
-          <UDashboardPanel id="console-page-unavailable">
-            <template #header>
-              <LayoutsConsoleNavbar :title="`${familyLabel} unavailable`" />
-            </template>
+          <template #error="{ clearError: clearPageError }">
+            <UDashboardPanel id="console-page-unavailable">
+              <template #header>
+                <LayoutsConsoleNavbar :title="`${familyLabel} unavailable`" />
+              </template>
 
-            <template #body>
-              <section class="flex min-h-[55vh] items-center">
-                <UAlert
-                  class="w-full max-w-2xl"
-                  color="error"
-                  variant="subtle"
-                  icon="i-lucide-triangle-alert"
-                  :title="`${familyLabel} page unavailable`"
-                  description="This page could not be loaded. The rest of the Console is still available."
-                >
-                  <template #actions>
-                    <UButton
-                      color="neutral"
-                      variant="soft"
-                      icon="i-lucide-refresh-cw"
-                      @click="clearPageError"
-                    >
-                      Retry
-                    </UButton>
-                  </template>
-                </UAlert>
-              </section>
-            </template>
-          </UDashboardPanel>
-        </template>
-      </NuxtErrorBoundary>
+              <template #body>
+                <section class="flex min-h-[55vh] items-center">
+                  <UAlert
+                    class="w-full max-w-2xl"
+                    color="error"
+                    variant="subtle"
+                    icon="i-lucide-triangle-alert"
+                    :title="`${familyLabel} page unavailable`"
+                    description="This page could not be loaded. The rest of the Console is still available."
+                  >
+                    <template #actions>
+                      <UButton
+                        color="neutral"
+                        variant="soft"
+                        icon="i-lucide-refresh-cw"
+                        @click="clearPageError"
+                      >
+                        Retry
+                      </UButton>
+                    </template>
+                  </UAlert>
+                </section>
+              </template>
+            </UDashboardPanel>
+          </template>
+        </NuxtErrorBoundary>
+      </div>
     </div>
   </UDashboardGroup>
 
@@ -164,11 +174,7 @@ import {
   toConsoleFamilyPath,
 } from '../composables/fireux/app/routing/consoleRoutes'
 import { useConsoleNav } from '../composables/fireux/app/ui/nav/useConsoleNav'
-import {
-  normalizeConsoleFamily,
-  useConsole,
-} from '../composables/fireux/app/console/useConsole'
-import { useConsoleSelection } from '../composables/fireux/app/console/useConsoleSelection'
+import { useConsole } from '../composables/fireux/app/console/useConsole'
 import { useConsoleNotifications } from '../composables/fireux/app/ui/useConsoleNotifications'
 
 defineOptions({ name: 'console' })
@@ -179,17 +185,6 @@ const open = ref(false)
 const { isOpen: isNotificationsSlideoverOpen } = useConsoleNotifications()
 const consoleNav = useConsoleNav()
 const consoleRoot = useConsole()
-const familyNames = consoleRoot.families
-  .map((value) => normalizeConsoleFamily(value))
-  .filter(Boolean)
-const familyConsoles = new Map(
-  familyNames.map((familyName) => [familyName, useConsole(familyName)] as const)
-)
-const familySelections = new Map(
-  familyNames.map(
-    (familyName) => [familyName, useConsoleSelection(familyName)] as const
-  )
-)
 const topNav = computed(() =>
   consoleNav.desktop.value.filter(
     (item) => consoleNav.resolveItemPosition(item) === 'top'
@@ -214,11 +209,8 @@ const familyLabel = computed(
 const familyPath = computed(() =>
   family.value ? toConsoleFamilyPath(family.value) : '/console'
 )
-const activeSelectionId = computed(() => {
-  const activeFamily = family.value
-  if (!activeFamily) return ''
-  return familySelections.get(activeFamily)?.selectedId.value ?? ''
-})
+const activeSelectionId = consoleNav.activeSelectionId
+const activeSelectionType = consoleNav.activeSelectionType
 const requiresSelection = computed(() => {
   const nav = route.meta.nav as Record<string, unknown> | undefined
   return (
@@ -238,4 +230,26 @@ const selectionRequiredDescription = computed(
 const selectionRequiredActionLabel = computed(
   () => `Choose ${familyLabel.value}`
 )
+const consoleDebugKey = computed(() =>
+  `console${familyLabel.value.replace(/\s+/g, '')}`
+)
+const selectedDebugKey = computed(() =>
+  `selected${familyLabel.value.replace(/\s+/g, '')}`
+)
+const consolePageDebug = computed(() => ({
+  [consoleDebugKey.value]: {
+    workspace: {
+      [selectedDebugKey.value]: {
+        id: activeSelectionId.value || null,
+        source: activeSelectionType.value,
+      },
+    },
+  },
+}))
+const consolePageDebugDescriptions = computed(() => ({
+  [`${consoleDebugKey.value}.workspace`]:
+    'The selected workspace visible to this Console page.',
+  [`${consoleDebugKey.value}.workspace.${selectedDebugKey.value}`]:
+    `The canonical selected ${familyLabel.value} id and source visible to this page. Null values mean this page cannot see a committed selection.`,
+}))
 </script>

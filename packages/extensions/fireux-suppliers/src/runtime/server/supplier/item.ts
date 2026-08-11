@@ -95,7 +95,11 @@ async function assertOperator(
     mutations.read<Record<string, unknown>>(context.memberships, context.uid),
   ])
   if (!supplier.exists || !support.exists) fail(404, 'Supplier not found.')
-  if (text(supplier.data?.app_scope_app_id) !== context.appId) {
+  const console = supplier.data?.console
+  const consoleAppId = console && typeof console === 'object' && !Array.isArray(console)
+    ? text((console as Record<string, unknown>).app_id)
+    : ''
+  if (consoleAppId !== context.appId) {
     fail(409, 'Supplier belongs to another App scope.')
   }
   const isAdmin = membership.exists && text(membership.data?.role) === 'admin'

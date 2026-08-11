@@ -288,7 +288,8 @@ Kitchen root identity, its required Place, same-id AppKitchen access, and User
 Console target pointers are verified by
 `scripts/audit-misebox-kitchen-authority.mjs`. Kitchen root IDs remain stable
 operational identity; authored public slugs resolve through the bounded Kitchen
-server route seam. Confirmed inert AppKitchen access ids are planned and
+server route seam. The protected one-time root/Console split is encoded by
+`scripts/migrate-misebox-kitchen-console-shape.mjs`. Confirmed inert AppKitchen access ids are planned and
 preimage-protected by `scripts/migrate-misebox-kitchen-authority.mjs`; the
 script requires an explicit confirmation hash before changing data.
 
@@ -316,7 +317,7 @@ Public Index and Public Detail family maps.
 | -------------------------------------------------------------- | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Existing domain concepts exceed the executable matrix          | `drift`      | Review one owning package at a time; declare the concept or name it as Record, Shape, Primitive, or to-confirm                                                      |
 | Place plus same-id Company role                                | `accepted`   | Place owns shared location identity; Company remains an exact stamps-only role marker and public reads reuse the Place projection                                   |
-| Kitchen root + Place + App support composition                 | `accepted`   | Every Kitchen requires its linked Place; Kitchen owns operational identity/configuration, Place owns location presentation, and App support owns access only        |
+| Kitchen root + Place + AppKitchen composition                  | `accepted`   | Every Kitchen requires its linked Place; Kitchen owns operational identity/lifecycle, Place owns location presentation, and AppKitchen owns access plus Console configuration |
 | Supplier and Portfolio public-read contracts are unresolved    | `to-confirm` | Define bounded public DTOs before claiming public family parity                                                                                                     |
 | Recipe and Dish Kitchen ownership                              | `accepted`   | Keep both as Kitchen-scoped Entities; Recipe owns authored preparation content, Dish owns reusable food identity/media, and MenuItem owns placement                  |
 | Kitchen Order, Sale, and Customer link ownership               | `accepted`   | KitchenOrder owns lifecycle; KitchenSale is its immutable result; App-scoped Customer links point to Orders without duplicating their status                         |

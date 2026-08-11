@@ -42,6 +42,11 @@ export const useConsoleNav = () => {
     if (!family) return ''
     return familySelections.get(family)?.selectedId.value ?? ''
   })
+  const activeSelectionType = computed(() => {
+    const family = activeFamily.value
+    if (!family) return null
+    return familySelections.get(family)?.selectedType.value ?? null
+  })
   const hasSelectedTarget = computed(() =>
     Boolean(String(activeSelectionId.value || '').trim())
   )
@@ -93,6 +98,10 @@ export const useConsoleNav = () => {
     ...nav,
     baseNavFilter,
     resolveItemPosition,
+    activeFamily,
+    activeSelectionId,
+    activeSelectionType,
+    hasSelectedTarget,
     items,
     desktop,
     mobile,

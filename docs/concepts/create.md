@@ -248,7 +248,7 @@ the final mutation, and completion routing.
 
 #### Kitchen reference
 
-- Public and Console create routes compose the same Kitchen create system;
+- Browse and Console create routes compose the same Kitchen create system;
   route mode changes chrome and destination, not entity truth.
 - Base Kitchen onboarding begins by selecting or creating an eligible
   canonical Place without requiring App ownership. `placeId` route state may
@@ -259,21 +259,21 @@ the final mutation, and completion routing.
   but that is not root identity authority.
 - Kitchen onboarding reuses canonical Place identity and creates the same-id
   Kitchen root as independently valid domain truth. A basic unattached Kitchen
-  uses `app_scope: { state: 'root_only', app_id: '' }`. App attachment is a
-  separate trusted transaction that changes scope, creates same-id AppKitchen
-  support, gives operator authority, and adds the Kitchen to Console targets.
+  has no `console` locator. App attachment is a separate trusted transaction
+  that adds `console: { app_id, app_role }`, creates the same-id AppKitchen,
+  gives operator authority, and adds the Kitchen to Console targets.
   An App-context convenience may orchestrate root creation followed by
   attachment, but support never substitutes for the root.
-- New Kitchen roots stay sparse and unpublished. Place fields, Menu content,
-  ordering, payment, profiles, and publication are not create side effects.
+- New Kitchen roots stay sparse and hidden from browse surfaces. Place fields,
+  Menu content, ordering, payment, profiles, and visibility are not create side effects.
   Completion allocates a canonical unique Kitchen route slug from the Place
   name so the unpublished root remains available to authorized collection
   projections.
 - Sparse onboarding must not strand optional profile data. Place-owned name,
   address, short name, story, contact, and media remain editable through the
   linked Place editor. Kitchen-owned route, identity overrides, media,
-  visibility, and operational settings remain editable through Kitchen
-  identity/edit surfaces. The Entity Editing System owns completeness cues and
+  visibility remain editable through Kitchen identity/edit surfaces. Console
+  configuration is edited against AppKitchen. The Entity Editing System owns completeness cues and
   edit parity; create does not copy Place fields into Kitchen to fill a card.
 - One Place resolves to at most one Kitchen. Preview and completion both reject
   a conflicting root or duplicate Place relationship instead of creating a

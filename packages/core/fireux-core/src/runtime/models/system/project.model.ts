@@ -2,7 +2,7 @@ import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../utils/entity.model'
 import type { FireuxStamped } from '../utils/stamps.model'
 import {
-  FireuxAppAccessRecordModel,
+  FireuxAppAccessRecordDefaults,
   type FireuxAppAccessRecord,
 } from '../utils/console-entity.model'
 
@@ -127,7 +127,7 @@ export const ProjectMetaDefaults: ProjectMeta = {
 }
 
 export const AppProjectDefaults: AppProject = {
-  ...FireuxAppAccessRecordModel,
+  ...FireuxAppAccessRecordDefaults,
 }
 
 export type ProjectCreateInput = Pick<Project, 'id' | 'name'> &

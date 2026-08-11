@@ -23,15 +23,15 @@ function request(value: unknown) {
   if (unsupported) throw createError({ statusCode: 400, statusMessage: `Kitchen update contains unsupported request field: ${unsupported}.` })
   return {
     kitchenId: requireFirestoreDocumentId(source.kitchen_id, 'Kitchen id'),
-    patch: parseKitchenUpdate(source.patch),
+    patches: parseKitchenUpdate(source.patch),
   }
 }
 
 export async function updateKitchen(event: H3Event, input: unknown) {
   const requested = request(input)
   const actor = await readKitchenMutationActor(event)
-  const slug = typeof requested.patch.slug === 'string'
-    ? requested.patch.slug
+  const slug = typeof requested.patches.root.slug === 'string'
+    ? requested.patches.root.slug
     : ''
   if (slug) {
     const conflict = await readKitchenByRouteSlug(getRuntimeFirestore(), slug)
@@ -49,10 +49,18 @@ export async function updateKitchen(event: H3Event, input: unknown) {
       actor,
       requested.kitchenId
     )
-    mutations.update(kitchenRootTarget, requested.kitchenId, {
-      ...requested.patch,
-      updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
-    })
+    if (Object.keys(requested.patches.root).length) {
+      mutations.update(kitchenRootTarget, requested.kitchenId, {
+        ...requested.patches.root,
+        updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
+      })
+    }
+    if (Object.keys(requested.patches.console).length) {
+      mutations.update(current.supports, requested.kitchenId, {
+        ...requested.patches.console,
+        updated: serverAuditStamp({ by: actor.uid, appId: current.ownerAppId }),
+      })
+    }
   })
   return { ok: true as const, kitchen_id: requested.kitchenId }
 }

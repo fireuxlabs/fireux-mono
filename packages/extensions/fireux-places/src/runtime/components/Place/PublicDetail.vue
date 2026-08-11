@@ -72,9 +72,10 @@
           eyebrow="Place"
           :cover-url="place.assets.cover"
           cover-alt=""
-          :image-url="place.assets.image"
-          image-alt=""
-          image-fit="cover"
+          :image-url="heroIdentityUrl"
+          :image-alt="heroIdentityAlt"
+          :image-fit="heroIdentityFit"
+          :media-background="heroMediaBackground"
           :initials="initials"
           :description="place.brand_tagline"
           :location="place.short_address"
@@ -348,6 +349,10 @@ const {
   relatedOperationsComponent,
   initials,
   detailStyle,
+  heroIdentityUrl,
+  heroIdentityFit,
+  heroIdentityAlt,
+  heroMediaBackground,
   placeTypeLabel,
   primaryActions,
   websiteLabel,

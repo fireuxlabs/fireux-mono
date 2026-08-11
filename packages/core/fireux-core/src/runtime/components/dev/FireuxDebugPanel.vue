@@ -42,7 +42,9 @@
       </div>
     </template>
 
-    <pre v-if="open" class="fireux-debug-panel__json">{{ jsonString }}</pre>
+    <template v-if="open">
+      <pre class="fireux-debug-panel__json">{{ annotatedJsonString }}</pre>
+    </template>
   </UCard>
 </template>
 
@@ -67,12 +69,14 @@ const props = withDefaults(
     title?: string
     scope?: FireuxDebugScope
     data?: unknown
+    descriptions?: Record<string, string>
     defaultOpen?: boolean
   }>(),
   {
     title: 'Debug',
     scope: 'runtime',
     data: () => ({}),
+    descriptions: () => ({}),
     defaultOpen: false,
   }
 )
@@ -88,6 +92,25 @@ const { dataKindLabel, dataSizeLabel, jsonString } = useDevDebugData(
   }
 )
 const scopeLabel = computed(() => `${props.scope} debug`)
+const annotatedJsonString = computed(() => {
+  const descriptions = props.descriptions
+  if (!Object.keys(descriptions).length) return jsonString.value
+
+  const path: string[] = []
+  return jsonString.value
+    .split('\n')
+    .map((line) => {
+      const match = line.match(/^(\s*)"([^"]+)":/)
+      if (!match) return line
+
+      const depth = Math.floor(match[1].length / 2)
+      path.length = depth - 1
+      path[depth - 1] = match[2]
+      const meaning = descriptions[path.join('.')]?.trim()
+      return meaning ? `${line} // ${meaning}` : line
+    })
+    .join('\n')
+})
 
 const copyDebug = async () => {
   await copyText(jsonString.value, {
@@ -169,4 +192,5 @@ const copyDebug = async () => {
   font-size: 11px;
   color: var(--ui-text);
 }
+
 </style>

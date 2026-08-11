@@ -112,7 +112,7 @@ contract.
   split.
 - Resolve route identity per public-detail entity instead of changing all
   `[id]` and `[slug]` routes mechanically.
-- Keep Kitchen root, required Place, and access-only AppKitchen composition
+- Keep Kitchen root, required Place, and AppKitchen access/Console composition
   strict; do not reintroduce pre-release compatibility identity.
 - Reconcile descriptive entities with the executable matrix before adding more
   root or scoped ceremony.

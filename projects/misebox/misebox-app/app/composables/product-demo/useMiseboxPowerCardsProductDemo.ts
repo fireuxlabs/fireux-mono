@@ -138,7 +138,7 @@ async function loadMiseboxPowerCardsProductDemo(): Promise<MiseboxPowerCardsProd
         kitchen: scenario.kitchen,
         place: scenario.place,
         scope: scenario.appSupport,
-        routeScope: 'demo',
+        console: { mode: 'demo' },
       }))
       if (!kitchenCell) {
         throw new Error(

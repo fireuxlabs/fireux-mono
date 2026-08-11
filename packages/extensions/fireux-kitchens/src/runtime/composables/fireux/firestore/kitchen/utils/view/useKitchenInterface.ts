@@ -1,10 +1,8 @@
 import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceUtils'
-import type { FireuxAppScopeState } from 'fireux-core/runtime/models/utils/scope.model'
 import { toShortAddress } from 'fireux-places/runtime/composables/fireux/firestore/place/utils/view/formatPlaceAddress'
 import { readPlaceAssets, readPlaceCurrencyCode } from 'fireux-places/runtime/utils/place-spine'
-import type { Kitchen } from '../../../../../../models/kitchen.model'
+import type { Kitchen, KitchenImageShade } from '../../../../../../models/kitchen.model'
 import {
-  readKitchenAppScope,
   readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
@@ -48,7 +46,7 @@ export function useKitchenInterface() {
 
   type KitchenPreview = {
     imageUrl: string
-    imageShade?: NonNullable<Kitchen['identity']['image_shade']>
+    imageShade?: KitchenImageShade
     name: string
     formattedAddress: string
     shortAddress?: string
@@ -76,6 +74,8 @@ export function useKitchenInterface() {
     const placeAssets = readPlaceAssets(parts.place)
     const kitchenDelta = meaningfulSurfaceDelta(kitchen)
     const scopeDelta = meaningfulSurfaceDelta(parts.scope)
+    const rootConsole = meaningfulSurfaceDelta(kitchenDelta.console)
+    const scopedConsole = meaningfulSurfaceDelta(scopeDelta.console)
     const merged = {
       ...place,
       ...kitchenDelta,
@@ -85,6 +85,11 @@ export function useKitchenInterface() {
       ...(Array.isArray(scopeDelta.team_ids)
         ? { team_ids: scopeDelta.team_ids }
         : {}),
+      console: {
+        ...rootConsole,
+        ...scopedConsole,
+        mode: parts.console?.mode ?? 'live',
+      },
     } as TKitchen & KitchenSurface
     for (const key of placeBaselineKeys) {
       if (Object.hasOwn(place, key)) {
@@ -116,7 +121,6 @@ export function useKitchenInterface() {
     const id = safeString(merged.id).trim()
     if (!id) return null
     const identity = readKitchenIdentity(merged)
-    const appScope = readKitchenAppScope(merged)
     const visibility = readKitchenVisibility(merged)
     const menus = readKitchenMenusConfig(merged)
     const sproochli = readKitchenSproochliConfig(merged)
@@ -124,13 +128,8 @@ export function useKitchenInterface() {
     return {
       ...merged,
       id,
-      app_scope_state: (appScope.state || undefined) as
-        | FireuxAppScopeState
-        | undefined,
-      app_scope_app_id: appScope.appId || undefined,
       show: visibility.show,
       active: visibility.active,
-      is_test_kitchen: visibility.isTest,
       display_name: identity.displayName || safeString(place.name),
       tagline: identity.tagline || safeString(place.brand_tagline),
       display_image_url: safeString(placeAssets.image),
@@ -141,7 +140,6 @@ export function useKitchenInterface() {
       menu_style: menus.style,
       menu_available: menus.available,
       sproochli,
-      route_scope: parts.routeScope ?? merged.route_scope,
     }
   }
 
@@ -166,16 +164,12 @@ export function useKitchenInterface() {
         kitchen.logo_image_url
     )
 
-    const isPubliclyVisible = kitchen.publicly_visible !== false
-    const badges = isPubliclyVisible
-      ? []
-      : [kitchen.is_test_kitchen ? 'Test' : 'Hidden']
+    const isVisible = kitchen.visibility !== false
+    const badges = isVisible ? [] : ['Hidden']
 
     return {
       id,
-      to: kitchen.is_test_kitchen
-        ? ''
-        : resolveKitchenPath({ id, slug, route_scope: kitchen.route_scope }),
+      to: resolveKitchenPath({ id, slug, console: kitchen.console }),
 
       title: name,
       subtitle: shortAddress,
@@ -257,7 +251,7 @@ export function useKitchenInterface() {
     const title = displayName || 'Kitchen'
     const card: KitchenCard.Card = {
       id,
-      to: resolveKitchenPath({ id, slug, route_scope: target.route_scope }),
+      to: resolveKitchenPath({ id, slug, console: target.console }),
       title,
       subtitle: tagline,
       badges,

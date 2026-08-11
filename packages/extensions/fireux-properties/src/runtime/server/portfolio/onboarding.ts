@@ -120,8 +120,10 @@ export async function completePortfolioOnboarding(
       if (!draft)
         fail(409, 'Portfolio creation input changed during onboarding.')
       mutations.create(portfolios, portfolioId, {
-        app_scope_state: current.appScopeState,
-        app_scope_app_id: current.appId,
+        console: {
+          app_id: current.appId,
+          app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
+        },
         name: draft.name,
         tagline: draft.tagline,
         image_url: draft.imageUrl,
@@ -141,8 +143,10 @@ export async function completePortfolioOnboarding(
         scope.appId !== current.appId
       ) {
         mutations.update(portfolios, portfolioId, {
-          app_scope_state: current.appScopeState,
-          app_scope_app_id: current.appId,
+          console: {
+            app_id: current.appId,
+            app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
+          },
           updated: serverAuditStamp({ by: current.uid }),
         })
       }

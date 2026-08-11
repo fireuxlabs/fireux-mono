@@ -16,7 +16,6 @@ import {
   serverAppKitchensTarget,
 } from './firestore-targets'
 import {
-  compactBrandPalette,
   parseBrandPalette,
   readBrandPalette,
 } from 'fireux-core/runtime/utils/brand-palette'
@@ -33,7 +32,6 @@ import {
   assertKitchenOnboardingSupportCapacity,
   kitchenOnboardingAccessDecision,
   isKitchenOnboardingPlaceOwnedByApp,
-  kitchenOnboardingSlugCandidates,
   onboardingRecord as record,
   onboardingText as text,
   readKitchenOnboardingScope,
@@ -169,13 +167,10 @@ export async function previewKitchenOnboarding(
   const slug = text(locator.kitchen?.slug)
   const identity = record(locator.kitchen?.identity)
   const displayName = text(
-    identity.display_name ||
-      locator.kitchen?.display_name ||
-      locator.kitchen?.name
+    identity.name
   )
-  const visibility = record(locator.kitchen?.visibility)
-  const published = visibility.show === true || locator.kitchen?.show === true
-  const paletteOverride = readBrandPalette(record(locator.kitchen?.menus).style)
+  const published = locator.kitchen?.visibility === true
+  const paletteOverride = readBrandPalette(locator.kitchen?.brand_palette)
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
@@ -261,77 +256,26 @@ export async function completeKitchenOnboarding(
       assertKitchenOnboardingSupportCapacity(supportAuthority, current.uid)
     }
 
-    const createdRoot = !root.exists
+    const createdRoot = false
     const createdAppSupport = !support.exists
-    const placeName = text(place.data?.name)
     const slug = text(rootData?.slug)
-    const placePalette = readBrandPalette(place.data?.brand_palette)
-    const paletteOverride = compactBrandPalette(
-      requestedPalette.value,
-      placePalette
-    )
-    let createdSlug = ''
-
-    if (createdRoot) {
-      const candidates = kitchenOnboardingSlugCandidates(
-        placeName,
-        locator.kitchenId
-      )
-      const matches = await mutations.query<Record<string, unknown>>(
-        kitchenRootTarget,
-        {
-          field: 'slug',
-          op: candidates.length === 1 ? '==' : 'in',
-          value: candidates.length === 1 ? candidates[0] : candidates,
-          limit: candidates.length,
-        }
-      )
-      const used = new Set(matches.map(match => text(match.data.slug)))
-      createdSlug = candidates.find(candidate => !used.has(candidate)) || ''
-      if (!createdSlug) fail(409, 'No unique Kitchen route is available.')
-    }
-
-    if (!createdRoot && Object.keys(requestedPalette.value).length) {
+    if (Object.keys(requestedPalette.value).length) {
       fail(409, 'Existing Kitchen colours are preserved during onboarding.')
     }
 
-    if (createdRoot) {
-      mutations.create(kitchenRootTarget, locator.kitchenId, {
-        place_id: locator.placeId,
-        slug: createdSlug,
-        app_scope: {
-          state: current.appScopeState,
+    const scope = readKitchenOnboardingScope(rootData || {})
+    if (scope.state === 'root_only') {
+      mutations.update(kitchenRootTarget, locator.kitchenId, {
+        console: {
           app_id: current.appId,
+          app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
         },
-        visibility: {
-          show: false,
-          active: true,
-          is_test: false,
-        },
-        ...(displayName && displayName !== placeName
-          ? { identity: { display_name: displayName } }
-          : {}),
-        ...(Object.keys(paletteOverride).length
-          ? { menus: { style: paletteOverride } }
-          : {}),
-        created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })
-    } else {
-      const scope = readKitchenOnboardingScope(rootData || {})
-      if (scope.state === 'root_only') {
-        mutations.update(kitchenRootTarget, locator.kitchenId, {
-          app_scope: {
-            state: current.appScopeState,
-            app_id: current.appId,
-          },
-          updated: serverAuditStamp({ by: current.uid }),
-        })
-      } else if (
-        scope.state !== current.appScopeState || scope.appId !== current.appId
-      ) {
-        fail(409, 'Kitchen App scope does not match this App.')
-      }
+    } else if (
+      scope.state !== current.appScopeState || scope.appId !== current.appId
+    ) {
+      fail(409, 'Kitchen Console attachment does not match this App.')
     }
 
     if (createdAppSupport) {
@@ -339,6 +283,7 @@ export async function completeKitchenOnboarding(
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
+        console: {},
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })
@@ -388,9 +333,6 @@ export async function completeKitchenOnboarding(
       created_root: createdRoot,
       created_app_support: createdAppSupport,
       ...(slug ? { slug } : {}),
-      ...(createdRoot && Object.keys(paletteOverride).length
-        ? { palette_override: paletteOverride }
-        : {}),
     }
   })
 }

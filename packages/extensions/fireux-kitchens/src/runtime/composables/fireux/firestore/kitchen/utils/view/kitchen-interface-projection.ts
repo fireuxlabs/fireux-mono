@@ -3,12 +3,12 @@ import { safeString } from 'fireux-core/runtime/composables/shared/useInterfaceU
 export const resolveKitchenPath = (target: {
   id?: string
   slug?: string
-  route_scope?: 'live' | 'demo' | 'test'
+  console?: { mode?: 'live' | 'demo' }
 }) => {
   const slug = safeString(target.slug)
   if (!slug) return ''
 
-  if (target.route_scope === 'demo' || target.route_scope === 'test') {
+  if (target.console?.mode === 'demo') {
     return ''
   }
 

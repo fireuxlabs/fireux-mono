@@ -1333,15 +1333,15 @@ async function buildSecurityTests() {
   }
   const rootKitchenProbePath = 'kitchens/security-rules-probe'
   const rootKitchenProbeData = {
-    app_scope: {
-      state: 'tenant_app',
+    console: {
       app_id: 'security-rules-tenant',
+      app_role: 'tenant',
     },
   }
   const parentRootKitchenProbeData = {
-    app_scope: {
-      state: 'parent_app',
+    console: {
       app_id: 'misebox-app',
+      app_role: 'parent',
     },
   }
   const appKitchenProbePath =
@@ -2129,7 +2129,7 @@ async function buildSecurityTests() {
       })
     ),
     ...[
-      ['root-only scope', { app_scope: { state: 'root_only' } }],
+      ['root-only Kitchen', { place_id: 'security-rules-probe' }],
       [
         'flat legacy scope',
         {
@@ -2140,27 +2140,27 @@ async function buildSecurityTests() {
       [
         'dedicated-App scope',
         {
-          app_scope: {
-            state: 'dedicated_app',
+          console: {
             app_id: 'security-rules-tenant',
+            app_role: 'dedicated',
           },
         },
       ],
       [
         'malformed App id',
         {
-          app_scope: {
-            state: 'tenant_app',
+          console: {
             app_id: 'invalid/app',
+            app_role: 'tenant',
           },
         },
       ],
       [
         'extra App-scope keys',
         {
-          app_scope: {
-            state: 'tenant_app',
+          console: {
             app_id: 'security-rules-tenant',
+            app_role: 'tenant',
             forged: true,
           },
         },
@@ -2168,9 +2168,9 @@ async function buildSecurityTests() {
       [
         'conflicting nested and flat scope',
         {
-          app_scope: {
-            state: 'tenant_app',
+          console: {
             app_id: 'security-rules-tenant',
+            app_role: 'tenant',
           },
           app_scope_state: 'parent_app',
           app_scope_app_id: 'misebox-app',

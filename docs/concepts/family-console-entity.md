@@ -1,6 +1,6 @@
 # Console entity family
 
-Updated: 2026-07-22
+Updated: 2026-08-11
 Ref: 796952bf0
 Role: map, not canon
 
@@ -27,7 +27,7 @@ still needed to remove unexplained drift.
 | Supplier  | Index, Overview, Identity, Team, Create, Operations | `accepted`: root + App support target with access-only Team today and Supplier-owned catalogue/item/ingredient operations                           |
 | Portfolio | Index, Overview, Identity, Team, Create, Operations | `accepted`: root + App support target with access-only Team and a private-heavy document/property domain                                            |
 | Property  | Index, Overview, Team                               | `to-confirm`: Property is a confirmed Console Entity, but standalone Identity/Create lifecycle versus Portfolio-owned lifecycle is not yet explicit |
-| Project   | Index, Overview, Identity, Operations               | `accepted`: private, root-only, read-only FireUX control-plane entity; it has no App support record, Team, or production Create flow                |
+| Project   | Index, Overview, Identity, Operations               | `accepted`: FireUX control-plane root with access-only AppProject support and no production Create flow                                             |
 
 The table records current source, not a promise that every listed sheet is
 finished.
@@ -49,16 +49,38 @@ Every Console Entity must share these rules:
   `ConsoleTargetCollection`.
 - Persisted selection is invalidated only after a successful target read proves
   it invalid. Pending or failed reads do not clear it.
+- Selection is one shared typed `{ id, type }` session state. Its cookie hydrates
+  that state once and persists explicit commits; selector, layout, navigation,
+  overview, and operation readers never treat a local cookie ref as live
+  authority.
+- A family core commits an authority-proven enforced single target before its
+  Index adapter renders. Index adapters present and mutate committed selection;
+  they do not initialize it, so reload and direct guarded-route entry follow the
+  same ordered state transition.
+- The shared `requiresSelection` layout keeps the family page mounted but hidden
+  behind its blocked presentation. This lets the family core finish its bounded
+  target read and commit an enforced target on direct entry without exposing the
+  guarded page before canonical selection exists.
 - Tenant and global Apps query bounded entity App-support authority. Neither
   mode authorizes a full-root client scan followed by local filtering.
 - `operator_ids` grants mutation authority. `team_ids` grants target/read
   membership only. Current App admins are the explicit override.
+- Core shares only the complete App-support access record: id, operator ids,
+  team ids, join requests, and stamps. Root identity, scope, visibility and
+  Console configuration remain domain-owned contracts.
 - Visible `canWrite` state never replaces server or Rules enforcement.
-- Canonical root creation is independently valid and may remain `root_only`.
-  Explicit App attachment uses a fixed-runtime authenticated family endpoint
-  and one trusted transaction for root scope, same-id App support, and the
-  caller's operator/team authority. A convenience funnel may sequence root
-  creation then attachment, but support never substitutes for the root.
+- Canonical root creation is independently valid. A family represents an
+  unattached root using its own exact contract; Core does not provide generic
+  root scope, identity, or visibility fragments. Explicit App attachment uses
+  a fixed-runtime authenticated family endpoint and a trusted transaction for
+  the family-owned attachment plus same-id App support. A convenience funnel
+  may sequence root creation then attachment, but support never substitutes
+  for the root.
+- Kitchen, Property, Portfolio, and Supplier roots name an optional Console
+  attachment as `console: { app_id, app_role }`; omission means the root is
+  unattached. Their writers reject the retired generic flat App-scope fields.
+  Company/Place dependencies and operational children remain specific to each
+  owning domain.
 - Index, Overview, Identity, Team, and Operations remain separate concerns.
   A family adds only sheets backed by a real lifecycle.
 
@@ -70,7 +92,7 @@ Every Console Entity must share these rules:
 | Kitchen Team adds members and join requests below Access | `accepted` | Kitchen has operational people records in addition to target-level authority; those records do not grant authority by themselves      | `useKitchenConsoleTeam` and `Console/Kitchen/Team`                                        |
 | Supplier, Portfolio, and Property Team are Access-only   | `accepted` | Their current Team pages expose shared `team_ids`/`operator_ids` truth without inventing domain people collections or edit controls   | family `useXConsoleTeam` adapters and `ConsoleTeamPanel`                                  |
 | Blank omits Identity, Team, and Operations               | `accepted` | Blank is a structural harness, not a product domain                                                                                   | `projects/fireux/fireux-blank`                                                            |
-| Project has no App support, Team, or Create              | `accepted` | Project authority is the private FireUX control plane and is currently read-only                                                      | Project entity declaration and internal control-plane APIs                                |
+| Project has AppProject access but no production Create  | `accepted` | Project authority is the FireUX control plane; AppProject selects Console access without duplicating Project identity                  | Project entity declaration and internal control-plane APIs                                |
 | Operation folders differ by domain                       | `accepted` | Operations represent selected-target work, so Kitchen, Supplier, Portfolio, and Project own different children                        | each owning package under `Console/X/Operations` and `console/x/operations`               |
 
 Accepted deltas change domain content or authority. They do not change the
@@ -121,10 +143,10 @@ composition delta, not permission to fork the Console Index spine.
 
 ### Next
 
-- Keep Kitchen root + required Place + access-only AppKitchen composition
-  guarded across Live, Demo, and Test sources.
+- Keep Kitchen root + required Place + AppKitchen access/Console composition
+  guarded across Live, Demo, and simulation sources.
 - Keep Kitchen live Create on its guarded trusted onboarding endpoint and keep
-  AppKitchen access support payload-free.
+  AppKitchen free of root identity while it owns bounded Console configuration.
 - Resolve Property's standalone Identity/Create lifecycle.
 - Reconcile Supplier and Portfolio root validation before confirming public
   projections.

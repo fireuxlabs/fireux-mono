@@ -3,6 +3,7 @@
 // Concurrent edit — 2026-07-22 12:35 CEST — Kitchen palette console: project server-authorized write capability with resolved Menu style.
 // Concurrent edit — 2026-07-22 15:12 CEST — Kitchen directory preview: expose bounded publication state to authorized admin/developer previews.
 import type {
+  KitchenConsoleConfig,
   KitchenFulfilmentConfig,
   KitchenMediaBackdropColor,
   KitchenMenusConfig,
@@ -10,6 +11,7 @@ import type {
   KitchenTablesConfig,
 } from '../kitchen.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
+import type { PublicAppDto } from 'fireux-core/runtime/server/utils/public-projection/public-dto.types'
 
 export const PUBLIC_KITCHEN_INDEX_PAGE_SIZE = 24
 export const PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE = 48
@@ -20,8 +22,7 @@ export type PublicKitchenIndexItem = {
   id: string
   name: string
   slug: string
-  publicly_visible: boolean
-  is_test_kitchen: boolean
+  visibility: boolean
   short_name?: string
   brand_tagline?: string
   formatted_address?: string
@@ -38,8 +39,11 @@ export type PublicKitchenIndexPage = {
 }
 
 export type PublicKitchenDetail = PublicKitchenIndexItem & {
-  app_scope_app_id: string
-  route_scope: 'live'
+  console: {
+    mode: 'live'
+    app_id: string
+    app_role: 'parent' | 'tenant'
+  }
   display_name: string
   sproochli?: Pick<
     SproochliAttachmentConfig,
@@ -81,17 +85,15 @@ export const KITCHEN_CONSOLE_TARGET_LIMIT = 50
 export type KitchenConsoleTargetItem = {
   id: string
   can_write: boolean
-  app_scope: {
-    state: 'parent_app' | 'tenant_app'
+  console: KitchenConsoleConfig & {
+    mode: 'live'
     app_id: string
+    app_role: 'parent' | 'tenant'
   }
   place_id: string
   slug: string
-  visibility: {
-    show: boolean
-    active: boolean
-    is_test: boolean
-  }
+  status: 'active' | 'paused' | 'archived'
+  visibility: boolean
   identity: {
     display_name: string
     tagline: string
@@ -110,7 +112,6 @@ export type KitchenConsoleTargetItem = {
   sproochli: SproochliAttachmentConfig
   show: boolean
   active: boolean
-  is_test_kitchen: boolean
   display_name: string
   name: string
   tagline?: string
@@ -119,6 +120,7 @@ export type KitchenConsoleTargetItem = {
   formatted_address?: string
   short_address?: string
   image_url?: string
+  logo_image_url?: string
   media_backdrop_color?: KitchenMediaBackdropColor
   food_gallery?: string[]
   currency_code?: string
@@ -128,11 +130,19 @@ export type KitchenConsoleTargetItem = {
   phone?: string
   lat?: number
   lng?: number
-  route_scope: 'live'
 }
 
 export type KitchenConsoleTargetsResponse = {
   ok: true
   appId: string
   items: KitchenConsoleTargetItem[]
+  appItems: KitchenConsoleAppTargetItem[]
+}
+
+export type KitchenConsoleAppTargetItem = {
+  app: PublicAppDto
+  kitchens: Array<Pick<
+    KitchenConsoleTargetItem,
+    'id' | 'name' | 'slug' | 'logo_image_url'
+  >>
 }

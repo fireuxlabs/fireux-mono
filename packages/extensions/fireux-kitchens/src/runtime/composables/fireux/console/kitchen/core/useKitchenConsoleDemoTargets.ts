@@ -36,7 +36,7 @@ export function useKitchenConsoleDemoTargets(
             kitchen: target.kitchen,
             place: target.place,
             scope: target.appSupport,
-            routeScope: 'demo',
+            console: { mode: 'demo' },
           })
           return kitchen
             ? [{

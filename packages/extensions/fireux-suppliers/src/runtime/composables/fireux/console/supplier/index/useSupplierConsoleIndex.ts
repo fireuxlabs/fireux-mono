@@ -45,10 +45,6 @@ export function useSupplierConsoleIndex(
 
   return useConsoleIndex({
     selection,
-    selectedId: computed(() => consoleSelection.supplierId.value),
-    autoSelectTargetId: computed(() =>
-      targeting.singleTargetId.value
-    ),
     runtime,
     targets: suppliers.targets,
     outcome: suppliers.outcome,

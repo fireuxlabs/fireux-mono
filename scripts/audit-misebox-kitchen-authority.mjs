@@ -44,6 +44,17 @@ const ids = (value, limit) => {
 }
 const issue = (kind, context) => issues.push({ kind, ...context })
 const issues = []
+const storageObjectPath = (value) => {
+  const url = text(value)
+  if (!url) return ''
+  try {
+    const parsed = new URL(url)
+    const encoded = parsed.pathname.match(/\/o\/([^/]+)$/)?.[1] || ''
+    return decodeURIComponent(encoded)
+  } catch {
+    return '<invalid-url>'
+  }
+}
 
 const [appSnapshot, kitchenSnapshot, placeSnapshot, userSnapshot] = await Promise.all([
   db.collection('apps').get(),
@@ -67,6 +78,7 @@ for (const appDoc of appSnapshot.docs) {
   for (const doc of supportSnapshot.docs) {
     const key = `${appDoc.id}/${doc.id}`
     const data = doc.data() || {}
+    const consoleConfig = record(data.console)
     appSupports.set(key, data)
     const operatorIds = ids(data.operator_ids, 50)
     const teamIds = ids(data.team_ids, 100)
@@ -76,8 +88,16 @@ for (const appDoc of appSnapshot.docs) {
       teamSnapshot.docs.map(member => text(member.data().user_id)).filter(Boolean)
     )
     if (
-      !exactKeys(data, ['operator_ids', 'team_ids', 'join_requests', 'created', 'updated']) ||
-      !operatorIds || !teamIds || !joinRequests
+      !exactKeys(data, ['operator_ids', 'team_ids', 'join_requests', 'console', 'created', 'updated']) ||
+      !operatorIds || !teamIds || !joinRequests ||
+      !consoleConfig ||
+      Object.keys(consoleConfig).some(key => ![
+        'menus',
+        'orders',
+        'tables',
+        'fulfilment',
+        'integrations',
+      ].includes(key))
     ) {
       issue('malformed_app_kitchen_support', {
         app_id: appDoc.id,
@@ -107,28 +127,39 @@ const kitchensByPlace = new Map()
 for (const [kitchenId, kitchen] of kitchens) {
   const context = { kitchen_id: kitchenId }
   const placeId = text(kitchen.place_id)
-  const scope = record(kitchen.app_scope)
-  const state = text(scope?.state)
+  const scope = record(kitchen.console)
+  const appRole = text(scope?.app_role)
   const appId = text(scope?.app_id)
-  const visibility = record(kitchen.visibility) || {}
-  const published = visibility.show === true && visibility.active !== false
+  const published = kitchen.visibility === true && text(kitchen.status) === 'active'
   const slug = text(kitchen.slug)
 
   if (
     !scope ||
-    !exactKeys(scope, ['state', 'app_id']) ||
-    !['parent_app', 'tenant_app'].includes(state) ||
+    !exactKeys(scope, ['app_id', 'app_role']) ||
+    !['parent', 'tenant'].includes(appRole) ||
     !appId ||
     Object.hasOwn(kitchen, 'app_scope_state') ||
     Object.hasOwn(kitchen, 'app_scope_app_id') ||
     Object.hasOwn(kitchen, 'app_id')
   ) {
-    issue('invalid_kitchen_app_scope', {
+    issue('invalid_kitchen_console_attachment', {
       ...context,
-      app_scope: scope,
+      console: scope,
       legacy_keys: ['app_scope_state', 'app_scope_app_id', 'app_id']
         .filter(key => Object.hasOwn(kitchen, key)),
     })
+  }
+  const assets = record(kitchen.assets) || {}
+  for (const role of ['image', 'logo', 'wordmark']) {
+    const objectPath = storageObjectPath(assets[role])
+    if (objectPath && objectPath !== `kitchens/${kitchenId}/${role}`) {
+      issue('noncanonical_kitchen_asset_path', {
+        ...context,
+        role,
+        object_path: objectPath,
+        expected_path: `kitchens/${kitchenId}/${role}`,
+      })
+    }
   }
   if (appId && !apps.has(appId)) issue('missing_kitchen_app', { ...context, app_id: appId })
   if (!placeId || !places.has(placeId)) {
@@ -167,6 +198,33 @@ for (const [kitchenId, kitchen] of kitchens) {
   ) {
     issue('kitchen_root_contains_access_authority', { ...context })
   }
+  const rootConsoleFields = [
+    'menus',
+    'orders',
+    'tables',
+    'fulfilment',
+    'sproochli',
+  ].filter(key => Object.hasOwn(kitchen, key))
+  if (rootConsoleFields.length) {
+    issue('kitchen_root_contains_console_config', {
+      ...context,
+      fields: rootConsoleFields,
+    })
+  }
+  if (
+    typeof kitchen.visibility !== 'boolean' ||
+    !['active', 'paused', 'archived'].includes(text(kitchen.status)) ||
+    !exactKeys(kitchen.identity, ['name', 'tagline']) ||
+    !exactKeys(kitchen.assets, ['image', 'logo', 'wordmark', 'backdrop_color'])
+  ) {
+    issue('invalid_kitchen_root_shape', {
+      ...context,
+      status: kitchen.status,
+      visibility: kitchen.visibility,
+      identity_keys: Object.keys(record(kitchen.identity) || {}).sort(),
+      asset_keys: Object.keys(record(kitchen.assets) || {}).sort(),
+    })
+  }
 }
 
 for (const [placeId, kitchenIds] of kitchensByPlace) {
@@ -197,7 +255,7 @@ for (const userDoc of userSnapshot.docs) {
   kitchenTargetIds += targetIds.length
   for (const kitchenId of targetIds) {
     const kitchen = kitchens.get(kitchenId)
-    const appId = text(record(kitchen?.app_scope)?.app_id)
+    const appId = text(record(kitchen?.console)?.app_id)
     const support = appSupports.get(`${appId}/${kitchenId}`)
     const authorized = new Set([
       ...(ids(support?.operator_ids, 50) || []),

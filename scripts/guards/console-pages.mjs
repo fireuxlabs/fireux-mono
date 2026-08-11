@@ -340,7 +340,9 @@ function validateConsoleLayout(repoRoot, violations) {
   const source = readFileSync(fullPath, 'utf8')
   const hasDirectSlot = /<slot\b[^>]*\bv-else\b/.test(source)
   const hasGuardedSlot =
-    /<NuxtErrorBoundary\b[^>]*\bv-else\b/.test(source) &&
+    /<div\b[^>]*\bv-show=["']!selectionBlocked["'][^>]*>[\s\S]*?<NuxtErrorBoundary\b/.test(
+      source
+    ) &&
     /<NuxtErrorBoundary\b[\s\S]*?<slot\s*\/>[\s\S]*?<template\s+#error=/.test(
       source
     ) &&
@@ -349,6 +351,26 @@ function validateConsoleLayout(repoRoot, violations) {
   if (!hasDirectSlot && !hasGuardedSlot) {
     violations.push(
       `${CONSOLE_LAYOUT} (must consume the AppShell route through a direct or failure-isolated slot)`
+    )
+  }
+  if (/<(?:slot|NuxtErrorBoundary)\b[^>]*\bv-else\b/.test(source)) {
+    violations.push(
+      `${CONSOLE_LAYOUT} (selection guards must keep the family page mounted behind the blocked presentation so authoritative target readers can commit enforced selection)`
+    )
+  }
+  if (
+    !/<DevFireuxDebugPanel\b[\s\S]{0,300}:data=["']consolePageDebug["']/.test(
+      source
+    ) ||
+    !/const activeSelectionId = consoleNav\.activeSelectionId[\s\S]{0,120}const activeSelectionType = consoleNav\.activeSelectionType/.test(
+      source
+    ) ||
+    !/\[consoleDebugKey\.value\]:\s*\{\s*workspace:\s*\{\s*\[selectedDebugKey\.value\]:\s*\{\s*id:\s*activeSelectionId\.value \|\| null,\s*source:\s*activeSelectionType\.value/.test(
+      source
+    )
+  ) {
+    violations.push(
+      `${CONSOLE_LAYOUT} (blocked pages must expose their canonical selected entity under the family Console workspace debug shape)`
     )
   }
   if (/<NuxtPage\b/.test(source)) {

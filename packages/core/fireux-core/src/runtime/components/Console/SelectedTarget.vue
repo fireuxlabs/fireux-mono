@@ -124,6 +124,7 @@
           />
 
           <UButton
+            v-if="clearable"
             color="neutral"
             variant="soft"
             size="sm"
@@ -161,6 +162,7 @@ const props = withDefaults(
     outcome?: ConsoleTargetOutcome
     icon?: string
     clearLabel?: string
+    clearable?: boolean
   }>(),
   {
     selectedId: '',
@@ -169,6 +171,7 @@ const props = withDefaults(
     outcome: 'ready',
     icon: 'i-lucide-layout-dashboard',
     clearLabel: 'Change',
+    clearable: true,
   }
 )
 

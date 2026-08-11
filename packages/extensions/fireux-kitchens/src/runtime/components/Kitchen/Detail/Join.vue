@@ -69,7 +69,7 @@ const kitchenName = computed(() =>
   String(props.kitchen?.display_name || props.kitchen?.name || 'this kitchen').trim()
 )
 const operatorAppId = computed(() =>
-  String(props.kitchen?.app_scope_app_id || currentAppId.value).trim()
+  String(props.kitchen?.console?.app_id || currentAppId.value).trim()
 )
 const operatorCollectionPath = computed(() =>
   operatorAppId.value ? resolveKitchenScopeCollectionPath(operatorAppId.value) : ''

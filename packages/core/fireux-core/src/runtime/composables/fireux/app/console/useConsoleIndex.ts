@@ -1,7 +1,6 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: require one authoritative target outcome.
 // Concurrent edit — 2026-07-20 16:14 CEST — Console Spine pass: gate target auto-selection on authoritative ready state.
-import { computed, unref, watch, type ComputedRef, type Ref } from 'vue'
-import { normalizeString } from '../../../../utils/string'
+import { computed, unref, type ComputedRef, type Ref } from 'vue'
 
 type ValueRef<T> = Ref<T> | ComputedRef<T>
 
@@ -23,13 +22,12 @@ type UseConsoleIndexOptions<
   outcome: ValueRef<ConsoleTargetOutcome>
   showTargets?: ValueRef<boolean | null | undefined>
   selection?: ValueRef<TSelection>
-  selectedId?: ValueRef<string | null | undefined>
-  autoSelectTargetId?: ValueRef<string | null | undefined>
   getTargetId: (target: TTarget) => string
   runtime?: ValueRef<TRuntime>
   selectTarget: (id: string) => void
   clearSelection?: () => void
   debug?: ValueRef<ConsoleIndexDebug | null | undefined>
+  includeCountsInDebug?: boolean
 }
 
 export function useConsoleIndex<
@@ -54,13 +52,6 @@ export function useConsoleIndex<
   const targetOutcome = computed<ConsoleTargetOutcome>(() =>
     unref(options.outcome)
   )
-  const targetIds = computed(() =>
-    new Set(
-      targetItems.value
-        .map((target) => normalizeString(options.getTargetId(target)))
-        .filter(Boolean)
-    )
-  )
   const sections = computed(() => ({
     targets: {
       show: options.showTargets ? Boolean(unref(options.showTargets)) : true,
@@ -73,7 +64,7 @@ export function useConsoleIndex<
   }))
   const debug = computed(() => ({
     ...(options.debug ? unref(options.debug) ?? {} : {}),
-    counts: counts.value,
+    ...(options.includeCountsInDebug === false ? {} : { counts: counts.value }),
   }))
 
   const actions = {
@@ -82,31 +73,6 @@ export function useConsoleIndex<
     },
     clear: options.clearSelection ?? (() => {}),
   }
-
-  watch(
-    () => ({
-      currentId: options.selectedId
-        ? normalizeString(unref(options.selectedId))
-        : '',
-      targetId: options.autoSelectTargetId
-        ? normalizeString(unref(options.autoSelectTargetId))
-        : '',
-      outcome: targetOutcome.value,
-      targetIds: targetIds.value,
-    }),
-    (state: {
-      currentId: string
-      targetId: string
-      outcome: ConsoleTargetOutcome
-      targetIds: Set<string>
-    }) => {
-      const { currentId, targetId, outcome, targetIds } = state
-      if (outcome !== 'ready' || !targetIds.has(targetId)) return
-      if (!targetId || currentId === targetId) return
-      options.selectTarget(targetId)
-    },
-    { immediate: true }
-  )
 
   return {
     selection,

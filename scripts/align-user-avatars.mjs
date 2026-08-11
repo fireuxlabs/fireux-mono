@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @fireux-script
 // manual_entrypoint: true
-// last_used: 2026-08-08
+// last_used: 2026-08-11
 // usage_note: plan or explicitly copy legacy User avatars into their canonical owned Firebase Storage paths without deleting source objects.
 
 import { createHash, randomUUID } from 'node:crypto'
@@ -260,6 +260,8 @@ async function buildPlan(sessions) {
   const operations = []
   const blockers = []
   const sources = new Map()
+  let usersScanned = 0
+  let ownedAvatars = 0
   for (const session of sessions) {
     const bucket = getStorage(session.app).bucket(session.storageBucket)
     const [bucketExists] = await bucket.exists().catch(() => [false])
@@ -267,8 +269,12 @@ async function buildPlan(sessions) {
       .collection('users')
       .get()
     for (const user of users.docs) {
+      usersScanned += 1
       const avatar = text(user.get('assets.avatar')) || text(user.get('avatar'))
-      if (canonicalAvatarOwned(avatar, user.id)) continue
+      if (canonicalAvatarOwned(avatar, user.id)) {
+        ownedAvatars += 1
+        continue
+      }
       const key = `${session.projectId}/${user.id}`
       if (!bucketExists) {
         blockers.push({
@@ -316,6 +322,8 @@ async function buildPlan(sessions) {
       mode: 'dry-run',
       generatedAt: new Date().toISOString(),
       planSha256,
+      usersScanned,
+      ownedAvatars,
       operations,
       blockers,
     },
@@ -335,6 +343,8 @@ function summarize(plan) {
   return {
     mode: plan.mode,
     planSha256: plan.planSha256,
+    usersScanned: plan.usersScanned,
+    ownedAvatars: plan.ownedAvatars,
     avatars: plan.operations.length,
     sourceKinds: Object.fromEntries(
       ['https', 'fallback'].map((kind) => [

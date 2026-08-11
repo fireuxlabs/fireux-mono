@@ -54,7 +54,18 @@ const record = (value: unknown): Record<string, unknown> =>
     : {}
 
 const explicitKitchenDisplayName = (value: Record<string, unknown>) =>
-  readRecordString(record(value.identity), 'display_name')
+  readRecordString(record(value.identity), 'name')
+
+const scopedKitchenSurface = (
+  rootData: Record<string, unknown>,
+  appData: Record<string, unknown>
+) => ({
+  ...rootData,
+  console: {
+    ...record(rootData.console),
+    ...record(appData.console),
+  },
+})
 
 export const resolveSourceAppId = (
   kitchenData: Record<string, unknown>
@@ -90,7 +101,7 @@ export async function readMenuKitchenPlaceData(
 
 export function menuKitchenIdentity(
   rootData: Record<string, unknown>,
-  _appData: Record<string, unknown> = {},
+  appData: Record<string, unknown> = {},
   placeData: Record<string, unknown> = {}
 ): {
   name: string
@@ -103,13 +114,14 @@ export function menuKitchenIdentity(
   showCurrency: boolean
   page_style?: Record<string, unknown>
 } {
-  const rootIdentity = readKitchenIdentity(rootData)
+  const kitchen = scopedKitchenSurface(rootData, appData)
+  const rootIdentity = readKitchenIdentity(kitchen)
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
-  const menuDisplay = readKitchenMenusConfig(rootData)
+  const menuDisplay = readKitchenMenusConfig(kitchen)
   const pageStyle = resolveMenuPageStyle(
     { source: 'place', style: placeData.brand_palette },
-    { source: 'root-kitchen', style: readKitchenMenuStyle(rootData) }
+    { source: 'app-kitchen', style: readKitchenMenuStyle(kitchen) }
   )
 
   return {
@@ -131,17 +143,20 @@ export function menuKitchenIdentity(
 
 export function menuKitchenFulfilment(
   rootData: Record<string, unknown>,
-  _appData: Record<string, unknown> = {}
+  appData: Record<string, unknown> = {}
 ) {
-  return readKitchenFulfilmentConfig(rootData)
+  return readKitchenFulfilmentConfig(scopedKitchenSurface(rootData, appData))
 }
 
 export function menuKitchenOperationHours(
   rootData: Record<string, unknown>,
-  _appData: Record<string, unknown> = {},
+  appData: Record<string, unknown> = {},
   placeData: Record<string, unknown> = {}
 ) {
-  return resolveKitchenOperationHours(rootData, placeData)
+  return resolveKitchenOperationHours(
+    scopedKitchenSurface(rootData, appData),
+    placeData
+  )
 }
 
 export async function readMenuKitchenBySlug(kitchenSlug: string) {
@@ -190,7 +205,9 @@ export async function readRootMenuKitchenScope(
     appKitchenData,
     placeData
   )
-  const sproochli = readKitchenSproochliConfig(kitchenData)
+  const sproochli = readKitchenSproochliConfig(
+    scopedKitchenSurface(kitchenData, appKitchenData)
+  )
 
   return {
     ...(resolvedKitchenId ? { kitchenId: resolvedKitchenId } : {}),
