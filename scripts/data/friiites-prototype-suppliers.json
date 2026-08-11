@@ -1,0 +1,25 @@
+{
+  "format": "fireux-friiites-prototype-suppliers/1",
+  "executor": "scripts/seed-friiites-prototype-suppliers.mjs",
+  "target": { "project_id": "misebox-78f9c", "database_id": "misebox", "app_id": "friiites", "kitchen_id": "5dGJgdjDv7Zi0tjva61O" },
+  "suppliers": [
+    {
+      "id": "friiites-supplier-a",
+      "name": "Friiites Supplier A · Produce (Prototype)",
+      "summary": "Provisional produce supplier used while the Friiites supply chain is developed.",
+      "ingredient_ids": ["garlic", "jalapeno", "onion", "potato"]
+    },
+    {
+      "id": "friiites-supplier-b",
+      "name": "Friiites Supplier B · Pantry (Prototype)",
+      "summary": "Provisional pantry supplier used while the Friiites supply chain is developed.",
+      "ingredient_ids": ["black-pepper", "cornflour", "crispy-onions", "curry", "dry-white-wine", "fine-salt", "garlic-powder", "ketchup", "nutmeg", "onion-powder", "paprika", "truffle-oil"]
+    },
+    {
+      "id": "friiites-supplier-c",
+      "name": "Friiites Supplier C · Chilled and Meat (Prototype)",
+      "summary": "Provisional chilled and meat supplier used while the Friiites supply chain is developed.",
+      "ingredient_ids": ["bacon", "beef-stock", "beef-tallow", "bratwurst", "cheese-curds", "parmesan", "swiss-cheese"]
+    }
+  ]
+}

@@ -265,3 +265,29 @@
       color-mix(in srgb, var(--ui-primary) 14%, var(--ui-border));
   }
 }
+.place-public__identity-media {
+  display: grid;
+  gap: calc(var(--spacing) * 4);
+  padding: calc(var(--spacing) * 5);
+  border-radius: var(--ui-radius);
+  background: var(--fx-public-entity-media-bg, var(--ui-bg-muted));
+}
+
+.place-public__identity-assets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--spacing) * 6);
+}
+
+.place-public__identity-logo {
+  width: min(calc(var(--spacing) * 32), 32vw);
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+
+.place-public__identity-wordmark {
+  width: min(calc(var(--spacing) * 100), 100%);
+  max-height: calc(var(--spacing) * 32);
+  object-fit: contain;
+}

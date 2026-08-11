@@ -52,6 +52,8 @@ const optionalTextFields = new Map<string, number>([
   ['search_term', 1_000],
   ['image_url', 2_048],
   ['cover_image', 2_048],
+  ['logo_image', 2_048],
+  ['wordmark_image', 2_048],
   ['phone', 120],
   ['email', 320],
   ['website', 2_048],
@@ -183,16 +185,27 @@ function normalizePatch(
     if (optionalTextFields.has(key)) {
       const normalized = deleteOrText(value, optionalTextFields.get(key) || 240)
       if (
-        (key === 'image_url' || key === 'cover_image') &&
+        (key === 'image_url' || key === 'cover_image' ||
+          key === 'logo_image' || key === 'wordmark_image') &&
         typeof normalized === 'string'
       ) {
         patch[key] = requireFirebaseStorageDownloadUrl(normalized, {
           bucketName: target.bucketName,
           objectPath:
             key === 'image_url'
-              ? `places/${target.placeId}/avatar`
-              : `places/${target.placeId}/cover`,
-          label: key === 'image_url' ? 'Place image' : 'Place cover',
+              ? `places/${target.placeId}/image`
+              : key === 'cover_image'
+                ? `places/${target.placeId}/cover`
+                : key === 'logo_image'
+                  ? `places/${target.placeId}/logo`
+                  : `places/${target.placeId}/wordmark`,
+          label: key === 'image_url'
+            ? 'Place image'
+            : key === 'cover_image'
+              ? 'Place cover'
+              : key === 'logo_image'
+                ? 'Place logo'
+                : 'Place wordmark',
         })
       } else {
         patch[key] = normalized

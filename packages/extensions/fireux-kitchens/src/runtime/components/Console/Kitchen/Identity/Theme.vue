@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <div v-if="selectedKitchen" class="space-y-6">
+    <div v-if="selectedKitchen && !placePending && rootComplete" class="space-y-6">
       <UCard variant="subtle">
         <div class="flex items-start gap-3">
           <UIcon
@@ -56,12 +56,30 @@
       </div>
     </div>
 
+    <UCard v-else-if="selectedKitchen && !placePending">
+      <UAlert
+        color="neutral"
+        variant="subtle"
+        icon="i-lucide-lock-keyhole"
+        title="Complete Root Kitchen identity first"
+        description="Menu display theme unlocks when every Root identity requirement reaches 100%."
+      >
+        <template #actions>
+          <UButton to="/console/kitchen/identity" color="neutral" variant="soft">
+            Return to identity
+          </UButton>
+        </template>
+      </UAlert>
+    </UCard>
+
     <MoleculesStateCard v-else entity="kitchen theme" kind="document" loading />
   </ClientOnly>
 </template>
 
 <script setup lang="ts">
 import { useKitchenThemeEditor } from './useKitchenThemeEditor'
+import { useKitchenIdentityProgression } from '../../../../composables/fireux/console/kitchen/identity/useKitchenIdentityProgression'
+const { rootComplete, placePending } = useKitchenIdentityProgression()
 const {
   selectedKitchen,
   kitchenId,

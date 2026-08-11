@@ -2,7 +2,7 @@
   <!-- Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: make Kitchen identity fields explicit optional overrides of Place. -->
   <MoleculesDisclosurePanel
     title="Kitchen"
-    description="Name, slug, tagline, and menu theme."
+    description="Name, slug, tagline, and linked Place media."
     icon="i-lucide-store"
   >
     <div class="mt-4 space-y-4">
@@ -92,16 +92,6 @@
               </div>
             </div>
 
-            <div class="md:col-span-2">
-              <UButton
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-palette"
-                to="/console/kitchen/identity/theme"
-              >
-                Open theme
-              </UButton>
-            </div>
           </div>
         </UCard>
     </div>

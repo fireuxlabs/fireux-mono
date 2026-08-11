@@ -1,0 +1,23 @@
+{
+  "format": "fireux-friiites-ingredient-roots/1",
+  "executor": "scripts/add-friiites-ingredient-roots.mjs",
+  "kitchen_executor": "scripts/attach-friiites-kitchen-ingredients.mjs",
+  "target": {
+    "project_id": "misebox-78f9c",
+    "database_id": "misebox",
+    "collection": "ingredients"
+  },
+  "entries": [
+    { "id": "beef-stock", "name": "Beef Stock", "aliases": [], "category": "pantry", "kind": "prepared" },
+    { "id": "beef-tallow", "name": "Beef Tallow", "aliases": ["Tallow"], "category": "pantry", "kind": "base" },
+    { "id": "bratwurst", "name": "Bratwurst", "aliases": [], "category": "meat-poultry", "kind": "composite" },
+    { "id": "cheese-curds", "name": "Cheese Curds", "aliases": [], "category": "dairy-eggs", "kind": "variety" },
+    { "id": "dry-white-wine", "name": "Dry White Wine", "aliases": ["White Wine"], "category": "pantry", "kind": "base" },
+    { "id": "garlic-powder", "name": "Garlic Powder", "aliases": [], "category": "herbs-spices", "kind": "base" },
+    { "id": "nutmeg", "name": "Nutmeg", "aliases": [], "category": "herbs-spices", "kind": "base" },
+    { "id": "onion-powder", "name": "Onion Powder", "aliases": [], "category": "herbs-spices", "kind": "base" },
+    { "id": "paprika", "name": "Paprika", "aliases": [], "category": "herbs-spices", "kind": "base" },
+    { "id": "parmesan", "name": "Parmesan", "aliases": ["Parmesan Cheese"], "category": "dairy-eggs", "kind": "variety" },
+    { "id": "truffle-oil", "name": "Truffle Oil", "aliases": [], "category": "pantry", "kind": "prepared" }
+  ]
+}

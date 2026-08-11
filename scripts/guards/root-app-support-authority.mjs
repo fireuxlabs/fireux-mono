@@ -443,14 +443,26 @@ export async function run({ repoRoot = process.cwd() } = {}) {
       ])
   )
 
-  assert.match(source.placeModel, /export const PlaceStorage = \{[\s\S]*shape:\s*'public\/root'[\s\S]*path:\s*'places\/\{placeId\}'/)
+  assert.match(
+    source.placeModel,
+    /export const PlaceStorage = \{[\s\S]*shape:\s*'public\/root'[\s\S]*path:\s*'places\/\{placeId\}'/
+  )
   assert.match(source.placeModel, /export const PlaceDefaults = \{/)
   assert.doesNotMatch(source.placeModel, /export const PlaceModel = \{/)
 
-  assert.match(source.kitchenModel, /export const KitchenStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'kitchens\/\{kitchenId\}'/)
-  assert.match(source.kitchenModel, /export const AppKitchenStorage = \{[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}'/)
+  assert.match(
+    source.kitchenModel,
+    /export const KitchenStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'kitchens\/\{kitchenId\}'/
+  )
+  assert.match(
+    source.kitchenModel,
+    /export const AppKitchenStorage = \{[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/kitchens\/\{kitchenId\}'/
+  )
   assert.match(source.kitchenModel, /export const KitchenDefaults = \{/)
-  assert.match(source.kitchenModel, /export const AppKitchenDefaults:\s*AppKitchen = \{/)
+  assert.match(
+    source.kitchenModel,
+    /export const AppKitchenDefaults:\s*AppKitchen = \{/
+  )
 
   for (const [name, modelSource, modelName] of [
     ['Portfolio', source.portfolioModel, 'PortfolioModel'],
@@ -487,8 +499,14 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /FireuxConsoleAccessModel|operator_ids|team_ids|join_requests/,
     'Supplier root must not contain App access fields.'
   )
-  assert.match(source.supplierModel, /export const SupplierStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'suppliers\/\{supplierId\}'/)
-  assert.match(source.supplierModel, /export const AppSupplierStorage = \{[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/suppliers\/\{supplierId\}'/)
+  assert.match(
+    source.supplierModel,
+    /export const SupplierStorage = \{[\s\S]*shape:\s*'root'[\s\S]*path:\s*'suppliers\/\{supplierId\}'/
+  )
+  assert.match(
+    source.supplierModel,
+    /export const AppSupplierStorage = \{[\s\S]*shape:\s*'scoped'[\s\S]*path:\s*'apps\/\{appId\}\/suppliers\/\{supplierId\}'/
+  )
   assert.match(source.supplierModel, /export const AppSupplierDefaults/)
   assert.match(source.portfolioModel, /export const AppPortfolioModel/)
   assert.match(
@@ -972,9 +990,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenUpdateServer, /runGuardedServerTransaction/)
   assert.match(source.kitchenUpdateServer, /requireKitchenMutationAuthority/)
   assert.match(source.kitchenUpdateServer, /readKitchenByRouteSlug/)
-  assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingManagement/)
+  assert.match(
+    source.kitchenMutationAuthority,
+    /readKitchenOnboardingManagement/
+  )
   assert.match(source.kitchenMutationAuthority, /readKitchenOnboardingSupport/)
-  assert.match(source.kitchenMutationAuthority, /resolveKitchenConsoleTargetIds/)
+  assert.match(
+    source.kitchenMutationAuthority,
+    /resolveKitchenConsoleTargetIds/
+  )
   assert.match(
     source.kitchenServerConfig,
     /route:\s*'\/api\/console\/kitchen\/update'[\s\S]*method:\s*'patch'[\s\S]*runtime\/server\/api\/console\/kitchen\/update\.patch/
@@ -986,8 +1010,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenDemoTargets,
-    /management:\s*\{\s*mode:\s*'console'\s*\}/,
-    'Every Demo Kitchen must carry the same explicit App relationship as its access-only Demo support.'
+    /management:\s*input\.management/,
+    'Every Demo Kitchen must carry its fixture-owned explicit management relationship.'
+  )
+  assert.match(
+    source.kitchenDemoTargets,
+    /mode:\s*'app'[\s\S]*app_id:\s*deanosKitchenDemoIdentity\.appId/,
+    'The Deanos Demo must remain the explicit App-managed Demo Kitchen.'
   )
   assert.match(
     source.kitchenDemoTargets,
@@ -1052,7 +1081,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /hasRetiredScope/)
   assert.match(source.kitchenTargetApi, /readFireuxEntityManagement/)
   assert.match(source.kitchenTargetApi, /management\.mode === 'root'/)
-  assert.match(source.kitchenTargetApi, /management:\s*input\.scope\.management/)
+  assert.match(
+    source.kitchenTargetApi,
+    /management:\s*input\.scope\.management/
+  )
   assert.match(source.kitchenTargetApi, /db\.getAll/)
   assert.match(source.kitchenTargetApi, /readKitchenOnboardingSupport/)
   assert.match(

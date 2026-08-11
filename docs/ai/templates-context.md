@@ -19,9 +19,23 @@ referrals. The current proving member is Template One.
 
 ## Ownership boundaries
 
-- `fireux-misebox` owns Template One's contract, atom anatomy and fixtures.
+- `fireux-misebox` owns Template One's contract, atom anatomy, reusable scene
+  compositions and catalogue fixtures.
 - Misebox owns the canonical `/templates/template-one` product page. FireUX
   keeps a catalogue referral and does not copy anatomy or fixtures.
+- Templates are available only to App-managed Kitchens. Root and Console
+  Kitchens appear on the Template One page only as progression specimens that
+  expose the inherited atom inputs an App template extends.
+- Root owns neither theme nor template. Console owns Kitchen Menu `PageStyle`
+  but never template selection. An App extends the effective Console theme with
+  one App-owned template applied across all of its tenant/franchise Kitchens;
+  franchises do not fork or select templates independently.
+- Place presentation is intentionally minimal: entity identity media plus one
+  semantic `place_primary_color` fallback behind transparent uploads. Current
+  persisted Place source still calls it `media_backdrop_color`; migrate that
+  field only through the guarded Place projection/write family. Rich
+  palette and composition inputs begin above Place; do not treat Place
+  `brand_palette` compatibility data as the Template One App palette.
 - A template injection owns tokens, copy, links, and approved media only. It
   never repeats scene markup or template CSS and does not create an App,
   domain, or production record.
@@ -40,7 +54,7 @@ referrals. The current proving member is Template One.
 
 1. `packages/ecosystem/fireux-misebox/src/runtime/template-one.ts`
 2. `packages/ecosystem/fireux-misebox/src/runtime/template-one-fixtures.ts`
-3. `packages/ecosystem/fireux-misebox/src/runtime/TemplateOneAtoms.vue`
+3. `packages/ecosystem/fireux-misebox/src/runtime/TemplateOne*.vue`
 4. `projects/misebox/misebox-app/app/pages/templates/*`
 5. `projects/fireux/fireux-app/app/pages/templates/*`
 6. `scripts/guards/landing-templates.mjs`
@@ -53,7 +67,7 @@ reconstruct a wordmark or borrow another identity.
 
 ## Refresh and verification
 
-When adding anatomy, an injection field, or a catalogue member, inspect the
+When adding anatomy, a progression specimen, an injection field, or a catalogue member, inspect the
 current proving App and nearest public catalogue/detail route, change the
 narrowest owner, update the focused guard, and visually verify every injection
 at desktop and phone widths. Run the owning App production build and mandatory

@@ -1,46 +1,63 @@
 <template>
   <fieldset class="template-brand-switcher">
-    <legend>Kitchen toggle</legend>
-    <div>
-      <NuxtLink
-        v-for="brand in brands"
-        :key="brand.id"
-        replace
-        :to="{ query: { ...route.query, brand: brand.id } }"
-        :aria-pressed="brand.id === modelValue"
-      >
-        <span class="template-brand-switcher__swatch" :style="swatch(brand)" />
-        <span class="template-brand-switcher__label">
-          <strong>{{ brand.name }}</strong>
-          <small>{{ tierLabel(brand) }}</small>
-        </span>
-      </NuxtLink>
+    <legend>Kitchen comparison</legend>
+    <div class="template-brand-switcher__groups">
+      <section v-for="group in groupedBrands" :key="group.tier">
+        <p>{{ group.label }}</p>
+        <div>
+          <NuxtLink
+            v-for="brand in group.brands"
+            :key="brand.id"
+            replace
+            :to="{ query: { ...route.query, brand: brand.id } }"
+            :aria-pressed="brand.id === modelValue"
+          >
+            <span class="template-brand-switcher__swatch" :style="swatch(brand)" />
+            <span class="template-brand-switcher__label">
+              <strong>{{ brand.name }}</strong>
+              <small>{{ sourceLabel(brand) }}</small>
+            </span>
+          </NuxtLink>
+        </div>
+      </section>
     </div>
   </fieldset>
 </template>
 
 <script setup lang="ts">
-import type { TemplateOneBrandInjection } from './template-one'
+import { computed } from 'vue'
+import type { TemplateOneKitchenSpecimen } from './template-one'
 const route = useRoute()
 
-defineProps<{
-  brands: readonly TemplateOneBrandInjection[]
-  modelValue: TemplateOneBrandInjection['id']
+const props = defineProps<{
+  brands: readonly TemplateOneKitchenSpecimen[]
+  modelValue: TemplateOneKitchenSpecimen['id']
 }>()
 
-const swatch = (brand: TemplateOneBrandInjection) => ({
-  '--swatch-canvas': brand.rootProps.palette.secondary_color,
-  '--swatch-accent': brand.rootProps.palette.primary_color,
+const groupedBrands = computed(() => [
+  {
+    tier: 'root',
+    label: 'Root',
+    brands: props.brands.filter((brand) => brand.tier === 'root'),
+  },
+  {
+    tier: 'console',
+    label: 'Console',
+    brands: props.brands.filter((brand) => brand.tier === 'console'),
+  },
+  {
+    tier: 'app',
+    label: 'App Kitchens · inherited base',
+    brands: props.brands.filter((brand) => brand.tier === 'app'),
+  },
+])
+
+const swatch = (brand: TemplateOneKitchenSpecimen) => ({
+  '--swatch-canvas': brand.rootProps.placePrimaryColor,
 })
 
-const tierLabel = (brand: TemplateOneBrandInjection) => {
-  if (brand.tier === 'root') return 'Root Kitchen · unassigned example'
-  if (brand.tier === 'console') {
-    return brand.appProps
-      ? 'Console Kitchen · Demo · App preview'
-      : 'Console Kitchen · Demo'
-  }
-  return brand.demo ? 'App Kitchen · Demo preview' : 'App Kitchen'
+const sourceLabel = (brand: TemplateOneKitchenSpecimen) => {
+  return brand.demo ? 'Demo' : 'Live'
 }
 </script>
 
@@ -60,7 +77,24 @@ legend {
   text-transform: uppercase;
 }
 
-fieldset > div {
+.template-brand-switcher__groups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.template-brand-switcher section {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.template-brand-switcher section > p {
+  margin: 0;
+  color: var(--ui-text-muted);
+  font-size: var(--text-xs);
+}
+
+.template-brand-switcher section > div {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
@@ -109,11 +143,7 @@ fieldset > div {
 .template-brand-switcher__swatch {
   width: 1.1rem;
   height: 1.1rem;
-  background: linear-gradient(
-    135deg,
-    var(--swatch-canvas) 50%,
-    var(--swatch-accent) 50%
-  );
+  background: var(--swatch-canvas);
   border: 1px solid rgb(127 127 127 / 25%);
   border-radius: 50%;
 }

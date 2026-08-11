@@ -37,6 +37,8 @@ export function usePlaceDetail(props: { locator: string }) {
     return {
       '--fx-public-entity-accent':
         palette?.primary_color || 'var(--ui-primary)',
+      '--fx-public-entity-media-bg':
+        place.value?.media_backdrop_color || 'var(--ui-bg-muted)',
     }
   })
   const placeTypeLabel = computed(() =>

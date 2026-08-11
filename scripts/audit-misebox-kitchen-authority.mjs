@@ -190,6 +190,7 @@ for (const [slug, kitchenIds] of kitchensBySlug) {
 
 let userTargetDocuments = 0
 let kitchenTargetIds = 0
+const targetedKitchenIds = new Set()
 for (const userDoc of userSnapshot.docs) {
   const target = await userDoc.ref.collection('private').doc('targets').get()
   if (!target.exists) continue
@@ -203,6 +204,7 @@ for (const userDoc of userSnapshot.docs) {
   }
   kitchenTargetIds += targetIds.length
   for (const kitchenId of targetIds) {
+    targetedKitchenIds.add(kitchenId)
     const kitchen = kitchens.get(kitchenId)
     const appId = managementAppId(readManagement(kitchen?.management))
     const support = appSupports.get(`${appId}/${kitchenId}`)
@@ -220,6 +222,28 @@ for (const userDoc of userSnapshot.docs) {
   }
 }
 
+const targetKitchens = [...targetedKitchenIds]
+  .sort()
+  .map(kitchenId => {
+    const kitchen = kitchens.get(kitchenId) || {}
+    const place = places.get(kitchenId) || {}
+    return {
+      id: kitchenId,
+      name: text(record(kitchen.identity)?.name || place.name),
+      management: readManagement(kitchen.management),
+    }
+  })
+
+for (const [kitchenId, kitchen] of kitchens) {
+  const management = readManagement(kitchen.management)
+  if (management?.mode !== 'root' && !targetedKitchenIds.has(kitchenId)) {
+    issue('managed_kitchen_without_console_target', {
+      kitchen_id: kitchenId,
+      management,
+    })
+  }
+}
+
 console.log(JSON.stringify({
   project_id: target.projectId || auth.projectId,
   database_id: databaseId,
@@ -234,6 +258,7 @@ console.log(JSON.stringify({
     kitchen_target_ids: kitchenTargetIds,
     issues: issues.length,
   },
+  target_kitchens: targetKitchens,
   issues,
 }, null, 2))
 

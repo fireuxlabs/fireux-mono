@@ -73,7 +73,12 @@ export function useConsoleTargetRequest<TItem extends ConsoleTargetIdItem>(
   const items = computed<TItem[]>(() => response.value?.items ?? [])
   const active = computed(() => enabled.value && Boolean(uid.value))
   const pending = computed(
-    () => enabled.value && (!hasAuthState.value || (active.value && state.pending.value))
+    () =>
+      enabled.value &&
+      (!hasAuthState.value ||
+        (active.value &&
+          !state.error.value &&
+          (state.pending.value || !response.value)))
   )
   const error = computed<unknown | undefined>(() =>
     active.value ? (state.error.value ?? undefined) : undefined

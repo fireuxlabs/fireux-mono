@@ -102,6 +102,9 @@ export async function run(ctx) {
   if (/console-app-id|consoleAppId/.test(source.migration)) {
     violations.push(`${relativeFiles.migration} accepts a redundant Console App id`)
   }
+  if (!/Ecosystem App support does not prove Console management/.test(source.migration)) {
+    violations.push(`${relativeFiles.migration} infers Console management from support alone`)
+  }
 
   if (!/management:\s*Exclude<FireuxEntityManagement, \{ mode: 'root' \}>/.test(source.kitchenTargetModel)) {
     violations.push(`${relativeFiles.kitchenTargetModel} does not preserve the exact attached-management union`)

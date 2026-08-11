@@ -64,6 +64,8 @@ export type PublicPlaceDetailProjection = PublicPlaceProjection & {
   about?: string
   cover_image?: string
   gallery_images?: string[]
+  logo_image?: string
+  wordmark_image?: string
   business_hours?: PlaceBusinessHours
   website?: string
   google_maps_url?: string

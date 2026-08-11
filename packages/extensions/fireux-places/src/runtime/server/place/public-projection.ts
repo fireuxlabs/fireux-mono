@@ -111,6 +111,8 @@ export function projectPublicPlaceDetail(
           .filter(Boolean)
       )).slice(0, 24)
     : []
+  const logoImage = httpsUrl(value.logo_image)
+  const wordmarkImage = httpsUrl(value.wordmark_image)
   const businessHours = normalizePlaceBusinessHours(value.business_hours)
   const website = httpsUrl(value.website)
   const googleMapsUrl = httpsUrl(value.google_maps_url)
@@ -124,6 +126,8 @@ export function projectPublicPlaceDetail(
     ...(about ? { about } : {}),
     ...(coverImage ? { cover_image: coverImage } : {}),
     ...(galleryImages.length ? { gallery_images: galleryImages } : {}),
+    ...(logoImage ? { logo_image: logoImage } : {}),
+    ...(wordmarkImage ? { wordmark_image: wordmarkImage } : {}),
     ...(businessHours ? { business_hours: businessHours } : {}),
     ...(website ? { website } : {}),
     ...(googleMapsUrl ? { google_maps_url: googleMapsUrl } : {}),

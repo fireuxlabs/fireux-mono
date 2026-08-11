@@ -16,9 +16,9 @@
           Sign in
         </NuxtLink>
 
-        <NuxtLink class="friiites-header__order" to="/#ordering">
-          <span class="friiites-header__order-desktop">Order now</span>
-          <span class="friiites-header__order-mobile">Order</span>
+        <NuxtLink class="friiites-header__order" to="/menus">
+          <span class="friiites-header__order-desktop">View menu</span>
+          <span class="friiites-header__order-mobile">Menu</span>
         </NuxtLink>
 
         <details class="friiites-header__menu">
@@ -42,12 +42,7 @@
 
 <script setup lang="ts">
 const menuItems = [
-  { label: 'Our method', to: '/#method' },
-  { label: 'The product', to: '/#product' },
-  { label: 'Ordering', to: '/#ordering' },
-  { label: 'Order journey', to: '/#journey' },
-  { label: 'Franchise', to: '/#system' },
-  { label: 'Locations', to: '/#locations' },
+  { label: 'Menu', to: '/menus' },
 ] as const
 </script>
 

@@ -1,4 +1,5 @@
 import type { SparseBrandPalette } from 'fireux-core/runtime/models/utils/style.model'
+import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
 import {
   PlaceDefaults,
   type Place,
@@ -12,10 +13,7 @@ import {
   type KitchenFulfilmentPaymentPolicy,
   type KitchenOrdersConfig,
 } from '../../../models/kitchen.model'
-import {
-  kitchenDemoCreated,
-  kitchenDemoUpdated,
-} from './fixtures'
+import { kitchenDemoCreated, kitchenDemoUpdated } from './fixtures'
 import type { KitchenDemoIdentity } from './types'
 
 export type KitchenDemoTarget = {
@@ -29,6 +27,7 @@ export type KitchenDemoTarget = {
 
 export type DemoKitchenInput = {
   identity: KitchenDemoIdentity
+  management: FireuxEntityManagement
   name: string
   tagline: string
   logoImageUrl: string
@@ -62,7 +61,7 @@ export const kitchen = (input: DemoKitchenInput): Kitchen => ({
   ...KitchenDefaults,
   id: input.identity.kitchenId,
   slug: input.identity.kitchenSlug,
-  management: { mode: 'console' },
+  management: input.management,
   visibility: true,
   identity: {
     display_name: input.name,

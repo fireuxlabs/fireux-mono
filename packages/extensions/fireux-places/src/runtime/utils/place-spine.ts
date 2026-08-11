@@ -167,6 +167,8 @@ export const readPlacePresentation = (value: unknown) => {
     imageUrl: text(source.image_url),
     coverImage: text(source.cover_image),
     gallery: stringArray(source.gallery_images),
+    logoImage: text(source.logo_image),
+    wordmarkImage: text(source.wordmark_image),
     mediaBackdropColor: readMediaBackdropColor(
       source.media_backdrop_color,
       source.image_shade

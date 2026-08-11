@@ -1131,7 +1131,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     /Cover image URL|Gallery image URL|type="url"/
   )
   assert.match(placeMediaMutation, /requireFirebaseStorageDownloadUrl/)
-  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/avatar/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/image/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/logo/)
+  assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/wordmark/)
   assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/cover/)
   assert.match(placeMediaMutation, /places\/\$\{target\.placeId\}\/gallery\//)
   assert.deepEqual(typeFields(publicPlaceModel, 'PublicPlaceProjection'), [

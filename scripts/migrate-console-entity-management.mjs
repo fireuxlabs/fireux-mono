@@ -92,9 +92,12 @@ function managementFor(data) {
   const kitchenConsole = record(data.console)
   const kitchenAppId = text(kitchenConsole.app_id)
   if (kitchenAppId) {
-    return kitchenAppId === ecosystemAppId
-      ? { mode: 'console' }
-      : { mode: 'app', app_id: kitchenAppId }
+    if (kitchenAppId === ecosystemAppId) {
+      throw new Error(
+        'Ecosystem App support does not prove Console management.'
+      )
+    }
+    return { mode: 'app', app_id: kitchenAppId }
   }
 
   const nestedScope = record(data.app_scope)
@@ -135,11 +138,14 @@ for (const collectionName of collections) {
         )
       }
       const supportAppId = supportAppIds[0] || ''
+      if (supportAppId === ecosystemAppId) {
+        throw new Error(
+          `${document.ref.path}: Ecosystem App support does not prove Console management.`
+        )
+      }
       management = !supportAppId
         ? { mode: 'root' }
-        : supportAppId === ecosystemAppId
-          ? { mode: 'console' }
-          : { mode: 'app', app_id: supportAppId }
+        : { mode: 'app', app_id: supportAppId }
     }
     if (!management) continue
     operations.push({

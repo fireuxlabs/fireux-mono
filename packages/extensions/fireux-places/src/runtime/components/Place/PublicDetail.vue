@@ -110,6 +110,39 @@
           </template>
         </PublicEntityHero>
 
+        <section
+          v-if="place.logo_image || place.wordmark_image"
+          class="place-public__identity-media"
+          aria-labelledby="place-identity-title"
+        >
+          <div class="place-public__section-heading">
+            <p class="fx-type-label">Identity</p>
+            <h2 id="place-identity-title" class="fx-type-section-title">
+              {{ place.short_name || place.name }}
+            </h2>
+          </div>
+          <div class="place-public__identity-assets">
+            <img
+              v-if="place.logo_image"
+              :src="place.logo_image"
+              :alt="`${place.name} logo`"
+              class="place-public__identity-logo"
+              loading="lazy"
+              decoding="async"
+              @error="hideFailedImage"
+            />
+            <img
+              v-if="place.wordmark_image"
+              :src="place.wordmark_image"
+              :alt="`${place.name} wordmark`"
+              class="place-public__identity-wordmark"
+              loading="lazy"
+              decoding="async"
+              @error="hideFailedImage"
+            />
+          </div>
+        </section>
+
         <div
           class="place-public__content"
           :class="{ 'place-public__content--utilities': !hasEditorialContent }"

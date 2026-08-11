@@ -124,6 +124,8 @@ export const PlaceDefaults = {
   image_url: '' as string,
   cover_image: '' as string,
   gallery_images: [] as string[],
+  logo_image: '' as string,
+  wordmark_image: '' as string,
   media_backdrop_color: '' as MediaBackdropColor | '',
   /** @deprecated Never write; migrate to media_backdrop_color. */
   image_shade: 'none' as PlaceImageShade,

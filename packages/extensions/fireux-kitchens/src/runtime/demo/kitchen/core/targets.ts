@@ -57,6 +57,10 @@ export const deanosKitchenDemoTarget = target(
   deanosKitchenDemoIdentity,
   kitchen({
     identity: deanosKitchenDemoIdentity,
+    management: {
+      mode: 'app',
+      app_id: deanosKitchenDemoIdentity.appId,
+    },
     name: 'Deanos Smash Burger',
     tagline: 'Smashed to order. Served fast.',
     logoImageUrl: deanosKitchenMedia('logo.png'),
@@ -156,6 +160,7 @@ export const pizzaTheActionKitchenDemoTarget = target(
   pizzaTheActionKitchenDemoIdentity,
   kitchen({
     identity: pizzaTheActionKitchenDemoIdentity,
+    management: { mode: 'console' },
     name: 'Pizza the Action',
     tagline: 'Big flavour. Zero drama.',
     logoImageUrl: kitchenDemoMediaUrl(
@@ -214,6 +219,7 @@ export const miseboxRestaurantKitchenDemoTarget = target(
   miseboxRestaurantKitchenDemoIdentity,
   kitchen({
     identity: miseboxRestaurantKitchenDemoIdentity,
+    management: { mode: 'console' },
     name: 'Misebox Restaurant',
     tagline: 'A polished seasonal Menu and Kiosk',
     logoImageUrl: kitchenDemoMediaUrl(
@@ -256,15 +262,13 @@ const targetIds = new Set<string>()
 for (const item of kitchenDemoTargets) {
   const kitchenId = String(item.kitchen.id ?? '').trim()
   const placeId = String(item.place.id ?? '').trim()
-  const logoImageUrl = String(
-    item.kitchen.identity.logo_image_url ?? ''
-  ).trim()
+  const logoImageUrl = String(item.kitchen.identity.logo_image_url ?? '').trim()
   const placeMedia = [
     item.place.image_url,
     item.place.cover_image,
     ...item.place.gallery_images,
   ]
-    .map(value => String(value ?? '').trim())
+    .map((value) => String(value ?? '').trim())
     .filter(Boolean)
   const teamIds = item.appSupport.team_ids
   const operatorIds = item.appSupport.operator_ids
