@@ -1,5 +1,5 @@
 import {
-  KitchenMiseTaskModel,
+  KitchenMiseTaskDefaults,
   type KitchenMiseTask,
 } from '../../../../models/kitchen/mise.model'
 import {
@@ -44,7 +44,7 @@ export const miseTask = (
       : status
 
   return {
-  ...KitchenMiseTaskModel,
+  ...KitchenMiseTaskDefaults,
   id,
   kitchen_id: identity.kitchenId,
   title,
@@ -56,7 +56,7 @@ export const miseTask = (
   priority,
   estimated_minutes: estimatedMinutes,
   ingredient_ids: [...(production.ingredientIds ?? [])],
-  mise_ids: [...(production.prepItemIds ?? [])],
+  prep_item_ids: [...(production.prepItemIds ?? [])],
   menu_id: identity.menuId,
   recipe_id: production.recipeId ?? '',
   checklist: (production.checklist ?? []).map((item, index) => ({
@@ -115,4 +115,3 @@ export const recipeMiseTask = (
     }
   )
 }
-

@@ -84,6 +84,7 @@ The current declared Entities are:
 | Kitchen          | kitchen, console entity   | root           | owning App database         | access record     | projection  | yes     |
 | KitchenMenu      | menu, kitchen             | Kitchen-scoped | parent                      | none              | projection  | no      |
 | Recipe           | kitchen                   | Kitchen-scoped | parent                      | none              | none        | no      |
+| KitchenPrepItem  | kitchen                   | Kitchen-scoped | parent                      | none              | none        | no      |
 | Dish             | kitchen, menu             | Kitchen-scoped | parent                      | none              | none        | no      |
 | KitchenOrder     | kitchen, ordering         | Kitchen-scoped | parent                      | none              | none        | no      |
 | Menu             | menu                      | root           | owning App database         | none              | projection  | no      |
@@ -175,9 +176,11 @@ not turn them into one identity or justify copying the scoped tree into root.
 
 ### Parent-owned records
 
-Recipe and Dish have independent lifecycles inside their owning Kitchen, so
-they are parent-scoped Entities rather than root identities. Recipe owns
-authored preparation content. Dish owns reusable food identity and media.
+Recipe, KitchenPrepItem, and Dish have independent lifecycles inside their
+owning Kitchen, so they are parent-scoped Entities rather than root identities.
+Recipe owns authored preparation content. KitchenPrepItem owns a reusable
+intermediate product's inputs, yield, and method. Dish owns reusable food
+identity and media.
 
 MenuSection, MenuItem, and KitchenStation can have stable document ids without
 independent Entity lifecycle. Kitchen team join requests, document links,
@@ -207,8 +210,8 @@ projection; it does not establish raw root-read authority.
 
 The repository contains domain concepts whose models, routes, or collections
 predate executable entity declarations. Examples include remaining profile
-roots outside the confirmed Chef and Driver records, Task, and Blog
-content.
+roots outside the confirmed Chef and Driver records, generic Task concepts,
+and Blog content.
 
 Their existence is real; their FireUX Entity classification is not yet declared
 by the matrix. Treat each as `to-confirm` for classification work. Do not
@@ -220,16 +223,33 @@ stable document id and hydrate only the bounded public projection. Its
 canonical `name` is the popular name used by the shared world; language and
 translation state are not Ingredient identity.
 
-Recipe and Dish are confirmed Kitchen-scoped Entities. Recipe owns authored
-preparation content; Dish owns reusable food identity and media. MenuItem is a
-MenuSection-owned placement Record and must reference a Dish from the same
-Kitchen. Run `scripts/audit-misebox-recipe-dish-menu-items.mjs` to verify those
-scope fields and relationships in Misebox without writing data.
+Recipe, KitchenPrepItem, and Dish are confirmed Kitchen-scoped Entities. Recipe
+owns authored preparation content; KitchenPrepItem owns a reusable intermediate
+product's inputs, yield, and method; Dish owns reusable food identity and media.
+MenuItem is a MenuSection-owned placement Record and must reference a Dish from
+the same Kitchen. Run `scripts/audit-misebox-recipe-dish-menu-items.mjs` and
+`scripts/audit-misebox-kitchen-prep-items.mjs` to verify those scope fields and
+relationships in Misebox without writing data.
 
 KitchenStation is a confirmed Kitchen-owned operational Record at
 `apps/{appId}/kitchens/{kitchenId}/stations/{stationId}`. Run
 `scripts/audit-misebox-kitchen-stations.mjs` to verify its AppKitchen parent,
 scope, required fields, ordering, and Station references without writing data.
+
+KitchenMiseTask is a confirmed Kitchen-owned operational Record at
+`apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}`. It owns preparation workflow,
+scheduling, checklist and assignment state. `prep_item_ids` links canonical
+KitchenPrepItem entities explicitly; other links remain inside the owning
+Kitchen or point to canonical Ingredient ids. Run
+`scripts/audit-misebox-kitchen-mise.mjs` to verify its stored contract and
+relationships without writing data.
+
+KitchenPrepItem is stored at
+`apps/{appId}/kitchens/{kitchenId}/prep-items/{prepItemId}`. The protected
+legacy `mise` migration is complete; new code must not restore those duplicate
+root/AppKitchen documents or normalize them as Mise tasks. Keep
+`scripts/migrate-misebox-kitchen-prep-items.mjs` as the migration record and
+use the read-only audit to detect storage regression.
 
 KitchenOrder is a confirmed Kitchen-scoped Entity with a trusted lifecycle.
 Completing a ready Order atomically creates its same-id immutable KitchenSale

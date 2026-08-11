@@ -1,9 +1,10 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: adopt authoritative target outcomes.
-import { computed } from 'vue'
+import { computed, isRef } from 'vue'
 import { normalizeString } from '../../../../../utils/string'
 import { useConsole, type ConsoleSource } from '../../../app/console/useConsole'
 import { consoleData } from '../../../app/console/useConsoleData'
 import { useConsoleEntityRuntime } from '../../../app/console/useConsoleEntityRuntime'
+import { useConsoleTargets } from '../../../app/console/useConsoleTargets'
 import {
   useProjectCollection,
   type ProjectCollectionFilter,
@@ -37,9 +38,17 @@ type UseProjectConsoleOptions = {
  */
 export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
   const consoleRoot = useConsole('project')
+  const consoleTargets = useConsoleTargets({ family: 'project' })
+  const targetFilter = computed<ProjectCollectionFilter>(() =>
+    consoleTargets.filter(
+      isRef(options.filter)
+        ? (options.filter.value ?? {})
+        : (options.filter ?? {})
+    )
+  )
   const liveCollection = useProjectCollection({
     source: consoleRoot.source,
-    filter: options.filter,
+    filter: targetFilter,
   })
   const demoTargets = useProjectConsoleDemoTargets(
     computed(() => consoleRoot.source.value === 'demo')
@@ -68,10 +77,16 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
       ? demoTargets.error.value
       : liveCollection.error.value
   )
-  const targetsOutcome = computed(() =>
+  const sourceTargetsOutcome = computed(() =>
     consoleRoot.source.value === 'demo'
       ? demoTargets.outcome.value
       : liveCollection.outcome.value
+  )
+  const liveTargetsOutcome = consoleTargets.resolveOutcome(sourceTargetsOutcome)
+  const targetsOutcome = computed(() =>
+    consoleRoot.source.value === 'demo'
+      ? sourceTargetsOutcome.value
+      : liveTargetsOutcome.value
   )
   const entity = useConsoleEntityRuntime<ProjectSurface>({
     family: 'project',
@@ -81,6 +96,7 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
     getId: (project) => normalizeString(project?.id),
     mode: consoleRoot.source,
     readOnly: true,
+    enforcedTargetId: consoleTargets.singleTargetId,
   })
   const selectedProject = computed<ProjectConsoleEntity | null>(
     () => entity.selection.selectedTarget.value
@@ -119,6 +135,7 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
 
   return {
     projects,
+    targeting: consoleTargets,
     selection,
     runtime,
     actions,

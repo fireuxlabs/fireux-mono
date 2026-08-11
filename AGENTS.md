@@ -24,6 +24,7 @@ Use the smallest current context that fits the task.
 - Werkbox-specific work: `docs/ai/werkbox-context.md`
 - Apps That Slap-specific work: `docs/ai/apps-that-slap-context.md`
 - Cross-system identity, landing, and pricing literature: `docs/ai/identity-literature-context.md`
+- Landing-template catalogue and brand injection: `docs/ai/templates-context.md`
 - Product literature and common tongue: `docs/concepts/product-language.md`
 - Concept maps and family language: `docs/concepts/*.md`
 - Source shape and executable authority: `scripts/guards/*`

@@ -2,16 +2,7 @@
 // Concurrent edit — 2026-07-20 20:51 CEST — Place-root authority pass: make Kitchen hours an optional operational override and remove Kitchen currency authority.
 // Concurrent edit — 2026-07-20 23:30 CEST — Entity Vocabulary + Matrix Pass: classify Kitchen root identity and access-only App support.
 import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
-import type {
-  FireuxConsoleEntityAppScope,
-  FireuxConsoleEntityIdentity,
-  FireuxConsoleEntityVisibility,
-} from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
-import {
-  FireuxConsoleEntityAppScopeModel,
-  FireuxConsoleEntityVisibilityModel,
-} from 'fireux-core/runtime/models/utils/console-entity.model'
 import type { CurrencyDisplayFormat } from './shared/currency-display.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
@@ -78,27 +69,28 @@ export const AppKitchenStorage = {
 
 export type KitchenOperationKey = typeof KitchenStorage.operations[number]
 
-export type KitchenAppScope = FireuxConsoleEntityAppScope
-
-export type KitchenVisibility = FireuxConsoleEntityVisibility
-
 export type KitchenMediaBackdropColor = `#${string}`
 /** @deprecated Read-only compatibility for unmigrated records and consumers. */
 export type KitchenImageShade = 'light' | 'dark' | 'none'
 
-export type KitchenIdentity = Omit<
-  FireuxConsoleEntityIdentity,
-  'image_url' | 'gallery'
-> & {
-  /** Sparse override; empty means inherit Place.media_backdrop_color. */
-  media_backdrop_color?: KitchenMediaBackdropColor | ''
-  /** @deprecated Read-only compatibility. */
-  image_shade?: KitchenImageShade
-  /** Optional Kitchen-owned card image. Empty means inherit Place.image_url. */
-  card_image_url?: string
-  logo_image_url?: string
-  wordmark_no_logo_image_url?: string
-  wordmark_image_url?: string
+export type KitchenStatus = 'active' | 'paused' | 'archived'
+
+export type KitchenConsoleAttachment = {
+  app_id: string
+  app_role: 'parent' | 'tenant'
+}
+
+export type KitchenIdentity = {
+  /** Sparse override; empty means inherit the linked Place name. */
+  name: string
+  tagline: string
+}
+
+export type KitchenAssets = {
+  image: string
+  logo: string
+  wordmark: string
+  backdrop_color: KitchenMediaBackdropColor | ''
 }
 
 export type KitchenMenusConfig = {
@@ -157,6 +149,16 @@ export type KitchenFulfilmentConfig = {
   payment_methods: KitchenFulfilmentPaymentPolicy[]
 }
 
+export type KitchenConsoleConfig = {
+  menus?: KitchenMenusConfig
+  orders?: KitchenOrdersConfig
+  tables?: KitchenTablesConfig
+  fulfilment?: KitchenFulfilmentConfig
+  integrations?: {
+    sproochli?: SproochliAttachmentConfig
+  }
+}
+
 export const KitchenEntity = defineFireuxEntity({
   kind: 'entity',
   name: 'Kitchen',
@@ -175,65 +177,20 @@ export const KitchenDefaults = {
   id: '',
   place_id: '',
   slug: '',
-
-  // Level 1 Kitchen spine: these namespaces mirror console/kitchen route groups.
-  // Records still live in operation-specific models and app-scoped collections.
-  app_scope: {
-    ...FireuxConsoleEntityAppScopeModel,
-  } as KitchenAppScope,
-
-  visibility: {
-    ...FireuxConsoleEntityVisibilityModel,
-  } as KitchenVisibility,
+  status: 'active' as KitchenStatus,
+  visibility: false,
 
   identity: {
-    display_name: '',
+    name: '',
     tagline: '',
-    media_backdrop_color: '',
-    /** @deprecated Never write; migrate to media_backdrop_color. */
-    image_shade: 'none' as KitchenImageShade,
-    card_image_url: '',
-    logo_image_url: '',
-    wordmark_no_logo_image_url: '',
-    wordmark_image_url: '',
   } as KitchenIdentity,
 
-  // Default food-menu display config for this Kitchen.
-  // Actual menu records live under the `menus` operation.
-  menus: {
-    currency_format: 'dash',
-    show_currency: true,
-    style: undefined,
-  } as KitchenMenusConfig,
-
-  // Kitchen-level ordering defaults. Order records live under the `orders` operation.
-  orders: {
-    modes: [],
-    default_lead_time_minutes: 0,
-    acceptance_required: true,
-    operation_hours: {
-      source: 'custom',
-      timezone: 'Europe/Zurich',
-      windows: [],
-    },
-    printing: {
-      ticket_device_id: '',
-    },
-  } as KitchenOrdersConfig,
-
-  // Front-of-house table numbering. Individual table records can be added
-  // later if tables gain names, zones, capacities, or independent lifecycle.
-  tables: {
-    count: 0,
-  } as KitchenTablesConfig,
-
-  // Kitchen-level fulfilment rules. Menus opt into delivery/collection/etc.;
-  // the Kitchen owns the actual delivery zones, default payment methods, and
-  // other venue service rules that public searches and ordering funnels consume.
-  fulfilment: {
-    delivery_zones: [],
-    payment_methods: [],
-  } as KitchenFulfilmentConfig,
+  assets: {
+    image: '',
+    logo: '',
+    wordmark: '',
+    backdrop_color: '',
+  } as KitchenAssets,
 
   created: {
     at: {} as FirebaseTimestamp,
@@ -248,36 +205,12 @@ export const KitchenDefaults = {
 
 export type Kitchen = Omit<
   WidenLiteral<typeof KitchenDefaults>,
-  'app_scope' | 'menus' | 'fulfilment'
+  'identity' | 'assets'
 > &
   {
-    app_scope: KitchenAppScope
-    menus: KitchenMenusConfig
-    fulfilment: KitchenFulfilmentConfig
-    sproochli?: SproochliAttachmentConfig
-
-    // Flat kitchen surface fields used by collection, route, and console views.
-    app_scope_state?: KitchenAppScope['state']
-    app_scope_app_id?: KitchenAppScope['app_id']
-    is_test_kitchen?: boolean
-    show?: boolean
-    active?: boolean
-    display_name?: string
-    tagline?: string
-    formatted_address?: string
-    short_address?: string
-    cover_image?: string
-    display_image_url?: string
-    wordmark_no_logo_image_url?: string
-    wordmark_image_url?: string
-    image_shade?: KitchenImageShade
-    food_gallery?: string[]
-    currency_code?: string
-    menu_currency_format?: CurrencyDisplayFormat
-    menu_show_currency?: boolean
-    menu_style?: Partial<PageStyle>
-    menu_available?: boolean
-    claimed_by?: string
+    identity: KitchenIdentity
+    assets: KitchenAssets
+    console?: KitchenConsoleAttachment
   }
 
 export type AppKitchen = {
@@ -287,6 +220,7 @@ export type AppKitchen = {
   join_requests: string[]
   created: FireuxStamped['created']
   updated: FireuxStamped['updated']
+  console: KitchenConsoleConfig
 }
 
 export const AppKitchenDefaults: AppKitchen = {
@@ -294,6 +228,7 @@ export const AppKitchenDefaults: AppKitchen = {
   operator_ids: [],
   team_ids: [],
   join_requests: [],
+  console: {},
   created: {
     at: {} as FirebaseTimestamp,
     by: undefined,
@@ -312,34 +247,20 @@ export type KitchenCreateInput = Partial<
     | 'place_id'
     | 'slug'
     | 'identity'
-    | 'menus'
-    | 'orders'
+    | 'assets'
   >
 >
 
 export type KitchenUpdateInput = Partial<
   Pick<
     Kitchen,
-    'slug' | 'identity' | 'menus' | 'orders' | 'tables' | 'fulfilment' | 'visibility'
+    'slug' | 'identity' | 'assets' | 'status' | 'visibility'
   >
 > & {
-  'identity.display_name'?: string
+  'identity.name'?: string
   'identity.tagline'?: string
-  'identity.card_image_url'?: string
-  'identity.logo_image_url'?: string
-  'identity.wordmark_no_logo_image_url'?: string
-  'identity.wordmark_image_url'?: string
-  'identity.media_backdrop_color'?: string
-  'menus.currency_format'?: CurrencyDisplayFormat
-  'menus.show_currency'?: boolean
-  'menus.available'?: boolean
-  'visibility.show'?: boolean
-  'visibility.active'?: boolean
-  'visibility.is_test'?: boolean
-  'orders.modes'?: string[]
-  'orders.default_lead_time_minutes'?: number
-  'orders.acceptance_required'?: boolean
-  'orders.operation_hours'?: WeekdayTimeWindowsConfig | null
-  'orders.printing'?: KitchenOrdersConfig['printing'] | null
-  'tables.count'?: number
+  'assets.image'?: string
+  'assets.logo'?: string
+  'assets.wordmark'?: string
+  'assets.backdrop_color'?: string
 }

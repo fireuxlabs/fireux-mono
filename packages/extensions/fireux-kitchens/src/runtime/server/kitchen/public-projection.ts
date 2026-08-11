@@ -13,7 +13,6 @@ import {
   readKitchenSproochliConfig,
   readKitchenVisibility,
 } from '../../utils/kitchen-spine.ts'
-import { readKitchenOnboardingSupport } from './onboarding-policy.ts'
 import { menuKitchenIdentity } from '../menu/ownership/kitchen-scope.ts'
 
 export type KitchenPublicDocument = {
@@ -25,6 +24,7 @@ export type KitchenPublicDirectoryScope = {
   appId: string
   ecosystemId: string
   role: 'global' | 'tenant' | 'standalone'
+  includeHidden?: boolean
 }
 
 type RuntimeFirestore = ReturnType<typeof getRuntimeFirestore>
@@ -36,7 +36,8 @@ type CanonicalKitchenAppScope = {
 
 type PublicKitchenProjectionParts = {
   document: KitchenPublicDocument
-  appScope: CanonicalKitchenAppScope
+  appScope: CanonicalKitchenAppScope | null
+  supportData: Record<string, unknown>
   placeData: Record<string, unknown>
   identity: ReturnType<typeof menuKitchenIdentity>
   rootIdentity: ReturnType<typeof readKitchenIdentity>
@@ -59,28 +60,32 @@ const number = (value: unknown) => {
 function canonicalKitchenAppScope(
   data: Record<string, unknown>
 ): CanonicalKitchenAppScope | null {
-  const scope = record(data.app_scope)
-  const keys = Object.keys(scope).sort()
-  const state = scope.state
-  const appId = text(scope.app_id)
-  const hasLegacyScope = [
+  const console = record(data.console)
+  const keys = Object.keys(console).sort()
+  const appRole = console.app_role
+  const appId = text(console.app_id)
+  const hasRetiredScope = [
+    'app_scope',
     'app_scope_state',
     'app_scope_app_id',
     'app_id',
   ].some(key => Object.hasOwn(data, key))
 
   if (
-    hasLegacyScope ||
+    hasRetiredScope ||
     keys.length !== 2 ||
     keys[0] !== 'app_id' ||
-    keys[1] !== 'state' ||
-    (state !== 'parent_app' && state !== 'tenant_app') ||
+    keys[1] !== 'app_role' ||
+    (appRole !== 'parent' && appRole !== 'tenant') ||
     !isFirestoreDocumentId(appId)
   ) {
     return null
   }
 
-  return { state, appId }
+  return {
+    state: appRole === 'tenant' ? 'tenant_app' : 'parent_app',
+    appId,
+  }
 }
 
 export function isPublishedKitchen(data: Record<string, unknown>) {
@@ -106,14 +111,11 @@ export async function hydrateKitchenPublicDocuments(
     }
 
     const appScope = canonicalKitchenAppScope(document.data)
-    if (appScope) {
-      const appRef = db.collection('apps').doc(appScope.appId)
-      references.set(appRef.path, appRef)
-      const appKitchenRef = db
-        .collection(`apps/${appScope.appId}/kitchens`)
-        .doc(document.id)
-      references.set(appKitchenRef.path, appKitchenRef)
-    }
+    if (!appScope) continue
+    const appKitchenRef = db
+      .collection(`apps/${appScope.appId}/kitchens`)
+      .doc(document.id)
+    references.set(appKitchenRef.path, appKitchenRef)
   }
 
   if (!references.size) return new Map<string, Record<string, unknown>>()
@@ -128,7 +130,7 @@ export async function hydrateKitchenPublicDocuments(
 function publicKitchenProjectionParts(
   document: KitchenPublicDocument,
   dataByPath: Map<string, Record<string, unknown>>,
-  directoryScope: KitchenPublicDirectoryScope
+  _directoryScope: KitchenPublicDirectoryScope
 ): PublicKitchenProjectionParts | null {
   const rootData = document.data
   const placeId = readRecordString(rootData, 'place_id')
@@ -138,32 +140,11 @@ function publicKitchenProjectionParts(
   if (!placeData) return null
 
   const appScope = canonicalKitchenAppScope(rootData)
-  if (!appScope) return null
-  if (
-    directoryScope.role !== 'global' &&
-    appScope.appId !== directoryScope.appId
-  ) {
-    return null
-  }
+  const supportData = appScope
+    ? dataByPath.get(`apps/${appScope.appId}/kitchens/${document.id}`) || {}
+    : {}
 
-  const app = dataByPath.get(`apps/${appScope.appId}`)
-  const appData = dataByPath.get(
-    `apps/${appScope.appId}/kitchens/${document.id}`
-  )
-  if (
-    !app ||
-    readRecordString(app, 'ecosystem_id') !== directoryScope.ecosystemId ||
-    !appData
-  ) {
-    return null
-  }
-  try {
-    if (!readKitchenOnboardingSupport(appData)) return null
-  } catch {
-    return null
-  }
-
-  const identity = menuKitchenIdentity(rootData, appData, placeData)
+  const identity = menuKitchenIdentity(rootData, supportData, placeData)
   if (!text(identity.name)) return null
 
   const slug = readRecordString(rootData, 'slug')
@@ -173,11 +154,12 @@ function publicKitchenProjectionParts(
   return {
     document,
     appScope,
+    supportData,
     placeData,
     identity,
     rootIdentity: readKitchenIdentity(rootData),
     place: readPlacePresentation(placeData),
-    publiclyVisible: isPublishedKitchen(rootData),
+    publiclyVisible: rootData.visibility === true,
     isTestKitchen: visibility.isTest,
   }
 }
@@ -272,11 +254,13 @@ export function projectPublicKitchenDetail(
   const tagline = item.brand_tagline || ''
   const imageUrl = item.image_url || ''
   const placeImageUrl = text(parts.place.imageUrl)
-  const sproochli = readKitchenSproochliConfig(parts.document.data)
+  const sproochli = readKitchenSproochliConfig(parts.supportData)
 
   return {
     ...item,
-    app_scope_app_id: parts.appScope.appId,
+    ...(parts.appScope?.appId
+      ? { app_scope_app_id: parts.appScope.appId }
+      : {}),
     route_scope: 'live',
     display_name: item.name,
     ...(sproochli.enabled

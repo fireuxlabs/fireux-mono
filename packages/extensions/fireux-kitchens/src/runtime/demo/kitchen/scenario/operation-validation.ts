@@ -162,7 +162,7 @@ export function validateKitchenDemoOperations(
             && !KITCHEN_MISE_WORKFLOW_STAGES.includes(task.workflow_stage)
           )
           || task.ingredient_ids.some(id => !ingredientIds.has(id))
-          || task.mise_ids.some(id => !prepItemIds.has(id))
+          || task.prep_item_ids.some(id => !prepItemIds.has(id))
           || Boolean(task.recipe_id && !recipeIds.has(task.recipe_id))
           || Boolean(
             task.recipe_id

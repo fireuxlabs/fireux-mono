@@ -38,7 +38,7 @@ export type PublicKitchenIndexPage = {
 }
 
 export type PublicKitchenDetail = PublicKitchenIndexItem & {
-  app_scope_app_id: string
+  app_scope_app_id?: string
   route_scope: 'live'
   display_name: string
   sproochli?: Pick<
@@ -134,5 +134,6 @@ export type KitchenConsoleTargetItem = {
 export type KitchenConsoleTargetsResponse = {
   ok: true
   appId: string
+  family: 'kitchen'
   items: KitchenConsoleTargetItem[]
 }

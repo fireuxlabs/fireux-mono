@@ -2019,7 +2019,7 @@ export async function run(ctx) {
     !kitchenConsoleTargetSource.includes(
       'enabled?: MaybeRefOrGetter<boolean>'
     ) ||
-    !kitchenConsoleTargetSource.includes('!enabled.value ||')
+    !kitchenConsoleTargetSource.includes('enabled: options.enabled')
   ) {
     violations.push({
       code: 'kitchen-demo-live-target',

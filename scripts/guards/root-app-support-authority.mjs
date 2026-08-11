@@ -431,6 +431,7 @@ const sourceFamilies = {
   miseboxRules: [
     files.miseboxRules,
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules',
+    'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-workflow.rules',
   ],
 }
 
@@ -929,6 +930,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
 
   assert.deepEqual(directTypeFields(source.kitchenModel, 'AppKitchen'), [
+    'console',
     'created',
     'id',
     'join_requests',
@@ -938,13 +940,13 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   ])
   assert.match(
     source.kitchenModel,
-    /Omit<[\s\S]*FireuxConsoleEntityIdentity,[\s\S]*'image_url' \| 'gallery'[\s\S]*>/,
-    'Kitchen identity must exclude Place-owned media.'
+    /export type KitchenIdentity = \{[\s\S]*name: string[\s\S]*tagline: string[\s\S]*\}/,
+    'Kitchen identity must remain a small root-owned override.'
   )
   assert.match(
     source.kitchenModel,
-    /card_image_url\?: string[\s\S]*card_image_url: ''/,
-    'Kitchen identity must declare one sparse card-image override without copying Place media.'
+    /export type KitchenAssets = \{[\s\S]*image: string[\s\S]*logo: string[\s\S]*wordmark: string[\s\S]*backdrop_color:/,
+    'Kitchen assets must use the canonical root asset namespace.'
   )
   assert.match(
     source.kitchenInterface,
@@ -1022,24 +1024,9 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(
     source.kitchenTargetCollection,
-    /\/api\/console\/kitchen\/targets/
+    /useConsoleTargetRequest<KitchenConsoleTargetItem>\(['"]kitchen['"]/
   )
-  assert.match(source.kitchenTargetCollection, /getIdToken\(\)/)
-  assert.match(source.kitchenTargetCollection, /Authorization:\s*`Bearer/)
-  assert.match(
-    source.kitchenTargetCollection,
-    /kitchen-console-targets-\$\{appId\}-\$\{uid\.value/
-  )
-  assert.match(source.kitchenTargetCollection, /dedupe:\s*'defer'/)
-  assert.match(source.kitchenTargetCollection, /useFirestoreCollectionState/)
-  assert.match(
-    source.kitchenTargetCollection,
-    /value\.requestUid !== uid\.value/
-  )
-  assert.match(
-    source.kitchenTargetCollection,
-    /value\.response\.appId !== appId/
-  )
+  assert.doesNotMatch(source.kitchenTargetCollection, /useAsyncData/)
   assert.match(source.kitchenConsoleIndex, /targets:\s*targetCollection/)
   assert.doesNotMatch(
     source.kitchenConsoleIndex,
@@ -1078,8 +1065,8 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   assert.match(source.kitchenTargetApi, /readCanonicalKitchenScope/)
   assert.match(source.kitchenTargetApi, /keys\.length !== 2/)
-  assert.match(source.kitchenTargetApi, /state !== 'parent_app'/)
-  assert.match(source.kitchenTargetApi, /state !== 'tenant_app'/)
+  assert.match(source.kitchenTargetApi, /appRole !== 'parent'/)
+  assert.match(source.kitchenTargetApi, /appRole !== 'tenant'/)
   assert.match(source.kitchenTargetApi, /'app_scope_state'/)
   assert.match(source.kitchenTargetApi, /'app_scope_app_id'/)
   assert.match(source.kitchenTargetApi, /db\.getAll/)

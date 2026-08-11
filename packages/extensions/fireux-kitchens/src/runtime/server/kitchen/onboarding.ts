@@ -12,6 +12,7 @@ import { getRuntimeFirestore } from 'fireux-core/runtime/server/utils/getRuntime
 import { runGuardedServerTransaction } from 'fireux-core/runtime/server/utils/firestore-mutations/server-transaction'
 import { requireFirestoreDocumentId } from 'fireux-core/runtime/server/utils/ids/path'
 import { serverAuditStamp } from 'fireux-core/runtime/server/utils/records/stamps'
+import { normalizeSlug } from 'fireux-core/runtime/utils/slug/normalizeSlug'
 import {
   FIRESTORE_MUTATION_TARGETS,
   serverAppKitchensTarget,
@@ -200,14 +201,9 @@ export async function previewKitchenOnboarding(
   })
   const slug = text(locator.kitchen?.slug)
   const identity = record(locator.kitchen?.identity)
-  const displayName = text(
-    identity.display_name ||
-      locator.kitchen?.display_name ||
-      locator.kitchen?.name
-  )
-  const visibility = record(locator.kitchen?.visibility)
-  const published = visibility.show === true || locator.kitchen?.show === true
-  const paletteOverride = readBrandPalette(record(locator.kitchen?.menus).style)
+  const displayName = text(identity.name)
+  const published = locator.kitchen?.visibility === true
+  const paletteOverride = readBrandPalette(locator.kitchen?.brand_palette)
   return {
     kitchen_id: locator.kitchenId,
     place_id: locator.placeId,
@@ -285,7 +281,7 @@ export async function completeKitchenOnboarding(
     const createdRoot = !root.exists
     const createdAppSupport = !support.exists
     const placeName = text(place.data?.name)
-    const slug = text(rootData?.slug)
+    const slug = text(rootData?.slug) || normalizeSlug(placeName || locator.kitchenId)
     const placePalette = readBrandPalette(place.data?.brand_palette)
     const paletteOverride = compactBrandPalette(
       requestedPalette.value,
@@ -299,20 +295,25 @@ export async function completeKitchenOnboarding(
     if (createdRoot) {
       mutations.create(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId, {
         place_id: locator.placeId,
-        app_scope: {
-          state: current.appScopeState,
+        slug,
+        status: 'active',
+        visibility: false,
+        console: {
           app_id: current.appId,
+          app_role: current.appScopeState === 'tenant_app' ? 'tenant' : 'parent',
         },
-        visibility: {
-          show: false,
-          active: true,
-          is_test: false,
+        identity: {
+          name: displayName && displayName !== placeName ? displayName : '',
+          tagline: '',
         },
-        ...(displayName && displayName !== placeName
-          ? { identity: { display_name: displayName } }
-          : {}),
+        assets: {
+          image: '',
+          logo: '',
+          wordmark: '',
+          backdrop_color: '',
+        },
         ...(Object.keys(paletteOverride).length
-          ? { menus: { style: paletteOverride } }
+          ? { brand_palette: paletteOverride }
           : {}),
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
@@ -332,6 +333,7 @@ export async function completeKitchenOnboarding(
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
+        console: {},
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })

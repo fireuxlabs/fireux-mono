@@ -65,23 +65,15 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(manager, /\buseKitchenCollection\s*\(/)
   assert.doesNotMatch(manager, /useKitchenFetch|firebase\/firestore/)
   assert.match(collection, /\/api\/kitchens\?limit=/)
-  assert.match(collection, /visibility=all/)
+  assert.match(collection, /includeHidden=true/)
   assert.match(collection, /getIdToken\(\)/)
   assert.match(collection, /watch\(\s*\[hasAuthState,\s*uid\]/)
-  assert.match(collection, /void requestPreview\(\)/)
-  assert.match(collection, /generation === previewGeneration/)
-  assert.doesNotMatch(
-    collection,
-    /shouldRequestPreview|previewPending|previewError/
-  )
-  assert.match(
-    collection,
-    /await state\.refresh\(\)[\s\S]*?void requestPreview\(\)/
-  )
-  assert.doesNotMatch(
-    collection,
-    /firebase\/firestore|useFirestoreRead|useDevKitchenCollection/
-  )
+  assert.doesNotMatch(collection, /requestPreview|privilegedPreview|firebase\/firestore/)
+  assert.match(indexApi, /db\.collection\('kitchens'\)/)
+  assert.match(indexApi, /document\.data\.visibility === false && !includeHidden/)
+  assert.match(indexApi, /requireFirebaseBearerUser/)
+  assert.match(indexApi, /apps\/\$\{appId\}\/users\/\$\{uid\}/)
+  assert.match(indexApi, /!isDeveloper && !isAdmin/)
   assert.match(indexApi, /projectPublicKitchenIndexItem/)
   assert.match(indexApi, /where\('place_id', '==', requestedPlaceId\)/)
   assert.match(detailApi, /projectPublicKitchenDetail/)

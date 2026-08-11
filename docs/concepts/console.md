@@ -30,6 +30,7 @@ Map the shared console system and domain adapters.
 - `useConsoleEntityRuntime`
 - `useConsoleDemoData`
 - `useConsoleTargets`
+- `useConsoleTargetRequest`
 - `useConsoleIndex`
 - `ConsoleSelectedTarget`
 - `ConsoleTargetCollection`
@@ -120,6 +121,12 @@ Map the shared console system and domain adapters.
 - Every Live App sources target relationships and operator/team access from
   the owning entity family's persisted App-support records. AppUser does not
   carry Console target IDs.
+- Every family loads its authenticated chooser candidates through
+  `/api/console/{family}/targets`. Core owns the App-, family-, and User-scoped
+  request lifecycle; the family endpoint owns authority and the family core
+  maps the returned IDs or projections into domain cards. Project retains its
+  private control-plane authority, and Kitchen retains its richer joined
+  projection, without forking the request contract.
 - Target adapters must pass the collection `outcome` through `useConsoleIndex`;
   it is the sole target-state authority, with no count or pending fallback.
   Named `ConsoleXIndexTargets` wrappers require that outcome and use
@@ -153,7 +160,8 @@ Map the shared console system and domain adapters.
   root and same-id App-support reads must fail the complete outcome on a missing
   half, wrong App scope, malformed support authority, or unauthorized indexed
   id; they never leave an unused full-root listener behind client filtering.
-- Kitchen live targets use the authenticated `/api/console/kitchen/targets`
+- Kitchen live targets use the canonical authenticated
+  `/api/console/kitchen/targets`
   projection. The fixed-runtime server derives candidate IDs, exact-loads and
   authorizes every canonical root/App-support/Place join, and the selected live
   Kitchen reuses that projected root instead of starting a second raw browser

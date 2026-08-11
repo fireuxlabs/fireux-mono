@@ -107,7 +107,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Logo.vue'
   )
   assert.match(placeModel, /media_backdrop_color/)
-  assert.match(kitchenModel, /media_backdrop_color/)
+  assert.match(kitchenModel, /backdrop_color/)
   assert.match(kitchenLogoEditor, /type="color"/)
   assert.doesNotMatch(kitchenLogoEditor, /Logo tone|imageShadeOptions/)
   const appModel = read(repoRoot, APP_MODEL)

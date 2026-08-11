@@ -307,7 +307,7 @@ export function projectKitchenDemoMiseTaskMenuIds(
   }
 
   let hasProductionSource = false
-  for (const prepItemId of task.mise_ids) {
+  for (const prepItemId of task.prep_item_ids) {
     hasProductionSource =
       addEntityMenus(cascade.prepItems, prepItemId)
       || hasProductionSource

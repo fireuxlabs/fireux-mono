@@ -110,7 +110,7 @@ export const projectKitchenMiseTask = (
     estimatedMinutes: positiveInteger(task.estimated_minutes),
     id,
     ingredientCount: relationCount(task.ingredient_ids),
-    prepItemCount: relationCount(task.mise_ids),
+    prepItemCount: relationCount(task.prep_item_ids),
     priority: normalizeKitchenMisePriority(task.priority),
     recipeId: cleanKitchenMiseText(task.recipe_id),
     serviceDate: cleanKitchenMiseText(task.service_date),

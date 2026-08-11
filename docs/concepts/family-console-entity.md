@@ -38,6 +38,9 @@ Every Console Entity must share these rules:
 
 - The family core owns target candidate resolution, the authoritative target
   collection outcome, and selection validity.
+- Every family enters through `/api/console/{family}/targets`. Core owns one
+  authenticated App + family + User request lifecycle; each family retains
+  its own authority query and domain projection.
 - Index and Overview adapters consume that core state. They do not create a
   second membership resolver or target outcome.
 - Target outcomes are explicit: `idle`, `pending`, `error`, `empty`, or

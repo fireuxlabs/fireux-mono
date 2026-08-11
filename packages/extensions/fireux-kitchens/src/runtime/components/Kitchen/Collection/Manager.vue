@@ -52,7 +52,7 @@
     <CollectionDirectoryState
       v-else-if="outcome === 'error'"
       title="Kitchens unavailable"
-      description="Published kitchens could not be loaded. Please try again."
+      description="Kitchens could not be loaded. Please try again."
       icon="i-lucide-triangle-alert"
       role="alert"
       aria-live="assertive"
@@ -78,14 +78,14 @@
           <KitchenCardsPill
             v-bind="card"
             :link="linkEnabled"
-            :show-badges="showBadges || privilegedPreview"
+            :show-badges="showBadges"
           />
         </template>
         <template #cell="{ card }">
           <KitchenCardsCell
             v-bind="card"
             :link="linkEnabled"
-            :show-badges="showBadges || privilegedPreview"
+            :show-badges="showBadges"
             directory
           />
         </template>
@@ -117,7 +117,7 @@
         :title="query ? 'No matching kitchens' : 'No kitchens yet'"
         :description="query
           ? 'Try a different kitchen name or location.'
-          : 'Published kitchens will appear here when they are ready.'"
+          : 'Kitchens will appear here when they are added.'"
       />
 
       <div v-if="hasMore && !query" class="kitchen-directory__more">
@@ -176,7 +176,7 @@ const props = withDefaults(
     devJsonContext?: string
   }>(),
   {
-    title: 'Kitchen directory',
+    title: 'Kitchen collection',
     description: '',
     searchPlaceholder: 'Search kitchens…',
     showSearch: true,
@@ -195,7 +195,6 @@ const collectionSurface = computed<KitchenCollectionItem[]>(
   () => fetched.kitchens.value ?? []
 )
 const outcome = computed(() => fetched.outcome.value)
-const privilegedPreview = computed(() => fetched.privilegedPreview.value)
 const hasMore = computed(() => fetched.hasMore.value)
 const loadingMore = computed(() => fetched.loadingMore.value)
 const loadMoreError = computed(() => fetched.loadMoreError.value)
@@ -209,12 +208,10 @@ const isSettled = computed(() =>
   outcome.value === 'ready' || outcome.value === 'empty'
 )
 const { devJsonData, loadDevJson, unloadDevJson } = useDevCollectionJson(collectionSurface)
-const title = computed(() => String(props.title || 'Kitchen directory'))
+const title = computed(() => String(props.title || 'Kitchen collection'))
 const description = computed(() =>
   String(
-    props.description || (fetched.privilegedPreview.value
-      ? 'Admin preview of all Kitchens. Hidden and test Kitchens are not public.'
-      : 'Choose a kitchen to explore its public profile and menus.')
+    props.description || 'Choose a Kitchen to view its profile and menus.'
   ).trim()
 )
 const searchPlaceholder = computed(() =>
@@ -225,7 +222,7 @@ const showCount = computed(() => props.showCount !== false)
 const linkEnabled = computed(() => props.link !== false)
 const showVariantToggle = computed(() => props.showVariantToggle !== false)
 const showBadges = computed(() =>
-  props.showBadges !== false || fetched.privilegedPreview.value
+  props.showBadges !== false || fetched.canViewHidden.value
 )
 const devJsonTitle = computed(() =>
   String(props.devJsonTitle || 'Kitchens (JSON)').trim()

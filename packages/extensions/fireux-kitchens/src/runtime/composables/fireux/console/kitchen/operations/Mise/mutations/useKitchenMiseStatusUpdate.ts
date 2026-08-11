@@ -5,7 +5,7 @@ import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app
 import { resolveKitchenScopeCollectionPath } from '../../../../../firestore/kitchen/utils/paths/useKitchenChildCollection'
 import {
   KitchenMiseTaskStorage,
-  KitchenMiseTaskModel,
+  KitchenMiseTaskDefaults,
   normalizeKitchenMiseStatus,
   type KitchenMiseStatus,
   type KitchenMiseTask,
@@ -48,7 +48,7 @@ export function useKitchenMiseStatusUpdate() {
       status,
       completed_at: status === 'done'
         ? serverTimestamp() as never
-        : KitchenMiseTaskModel.completed_at,
+        : KitchenMiseTaskDefaults.completed_at,
     })
   }
 

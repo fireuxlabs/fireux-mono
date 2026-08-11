@@ -1497,42 +1497,6 @@ service cloud.firestore {
             isTargetOperator(appId, 'kitchens', kitchenId);
         }
 
-        match /stations/{stationId} {
-          function hasStationParent() {
-            return exists(
-              /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
-            );
-          }
-
-          allow get, list: if hasStationParent() &&
-            (isAppAdmin(appId) ||
-              isTargetMember(appId, 'kitchens', kitchenId));
-          allow create: if hasStationParent() &&
-            isValidFirestoreDocumentId(stationId) &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
-            isValidKitchenStation(request.resource.data, kitchenId) &&
-            request.resource.data.created.at == request.time &&
-            request.resource.data.created.by == request.auth.uid &&
-            request.resource.data.created.app_id == appId &&
-            request.resource.data.updated.at == request.time &&
-            request.resource.data.updated.by == request.auth.uid;
-          allow update: if hasStationParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId)) &&
-            isValidKitchenStation(request.resource.data, kitchenId) &&
-            request.resource.data.kitchen_id == resource.data.kitchen_id &&
-            request.resource.data.created == resource.data.created &&
-            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
-              'name', 'description', 'active', 'sort_order', 'updated'
-            ]) &&
-            request.resource.data.updated.at == request.time &&
-            request.resource.data.updated.by == request.auth.uid;
-          allow delete: if hasStationParent() &&
-            (isAppAdmin(appId) ||
-              isTargetOperator(appId, 'kitchens', kitchenId));
-        }
-
         match /menus/{menuId} {
           allow get, list: if isAppAdmin(appId) ||
             isTargetMember(appId, 'kitchens', kitchenId);
@@ -1609,7 +1573,10 @@ service cloud.firestore {
               'ingredients',
               'dishes',
               'recipes',
+              'prep-items',
               'stations',
+              'mise',
+              'mise-tasks',
               'menus',
               'orders',
               'sales'
@@ -1709,6 +1676,311 @@ service cloud.firestore {
               (isAppAdmin(appId) ||
                 isTargetOperator(appId, targetCollection, targetId));
           }
+        }
+      }
+      match /kitchens/{kitchenId} {
+        function hasKitchenWorkflowParent() {
+          return exists(
+            /databases/$(database)/documents/apps/$(appId)/kitchens/$(kitchenId)
+          );
+        }
+
+        match /stations/{stationId} {
+          allow get, list: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetMember(appId, 'kitchens', kitchenId));
+          allow create: if hasKitchenWorkflowParent() &&
+            isValidFirestoreDocumentId(stationId) &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenStation(request.resource.data, kitchenId) &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.created.app_id == appId &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenStation(request.resource.data, kitchenId) &&
+            request.resource.data.kitchen_id == resource.data.kitchen_id &&
+            request.resource.data.created == resource.data.created &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'name', 'description', 'active', 'sort_order', 'updated'
+            ]) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow delete: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId));
+        }
+
+        // Legacy prep-item documents share the old `mise` name but are not
+        // workflow tasks. Preserve member reads while closing browser writes
+        // until that record family is separately classified and migrated.
+        match /mise/{legacyMiseId} {
+          allow get, list: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetMember(appId, 'kitchens', kitchenId));
+          allow create, update, delete: if false;
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
+        }
+
+        match /prep-items/{prepItemId} {
+          function isValidPrepItemUnit(value) {
+            return value in ['', 'g', 'ml', 'each', 'portion'];
+          }
+
+          function isValidPrepItemInput(value) {
+            return value is map &&
+              value.keys().hasAll([
+                'ingredient_id', 'quantity', 'unit', 'preparation'
+              ]) &&
+              value.keys().hasOnly([
+                'ingredient_id', 'quantity', 'unit', 'preparation'
+              ]) &&
+              isValidFirestoreDocumentId(value.ingredient_id) &&
+              value.quantity is number && value.quantity >= 0 &&
+              value.quantity <= 1000000000 &&
+              isValidPrepItemUnit(value.unit) && value.unit != '' &&
+              isValidBoundedString(value.preparation, 500);
+          }
+
+          function isValidPrepItemInputChunk(value, start) {
+            return value.size() <= start ||
+              (isValidPrepItemInput(value[start]) &&
+                (value.size() <= start + 1 ||
+                  (isValidPrepItemInput(value[start + 1]) &&
+                    (value.size() <= start + 2 ||
+                      (isValidPrepItemInput(value[start + 2]) &&
+                        (value.size() <= start + 3 ||
+                          isValidPrepItemInput(value[start + 3])))))));
+          }
+
+          function isValidPrepItemInputs(value) {
+            return value is list && value.size() <= 12 &&
+              isValidPrepItemInputChunk(value, 0) &&
+              (value.size() <= 4 ||
+                (isValidPrepItemInputChunk(value, 4) &&
+                  (value.size() <= 8 ||
+                    isValidPrepItemInputChunk(value, 8))));
+          }
+
+          function isValidPrepItemMethodChunk(value, start) {
+            return value.size() <= start ||
+              (isValidBoundedString(value[start], 1000) &&
+                value[start].size() > 0 &&
+                (value.size() <= start + 1 ||
+                  (isValidBoundedString(value[start + 1], 1000) &&
+                    value[start + 1].size() > 0 &&
+                    (value.size() <= start + 2 ||
+                      (isValidBoundedString(value[start + 2], 1000) &&
+                        value[start + 2].size() > 0 &&
+                        (value.size() <= start + 3 ||
+                          (isValidBoundedString(value[start + 3], 1000) &&
+                            value[start + 3].size() > 0)))))));
+          }
+
+          function isValidPrepItemMethod(value) {
+            return value is list && value.size() <= 20 &&
+              isValidPrepItemMethodChunk(value, 0) &&
+              (value.size() <= 4 ||
+                (isValidPrepItemMethodChunk(value, 4) &&
+                  (value.size() <= 8 ||
+                    (isValidPrepItemMethodChunk(value, 8) &&
+                      (value.size() <= 12 ||
+                        (isValidPrepItemMethodChunk(value, 12) &&
+                          (value.size() <= 16 ||
+                            isValidPrepItemMethodChunk(value, 16))))))));
+          }
+
+          function isValidKitchenPrepItem(data) {
+            return data is map &&
+              data.keys().hasAll([
+                'kitchen_id', 'name', 'slug', 'description',
+                'source_language', 'names', 'descriptions', 'station',
+                'inputs', 'recipe_id', 'yield', 'method', 'created', 'updated'
+              ]) &&
+              data.keys().hasOnly([
+                'kitchen_id', 'name', 'slug', 'description',
+                'source_language', 'names', 'descriptions', 'station',
+                'inputs', 'recipe_id', 'yield', 'method', 'created', 'updated'
+              ]) &&
+              data.kitchen_id == kitchenId &&
+              isValidBoundedString(data.name, 240) && data.name.size() > 0 &&
+              isValidBoundedString(data.slug, 240) && data.slug.size() > 0 &&
+              isValidBoundedString(data.description, 10000) &&
+              isValidBoundedString(data.source_language, 35) &&
+              data.source_language.size() > 0 &&
+              data.names is map && data.names.size() <= 30 &&
+              data.descriptions is map && data.descriptions.size() <= 30 &&
+              isValidBoundedString(data.station, 200) &&
+              isValidPrepItemInputs(data.inputs) &&
+              isValidBoundedString(data.recipe_id, 1500) &&
+              (data.recipe_id == '' || isValidFirestoreDocumentId(data.recipe_id)) &&
+              data.yield is map &&
+              data.yield.keys().hasAll(['quantity', 'unit']) &&
+              data.yield.keys().hasOnly(['quantity', 'unit']) &&
+              data.yield.quantity is number && data.yield.quantity >= 0 &&
+              data.yield.quantity <= 1000000000 &&
+              isValidPrepItemUnit(data.yield.unit) &&
+              isValidPrepItemMethod(data.method) &&
+              validCreatedStamp(data.created) &&
+              validUpdatedStamp(data.updated);
+          }
+
+          allow get, list: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetMember(appId, 'kitchens', kitchenId));
+          allow create: if hasKitchenWorkflowParent() &&
+            isValidFirestoreDocumentId(prepItemId) &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenPrepItem(request.resource.data) &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.created.app_id == appId &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenPrepItem(request.resource.data) &&
+            request.resource.data.kitchen_id == resource.data.kitchen_id &&
+            request.resource.data.created == resource.data.created &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'name', 'slug', 'description', 'source_language', 'names',
+              'descriptions', 'station', 'inputs', 'recipe_id', 'yield',
+              'method', 'updated'
+            ]) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow delete: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId));
+
+          match /{nested=**} {
+            allow get, list, create, update, delete: if false;
+          }
+        }
+
+        match /mise-tasks/{taskId} {
+          function isMiseTimestampOrUnset(value) {
+            return value is timestamp || (value is map && value.size() == 0);
+          }
+
+          function isValidMiseChecklistItem(value) {
+            return value is map &&
+              value.keys().hasAll(['id', 'label', 'done']) &&
+              value.keys().hasOnly(['id', 'label', 'done']) &&
+              isValidBoundedString(value.id, 200) && value.id.size() > 0 &&
+              isValidBoundedString(value.label, 500) && value.label.size() > 0 &&
+              value.done is bool;
+          }
+
+          function isValidMiseChecklistChunk(value, start) {
+            return value.size() <= start ||
+              (isValidMiseChecklistItem(value[start]) &&
+                (value.size() <= start + 1 ||
+                  (isValidMiseChecklistItem(value[start + 1]) &&
+                    (value.size() <= start + 2 ||
+                      (isValidMiseChecklistItem(value[start + 2]) &&
+                        (value.size() <= start + 3 ||
+                          isValidMiseChecklistItem(value[start + 3])))))));
+          }
+
+          function isValidMiseChecklist(value) {
+            return value is list && value.size() <= 20 &&
+              isValidMiseChecklistChunk(value, 0) &&
+              (value.size() <= 4 ||
+                (isValidMiseChecklistChunk(value, 4) &&
+                  (value.size() <= 8 ||
+                    (isValidMiseChecklistChunk(value, 8) &&
+                      (value.size() <= 12 ||
+                        (isValidMiseChecklistChunk(value, 12) &&
+                          (value.size() <= 16 ||
+                            isValidMiseChecklistChunk(value, 16))))))));
+          }
+
+          function isValidKitchenMiseTask(data) {
+            return data is map &&
+              data.keys().hasAll([
+                'kitchen_id', 'title', 'description', 'station',
+                'service_date', 'status', 'priority', 'estimated_minutes',
+                'ingredient_ids', 'prep_item_ids', 'menu_id', 'recipe_id',
+                'assignee_ids', 'checklist', 'due_at', 'completed_at',
+                'notes', 'created', 'updated'
+              ]) &&
+              data.keys().hasOnly([
+                'kitchen_id', 'title', 'description', 'station',
+                'workflow_stage', 'service_date', 'status', 'priority',
+                'estimated_minutes', 'ingredient_ids', 'prep_item_ids', 'menu_id',
+                'recipe_id', 'assignee_ids', 'checklist', 'due_at',
+                'completed_at', 'notes', 'created', 'updated'
+              ]) &&
+              data.kitchen_id == kitchenId &&
+              isValidBoundedString(data.title, 240) && data.title.size() > 0 &&
+              isValidBoundedString(data.description, 5000) &&
+              isValidBoundedString(data.station, 200) &&
+              (!('workflow_stage' in data) || data.workflow_stage in [
+                '', 'wash', 'cut_portion', 'make', 'cook_chill',
+                'set_stations', 'final_checks'
+              ]) &&
+              data.service_date is string &&
+              (data.service_date == '' ||
+                data.service_date.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')) &&
+              data.status in ['todo', 'in_progress', 'done', 'blocked'] &&
+              data.priority in ['low', 'normal', 'high', 'urgent'] &&
+              data.estimated_minutes is int &&
+              data.estimated_minutes >= 0 && data.estimated_minutes <= 10080 &&
+              isValidIdentityProfileStringList(data.ingredient_ids, 1500) &&
+              isValidIdentityProfileStringList(data.prep_item_ids, 1500) &&
+              isValidBoundedString(data.menu_id, 1500) &&
+              isValidBoundedString(data.recipe_id, 1500) &&
+              isValidIdentityProfileStringList(data.assignee_ids, 1500) &&
+              isValidMiseChecklist(data.checklist) &&
+              isMiseTimestampOrUnset(data.due_at) &&
+              isMiseTimestampOrUnset(data.completed_at) &&
+              isValidBoundedString(data.notes, 10000) &&
+              validCreatedStamp(data.created) &&
+              validUpdatedStamp(data.updated);
+          }
+
+          allow get, list: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetMember(appId, 'kitchens', kitchenId));
+          allow create: if hasKitchenWorkflowParent() &&
+            isValidFirestoreDocumentId(taskId) &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            request.resource.data.keys().hasAll(['workflow_stage']) &&
+            isValidKitchenMiseTask(request.resource.data) &&
+            request.resource.data.created.at == request.time &&
+            request.resource.data.created.by == request.auth.uid &&
+            request.resource.data.created.app_id == appId &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow update: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId)) &&
+            isValidKitchenMiseTask(request.resource.data) &&
+            request.resource.data.kitchen_id == resource.data.kitchen_id &&
+            request.resource.data.created == resource.data.created &&
+            request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+              'title', 'description', 'station', 'workflow_stage',
+              'service_date', 'status', 'priority', 'estimated_minutes',
+              'ingredient_ids', 'prep_item_ids', 'menu_id', 'recipe_id',
+              'assignee_ids', 'checklist', 'due_at', 'completed_at',
+              'notes', 'updated'
+            ]) &&
+            request.resource.data.updated.at == request.time &&
+            request.resource.data.updated.by == request.auth.uid;
+          allow delete: if hasKitchenWorkflowParent() &&
+            (isAppAdmin(appId) ||
+              isTargetOperator(appId, 'kitchens', kitchenId));
         }
       }
     }

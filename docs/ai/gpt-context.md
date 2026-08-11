@@ -21,6 +21,7 @@ Current scoped context entrypoints:
 - BuenoHost: `docs/ai/buenohost-context.md`
 - Identity and product literature: `docs/ai/identity-literature-context.md`
 - Misebox: `docs/ai/misebox-context.md`
+- Landing templates: `docs/ai/templates-context.md`
 - Werkbox: `docs/ai/werkbox-context.md`
 - Firestore mutations: `docs/ai/firestore-mutations-context.md`
 

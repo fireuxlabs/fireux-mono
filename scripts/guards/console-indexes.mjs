@@ -62,6 +62,7 @@ export async function run(ctx) {
     validateIndex({ ...index, files, repoRoot, violations })
   }
   validateSharedConsoleSource({ repoRoot, violations })
+  validateConsoleTargetEndpoints({ repoRoot, violations })
   validateConsoleDataContract({ files, repoRoot, violations })
   validateSourceIgnorantViews({ files, repoRoot, violations })
   validateMutationWriteGates({ files, repoRoot, violations })
@@ -91,6 +92,114 @@ export async function run(ctx) {
 
   console.log(
     '[guard] ✅ console indexes, typed data, and write gates use the shared spine'
+  )
+}
+
+function validateConsoleTargetEndpoints({ repoRoot, violations }) {
+  const requestRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargetRequest.ts'
+  const targetsRelative =
+    'packages/core/fireux-core/src/runtime/composables/fireux/app/console/useConsoleTargets.ts'
+  const endpointRelative =
+    'packages/core/fireux-core/src/runtime/server/api/console/[family]/targets.get.ts'
+  const moduleRelative = 'packages/core/fireux-core/src/module.ts'
+  const kitchenRelative =
+    'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/console/kitchen/index/useKitchenConsoleTargetCollection.ts'
+  const request = readRequiredSource(
+    repoRoot,
+    requestRelative,
+    'missing shared authenticated Console target request',
+    violations
+  )
+  const targets = readRequiredSource(
+    repoRoot,
+    targetsRelative,
+    'missing shared Console target authority adapter',
+    violations
+  )
+  const endpoint = readRequiredSource(
+    repoRoot,
+    endpointRelative,
+    'missing canonical Console family target endpoint',
+    violations
+  )
+  const moduleSource = readRequiredSource(
+    repoRoot,
+    moduleRelative,
+    'missing Core module registration',
+    violations
+  )
+  const kitchen = readRequiredSource(
+    repoRoot,
+    kitchenRelative,
+    'missing Kitchen target projection adapter',
+    violations
+  )
+
+  assertMatch(
+    moduleSource,
+    /route:\s*['"]\/api\/console\/:family\/targets['"]/,
+    moduleRelative,
+    'must register the canonical family target endpoint',
+    violations
+  )
+  assertMatch(
+    request,
+    /console-targets-\$\{appId\}-\$\{normalizedFamily\}-\$\{uid\.value/,
+    requestRelative,
+    'request state must be isolated by App, family, and User',
+    violations
+  )
+  for (const pattern of [
+    /\/api\/console\/\$\{normalizedFamily\}\/targets/,
+    /getIdToken\(\)/,
+    /Authorization:\s*`Bearer/,
+    /value\.response\.appId !== appId/,
+    /value\.response\.family !== normalizedFamily/,
+  ]) {
+    assertMatch(
+      request,
+      pattern,
+      requestRelative,
+      'must validate one authenticated canonical response',
+      violations
+    )
+  }
+  assertMatch(
+    targets,
+    /useConsoleTargetRequest\(family\)/,
+    targetsRelative,
+    'all generic Console families must consume the shared request',
+    violations
+  )
+  for (const pattern of [
+    /requireFirebaseBearerUser/,
+    /project_ids/,
+    /operator_ids/,
+    /team_ids/,
+    /Cache-Control['"]?:\s*['"]private, no-store/,
+  ]) {
+    assertMatch(
+      endpoint,
+      pattern,
+      endpointRelative,
+      'must retain authenticated, family-owned target authority',
+      violations
+    )
+  }
+  assertMatch(
+    kitchen,
+    /useConsoleTargetRequest<KitchenConsoleTargetItem>\(['"]kitchen['"]/,
+    kitchenRelative,
+    'Kitchen must reuse the shared request lifecycle',
+    violations
+  )
+  assertNoMatch(
+    kitchen,
+    /useAsyncData|firebase\/firestore/,
+    kitchenRelative,
+    'Kitchen must not fork request lifecycle or browser authority',
+    violations
   )
 }
 

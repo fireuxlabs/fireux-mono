@@ -1,6 +1,7 @@
 // FILE: packages/extensions/fireux-kitchens/src/runtime/models/kitchen/mise.model.ts
 
 import type { FireuxStamped } from 'fireux-core/runtime/models/utils/stamps.model'
+import { defineFireuxEntity } from 'fireux-core/runtime/models/utils/entity.model'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 
 /**
@@ -8,7 +9,7 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  *
  * Family: Kitchen-scoped
  * Storage: scoped operational record
- * Path: apps/{appId}/kitchens/{kitchenId}/mise/{taskId}
+ * Path: apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}
  * Owner app scope: Kitchen
  *
  * Decision note:
@@ -18,11 +19,29 @@ import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
  */
 export const KitchenMiseTaskStorage = {
   shape: 'scoped',
-  path: 'apps/{appId}/kitchens/{kitchenId}/mise/{taskId}',
-  collection: 'mise',
+  path: 'apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}',
+  collection: 'mise-tasks',
   parent: 'kitchen',
   idParam: 'taskId',
 } as const
+
+export const KitchenMiseTaskRecord = defineFireuxEntity({
+  kind: 'record',
+  name: 'KitchenMiseTask',
+  family: ['kitchen', 'support'],
+  identity: 'parent-scoped',
+  authority: 'parent',
+  appSupport: 'none',
+  publicRead: 'none',
+  status: 'confirmed',
+  console: false,
+  parent: 'Kitchen',
+  scoped: KitchenMiseTaskStorage.path,
+  notes: [
+    'Kitchen owns Mise workflow, scheduling and assignment state.',
+    'Mise tasks may reference Kitchen-owned Stations, Team, Menus and Recipes.',
+  ],
+})
 
 export const KITCHEN_MISE_STATUSES = [
   'todo',
@@ -164,7 +183,30 @@ export type KitchenMiseChecklistItem = {
   done: boolean
 }
 
-export const KitchenMiseTaskModel = {
+export interface KitchenMiseTask extends FireuxStamped {
+  id: string
+  kitchen_id: string
+  title: string
+  description: string
+  station: string
+  /** Missing legacy values remain visible in the Unsorted workflow group. */
+  workflow_stage?: KitchenMiseWorkflowStage | ''
+  service_date: string
+  status: KitchenMiseStatus
+  priority: KitchenMisePriority
+  estimated_minutes: number
+  ingredient_ids: string[]
+  prep_item_ids: string[]
+  menu_id: string
+  recipe_id: string
+  assignee_ids: string[]
+  checklist: KitchenMiseChecklistItem[]
+  due_at: FirebaseTimestamp
+  completed_at: FirebaseTimestamp
+  notes: string
+}
+
+export const KitchenMiseTaskDefaults = {
   id: '' as string,
   kitchen_id: '' as string,
 
@@ -178,7 +220,7 @@ export const KitchenMiseTaskModel = {
   estimated_minutes: 0 as number,
 
   ingredient_ids: [] as string[],
-  mise_ids: [] as string[],
+  prep_item_ids: [] as string[],
   menu_id: '' as string,
   recipe_id: '' as string,
   assignee_ids: [] as string[],
@@ -198,21 +240,7 @@ export const KitchenMiseTaskModel = {
     at: {} as FirebaseTimestamp,
     by: '' as FireuxStamped['created']['by'],
   },
-} as const
-
-type MutableKitchenMiseTaskModel = {
-  -readonly [K in keyof typeof KitchenMiseTaskModel]: (typeof KitchenMiseTaskModel)[K]
-}
-
-export type KitchenMiseTask =
-  Omit<MutableKitchenMiseTaskModel, 'workflow_stage'>
-  & {
-    /**
-     * Additive workflow classification. Missing legacy records remain visible
-     * in the Unsorted group until a chef classifies them.
-     */
-    workflow_stage?: KitchenMiseWorkflowStage | ''
-  }
+} as const satisfies KitchenMiseTask
 
 export type KitchenMiseTaskCreateInput = Omit<KitchenMiseTask, 'created' | 'updated'>
 export type KitchenMiseTaskUpdateInput = Partial<
@@ -266,13 +294,13 @@ export function normalizeKitchenMiseTask(value: unknown): KitchenMiseTask {
   const source = kitchenMiseRecord(value)
   const created = source.created && typeof source.created === 'object'
     ? source.created as KitchenMiseTask['created']
-    : KitchenMiseTaskModel.created
+    : KitchenMiseTaskDefaults.created
   const updated = source.updated && typeof source.updated === 'object'
     ? source.updated as KitchenMiseTask['updated']
-    : KitchenMiseTaskModel.updated
+    : KitchenMiseTaskDefaults.updated
 
   return {
-    ...KitchenMiseTaskModel,
+    ...KitchenMiseTaskDefaults,
     id: kitchenMiseString(source.id),
     kitchen_id: kitchenMiseString(source.kitchen_id),
     title: kitchenMiseString(source.title),
@@ -284,18 +312,18 @@ export function normalizeKitchenMiseTask(value: unknown): KitchenMiseTask {
     priority: normalizeKitchenMisePriority(source.priority),
     estimated_minutes: kitchenMiseEstimatedMinutes(source.estimated_minutes),
     ingredient_ids: kitchenMiseStringArray(source.ingredient_ids),
-    mise_ids: kitchenMiseStringArray(source.mise_ids),
+    prep_item_ids: kitchenMiseStringArray(source.prep_item_ids),
     menu_id: kitchenMiseString(source.menu_id),
     recipe_id: kitchenMiseString(source.recipe_id),
     assignee_ids: kitchenMiseStringArray(source.assignee_ids),
     checklist: normalizeKitchenMiseChecklist(source.checklist),
     due_at: kitchenMiseTimestamp(
       source.due_at,
-      KitchenMiseTaskModel.due_at
+      KitchenMiseTaskDefaults.due_at
     ),
     completed_at: kitchenMiseTimestamp(
       source.completed_at,
-      KitchenMiseTaskModel.completed_at
+      KitchenMiseTaskDefaults.completed_at
     ),
     notes: kitchenMiseString(source.notes),
     created,

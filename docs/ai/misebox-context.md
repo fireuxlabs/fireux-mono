@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-04
+Updated: 2026-08-11
 Ref: d232cc731
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -37,75 +37,41 @@ Before each task:
   into one app-wide `/operations` index grouped by Console.
 - Reusable kitchen, menu, ordering, supplier, product, and other domain truth
   belongs in the owning extension package under `packages/extensions/*`.
-- The `/kitchens` directory is published-only for guests and ordinary,
-  Premium, or Free users. An explicit authenticated private projection may
-  show all strict canonical Kitchen/App-support pairs to a current Misebox App
-  admin or, in local development, the configured developer. Global Misebox is
-  bounded to Apps with the current `ecosystem_id`; tenant runtimes remain
-  bounded to their current App. The derived access badge grants no authority,
-  Test preview rows never become public detail links, and legacy
-  root-only, missing-support, cross-ecosystem, or malformed rows fail closed.
-  Hidden is a directory-discovery state, not route access: hidden Live Kitchens
-  retain exact public detail links, while Test Kitchens have no public route.
-  Local development shows the strict all-Kitchen projection by default;
-  deployed Apps require the authenticated admin/developer preview to discover
-  hidden rows. That private preview is progressive enhancement: the bounded
-  public Kitchen collection renders as soon as it is ready and is never hidden
-  or failed by a delayed token refresh or unavailable private projection.
-  Kitchen detail exact-loads the same server-owned projection and
-  allowlist by slug during SSR; it does not read the Kitchen root or AppKitchen
-  support record directly from the browser.
-  The same public Kitchen detail remains read-only for ordinary visitors but
-  exposes a compact Kitchen-identity editor to an exact current-App admin or
-  the configured local developer. That editor mutates only Kitchen-owned name,
-  tagline, logo, and card-image overrides through a trusted server endpoint.
-  Place-owned facts/media and Menu operations remain in their owning Console
-  surfaces; public detail never restores a raw browser Kitchen-root write.
-- Reusable Kitchen onboarding belongs to `fireux-kitchens`. It composes the
-  Place package's canonical onboarding, then atomically creates or connects the
-  sparse Kitchen root and Misebox App-support authority. Misebox
-  apps configure whether creation is available and tenant Apps remain bounded
-  to persisted AppKitchen support. A current App admin creates or attaches
-  the root; apps do not recreate the funnel or copy Place defaults into Kitchen.
-  Place onboarding may establish sparse primary/secondary brand colours. New
-  Kitchens inherit them and persist only differing colours on the canonical
-  Kitchen root; Misebox app chrome and AppKitchen access records own neither.
-  A Kitchen logo is owned only by
-  `Kitchen.identity.logo_image_url`; Kitchen cards and logo editors do not use
-  the linked Place image as a second logo source. Kitchen cards resolve the
-  sparse `Kitchen.identity.card_image_url` override first, then the linked
-  `Place.cover_image`, with `Place.image_url` only as the final fallback when
-  no cover exists. This lets a restaurant inside a hotel provide its own square
-  Kitchen crop while ordinary Kitchens reuse their Place cover at read time;
-  no Place media is copied into the Kitchen root. Console target selection is
-  an identity surface, not a public card: it uses only the Kitchen-owned logo
-  and shows the neutral Kitchen fallback when that logo is absent. Demo
-  Kitchens obey the same split and cannot reuse their Place photograph as
-  their Kitchen logo.
-  Place optionally owns the validated six-digit `media_backdrop_color` base
-  inherited by Place-backed children. Kitchen persists the sparse
-  `identity.media_backdrop_color` override only when its transparent logo,
-  either wordmark (including `wordmark_no_logo_image_url`), or transparent
-  Kitchen card override needs a different background. The colour never tints
-  Place cover, image, or gallery photography. See
+- `/kitchens` is the Kitchen collection. It scans the canonical `kitchens`
+  root collection and excludes only a root whose boolean `visibility` is
+  explicitly `false` for ordinary visitors. A signed-in configured developer
+  or current-App admin receives the same root collection with hidden rows
+  included and labelled `Hidden`; App attachment and AppKitchen support never
+  decide collection membership. Each collection row joins its required Place
+  only to resolve Place-owned presentation. Kitchen detail resolves the same
+  root and Place by authored slug during SSR; browser code does not read raw
+  root or AppKitchen documents.
+- Reusable Kitchen onboarding belongs to `fireux-kitchens`. It selects or
+  creates the required Place first, then creates the same-id canonical Kitchen
+  root. App attachment is explicit: when present, the root's small `console`
+  reference names the App and role, while the same-id AppKitchen record owns
+  access and Console configuration. Neither record substitutes for the root.
+- A Kitchen root owns `place_id`, `slug`, `status`, boolean `visibility`, its
+  sparse `identity`, its `assets`, optional brand palette override, optional
+  Console attachment, and audit stamps. `identity` uses `name` and `tagline`;
+  `assets` uses `image`, `logo`, `wordmark`, and `backdrop_color`. Place owns
+  location name/address, photography, gallery, contact details, currency,
+  timezone, and business hours. Collection cards resolve a Kitchen image
+  override first, then the linked Place cover, then the Place image; no Place
+  media is copied into Kitchen.
+- AppKitchen owns bounded `operator_ids`, `team_ids`, and `join_requests`, plus
+  its `console` configuration for menus, orders, tables, fulfilment, and
+  integrations. Operational settings do not live on the Kitchen root.
+  Authenticated Console target projection requires the exact root, Place,
+  matching AppKitchen support, and scoped App membership. `operator_ids`
+  grants Kitchen mutation authority; `team_ids` grants target/read membership
+  only. Current App admins remain the explicit administrative override.
+- Media editors accept files rather than arbitrary URL text. Trusted upload
+  and mutation boundaries own exact Kitchen asset targets and reject another
+  bucket, external host, or wrong entity path. Kitchen assets never use the
+  linked Place image as a second logo source. See
   `docs/concepts/place-kitchen-media.md`.
-  Media editors accept image files, not arbitrary URL text. The upload writer
-  owns the exact Firebase Storage target: Kitchen logo/card overrides live at
-  `kitchens/{kitchenId}/identity/{logo|card}/current`, while Place avatar,
-  cover, and gallery media live below `places/{placeId}/`. Firestore stores
-  only the generated download URL for that exact target, and trusted mutation
-  boundaries reject another bucket, external host, or wrong entity path.
-  Place name, address, location media, gallery, contact details, currency,
-  timezone, and business hours remain Place-owned. Kitchen owns only its
-  operational override, logo, Menu, service, fulfilment, and other Kitchen
-  configuration. AppKitchen is an access-only record and never supplies
-  identity, media, style, fulfilment, or operating configuration.
-  Every Live, Demo, or writable Test Kitchen must have a valid linked Place;
-  Demo and Test sources provide their corresponding Demo/Test Place rather
-  than fabricating Place-like fields on the Kitchen. Demo Kitchen roots also
-  name their current parent App and pair with same-id access-only Demo support;
-  Demo is read-only, not root-only.
-  Supplier location follows a different owner contract:
+- Supplier location follows a different owner contract:
   `Supplier.company_id -> Company`, with Company as a same-id role over Place.
   Supplier onboarding requires that complete relationship and validates both
   records inside the trusted creation transaction; an empty `company_id` is
@@ -116,18 +82,6 @@ Before each task:
   `Supplier.place_id` or copy Place presentation onto the Supplier root.
   Live Supplier consumers must provide the same bounded Company projection
   before claiming equivalent location enrichment.
-  The Kitchen theme editor mutates the canonical Kitchen root through a
-  target-bound trusted transaction.
-  AppKitchen access records require bounded `operator_ids`, `team_ids`, and
-  `join_requests` arrays. The authenticated Kitchen target endpoint validates
-  that exact support shape and remains the sole live Console target outcome.
-  Missing, malformed, or payload-bearing AppKitchen records fail closed;
-  pre-release code does not carry legacy repair or fallback paths.
-  `operator_ids` grants Kitchen mutation authority; `team_ids` grants Kitchen
-  target/read membership only and must never authorize a write. Current App
-  admins remain the explicit administrative override. Supplier and any other
-  root/App-support console packages composed into Misebox keep their own domain
-  payloads but follow the same authority and atomic onboarding spine.
 - Product-neutral money and immutable FinancialFact primitives belong to
   `fireux-finance`. Kitchen retains Order and KitchenSale lifecycle ownership;
   a trusted `ready -> completed` transaction creates the same-id Sale and its
@@ -322,6 +276,17 @@ Before each task:
   clean, Cut & portion, Make, Cook & chill, Set stations, and Final checks;
   status, priority, station, and checklist progress remain orthogonal task
   metadata, while unclassified legacy records remain visible under Unsorted.
+  Live task storage is the dedicated Kitchen-owned
+  `apps/{appId}/kitchens/{kitchenId}/mise-tasks/{taskId}` collection. The older
+  `mise` collections contain legacy Prep Item documents and must not be read,
+  normalized, secured, or migrated as Mise tasks. Canonical Prep Items are
+  Kitchen-scoped Entities at
+  `apps/{appId}/kitchens/{kitchenId}/prep-items/{prepItemId}` and own inputs,
+  yield, method, and presentation. A task links them explicitly through
+  `prep_item_ids`; it never treats those ids as task dependencies. The
+  protected legacy migration is complete. Do not restore `mise` documents or
+  move Prep Items through browser code; use the read-only Prep Item audit to
+  detect regression and retain the migration script as operational evidence.
   The Product Demo names that operation projection `console.miseTasks`;
   Dish-level `mise` remains the derived production-requirement graph. The
   operation-level preview does not substitute those requirements for tasks.

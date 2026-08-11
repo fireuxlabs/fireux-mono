@@ -165,7 +165,7 @@ for (const supportKey of supportPaths) {
   const support = db.collection('apps').doc(appId).collection('kitchens').doc(kitchenId)
   const [team, mise] = await Promise.all([
     support.collection('team').get(),
-    support.collection('mise').get(),
+    support.collection('mise-tasks').get(),
   ])
   counts.team_members += team.size
   counts.mise_tasks += mise.size

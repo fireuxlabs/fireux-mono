@@ -49,28 +49,32 @@ function readCanonicalKitchenScope(
   kitchenId: string,
   data: StoredRecord
 ): CanonicalKitchenScope {
-  const scope = record(data.app_scope)
-  const keys = Object.keys(scope).sort()
-  const state = scope.state
-  const appId = text(scope.app_id)
-  const hasLegacyScope = [
+  const console = record(data.console)
+  const keys = Object.keys(console).sort()
+  const appRole = console.app_role
+  const appId = text(console.app_id)
+  const hasRetiredScope = [
+    'app_scope',
     'app_scope_state',
     'app_scope_app_id',
     'app_id',
   ].some(key => Object.hasOwn(data, key))
 
   if (
-    hasLegacyScope ||
+    hasRetiredScope ||
     keys.length !== 2 ||
     keys[0] !== 'app_id' ||
-    keys[1] !== 'state' ||
-    (state !== 'parent_app' && state !== 'tenant_app') ||
+    keys[1] !== 'app_role' ||
+    (appRole !== 'parent' && appRole !== 'tenant') ||
     !isFirestoreDocumentId(appId)
   ) {
     conflict(`Kitchen ${kitchenId} has an invalid canonical App scope.`)
   }
 
-  return { state, app_id: appId }
+  return {
+    state: appRole === 'tenant' ? 'tenant_app' : 'parent_app',
+    app_id: appId,
+  }
 }
 
 const optionalNumber = (value: unknown) => {
@@ -83,6 +87,7 @@ function projectKitchenTarget(input: {
   id: string
   canWrite: boolean
   root: StoredRecord
+  support: StoredRecord
   place: StoredRecord
   scope: CanonicalKitchenScope
 }): KitchenConsoleTargetItem {
@@ -90,7 +95,7 @@ function projectKitchenTarget(input: {
   const place = readPlacePresentation(input.place)
   const resolvedIdentity = menuKitchenIdentity(
     input.root,
-    {},
+    input.support,
     input.place
   )
   const displayName = text(resolvedIdentity.name)
@@ -99,14 +104,15 @@ function projectKitchenTarget(input: {
   }
 
   const visibility = readKitchenVisibility(input.root)
-  const menus = readKitchenMenusConfig(input.root)
+  const menus = readKitchenMenusConfig(input.support)
   const resolvedMenuStyle = record(resolvedIdentity.page_style)
   const gallery = place.gallery
   const tagline =
     rootIdentity.tagline ||
     place.brandTagline
-  const orders = record(input.root.orders)
-  const tables = record(input.root.tables)
+  const supportConsole = record(input.support.console)
+  const orders = record(supportConsole.orders)
+  const tables = record(supportConsole.tables)
   const shortName = place.shortName
   const brandTagline = place.brandTagline
   const formattedAddress = place.formattedAddress
@@ -165,8 +171,8 @@ function projectKitchenTarget(input: {
     ...(Object.keys(tables).length
       ? { tables: tables as KitchenTablesConfig }
       : {}),
-    fulfilment: readKitchenFulfilmentConfig(input.root),
-    sproochli: readKitchenSproochliConfig(input.root),
+    fulfilment: readKitchenFulfilmentConfig(input.support),
+    sproochli: readKitchenSproochliConfig(input.support),
     show: visibility.show,
     active: visibility.active,
     is_test_kitchen: visibility.isTest,
@@ -228,7 +234,7 @@ export default defineEventHandler(
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'private, no-store',
       })
-      return { ok: true, appId, items: [] }
+      return { ok: true, appId, family: 'kitchen', items: [] }
     }
 
     const rootSnapshots = await db.getAll(
@@ -315,6 +321,7 @@ export default defineEventHandler(
         canWrite:
           scopedRole === 'admin' || authority.operatorIds.includes(uid),
         root,
+        support,
         place: placeSnapshot.data() || {},
         scope,
       })
@@ -324,6 +331,6 @@ export default defineEventHandler(
       'Content-Type': 'application/json; charset=utf-8',
       'Cache-Control': 'private, no-store',
     })
-    return { ok: true, appId, items }
+    return { ok: true, appId, family: 'kitchen', items }
   }
 )

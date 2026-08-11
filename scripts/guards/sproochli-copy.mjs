@@ -885,7 +885,7 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.doesNotMatch(menuRootEntry, /source_language/)
   assert.doesNotMatch(menuPayloadTypes, /sourceLanguage/)
   assert.doesNotMatch(menuEndpoint, /source_language|sourceLanguage/)
-  assert.match(kitchenMenuScope, /readKitchenSproochliConfig\(kitchenData\)/)
+  assert.match(kitchenMenuScope, /readKitchenSproochliConfig\(appKitchenData\)/)
   assert.equal(TranslationMemoryStorage.collection, 'translation_memory')
   assert.equal(TranslationMemoryStorage.access, 'server-only')
   assert.match(
