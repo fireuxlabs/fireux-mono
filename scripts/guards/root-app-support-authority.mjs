@@ -1055,17 +1055,24 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetCollection, /Authorization:\s*`Bearer/)
   assert.match(
     source.kitchenTargetCollection,
-    /kitchen-console-targets-\$\{appId\}-\$\{uid\.value/
+    /useState<KitchenConsoleTargetState>\(\s*`kitchen-console-targets-\$\{appId\}`/
   )
-  assert.match(source.kitchenTargetCollection, /dedupe:\s*'defer'/)
-  assert.match(source.kitchenTargetCollection, /useFirestoreCollectionState/)
+  assert.doesNotMatch(source.kitchenTargetCollection, /useAsyncData/)
   assert.match(
     source.kitchenTargetCollection,
     /value\.requestUid !== uid\.value/
   )
   assert.match(
     source.kitchenTargetCollection,
-    /value\.response\.appId !== appId/
+    /value\.response\?\.appId !== appId/
+  )
+  assert.match(
+    source.kitchenTargetCollection,
+    /if \(!requestUid\) \{[\s\S]{0,250}requestUid:\s*''[\s\S]{0,250}response:\s*null/
+  )
+  assert.match(
+    source.kitchenTargetCollection,
+    /state\.value = \{\s*requestUid,\s*outcome:\s*'pending',\s*response:\s*null/
   )
   assert.match(source.kitchenConsoleIndex, /targets:\s*targetCollection/)
   assert.doesNotMatch(

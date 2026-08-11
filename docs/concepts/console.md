@@ -108,7 +108,7 @@ Map the shared console system and domain adapters.
 - `ConsoleXIndex` renders selected and targets sections.
 - `useXConsoleIndex` adapts domain data into shared `useConsoleIndex`.
 - `useXConsole` owns target candidate resolution, the authoritative collection
-  outcome, and selection validity. Index and overview composables consume that
+  outcome, and selected-target resolution. Index and overview composables consume that
   core result; they do not call `useConsoleTargets` again or overlay another
   membership outcome.
 - Named selected wrappers map domain identity into `ConsoleSelectedTarget`;
@@ -116,7 +116,8 @@ Map the shared console system and domain adapters.
   the family index forwards `actions.clear`. A family may project its existing
   entity card through the shared selected-content slot; it must not replace the
   shared empty state or Clear behavior.
-- Tenant apps can auto-select a single persisted authorized target.
+- A family policy may explicitly enforce one authority-proven target, such as a
+  tenant App with one Kitchen and Demo disabled.
 - Every Live App sources target relationships and operator/team access from
   the owning entity family's persisted App-support records. AppUser does not
   carry Console target IDs.
@@ -129,15 +130,16 @@ Map the shared console system and domain adapters.
 - Target wrappers must not add an `isMounted`, local pending flag, or direct
   state card in front of that outcome. Multi-source families render one shared
   target presenter per source from the first paint.
-- Domain wrappers retain entity-to-card mapping, selection validation, copy,
+- Domain wrappers retain entity-to-card mapping, selected-target resolution, copy,
   card components, and actions. A multi-source family such as Kitchen composes
   one shared target presenter per source rather than flattening source state.
 - The Kitchen index keeps its bounded authenticated Live target chooser and
   lazy Demo target chooser available together, even while a Demo Kitchen is
   selected. This is a navigation exception only: selected Live target and
   operation providers remain inactive in Demo mode.
-- Persisted selection is validated only against a successful target read.
-  Pending or failed target reads must not clear a saved selection.
+- Target reads resolve whether persisted selection is currently available, but
+  never rewrite it. Only explicit select/clear actions or enforced family policy
+  change the typed workspace selection.
 - Selected-target routes distinguish persistence from hydration. The persisted
   family selection ID decides whether a target is selected; the asynchronously
   loaded target object decides whether target content is ready. A missing

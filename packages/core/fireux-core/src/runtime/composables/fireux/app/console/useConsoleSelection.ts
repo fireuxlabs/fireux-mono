@@ -112,61 +112,49 @@ export function useConsoleSelection<TTarget = never>(
     )
   })
 
-  if (options) {
-    // One ordered state machine owns hydration normalization, enforced-target
-    // commitment, and authority validation. Non-authoritative outcomes never
-    // invalidate persisted state.
+  // Selection owns only typed workspace state. Target readers may resolve that
+  // state, but they never clear or rewrite it as their loading outcome changes.
+  watch(
+    selectedType,
+    (type: ConsoleDataType | null) => {
+      if (type && consoleRoot.source.value !== type) {
+        consoleRoot.setSource(type)
+      }
+    },
+    { immediate: true }
+  )
+
+  if (options?.enforcedTargetId) {
+    // A family policy may explicitly commit one authority-proven target. This
+    // is the only target-outcome-driven selection mutation.
     watch(
       () => ({
-        enforcedId: options.enforcedTargetId
-          ? normalizeString(unref(options.enforcedTargetId))
-          : '',
+        enforcedId: normalizeString(unref(options.enforcedTargetId)),
         items: targetItems.value,
         outcome: targetOutcome.value,
         currentId: selectedId.value,
         currentType: selectedType.value,
-        canonicalId: normalizeString(state.value?.id),
       }),
-      ({ enforcedId, items, outcome, currentId, currentType, canonicalId }) => {
-        const authoritative = outcome === 'ready' || outcome === 'empty'
+      ({ enforcedId, items, outcome, currentId, currentType }: {
+        enforcedId: string
+        items: TTarget[]
+        outcome: ConsoleTargetOutcome
+        currentId: string
+        currentType: ConsoleDataType | null
+      }) => {
         const enforcedTarget =
           outcome === 'ready' && enforcedId
             ? items.find((item) => getTargetId(item) === enforcedId)
             : null
-        const currentTarget = currentId
-          ? items.find(
-              (item) =>
-                getTargetId(item) === currentId &&
-                (!options.getType || getTargetType(item) === currentType)
-            )
-          : null
+        if (!enforcedTarget) return
 
-        if (enforcedTarget) {
-          const type = getTargetType(enforcedTarget) ?? 'live'
-          if (currentId !== enforcedId || currentType !== type) {
-            selectTarget(enforcedId, type)
-          } else if (consoleRoot.source.value !== type) {
-            consoleRoot.setSource(type)
-          }
-          return
-        }
-        if (authoritative && currentId && !currentTarget) {
-          clearSelection()
-          return
-        }
-        if (!currentId) return
-
-        const type = currentType ?? 'live'
-        if (canonicalId !== currentId || currentType !== type) {
-          selectTarget(currentId, type)
-        } else if (consoleRoot.source.value !== type) {
-          consoleRoot.setSource(type)
+        const type = getTargetType(enforcedTarget) ?? 'live'
+        if (currentId !== enforcedId || currentType !== type) {
+          selectTarget(enforcedId, type)
         }
       },
       { immediate: true }
     )
-  } else if (selectedId.value && selectedType.value) {
-    consoleRoot.setSource(selectedType.value)
   }
 
   return {

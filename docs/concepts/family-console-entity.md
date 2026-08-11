@@ -47,8 +47,9 @@ Every Console Entity must share these rules:
   `useConsoleIndex`.
 - Selected presentation uses `ConsoleSelectedTarget`; target state uses
   `ConsoleTargetCollection`.
-- Persisted selection is invalidated only after a successful target read proves
-  it invalid. Pending or failed reads do not clear it.
+- Target reads resolve whether the persisted selection is currently available;
+  they never clear workspace state. Only an explicit User action or enforced
+  family policy changes selection.
 - Selection is one shared typed `{ id, type }` session state. Its cookie hydrates
   that state once and persists explicit commits; selector, layout, navigation,
   overview, and operation readers never treat a local cookie ref as live

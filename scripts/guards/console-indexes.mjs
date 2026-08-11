@@ -210,16 +210,32 @@ function validateConsoleDataContract({ files, repoRoot, violations }) {
       'selected targets must match both persisted id and provider type',
       violations
     )
-    if (findCallSources(selectionSource, 'watch').length !== 1) {
+    if (findCallSources(selectionSource, 'watch').length !== 2) {
       violations.push(
-        `${selectionRelative} (selection hydration, enforcement, validation, and source normalization must use one ordered watcher)`
+        `${selectionRelative} (selection may watch only typed source projection and explicit enforced-target policy)`
       )
     }
     assertMatch(
       selectionSource,
-      /const authoritative = outcome === ['"]ready['"] \|\| outcome === ['"]empty['"][\s\S]{0,900}if \(enforcedTarget\)[\s\S]{0,900}if \(authoritative && currentId && !currentTarget\)/,
+      /if \(options\?\.enforcedTargetId\)[\s\S]{0,700}outcome === ['"]ready['"] && enforcedId[\s\S]{0,500}if \(!enforcedTarget\) return[\s\S]{0,300}selectTarget\(enforcedId, type\)/,
       selectionRelative,
-      'selection state machine must enforce a valid fixed target before invalidating a persisted selection',
+      'selection may auto-commit only an explicit authority-proven enforced target',
+      violations
+    )
+    for (const watchSource of findCallSources(selectionSource, 'watch')) {
+      assertNoMatch(
+        watchSource,
+        /clearSelection\s*\(/,
+        selectionRelative,
+        'target loading and validation must never clear the canonical workspace selection',
+        violations
+      )
+    }
+    assertNoMatch(
+      selectionSource,
+      /authoritative && currentId && !currentTarget/,
+      selectionRelative,
+      'target outcomes must resolve selection authority without destructively rewriting workspace state',
       violations
     )
   }
@@ -903,16 +919,30 @@ function validateTargetAuthority({ family, files, repoRoot, violations }) {
     const targetCollectionSource = readFileSync(targetCollectionPath, 'utf8')
     assertMatch(
       targetCollectionSource,
-      /immediate:\s*false,[\s\S]{0,500}void state\.execute\(\)/,
+      /useState<KitchenConsoleTargetState>\(\s*`kitchen-console-targets-\$\{appId\}`[\s\S]{0,300}outcome:\s*['"]idle['"][\s\S]{0,120}response:\s*null/,
       relativePath(repoRoot, targetCollectionPath),
-      'Kitchen target projection must explicitly execute only after authenticated state is ready',
+      'Kitchen target projection must keep one App-scoped request record',
       violations
     )
     assertMatch(
       targetCollectionSource,
-      /const pending = computed\([\s\S]{0,350}state\.status\.value === ['"]idle['"][\s\S]{0,180}state\.pending\.value[\s\S]{0,180}!state\.error\.value && response\.value === null/,
+      /state\.value = \{\s*requestUid,\s*outcome:\s*['"]pending['"],[\s\S]{0,500}\$fetch<KitchenConsoleTargetsResponse>[\s\S]{0,500}outcome:\s*response\.items\.length > 0 \? ['"]ready['"] : ['"]empty['"]/,
       relativePath(repoRoot, targetCollectionPath),
-      'Kitchen target projection must remain pending until the current response exists so route initialization cannot publish a false authoritative empty outcome',
+      'Kitchen target projection must publish pending before one request and derive ready or empty only from its completed response',
+      violations
+    )
+    assertMatch(
+      targetCollectionSource,
+      /if \(!authReady\) return[\s\S]{0,250}if \(!requestUid\) \{[\s\S]{0,250}response:\s*null[\s\S]{0,200}if \(!canLoad\) return\s*void load\(requestUid\)/,
+      relativePath(repoRoot, targetCollectionPath),
+      'Kitchen target projection must erase signed-out state and start only after App authentication resolves to a User id',
+      violations
+    )
+    assertNoMatch(
+      targetCollectionSource,
+      /useAsyncData/,
+      relativePath(repoRoot, targetCollectionPath),
+      'Kitchen target projection must not layer Nuxt async-data lifecycle over its shared authenticated request state',
       violations
     )
   }
