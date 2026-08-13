@@ -6,6 +6,7 @@ import { useFirestoreUpdate } from 'fireux-core/runtime/composables/fireux/fires
 import { useConsoleWriteGuard } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleWriteGuard'
 import { useFirestoreResolver } from 'fireux-core/runtime/composables/fireux/firestore/vuefire'
 import { useRuntimeConfig } from '#imports'
+import { useAuth } from 'fireux-core/runtime/composables/fireux/firebase/useAuth'
 import type { Ref } from 'vue'
 import { unref } from 'vue'
 import { DishStorage } from '../../../../../models/kitchen/dish.model'
@@ -45,6 +46,7 @@ export function useMenuUpdate(
   const fireux = useFireUXConfig()
   const { appId } = fireux
   const runtimeConfig = useRuntimeConfig()
+  const { currentUser } = useAuth()
   const tenantReservedRouteKeys = () => {
     const keys = runtimeConfig.public?.fireux?.reservedRouteKeys
     return Array.isArray(keys) ? keys : []
@@ -196,6 +198,14 @@ export function useMenuUpdate(
         menuCollectionPath: collectionPath(kitchenId),
         menuId,
       })
+      const token = await currentUser.value?.getIdToken()
+      if (!token) throw new Error('Sign in before publishing this Menu.')
+      await $fetch('/api/console/kitchen/menus/publish', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: { kitchenId, menuId },
+      })
+      return
     }
     await updateMenu(kitchenId, menuId, { status })
   }

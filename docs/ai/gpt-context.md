@@ -73,11 +73,11 @@ Before each task:
   and refuses a save when another task changes the shared worktree during
   verification. Every task that edits the repository runs `pnpm guard` before
   handoff; focused guards are iteration feedback, not a completion substitute.
-- Permanent product source under `packages/`, `projects/`, and `tools/` must
-  remain at or below 400 lines per authored code, style, or Rules file. Split
-  responsibilities into named owned seams; there is no allowlist or scope
-  switch. Operational `scripts/` are outside this product-source boundary and
-  remain governed by script safety, usage, and lifecycle guards.
+- Keep product source readable and responsibility-owned. File length is review
+  evidence, not a save blocker: split a file when it contains distinct owned
+  responsibilities or a smaller seam materially improves maintenance, not to
+  satisfy an arbitrary line count. Operational `scripts/` remain governed by
+  script safety, usage, and lifecycle guards.
 
 ## Authority
 

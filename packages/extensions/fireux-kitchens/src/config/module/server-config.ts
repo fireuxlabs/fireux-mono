@@ -174,6 +174,11 @@ const baseServerHandlers = [
     handler: './runtime/server/api/console/kitchen/menus/upload.post',
   },
   {
+    route: '/api/console/kitchen/menus/publish',
+    method: 'post',
+    handler: './runtime/server/api/console/kitchen/menus/publish.post',
+  },
+  {
     route: '/api/console/kitchen/menus/upload',
     method: 'options',
     handler: './runtime/server/api/console/kitchen/menus/upload.options',

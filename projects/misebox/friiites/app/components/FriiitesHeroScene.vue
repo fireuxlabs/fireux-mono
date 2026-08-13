@@ -10,14 +10,21 @@
     :flagship-dish="flagshipResult?.dish || null"
     :product-crop="productCrop"
     :requirements="requirements"
-    :show-action="false"
-    :show-scroll-cue="false"
+    :show-action="true"
+    :show-scroll-cue="true"
+    :mobile-composition="mobileComposition"
   />
 </template>
 
 <script setup lang="ts">
 import TemplateOneSceneOne from 'fireux-misebox/runtime/TemplateOneSceneOne.vue'
 import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/server/dish/flagship-projection'
+
+withDefaults(defineProps<{
+  mobileComposition?: 'default' | '1' | '2' | '3' | '4' | '5'
+}>(), {
+  mobileComposition: 'default',
+})
 
 const { data: flagshipResult } = await useFetch<KitchenFlagshipDishResult>(
   '/api/kitchens/5dGJgdjDv7Zi0tjva61O/flagship-dish',
