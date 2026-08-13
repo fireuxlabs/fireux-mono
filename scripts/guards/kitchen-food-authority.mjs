@@ -39,6 +39,10 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     repoRoot,
     'packages/extensions/fireux-kitchens/src/runtime/composables/fireux/firestore/menu/mutations/useMenuItemMutations.ts'
   )
+  const flagshipCommand = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/server/api/console/kitchen/dishes/[dishId]/flagship.patch.ts'
+  )
   const rules = [
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/identity-validation.rules',
     'packages/ecosystem/fireux-misebox/src/config/firebase/rules/kitchen-operations.rules',
@@ -53,6 +57,12 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(dishModel, /identity:\s*'parent-scoped'/)
   assert.match(dishModel, /parent:\s*'Kitchen'/)
   assert.match(dishModel, /export const DishDefaults\b/)
+  assert.match(dishModel, /is_flagship:\s*false/)
+  assert.match(dishModel, /normalizeDishFlagshipFlag/)
+  assert.match(rules, /data\.is_flagship is bool/)
+  assert.match(flagshipCommand, /runTransaction/)
+  assert.match(flagshipCommand, /where\('is_flagship', '==', true\)/)
+  assert.match(flagshipCommand, /is_flagship:\s*false/)
   assert.match(menuItemModel, /export const MenuItemDefaults\b/)
   assert.match(menuItemModel, /parent:\s*'MenuSection'/)
   assert.match(stationModel, /export const KitchenStationRecord\s*=\s*defineFireuxEntity/)

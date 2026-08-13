@@ -8,7 +8,7 @@
 
 <script setup lang="ts">
 definePageMeta({
-  layout: 'friiites',
+  layout: 'templates',
   nav: {
     key: 'home',
     label: 'Home',

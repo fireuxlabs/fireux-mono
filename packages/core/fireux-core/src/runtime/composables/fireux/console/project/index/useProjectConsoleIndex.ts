@@ -1,29 +1,17 @@
 // Concurrent edit — 2026-07-19 17:36 CEST — Repo Efficiency Pass 6 of 6: use outcome as target-state authority.
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: identify authoritative Project targets.
-import { computed, type Ref } from 'vue'
+import { computed } from 'vue'
 import { useConsoleIndex } from '../../../app/console/useConsoleIndex'
-import type { ProjectCollectionFilter } from '../../../project/useProjectCollection'
 import type { ProjectSurface } from '../../../project/useProjectInterface'
 import { useProjectConsole } from '../core/useProjectConsole'
 
-type UseProjectConsoleIndexOptions = {
-  filter?:
-    | ProjectCollectionFilter
-    | Ref<ProjectCollectionFilter | null | undefined>
-    | null
-}
-
-export function useProjectConsoleIndex(
-  options: UseProjectConsoleIndexOptions = {}
-) {
+export function useProjectConsoleIndex() {
   const {
     projects,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
-  } = useProjectConsole({
-    filter: options.filter,
-  })
+  } = useProjectConsole()
   const selection = computed(() => ({
     project: consoleSelection.project.value,
     projectId: consoleSelection.projectId.value,
@@ -47,11 +35,6 @@ export function useProjectConsoleIndex(
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.projectId.value),
-    autoSelectTargetId: computed(() =>
-      projects.targets.value.length === 1
-        ? String(projects.targets.value[0]?.id || '').trim()
-        : ''
-    ),
     runtime,
     targets: projects.targets,
     outcome: projects.outcome,

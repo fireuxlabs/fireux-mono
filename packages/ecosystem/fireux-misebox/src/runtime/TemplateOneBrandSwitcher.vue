@@ -9,7 +9,7 @@
             v-for="brand in group.brands"
             :key="brand.id"
             replace
-            :to="{ query: { ...route.query, brand: brand.id } }"
+            :to="{ query: { kitchen: brand.id } }"
             :aria-pressed="brand.id === modelValue"
           >
             <span class="template-brand-switcher__swatch" :style="swatch(brand)" />
@@ -27,8 +27,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { TemplateOneKitchenSpecimen } from './template-one'
-const route = useRoute()
-
 const props = defineProps<{
   brands: readonly TemplateOneKitchenSpecimen[]
   modelValue: TemplateOneKitchenSpecimen['id']

@@ -15,6 +15,7 @@ import {
   readKitchenIdentity,
   readKitchenMenusConfig,
   readKitchenMenuStyle,
+  readKitchenConsolePalette,
   readKitchenSproochliConfig,
   resolveKitchenOperationHours,
 } from '../../../utils/kitchen-spine'
@@ -110,9 +111,23 @@ export function menuKitchenIdentity(
   const place = readPlacePresentation(placeData)
   const currencyCode = readPlaceCurrencyCode(placeData)
   const menuDisplay = readKitchenMenusConfig(appData)
+  const consolePalette = readKitchenConsolePalette(appData)
+  const consoleStyle = consolePalette
+    ? {
+        background_color_light: consolePalette.canvas,
+        background_color_dark: consolePalette.canvas,
+        font_color_light: consolePalette.text,
+        font_color_dark: consolePalette.text,
+        title_color_light: consolePalette.text,
+        title_color_dark: consolePalette.text,
+        primary_color: consolePalette.accent,
+        secondary_color: consolePalette.accent_contrast,
+      }
+    : {}
   const pageStyle = resolveMenuPageStyle(
     { source: 'place', style: placeData.brand_palette },
     { source: 'root-kitchen', style: rootData.brand_palette },
+    { source: 'console-theme', style: consoleStyle },
     { source: 'app-kitchen', style: readKitchenMenuStyle(appData) }
   )
 

@@ -1,27 +1,19 @@
 // Concurrent edit — 2026-07-20 16:19 CEST — Console Spine project cleanup: adopt authoritative target outcomes.
-import { computed, isRef } from 'vue'
+import { computed } from 'vue'
 import { normalizeString } from '../../../../../utils/string'
 import { useConsole, type ConsoleSource } from '../../../app/console/useConsole'
 import { consoleData } from '../../../app/console/useConsoleData'
 import { useConsoleEntityRuntime } from '../../../app/console/useConsoleEntityRuntime'
+import { useConsoleFamilyRuntime } from '../../../app/console/useConsoleFamilyRuntime'
 import { useConsoleTargets } from '../../../app/console/useConsoleTargets'
 import {
   useProjectCollection,
-  type ProjectCollectionFilter,
 } from '../../../project/useProjectCollection'
 import type { ProjectSurface } from '../../../project/useProjectInterface'
 import { ProjectStorage } from '../../../../../models/system/project.model'
-import type { Ref } from 'vue'
 import { useProjectConsoleDemoTargets } from './useProjectConsoleDemoTargets'
 
 type ProjectConsoleEntity = ProjectSurface
-
-type UseProjectConsoleOptions = {
-  filter?:
-    | ProjectCollectionFilter
-    | Ref<ProjectCollectionFilter | null | undefined>
-    | null
-}
 
 /**
  * FireUX stack family: Console-backed root entity.
@@ -36,16 +28,10 @@ type UseProjectConsoleOptions = {
  * It should not redefine generic Project collection reads, introduce scoped
  * Project ownership, or redefine related entity identities.
  */
-export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
+function createProjectConsole() {
   const consoleRoot = useConsole('project')
   const consoleTargets = useConsoleTargets({ family: 'project' })
-  const targetFilter = computed<ProjectCollectionFilter>(() =>
-    consoleTargets.filter(
-      isRef(options.filter)
-        ? (options.filter.value ?? {})
-        : (options.filter ?? {})
-    )
-  )
+  const targetFilter = computed(() => consoleTargets.filter({}))
   const liveCollection = useProjectCollection({
     source: consoleRoot.source,
     filter: targetFilter,
@@ -140,4 +126,8 @@ export function useProjectConsole(options: UseProjectConsoleOptions = {}) {
     runtime,
     actions,
   }
+}
+
+export function useProjectConsole() {
+  return useConsoleFamilyRuntime('project', createProjectConsole)
 }

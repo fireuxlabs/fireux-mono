@@ -2,6 +2,8 @@
 // Concurrent edit — 2026-07-20 22:37 CEST — Place-root authority pass: resolve explicit Kitchen overrides through the concrete Place runtime module.
 import type { CurrencyDisplayFormat } from '../models/shared/currency-display.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import type { ConsolePalette } from 'fireux-core/types/theme'
+import { readConsolePalette } from 'fireux-core/runtime/utils/brand-palette'
 import {
   readSproochliAttachmentConfig,
   type SproochliAttachmentConfig,
@@ -220,6 +222,14 @@ export const readKitchenSproochliConfig = (
 
 export const readKitchenMenuStyle = (value: KitchenSpineRecord) =>
   readKitchenMenusConfig(value).style
+
+export const readKitchenConsolePalette = (
+  value: KitchenSpineRecord
+): ConsolePalette | null => {
+  const console = record(record(value).console)
+  const theme = record(console.theme)
+  return readConsolePalette(theme.palette)
+}
 
 /** Read-only projection helper. Canonical currency is owned by linked Place. */
 export const readKitchenCurrencyCode = (value: KitchenSpineRecord) => {

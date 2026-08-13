@@ -109,9 +109,18 @@ const { currentUser, isAdmin } = useUser()
 const claimedBy = computed(() =>
   String(hydratedKitchen.value?.claimed_by ?? '').trim()
 )
+const operatorIds = computed(() =>
+  Array.isArray(hydratedKitchen.value?.operator_ids)
+    ? hydratedKitchen.value.operator_ids.map((value: unknown) => String(value || '').trim())
+    : []
+)
 const canEdit = computed(() => {
-  if (!claimedBy.value) return Boolean(isAdmin.value)
-  return Boolean(isAdmin.value || currentUser.value?.id === claimedBy.value)
+  const uid = String(currentUser.value?.id || '').trim()
+  return Boolean(
+    isAdmin.value ||
+    (uid && claimedBy.value === uid) ||
+    (uid && operatorIds.value.includes(uid))
+  )
 })
 
 const clean = (value: unknown) => String(value ?? '').trim()

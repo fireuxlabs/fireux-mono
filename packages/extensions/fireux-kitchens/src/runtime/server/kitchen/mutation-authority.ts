@@ -39,7 +39,8 @@ function requireMemberRole(exists: boolean, value: unknown, message: string) {
 export async function requireKitchenMutationAuthority(
   mutations: GuardedServerTransaction,
   actor: Awaited<ReturnType<typeof readKitchenMutationActor>>,
-  kitchenId: string
+  kitchenId: string,
+  options: { allowRoot?: boolean } = {}
 ) {
   const runtimeMemberships = serverAppUsersTarget(actor.runtimeAppId)
   const [root, runtimeMembership] = await Promise.all([
@@ -68,6 +69,24 @@ export async function requireKitchenMutationAuthority(
   const rootData = root.data || {}
   const management = readKitchenOnboardingManagement(rootData)
   if (management.mode === 'root') {
+    if (options.allowRoot === true) {
+      const place = await mutations.read(FIRESTORE_MUTATION_TARGETS.places, kitchenId)
+      if (!place.exists) {
+        throw createError({
+          statusCode: 409,
+          statusMessage: 'The linked Place does not exist.',
+        })
+      }
+      return {
+        authority: null,
+        ownerRole: String(runtimeMembership.data?.role) as 'admin' | 'user',
+        ownerAppId: actor.runtimeAppId,
+        placeData: place.data || {},
+        rootData,
+        supportData: {},
+        supports: serverAppKitchensTarget(actor.runtimeAppId),
+      }
+    }
     throw createError({
       statusCode: 409,
       statusMessage: 'The Kitchen is not attached to an App.',
@@ -112,6 +131,7 @@ export async function requireKitchenMutationAuthority(
   }
   return {
     authority,
+    ownerRole,
     ownerAppId,
     placeData: place.data || {},
     rootData,

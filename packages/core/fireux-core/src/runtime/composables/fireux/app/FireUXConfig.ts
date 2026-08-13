@@ -4,6 +4,7 @@ import type { RuntimeApp } from '../../../../config/app/runtime'
 import type {
   FireuxAppRole,
   FireuxConsoleConfig,
+  FireuxConsoleFamilyConfig,
 } from '../../../../config/app/types'
 
 export type FireUXRole = FireuxAppRole
@@ -67,22 +68,25 @@ function toStringArray(v: unknown): string[] {
 function toConsoleConfig(v: unknown): FireuxConsoleConfig {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return {}
 
-  return Object.fromEntries(
-    Object.entries(v as AnyRecord)
-      .map(([family, value]) => {
-        const key = family.trim().toLowerCase()
-        const config =
-          value && typeof value === 'object' && !Array.isArray(value)
-            ? (value as AnyRecord)
-            : {}
-        if (!key || typeof config.canCreate !== 'boolean') return null
-        return [key, { canCreate: config.canCreate }] as const
-      })
-      .filter(
-        (entry): entry is readonly [string, { canCreate: boolean }] =>
-          entry !== null
-      )
-  )
+  const entries: Array<[string, FireuxConsoleFamilyConfig]> = []
+  for (const [family, value] of Object.entries(v as AnyRecord)) {
+    const key = family.trim().toLowerCase()
+    const config =
+      value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as AnyRecord)
+        : {}
+    if (!key) continue
+
+    const normalized: FireuxConsoleFamilyConfig = {}
+    if (typeof config.canCreate === 'boolean') {
+      normalized.canCreate = config.canCreate
+    }
+    if (typeof config.allowDemo === 'boolean') {
+      normalized.allowDemo = config.allowDemo
+    }
+    if (Object.keys(normalized).length) entries.push([key, normalized])
+  }
+  return Object.fromEntries(entries)
 }
 
 function reqRole(src: AnyRecord): FireUXRole {
@@ -127,6 +131,7 @@ function buildConfig(event?: H3Event): Readonly<FireUXConfig> {
     domains: toStringArray(fireux.domains),
     profiles: toStringArray(fireux.profiles),
     selfJoinEnabled: fireux.selfJoinEnabled === true,
+    theme: optRecord(fireux, 'theme') as FireUXConfig['theme'],
     navHiddenKeys: toStringArray(fireux.navHiddenKeys),
     navOverrides: (optRecord(fireux, 'navOverrides') ||
       {}) as FireUXConfig['navOverrides'],

@@ -95,12 +95,12 @@ remain real data even when a Demo record links to them.
   Canonical Ingredient images and shared App/brand media never move into this
   Demo prefix merely because a Demo surface displays them. Live-owned media
   stays in its owning Live publication or storage path, never in `demo/`.
-- The reviewed Misebox media inventory has 68 unique payload hashes and 73
+- The reviewed Misebox media inventory has 72 unique payload hashes and 78
   owner-relative objects: 62 Kitchen-owned images, three Supplier logos, three
   Supplier-company Place photos, and five Place-owned object identities for
   Deanos presentation fields that reuse reviewed bytes. The repository keeps
   only the exact metadata manifest under `scripts/data/misebox-demo-media/`:
-  68 source descriptors record path, hash, byte count, and MIME type, while 73
+  72 source descriptors record path, hash, byte count, and MIME type, while 78
   object-to-source mappings preserve each owner identity. It does not mirror
   Demo image binaries. The manual
   `scripts/publish-misebox-demo-media.mjs` workflow audits Storage directly.

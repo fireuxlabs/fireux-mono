@@ -49,6 +49,12 @@ export async function resolveClientAuthState(
 
   const auth = getAuth(app)
   const currentUid = auth.currentUser?.uid ?? null
+  if (currentUid) {
+    return {
+      uid: currentUid,
+      isAuthenticated: !auth.currentUser?.isAnonymous,
+    }
+  }
 
   return withTimeout(
     new Promise<AuthGuardState>((resolve) => {

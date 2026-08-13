@@ -89,7 +89,7 @@
                 color="neutral"
                 variant="soft"
                 icon="i-lucide-map-pin"
-                to="/console/kitchen/identity/place"
+                :to="`/places/${encodeURIComponent(placeId)}/edit`"
               >
                 Open linked Place
               </UButton>
@@ -104,15 +104,14 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref, watch } from 'vue'
-import { useKitchenLogoUpdate } from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenLogoUpdate'
+import { useKitchenAssetUpdate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenAssetUpdate'
 import { normalizeHexColor } from 'fireux-core/runtime/utils/brand-palette'
-import type { KitchenMediaBackdropColor } from '../../../../../models/kitchen.model'
-import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
+import type { KitchenMediaBackdropColor } from '../../../models/kitchen.model'
+import { readKitchenIdentity } from '../../../utils/kitchen-spine'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
   kitchenId: string
-  collectionPath: string
   canWrite: boolean
 }>()
 
@@ -123,9 +122,9 @@ const name = computed(() => identity.value.displayName)
 const placeId = computed(() => String(props.kitchen?.place_id ?? '').trim())
 const {
   pending: logoUploading,
-  uploadKitchenLogo,
-  updateKitchenMediaBackdropColor,
-} = useKitchenLogoUpdate()
+  uploadKitchenAsset,
+  updateKitchenBackdrop,
+} = useKitchenAssetUpdate()
 const placeBackdropColor = computed(() =>
   String((props.kitchen as any)?.media_backdrop_color || '').trim()
 )
@@ -184,7 +183,7 @@ const saveBackdrop = async () => {
   }
   return updateLogo(
     () =>
-      updateKitchenMediaBackdropColor(
+      updateKitchenBackdrop(
         props.kitchenId,
         color as KitchenMediaBackdropColor | ''
       ),
@@ -203,7 +202,7 @@ const handleLogoUpload = async (file: File) => {
 
   return updateLogo(
     async () => {
-      await uploadKitchenLogo(props.kitchenId, file)
+      await uploadKitchenAsset(props.kitchenId, 'logo', file)
     },
     'Logo updated',
     'Failed to update logo'

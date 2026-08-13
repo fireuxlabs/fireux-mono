@@ -123,7 +123,7 @@
         :dismissible="false"
         prevent-close
         title="🚫 Blocked"
-        description="This app needs to be initialized."
+        :description="setupDescription"
       >
         <template #body>
           <AppInitializeSystem :state="initialization" />
@@ -189,7 +189,13 @@ const {
   pending: appStatusPending,
   error: appStatusError,
   refresh: refreshAppStatus,
-} = useFetch<{ ok: true; appId: string; initialized: boolean }>(
+} = useFetch<{
+  ok: true
+  appId: string
+  initialized: boolean
+  mediaReady: boolean
+  paletteReady: boolean
+}>(
   '/api/public/app/status',
   { server: false, lazy: true }
 )
@@ -197,10 +203,22 @@ const isResolved = computed(
   () =>
     !appStatusPending.value &&
     !appStatusError.value &&
-    typeof appStatus.value?.initialized === 'boolean'
+    typeof appStatus.value?.initialized === 'boolean' &&
+    typeof appStatus.value?.mediaReady === 'boolean' &&
+    typeof appStatus.value?.paletteReady === 'boolean'
 )
 const isInitialized = computed(
-  () => appStatus.value?.initialized === true
+  () =>
+    appStatus.value?.initialized === true &&
+    appStatus.value?.mediaReady === true &&
+    appStatus.value?.paletteReady === true
+)
+const setupDescription = computed(() =>
+  appStatus.value?.initialized && !appStatus.value?.mediaReady
+    ? 'This App needs its five canonical Storage assets.'
+    : appStatus.value?.initialized && !appStatus.value?.paletteReady
+      ? 'This App needs its complete semantic palette.'
+    : 'This App needs to be initialized.'
 )
 
 const showOnboardingModal = computed(

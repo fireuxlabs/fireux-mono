@@ -3,15 +3,6 @@ import { useFireUXConfig } from 'fireux-core/runtime/composables/fireux/app/Fire
 import { normalizeString } from 'fireux-core/runtime/utils/string'
 import { useKitchenInterface } from '../../../firestore/kitchen/utils/view/useKitchenInterface'
 import { useKitchenConsole } from '../core/useKitchenConsole'
-import { useKitchenConsoleDishes } from '../operations/Dishes/useKitchenConsoleDishes'
-import { useKitchenConsoleIngredients } from '../operations/Ingredients/useKitchenConsoleIngredients'
-import { useKitchenConsoleMenus } from '../operations/Menus/useKitchenConsoleMenus'
-import { useKitchenConsoleMise } from '../operations/Mise/useKitchenConsoleMise'
-import { useKitchenConsoleOrders } from '../operations/Orders/useKitchenConsoleOrders'
-import { useKitchenConsoleRecipes } from '../operations/Recipes/useKitchenConsoleRecipes'
-import { useKitchenConsoleStations } from '../operations/Stations/useKitchenConsoleStations'
-import { useKitchenConsoleSuppliers } from '../operations/Suppliers/useKitchenConsoleSuppliers'
-import { useKitchenConsoleTables } from '../operations/Tables/useKitchenConsoleTables'
 import { readKitchenManagementTarget } from '../../../../../utils/kitchen-spine'
 import { useKitchenConsolePlace } from '../identity/useKitchenConsolePlace'
 
@@ -34,34 +25,22 @@ export type KitchenOverviewOperationCard = {
   label: string
   detail: string
   icon: string
-  count: number
-  pending: boolean
   to: string
 }
 
-const count = (items: unknown) => Array.isArray(items) ? items.length : 0
 const identityTo = '/console/kitchen/identity'
 
 export function useKitchenConsoleOverview() {
   const fireux = useFireUXConfig()
   // Concurrent edit — 2026-07-20 21:35 CEST — Place-root authority pass: resolve shared overview fields from the linked Place.
   const {
+    targets,
     selection,
     runtime,
     actions,
   } = useKitchenConsole()
   const { pill, surface } = useKitchenInterface()
   const { place, currencyCode } = useKitchenConsolePlace()
-  const menuState = useKitchenConsoleMenus()
-  const ingredientState = useKitchenConsoleIngredients()
-  const dishState = useKitchenConsoleDishes({ resolveMenuSections: false })
-  const recipeState = useKitchenConsoleRecipes()
-  const supplierState = useKitchenConsoleSuppliers()
-  const stationState = useKitchenConsoleStations()
-  const miseState = useKitchenConsoleMise()
-  const orderState = useKitchenConsoleOrders()
-  const tableState = useKitchenConsoleTables()
-
   const selectedKitchen = selection.kitchen
   const kitchenId = selection.kitchenId
   const kitchenSource = computed(() =>
@@ -235,8 +214,6 @@ export function useKitchenConsoleOverview() {
       label: 'Menus',
       detail: 'Published and working menu surfaces.',
       icon: 'i-lucide-book-open',
-      count: count(menuState.menus.value),
-      pending: Boolean(menuState.pending.value),
       to: '/console/kitchen/menus',
     },
     {
@@ -244,8 +221,6 @@ export function useKitchenConsoleOverview() {
       label: 'Ingredients',
       detail: 'Ingredient records available to recipes and dishes.',
       icon: 'i-lucide-wheat',
-      count: count(ingredientState.ingredients.value),
-      pending: Boolean(ingredientState.pending.value),
       to: '/console/kitchen/ingredients',
     },
     {
@@ -253,8 +228,6 @@ export function useKitchenConsoleOverview() {
       label: 'Dishes',
       detail: 'Sellable dishes and menu items.',
       icon: 'i-lucide-utensils',
-      count: count(dishState.dishes.value),
-      pending: Boolean(dishState.pending.value),
       to: '/console/kitchen/dishes',
     },
     {
@@ -262,8 +235,6 @@ export function useKitchenConsoleOverview() {
       label: 'Recipes',
       detail: 'Kitchen prep recipes connected to dishes.',
       icon: 'i-lucide-notebook-tabs',
-      count: count(recipeState.recipes.value),
-      pending: Boolean(recipeState.pending.value),
       to: '/console/kitchen/recipes',
     },
     {
@@ -271,8 +242,6 @@ export function useKitchenConsoleOverview() {
       label: 'Tables',
       detail: 'Configured tables; open tabs remain separate.',
       icon: 'i-lucide-layout-grid',
-      count: tableState.tableCount.value,
-      pending: Boolean(tableState.pending.value),
       to: '/console/kitchen/tables',
     },
     {
@@ -280,8 +249,6 @@ export function useKitchenConsoleOverview() {
       label: 'Orders',
       detail: 'Visible kitchen order tickets.',
       icon: 'i-lucide-receipt-text',
-      count: count(orderState.ticketOrders.value),
-      pending: Boolean(orderState.pending.value),
       to: '/console/kitchen/orders',
     },
     {
@@ -289,8 +256,6 @@ export function useKitchenConsoleOverview() {
       label: 'Suppliers',
       detail: 'Supplier links for purchasing.',
       icon: 'i-lucide-truck',
-      count: count(supplierState.suppliers.value),
-      pending: Boolean(supplierState.pending.value),
       to: '/console/kitchen/suppliers',
     },
     {
@@ -298,8 +263,6 @@ export function useKitchenConsoleOverview() {
       label: 'Mise',
       detail: 'Prep tasks and service setup.',
       icon: 'i-lucide-list-checks',
-      count: count(miseState.miseTasks.value),
-      pending: Boolean(miseState.pending.value),
       to: '/console/kitchen/mise',
     },
     {
@@ -307,8 +270,6 @@ export function useKitchenConsoleOverview() {
       label: 'Stations',
       detail: 'Kitchen station setup.',
       icon: 'i-lucide-panels-top-left',
-      count: count(stationState.stations.value),
-      pending: Boolean(stationState.pending.value),
       to: '/console/kitchen/stations',
     },
   ])
@@ -335,18 +296,13 @@ export function useKitchenConsoleOverview() {
         .filter((field) => !field.complete)
         .map((field) => field.key),
     },
-    operations: {
-      cards: operationCards.value.map((card) => ({
-        key: card.key,
-        count: card.count,
-        pending: card.pending,
-      })),
-    },
+    operations: operationCards.value.map(card => card.key),
   }))
 
   return {
     selectedKitchen,
     kitchenId,
+    targetOutcome: targets.outcome,
     kitchenTitle,
     kitchenSubtitle,
     identityImage,

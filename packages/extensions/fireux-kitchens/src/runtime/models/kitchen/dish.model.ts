@@ -55,6 +55,8 @@ export const normalizeDishDealFlag = (value: unknown) =>
   value === true ||
   ['true', 'yes', '1'].includes(String(value ?? '').trim().toLowerCase())
 
+export const normalizeDishFlagshipFlag = (value: unknown) => value === true
+
 export const DishDefaults = {
   id: '' as string,
   name: '' as string,
@@ -62,6 +64,7 @@ export const DishDefaults = {
   description: '' as string,
   item_kind: 'food' as DishItemKind,
   is_deal: false as boolean,
+  is_flagship: false as boolean,
   image: '' as string,
   kitchen_id: '' as string,
   created: {
@@ -105,6 +108,7 @@ export function normalizeDish(value: unknown): Dish {
     description: pickString(source.description),
     item_kind: normalizeDishItemKind(source.item_kind),
     is_deal: normalizeDishDealFlag(source.is_deal),
+    is_flagship: normalizeDishFlagshipFlag(source.is_flagship),
     image: pickString(source.image),
     kitchen_id: pickString(source.kitchen_id),
     created,

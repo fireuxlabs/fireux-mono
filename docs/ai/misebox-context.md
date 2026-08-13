@@ -1,6 +1,6 @@
 # Misebox GPT Context
 
-Updated: 2026-08-11
+Updated: 2026-08-12
 Ref: d232cc731
 Role: living context
 Scope: Misebox ecosystem and Apps
@@ -55,8 +55,10 @@ Before each task:
   App with `app_id`. The same-id AppKitchen record owns access and Console
   configuration. Neither relationship nor support substitutes for the root.
 - A Kitchen root uses the same document ID as its required Place and owns
-  `slug`, boolean `visibility`, sparse `identity`, `assets`, optional brand
-  palette override, exact `management`, and audit stamps. It does not duplicate
+  `slug`, boolean `visibility`, sparse `identity`, `assets`, an optional
+  transparent-media backdrop override, exact `management`, and audit stamps.
+  Pre-release two-colour `brand_palette` data is compatibility input rather
+  than Console or App theme authority. The root does not duplicate
   a Place id or generic lifecycle status. `identity` uses `name` and `tagline`;
   `assets` uses `image`, `logo`, `wordmark`, and `backdrop_color`. Place owns
   location name/address, photography, gallery, contact details, currency,
@@ -65,7 +67,15 @@ Before each task:
   media is copied into Kitchen.
 - AppKitchen owns bounded `operator_ids`, `team_ids`, and `join_requests`, plus
   its `console` configuration for menus, orders, tables, fulfilment, and
-  integrations. Operational settings do not live on the Kitchen root.
+  integrations. A missing Console theme may be seeded from the owning App's
+  reviewed semantic palette during trusted attachment; existing Console
+  colours are preserved. The Kitchen Identity Console mirrors onboarding as
+  Place → Kitchen → Console → App: Place backdrop first, sparse Kitchen
+  identity second, Console palette and optional font choices on AppKitchen,
+  then dedicated App controls only for `management.mode === 'app'`. App writes
+  retain only the palette delta over Console and exactly two typography family
+  inputs; the five App masters remain the universal readiness gate.
+  Operational settings do not live on the Kitchen root.
   Authenticated Console target projection requires the exact root, Place,
   matching AppKitchen support, and scoped App membership. `operator_ids`
   grants Kitchen mutation authority; `team_ids` grants target/read membership
@@ -75,6 +85,11 @@ Before each task:
   bucket, external host, or wrong entity path. Kitchen assets never use the
   linked Place image as a second logo source. See
   `docs/concepts/place-kitchen-media.md`.
+- `/places/<id>/edit`, `/kitchens/<locator>/edit`, and Kitchen Console Identity
+  compose the same owner-level edit panels. The route framing may differ, but
+  field ownership and mutation authority do not: Place media remains Place,
+  Kitchen identity/assets remain Kitchen, and Console/App settings remain on
+  their support or App owners.
 - Supplier location follows a different owner contract:
   `Supplier.company_id -> Company`, with Company as a same-id role over Place.
   Supplier onboarding requires that complete relationship and validates both
@@ -187,7 +202,7 @@ Before each task:
   Demo-owned presentation images use fixed public HTTPS values for immutable
   objects in `misebox-78f9c.appspot.com` under the owner-relative
   `demo/misebox-app/` prefix. Storage is the binary authority: the repository
-  retains only a guarded metadata manifest with 68 source descriptors and 73
+  retains only a guarded metadata manifest with 72 source descriptors and 78
   object-to-source mappings, and no Demo image mirror. Five Deanos payloads
   have both Kitchen-owned and Place-owned object identities because the model
   fields have different owners. Kitchen/Supplier logos and Place imagery never

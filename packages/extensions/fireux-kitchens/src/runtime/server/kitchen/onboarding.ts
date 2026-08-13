@@ -20,9 +20,15 @@ import {
   serverAppUsersTarget,
 } from 'fireux-core/runtime/utils/firestore-mutations/targets'
 import {
+  appPaletteLayersEqual,
   compactBrandPalette,
+  compactAppPalette,
+  consolePaletteFromApp,
   parseBrandPalette,
+  readAppPalette,
+  readAppPaletteLayer,
   readBrandPalette,
+  readConsolePalette,
 } from 'fireux-core/runtime/utils/brand-palette'
 import { PlaceStorage } from 'fireux-places/runtime/models/place.model'
 import type {
@@ -51,6 +57,7 @@ type RuntimePolicy = {
   ecosystem: string
   management: Exclude<FireuxEntityManagement, { mode: 'root' }>
   canCreate: boolean
+  configuredAppPalette: ReturnType<typeof readAppPalette>
 }
 
 type Actor = RuntimePolicy & {
@@ -101,7 +108,15 @@ function runtimePolicy(event: H3Event): RuntimePolicy {
     fireux.consoleConfig,
     'kitchen'
   )
-  return { appId, appRole, ecosystem, management, canCreate }
+  const configuredAppPalette = readAppPalette(fireux.theme?.palette)
+  return {
+    appId,
+    appRole,
+    ecosystem,
+    management,
+    canCreate,
+    configuredAppPalette,
+  }
 }
 
 async function actor(event: H3Event): Promise<Actor & { role: MemberRole }> {
@@ -234,8 +249,9 @@ export async function completeKitchenOnboarding(
   const supports = serverAppKitchensTarget(current.appId)
 
   return runGuardedServerTransaction({ kind: 'runtime' }, async (mutations) => {
-    const [membership, place, root, support] = await Promise.all([
+    const [membership, app, place, root, support] = await Promise.all([
       mutations.read(memberships, current.uid),
+      mutations.read(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.places, locator.placeId),
       mutations.read(FIRESTORE_MUTATION_TARGETS.kitchens, locator.kitchenId),
       mutations.read(supports, locator.kitchenId),
@@ -283,6 +299,22 @@ export async function completeKitchenOnboarding(
       requestedPalette.value,
       placePalette
     )
+    const storedAppPaletteValue = record(record(app.data?.theme).palette)
+    const appPalette = current.configuredAppPalette ||
+      readAppPalette(storedAppPaletteValue)
+    const storedAppPaletteLayer = readAppPaletteLayer(storedAppPaletteValue)
+    const storedConsole = record(supportData?.console)
+    const storedTheme = record(storedConsole.theme)
+    const existingConsolePalette = readConsolePalette(storedTheme.palette)
+    const maySeedConsole = createdAppSupport || role === 'admin'
+    const consolePalette = existingConsolePalette ||
+      (appPalette && maySeedConsole ? consolePaletteFromApp(appPalette) : null)
+    const inheritedConsoleTheme = appPalette
+      ? { palette: consolePaletteFromApp(appPalette) }
+      : null
+    const compactAppLayer = appPalette && consolePalette
+      ? compactAppPalette(appPalette, consolePalette)
+      : null
 
     if (!createdRoot && Object.keys(requestedPalette.value).length) {
       fail(409, 'Existing Kitchen colours are preserved during onboarding.')
@@ -321,7 +353,7 @@ export async function completeKitchenOnboarding(
         operator_ids: [current.uid],
         team_ids: [current.uid],
         join_requests: [],
-        console: {},
+        console: inheritedConsoleTheme ? { theme: inheritedConsoleTheme } : {},
         created: serverAuditStamp({ by: current.uid, appId: current.appId }),
         updated: serverAuditStamp({ by: current.uid }),
       })
@@ -329,6 +361,20 @@ export async function completeKitchenOnboarding(
       mutations.update(supports, locator.kitchenId, {
         operator_ids: FieldValue.arrayUnion(current.uid),
         team_ids: FieldValue.arrayUnion(current.uid),
+        ...(inheritedConsoleTheme && !readConsolePalette(storedTheme.palette)
+          ? { 'console.theme': inheritedConsoleTheme }
+          : {}),
+        updated: serverAuditStamp({ by: current.uid }),
+      })
+    }
+
+    if (
+      compactAppLayer &&
+      (!storedAppPaletteLayer ||
+        !appPaletteLayersEqual(storedAppPaletteLayer, compactAppLayer))
+    ) {
+      mutations.update(FIRESTORE_MUTATION_TARGETS.runtimeApps, current.appId, {
+        'theme.palette': compactAppLayer,
         updated: serverAuditStamp({ by: current.uid }),
       })
     }

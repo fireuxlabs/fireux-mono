@@ -1,6 +1,7 @@
 import type { FirebaseTimestamp } from '../../../types/firebase'
 import { defineFireuxEntity } from '../utils/entity.model'
 import type { FireuxStamped } from '../utils/stamps.model'
+import type { AppThemeLayer } from '../../../types/theme'
 
 export type AppStatus = 'draft' | 'active' | 'paused' | 'archived'
 export type AppRole = 'global' | 'tenant' | 'standalone'
@@ -48,6 +49,7 @@ export interface AppPresentation {
 }
 
 export interface App extends FireuxStamped, AppIdentity, AppPresentation {
+  theme?: AppThemeLayer
   self_join_enabled: boolean
 }
 
@@ -112,6 +114,7 @@ export const AppPresentationDefaults: AppPresentation = {
 export const AppDefaults: App = {
   ...AppIdentityDefaults,
   ...AppPresentationDefaults,
+  theme: undefined,
   self_join_enabled: false,
   created: {
     at: {} as FirebaseTimestamp,

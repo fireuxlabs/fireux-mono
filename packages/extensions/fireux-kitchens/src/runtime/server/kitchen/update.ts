@@ -47,7 +47,8 @@ export async function updateKitchen(event: H3Event, input: unknown) {
     const current = await requireKitchenMutationAuthority(
       mutations,
       actor,
-      requested.kitchenId
+      requested.kitchenId,
+      { allowRoot: true }
     )
     mutations.update(FIRESTORE_MUTATION_TARGETS.kitchens, requested.kitchenId, {
       ...requested.patch,

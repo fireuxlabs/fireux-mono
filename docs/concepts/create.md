@@ -165,6 +165,25 @@ on the server.
 - Admin SDK or server credentials are involved.
 - A single user action must create files and records together.
 
+#### App initialization
+
+App initialization is complete only when its canonical App record and all five
+Storage-backed media roles exist together. The trusted media sync validates the
+bundled `logo.png`, both surface wordmarks, `cover.png` and `thumbnail.png`,
+uploads them under `apps/<appId>/img/app/*`, and records their URLs on
+`App.media`. A partial upload remains an incomplete, retryable setup; it must
+not release the App shell or report success.
+
+New App source declares its complete reviewed eight-colour semantic palette.
+Fresh initialization stores it while the App has no lower Console layer;
+initialization of an existing App backfills only an absent palette and never
+overwrites authored storage. When a domain-owned onboarding transaction creates
+or attaches Console support, it seeds missing Console roles from the complete
+source, preserves existing Console colours, and compacts `App.theme.palette`
+to the roles that extend or override Console. Runtime presentation resolves the
+effective eight colours from both layers. Root entity creation remains
+independently valid and does not receive App colours.
+
 #### Menu example
 
 - `MenuCTA` uses `ProviderGoQrTools`.

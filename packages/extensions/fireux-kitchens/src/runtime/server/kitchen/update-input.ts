@@ -14,6 +14,7 @@ function fail(message: string): never {
 
 const allowed = new Set([
   'slug',
+  'identity.name',
   'identity.display_name',
   'identity.tagline',
   'identity.card_image_url',
@@ -21,6 +22,10 @@ const allowed = new Set([
   'identity.wordmark_no_logo_image_url',
   'identity.wordmark_image_url',
   'identity.media_backdrop_color',
+  'assets.image',
+  'assets.logo',
+  'assets.wordmark',
+  'assets.backdrop_color',
   'menus.currency_format',
   'menus.show_currency',
   'menus.available',
@@ -33,7 +38,7 @@ const allowed = new Set([
   'tables.count',
   'fulfilment',
 ])
-const groups = new Set(['identity', 'menus', 'orders', 'tables'])
+const groups = new Set(['identity', 'assets', 'menus', 'orders', 'tables'])
 
 function flatten(source: Record<string, unknown>) {
   const out: Record<string, unknown> = {}
@@ -97,6 +102,16 @@ export function parseKitchenUpdate(value: unknown) {
         out[key] = color || FieldValue.delete()
       } else {
         out[key] = sparseString(raw, 'Kitchen identity value', 2048)
+      }
+      continue
+    }
+    if (key.startsWith('assets.')) {
+      if (key === 'assets.backdrop_color') {
+        const color = normalizeHexColor(raw)
+        if (color === null) fail('Kitchen backdrop must be a 6-digit hex colour.')
+        out[key] = color || FieldValue.delete()
+      } else {
+        out[key] = sparseString(raw, 'Kitchen asset URL', 2048)
       }
       continue
     }

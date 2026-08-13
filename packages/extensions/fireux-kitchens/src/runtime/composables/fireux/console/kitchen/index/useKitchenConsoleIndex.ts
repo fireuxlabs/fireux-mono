@@ -15,10 +15,10 @@ export function useKitchenConsoleIndex() {
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
-  } = useKitchenConsole({
-    keepLiveTargetsAvailable: true,
-  })
-  const demoCollection = useKitchenConsoleDemoData(true)
+  } = useKitchenConsole()
+  const demoCollection = useKitchenConsoleDemoData(
+    computed(() => consoleRuntime.allowDemo.value)
+  )
   const targetKitchens = computed(() => targetCollection.kitchens.value)
   const demoKitchens = computed(() => demoCollection.data.value?.kitchens ?? [])
   const targetOutcome = targetCollection.outcome
@@ -42,21 +42,14 @@ export function useKitchenConsoleIndex() {
   const isTenantSingleTarget = computed(
     () =>
       consoleRuntime.isTenant.value &&
+      !consoleRuntime.allowDemo.value &&
       isLiveSelection.value &&
       targetOutcome.value === 'ready' &&
       targetKitchens.value.length === 1 &&
       Boolean(consoleSelection.kitchen.value)
   )
-  const autoSelectTargetId = computed(() =>
-    consoleRuntime.isTenant.value &&
-    isLiveSelection.value &&
-    targetOutcome.value === 'ready' &&
-    targetKitchens.value.length === 1
-      ? String(targetKitchens.value[0]?.id ?? '').trim()
-      : ''
-  )
   const showTargetChooser = computed(
-    () => !isTenantSingleTarget.value
+    () => true
   )
   const runtime = computed(() => ({
     appId: consoleRuntime.appId.value,
@@ -90,7 +83,6 @@ export function useKitchenConsoleIndex() {
   const index = useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.kitchenId.value),
-    autoSelectTargetId,
     runtime,
     targets: targetKitchens,
     outcome: targetOutcome,
@@ -104,14 +96,20 @@ export function useKitchenConsoleIndex() {
   })
   const sections = computed(() => ({
     ...index.sections.value,
+    locked: isTenantSingleTarget.value,
     demoTargets: {
-      show: index.sections.value.targets.show,
+      show:
+        consoleRuntime.allowDemo.value &&
+        index.sections.value.targets.show,
       collection: demoKitchens.value,
       outcome: demoCollection.outcome.value,
     },
   }))
   const actions = {
     ...index.actions,
+    clear: () => {
+      if (!isTenantSingleTarget.value) index.actions.clear()
+    },
     selectTarget: (
       id: string,
       source: KitchenFetchSource = 'live'

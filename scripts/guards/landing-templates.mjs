@@ -2,6 +2,7 @@
 // last_used: 2026-08-11
 // usage_note: guards Misebox-owned Template One and FireUX referral ownership.
 import { readFileSync } from 'node:fs'
+import { existsSync } from 'node:fs'
 import path from 'node:path'
 
 export function run(ctx) {
@@ -32,10 +33,60 @@ export function run(ctx) {
     'utf8'
   )
   const contract = readFileSync(path.join(runtime, 'template-one.ts'), 'utf8')
+  const typography = readFileSync(
+    path.join(runtime, 'TemplateOneTypography.vue'),
+    'utf8'
+  )
+  const themeTypes = readFileSync(
+    path.join(repoRoot, 'packages/core/fireux-core/src/types/theme.ts'),
+    'utf8'
+  )
+  const appMedia = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/appMedia.ts'
+    ),
+    'utf8'
+  )
+  const appMediaRequirements = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/composables/fireux/firestore/core/app/utils/app-media-requirements.ts'
+    ),
+    'utf8'
+  )
+  const entityAssetOnboarding = readFileSync(
+    path.join(
+      repoRoot,
+      'packages/core/fireux-core/src/runtime/models/operations/entity-asset-onboarding.ts'
+    ),
+    'utf8'
+  )
   const miseboxDetail = readFileSync(
     path.join(
       repoRoot,
       'projects/misebox/misebox-app/app/pages/templates/[slug].vue'
+    ),
+    'utf8'
+  )
+  const assetReadiness = readFileSync(
+    path.join(
+      repoRoot,
+      'projects/misebox/misebox-app/app/components/templates/TemplateOneAssetReadiness.vue'
+    ),
+    'utf8'
+  )
+  const paletteProgression = readFileSync(
+    path.join(
+      repoRoot,
+      'projects/misebox/misebox-app/app/components/templates/TemplatePaletteProgression.vue'
+    ),
+    'utf8'
+  )
+  const heroProps = readFileSync(
+    path.join(
+      repoRoot,
+      'projects/misebox/misebox-app/app/components/templates/TemplateOneHeroProps.vue'
     ),
     'utf8'
   )
@@ -116,6 +167,8 @@ export function run(ctx) {
   }
   if (!fixtures.includes("slug: 'template-one'"))
     violations.push('Template One must own the neutral slug')
+  if (!fixtures.includes("slug: 'template-two'"))
+    violations.push('Template Two must be independently routable')
   if (
     !basicPresentation.includes("MISEBOX_BASIC_PRIMARY_COLOR = '#2563eb'") ||
     !basicPresentation.includes("placePrimaryColorSource: 'projected' | 'misebox-default'") ||
@@ -150,10 +203,23 @@ export function run(ctx) {
   if (
     contract.includes('textureSrc') ||
     fixtures.includes('textureSrc') ||
-    !sceneOne.includes("url('/img/template-one/charcoal-texture.webp')")
+    !existsSync(
+      path.join(runtime, 'public/img/template-one/charcoal-texture.webp')
+    )
   )
     violations.push(
       'Scene One texture must remain Template One-owned and identical across brands'
+    )
+  if (
+    !sceneOne.includes('class="template-one-scene-one__scroll-cue"') ||
+    !sceneOne.includes('href="#method"') ||
+    !sceneOne.includes('aria-label="Scroll to explore"') ||
+    !sceneOne.includes('<span>Scroll to explore</span>') ||
+    contract.includes('scrollLabel') ||
+    fixtures.includes('scrollLabel')
+  )
+    violations.push(
+      'Scene One scroll cue must remain fixed Template One anatomy rather than an App injection'
     )
   if (
     !switcher.includes("brand.tier === 'root'") ||
@@ -177,6 +243,44 @@ export function run(ctx) {
   if (!fixtures.includes('Place primary colour, Console theme, then App template.'))
     violations.push('Template One must preserve the presentation progression')
   if (
+    !fixtures.includes('const friiitesConsolePalette = consolePaletteFromApp(friiitesAppPalette)') ||
+    !fixtures.includes('const deanosConsolePalette = consolePaletteFromApp(deanosAppPalette)') ||
+    !fixtures.includes('compactAppPalette(friiitesAppPalette, friiitesConsolePalette)') ||
+    !fixtures.includes('compactAppPalette(deanosAppPalette, deanosConsolePalette)')
+  )
+    violations.push(
+      'App-tier template specimens must derive Console and sparse App layers from one complete source palette'
+    )
+  if (
+    !paletteProgression.includes('What comes from where') ||
+    !paletteProgression.includes('No override stored. Contributes no colour at this layer.') ||
+    !paletteProgression.includes('appKeyOrder.filter')
+  )
+    violations.push(
+      'Palette ownership must show each stored contribution once without inherited duplicates or absent App roles'
+    )
+  if (
+    !themeTypes.includes('export type AppTypography = {') ||
+    !themeTypes.includes('display_family: string') ||
+    !themeTypes.includes('body_family: string') ||
+    !contract.includes('typography: AppTypography') ||
+    !fixtures.includes('display_family:') ||
+    !fixtures.includes('body_family:') ||
+    !typography.includes('Two families. Four roles.') ||
+    !typography.includes('COMING SOON.') ||
+    !typography.includes('HOUSE SPECIALS') ||
+    !typography.includes('Coming soon to a location near you.') ||
+    !typography.includes('03 · LOCATIONS') ||
+    !typography.includes('ORDER NOW') ||
+    !typography.includes('--template-one-display-family') ||
+    !typography.includes('--template-one-body-family') ||
+    !miseboxDetail.includes("v-if=\"template.slug === 'template-one'\"") ||
+    !miseboxDetail.includes(':typography="selectedKitchen.appProps.typography"')
+  )
+    violations.push(
+      'Template One typography must derive four semantic roles from exactly two App family inputs'
+    )
+  if (
     !miseboxDetail.includes('<TemplateOneAtoms') ||
     !miseboxDetail.includes(':injection="selectedKitchen"') ||
     !miseboxDetail.includes('TemplateOneBrandSwitcher')
@@ -184,9 +288,11 @@ export function run(ctx) {
     violations.push('Misebox detail must render the four-Kitchen comparison')
   if (
     !miseboxDetail.includes('<TemplateOneSceneOne') ||
-    !miseboxDetail.includes("'template-one-page--preview': selectedKitchen.appProps") ||
+    !miseboxDetail.includes("'template-one-page--preview': isTemplatePreview") ||
+    !miseboxDetail.includes("template.kind === 'template' && Boolean(selectedKitchen.value.appProps)") ||
     !miseboxDetail.includes('aria-label="Template preview tools"') ||
-    !miseboxDetail.includes('aria-label="Level One Hero variables"') ||
+    !miseboxDetail.includes('<TemplateOneHeroProps') ||
+    !heroProps.includes('aria-label="Level One Hero variables"') ||
     !miseboxDetail.includes('selectedKitchen.rootProps.placePrimaryColor') ||
     !miseboxDetail.includes('selectedKitchen.appProps.sceneOne.present') ||
     !miseboxDetail.includes('layout: false') ||
@@ -194,6 +300,45 @@ export function run(ctx) {
   )
     violations.push(
       'App fixtures must render only the shared full-screen Scene One composition'
+    )
+  if (
+    fixtures.includes('localhost:3033') ||
+    fixtures.includes('/__template-brands/') ||
+    fixtures.includes('/img/app/brand/wordmark-dark-transparent.png') ||
+    fixtures.includes('deanosWordmarkSrc') ||
+    fixtures.includes('kitchens%2Fdeanos%2Flogo.png') ||
+    sceneOne.includes('<AppBrandWordmark')
+  )
+    violations.push(
+      'Tenant template previews must use owner Storage projections without sibling App mounts or FireUX fallback'
+    )
+  if (
+    !appMedia.includes('apps/${appId}/${APP_IMAGE_RELATIVE_PATHS[kind]}') ||
+    !appMedia.includes('resolveAppImageSources') ||
+    !appMedia.includes('owningAppBundle') ||
+    !appMediaRequirements.includes("wordmarkDark: 'img/app/wordmark-dark.png'")
+  )
+    violations.push(
+      'App media must preserve canonical role paths and local-first owner resolution'
+    )
+  if (!heroProps.includes("wordmarkSrc ? 'Present' : 'Missing'"))
+    violations.push('Template inspection must report canonical wordmark presence honestly')
+  if (
+    !entityAssetOnboarding.includes("root: ['logo', 'wordmarkLight', 'wordmarkDark']") ||
+    !entityAssetOnboarding.includes("console: ['logo', 'wordmarkLight', 'wordmarkDark', 'cover', 'thumbnail']") ||
+    !entityAssetOnboarding.includes("app: ['logo', 'wordmarkLight', 'wordmarkDark', 'cover', 'thumbnail']") ||
+    !entityAssetOnboarding.includes('entityAssetDimensionsMatch') ||
+    !miseboxIndex.includes('<TemplateOneAssetReadiness') ||
+    !miseboxIndex.includes(':storage-readiness="appAssetReadiness"') ||
+    !miseboxIndex.includes(":authority=\"selectedKitchen.demo ? 'demo' : 'app'\"") ||
+    miseboxDetail.includes('<TemplateOneAssetReadiness') ||
+    !assetReadiness.includes("props.authority !== 'demo'") ||
+    !assetReadiness.includes("invalid: 'Needs attention'") ||
+    !assetReadiness.includes('new Image()') ||
+    !assetReadiness.includes("props.stage === 'app'")
+  )
+    violations.push(
+      'Template inspection must enforce progressive Root, Console, and App asset readiness'
     )
   if (
     !miseboxDetail.includes('aria-label="Presentation inheritance"') ||
@@ -205,19 +350,28 @@ export function run(ctx) {
     !kitchenPreview.includes('Kitchen preview') ||
     !kitchenPreview.includes('Browse menu') ||
     !miseboxDetail.includes("const levels = ['Place', 'Kitchen']") ||
-    !miseboxDetail.includes("levels.push('Console', 'App + Template One')")
+    !miseboxDetail.includes('levels.push(\'Console\', `App + ${template.name}`)')
   )
     violations.push(
       'Template detail shell must expose the Place-to-Template inheritance path'
     )
-  if (!miseboxIndex.includes('to="/templates/template-one"'))
-    violations.push('Misebox catalogue must link to its canonical local detail')
+  if (
+    !miseboxIndex.includes('query: { kitchen: selectedKitchen.id }') ||
+    !miseboxIndex.includes('`/templates/${item.slug}`') ||
+    !miseboxDetail.includes('route.query.kitchen || route.query.brand')
+  )
+    violations.push('Misebox catalogue must select one Kitchen and carry it into each template')
   if (!fireuxIndex.includes('http://localhost:3001/templates/${template.slug}'))
     violations.push('FireUX catalogue must refer to the local Misebox owner')
   if (!fireuxReferral.includes('http://localhost:3001/templates/template-one'))
     violations.push('FireUX detail must redirect locally to Misebox')
   if (/Friiites|Deano/.test(atoms))
     violations.push('Template One anatomy must not contain fixture content')
+  if (
+    !sceneOne.includes('data-scene-layer="texture-shadow"') ||
+    !sceneOne.includes('data-scene-layer="texture-highlight"')
+  )
+    violations.push('Template One must retain its fixed texture-layer anatomy')
   for (const removedAtom of ['displayTitle', 'filledAction', 'mediaFrame'])
     if (atoms.includes(removedAtom))
       violations.push(`first slice must not render ${removedAtom}`)

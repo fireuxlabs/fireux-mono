@@ -16,11 +16,6 @@
           Sign in
         </NuxtLink>
 
-        <NuxtLink class="friiites-header__order" to="/menus">
-          <span class="friiites-header__order-desktop">View menu</span>
-          <span class="friiites-header__order-mobile">Menu</span>
-        </NuxtLink>
-
         <details class="friiites-header__menu">
           <summary aria-label="Open navigation menu">
             <UIcon name="i-lucide-menu" aria-hidden="true" />
@@ -42,17 +37,22 @@
 
 <script setup lang="ts">
 const menuItems = [
-  { label: 'Menu', to: '/menus' },
+  { label: '02 Menu', to: '/#menu' },
+  { label: '03 Locations', to: '/#locations' },
+  { label: '04 Method', to: '/#method' },
+  { label: '05 Classic', to: '/#classic' },
+  { label: '06 Next level', to: '/#next-level' },
+  { label: '07 Order now', to: '/#order-now' },
+  { label: '08 Franchise', to: '/#franchise' },
+  { label: '09 Misebox', to: '/#misebox' },
 ] as const
 </script>
 
 <style scoped>
 .friiites-header {
-  position: absolute;
-  inset: 0 0 auto;
   z-index: 30;
   color: var(--ui-text-highlighted);
-  background: transparent;
+  background: var(--friiites-black);
   border-bottom: 1px solid color-mix(in srgb, currentColor 10%, transparent);
 }
 
@@ -87,7 +87,6 @@ const menuItems = [
 }
 
 .friiites-header__sign-in,
-.friiites-header__order,
 .friiites-header__menu nav a {
   font-size: var(--text-xs);
   font-weight: var(--font-weight-extrabold);
@@ -99,26 +98,15 @@ const menuItems = [
   color: color-mix(in srgb, currentColor 78%, transparent);
 }
 
-.friiites-header__order {
-  padding: calc(var(--spacing) * 3.4) calc(var(--spacing) * 7);
-  color: var(--friiites-gold);
-  border: 1px solid var(--friiites-gold);
-}
-
-.friiites-header__order,
 .friiites-header__menu summary {
   background-color: color-mix(in srgb, var(--friiites-black) 88%, transparent);
   background-image:
     linear-gradient(rgb(var(--brand-accent-rgb) / 7%), rgb(0 0 0 / 8%)),
-    url('/img/app/hero/charcoal-texture.webp');
+    url('/img/template-one/charcoal-texture.webp');
   background-position: center;
   background-size: auto, 16rem;
   background-blend-mode: normal, soft-light;
   box-shadow: inset 0 0 0 1px rgb(255 255 255 / 2%);
-}
-
-.friiites-header__order-mobile {
-  display: none;
 }
 
 .friiites-header__menu {
@@ -146,7 +134,6 @@ const menuItems = [
   height: 1.5rem;
 }
 
-.friiites-header__order:hover,
 .friiites-header__menu summary:hover {
   background-color: color-mix(in srgb, var(--friiites-gold) 14%, var(--friiites-black));
 }
@@ -197,17 +184,6 @@ const menuItems = [
     letter-spacing: 0.06em;
   }
 
-  .friiites-header__order {
-    padding: 0.7rem 0.85rem;
-  }
-
-  .friiites-header__order-desktop {
-    display: none;
-  }
-
-  .friiites-header__order-mobile {
-    display: inline;
-  }
 }
 
 @media (max-width: 23rem) {
@@ -219,8 +195,5 @@ const menuItems = [
     gap: 0.3rem;
   }
 
-  .friiites-header__order {
-    padding-inline: 0.65rem;
-  }
 }
 </style>

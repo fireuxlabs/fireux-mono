@@ -4,8 +4,9 @@ import { normalizeString } from 'fireux-core/runtime/utils/string'
 import {
   readKitchenIdentity,
   readKitchenManagementTarget,
-  readKitchenMenuStyle,
 } from '../../../../../utils/kitchen-spine'
+import { readConsolePalette } from 'fireux-core/runtime/utils/brand-palette'
+import { readPlacePresentation } from 'fireux-places/runtime/utils/place-spine'
 import { useKitchenConsoleIdentity } from './useKitchenConsoleIdentity'
 import { useKitchenConsolePlace } from './useKitchenConsolePlace'
 
@@ -23,9 +24,8 @@ const completionPercent = (requirements: KitchenIdentityRequirement[]) => {
 }
 
 /**
- * Kitchen identity is progressive authority, not three interchangeable themes.
- * Root identity must resolve before Console presentation can be authored. App
- * Brand System work remains downstream of both and must not be simulated here.
+ * Kitchen identity follows the same Place → Kitchen → Console → App authority
+ * used by onboarding. Each layer stores only its own additions or overrides.
  */
 export function useKitchenIdentityProgression() {
   const fireux = useFireUXConfig()
@@ -36,6 +36,7 @@ export function useKitchenIdentityProgression() {
   )
   const identity = computed(() => readKitchenIdentity(kitchen.value))
   const place = placeState.place
+  const placePresentation = computed(() => readPlacePresentation(place.value))
   const resolvedName = computed(() =>
     normalizeString(identity.value.displayName) ||
     normalizeString(place.value?.name) ||
@@ -45,18 +46,30 @@ export function useKitchenIdentityProgression() {
     normalizeString(identity.value.tagline) ||
     normalizeString(place.value?.brand_tagline)
   )
-  const resolvedBackdrop = computed(() =>
-    normalizeString(identity.value.mediaBackdropColor) ||
-    normalizeString(place.value?.media_backdrop_color)
-  )
-
-  const rootRequirements = computed<KitchenIdentityRequirement[]>(() => [
+  const placeRequirements = computed<KitchenIdentityRequirement[]>(() => [
     {
       key: 'place',
       label: 'Linked Place',
       detail: 'The Kitchen resolves its physical identity from one Place.',
       complete: Boolean(identityState.placeId.value && place.value?.id),
     },
+    {
+      key: 'place-name',
+      label: 'Place name',
+      detail: 'The linked Place has its canonical name.',
+      complete: Boolean(placePresentation.value.name),
+    },
+    {
+      key: 'place-backdrop',
+      label: 'Identity backdrop',
+      detail: 'Transparent identity media has a deliberate base colour.',
+      complete: Boolean(placePresentation.value.mediaBackdropColor),
+    },
+  ])
+  const placePercent = computed(() => completionPercent(placeRequirements.value))
+  const placeComplete = computed(() => placePercent.value === 100)
+
+  const rootRequirements = computed<KitchenIdentityRequirement[]>(() => [
     {
       key: 'name',
       label: 'Name',
@@ -66,7 +79,7 @@ export function useKitchenIdentityProgression() {
     {
       key: 'slug',
       label: 'Slug',
-      detail: 'The Kitchen has a stable public identifier.',
+      detail: 'The Kitchen has a stable route identifier.',
       complete: Boolean(identityState.slug.value),
     },
     {
@@ -77,36 +90,39 @@ export function useKitchenIdentityProgression() {
     },
     {
       key: 'logo',
-      label: 'Kitchen logo',
-      detail: 'Console targets use Kitchen-owned identity, not Place photography.',
-      complete: Boolean(identity.value.logoImageUrl),
+      label: 'Logo',
+      detail: 'A Kitchen override or inherited Place logo is available.',
+      complete: Boolean(
+        identity.value.logoImageUrl || placePresentation.value.logoImage
+      ),
     },
     {
       key: 'wordmark',
-      label: 'Kitchen wordmark',
-      detail: 'A Kitchen-owned transparent wordmark is available.',
-      complete: Boolean(identity.value.wordmarkImageUrl),
-    },
-    {
-      key: 'backdrop',
-      label: 'Media backdrop',
-      detail: 'Transparent identity media resolves against a deliberate colour.',
-      complete: Boolean(resolvedBackdrop.value),
+      label: 'Wordmark',
+      detail: 'A Kitchen override or inherited Place wordmark is available.',
+      complete: Boolean(
+        identity.value.wordmarkImageUrl || placePresentation.value.wordmarkImage
+      ),
     },
   ])
-  const rootPercent = computed(() => completionPercent(rootRequirements.value))
-  const rootComplete = computed(() => rootPercent.value === 100)
+  const rootPercent = computed(() =>
+    placeComplete.value ? completionPercent(rootRequirements.value) : 0
+  )
+  const rootComplete = computed(() =>
+    placeComplete.value && rootPercent.value === 100
+  )
 
-  const storedMenuStyle = computed(() => readKitchenMenuStyle(kitchen.value))
+  const storedConsolePalette = computed(() =>
+    readConsolePalette(
+      (kitchen.value?.console_theme as Record<string, unknown> | undefined)?.palette
+    )
+  )
   const consoleRequirements = computed<KitchenIdentityRequirement[]>(() => [
     {
       key: 'menu-style',
       label: 'Menu display theme',
-      detail: 'The Console has saved its portable PageStyle colours.',
-      complete: Boolean(
-        normalizeString(storedMenuStyle.value?.primary_color) &&
-        normalizeString(storedMenuStyle.value?.secondary_color)
-      ),
+      detail: 'The Console has saved its four functional colours.',
+      complete: Boolean(storedConsolePalette.value),
     },
   ])
   const consolePercent = computed(() =>
@@ -126,12 +142,6 @@ export function useKitchenIdentityProgression() {
       detail: 'The Kitchen is managed by a dedicated tenant App.',
       complete: management.value.hasDedicatedApp,
     },
-    {
-      key: 'brand-system',
-      label: 'App Brand System',
-      detail: 'Stored Brand System authoring is not implemented yet.',
-      complete: false,
-    },
   ])
   const appPercent = computed(() =>
     consoleComplete.value ? completionPercent(appRequirements.value) : 0
@@ -141,6 +151,9 @@ export function useKitchenIdentityProgression() {
     ...identityState,
     place,
     placePending: placeState.pending,
+    placeRequirements,
+    placePercent,
+    placeComplete,
     kitchen,
     rootRequirements,
     rootPercent,
@@ -151,6 +164,8 @@ export function useKitchenIdentityProgression() {
     appRequirements,
     appPercent,
     appComplete: computed(() => appPercent.value === 100),
+    hasDedicatedApp: computed(() => management.value.hasDedicatedApp),
+    managementMode: computed(() => management.value.mode),
   }
 }
 

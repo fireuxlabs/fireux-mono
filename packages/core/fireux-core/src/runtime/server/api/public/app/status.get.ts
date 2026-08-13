@@ -3,10 +3,13 @@
 import { defineEventHandler, setResponseHeaders, type H3Event } from 'h3'
 import { useFireUXConfig } from '../../../../composables/fireux/app/FireUXConfig'
 import { AppStorage } from '../../../../models/core/app.model'
+import { isAppMediaComplete } from '../../../../composables/fireux/firestore/core/app/utils/appMedia'
+import { readAppPaletteLayer } from '../../../../utils/brand-palette'
 import { getRuntimeFirestore } from '../../../utils/getRuntimeFirestore'
 
 export default defineEventHandler(async (event: H3Event) => {
-  const { appId } = useFireUXConfig()
+  const config = useFireUXConfig(event)
+  const { appId } = config
   const snapshot = await getRuntimeFirestore()
     .collection(AppStorage.collection)
     .doc(appId)
@@ -21,5 +24,8 @@ export default defineEventHandler(async (event: H3Event) => {
     ok: true as const,
     appId,
     initialized: snapshot.exists,
+    mediaReady: snapshot.exists && isAppMediaComplete(snapshot.data()?.media),
+    paletteReady:
+      !config.theme || Boolean(readAppPaletteLayer(snapshot.data()?.theme?.palette)),
   }
 })

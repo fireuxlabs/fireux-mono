@@ -11,6 +11,7 @@ import type {
 } from '../kitchen.model'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/scope.model'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 
 export const PUBLIC_KITCHEN_INDEX_PAGE_SIZE = 24
 export const PUBLIC_KITCHEN_INDEX_MAX_PAGE_SIZE = 48
@@ -98,6 +99,7 @@ export type KitchenConsoleTargetItem = {
     gallery: string[]
   }
   menus: KitchenMenusConfig
+  console_theme?: ConsoleTheme
   orders?: KitchenOrdersConfig
   tables?: KitchenTablesConfig
   fulfilment: KitchenFulfilmentConfig

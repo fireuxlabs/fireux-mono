@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { BrandPalette } from './template-one'
+import type { AppPalette } from './template-one'
 
 const props = withDefaults(defineProps<{
   id?: string
@@ -46,7 +46,7 @@ const props = withDefaults(defineProps<{
   title: string
   description?: string
   steps: readonly { title: string; body: string }[]
-  palette: BrandPalette
+  palette: AppPalette
 }>(), {
   id: 'method',
   sceneNumber: '01',
@@ -54,8 +54,8 @@ const props = withDefaults(defineProps<{
 })
 
 const themeStyle = computed(() => ({
-  '--template-one-primary': props.palette.primary_color,
-  '--template-one-canvas': props.palette.secondary_color,
+  '--template-one-primary': props.palette.accent,
+  '--template-one-canvas': props.palette.canvas,
 }))
 </script>
 

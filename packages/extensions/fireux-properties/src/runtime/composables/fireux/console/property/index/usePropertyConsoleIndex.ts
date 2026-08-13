@@ -3,26 +3,15 @@
 // Concurrent edit — 2026-07-21 22:31 CEST — Console family alignment: consume Property core-owned target authority.
 import { computed } from 'vue'
 import { useConsoleIndex } from 'fireux-core/runtime/composables/fireux/app/console/useConsoleIndex'
-import type { PropertyCollectionFilter } from '../../../firestore/property/fetch/usePropertyCollection'
 import { usePropertyConsole } from '../core/usePropertyConsole'
-import type { Ref } from 'vue'
-
-type UsePropertyConsoleIndexOptions = {
-  filter?: PropertyCollectionFilter | Ref<PropertyCollectionFilter | null | undefined> | null
-}
-
-export function usePropertyConsoleIndex(
-  options: UsePropertyConsoleIndexOptions = {}
-) {
+export function usePropertyConsoleIndex() {
   const {
     properties,
     targeting,
     selection: consoleSelection,
     runtime: consoleRuntime,
     actions: consoleActions,
-  } = usePropertyConsole({
-    filter: options.filter,
-  })
+  } = usePropertyConsole()
   const selection = computed(() => ({
     property: consoleSelection.property.value,
     propertyId: consoleSelection.propertyId.value,
@@ -47,9 +36,6 @@ export function usePropertyConsoleIndex(
   return useConsoleIndex({
     selection,
     selectedId: computed(() => consoleSelection.propertyId.value),
-    autoSelectTargetId: computed(() =>
-      targeting.singleTargetId.value
-    ),
     runtime,
     targets: properties.targets,
     outcome: properties.outcome,

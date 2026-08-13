@@ -2,7 +2,7 @@
   <main
     v-if="template"
     class="template-one-page"
-    :class="{ 'template-one-page--preview': selectedKitchen.appProps }"
+    :class="{ 'template-one-page--preview': isTemplatePreview }"
   >
     <nav
       class="template-one-page__inheritance"
@@ -29,76 +29,61 @@
       :identity-src="placePreview.identitySrc"
     />
     <header
-      v-if="selectedKitchen.appProps"
+      v-if="isTemplatePreview"
       class="template-one-page__preview-shell"
     >
       <nav
         class="template-one-page__preview-toolbar"
         aria-label="Template preview tools"
       >
-        <NuxtLink to="/templates/template-one">← Comparison</NuxtLink>
-        <span>Template One preview</span>
+        <NuxtLink :to="{ path: '/templates', query: { kitchen: selectedKitchenId } }">← Templates</NuxtLink>
+        <span>{{ template.name }} preview</span>
         <div>
           <NuxtLink
             v-for="kitchen in appKitchens"
             :key="kitchen.id"
             replace
-            :to="{ query: { brand: kitchen.id } }"
+            :to="{ query: { kitchen: kitchen.id } }"
             :aria-current="kitchen.id === selectedKitchenId ? 'page' : undefined"
           >
             {{ kitchen.name }}
           </NuxtLink>
         </div>
       </nav>
-      <aside
-        class="template-one-page__level-one"
-        aria-label="Level One Hero variables"
-      >
-      <strong>Level One · Hero</strong>
-      <dl>
-        <div>
-          <dt>Name</dt>
-          <dd>{{ selectedKitchen.name }}</dd>
-        </div>
-        <div>
-          <dt>Wordmark</dt>
-          <dd>Present</dd>
-        </div>
-        <div>
-          <dt>Place primary</dt>
-          <dd>
-            <span
-              class="template-one-page__colour"
-              :style="{ backgroundColor: selectedKitchen.rootProps.placePrimaryColor }"
-            />
-            <code>{{ selectedKitchen.rootProps.placePrimaryColor }}</code>
-          </dd>
-        </div>
-        <div>
-          <dt>Present</dt>
-          <dd>{{ selectedKitchen.appProps.sceneOne.present }}</dd>
-        </div>
-        <div>
-          <dt>Alignment</dt>
-          <dd>{{ selectedKitchen.appProps.sceneOne.identityAlignment }}</dd>
-        </div>
-      </dl>
-      <small>Header reuses Name + Wordmark. Links are Template One defaults.</small>
-      </aside>
-    </header>
-    <template v-if="selectedKitchen.appProps">
-      <TemplateOneSceneOne
+      <TemplateOneHeroProps
         :name="selectedKitchen.name"
         :wordmark-src="selectedKitchen.rootProps.wordmarkSrc"
         :place-primary-color="selectedKitchen.rootProps.placePrimaryColor"
         :present="selectedKitchen.appProps.sceneOne.present"
         :identity-alignment="selectedKitchen.appProps.sceneOne.identityAlignment"
+        :tagline="selectedKitchen.appProps.sceneOne.tagline"
+      />
+      <TemplateOneTypography
+        v-if="template.slug === 'template-one'"
+        :typography="selectedKitchen.appProps.typography"
+      />
+      <p class="template-one-page__content-readiness">
+        Template content ·
+        <strong>{{ templateContentReadiness }}</strong>
+      </p>
+    </header>
+    <template v-if="isTemplatePreview">
+      <TemplateOneSceneOne
+        :name="selectedKitchen.name"
+        :wordmark-src="sceneWordmarkSrc"
+        :place-primary-color="selectedKitchen.rootProps.placePrimaryColor"
+        :present="selectedKitchen.appProps.sceneOne.present"
+        :identity-alignment="selectedKitchen.appProps.sceneOne.identityAlignment"
+        :palette="effectivePalette"
+        :typography="selectedKitchen.appProps.typography"
+        :flagship-dish="flagshipResult?.dish || null"
+        :requirements="sceneRequirements"
       />
     </template>
     <UContainer v-else>
       <header class="template-one-page__header">
         <NuxtLink to="/templates">← Templates</NuxtLink>
-        <h1>Template One.</h1>
+        <h1>{{ template.name }}.</h1>
       </header>
       <TemplateOneBrandSwitcher
         :model-value="selectedKitchenId"
@@ -108,6 +93,7 @@
         :injection="selectedKitchen"
         :menu="templateOneMenuSample"
         :basic-presentation="basicPresentation"
+        :presentation-kind="template.kind"
       />
     </UContainer>
   </main>
@@ -121,6 +107,7 @@ import TemplateOnePlacePreview from '~/components/templates/TemplateOnePlacePrev
 import TemplateOneAtoms from 'fireux-misebox/runtime/TemplateOneAtoms.vue'
 import TemplateOneBrandSwitcher from 'fireux-misebox/runtime/TemplateOneBrandSwitcher.vue'
 import TemplateOneSceneOne from 'fireux-misebox/runtime/TemplateOneSceneOne.vue'
+import TemplateOneTypography from 'fireux-misebox/runtime/TemplateOneTypography.vue'
 import {
   findLandingTemplate,
   findLandingTemplateBrand,
@@ -131,6 +118,9 @@ import type { TemplateOneKitchenSpecimen } from 'fireux-misebox/runtime/template
 import { resolveMiseboxKitchenBasicPresentation } from 'fireux-misebox/runtime/kitchen-basic-presentation'
 import { miseboxDemoMediaUrl } from 'fireux-demo/runtime/media/misebox'
 import { useSeo } from 'fireux-core/runtime/composables/fireux/seo/useSeo'
+import { resolveAppPalette } from 'fireux-core/runtime/utils/brand-palette'
+import type { AppPalette } from 'fireux-core/types/theme'
+import type { KitchenFlagshipDishResult } from 'fireux-kitchens/runtime/server/dish/flagship-projection'
 
 const route = useRoute()
 const template = findLandingTemplate(String(route.params.slug || ''))
@@ -138,21 +128,78 @@ if (!template)
   throw createError({ statusCode: 404, statusMessage: 'Template not found' })
 
 const selectedKitchenId = computed<TemplateOneKitchenSpecimen['id']>(() =>
-  isLandingTemplateBrandId(String(route.query.brand || ''))
-    ? (route.query.brand as TemplateOneKitchenSpecimen['id'])
+  isLandingTemplateBrandId(String(route.query.kitchen || route.query.brand || ''))
+    ? (String(route.query.kitchen || route.query.brand) as TemplateOneKitchenSpecimen['id'])
     : 'seehotel-bonigen'
 )
-const selectedKitchen = computed(
+const selectedKitchen = computed<TemplateOneKitchenSpecimen>(
   () => findLandingTemplateBrand(selectedKitchenId.value) || template.brands[0]
+)
+const isTemplatePreview = computed(() =>
+  template.kind === 'template' && Boolean(selectedKitchen.value.appProps)
 )
 const appKitchens = computed(() =>
   template.brands.filter((kitchen) => kitchen.tier === 'app')
 )
+const selectedAppProps = computed(() => selectedKitchen.value.appProps)
+const { data: flagshipResult } = await useAsyncData(
+  'template-one-flagship-dish',
+  () => selectedAppProps.value
+    ? $fetch<KitchenFlagshipDishResult>(
+        `/api/kitchens/${selectedAppProps.value.kitchenId}/flagship-dish`,
+        { query: { appId: selectedAppProps.value.appId } }
+      )
+    : null,
+  { watch: [selectedKitchenId] }
+)
+const effectivePalette = computed<AppPalette>(() => {
+  const app = selectedAppProps.value
+  const consolePalette = selectedKitchen.value.consoleProps?.palette
+  return app && consolePalette
+    ? resolveAppPalette(consolePalette, app.palette) || {
+        canvas: '#0b0b0a', surface: '#181817', canvas_inverted: '#f8fafc',
+        text: '#f8fafc', text_muted: '#94a3b8', ink: '#0b0b0a',
+        accent: '#64748b', accent_contrast: '#ffffff',
+      }
+    : {
+        canvas: '#0b0b0a', surface: '#181817', canvas_inverted: '#f8fafc',
+        text: '#f8fafc', text_muted: '#94a3b8', ink: '#0b0b0a',
+        accent: '#64748b', accent_contrast: '#ffffff',
+      }
+})
+const sceneWordmarkSrc = computed(() => {
+  const app = selectedAppProps.value
+  if (!app) return ''
+  return selectedKitchen.value.demo
+    ? miseboxDemoMediaUrl(`apps/${app.appId}/img/app/wordmark-dark.png`)
+    : `/api/templates/template-one/assets/wordmarkDark?appId=${encodeURIComponent(app.appId)}`
+})
+const sceneRequirements = computed(() => ({
+  wordmark: Boolean(sceneWordmarkSrc.value),
+  palette: Boolean(resolveAppPalette(
+    selectedKitchen.value.consoleProps?.palette || effectivePalette.value,
+    selectedAppProps.value?.palette || {}
+  )),
+  typography: Boolean(
+    selectedAppProps.value?.typography.display_family &&
+    selectedAppProps.value?.typography.body_family
+  ),
+  flagshipDish: flagshipResult.value?.ready === true,
+  pattern: 'unapproved' as const,
+}))
+const templateContentReadiness = computed(() => {
+  const readiness = flagshipResult.value?.contentReadiness
+  if (!readiness) return 'Not checked'
+  return readiness.ready
+    ? `${readiness.eligibleDishCount}/${readiness.requiredDishCount} Dishes · ready`
+    : `${readiness.eligibleDishCount}/${readiness.requiredDishCount} Dishes · not ready`
+})
 const presentationPath = computed(() => {
   const levels = ['Place', 'Kitchen']
-  if (selectedKitchen.value.tier === 'console') levels.push('Console')
-  if (selectedKitchen.value.tier === 'app') {
-    levels.push('Console', 'App + Template One')
+  if (template.kind !== 'default' && selectedKitchen.value.tier === 'console') levels.push('Console')
+  if (template.kind === 'theme' && selectedKitchen.value.tier === 'app') levels.push('Console')
+  if (template.kind === 'template' && selectedKitchen.value.tier === 'app') {
+    levels.push('Console', `App + ${template.name}`)
   }
   return levels
 })
@@ -205,10 +252,10 @@ const placePreview = computed(() => ({
 
 definePageMeta({ layout: false, name: 'MiseboxTemplateDetailPage' })
 useSeo({
-  title: 'Template One · Misebox',
+  title: `${template.name} · Misebox`,
   description:
     'Compare the complete Root, Console and App presentation levels.',
-  path: '/templates/template-one',
+  path: `/templates/${template.slug}`,
   image: '/img/app/cover.png',
 })
 </script>
@@ -255,97 +302,6 @@ useSeo({
   padding: 0;
   background: #0b0b0a;
 }
-.template-one-page__preview-shell {
-  position: relative;
-  z-index: 4;
-  color: color-mix(in srgb, white 78%, transparent);
-  background: #0b0b0a;
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
-}
-.template-one-page__preview-toolbar {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: calc(var(--spacing) * 3);
-  align-items: center;
-  min-height: calc(var(--spacing) * 11);
-  padding-inline: calc(var(--spacing) * 4);
-  color: color-mix(in srgb, white 72%, transparent);
-  font-size: var(--text-xs);
-  background: rgb(0 0 0 / 62%);
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
-  backdrop-filter: blur(calc(var(--spacing) * 3));
-}
-.template-one-page__preview-toolbar > span {
-  justify-self: end;
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-}
-.template-one-page__preview-toolbar > div {
-  display: flex;
-  grid-column: 1 / -1;
-  gap: calc(var(--spacing) * 3);
-  justify-content: flex-start;
-  padding-bottom: calc(var(--spacing) * 2.5);
-}
-.template-one-page__preview-toolbar a[aria-current='page'] {
-  color: white;
-  text-decoration: underline;
-  text-underline-offset: calc(var(--spacing) * 1.5);
-}
-.template-one-page__level-one {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: calc(var(--spacing) * 4);
-  align-items: center;
-  padding: calc(var(--spacing) * 2.5) calc(var(--spacing) * 4);
-  color: color-mix(in srgb, white 78%, transparent);
-  font-size: var(--text-xs);
-  background: rgb(0 0 0 / 55%);
-  border-top: 1px solid rgb(255 255 255 / 10%);
-  backdrop-filter: blur(calc(var(--spacing) * 3));
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-.template-one-page__level-one::-webkit-scrollbar {
-  display: none;
-}
-.template-one-page__level-one > strong {
-  flex: 0 0 auto;
-  color: white;
-  letter-spacing: var(--tracking-widest);
-  text-transform: uppercase;
-}
-.template-one-page__level-one dl {
-  display: flex;
-  flex: 0 0 auto;
-  flex-wrap: nowrap;
-  gap: calc(var(--spacing) * 2) calc(var(--spacing) * 5);
-  margin: 0;
-}
-.template-one-page__level-one dl > div {
-  display: flex;
-  gap: calc(var(--spacing) * 1.5);
-}
-.template-one-page__level-one dt {
-  color: color-mix(in srgb, white 48%, transparent);
-}
-.template-one-page__level-one dd {
-  display: flex;
-  gap: calc(var(--spacing) * 1.5);
-  align-items: center;
-  margin: 0;
-  color: white;
-}
-.template-one-page__level-one small {
-  display: none;
-  color: color-mix(in srgb, white 55%, transparent);
-}
-.template-one-page__colour {
-  width: calc(var(--spacing) * 3);
-  height: calc(var(--spacing) * 3);
-  border: 1px solid rgb(255 255 255 / 35%);
-  border-radius: 50%;
-}
 .template-one-page :deep(.container) {
   display: grid;
   max-width: 64rem;
@@ -360,39 +316,22 @@ useSeo({
   width: fit-content;
   color: var(--ui-text-muted);
 }
+.template-one-page__content-readiness {
+  margin: 0;
+  padding: calc(var(--spacing) * 3) clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 12));
+  color: color-mix(in srgb, white 62%, transparent);
+  font-size: var(--text-sm);
+  background: #0b0b0a;
+  border-top: 1px solid rgb(255 255 255 / 10%);
+}
+.template-one-page__content-readiness strong {
+  color: white;
+}
 .template-one-page h1 {
   margin: 0;
   font-size: clamp(var(--text-5xl), 10vw, var(--text-9xl));
   letter-spacing: -0.07em;
   line-height: 0.9;
 }
-@media (min-width: 40.0625rem) {
-  .template-one-page__preview-toolbar {
-    grid-template-columns: 1fr auto 1fr;
-    gap: calc(var(--spacing) * 4);
-    padding-inline: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 12));
-  }
-  .template-one-page__preview-toolbar > span {
-    justify-self: auto;
-  }
-  .template-one-page__preview-toolbar > div {
-    grid-column: auto;
-    justify-content: flex-end;
-    padding-bottom: 0;
-  }
-  .template-one-page__level-one {
-    margin-inline: clamp(calc(var(--spacing) * 4), 3vw, calc(var(--spacing) * 12));
-    flex-wrap: wrap;
-    gap: calc(var(--spacing) * 3) calc(var(--spacing) * 6);
-    overflow: visible;
-  }
-  .template-one-page__level-one dl {
-    flex: 1;
-    flex-wrap: wrap;
-  }
-  .template-one-page__level-one small {
-    display: inline;
-  }
-}
 </style>
-  flex: 0 0 auto;
+<style scoped src="./template-detail-toolbar.css"></style>

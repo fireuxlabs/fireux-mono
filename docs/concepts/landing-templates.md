@@ -44,16 +44,18 @@ result consistently across every tenant/franchise Kitchen in that App. Template
 selection is App-owned, not a per-Kitchen franchise choice.
 
 At the App level, Friiites and Deano's Smash consume the same Scene One
-composition. Friiites proves it with canonical identity media; Deano's uses its
-existing Demo-owned transparent logo/wordmark lockup. The shared media frame
-contains both wide and square identity aspect ratios without branching. The
-Scene One injection may align that same identity frame left or centre;
+composition. Friiites proves it with canonical identity media; Deano's has an
+existing Demo-owned square logo but no canonical App wordmark yet, so the
+wordmark role is shown as missing rather than substituted. The shared media
+frame does not branch around that missing role. Once Deano's supplies
+`public/img/app/wordmark-dark.png`, the Scene One injection may align that same
+identity frame left or centre;
 Friiites uses left alignment and Deano's uses centre alignment. This is a
 bounded presentation option, not alternate scene markup. The charcoal surface
 is owned by Template One and is identical for both injections; it is not a
 brand asset or configurable delta. Both current fixtures declare
-`present: 'wordmark'`; the wordmark itself resolves from Root identity rather
-than being duplicated into Scene One configuration. The
+`present: 'wordmark'`; fulfilment of that role resolves from Root identity
+rather than being duplicated into Scene One configuration. The
 catalogue and live Friiites App consume the same component; neither owns
 duplicate Scene One markup or CSS. The Process composition remains available
 but is not mounted in the current one-scene preview.

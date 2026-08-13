@@ -1,9 +1,11 @@
 import type { TemplateOneKitchenSpecimen } from './template-one'
 import type { TemplateOneMenuSample } from './template-one'
 import { MISEBOX_BASIC_PRIMARY_COLOR } from './kitchen-basic-presentation'
-
-const deanosWordmarkSrc =
-  'https://firebasestorage.googleapis.com/v0/b/misebox-78f9c.appspot.com/o/demo%2Fmisebox-app%2Fkitchens%2Fdeanos%2Flogo.png?alt=media&token=f71ae1d8-4b0e-4d0c-8b65-cc99580a6c60'
+import {
+  compactAppPalette,
+  consolePaletteFromApp,
+} from 'fireux-core/runtime/utils/brand-palette'
+import type { AppPalette } from 'fireux-core/types/theme'
 
 export const templateOneMenuSample = {
   sections: [
@@ -32,11 +34,13 @@ export const templateOneMenuSample = {
 const rootProps = (
   placePrimaryColor: string,
   source: string,
-  wordmarkSrc = ''
+  wordmarkSrc = '',
+  kitchenSource = ''
 ) => ({
   placePrimaryColor,
   wordmarkSrc,
   source,
+  ...(kitchenSource ? { kitchenSource } : {}),
 })
 
 const consoleValues = [
@@ -72,12 +76,38 @@ const pizzaTheActionMenuPageStyle = {
   title_font_family: 'Montserrat',
 } as const
 
+const friiitesAppPalette = {
+  canvas: '#181817',
+  surface: '#242321',
+  canvas_inverted: '#f3e9d2',
+  text: '#f3e9d2',
+  text_muted: '#bdb6a5',
+  ink: '#181817',
+  accent: '#d99a22',
+  accent_contrast: '#181817',
+} as const satisfies AppPalette
+
+const deanosAppPalette = {
+  canvas: '#0b0b0a',
+  surface: '#211916',
+  canvas_inverted: '#f6ead8',
+  text: '#f6ead8',
+  text_muted: '#c7b6aa',
+  ink: '#0b0b0a',
+  accent: '#ff4f2e',
+  accent_contrast: '#0b0b0a',
+} as const satisfies AppPalette
+
+const friiitesConsolePalette = consolePaletteFromApp(friiitesAppPalette)
+const deanosConsolePalette = consolePaletteFromApp(deanosAppPalette)
+
 export const landingTemplateBrands = [
   {
     id: 'seehotel-bonigen',
     name: 'Seehotel Bönigen',
     tier: 'root',
     demo: false,
+    assetSources: {},
     rootProps: rootProps(
       MISEBOX_BASIC_PRIMARY_COLOR,
       'Misebox Basic default primary colour'
@@ -88,6 +118,9 @@ export const landingTemplateBrands = [
     name: 'Pizza the Action',
     tier: 'console',
     demo: true,
+    assetSources: {
+      logo: 'demo:kitchens/pizza-the-action/logo.png',
+    },
     rootProps: rootProps(
       MISEBOX_BASIC_PRIMARY_COLOR,
       'Misebox Basic default primary colour'
@@ -95,6 +128,9 @@ export const landingTemplateBrands = [
     consoleProps: {
       source: 'Pizza the Action Demo Kitchen.menus.style',
       pageStyle: pizzaTheActionMenuPageStyle,
+      palette: {
+        canvas: '#fff7d6', text: '#345442', accent: '#1f6b45', accent_contrast: '#fff8dc',
+      },
       values: consoleValues,
     },
   },
@@ -103,24 +139,34 @@ export const landingTemplateBrands = [
     name: 'Friiites',
     tier: 'app',
     demo: false,
+    assetSources: {},
     rootProps: rootProps(
       '#0b0b0a',
-      'Friiites Place primary colour',
-      'http://localhost:3033/img/app/brand/wordmark-dark-transparent.png'
+      'places/5dGJgdjDv7Zi0tjva61O · media_backdrop_color',
+      '',
+      'kitchens/5dGJgdjDv7Zi0tjva61O · assets.backdrop_color'
     ),
     consoleProps: {
-      source: 'Effective default Menu PageStyle inherited by the App Kitchen',
+      source: 'apps/friiites/kitchens/5dGJgdjDv7Zi0tjva61O · console.theme.palette',
       pageStyle: defaultMenuPageStyle,
+      palette: friiitesConsolePalette,
       values: consoleValues,
     },
     appProps: {
-      source: 'Friiites tenant App fixture',
+      source: 'apps/friiites · theme.palette',
+      appId: 'friiites',
+      kitchenId: '5dGJgdjDv7Zi0tjva61O',
       template: 'template-one',
       note: 'Real App consumer; template selection persistence remains to be modelled.',
-      palette: { primary_color: '#d99a22', secondary_color: '#f3e9d2' },
+      palette: compactAppPalette(friiitesAppPalette, friiitesConsolePalette),
+      typography: {
+        display_family: "Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif",
+        body_family: "'Arial Narrow', Arial, sans-serif",
+      },
       sceneOne: {
         present: 'wordmark',
         identityAlignment: 'left',
+        tagline: ['Hand-cut.', 'Brined.', 'Triple-fried', 'in beef tallow.'],
       },
       process: {
         eyebrow: 'Our method',
@@ -148,24 +194,39 @@ export const landingTemplateBrands = [
     name: "Deano's Smash",
     tier: 'app',
     demo: true,
+    assetSources: {
+      logo: 'demo:apps/deanos/img/app/logo.png',
+      wordmarkLight: 'demo:apps/deanos/img/app/wordmark-light.png',
+      wordmarkDark: 'demo:apps/deanos/img/app/wordmark-dark.png',
+      cover: 'demo:apps/deanos/img/app/cover.png',
+      thumbnail: 'demo:apps/deanos/img/app/thumbnail.png',
+    },
     rootProps: rootProps(
       '#ff4f2e',
       "Deano's Demo Place primary colour",
-      deanosWordmarkSrc
+      'demo:apps/deanos/img/app/wordmark-dark.png'
     ),
     consoleProps: {
-      source: 'Effective default Menu PageStyle inherited by the Demo App Kitchen',
+      source: "Deano's Demo Console palette derived from its App",
       pageStyle: defaultMenuPageStyle,
+      palette: deanosConsolePalette,
       values: consoleValues,
     },
     appProps: {
       source: "Deano's incremental App preview fixture",
+      appId: 'deanos',
+      kitchenId: 'deanos',
       template: 'template-one',
       note: 'Demo App emulation; App presentation data can be extended incrementally.',
-      palette: { primary_color: '#ff4f2e', secondary_color: '#f6ead8' },
+      palette: compactAppPalette(deanosAppPalette, deanosConsolePalette),
+      typography: {
+        display_family: 'Montserrat, Arial, sans-serif',
+        body_family: 'Inter, Arial, sans-serif',
+      },
       sceneOne: {
         present: 'wordmark',
         identityAlignment: 'center',
+        tagline: ['Smashed.', 'Seared.', 'Stacked.', 'Served hot.'],
       },
       process: {
         eyebrow: 'The build',
@@ -193,12 +254,61 @@ export const landingTemplateBrands = [
 
 export const landingTemplates = [
   {
+    slug: 'default',
+    name: 'Default',
+    kind: 'default',
+    minimumTier: 'root',
+    status: 'Included',
+    summary: 'Out-of-box Kitchen presentation using inherited Place identity.',
+    anatomy: ['Place identity', 'Kitchen doorway', 'Menu baseline'],
+    features: ['Identity backdrop', 'Kitchen identity', 'Default Menu'],
+    purchaseOptions: [],
+    brands: landingTemplateBrands,
+  },
+  {
+    slug: 'theme',
+    name: 'Theme',
+    kind: 'theme',
+    minimumTier: 'console',
+    status: 'Console',
+    summary: 'Functional Console presentation extending the Default level.',
+    anatomy: ['Default presentation', 'Console palette', 'PageStyle'],
+    features: ['Four functional colours', 'Typography intent', 'Console surfaces'],
+    purchaseOptions: [],
+    brands: landingTemplateBrands,
+  },
+  {
     slug: 'template-one',
     name: 'Template One',
+    kind: 'template',
+    minimumTier: 'app',
     status: 'In development',
     summary: 'Place primary colour, Console theme, then App template.',
     anatomy: ['Page', 'Scenes', 'Layers', 'Elements'],
     features: ['Place primary colour', 'Console presentation', 'App template'],
+    purchaseOptions: [
+      {
+        seller: 'FireUX',
+        label: 'Request through FireUX',
+        to: '/pricing/your-app',
+      },
+      {
+        seller: 'Misebox',
+        label: 'Request through Misebox',
+        to: '/get-started',
+      },
+    ],
+    brands: landingTemplateBrands,
+  },
+  {
+    slug: 'template-two',
+    name: 'Template Two',
+    kind: 'template',
+    minimumTier: 'app',
+    status: 'Foundation only',
+    summary: 'The same Kitchen inputs, ready for a second composition.',
+    anatomy: ['Page', 'Scenes', 'Layers', 'Elements'],
+    features: ['Shared Kitchen projection', 'Independent template anatomy'],
     purchaseOptions: [
       {
         seller: 'FireUX',

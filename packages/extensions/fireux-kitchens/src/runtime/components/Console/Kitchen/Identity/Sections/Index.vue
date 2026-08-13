@@ -11,49 +11,42 @@
 
       <ConsoleKitchenIdentityStage
         number="01"
-        title="Root Kitchen identity"
-        description="Canonical Kitchen identity. Inherited Place values count when they resolve deliberately; duplicate overrides are not required."
-        :percent="rootPercent"
-        :complete="rootComplete"
-        :requirements="rootRequirements"
+        title="Your Place"
+        description="Shared location identity inherited by this Kitchen. Change the backdrop here without duplicating it on Kitchen."
+        :percent="placePercent"
+        :complete="placeComplete"
+        :requirements="placeRequirements"
       >
-        <ConsoleKitchenIdentitySectionsLogo
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :collection-path="rootCollection"
-          :can-write="canWrite"
-        />
-
-        <ConsoleKitchenIdentitySectionsKitchen
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :collection-path="rootCollection"
-          :can-write="canWrite"
-        />
-
-        <ConsoleKitchenIdentitySectionsWordmark
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :collection-path="rootCollection"
-          :can-write="canWrite"
-        />
-
-        <ConsoleKitchenIdentitySectionsPublication
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :can-write="canWrite && rootComplete"
-        />
+        <ConsoleKitchenIdentityPlace />
       </ConsoleKitchenIdentityStage>
 
       <ConsoleKitchenIdentityStage
         number="02"
-        title="Console identity"
-        description="Portable Kitchen Menu PageStyle and Console-owned service presentation. This is not an App template."
+        title="Kitchen identity"
+        description="Kitchen additions and deliberate overrides above the linked Place."
+        :percent="rootPercent"
+        :complete="rootComplete"
+        :locked="!placeComplete"
+        locked-title="Place identity is incomplete"
+        locked-description="Finish the linked Place identity before adding Kitchen overrides."
+        :requirements="rootRequirements"
+      >
+        <KitchenEditIdentity
+          :kitchen="kitchen"
+          :kitchen-id="kitchenId"
+          :can-write="canWrite"
+        />
+      </ConsoleKitchenIdentityStage>
+
+      <ConsoleKitchenIdentityStage
+        number="03"
+        title="Console theme"
+        description="Four functional colours and optional Console typography. This layer exists because the Kitchen has a Console."
         :percent="consolePercent"
         :complete="consoleComplete"
         :locked="!rootComplete"
-        locked-title="Root Kitchen identity is incomplete"
-        locked-description="Finish every Root requirement above before configuring Console identity."
+        locked-title="Kitchen identity is incomplete"
+        locked-description="Finish the Place and Kitchen sections before configuring the Console theme."
         :requirements="consoleRequirements"
       >
         <UButton
@@ -62,55 +55,25 @@
           icon="i-lucide-palette"
           to="/console/kitchen/identity/theme"
         >
-          Open menu display theme
+          Edit Console theme
         </UButton>
-
-        <ConsoleKitchenIdentitySectionsSproochli
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :can-write="canWrite"
-        />
-
-        <ConsoleKitchenIdentitySectionsOperationHours
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :collection-path="rootCollection"
-          :can-write="canWrite"
-        />
-
-        <ConsoleKitchenIdentitySectionsPayments
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :collection-path="rootCollection"
-          :can-write="canWrite"
-        />
-
-        <ConsoleKitchenIdentitySectionsDelivery
-          v-if="hasDeliveryMenus"
-          :kitchen="kitchen"
-          :kitchen-id="kitchenId"
-          :collection-path="rootCollection"
-          :can-write="canWrite"
-        />
       </ConsoleKitchenIdentityStage>
 
       <ConsoleKitchenIdentityStage
-        number="03"
+        v-if="hasDedicatedApp"
+        number="04"
         title="App identity"
-        description="An App-owned Brand System extends the completed Console identity across every tenant and franchise Kitchen."
+        description="Bonus App controls established during onboarding: five masters, the effective palette and two font families."
         :percent="appPercent"
         :complete="appComplete"
         :locked="!consoleComplete"
         locked-title="Console identity is incomplete"
-        locked-description="Complete Root and Console identity before an App Brand System can be applied."
-        :requirements="appRequirements"
+        locked-description="Complete Place, Kitchen and Console identity before editing App identity."
+        :requirements="[]"
       >
-        <UAlert
-          color="neutral"
-          variant="subtle"
-          icon="i-lucide-blocks"
-          title="Brand System authoring is not available yet"
-          description="This page will not invent App palette, asset, template, or franchise-version storage before that authority is implemented."
+        <ConsoleKitchenIdentitySectionsApp
+          :kitchen-id="kitchenId"
+          @saved="refreshTargets"
         />
       </ConsoleKitchenIdentityStage>
     </div>
@@ -127,21 +90,19 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useKitchenIdentityProgression } from '../../../../../composables/fireux/console/kitchen/identity/useKitchenIdentityProgression'
-import { useKitchenConsoleMenus } from '../../../../../composables/fireux/console/kitchen/operations/Menus/useKitchenConsoleMenus'
 import { useKitchenInterface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
 import type { KitchenSurface } from '../../../../../composables/fireux/firestore/kitchen/utils/view/useKitchenInterface'
-import { menuAcceptsOrderType } from '../../../../../utils/menu-ordering-policy'
-import ConsoleKitchenIdentitySectionsKitchen from './Kitchen.vue'
-import ConsoleKitchenIdentitySectionsLogo from './Logo.vue'
-import ConsoleKitchenIdentitySectionsWordmark from './Wordmark.vue'
+import ConsoleKitchenIdentitySectionsApp from './App.vue'
 
 const {
   selectedKitchen,
   kitchenId,
-  rootCollection,
   canWrite,
   place,
   placePending,
+  placeRequirements,
+  placePercent,
+  placeComplete,
   rootRequirements,
   rootPercent,
   rootComplete,
@@ -151,8 +112,9 @@ const {
   appRequirements,
   appPercent,
   appComplete,
+  hasDedicatedApp,
+  refreshTargets,
 } = useKitchenIdentityProgression()
-const { menus } = useKitchenConsoleMenus()
 const { preview, surface } = useKitchenInterface()
 const kitchen = computed(
   () => selectedKitchen.value as KitchenSurface | null
@@ -162,7 +124,4 @@ const resolvedKitchen = computed(() => surface({
   place: place.value,
 }))
 const previewModel = computed(() => preview(resolvedKitchen.value))
-const hasDeliveryMenus = computed(() =>
-  menus.value.some((menu) => menuAcceptsOrderType(menu, 'delivery'))
-)
 </script>

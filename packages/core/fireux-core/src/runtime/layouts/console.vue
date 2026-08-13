@@ -110,7 +110,7 @@
         </template>
       </UDashboardPanel>
 
-      <NuxtErrorBoundary v-else :key="route.fullPath">
+      <NuxtErrorBoundary v-else>
         <slot />
 
         <template #error="{ clearError: clearPageError }">

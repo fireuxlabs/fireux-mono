@@ -1,7 +1,8 @@
-import { useAsyncData } from '#imports'
+import { useState } from '#imports'
 import {
   computed,
   toValue,
+  watch,
   type ComputedRef,
   type MaybeRefOrGetter,
 } from 'vue'
@@ -16,8 +17,12 @@ import type { ConsoleTargetOutcome } from './useConsoleIndex'
 
 type ConsoleTargetRequestState<TItem extends ConsoleTargetIdItem> = {
   requestUid: string
-  response: ConsoleTargetsResponse<TItem>
+  status: 'idle' | 'pending' | 'ready' | 'error'
+  response: ConsoleTargetsResponse<TItem> | null
+  error?: unknown
 }
+
+const pendingRequests = new Map<string, Promise<void>>()
 
 export function useConsoleTargetRequest<TItem extends ConsoleTargetIdItem>(
   family: string,
@@ -30,41 +35,75 @@ export function useConsoleTargetRequest<TItem extends ConsoleTargetIdItem>(
     () => options.enabled === undefined || Boolean(toValue(options.enabled))
   )
   const uid = computed(() => String(currentUser.value?.uid ?? '').trim())
-  const state = useAsyncData<ConsoleTargetRequestState<TItem> | null>(
-    () => `console-targets-${appId}-${normalizedFamily}-${uid.value || 'signed-out'}`,
-    async () => {
-      const user = currentUser.value
-      const requestUid = uid.value
-      if (
-        !enabled.value ||
-        !import.meta.client ||
-        !hasAuthState.value ||
-        user?.uid !== requestUid
-      ) {
-        return null
-      }
-      const token = await user.getIdToken()
-      const response = await $fetch<ConsoleTargetsResponse<TItem>>(
-        `/api/console/${normalizedFamily}/targets`,
-        { headers: { Authorization: `Bearer ${token}` } }
-      )
-      return { requestUid, response }
-    },
-    {
-      server: false,
-      lazy: true,
-      dedupe: 'defer',
-      watch: [enabled, hasAuthState, uid],
-    }
+  const state = useState<ConsoleTargetRequestState<TItem>>(
+    `console-target-request-${appId}-${normalizedFamily}`,
+    () => ({ requestUid: '', status: 'idle', response: null })
   )
+  const load = async () => {
+    const user = currentUser.value
+    const requestUid = uid.value
+    if (
+      !enabled.value ||
+      !import.meta.client ||
+      !hasAuthState.value ||
+      !requestUid ||
+      user?.uid !== requestUid
+    ) {
+      if (!enabled.value || hasAuthState.value) {
+        state.value = { requestUid, status: 'idle', response: null }
+      }
+      return
+    }
+    if (
+      state.value.requestUid === requestUid &&
+      state.value.status === 'ready'
+    ) {
+      return
+    }
+
+    const requestKey = `${appId}:${normalizedFamily}:${requestUid}`
+    const pendingRequest = pendingRequests.get(requestKey)
+    if (pendingRequest) return pendingRequest
+
+    const request = (async () => {
+      state.value = { requestUid, status: 'pending', response: null }
+      try {
+        const token = await user.getIdToken()
+        const response = await $fetch<ConsoleTargetsResponse<TItem>>(
+          `/api/console/${normalizedFamily}/targets`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        )
+        if (uid.value !== requestUid) return
+        if (
+          response.appId !== appId ||
+          response.family !== normalizedFamily
+        ) {
+          throw new Error('Console target response scope mismatch.')
+        }
+        state.value = { requestUid, status: 'ready', response }
+      } catch (error) {
+        if (uid.value === requestUid) {
+          state.value = {
+            requestUid,
+            status: 'error',
+            response: null,
+            error,
+          }
+        }
+      } finally {
+        pendingRequests.delete(requestKey)
+      }
+    })()
+    pendingRequests.set(requestKey, request)
+    return request
+  }
+  watch([enabled, hasAuthState, uid], () => void load(), { immediate: true })
   const response = computed<ConsoleTargetsResponse<TItem> | null>(() => {
     if (!enabled.value) return null
-    const value = state.data.value
+    const value = state.value
     if (
-      !value ||
       value.requestUid !== uid.value ||
-      value.response.appId !== appId ||
-      value.response.family !== normalizedFamily
+      value.status !== 'ready'
     ) {
       return null
     }
@@ -76,12 +115,12 @@ export function useConsoleTargetRequest<TItem extends ConsoleTargetIdItem>(
     () =>
       enabled.value &&
       (!hasAuthState.value ||
-        (active.value &&
-          !state.error.value &&
-          (state.pending.value || !response.value)))
+        (active.value && state.value.status === 'pending'))
   )
   const error = computed<unknown | undefined>(() =>
-    active.value ? (state.error.value ?? undefined) : undefined
+    active.value && state.value.requestUid === uid.value
+      ? state.value.error
+      : undefined
   )
   const outcome = computed<ConsoleTargetOutcome>(() => {
     if (!enabled.value || !active.value) return 'idle'
@@ -96,7 +135,12 @@ export function useConsoleTargetRequest<TItem extends ConsoleTargetIdItem>(
     pending,
     error,
     outcome,
-    refresh: state.refresh as () => Promise<void>,
+    refresh: async () => {
+      if (state.value.requestUid === uid.value) {
+        state.value = { requestUid: uid.value, status: 'idle', response: null }
+      }
+      await load()
+    },
   }
 }
 

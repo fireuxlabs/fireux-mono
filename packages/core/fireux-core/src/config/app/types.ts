@@ -2,11 +2,14 @@ import type { NuxtConfig } from '@nuxt/schema'
 import type { FireuxDesignPackConfig } from './design-packs'
 import type { FireuxSeoConfig } from './seo'
 import type { FireuxMetaContent } from './meta-content'
+import type { AppTheme } from '../../types/theme'
 
 export type FireuxAppRole = 'global' | 'tenant' | 'standalone'
 
 export type FireuxConsoleFamilyConfig = {
   canCreate?: boolean
+  /** Whether this App exposes the shared Demo target catalogue for this Console. */
+  allowDemo?: boolean
 }
 
 export type FireuxConsoleConfig = Record<string, FireuxConsoleFamilyConfig>
@@ -33,6 +36,8 @@ export type FireuxAppConfig = {
   id: string
   name: string
   shortName: string
+  /** Complete semantic palette confirmed during App onboarding. */
+  theme?: AppTheme
   /** Optional app-owned Firestore database id. Standalone apps should set this. */
   databaseId?: string
   /** Optional public contact/support email shown in shared UI (e.g. footer). */

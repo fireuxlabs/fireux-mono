@@ -7,6 +7,7 @@ import type { FireuxEntityManagement } from 'fireux-core/runtime/models/utils/sc
 import { FireuxEntityManagementDefaults } from 'fireux-core/runtime/models/utils/scope.model'
 import type { CurrencyDisplayFormat } from './shared/currency-display.model'
 import type { PageStyle } from 'fireux-core/runtime/models/utils/style.model'
+import type { ConsoleTheme } from 'fireux-core/types/theme'
 import type { FirebaseTimestamp } from 'fireux-core/types/firebase'
 import type { SproochliAttachmentConfig } from 'fireux-sproochli/runtime/sproochli'
 import type { KitchenOrderType } from './kitchen/order.model'
@@ -145,6 +146,7 @@ export type KitchenFulfilmentConfig = {
 }
 
 export type KitchenConsoleConfig = {
+  theme?: ConsoleTheme
   menus?: KitchenMenusConfig
   orders?: KitchenOrdersConfig
   tables?: KitchenTablesConfig

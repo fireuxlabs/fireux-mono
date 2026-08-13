@@ -32,6 +32,16 @@ export const BRAND_PALETTE_KEYS = [
 export type BrandPaletteKey = (typeof BRAND_PALETTE_KEYS)[number]
 export type SparseBrandPalette = Partial<BrandPalette>
 
+export type {
+  AppPalette,
+  AppPaletteLayer,
+  AppTheme,
+  AppThemeLayer,
+  AppTypography,
+  ConsolePalette,
+  ConsoleTheme,
+} from '../../../types/theme'
+
 export type PageStyle = BrandPalette & {
   background_color_light: string
   background_color_dark: string

@@ -4,6 +4,22 @@ import { ensureRuntimeLayer } from './runtime-layer'
 
 export function configurePages(resolver: Resolver, nuxt: Nuxt) {
   ensureRuntimeLayer(resolver, nuxt)
+  nuxt.hook('pages:extend', (pages: any[]) => {
+    const disableConsoleTransitions = (items: any[]) => {
+      for (const page of items) {
+        if (
+          String(page?.path ?? '').startsWith('/console') ||
+          String(page?.file ?? '').includes('/pages/console/')
+        ) {
+          page.meta = { ...(page.meta || {}), pageTransition: false }
+        }
+        if (Array.isArray(page?.children)) {
+          disableConsoleTransitions(page.children)
+        }
+      }
+    }
+    disableConsoleTransitions(pages)
+  })
 }
 
 function globToRegex(pattern: string) {

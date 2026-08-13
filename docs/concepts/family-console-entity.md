@@ -41,6 +41,9 @@ Every Console Entity must share these rules:
 - Every family enters through `/api/console/{family}/targets`. Core owns one
   authenticated App + family + User request lifecycle; each family retains
   its own authority query and domain projection.
+- Every `useXConsole` entrypoint returns one request-scoped family runtime.
+  Selector and selected-target pages consume it rather than reconstructing
+  targets, selection, or entity state.
 - Index and Overview adapters consume that core state. They do not create a
   second membership resolver or target outcome.
 - Target outcomes are explicit: `idle`, `pending`, `error`, `empty`, or

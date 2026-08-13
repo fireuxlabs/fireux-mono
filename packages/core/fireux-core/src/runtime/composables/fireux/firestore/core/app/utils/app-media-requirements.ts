@@ -6,19 +6,27 @@ import type {
 } from './appMedia'
 
 export const APP_IMAGE_STORAGE_OBJECT_NAMES = {
-  thumbnail: 'thumbnail',
-  logo: 'logo',
-  wordmarkLight: 'wordmark-light',
-  wordmarkDark: 'wordmark-dark',
-  cover: 'cover',
+  thumbnail: 'thumbnail.png',
+  logo: 'logo.png',
+  wordmarkLight: 'wordmark-light.png',
+  wordmarkDark: 'wordmark-dark.png',
+  cover: 'cover.png',
+} as const satisfies Record<AppImageKind, string>
+
+export const APP_IMAGE_RELATIVE_PATHS = {
+  thumbnail: 'img/app/thumbnail.png',
+  logo: 'img/app/logo.png',
+  wordmarkLight: 'img/app/wordmark-light.png',
+  wordmarkDark: 'img/app/wordmark-dark.png',
+  cover: 'img/app/cover.png',
 } as const satisfies Record<AppImageKind, string>
 
 export const APP_IMAGE_LOCAL_PUBLIC_PATHS = {
-  thumbnail: '/img/app/thumbnail.png',
-  logo: '/img/app/logo.png',
-  wordmarkLight: '/img/app/wordmark-light.png',
-  wordmarkDark: '/img/app/wordmark-dark.png',
-  cover: '/img/app/cover.png',
+  thumbnail: `/${APP_IMAGE_RELATIVE_PATHS.thumbnail}`,
+  logo: `/${APP_IMAGE_RELATIVE_PATHS.logo}`,
+  wordmarkLight: `/${APP_IMAGE_RELATIVE_PATHS.wordmarkLight}`,
+  wordmarkDark: `/${APP_IMAGE_RELATIVE_PATHS.wordmarkDark}`,
+  cover: `/${APP_IMAGE_RELATIVE_PATHS.cover}`,
 } as const satisfies Record<AppImageKind, string>
 
 export const APP_LOCAL_ONLY_PUBLIC_PATHS = {
@@ -180,4 +188,3 @@ export const APP_PUBLIC_ASSET_REQUIREMENTS = [
   ...APP_SYNCABLE_IMAGE_REQUIREMENTS,
   ...APP_LOCAL_ONLY_ASSET_REQUIREMENTS,
 ] as const satisfies readonly AppPublicAssetRequirement[]
-

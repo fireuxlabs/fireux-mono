@@ -105,12 +105,23 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   )
   const kitchenLogoEditor = read(
     repoRoot,
-    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Logo.vue'
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Edit/Logo.vue'
+  )
+  const kitchenIdentityEditor = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Kitchen/Edit/Identity.vue'
+  )
+  const kitchenConsoleIdentity = read(
+    repoRoot,
+    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Index.vue'
   )
   assert.match(placeModel, /media_backdrop_color/)
   assert.match(kitchenModel, /backdrop_color/)
   assert.match(kitchenLogoEditor, /type="color"/)
   assert.doesNotMatch(kitchenLogoEditor, /Logo tone|imageShadeOptions/)
+  assert.match(kitchenConsoleIdentity, /<KitchenEditIdentity/)
+  assert.match(kitchenIdentityEditor, /<KitchenEditFields/)
+  assert.doesNotMatch(kitchenIdentityEditor, /updateCoverImage|updateGalleryImages|places\//)
   const appModel = read(repoRoot, APP_MODEL)
   const ecosystemModel = read(repoRoot, ECOSYSTEM_MODEL)
   const projectModel = read(repoRoot, PROJECT_MODEL)

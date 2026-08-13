@@ -24,31 +24,31 @@ import {
 const EXPECTED_MEDIA = [
   {
     kind: 'thumbnail',
-    objectName: 'thumbnail',
+    objectName: 'thumbnail.png',
     field: 'thumbnail_url',
     dimensions: { requiredWidth: 1200, requiredHeight: 630 },
   },
   {
     kind: 'logo',
-    objectName: 'logo',
+    objectName: 'logo.png',
     field: 'logo_url',
     dimensions: { requiredWidth: 512, requiredHeight: 512 },
   },
   {
     kind: 'wordmarkLight',
-    objectName: 'wordmark-light',
+    objectName: 'wordmark-light.png',
     field: 'wordmark_light_url',
     dimensions: { minWidth: 256, minHeight: 64, minAspect: 3 },
   },
   {
     kind: 'wordmarkDark',
-    objectName: 'wordmark-dark',
+    objectName: 'wordmark-dark.png',
     field: 'wordmark_dark_url',
     dimensions: { minWidth: 256, minHeight: 64, minAspect: 3 },
   },
   {
     kind: 'cover',
-    objectName: 'cover',
+    objectName: 'cover.png',
     field: 'cover_url',
     dimensions: {
       minWidth: 1280,
@@ -274,7 +274,7 @@ function buildTargetPlan({ configs, requestedApp, requestedEcosystem }) {
 }
 
 function objectPathFor(appId, objectName) {
-  return `apps/${appId}/media/${objectName}`
+  return `apps/${appId}/img/app/${objectName}`
 }
 
 function localAssetPathFor(target, objectName) {
@@ -284,7 +284,7 @@ function localAssetPathFor(target, objectName) {
     'public',
     'img',
     'app',
-    `${objectName}.png`
+    objectName
   )
 }
 
@@ -429,10 +429,12 @@ function elevateStatus(current, next) {
 
 async function auditRegistryApp({ adminApp, bucket, target }) {
   const database = getFirestore(adminApp, target.databaseId)
-  const prefix = `apps/${target.appId}/media/`
-  const [document, storageResult] = await Promise.all([
+  const prefix = `apps/${target.appId}/img/app/`
+  const legacyPrefix = `apps/${target.appId}/media/`
+  const [document, storageResult, legacyStorageResult] = await Promise.all([
     database.collection('apps').doc(target.appId).get(),
     bucket.getFiles({ prefix }),
+    bucket.getFiles({ prefix: legacyPrefix }),
   ])
 
   const listedObjects = storageResult[0].map((file) => file.name).sort()
@@ -446,6 +448,7 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
   const unexpectedObjects = listedObjects.filter(
     (objectPath) => !expectedObjectSet.has(objectPath)
   )
+  const legacyObjects = legacyStorageResult[0].map((file) => file.name).sort()
 
   const data = document.exists ? document.data() || {} : {}
   const media = recordObject(data.media)
@@ -553,6 +556,7 @@ async function auditRegistryApp({ adminApp, bucket, target }) {
     issues,
     checks,
     listedObjects,
+    legacyObjects,
     unexpectedObjects,
     legacyFields,
   }
@@ -564,16 +568,17 @@ function printUsage() {
   pnpm audit:app-media -- (--ecosystem <registry-key> | --all) [--app <registry-key>] --targets
 
 Checks each selected registry App in its canonical database against:
-- apps/{appId}/media/thumbnail
-- apps/{appId}/media/logo
-- apps/{appId}/media/wordmark-light
-- apps/{appId}/media/wordmark-dark
-- apps/{appId}/media/cover
+- apps/{appId}/img/app/thumbnail.png
+- apps/{appId}/img/app/logo.png
+- apps/{appId}/img/app/wordmark-light.png
+- apps/{appId}/img/app/wordmark-dark.png
+- apps/{appId}/img/app/cover.png
 
 Only nested media.* fields are canonical. The audit also reports legacy root
-fields and unexpected objects. Every stored object must be a valid canonical
-PNG and byte-for-byte match its App-owned public/img/app source. The audit never
-mutates Firestore or Storage.
+fields, unexpected canonical objects, and legacy apps/{appId}/media/* objects
+pending explicit migration. Every canonical object must be a valid PNG and
+byte-for-byte match its App-owned public/img/app source. The audit never mutates
+Firestore or Storage.
 
 Options:
 - --ecosystem: APP_REGISTRY ecosystem key, for example misebox or fireux

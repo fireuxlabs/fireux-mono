@@ -113,6 +113,7 @@
               data.description is string && data.description.size() <= 5000 &&
               data.item_kind in ['food', 'drink'] &&
               data.is_deal is bool &&
+              data.is_flagship is bool &&
               data.image is string && data.image.size() <= 2000 &&
               validCreatedStamp(data.created) &&
               validUpdatedStamp(data.updated);

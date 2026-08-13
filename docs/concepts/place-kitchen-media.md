@@ -44,6 +44,16 @@ media.
 Writers accept files and persist canonical Firebase Storage download URLs for
 the exact entity-owned targets. Colour writers accept only `#rrggbb`.
 
+The cross-owner target is one asset-role language through
+`Place → Kitchen → App`: a role retains the same filename and relative path,
+while only its entity prefix changes. Apps now prove that shape with
+`apps/<appId>/img/app/<filename>` and the matching bundled
+`public/img/app/<filename>`. Existing Place and Kitchen Storage targets predate
+that convention. They remain readable compatibility paths until an explicit
+guarded Storage migration moves the objects and updates their recorded URLs;
+new presentation code must not treat those legacy paths as a second permanent
+asset system.
+
 The bounded Misebox migration from the retired Place `assets` object to these
 canonical sparse Place fields is owned by
 `scripts/migrate-misebox-place-assets.mjs`. It verifies every referenced

@@ -1,6 +1,6 @@
 # Landing templates context
 
-Updated: 2026-08-10
+Updated: 2026-08-12
 Ref: 93c271035
 Role: living context
 Scope: FireUX landing-template catalogue and brand-injection family
@@ -23,6 +23,9 @@ referrals. The current proving member is Template One.
   compositions and catalogue fixtures.
 - Misebox owns the canonical `/templates/template-one` product page. FireUX
   keeps a catalogue referral and does not copy anatomy or fixtures.
+- The catalogue also exposes `Default` for Root presentation and `Theme` for
+  Console presentation. They are progressive presentation levels, not App
+  template records; Template One and Template Two remain App-only.
 - Templates are available only to App-managed Kitchens. Root and Console
   Kitchens appear on the Template One page only as progression specimens that
   expose the inherited atom inputs an App template extends.
@@ -31,11 +34,32 @@ referrals. The current proving member is Template One.
   one App-owned template applied across all of its tenant/franchise Kitchens;
   franchises do not fork or select templates independently.
 - Place presentation is intentionally minimal: entity identity media plus one
-  semantic `place_primary_color` fallback behind transparent uploads. Current
+  semantic `identity_backdrop_color` fallback behind transparent uploads. Current
   persisted Place source still calls it `media_backdrop_color`; migrate that
   field only through the guarded Place projection/write family. Rich
   palette and composition inputs begin above Place; do not treat Place
   `brand_palette` compatibility data as the Template One App palette.
+- Palette ownership is progressive and non-copying: Place owns one identity
+  backdrop, Kitchen may sparsely override it, Console owns four functional
+  colours, and App stores only roles that extend or override Console. App
+  source still reviews the effective eight-colour result. Domain-owned App
+  attachment seeds a missing Console layer from that source, preserves any
+  existing Console colours, and compacts the canonical App layer. Templates
+  resolve Console plus App; they never require duplicated values.
+- App typography begins with two family inputs only: display and body. Template
+  One derives Display, Heading, Body and Label roles from those inputs;
+  responsive scales, uploads and per-role overrides remain outside this seam.
+- Template One eligibility is inspected outside scene anatomy. Scene One
+  consumes canonical wordmark, effective palette, two typography families and
+  the unique Kitchen-owned flagship Dish from the bounded Dish projection.
+  Missing or multiple flagships render one shared not-ready anatomy; collection
+  order is never a fallback. Dish owns food imagery. Optional App Brand Asset
+  roles such as marks and patterns remain unapproved until their owner records
+  canonical role and usage metadata.
+- Scene One render readiness is distinct from full Template One content
+  readiness. The scene can render from one unique flagship, while the template
+  requirements manifest still requires six eligible Dishes plus exactly one
+  explicit flagship before reporting complete content readiness.
 - A template injection owns tokens, copy, links, and approved media only. It
   never repeats scene markup or template CSS and does not create an App,
   domain, or production record.
@@ -44,9 +68,19 @@ referrals. The current proving member is Template One.
   templates.
 - Friiites remains a Misebox tenant App and visual proving reference. Core owns
   no template-specific presentation.
+- Template injections consume canonical asset roles, never filenames unique to
+  one brand. Firebase Storage is durable authority. The owning App may resolve
+  its identical bundled `public/img/app/<filename>` first and Storage second;
+  cross-App catalogues use the owner App's Storage URL only. Missing roles stay
+  missing and never fall back to another brand or asset kind. Misebox must not
+  mount or inspect a sibling tenant App's bundle to populate its catalogue.
 - Template anatomy preserves Page → Scenes → Layers → Elements. Page chrome is
   outside scenes; neutral hooks are `data-landing-scene` and
   `data-scene-layer`.
+- A template-consuming App starts from its App-owned `templates` layout. That
+  layout keeps header/page chrome in normal document flow and mounts the page;
+  reusable scenes never compensate for header height or position. Extract a
+  shared configurable header only after a second real App proves the contract.
 - Shared landing motion remains outside this family. Do not add GSAP,
   ScrollTrigger, or a competing motion abstraction here.
 

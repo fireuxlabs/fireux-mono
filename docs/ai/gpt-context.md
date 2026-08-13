@@ -601,6 +601,19 @@ Before each task:
   `(default)` AppMeta projection. App media sync and App-admin presentation
   edits use the same projection seam. The second database write is retryable,
   not falsely described as part of the named-database transaction.
+- App source declares the complete reviewed eight-role semantic palette. App
+  initialization persists that source when no lower theme layer exists and
+  backfills only an absent canonical palette. Domain-owned App attachment may
+  derive a missing four-role Console palette from the complete source, then
+  compacts canonical `App.theme.palette` to only roles that extend or override
+  Console. Existing Console colours are preserved; renderers resolve the full
+  palette from Console plus App rather than storing duplicates. The same setup
+  action validates, uploads and records all five canonical App Storage masters.
+  Root entities never receive App presentation.
+- App theme typography is limited to `display_family` and `body_family`.
+  Domain identity editors may expose those fields only for an entity whose
+  canonical management is a dedicated App, and must write the owning App rather
+  than the currently running ecosystem App. Template treatments remain readers.
 - App initialization requires a fully valid environment, live Firebase
   Storage reachability, and App-owned media check. Dev mode is not authority to
   bypass required configuration, infrastructure, or asset validation.

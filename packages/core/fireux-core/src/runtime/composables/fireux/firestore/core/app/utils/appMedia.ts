@@ -1,7 +1,7 @@
-// Canonical app media naming:
+// Canonical App media naming:
 // - Local files: public/img/app/{thumbnail|logo|wordmark-light|wordmark-dark|cover}.*
 // - Browser URLs: /img/app/{thumbnail|logo|wordmark-light|wordmark-dark|cover}.*
-// - Storage objects: apps/<appId>/media/{thumbnail|logo|wordmark-light|wordmark-dark|cover}
+// - Storage objects: apps/<appId>/img/app/{thumbnail|logo|wordmark-light|wordmark-dark|cover}.png
 // - Firestore fields:
 //   {media.thumbnail_url|media.logo_url|media.wordmark_light_url|media.wordmark_dark_url|media.cover_url}
 import { normalizePublicImgAsset } from '../../../../../../../utils/brandAssets'
@@ -83,7 +83,7 @@ export type AppPublicAssetRequirement = {
 import {
   APP_IMAGE_FIRESTORE_FIELDS,
   APP_IMAGE_LOCAL_PUBLIC_PATHS,
-  APP_IMAGE_STORAGE_OBJECT_NAMES,
+  APP_IMAGE_RELATIVE_PATHS,
   APP_PUBLIC_ASSET_REQUIREMENTS,
   APP_SYNCABLE_IMAGE_REQUIREMENTS,
 } from './app-media-requirements'
@@ -174,13 +174,45 @@ export function validateAppAssetDimensions(
 }
 
 export function appImageStoragePath(appId: string, kind: AppImageKind): string {
-  // "Public bucket" convention: a stable object path that can be overwritten.
-  // The UI refresh resolves the current download URL and saves it to Firestore.
-  return `apps/${appId}/media/${APP_IMAGE_STORAGE_OBJECT_NAMES[kind]}`
+  // The owner prefix changes; the canonical role path and filename do not.
+  return `apps/${appId}/${APP_IMAGE_RELATIVE_PATHS[kind]}`
 }
 
 export function appImageLocalPublicPath(kind: AppImageKind): string {
   return APP_IMAGE_LOCAL_PUBLIC_PATHS[kind]
+}
+
+export type AppImageSourceResolution = {
+  kind: AppImageKind
+  relativePath: string
+  localUrl: string
+  storageUrl: string
+  candidates: readonly string[]
+}
+
+/**
+ * Resolve one canonical App image role without changing its language.
+ * The owning App may try its bundled file first, then the recorded Storage URL.
+ * Cross-App consumers set `owningAppBundle` false and receive Storage only.
+ */
+export function resolveAppImageSources(
+  kind: AppImageKind,
+  storageUrl: unknown,
+  options: { owningAppBundle: boolean }
+): AppImageSourceResolution {
+  const localUrl = appImageLocalPublicPath(kind)
+  const resolvedStorageUrl = safeUrl(storageUrl)
+  const candidates = options.owningAppBundle
+    ? [localUrl, resolvedStorageUrl].filter(Boolean)
+    : [resolvedStorageUrl].filter(Boolean)
+
+  return {
+    kind,
+    relativePath: APP_IMAGE_RELATIVE_PATHS[kind],
+    localUrl,
+    storageUrl: resolvedStorageUrl,
+    candidates,
+  }
 }
 
 export function appImageFirestoreField(kind: AppImageKind): AppImageFirestoreField {
@@ -195,39 +227,56 @@ function safeUrl(value: unknown): string {
   return typeof value === 'string' ? normalizePublicImgAsset(value) : ''
 }
 
-/**
- * Dev-only visual backup:
- * - Canonical record and storage paths remain Firestore + Storage based.
- * - When an app is new and media has not been synced yet, local public assets can
- *   be rendered for development surfaces without rewriting canonical data.
- */
+/** App initialization is incomplete until every canonical Storage role is recorded. */
+export function isAppMediaComplete(value: unknown): boolean {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false
+  const media = value as AppMediaRecordLike
+  return [
+    media.thumbnail_url,
+    media.logo_url,
+    media.wordmark_light_url,
+    media.wordmark_dark_url,
+    media.cover_url,
+  ].every((url) => Boolean(safeUrl(url)))
+}
+
+/** Resolve canonical App roles for a view without crossing App ownership. */
 export function resolveAppMediaForView(
   media: AppMediaRecordLike | null | undefined,
   options?: {
+    owningAppBundle?: boolean
+    /** @deprecated Use owningAppBundle. */
     devLocalFallback?: boolean
   }
 ) {
-  const devLocalFallback = Boolean(options?.devLocalFallback)
+  const owningAppBundle = Boolean(
+    options?.owningAppBundle ?? options?.devLocalFallback
+  )
 
   const thumbnailUrl =
-    safeUrl(media?.thumbnail_url) ||
-    (devLocalFallback ? appImageLocalPublicPath('thumbnail') : '')
+    resolveAppImageSources('thumbnail', media?.thumbnail_url, {
+      owningAppBundle,
+    }).candidates[0] || ''
 
   const logoUrl =
-    safeUrl(media?.logo_url) ||
-    (devLocalFallback ? appImageLocalPublicPath('logo') : '')
+    resolveAppImageSources('logo', media?.logo_url, {
+      owningAppBundle,
+    }).candidates[0] || ''
 
   const wordmarkLightUrl =
-    safeUrl(media?.wordmark_light_url) ||
-    (devLocalFallback ? appImageLocalPublicPath('wordmarkLight') : '')
+    resolveAppImageSources('wordmarkLight', media?.wordmark_light_url, {
+      owningAppBundle,
+    }).candidates[0] || ''
 
   const wordmarkDarkUrl =
-    safeUrl(media?.wordmark_dark_url) ||
-    (devLocalFallback ? appImageLocalPublicPath('wordmarkDark') : '')
+    resolveAppImageSources('wordmarkDark', media?.wordmark_dark_url, {
+      owningAppBundle,
+    }).candidates[0] || ''
 
   const coverUrl =
-    safeUrl(media?.cover_url) ||
-    (devLocalFallback ? appImageLocalPublicPath('cover') : '')
+    resolveAppImageSources('cover', media?.cover_url, {
+      owningAppBundle,
+    }).candidates[0] || ''
 
   return {
     thumbnailUrl,

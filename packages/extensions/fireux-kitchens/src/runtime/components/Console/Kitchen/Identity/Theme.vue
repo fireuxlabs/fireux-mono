@@ -39,12 +39,21 @@
       </UCard>
 
       <div class="grid gap-4 xl:grid-cols-[minmax(0,1fr)_420px]">
-        <ConsoleKitchenIdentityThemeEditor
-          :style="draftPageStyle"
-          :can-write="canWrite"
-          :save-state="saveState"
-          @update:style="setDraftPageStyle"
-        />
+        <div class="space-y-4">
+          <ConsoleKitchenIdentityConsolePaletteEditor
+            :palette="consolePalette"
+            :can-write="canWriteConsolePalette"
+            :saving="paletteSaving"
+            :save-state="paletteSaveState"
+            @save="saveConsolePalette"
+          />
+          <ConsoleKitchenIdentityThemeEditor
+            :style="draftPageStyle"
+            :can-write="canWrite"
+            :save-state="saveState"
+            @update:style="setDraftPageStyle"
+          />
+        </div>
 
         <ConsoleKitchenIdentityMenuPreview
           :kitchen-name="kitchenName"
@@ -61,8 +70,8 @@
         color="neutral"
         variant="subtle"
         icon="i-lucide-lock-keyhole"
-        title="Complete Root Kitchen identity first"
-        description="Menu display theme unlocks when every Root identity requirement reaches 100%."
+        title="Complete Kitchen identity first"
+        description="Console theme unlocks when the Place and Kitchen identity sections are complete."
       >
         <template #actions>
           <UButton to="/console/kitchen/identity" color="neutral" variant="soft">
@@ -78,6 +87,7 @@
 
 <script setup lang="ts">
 import { useKitchenThemeEditor } from './useKitchenThemeEditor'
+import { useKitchenConsolePaletteEditor } from './useKitchenConsolePaletteEditor'
 import { useKitchenIdentityProgression } from '../../../../composables/fireux/console/kitchen/identity/useKitchenIdentityProgression'
 const { rootComplete, placePending } = useKitchenIdentityProgression()
 const {
@@ -132,4 +142,11 @@ const {
   hasOutstandingThemeSave,
   flushThemeSave,
 } = useKitchenThemeEditor()
+const {
+  palette: consolePalette,
+  canSave: canWriteConsolePalette,
+  saving: paletteSaving,
+  saveState: paletteSaveState,
+  save: saveConsolePalette,
+} = useKitchenConsolePaletteEditor()
 </script>

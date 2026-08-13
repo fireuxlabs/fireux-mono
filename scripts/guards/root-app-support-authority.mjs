@@ -398,6 +398,12 @@ const files = {
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/update.ts',
   kitchenMutationAuthority:
     'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/mutation-authority.ts',
+  kitchenTheme:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/theme.ts',
+  kitchenAppTheme:
+    'packages/extensions/fireux-kitchens/src/runtime/server/kitchen/app-theme.ts',
+  kitchenIdentityProgression:
+    'packages/extensions/fireux-kitchens/src/runtime/components/Console/Kitchen/Identity/Sections/Index.vue',
   kitchenOnboardingHandler:
     'packages/extensions/fireux-kitchens/src/runtime/server/api/kitchens/onboarding/complete.post.ts',
   kitchenOnboarding:
@@ -991,6 +997,21 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenUpdateServer, /requireKitchenMutationAuthority/)
   assert.match(source.kitchenUpdateServer, /readKitchenByRouteSlug/)
   assert.match(
+    source.kitchenIdentityProgression,
+    /title="Your Place"[\s\S]*title="Kitchen identity"[\s\S]*title="Console theme"[\s\S]*v-if="hasDedicatedApp"[\s\S]*title="App identity"/,
+    'Kitchen identity must mirror the Place, Kitchen, Console, and capability-gated App onboarding progression.'
+  )
+  assert.match(
+    source.kitchenTheme,
+    /'console\.theme\.palette'[\s\S]*mutations\.update\(current\.supports/,
+    'Console theme writes must target same-id AppKitchen support rather than Kitchen root.'
+  )
+  assert.match(
+    source.kitchenAppTheme,
+    /management\.mode !== 'app'[\s\S]*compactAppPalette[\s\S]*'theme\.typography'/,
+    'App identity writes must require dedicated-App capability and preserve sparse palette plus two-family typography.'
+  )
+  assert.match(
     source.kitchenMutationAuthority,
     /readKitchenOnboardingManagement/
   )
@@ -1083,6 +1104,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
   assert.match(source.kitchenTargetApi, /management\.mode === 'root'/)
   assert.match(
     source.kitchenTargetApi,
+    /isGlobal\s*\?\s*indexedTargetIds\s*:\s*indexedTargetIds\.filter\(id => scopes\.get\(id\)\?\.appId === appId\)/,
+    'Tenant Kitchen target projection must be restricted to the current App.'
+  )
+  assert.match(
+    source.kitchenTargetApi,
     /management:\s*input\.scope\.management/
   )
   assert.match(source.kitchenTargetApi, /db\.getAll/)
@@ -1119,6 +1145,11 @@ export async function run({ repoRoot = process.cwd() } = {}) {
     source.kitchenOnboarding,
     /(?:transaction\.create\(supportRef|mutations\.create\(supports),[\s\S]*operator_ids:[\s\S]*team_ids:[\s\S]*join_requests:/,
     'Trusted Kitchen onboarding must seed every AppKitchen authority array.'
+  )
+  assert.match(
+    source.kitchenOnboarding,
+    /readAppPalette\([\s\S]*consolePaletteFromApp\([\s\S]*compactAppPalette\([\s\S]*console:\s*inheritedConsoleTheme/,
+    'Trusted Kitchen onboarding must seed missing Console colours and compact the owning App palette.'
   )
   assert.doesNotMatch(
     source.kitchenOnboarding,

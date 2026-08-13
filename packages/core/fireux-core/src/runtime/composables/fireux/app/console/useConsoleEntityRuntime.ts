@@ -33,6 +33,7 @@ export type UseConsoleEntityRuntimeOptions<TTarget extends object> = {
   useAppSupport?: ValueRef<boolean | null | undefined>
   readOnly?: ValueRef<boolean | null | undefined>
   userId?: ValueRef<string | null | undefined>
+  enforcedTargetId?: ValueRef<string | null | undefined>
 }
 
 export function useConsoleEntityRuntime<TTarget extends object>(
@@ -64,6 +65,7 @@ export function useConsoleEntityRuntime<TTarget extends object>(
     targetOutcome: computed(() => unref(options.targetOutcome)),
     getId: (data) => options.getId(data.value),
     getType: (data) => data.type,
+    enforcedTargetId: options.enforcedTargetId,
   })
   const selectedTarget = computed<TTarget | null>(
     () => selectedData.value?.value ?? null

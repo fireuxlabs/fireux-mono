@@ -87,7 +87,7 @@
       </div>
     </section>
 
-    <section v-if="injection.consoleProps" class="console-theme">
+    <section v-if="showConsole && injection.consoleProps" class="console-theme">
       <header>
         <div>
           <small>{{ consoleLevelLabel }}</small>
@@ -132,7 +132,9 @@ const props = defineProps<{
   injection: TemplateOneKitchenSpecimen
   menu: TemplateOneMenuSample
   basicPresentation?: MiseboxKitchenBasicPresentation | null
+  presentationKind?: 'default' | 'theme' | 'template'
 }>()
+const showConsole = computed(() => props.presentationKind !== 'default')
 const presence = (value?: string) => value ? 'Present' : 'Missing'
 const sourceLabel = (
   value: MiseboxKitchenBasicPresentation['placePrimaryColorSource']

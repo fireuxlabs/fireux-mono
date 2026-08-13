@@ -21,10 +21,10 @@ function isConsoleRootPath(path: string) {
 }
 
 export default defineNuxtRouteMiddleware(async (to) => {
-  if (import.meta.server) return
-
   const path = String(to.path || '')
   if (!isConsolePath(path)) return
+  to.meta.pageTransition = false
+  if (import.meta.server) return
   const runtime = useRuntimeConfig()
   const fireuxRuntime = () =>
     (runtime.public?.fireux || {}) as Record<string, unknown>

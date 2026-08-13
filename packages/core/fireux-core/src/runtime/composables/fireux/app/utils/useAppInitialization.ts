@@ -56,26 +56,23 @@ export function useAppInitialization(
     proceedError.value = null
     try {
       const result = await initializeConfiguredApp()
-      await options.onInitialized?.()
-
       const syncResult = await syncAppMediaToStorage()
-      await refreshEnv()
-
       if (syncResult.failed.length) {
         const detail = syncResult.failed
           .map((entry) => `${entry.kind}: ${entry.message}`)
           .join(' | ')
-        proceedError.value = `App initialized, but some brand assets failed to sync to Storage. ${detail}`
-        toast.warn(proceedError.value)
-      } else {
-        toast.success(
-          result.appCreated
-            ? 'App initialized.'
-            : result.membershipCreated || result.membershipUpdated
-              ? 'App access repaired.'
-              : 'App is ready.'
-        )
+        throw new Error(`App setup is incomplete. ${detail}`)
       }
+
+      await refreshEnv()
+      await options.onInitialized?.()
+      toast.success(
+        result.appCreated
+          ? 'App initialized.'
+          : result.membershipCreated || result.membershipUpdated
+            ? 'App access repaired.'
+            : 'App is ready.'
+      )
     } catch (e) {
       const message =
         e instanceof Error && e.message.trim()

@@ -9,11 +9,11 @@
           <div class="space-y-4">
             <div>
               <p class="text-sm font-medium text-highlighted">
-                Kiosk wordmark
+                Wordmark
               </p>
               <p class="text-xs text-dimmed">
                 Current Kitchen wordmark. Recommended: 1600 × 400 px,
-                transparent PNG. Kiosk uses the no-logo wordmark first.
+                transparent PNG.
               </p>
             </div>
 
@@ -50,22 +50,10 @@
                 variant="soft"
                 icon="i-lucide-upload"
                 :disabled="!canWrite || pending"
-                :loading="pending && wordmarkUploadKind === 'no-logo'"
-                @click="openWordmarkUpload('no-logo')"
+                :loading="pending"
+                @click="openWordmarkUpload"
               >
-                No-logo wordmark
-              </UButton>
-
-              <UButton
-                size="sm"
-                color="neutral"
-                variant="soft"
-                icon="i-lucide-upload"
-                :disabled="!canWrite || pending"
-                :loading="pending && wordmarkUploadKind === 'standard'"
-                @click="openWordmarkUpload('standard')"
-              >
-                Wordmark
+                Upload wordmark
               </UButton>
             </div>
           </div>
@@ -77,23 +65,18 @@
 <script setup lang="ts">
 import { useToastify } from 'fireux-core/runtime/composables/fireux/app/ui/useToastify'
 import { computed, ref } from 'vue'
-import {
-  useKitchenWordmarkUpdate,
-  type KitchenWordmarkKind,
-} from '../../../../../composables/fireux/firestore/kitchen/mutations/useKitchenWordmarkUpdate'
-import { readKitchenIdentity } from '../../../../../utils/kitchen-spine'
+import { useKitchenWordmarkUpdate } from '../../../composables/fireux/firestore/kitchen/mutations/useKitchenWordmarkUpdate'
+import { readKitchenIdentity } from '../../../utils/kitchen-spine'
 
 const props = defineProps<{
   kitchen: Record<string, unknown> | null
   kitchenId: string
-  collectionPath: string
   canWrite: boolean
 }>()
 
 const toast = useToastify()
 const { pending, uploadKitchenWordmark } = useKitchenWordmarkUpdate()
 const wordmarkInput = ref<HTMLInputElement | null>(null)
-const wordmarkUploadKind = ref<KitchenWordmarkKind>('no-logo')
 
 const identity = computed(() => readKitchenIdentity(props.kitchen))
 const name = computed(() => identity.value.displayName)
@@ -105,9 +88,8 @@ const mediaBackdropColor = computed(() =>
   String((props.kitchen as any)?.media_backdrop_color || '').trim()
 )
 
-const openWordmarkUpload = (kind: KitchenWordmarkKind) => {
+const openWordmarkUpload = () => {
   if (!props.canWrite || pending.value) return
-  wordmarkUploadKind.value = kind
   wordmarkInput.value?.click()
 }
 
@@ -122,16 +104,9 @@ const handleWordmarkFileChange = async (event: Event) => {
   }
 
   try {
-    await uploadKitchenWordmark(
-      props.kitchenId,
-      file,
-      wordmarkUploadKind.value
-    )
+    await uploadKitchenWordmark(props.kitchenId, file)
     toast.add({
-      title:
-        wordmarkUploadKind.value === 'no-logo'
-          ? 'Kiosk wordmark updated'
-          : 'Wordmark updated',
+      title: 'Wordmark updated',
       icon: 'i-heroicons-check-circle',
     })
   } catch (error) {

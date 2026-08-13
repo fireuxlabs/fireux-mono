@@ -31,6 +31,7 @@ Map the shared console system and domain adapters.
 - `useConsoleDemoData`
 - `useConsoleTargets`
 - `useConsoleTargetRequest`
+- `useConsoleFamilyRuntime`
 - `useConsoleIndex`
 - `ConsoleSelectedTarget`
 - `ConsoleTargetCollection`
@@ -53,6 +54,13 @@ Map the shared console system and domain adapters.
   then directly composes `UDashboardPanel`, `LayoutsConsoleNavbar`, a header
   slot, and a body slot inside it. Do not hide that route shell in a generic
   component.
+- Console routes disable the global `out-in` page transition so the persistent
+  Console layout and family runtime remain responsive while route content
+  changes.
+- The Console layout does not key its content boundary by the full route.
+  Established Firebase authentication is read synchronously during navigation;
+  an auth observer is reserved for initial hydration when no current User is
+  available yet.
 - In the shared `UDashboardGroup` flex layout, the neutral route wrapper uses
   `flex min-h-full min-w-0 flex-1`; a bare block wrapper can stop
   `UDashboardPanel` from filling the remaining Console width.
@@ -71,6 +79,9 @@ Map the shared console system and domain adapters.
 - Authentication and role requirements also live at top-level page meta; `nav` must not become a second access contract.
 - A route opts into only the surfaces its operation needs. A live Orders board does not imply an Orders edit page.
 - Route pages stay thin. Domain components own data, permissions, states, and mutations.
+- Overview navigation cards do not initialize child operation workspaces to
+  calculate counts. A future count belongs to one bounded overview summary;
+  each operation loads its records only when its own route opens.
 - Adopted routes can declare `consoleSurface`; edit routes declare `edit` and live routes declare `live`.
 - The console-pages guard enforces the real DOM root plus the explicit
   panel/navbar/body contract for visible leaf pages. Redirects, nested routers,
@@ -112,12 +123,18 @@ Map the shared console system and domain adapters.
   outcome, and selection validity. Index and overview composables consume that
   core result; they do not call `useConsoleTargets` again or overlay another
   membership outcome.
+- `useXConsole` resolves through `useConsoleFamilyRuntime`, which creates one
+  family runtime per Nuxt App request/client instance. Selector, Overview,
+  Identity, Team, and Operations consume that same object; repeated composable
+  calls must not recreate target reads, selection watchers, or entity runtime.
 - Named selected wrappers map domain identity into `ConsoleSelectedTarget`;
   Core owns the selected/empty card anatomy and Clear action presentation, and
   the family index forwards `actions.clear`. A family may project its existing
   entity card through the shared selected-content slot; it must not replace the
   shared empty state or Clear behavior.
 - Tenant apps can auto-select a single persisted authorized target.
+- Authority-proven single targets are committed inside the family runtime;
+  index adapters never add a second auto-selection path.
 - Every Live App sources target relationships and operator/team access from
   the owning entity family's persisted App-support records. AppUser does not
   carry Console target IDs.
@@ -150,7 +167,7 @@ Map the shared console system and domain adapters.
   loaded target object decides whether target content is ready. A missing
   object while an ID exists is a loading state, never a false "select first"
   empty state.
-- A Console family has one family-keyed reactive source state shared by every
+- A Console family has one App-and-family-keyed reactive source state shared by every
   composable instance. Its cookie is persistence, not a second live source
   authority; source changes update both together so source-aware selection
   cannot race between `live`, `demo`, and `test`.

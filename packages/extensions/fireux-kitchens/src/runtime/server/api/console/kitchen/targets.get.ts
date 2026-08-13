@@ -34,6 +34,7 @@ import {
   readKitchenMenusConfig,
   readKitchenSproochliConfig,
   readKitchenVisibility,
+  readKitchenConsolePalette,
 } from '../../../../utils/kitchen-spine.ts'
 
 type StoredRecord = Record<string, unknown>
@@ -118,6 +119,7 @@ function projectKitchenTarget(input: {
     rootIdentity.tagline ||
     place.brandTagline
   const supportConsole = record(input.support.console)
+  const consolePalette = readKitchenConsolePalette(input.support)
   const orders = record(supportConsole.orders)
   const tables = record(supportConsole.tables)
   const shortName = place.shortName
@@ -168,6 +170,7 @@ function projectKitchenTarget(input: {
         ? { style: resolvedMenuStyle }
         : {}),
     },
+    ...(consolePalette ? { console_theme: { palette: consolePalette } } : {}),
     ...(Object.keys(orders).length
       ? { orders: orders as KitchenOrdersConfig }
       : {}),
@@ -209,7 +212,7 @@ export default defineEventHandler(
       event,
       'Sign in to view Kitchen targets.'
     )
-    const { appId, ecosystem } = useFireUXConfig()
+    const { appId, ecosystem, isGlobal } = useFireUXConfig()
     const db = getRuntimeFirestore()
     const currentMembershipRef = db.doc(`apps/${appId}/users/${uid}`)
     const currentMembershipSnapshot = await currentMembershipRef.get()
@@ -225,11 +228,11 @@ export default defineEventHandler(
       })
     }
 
-    const targetIds = await resolveKitchenConsoleTargetIds(
+    const indexedTargetIds = await resolveKitchenConsoleTargetIds(
       uid,
       currentMembership
     )
-    if (!targetIds.length) {
+    if (!indexedTargetIds.length) {
       setResponseHeaders(event, {
         'Content-Type': 'application/json; charset=utf-8',
         'Cache-Control': 'private, no-store',
@@ -238,7 +241,7 @@ export default defineEventHandler(
     }
 
     const rootSnapshots = await db.getAll(
-      ...targetIds.map(id => db.doc(`kitchens/${id}`))
+      ...indexedTargetIds.map(id => db.doc(`kitchens/${id}`))
     )
     const roots = new Map(
       rootSnapshots.map(snapshot => [snapshot.id, snapshot])
@@ -246,7 +249,7 @@ export default defineEventHandler(
     const scopes = new Map<string, CanonicalKitchenScope>()
     const relatedRefs = new Map<string, ReturnType<typeof db.doc>>()
 
-    for (const id of targetIds) {
+    for (const id of indexedTargetIds) {
       const rootSnapshot = roots.get(id)
       if (!rootSnapshot?.exists) {
         conflict(`Kitchen target ${id} is missing its canonical root.`)
@@ -254,6 +257,13 @@ export default defineEventHandler(
       const root = rootSnapshot.data() || {}
       const scope = readCanonicalKitchenScope(id, root, ecosystem)
       scopes.set(id, scope)
+    }
+
+    const targetIds = isGlobal
+      ? indexedTargetIds
+      : indexedTargetIds.filter(id => scopes.get(id)?.appId === appId)
+    for (const id of targetIds) {
+      const scope = scopes.get(id)!
       for (const ref of [
         db.doc(`apps/${scope.appId}/kitchens/${id}`),
         db.doc(`apps/${scope.appId}/users/${uid}`),

@@ -16,6 +16,10 @@ const sourceRoot = join(packageRoot, 'src/config')
 const outputRoot = join(packageRoot, 'dist/config')
 const configDependencyFiles = [
   {
+    source: join(packageRoot, 'src/types/theme.ts'),
+    output: join(packageRoot, 'dist/types/theme.mjs'),
+  },
+  {
     source: join(packageRoot, 'src/utils/brandAssets.ts'),
     output: join(packageRoot, 'dist/utils/brandAssets.mjs'),
   },
